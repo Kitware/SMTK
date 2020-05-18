@@ -25,7 +25,9 @@ smtk::attribute::InfixExpressionEvaluator::InfixExpressionEvaluator(ConstAttribu
 }
 
 bool smtk::attribute::InfixExpressionEvaluator::evaluate(
-  smtk::attribute::Evaluator::ValueType& result, smtk::io::Logger& log, const std::size_t& element,
+  smtk::attribute::Evaluator::ValueType& result,
+  smtk::io::Logger& log,
+  const std::size_t& element,
   const DependentEvaluationMode& evaluationMode)
 {
   smtk::attribute::ConstAttributePtr att = attribute().lock();
@@ -52,79 +54,85 @@ bool smtk::attribute::InfixExpressionEvaluator::evaluate(
 
   // Tells |grammar| to attempt to create an Evaluator and evaluate() child
   // expressions.
-  smtk::common::SubsymbolVisitor childExpressionVisitor = [&symbolsUsed, &ctxtStorage, attSymbol,
-    attRes, &log, element](const std::string& symbol) {
-    // Are we attempting to reference ourself?
-    if (attSymbol == symbol)
-    {
-      log.addRecord(smtk::io::Logger::ERROR, "Cannot write " + attSymbol + " in terms of itself.");
-      return std::pair<double, bool>(0.0, false);
-    }
-
-    // Are we attempting to reference a dependent expression?
-    // If we can reach |symbol| from |attSymbol|, this would be a cycle.
-    if (ctxtStorage.isDependentOn(attSymbol, symbol))
-    {
-      log.addRecord(smtk::io::Logger::ERROR, "Cannot use " + symbol + " in expression " +
-          attSymbol + " because the expression " + symbol + " already uses " + attSymbol + ".");
-      return std::pair<double, bool>(0.0, false);
-    }
-
-    symbolsUsed.insert(symbol);
-
-    // |attSymbol| is dependent on |symbol|.
-    ctxtStorage.addDependency(symbol, attSymbol);
-
-    smtk::attribute::AttributePtr childAtt = attRes->findAttribute(symbol);
-    if (!childAtt)
-    {
-      log.addRecord(
-        smtk::io::Logger::ERROR, "Cannot find referenced attribute with name " + symbol);
-      return std::pair<double, bool>(0.0, false);
-    }
-
-    std::unique_ptr<smtk::attribute::Evaluator> childEvaluator = attRes->createEvaluator(childAtt);
-    if (childEvaluator)
-    {
-      // Recursively evaluates this child so we can learn its result. evaluationMode
-      // is set to DO_NOT_EVALUATE_DEPENDENTS to prevent infinite recursion.
-      ValueType result;
-      if (childEvaluator->evaluate(
-            result, log, element, DependentEvaluationMode::DO_NOT_EVALUATE_DEPENDENTS))
+  smtk::common::SubsymbolVisitor childExpressionVisitor =
+    [&symbolsUsed, &ctxtStorage, attSymbol, attRes, &log, element](const std::string& symbol) {
+      // Are we attempting to reference ourself?
+      if (attSymbol == symbol)
       {
-        try
+        log.addRecord(
+          smtk::io::Logger::ERROR, "Cannot write " + attSymbol + " in terms of itself.");
+        return std::pair<double, bool>(0.0, false);
+      }
+
+      // Are we attempting to reference a dependent expression?
+      // If we can reach |symbol| from |attSymbol|, this would be a cycle.
+      if (ctxtStorage.isDependentOn(attSymbol, symbol))
+      {
+        log.addRecord(
+          smtk::io::Logger::ERROR,
+          "Cannot use " + symbol + " in expression " + attSymbol + " because the expression " +
+            symbol + " already uses " + attSymbol + ".");
+        return std::pair<double, bool>(0.0, false);
+      }
+
+      symbolsUsed.insert(symbol);
+
+      // |attSymbol| is dependent on |symbol|.
+      ctxtStorage.addDependency(symbol, attSymbol);
+
+      smtk::attribute::AttributePtr childAtt = attRes->findAttribute(symbol);
+      if (!childAtt)
+      {
+        log.addRecord(
+          smtk::io::Logger::ERROR, "Cannot find referenced attribute with name " + symbol);
+        return std::pair<double, bool>(0.0, false);
+      }
+
+      std::unique_ptr<smtk::attribute::Evaluator> childEvaluator =
+        attRes->createEvaluator(childAtt);
+      if (childEvaluator)
+      {
+        // Recursively evaluates this child so we can learn its result. evaluationMode
+        // is set to DO_NOT_EVALUATE_DEPENDENTS to prevent infinite recursion.
+        ValueType result;
+        if (childEvaluator->evaluate(
+              result, log, element, DependentEvaluationMode::DO_NOT_EVALUATE_DEPENDENTS))
         {
-          // TODO: The result of evaluate() could be an int, but there are no
-          // Evaluators that currently return an int, so this is OK for now.
-          return std::pair<double, bool>(boost::get<double>(result), true);
+          try
+          {
+            // TODO: The result of evaluate() could be an int, but there are no
+            // Evaluators that currently return an int, so this is OK for now.
+            return std::pair<double, bool>(boost::get<double>(result), true);
+          }
+          catch (const boost::bad_get&)
+          {
+            // This tells us that the result of |childEvaluator| was not
+            // compatible with InfixExpressionEvaluator.
+            log.addRecord(
+              smtk::io::Logger::ERROR,
+              "Result type of child expression evaluation was not "
+              "compatible with an infix expression.");
+            return std::pair<double, bool>(0.0, false);
+          }
         }
-        catch (const boost::bad_get&)
+        else
         {
-          // This tells us that the result of |childEvaluator| was not
-          // compatible with InfixExpressionEvaluator.
-          log.addRecord(smtk::io::Logger::ERROR,
-            "Result type of child expression evaluation was not "
-            "compatible with an infix expression.");
+          log.addRecord(smtk::io::Logger::ERROR, "Evaluation failed for " + symbol + ".");
           return std::pair<double, bool>(0.0, false);
         }
       }
-      else
-      {
-        log.addRecord(smtk::io::Logger::ERROR, "Evaluation failed for " + symbol + ".");
-        return std::pair<double, bool>(0.0, false);
-      }
-    }
 
-    log.addRecord(
-      smtk::io::Logger::ERROR, "Referenced attribute " + symbol + " is not evaluatable");
-    return std::pair<double, bool>(0.0, false);
-  };
+      log.addRecord(
+        smtk::io::Logger::ERROR, "Referenced attribute " + symbol + " is not evaluatable");
+      return std::pair<double, bool>(0.0, false);
+    };
   grammar.setSubsymbolVisitor(childExpressionVisitor);
 
   smtk::attribute::ConstStringItemPtr expressionStringItem = att->findString("expression");
   if (!expressionStringItem->isSet(element))
   {
-    log.addRecord(smtk::io::Logger::ERROR,
+    log.addRecord(
+      smtk::io::Logger::ERROR,
       "Missing element " + std::to_string(element + 1) + " needed for evaluation.");
     return false;
   }
@@ -218,7 +226,8 @@ std::size_t smtk::attribute::InfixExpressionEvaluator::numberOfEvaluatableElemen
 }
 
 void smtk::attribute::InfixExpressionEvaluator::logError(
-  const smtk::common::InfixExpressionError& err, smtk::io::Logger& log) const
+  const smtk::common::InfixExpressionError& err,
+  smtk::io::Logger& log) const
 {
   std::stringstream stream;
   switch (err)

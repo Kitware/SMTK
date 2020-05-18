@@ -72,8 +72,8 @@ public:
   //of the cell.
   //The pointer that is returned must not be deleted.
   //The pointer returned should be treated as a read only pointer
-  bool fetchNextCell(
-    smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points);
+  bool
+  fetchNextCell(smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points);
 
 private:
   smtk::mesh::ResourcePtr m_parent;
@@ -81,7 +81,7 @@ private:
   smtk::mesh::ConnectivityStoragePtr m_connectivity;
   smtk::mesh::ConnectivityStorage::IterationState m_iteratorLocation;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

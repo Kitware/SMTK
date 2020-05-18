@@ -31,9 +31,9 @@ enum IteratorStyle
 class SMTKCORE_EXPORT EntityIterator
 {
 public:
-  template <typename C>
+  template<typename C>
   void traverse(C ebegin, C eend);
-  template <typename C>
+  template<typename C>
   void traverse(C ebegin, C eend, IteratorStyle style);
 
   void traverse(const EntityRef& x);
@@ -62,7 +62,7 @@ protected:
 
 /**\brief Iterate over the given entities and **only** those entities.
   */
-template <typename C>
+template<typename C>
 void EntityIterator::traverse(C ebegin, C eend)
 {
   this->traverse(ebegin, eend, ITERATE_BARE);
@@ -70,7 +70,7 @@ void EntityIterator::traverse(C ebegin, C eend)
 
 /**\brief Iterate over the given entities and the specified \a related records.
   */
-template <typename C>
+template<typename C>
 void EntityIterator::traverse(C ebegin, C eend, IteratorStyle related)
 {
   m_related = related;

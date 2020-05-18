@@ -119,8 +119,8 @@ template <> struct Action<Property<std::vector<double> >::Regex> :
 template <> struct Action<Property<std::vector<double> >::Value> :
     ValueAction<std::vector<double> > {};
 // clang-format on
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

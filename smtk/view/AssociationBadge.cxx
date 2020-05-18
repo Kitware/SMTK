@@ -55,7 +55,8 @@ AssociationBadge::AssociationBadge(BadgeSet& parent, const Configuration::Compon
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Badge Requires elements must have a Definition attribute.");
       }
     }
@@ -81,7 +82,8 @@ AssociationBadge::AssociationBadge(BadgeSet& parent, const Configuration::Compon
   }
   if (m_requiredDefinitions.empty())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "AssociationBadge must be configured with a list of required Definitions.");
   }
   // NB: Could add option to show some other icon when associations are valid.
@@ -127,8 +129,8 @@ std::string AssociationBadge::tooltip(const DescriptivePhrase* phrase) const
   return result;
 }
 
-std::string AssociationBadge::icon(
-  const DescriptivePhrase*, const std::array<float, 4>& background) const
+std::string AssociationBadge::icon(const DescriptivePhrase*, const std::array<float, 4>& background)
+  const
 {
   std::string icon = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                      "<svg data-name=\"Layer 1\" version=\"1.1\" viewBox=\"0 0 64 64\" "
@@ -240,5 +242,5 @@ std::set<std::string> AssociationBadge::unmetRequirements(
   }
   return defs; // Some requirements remain.
 }
-}
-}
+} // namespace view
+} // namespace smtk

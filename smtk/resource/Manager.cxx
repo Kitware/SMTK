@@ -34,7 +34,7 @@ void InitializeObserver(Manager* mgr, Observer fn)
     return common::Processing::CONTINUE;
   });
 }
-}
+} // namespace
 
 Manager::Manager()
   : m_observers(std::bind(InitializeObserver, this, std::placeholders::_1))
@@ -130,7 +130,8 @@ smtk::resource::ResourcePtr Manager::create(const Resource::Index& index)
 }
 
 smtk::resource::ResourcePtr Manager::create(
-  const std::string& typeName, const smtk::common::UUID& uuid)
+  const std::string& typeName,
+  const smtk::common::UUID& uuid)
 {
   smtk::resource::ResourcePtr resource;
 
@@ -147,7 +148,8 @@ smtk::resource::ResourcePtr Manager::create(
 }
 
 smtk::resource::ResourcePtr Manager::create(
-  const Resource::Index& index, const smtk::common::UUID& uuid)
+  const Resource::Index& index,
+  const smtk::common::UUID& uuid)
 {
   smtk::resource::ResourcePtr resource;
 
@@ -440,10 +442,11 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   auto metadata = m_metadata.get<IndexTag>().find(index);
   if (metadata == m_metadata.get<IndexTag>().end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Resource manager "
-        << this << " is refusing to add resource " << resource << " of type \""
-        << resource->typeName() << "\" "
-        << "as that type has not been registered.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Resource manager " << this << " is refusing to add resource " << resource << " of type \""
+                          << resource->typeName() << "\" "
+                          << "as that type has not been registered.");
     return false;
   }
 
@@ -511,7 +514,8 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
 }
 
 bool Manager::addLegacyReader(
-  const std::string& alias, const std::function<ResourcePtr(const std::string&)>& read)
+  const std::string& alias,
+  const std::function<ResourcePtr(const std::string&)>& read)
 {
   if (m_legacyReaders.find(alias) != m_legacyReaders.end())
   {
@@ -535,7 +539,9 @@ void Manager::reviseId(const Resource::SetId& source, const Resource::SetId& des
   resources.modify(resourceIt, destination, source);
 }
 
-void Manager::reviseLocation(const smtk::common::UUID& uid, const Resource::SetLocation& source,
+void Manager::reviseLocation(
+  const smtk::common::UUID& uid,
+  const Resource::SetLocation& source,
   const Resource::SetLocation& destination)
 {
   ScopedLockGuard guard(m_lock, LockType::Write);
@@ -568,5 +574,5 @@ smtk::common::Termination Manager::visit(const ResourceVisitor& visitor) const
   }
   return smtk::common::Termination::NORMAL;
 }
-}
-}
+} // namespace resource
+} // namespace smtk

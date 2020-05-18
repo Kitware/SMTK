@@ -36,6 +36,6 @@ protected:
 
   std::string synopsis(bool& membershipValid) const override;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif

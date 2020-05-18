@@ -35,7 +35,7 @@ namespace
 {
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-}
+} // namespace
 
 using namespace smtk::model;
 
@@ -63,7 +63,8 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
 
   smtk::operation::Operation::Result importOpResult = importOp->operate();
 
-  if (importOpResult->findInt("outcome")->value() !=
+  if (
+    importOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
@@ -135,7 +136,8 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
 
   smtk::operation::Operation::Result auxGeoOpResult = auxGeoOp->operate();
 
-  if (auxGeoOpResult->findInt("outcome")->value() !=
+  if (
+    auxGeoOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Add auxiliary geometry failed!\n";
@@ -177,7 +179,8 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
     createInstances->parameters()->findString("snap to entity")->setIsEnabled(false);
 
     smtk::operation::Operation::Result result = createInstances->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Create Instances operation failed\n";

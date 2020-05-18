@@ -133,7 +133,8 @@ bool Configuration::Component::attribute(const std::string& attname, std::string
 }
 
 Configuration::Component& Configuration::Component::setAttribute(
-  const std::string& attname, const std::string& value)
+  const std::string& attname,
+  const std::string& value)
 {
   m_attributes[attname] = value;
   return *this;

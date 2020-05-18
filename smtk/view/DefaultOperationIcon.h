@@ -27,14 +27,15 @@ std::string SMTKCORE_EXPORT DefaultOperationIcon(const std::string& secondaryCol
 {
   std::string svg = default_operation_opt_svg;
   std::array<double, 4> rgba;
-  if (smtk::common::Color::stringToFloatRGBA(rgba.data(), secondaryColor) &&
+  if (
+    smtk::common::Color::stringToFloatRGBA(rgba.data(), secondaryColor) &&
     smtk::common::Color::floatRGBToLightness(rgba.data()) > 0.5)
   {
     svg = std::regex_replace(svg, std::regex("stroke=\"#000"), "stroke=\"#fff");
   }
   return svg;
 }
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

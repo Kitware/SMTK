@@ -32,8 +32,15 @@ using namespace smtk;
 namespace
 {
 
-bool testDefinitionValidity(const DefinitionPtr& def, bool hlr, bool hlw, unsigned int lr,
-  unsigned int lw, unsigned int r, unsigned int w, const std::string& prefix)
+bool testDefinitionValidity(
+  const DefinitionPtr& def,
+  bool hlr,
+  bool hlw,
+  unsigned int lr,
+  unsigned int lw,
+  unsigned int r,
+  unsigned int w,
+  const std::string& prefix)
 {
   bool status = true;
   if (hlr)
@@ -103,8 +110,15 @@ bool testDefinitionValidity(const DefinitionPtr& def, bool hlr, bool hlw, unsign
   return status;
 }
 
-bool testItemDefinitionValidity(const ConstItemDefinitionPtr& def, bool hlr, bool hlw,
-  unsigned int lr, unsigned int lw, unsigned int r, unsigned int w, const std::string& prefix)
+bool testItemDefinitionValidity(
+  const ConstItemDefinitionPtr& def,
+  bool hlr,
+  bool hlw,
+  unsigned int lr,
+  unsigned int lw,
+  unsigned int r,
+  unsigned int w,
+  const std::string& prefix)
 {
   bool status = true;
   if (hlr)
@@ -174,8 +188,15 @@ bool testItemDefinitionValidity(const ConstItemDefinitionPtr& def, bool hlr, boo
   return status;
 }
 
-bool testItemValidity(const ItemPtr& item, bool hlr, bool hlw, unsigned int lr, unsigned int lw,
-  unsigned int r, unsigned int w, const std::string& prefix)
+bool testItemValidity(
+  const ItemPtr& item,
+  bool hlr,
+  bool hlw,
+  unsigned int lr,
+  unsigned int lw,
+  unsigned int r,
+  unsigned int w,
+  const std::string& prefix)
 {
   bool status = true;
   if (hlr)
@@ -245,8 +266,15 @@ bool testItemValidity(const ItemPtr& item, bool hlr, bool hlw, unsigned int lr, 
   return status;
 }
 
-bool testAttributeValidity(const AttributePtr& att, bool hlr, bool hlw, unsigned int lr,
-  unsigned int lw, unsigned int r, unsigned int w, const std::string& prefix)
+bool testAttributeValidity(
+  const AttributePtr& att,
+  bool hlr,
+  bool hlw,
+  unsigned int lr,
+  unsigned int lw,
+  unsigned int r,
+  unsigned int w,
+  const std::string& prefix)
 {
   bool status = true;
   if (hlr)
@@ -432,9 +460,9 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   attRes->finalizeDefinitions();
   attRes->createAttribute("TestAtt", "C");
 }
-}
+} // namespace
 
-int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/ [])
+int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/[])
 {
   //
   // I. Let's create an attribute resource and some definitions
@@ -455,7 +483,8 @@ int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -463,7 +492,8 @@ int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -474,15 +504,17 @@ int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(testResource(attRes, "XML Pass - "), "Failed checking Categories in XML Pass");
 

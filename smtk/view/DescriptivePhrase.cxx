@@ -140,8 +140,8 @@ int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
   return -1;
 }
 
-int DescriptivePhrase::argFindChild(
-  const smtk::resource::ResourcePtr& child, bool onlyResource) const
+int DescriptivePhrase::argFindChild(const smtk::resource::ResourcePtr& child, bool onlyResource)
+  const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
@@ -172,7 +172,8 @@ int DescriptivePhrase::argFindChild(const smtk::resource::ComponentPtr& child) c
 }
 
 int DescriptivePhrase::argFindChild(
-  const std::string& propName, smtk::resource::PropertyType propType) const
+  const std::string& propName,
+  smtk::resource::PropertyType propType) const
 {
   (void)propType;
   int i = 0;
@@ -352,7 +353,8 @@ static int modelEntitySortOrder(smtk::model::EntityPtr ent)
 }
 
 bool DescriptivePhrase::compareByTypeThenTitle(
-  const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
+  const DescriptivePhrasePtr& a,
+  const DescriptivePhrasePtr& b)
 {
   static constexpr int sortOrder[] = {
     0, // RESOURCE_SUMMARY
@@ -593,5 +595,5 @@ int DescriptivePhrase::visitChildrenInternal(Visitor fn, std::vector<int>& indic
   return traverse;
 }
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk

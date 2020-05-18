@@ -64,8 +64,10 @@ void vtkTexturePointIntensityFilter::SetTextureDataConnection(vtkAlgorithmOutput
   this->SetInputConnection(1, algOutput);
 }
 
-int vtkTexturePointIntensityFilter::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkTexturePointIntensityFilter::RequestData(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* vtkNotUsed(outputVector))
 {
   // get the info and input data
   vtkPolyData* inputPD = vtkPolyData::SafeDownCast(this->GetInput(0));
@@ -87,7 +89,8 @@ int vtkTexturePointIntensityFilter::RequestData(vtkInformation* vtkNotUsed(reque
     tCoords = inputPD->GetPointData()->GetTCoords();
     if (!tCoords)
     {
-      vtkErrorMacro("Input polydata must have texture coordinates or field "
+      vtkErrorMacro(
+        "Input polydata must have texture coordinates or field "
         << "data setup by vtkRegisterPlanarTextureMap!");
       return VTK_ERROR;
     }
@@ -117,8 +120,13 @@ int vtkTexturePointIntensityFilter::RequestData(vtkInformation* vtkNotUsed(reque
   if (useRegisterPlanarTextureMap)
   {
     // assumes x, y is correct for plane we have registered texture map on
-    vtkRegisterPlanarTextureMap::ComputeTextureCoordinate(tp, sRange->GetTuple2(0),
-      tRange->GetTuple2(0), sMap->GetTuple2(0), tMap->GetTuple2(0), resultTCoord);
+    vtkRegisterPlanarTextureMap::ComputeTextureCoordinate(
+      tp,
+      sRange->GetTuple2(0),
+      tRange->GetTuple2(0),
+      sMap->GetTuple2(0),
+      tMap->GetTuple2(0),
+      resultTCoord);
   }
   else
   {

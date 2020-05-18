@@ -37,8 +37,8 @@ smtk::mesh::HandleRange moabToSMTKRange(const ::moab::Range&);
 
 SMTKCORE_EXPORT
 ::moab::Range smtkToMOABRange(const smtk::mesh::HandleRange&);
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

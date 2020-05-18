@@ -40,9 +40,9 @@ struct SMTKCORE_EXPORT ComponentLinkBase
 class SMTKCORE_EXPORT ComponentLinks : public Links
 {
 public:
-  typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
-    ComponentLinkBase>
-    Data;
+  typedef smtk::common::
+    Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int, ComponentLinkBase>
+      Data;
 
   friend class smtk::resource::Component;
 
@@ -56,8 +56,8 @@ private:
 
   const Component* m_component;
 };
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_ComponentLinks_h

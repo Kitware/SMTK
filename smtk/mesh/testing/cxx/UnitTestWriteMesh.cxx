@@ -440,10 +440,12 @@ void verify_write_operation()
   test(writeOp->parameters() != nullptr, "failed to access write operation parameters");
   test(
     writeOp->parameters()->associate(mr), "failed to associate mesh resource to write operation");
-  test(writeOp->parameters()->findFile("filename")->setValue(write_path),
+  test(
+    writeOp->parameters()->findFile("filename")->setValue(write_path),
     "failed to set file path for write operation");
   auto result = writeOp->operate();
-  test(result->findInt("outcome")->value() ==
+  test(
+    result->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "write operation failed to operate");
 
@@ -462,7 +464,7 @@ void verify_write_operation()
   test(mr1->numberOfMeshes() == mr->numberOfMeshes());
   test(mr1->types() == mr->types());
 }
-}
+} // namespace
 
 int UnitTestWriteMesh(int /*unused*/, char** const /*unused*/)
 {

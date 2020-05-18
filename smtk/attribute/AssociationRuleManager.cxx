@@ -25,12 +25,13 @@ bool AssociationRuleManager::registerResourceManager(smtk::resource::ManagerPtr&
   {
     // ...add an observer that adds the new rule to all current and
     // future attribute resources associated with this manager.
-    auto registerCustomTypeObserver = [=](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+    auto registerCustomTypeObserver =
+      [=](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
+        if (
+          const smtk::attribute::Resource* attributeResource =
+            dynamic_cast<const smtk::attribute::Resource*>(&resource))
         {
           registerFunction.second(const_cast<smtk::attribute::Resource&>(*attributeResource));
         }
@@ -39,9 +40,10 @@ bool AssociationRuleManager::registerResourceManager(smtk::resource::ManagerPtr&
 
     // Associate the observer key with the rule type, so we can remove it
     // later if requested.
-    m_associationObservers.insert(
-      std::make_pair(registerFunction.first, manager->observers().insert(registerCustomTypeObserver,
-                                               "Register attribute association rule.")));
+    m_associationObservers.insert(std::make_pair(
+      registerFunction.first,
+      manager->observers().insert(
+        registerCustomTypeObserver, "Register attribute association rule.")));
   }
 
   // For each dissociation register function...
@@ -49,12 +51,13 @@ bool AssociationRuleManager::registerResourceManager(smtk::resource::ManagerPtr&
   {
     // ...add an observer that adds the new rule to all current and
     // future attribute resources associated with this manager.
-    auto registerCustomTypeObserver = [=](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+    auto registerCustomTypeObserver =
+      [=](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
+        if (
+          const smtk::attribute::Resource* attributeResource =
+            dynamic_cast<const smtk::attribute::Resource*>(&resource))
         {
           registerFunction.second(const_cast<smtk::attribute::Resource&>(*attributeResource));
         }
@@ -63,14 +66,15 @@ bool AssociationRuleManager::registerResourceManager(smtk::resource::ManagerPtr&
 
     // Associate the observer key with the rule type, so we can remove it
     // later if requested.
-    m_dissociationObservers.insert(
-      std::make_pair(registerFunction.first, manager->observers().insert(registerCustomTypeObserver,
-                                               "Register attribute dissociation rule.")));
+    m_dissociationObservers.insert(std::make_pair(
+      registerFunction.first,
+      manager->observers().insert(
+        registerCustomTypeObserver, "Register attribute dissociation rule.")));
   }
 
   m_manager = manager;
 
   return true;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

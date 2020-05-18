@@ -208,7 +208,8 @@ Import::Result Import::operateInternal()
   model.setSession(smtk::model::SessionRef(resource, resource->session()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
-  resource->session()->transcribe(model,
+  resource->session()->transcribe(
+    model,
     (this->callFromRead ? smtk::model::SESSION_EVERYTHING & ~smtk::model::SESSION_PROPERTIES
                         : smtk::model::SESSION_EVERYTHING),
     false);
@@ -264,8 +265,9 @@ Import::Specification Import::createSpecification()
   auto importDef = spec->findDefinition("import");
 
   std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
-  auto fileItemDefinitionFilter = [](
-    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  auto fileItemDefinitionFilter = [](smtk::attribute::FileItemDefinition::Ptr ptr) {
+    return ptr->name() == "filename";
+  };
   importDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
 
   assert(fileItemDefinitions.size() == 1);

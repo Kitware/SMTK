@@ -24,8 +24,10 @@ namespace vtk
 
 namespace
 {
-typedef std::tuple<smtk::extension::vtk::geometry::BoundingBox,
-  smtk::extension::vtk::geometry::ClosestPoint, smtk::extension::vtk::geometry::DistanceTo>
+typedef std::tuple<
+  smtk::extension::vtk::geometry::BoundingBox,
+  smtk::extension::vtk::geometry::ClosestPoint,
+  smtk::extension::vtk::geometry::DistanceTo>
   QueryList;
 }
 
@@ -46,6 +48,6 @@ void Resource::setSession(const Session::Ptr& session)
   m_session = session->shared_from_this();
   this->registerSession(m_session);
 }
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk

@@ -34,11 +34,13 @@ namespace mesh
 struct SMTKMESHSESSION_EXPORT DistanceTo
   : public smtk::resource::query::DerivedFrom<DistanceTo, smtk::geometry::DistanceTo>
 {
-  virtual std::pair<double, std::array<double, 3> > operator()(
-    const smtk::resource::Component::Ptr& component, const std::array<double, 3>& sourcePoint) const
+  virtual std::pair<double, std::array<double, 3>> operator()(
+    const smtk::resource::Component::Ptr& component,
+    const std::array<double, 3>& sourcePoint) const
   {
-    if (auto resource =
-          std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
+    if (
+      auto resource =
+        std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
     {
       smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
       auto elementIt = topology->m_elements.find(component->id());
@@ -54,8 +56,8 @@ struct SMTKMESHSESSION_EXPORT DistanceTo
     return smtk::geometry::DistanceTo::operator()(component, sourcePoint);
   }
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

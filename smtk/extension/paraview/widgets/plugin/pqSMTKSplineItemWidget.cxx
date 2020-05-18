@@ -38,7 +38,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKSplineItemWidget::pqSMTKSplineItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
   , m_handleConnection(vtkEventQtSlotConnect::New())
 {
@@ -57,7 +58,8 @@ qtItem* pqSMTKSplineItemWidget::createSplineItemWidget(const qtAttributeItemInfo
 }
 
 bool pqSMTKSplineItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   // I. Reject items we can't map to our widget:
   smtk::attribute::DoubleItemPtr pointsItem;
@@ -119,8 +121,11 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   // non-default (or the item has no default).
   widgetProxy->UpdateVTKObjects();
 
-  m_handleConnection->Connect(widgetProxy->GetProperty("HandlePositions"),
-    vtkCommand::ModifiedEvent, this, SIGNAL(modified()));
+  m_handleConnection->Connect(
+    widgetProxy->GetProperty("HandlePositions"),
+    vtkCommand::ModifiedEvent,
+    this,
+    SIGNAL(modified()));
 
   return widget != nullptr;
 }
@@ -143,10 +148,12 @@ void pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
   auto pointsArray = pointsHelper.GetArray<double>();
   if (!pointsItem->setValues(pointsArray.begin(), pointsArray.end()))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not update \""
-        << pointsItem->label() << "\""
-                                  " with "
-        << pointsArray.size() << " coordinates.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not update \"" << pointsItem->label()
+                            << "\""
+                               " with "
+                            << pointsArray.size() << " coordinates.");
   }
   for (size_t ii = 0; ii < pointsItem->numberOfValues(); ++ii)
   {
@@ -165,7 +172,8 @@ void pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
 }
 
 bool pqSMTKSplineItemWidget::fetchPointsAndClosedItems(
-  smtk::attribute::DoubleItemPtr& pointsItem, smtk::attribute::VoidItemPtr& closedItem)
+  smtk::attribute::DoubleItemPtr& pointsItem,
+  smtk::attribute::VoidItemPtr& closedItem)
 {
   auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
   if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 2)
@@ -187,7 +195,9 @@ bool pqSMTKSplineItemWidget::fetchPointsAndClosedItems(
   closedItem = groupItem->findAs<smtk::attribute::VoidItem>(closedItemName);
   if (!pointsItem || !closedItem)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not find"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not find"
         << " a DoubleItem for the points named \"" << pointsItemName << "\","
         << " a VoidItem for loop-closure named \"" << closedItemName << "\","
         << " or both.");
@@ -195,9 +205,10 @@ bool pqSMTKSplineItemWidget::fetchPointsAndClosedItems(
   }
   if (pointsItem->numberOfValues() % 3 != 0)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "The points ("
-        << pointsItem->numberOfValues() << ") must have"
-        << " values in multiples of 3 (x, y, and z for each point).");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "The points (" << pointsItem->numberOfValues() << ") must have"
+                     << " values in multiples of 3 (x, y, and z for each point).");
     return false;
   }
   if (closedItem->isEnabled() && (pointsItem->numberOfValues() / 3 < 3))

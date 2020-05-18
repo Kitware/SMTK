@@ -94,7 +94,7 @@ public:
   bool set(const void* const values);
 
   //Convenience method for accessing field data.
-  template <typename T>
+  template<typename T>
   std::vector<T> get() const
   {
     if (type() != FieldTypeFor<T>::type)
@@ -110,7 +110,7 @@ public:
   }
 
   //Convenience method for accessing field data.
-  template <typename T>
+  template<typename T>
   std::vector<T> get(const smtk::mesh::HandleRange& cellIds) const
   {
     if (type() != FieldTypeFor<T>::type)
@@ -126,7 +126,7 @@ public:
   }
 
   //Convenience method for setting field data.
-  template <typename T>
+  template<typename T>
   bool set(const std::vector<T>& values)
   {
     if (type() != FieldTypeFor<T>::type)
@@ -137,7 +137,7 @@ public:
   }
 
   //Convenience method for setting field data.
-  template <typename T>
+  template<typename T>
   bool set(const smtk::mesh::HandleRange& cellIds, const std::vector<T>& values)
   {
     if (type() != FieldTypeFor<T>::type)

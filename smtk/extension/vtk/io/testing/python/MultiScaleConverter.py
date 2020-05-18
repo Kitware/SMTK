@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 
 import math
@@ -70,9 +70,9 @@ class OuterEdgeFilter(smtk.mesh.CellForEach):
 
         v0 = [0., 0., 0.]  # unit vector from origin to first point in cell
         v1 = [0., 0., 0.]
-            # unit vector from first point to second point in cell
+        # unit vector from first point to second point in cell
         v2 = [0., 0., 0.]
-            # unit vector from first point to third point in cell
+        # unit vector from first point to third point in cell
         normal = [0., 0., 0.]  # unit normal of cell
         length = [0., 0., 0.]
 

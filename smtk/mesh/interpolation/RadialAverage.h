@@ -37,9 +37,14 @@ class StructuredGrid;
 class SMTKCORE_EXPORT RadialAverage
 {
 public:
-  RadialAverage(ResourcePtr collection, const PointCloud&, double radius,
+  RadialAverage(
+    ResourcePtr collection,
+    const PointCloud&,
+    double radius,
     std::function<bool(double)> prefilter = [](double) { return true; });
-  RadialAverage(const StructuredGrid&, double radius,
+  RadialAverage(
+    const StructuredGrid&,
+    double radius,
     std::function<bool(double)> prefilter = [](double) { return true; });
 
   double operator()(std::array<double, 3> x) const { return m_function(x); }
@@ -47,7 +52,7 @@ public:
 private:
   std::function<double(std::array<double, 3>)> m_function;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

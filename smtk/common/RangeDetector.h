@@ -18,7 +18,7 @@ namespace smtk
 namespace common
 {
 
-template <typename I>
+template<typename I>
 class RangeDetector
 {
 public:

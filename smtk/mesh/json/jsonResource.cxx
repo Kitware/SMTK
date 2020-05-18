@@ -39,7 +39,10 @@ public:
   }
 
   void write(
-    const smtk::mesh::MeshSet& mesh, nlohmann::json& j, bool writeMeshes, bool writeCellAndPoints)
+    const smtk::mesh::MeshSet& mesh,
+    nlohmann::json& j,
+    bool writeMeshes,
+    bool writeCellAndPoints)
   {
     j["cell_types"] = mesh.types().cellTypes().to_string();
 
@@ -102,7 +105,7 @@ public:
 private:
   nlohmann::json& m_json;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -151,5 +154,5 @@ void from_json(const nlohmann::json& j, ResourcePtr& resource)
     interface->addMeshes(meshInfos);
   }
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

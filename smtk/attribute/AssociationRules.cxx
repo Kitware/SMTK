@@ -49,5 +49,5 @@ const Rule* AssociationRules::dissociationRuleForDefinition(
   }
   return nullptr;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

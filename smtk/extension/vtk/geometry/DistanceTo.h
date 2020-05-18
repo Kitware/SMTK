@@ -33,12 +33,13 @@ namespace geometry
 struct VTKSMTKGEOMETRYEXT_EXPORT DistanceTo
   : public smtk::resource::query::DerivedFrom<DistanceTo, smtk::geometry::DistanceTo>
 {
-  std::pair<double, std::array<double, 3> > operator()(
-    const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const override;
+  std::pair<double, std::array<double, 3>> operator()(
+    const smtk::resource::Component::Ptr&,
+    const std::array<double, 3>&) const override;
 };
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

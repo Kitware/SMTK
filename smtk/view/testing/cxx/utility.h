@@ -17,9 +17,13 @@ namespace smtk
 namespace view
 {
 
-PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewManager,
-  const Configuration& config, std::vector<char*>& dataArgs);
+PhraseModel::Ptr loadTestData(
+  int argc,
+  char* argv[],
+  const ManagerPtr& viewManager,
+  const Configuration& config,
+  std::vector<char*>& dataArgs);
 }
-}
+} // namespace smtk
 
 #endif // smtk_view_testing_cxx_utility_h

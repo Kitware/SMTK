@@ -49,15 +49,29 @@ namespace polygon
 
 namespace
 {
-typedef std::tuple<CleanGeometry, CreateEdge, CreateEdgeFromPoints, CreateEdgeFromVertices,
-  CreateFaces, CreateFacesFromEdges, CreateModel, CreateVertices, Delete, DemoteVertex,
+typedef std::tuple<
+  CleanGeometry,
+  CreateEdge,
+  CreateEdgeFromPoints,
+  CreateEdgeFromVertices,
+  CreateFaces,
+  CreateFacesFromEdges,
+  CreateModel,
+  CreateVertices,
+  Delete,
+  DemoteVertex,
   ForceCreateFace,
 #ifdef VTK_SUPPORT
-  ExtractContours, Import,
+  ExtractContours,
+  Import,
 #endif
-  LegacyRead, Read, SplitEdge, TweakEdge, Write>
+  LegacyRead,
+  Read,
+  SplitEdge,
+  TweakEdge,
+  Write>
   OperationList;
-}
+} // namespace
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
@@ -111,6 +125,6 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   operationManager->unregisterOperations<OperationList>();
 }
-}
-}
-}
+} // namespace polygon
+} // namespace session
+} // namespace smtk

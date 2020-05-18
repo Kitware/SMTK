@@ -16,7 +16,7 @@ bool instantiateManager()
 {
   return smtk::plugin::Manager::instance() != nullptr;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -45,8 +45,8 @@ void Manager::addClient(const std::weak_ptr<ClientBase>& pluginClient)
     }
   }
 }
-}
-}
+} // namespace detail
+} // namespace plugin
 
 bool instantiated = instantiateManager();
-}
+} // namespace smtk

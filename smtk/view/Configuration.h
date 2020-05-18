@@ -143,7 +143,7 @@ protected:
   Component m_details;
   std::size_t m_includeIndex;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif /* __smtk_view_Configuration_h */

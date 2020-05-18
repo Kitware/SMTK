@@ -23,7 +23,6 @@
 #include "pqPipelineSource.h"
 #include "pqServer.h"
 #include "pqSpherePropertyWidget.h"
-#include "pqSpherePropertyWidget.h"
 #include "vtkPVXMLElement.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMProperty.h"
@@ -35,7 +34,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKSphereItemWidget::pqSMTKSphereItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -49,7 +49,8 @@ qtItem* pqSMTKSphereItemWidget::createSphereItemWidget(const qtAttributeItemInfo
 }
 
 bool pqSMTKSphereItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   //I. Reject items we can't map to a plane:
   smtk::attribute::DoubleItemPtr centerItem;
@@ -147,7 +148,8 @@ void pqSMTKSphereItemWidget::updateWidgetFromItemInternal()
 }
 
 bool pqSMTKSphereItemWidget::fetchCenterAndRadiusItems(
-  smtk::attribute::DoubleItemPtr& centerItem, smtk::attribute::DoubleItemPtr& radiusItem)
+  smtk::attribute::DoubleItemPtr& centerItem,
+  smtk::attribute::DoubleItemPtr& radiusItem)
 {
   auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
   if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 2)
@@ -169,7 +171,9 @@ bool pqSMTKSphereItemWidget::fetchCenterAndRadiusItems(
   radiusItem = groupItem->findAs<smtk::attribute::DoubleItem>(radiusItemName);
   if (!centerItem || !radiusItem)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not find"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not find"
         << " a DoubleItem for the center named \"" << centerItemName << "\","
         << " a DoubleItem for the radius named \"" << radiusItemName << "\","
         << " or both.");
@@ -177,10 +181,11 @@ bool pqSMTKSphereItemWidget::fetchCenterAndRadiusItems(
   }
   if (centerItem->numberOfValues() != 3 || radiusItem->numberOfValues() != 1)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "The center ("
-        << centerItem->numberOfValues() << ")"
-        << " and radius (" << radiusItem->numberOfValues() << ")"
-        << " must have exactly 3 and 1 values, respectively.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "The center (" << centerItem->numberOfValues() << ")"
+                     << " and radius (" << radiusItem->numberOfValues() << ")"
+                     << " must have exactly 3 and 1 values, respectively.");
     return false;
   }
   return true;

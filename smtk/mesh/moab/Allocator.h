@@ -36,19 +36,29 @@ public:
 
   ~Allocator() override;
 
-  bool allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
+  bool allocatePoints(
+    std::size_t numPointsToAlloc,
+    smtk::mesh::Handle& firstVertexHandle,
     std::vector<double*>& coordinateMemory) override;
 
-  bool allocateCells(smtk::mesh::CellType cellType, std::size_t numCellsToAlloc,
-    int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
+  bool allocateCells(
+    smtk::mesh::CellType cellType,
+    std::size_t numCellsToAlloc,
+    int numVertsPerCell,
+    smtk::mesh::HandleRange& createdCellIds,
     smtk::mesh::Handle*& connectivityArray) override;
 
-  bool connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate, int numVertsPerCell,
+  bool connectivityModified(
+    const smtk::mesh::HandleRange& cellsToUpdate,
+    int numVertsPerCell,
     const smtk::mesh::Handle* connectivityArray) override;
 
 protected:
-  bool connectivityModified(smtk::mesh::Handle firstCellToUpdate, int numberOfCellsToUpdate,
-    int numVertsPerCell, const smtk::mesh::Handle* connectivityArray);
+  bool connectivityModified(
+    smtk::mesh::Handle firstCellToUpdate,
+    int numberOfCellsToUpdate,
+    int numVertsPerCell,
+    const smtk::mesh::Handle* connectivityArray);
 
 private:
   Allocator(const Allocator& other);            //blank since we are used by shared_ptr
@@ -57,8 +67,8 @@ private:
   //holds a reference to the real moab interface
   ::moab::ReadUtilIface* m_rface;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

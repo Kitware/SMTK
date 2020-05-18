@@ -25,9 +25,11 @@ pqSMTKCallObserversOnMainThreadBehavior::pqSMTKCallObserversOnMainThreadBehavior
   // Whenever a new server is connected, mutate the calling logic of the
   // operation and resource Observers to force observation to occur on the main
   // thread.
-  QObject::connect(pqSMTKBehavior::instance(),
+  QObject::connect(
+    pqSMTKBehavior::instance(),
     (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
-    this, &pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThread);
+    this,
+    &pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThread);
 }
 
 pqSMTKCallObserversOnMainThreadBehavior* pqSMTKCallObserversOnMainThreadBehavior::instance(
@@ -57,7 +59,8 @@ pqSMTKCallObserversOnMainThreadBehavior::~pqSMTKCallObserversOnMainThreadBehavio
 }
 
 void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThread(
-  pqSMTKWrapper* wrapper, pqServer* server)
+  pqSMTKWrapper* wrapper,
+  pqServer* server)
 {
   (void)server;
 
@@ -79,10 +82,12 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Connect to the above signal on the main thread and call the Observer
   // functors.
   std::weak_ptr<smtk::resource::Manager> resourceManager = wrapper->smtkResourceManager();
-  QObject::connect(this,
+  QObject::connect(
+    this,
     (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::resourceEvent,
-    this, [this, resourceManager](QString resourceId, int event) {
+    this,
+    [this, resourceManager](QString resourceId, int event) {
       auto id = smtk::common::UUID(resourceId.toStdString());
       auto rsrc = m_activeResources[id];
       if (const auto& resource = rsrc)
@@ -99,23 +104,30 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Override the operation Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkOperationManager()->observers().overrideWith(
-    [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+    [this](
+      const smtk::operation::Operation& oper,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       auto id = smtk::common::UUID::random();
       m_activeOperationMutex.lock();
       m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
       m_activeOperationMutex.unlock();
-      emit operationEvent(QString::fromStdString(id.toString()), static_cast<int>(event),
-        result ? QString::fromStdString(result->name()) : QString(), QPrivateSignal());
+      emit operationEvent(
+        QString::fromStdString(id.toString()),
+        static_cast<int>(event),
+        result ? QString::fromStdString(result->name()) : QString(),
+        QPrivateSignal());
       return 0;
     });
 
   // Connect to the above signal on the main thread and call the Observer
   // functors.
-  QObject::connect(this,
+  QObject::connect(
+    this,
     (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QString, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::operationEvent,
-    this, [this](QString operationId, int event, QString resultName) {
+    this,
+    [this](QString operationId, int event, QString resultName) {
       auto id = smtk::common::UUID(operationId.toStdString());
       m_activeOperationMutex.lock();
       auto op = m_activeOperations[id];
@@ -145,10 +157,12 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
 
   // Connect to the above signal on the main thread and call the Observer
   // functors.
-  QObject::connect(this,
+  QObject::connect(
+    this,
     (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, QString, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::selectionEvent,
-    this, [this](QString selectionId, QString qstr) {
+    this,
+    [this](QString selectionId, QString qstr) {
       auto id = smtk::common::UUID(selectionId.toStdString());
       auto sel = m_activeSelection[id];
       if (auto selection = sel)

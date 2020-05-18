@@ -144,7 +144,7 @@ void verify_tet_typeset_queries(const smtk::mesh::ResourcePtr& mr)
   test(!tetCTypes.hasDimension(smtk::mesh::Dims1));
   test(!tetCTypes.hasDimension(smtk::mesh::Dims0));
 }
-}
+} // namespace
 
 int UnitTestTypeSetFromData(int /*unused*/, char** const /*unused*/)
 {

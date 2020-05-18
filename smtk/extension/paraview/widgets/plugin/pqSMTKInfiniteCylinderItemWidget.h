@@ -34,7 +34,8 @@ class pqSMTKInfiniteCylinderItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKInfiniteCylinderItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKInfiniteCylinderItemWidget();
 
   static qtItem* createCylinderItemWidget(const qtAttributeItemInfo& info);
@@ -67,7 +68,8 @@ protected:
     * this method returns false.
     */
   bool fetchCylinderItems(
-    ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items);
+    ItemBindings& binding,
+    std::vector<smtk::attribute::DoubleItemPtr>& items);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKInfiniteCylinderItemWidget_h

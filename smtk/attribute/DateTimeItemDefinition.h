@@ -61,8 +61,8 @@ public:
   bool useCalendarPopup() const { return m_useCalendarPopup; }
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
@@ -85,7 +85,7 @@ protected:
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_DateTimeItemDefinition_h */

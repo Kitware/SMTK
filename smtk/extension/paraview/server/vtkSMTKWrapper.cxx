@@ -87,7 +87,8 @@ vtkSMTKWrapper::vtkSMTKWrapper()
 
   // TODO: this logic can be removed with the introduction of the new project
   //       infrastructure
-  if (this->Managers->contains<smtk::operation::Manager::Ptr>() &&
+  if (
+    this->Managers->contains<smtk::operation::Manager::Ptr>() &&
     this->Managers->contains<smtk::resource::Manager::Ptr>())
   {
     auto operationManager = this->Managers->get<smtk::operation::Manager::Ptr>();
@@ -172,13 +173,13 @@ void vtkSMTKWrapper::ProcessJSON()
     {
       vtkErrorMacro("Invalid representation!");
       response["error"] = { { "code", JSONRPC_METHOD_NOT_FOUND_CODE },
-        { "message", JSONRPC_METHOD_NOT_FOUND_MESSAGE } };
+                            { "message", JSONRPC_METHOD_NOT_FOUND_MESSAGE } };
     }
   }
   else
   {
     response["error"] = { { "code", JSONRPC_INVALID_PARAMS_CODE },
-      { "message", JSONRPC_INVALID_PARAMS_MESSAGE } };
+                          { "message", JSONRPC_INVALID_PARAMS_MESSAGE } };
   }
 
   this->SetJSONResponse(response.dump().c_str());
@@ -266,7 +267,7 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
   else
   {
     response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
-      { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
+                          { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
   }
 }
 
@@ -289,7 +290,7 @@ void vtkSMTKWrapper::RemoveResourceFilter(json& response)
   else
   {
     response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
-      { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
+                          { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
   }
 }
 

@@ -55,8 +55,9 @@ void to_json(json& j, const EntityIterator& iter)
     if (ent.isValid(&eptr))
     {
       json jent = { { "d", eptr->dimension() },
-        { "e", eptr->entityFlags() }, // Entity::flagToSpecifierString(eptr->entityFlags())
-        { "r", eptr->relations() } };
+                    { "e",
+                      eptr->entityFlags() }, // Entity::flagToSpecifierString(eptr->entityFlags())
+                    { "r", eptr->relations() } };
       // Add arrangement information:
       const KindsToArrangements& amap(eptr->arrangementMap());
       if (!amap.empty())
@@ -79,5 +80,5 @@ void to_json(json& j, const EntityIterator& iter)
     }
   }
 }
-}
-}
+} // namespace model
+} // namespace smtk

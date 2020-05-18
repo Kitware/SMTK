@@ -21,7 +21,9 @@ namespace operation
 {
 
 bool WriterGroup::registerOperation(
-  const std::string& operatorName, const std::string& resourceName, const std::string& fileItemName)
+  const std::string& operatorName,
+  const std::string& resourceName,
+  const std::string& fileItemName)
 {
   Operation::Specification spec = specification(operatorName);
 
@@ -70,5 +72,5 @@ std::shared_ptr<smtk::operation::Operation> WriterGroup::writerForResource(
   }
   return manager->create(*indices.begin());
 }
-}
-}
+} // namespace operation
+} // namespace smtk

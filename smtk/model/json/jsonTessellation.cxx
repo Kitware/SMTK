@@ -35,8 +35,9 @@ void to_json(json& j, const Tessellation& tess)
   }
   else
   {
-    j = { { "metadata", { "format version", "3" } }, { "vertices", tess.coords() },
-      { "faces", tess.conn() } };
+    j = { { "metadata", { "format version", "3" } },
+          { "vertices", tess.coords() },
+          { "faces", tess.conn() } };
   }
 }
 
@@ -47,8 +48,8 @@ void from_json(const json& j, Tessellation& tess)
   {
     try
     {
-      tess.coords() = j.at("vertices").get<std::vector<double> >();
-      tess.conn() = j.at("faces").get<std::vector<int> >();
+      tess.coords() = j.at("vertices").get<std::vector<double>>();
+      tess.conn() = j.at("faces").get<std::vector<int>>();
     }
     catch (std::exception&)
     {
@@ -57,5 +58,5 @@ void from_json(const json& j, Tessellation& tess)
     }
   }
 }
-}
-}
+} // namespace model
+} // namespace smtk

@@ -84,7 +84,7 @@ smtk::mesh::PointCloud PointCloudFromVTKFile::operator()(const std::string& file
 
   return smtk::mesh::PointCloud(externalData->GetNumberOfPoints(), coordinates, data, valid);
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

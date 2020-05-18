@@ -16,7 +16,7 @@ namespace common
 {
 
 /// Return the square of the Euclidean distance between \a p0 and \a p1.
-template <typename T>
+template<typename T>
 double distance2(const T* p0, const T* p1)
 {
   double d2 = 0.;

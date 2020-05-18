@@ -30,8 +30,8 @@ public:
   static std::string& lower(std::string& s);
   static std::string& upper(std::string& s);
 
-  static std::vector<std::string> split(
-    const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
+  static std::vector<std::string>
+  split(const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
 };
 
 } // namespace common

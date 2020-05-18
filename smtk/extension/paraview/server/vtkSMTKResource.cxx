@@ -51,8 +51,9 @@ void vtkSMTKResource::PrintSelf(ostream& os, vtkIndent indent)
 
 void vtkSMTKResource::SetResourceById(const char* resourceIdStr)
 {
-  vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting resource to "
-                << (resourceIdStr ? resourceIdStr : "(null)"));
+  vtkDebugMacro(
+    << this->GetClassName() << " (" << this << "): setting resource to "
+    << (resourceIdStr ? resourceIdStr : "(null)"));
 
   if (resourceIdStr == nullptr || this->Wrapper == nullptr)
   {
@@ -105,7 +106,9 @@ vtkAlgorithm* vtkSMTKResource::GetConverter()
 }
 
 int vtkSMTKResource::RequestData(
-  vtkInformation* /*unused*/, vtkInformationVector** /*unused*/, vtkInformationVector* outInfo)
+  vtkInformation* /*unused*/,
+  vtkInformationVector** /*unused*/,
+  vtkInformationVector* outInfo)
 {
   // Access the converter, constructing and initializing it if necessary.
   auto converter = this->GetConverter();

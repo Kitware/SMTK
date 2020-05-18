@@ -27,8 +27,10 @@ vtkImageSpacingFlip::vtkImageSpacingFlip() = default;
 
 vtkImageSpacingFlip::~vtkImageSpacingFlip() = default;
 
-int vtkImageSpacingFlip::RequestData(vtkInformation* /*request*/,
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkImageSpacingFlip::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
   vtkInformation* outInfo = outputVector->GetInformationObject(0);

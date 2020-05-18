@@ -46,8 +46,8 @@ public:
     return nullptr;
   }
 };
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk
 
 #endif // smtk_session_vtk_RegisterVTKBackend_h

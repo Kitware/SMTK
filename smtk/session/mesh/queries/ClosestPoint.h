@@ -34,10 +34,12 @@ struct SMTKMESHSESSION_EXPORT ClosestPoint
   : public smtk::resource::query::DerivedFrom<ClosestPoint, smtk::geometry::ClosestPoint>
 {
   virtual std::array<double, 3> operator()(
-    const smtk::resource::Component::Ptr& component, const std::array<double, 3>& sourcePoint) const
+    const smtk::resource::Component::Ptr& component,
+    const std::array<double, 3>& sourcePoint) const
   {
-    if (auto resource =
-          std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
+    if (
+      auto resource =
+        std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
     {
       smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
       auto elementIt = topology->m_elements.find(component->id());
@@ -53,8 +55,8 @@ struct SMTKMESHSESSION_EXPORT ClosestPoint
     return smtk::geometry::ClosestPoint::operator()(component, sourcePoint);
   }
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

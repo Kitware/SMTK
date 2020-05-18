@@ -84,8 +84,10 @@ protected:
    * Append all ItemDefinition types in an AttDef recursively to populate the
    * tree.
    */
-  void appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
-    QTreeWidgetItem* parentItem, const QString& attDefType);
+  void appendRecursively(
+    smtk::attribute::ItemDefinitionPtr parentItemDef,
+    QTreeWidgetItem* parentItem,
+    const QString& attDefType);
 
   /**
    * Update the attribute collection. This ensures the attribute::collection instance is

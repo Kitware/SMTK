@@ -62,7 +62,8 @@ SplitEdge::Result SplitEdge::operateInternal()
   std::vector<double> point;
   smtk::model::EntityRefArray created;
   bool ok;
-  if (pointIdItem && pointIdItem->value(0) >= 0 &&
+  if (
+    pointIdItem && pointIdItem->value(0) >= 0 &&
     pointIdItem->value(0) < static_cast<int>(storage->pointsSize()))
   {
     ok = mod->splitModelEdgeAtIndex(

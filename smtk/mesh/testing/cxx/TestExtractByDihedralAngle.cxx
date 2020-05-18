@@ -41,12 +41,12 @@ std::string data_root = SMTK_DATA_DIR;
 
 // A numerical tolerance
 const double epsilon = 1.e-8;
-}
+} // namespace
 
 // Import a tetrahedralized cube, extract its shell, select a cell on the shell
 // to run ExtractByDihedralAngle, check that the points in the resulting
 // extraction are coplanar.
-int TestExtractByDihedralAngle(int, char* [])
+int TestExtractByDihedralAngle(int, char*[])
 {
   // Import a tetrahedralized cube
   smtk::mesh::Resource::Ptr resource;
@@ -62,7 +62,8 @@ int TestExtractByDihedralAngle(int, char* [])
     }
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
-    test(importOpResult->findInt("outcome")->value() ==
+    test(
+      importOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Import operator failed");
 
@@ -81,7 +82,8 @@ int TestExtractByDihedralAngle(int, char* [])
     smtk::operation::Operation::Ptr extractSkin = smtk::mesh::ExtractSkin::create();
     extractSkin->parameters()->associate(smtk::mesh::Component::create(tetrahedra));
     smtk::operation::Operation::Result result = extractSkin->operate();
-    test(result->findInt("outcome")->value() ==
+    test(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Extract skin failed");
 
@@ -142,8 +144,9 @@ int TestExtractByDihedralAngle(int, char* [])
     std::array<double, 3> v1 = { p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2] };
     std::array<double, 3> v2 = { p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2] };
 
-    std::array<double, 3> n = { v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
-      v1[0] * v2[1] - v1[1] * v2[0] };
+    std::array<double, 3> n = { v1[1] * v2[2] - v1[2] * v2[1],
+                                v1[2] * v2[0] - v1[0] * v2[2],
+                                v1[0] * v2[1] - v1[1] * v2[0] };
 
     double magnitude = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
     for (std::size_t i = 0; i < n.size(); i++)

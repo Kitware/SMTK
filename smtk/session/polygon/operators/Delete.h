@@ -47,10 +47,15 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 
-  template <typename U, typename V, typename W, typename X>
-  bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool deleteBoundingCells,
-    U& verts, V& edges, W& faces, X& other);
-  template <typename U, typename V, typename W, typename X>
+  template<typename U, typename V, typename W, typename X>
+  bool checkAndAddBoundingCells(
+    const smtk::model::EntityRef& ent,
+    bool deleteBoundingCells,
+    U& verts,
+    V& edges,
+    W& faces,
+    X& other);
+  template<typename U, typename V, typename W, typename X>
   void addBoundaryCells(const smtk::model::EntityRef& ent, U& verts, V& edges, W& faces, X& other);
 
   int m_numInUse;

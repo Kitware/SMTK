@@ -27,7 +27,9 @@ namespace project
 void to_json(json& j, const ProjectDescriptor& pd)
 {
   j = {
-    { "fileVersion", 1 }, { "simulationCode", pd.m_simulationCode }, { "projectName", pd.m_name },
+    { "fileVersion", 1 },
+    { "simulationCode", pd.m_simulationCode },
+    { "projectName", pd.m_name },
     { "projectDirectory", pd.m_directory },
   };
   json jDescriptors = json::array();

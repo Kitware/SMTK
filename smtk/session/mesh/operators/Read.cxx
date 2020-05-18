@@ -157,6 +157,6 @@ smtk::resource::ResourcePtr read(const std::string& filename)
   }
   return result->findResource("resource")->value();
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

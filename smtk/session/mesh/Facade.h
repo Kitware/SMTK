@@ -41,8 +41,8 @@ private:
   struct Internals;
   Internals* m_internal;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

@@ -82,7 +82,7 @@ class SMTKQTEXT_EXPORT qtDoubleLineEdit : public qtLineEdit
   Q_PROPERTY(RealNumberNotation notation READ notation WRITE setNotation)
   Q_PROPERTY(int precision READ precision WRITE setPrecision)
   Q_PROPERTY(bool useGlobalPrecisionAndNotation READ useGlobalPrecisionAndNotation WRITE
-      setUseGlobalPrecisionAndNotation)
+               setUseGlobalPrecisionAndNotation)
   using Superclass = qtLineEdit;
 
 public:
@@ -140,10 +140,10 @@ public:
    * Return a double formatted according to a QTextStream::RealNumberNotation and number
    * of digits of precision.
    */
-  static QString formatDouble(
-    double value, QTextStream::RealNumberNotation notation, int precision);
-  static QString formatDouble(
-    double value, qtDoubleLineEdit::RealNumberNotation notation, int precision);
+  static QString
+  formatDouble(double value, QTextStream::RealNumberNotation notation, int precision);
+  static QString
+  formatDouble(double value, qtDoubleLineEdit::RealNumberNotation notation, int precision);
   //@}
 
   //@{
@@ -186,6 +186,6 @@ private:
   class qtInternals;
   QScopedPointer<qtInternals> Internals;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif

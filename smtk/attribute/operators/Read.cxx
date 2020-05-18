@@ -75,8 +75,10 @@ Read::Result Read::operateInternal()
     }
     else
     {
-      smtkErrorMacro(log(), "Cannot read attribute file \""
-          << filename << "\" - Unsupported Version: " << *version << ".");
+      smtkErrorMacro(
+        log(),
+        "Cannot read attribute file \"" << filename << "\" - Unsupported Version: " << *version
+                                        << ".");
     }
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
@@ -166,5 +168,5 @@ smtk::resource::ResourcePtr read(const std::string& filename)
   }
   return result->findResource("resource")->value();
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

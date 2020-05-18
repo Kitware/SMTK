@@ -84,7 +84,8 @@ protected:
    * new smtk::attribute::Definition (to update the model).
    */
   QModelIndex findElementByData(
-    QTreeWidgetItem* element, const smtk::attribute::DefinitionPtr& dataMatch);
+    QTreeWidgetItem* element,
+    const smtk::attribute::DefinitionPtr& dataMatch);
 
 private:
   AttDefDataModel(const AttDefDataModel&) = delete;

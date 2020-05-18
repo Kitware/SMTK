@@ -23,8 +23,9 @@ namespace mesh
 {
 namespace moab
 {
-std::pair<double, std::array<double, 3> > DistanceTo::operator()(
-  const smtk::resource::Component::Ptr& component, const std::array<double, 3>& point) const
+std::pair<double, std::array<double, 3>> DistanceTo::operator()(
+  const smtk::resource::Component::Ptr& component,
+  const std::array<double, 3>& point) const
 {
   auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
   if (meshComponent)
@@ -42,15 +43,17 @@ std::pair<double, std::array<double, 3> > DistanceTo::operator()(
   return this->Parent::operator()(component, point);
 }
 
-std::pair<double, std::array<double, 3> > DistanceTo::operator()(
-  const smtk::mesh::MeshSet& meshset, const std::array<double, 3>& point) const
+std::pair<double, std::array<double, 3>> DistanceTo::operator()(
+  const smtk::mesh::MeshSet& meshset,
+  const std::array<double, 3>& point) const
 {
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
-  std::pair<double, std::array<double, 3> > returnValue(nan, { { nan, nan, nan } });
+  std::pair<double, std::array<double, 3>> returnValue(nan, { { nan, nan, nan } });
 
   // If the entity has a mesh tessellation, and the mesh backend is moab, and
   // the tessellation has triangles...
-  if (meshset.isValid() && meshset.resource()->interfaceName() == "moab" &&
+  if (
+    meshset.isValid() && meshset.resource()->interfaceName() == "moab" &&
     meshset.types().hasCell(smtk::mesh::Triangle))
   {
     PointLocatorCache& pointLocatorCache = meshset.resource()->queries().cache<PointLocatorCache>();
@@ -67,7 +70,8 @@ std::pair<double, std::array<double, 3> > DistanceTo::operator()(
 
       search =
         pointLocatorCache.m_caches
-          .emplace(std::make_pair(meshset.id(),
+          .emplace(std::make_pair(
+            meshset.id(),
             std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
               interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
           .first;
@@ -91,6 +95,6 @@ std::pair<double, std::array<double, 3> > DistanceTo::operator()(
 
   return returnValue;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

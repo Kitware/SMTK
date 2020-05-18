@@ -28,7 +28,8 @@ InfixExpressionGrammar::InfixExpressionGrammar()
 }
 
 void InfixExpressionGrammar::addFunction(
-  const std::string& name, const std::function<double(double)>& f)
+  const std::string& name,
+  const std::function<double(double)>& f)
 {
   m_functions.insert(name, f);
 }
@@ -48,8 +49,8 @@ SubsymbolVisitor InfixExpressionGrammar::subsymbolVisitor() const
   return m_subsymbolVisitor;
 }
 
-double InfixExpressionGrammar::evaluate(
-  const std::string& expression, InfixExpressionError& err) const
+double InfixExpressionGrammar::evaluate(const std::string& expression, InfixExpressionError& err)
+  const
 {
   // Freshen up |err|.
   err = InfixExpressionError::ERROR_NONE;
@@ -86,7 +87,9 @@ InfixExpressionError InfixExpressionGrammar::testExpressionSyntax(
 }
 
 InfixExpressionError InfixExpressionGrammar::testExpressionSyntax(
-  const std::string& expression, InfixOperators& ops, EvaluationStacks& stacks) const
+  const std::string& expression,
+  InfixOperators& ops,
+  EvaluationStacks& stacks) const
 {
   InfixExpressionError err = InfixExpressionError::ERROR_NONE;
 
@@ -94,8 +97,9 @@ InfixExpressionError InfixExpressionGrammar::testExpressionSyntax(
 
   try
   {
-    tao::pegtl::parse<expression_internal::expression_grammar,
-      expression_internal::ExpressionAction>(in, ops, stacks, m_functions, m_subsymbolVisitor, err);
+    tao::pegtl::
+      parse<expression_internal::expression_grammar, expression_internal::ExpressionAction>(
+        in, ops, stacks, m_functions, m_subsymbolVisitor, err);
   }
   catch (tao::pegtl::parse_error& /*parse_err*/)
   {

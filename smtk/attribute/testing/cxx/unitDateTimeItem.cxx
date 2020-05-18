@@ -183,7 +183,8 @@ void verifySerialize()
   sa::DateTimeItemDefinitionPtr dt1InputDef =
     smtk::dynamic_pointer_cast<sa::DateTimeItemDefinition>(inputItemDef);
   test(!!dt1InputDef, "Failed to read back DateTimeItemDefinition");
-  test(dt1InputDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
+  test(
+    dt1InputDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
     "Failed to read back definition display format");
   test(!dt1InputDef->useTimeZone(), "Failed to read back use-time-zone setting");
   test(!dt1InputDef->useCalendarPopup(), "Failed to read back enable-calendar-popup setting");
@@ -236,10 +237,12 @@ void verifySerialize()
   sa::IntItemPtr discreteItemInput = inputAtt->findInt("discrete");
   test(!!discreteItemInput, "Failed to find discrete IntItem");
   test(discreteItemInput->setDiscreteIndex(0), "Invalid discrete index 0");
-  test(discreteItemInput->numberOfActiveChildrenItems() == 0,
+  test(
+    discreteItemInput->numberOfActiveChildrenItems() == 0,
     "Wrong number of active children; should be 0");
   test(discreteItemInput->setDiscreteIndex(1), "Invalid discrete index 1");
-  test(discreteItemInput->numberOfActiveChildrenItems() == 1,
+  test(
+    discreteItemInput->numberOfActiveChildrenItems() == 1,
     "Wrong number of active children; should be 1");
   sa::ItemPtr activeChild = discreteItemInput->activeChildItem(0);
   test(activeChild->type() == sa::Item::DateTimeType, "Active child not DateTime");

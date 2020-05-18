@@ -38,8 +38,8 @@ protected:
 
   bool callFromRead = false;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

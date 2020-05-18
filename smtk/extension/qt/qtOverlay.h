@@ -55,7 +55,7 @@ protected:
   //        QPointer<QWidget> m_overlayWidget;
   bool m_Active;
 };
-};
-};
+}; // namespace extension
+}; // namespace smtk
 
 #endif // __smtk_extension_qtOverlay_

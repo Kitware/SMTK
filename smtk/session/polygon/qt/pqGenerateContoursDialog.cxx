@@ -67,7 +67,10 @@ void InternalDoubleValidator::fixup(QString& input) const
 }
 
 inline bool internal_COLOR_REP_BY_ARRAY(
-  vtkSMProxy* reproxy, const char* arrayname, int attribute_type, bool rescale = true)
+  vtkSMProxy* reproxy,
+  const char* arrayname,
+  int attribute_type,
+  bool rescale = true)
 {
   bool res = vtkSMPVRepresentationProxy::SetScalarColoring(reproxy, arrayname, attribute_type);
   if (rescale && res && vtkSMPVRepresentationProxy::GetUsingScalarColoring(reproxy))
@@ -96,27 +99,42 @@ inline bool internal_COLOR_REP_BY_ARRAY(
   return res;
 }
 
-pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource,
-  const bool& mapScalars2Colors, QWidget* parent, Qt::WindowFlags flags)
+pqGenerateContoursDialog::pqGenerateContoursDialog(
+  pqPipelineSource* imagesource,
+  const bool& mapScalars2Colors,
+  QWidget* parent,
+  Qt::WindowFlags flags)
   : QDialog(parent, flags)
   , ImageSource(imagesource)
 {
   this->MainDialog = new QDialog;
   this->InternalWidget = new Ui::qtGenerateContoursDialog;
   this->InternalWidget->setupUi(this->MainDialog);
-  QObject::connect(this->InternalWidget->generateContoursButton, SIGNAL(clicked()), this,
+  QObject::connect(
+    this->InternalWidget->generateContoursButton,
+    SIGNAL(clicked()),
+    this,
     SLOT(generateContours()));
-  QObject::connect(this->InternalWidget->createContourNodesButton, SIGNAL(clicked()), this,
+  QObject::connect(
+    this->InternalWidget->createContourNodesButton,
+    SIGNAL(clicked()),
+    this,
     SLOT(onAccecptContours()));
   QObject::connect(this->InternalWidget->cancelButton, SIGNAL(clicked()), this, SLOT(onCancel()));
-  QObject::connect(this->InternalWidget->imageOpacitySlider, SIGNAL(valueChanged(int)), this,
+  QObject::connect(
+    this->InternalWidget->imageOpacitySlider,
+    SIGNAL(valueChanged(int)),
+    this,
     SLOT(onOpacityChanged(int)));
 
   this->InternalWidget->createContourNodesButton->setEnabled(false);
   this->InternalWidget->generateContoursBox->setEnabled(false);
 
   pqProgressManager* progress_manager = pqApplicationCore::instance()->getProgressManager();
-  QObject::connect(progress_manager, SIGNAL(progress(const QString&, int)), this,
+  QObject::connect(
+    progress_manager,
+    SIGNAL(progress(const QString&, int)),
+    this,
     SLOT(updateProgress(const QString&, int)));
   this->Progress = new QProgressDialog(this->MainDialog);
   this->Progress->setWindowTitle(QString("Loading Image"));
@@ -162,12 +180,21 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
     this->ContourValue = VTK_FLOAT_MAX;
     this->MinimumLineLength = -1;
     this->UseRelativeLineLength = false;
-    QObject::connect(this->InternalWidget->contourValue, SIGNAL(textChanged(const QString&)), this,
+    QObject::connect(
+      this->InternalWidget->contourValue,
+      SIGNAL(textChanged(const QString&)),
+      this,
       SLOT(updateContourButtonStatus()));
-    QObject::connect(this->InternalWidget->minimumLineLength, SIGNAL(textChanged(const QString&)),
-      this, SLOT(updateContourButtonStatus()));
-    QObject::connect(this->InternalWidget->relativeLineLengthCheckbox, SIGNAL(stateChanged(int)),
-      this, SLOT(updateContourButtonStatus()));
+    QObject::connect(
+      this->InternalWidget->minimumLineLength,
+      SIGNAL(textChanged(const QString&)),
+      this,
+      SLOT(updateContourButtonStatus()));
+    QObject::connect(
+      this->InternalWidget->relativeLineLengthCheckbox,
+      SIGNAL(stateChanged(int)),
+      this,
+      SLOT(updateContourButtonStatus()));
 
     // Set up camera reset button
     QObject::connect(
@@ -193,7 +220,10 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
       this->InternalWidget->mapScalarsCheck->setChecked(mapScalars2Colors);
     }
 
-    QObject::connect(this->InternalWidget->mapScalarsCheck, SIGNAL(stateChanged(int)), this,
+    QObject::connect(
+      this->InternalWidget->mapScalarsCheck,
+      SIGNAL(stateChanged(int)),
+      this,
       SLOT(onMapScalars(int)));
 
     // create the image mesh, which will be used for generating contours
@@ -411,7 +441,8 @@ void pqGenerateContoursDialog::disableWhileProcessing()
 
 void pqGenerateContoursDialog::updateContourButtonStatus()
 {
-  if (this->ContourValue == this->InternalWidget->contourValue->text().toDouble() &&
+  if (
+    this->ContourValue == this->InternalWidget->contourValue->text().toDouble() &&
     this->MinimumLineLength == this->InternalWidget->minimumLineLength->text().toDouble() &&
     this->UseRelativeLineLength == this->InternalWidget->relativeLineLengthCheckbox->isChecked())
   {

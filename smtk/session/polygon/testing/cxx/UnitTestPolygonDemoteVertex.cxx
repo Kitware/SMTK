@@ -114,14 +114,16 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     test(point != nullptr, "Could not find point");
     for (int j = 0; j < numCoordsPerVertex; ++j)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
-             j, points[i * numCoordsPerVertex + j]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
+          j, points[i * numCoordsPerVertex + j]),
         "Setting points failed");
     }
   }
 
   smtk::operation::Operation::Result res = createVerticesOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create vertices operator failed");
 
@@ -145,12 +147,15 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     smtk::session::polygon::CreateEdgeFromVertices::Ptr createEdgeFromVerticesOp =
       operationManager->create<smtk::session::polygon::CreateEdgeFromVertices>();
     test(createEdgeFromVerticesOp != nullptr, "No create edge from vertices operator");
-    test(createEdgeFromVerticesOp->parameters()->associateEntity(verts[i]),
+    test(
+      createEdgeFromVerticesOp->parameters()->associateEntity(verts[i]),
       "Could not associate vertex");
-    test(createEdgeFromVerticesOp->parameters()->associateEntity(verts[endVert[i]]),
+    test(
+      createEdgeFromVerticesOp->parameters()->associateEntity(verts[endVert[i]]),
       "Could not associate vertex");
     res = createEdgeFromVerticesOp->operate();
-    test(res->findInt("outcome")->value() ==
+    test(
+      res->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Create edge from vertices operator failed");
   }
@@ -175,7 +180,8 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
       createFacesFromEdgesOp->parameters()->associateEntity(edges[i]), "Could not associate edge");
   }
   res = createFacesFromEdgesOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create faces from edges operator failed");
 
@@ -193,10 +199,12 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
   smtk::session::polygon::DemoteVertex::Ptr demoteVertexOp =
     operationManager->create<smtk::session::polygon::DemoteVertex>();
   test(demoteVertexOp != nullptr, "No demote vertex operator");
-  test(demoteVertexOp->parameters()->associateEntity(verts[numVertices - 1]),
+  test(
+    demoteVertexOp->parameters()->associateEntity(verts[numVertices - 1]),
     "Could not associate vertex");
   res = demoteVertexOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Demote vertex operator failed");
 
@@ -234,11 +242,14 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
             << remainingEdges.size() << " edges, " << remainingVertices.size()
             << " vertices in the model" << std::endl;
 
-  test(static_cast<int>(remainingFaces.size()) == numFaces,
+  test(
+    static_cast<int>(remainingFaces.size()) == numFaces,
     "Incorrect number of faces after demoting vertex");
-  test(static_cast<int>(remainingEdges.size()) == numEdges - 1,
+  test(
+    static_cast<int>(remainingEdges.size()) == numEdges - 1,
     "Incorrect number of edges after demoting vertex");
-  test(static_cast<int>(remainingVertices.size()) == numVertices - 1,
+  test(
+    static_cast<int>(remainingVertices.size()) == numVertices - 1,
     "Incorrect number of vertices after demoting vertex");
 
   return 0;

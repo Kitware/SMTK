@@ -28,7 +28,7 @@ namespace resource
 /// instead, they derive from smtk::resource::DerivedFrom<Self, Parent>, where
 /// Self is the class being defined and Parent is either
 /// smtk::resource::Resource or one of its derived classes.
-template <typename Self, typename Parent>
+template<typename Self, typename Parent>
 class DerivedFrom : public Parent
 {
 public:
@@ -56,13 +56,15 @@ public:
 
   virtual int numberOfGenerationsFromBase(const std::string& typeName) const override
   {
-    return (smtk::common::typeName<Self>() == typeName ? 0 : 1 +
-          ParentResource::numberOfGenerationsFromBase(typeName));
+    return (
+      smtk::common::typeName<Self>() == typeName
+        ? 0
+        : 1 + ParentResource::numberOfGenerationsFromBase(typeName));
   }
 
 protected:
   /// Forward all constructor arguments to the parent class.
-  template <typename... T>
+  template<typename... T>
   DerivedFrom(T&&... all)
     : Parent(std::forward<T>(all)...)
   {
@@ -76,10 +78,10 @@ protected:
   DerivedFrom(const DerivedFrom&) = delete;
 };
 
-template <typename Self, typename Parent>
+template<typename Self, typename Parent>
 const Resource::Index DerivedFrom<Self, Parent>::type_index =
   std::type_index(typeid(Self)).hash_code();
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_DerivedFrom_h

@@ -110,8 +110,8 @@ public:
   /// The icon may change depending on
   /// (1) the state of the phrase or its parent view,
   /// (2) the background color of the phrase.
-  virtual std::string icon(
-    const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
+  virtual std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>& background)
+    const = 0;
 
   /// Take an action when the badge is clicked.
   ///
@@ -131,6 +131,6 @@ protected:
   /// Should this badge be invoked by non-specific user gestures when it is applicable?
   bool m_isDefault;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 #endif

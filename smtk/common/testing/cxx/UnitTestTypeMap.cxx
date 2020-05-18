@@ -34,19 +34,19 @@ struct Foo
 class TypeMap : public smtk::common::TypeMap<std::string>
 {
 public:
-  template <typename Type>
+  template<typename Type>
   void insertType()
   {
     return smtk::common::TypeMap<std::string>::insertType<Type>();
   }
 
-  template <typename Tuple>
+  template<typename Tuple>
   void insertTypes()
   {
     smtk::common::TypeMap<std::string>::insertTypes<Tuple>();
   }
 };
-}
+} // namespace
 
 int UnitTestTypeMap(int /*unused*/, char** const /*unused*/)
 {
@@ -73,7 +73,8 @@ int UnitTestTypeMap(int /*unused*/, char** const /*unused*/)
 
   const smtk::common::TypeMapEntry<std::string, int>& constIntTypeMap = typeMap.get<int>();
 
-  test(constIntTypeMap.at("foo") == 3,
+  test(
+    constIntTypeMap.at("foo") == 3,
     "Inserted value should be accessible via specialized interface.");
 
   try
@@ -92,13 +93,15 @@ int UnitTestTypeMap(int /*unused*/, char** const /*unused*/)
 
   floatTypeMap["foo"] = 2.3f;
 
-  test(fabs(floatTypeMap.at("foo") - 2.3f) < float_epsilon,
+  test(
+    fabs(floatTypeMap.at("foo") - 2.3f) < float_epsilon,
     "Assignment should be accessible via specialized interface.");
 
-  test(fabs(typeMap.at<float>("foo") - 2.3f) < float_epsilon,
+  test(
+    fabs(typeMap.at<float>("foo") - 2.3f) < float_epsilon,
     "Assigned values should be accessible via generalized interface.");
 
-  typedef std::unordered_map<smtk::common::UUID, std::vector<std::string> > StringMap;
+  typedef std::unordered_map<smtk::common::UUID, std::vector<std::string>> StringMap;
   typeMap.insertType<StringMap>();
   smtk::common::TypeMapEntry<std::string, StringMap>& stringMapTypeMap = typeMap.get<StringMap>();
 

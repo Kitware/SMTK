@@ -16,4 +16,4 @@ namespace plugin
 {
 ClientBase::~ClientBase() = default;
 }
-}
+} // namespace smtk

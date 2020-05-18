@@ -21,10 +21,12 @@ PointLocatorExtension::PointLocatorExtension() = default;
 PointLocatorExtension::~PointLocatorExtension() = default;
 
 bool PointLocatorExtension::randomPoint(
-  const EntityRef& entity, std::size_t nPoints, std::vector<double>& points)
+  const EntityRef& entity,
+  std::size_t nPoints,
+  std::vector<double>& points)
 {
   std::random_device rd;
   return this->randomPoint(entity, nPoints, points, rd());
 }
-}
-}
+} // namespace model
+} // namespace smtk

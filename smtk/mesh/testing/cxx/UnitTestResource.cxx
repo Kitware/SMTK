@@ -98,7 +98,7 @@ void verify_resource_info_json()
   test((resource->readLocation() == std::string()));
   test((resource->writeLocation() == std::string("foo")));
 }
-}
+} // namespace
 
 int UnitTestResource(int /*unused*/, char** const /*unused*/)
 {

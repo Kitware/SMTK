@@ -113,7 +113,8 @@ void XmlDocV2Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
 }
 
 void XmlDocV2Parser::processDirectoryDef(
-  pugi::xml_node& node, attribute::DirectoryItemDefinitionPtr idef)
+  pugi::xml_node& node,
+  attribute::DirectoryItemDefinitionPtr idef)
 {
   xml_node defaultNode;
   xml_attribute xatt;
@@ -402,7 +403,8 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
 }
 
 void XmlDocV2Parser::processMeshEntityDef(
-  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
+  pugi::xml_node& node,
+  attribute::ComponentItemDefinitionPtr idef)
 {
   xml_node child;
   xml_attribute xatt;
@@ -487,7 +489,9 @@ void XmlDocV2Parser::processViews(xml_node& root)
 }
 
 void XmlDocV2Parser::processViewComponent(
-  smtk::view::Configuration::Component& comp, xml_node& node, bool isTopComp)
+  smtk::view::Configuration::Component& comp,
+  xml_node& node,
+  bool isTopComp)
 {
   // Add the attributes of the node to the component
   xml_attribute xatt;
@@ -497,8 +501,8 @@ void XmlDocV2Parser::processViewComponent(
   {
     // If this is the top View comp then skip Title, Name and Type Attributes
     name = xatt.name();
-    if (isTopComp &&
-      ((name == "Name") || (name == "Title") || (name == "Type") || (name == "Icon")))
+    if (
+      isTopComp && ((name == "Name") || (name == "Title") || (name == "Type") || (name == "Icon")))
     {
       continue;
     }

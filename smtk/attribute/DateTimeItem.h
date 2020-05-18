@@ -70,12 +70,12 @@ protected:
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   ConstDateTimeItemDefinitionPtr itemDefinition() const;
   bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
-  std::vector< ::smtk::common::DateTimeZonePair> m_values;
+  std::vector<::smtk::common::DateTimeZonePair> m_values;
   std::vector<bool> m_isSet;
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_DateTimeItem_h */

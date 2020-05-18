@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.attribute
 import smtk.testing
@@ -67,6 +67,7 @@ class testModifyViewComponents(smtk.testing.TestCase):
         print('Attributes in the component:')
         for att, value in compAtts.items():
             print('Attribute: {}, Value: {}'.format(att, value))
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

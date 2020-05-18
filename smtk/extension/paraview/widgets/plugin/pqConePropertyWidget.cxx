@@ -38,7 +38,9 @@ public:
 };
 
 pqConePropertyWidget::pqConePropertyWidget(
-  vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup, QWidget* parentObj)
+  vtkSMProxy* smproxy,
+  vtkSMPropertyGroup* smgroup,
+  QWidget* parentObj)
   : Superclass("representations", "ConeWidgetRepresentation", smproxy, smgroup, parentObj)
   , m_p(new pqConePropertyWidget::Internals())
 {

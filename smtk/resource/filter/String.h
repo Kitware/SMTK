@@ -148,10 +148,10 @@ template <> struct Action<Property<std::vector<std::string> >::Regex>
 // clang-format on
 
 /// Specialization of ValueAction to accommodate vectors of types.
-template <>
-struct Action<Property<std::vector<std::string> >::Value>
+template<>
+struct Action<Property<std::vector<std::string>>::Value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
@@ -167,8 +167,8 @@ struct Action<Property<std::vector<std::string> >::Value>
       value.push_back(str);
     }
 
-    static_cast<RuleFor<std::vector<std::string> >*>(rule.get())->acceptableValue = [value](
-      const std::vector<std::string>& val) -> bool {
+    static_cast<RuleFor<std::vector<std::string>>*>(rule.get())->acceptableValue =
+      [value](const std::vector<std::string>& val) -> bool {
       if (val.size() != value.size())
       {
         return false;
@@ -186,10 +186,10 @@ struct Action<Property<std::vector<std::string> >::Value>
 };
 
 /// Specialization of ValueRegexAction to accommodate vectors of types.
-template <>
-struct Action<Property<std::vector<std::string> >::ValueRegex>
+template<>
+struct Action<Property<std::vector<std::string>>::ValueRegex>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
@@ -205,8 +205,8 @@ struct Action<Property<std::vector<std::string> >::ValueRegex>
       regex.emplace_back(str.c_str());
     }
 
-    static_cast<RuleFor<std::vector<std::string> >*>(rule.get())->acceptableValue = [regex](
-      const std::vector<std::string>& val) -> bool {
+    static_cast<RuleFor<std::vector<std::string>>*>(rule.get())->acceptableValue =
+      [regex](const std::vector<std::string>& val) -> bool {
       if (val.size() != regex.size())
       {
         return false;
@@ -222,8 +222,8 @@ struct Action<Property<std::vector<std::string> >::ValueRegex>
     };
   }
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

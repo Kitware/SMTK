@@ -54,8 +54,12 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKWrapper : public pqProxy
   using Superclass = pqProxy;
 
 public:
-  pqSMTKWrapper(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
-    pqServer* server, QObject* parent = nullptr);
+  pqSMTKWrapper(
+    const QString& regGroup,
+    const QString& regName,
+    vtkSMProxy* proxy,
+    pqServer* server,
+    QObject* parent = nullptr);
   ~pqSMTKWrapper() override;
 
   /// Return the proxy for the resource manager cast to its proper type.
@@ -90,7 +94,7 @@ public slots:
   virtual void removeResource(pqSMTKResource* rsrc);
 
 protected:
-  std::set<QPointer<pqSMTKResource> > m_resources;
+  std::set<QPointer<pqSMTKResource>> m_resources;
 
 private:
   Q_DISABLE_COPY(pqSMTKWrapper);

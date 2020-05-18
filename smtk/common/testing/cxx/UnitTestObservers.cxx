@@ -16,7 +16,7 @@ namespace
 class Observed
 {
 public:
-  typedef smtk::common::Observers<std::function<void()> > Observers;
+  typedef smtk::common::Observers<std::function<void()>> Observers;
 
   void operator()() { m_observers(); }
 
@@ -25,7 +25,7 @@ public:
 private:
   Observers m_observers;
 };
-}
+} // namespace
 
 void TestPriority()
 {

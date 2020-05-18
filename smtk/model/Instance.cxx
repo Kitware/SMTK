@@ -140,9 +140,11 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
   }
   else if (snaps.size() > 1)
   {
-    smtkWarningMacro(inst.resource()->log(), "Expected a single model entity to snap to, got "
-        << snaps.size() << ". "
-        << "Ignoring all but first (" << snaps.begin()->name() << ")");
+    smtkWarningMacro(
+      inst.resource()->log(),
+      "Expected a single model entity to snap to, got " << snaps.size() << ". "
+                                                        << "Ignoring all but first ("
+                                                        << snaps.begin()->name() << ")");
   }
 
   std::string snapRule;
@@ -248,7 +250,7 @@ std::string Instance::rule() const
     return "empty";
   }
 
-  auto stringProperties = comp->properties().get<std::vector<std::string> >();
+  auto stringProperties = comp->properties().get<std::vector<std::string>>();
   return (!stringProperties.contains(rule) || stringProperties.at(rule).empty())
     ? "empty"
     : stringProperties.at(rule)[0];
@@ -257,7 +259,8 @@ std::string Instance::rule() const
 bool Instance::setRule(const std::string& nextRule)
 {
   // Only accept valid rules:
-  if (nextRule != "tabular" && nextRule != "uniform random" &&
+  if (
+    nextRule != "tabular" && nextRule != "uniform random" &&
     nextRule != "uniform random on surface")
   {
     return false;

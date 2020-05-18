@@ -31,8 +31,10 @@ public:
   Ptr setup(const smtk::resource::ResourcePtr& resource, int mutability = 0);
   virtual ~ResourcePhraseContent();
 
-  static DescriptivePhrasePtr createPhrase(const smtk::resource::ResourcePtr& resource,
-    int mutability = 0, DescriptivePhrasePtr parent = DescriptivePhrasePtr());
+  static DescriptivePhrasePtr createPhrase(
+    const smtk::resource::ResourcePtr& resource,
+    int mutability = 0,
+    DescriptivePhrasePtr parent = DescriptivePhrasePtr());
 
   bool displayable(ContentType contentType) const override
   {
@@ -68,7 +70,7 @@ protected:
   int m_mutability;
 };
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk
 
 #endif

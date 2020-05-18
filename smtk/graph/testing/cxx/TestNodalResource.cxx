@@ -21,7 +21,7 @@ namespace test_nodal_resource
 class Node : public smtk::graph::Component
 {
 public:
-  template <typename... Args>
+  template<typename... Args>
   Node(Args&&... args)
     : smtk::graph::Component::Component(std::forward<Args>(args)...)
   {
@@ -32,7 +32,7 @@ public:
 class Arc : public smtk::graph::Arc<Node, Node>
 {
 public:
-  template <typename... Args>
+  template<typename... Args>
   Arc(Args&&... args)
     : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
   {
@@ -46,9 +46,9 @@ struct BasicTraits
   typedef std::tuple<test_nodal_resource::Node> NodeTypes;
   typedef std::tuple<test_nodal_resource::Arc> ArcTypes;
 };
-}
+} // namespace test_nodal_resource
 
-int TestNodalResource(int, char* [])
+int TestNodalResource(int, char*[])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.

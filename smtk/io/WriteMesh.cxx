@@ -46,7 +46,9 @@ std::vector<smtk::io::mesh::MeshIOPtr>& WriteMesh::SupportedIOTypes()
 }
 
 bool WriteMesh::operator()(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource, mesh::Subset subset) const
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
+  mesh::Subset subset) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -57,7 +59,8 @@ bool WriteMesh::operator()(
   {
     for (auto&& format : writer->FileFormats())
     {
-      if (format.CanWrite() &&
+      if (
+        format.CanWrite() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -80,7 +83,8 @@ bool WriteMesh::operator()(smtk::mesh::ResourcePtr resource, mesh::Subset subset
   {
     for (auto&& format : writer->FileFormats())
     {
-      if (format.CanWrite() &&
+      if (
+        format.CanWrite() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -139,5 +143,5 @@ bool writeNeumann(smtk::mesh::ResourcePtr resource)
   WriteMesh write;
   return smtk::io::writeMesh(resource, mesh::Subset::OnlyNeumann);
 }
-}
-}
+} // namespace io
+} // namespace smtk

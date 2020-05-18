@@ -29,9 +29,11 @@ namespace attribute
 {
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefinitionPtr& defPtr,
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::GroupItemDefinitionPtr& defPtr,
   const smtk::attribute::ResourcePtr& resPtr);
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

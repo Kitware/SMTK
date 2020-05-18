@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 """ import_from_deform.py:
 
@@ -23,6 +23,21 @@ partitioned into a number of zones equal to the number of microscale
 statistics feature parameters provided by the user.
 
 """
+import vtk
+import subprocess
+import smtk.operation
+import smtk.model
+import smtk.mesh
+import smtk.io.vtk
+import smtk.io
+import smtk.session.multiscale
+import smtk.session.mesh
+import smtk.attribute
+import smtk
+import os.path
+import os
+import import_from_deform_xml
+import Dream3DPipeline
 import AFRLDir
 
 import sys
@@ -31,24 +46,6 @@ afrlDir = AFRLDir.description.replace('\n', '') + '/CMBPreprocessingScripts'
 
 if afrlDir not in sys.path:
     sys.path.append(afrlDir)
-
-import Dream3DPipeline
-
-import import_from_deform_xml
-
-import os
-import os.path
-import smtk
-import smtk.attribute
-import smtk.session.mesh
-import smtk.session.multiscale
-import smtk.io
-import smtk.io.vtk
-import smtk.mesh
-import smtk.model
-import smtk.operation
-import subprocess
-import vtk
 
 
 class import_from_deform(smtk.operation.Operation):

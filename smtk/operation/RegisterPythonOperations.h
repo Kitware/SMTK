@@ -20,8 +20,9 @@ namespace operation
 {
 
 SMTKCORE_EXPORT bool registerPythonOperations(
-  const smtk::operation::Manager::Ptr& operationManager, const std::string& moduleName);
+  const smtk::operation::Manager::Ptr& operationManager,
+  const std::string& moduleName);
 }
-}
+} // namespace smtk
 
 #endif

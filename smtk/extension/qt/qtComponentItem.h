@@ -27,6 +27,6 @@ public:
   qtComponentItem(const qtAttributeItemInfo& info);
   virtual ~qtComponentItem();
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif

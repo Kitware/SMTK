@@ -20,7 +20,7 @@ namespace io
 {
 class Logger;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -36,9 +36,9 @@ SMTKIOVTK_EXPORT void RedirectVTKOutputTo(smtk::io::Logger& log);
 
 //Reset the output from VTK I/O back to its default behavior.
 SMTKIOVTK_EXPORT void ResetVTKOutput();
-}
-}
-}
-}
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

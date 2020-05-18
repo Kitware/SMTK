@@ -46,16 +46,18 @@ int main(int argc, char* argv[])
     char* filename = argv[2];
     auto rsrcMgr = smtk::resource::Manager::create();
     auto operMgr = smtk::operation::Manager::create();
-    auto polygonRegistry = smtk::plugin::Registry<smtk::session::polygon::Registrar,
-      smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
+    auto polygonRegistry = smtk::plugin::Registry<
+      smtk::session::polygon::Registrar,
+      smtk::resource::Manager,
+      smtk::operation::Manager>(rsrcMgr, operMgr);
 
     auto rdr = operMgr->create<smtk::operation::ReadResource>();
     if (rdr)
     {
       rdr->parameters()->findFile("filename")->setValue(filename);
       auto result = rdr->operate();
-      if (result->findInt("outcome")->value() ==
-        int(smtk::operation::Operation::Outcome::SUCCEEDED))
+      if (
+        result->findInt("outcome")->value() == int(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         auto rsrc = result->findResource("resource")->value();
         rsrcMgr->add(rsrc);

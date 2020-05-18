@@ -45,7 +45,7 @@ public:
   void operator=(const PhraseModelFactory&) = delete;
 
   /// Simplify creation by passing in the factory's view-manager.
-  template <typename Class>
+  template<typename Class>
   std::unique_ptr<Class> create(const Configuration* config)
   {
     auto phraseModel = this->create<Class>(config, m_manager);
@@ -63,7 +63,7 @@ public:
 protected:
   Manager* m_manager;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

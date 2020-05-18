@@ -27,7 +27,7 @@ public:
   static void registerTo(const smtk::common::Managers::Ptr&);
   static void unregisterFrom(const smtk::common::Managers::Ptr&);
 };
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

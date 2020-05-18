@@ -84,7 +84,7 @@ private:
   smtk::attribute::AttributePtr m_analysisAttribute; ///< Analysis Attribute used by the View
   smtk::extension::qtAttribute* m_qtAnalysisAttribute;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

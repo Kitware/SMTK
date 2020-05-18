@@ -15,5 +15,5 @@ namespace common
 {
 Managers::Managers() = default;
 Managers::~Managers() = default;
-}
-}
+} // namespace common
+} // namespace smtk

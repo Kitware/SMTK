@@ -46,7 +46,8 @@ ConstSessionPtr Resource::polygonSession() const
 }
 
 void Resource::addStorage(
-  const smtk::common::UUID& uid, smtk::session::polygon::internal::entity::Ptr storage)
+  const smtk::common::UUID& uid,
+  smtk::session::polygon::internal::entity::Ptr storage)
 {
   this->polygonSession()->addStorage(uid, storage);
 }
@@ -55,6 +56,6 @@ bool Resource::removeStorage(const smtk::common::UUID& uid)
 {
   return this->polygonSession()->removeStorage(uid);
 }
-}
-}
-}
+} // namespace polygon
+} // namespace session
+} // namespace smtk

@@ -43,7 +43,8 @@ public:
   /// Verify whether an attribute can be associated/dissociated to/from a
   /// persistent object.
   virtual bool operator()(
-    const Attribute::ConstPtr&, const smtk::resource::PersistentObject::ConstPtr&) const = 0;
+    const Attribute::ConstPtr&,
+    const smtk::resource::PersistentObject::ConstPtr&) const = 0;
 
   /// Serialize the rule to/from json.
   virtual const Rule& operator>>(nlohmann::json& json) const = 0;
@@ -67,7 +68,7 @@ class SMTKCORE_EXPORT AssociationRule : public Rule
 class SMTKCORE_EXPORT DissociationRule : public Rule
 {
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

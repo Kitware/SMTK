@@ -40,8 +40,8 @@ public:
 
   bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override;
 };
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk
 
 #endif

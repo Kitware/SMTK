@@ -46,10 +46,14 @@ class SMTKQTEXT_EXPORT qtOperationDialog : public QDialog
   Q_OBJECT
 
 public:
-  qtOperationDialog(smtk::operation::OperationPtr operation,
-    QSharedPointer<smtk::extension::qtUIManager> uiManager, QWidget* parentWidget = nullptr);
-  qtOperationDialog(smtk::operation::OperationPtr operation,
-    smtk::resource::ManagerPtr resourceManager, smtk::view::ManagerPtr viewManager,
+  qtOperationDialog(
+    smtk::operation::OperationPtr operation,
+    QSharedPointer<smtk::extension::qtUIManager> uiManager,
+    QWidget* parentWidget = nullptr);
+  qtOperationDialog(
+    smtk::operation::OperationPtr operation,
+    smtk::resource::ManagerPtr resourceManager,
+    smtk::view::ManagerPtr viewManager,
     QWidget* parentWidget = nullptr);
   virtual ~qtOperationDialog();
 
@@ -63,7 +67,8 @@ protected slots:
 
 protected:
   void buildUI(
-    smtk::operation::OperationPtr op, QSharedPointer<smtk::extension::qtUIManager> uiMManager);
+    smtk::operation::OperationPtr op,
+    QSharedPointer<smtk::extension::qtUIManager> uiMManager);
 
   // Override showEvent() in order to fix Qt sizing issue
   void showEvent(QShowEvent* event) override;
@@ -71,7 +76,7 @@ protected:
 private:
   qtOperationDialogInternals* m_internals;
 }; // class
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

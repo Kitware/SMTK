@@ -50,7 +50,7 @@ public:
   // ChildViews represent all of the qtViews associated with the
   // group's children views while TabbedViews represent those
   // children who are currently being displayed as tabs
-  QList<smtk::extension::qtBaseView *> m_ChildViews, m_TabbedViews;
+  QList<smtk::extension::qtBaseView*> m_ChildViews, m_TabbedViews;
   QList<QWidget*> m_PageWidgets;
   QList<QIcon> m_PageIcons;
   QList<QLabel*> m_Labels;

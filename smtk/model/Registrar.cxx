@@ -38,9 +38,20 @@ namespace model
 {
 namespace
 {
-typedef std::tuple<AddAuxiliaryGeometry, AddImage, AssignColors, CloseModel, CreateInstances,
-  Delete, DivideInstance, EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry,
-  MergeInstances, SetInstancePrototype, TerrainExtraction>
+typedef std::tuple<
+  AddAuxiliaryGeometry,
+  AddImage,
+  AssignColors,
+  CloseModel,
+  CreateInstances,
+  Delete,
+  DivideInstance,
+  EntityGroupOperation,
+  ExportModelJSON,
+  GroupAuxiliaryGeometry,
+  MergeInstances,
+  SetInstancePrototype,
+  TerrainExtraction>
   OperationList;
 }
 
@@ -73,5 +84,5 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 {
   resourceManager->unregisterResource<smtk::model::Resource>();
 }
-}
-}
+} // namespace model
+} // namespace smtk

@@ -42,10 +42,10 @@ class SMTKCORE_EXPORT CellSet
   friend SMTKCORE_EXPORT CellSet set_intersect(const CellSet& a, const CellSet& b);
   friend SMTKCORE_EXPORT CellSet set_difference(const CellSet& a, const CellSet& b);
   friend SMTKCORE_EXPORT CellSet set_union(const CellSet& a, const CellSet& b);
-  friend SMTKCORE_EXPORT CellSet point_intersect(
-    const CellSet& a, const CellSet& b, ContainmentType t);
-  friend SMTKCORE_EXPORT CellSet point_difference(
-    const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT CellSet
+  point_intersect(const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT CellSet
+  point_difference(const CellSet& a, const CellSet& b, ContainmentType t);
   friend SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter);
   friend class Resource; //required for creation of new meshes
 public:
@@ -147,7 +147,7 @@ SMTKCORE_EXPORT CellSet point_difference(const CellSet& a, const CellSet& b, Con
 
 //apply a for_each cell operator on all cells of a given set.
 SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

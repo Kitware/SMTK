@@ -49,7 +49,7 @@ vtkSmartPointer<vtkAlgorithm> SourceFromMesh::operator()(
 
   return source;
 }
-}
-}
-}
-}
+} // namespace source
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

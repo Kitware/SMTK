@@ -41,7 +41,7 @@ struct QueryD : smtk::resource::query::DerivedFrom<QueryD, QueryC>
 {
   double foo() const override { return 6.; }
 };
-}
+} // namespace
 
 int TestQuery(int /*unused*/, char** const /*unused*/)
 {
@@ -54,11 +54,12 @@ int TestQuery(int /*unused*/, char** const /*unused*/)
   }
   test(factory.unregisterQuery<QueryA>(), "Could not unregister QueryA");
 
-  test(factory.registerQuery<QueryB>([](const std::size_t& index) {
-    if (index == QueryB::typeIndex())
-      return std::numeric_limits<int>::max();
-    return -1;
-  }),
+  test(
+    factory.registerQuery<QueryB>([](const std::size_t& index) {
+      if (index == QueryB::typeIndex())
+        return std::numeric_limits<int>::max();
+      return -1;
+    }),
     "Could not register QueryB with a custom priority function");
   {
     std::unique_ptr<QueryB> queryB = factory.create<QueryB>();

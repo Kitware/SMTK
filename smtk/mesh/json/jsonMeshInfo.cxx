@@ -19,7 +19,7 @@ namespace
 {
 const std::string dirName = "dirichlet";
 const std::string neumName = "neumann";
-}
+} // namespace
 
 namespace smtk
 {
@@ -156,6 +156,6 @@ void from_json(const nlohmann::json& /*j*/, std::vector<MeshInfo>& /*meshInfos*/
   //   meshInfos.push_back(meshInfo);
   // }
 }
-}
-}
-}
+} // namespace json
+} // namespace mesh
+} // namespace smtk

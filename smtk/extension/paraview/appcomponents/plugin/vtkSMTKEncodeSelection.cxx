@@ -48,21 +48,34 @@ vtkSMTKEncodeSelection::vtkSMTKEncodeSelection() = default;
 
 vtkSMTKEncodeSelection::~vtkSMTKEncodeSelection() = default;
 
-bool vtkSMTKEncodeSelection::ProcessSelection(vtkSelection* rawSelection,
-  vtkSMRenderViewProxy* viewProxy, bool multipleSelectionsAllowed,
-  vtkCollection* selectedRepresentations, vtkCollection* selectionSources, int modifier,
+bool vtkSMTKEncodeSelection::ProcessSelection(
+  vtkSelection* rawSelection,
+  vtkSMRenderViewProxy* viewProxy,
+  bool multipleSelectionsAllowed,
+  vtkCollection* selectedRepresentations,
+  vtkCollection* selectionSources,
+  int modifier,
   bool selectBlocks)
 {
   this->ProcessRawSelection(rawSelection, viewProxy, modifier, selectBlocks);
 
-  bool ok = this->Superclass::ProcessSelection(rawSelection, viewProxy, multipleSelectionsAllowed,
-    selectedRepresentations, selectionSources, modifier, selectBlocks);
+  bool ok = this->Superclass::ProcessSelection(
+    rawSelection,
+    viewProxy,
+    multipleSelectionsAllowed,
+    selectedRepresentations,
+    selectionSources,
+    modifier,
+    selectBlocks);
 
   return ok;
 }
 
 void vtkSMTKEncodeSelection::ProcessRawSelection(
-  vtkSelection* rawSelection, vtkSMRenderViewProxy* viewProxy, int modifier, bool selectBlocks)
+  vtkSelection* rawSelection,
+  vtkSMRenderViewProxy* viewProxy,
+  int modifier,
+  bool selectBlocks)
 {
   auto behavior = pqSMTKBehavior::instance();
   auto wrapper = behavior->builtinOrActiveWrapper();
@@ -88,7 +101,8 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
     vtkSMPropertyHelper(wrapper->getProxy(), "SelectionSource").GetAsString();
   int selnValue = vtkSMPropertyHelper(wrapper->getProxy(), "SelectedValue").GetAsInt();
   auto smtkSelection = wrapper->smtkSelection();
-  if (!smtkSelection->currentSelection().empty() &&
+  if (
+    !smtkSelection->currentSelection().empty() &&
     modifier == pqView::SelectionModifier::PV_SELECTION_DEFAULT)
   {
     std::set<smtk::resource::PersistentObjectPtr> blank;
@@ -139,8 +153,15 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
         // the entire selection, not just the current block).
         if (smtkResource && visited.find(smtkResource) == visited.end())
         {
-          didModifySelection |= this->ProcessResource(wrapper, smtkResource, smtkSelection, rr,
-            rawSelection, viewProxy, modifier, selectBlocks);
+          didModifySelection |= this->ProcessResource(
+            wrapper,
+            smtkResource,
+            smtkSelection,
+            rr,
+            rawSelection,
+            viewProxy,
+            modifier,
+            selectBlocks);
           visited.insert(smtkResource);
         }
       }
@@ -161,10 +182,15 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
 #endif
 }
 
-bool vtkSMTKEncodeSelection::ProcessResource(pqSMTKWrapper* wrapper,
-  const smtk::resource::ResourcePtr& resource, const smtk::view::SelectionPtr& smtkSelection,
-  vtkSMTKResourceRepresentation* resourceRep, vtkSelection* rawSelection,
-  vtkSMRenderViewProxy* viewProxy, int modifier, bool selectBlocks)
+bool vtkSMTKEncodeSelection::ProcessResource(
+  pqSMTKWrapper* wrapper,
+  const smtk::resource::ResourcePtr& resource,
+  const smtk::view::SelectionPtr& smtkSelection,
+  vtkSMTKResourceRepresentation* resourceRep,
+  vtkSelection* rawSelection,
+  vtkSMRenderViewProxy* viewProxy,
+  int modifier,
+  bool selectBlocks)
 {
   (void)resource;
   (void)rawSelection;
@@ -198,7 +224,8 @@ bool vtkSMTKEncodeSelection::ProcessResource(pqSMTKWrapper* wrapper,
     operation->setSMTKSelectionSource("paraview");
     operation->setSMTKSelectionValue(1);
     auto result = operation->operate();
-    if (result->findInt("outcome")->value() ==
+    if (
+      result->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       return true;

@@ -20,7 +20,9 @@ namespace smtk
 namespace operation
 {
 
-Metadata::Metadata(const std::string& typeName, Operation::Index index,
+Metadata::Metadata(
+  const std::string& typeName,
+  Operation::Index index,
   Operation::Specification specification,
   std::function<std::shared_ptr<smtk::operation::Operation>(void)> createFunctor)
   : create(createFunctor)
@@ -58,5 +60,5 @@ std::set<std::string> Metadata::groups() const
   return extractTagNames(m_specification);
 }
 
-} // operation namespace
-} // smtk namespace
+} // namespace operation
+} // namespace smtk

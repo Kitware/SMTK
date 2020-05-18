@@ -54,7 +54,7 @@ public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtAttributeView(const smtk::view::Information& info);
   virtual ~qtAttributeView();
-  const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& attDefinitionMap() const;
+  const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& attDefinitionMap() const;
 
   QStandardItem* getSelectedItem();
   int currentViewBy();
@@ -117,7 +117,8 @@ signals:
 protected:
   void createWidget() override;
   virtual smtk::extension::qtAssociationWidget* createAssociationWidget(
-    QWidget* parent, qtBaseView* view);
+    QWidget* parent,
+    qtBaseView* view);
   // Methods for fetching attributes corresponding to either a StandardItem or ModelIndex.
   smtk::attribute::AttributePtr getAttributeFromItem(const QStandardItem* item);
   smtk::attribute::AttributePtr getAttributeFromIndex(const QModelIndex& index);
@@ -132,19 +133,21 @@ protected:
   void addComparativeProperty(QStandardItem* current, smtk::attribute::DefinitionPtr attDef);
 
   void updateChildWidgetsEnableState(smtk::attribute::ItemPtr linkedData, QTableWidgetItem* item);
-  void updateItemWidgetsEnableState(
-    smtk::attribute::ItemPtr linkedData, int& startRow, bool enabled);
+  void
+  updateItemWidgetsEnableState(smtk::attribute::ItemPtr linkedData, int& startRow, bool enabled);
   virtual void getAllDefinitions();
 
   void initSelectAttCombo(smtk::attribute::DefinitionPtr attDef);
-  void insertTableColumn(
-    QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
+  void
+  insertTableColumn(QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
   // Determines if an alert icon should be displayed next to the attribute in the list
   void updateAttributeStatus(smtk::attribute::Attribute* att);
   // This View needs to handle changes made to resources as a result of an operation.
   // This method is used by the observation mechanism to address these changes
-  virtual int handleOperationEvent(const smtk::operation::Operation& op,
-    smtk::operation::EventType event, smtk::operation::Operation::Result result);
+  virtual int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
+    smtk::operation::Operation::Result result);
 
   QToolBar* toolBar();
 
@@ -159,7 +162,8 @@ protected:
   void triggerEdit(const QModelIndex& index);
   int numOfAttributes();
   const smtk::view::Configuration::Component& findStyle(
-    const smtk::attribute::DefinitionPtr& def, bool isOriginalDef = true);
+    const smtk::attribute::DefinitionPtr& def,
+    bool isOriginalDef = true);
 
 private:
   qtAttributeViewInternals* m_internals;
@@ -170,7 +174,7 @@ private:
   std::string m_searchBoxText; //!< Text to be displayed in the search box when no text is entered
   std::string m_attributeNameRegex; //!< Regex pattern for attribute names
 };
-};
-};
+}; // namespace extension
+}; // namespace smtk
 
 #endif

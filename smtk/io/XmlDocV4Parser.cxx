@@ -121,8 +121,10 @@ void XmlDocV4Parser::processDefinition(pugi::xml_node& defNode, smtk::attribute:
     }
     else
     {
-      smtkErrorMacro(m_logger, "AssociationRule for definition type \""
-          << def->type() << "\" does not have \"Name\" attribute.");
+      smtkErrorMacro(
+        m_logger,
+        "AssociationRule for definition type \"" << def->type()
+                                                 << "\" does not have \"Name\" attribute.");
     }
   }
 
@@ -147,8 +149,10 @@ void XmlDocV4Parser::processDefinition(pugi::xml_node& defNode, smtk::attribute:
     }
     else
     {
-      smtkErrorMacro(m_logger, "DissociationRule for definition type \""
-          << def->type() << "\" does not have \"Name\" attribute.");
+      smtkErrorMacro(
+        m_logger,
+        "DissociationRule for definition type \"" << def->type()
+                                                  << "\" does not have \"Name\" attribute.");
     }
   }
 }
@@ -313,25 +317,30 @@ void XmlDocV4Parser::processEvaluators(xml_node& evaluatorsNode)
       const xml_attribute definitionTypeAttribute = definitionNode.attribute("Type");
       if (!definitionTypeAttribute)
       {
-        smtkWarningMacro(m_logger, "Missing Type xml attribute in Definition xml node for Evaluator"
-                                   "specification.");
+        smtkWarningMacro(
+          m_logger,
+          "Missing Type xml attribute in Definition xml node for Evaluator"
+          "specification.");
         continue;
       }
 
       const std::string evaluatorDefinition = definitionTypeAttribute.value();
       if (!m_resource->findDefinition(evaluatorDefinition))
       {
-        smtkWarningMacro(m_logger, "Missing definition of type \"" << evaluatorDefinition
-                                                                   << "\" in Attribute Resource.");
+        smtkWarningMacro(
+          m_logger,
+          "Missing definition of type \"" << evaluatorDefinition << "\" in Attribute Resource.");
       }
 
       const bool defWasSet = m_resource->evaluatorFactory().addDefinitionForEvaluator(
         evaluatorAlias, evaluatorDefinition);
       if (!defWasSet)
       {
-        smtkWarningMacro(m_logger, "Evaluator with alias \""
-            << evaluatorAlias << "\" was not found while setting definition "
-            << evaluatorDefinition);
+        smtkWarningMacro(
+          m_logger,
+          "Evaluator with alias \"" << evaluatorAlias
+                                    << "\" was not found while setting definition "
+                                    << evaluatorDefinition);
       }
     }
   }

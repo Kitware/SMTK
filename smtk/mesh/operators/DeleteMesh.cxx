@@ -14,7 +14,6 @@
 #include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Session.h"
-#include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

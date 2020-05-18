@@ -23,7 +23,9 @@ vtkExtractLine::vtkExtractLine()
   this->LineId = -1;
 }
 
-int vtkExtractLine::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
+int vtkExtractLine::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   // get the info objects
@@ -43,8 +45,9 @@ int vtkExtractLine::RequestData(vtkInformation* /*request*/, vtkInformationVecto
 
   if (this->LineId > input->GetNumberOfLines())
   {
-    vtkWarningMacro("LineId (" << this->LineId << ") too large.  Only " << input->GetNumberOfLines()
-                               << "lines in input.  No line in output.");
+    vtkWarningMacro(
+      "LineId (" << this->LineId << ") too large.  Only " << input->GetNumberOfLines()
+                 << "lines in input.  No line in output.");
     return 1;
   }
 

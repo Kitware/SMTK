@@ -38,8 +38,9 @@ namespace mesh
 namespace moab
 {
 
-class SMTKCORE_EXPORT BufferedCellAllocator : public smtk::mesh::BufferedCellAllocator,
-                                              protected smtk::mesh::moab::Allocator
+class SMTKCORE_EXPORT BufferedCellAllocator
+  : public smtk::mesh::BufferedCellAllocator
+  , protected smtk::mesh::moab::Allocator
 {
 public:
   BufferedCellAllocator(::moab::Interface* interface);
@@ -49,13 +50,13 @@ public:
   bool reserveNumberOfCoordinates(std::size_t nCoordinates) override;
   bool setCoordinate(std::size_t coord, double* xyz) override;
 
-  bool addCell(
-    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) override
+  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0)
+    override
   {
     return this->addCell<long long int>(ctype, pointIds, nCoordinates);
   }
-  bool addCell(
-    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) override
+  bool addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0)
+    override
   {
     return this->addCell<long int>(ctype, pointIds, nCoordinates);
   }
@@ -71,7 +72,7 @@ public:
   void clear();
 
 protected:
-  template <typename IntegerType>
+  template<typename IntegerType>
   bool addCell(smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates);
 
   ::moab::EntityHandle m_firstCoordinate;
@@ -88,9 +89,11 @@ private:
     const BufferedCellAllocator& other); //blank since we are used by shared_ptr
 };
 
-template <typename IntegerType>
+template<typename IntegerType>
 bool BufferedCellAllocator::addCell(
-  smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates)
+  smtk::mesh::CellType ctype,
+  IntegerType* pointIds,
+  std::int64_t nCoordinates)
 {
   if (!m_validState)
   {
@@ -115,8 +118,8 @@ bool BufferedCellAllocator::addCell(
 
   return m_validState;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

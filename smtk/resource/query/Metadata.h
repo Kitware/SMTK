@@ -29,7 +29,9 @@ class SMTKCORE_EXPORT Metadata
 {
   friend class Factory;
 
-  Metadata(std::size_t index, std::function<int(const std::size_t&)> priorityFunctor,
+  Metadata(
+    std::size_t index,
+    std::function<int(const std::size_t&)> priorityFunctor,
     std::function<Query*()> createFunctor)
     : create(createFunctor)
     , priority(priorityFunctor)
@@ -37,15 +39,16 @@ class SMTKCORE_EXPORT Metadata
   {
   }
 
-  template <typename QueryType>
+  template<typename QueryType>
   Metadata(identity<QueryType>, std::function<int(const std::size_t&)> priorityFunctor)
     : Metadata(QueryType::typeIndex(), priorityFunctor, []() { return new QueryType; })
   {
   }
 
-  template <typename QueryType>
+  template<typename QueryType>
   Metadata(identity<QueryType>)
-    : Metadata(QueryType::typeIndex(),
+    : Metadata(
+        QueryType::typeIndex(),
         [](const std::size_t& typeIndex) {
           return QueryType::numberOfGenerationsFromType(typeIndex);
         },
@@ -56,8 +59,9 @@ class SMTKCORE_EXPORT Metadata
   const std::size_t& index() const { return m_index; }
 
   std::function<Query*()> create = []() { return nullptr; };
-  std::function<int(const std::size_t&)> priority = [](
-    const std::size_t&) { return std::numeric_limits<int>::lowest(); };
+  std::function<int(const std::size_t&)> priority = [](const std::size_t&) {
+    return std::numeric_limits<int>::lowest();
+  };
 
   static Metadata key(const std::size_t& index) { return Metadata(index); }
 
@@ -68,8 +72,8 @@ class SMTKCORE_EXPORT Metadata
 
   std::size_t m_index;
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

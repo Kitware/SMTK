@@ -31,18 +31,18 @@ namespace source
 /// using smtk::resource::Resources as the key. This class extends
 /// smtk::extension::vtk::source::SourceGenerator.
 class VTKSMTKSOURCEEXT_EXPORT SourceFromMesh
-  : public smtk::common::GeneratorType<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm>,
-      SourceFromMesh>
+  : public smtk::common::
+      GeneratorType<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm>, SourceFromMesh>
 {
 public:
   bool valid(const smtk::resource::ResourcePtr&) const override;
 
   vtkSmartPointer<vtkAlgorithm> operator()(const smtk::resource::ResourcePtr&) override;
 };
-}
-}
-}
-}
+} // namespace source
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif

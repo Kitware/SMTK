@@ -39,7 +39,7 @@ bool vtkPolygonArcOperation::AbleToOperate()
 {
   bool able2Op = m_smtkOp.lock() &&
     (m_smtkOp.lock()->typeName() == "smtk::session::polygon::TweakEdge" ||
-                   m_smtkOp.lock()->typeName() == "smtk::session::polygon::CreateEdge") &&
+     m_smtkOp.lock()->typeName() == "smtk::session::polygon::CreateEdge") &&
     m_smtkOp.lock()->ableToOperate();
   if (!able2Op)
   {

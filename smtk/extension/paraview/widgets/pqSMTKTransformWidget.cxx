@@ -55,13 +55,15 @@ namespace
 // this class that adds a constructor argument to hide reference bounds
 // information. This logic will use the new constructor argument if it is
 // available.
-template <typename MyClass>
+template<typename MyClass>
 class CanHideReferenceBounds
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testConstructorWithArgs(decltype(X{ std::declval<vtkSMProxy*>(),
-    std::declval<vtkSMPropertyGroup*>(), std::declval<QWidget*>(), std::declval<bool>() })*);
-  template <typename X>
+                                                            std::declval<vtkSMPropertyGroup*>(),
+                                                            std::declval<QWidget*>(),
+                                                            std::declval<bool>() })*);
+  template<typename X>
   static std::false_type testConstructorWithArgs(...);
 
 public:
@@ -71,23 +73,23 @@ public:
 
 struct CreateAndHideReferenceBounds
 {
-  template <typename BoxPropertyWidget>
-  typename std::enable_if<CanHideReferenceBounds<BoxPropertyWidget>::value,
-    BoxPropertyWidget*>::type
-  operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
+  template<typename BoxPropertyWidget>
+  typename std::enable_if<CanHideReferenceBounds<BoxPropertyWidget>::value, BoxPropertyWidget*>::
+    type
+    operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
   {
     return new BoxPropertyWidget(smproxy, smgroup, nullptr, true);
   }
 
-  template <typename BoxPropertyWidget>
-  typename std::enable_if<!CanHideReferenceBounds<BoxPropertyWidget>::value,
-    BoxPropertyWidget*>::type
-  operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
+  template<typename BoxPropertyWidget>
+  typename std::enable_if<!CanHideReferenceBounds<BoxPropertyWidget>::value, BoxPropertyWidget*>::
+    type
+    operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
   {
     return new BoxPropertyWidget(smproxy, smgroup);
   }
 };
-}
+} // namespace
 
 using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
@@ -98,16 +100,20 @@ struct pqSMTKTransformWidget::Internal
 };
 
 pqSMTKTransformWidget::pqSMTKTransformWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
   , m_internal(new pqSMTKTransformWidget::Internal)
 {
 
   QPointer<pqSMTKTransformWidget> guardedObject(this);
   m_internal->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
-    [guardedObject](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [guardedObject](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
-      if (!guardedObject || !guardedObject->item() ||
+      if (
+        !guardedObject || !guardedObject->item() ||
         event != smtk::operation::EventType::DID_OPERATE ||
         op.index() == std::type_index(typeid(smtk::attribute::Signal)).hash_code())
       {
@@ -141,7 +147,8 @@ qtItem* pqSMTKTransformWidget::createTransformWidget(const qtAttributeItemInfo& 
 }
 
 bool pqSMTKTransformWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   std::vector<smtk::attribute::DoubleItemPtr> items;
   smtk::attribute::StringItemPtr control;
@@ -221,7 +228,8 @@ void pqSMTKTransformWidget::resetWidget()
     }
     catch (smtk::resource::query::BadTypeError&)
     {
-      smtkErrorMacro(smtk::io::Logger::instance(),
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
         "Associated object does not have a geometric bounding box query.");
     }
   }
@@ -230,7 +238,8 @@ void pqSMTKTransformWidget::resetWidget()
   smtk::attribute::StringItemPtr control;
   if (!this->fetchTransformItems(items, control))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -256,7 +265,8 @@ void pqSMTKTransformWidget::updateItemFromWidgetInternal()
   smtk::attribute::StringItemPtr control;
   if (!this->fetchTransformItems(items, control))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -312,7 +322,8 @@ void pqSMTKTransformWidget::updateWidgetFromItemInternal()
   smtk::attribute::StringItemPtr control;
   if (!this->fetchTransformItems(items, control))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -338,7 +349,8 @@ void pqSMTKTransformWidget::updateWidgetFromItemInternal()
 }
 
 bool pqSMTKTransformWidget::fetchTransformItems(
-  std::vector<smtk::attribute::DoubleItemPtr>& items, smtk::attribute::StringItemPtr& control)
+  std::vector<smtk::attribute::DoubleItemPtr>& items,
+  smtk::attribute::StringItemPtr& control)
 {
   items.clear();
   control = nullptr;
@@ -376,7 +388,8 @@ bool pqSMTKTransformWidget::fetchTransformItems(
 }
 
 void pqSMTKTransformWidget::setControlState(
-  const std::string& controlState, QCheckBox* controlWidget)
+  const std::string& controlState,
+  QCheckBox* controlWidget)
 {
   std::string state = controlState;
   std::transform(

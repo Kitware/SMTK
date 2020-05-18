@@ -51,8 +51,8 @@ smtk::geometry::Resource::Ptr Geometry::resource() const
   return std::dynamic_pointer_cast<smtk::geometry::Resource>(m_parent.lock());
 }
 
-void Geometry::queryGeometry(
-  const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const
+void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+  const
 {
   auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
   if (!ent)
@@ -127,10 +127,9 @@ void Geometry::queryGeometry(
         break;
     }
 
-    if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+    if (entry.m_geometry && ent->properties().contains<std::vector<double>>("color"))
     {
-      Geometry::addColorArray(
-        entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+      Geometry::addColorArray(entry.m_geometry, ent->properties().at<std::vector<double>>("color"));
     }
   }
   else

@@ -34,7 +34,9 @@ namespace mesh
 /// A GeneratorType for creating StructuredGrids from VTK auxiliary geometry.
 /// This class extends smtk::mesh::StructuredGridGenerator.
 class VTKSMTKSOURCEEXT_EXPORT StructuredGridFromVTKAuxiliaryGeometry
-  : public smtk::common::GeneratorType<smtk::model::AuxiliaryGeometry, smtk::mesh::StructuredGrid,
+  : public smtk::common::GeneratorType<
+      smtk::model::AuxiliaryGeometry,
+      smtk::mesh::StructuredGrid,
       StructuredGridFromVTKAuxiliaryGeometry>
 {
 public:
@@ -42,10 +44,10 @@ public:
 
   smtk::mesh::StructuredGrid operator()(const smtk::model::AuxiliaryGeometry&) override;
 };
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif

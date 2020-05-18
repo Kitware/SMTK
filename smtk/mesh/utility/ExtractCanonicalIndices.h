@@ -28,13 +28,16 @@ class SMTKCORE_EXPORT PreAllocatedCanonicalIndices
 
 public:
   static void determineAllocationLengths(
-    const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells);
+    const smtk::mesh::MeshSet& ms,
+    std::int64_t& numberOfCells);
 
   PreAllocatedCanonicalIndices(std::int64_t* referenceCellIndices, std::int64_t* canonicalIndices);
 
 private:
   friend SMTKCORE_EXPORT void extractCanonicalIndices(
-    const smtk::mesh::MeshSet&, const smtk::mesh::MeshSet&, PreAllocatedCanonicalIndices&);
+    const smtk::mesh::MeshSet&,
+    const smtk::mesh::MeshSet&,
+    PreAllocatedCanonicalIndices&);
 
   std::int64_t* m_referenceCellIndices;
   std::int64_t* m_canonicalIndices;
@@ -67,9 +70,11 @@ private:
 //the extract method
 
 SMTKCORE_EXPORT void extractCanonicalIndices(
-  const smtk::mesh::MeshSet&, const smtk::mesh::MeshSet&, PreAllocatedCanonicalIndices&);
-}
-}
-}
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::MeshSet&,
+  PreAllocatedCanonicalIndices&);
+} // namespace utility
+} // namespace mesh
+} // namespace smtk
 
 #endif

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import os
 import sys
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -11,7 +11,7 @@ import sys
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.common
 import smtk.resource

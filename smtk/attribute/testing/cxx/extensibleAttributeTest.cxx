@@ -47,12 +47,13 @@ void cleanup(const std::string& file_path)
   }
 }
 
-const char* d2items[] = { "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1",
-  "StringItem2", "StringItem3", "FileItem1", "FileItem2", "FileItem3", "DirectoryItem1",
-  "DirectoryItem2", "DirectoryItem3" };
+const char* d2items[] = { "IntItem1",      "IntItem2",    "DoubleItem1",    "DoubleItem2",
+                          "StringItem1",   "StringItem2", "StringItem3",    "FileItem1",
+                          "FileItem2",     "FileItem3",   "DirectoryItem1", "DirectoryItem2",
+                          "DirectoryItem3" };
 
-const char* d3items[] = { "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "GroupItem1",
-  "GroupItem2", "GroupItem3" };
+const char* d3items[] = { "IntItem1",   "IntItem2",   "DoubleItem1", "DoubleItem2",
+                          "GroupItem1", "GroupItem2", "GroupItem3" };
 
 int checkGroupItemDef(const char* name, smtk::attribute::DefinitionPtr def, bool isExtensible)
 {
@@ -396,7 +397,7 @@ int checkDirectoryItemDef(const char* name, smtk::attribute::DefinitionPtr def, 
   return pos;
 }
 
-template <typename T>
+template<typename T>
 int checkDefaults(T sitem)
 {
   std::size_t n = sitem->numberOfValues();
@@ -419,7 +420,7 @@ int checkDefaults(T sitem)
   return 0;
 }
 
-template <typename T>
+template<typename T>
 int checkItem(T sitem, bool isExtensible)
 {
   std::size_t minN = sitem->numberOfRequiredValues(), maxN = sitem->maxNumberOfValues();

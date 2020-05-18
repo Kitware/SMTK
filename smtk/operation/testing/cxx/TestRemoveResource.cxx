@@ -51,7 +51,7 @@ protected:
   {
   }
 };
-}
+} // namespace
 
 int TestRemoveResource(int /*unused*/, char** const /*unused*/)
 {
@@ -94,7 +94,8 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
   auto result = removeResource->operate();
 
   // Test for the operation's success
-  smtkTest(result->findInt("outcome")->value() ==
+  smtkTest(
+    result->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Remove resource operation failed.");
 

@@ -101,5 +101,5 @@ const char* UndoElevateMesh::xmlDescription() const
 {
   return UndoElevateMesh_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

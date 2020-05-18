@@ -42,13 +42,28 @@ protected:
   vtkCleanPolylines();
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void TraverseLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
-    unsigned char* marks, vtkIdList* ids, double* length, vtkIdType* lastLineId);
+  void TraverseLine(
+    vtkIdType startPid,
+    vtkIdType startCellId,
+    vtkPolyData* input,
+    unsigned char* marks,
+    vtkIdList* ids,
+    double* length,
+    vtkIdType* lastLineId);
   void StripLines(vtkPolyData* input, vtkPolyData* result, vtkDoubleArray* lengths);
   void RemoveNonManifoldFeatures(
-    vtkPolyData* input, vtkDoubleArray* lengths, vtkPolyData* result, vtkDoubleArray* newLengths);
-  void TraversePolyLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
-    vtkDoubleArray* lengths, unsigned char* marks, vtkIdList* ids, double* length);
+    vtkPolyData* input,
+    vtkDoubleArray* lengths,
+    vtkPolyData* result,
+    vtkDoubleArray* newLengths);
+  void TraversePolyLine(
+    vtkIdType startPid,
+    vtkIdType startCellId,
+    vtkPolyData* input,
+    vtkDoubleArray* lengths,
+    unsigned char* marks,
+    vtkIdList* ids,
+    double* length);
 
 private:
   vtkCleanPolylines(const vtkCleanPolylines&); // Not implemented.

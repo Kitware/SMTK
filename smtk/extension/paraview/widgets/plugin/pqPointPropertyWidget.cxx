@@ -77,7 +77,9 @@ constexpr const char* tooltipActive =
 #endif
 
 pqPointPropertyWidget::pqPointPropertyWidget(
-  vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup, QWidget* parentObject)
+  vtkSMProxy* smproxy,
+  vtkSMPropertyGroup* smgroup,
+  QWidget* parentObject)
   : Superclass("representations", "HandleWidgetRepresentation", smproxy, smgroup, parentObject)
   , m_state(0)
   , m_surfacePickHelper(nullptr)
@@ -145,7 +147,9 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
     {
       m_surfacePickHelper = new pqPointPickingHelper(QKeySequence(tr("P")), false, this);
       m_surfacePickHelper->connect(this, SIGNAL(viewChanged(pqView*)), SLOT(setView(pqView*)));
-      this->connect(m_surfacePickHelper, SIGNAL(pick(double, double, double)),
+      this->connect(
+        m_surfacePickHelper,
+        SIGNAL(pick(double, double, double)),
         SLOT(setWorldPosition(double, double, double)));
       pqPointPickingVisibilityHelper<pqPointPickingHelper>{ *this, *m_surfacePickHelper };
       m_surfacePickHelper->setView(currView);
@@ -155,7 +159,9 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
     {
       m_pointPickHelper = new pqPointPickingHelper(QKeySequence(tr("Ctrl+P")), true, this);
       m_pointPickHelper->connect(this, SIGNAL(viewChanged(pqView*)), SLOT(setView(pqView*)));
-      this->connect(m_pointPickHelper, SIGNAL(pick(double, double, double)),
+      this->connect(
+        m_pointPickHelper,
+        SIGNAL(pick(double, double, double)),
         SLOT(setWorldPosition(double, double, double)));
       pqPointPickingVisibilityHelper<pqPointPickingHelper>{ *this, *m_pointPickHelper };
       m_pointPickHelper->setView(currView);

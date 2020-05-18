@@ -46,7 +46,7 @@ struct SMTKCORE_EXPORT BoundingBox
     return this->Parent::operator()(object);
   }
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

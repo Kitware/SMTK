@@ -37,7 +37,8 @@ public:
     * a 2-d auxiliary geometry representing an oscillator source),
     * update the position and radius of the operation to match.
     */
-  bool configure(const smtk::attribute::AttributePtr& changedAttribute,
+  bool configure(
+    const smtk::attribute::AttributePtr& changedAttribute,
     const smtk::attribute::ItemPtr& changedItem) override;
 
 protected:
@@ -46,8 +47,8 @@ protected:
 
   void assignName(smtk::model::Model& model, smtk::model::AuxiliaryGeometry& source);
 };
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk
 
 #endif

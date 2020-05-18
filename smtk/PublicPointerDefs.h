@@ -31,7 +31,7 @@ class UUIDGenerator;
 typedef std::set<smtk::common::UUID> UUIDs;
 /// @see smtk::common::UUID
 typedef std::vector<smtk::common::UUID> UUIDArray;
-}
+} // namespace common
 
 namespace resource
 {
@@ -40,7 +40,7 @@ class Resource;
 class Component;
 class Manager;
 class Set;
-}
+} // namespace resource
 
 namespace geometry
 {
@@ -48,7 +48,7 @@ class Backend;
 class Geometry;
 class Manager;
 class Resource;
-}
+} // namespace geometry
 
 namespace attribute
 {
@@ -85,20 +85,20 @@ class ValueItem;
 class ValueItemDefinition;
 class VoidItem;
 class VoidItemDefinition;
-}
+} // namespace attribute
 
 namespace operation
 {
 class Operation;
 class Manager;
-}
+} // namespace operation
 
 namespace extension
 {
 class qtSelectionManager;
 /// @see smtk::extension::qtSelectionManager
 typedef smtk::shared_ptr<smtk::extension::qtSelectionManager> qtSelectionManagerPtr;
-}
+} // namespace extension
 
 namespace mesh
 {
@@ -120,7 +120,7 @@ namespace json
 {
 class Interface;
 }
-}
+} // namespace mesh
 
 namespace model
 {
@@ -221,7 +221,7 @@ typedef std::vector<smtk::model::Volume> Volumes;
 class VolumeUse;
 /// @see smtk::model::VolumeUse
 typedef std::vector<smtk::model::VolumeUse> VolumeUses;
-}
+} // namespace model
 
 namespace view
 {
@@ -237,7 +237,7 @@ class PhraseModel;
 class ResourcePhraseContent;
 class Selection;
 class SubphraseGenerator;
-}
+} // namespace view
 
 namespace workflow
 {
@@ -248,20 +248,20 @@ namespace simulation
 {
 class ExportSpec;
 class UserData;
-}
+} // namespace simulation
 
 namespace io
 {
 class Logger;
 /// @see smtk::io::Logger
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
-}
+} // namespace io
 
 namespace project
 {
 class Manager;
 class Project;
-}
+} // namespace project
 
 namespace resource
 {
@@ -305,7 +305,7 @@ typedef std::set<smtk::resource::PersistentObjectPtr> PersistentObjectSet;
 typedef std::set<smtk::resource::ResourcePtr> ResourceSet;
 /// @see ComponentPtr
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
-}
+} // namespace resource
 
 namespace geometry
 {
@@ -317,7 +317,7 @@ typedef std::shared_ptr<const Manager> ConstManagerPtr;
 /// @see smtk::geometry::Resource
 typedef std::shared_ptr<Resource> ResourcePtr;
 typedef std::shared_ptr<const Resource> ConstResourcePtr;
-}
+} // namespace geometry
 
 namespace operation
 {
@@ -329,7 +329,7 @@ typedef smtk::weak_ptr<smtk::operation::Operation> WeakOperationPtr;
 typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
 /// @see smtk::operation::Manager
 typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
-}
+} // namespace operation
 
 namespace mesh
 {
@@ -356,14 +356,14 @@ namespace moab
 {
 /// @see smtk::mesh::moab::Interface
 typedef smtk::shared_ptr<smtk::mesh::moab::Interface> InterfacePtr;
-}
+} // namespace moab
 
 namespace json
 {
 /// @see smtk::mesh::json::Interface
 typedef smtk::shared_ptr<smtk::mesh::json::Interface> InterfacePtr;
-}
-}
+} // namespace json
+} // namespace mesh
 
 namespace model
 {
@@ -373,7 +373,7 @@ typedef smtk::shared_ptr<smtk::model::Session> SessionPtr;
 /// @see smtk::model::Session
 typedef smtk::weak_ptr<smtk::model::Session> WeakSessionPtr;
 /// @see smtk::common::UUID, smtk::model::Session
-typedef std::map<smtk::common::UUID, smtk::shared_ptr<smtk::model::Session> > UUIDsToSessions;
+typedef std::map<smtk::common::UUID, smtk::shared_ptr<smtk::model::Session>> UUIDsToSessions;
 /// @see smtk::model::DefaultSession
 typedef smtk::shared_ptr<smtk::model::DefaultSession> DefaultSessionPtr;
 /// @see smtk::model::SessionIO
@@ -422,7 +422,7 @@ typedef smtk::shared_ptr<smtk::model::GridInfo> GridInfoPtr;
 // typedef smtk::shared_ptr<smtk::model::GridInfo2D> GridInfo2DPtr;
 /// @see smtk::model::GridInfo3D
 // typedef smtk::shared_ptr<smtk::model::GridInfo3D> GridInfo3DPtr;
-}
+} // namespace model
 
 namespace attribute
 {
@@ -587,7 +587,7 @@ typedef smtk::shared_ptr<smtk::attribute::Resource> ResourcePtr;
 typedef smtk::shared_ptr<const smtk::attribute::Resource> ConstResourcePtr;
 /// @see smtk::attribute::Resource
 typedef smtk::weak_ptr<smtk::attribute::Resource> WeakResourcePtr;
-}
+} // namespace attribute
 
 namespace view
 {
@@ -633,7 +633,7 @@ typedef smtk::shared_ptr<smtk::view::PhraseListContent> PhraseListContentPtr;
 typedef smtk::shared_ptr<smtk::view::ComponentPhraseContent> ComponentPhraseContentPtr;
 /// @see smtk::view::ResourcePhraseContent
 typedef smtk::shared_ptr<smtk::view::ResourcePhraseContent> ResourcePhraseContentPtr;
-}
+} // namespace view
 
 namespace workflow
 {
@@ -641,7 +641,7 @@ namespace workflow
 typedef smtk::shared_ptr<smtk::workflow::OperationFilterSort> OperationFilterSortPtr;
 /// @see smtk::workflow::OperationFilterSort
 typedef smtk::weak_ptr<smtk::workflow::OperationFilterSort> WeakOperationFilterSortPtr;
-}
+} // namespace workflow
 
 namespace simulation
 {
@@ -650,25 +650,25 @@ namespace simulation
 typedef smtk::shared_ptr<smtk::simulation::ExportSpec> ExportSpecPtr;
 /// @see smtk::simulation::UserData
 typedef smtk::shared_ptr<smtk::simulation::UserData> UserDataPtr;
-}
+} // namespace simulation
 
 //special map and set typedefs for better safety with sets of weak pointers
 //since sets of weak pointers can be dangerous.
 namespace attribute
 {
 /// @see attribute::WeakAttributePtr
-typedef std::set<attribute::WeakAttributePtr, smtk::owner_less<attribute::WeakAttributePtr> >
+typedef std::set<attribute::WeakAttributePtr, smtk::owner_less<attribute::WeakAttributePtr>>
   WeakAttributePtrSet;
 /// @see attribute::WeakDefinitionPtr
-typedef std::set<attribute::WeakDefinitionPtr, smtk::owner_less<attribute::WeakDefinitionPtr> >
+typedef std::set<attribute::WeakDefinitionPtr, smtk::owner_less<attribute::WeakDefinitionPtr>>
   WeakDefinitionPtrSet;
 /// @see attribute::WeakItemDefinitionPtr
-typedef std::set<attribute::WeakItemDefinitionPtr,
-  smtk::owner_less<attribute::WeakItemDefinitionPtr> >
-  WeakItemDefinitionPtrSet;
+typedef std::
+  set<attribute::WeakItemDefinitionPtr, smtk::owner_less<attribute::WeakItemDefinitionPtr>>
+    WeakItemDefinitionPtrSet;
 /// @see attribute::WeakItemPtr
-typedef std::set<attribute::WeakItemPtr, smtk::owner_less<attribute::WeakItemPtr> > WeakItemPtrSet;
-}
+typedef std::set<attribute::WeakItemPtr, smtk::owner_less<attribute::WeakItemPtr>> WeakItemPtrSet;
+} // namespace attribute
 
 namespace project
 {
@@ -676,12 +676,12 @@ namespace project
 typedef smtk::shared_ptr<smtk::project::Manager> ManagerPtr;
 /// @see smtk::project::Project
 typedef smtk::shared_ptr<smtk::project::Project> ProjectPtr;
-}
+} // namespace project
 
 // These are used internally by SMTK
 namespace internal
 {
-template <typename T>
+template<typename T>
 struct is_shared_ptr
 {
   enum
@@ -689,8 +689,8 @@ struct is_shared_ptr
     type = false
   };
 };
-template <typename T>
-struct is_shared_ptr<smtk::shared_ptr<T> >
+template<typename T>
+struct is_shared_ptr<smtk::shared_ptr<T>>
 {
   enum
   {
@@ -698,19 +698,19 @@ struct is_shared_ptr<smtk::shared_ptr<T> >
   };
 };
 
-template <typename T, int Enabled = is_shared_ptr<T>::type>
+template<typename T, int Enabled = is_shared_ptr<T>::type>
 struct shared_ptr_type
 {
   typedef smtk::shared_ptr<T> SharedPointerType;
   typedef T RawPointerType;
 };
 
-template <typename T>
+template<typename T>
 struct shared_ptr_type<T, true>
 {
   typedef T SharedPointerType;
   typedef typename T::element_type RawPointerType;
 };
-}
-}
+} // namespace internal
+} // namespace smtk
 #endif /* __smtk_PublicPointerDefs_h */

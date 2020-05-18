@@ -50,7 +50,8 @@ MembershipBadge::MembershipBadge()
 }
 
 MembershipBadge::MembershipBadge(
-  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& config)
+  smtk::view::BadgeSet& parent,
+  const smtk::view::Configuration::Component& config)
   : m_singleSelect(false)
   , m_iconOn(selected_svg)
   , m_iconOff(unselected_svg)
@@ -70,7 +71,8 @@ MembershipBadge::MembershipBadge(
 MembershipBadge::~MembershipBadge() = default;
 
 std::string MembershipBadge::icon(
-  const DescriptivePhrase* phrase, const std::array<float, 4>& background) const
+  const DescriptivePhrase* phrase,
+  const std::array<float, 4>& background) const
 {
   auto persistentObj = phrase->relatedObject();
   auto valIt = m_members.find(persistentObj);
@@ -85,7 +87,8 @@ std::string MembershipBadge::icon(
 }
 
 bool MembershipBadge::action(
-  const smtk::view::DescriptivePhrase* phrase, const smtk::view::BadgeAction& act)
+  const smtk::view::DescriptivePhrase* phrase,
+  const smtk::view::BadgeAction& act)
 {
   using smtk::view::DescriptivePhrase;
 
@@ -149,6 +152,6 @@ bool MembershipBadge::action(
   emit membershipChange(newValue);
   return true;
 }
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk

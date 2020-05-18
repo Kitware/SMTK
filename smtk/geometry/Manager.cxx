@@ -63,12 +63,14 @@ void Manager::registerResourceManager(const smtk::resource::Manager::Ptr& manage
         }
       },
       /* priority */ 0,
-      /* initialize */ true, "Add geometry objects to geometric resources.");
+      /* initialize */ true,
+      "Add geometry objects to geometric resources.");
   }
 }
 
 void Manager::constructGeometry(
-  const std::shared_ptr<smtk::resource::Manager>& resourceManager, Backend& backend)
+  const std::shared_ptr<smtk::resource::Manager>& resourceManager,
+  Backend& backend)
 {
   if (!resourceManager)
   {

@@ -131,7 +131,10 @@ typedef std::pair<ResourceEventType, ConditionObserver> ConditionTrigger;
 
 /// Callbacks for one-to-one relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToOneCallback)(
-  ResourceEventType, const smtk::model::EntityRef&, const smtk::model::EntityRef&, void*);
+  ResourceEventType,
+  const smtk::model::EntityRef&,
+  const smtk::model::EntityRef&,
+  void*);
 /// An observer of a one-to-one relationship-event.
 typedef std::pair<OneToOneCallback, void*> OneToOneObserver;
 /// A trigger entry for an event-observer pair.
@@ -139,7 +142,10 @@ typedef std::pair<ResourceEventType, OneToOneObserver> OneToOneTrigger;
 
 /// Callbacks for one-to-many relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToManyCallback)(
-  ResourceEventType, const smtk::model::EntityRef&, const smtk::model::EntityRefArray&, void*);
+  ResourceEventType,
+  const smtk::model::EntityRef&,
+  const smtk::model::EntityRefArray&,
+  void*);
 /// An observer of a one-to-many relationship-event.
 typedef std::pair<OneToManyCallback, void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.

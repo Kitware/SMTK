@@ -42,15 +42,20 @@ public:
   ~qtOperationDialogInternals() = default;
 };
 
-qtOperationDialog::qtOperationDialog(smtk::operation::OperationPtr op,
-  QSharedPointer<smtk::extension::qtUIManager> uiManager, QWidget* parentWidget)
+qtOperationDialog::qtOperationDialog(
+  smtk::operation::OperationPtr op,
+  QSharedPointer<smtk::extension::qtUIManager> uiManager,
+  QWidget* parentWidget)
   : QDialog(parentWidget)
 {
   this->buildUI(op, uiManager);
 }
 
-qtOperationDialog::qtOperationDialog(smtk::operation::OperationPtr op,
-  smtk::resource::ManagerPtr resManager, smtk::view::ManagerPtr viewManager, QWidget* parentWidget)
+qtOperationDialog::qtOperationDialog(
+  smtk::operation::OperationPtr op,
+  smtk::resource::ManagerPtr resManager,
+  smtk::view::ManagerPtr viewManager,
+  QWidget* parentWidget)
   : QDialog(parentWidget)
 {
   auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
@@ -59,7 +64,8 @@ qtOperationDialog::qtOperationDialog(smtk::operation::OperationPtr op,
 }
 
 void qtOperationDialog::buildUI(
-  smtk::operation::OperationPtr op, QSharedPointer<smtk::extension::qtUIManager> uiManager)
+  smtk::operation::OperationPtr op,
+  QSharedPointer<smtk::extension::qtUIManager> uiManager)
 {
   m_internals = new qtOperationDialogInternals();
   m_internals->m_uiManager = uiManager;
@@ -105,8 +111,11 @@ void qtOperationDialog::buildUI(
   // make Apply come first it tab order, so tabbing to Apply then "Enter" works.
   QWidget::setTabOrder(m_internals->m_applyButton, m_internals->m_cancelButton);
 
-  QObject::connect(m_internals->m_smtkView, &smtk::extension::qtOperationView::operationExecuted,
-    this, &qtOperationDialog::onOperationExecuted);
+  QObject::connect(
+    m_internals->m_smtkView,
+    &smtk::extension::qtOperationView::operationExecuted,
+    this,
+    &qtOperationDialog::onOperationExecuted);
   QObject::connect(m_internals->m_cancelButton, &QPushButton::clicked, this, &QDialog::reject);
 
   m_internals->m_smtkView->setButtons(m_internals->m_applyButton, nullptr, nullptr);

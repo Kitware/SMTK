@@ -34,7 +34,7 @@ protected:
 };
 
 SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif // __smtk_attribute_operators_Read_h

@@ -217,15 +217,16 @@ private:
 
 public:
   SetCellData(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::CellField& ds)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::CellField& ds)
     : smtk::mesh::CellForEach(true)
     , m_dataGenerator(dataGenerator)
     , m_cellfield(ds)
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -254,15 +255,16 @@ private:
 
 public:
   ValidateCellData(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::CellField& ds)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::CellField& ds)
     : smtk::mesh::CellForEach(true)
     , m_dataGenerator(dataGenerator)
     , m_cellfield(ds)
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -289,8 +291,8 @@ void verify_incremental_data_assignment()
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
   smtk::mesh::MeshSet mesh = mr->meshes();
-  std::function<double(double, double, double)> euclideanDistance = [](
-    double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
+  std::function<double(double, double, double)> euclideanDistance =
+    [](double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
   smtk::mesh::CellField distanceCellField =
     mesh.createCellField("euclidean distance", 1, smtk::mesh::FieldType::Double);
 
@@ -359,7 +361,7 @@ void verify_cellfield_persistency()
     }
   }
 }
-}
+} // namespace
 
 int UnitTestCellField(int /*unused*/, char** const /*unused*/)
 {

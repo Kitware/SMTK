@@ -85,7 +85,7 @@ protected:
   void addTessellations();
 
   std::map<RegionId, smtk::model::Face> m_regionFaces;
-  std::map<RegionId, std::vector<OrientedEdges> > m_regionLoops;
+  std::map<RegionId, std::vector<OrientedEdges>> m_regionLoops;
   Result m_result;
   smtk::model::Model m_model;
   smtk::session::polygon::Resource::Ptr m_resource;

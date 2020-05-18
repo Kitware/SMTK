@@ -27,7 +27,7 @@ typedef std::function<void(const std::string&, SelectionPtr)> SelectionObserver;
 
 /// A class for holding SelectionObserver functors that observe selection events.
 typedef smtk::common::Observers<SelectionObserver> SelectionObservers;
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif // __smtk_view_SelectionObserver_h

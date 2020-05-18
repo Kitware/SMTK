@@ -73,8 +73,9 @@ CloseModel::Result CloseModel::operateInternal()
     for (const auto& cit : associatedMeshes)
     {
       auto meshResource = std::dynamic_pointer_cast<smtk::resource::Resource>(cit);
-      smtk::resource::Component::Visitor temp = [&](
-        const smtk::resource::ComponentPtr& c) { expunged.insert(c); };
+      smtk::resource::Component::Visitor temp = [&](const smtk::resource::ComponentPtr& c) {
+        expunged.insert(c);
+      };
       meshResource->visit(temp);
     }
 
@@ -85,8 +86,9 @@ CloseModel::Result CloseModel::operateInternal()
     }
   }
 
-  Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                             : smtk::operation::Operation::Outcome::FAILED);
+  Result result = this->createResult(
+    success ? smtk::operation::Operation::Outcome::SUCCEEDED
+            : smtk::operation::Operation::Outcome::FAILED);
 
   if (success)
   {

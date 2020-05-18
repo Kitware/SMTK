@@ -67,5 +67,5 @@ void from_json(const json& j, ResourcePtr& resource)
     resource->setName(j.at("name"));
   }
 }
-}
-}
+} // namespace resource
+} // namespace smtk

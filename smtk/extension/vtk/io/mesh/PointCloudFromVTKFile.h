@@ -41,9 +41,9 @@ public:
 
   smtk::mesh::PointCloud operator()(const std::string& file) override;
 };
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

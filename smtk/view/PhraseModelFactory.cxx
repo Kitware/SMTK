@@ -53,5 +53,5 @@ std::shared_ptr<PhraseModel> PhraseModelFactory::createFromConfiguration(
   }
   return phraseModel;
 }
-}
-}
+} // namespace view
+} // namespace smtk

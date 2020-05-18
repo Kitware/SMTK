@@ -41,6 +41,6 @@ smtk::mesh::HandleRange moabToSMTKRange(const ::moab::Range& range)
   }
   return range;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

@@ -31,8 +31,10 @@ pqSMTKColorByToolBar::pqSMTKColorByToolBar(QWidget* parent)
   widget << pqSetName("colorBy");
   widget->setToolTip("Color SMTK components by...");
   this->addWidget(widget);
-  QObject::connect(&pqActiveObjects::instance(),
-    SIGNAL(representationChanged(pqDataRepresentation*)), widget,
+  QObject::connect(
+    &pqActiveObjects::instance(),
+    SIGNAL(representationChanged(pqDataRepresentation*)),
+    widget,
     SLOT(setRepresentation(pqDataRepresentation*)));
 
   // Now, if we find a sibling toolbar named "Active Variable Controls" hook it

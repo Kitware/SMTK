@@ -103,13 +103,18 @@ public:
     * Note that it is valid to pass a null pointer to \a selectionIn.
     * In this case, all operations in the manager are returned.
     */
-  static void workingSet(smtk::operation::ManagerPtr operationsIn,
-    smtk::view::SelectionPtr selectionIn, int selectionMaskIn, bool exactSelectionIn,
+  static void workingSet(
+    smtk::operation::ManagerPtr operationsIn,
+    smtk::view::SelectionPtr selectionIn,
+    int selectionMaskIn,
+    bool exactSelectionIn,
     OperationIndexSet& workingSet);
 
   /// Core functionality of the class as a static method to filter operations for presentation:
   static void availableOperations(
-    const OperationIndexSet& workingSetIn, OperationFilterSort filterIn, OperationIndexArray& out);
+    const OperationIndexSet& workingSetIn,
+    OperationFilterSort filterIn,
+    OperationIndexArray& out);
 
 protected:
   AvailableOperations();
@@ -132,7 +137,7 @@ protected:
   OperationIndexArray m_available;
   Observers m_observers;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

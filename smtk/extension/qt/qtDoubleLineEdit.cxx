@@ -95,7 +95,7 @@ void unregister_dle_instance(qtDoubleLineEdit* dle)
     InstanceTracker = nullptr;
   }
 }
-}
+} // namespace
 
 //=============================================================================
 class qtDoubleLineEdit::qtInternals
@@ -205,8 +205,9 @@ qtDoubleLineEdit::qtDoubleLineEdit(QWidget* _parent)
   internals.InactiveLineEdit->hide();
   internals.sync(this);
 
-  QObject::connect(this, &QLineEdit::textChanged,
-    [this](const QString& /*unused*/) { this->Internals->sync(this); });
+  QObject::connect(this, &QLineEdit::textChanged, [this](const QString& /*unused*/) {
+    this->Internals->sync(this);
+  });
 }
 
 //-----------------------------------------------------------------------------
@@ -304,7 +305,9 @@ QString qtDoubleLineEdit::simplifiedText() const
 
 //-----------------------------------------------------------------------------
 QString qtDoubleLineEdit::formatDouble(
-  double value, QTextStream::RealNumberNotation notation, int precision)
+  double value,
+  QTextStream::RealNumberNotation notation,
+  int precision)
 {
   QString text;
   QTextStream converter(&text);
@@ -317,7 +320,9 @@ QString qtDoubleLineEdit::formatDouble(
 
 //-----------------------------------------------------------------------------
 QString qtDoubleLineEdit::formatDouble(
-  double value, qtDoubleLineEdit::RealNumberNotation notation, int precision)
+  double value,
+  qtDoubleLineEdit::RealNumberNotation notation,
+  int precision)
 {
   return qtDoubleLineEdit::formatDouble(value, toTextStreamNotation(notation), precision);
 }

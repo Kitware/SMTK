@@ -27,10 +27,12 @@ namespace polygon
 namespace internal
 {
 SMTKPOLYGONSESSION_EXPORT void to_json(
-  json& j, const smtk::session::polygon::internal::vertex::Ptr& vertex);
+  json& j,
+  const smtk::session::polygon::internal::vertex::Ptr& vertex);
 
 SMTKPOLYGONSESSION_EXPORT void from_json(
-  const json& j, smtk::session::polygon::internal::vertex::Ptr& vertex);
+  const json& j,
+  smtk::session::polygon::internal::vertex::Ptr& vertex);
 } // namespace internal
 } // namespace polygon
 } // namespace session

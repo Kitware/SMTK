@@ -101,7 +101,8 @@ void pqExportSimulationReaction::exportSimulation()
     }
 
     // Test the results for success
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       smtkErrorMacro(
@@ -138,9 +139,12 @@ void pqExportSimulationReaction::exportSimulation()
 
     // Alert the user if the operation fails. Close the dialog if the operation
     // succeeds.
-    connect(opView, &smtk::extension::qtOperationView::operationExecuted,
+    connect(
+      opView,
+      &smtk::extension::qtOperationView::operationExecuted,
       [=](const smtk::operation::Operation::Result& result) {
-        if (result->findInt("outcome")->value() !=
+        if (
+          result->findInt("outcome")->value() !=
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           QMessageBox msgBox;
@@ -202,7 +206,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKExportSimulationBehavior* g_instance = nullptr;
 

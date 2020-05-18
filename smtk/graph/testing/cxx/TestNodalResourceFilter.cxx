@@ -21,7 +21,7 @@ class NodeA : public smtk::graph::Component
 {
 public:
   smtkTypenameMacro(NodeA);
-  template <typename... Args>
+  template<typename... Args>
   NodeA(Args&&... args)
     : smtk::graph::Component::Component(std::forward<Args>(args)...)
   {
@@ -32,7 +32,7 @@ class NodeB : public smtk::graph::Component
 {
 public:
   smtkTypenameMacro(NodeB);
-  template <typename... Args>
+  template<typename... Args>
   NodeB(Args&&... args)
     : smtk::graph::Component::Component(std::forward<Args>(args)...)
   {
@@ -45,9 +45,9 @@ struct BasicTraits
     NodeTypes;
   typedef std::tuple<> ArcTypes;
 };
-}
+} // namespace test_nodal_resource_filter
 
-int TestNodalResourceFilter(int, char* [])
+int TestNodalResourceFilter(int, char*[])
 {
   auto resource = smtk::graph::Resource<test_nodal_resource_filter::BasicTraits>::create();
 
@@ -85,10 +85,12 @@ int TestNodalResourceFilter(int, char* [])
 
   std::array<smtk::resource::Component*, 2> components = { nodeA.get(), nodeB.get() };
 
-  std::array<decltype(queryOp1A)*, 9> queryOpsA = { &queryOp1A, &queryOp2A, &queryOp3A, &queryOp4A,
-    &queryOp5A, &queryOp6A, &queryOp7A, &queryOp8A, &queryOp9A };
-  std::array<decltype(queryOp1A)*, 9> queryOpsB = { &queryOp1B, &queryOp2B, &queryOp3B, &queryOp4B,
-    &queryOp5B, &queryOp6B, &queryOp7B, &queryOp8B, &queryOp9B };
+  std::array<decltype(queryOp1A)*, 9> queryOpsA = { &queryOp1A, &queryOp2A, &queryOp3A,
+                                                    &queryOp4A, &queryOp5A, &queryOp6A,
+                                                    &queryOp7A, &queryOp8A, &queryOp9A };
+  std::array<decltype(queryOp1A)*, 9> queryOpsB = { &queryOp1B, &queryOp2B, &queryOp3B,
+                                                    &queryOp4B, &queryOp5B, &queryOp6B,
+                                                    &queryOp7B, &queryOp8B, &queryOp9B };
 
   std::array<decltype(queryOpsA)*, 2> queryOps = { &queryOpsA, &queryOpsB };
 
@@ -99,8 +101,9 @@ int TestNodalResourceFilter(int, char* [])
       for (int k = 0; k < 2; ++k)
       {
         bool expected = (j == k ? (i % 3 != 2) : false);
-        test((*(*queryOps[j])[i])(*components[k]) == expected, "Filter operation " +
-            std::to_string(i) + ", " + std::to_string(j) +
+        test(
+          (*(*queryOps[j])[i])(*components[k]) == expected,
+          "Filter operation " + std::to_string(i) + ", " + std::to_string(j) +
             " returned unexpected result for component " + std::to_string(k));
       }
     }

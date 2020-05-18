@@ -35,5 +35,5 @@ const char* CompositeAuxiliaryGeometry::xmlDescription() const
 {
   return CompositeAuxiliaryGeometry_xml;
 }
-}
-}
+} // namespace model
+} // namespace smtk

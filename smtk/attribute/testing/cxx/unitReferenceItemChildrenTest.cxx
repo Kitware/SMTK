@@ -64,9 +64,10 @@ void setupAttributeResource(ResourcePtr& attRes)
   tempItem->setNumberOfRequiredValues(1);
   std::vector<std::string> children;
   children.emplace_back("initialTemp");
-  std::size_t index =
-    materialItem->addConditional(smtk::common::typeName<smtk::attribute::Resource>(),
-      smtk::attribute::Resource::createAttributeQuery(solidM), children);
+  std::size_t index = materialItem->addConditional(
+    smtk::common::typeName<smtk::attribute::Resource>(),
+    smtk::attribute::Resource::createAttributeQuery(solidM),
+    children);
   if (index != 0)
   {
     std::cerr << "Incorrect Index returned for Solid Conditional = " << index << " should be 0\n";
@@ -101,7 +102,9 @@ void setupAttributeResource(ResourcePtr& attRes)
 // Tests to see if the item is set to the proper value and if
 // the number of conditional children match
 bool testMaterialItem(
-  const ComponentItemPtr& matItem, const AttributePtr matAtt, std::size_t numChildren)
+  const ComponentItemPtr& matItem,
+  const AttributePtr matAtt,
+  std::size_t numChildren)
 {
   if (matItem->value() != matAtt)
   {
@@ -157,9 +160,9 @@ bool testResource(const ResourcePtr& attRes, const std::string& prefix)
   }
   return status;
 }
-}
+} // namespace
 
-int unitReferenceItemChildrenTest(int /*unused*/, char* /*unused*/ [])
+int unitReferenceItemChildrenTest(int /*unused*/, char* /*unused*/[])
 {
   //
   // I. Let's create an attribute resource and some definitions
@@ -181,7 +184,8 @@ int unitReferenceItemChildrenTest(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -189,7 +193,8 @@ int unitReferenceItemChildrenTest(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -202,15 +207,17 @@ int unitReferenceItemChildrenTest(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(testResource(attRes, "XML Pass - "), "Failed checking Conditional Children in XML Pass");
 

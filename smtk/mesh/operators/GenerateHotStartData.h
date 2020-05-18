@@ -41,7 +41,7 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif // __smtk_mesh_operators_GenerateHotStartData_h

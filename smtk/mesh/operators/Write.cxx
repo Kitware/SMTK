@@ -50,7 +50,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -122,8 +122,9 @@ Write::Specification Write::createSpecification()
   auto writeDef = spec->findDefinition("write");
 
   std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
-  auto fileItemDefinitionFilter = [](
-    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  auto fileItemDefinitionFilter = [](smtk::attribute::FileItemDefinition::Ptr ptr) {
+    return ptr->name() == "filename";
+  };
   writeDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
 
   assert(fileItemDefinitions.size() == 1);
@@ -183,5 +184,5 @@ const char* Write::xmlDescription() const
 {
   return Write_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

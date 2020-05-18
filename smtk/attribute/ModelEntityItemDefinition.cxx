@@ -53,26 +53,31 @@ void ModelEntityItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
 {
   // FIXME: Should we enforce constraints?
   this->m_acceptable.clear();
-  this->setAcceptsEntries(smtk::common::typeName<smtk::model::Resource>(),
-    smtk::model::Entity::flagToSpecifierString(entMask), true);
+  this->setAcceptsEntries(
+    smtk::common::typeName<smtk::model::Resource>(),
+    smtk::model::Entity::flagToSpecifierString(entMask),
+    true);
 }
 
 //// Construct an item from the definition given its owning attribute and position.
 smtk::attribute::ItemPtr ModelEntityItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new ModelEntityItem(owningAttribute, itemPosition));
 }
 
 //// Construct an item from the definition given its owning item and position.
-smtk::attribute::ItemPtr ModelEntityItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+ModelEntityItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new ModelEntityItem(owningItem, itemPosition, subGroupPosition));
 }
 
 bool ModelEntityItemDefinition::setAcceptsEntries(
-  const std::string& typeName, const std::string& queryString, bool accept)
+  const std::string& typeName,
+  const std::string& queryString,
+  bool accept)
 {
   return this->ComponentItemDefinition::setAcceptsEntries(typeName, queryString, accept);
 }

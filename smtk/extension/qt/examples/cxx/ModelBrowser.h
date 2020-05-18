@@ -24,8 +24,8 @@ namespace extension
 {
 class qtDescriptivePhraseModel;
 class qtDescriptivePhraseDelegate;
-}
-}
+} // namespace extension
+} // namespace smtk
 
 class ModelBrowser : public QWidget
 {
@@ -36,7 +36,9 @@ public:
 
   QTreeView* tree() const;
 
-  void setup(smtk::resource::ManagerPtr mgr, smtk::extension::qtDescriptivePhraseModel* qm,
+  void setup(
+    smtk::resource::ManagerPtr mgr,
+    smtk::extension::qtDescriptivePhraseModel* qm,
     smtk::extension::qtDescriptivePhraseDelegate* qd);
 
 public slots:

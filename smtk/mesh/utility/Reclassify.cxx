@@ -67,7 +67,9 @@ public:
     return found;
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+  void forCell(
+    const smtk::mesh::Handle& cellId,
+    smtk::mesh::CellType /*cellType*/,
     int /*numPointIds*/) override
   {
     bool contained = true;
@@ -133,7 +135,7 @@ smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::ResourcePtr resource, smtk::model
 
   return result;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -142,8 +144,11 @@ namespace mesh
 namespace utility
 {
 
-bool split(smtk::mesh::ResourcePtr resource, smtk::model::Edge orignalEdge,
-  smtk::model::Edge newEdge, smtk::model::Vertex promotedVertex)
+bool split(
+  smtk::mesh::ResourcePtr resource,
+  smtk::model::Edge orignalEdge,
+  smtk::model::Edge newEdge,
+  smtk::model::Vertex promotedVertex)
 {
   if (!resource)
   {
@@ -205,8 +210,11 @@ bool split(smtk::mesh::ResourcePtr resource, smtk::model::Edge orignalEdge,
   return ret;
 }
 
-bool make_disjoint(smtk::mesh::ResourcePtr resource, const smtk::mesh::MeshSet& toBeRemoved,
-  smtk::mesh::MeshSet& removeFrom, const smtk::model::EntityRef& modelAssoc)
+bool make_disjoint(
+  smtk::mesh::ResourcePtr resource,
+  const smtk::mesh::MeshSet& toBeRemoved,
+  smtk::mesh::MeshSet& removeFrom,
+  const smtk::model::EntityRef& modelAssoc)
 {
 
   //Add a new MeshSet which contains all the original cells, expect the ones
@@ -232,8 +240,11 @@ bool make_disjoint(smtk::mesh::ResourcePtr resource, const smtk::mesh::MeshSet& 
   return true;
 }
 
-bool merge(smtk::mesh::ResourcePtr resource, smtk::model::Vertex toRemoveVert,
-  smtk::model::Edge toRemoveEdge, smtk::model::Edge toAddTo)
+bool merge(
+  smtk::mesh::ResourcePtr resource,
+  smtk::model::Vertex toRemoveVert,
+  smtk::model::Edge toRemoveEdge,
+  smtk::model::Edge toAddTo)
 {
   smtk::mesh::MeshSet vertexToRemoveMS = resource->findAssociatedMeshes(toRemoveVert);
   smtk::mesh::MeshSet edgeToRemoveMS = resource->findAssociatedMeshes(toRemoveEdge);
@@ -258,8 +269,11 @@ bool merge(smtk::mesh::ResourcePtr resource, smtk::model::Vertex toRemoveVert,
   return false;
 }
 
-bool fuse(smtk::mesh::ResourcePtr resource, smtk::mesh::MeshSet& toRemove,
-  smtk::mesh::MeshSet& toAddTo, const smtk::model::EntityRef& toAddToAssoc)
+bool fuse(
+  smtk::mesh::ResourcePtr resource,
+  smtk::mesh::MeshSet& toRemove,
+  smtk::mesh::MeshSet& toAddTo,
+  const smtk::model::EntityRef& toAddToAssoc)
 {
   //Merge two mesh sets together and create a single meshset from that
   //
@@ -307,6 +321,6 @@ bool fuse(smtk::mesh::ResourcePtr resource, smtk::mesh::MeshSet& toRemove,
   resource->setAssociation(toAddToAssoc, toAddTo);
   return true;
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

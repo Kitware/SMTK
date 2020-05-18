@@ -33,7 +33,7 @@ public:
 
   smtk::resource::ManagerPtr resourceManager();
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

@@ -19,7 +19,7 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-int unitAssociationTest(int /*unused*/, char* /*unused*/ [])
+int unitAssociationTest(int /*unused*/, char* /*unused*/[])
 {
   //
   // I. Let's create an attribute resource and some definitions
@@ -37,17 +37,21 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/ [])
 
   // Let associate a to t
   smtkTest(a->associate(t), "Failed to associate a to test");
-  smtkTest(a->associatedObjects()->numberOfValues() == 1,
+  smtkTest(
+    a->associatedObjects()->numberOfValues() == 1,
     "Incorrect number of associated objects returned - should be 1");
   smtkTest(a->isObjectAssociated(t), "a did not indicate that it was associated to test");
-  smtkTest(!a->associatedObjects()->removeInvalidValues(),
+  smtkTest(
+    !a->associatedObjects()->removeInvalidValues(),
     "a's associations said there was an invalid value - it should have been ok");
 
   // Now remove t and clean up the invalid association
   attRes->removeAttribute(t);
-  smtkTest(a->associatedObjects()->removeInvalidValues(),
+  smtkTest(
+    a->associatedObjects()->removeInvalidValues(),
     "a's associations said there were no invalid values - there should have been");
-  smtkTest(a->associatedObjects()->numberOfValues() == 0,
+  smtkTest(
+    a->associatedObjects()->numberOfValues() == 0,
     "Incorrect number of associated objects returned - should be 0");
   return 0;
 }

@@ -49,7 +49,7 @@ public:
     // Reference to resource that is getting modified ("to")
     const smtk::attribute::Resource& ToResource;
     // List of ValueItemDefinitions that reference expressions not currently in this resource
-    std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
+    std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr>> UnresolvedExpItems;
     CopyInfo(const smtk::attribute::ResourcePtr resource)
       : ToResource(*resource)
     {
@@ -155,10 +155,10 @@ public:
   bool removeTag(const std::string& name);
   ///@}
 
-  virtual smtk::attribute::ItemPtr buildItem(
-    Attribute* owningAttribute, int itemPosition) const = 0;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const = 0;
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition)
+    const = 0;
+  virtual smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const = 0;
   virtual smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const = 0;
 
@@ -167,10 +167,12 @@ protected:
   // in because that should never change.
   ItemDefinition(const std::string& myname);
   void copyTo(ItemDefinitionPtr def) const;
-  virtual void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  virtual void applyCategories(
+    const smtk::attribute::Categories& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent);
   virtual void applyAdvanceLevels(
-    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent);
+    const unsigned int& readLevelFromParent,
+    const unsigned int& writeLevelFromParent);
   int m_version;
   bool m_isOptional;
   bool m_isEnabledByDefault;
@@ -189,7 +191,7 @@ private:
   // constant value that should never be changed
   const std::string m_name;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_ItemDefinition_h */

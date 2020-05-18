@@ -76,9 +76,12 @@ public:
   void SetSelectionObjProxy(vtkSMSourceProxy* pxy);
 
   /// Method called by client-side selection manager to send selection to server.
-  template <typename T>
+  template<typename T>
   void SendClientSelectionToServer(
-    const T& seln, const T& added, const T& removed, const std::string& sender);
+    const T& seln,
+    const T& added,
+    const T& removed,
+    const std::string& sender);
 
   /**\brief Fetch the selection from the server.
     *
@@ -91,9 +94,13 @@ public:
     * The method populates \a seln, \a added, and \a removed
     * based on values obtained from the source proxies.
     */
-  template <typename T>
+  template<typename T>
   void RecvClientSelectionFromServer(
-    vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, T& seln, T& added, T& removed);
+    vtkSMSourceProxy* dataSource,
+    vtkSMSourceProxy* selnSource,
+    T& seln,
+    T& added,
+    T& removed);
 
   void FetchHardwareSelection();
 
@@ -102,7 +109,8 @@ public:
 
   void SetRepresentation(vtkSMRepresentationProxy* pxy);
   void SetResourceForRepresentation(
-    smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy);
+    smtk::resource::ResourcePtr clientSideResource,
+    vtkSMRepresentationProxy* pxy);
 
 protected:
   vtkSMSMTKWrapperProxy();

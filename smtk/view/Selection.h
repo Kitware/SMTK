@@ -176,8 +176,8 @@ public:
     */
   //@{
   /// Register a selection value. If the value was already registered, returns false.
-  bool registerSelectionValue(
-    const std::string& valueLabel, int value, bool valueMustBeUnique = true);
+  bool
+  registerSelectionValue(const std::string& valueLabel, int value, bool valueMustBeUnique = true);
   /// Unregister a selection value. If the value was not registered, returns false.
   bool unregisterSelectionValue(const std::string& valueLabel)
   {
@@ -226,9 +226,13 @@ public:
     * Actions which REPLACE the selection will erase the entire selection map and
     * then insert the provided \a objects with the given \a value.
     */
-  template <typename T>
-  bool modifySelection(const T& objects, const std::string& source, int value,
-    SelectionAction action = SelectionAction::DEFAULT, bool bitwise = false,
+  template<typename T>
+  bool modifySelection(
+    const T& objects,
+    const std::string& source,
+    int value,
+    SelectionAction action = SelectionAction::DEFAULT,
+    bool bitwise = false,
     bool postponeNotification = false);
 
   /**\brief Reset values in the selection map so no entries contain the given bit \a value.
@@ -290,18 +294,18 @@ public:
   SelectionMap& currentSelection(SelectionMap& selection) const;
   const SelectionMap& currentSelection() const { return m_selection; }
   /// Return the subset of selected elements that match the given selection value.
-  template <typename T>
+  template<typename T>
   T& currentSelectionByValue(T& selection, int value, bool exactMatch = true);
-  template <typename T>
+  template<typename T>
   T& currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch = true);
 
-  template <typename T>
+  template<typename T>
   T currentSelectionByValueAs(int value, bool exactMatch = true)
   {
     T result;
     return this->currentSelectionByValue(result, value, exactMatch);
   }
-  template <typename T>
+  template<typename T>
   T currentSelectionByValueAs(const std::string& valueLabel, bool exactMatch = true)
   {
     T result;
@@ -324,8 +328,12 @@ public:
 protected:
   Selection();
 
-  bool performAction(smtk::resource::PersistentObjectPtr comp, int value, SelectionAction action,
-    SelectionMap& suggested, bool bitwise);
+  bool performAction(
+    smtk::resource::PersistentObjectPtr comp,
+    int value,
+    SelectionAction action,
+    SelectionMap& suggested,
+    bool bitwise);
   bool refilter(const std::string& source);
 
   SelectionAction m_defaultAction;
@@ -342,7 +350,7 @@ private:
   void operator=(const Selection&) = delete;
 };
 
-template <typename T>
+template<typename T>
 T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
 {
   if (exactMatch)
@@ -376,16 +384,21 @@ T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
   return selection;
 }
 
-template <typename T>
+template<typename T>
 T& Selection::currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch)
 {
   int val = this->selectionValueFromLabel(valueLabel);
   return this->currentSelectionByValue(selection, val, exactMatch);
 }
 
-template <typename T>
-bool Selection::modifySelection(const T& objects, const std::string& source, int value,
-  SelectionAction action, bool bitwise, bool postponeNotification)
+template<typename T>
+bool Selection::modifySelection(
+  const T& objects,
+  const std::string& source,
+  int value,
+  SelectionAction action,
+  bool bitwise,
+  bool postponeNotification)
 {
   bool modified = false;
   SelectionMap suggestions;
@@ -393,13 +406,15 @@ bool Selection::modifySelection(const T& objects, const std::string& source, int
   {
     action = this->defaultAction();
   }
-  if (!bitwise &&
+  if (
+    !bitwise &&
     (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE))
   {
     modified = !m_selection.empty();
     m_selection.clear();
   }
-  else if (bitwise &&
+  else if (
+    bitwise &&
     (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE))
   {
     // Remove unmatched objects from existing selection

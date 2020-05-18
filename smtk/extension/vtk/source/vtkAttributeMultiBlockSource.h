@@ -49,7 +49,9 @@ protected:
   ~vtkAttributeMultiBlockSource() override;
 
   int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+    vtkInformation* request,
+    vtkInformationVector** inInfo,
+    vtkInformationVector* outInfo) override;
 
 private:
   vtkAttributeMultiBlockSource(const vtkAttributeMultiBlockSource&); // Not implemented.

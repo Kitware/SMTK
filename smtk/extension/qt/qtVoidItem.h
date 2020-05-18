@@ -47,7 +47,7 @@ private:
   qtVoidItemInternals* Internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

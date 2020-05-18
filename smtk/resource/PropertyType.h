@@ -66,7 +66,7 @@ typedef std::map<smtk::common::UUID, IntegerData> UUIDsToIntegerData;
 typedef UUIDsToIntegerData::iterator UUIDWithIntegerProperties;
 typedef IntegerData::iterator PropertyNameWithIntegers;
 typedef IntegerData::const_iterator PropertyNameWithConstIntegers;
-} // resource namespace
-} // smtk namespace
+} // namespace resource
+} // namespace smtk
 
 #endif

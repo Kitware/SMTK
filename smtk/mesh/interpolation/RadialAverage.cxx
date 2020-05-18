@@ -24,8 +24,11 @@ namespace
 {
 struct RadialAverageForPointCloud
 {
-  RadialAverageForPointCloud(smtk::mesh::ResourcePtr resource,
-    const smtk::mesh::PointCloud& pointcloud, double radius, std::function<bool(double)> prefilter)
+  RadialAverageForPointCloud(
+    smtk::mesh::ResourcePtr resource,
+    const smtk::mesh::PointCloud& pointcloud,
+    double radius,
+    std::function<bool(double)> prefilter)
     : m_pointcloud(pointcloud)
     , m_radius(radius)
     , m_prefilter(prefilter)
@@ -73,7 +76,9 @@ struct RadialAverageForStructuredGrid
 {
   typedef std::pair<int, int> Coord;
 
-  RadialAverageForStructuredGrid(const smtk::mesh::StructuredGrid& structuredgrid, double radius,
+  RadialAverageForStructuredGrid(
+    const smtk::mesh::StructuredGrid& structuredgrid,
+    double radius,
     std::function<bool(double)> prefilter)
     : m_structuredgrid(structuredgrid)
     , m_radius2(radius * radius)
@@ -109,9 +114,11 @@ struct RadialAverageForStructuredGrid
     }
 
     // (ix,iy) represents the closest point in the grid to the query point
-    int ix = static_cast<int>(std::round(m_structuredgrid.m_extent[0] +
+    int ix = static_cast<int>(std::round(
+      m_structuredgrid.m_extent[0] +
       ((x[0] - m_structuredgrid.m_origin[0]) / m_structuredgrid.m_spacing[0])));
-    int iy = static_cast<int>(std::round(m_structuredgrid.m_extent[2] +
+    int iy = static_cast<int>(std::round(
+      m_structuredgrid.m_extent[2] +
       ((x[1] - m_structuredgrid.m_origin[1]) / m_structuredgrid.m_spacing[1])));
 
     // Since we allow for different spacing in x and y, our circle maps to an
@@ -182,23 +189,28 @@ struct RadialAverageForStructuredGrid
   int m_discreteRadius[2];
   double m_limits[4];
 };
-}
+} // namespace
 
 namespace smtk
 {
 namespace mesh
 {
 
-RadialAverage::RadialAverage(smtk::mesh::ResourcePtr resource, const PointCloud& pointcloud,
-  double radius, std::function<bool(double)> prefilter)
+RadialAverage::RadialAverage(
+  smtk::mesh::ResourcePtr resource,
+  const PointCloud& pointcloud,
+  double radius,
+  std::function<bool(double)> prefilter)
   : m_function(RadialAverageForPointCloud(resource, pointcloud, radius, prefilter))
 {
 }
 
 RadialAverage::RadialAverage(
-  const StructuredGrid& structuredgrid, double radius, std::function<bool(double)> prefilter)
+  const StructuredGrid& structuredgrid,
+  double radius,
+  std::function<bool(double)> prefilter)
   : m_function(RadialAverageForStructuredGrid(structuredgrid, radius, prefilter))
 {
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

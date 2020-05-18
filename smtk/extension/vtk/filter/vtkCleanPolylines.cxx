@@ -34,7 +34,9 @@ vtkCleanPolylines::vtkCleanPolylines()
   this->UseRelativeLineLength = true;
 }
 
-int vtkCleanPolylines::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
+int vtkCleanPolylines::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   // get the info objects
@@ -68,8 +70,11 @@ int vtkCleanPolylines::RequestData(vtkInformation* /*request*/, vtkInformationVe
   vtkNew<vtkPolyData> reducedPolylines;
   vtkNew<vtkDoubleArray> lengths1;
   lengths->SetNumberOfComponents(1);
-  this->RemoveNonManifoldFeatures(strippedLines.GetPointer(), lengths.GetPointer(),
-    reducedPolylines.GetPointer(), lengths1.GetPointer());
+  this->RemoveNonManifoldFeatures(
+    strippedLines.GetPointer(),
+    lengths.GetPointer(),
+    reducedPolylines.GetPointer(),
+    lengths1.GetPointer());
 
   double minimumPolylineLength = this->MinimumLineLength;
   double l;
@@ -218,8 +223,14 @@ void vtkCleanPolylines::StripLines(vtkPolyData* input, vtkPolyData* result, vtkD
   delete[] marks;
 }
 
-void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
-  unsigned char* marks, vtkIdList* ids, double* length, vtkIdType* lastLineId)
+void vtkCleanPolylines::TraverseLine(
+  vtkIdType startPid,
+  vtkIdType startCellId,
+  vtkPolyData* input,
+  unsigned char* marks,
+  vtkIdList* ids,
+  double* length,
+  vtkIdType* lastLineId)
 {
   vtkIdType pid, lastPid, cell, *pntCells;
   vtkIdType nCells;
@@ -283,7 +294,10 @@ void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId, 
 }
 
 void vtkCleanPolylines::RemoveNonManifoldFeatures(
-  vtkPolyData* input, vtkDoubleArray* lengths, vtkPolyData* result, vtkDoubleArray* newLengths)
+  vtkPolyData* input,
+  vtkDoubleArray* lengths,
+  vtkPolyData* result,
+  vtkDoubleArray* newLengths)
 {
   //Create a visited mask for all point ids - we need this in the case
   // there are any closed loops that are not connected to any other line
@@ -436,8 +450,14 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
   delete[] marks;
 }
 
-void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCellId,
-  vtkPolyData* input, vtkDoubleArray* lengths, unsigned char* marks, vtkIdList* ids, double* length)
+void vtkCleanPolylines::TraversePolyLine(
+  vtkIdType startPid,
+  vtkIdType startCellId,
+  vtkPolyData* input,
+  vtkDoubleArray* lengths,
+  unsigned char* marks,
+  vtkIdList* ids,
+  double* length)
 {
   vtkIdType pid, lastPid, cell, *pntCells;
   vtkIdType nCells;

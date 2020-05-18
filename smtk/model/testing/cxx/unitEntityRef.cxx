@@ -82,7 +82,7 @@ public:
   std::string name() const override { return "TestBackend"; }
 };
 
-class TestGeometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
+class TestGeometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>>
 {
 public:
   TestGeometry(const TestResource::Ptr& parent)
@@ -99,8 +99,8 @@ public:
 
   smtk::geometry::Resource::Ptr resource() const override { return m_parent.lock(); }
 
-  void queryGeometry(
-    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override
+  void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+    const override
   {
     if (obj)
     {
@@ -150,7 +150,10 @@ static int numberOfFreeCellsRemoved = 0;
 static int numberOfSubmodelsRemoved = 0;
 static int numberOfGroupsRemoved = 0;
 
-int didRemove(ResourceEventType event, const EntityRef& /*unused*/, const EntityRef& /*unused*/,
+int didRemove(
+  ResourceEventType event,
+  const EntityRef& /*unused*/,
+  const EntityRef& /*unused*/,
   void* /*unused*/)
 {
   switch (event.second)
@@ -299,28 +302,33 @@ void testMiscConstructionMethods()
       edges.push_back(sm->addEdge());
       edges[i - 1].addRawRelation(verts[i - 1]);
       edges[i - 1].addRawRelation(verts[i]);
-      test(edges[i - 1].relationsAs<EntityRefArray>().size() == 2,
+      test(
+        edges[i - 1].relationsAs<EntityRefArray>().size() == 2,
         "Expected addRawRelation() to add a relation.");
     }
   }
   edges.push_back(sm->addEdge());
   edges[5].addRawRelation(verts[5]);
   edges[5].addRawRelation(verts[0]);
-  test(edges[5].relationsAs<EntityRefArray>().size() == 2,
+  test(
+    edges[5].relationsAs<EntityRefArray>().size() == 2,
     "Expected addRawRelation() to add a relation.");
 
   // Should have no effect:
   edges[0].findOrAddRawRelation(verts[0]);
-  test(edges[0].relationsAs<EntityRefArray>().size() == 2,
+  test(
+    edges[0].relationsAs<EntityRefArray>().size() == 2,
     "Expected findOrAddRawRelation() to skip adding a duplicate relation.");
 
   // Should have an effect:
   edges[0].addRawRelation(verts[0]);
-  test(edges[0].relationsAs<EntityRefArray>().size() == 3,
+  test(
+    edges[0].relationsAs<EntityRefArray>().size() == 3,
     "Expected addRawRelation() to add a duplicate relation.");
 
   // Should not include duplicates:
-  test(edges[0].relationsAs<EntityRefs>().size() == 2,
+  test(
+    edges[0].relationsAs<EntityRefs>().size() == 2,
     "Expected relationsAs<EntityRefs> (a set) to remove duplicates.");
 
   std::cout << "testMiscConstructionMethods... done\n\n";
@@ -376,7 +384,8 @@ void testResourceComponentConversion()
   test(mep->referenceAs<smtk::model::Model>() == m0, "Could not convert from component to ref.");
   test(smtk::model::Model(mep) == m0, "Could not convert from ref to component.");
   smtk::resource::ComponentPtr cmp = m0.component();
-  test(cmp == smtk::dynamic_pointer_cast<smtk::resource::Component>(mep),
+  test(
+    cmp == smtk::dynamic_pointer_cast<smtk::resource::Component>(mep),
     "Component/Entity mismatch.");
   std::cout << "testResourceComponentConversion... done\n\n";
 }
@@ -406,23 +415,31 @@ int main(int argc, char* argv[])
     // casts to invalid entityref types).
     // Also, check lowerDimensionalBoundaries and higherDimensionalBordants.
     Volume tet = Volume(sm, uids[21]);
-    test(tet.lowerDimensionalBoundaries(2).size() == 5,
+    test(
+      tet.lowerDimensionalBoundaries(2).size() == 5,
       "The test model volume should have had 5 surface boundaries.");
-    test(tet.lowerDimensionalBoundaries(1).size() == 9,
+    test(
+      tet.lowerDimensionalBoundaries(1).size() == 9,
       "The test model volume should have had 9 surface+edge boundaries.");
-    test(tet.lowerDimensionalBoundaries(0).size() == 7,
+    test(
+      tet.lowerDimensionalBoundaries(0).size() == 7,
       "The test model volume should have had 7 surface+edge+vertex boundaries.");
-    test(tet.lowerDimensionalBoundaries(-1).size() == 21,
+    test(
+      tet.lowerDimensionalBoundaries(-1).size() == 21,
       "The test model volume should have had 21 boundaries (total).");
 
     Vertex vrt = Vertex(sm, uids[0]);
-    test(vrt.higherDimensionalBordants(1).size() == 3,
+    test(
+      vrt.higherDimensionalBordants(1).size() == 3,
       "The test model vert should have had 3 edge boundaries.");
-    test(vrt.higherDimensionalBordants(2).size() == 3,
+    test(
+      vrt.higherDimensionalBordants(2).size() == 3,
       "The test model vert should have had 3 surface+edge boundaries.");
-    test(vrt.higherDimensionalBordants(3).size() == 1,
+    test(
+      vrt.higherDimensionalBordants(3).size() == 1,
       "The test model vert should have had 1 edge+surface+volume boundaries.");
-    test(vrt.higherDimensionalBordants(-1).size() == 7,
+    test(
+      vrt.higherDimensionalBordants(-1).size() == 7,
       "The test model vert should have had 7 boundaries (total).");
 
     // Test Model::addCell()
@@ -438,7 +455,8 @@ int main(int argc, char* argv[])
     EntityRefs entities;
     EntityRef::EntityRefsFromUUIDs(entities, sm, uids);
     std::cout << "  " << uids.size() << " uids, " << entities.size() << " entities\n";
-    test(uids.size() == entities.size(),
+    test(
+      uids.size() == entities.size(),
       "Translation from UUIDs to entityrefs should not omit entries");
     Group bits = sm->addGroup(0, "Bits'n'pieces");
     // Test Group::addEntities()
@@ -448,7 +466,8 @@ int main(int argc, char* argv[])
     // Test Group::parent()
     test(bits.parent() == model, "Parent of group incorrect.");
     // Test Model::groups() when non-empty
-    test(!model.groups().empty() && model.groups()[0] == bits,
+    test(
+      !model.groups().empty() && model.groups()[0] == bits,
       "Group should be reported as member of model.");
     // Test Group::members().
     CellEntities groupCells = bits.members<CellEntities>();
@@ -528,11 +547,13 @@ int main(int argc, char* argv[])
 
     std::cout << "testProperties\n";
     entity.setFloatProperty("perpendicular", 1.57);
-    test(entity.floatProperty("perpendicular").size() == 1 &&
+    test(
+      entity.floatProperty("perpendicular").size() == 1 &&
       entity.floatProperty("perpendicular")[0] == 1.57);
 
     entity.setStringProperty("name", "Tetrahedron");
-    test(entity.stringProperty("name").size() == 1 &&
+    test(
+      entity.stringProperty("name").size() == 1 &&
       entity.stringProperty("name")[0] == "Tetrahedron");
 
     entity.setIntegerProperty("7beef", 507631);
@@ -545,18 +566,23 @@ int main(int argc, char* argv[])
     test(
       entity.exclusions() == Exclusions::Nothing, "Entity's exclusion status should be Nothing.");
     entity.setExclusions(true); // Exclude it from everything
-    test(entity.exclusions() == Exclusions::Everything,
+    test(
+      entity.exclusions() == Exclusions::Everything,
       "Entity's exclusion status should be Everything");
     entity.setExclusions(false); // Reset exclusion status
     test(entity.exclusions() == Exclusions::Nothing, "Entity's exclusion status should be Nothing");
     // Set excluded from tessellation generation
     entity.setExclusions(true, Exclusions::Rendering);
-    test(entity.exclusions(Exclusions::Rendering) == 1, "Entity should be excluded"
-                                                        " from rendering");
+    test(
+      entity.exclusions(Exclusions::Rendering) == 1,
+      "Entity should be excluded"
+      " from rendering");
     // Set excluded from view representation
     entity.setExclusions(true, Exclusions::ViewPresentation);
-    test(entity.exclusions(Exclusions::ViewPresentation) == 1, "Entity should be excluded"
-                                                               " from view presentation");
+    test(
+      entity.exclusions(Exclusions::ViewPresentation) == 1,
+      "Entity should be excluded"
+      " from view presentation");
 
     // Test color/hasColor/setColor
     test(!entity.hasColor(), "Entity should not have had a color assigned to it.");
@@ -604,7 +630,8 @@ int main(int argc, char* argv[])
     Volume vol(sm, uids[21]);
     vol.embedEntity(v);
 
-    test(!vol.inclusions<CellEntities>().empty() && vol.inclusions<CellEntities>()[0] == v,
+    test(
+      !vol.inclusions<CellEntities>().empty() && vol.inclusions<CellEntities>()[0] == v,
       "Volume should have an included vertex.");
 
     // Test removing cell inclusions and model members.
@@ -642,7 +669,8 @@ int main(int argc, char* argv[])
     FaceUses fu(sh.faceUses());
 
     test(fu.size() == 5, "Shell should have 5 faces.");
-    test(fu[0].orientation() == NEGATIVE,
+    test(
+      fu[0].orientation() == NEGATIVE,
       "Face-uses of sample tet should all have negative orientation.");
     test(fu[0].sense() == 0, "Face-uses of sample tet should be sense 0.");
     test(fu[0].volume() == vol, "Face-use did not report the correct volume it bounds.");
@@ -657,11 +685,13 @@ int main(int argc, char* argv[])
     loops = loops[0].containedLoops();
     test(loops.size() == 1, "First face-use should have 1 inner loop.");
     Loop innerLoop = loops[0];
-    test(innerLoop.face() == fu[0].face(),
+    test(
+      innerLoop.face() == fu[0].face(),
       "Inner loop of face's loop should report face as parent cell.");
     EdgeUses ieus = innerLoop.edgeUses();
     test(ieus.size() == 3, "Inner loop of face 0 should have 3 edges.");
-    test(ieus[0].faceUse() == fu[0],
+    test(
+      ieus[0].faceUse() == fu[0],
       "EdgeUse failed to report proper FaceUse associated with its Loop.");
 
     // Now test EdgeUse methods.
@@ -670,7 +700,8 @@ int main(int argc, char* argv[])
     // negatively-oriented face-use and the inner loop is a hole in the face.
     Vertices ieverts = ieus[0].vertices();
     test(ieverts.size() == 2, "Bad number of innerLoop edge vertices.");
-    test(ieverts[0].entity() == uids[4] && ieverts[1].entity() == uids[3],
+    test(
+      ieverts[0].entity() == uids[4] && ieverts[1].entity() == uids[3],
       "Bad innerLoop, edge 0 vertices.");
 
     // Let's look at uses of the same edge from different triangles.
@@ -684,7 +715,8 @@ int main(int argc, char* argv[])
           << ieus[i].sense() << " " << (ieus[i].orientation() == POSITIVE ? "+" : "-") << ")  "
           << oeus[i] << " (" << oeus[i].edge() << " " << oeus[i].sense() << " "
           << (oeus[i].orientation() == POSITIVE ? "+" : "-") << ")\n";
-      test(oeus[2 - i].edge() == ieus[i].edge() && oeus[2 - i].sense() != ieus[i].sense() &&
+      test(
+        oeus[2 - i].edge() == ieus[i].edge() && oeus[2 - i].sense() != ieus[i].sense() &&
           oeus[2 - i].orientation() != ieus[i].orientation(),
         msg.str());
       test(ieus[i].loop() == innerLoop, "EdgeUse did not point to proper parent loop.");
@@ -705,7 +737,8 @@ int main(int argc, char* argv[])
         test(!curChains.empty(), "EdgeUses should not have empty chains.");
         for (Chains::iterator chainIt = curChains.begin(); chainIt != curChains.end(); ++chainIt)
         {
-          test(!chainIt->containingChain().isValid(),
+          test(
+            !chainIt->containingChain().isValid(),
             "Top-level chains should not have parent chain.");
           Chains subchains = chainIt->containedChains();
           //std::cout << "        " << *chainIt << " with " << subchains.size() << " subchains\n";
@@ -725,7 +758,8 @@ int main(int argc, char* argv[])
     int n4 = 0;
     for (Vertices::iterator vertIt = allVerts.begin(); vertIt != allVerts.end(); ++vertIt)
     {
-      test(vertIt->uses<VertexUses>().size() == 1,
+      test(
+        vertIt->uses<VertexUses>().size() == 1,
         "All sample tet vertices should have a single use.");
       VertexUse vu(vertIt->uses<VertexUses>()[0]);
       int n = static_cast<int>(vu.chains().size());

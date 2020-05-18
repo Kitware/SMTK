@@ -49,8 +49,8 @@ public:
   smtkTypeMacro(smtk::attribute::ModelEntityItem);
   ~ModelEntityItem() override;
 
-  using ComponentItem::setValue;
   using ComponentItem::appendValue;
+  using ComponentItem::setValue;
 
   Item::Type type() const override;
 
@@ -58,9 +58,9 @@ public:
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
 
-  template <typename I>
+  template<typename I>
   bool setValues(I vbegin, I vend, std::size_t offset = 0);
-  template <typename I>
+  template<typename I>
   bool appendValues(I vbegin, I vend);
 
   bool appendValue(const smtk::model::EntityRef& val);
@@ -76,7 +76,7 @@ protected:
   ModelEntityItem(Item* owningItem, int myPosition, int mySubGroupPosition);
 };
 
-template <typename I>
+template<typename I>
 bool ModelEntityItem::setValues(I vbegin, I vend, std::size_t offset)
 {
   bool ok = false;
@@ -102,7 +102,7 @@ bool ModelEntityItem::setValues(I vbegin, I vend, std::size_t offset)
   return ok;
 }
 
-template <typename I>
+template<typename I>
 bool ModelEntityItem::appendValues(I vbegin, I vend)
 {
   return this->setValues(vbegin, vend, this->numberOfValues());

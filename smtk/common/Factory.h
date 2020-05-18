@@ -41,9 +41,9 @@ struct SMTKCORE_EXPORT Name
 struct SMTKCORE_EXPORT Index
 {
 };
-template <typename... Args>
+template<typename... Args>
 using Inputs = std::tuple<Args...>;
-}
+} // namespace factory
 
 /// A Factory is a class that constructs class instances that inherit from
 /// BaseType. A class can be created by keying off of its Type, it's Type Index
@@ -88,7 +88,7 @@ using Inputs = std::tuple<Args...>;
 ///                              .create(typeid(Derived1).hash_code(), 14);
 ///
 /// ...
-template <typename BaseType, typename... InputTypes>
+template<typename BaseType, typename... InputTypes>
 class SMTK_ALWAYS_EXPORT Factory
 {
   // Create functors declare a create method's input signature at class scope,
@@ -100,20 +100,20 @@ class SMTK_ALWAYS_EXPORT Factory
   // NOTE: the second template parameter is a dummy, needed because explicit
   // template specializations are not allowed within an unspecialized outer
   // class.
-  template <typename InputType, bool = true>
+  template<typename InputType, bool = true>
   class CreateWithInput
   {
   public:
     // Because the input type is a class template, it does not fit the forwarding
     // reference signature. We therefore need to support lvalue and rvalue
     // signatures independently.
-    template <typename Type>
+    template<typename Type>
     BaseType* operator()(InputType&& args) const
     {
       return new Type(args);
     }
 
-    template <typename Type>
+    template<typename Type>
     BaseType* operator()(InputType& args) const
     {
       return new Type(args);
@@ -122,17 +122,17 @@ class SMTK_ALWAYS_EXPORT Factory
 
   // Create functors are specialized for tuple inputs. Tuples are used to convey
   // multi-parameter constructor signatures.
-  template <typename... XInputTypes, bool dummy>
+  template<typename... XInputTypes, bool dummy>
   class CreateWithInput<std::tuple<XInputTypes...>, dummy>
   {
   public:
-    template <typename Type>
+    template<typename Type>
     BaseType* operator()(XInputTypes&&... args) const
     {
       return new Type(std::forward<XInputTypes>(args)...);
     }
 
-    template <typename Type>
+    template<typename Type>
     BaseType* operator()(XInputTypes&... args) const
     {
       return new Type(args...);
@@ -143,11 +143,11 @@ class SMTK_ALWAYS_EXPORT Factory
   // signature (InputType, defined at class-template scope) and derived type to
   // create (Type, defined explicitly using the class's constructor). This class
   // is the composing element for the factory's Metadata instance.
-  template <typename InputType, bool = true>
+  template<typename InputType, bool = true>
   class MetadataForInput
   {
   public:
-    template <typename Type>
+    template<typename Type>
     MetadataForInput(identity<Type>)
       : m_rcreate([](InputType&& args) -> BaseType* {
         return CreateWithInput<InputType>().template operator()<Type>(
@@ -169,14 +169,14 @@ class SMTK_ALWAYS_EXPORT Factory
     std::function<BaseType*(InputType&)> m_lcreate;
   };
 
-  template <typename... XInputTypes, bool dummy>
+  template<typename... XInputTypes, bool dummy>
   class MetadataForInput<std::tuple<XInputTypes...>, dummy>
   {
   public:
-    template <typename Type>
+    template<typename Type>
     MetadataForInput(identity<Type>)
       : m_create([](XInputTypes&... args) -> BaseType* {
-        return CreateWithInput<std::tuple<XInputTypes...> >().template operator()<Type>(args...);
+        return CreateWithInput<std::tuple<XInputTypes...>>().template operator()<Type>(args...);
       })
     {
     }
@@ -190,11 +190,11 @@ class SMTK_ALWAYS_EXPORT Factory
   // A specialization for default constructors that accept no parameters, since
   // the above generic signatures are not quite generic enough to handle empty
   // parameter packs.
-  template <bool dummy>
+  template<bool dummy>
   class MetadataForInput<void, dummy>
   {
   public:
-    template <typename Type>
+    template<typename Type>
     MetadataForInput(identity<Type>)
       : m_create([]() -> BaseType* { return new Type; })
     {
@@ -209,7 +209,7 @@ class SMTK_ALWAYS_EXPORT Factory
   // MetadataForInputs is the composite of each type of MetadataForInput,
   // templated across input signatures. There is one instance for each derived
   // type that the Factory can create.
-  template <typename... XInputTypes>
+  template<typename... XInputTypes>
   class MetadataForInputs : public MetadataForInput<XInputTypes>...
   {
   public:
@@ -219,7 +219,7 @@ class SMTK_ALWAYS_EXPORT Factory
     // input parameters.
     // using XInputTypes::create...;
 
-    template <typename Type>
+    template<typename Type>
     MetadataForInputs(identity<Type> identity)
       : MetadataForInput<XInputTypes>(identity)...
       , m_index(typeid(Type).hash_code())
@@ -254,23 +254,26 @@ class SMTK_ALWAYS_EXPORT Factory
   typedef boost::multi_index_container<
     Metadata,
     boost::multi_index::indexed_by<
-      boost::multi_index::hashed_unique<boost::multi_index::tag<ByIndex>,
-        boost::multi_index::const_mem_fun<Metadata, const std::size_t&, &Metadata::index> >,
-      boost::multi_index::hashed_unique<boost::multi_index::tag<ByName>,
-        boost::multi_index::const_mem_fun<Metadata, const std::string&, &Metadata::name> > > >
+      boost::multi_index::hashed_unique<
+        boost::multi_index::tag<ByIndex>,
+        boost::multi_index::const_mem_fun<Metadata, const std::size_t&, &Metadata::index>>,
+      boost::multi_index::hashed_unique<
+        boost::multi_index::tag<ByName>,
+        boost::multi_index::const_mem_fun<Metadata, const std::string&, &Metadata::name>>>>
     Container;
 
   // A convenience Interface is provided that singles out one of the three modes
   // of creation: by type, by type name and by type index.
-  template <typename TagType, bool>
+  template<typename TagType, bool>
   class Interface;
 
 public:
   /// Register a Type to the factory.
-  template <typename Type>
+  template<typename Type>
   bool registerType()
   {
-    static_assert(std::is_base_of<BaseType, Type>::value,
+    static_assert(
+      std::is_base_of<BaseType, Type>::value,
       "Cannot register a type that does not inherit from the Factory's BaseType.");
     return registerType(Metadata(identity<Type>()));
   }
@@ -282,14 +285,14 @@ public:
   }
 
   /// Register a tuple of Types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerTypes()
   {
     return registerTypes<0, Tuple>();
   }
 
   /// Unregister a Type.
-  template <typename Type>
+  template<typename Type>
   bool unregisterType()
   {
     return unregisterType(typeid(Type).hash_code());
@@ -308,14 +311,14 @@ public:
   }
 
   /// Unregister a tuple of Types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool unregisterTypes()
   {
     return unregisterTypes<0, Tuple>();
   }
 
   /// Determine whether or not a Type is available.
-  template <typename Type>
+  template<typename Type>
   bool contains() const
   {
     return contains(typeid(Type).hash_code());
@@ -336,7 +339,7 @@ public:
   }
 
   /// Create an instance of a Type.
-  template <typename Type, typename... Args>
+  template<typename Type, typename... Args>
   std::unique_ptr<Type> create(Args&&... args) const
   {
     return std::unique_ptr<Type>{ static_cast<Type*>(
@@ -344,7 +347,7 @@ public:
   }
 
   /// Create an instance of a Type using its type name.
-  template <typename... Args>
+  template<typename... Args>
   std::unique_ptr<BaseType> createFromName(const std::string& typeName, Args&&... args) const
   {
     auto& byName = m_metadata.template get<ByName>();
@@ -357,7 +360,7 @@ public:
   }
 
   /// Create an instance of a Type using its type name.
-  template <typename... Args>
+  template<typename... Args>
   std::unique_ptr<BaseType> createFromIndex(const std::size_t& typeIndex, Args&&... args) const
   {
     return createFromIndex_<Args...>(typeIndex, std::forward<Args>(args)...);
@@ -365,7 +368,7 @@ public:
 
   /// Access a convenience Interface for creating objects that singles out one of
   /// the three modes of creation: by type, by type name and by type index.
-  template <typename TagType>
+  template<typename TagType>
   Interface<TagType, true> get() const
   {
     return Interface<TagType, true>(*this);
@@ -380,8 +383,8 @@ private:
   // 2. One input parameter: access the metadata using the input parameter type
   // 3. Multiple input parameters: combine the parameters into a tuple and access
   //    the metadata using the tuple type
-  template <typename... Args>
-  typename std::enable_if<sizeof...(Args) == 0, std::unique_ptr<BaseType> >::type createFromIndex_(
+  template<typename... Args>
+  typename std::enable_if<sizeof...(Args) == 0, std::unique_ptr<BaseType>>::type createFromIndex_(
     const std::size_t& typeIndex) const
   {
     auto& byIndex = m_metadata.template get<ByIndex>();
@@ -394,7 +397,7 @@ private:
     }
     return std::unique_ptr<BaseType>();
   }
-  template <typename Arg>
+  template<typename Arg>
   std::unique_ptr<BaseType> createFromIndex_(const std::size_t& typeIndex, Arg&& arg) const
   {
     auto& byIndex = m_metadata.template get<ByIndex>();
@@ -409,9 +412,10 @@ private:
     }
     return std::unique_ptr<BaseType>();
   }
-  template <typename... Args>
-  typename std::enable_if<(sizeof...(Args) > 0), std::unique_ptr<BaseType> >::type createFromIndex_(
-    const std::size_t& typeIndex, Args&&... args) const
+  template<typename... Args>
+  typename std::enable_if<(sizeof...(Args) > 0), std::unique_ptr<BaseType>>::type createFromIndex_(
+    const std::size_t& typeIndex,
+    Args&&... args) const
   {
     auto& byIndex = m_metadata.template get<ByIndex>();
     auto search = byIndex.find(typeIndex);
@@ -419,7 +423,7 @@ private:
     {
       return std::unique_ptr<BaseType>{
         static_cast<
-          const MetadataForInput<std::tuple<typename std::remove_reference<Args>::type...> >&>(
+          const MetadataForInput<std::tuple<typename std::remove_reference<Args>::type...>>&>(
           *search)
           .create(args...)
       };
@@ -428,24 +432,24 @@ private:
   }
 
   // Helper methods for walking the types in a tuple.
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerTypes()
   {
     bool registered = this->registerType<typename std::tuple_element<I, Tuple>::type>();
     return registered && registerTypes<I + 1, Tuple>();
   }
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerTypes()
   {
     return true;
   }
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     bool unregistered = this->unregisterType<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && unregisterTypes<I + 1, Tuple>();
   }
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     return true;
@@ -472,17 +476,17 @@ private:
 
   // Specialization that uses the template Type to select the right metadata
   // type.
-  template <bool dummy>
+  template<bool dummy>
   class Interface<factory::Type, dummy> : private InterfaceBase
   {
   public:
-    template <typename Type>
+    template<typename Type>
     bool contains() const
     {
       return InterfaceBase::m_factory.template contains<Type>();
     }
 
-    template <typename Type, typename... Args>
+    template<typename Type, typename... Args>
     std::unique_ptr<Type> create(Args&&... args) const
     {
       return std::unique_ptr<Type>{ static_cast<Type*>(
@@ -502,7 +506,7 @@ private:
   };
 
   // Specialization that uses the type name to select the right metadata type.
-  template <bool dummy>
+  template<bool dummy>
   class Interface<factory::Name, dummy> : private InterfaceBase
   {
   public:
@@ -511,7 +515,7 @@ private:
       return InterfaceBase::m_factory.contains(typeName);
     }
 
-    template <typename... Args>
+    template<typename... Args>
     std::unique_ptr<BaseType> create(const std::string& typeName, Args&&... args) const
     {
       return InterfaceBase::m_factory.template createFromName<Args...>(
@@ -529,7 +533,7 @@ private:
   };
 
   // Specialization that uses the type index to select the right metadata type.
-  template <bool dummy>
+  template<bool dummy>
   class Interface<factory::Index, dummy> : private InterfaceBase
   {
   public:
@@ -538,7 +542,7 @@ private:
       return InterfaceBase::m_factory.contains(typeIndex);
     }
 
-    template <typename... Args>
+    template<typename... Args>
     std::unique_ptr<BaseType> create(const std::size_t& typeIndex, Args&&... args) const
     {
       return InterfaceBase::m_factory.template createFromIndex<Args...>(
@@ -558,7 +562,7 @@ private:
   // The container of metadata.
   Container m_metadata;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

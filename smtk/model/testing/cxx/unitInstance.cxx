@@ -47,7 +47,8 @@ Instance testInstanceClone(const Instance& instance, std::size_t num)
 
   smtkTest(result.rule() == "tabular", "Unexpected result rule.");
   smtkTest(result.hasFloatProperty("placements"), "No result placements.");
-  smtkTest(result.floatProperty("placements").size() == 3 * (num < sz ? num : sz),
+  smtkTest(
+    result.floatProperty("placements").size() == 3 * (num < sz ? num : sz),
     "Incorrect placement array size.");
   smtkTest(result.memberOf() == source, "Expected relation to source instance.");
   smtkTest(source.isMember(result), "Expected relation to subset instance.");
@@ -60,7 +61,7 @@ Instance testInstanceClone(const Instance& instance, std::size_t num)
 std::set<Instance> testInstanceDivide(const Instance& instance, bool merge)
 {
   Instance source(instance);
-  std::set<Instance> result = source.divide<std::set<Instance> >(merge);
+  std::set<Instance> result = source.divide<std::set<Instance>>(merge);
   if (merge)
   {
     smtkTest(!result.empty(), "Always expect merged division to have at least 1 output.");
@@ -78,7 +79,7 @@ std::set<Instance> testInstanceDivide(const Instance& instance, bool merge)
   return result;
 }
 
-template <typename Container>
+template<typename Container>
 void printDivideSummary(const char* msg, Container& div)
 {
   std::cout << msg << " has " << div.size() << " entries\n";
@@ -93,7 +94,7 @@ void printDivideSummary(const char* msg, Container& div)
   }
 }
 
-template <typename Container>
+template<typename Container>
 std::size_t sumDividedPlacementCounts(const Container& div)
 {
   std::size_t np = 0;

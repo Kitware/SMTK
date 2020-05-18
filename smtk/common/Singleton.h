@@ -15,7 +15,7 @@ namespace smtk
 {
 namespace common
 {
-template <typename T>
+template<typename T>
 class Singleton
 {
 public:
@@ -27,7 +27,7 @@ private:
   inline explicit Singleton() {}
 };
 
-template <typename T>
+template<typename T>
 typename T::Ptr& Singleton<T>::instance()
 {
   static typename T::Ptr instance = nullptr;
@@ -37,7 +37,7 @@ typename T::Ptr& Singleton<T>::instance()
   }
   return instance;
 }
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

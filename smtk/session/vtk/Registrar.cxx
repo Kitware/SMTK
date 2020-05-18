@@ -86,6 +86,6 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   operationManager->unregisterOperations<OperationList>();
 }
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk

@@ -35,13 +35,16 @@ namespace attribute
 
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ValueItemPtr& itemPtr);
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo);
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::ValueItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo);
 
 /**\ A helper function to process Derived type of valueItem and
    * covert it to json
    */
-template <typename ItemType>
+template<typename ItemType>
 static void processDerivedValueToJson(json& j, ItemType itemPtr)
 {
   if (itemPtr->isDiscrete())
@@ -92,9 +95,12 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
 /**\ A helper function to process json and
    * covert it to derived type of valueItem
    */
-template <typename ItemType, typename BasicType>
-static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& /*attRefInfo*/)
+template<typename ItemType, typename BasicType>
+static void processDerivedValueFromJson(
+  const json& j,
+  ItemType itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& /*attRefInfo*/)
 {
   auto resPtr = itemPtr->attribute()->attributeResource();
   if (itemPtr->isDiscrete())
@@ -130,8 +136,10 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Missing ExpressionName for Item: "
-            << itemPtr->name() << " in Attribute: " << itemPtr->attribute()->name());
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Missing ExpressionName for Item: " << itemPtr->name()
+                                              << " in Attribute: " << itemPtr->attribute()->name());
       }
 
       if (!expAtt)
@@ -210,7 +218,8 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
           auto query = iter->find("Expression");
           if (query != iter->end())
           {
-            smtkErrorMacro(smtk::io::Logger::instance(),
+            smtkErrorMacro(
+              smtk::io::Logger::instance(),
               "Encountered old style expression per element format for Item: "
                 << itemPtr->name() << " from Attribute: " << itemPtr->attribute()->name()
                 << " ignoring expression setting!");
@@ -241,7 +250,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

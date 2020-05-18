@@ -38,8 +38,8 @@ public:
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
 };
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk
 
 #endif

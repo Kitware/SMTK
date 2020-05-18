@@ -67,10 +67,10 @@ struct Property<std::vector<T> >
 // clang-format on
 
 /// Specialization of ValueAction to accommodate vectors of types.
-template <typename Type>
-struct ValueAction<std::vector<Type> >
+template<typename Type>
+struct ValueAction<std::vector<Type>>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
@@ -84,8 +84,8 @@ struct ValueAction<std::vector<Type> >
       value.push_back(Property<Type>::convert(str));
     }
 
-    static_cast<RuleFor<std::vector<Type> >*>(rule.get())->acceptableValue = [value](
-      const std::vector<Type>& val) -> bool {
+    static_cast<RuleFor<std::vector<Type>>*>(rule.get())->acceptableValue =
+      [value](const std::vector<Type>& val) -> bool {
       if (val.size() != value.size())
       {
         return false;
@@ -103,10 +103,10 @@ struct ValueAction<std::vector<Type> >
 };
 
 /// Specialization of ValueRegexAction to accommodate vectors of types.
-template <typename Type>
-struct ValueRegexAction<std::vector<Type> >
+template<typename Type>
+struct ValueRegexAction<std::vector<Type>>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
@@ -119,8 +119,8 @@ struct ValueRegexAction<std::vector<Type> >
       regex.emplace_back(it->str().c_str());
     }
 
-    static_cast<RuleFor<std::vector<Type> >*>(rule.get())->acceptableValue = [regex](
-      const std::vector<Type>& val) -> bool {
+    static_cast<RuleFor<std::vector<Type>>*>(rule.get())->acceptableValue =
+      [regex](const std::vector<Type>& val) -> bool {
       if (val.size() != regex.size())
       {
         return false;
@@ -136,8 +136,8 @@ struct ValueRegexAction<std::vector<Type> >
     };
   }
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

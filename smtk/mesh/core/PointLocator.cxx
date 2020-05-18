@@ -21,7 +21,9 @@ PointLocator::PointLocator(const smtk::mesh::PointSet& ps)
 {
 }
 
-PointLocator::PointLocator(const smtk::mesh::ResourcePtr resource, std::size_t numPoints,
+PointLocator::PointLocator(
+  const smtk::mesh::ResourcePtr resource,
+  std::size_t numPoints,
   const std::function<std::array<double, 3>(std::size_t)>& coordinates)
   : m_locator(resource->interface()->pointLocator(numPoints, coordinates))
 {
@@ -36,5 +38,5 @@ void PointLocator::find(double x, double y, double z, double radius, LocatorResu
 {
   return m_locator->locatePointsWithinRadius(x, y, z, radius, results);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

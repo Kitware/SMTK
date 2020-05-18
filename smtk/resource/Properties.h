@@ -42,21 +42,21 @@ public:
   virtual void eraseId(const smtk::common::UUID&) = 0;
 };
 
-template <typename Type>
+template<typename Type>
 class PropertiesOfType;
 
 /// A specialization of the smtk::common::PropertiesContainer for a single type.
 /// PropertiesOfType provides a non-templated API for accessing property
 /// information, as well as logic for erasing properties associated with a UUID
 /// (needed for cleaning up after components are deleted).
-template <typename Type>
-class PropertiesOfType<std::unordered_map<smtk::common::UUID, Type> >
-  : public smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type> >,
-    public PropertiesBase
+template<typename Type>
+class PropertiesOfType<std::unordered_map<smtk::common::UUID, Type>>
+  : public smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type>>
+  , public PropertiesBase
 {
   friend class Properties;
   PropertiesOfType()
-    : smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type> >()
+    : smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type>>()
     , PropertiesBase()
   {
   }
@@ -80,13 +80,13 @@ class SMTKCORE_EXPORT Properties : public smtk::common::TypeMapBase<std::string>
 public:
   Properties() {}
 
-  template <typename List>
+  template<typename List>
   Properties()
   {
     insertPropertyTypes<List>();
   }
 
-  template <typename List>
+  template<typename List>
   Properties(identity<List>)
   {
     insertPropertyTypes<List>();
@@ -101,7 +101,7 @@ public:
     }
   }
 
-  template <typename Type>
+  template<typename Type>
   void eraseIdForType(const smtk::common::UUID& id)
   {
     dynamic_cast<PropertiesBase&>(this->get<Type>()).eraseId(id);
@@ -110,7 +110,7 @@ public:
   // TODO: Putting the following two methods in the public API breaks RAII.
   // There needs to be a way for a derived resource to augment its types of
   // properties, though.
-  template <typename Type>
+  template<typename Type>
   void insertPropertyType()
   {
     std::string key = smtk::common::typeName<Type>();
@@ -121,26 +121,26 @@ public:
     }
   }
 
-  template <typename Tuple>
+  template<typename Tuple>
   void insertPropertyTypes()
   {
     Properties::insertPropertyTypes<0, Tuple>();
   }
 
 private:
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertPropertyTypes()
   {
     this->insertPropertyType<typename std::tuple_element<I, Tuple>::type>();
     Properties::insertPropertyTypes<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertPropertyTypes()
   {
   }
 };
-}
+} // namespace detail
 
 class Component;
 class Resource;
@@ -149,14 +149,15 @@ class Properties;
 /// A specialization of the Properties container for a single type.
 /// ConstPropertiesOfType provides a non-templated API for accessing property
 /// information.
-template <typename Type>
+template<typename Type>
 class ConstPropertiesOfType
 {
   using IndexedType = std::unordered_map<smtk::common::UUID, Type>;
 
   friend class Properties;
   ConstPropertiesOfType(
-    const smtk::common::UUID& id, const detail::PropertiesOfType<IndexedType>& properties)
+    const smtk::common::UUID& id,
+    const detail::PropertiesOfType<IndexedType>& properties)
     : m_id(id)
     , m_properties(properties)
   {
@@ -216,7 +217,7 @@ private:
 /// A specialization of the Properties container for a single type.
 /// PropertiesOfType provides a non-templated API for accessing property
 /// information.
-template <typename Type>
+template<typename Type>
 class PropertiesOfType
 {
   using IndexedType = std::unordered_map<smtk::common::UUID, Type>;
@@ -324,66 +325,68 @@ private:
 class SMTKCORE_EXPORT Properties
 {
 public:
-  template <typename Type>
+  template<typename Type>
   using Indexed = std::unordered_map<smtk::common::UUID, Type>;
 
   /// Check whether a property associated with \a key is present.
-  template <typename Type>
+  template<typename Type>
   bool contains(const std::string& key) const
   {
     return get<Type>().contains(key);
   }
 
   /// Insert (\a key, \a value ) into the container.
-  template <typename Type>
+  template<typename Type>
   bool insert(const std::string& key, const Type& value)
   {
     return get<Type>().insert(key, value);
   }
 
   /// Emplace (\a key, \a value ) into the container.
-  template <typename Type>
+  template<typename Type>
   bool emplace(const std::string& key, Type&& value)
   {
     return get<Type>().emplace(key, std::forward<Type>(value));
   }
 
   /// Erase property indexed by \a key from the container.
-  template <typename Type>
+  template<typename Type>
   void erase(const std::string& key)
   {
     return get<Type>().erase(key);
   }
 
   /// Access property indexed by \a key.
-  template <typename Type>
+  template<typename Type>
   Type& at(const std::string& key)
   {
     return get<Type>().at(key);
   }
 
   /// Access property indexed by \a key.
-  template <typename Type>
+  template<typename Type>
   const Type& at(const std::string& key) const
   {
     return get<Type>().at(key);
   }
 
   /// Access properties of type \a Type.
-  template <typename Type>
+  template<typename Type>
   PropertiesOfType<Type> get()
   {
-    return PropertiesOfType<Type>(id(),
-      static_cast<detail::PropertiesOfType<Indexed<Type> >&>(properties().get<Indexed<Type> >()));
+    return PropertiesOfType<Type>(
+      id(),
+      static_cast<detail::PropertiesOfType<Indexed<Type>>&>(properties().get<Indexed<Type>>()));
   }
 
   /// Access properties of type \a Type.
-  template <typename Type>
+  template<typename Type>
   const ConstPropertiesOfType<Type> get() const
   {
     return ConstPropertiesOfType<Type>(
-      id(), static_cast<const detail::PropertiesOfType<Indexed<Type> >&>(
-              properties().get<Indexed<Type> >()));
+      id(),
+      static_cast<const detail::PropertiesOfType<Indexed<Type>>&>(
+        properties().get<Indexed<Type>>()));
   }
 
 private:
@@ -405,8 +408,13 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
 
   /// The default value types for all resources and components are int, double,
   /// string, and vectors of these types.
-  typedef std::tuple<Indexed<long>, Indexed<double>, Indexed<std::string>,
-    Indexed<std::vector<long> >, Indexed<std::vector<double> >, Indexed<std::vector<std::string> > >
+  typedef std::tuple<
+    Indexed<long>,
+    Indexed<double>,
+    Indexed<std::string>,
+    Indexed<std::vector<long>>,
+    Indexed<std::vector<double>>,
+    Indexed<std::vector<std::string>>>
     PropertyTypes;
 
 public:
@@ -416,10 +424,10 @@ public:
   // TODO: Putting the following method in the public API breaks RAII. There
   // needs to be a way for a derived resource to augment its types of
   // properties, though.
-  template <typename Type>
+  template<typename Type>
   void insertPropertyType()
   {
-    m_data.insertPropertyType<Indexed<Type> >();
+    m_data.insertPropertyType<Indexed<Type>>();
   }
 
 private:
@@ -449,8 +457,8 @@ class SMTKCORE_EXPORT ComponentProperties : public smtk::resource::Properties
 
   const Component* m_component;
 };
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk
 
 #endif

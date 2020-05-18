@@ -53,7 +53,9 @@ protected:
   /*
   void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
   */
-  int handleOperationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
+  int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
     const smtk::operation::Operation::Result& res) override;
   void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
 
@@ -63,7 +65,7 @@ protected:
   smtk::view::DescriptivePhrasePtr m_root;
   std::function<bool(const smtk::resource::Resource&)> m_filter;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

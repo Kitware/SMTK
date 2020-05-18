@@ -151,10 +151,15 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
     // Observe all changes to the model, which includes calling the observer on all
     // existing top-level phrases.
     m_modelObserver = m_model->observers().insert(
-      [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
-        const std::vector<int>& src, const std::vector<int>& dst,
+      [this](
+        smtk::view::DescriptivePhrasePtr phrase,
+        smtk::view::PhraseModelEvent event,
+        const std::vector<int>& src,
+        const std::vector<int>& dst,
         const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },
-      0, true, modelDesc.str());
+      0,
+      true,
+      modelDesc.str());
   }
 }
 
@@ -251,8 +256,8 @@ int qtDescriptivePhraseModel::rowCount(const QModelIndex& owner) const
 }
 
 /// Return something to display in the table header.
-QVariant qtDescriptivePhraseModel::headerData(
-  int section, Qt::Orientation orientation, int role) const
+QVariant qtDescriptivePhraseModel::headerData(int section, Qt::Orientation orientation, int role)
+  const
 {
   if (role != Qt::DisplayRole)
   {
@@ -472,8 +477,11 @@ Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
   return Qt::CopyAction;
 }
 
-void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr phrase,
-  smtk::view::PhraseModelEvent event, const std::vector<int>& src, const std::vector<int>& dst,
+void qtDescriptivePhraseModel::updateObserver(
+  smtk::view::DescriptivePhrasePtr phrase,
+  smtk::view::PhraseModelEvent event,
+  const std::vector<int>& src,
+  const std::vector<int>& dst,
   const std::vector<int>& range)
 {
   (void)phrase;
@@ -506,5 +514,5 @@ void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr p
       break;
   }
 }
-}
-}
+} // namespace extension
+} // namespace smtk

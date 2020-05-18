@@ -39,7 +39,9 @@ public:
 
   /// Register an IO operation identified by the unique names of the resource
   /// and operation and the file item name.
-  bool registerOperation(const std::string&, const std::string&,
+  bool registerOperation(
+    const std::string&,
+    const std::string&,
     const std::string& fileItemName = m_defaultFileItemName);
 
   bool requiresFileItem() const override { return false; }
@@ -47,7 +49,7 @@ public:
   // Obtain the operation associated with the resource name.
   std::shared_ptr<smtk::operation::Operation> writerForResource(const std::string&) const;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_WriterGroup_h

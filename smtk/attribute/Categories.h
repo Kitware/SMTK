@@ -123,7 +123,9 @@ public:
     bool passes(const std::set<std::string>& cats) const;
     bool passes(const std::string& cat) const;
     ///@}
-    static bool passesCheck(const std::set<std::string>& cats, const std::set<std::string>& testSet,
+    static bool passesCheck(
+      const std::set<std::string>& cats,
+      const std::set<std::string>& testSet,
       Set::CombinationMode comboMode);
     ///\brief Comparison operator needed to create a set of Categories::Sets
     bool operator<(const Set& rhs) const;
@@ -205,6 +207,6 @@ public:
 private:
   std::set<Set> m_sets;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 #endif

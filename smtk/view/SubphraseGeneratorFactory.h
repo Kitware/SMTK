@@ -41,7 +41,7 @@ public:
     return this->createFromName(sgType);
   }
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

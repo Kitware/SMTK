@@ -154,7 +154,9 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 
   // Define an observer that adds all created resources to the resource manager.
   m_resourceObserver = this->observers().insert(
-    [&, weakRMPtr](const smtk::operation::Operation& /*unused*/, smtk::operation::EventType event,
+    [&, weakRMPtr](
+      const smtk::operation::Operation& /*unused*/,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result result) {
       auto rsrcManager = weakRMPtr.lock();
       if (!rsrcManager)
@@ -174,8 +176,8 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 
       // Gather all resource items
       std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-      std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
-        smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
+      std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
+        [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
       result->filterItems(resourceItems, filter);
 
       // For each resource item found...
@@ -235,5 +237,5 @@ std::set<std::string> Manager::availableGroups() const
   }
   return available;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

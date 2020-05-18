@@ -42,34 +42,46 @@ public:
 
   //Load the domain sets from a moab data file as a new resource into the
   //given manager.
-  smtk::mesh::ResourcePtr operator()(const std::string& filePath,
+  smtk::mesh::ResourcePtr operator()(
+    const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface,
     mesh::Subset subset = mesh::Subset::EntireResource) const;
-  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+  bool operator()(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr resource,
     mesh::Subset subset = mesh::Subset::EntireResource) const;
 };
 
-SMTKCORE_EXPORT smtk::mesh::ResourcePtr readMesh(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, mesh::Subset subset = mesh::Subset::EntireResource);
+SMTKCORE_EXPORT smtk::mesh::ResourcePtr readMesh(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  mesh::Subset subset = mesh::Subset::EntireResource);
 // Explicit functions for each subset type
 SMTKCORE_EXPORT smtk::mesh::ResourcePtr readEntireResource(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::ResourcePtr readDomain(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::ResourcePtr readDirichlet(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::ResourcePtr readNeumann(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface);
 
-SMTKCORE_EXPORT bool readMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+SMTKCORE_EXPORT bool readMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   mesh::Subset subset = mesh::Subset::EntireResource);
 // Explicit functions for each subset type
 SMTKCORE_EXPORT bool readEntireResource(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource);
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool readDomain(const std::string& filePath, smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool readDirichlet(const std::string& filePath, smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool readNeumann(const std::string& filePath, smtk::mesh::ResourcePtr resource);
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif

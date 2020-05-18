@@ -22,6 +22,6 @@ std::size_t Query::typeIndex()
 {
   return std::type_index(typeid(Query)).hash_code();
 }
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk

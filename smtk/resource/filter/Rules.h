@@ -24,7 +24,7 @@ namespace filter
 class SMTKCORE_EXPORT Rules
 {
 public:
-  typedef std::vector<std::unique_ptr<smtk::resource::filter::Rule> > Container;
+  typedef std::vector<std::unique_ptr<smtk::resource::filter::Rule>> Container;
 
   Rules() = default;
 
@@ -46,7 +46,7 @@ public:
     return true;
   }
 
-  template <typename... Args>
+  template<typename... Args>
   void emplace_back(Args&&... args)
   {
     return m_data.emplace_back(std::forward<Args>(args)...);
@@ -61,8 +61,8 @@ public:
 private:
   Container m_data;
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

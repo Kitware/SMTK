@@ -22,7 +22,7 @@ namespace delaunay
 {
 SMTKDELAUNAYEXT_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
 }
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

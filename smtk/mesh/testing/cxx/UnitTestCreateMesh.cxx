@@ -53,7 +53,8 @@ void verify_create_empty_mesh(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet result = mr->createMesh(emptyCellSet);
 
   test(result.is_empty(), "empty cellset should create empty meshset");
-  test(numMeshesBeforeCreation == mr->numberOfMeshes(),
+  test(
+    numMeshesBeforeCreation == mr->numberOfMeshes(),
     "the number of meshes shouldn't change when adding an empty mesh");
 }
 
@@ -154,7 +155,7 @@ void verify_create_mesh_marks_modified()
   verify_create_mesh(mr);
   test(mr->isModified(), "resource should be marked as modified now");
 }
-}
+} // namespace
 
 int UnitTestCreateMesh(int /*unused*/, char** const /*unused*/)
 {

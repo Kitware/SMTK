@@ -144,9 +144,9 @@ void AvailableOperations::setWorkflowFilter(OperationFilterSort wf)
   m_workflowFilter = wf;
   if (m_workflowFilter)
   {
-    m_workflowFilterObserverId =
-      m_workflowFilter->observers().insert([this]() { this->workflowFilterModified(); },
-        "Update available operations to reflect a change in the workflow filter");
+    m_workflowFilterObserverId = m_workflowFilter->observers().insert(
+      [this]() { this->workflowFilterModified(); },
+      "Update available operations to reflect a change in the workflow filter");
   }
   else
   {
@@ -155,7 +155,8 @@ void AvailableOperations::setWorkflowFilter(OperationFilterSort wf)
 }
 
 void AvailableOperations::operationMetadataChanged(
-  const smtk::operation::Metadata& operMeta, bool adding)
+  const smtk::operation::Metadata& operMeta,
+  bool adding)
 {
   (void)operMeta;
   (void)adding;
@@ -191,8 +192,11 @@ const AvailableOperations::Data* AvailableOperations::operationData(const Index&
   return &it->second;
 }
 
-void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
-  smtk::view::SelectionPtr selectionIn, int selectionMaskIn, bool exactSelectionIn,
+void AvailableOperations::workingSet(
+  smtk::operation::ManagerPtr operationsIn,
+  smtk::view::SelectionPtr selectionIn,
+  int selectionMaskIn,
+  bool exactSelectionIn,
   OperationIndexSet& workingSetOut)
 {
   smtk::operation::InternalGroup internalOperations(operationsIn);
@@ -207,7 +211,8 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
     std::set<smtk::resource::PersistentObjectPtr> actual;
     for (const auto& entry : selnMap)
     {
-      if ((exactSelectionIn && ((entry.second & selectionMaskIn) == selectionMaskIn)) ||
+      if (
+        (exactSelectionIn && ((entry.second & selectionMaskIn) == selectionMaskIn)) ||
         (!exactSelectionIn && (entry.second & selectionMaskIn)))
       {
         actual.insert(entry.first);
@@ -278,7 +283,8 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
       }
       if (match)
       {
-        if ((!extensible && numSel == numRequired) ||
+        if (
+          (!extensible && numSel == numRequired) ||
           (extensible && numSel >= numRequired && (maxAllowed == 0 || numSel <= maxAllowed)))
         {
           // Do not present operations marked as internal
@@ -303,8 +309,10 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
   }
 }
 
-void AvailableOperations::availableOperations(const OperationIndexSet& workingSetIn,
-  smtk::workflow::OperationFilterSortPtr filterIn, OperationIndexArray& out)
+void AvailableOperations::availableOperations(
+  const OperationIndexSet& workingSetIn,
+  smtk::workflow::OperationFilterSortPtr filterIn,
+  OperationIndexArray& out)
 {
   if (filterIn)
   {
@@ -324,8 +332,12 @@ void AvailableOperations::computeFromSelection()
     return;
   }
   OperationIndexSet workingSet;
-  AvailableOperations::workingSet(m_operationManager, m_useSelection ? m_selection : nullptr,
-    m_selectionMask, m_selectionExact, workingSet);
+  AvailableOperations::workingSet(
+    m_operationManager,
+    m_useSelection ? m_selection : nullptr,
+    m_selectionMask,
+    m_selectionExact,
+    workingSet);
   if (m_workingSet == workingSet)
   {
     // The selection changed, but the set of available operators didn't.

@@ -47,8 +47,10 @@ vtkPolyDataStatsFilter::~vtkPolyDataStatsFilter()
   this->Transform->Delete();
 }
 
-int vtkPolyDataStatsFilter::RequestData(vtkInformation* /*request*/,
-  vtkInformationVector** inputVector, vtkInformationVector* /*outputVector*/)
+int vtkPolyDataStatsFilter::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* /*outputVector*/)
 {
   //Reset Information before recomputing
   this->AreaStats[0] = this->AreaStats[1] = this->AreaStats[2] = 0.0;

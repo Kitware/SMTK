@@ -56,7 +56,8 @@ oscillatorAuxiliaryGeometryExtension::oscillatorAuxiliaryGeometryExtension()
 oscillatorAuxiliaryGeometryExtension::~oscillatorAuxiliaryGeometryExtension() = default;
 
 bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
-  smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
+  smtk::model::AuxiliaryGeometry& entity,
+  std::vector<double>& bboxOut)
 {
   if (!entity.isValid() || !entity.hasStringProperty("oscillator_type"))
   {
@@ -149,5 +150,7 @@ oscillatorAuxiliaryGeometryExtension::generateOscillatorSourceRepresentation(
 }
 
 smtkDeclareExtension(
-  /*SMTKRGGSESSION_EXPORT*/, oscillator_auxiliary_geometry, oscillatorAuxiliaryGeometryExtension);
+  /*SMTKRGGSESSION_EXPORT*/,
+  oscillator_auxiliary_geometry,
+  oscillatorAuxiliaryGeometryExtension);
 smtkComponentInitMacro(smtk_oscillator_auxiliary_geometry_extension);

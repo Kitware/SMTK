@@ -47,35 +47,38 @@ const std::string colorProperty = "color";
 
 // If there is no color property on the object, default to coloring it gray.
 const std::string defaultFillColor = "#808080";
-}
+} // namespace
 
 namespace smtk
 {
 namespace view
 {
 std::string SVGIconConstructor::operator()(
-  const smtk::resource::PersistentObject& object, const std::string& secondaryColor) const
+  const smtk::resource::PersistentObject& object,
+  const std::string& secondaryColor) const
 {
   std::string fill = defaultFillColor;
 
-  if (object.properties().contains<std::vector<double> >(colorProperty))
+  if (object.properties().contains<std::vector<double>>(colorProperty))
   {
-    auto& vec = object.properties().at<std::vector<double> >(colorProperty);
+    auto& vec = object.properties().at<std::vector<double>>(colorProperty);
     if (vec.size() >= 3)
     {
       fill = smtk::common::Color::floatRGBToString(vec.data());
     }
   }
 
-  std::string svg =
-    std::regex_replace(std::regex_replace(this->svg(object), std::regex(m_defaultColor), fill),
-      std::regex(m_secondaryColor), secondaryColor);
+  std::string svg = std::regex_replace(
+    std::regex_replace(this->svg(object), std::regex(m_defaultColor), fill),
+    std::regex(m_secondaryColor),
+    secondaryColor);
 
   return svg;
 }
 
 std::string DefaultIconConstructor::operator()(
-  const smtk::resource::PersistentObject&, const std::string&) const
+  const smtk::resource::PersistentObject&,
+  const std::string&) const
 {
   return "";
 }
@@ -154,5 +157,5 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
     return model_svg;
   }
 }
-}
-}
+} // namespace view
+} // namespace smtk

@@ -41,7 +41,11 @@ namespace model
   * in these cases, you may pass any value.
   */
 Arrangement Arrangement::Construct(
-  EntityTypeBits t, ArrangementKind k, int relationIdx, int sense, Orientation orientation)
+  EntityTypeBits t,
+  ArrangementKind k,
+  int relationIdx,
+  int sense,
+  Orientation orientation)
 {
   // Do not construct an arrangement if its inverse is invalid:
   if (Dual(t, k) == KINDS_OF_ARRANGEMENTS)
@@ -117,8 +121,8 @@ Arrangement Arrangement::Construct(
   * is NEGATIVE) or 1 (when \a orient is POSITIVE).
   * the values of the enum should be used.
   */
-Arrangement Arrangement::CellHasUseWithIndexSenseAndOrientation(
-  int relationIdx, int sense, Orientation orient)
+Arrangement
+Arrangement::CellHasUseWithIndexSenseAndOrientation(int relationIdx, int sense, Orientation orient)
 {
   Arrangement result;
   result.details().push_back(relationIdx);
@@ -268,7 +272,9 @@ Arrangement Arrangement::EntitySubsetOfWithIndex(int relationIdx)
   *       orientation (\a orient) from a cell's HAS_USE arrangement.
   */
 bool Arrangement::IndexSenseAndOrientationFromCellHasUse(
-  int& relationIdx, int& sense, Orientation& orient) const
+  int& relationIdx,
+  int& sense,
+  Orientation& orient) const
 {
   if (m_details.size() != 3)
   {
@@ -423,7 +429,9 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   * specific circumstances where the context is known.)
   */
 bool Arrangement::relations(
-  smtk::common::UUIDArray& relsOut, const EntityPtr ent, ArrangementKind k) const
+  smtk::common::UUIDArray& relsOut,
+  const EntityPtr ent,
+  ArrangementKind k) const
 {
   if (!ent)
     return false;
@@ -596,8 +604,8 @@ bool Arrangement::relations(
   * accumulate relations from multiple arrangements into a single array
   * for later processing.
   */
-bool Arrangement::relationIndices(
-  std::vector<int>& idxsOut, const EntityPtr ent, ArrangementKind k) const
+bool Arrangement::relationIndices(std::vector<int>& idxsOut, const EntityPtr ent, ArrangementKind k)
+  const
 {
   if (!ent)
     return false;

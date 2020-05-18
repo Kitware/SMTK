@@ -44,7 +44,8 @@ void qtSMTKUtilities::registerItemConstructor(const std::string& itemName, qtIte
 }
 
 void qtSMTKUtilities::registerModelViewConstructor(
-  const std::string& viewName, smtk::extension::qtModelViewConstructor viewc)
+  const std::string& viewName,
+  smtk::extension::qtModelViewConstructor viewc)
 {
   qtSMTKUtilities::s_modelViewConstructors[viewName] = viewc;
 }
@@ -56,7 +57,8 @@ void qtSMTKUtilities::updateItemConstructors(smtk::extension::qtUIManager* uiMan
 
   SMTKItemConstructorMap::const_iterator it;
   for (it = qtSMTKUtilities::itemConstructors().begin();
-       it != qtSMTKUtilities::itemConstructors().end(); ++it)
+       it != qtSMTKUtilities::itemConstructors().end();
+       ++it)
   {
     uiMan->registerItemConstructor(it->first, it->second);
   }
@@ -88,7 +90,8 @@ smtk::common::UUID qtSMTKUtilities::QVariantToUUID(QVariant variant)
 }
 
 smtk::model::EntityRef qtSMTKUtilities::QVariantToEntityRef(
-  QVariant variant, smtk::model::ResourcePtr mResource)
+  QVariant variant,
+  smtk::model::ResourcePtr mResource)
 {
   smtk::common::UUID uuid = qtSMTKUtilities::QVariantToUUID(variant);
   return smtk::model::EntityRef(mResource, uuid);

@@ -33,15 +33,17 @@ namespace qt
   *
   * \sa smtk::extension::paraview::appcomponents::VisibilityBadge
   */
-class SMTKQTEXT_EXPORT VisibilityBadge : public QObject, public smtk::view::Badge
+class SMTKQTEXT_EXPORT VisibilityBadge
+  : public QObject
+  , public smtk::view::Badge
 {
   Q_OBJECT
 public:
   VisibilityBadge();
   virtual ~VisibilityBadge();
 };
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk
 
 #endif

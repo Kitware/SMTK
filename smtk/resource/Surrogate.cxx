@@ -23,7 +23,10 @@ namespace smtk
 namespace resource
 {
 
-Surrogate::Surrogate(const Index& index, const std::string& typeName, const smtk::common::UUID& id,
+Surrogate::Surrogate(
+  const Index& index,
+  const std::string& typeName,
+  const smtk::common::UUID& id,
   const std::string& location)
   : m_index(index)
   , m_typeName(typeName)
@@ -88,8 +91,9 @@ bool Surrogate::fetch(const ManagerPtr& manager) const
     // If we need to read the resource, select the resource type by type name
     // and NOT by type index. The type name is guaranteed to be persistent
     // across platforms and process threads, whereas the type index is not.
-    return (resource != nullptr ? this->resolve(resource)
-                                : this->resolve(manager->read(m_typeName, m_location)));
+    return (
+      resource != nullptr ? this->resolve(resource)
+                          : this->resolve(manager->read(m_typeName, m_location)));
   }
 
   // If the manager is invalid, there's not much we can do.
@@ -117,10 +121,12 @@ bool Surrogate::resolve(const ResourcePtr& resource) const
     // If we have reached this point, there is a discrepancy between the
     // Surrogate data and the resource from file that the surrogate describes.
     // We warn to this effect and return with failure.
-    smtkErrorMacro(smtk::io::Logger::instance(), "Resource "
-        << resource << " is expected to be of type < " << m_typeName << " > and have id < "
-        << m_id.toString() << " > but instead is of type < " << resource->typeName()
-        << " > and has id < " << resource->id().toString() << " >.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Resource " << resource << " is expected to be of type < " << m_typeName
+                  << " > and have id < " << m_id.toString() << " > but instead is of type < "
+                  << resource->typeName() << " > and has id < " << resource->id().toString()
+                  << " >.");
   }
 
   return false;

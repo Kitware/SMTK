@@ -50,10 +50,15 @@ pqSMTKDisplayAttributeOnLoadBehavior::pqSMTKDisplayAttributeOnLoadBehavior(QObje
 
   // Track server connects/disconnects
   auto rsrcBehavior = pqSMTKBehavior::instance();
-  QObject::connect(rsrcBehavior, SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
-    this, SLOT(observeResourcesOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
-  QObject::connect(rsrcBehavior,
-    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)), this,
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
+    SLOT(observeResourcesOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
     SLOT(unobserveResourcesOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
 }
 
@@ -77,7 +82,8 @@ pqSMTKDisplayAttributeOnLoadBehavior* pqSMTKDisplayAttributeOnLoadBehavior::inst
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -103,7 +109,8 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::unobserveResourcesOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -125,7 +132,8 @@ void pqSMTKDisplayAttributeOnLoadBehavior::unobserveResourcesOnServer(
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
-  const smtk::resource::Resource& rsrc, smtk::resource::EventType event)
+  const smtk::resource::Resource& rsrc,
+  smtk::resource::EventType event)
 {
   auto attr = dynamic_cast<const smtk::attribute::Resource*>(&rsrc);
   if (attr)

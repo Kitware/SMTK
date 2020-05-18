@@ -45,11 +45,11 @@ public:
   {
     return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
                      : (static_cast<unsigned int>(ith) >= m_itemDefs.size()
-                           ? smtk::attribute::ItemDefinitionPtr()
-                           : m_itemDefs[static_cast<std::size_t>(ith)]);
+                          ? smtk::attribute::ItemDefinitionPtr()
+                          : m_itemDefs[static_cast<std::size_t>(ith)]);
   }
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
-  template <typename T>
+  template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
     const std::string& inName)
   {
@@ -142,8 +142,8 @@ public:
   std::string subGroupLabel(std::size_t element) const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
   void buildGroup(smtk::attribute::GroupItem* group, int subGroupPosition) const;
 
   smtk::attribute::ItemDefinitionPtr createCopy(
@@ -151,10 +151,12 @@ public:
 
 protected:
   GroupItemDefinition(const std::string& myname);
-  virtual void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  virtual void applyCategories(
+    const smtk::attribute::Categories& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(
-    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent) override;
+    const unsigned int& readLevelFromParent,
+    const unsigned int& writeLevelFromParent) override;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;
@@ -179,7 +181,7 @@ inline int GroupItemDefinition::findItemPosition(const std::string& inName) cons
   }
   return it->second;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_GroupItemDefinition_h */

@@ -38,29 +38,36 @@ public:
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 
-  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+  bool operator()(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr resource,
     mesh::Subset subset = mesh::Subset::EntireResource) const;
   bool operator()(
-    smtk::mesh::ResourcePtr resource, mesh::Subset subset = mesh::Subset::EntireResource) const;
+    smtk::mesh::ResourcePtr resource,
+    mesh::Subset subset = mesh::Subset::EntireResource) const;
 };
 
-SMTKCORE_EXPORT bool writeMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+SMTKCORE_EXPORT bool writeMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   mesh::Subset subset = mesh::Subset::EntireResource);
 SMTKCORE_EXPORT bool writeEntireResource(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource);
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource);
 // Explicit functions for each subset type
 SMTKCORE_EXPORT bool writeDomain(const std::string& filePath, smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool writeDirichlet(const std::string& filePath, smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool writeNeumann(const std::string& filePath, smtk::mesh::ResourcePtr resource);
 
 SMTKCORE_EXPORT bool writeMesh(
-  smtk::mesh::ResourcePtr resource, mesh::Subset subset = mesh::Subset::EntireResource);
+  smtk::mesh::ResourcePtr resource,
+  mesh::Subset subset = mesh::Subset::EntireResource);
 // Explicit functions for each subset type
 SMTKCORE_EXPORT bool writeEntireResource(smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool writeDomain(smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool writeDirichlet(smtk::mesh::ResourcePtr resource);
 SMTKCORE_EXPORT bool writeNeumann(smtk::mesh::ResourcePtr resource);
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif

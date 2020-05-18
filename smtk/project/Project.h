@@ -63,7 +63,7 @@ public:
   std::string importLocation(smtk::resource::ResourcePtr res) const;
 
   /// Return resource of specified type and identifier
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> findResource(const std::string& identifier) const;
 
   /// Load model file and add to the project resources.
@@ -72,7 +72,10 @@ public:
   /// identifer. In other words, you can add a model, but not replace an existing one.
   /// This method does not add resource links to the input model; any required links
   /// must be created in the application code.
-  bool addModel(const std::string& location, const std::string& identifier, bool copyNativeFile,
+  bool addModel(
+    const std::string& location,
+    const std::string& identifier,
+    bool copyNativeFile,
     bool useVTKSession);
 
 protected:
@@ -83,8 +86,10 @@ protected:
   void setCoreManagers(smtk::resource::ManagerPtr, smtk::operation::ManagerPtr);
 
   /// Create project from application-provided specification
-  bool build(smtk::attribute::AttributePtr specification,
-    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool replaceExistingDirectory = false);
+  bool build(
+    smtk::attribute::AttributePtr specification,
+    smtk::io::Logger& logger = smtk::io::Logger::instance(),
+    bool replaceExistingDirectory = false);
 
   bool save(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
@@ -96,31 +101,40 @@ protected:
   // Copy contents to a differnet project (for save-as functionality).
   // Note that this method is *destructive* to the this project, which should
   // be closed (and not saved) after this method is used.
-  bool copyTo(
-    ProjectPtr thatProject, smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
+  bool copyTo(ProjectPtr thatProject, smtk::io::Logger& logger = smtk::io::Logger::instance())
+    const;
 
   // Remaining calls are for internal use
 
   bool importModels(const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger);
 
-  bool importModel(const std::string& location, bool copyNativeFile, ResourceDescriptor& descriptor,
-    bool useVtkSession, smtk::io::Logger& logger = smtk::io::Logger::instance());
+  bool importModel(
+    const std::string& location,
+    bool copyNativeFile,
+    ResourceDescriptor& descriptor,
+    bool useVtkSession,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
-  bool importAttributeTemplate(const std::string& location, ResourceDescriptor& descriptor,
+  bool importAttributeTemplate(
+    const std::string& location,
+    ResourceDescriptor& descriptor,
     smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   bool writeProjectFile(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
   bool loadResources(
-    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
+    const std::string& path,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Return export operator
   /// If reset flag is true, will create new operator in order to
   /// reset contents to their default values.
   smtk::operation::OperationPtr getExportOperator(
-    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false);
+    smtk::io::Logger& logger = smtk::io::Logger::instance(),
+    bool reset = false);
 
-  bool populateExportOperator(smtk::operation::OperationPtr exportOp,
+  bool populateExportOperator(
+    smtk::operation::OperationPtr exportOp,
     smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
   void releaseExportOperator();
@@ -155,7 +169,7 @@ private:
   Project();
 }; // class smtk::project::Project
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Project::findResource(const std::string& identifier) const
 {
   auto resManager = m_resourceManager.lock();

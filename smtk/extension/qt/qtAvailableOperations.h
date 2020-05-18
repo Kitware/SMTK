@@ -58,7 +58,7 @@ protected:
 
   void updateList();
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif // smtk_extension_qtAvailableOperations_h

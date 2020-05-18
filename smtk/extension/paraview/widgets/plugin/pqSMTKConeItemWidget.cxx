@@ -38,7 +38,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKConeItemWidget::pqSMTKConeItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
   , m_forceCylinder(false)
 {
@@ -60,7 +61,8 @@ qtItem* pqSMTKConeItemWidget::createCylinderItemWidget(const qtAttributeItemInfo
 }
 
 bool pqSMTKConeItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   ItemBindings binding;
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -102,7 +104,8 @@ void pqSMTKConeItemWidget::updateItemFromWidgetInternal()
   ItemBindings binding;
   if (!this->fetchConeItems(binding, items))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -181,7 +184,8 @@ void pqSMTKConeItemWidget::updateWidgetFromItemInternal()
   ItemBindings binding;
   if (!this->fetchConeItems(binding, items))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -232,7 +236,8 @@ bool pqSMTKConeItemWidget::setForceCylindrical(bool isCylinder)
 }
 
 bool pqSMTKConeItemWidget::fetchConeItems(
-  ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items)
+  ItemBindings& binding,
+  std::vector<smtk::attribute::DoubleItemPtr>& items)
 {
   items.clear();
 
@@ -277,7 +282,8 @@ bool pqSMTKConeItemWidget::fetchConeItems(
   auto rd0Item = groupItem->findAs<smtk::attribute::DoubleItem>(rd0ItemName);
   auto rd1Item = groupItem->findAs<smtk::attribute::DoubleItem>(rd1ItemName);
 
-  if (pt0Item && pt0Item->numberOfValues() == 3 && pt1Item && pt1Item->numberOfValues() == 3 &&
+  if (
+    pt0Item && pt0Item->numberOfValues() == 3 && pt1Item && pt1Item->numberOfValues() == 3 &&
     rd0Item && rd0Item->numberOfValues() == 1)
   {
     items.push_back(pt0Item);

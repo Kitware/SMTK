@@ -44,13 +44,14 @@ public:
 
   // Given a resource type and a file name, return the set of operators that
   // accept the input file and return a resource of the given type.
-  template <typename ResourceType>
+  template<typename ResourceType>
   std::set<Operation::Index> operationsForResourceAndFileName(const std::string&) const;
 
   // Given a resource name and a file name, return the set of operators that
   // accept the input file and return a resource of the given type.
   std::set<Operation::Index> operationsForResourceAndFileName(
-    const std::string&, const std::string&) const;
+    const std::string&,
+    const std::string&) const;
 
 private:
   // Given a set of operation indices, remove the ones that do not accept the
@@ -58,13 +59,13 @@ private:
   void filterOperationsThatRejectFileName(std::set<Operation::Index>&, const std::string&) const;
 };
 
-template <typename ResourceType>
+template<typename ResourceType>
 std::set<Operation::Index> ExporterGroup::operationsForResourceAndFileName(
   const std::string& fileName) const
 {
   return operationsForResourceAndFileName(smtk::common::typeName<ResourceType>(), fileName);
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_ExporterGroup_h

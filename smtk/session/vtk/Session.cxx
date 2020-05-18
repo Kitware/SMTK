@@ -111,7 +111,11 @@ EntityHandle::EntityHandle(int emod, vtkDataObject* obj, SessionPtr sess)
 
 /// Construct a possibly-valid handle (of a non-top-level entity).
 EntityHandle::EntityHandle(
-  int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, SessionPtr sess)
+  int emod,
+  vtkDataObject* obj,
+  vtkDataObject* parent,
+  int idxInParent,
+  SessionPtr sess)
   : m_modelNumber(emod)
   , m_object(obj)
   , m_session(sess)
@@ -219,7 +223,8 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
 // ++ 6 ++
 /// Add the dataset and its blocks to the session.
 smtk::model::Model Session::addModel(
-  vtkSmartPointer<vtkMultiBlockDataSet>& model, SessionInfoBits requestedInfo)
+  vtkSmartPointer<vtkMultiBlockDataSet>& model,
+  SessionInfoBits requestedInfo)
 {
   EntityHandle handle(
     static_cast<int>(this->m_models.size()), model.GetPointer(), shared_from_this());
@@ -275,7 +280,9 @@ void AddCellToParent(smtk::model::EntityRef& mutableEntityRef, EntityHandle& han
 
 // ++ 7 ++
 SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth)
+  const smtk::model::EntityRef& entity,
+  SessionInfoBits requestedInfo,
+  int depth)
 {
   SessionInfoBits actual = SESSION_NOTHING;
   EntityHandle handle = this->toEntity(entity);
@@ -512,7 +519,9 @@ int Session::parentIndex(vtkDataObject* obj) const
 }
 
 bool Session::ensureChildParentMapEntry(
-  vtkDataObject* child, vtkDataObject* parent, int idxInParent)
+  vtkDataObject* child,
+  vtkDataObject* parent,
+  int idxInParent)
 {
   return this->m_cpMap
     .insert(ChildParentMap_t::value_type(child, ParentAndIndex_t(parent, idxInParent)))

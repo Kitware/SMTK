@@ -78,7 +78,7 @@ protected:
   {
   }
 };
-}
+} // namespace
 
 int TestResourceManager(int /*unused*/, char** const /*unused*/)
 {
@@ -100,12 +100,12 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Observe resources being added
   int numResources = 0;
-  auto countingObserver = [&numResources](
-    const smtk::resource::Resource& rsrc, smtk::resource::EventType event) {
-    (void)rsrc;
-    numResources += (event == smtk::resource::EventType::ADDED ? +1 : -1);
-    std::cout << "Resource count now " << numResources << " rsrc " << &rsrc << "\n";
-  };
+  auto countingObserver =
+    [&numResources](const smtk::resource::Resource& rsrc, smtk::resource::EventType event) {
+      (void)rsrc;
+      numResources += (event == smtk::resource::EventType::ADDED ? +1 : -1);
+      std::cout << "Resource count now " << numResources << " rsrc " << &rsrc << "\n";
+    };
   auto handle = resourceManager->observers().insert(countingObserver);
   smtkTest(numResources == 1, "Did not observe new resource being added.");
 
@@ -129,7 +129,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Test that the observer can unregister itself while the observer is being called.
   auto removingObserver = [&handle, &resourceManager](
-    const smtk::resource::Resource& /*unused*/, smtk::resource::EventType /*unused*/) {
+                            const smtk::resource::Resource& /*unused*/,
+                            smtk::resource::EventType /*unused*/) {
     std::cout << "Observer removing self\n";
     resourceManager->observers().erase(handle);
   };
@@ -168,7 +169,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
     smtkTest(success, "Resource type B should have been registered.");
 
     // Ensure that the latest descriptor was registered
-    smtkTest(resourceManager->metadata().size() == 2,
+    smtkTest(
+      resourceManager->metadata().size() == 2,
       "Resource manager should have two resource types registered.");
   }
 
@@ -177,11 +179,13 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   smtkTest(resourceManager->size() == 3, "Resource manager should be managing three resources.");
 
   auto resourceBSet = resourceManager->find<ResourceB>();
-  smtkTest(resourceBSet.size() == 1,
+  smtkTest(
+    resourceBSet.size() == 1,
     "Resource manager should have one resource of type ResourceB registered.");
 
   auto resourceASet = resourceManager->find<ResourceA>();
-  smtkTest(resourceASet.size() == 3,
+  smtkTest(
+    resourceASet.size() == 3,
     "Resource manager should have three resources of type ResourceA registered.");
 
   // Test fetching resources by exact index; this will only
@@ -205,7 +209,6 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
         auto rsrc = resourceManager->create<ResourceA>();
         resourceManager->remove(rsrc);
       }
-
     }));
   }
   for (auto& t : ts)

@@ -17,4 +17,4 @@ namespace mesh
 
 StructuredGridGenerator::~StructuredGridGenerator() = default;
 }
-}
+} // namespace smtk

@@ -23,7 +23,8 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::FileItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::FileItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr));
   std::string fileFilters = defPtr->getFileFilters();
@@ -34,7 +35,8 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::FileItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::FileItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -49,5 +51,5 @@ SMTKCORE_EXPORT void from_json(
   auto fsysDef = smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr);
   smtk::attribute::from_json(j, fsysDef);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

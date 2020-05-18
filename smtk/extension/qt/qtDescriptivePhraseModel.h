@@ -102,12 +102,18 @@ public:
   view::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
   QModelIndex indexFromPath(const std::vector<int>& path) const;
 
-  template <typename T, typename C>
+  template<typename T, typename C>
   bool foreach_phrase(
-    T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true);
-  template <typename T, typename C>
+    T& visitor,
+    C& collector,
+    const QModelIndex& top = QModelIndex(),
+    bool onlyBuilt = true);
+  template<typename T, typename C>
   bool foreach_phrase(
-    T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true) const;
+    T& visitor,
+    C& collector,
+    const QModelIndex& top = QModelIndex(),
+    bool onlyBuilt = true) const;
 
   void rebuildSubphrases(const QModelIndex& qidx);
 
@@ -120,8 +126,12 @@ signals:
   void phraseTitleChanged(const QModelIndex&);
 
 protected:
-  void updateObserver(smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
-    const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& range);
+  void updateObserver(
+    smtk::view::DescriptivePhrasePtr phrase,
+    smtk::view::PhraseModelEvent event,
+    const std::vector<int>& src,
+    const std::vector<int>& dst,
+    const std::vector<int>& range);
 
   smtk::view::PhraseModelPtr m_model;
   smtk::view::PhraseModelObservers::Key m_modelObserver;
@@ -138,9 +148,12 @@ protected:
   *
   * Note that if you call this method, you must include "smtk/extension/qt/qtTypeDeclarations.h".
   */
-template <typename T, typename C>
+template<typename T, typename C>
 bool qtDescriptivePhraseModel::foreach_phrase(
-  T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt)
+  T& visitor,
+  C& collector,
+  const QModelIndex& top,
+  bool onlyBuilt)
 {
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
@@ -163,9 +176,12 @@ bool qtDescriptivePhraseModel::foreach_phrase(
 }
 
 /// A const version of foreach_phrase. See the non-const version for documentation.
-template <typename T, typename C>
+template<typename T, typename C>
 bool qtDescriptivePhraseModel::foreach_phrase(
-  T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt) const
+  T& visitor,
+  C& collector,
+  const QModelIndex& top,
+  bool onlyBuilt) const
 {
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
@@ -187,7 +203,7 @@ bool qtDescriptivePhraseModel::foreach_phrase(
   return false;
 }
 
-} // namespace model
+} // namespace extension
 } // namespace smtk
 
 #endif // smtk_extension_qtDescriptivePhraseModel_h

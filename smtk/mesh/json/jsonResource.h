@@ -21,7 +21,7 @@ namespace mesh
 SMTKCORE_EXPORT void to_json(nlohmann::json&, const ResourcePtr&);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json&, ResourcePtr&);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

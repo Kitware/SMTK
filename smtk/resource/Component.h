@@ -56,7 +56,7 @@ private:
   Links m_links;
   Properties m_properties;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Component_h

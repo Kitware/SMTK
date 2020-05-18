@@ -29,11 +29,16 @@ using namespace smtk;
 namespace
 {
 
-const std::vector<std::pair<int, int> > g_minMaxRanges = { { 2, 0 }, { 0, 2 }, { 2, 2 }, { 1, 2 },
-  { 0, 0 } };
+const std::vector<std::pair<int, int>> g_minMaxRanges = { { 2, 0 },
+                                                          { 0, 2 },
+                                                          { 2, 2 },
+                                                          { 1, 2 },
+                                                          { 0, 0 } };
 
 bool testGroupItem(
-  GroupItemPtr& gitem, const std::pair<int, int>& minMax, const std::string& prefix)
+  GroupItemPtr& gitem,
+  const std::pair<int, int>& minMax,
+  const std::string& prefix)
 {
   smtkTest(gitem != nullptr, prefix << "Failed to find groupItem");
   if (!gitem->isConditional())
@@ -48,7 +53,8 @@ bool testGroupItem(
   {
     gitem->item(i)->setIsEnabled(true);
     ++numEnabled;
-    if (((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
+    if (
+      ((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
       gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly satisfied its conditionals. Had "
@@ -56,8 +62,8 @@ bool testGroupItem(
                 << minMax.second << ")\n";
       return false;
     }
-    else if (((numEnabled >= minMax.first) &&
-               ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
+    else if (
+      ((numEnabled >= minMax.first) && ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
       !gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly failed its conditionals. Had "
@@ -71,7 +77,8 @@ bool testGroupItem(
   {
     gitem->item(i)->setIsEnabled(false);
     --numEnabled;
-    if (((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
+    if (
+      ((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
       gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly satisfied its conditionals. Had "
@@ -79,8 +86,8 @@ bool testGroupItem(
                 << minMax.second << ")\n";
       return false;
     }
-    else if (((numEnabled >= minMax.first) &&
-               ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
+    else if (
+      ((numEnabled >= minMax.first) && ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
       !gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly failed its conditionals. Had "
@@ -118,9 +125,9 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   }
   return status;
 }
-}
+} // namespace
 
-int unitConditionalGroup(int /*unused*/, char* /*unused*/ [])
+int unitConditionalGroup(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test configurations files
   bool status = true;
@@ -155,7 +162,8 @@ int unitConditionalGroup(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -163,7 +171,8 @@ int unitConditionalGroup(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -174,15 +183,17 @@ int unitConditionalGroup(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(testResource(attRes, "XML Pass - "), "Failed testing Conditional Groups in XML Pass");
 

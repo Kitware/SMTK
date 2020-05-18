@@ -44,7 +44,8 @@ ComponentPhraseContent::ComponentPhraseContent()
 ComponentPhraseContent::~ComponentPhraseContent() = default;
 
 ComponentPhraseContent::Ptr ComponentPhraseContent::setup(
-  const smtk::resource::ComponentPtr& component, int mutability)
+  const smtk::resource::ComponentPtr& component,
+  int mutability)
 {
   m_component = component;
   m_mutability = mutability;
@@ -52,7 +53,9 @@ ComponentPhraseContent::Ptr ComponentPhraseContent::setup(
 }
 
 DescriptivePhrasePtr ComponentPhraseContent::createPhrase(
-  const smtk::resource::ComponentPtr& component, int mutability, DescriptivePhrasePtr parent)
+  const smtk::resource::ComponentPtr& component,
+  int mutability,
+  DescriptivePhrasePtr parent)
 {
   auto result =
     DescriptivePhrase::create()->setup(DescriptivePhraseType::COMPONENT_SUMMARY, parent);
@@ -233,7 +236,8 @@ bool ComponentPhraseContent::editStringValue(ContentType contentType, const std:
       if (op->parameters()->associate(component))
       {
         auto res = op->operate();
-        if (res->findInt("outcome")->value() ==
+        if (
+          res->findInt("outcome")->value() ==
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           return true;
@@ -280,5 +284,5 @@ void ComponentPhraseContent::setMutability(int whatsMutable)
   m_mutability = whatsMutable;
 }
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk

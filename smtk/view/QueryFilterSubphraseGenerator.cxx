@@ -55,7 +55,8 @@ DescriptivePhrases QueryFilterSubphraseGenerator::subphrases(DescriptivePhrase::
 }
 
 SubphraseGenerator::Path QueryFilterSubphraseGenerator::indexOfObjectInParent(
-  const smtk::resource::PersistentObjectPtr& obj, smtk::view::DescriptivePhrasePtr& parent,
+  const smtk::resource::PersistentObjectPtr& obj,
+  smtk::view::DescriptivePhrasePtr& parent,
   const Path& parentPath)
 {
   // The query filter phrase generator will never have resource as children of anything. So unless

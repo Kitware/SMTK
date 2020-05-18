@@ -56,7 +56,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int main(int argc, char* argv[])
 {
@@ -131,7 +131,8 @@ int main(int argc, char* argv[])
       // Execute "write mesh" operator...
       smtk::operation::OperationResult writeMeshOpResult = writeMeshOp->operate();
       // ...and test the results for success.
-      if (writeMeshOpResult->findInt("outcome")->value() !=
+      if (
+        writeMeshOpResult->findInt("outcome")->value() !=
         smtk::operation::Operation::OPERATION_SUCCEEDED)
       {
         std::cerr << "Write mesh operator failed\n";

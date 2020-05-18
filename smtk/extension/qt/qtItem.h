@@ -60,7 +60,7 @@ public:
 
   smtk::attribute::ItemPtr item() const { return m_itemInfo.item(); }
 
-  template <typename ItemType>
+  template<typename ItemType>
   std::shared_ptr<ItemType> itemAs() const
   {
     return m_itemInfo.itemAs<ItemType>();
@@ -124,7 +124,7 @@ protected:
 private:
   qtItemInternals* Internals;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

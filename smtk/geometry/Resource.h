@@ -94,7 +94,7 @@ protected:
   Resource(smtk::resource::ManagerPtr manager = nullptr);
 
 private:
-  std::map<Backend::index_t, std::unique_ptr<Geometry> > m_geometry;
+  std::map<Backend::index_t, std::unique_ptr<Geometry>> m_geometry;
 };
 
 } // namespace geometry

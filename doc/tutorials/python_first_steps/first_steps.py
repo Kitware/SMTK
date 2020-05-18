@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+from smtk import model
+from smtk import io
+from smtk import attribute
+import smtk
 import sys
 # print('This test has been disabled until tutorials are updated.\n')
 # sys.exit(125)
@@ -9,10 +13,6 @@ modelFileName = sys.argv[-1]
 # I. First, demonstrate basic setup of importing module
 #    and creating managers.
 # ++ 1 ++
-import smtk
-from smtk import attribute
-from smtk import io
-from smtk import model
 
 ares = smtk.attribute.Resource.create()
 mmgr = smtk.model.Resource.create()

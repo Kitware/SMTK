@@ -47,7 +47,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int UnitTestReadWriteMeshResource(int /*unused*/, char** const /*unused*/)
 {
@@ -69,20 +69,24 @@ int UnitTestReadWriteMeshResource(int /*unused*/, char** const /*unused*/)
   auto writeOp = smtk::mesh::WriteResource::create();
   test(writeOp != nullptr, "failed to create write resource operation");
   test(writeOp->parameters() != nullptr, "failed to access write resource operation parameters");
-  test(writeOp->parameters()->associate(mr),
+  test(
+    writeOp->parameters()->associate(mr),
     "failed to associate mesh resource to write resource operation");
   auto result = writeOp->operate();
-  test(result->findInt("outcome")->value() ==
+  test(
+    result->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "write resource operation failed to operate");
 
   auto readOp = smtk::mesh::ReadResource::create();
   test(readOp != nullptr, "failed to create read resource operation");
   test(readOp->parameters() != nullptr, "failed to access read resource operation parameters");
-  test(readOp->parameters()->findFile("filename")->setValue(write_path),
+  test(
+    readOp->parameters()->findFile("filename")->setValue(write_path),
     "failed to set file path for read resource operation");
   result = readOp->operate();
-  test(result->findInt("outcome")->value() ==
+  test(
+    result->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "read resource operation failed to operate");
 

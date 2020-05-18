@@ -94,12 +94,14 @@ int unitComponentPhraseModel(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto registry = smtk::plugin::
+    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
 
   // I. Construct a ComponentPhraseModel that displays edges and faces. Load some geometry.
   auto phraseModel = smtk::view::ComponentPhraseModel::create();
-  phraseModel->setMutableAspects(static_cast<int>(PhraseContent::ContentType::TITLE) |
+  phraseModel->setMutableAspects(
+    static_cast<int>(PhraseContent::ContentType::TITLE) |
     static_cast<int>(PhraseContent::ContentType::COLOR));
   std::multimap<std::string, std::string> filters;
   filters.insert(
@@ -124,7 +126,8 @@ int unitComponentPhraseModel(int argc, char* argv[])
   smtkTest(!!rsrc, "Unable to discern that a resource was loaded.");
   auto firstSize = phraseModel->root()->subphrases().size();
 
-  test(phraseModel->root()->root() == phraseModel->root(),
+  test(
+    phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");
   phraseModel->root()->visitChildren(printer);
 
@@ -133,10 +136,11 @@ int unitComponentPhraseModel(int argc, char* argv[])
   auto& topLevel = phraseModel->root()->subphrases();
   for (const auto& entry : topLevel)
   {
-    PhraseContent::ContentType attribs[] = { PhraseContent::ContentType::TITLE,
-      PhraseContent::ContentType::SUBTITLE, PhraseContent::ContentType::COLOR,
-      PhraseContent::ContentType::VISIBILITY, PhraseContent::ContentType::ICON_LIGHTBG,
-      PhraseContent::ContentType::ICON_DARKBG };
+    PhraseContent::ContentType attribs[] = {
+      PhraseContent::ContentType::TITLE,        PhraseContent::ContentType::SUBTITLE,
+      PhraseContent::ContentType::COLOR,        PhraseContent::ContentType::VISIBILITY,
+      PhraseContent::ContentType::ICON_LIGHTBG, PhraseContent::ContentType::ICON_DARKBG
+    };
     int editable = 0;
     for (auto attrib : attribs)
     {
@@ -160,9 +164,11 @@ int unitComponentPhraseModel(int argc, char* argv[])
   {
     std::cout << "---\n";
     phraseModel->root()->visitChildren(printer);
-    smtkTest(!phraseModel->root()->subphrases().empty(),
+    smtkTest(
+      !phraseModel->root()->subphrases().empty(),
       "Expected a non-empty list with a non-null active resource.");
-    smtkTest(phraseModel->root()->subphrases().size() == reducedSize,
+    smtkTest(
+      phraseModel->root()->subphrases().size() == reducedSize,
       "Expected the same number of phrases as earlier.");
 
     // IV. Test updates due to operations.
@@ -198,13 +204,15 @@ int unitComponentPhraseModel(int argc, char* argv[])
       // pm->findModelEntity("cell to add")->setObjectValues(faces.begin(), faces.end());
       pm->associations()->appendValue(fmod);
       auto res = op->operate();
-      bool ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      bool ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "add group success " << (ok ? "T" : "F") << "\n";
       auto sizeAfterAdd = phraseModel->root()->subphrases().size();
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(sizeAfterAdd == sizeBeforeAdd + 1,
+      smtkTest(
+        sizeAfterAdd == sizeBeforeAdd + 1,
         "Adding a group should increase number of phrases by 1.");
     }
     {
@@ -218,12 +226,14 @@ int unitComponentPhraseModel(int argc, char* argv[])
       pm->findString("name")->setValue("name");
       value->appendValue("zzz");
       auto res = op->operate();
-      bool ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      bool ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "set property success " << (ok ? "T" : "F") << "\n";
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(phraseModel->root()->subphrases().back()->title() == "zzz",
+      smtkTest(
+        phraseModel->root()->subphrases().back()->title() == "zzz",
         "Did not move renamed face to end.");
 
       // (ii) Make a change that requires no move, but which
@@ -233,13 +243,15 @@ int unitComponentPhraseModel(int argc, char* argv[])
       pm->associate(faces[1]);
       value->setValue("aaa");
       res = op->operate();
-      ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "set property success " << (ok ? "T" : "F") << "\n";
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(phraseModel->root()->subphrases()[5]->title() == "aaa", "Improper phrase title \""
-          << phraseModel->root()->subphrases()[5]->title() << "\".");
+      smtkTest(
+        phraseModel->root()->subphrases()[5]->title() == "aaa",
+        "Improper phrase title \"" << phraseModel->root()->subphrases()[5]->title() << "\".");
 
       // (iii) Move something from the middle to the beginning
       //       of the list.
@@ -247,52 +259,63 @@ int unitComponentPhraseModel(int argc, char* argv[])
       auto gp = fmod->modelResource()->findEntitiesByProperty("name", "epic")[0].entityRecord();
       pm->associate(gp);
       res = op->operate();
-      ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "set property success " << (ok ? "T" : "F") << "\n";
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(phraseModel->root()->subphrases().front()->title() == "aaa",
+      smtkTest(
+        phraseModel->root()->subphrases().front()->title() == "aaa",
         "Did not move renamed group to beginning.");
 
       // (iv) Move something from the beginning to the middle
       value->setValue("epic");
       res = op->operate();
-      ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "set property success " << (ok ? "T" : "F") << "\n";
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(phraseModel->root()->subphrases().front()->title() != "epic",
+      smtkTest(
+        phraseModel->root()->subphrases().front()->title() != "epic",
         "Did not move renamed group to middle.");
-      smtkTest(phraseModel->root()->subphrases()[2]->title() == "epic",
+      smtkTest(
+        phraseModel->root()->subphrases()[2]->title() == "epic",
         "Did not move renamed group to middle.");
 
       // (v) Move something from the end to the middle
       pm->disassociate(gp);
       pm->associate(faces[0]);
       res = op->operate();
-      ok = (res->findInt("outcome")->value(0) ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      ok =
+        (res->findInt("outcome")->value(0) ==
+         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
       std::cout << "set property success " << (ok ? "T" : "F") << "\n";
       std::cout << "---\n";
       phraseModel->root()->visitChildren(printer);
-      smtkTest(phraseModel->root()->subphrases()[6]->title() == "epic",
+      smtkTest(
+        phraseModel->root()->subphrases()[6]->title() == "epic",
         "Did not move renamed group to middle.");
     }
     {
       // First sort all phrases alphabetically
       phraseModel->setSortFunction(DescriptivePhrase::compareByTitle);
-      smtkTest(phraseModel->root()->subphrases()[0]->title() == "aaa",
+      smtkTest(
+        phraseModel->root()->subphrases()[0]->title() == "aaa",
         "Did not sort phrases alphabetically.");
-      smtkTest(phraseModel->root()->subphrases()[4]->title() == "epic",
+      smtkTest(
+        phraseModel->root()->subphrases()[4]->title() == "epic",
         "Did not sort phrases alphabetically.");
 
       // then sort by type and then title
       phraseModel->setSortFunction(DescriptivePhrase::compareByTypeThenTitle);
-      smtkTest(phraseModel->root()->subphrases()[0]->title() == "background",
+      smtkTest(
+        phraseModel->root()->subphrases()[0]->title() == "background",
         "Did not sort phrases alphabetically.");
-      smtkTest(phraseModel->root()->subphrases()[6]->title() == "epic",
+      smtkTest(
+        phraseModel->root()->subphrases()[6]->title() == "epic",
         "Did not sort phrases alphabetically.");
     }
 

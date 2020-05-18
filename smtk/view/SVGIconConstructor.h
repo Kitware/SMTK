@@ -73,7 +73,7 @@ class SMTKCORE_EXPORT ModelIconConstructor : public SVGIconConstructor
 {
   std::string svg(const smtk::resource::PersistentObject&) const override;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

@@ -33,7 +33,7 @@ public:
 
   virtual const Configuration* configuration() const = 0;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

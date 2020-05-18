@@ -90,7 +90,7 @@ public:
     * selected from the original and will be related to the original as if it
     * was a group member (i.e., with ArrangementKind::SUBSET_OF).
     */
-  template <typename I>
+  template<typename I>
   Instance clonePlacements(I begin, I end, bool relate = true);
 
   /**\brief Divide an instance into several based on "subset" clones.
@@ -113,7 +113,7 @@ public:
     * If divide is called on an instance with no clone-children, the
     * returned set will be empty.
     */
-  template <typename Container>
+  template<typename Container>
   Container divide(bool merge = false, Container* clonesIncluded = nullptr);
 
   /**\brief Merge two or more instances that have everything but placements in common.
@@ -127,16 +127,20 @@ public:
     * NB: The current implementation will always merge instances into
     * an instance with a tabular rule.
     */
-  template <typename Container>
+  template<typename Container>
   static Instance merge(const Container& instances);
 
   // Instance& setTransform(const smtk::common::Matrix4d&);
   // smtk::common::Matrix4d transform() const;
 
 protected:
-  template <typename Container>
-  void divideMapInternal(Instance& clone, std::set<int>& taken, bool merge,
-    std::vector<std::vector<int> >& output, Container* clonesIncluded);
+  template<typename Container>
+  void divideMapInternal(
+    Instance& clone,
+    std::set<int>& taken,
+    bool merge,
+    std::vector<std::vector<int>>& output,
+    Container* clonesIncluded);
 
   bool checkMergeable(const Instance& other) const;
   bool mergeInternal(const Instance& other);

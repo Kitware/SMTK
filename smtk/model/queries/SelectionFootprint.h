@@ -31,8 +31,8 @@ namespace model
   *
   */
 struct SMTKCORE_EXPORT SelectionFootprint
-  : public smtk::resource::query::DerivedFrom<SelectionFootprint,
-      smtk::geometry::SelectionFootprint>
+  : public smtk::resource::query::
+      DerivedFrom<SelectionFootprint, smtk::geometry::SelectionFootprint>
 {
   /// Add the "selection footprint" of \a selectedObject to the \a footprint set.
   ///
@@ -44,7 +44,8 @@ struct SMTKCORE_EXPORT SelectionFootprint
   ///
   /// Returns true if at least one persistent object was added to (or was already in)
   /// the \a footprint set — either \a selectedObject itself or some other object.
-  virtual bool operator()(smtk::resource::PersistentObject& selectedObject,
+  virtual bool operator()(
+    smtk::resource::PersistentObject& selectedObject,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const override
   {
@@ -68,9 +69,11 @@ struct SMTKCORE_EXPORT SelectionFootprint
     return hasFootprint;
   }
 
-  bool addComponentFootprint(smtk::model::Entity* ent,
+  bool addComponentFootprint(
+    smtk::model::Entity* ent,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
-    std::unique_ptr<smtk::geometry::Geometry>& geom, bool stopRecursingAtGeometry = true) const
+    std::unique_ptr<smtk::geometry::Geometry>& geom,
+    bool stopRecursingAtGeometry = true) const
   {
     bool hasFootprint = false;
     if (ent && geom)
@@ -135,7 +138,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
     return hasFootprint;
   }
 };
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

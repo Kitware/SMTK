@@ -43,7 +43,7 @@ protected:
   void processAssociationRules(pugi::xml_node& root) override;
   void processEvaluators(pugi::xml_node& evaluatorsNode);
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_XmlDocV4Parser_h */

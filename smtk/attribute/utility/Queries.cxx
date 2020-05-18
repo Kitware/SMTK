@@ -28,7 +28,8 @@ namespace attribute
 namespace utility
 {
 std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
-  const ComponentItemPtr& compItem, const std::set<smtk::resource::PersistentObjectPtr>& objSet)
+  const ComponentItemPtr& compItem,
+  const std::set<smtk::resource::PersistentObjectPtr>& objSet)
 {
   // Uniqueness condition only applies to component items (not resource items)
   if (compItem == nullptr)
@@ -74,8 +75,10 @@ std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
 }
 
 std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
-  const ConstReferenceItemDefinitionPtr& refItemDef, smtk::attribute::ResourcePtr& attResource,
-  smtk::resource::ManagerPtr& resManager, const smtk::common::UUID& ignoreResource)
+  const ConstReferenceItemDefinitionPtr& refItemDef,
+  smtk::attribute::ResourcePtr& attResource,
+  smtk::resource::ManagerPtr& resManager,
+  const smtk::common::UUID& ignoreResource)
 {
   auto assocMap = refItemDef->acceptableEntries();
   std::set<smtk::resource::PersistentObjectPtr> candidates;
@@ -174,8 +177,10 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   return candidates;
 }
 
-std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
-  smtk::resource::ManagerPtr& resManager, bool useAttributeAssociations,
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
+  const ReferenceItemPtr& refItem,
+  smtk::resource::ManagerPtr& resManager,
+  bool useAttributeAssociations,
   const smtk::common::UUID& ignoreResource)
 {
   std::set<smtk::resource::PersistentObjectPtr> candidates;
@@ -239,6 +244,6 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const Referenc
   }
   return checkUniquenessCondition(compItem, candidates);
 }
-}
-}
-}
+} // namespace utility
+} // namespace attribute
+} // namespace smtk

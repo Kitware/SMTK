@@ -41,8 +41,9 @@ bool Factory::contains(const std::size_t typeIndex) const
 std::unique_ptr<Query> Factory::create(const std::size_t& typeIndex) const
 {
   std::size_t index = indexFor(typeIndex);
-  return (index != 0 ? std::unique_ptr<Query>(m_metadata.find(Metadata::key(index))->create())
-                     : std::unique_ptr<Query>());
+  return (
+    index != 0 ? std::unique_ptr<Query>(m_metadata.find(Metadata::key(index))->create())
+               : std::unique_ptr<Query>());
 }
 
 std::size_t Factory::indexFor(const std::size_t& typeIndex) const
@@ -67,6 +68,6 @@ std::size_t Factory::indexFor(const std::size_t& typeIndex) const
   }
   return 0;
 }
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk

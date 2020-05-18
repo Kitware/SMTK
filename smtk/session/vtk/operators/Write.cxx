@@ -59,7 +59,7 @@ void RetrievePreservedUUIDsRecursive(vtkDataObject* data, std::vector<smtk::comm
     }
   }
 }
-}
+} // namespace
 
 namespace smtk
 {

@@ -21,5 +21,5 @@ namespace attribute
 template class ValueItemDefinitionTemplate<int>;
 template class ValueItemDefinitionTemplate<double>;
 template class ValueItemDefinitionTemplate<std::string>;
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -25,8 +25,12 @@ namespace session
 namespace polygon
 {
 
-Neighborhood::Neighborhood(SweeplinePosition& x, FragmentArray& fragments,
-  SweepEventSet& eventQueue, ActiveFragmentTree& active, smtk::session::polygon::SessionPtr sess)
+Neighborhood::Neighborhood(
+  SweeplinePosition& x,
+  FragmentArray& fragments,
+  SweepEventSet& eventQueue,
+  ActiveFragmentTree& active,
+  smtk::session::polygon::SessionPtr sess)
   : m_point(&x)
   , m_fragments(&fragments)
   , m_eventQueue(&eventQueue)
@@ -186,8 +190,14 @@ bool Neighborhood::isFragmentOutgoing(const EdgeFragment& frag)
 }
 
 /// Relate a region between 2 fragments A & B which share a vertex x to neighborhoods just before and after x.
-void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool isOutA,
-  FragmentId fB, EdgeFragment& fragB, bool isOutB, RegionId region)
+void Neighborhood::relateNeighborhoods(
+  FragmentId fA,
+  EdgeFragment& fragA,
+  bool isOutA,
+  FragmentId fB,
+  EdgeFragment& fragB,
+  bool isOutB,
+  RegionId region)
 {
   // NB: Inside this method, the vertex "x" shared by fragments A and B
   //     is referred to as "o" (their common origin).
@@ -219,7 +229,7 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
       m_related.insert(std::pair<RegionId, RegionId>(other, region));
     }
     else // (oaXyy < 0)
-    {    // Fragment A is incoming and bounded below by a fragment whose upper region should be merged with idA
+    { // Fragment A is incoming and bounded below by a fragment whose upper region should be merged with idA
       RegionId other = this->upperRegionJustBelow(origin);
       printRelating(region, other, 2, m_debugLevel);
       m_related.insert(std::pair<RegionId, RegionId>(other, region));
@@ -304,7 +314,7 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
 
 void Neighborhood::mergeRelated()
 {
-  std::set<std::pair<RegionId, RegionId> >::iterator relIt;
+  std::set<std::pair<RegionId, RegionId>>::iterator relIt;
   RegionId firstOutside = -1;
   for (relIt = m_related.begin(); relIt != m_related.end(); ++relIt)
   {
@@ -330,7 +340,8 @@ void Neighborhood::mergeRelated()
 
 /// The space between \a ringA and \a ringB is not interrupted; mark coedges of A/B as same region.
 void Neighborhood::assignAndMergeRegions(
-  const std::list<FragmentId>::iterator& ringA, const std::list<FragmentId>::iterator& ringB)
+  const std::list<FragmentId>::iterator& ringA,
+  const std::list<FragmentId>::iterator& ringB)
 {
   if (m_debugLevel > 1)
   {
@@ -373,8 +384,11 @@ void Neighborhood::assignAndMergeRegions(
 }
 
 /// Insert \a fragId into \a m_ring if it is between \a ringA and \a ringB
-bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& ringA,
-  const std::list<FragmentId>::iterator& ringB, FragmentId fragId, EdgeFragment& frag,
+bool Neighborhood::insertFragmentBetween(
+  const std::list<FragmentId>::iterator& ringA,
+  const std::list<FragmentId>::iterator& ringB,
+  FragmentId fragId,
+  EdgeFragment& frag,
   const internal::Point& other)
 {
   (void)frag;
@@ -389,12 +403,12 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
   internal::HighPrecisionCoord oaXoo = cross2d(oa, oo);
   internal::HighPrecisionCoord ooXob = cross2d(oo, ob);
   internal::HighPrecisionCoord oaXob = cross2d(oa, ob);
-  if ((oaXoo > 0 && ooXob > 0) || // oaXob < pi and "other" is between them; or...
+  if (
+    (oaXoo > 0 && ooXob > 0) || // oaXob < pi and "other" is between them; or...
     (oaXob < 0 &&
-        !(ooXob < 0 &&
-          oaXoo <
-            0))) // oaXob > pi and "other" is *not between* the short CCW path between B and A.
-  {              // other is between ringA and ringB. Insert it just before ringB:
+     !(ooXob < 0 &&
+       oaXoo < 0))) // oaXob > pi and "other" is *not between* the short CCW path between B and A.
+  {                 // other is between ringA and ringB. Insert it just before ringB:
     m_ring.insert(ringB, fragId);
     return true;
   }
@@ -445,7 +459,9 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
  * (4?) a warning is logged.
  */
 void Neighborhood::insertFragment(
-  FragmentId fragId, EdgeFragment& frag, const internal::Point& other)
+  FragmentId fragId,
+  EdgeFragment& frag,
+  const internal::Point& other)
 {
   for (int i = 0; i < 2; ++i)
     if (frag.m_regionId[i] < 0)
@@ -699,7 +715,10 @@ void Neighborhood::dumpRegions()
 }
 
 RegionId Neighborhood::traverseLoop(
-  OrientedEdges& result, std::set<RegionId>& neighborRegions, FragmentId fragId, bool orientation)
+  OrientedEdges& result,
+  std::set<RegionId>& neighborRegions,
+  FragmentId fragId,
+  bool orientation)
 {
   result.clear();
   neighborRegions.clear();
@@ -735,8 +754,8 @@ RegionId Neighborhood::traverseLoop(
     }
     frag = &((*m_fragments)[fragId]);
   } while ((fragId != fragStart || orientation != orientStart) &&
-    !frag->marked(orientation) // stop infinity on buggy edges
-    );
+           !frag->marked(orientation) // stop infinity on buggy edges
+  );
   if (m_debugLevel > 1)
   {
     std::cout << "]";
@@ -750,7 +769,9 @@ RegionId Neighborhood::traverseLoop(
 }
 
 void Neighborhood::dumpLoop(
-  OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions)
+  OrientedEdges& loopEdges,
+  RegionId contained,
+  std::set<RegionId>& neighborRegions)
 {
   std::cout << "Loop around region " << (contained / 2) << (contained % 2 == 0 ? "L" : "U")
             << " with neighbors ";

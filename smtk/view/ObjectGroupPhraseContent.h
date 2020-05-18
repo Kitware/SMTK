@@ -34,12 +34,16 @@ class SMTKCORE_EXPORT ObjectGroupPhraseContent : public PhraseContent
 public:
   smtkTypeMacro(smtk::view::ObjectGroupPhraseContent);
   smtkSharedPtrCreateMacro(smtk::view::PhraseContent);
-  Ptr setup(const std::string& title, const std::string& resourceFilter,
+  Ptr setup(
+    const std::string& title,
+    const std::string& resourceFilter,
     const std::string& componentFilter);
   virtual ~ObjectGroupPhraseContent();
 
-  static DescriptivePhrasePtr createPhrase(const std::string& title,
-    const std::string& resourceFilter, const std::string& componentFilter,
+  static DescriptivePhrasePtr createPhrase(
+    const std::string& title,
+    const std::string& resourceFilter,
+    const std::string& componentFilter,
     DescriptivePhrasePtr parent = DescriptivePhrasePtr());
 
   const std::string& resourceFilter() const { return m_resourceFilter; }
@@ -73,7 +77,7 @@ protected:
   std::string m_title;
 };
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk
 
 #endif

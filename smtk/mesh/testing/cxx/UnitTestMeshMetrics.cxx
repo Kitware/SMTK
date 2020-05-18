@@ -50,7 +50,7 @@ void verify_eulerCharacteristic_cubeWithHole()
 
   test(smtk::mesh::utility::eulerCharacteristic(mr->meshes().extractShell()) == 0);
 }
-}
+} // namespace
 
 int UnitTestMeshMetrics(int /*unused*/, char** const /*unused*/)
 {

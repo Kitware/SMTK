@@ -141,7 +141,7 @@ SMTKCORE_EXPORT PointSet set_union(const PointSet& a, const PointSet& b);
 
 //apply a for_each point operator on each point in a container.
 SMTKCORE_EXPORT void for_each(const PointSet& a, PointForEach& filter);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

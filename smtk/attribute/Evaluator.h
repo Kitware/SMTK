@@ -42,8 +42,13 @@ public:
   // can be placed in |log|.
   virtual bool canEvaluate(smtk::io::Logger& log) = 0;
 
-  using ValueType = boost::variant<std::string, int, double, std::vector<std::string>,
-    std::vector<int>, std::vector<double> >;
+  using ValueType = boost::variant<
+    std::string,
+    int,
+    double,
+    std::vector<std::string>,
+    std::vector<int>,
+    std::vector<double>>;
 
   enum class DependentEvaluationMode
   {
@@ -57,7 +62,10 @@ public:
   // |log| will have errors if evaluation was unsuccessful.
   // It is the responsibility of the Evaluator subclass to determine what
   // evaluation at |element| means.
-  virtual bool evaluate(ValueType& result, smtk::io::Logger& log, const std::size_t& element = 0,
+  virtual bool evaluate(
+    ValueType& result,
+    smtk::io::Logger& log,
+    const std::size_t& element = 0,
     const DependentEvaluationMode& evaluationMode =
       DependentEvaluationMode::EVALUATE_DEPENDENTS) = 0;
 

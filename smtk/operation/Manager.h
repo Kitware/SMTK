@@ -48,18 +48,18 @@ public:
   virtual ~Manager();
 
   /// Register an operation identified by its class type.
-  template <typename OperationType>
+  template<typename OperationType>
   bool registerOperation();
 
   /// Register an operation identified by its class type and type name.
-  template <typename OperationType>
+  template<typename OperationType>
   bool registerOperation(const std::string&);
 
   /// Register an operation identified by its type index.
   bool registerOperation(Metadata&&);
 
   /// Register a tuple of operations identified by their class types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerOperations()
   {
     return Manager::registerOperations<0, Tuple>();
@@ -67,14 +67,14 @@ public:
 
   /// Register a tuple of operations identified by their class types and type
   /// names.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerOperations(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
   {
     return Manager::registerOperations<0, Tuple>(typeNames);
   }
 
   /// Unegister an operation identified by its class type.
-  template <typename OperationType>
+  template<typename OperationType>
   bool unregisterOperation();
 
   /// Unregister an operation identified by its type name.
@@ -84,7 +84,7 @@ public:
   bool unregisterOperation(const Operation::Index&);
 
   // Unregister a tuple of operations identified by their class types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool unregisterOperations()
   {
     return Manager::unregisterOperations<0, Tuple>();
@@ -92,7 +92,7 @@ public:
 
   bool registered(const std::string&) const;
   bool registered(const Operation::Index&) const;
-  template <typename OperationNtype>
+  template<typename OperationNtype>
   bool registered() const;
 
   /// Construct an operation identified by its type name.
@@ -102,7 +102,7 @@ public:
   std::shared_ptr<smtk::operation::Operation> create(const Operation::Index&);
 
   /// Construct an operation identified by its class type.
-  template <typename OperationType>
+  template<typename OperationType>
   smtk::shared_ptr<OperationType> create();
 
   // We expose the underlying containers for metadata; this means of access
@@ -152,7 +152,7 @@ public:
 private:
   Manager();
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
   registerOperations()
   {
@@ -160,14 +160,14 @@ private:
     return registered && Manager::registerOperations<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
   registerOperations()
   {
     return true;
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerOperations(
     const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
   {
@@ -176,14 +176,14 @@ private:
     return registered && Manager::registerOperations<I + 1, Tuple>(typeNames);
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerOperations(
     const std::array<std::string, std::tuple_size<Tuple>::value>&)
   {
     return true;
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
   unregisterOperations()
   {
@@ -191,7 +191,7 @@ private:
     return unregistered && Manager::unregisterOperations<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
   unregisterOperations()
   {
@@ -221,26 +221,26 @@ private:
   std::weak_ptr<smtk::common::Managers> m_managers;
 };
 
-template <typename OperationType>
+template<typename OperationType>
 bool Manager::unregisterOperation()
 {
   return this->unregisterOperation(std::type_index(typeid(OperationType)).hash_code());
 }
 
-template <typename OperationType>
+template<typename OperationType>
 smtk::shared_ptr<OperationType> Manager::create()
 {
   return smtk::static_pointer_cast<OperationType>(
     this->create(std::type_index(typeid(OperationType)).hash_code()));
 }
 
-template <typename OperationType>
+template<typename OperationType>
 bool Manager::registerOperation()
 {
   return Manager::registerOperation<OperationType>(smtk::common::typeName<OperationType>());
 }
 
-template <typename OperationType>
+template<typename OperationType>
 bool Manager::registerOperation(const std::string& typeName)
 {
   // For standard operations (i.e. those defined in C++), the pattern is to use
@@ -249,18 +249,19 @@ bool Manager::registerOperation(const std::string& typeName)
   // OperationType::create(). This method is simply a shorthand that constructs a
   // metadata instance that adheres to this convention.
 
-  return Manager::registerOperation(
-    Metadata(typeName, std::type_index(typeid(OperationType)).hash_code(),
-      std::dynamic_pointer_cast<Operation>(OperationType::create())->createSpecification(),
-      []() { return OperationType::create(); }));
+  return Manager::registerOperation(Metadata(
+    typeName,
+    std::type_index(typeid(OperationType)).hash_code(),
+    std::dynamic_pointer_cast<Operation>(OperationType::create())->createSpecification(),
+    []() { return OperationType::create(); }));
 }
 
-template <typename OperationType>
+template<typename OperationType>
 bool Manager::registered() const
 {
   return Manager::registered(std::type_index(typeid(OperationType)).hash_code());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_Manager_h

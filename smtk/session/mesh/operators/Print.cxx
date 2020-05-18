@@ -62,21 +62,28 @@ Print::Result Print::operateInternal()
 
     smtk::mesh::MeshSet meshset = element.m_mesh;
 
-    smtkInfoMacro(this->log(), "Model Entity <" << it->id() << ">\n"
-                                                << "  name:         " << it->name()
-                                                << "\n"
-                                                   "  # meshes:     "
-                                                << meshset.size() << "\n"
-                                                                     "  # cells:      "
-                                                << meshset.cells().size() << "\n"
-                                                                             "  # points:     "
-                                                << meshset.points().size() << "\n"
-                                                                              "  # domains:    "
-                                                << meshset.domains().size() << "\n"
-                                                                               "  # dirichlets: "
-                                                << meshset.dirichlets().size() << "\n"
-                                                                                  "  # neumanns:   "
-                                                << meshset.neumanns().size());
+    smtkInfoMacro(
+      this->log(),
+      "Model Entity <" << it->id() << ">\n"
+                       << "  name:         " << it->name()
+                       << "\n"
+                          "  # meshes:     "
+                       << meshset.size()
+                       << "\n"
+                          "  # cells:      "
+                       << meshset.cells().size()
+                       << "\n"
+                          "  # points:     "
+                       << meshset.points().size()
+                       << "\n"
+                          "  # domains:    "
+                       << meshset.domains().size()
+                       << "\n"
+                          "  # dirichlets: "
+                       << meshset.dirichlets().size()
+                       << "\n"
+                          "  # neumanns:   "
+                       << meshset.neumanns().size());
   }
 
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
@@ -87,6 +94,6 @@ const char* Print::xmlDescription() const
 {
   return Print_xml;
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

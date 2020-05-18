@@ -76,7 +76,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     //verify the coordinates and the number of points match
@@ -87,7 +89,8 @@ public:
     smtk::mesh::PointLocator::LocatorResults results;
     results.want_Coordinates = true;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i)
     {
       m_locator.find(xyz[3 * index], xyz[3 * index + 1], xyz[3 * index + 2], 0.0, results);
 
@@ -116,7 +119,7 @@ void verify_points_find_themselves(const smtk::mesh::ResourcePtr& mr)
   FindsSelf functor(locator);
   smtk::mesh::for_each(mr->points(), functor);
 }
-}
+} // namespace
 
 int UnitTestPointLocator(int /*unused*/, char** const /*unused*/)
 {

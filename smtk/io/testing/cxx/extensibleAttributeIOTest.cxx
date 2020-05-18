@@ -62,7 +62,7 @@ const char* testInput =
   "    <Att Name=\"att\" Type=\"att1\"/>                                         "
   "  </Attributes>                                                               "
   "</SMTK_AttributeSystem>                                                       ";
-}
+} // namespace
 
 int main()
 {

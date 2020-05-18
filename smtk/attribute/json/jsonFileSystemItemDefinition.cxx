@@ -78,7 +78,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemDef
   auto result = j.find("NumberOfRequiredValues");
   if (result == j.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing NumberOfRequiredValues"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "JSON missing NumberOfRequiredValues"
         << "for FileSystemItemDefinition:" << defPtr->name());
     return;
   }
@@ -136,5 +138,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemDef
     defPtr->setDefaultValue(*result);
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

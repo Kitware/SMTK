@@ -67,8 +67,10 @@ bool compareSets(const std::set<std::string>& test, const std::set<std::string>&
   return false;
 }
 
-bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
-  const std::map<std::string, std::set<std::string> >& answers)
+bool testCategories(
+  const ItemDefinitionPtr& idef,
+  const std::string& prefix,
+  const std::map<std::string, std::set<std::string>>& answers)
 {
   bool status = true;
   auto gidef = std::dynamic_pointer_cast<GroupItemDefinition>(idef);
@@ -98,7 +100,7 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
       // Additional Checks for s1
       if (videf->name() == "s1")
       {
-        const std::vector<std::set<std::string> > enumCats = { { "ec1" }, { "ec2" }, {} };
+        const std::vector<std::set<std::string>> enumCats = { { "ec1" }, { "ec2" }, {} };
         const std::vector<bool> enumAL = { true, false, true };
         std::size_t i, n = videf->numberOfDiscreteValues();
         if (n != 3)
@@ -143,8 +145,10 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
   return status;
 }
 
-bool testCategories(const DefinitionPtr& def, const std::string& prefix,
-  const std::map<std::string, std::set<std::string> >& answers)
+bool testCategories(
+  const DefinitionPtr& def,
+  const std::string& prefix,
+  const std::map<std::string, std::set<std::string>>& answers)
 {
   int i, n = static_cast<int>(def->numberOfItemDefinitions());
   bool status = true;
@@ -165,7 +169,10 @@ bool testCategories(const DefinitionPtr& def, const std::string& prefix,
 }
 
 bool testAttriubute(
-  const attribute::ResourcePtr& attRes, const std::string& attName, bool relevance, bool validity)
+  const attribute::ResourcePtr& attRes,
+  const std::string& attName,
+  bool relevance,
+  bool validity)
 {
   attribute::AttributePtr att = attRes->findAttribute(attName);
   if (!att)
@@ -189,8 +196,10 @@ bool testAttriubute(
   return true;
 }
 
-bool testCategories(const attribute::ResourcePtr& attRes, const std::string& prefix,
-  const std::map<std::string, std::set<std::string> >& answers)
+bool testCategories(
+  const attribute::ResourcePtr& attRes,
+  const std::string& prefix,
+  const std::map<std::string, std::set<std::string>>& answers)
 {
   std::vector<smtk::attribute::DefinitionPtr> defs;
   attRes->definitions(defs);
@@ -289,9 +298,9 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   attRes->setActiveCategories(cats);
   attRes->setActiveCategoriesEnabled(true);
 }
-}
+} // namespace
 
-int unitCategories(int /*unused*/, char* /*unused*/ [])
+int unitCategories(int /*unused*/, char* /*unused*/[])
 {
   std::cerr << std::boolalpha; // To print out booleans
   //
@@ -300,15 +309,22 @@ int unitCategories(int /*unused*/, char* /*unused*/ [])
   setupAttributeResource(attRes);
 
   // Lets define what the categories should be for this resource
-  std::map<std::string, std::set<std::string> > answers = {
+  std::map<std::string, std::set<std::string>> answers = {
     { "A", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } },
     { "B", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "B", "v2" } },
     { "C", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "C" } },
-    { "D", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "v3" } }, { "E", { "E" } }, { "F", {} },
-    { "g1", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } }, { "g2", { "g2", "s3" } },
-    { "s1", { "A", "g1", "s1", "s2", "v1", "ec1", "ec2" } }, { "s2", { "s2", "v1" } },
-    { "s3", { "g2", "s3" } }, { "v1", { "s2", "v1" } }, { "v2", { "A", "B", "v2" } },
-    { "v3", { "A", "v3" } }, { "v4", {} },
+    { "D", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "v3" } },
+    { "E", { "E" } },
+    { "F", {} },
+    { "g1", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } },
+    { "g2", { "g2", "s3" } },
+    { "s1", { "A", "g1", "s1", "s2", "v1", "ec1", "ec2" } },
+    { "s2", { "s2", "v1" } },
+    { "s3", { "g2", "s3" } },
+    { "v1", { "s2", "v1" } },
+    { "v2", { "A", "B", "v2" } },
+    { "v3", { "A", "v3" } },
+    { "v4", {} },
     { "resource", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "B", "v2", "C", "v3", "E" } }
   };
   smtkTest(
@@ -326,7 +342,8 @@ int unitCategories(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -334,7 +351,8 @@ int unitCategories(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -346,15 +364,17 @@ int unitCategories(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(
     testCategories(attRes, "XML Pass - ", answers), "Failed checking Categories in XML Pass");

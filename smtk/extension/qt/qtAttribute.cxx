@@ -42,8 +42,11 @@ using namespace smtk::extension;
 class qtAttributeInternals
 {
 public:
-  qtAttributeInternals(smtk::attribute::AttributePtr myAttribute,
-    const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseAttributeView* myView)
+  qtAttributeInternals(
+    smtk::attribute::AttributePtr myAttribute,
+    const smtk::view::Configuration::Component& comp,
+    QWidget* p,
+    qtBaseAttributeView* myView)
   {
     m_parentWidget = p;
     m_attribute = myAttribute;
@@ -69,8 +72,11 @@ public:
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
-qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
-  const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView,
+qtAttribute::qtAttribute(
+  smtk::attribute::AttributePtr myAttribute,
+  const smtk::view::Configuration::Component& comp,
+  QWidget* p,
+  qtBaseView* myView,
   bool createWidgetWhenEmpty)
 {
   auto attView = dynamic_cast<qtBaseAttributeView*>(myView);

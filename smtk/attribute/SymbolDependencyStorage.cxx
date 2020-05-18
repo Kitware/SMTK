@@ -77,7 +77,8 @@ bool SymbolDependencyStorage::addDependency(const std::string& from, const std::
 }
 
 void SymbolDependencyStorage::pruneOldSymbols(
-  const std::unordered_set<std::string>& newSymbols, const std::string& dependentSymbol)
+  const std::unordered_set<std::string>& newSymbols,
+  const std::string& dependentSymbol)
 {
   // A nice and easy O(n) time operation.
   for (const auto& pair : m_cache)

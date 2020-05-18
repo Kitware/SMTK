@@ -41,7 +41,9 @@ using boost::sregex_token_iterator;
 namespace
 {
 bool importResource(
-  smtk::resource::Manager& manager, const std::string& moduleName, const std::string& resourceName)
+  smtk::resource::Manager& manager,
+  const std::string& moduleName,
+  const std::string& resourceName)
 {
   std::string typeName = moduleName + "." + resourceName;
   smtk::resource::Resource::Index index = std::hash<std::string>{}(typeName);
@@ -52,7 +54,8 @@ bool importResource(
 }
 
 std::vector<std::string> importResourcesFromModule(
-  const std::string& moduleName, smtk::resource::Manager& manager)
+  const std::string& moduleName,
+  smtk::resource::Manager& manager)
 {
   // Query the module for SMTK resources
   std::stringstream cmd;
@@ -97,7 +100,7 @@ std::vector<std::string> importResourcesFromModule(
 
   return typeNames;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -105,7 +108,8 @@ namespace resource
 {
 
 bool registerPythonResource(
-  const smtk::resource::Manager::Ptr& resourceManager, const std::string& moduleName)
+  const smtk::resource::Manager::Ptr& resourceManager,
+  const std::string& moduleName)
 {
   if (resourceManager == nullptr)
   {
@@ -140,5 +144,5 @@ bool registerPythonResource(
     return true;
   }
 }
-}
-}
+} // namespace resource
+} // namespace smtk

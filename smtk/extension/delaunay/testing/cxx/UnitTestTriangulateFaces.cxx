@@ -61,7 +61,7 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
     ents.erase(*i);
   }
 }
-}
+} // namespace
 
 int UnitTestTriangulateFaces(int /*unused*/, char** const /*unused*/)
 {
@@ -86,7 +86,8 @@ int UnitTestTriangulateFaces(int /*unused*/, char** const /*unused*/)
 
       readOp->parameters()->findFile("filename")->setValue(file_path);
       smtk::session::polygon::LegacyRead::Result result = readOp->operate();
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Could not read smtk model!\n";
@@ -136,7 +137,8 @@ int UnitTestTriangulateFaces(int /*unused*/, char** const /*unused*/)
     }
 
     smtk::extension::delaunay::TriangulateFaces::Result result = triangulateFacesOp->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Triangulate face operator failed\n";

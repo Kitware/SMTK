@@ -31,8 +31,8 @@ class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
   Q_OBJECT
 public:
   qtCheckableComboItemDelegate(QWidget* owner);
-  void paint(
-    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index)
+    const override;
 };
 
 //A sublcass of QComboBox to set text when hidePopup

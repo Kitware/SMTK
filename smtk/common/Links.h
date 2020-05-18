@@ -33,7 +33,11 @@ namespace smtk
 {
 namespace common
 {
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 class Links;
 
@@ -41,11 +45,19 @@ class Links;
 /// together. Since multiple links can exist between the same objects, links
 /// have an id for unique identification. Links also have a field to describe
 /// their role.
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 struct Link : base_type
 {
-  Link(const base_type& base_, const id_type& id_, const left_type& left_, const right_type& right_,
+  Link(
+    const base_type& base_,
+    const id_type& id_,
+    const left_type& left_,
+    const right_type& right_,
     const role_type& role_)
     : base_type(base_)
     , id(id_)
@@ -55,7 +67,11 @@ struct Link : base_type
   {
   }
 
-  Link(base_type&& base_, const id_type& id_, const left_type& left_, const right_type& right_,
+  Link(
+    base_type&& base_,
+    const id_type& id_,
+    const left_type& left_,
+    const right_type& right_,
     const role_type& role_)
     : base_type(base_)
     , id(id_)
@@ -99,40 +115,68 @@ using namespace boost::multi_index;
 /// right and role indexing. A link_type is also expected; users are optionally
 /// able to use template classes that inherit from Link and augment its storage
 /// and utility.
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 using LinkContainer = boost::multi_index_container<
   Link<id_type, left_type, right_type, role_type, base_type>,
   indexed_by<
-    ordered_unique<tag<Id>,
-      member<Link<id_type, left_type, right_type, role_type, base_type>, id_type,
-                     &Link<id_type, left_type, right_type, role_type, base_type>::id> >,
-    ordered_non_unique<tag<Role>,
-      member<Link<id_type, left_type, right_type, role_type, base_type>, role_type,
-                         &Link<id_type, left_type, right_type, role_type, base_type>::role> >,
+    ordered_unique<
+      tag<Id>,
+      member<
+        Link<id_type, left_type, right_type, role_type, base_type>,
+        id_type,
+        &Link<id_type, left_type, right_type, role_type, base_type>::id>>,
     ordered_non_unique<
-      tag<Left>, composite_key<Link<id_type, left_type, right_type, role_type, base_type>,
-                   member<Link<id_type, left_type, right_type, role_type, base_type>, left_type,
-                                 &Link<id_type, left_type, right_type, role_type, base_type>::left>,
-                   member<Link<id_type, left_type, right_type, role_type, base_type>, role_type,
-                                 &Link<id_type, left_type, right_type, role_type,
-                                   base_type>::role> > >,
-    ordered_non_unique<tag<Right>,
-      composite_key<Link<id_type, left_type, right_type, role_type, base_type>,
-                         member<Link<id_type, left_type, right_type, role_type, base_type>,
-                           right_type,
-                           &Link<id_type, left_type, right_type, role_type, base_type>::right>,
-                         member<Link<id_type, left_type, right_type, role_type, base_type>,
-                           role_type, &Link<id_type, left_type, right_type, role_type,
-                                        base_type>::role> > > > >;
+      tag<Role>,
+      member<
+        Link<id_type, left_type, right_type, role_type, base_type>,
+        role_type,
+        &Link<id_type, left_type, right_type, role_type, base_type>::role>>,
+    ordered_non_unique<
+      tag<Left>,
+      composite_key<
+        Link<id_type, left_type, right_type, role_type, base_type>,
+        member<
+          Link<id_type, left_type, right_type, role_type, base_type>,
+          left_type,
+          &Link<id_type, left_type, right_type, role_type, base_type>::left>,
+        member<
+          Link<id_type, left_type, right_type, role_type, base_type>,
+          role_type,
+          &Link<id_type, left_type, right_type, role_type, base_type>::role>>>,
+    ordered_non_unique<
+      tag<Right>,
+      composite_key<
+        Link<id_type, left_type, right_type, role_type, base_type>,
+        member<
+          Link<id_type, left_type, right_type, role_type, base_type>,
+          right_type,
+          &Link<id_type, left_type, right_type, role_type, base_type>::right>,
+        member<
+          Link<id_type, left_type, right_type, role_type, base_type>,
+          role_type,
+          &Link<id_type, left_type, right_type, role_type, base_type>::role>>>>>;
 
 /// Traits classes for Links. We key off of the tags to return sane responses
 /// in the Links class.
-template <typename id_type, typename left_type, typename right_type, typename role_type,
-  typename base_type, typename tag>
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
+  typename base_type,
+  typename tag>
 struct LinkTraits;
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Left>
 {
@@ -144,7 +188,11 @@ struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Left>
   static void setValue(Link_& a, const type& v) { a.left = v; }
 };
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Right>
 {
@@ -156,7 +204,11 @@ struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Right>
   static void setValue(Link_& a, const type& v) { a.right = v; }
 };
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Role>
 {
@@ -165,7 +217,7 @@ struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Role>
   static const type& value(const Link_& a) { return a.role; }
   static void setValue(Link_& a, const type& v) { a.role = v; }
 };
-}
+} // namespace detail
 
 /// The Links class represents a collection of Link-s. It has a set-like
 /// interface that permits insertion, erasure, iteration, find, etc.
@@ -174,12 +226,16 @@ struct LinkTraits<id_type, left_type, right_type, role_type, base_type, Role>
 /// though the container were a container of just that type). Internally, the
 /// links are held in a multiindex array to facilitate indexing according to the
 /// Id (default), Left, Right and Role values of the links.
-template <typename id_type, typename left_type = id_type, typename right_type = left_type,
-  typename role_type = int, typename base_type = detail::NullLinkBase>
+template<
+  typename id_type,
+  typename left_type = id_type,
+  typename right_type = left_type,
+  typename role_type = int,
+  typename base_type = detail::NullLinkBase>
 class Links : public detail::LinkContainer<id_type, left_type, right_type, role_type, base_type>
 {
   using Parent = detail::LinkContainer<id_type, left_type, right_type, role_type, base_type>;
-  template <typename tag>
+  template<typename tag>
   using LinkTraits = detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>;
 
 public:
@@ -211,20 +267,31 @@ public:
 
   /// Insertion into the container is performed by passing values for the
   /// base_type object, link id, left value, right value, and role.
-  std::pair<iterator, bool> insert(const base_type&, const id_type&, const left_type&,
-    const right_type&, const role_type& role = undefinedRole);
+  std::pair<iterator, bool> insert(
+    const base_type&,
+    const id_type&,
+    const left_type&,
+    const right_type&,
+    const role_type& role = undefinedRole);
 
   /// Since the base type may be large, this method facilitates its insertion
   /// using move semantics.
-  std::pair<iterator, bool> insert(base_type&&, const id_type&, const left_type&, const right_type&,
+  std::pair<iterator, bool> insert(
+    base_type&&,
+    const id_type&,
+    const left_type&,
+    const right_type&,
     const role_type& role = undefinedRole);
 
   /// If the base_type is default-constructible, this insertion method allows
   /// you to omit the base_type instance. A new base_type will be used and the
   /// left and right types are passed to the new link using move semantics.
-  template <typename return_value = typename std::pair<iterator, bool> >
+  template<typename return_value = typename std::pair<iterator, bool>>
   typename std::enable_if<std::is_default_constructible<base_type>::value, return_value>::type
-  insert(const id_type& id, const left_type& left, const right_type& right,
+  insert(
+    const id_type& id,
+    const left_type& left,
+    const right_type& right,
     const role_type& role = undefinedRole)
   {
     return insert(std::move(base_type()), id, left, right, role);
@@ -235,32 +302,32 @@ public:
 
   /// Check if a link with the input value matching the tagged search criterion
   /// exists.
-  template <typename tag>
+  template<typename tag>
   bool contains(const typename LinkTraits<tag>::type&) const;
 
   /// Return the number of links with the input value matching the tagged search
   /// criterion.
-  template <typename tag>
+  template<typename tag>
   std::size_t size(const typename LinkTraits<tag>::type&) const;
 
   /// Erase all links matching the input value for the tagged search criterion.
-  template <typename tag>
+  template<typename tag>
   bool erase_all(const typename LinkTraits<tag>::type&);
 
   /// Erase all links matching the input value and role for the tagged search
   /// criterion.
-  template <typename tag>
+  template<typename tag>
   bool erase_all(const std::tuple<typename LinkTraits<tag>::type, role_type>&);
 
   /// Access a link by its id and set its value associated with the tagged
   /// search criterion to a new value.
-  template <typename tag>
+  template<typename tag>
   bool set(const id_type&, const typename LinkTraits<tag>::type&);
 
   /// Return a set of ids corresponding to the input value for the tagged search
   /// criterion.
-  template <typename tag>
-  const std::set<std::reference_wrapper<const id_type> > ids(
+  template<typename tag>
+  const std::set<std::reference_wrapper<const id_type>> ids(
     const typename LinkTraits<tag>::type&) const;
 
   /// Access the link with the input id (must be const).
@@ -272,77 +339,111 @@ public:
 
   /// Access a tagged value associated with the input id (must be const; values
   /// can be modified using the "set" method).
-  template <typename tag>
+  template<typename tag>
   const typename LinkTraits<tag>::type& at(const id_type&) const;
 
   /// Given a Left or Right tag and an associated value, return a set of the
   /// other type that links to the input value.
-  template <typename tag>
-  const std::set<std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
-    std::less<const typename LinkTraits<tag>::other_type> >
+  template<typename tag>
+  const std::set<
+    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
+    std::less<const typename LinkTraits<tag>::other_type>>
   linked_to(const typename LinkTraits<tag>::type&) const;
 
   /// Given a Left or Right tag, an associated value and a role, return a set of
   /// the other type that links to the input value and has the role value.
-  template <typename tag>
-  const std::set<std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
-    std::less<const typename LinkTraits<tag>::other_type> >
+  template<typename tag>
+  const std::set<
+    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
+    std::less<const typename LinkTraits<tag>::other_type>>
   linked_to(const typename LinkTraits<tag>::type&, const role_type& role) const;
 };
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 const role_type Links<id_type, left_type, right_type, role_type, base_type>::undefinedRole =
   std::numeric_limits<role_type>::lowest();
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 std::pair<typename Links<id_type, left_type, right_type, role_type, base_type>::iterator, bool>
-Links<id_type, left_type, right_type, role_type, base_type>::insert(const base_type& base,
-  const id_type& id, const left_type& left, const right_type& right, const role_type& role)
+Links<id_type, left_type, right_type, role_type, base_type>::insert(
+  const base_type& base,
+  const id_type& id,
+  const left_type& left,
+  const right_type& right,
+  const role_type& role)
 {
   return this->insert(Link(base, id, left, right, role));
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 std::pair<typename Links<id_type, left_type, right_type, role_type, base_type>::iterator, bool>
-Links<id_type, left_type, right_type, role_type, base_type>::insert(base_type&& base,
-  const id_type& id, const left_type& left, const right_type& right, const role_type& role)
+Links<id_type, left_type, right_type, role_type, base_type>::insert(
+  base_type&& base,
+  const id_type& id,
+  const left_type& left,
+  const right_type& right,
+  const role_type& role)
 {
   return this->insert(Link(std::forward<base_type>(base), id, left, right, role));
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
+template<typename tag>
 bool Links<id_type, left_type, right_type, role_type, base_type>::contains(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::type& value) const
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value) const
 {
   auto& self = this->Parent::template get<tag>();
   auto found = self.find(value);
   return found != self.end();
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
+template<typename tag>
 std::size_t Links<id_type, left_type, right_type, role_type, base_type>::size(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::type& value) const
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value) const
 {
   auto& self = this->Parent::template get<tag>();
   auto range = self.equal_range(value);
   return std::distance(range.first, range.second);
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
+template<typename tag>
 bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::type& value)
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value)
 {
   auto& self = this->Parent::template get<tag>();
   auto to_erase = self.equal_range(value);
@@ -357,12 +458,17 @@ bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
   return true;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(const std::tuple<
-  typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type,
-  role_type>& value)
+template<typename tag>
+bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
+  const std::tuple<
+    typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type,
+    role_type>& value)
 {
   auto& self = this->Parent::template get<tag>();
   auto to_erase = self.equal_range(value);
@@ -377,12 +483,17 @@ bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(cons
   return true;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
+template<typename tag>
 bool Links<id_type, left_type, right_type, role_type, base_type>::set(
-  const id_type& id, const typename detail::LinkTraits<id_type, left_type, right_type, role_type,
-                       base_type, tag>::type& value)
+  const id_type& id,
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value)
 {
   typedef LinkTraits<tag> traits;
 
@@ -428,14 +539,19 @@ bool Links<id_type, left_type, right_type, role_type, base_type>::set(
   return modified;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
-const std::set<std::reference_wrapper<const id_type> > Links<id_type, left_type, right_type,
-  role_type, base_type>::ids(const typename detail::LinkTraits<id_type, left_type, right_type,
-  role_type, base_type, tag>::type& value) const
+template<typename tag>
+const std::set<std::reference_wrapper<const id_type>>
+Links<id_type, left_type, right_type, role_type, base_type>::ids(
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value) const
 {
-  std::set<std::reference_wrapper<const id_type> > ids;
+  std::set<std::reference_wrapper<const id_type>> ids;
 
   auto& self = this->Parent::template get<tag>();
   auto range = self.equal_range(value);
@@ -446,7 +562,11 @@ const std::set<std::reference_wrapper<const id_type> > Links<id_type, left_type,
   return ids;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 const typename Links<id_type, left_type, right_type, role_type, base_type>::Link&
 Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& id) const
@@ -463,14 +583,22 @@ Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& i
   return *it;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 base_type& Links<id_type, left_type, right_type, role_type, base_type>::value(const id_type& id)
 {
   return const_cast<Link&>(this->at(id));
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 const base_type& Links<id_type, left_type, right_type, role_type, base_type>::value(
   const id_type& id) const
@@ -478,9 +606,13 @@ const base_type& Links<id_type, left_type, right_type, role_type, base_type>::va
   return this->at(id);
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
+template<typename tag>
 const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type&
 Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& id) const
 {
@@ -498,21 +630,28 @@ Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& i
   return traits::value(*it);
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
-const std::set<std::reference_wrapper<const typename detail::LinkTraits<id_type, left_type,
-                 right_type, role_type, base_type, tag>::other_type>,
-  std::less<const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::other_type> >
+template<typename tag>
+const std::set<
+  std::reference_wrapper<
+    const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+      other_type>,
+  std::less<const typename detail::
+              LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::other_type>>
 Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::type& value) const
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value) const
 {
   typedef LinkTraits<tag> traits;
 
-  std::set<std::reference_wrapper<const typename traits::other_type>,
-    std::less<const typename traits::other_type> >
+  std::set<
+    std::reference_wrapper<const typename traits::other_type>,
+    std::less<const typename traits::other_type>>
     values;
 
   auto& self = this->Parent::template get<tag>();
@@ -524,22 +663,29 @@ Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
   return values;
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
-template <typename tag>
-const std::set<std::reference_wrapper<const typename detail::LinkTraits<id_type, left_type,
-                 right_type, role_type, base_type, tag>::other_type>,
-  std::less<const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::other_type> >
+template<typename tag>
+const std::set<
+  std::reference_wrapper<
+    const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+      other_type>,
+  std::less<const typename detail::
+              LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::other_type>>
 Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
-    tag>::type& value,
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
+    type& value,
   const role_type& role) const
 {
   typedef LinkTraits<tag> traits;
 
-  std::set<std::reference_wrapper<const typename traits::other_type>,
-    std::less<const typename traits::other_type> >
+  std::set<
+    std::reference_wrapper<const typename traits::other_type>,
+    std::less<const typename traits::other_type>>
     values;
 
   auto& self = this->Parent::template get<tag>();
@@ -550,7 +696,7 @@ Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
   }
   return values;
 }
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif // smtk_common_Links_h

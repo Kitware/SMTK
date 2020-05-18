@@ -59,17 +59,21 @@ public slots:
 public:
   QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-  void paint(
-    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index)
+    const override;
 
   QWidget* createEditor(
-    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    QWidget* parent,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& index) const override;
   void updateEditorGeometry(
-    QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    QWidget* editor,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& index) const override;
 
   void setEditorData(QWidget* editor, const QModelIndex& index) const override;
-  void setModelData(
-    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+  void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
+    const override;
 
   // return which icon the Point position is on
   // 'visible', 'color', or empty string;
@@ -78,7 +82,10 @@ public:
 
 protected:
   bool eventFilter(QObject* editor, QEvent* event) override;
-  bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option,
+  bool editorEvent(
+    QEvent* event,
+    QAbstractItemModel* model,
+    const QStyleOptionViewItem& option,
     const QModelIndex& index) override;
 
   int m_titleFontSize;

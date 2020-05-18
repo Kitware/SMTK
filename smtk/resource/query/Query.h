@@ -40,8 +40,8 @@ protected:
     return (Query::typeIndex() == index ? 0 : std::numeric_limits<int>::lowest());
   }
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

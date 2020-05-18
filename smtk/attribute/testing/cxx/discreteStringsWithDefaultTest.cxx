@@ -127,8 +127,9 @@ int main()
   smtk::attribute::StringItemDefinitionPtr discreteStringDef;
   {
     std::vector<smtk::attribute::StringItemDefinition::Ptr> stringItemDefinitions;
-    auto stringItemDefinitionFilter = [](
-      smtk::attribute::StringItemDefinition::Ptr ptr) { return ptr->name() == "discreteString"; };
+    auto stringItemDefinitionFilter = [](smtk::attribute::StringItemDefinition::Ptr ptr) {
+      return ptr->name() == "discreteString";
+    };
     att1Def->filterItemDefinitions(stringItemDefinitions, stringItemDefinitionFilter);
     discreteStringDef = stringItemDefinitions[0];
   }

@@ -43,7 +43,7 @@ CellEntities CellEntity::boundingCells() const
   UseEntities useEnts = this->uses<UseEntities>();
   if (!useEnts.empty())
   {
-    std::deque<ShellEntity> tmp = useEnts[0].shellEntities<std::deque<ShellEntity> >();
+    std::deque<ShellEntity> tmp = useEnts[0].shellEntities<std::deque<ShellEntity>>();
     ShellEntity shell;
     for (; !tmp.empty(); tmp.pop_front())
     {
@@ -105,7 +105,7 @@ UseEntities CellEntity::boundingCellUses(Orientation orientation) const
     return result;
   // We have a properly-oriented use; ask for all of its loops, appending
   // each loop's HAS_USE relations to result as we go.
-  std::deque<ShellEntity> tmp = cellUse.shellEntities<std::deque<ShellEntity> >();
+  std::deque<ShellEntity> tmp = cellUse.shellEntities<std::deque<ShellEntity>>();
   ShellEntity shell;
   for (; !tmp.empty(); tmp.pop_front())
   {

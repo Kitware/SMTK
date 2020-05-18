@@ -30,7 +30,7 @@ using json = nlohmann::json;
 SMTKCORE_EXPORT void to_json(json& j, const ResourcePtr& mresource);
 
 SMTKCORE_EXPORT void from_json(const json& j, ResourcePtr& mresource);
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

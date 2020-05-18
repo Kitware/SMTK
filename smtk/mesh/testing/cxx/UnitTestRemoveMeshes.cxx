@@ -53,7 +53,8 @@ void verify_remove_empty_mesh(const smtk::mesh::ResourcePtr& mr)
   test(result, "delete nothing is always true");
   test(!mr->isModified(), "deleting nothing should not change the modify flag");
 
-  test(numMeshesBeforeRemoval == mr->numberOfMeshes(),
+  test(
+    numMeshesBeforeRemoval == mr->numberOfMeshes(),
     "deleting no meshes shouldn't modify number of meshes");
 }
 
@@ -249,7 +250,7 @@ void verify_remove_verts_with_model_association(const smtk::mesh::ResourcePtr& m
 
   reset(mr);
 }
-}
+} // namespace
 
 int UnitTestRemoveMeshes(int /*unused*/, char** const /*unused*/)
 {

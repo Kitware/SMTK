@@ -147,7 +147,10 @@ bool qtSelectorView::createSelector()
     new qtAttribute(m_internals->m_selectorAttribute, comp, this->widget(), this, true);
   m_internals->m_qtSelectorAttribute->createBasicLayout(true);
   layout->addWidget(m_internals->m_qtSelectorAttribute->widget());
-  QObject::connect(m_internals->m_qtSelectorAttribute, &qtAttribute::modified, this,
+  QObject::connect(
+    m_internals->m_qtSelectorAttribute,
+    &qtAttribute::modified,
+    this,
     &qtSelectorView::selectionChanged);
   return true;
 }
@@ -230,7 +233,8 @@ bool qtSelectorView::createChildren()
     {
       this->addChildView(qtView, static_cast<int>(enumIndex));
       // Should this view be visible?
-      qtView->widget()->setVisible(m_internals->m_selectorItem->isSet() &&
+      qtView->widget()->setVisible(
+        m_internals->m_selectorItem->isSet() &&
         (m_internals->m_selectorItem->discreteIndex() == static_cast<int>(enumIndex)));
     }
   }
@@ -369,7 +373,8 @@ bool qtSelectorView::isValid() const
   int i, n = m_internals->ChildViews.size();
   for (i = 0; i < n; i++)
   {
-    if (m_internals->ChildViews.at(i)->widget()->isVisible() &&
+    if (
+      m_internals->ChildViews.at(i)->widget()->isVisible() &&
       !m_internals->ChildViews.at(i)->isValid())
     {
       return false;

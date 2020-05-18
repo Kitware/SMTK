@@ -37,7 +37,7 @@ void verify_import_polydata()
 
   test(smtk::io::importMesh(file_path, c), "should be able to import polydata");
 }
-}
+} // namespace
 
 int UnitTestMeshIOVTK(int argc, char* argv[])
 {

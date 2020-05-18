@@ -60,8 +60,11 @@ void create_simple_2d_model(smtk::model::ResourcePtr resource)
   file.close();
 }
 
-void add_model_edge_and_vert(smtk::model::ResourcePtr modelResource, smtk::model::Edge& oe,
-  smtk::model::Edge& ne, smtk::model::Vertex& nv)
+void add_model_edge_and_vert(
+  smtk::model::ResourcePtr modelResource,
+  smtk::model::Edge& oe,
+  smtk::model::Edge& ne,
+  smtk::model::Vertex& nv)
 {
   //verify that we only have a single model, that allows the subsequent logic
   //to be valid
@@ -100,7 +103,8 @@ void add_model_edge_and_vert(smtk::model::ResourcePtr modelResource, smtk::model
     double* cv2 = v2.coordinates();
     const smtk::model::Tessellation* tess = edge.gotMesh();
 
-    if (cv1[0] == 3.0 && cv1[1] == 0.0 && cv2[0] == 3.0 && cv2[1] == 5.0 &&
+    if (
+      cv1[0] == 3.0 && cv1[1] == 0.0 && cv2[0] == 3.0 && cv2[1] == 5.0 &&
       tess->coords().size() == 15)
     {
       //mark this edge as our original edge
@@ -233,7 +237,7 @@ void verify_merge()
   test(mr->cells(smtk::mesh::Dims0).size() == 7, "should now have 7 vertex cells");
   test(mr->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
 }
-}
+} // namespace
 
 int UnitTestReclassifyEdges(int /*unused*/, char** const /*unused*/)
 {

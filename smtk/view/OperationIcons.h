@@ -55,7 +55,7 @@ public:
   using FunctorMap = std::unordered_map<Index, IconConstructor>;
 
   /// Register an icon constructor identified by the resource it represents.
-  template <typename OperationType>
+  template<typename OperationType>
   bool registerOperation(IconConstructor&& functor)
   {
     Index index = typeid(OperationType).hash_code();
@@ -70,7 +70,7 @@ public:
   void registerDefaultIconConstructor(IconConstructor&& functor);
 
   /// Unregister an icon identified by the resource it represents.
-  template <typename OperationType>
+  template<typename OperationType>
   bool unregisterOperation()
   {
     Index index = typeid(OperationType).hash_code();
@@ -90,7 +90,7 @@ public:
 
   /// Construct an icon idenfified by the operation it represents.
   /// SecondaryColor is a background or nearby color that the icon must contrast with.
-  template <typename OperationType>
+  template<typename OperationType>
   std::string createIcon(const std::string& secondaryColor) const
   {
     Index index = typeid(OperationType).hash_code();
@@ -114,7 +114,7 @@ private:
   IndexMap m_indices;
   IconConstructor m_defaultIconConstructor;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

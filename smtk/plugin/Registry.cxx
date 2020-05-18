@@ -36,6 +36,6 @@ std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
 {
   return m_internals->m_ManagerMap[key];
 }
-}
-}
-}
+} // namespace detail
+} // namespace plugin
+} // namespace smtk

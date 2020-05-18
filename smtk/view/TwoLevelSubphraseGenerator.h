@@ -36,13 +36,18 @@ public:
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
 
 protected:
-  bool findSortedLocation(Path& pathInOut, smtk::model::EntityPtr entity,
-    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const override;
+  bool findSortedLocation(
+    Path& pathInOut,
+    smtk::model::EntityPtr entity,
+    DescriptivePhrase::Ptr& phr,
+    const DescriptivePhrase::Ptr& parent) const override;
 
   void childrenOfResource(
-    DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    smtk::resource::ResourcePtr rsrc,
+    DescriptivePhrases& result);
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif // smtk_view_TwoLevelSubphraseGenerator_h

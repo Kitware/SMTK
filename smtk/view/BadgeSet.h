@@ -64,16 +64,16 @@ public:
   PhraseModel* phraseModel() const { return m_phraseModel; }
 
   /// Get the first existing badge matching a type.
-  template <typename T>
+  template<typename T>
   T* findBadgeOfType();
 
 private:
   std::weak_ptr<Manager> m_manager;
   PhraseModel* m_phraseModel;
-  std::vector<std::unique_ptr<Badge> > m_badges;
+  std::vector<std::unique_ptr<Badge>> m_badges;
 };
 
-template <typename T>
+template<typename T>
 T* BadgeSet::findBadgeOfType()
 {
   for (auto& badge : m_badges)
@@ -84,6 +84,6 @@ T* BadgeSet::findBadgeOfType()
   }
   return nullptr;
 }
-}
-}
+} // namespace view
+} // namespace smtk
 #endif

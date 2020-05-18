@@ -27,7 +27,7 @@ using Tessellation = smtk::model::Tessellation;
 SMTKCORE_EXPORT void to_json(json& j, const Tessellation& tess);
 
 SMTKCORE_EXPORT void from_json(const json& j, Tessellation& tess);
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

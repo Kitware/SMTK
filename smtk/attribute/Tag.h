@@ -65,7 +65,7 @@ protected:
 };
 
 typedef std::set<Tag> Tags;
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_Tag_h */

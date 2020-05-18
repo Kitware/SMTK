@@ -96,7 +96,8 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   }
   iter->Delete();
 
-  if (!edgePoly || edgePoly->GetNumberOfPoints() <= 1 || !edgePoly->GetNumberOfCells() ||
+  if (
+    !edgePoly || edgePoly->GetNumberOfPoints() <= 1 || !edgePoly->GetNumberOfCells() ||
     !edgePoly->GetLines())
   {
     vtkErrorMacro("The selected edge does not have valid geometry!");

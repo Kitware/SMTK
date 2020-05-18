@@ -69,10 +69,13 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
 
 public:
   qtUIManager(const smtk::attribute::ResourcePtr& resource);
-  qtUIManager(const smtk::operation::OperationPtr& operation,
-    const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager);
   qtUIManager(
-    const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager);
+    const smtk::operation::OperationPtr& operation,
+    const smtk::resource::ManagerPtr& resourceManager,
+    const smtk::view::ManagerPtr& viewManager);
+  qtUIManager(
+    const smtk::resource::ManagerPtr& resourceManager,
+    const smtk::view::ManagerPtr& viewManager);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
@@ -87,12 +90,13 @@ public:
   ///@{
   /// Use the given smtk::view::Configuration to construct widgets matching the specification.
   qtBaseView* setSMTKView(smtk::view::ConfigurationPtr v);
-  qtBaseView* setSMTKView(
-    smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
+  qtBaseView*
+  setSMTKView(smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
   smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
   const smtk::view::Configuration::Component& findStyle(
-    const smtk::attribute::DefinitionPtr& def, const std::string& styleName = "") const;
+    const smtk::attribute::DefinitionPtr& def,
+    const std::string& styleName = "") const;
   ///}@
 
   smtk::resource::ManagerPtr& resourceManager()
@@ -216,15 +220,20 @@ public:
 
   static void updateArrayDataValue(smtk::attribute::GroupItemPtr dataItem, QTableWidgetItem* item);
   static void addNewTableValues(
-    smtk::attribute::GroupItemPtr dataItem, QTableWidget* table, double* vals, int numVals);
+    smtk::attribute::GroupItemPtr dataItem,
+    QTableWidget* table,
+    double* vals,
+    int numVals);
   static void removeSelectedTableValues(
-    smtk::attribute::GroupItemPtr dataItem, QTableWidget* table);
+    smtk::attribute::GroupItemPtr dataItem,
+    QTableWidget* table);
 
   bool updateTableItemCheckState(QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 
   virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def, const QFont& font);
   virtual int getWidthOfItemsMaxLabel(
-    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font);
+    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+    const QFont& font);
   virtual int getWidthOfText(const std::string& text, const QFont& font);
 
   ///Mechanism for creating new GUI view based on registered factory functions
@@ -339,7 +348,8 @@ private:
   void findDefinitionsLongLabels();
   void findDefinitionLongLabel(smtk::attribute::DefinitionPtr def, std::string& labelText);
   void getItemsLongLabel(
-    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
+    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+    std::string& labelText);
   std::map<std::string, qtItemConstructor> m_itemConstructors;
 
   int m_selectionBit;

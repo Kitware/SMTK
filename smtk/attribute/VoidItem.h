@@ -41,7 +41,7 @@ protected:
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_VoidItem_h */

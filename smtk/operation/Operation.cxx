@@ -38,7 +38,7 @@ namespace
 // used to create that name. Its value is irrelevant so we don't need to reset
 // it; its uniqueness is what we are after.
 std::atomic<std::size_t> g_uniqueCounter{ 0 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -108,7 +108,8 @@ Operation::Specification Operation::specification()
 }
 
 bool Operation::configure(
-  const smtk::attribute::AttributePtr& /*unused*/, const smtk::attribute::ItemPtr& /*unused*/)
+  const smtk::attribute::AttributePtr& /*unused*/,
+  const smtk::attribute::ItemPtr& /*unused*/)
 {
   // Do nothing. Subclasses might want to do something, though.
   return false;
@@ -274,8 +275,10 @@ Operation::Parameters Operation::parameters()
   // If we still don't have our parameters, then there's not much we can do.
   if (!m_parameters)
   {
-    smtkErrorMacro(this->log(), "Could not identify parameters attribute definition for operation "
-                                "\""
+    smtkErrorMacro(
+      this->log(),
+      "Could not identify parameters attribute definition for operation "
+      "\""
         << this->typeName() << "\".");
   }
 
@@ -420,5 +423,5 @@ Operation::Specification Operation::createBaseSpecification() const
   return spec;
 }
 
-} // operation namespace
-} // smtk namespace
+} // namespace operation
+} // namespace smtk

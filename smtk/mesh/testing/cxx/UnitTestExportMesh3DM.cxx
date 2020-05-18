@@ -91,7 +91,7 @@ void verify_write_valid_resource()
     test(result, "failed to properly write out a valid 3dm file");
   }
 }
-}
+} // namespace
 
 int UnitTestExportMesh3DM(int /*unused*/, char** const /*unused*/)
 {

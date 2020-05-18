@@ -126,38 +126,41 @@ struct property_sequence
 
 /// We use a traits class to describe analogous features between the different
 /// property types.
-template <typename property>
+template<typename property>
 struct property_traits;
 
-template <>
+template<>
 struct property_traits<int_property>
 {
   typedef int_property_name name;
   typedef property_sequence<int_property> sequence;
 };
 
-template <>
+template<>
 struct property_traits<float_property>
 {
   typedef float_property_name name;
   typedef property_sequence<float_property> sequence;
 };
 
-template <>
+template<>
 struct property_traits<string_property>
 {
   typedef string_property_name name;
-  typedef property_sequence<sor<string_property, string_property_regex> > sequence;
+  typedef property_sequence<sor<string_property, string_property_regex>> sequence;
 };
 
 /// With the differences between the property types factored out into the above
 /// traits class, we can now construct a general description for the grammar for
 /// each property type.
-template <typename property>
+template<typename property>
 struct grammar_for
-  : pad<seq<typename property_traits<property>::name,
-          opt<braced<sor<name_property, name_property_regex>,
-            opt<pad<string<'='>, space>, typename property_traits<property>::sequence> > > >,
+  : pad<
+      seq<
+        typename property_traits<property>::name,
+        opt<braced<
+          sor<name_property, name_property_regex>,
+          opt<pad<string<'='>, space>, typename property_traits<property>::sequence>>>>,
       space>
 {
 };
@@ -165,60 +168,60 @@ struct grammar_for
 /// The filter grammar is a composition of the grammar for each property type.
 struct SMTKCORE_EXPORT FilterGrammar
   : bracketed<
-      sor<grammar_for<int_property>, grammar_for<float_property>, grammar_for<string_property> > >
+      sor<grammar_for<int_property>, grammar_for<float_property>, grammar_for<string_property>>>
 {
 };
 
 /// Actions on the state in response to encountered grammar.
-template <typename Rule>
+template<typename Rule>
 struct SMTKCORE_EXPORT FilterAction : nothing<Rule>
 {
 };
 
-template <>
+template<>
 struct FilterAction<int_property_name>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input&, LimitingClause& clause)
   {
     clause.m_propType = smtk::resource::PropertyType::INTEGER_PROPERTY;
   }
 };
 
-template <>
+template<>
 struct FilterAction<float_property_name>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input&, LimitingClause& clause)
   {
     clause.m_propType = smtk::resource::PropertyType::FLOAT_PROPERTY;
   }
 };
 
-template <>
+template<>
 struct FilterAction<string_property_name>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input&, LimitingClause& clause)
   {
     clause.m_propType = smtk::resource::PropertyType::STRING_PROPERTY;
   }
 };
 
-template <>
+template<>
 struct FilterAction<name_property_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propName = in.string();
   }
 };
 
-template <>
+template<>
 struct FilterAction<name_property_regex_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propName = in.string();
@@ -226,30 +229,30 @@ struct FilterAction<name_property_regex_value>
   }
 };
 
-template <>
+template<>
 struct FilterAction<int_property_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propIntValues.push_back(std::stoi(in.string()));
   }
 };
 
-template <>
+template<>
 struct FilterAction<float_property_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propFloatValues.push_back(std::stod(in.string()));
   }
 };
 
-template <>
+template<>
 struct FilterAction<string_property_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propStringValues.push_back(in.string());
@@ -257,10 +260,10 @@ struct FilterAction<string_property_value>
   }
 };
 
-template <>
+template<>
 struct FilterAction<string_property_regex_value>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
     clause.m_propStringValues.push_back(in.string());

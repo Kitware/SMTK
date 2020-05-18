@@ -33,7 +33,7 @@ protected:
   virtual const char* xmlDescription() const override;
   void generateSummary(Result&) override;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

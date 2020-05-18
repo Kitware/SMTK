@@ -36,8 +36,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ComponentItemPtr& i
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr));
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::ComponentItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -49,7 +52,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr&
 }
 
 SMTKCORE_EXPORT void processFromRefItemSpec(
-  const json& j, smtk::attribute::ComponentItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos)
+  const json& j,
+  smtk::attribute::ComponentItemPtr& itemPtr,
+  std::vector<AttRefInfo>& attRefInfos)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -74,8 +79,9 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
       n = values->size();
       if (!itemPtr->setNumberOfValues(n))
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Unable to set the number of values on "
-            << itemPtr->name() << " to " << n);
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Unable to set the number of values on " << itemPtr->name() << " to " << n);
       }
     }
 
@@ -128,5 +134,5 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

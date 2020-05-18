@@ -33,9 +33,9 @@ namespace geometry
 
 class Geometry;
 }
-}
-}
-}
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 /**\brief A VTK source for exposing smtk resources.
   *
@@ -109,7 +109,8 @@ public:
 
   /// Return the component corresponding to the data object.
   static smtk::resource::ComponentPtr GetComponent(
-    const smtk::resource::ResourcePtr&, vtkInformation*);
+    const smtk::resource::ResourcePtr&,
+    vtkInformation*);
   smtk::resource::ComponentPtr GetComponent(vtkInformation*);
 
   smtk::resource::ResourcePtr GetResource();
@@ -125,8 +126,8 @@ public:
     int counter = 1;
     DumpBlockStructureWithUUIDsInternal(dataset, counter, indent);
   }
-  static void DumpBlockStructureWithUUIDsInternal(
-    vtkMultiBlockDataSet* dataset, int& counter, int indent = 0);
+  static void
+  DumpBlockStructureWithUUIDsInternal(vtkMultiBlockDataSet* dataset, int& counter, int indent = 0);
 
   /// Given a UUID and a data object, insert it into the cache, overwriting any pre-existing entry.
   ///
@@ -149,7 +150,9 @@ public:
   void ClearCache();
 
   int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+    vtkInformation* request,
+    vtkInformationVector** inInfo,
+    vtkInformationVector* outInfo) override;
 
 protected:
   vtkResourceMultiBlockSource();
@@ -158,7 +161,9 @@ protected:
   /// If any subclass determines that the resource has an
   /// appropriate geometry provider, it can call this method
   /// for the body of its RequestData() implementation.
-  int RequestDataFromGeometry(vtkInformation* request, vtkInformationVector* outputData,
+  int RequestDataFromGeometry(
+    vtkInformation* request,
+    vtkInformationVector* outputData,
     const smtk::extension::vtk::geometry::Geometry& provider);
 
   std::weak_ptr<smtk::resource::Resource> Resource;

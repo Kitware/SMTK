@@ -22,7 +22,7 @@ namespace smtk
 {
 namespace attribute
 {
-template <typename DataT>
+template<typename DataT>
 class ValueItemDefinitionTemplate : public smtk::attribute::ValueItemDefinition
 {
 public:
@@ -69,7 +69,7 @@ protected:
 private:
 };
 
-template <typename DataT>
+template<typename DataT>
 ValueItemDefinitionTemplate<DataT>::ValueItemDefinitionTemplate(const std::string& myname)
   : ValueItemDefinition(myname)
 {
@@ -83,14 +83,14 @@ ValueItemDefinitionTemplate<DataT>::ValueItemDefinitionTemplate(const std::strin
 /**\brief Set the default value for an attribute.
       *
       */
-template <typename DataT>
+template<typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const DataT& dvalue)
 {
   std::vector<DataT> defaultTuple(1, dvalue);
   return this->setDefaultValue(defaultTuple);
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
 {
   assert(static_cast<int>(m_discreteValues.size()) > m_defaultDiscreteIndex);
@@ -111,7 +111,7 @@ void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
       * is vector-valued, then the default is used for each
       * component.
       */
-template <typename DataT>
+template<typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const std::vector<DataT>& dvalue)
 {
   if (dvalue.empty())
@@ -131,7 +131,7 @@ bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const std::vector<DataT
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::addDiscreteValue(const DataT& dvalue)
 {
   // Set the label to be based on the value
@@ -140,22 +140,23 @@ void ValueItemDefinitionTemplate<DataT>::addDiscreteValue(const DataT& dvalue)
   this->addDiscreteValue(dvalue, oss.str());
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::addDiscreteValue(
-  const DataT& dvalue, const std::string& dlabel)
+  const DataT& dvalue,
+  const std::string& dlabel)
 {
   m_discreteValues.push_back(dvalue);
   m_discreteValueEnums.push_back(dlabel);
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::clearDiscreteValues()
 {
   m_discreteValues.clear();
   m_discreteValueEnums.clear();
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setMinRange(const DataT& minVal, bool isInclusive)
 {
   // If there is a default value is it within the new range?
@@ -180,7 +181,7 @@ bool ValueItemDefinitionTemplate<DataT>::setMinRange(const DataT& minVal, bool i
   return false;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setMaxRange(const DataT& maxVal, bool isInclusive)
 {
   // If there is a default value is it within the new range?
@@ -205,14 +206,14 @@ bool ValueItemDefinitionTemplate<DataT>::setMaxRange(const DataT& maxVal, bool i
   return false;
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::clearRange()
 {
   m_minRangeSet = false;
   m_maxRangeSet = false;
 }
 
-template <typename DataT>
+template<typename DataT>
 int ValueItemDefinitionTemplate<DataT>::findDiscreteIndex(const DataT& val) const
 {
   // Are we dealing with Discrete Values?
@@ -231,7 +232,7 @@ int ValueItemDefinitionTemplate<DataT>::findDiscreteIndex(const DataT& val) cons
   return -1;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::isValueValid(const DataT& val) const
 {
   // Are we dealing with Discrete Values?
@@ -254,13 +255,13 @@ bool ValueItemDefinitionTemplate<DataT>::isValueValid(const DataT& val) const
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue() const
 {
   return m_defaultValue.empty() ? m_dummy : m_defaultValue[0];
 }
 
-template <typename DataT>
+template<typename DataT>
 const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t element) const
 {
   bool vectorDefault = m_defaultValue.size() == this->numberOfRequiredValues();
@@ -268,7 +269,7 @@ const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t elemen
   return m_defaultValue.empty() ? m_dummy : m_defaultValue[vectorDefault ? element : 0];
 }
 
-template <typename DataT>
+template<typename DataT>
 const std::vector<DataT>& ValueItemDefinitionTemplate<DataT>::defaultValues() const
 {
   return m_defaultValue;
@@ -277,9 +278,10 @@ const std::vector<DataT>& ValueItemDefinitionTemplate<DataT>::defaultValues() co
 // Copies my contents to input definition
 // Input argument is ValueItemDefinition shared pointer, which must be
 // cast to (raw) ValueItemTemplateDefinition pointer.
-template <typename DataT>
+template<typename DataT>
 void ValueItemDefinitionTemplate<DataT>::copyTo(
-  ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const
+  ValueItemDefinitionPtr def,
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   // Get raw pointer and cast to ValueItemDefinitionTemplate*
   ValueItemDefinition* rawDef = def.get();

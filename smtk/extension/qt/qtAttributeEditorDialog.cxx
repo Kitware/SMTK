@@ -30,8 +30,10 @@
 
 using namespace smtk::extension;
 
-qtAttributeEditorDialog::qtAttributeEditorDialog(const smtk::attribute::AttributePtr& attribute,
-  smtk::extension::qtUIManager* uiManager, QWidget* Parent)
+qtAttributeEditorDialog::qtAttributeEditorDialog(
+  const smtk::attribute::AttributePtr& attribute,
+  smtk::extension::qtUIManager* uiManager,
+  QWidget* Parent)
   : QDialog(Parent)
   , m_attribute(attribute)
   , m_uiManager(uiManager)

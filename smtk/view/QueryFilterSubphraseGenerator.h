@@ -35,10 +35,12 @@ public:
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
 
 protected:
-  Path indexOfObjectInParent(const smtk::resource::PersistentObjectPtr& obj,
-    smtk::view::DescriptivePhrasePtr& parent, const Path& parentPath) override;
+  Path indexOfObjectInParent(
+    const smtk::resource::PersistentObjectPtr& obj,
+    smtk::view::DescriptivePhrasePtr& parent,
+    const Path& parentPath) override;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif // smtk_view_TwoLevelSubphraseGenerator_h

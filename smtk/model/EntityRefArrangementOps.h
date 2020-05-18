@@ -29,7 +29,7 @@ public:
   static int addSimpleRelationship(const EntityRef& a, ArrangementKind k, const EntityRef& b);
 
   /// Return the first relation of kind \a k as the specified entityref type \a T.
-  template <typename T>
+  template<typename T>
   static T firstRelation(const EntityRef& c, ArrangementKind k)
   {
     EntityPtr entRec;
@@ -54,7 +54,7 @@ public:
     * This will verify that each relation is valid before
     * inserting it into \a result.
     */
-  template <typename T>
+  template<typename T>
   static void appendAllRelations(const EntityRef& c, ArrangementKind k, T& result)
   {
     EntityPtr entRec;
@@ -91,9 +91,9 @@ public:
 
   /**\brief Helper methods used by appendAllRelations.
     */
-  template <typename T>
-  static void appendAllUseHasCellRelations(
-    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
+  template<typename T>
+  static void
+  appendAllUseHasCellRelations(ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -108,9 +108,9 @@ public:
       }
     }
   }
-  template <typename T>
-  static void appendAllCellHasUseRelations(
-    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
+  template<typename T>
+  static void
+  appendAllCellHasUseRelations(ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -126,9 +126,12 @@ public:
       }
     }
   }
-  template <typename T>
+  template<typename T>
   static void appendAllShellHasUseRelations(
-    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
+    ResourcePtr resource,
+    EntityPtr entRec,
+    Arrangements* arr,
+    T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -150,9 +153,13 @@ public:
   /// Add the indices of the invalidated relations to \a rangeDetector.
   ///
   /// This can be used as a first step in rewriting loops (which must have edge-uses remain in order).
-  template <typename T, typename U>
+  template<typename T, typename U>
   static void popAllShellHasUseRelations(
-    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result, U& rangeDetector)
+    ResourcePtr resource,
+    EntityPtr entRec,
+    Arrangements* arr,
+    T& result,
+    U& rangeDetector)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -174,9 +181,9 @@ public:
     }
     arr->clear();
   }
-  template <typename T>
-  static void appendAllSimpleRelations(
-    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
+  template<typename T>
+  static void
+  appendAllSimpleRelations(ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -199,7 +206,7 @@ public:
 // What follows are methods of EntityRef that require EntityRefArrangementOps.
 // This breaks an include-dependency cycle.
 
-template <typename T>
+template<typename T>
 T EntityRef::embeddedEntities() const
 {
   T result;
@@ -207,7 +214,7 @@ T EntityRef::embeddedEntities() const
   return result;
 }
 
-template <typename T>
+template<typename T>
 T EntityRef::instances() const
 {
   T result;

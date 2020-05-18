@@ -26,8 +26,11 @@ MeshInfo::MeshInfo()
 {
 }
 
-MeshInfo::MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
-  const smtk::mesh::HandleRange& cells, const smtk::mesh::HandleRange& points,
+MeshInfo::MeshInfo(
+  smtk::mesh::Handle meshId,
+  const smtk::common::UUID& uuid,
+  const smtk::mesh::HandleRange& cells,
+  const smtk::mesh::HandleRange& points,
   smtk::mesh::TypeSet types)
   : m_mesh(meshId)
   , m_uuid(uuid)
@@ -47,7 +50,7 @@ smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
   return smtk::mesh::moab::moabToSMTKRange(
     smtk::mesh::moab::smtkToMOABRange(m_cells).subset_by_type(
-      static_cast< ::moab::EntityType>(moabCellType)));
+      static_cast<::moab::EntityType>(moabCellType)));
 }
 
 smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) const
@@ -94,6 +97,6 @@ bool MeshInfo::has(const smtk::mesh::Neumann& bc) const
 {
   return std::find(m_neumanns.begin(), m_neumanns.end(), bc) != m_neumanns.end();
 }
-}
-}
-}
+} // namespace json
+} // namespace mesh
+} // namespace smtk

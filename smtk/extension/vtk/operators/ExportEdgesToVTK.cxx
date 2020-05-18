@@ -54,7 +54,10 @@ void collectVertices(EntityRef& model, vtkPoints* pts, std::map<EntityRef, vtkId
 }
 
 void insertEdges(
-  EntityRef& model, vtkPolyData* pdt, vtkPoints* pts, std::map<EntityRef, vtkIdType>& pointMap)
+  EntityRef& model,
+  vtkPolyData* pdt,
+  vtkPoints* pts,
+  std::map<EntityRef, vtkIdType>& pointMap)
 {
   vtkNew<vtkCellArray> lines;
   pdt->SetLines(lines.GetPointer());
@@ -171,8 +174,9 @@ ExportEdgesToVTK::Result ExportEdgesToVTK::operateInternal()
   wri->SetFileName(filename.c_str());
   bool ok = (wri->Write() != 0);
 
-  return this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
-                               : smtk::operation::Operation::Outcome::FAILED);
+  return this->createResult(
+    ok ? smtk::operation::Operation::Outcome::SUCCEEDED
+       : smtk::operation::Operation::Outcome::FAILED);
 }
 
 const char* ExportEdgesToVTK::xmlDescription() const

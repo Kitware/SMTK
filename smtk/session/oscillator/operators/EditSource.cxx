@@ -40,7 +40,8 @@ namespace session
 namespace oscillator
 {
 
-bool EditSource::configure(const smtk::attribute::AttributePtr& /*changedAttribute*/,
+bool EditSource::configure(
+  const smtk::attribute::AttributePtr& /*changedAttribute*/,
   const smtk::attribute::ItemPtr& changedItem)
 {
   auto params = this->parameters();
@@ -60,7 +61,8 @@ bool EditSource::configure(const smtk::attribute::AttributePtr& /*changedAttribu
   smtk::model::FloatList radius{ 0. };
 
   auto source = ent->referenceAs<smtk::model::AuxiliaryGeometry>();
-  if (source.isValid() && source.hasStringProperty("oscillator_type") &&
+  if (
+    source.isValid() && source.hasStringProperty("oscillator_type") &&
     source.stringProperty("oscillator_type")[0] == "source")
   {
     center = source.floatProperty("center");
@@ -205,6 +207,6 @@ void EditSource::assignName(smtk::model::Model& model, smtk::model::AuxiliaryGeo
   name << "source " << number;
   source.setName(name.str());
 }
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk

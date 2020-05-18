@@ -48,12 +48,10 @@
 #include "vtkInformationVector.h"
 #include "vtkLookupTable.h"
 #include "vtkMultiBlockDataSet.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
-#include "vtkPolyData.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkStringArray.h"
@@ -197,8 +195,11 @@ void vtkModelMultiBlockSource::Dirty()
  *  \brief Request the display tessellation be shown.
  */
 
-static void AddEntityTessToPolyData(const smtk::model::EntityRef& entityref, vtkPoints* pts,
-  vtkPolyData* pd, int showAnalysisTessellation)
+static void AddEntityTessToPolyData(
+  const smtk::model::EntityRef& entityref,
+  vtkPoints* pts,
+  vtkPolyData* pd,
+  int showAnalysisTessellation)
 {
   // gotMesh fetches Analysis mesh if it exists, falling back
   // to model tessellation if not.
@@ -279,7 +280,9 @@ static void AddEntityTessToPolyData(const smtk::model::EntityRef& entityref, vtk
 }
 
 static bool AddColorWithDefault(
-  vtkPolyData* pd, const smtk::model::EntityRef& entity, const double defaultColor[4])
+  vtkPolyData* pd,
+  const smtk::model::EntityRef& entity,
+  const double defaultColor[4])
 {
   // Only create the color array if there is a valid default:
   if (defaultColor[3] >= 0.)
@@ -302,9 +305,12 @@ static bool AddColorWithDefault(
 /// Add customized block info.
 /// Mapping from UUID to block id
 /// 'Volume' field array to color by volume
-static void addBlockInfo(const smtk::model::ResourcePtr& resource,
-  const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
-  const vtkIdType& blockId, vtkDataObject* dobj,
+static void addBlockInfo(
+  const smtk::model::ResourcePtr& resource,
+  const smtk::model::EntityRef& entityref,
+  const smtk::model::EntityRef& bordantCell,
+  const vtkIdType& blockId,
+  vtkDataObject* dobj,
   std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
   resource->setIntegerProperty(entityref.entity(), "block_index", blockId);
@@ -339,11 +345,13 @@ static void addBlockInfo(const smtk::model::ResourcePtr& resource,
 
 /// Generate a data object representing the entity. It may be polydata, image data, or a multiblock dataset.
 vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromModel(
-  const smtk::model::EntityRef& entity, bool genNormals)
+  const smtk::model::EntityRef& entity,
+  bool genNormals)
 {
   vtkSmartPointer<vtkDataObject> obj;
   SequenceType gen = this->GetCachedDataSequenceNumber(entity.entity());
-  if (entity.hasIntegerProperty(SMTK_TESS_GEN_PROP) &&
+  if (
+    entity.hasIntegerProperty(SMTK_TESS_GEN_PROP) &&
     entity.integerProperty(SMTK_TESS_GEN_PROP)[0] <= gen)
   {
     obj = this->GetCachedDataObject(entity.entity());
@@ -388,8 +396,8 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     {
       vtkSmartPointer<vtkDataObject> cgeom;
       smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>(
-        [&cgeom, &aux](const std::string& /*unused*/,
-          vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
+        [&cgeom, &aux](const std::string& /*unused*/, vtkAuxiliaryGeometryExtension::Ptr ext)
+          -> std::pair<bool, bool> {
           std::vector<double> bbox;
           if (ext->canHandleAuxiliaryGeometry(aux, bbox))
           {
@@ -406,7 +414,9 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
 }
 
 vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFromTessellation(
-  const smtk::model::EntityRef& entity, const smtk::model::Tessellation* tess, bool genNormals)
+  const smtk::model::EntityRef& entity,
+  const smtk::model::Tessellation* tess,
+  bool genNormals)
 {
   vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
   vtkNew<vtkPoints> pts;
@@ -442,7 +452,8 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
 }
 
 vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFromMeshTessellation(
-  const smtk::model::EntityRef& entity, bool genNormals)
+  const smtk::model::EntityRef& entity,
+  bool genNormals)
 {
   vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
   if (!entity.isValid())
@@ -492,7 +503,9 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
 
 /// Loop over the model generating blocks of polydata.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
-  vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals)
+  vtkPolyData* pd,
+  const smtk::model::EntityRef& entityref,
+  bool genNormals)
 {
   vtkNew<vtkPoints> pts;
   pts->SetDataTypeToDouble();
@@ -572,16 +585,19 @@ static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
 }
 
 /// Called by GenerateRepresentationFromModel to sum placements across all instances.
-void vtkModelMultiBlockSource::AddInstanceMetadata(vtkIdType& npts,
-  smtk::model::InstanceSet& modelInstances, const smtk::model::Instance& inst,
+void vtkModelMultiBlockSource::AddInstanceMetadata(
+  vtkIdType& npts,
+  smtk::model::InstanceSet& modelInstances,
+  const smtk::model::Instance& inst,
   std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
   const smtk::model::Tessellation* tess;
   std::map<smtk::common::UUID, vtkIdType>::iterator it;
-  if (!inst.isValid() ||                // Is the instance in the model resource?
+  if (
+    !inst.isValid() ||                  // Is the instance in the model resource?
     !(tess = inst.hasTessellation()) || // Does it have a tessellation that places instances?
     tess->coords().size() < 3           // Does the tessellation contain at least 1 placement?
-    )
+  )
   {
     return;
   }
@@ -592,7 +608,8 @@ void vtkModelMultiBlockSource::AddInstanceMetadata(vtkIdType& npts,
 
 /// Called by GenerateRepresentationFromModel to create hierarchical
 /// multiblock for rendering instance glyphs.
-void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds,
+void vtkModelMultiBlockSource::PreparePrototypeOutput(
+  vtkMultiBlockDataSet* mbds,
   vtkMultiBlockDataSet* protoBlocks,
   std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
@@ -620,7 +637,8 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
   // glyph prototype
   for (const auto& ipIter : instancePrototypes)
   {
-    if (ipIter.second == -1 && ipIter.first.isValid() &&
+    if (
+      ipIter.second == -1 && ipIter.first.isValid() &&
       ipIter.first.exclusions(smtk::model::Exclusions::Rendering))
     {
       // Ask hidden entity's owning model for normal generation info
@@ -643,7 +661,8 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
 }
 
 /// Called by GenerateRepresentationFromModel to create a polydata per instance
-void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* instanceBlocks,
+void vtkModelMultiBlockSource::PrepareInstanceOutput(
+  vtkMultiBlockDataSet* instanceBlocks,
   const smtk::model::InstanceSet& modelInstances,
   std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
@@ -701,29 +720,34 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
 }
 
 /// Called by GenerateRepresentationFromModel to add a glyph point per instance location.
-void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
+void vtkModelMultiBlockSource::AddInstancePoints(
+  vtkPolyData* instancePoly,
   const smtk::model::Instance& inst,
   std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
   EntityRef proto;
   const smtk::model::Tessellation* tess;
   std::map<smtk::model::EntityRef, vtkIdType>::iterator it;
-  if (!inst.isValid() ||                    // Is the instance in the model resource?
+  if (
+    !inst.isValid() ||                      // Is the instance in the model resource?
     !(tess = inst.hasTessellation()) ||     // Does it have a tessellation that places instances?
     tess->coords().size() < 3 ||            // Does the tessellation contain at least 1 placement?
     !((proto = inst.prototype()).isValid()) // Does it have a prototype entity?
-    )
+  )
   {
-    smtkWarningMacro(this->GetModelResource()->log(), "Instance "
-        << inst.entity() << " was invalid, has no tessellation, or has no prototype.");
+    smtkWarningMacro(
+      this->GetModelResource()->log(),
+      "Instance " << inst.entity() << " was invalid, has no tessellation, or has no prototype.");
     return;
   }
-  if (((it = instancePrototypes.find(proto)) == instancePrototypes.end()) ||
+  if (
+    ((it = instancePrototypes.find(proto)) == instancePrototypes.end()) ||
     it->second < 0 // Does the prototype have a valid block ID (i.e., a tessellation)?
-    )
+  )
   {
-    smtkWarningMacro(this->GetModelResource()->log(), "Prototype ("
-        << proto.name() << ") for instance (" << inst.name() << ") has no VTK dataset");
+    smtkWarningMacro(
+      this->GetModelResource()->log(),
+      "Prototype (" << proto.name() << ") for instance (" << inst.name() << ") has no VTK dataset");
     return;
   }
   vtkPoints* pts = instancePoly->GetPoints();
@@ -772,7 +796,8 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 
     if (hasColors)
     {
-      colorArray->InsertNextTuple4(static_cast<unsigned char>(colors[4 * ii]),
+      colorArray->InsertNextTuple4(
+        static_cast<unsigned char>(colors[4 * ii]),
         static_cast<unsigned char>(colors[4 * ii + 1]),
         static_cast<unsigned char>(colors[4 * ii + 2]),
         static_cast<unsigned char>(colors[4 * ii + 3]));
@@ -785,12 +810,14 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 }
 
 /// Create a multiblock with the right structure, find entities with tessellations, and add them.
-void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
-  vtkMultiBlockDataSet* instanceBlocks, vtkMultiBlockDataSet* protoBlocks,
+void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
+  vtkMultiBlockDataSet* mbds,
+  vtkMultiBlockDataSet* instanceBlocks,
+  vtkMultiBlockDataSet* protoBlocks,
   const smtk::model::ResourcePtr& resource)
 {
   smtk::model::EntityRefArray blockEntities[NUMBER_OF_BLOCK_TYPES];
-  std::vector<vtkSmartPointer<vtkDataObject> > blockDatasets[NUMBER_OF_BLOCK_TYPES];
+  std::vector<vtkSmartPointer<vtkDataObject>> blockDatasets[NUMBER_OF_BLOCK_TYPES];
   vtkSmartPointer<vtkMultiBlockDataSet> topBlocks[NUMBER_OF_BLOCK_TYPES];
 
   smtk::model::InstanceSet modelInstances;
@@ -881,7 +908,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
     { // skip anything not listed above... we don't know where to put it.
       if (eref.hasTessellation())
       {
-        smtkWarningMacro(resource->log(), "MultiBlockDataSet: Entity \""
+        smtkWarningMacro(
+          resource->log(),
+          "MultiBlockDataSet: Entity \""
             << eref.name() << "\" (" << eref.flagSummary() << ")"
             << " had a tessellation but was skipped because we don't know what block to put "
                "it in.");
@@ -931,8 +960,13 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
         resource, miter->GetCurrentMetaData());
     if (ent.isValid())
     {
-      addBlockInfo(resource, ent, volumeOfEntity(ent), miter->GetCurrentFlatIndex(),
-        miter->GetCurrentDataObject(), this->UUID2BlockIdMap);
+      addBlockInfo(
+        resource,
+        ent,
+        volumeOfEntity(ent),
+        miter->GetCurrentFlatIndex(),
+        miter->GetCurrentDataObject(),
+        this->UUID2BlockIdMap);
     }
   }
   miter->Delete();
@@ -947,7 +981,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 
 /// Generate polydata from an smtk::model with tessellation information.
 int vtkModelMultiBlockSource::RequestData(
-  vtkInformation* request, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+  vtkInformation* request,
+  vtkInformationVector** /*inInfo*/,
+  vtkInformationVector* outInfo)
 {
   auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();
@@ -1004,10 +1040,13 @@ int vtkModelMultiBlockSource::RequestData(
   return 1;
 }
 
-void vtkModelMultiBlockSource::SetCachedOutput(vtkMultiBlockDataSet* entityTess,
-  vtkMultiBlockDataSet* instances, vtkMultiBlockDataSet* protoBlocks)
+void vtkModelMultiBlockSource::SetCachedOutput(
+  vtkMultiBlockDataSet* entityTess,
+  vtkMultiBlockDataSet* instances,
+  vtkMultiBlockDataSet* protoBlocks)
 {
-  if (this->CachedOutputMBDS == entityTess && this->CachedOutputInst == instances &&
+  if (
+    this->CachedOutputMBDS == entityTess && this->CachedOutputInst == instances &&
     this->CachedOutputProto == protoBlocks)
   {
     return;

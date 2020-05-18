@@ -154,7 +154,8 @@ std::string pqSMTKAttributeItemWidget::GeometrySourceConvert(GeometrySource val)
 }
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : qtItem(info)
 {
   // Subclass constructors must call:
@@ -182,9 +183,12 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   m_p->m_geometrySource = pqSMTKAttributeItemWidget::GeometrySourceConvert(gs);
   QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
   m_p->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
-    [guardedObject](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [guardedObject](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
-      if (event == smtk::operation::EventType::DID_OPERATE &&
+      if (
+        event == smtk::operation::EventType::DID_OPERATE &&
         dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
         guardedObject->item() &&
         res->findReference("modified")->contains(guardedObject->item()->attribute()))
@@ -196,17 +200,23 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
     "pqSMTKAttributeItemWidget: Update widget from item when parent attribute is modified.");
 }
 
-pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr itm, QWidget* p,
-  smtk::extension::qtBaseView* bview, Qt::Orientation orient)
+pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
+  smtk::attribute::ItemPtr itm,
+  QWidget* p,
+  smtk::extension::qtBaseView* bview,
+  Qt::Orientation orient)
   : qtItem(
       smtk::extension::qtAttributeItemInfo(itm, smtk::view::Configuration::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
   QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
   m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(
-    [guardedObject](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [guardedObject](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
-      if (event == smtk::operation::EventType::DID_OPERATE &&
+      if (
+        event == smtk::operation::EventType::DID_OPERATE &&
         dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
         guardedObject->item() &&
         res->findReference("modified")->contains(guardedObject->item()->attribute()))
@@ -359,9 +369,7 @@ void pqSMTKAttributeItemWidget::createWidget()
   *
   * If conditional children exist, this may get called after createWidget().
   */
-void pqSMTKAttributeItemWidget::clearChildWidgets()
-{
-}
+void pqSMTKAttributeItemWidget::clearChildWidgets() {}
 
 /// Actually create widgets for whole of Item (label, editor, and conditional children).
 void pqSMTKAttributeItemWidget::updateUI()
@@ -512,7 +520,8 @@ bool pqSMTKAttributeItemWidget::validateControlItem(const smtk::attribute::Strin
     return false;
   }
   std::size_t index;
-  return !((!def->getEnumIndex("active", index) && !def->getEnumIndex("Active", index)) ||
+  return !(
+    (!def->getEnumIndex("active", index) && !def->getEnumIndex("Active", index)) ||
     // NB: Allow but do not require "visible" enum
     (!def->getEnumIndex("inactive", index) && !def->getEnumIndex("Inactive", index)));
 }

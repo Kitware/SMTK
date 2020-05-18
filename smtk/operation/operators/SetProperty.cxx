@@ -31,9 +31,11 @@ namespace smtk
 namespace operation
 {
 
-template <typename V, typename VL, typename VI>
+template<typename V, typename VL, typename VI>
 void SetPropertyValue(
-  const std::string& name, typename VI::Ptr item, smtk::attribute::ReferenceItemPtr& entities)
+  const std::string& name,
+  typename VI::Ptr item,
+  smtk::attribute::ReferenceItemPtr& entities)
 {
   if (!item || item->numberOfValues() == 0)
   {
@@ -106,5 +108,5 @@ const char* SetProperty::xmlDescription() const
 {
   return SetProperty_xml;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

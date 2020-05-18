@@ -33,22 +33,22 @@
 #include <array>
 #include <functional>
 
-int UnitTestExtractCanonicalIndices(int /*unused*/, char* /*unused*/ [])
+int UnitTestExtractCanonicalIndices(int /*unused*/, char* /*unused*/[])
 {
   // Create a new mesh mesh resource
   smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
 
   // Construct a uniform grid
   std::array<std::size_t, 3> discretization = { { 2, 2, 2 } };
-  std::function<std::array<double, 3>(std::array<double, 3>)> transform = [](
-    std::array<double, 3> x) { return x; };
+  std::function<std::array<double, 3>(std::array<double, 3>)> transform =
+    [](std::array<double, 3> x) { return x; };
   auto meshes = smtk::mesh::utility::createUniformGrid(meshResource, discretization, transform);
 
-  std::array<std::int64_t, 24> validReferenceCellIndices = { 0, 1, 2, 3, 0, 1, 4, 5, 0, 2, 4, 6, 4,
-    5, 6, 7, 2, 3, 6, 7, 1, 3, 5, 7 };
+  std::array<std::int64_t, 24> validReferenceCellIndices = { 0, 1, 2, 3, 0, 1, 4, 5, 0, 2, 4, 6,
+                                                             4, 5, 6, 7, 2, 3, 6, 7, 1, 3, 5, 7 };
 
-  std::array<std::int64_t, 24> validCanonicalIndices = { 4, 4, 4, 4, 0, 0, 0, 0, 3, 3, 3, 3, 5, 5,
-    5, 5, 2, 2, 2, 2, 1, 1, 1, 1 };
+  std::array<std::int64_t, 24> validCanonicalIndices = { 4, 4, 4, 4, 0, 0, 0, 0, 3, 3, 3, 3,
+                                                         5, 5, 5, 5, 2, 2, 2, 2, 1, 1, 1, 1 };
 
   // Loop over the surface meshsets
   for (int i = 1; i < 7; i++)
@@ -65,11 +65,17 @@ int UnitTestExtractCanonicalIndices(int /*unused*/, char* /*unused*/ [])
 
     smtk::mesh::utility::extractCanonicalIndices(meshes[i], meshes[0], indices);
 
-    smtkTest(std::equal(referenceCellIndices.begin(), referenceCellIndices.end(),
-               validReferenceCellIndices.begin() + (i - 1) * 4),
+    smtkTest(
+      std::equal(
+        referenceCellIndices.begin(),
+        referenceCellIndices.end(),
+        validReferenceCellIndices.begin() + (i - 1) * 4),
       "Incorrect reference cell indices.");
-    smtkTest(std::equal(canonicalIndices.begin(), canonicalIndices.end(),
-               validCanonicalIndices.begin() + (i - 1) * 4),
+    smtkTest(
+      std::equal(
+        canonicalIndices.begin(),
+        canonicalIndices.end(),
+        validCanonicalIndices.begin() + (i - 1) * 4),
       "Invalid canonical indices.");
   }
 

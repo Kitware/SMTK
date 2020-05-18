@@ -61,13 +61,14 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 {
   void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
   {
-    smtk::model::EntityRefArray children = (root.isModel()
-        ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
-        : (root.isCellEntity()
+    smtk::model::EntityRefArray children =
+      (root.isModel()
+         ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+         : (root.isCellEntity()
               ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
               : (root.isGroup()
-                    ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
-                    : smtk::model::EntityRefArray())));
+                   ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
+                   : smtk::model::EntityRefArray())));
 
     for (smtk::model::EntityRefArray::const_iterator it = children.begin(); it != children.end();
          ++it)
@@ -132,7 +133,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
     iac->Start();
 #else
-    (void)model;
+  (void)model;
 #endif
   }
 
@@ -177,7 +178,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     smtk::operation::Operation::Result createBackgroundDomainOpResult =
       createBackgroundDomainOp->operate();
 
-    if (createBackgroundDomainOpResult->findInt("outcome")->value() !=
+    if (
+      createBackgroundDomainOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"create uniform grid\" operator failed\n";
@@ -254,7 +256,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     smtk::operation::Operation::Result createBackgroundDomainOpResult =
       createBackgroundDomainOp->operate();
 
-    if (createBackgroundDomainOpResult->findInt("outcome")->value() !=
+    if (
+      createBackgroundDomainOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"create uniform grid\" operator failed\n";
@@ -288,7 +291,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
     return 0;
   }
-}
+} // namespace
 
 int TestCreateUniformGridOp(int argc, char* argv[])
 {

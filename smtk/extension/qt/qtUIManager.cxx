@@ -107,8 +107,10 @@ qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   this->commonConstructor();
 }
 
-qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
-  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
+qtUIManager::qtUIManager(
+  const smtk::operation::OperationPtr& op,
+  const smtk::resource::ManagerPtr& resourceManager,
+  const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
   , m_operation(op)
 {
@@ -124,9 +126,10 @@ qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
   auto spec = op->specification();
   if (!spec)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Asked to create an operation view of "
-        << op->index() << " (" << op->typeName() << ")"
-        << " but operator has no specification.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Asked to create an operation view of " << op->index() << " (" << op->typeName() << ")"
+                                              << " but operator has no specification.");
   }
   m_attResource = spec;
 
@@ -134,16 +137,18 @@ qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
 }
 
 qtUIManager::qtUIManager(
-  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
+  const smtk::resource::ManagerPtr& resourceManager,
+  const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
 {
   m_managers.insert(resourceManager);
   m_managers.insert(viewManager);
 
-  if (!m_managers.get<smtk::resource::Manager::Ptr>() ||
-    !m_managers.get<smtk::view::Manager::Ptr>())
+  if (
+    !m_managers.get<smtk::resource::Manager::Ptr>() || !m_managers.get<smtk::view::Manager::Ptr>())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Asked to create a browser view with missing resource or view manager.");
   }
   this->commonConstructor();
@@ -243,7 +248,8 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 }
 
 void qtUIManager::initializeUI(
-  const smtk::extension::ViewInfo& viewInfo, bool useInternalFileBrowser)
+  const smtk::extension::ViewInfo& viewInfo,
+  bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
   m_parentWidget = viewInfo.m_parent;
@@ -362,9 +368,11 @@ smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  const smtk::extension::ViewInfo& viewInfo, bool useInternalFileBrowser)
+  const smtk::extension::ViewInfo& viewInfo,
+  bool useInternalFileBrowser)
 {
-  if ((m_smtkView == viewInfo.m_view) && (m_parentWidget == viewInfo.m_parent) &&
+  if (
+    (m_smtkView == viewInfo.m_view) && (m_parentWidget == viewInfo.m_parent) &&
     (m_useInternalFileBrowser == useInternalFileBrowser))
   {
     return m_topView;
@@ -385,9 +393,12 @@ qtBaseView* qtUIManager::setSMTKView(smtk::view::ConfigurationPtr v)
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser)
+  smtk::view::ConfigurationPtr v,
+  QWidget* pWidget,
+  bool useInternalFileBrowser)
 {
-  if ((m_smtkView != v) || (m_parentWidget != pWidget) ||
+  if (
+    (m_smtkView != v) || (m_parentWidget != pWidget) ||
     (m_useInternalFileBrowser != useInternalFileBrowser))
   {
     m_smtkView = v;
@@ -655,7 +666,8 @@ void qtUIManager::setWidgetColorToNormal(QWidget* widget)
 }
 
 void qtUIManager::updateArrayTableWidget(
-  smtk::attribute::GroupItemPtr dataItem, QTableWidget* widget)
+  smtk::attribute::GroupItemPtr dataItem,
+  QTableWidget* widget)
 {
   widget->clear();
   widget->setRowCount(0);
@@ -693,7 +705,9 @@ void qtUIManager::updateArrayTableWidget(
 }
 
 void qtUIManager::updateTableColRows(
-  smtk::attribute::ItemPtr dataItem, int col, QTableWidget* widget)
+  smtk::attribute::ItemPtr dataItem,
+  int col,
+  QTableWidget* widget)
 {
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataItem);
   if (!item || item->isDiscrete() || item->isExpression())
@@ -711,7 +725,8 @@ void qtUIManager::updateTableColRows(
 }
 
 void qtUIManager::updateArrayDataValue(
-  smtk::attribute::GroupItemPtr dataItem, QTableWidgetItem* item)
+  smtk::attribute::GroupItemPtr dataItem,
+  QTableWidgetItem* item)
 {
   if (!dataItem)
   {
@@ -731,7 +746,8 @@ void qtUIManager::updateArrayDataValue(
 }
 
 bool qtUIManager::getExpressionArrayString(
-  smtk::attribute::GroupItemPtr dataItem, QString& strValues)
+  smtk::attribute::GroupItemPtr dataItem,
+  QString& strValues)
 {
   if (!dataItem || !dataItem->numberOfRequiredGroups())
   {
@@ -762,7 +778,8 @@ bool qtUIManager::getExpressionArrayString(
 }
 
 void qtUIManager::removeSelectedTableValues(
-  smtk::attribute::GroupItemPtr dataItem, QTableWidget* table)
+  smtk::attribute::GroupItemPtr dataItem,
+  QTableWidget* table)
 {
   if (!dataItem)
   {
@@ -793,7 +810,10 @@ void qtUIManager::removeSelectedTableValues(
 }
 
 void qtUIManager::addNewTableValues(
-  smtk::attribute::GroupItemPtr dataItem, QTableWidget* table, double* vals, int numVals)
+  smtk::attribute::GroupItemPtr dataItem,
+  QTableWidget* table,
+  double* vals,
+  int numVals)
 {
   int numCols = table->columnCount();
   if (!dataItem || numCols != numVals)
@@ -838,7 +858,8 @@ void qtUIManager::onModelEntityItemCreated(smtk::extension::qtModelEntityItem* e
 }
 
 bool qtUIManager::updateTableItemCheckState(
-  QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem)
+  QTableWidgetItem* labelitem,
+  smtk::attribute::ItemPtr attItem)
 {
   bool bEnabled = true;
   if (attItem->definition()->isOptional())
@@ -935,7 +956,8 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
   it = m_itemConstructors.find(qtItemViewType);
   if (it == m_itemConstructors.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Could not create an ItemView of type: " << qtItemViewType << "- Using a Default Item View.");
     // OK - lets create a default view for the item
 
@@ -951,7 +973,8 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
 }
 
 void qtUIManager::onViewUIModified(
-  smtk::extension::qtBaseView* bview, smtk::attribute::ItemPtr item)
+  smtk::extension::qtBaseView* bview,
+  smtk::attribute::ItemPtr item)
 {
   emit this->viewUIChanged(bview, item);
 }
@@ -983,7 +1006,8 @@ int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
 }
 
 void qtUIManager::findDefinitionLongLabel(
-  smtk::attribute::DefinitionPtr def, std::string& labelText)
+  smtk::attribute::DefinitionPtr def,
+  std::string& labelText)
 {
   QList<smtk::attribute::ItemDefinitionPtr> itemDefs;
   int i, n = static_cast<int>(def->numberOfItemDefinitions());
@@ -996,7 +1020,8 @@ void qtUIManager::findDefinitionLongLabel(
 }
 
 void qtUIManager::getItemsLongLabel(
-  const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText)
+  const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+  std::string& labelText)
 {
   bool hasOptionalItem = false;
   foreach (smtk::attribute::ItemDefinitionPtr itDef, itemDefs)
@@ -1020,7 +1045,8 @@ void qtUIManager::getItemsLongLabel(
 }
 
 int qtUIManager::getWidthOfItemsMaxLabel(
-  const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font)
+  const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+  const QFont& font)
 {
   std::string text;
   this->getItemsLongLabel(itemDefs, text);
@@ -1099,14 +1125,16 @@ qtItem* qtUIManager::defaultItemConstructor(const qtAttributeItemInfo& info)
     case smtk::attribute::Item::VoidType:
       return qtVoidItem::createItemWidget(info);
     default:
-      smtkErrorMacro(smtk::io::Logger::instance(),
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
   }
   return aItem;
 }
 
 void qtUIManager::setActiveTabInfo(
-  const std::string& groupViewName, const std::string& activeTabName)
+  const std::string& groupViewName,
+  const std::string& activeTabName)
 {
   m_activeTabInfo[groupViewName] = activeTabName;
 }
@@ -1132,7 +1160,8 @@ void qtUIManager::setHighlightOnHover(bool val)
 }
 
 const smtk::view::Configuration::Component& qtUIManager::findStyle(
-  const smtk::attribute::DefinitionPtr& def, const std::string& styleName) const
+  const smtk::attribute::DefinitionPtr& def,
+  const std::string& styleName) const
 {
   static smtk::view::Configuration::Component emptyStyle;
   auto attRes = m_attResource.lock();

@@ -41,8 +41,8 @@ protected:
   Result operateInternal() override;
   const char* xmlDescription() const override;
 };
-}
-}
-}
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk
 
 #endif

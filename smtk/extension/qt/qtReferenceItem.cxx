@@ -53,23 +53,26 @@ void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->update();
 }
 
-nlohmann::json defaultConfiguration = { { "Name", "RefItem" },
+nlohmann::json defaultConfiguration = {
+  { "Name", "RefItem" },
   { "Type", "smtk::view::ReferenceItemPhraseModel" },
   { "Component",
-    { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+    { { "Name", "Details" },
+      { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
       { "Children",
         { { { "Name", "PhraseModel" },
-          { "Attributes", { { "Type", "smtk::view::ReferenceItemPhraseModel" } } },
-          { "Children",
-            { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
-              { { "Name", "Badges" },
-                { "Children",
-                  { { { "Name", "Badge" },
-                    { "Attributes",
-                      { { "Default", true },
-                        { "Type",
-                          "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
-}
+            { "Attributes", { { "Type", "smtk::view::ReferenceItemPhraseModel" } } },
+            { "Children",
+              { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
+                { { "Name", "Badges" },
+                  { "Children",
+                    { { { "Name", "Badge" },
+                        { "Attributes",
+                          { { "Default", true },
+                            { "Type",
+                              "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } }
+};
+} // namespace
 
 qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
 {
@@ -106,7 +109,8 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
   // Grab default icons from the configuration object if specified.
   std::string selectedIconURL;
   std::string unselectedIconURL;
-  if (info.component().attribute("ItemMemberIcon", selectedIconURL) &&
+  if (
+    info.component().attribute("ItemMemberIcon", selectedIconURL) &&
     info.component().attribute("ItemNonMemberIcon", unselectedIconURL))
   {
     this->setSelectionIconPaths(selectedIconURL, unselectedIconURL);
@@ -166,7 +170,8 @@ void qtReferenceItem::setLabelVisible(bool visible)
 }
 
 bool qtReferenceItem::setSelectionIconPaths(
-  const std::string& selectedIconPath, const std::string& unselectedIconPath)
+  const std::string& selectedIconPath,
+  const std::string& unselectedIconPath)
 {
   if (m_p->m_selectedIconURL == selectedIconPath && m_p->m_unselectedIconURL == unselectedIconPath)
   {
@@ -367,7 +372,8 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   smtk::view::ConfigurationPtr phraseModelConfig;
   auto refItem = std::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(m_itemInfo.item());
   // If the item only allows single selection, configure the membership badge for it.
-  if (refItem && refItem->numberOfRequiredValues() < 2 &&
+  if (
+    refItem && refItem->numberOfRequiredValues() < 2 &&
     ((!refItem->isExtensible()) || (refItem->isExtensible() && refItem->maxNumberOfValues() == 1)))
   {
     json jj = defaultConfiguration;
@@ -441,8 +447,12 @@ void qtReferenceItem::updateUI()
     m_p->m_phraseModel->addSource(m_itemInfo.uiManager()->managers());
     QPointer<qtReferenceItem> guardedObject(this);
     m_p->m_modelObserverId = m_p->m_phraseModel->observers().insert(
-      [guardedObject](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,
-        const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& refs) {
+      [guardedObject](
+        smtk::view::DescriptivePhrasePtr phr,
+        smtk::view::PhraseModelEvent evt,
+        const std::vector<int>& src,
+        const std::vector<int>& dst,
+        const std::vector<int>& refs) {
         if (guardedObject)
         {
           guardedObject->checkRemovedComponents(phr, evt, src, dst, refs);
@@ -580,8 +590,9 @@ void qtReferenceItem::updateUI()
 
   // Create a popup for editing the item's contents
   auto refItem = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
-  bool multiselect = refItem && (refItem->numberOfRequiredValues() > 1 ||
-                                  (refItem->isExtensible() && refItem->maxNumberOfValues() != 1));
+  bool multiselect = refItem &&
+    (refItem->numberOfRequiredValues() > 1 ||
+     (refItem->isExtensible() && refItem->maxNumberOfValues() != 1));
   m_p->m_popup = new QDialog(m_p->m_editBtn);
   m_p->m_popupLayout = new QVBoxLayout(m_p->m_popup);
   m_p->m_popupList = new QListView(m_p->m_popup);
@@ -651,10 +662,11 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto ment = (this->members().empty() ? smtk::resource::PersistentObjectPtr()
-                                         : this->members().begin()->first.lock());
-    label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
-                          : (numSel > 0 ? "too many" : "(none)"));
+    auto ment =
+      (this->members().empty() ? smtk::resource::PersistentObjectPtr()
+                               : this->members().begin()->first.lock());
+    label
+      << (numSel == 1 ? (ment ? ment->name() : "NULL!!") : (numSel > 0 ? "too many" : "(none)"));
     ok = numSel >= numRequired && numSel <= maxAllowed;
   }
   else
@@ -813,8 +825,11 @@ void qtReferenceItem::membershipChanged(int)
   this->linkHoverTrue();
 }
 
-void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr phr,
-  smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
+void qtReferenceItem::checkRemovedComponents(
+  smtk::view::DescriptivePhrasePtr phr,
+  smtk::view::PhraseModelEvent evt,
+  const std::vector<int>& src,
+  const std::vector<int>& dst,
   const std::vector<int>& refs)
 {
   (void)phr;

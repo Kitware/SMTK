@@ -71,14 +71,18 @@ protected:
 
   // This is required of every session:
   virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo);
+    const smtk::model::EntityRef& entity,
+    SessionInfoBits requestedInfo);
 
   vtkSmartPointer<vtkUnstructuredGrid> Model;
   // ... };
   // -- 1 --
 
-  void addRelations(smtk::model::EntityRef& entityref, std::vector<EntityHandle>& rels,
-    SessionInfoBits requestedInfo, int depth);
+  void addRelations(
+    smtk::model::EntityRef& entityref,
+    std::vector<EntityHandle>& rels,
+    SessionInfoBits requestedInfo,
+    int depth);
   bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
 
 private:

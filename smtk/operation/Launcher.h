@@ -59,12 +59,13 @@ public:
 
   /// Launch an operation using the launch method associated to the input key.
   std::shared_future<Operation::Result> operator()(
-    const Operation::Ptr&, const Launchers::LauncherMap::key_type&);
+    const Operation::Ptr&,
+    const Launchers::LauncherMap::key_type&);
 
 protected:
   LauncherMap m_launchers;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_operation_Launcher_h

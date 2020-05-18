@@ -36,18 +36,22 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
   (void)argv;
 
   // Explicitly instantiate item filters for gcc4.8
-  std::function<bool(smtk::attribute::ItemPtr)> itemFilter = [](
-    smtk::attribute::ItemPtr /*unused*/) { return true; };
-  std::function<bool(smtk::attribute::DoubleItemPtr)> doubleFilter = [](
-    DoubleItemPtr /*unused*/) { return true; };
-  std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](
-    IntItemPtr /*unused*/) { return true; };
-  std::function<bool(smtk::attribute::ItemPtr)> intDoubleFilter = [](
-    ItemPtr item) { return item->type() == Item::DoubleType || item->type() == Item::IntType; };
-  std::function<bool(smtk::attribute::ComponentItemPtr)> componentFilter = [](
-    ComponentItemPtr /*unused*/) { return true; };
-  std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](
-    VoidItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::ItemPtr)> itemFilter =
+    [](smtk::attribute::ItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::DoubleItemPtr)> doubleFilter = [](DoubleItemPtr /*unused*/) {
+    return true;
+  };
+  std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](IntItemPtr /*unused*/) {
+    return true;
+  };
+  std::function<bool(smtk::attribute::ItemPtr)> intDoubleFilter = [](ItemPtr item) {
+    return item->type() == Item::DoubleType || item->type() == Item::IntType;
+  };
+  std::function<bool(smtk::attribute::ComponentItemPtr)> componentFilter =
+    [](ComponentItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](VoidItemPtr /*unused*/) {
+    return true;
+  };
 
   std::cout << "Use create model operator to test filterItems function in attribute." << std::endl;
   /// Use "create model" operator to valid valueItem
@@ -58,12 +62,14 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
   smtkTest(cmItems.size() == 10, "  Number of items including all children does not equal 10");
   // Find int and double items in all children
   createModelOp->parameters()->filterItems(intDoubleItems, intDoubleFilter, false);
-  smtkTest(intDoubleItems.size() == 8,
+  smtkTest(
+    intDoubleItems.size() == 8,
     "  Number of int and double items including all children does not equal 8");
   // Find items in active children
   std::vector<DoubleItemPtr> cmDoubleItems;
   createModelOp->parameters()->filterItems(cmDoubleItems, doubleFilter);
-  smtkTest(cmDoubleItems.size() == 4,
+  smtkTest(
+    cmDoubleItems.size() == 4,
     "  Number of double items only including active child does not equal 4");
   smtkTest(cmDoubleItems[0]->name() == std::string("origin"), "  Double item origin is missing");
   smtkTest(cmDoubleItems[1]->name() == std::string("x axis"), "  Double item x axis is missing");
@@ -92,12 +98,16 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
   groupOp->parameters()->filterItems(allGroupItems, itemFilter, false);
   groupOp->parameters()->filterItems(voidGroupItems, voidFilter);
 
-  smtkTest(groupItems.size() == 8, "Number of items only including active child ("
-      << groupItems.size() << ") does not equal 8");
-  smtkTest(allGroupItems.size() == 11, "Number of items including all children ("
-      << allGroupItems.size() << ") does not equal 11");
-  smtkTest(voidGroupItems.size() == 4, "Number of void items only including active child ("
-      << voidGroupItems.size() << ") does not equal 4");
+  smtkTest(
+    groupItems.size() == 8,
+    "Number of items only including active child (" << groupItems.size() << ") does not equal 8");
+  smtkTest(
+    allGroupItems.size() == 11,
+    "Number of items including all children (" << allGroupItems.size() << ") does not equal 11");
+  smtkTest(
+    voidGroupItems.size() == 4,
+    "Number of void items only including active child (" << voidGroupItems.size()
+                                                         << ") does not equal 4");
   smtkTest(voidGroupItems[0]->name() == std::string("Vertex"), "void item Vertex is missing");
   smtkTest(voidGroupItems[1]->name() == std::string("Edge"), "void item Edge is missing");
   smtkTest(voidGroupItems[2]->name() == std::string("Face"), "void item Face is missing");
@@ -105,12 +115,15 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
 
   groupOp->parameters()->filterItems(componentGroupItems, componentFilter);
   smtkTest(
-    componentGroupItems.size() == 1, "Number of component items only including active child ("
-      << componentGroupItems.size() << ") does not equal 1");
+    componentGroupItems.size() == 1,
+    "Number of component items only including active child (" << componentGroupItems.size()
+                                                              << ") does not equal 1");
   componentGroupItems.clear();
   groupOp->parameters()->filterItems(componentGroupItems, componentFilter, false);
-  smtkTest(componentGroupItems.size() == 4, "Number of component items including children ("
-      << componentGroupItems.size() << ") does not equal 4");
+  smtkTest(
+    componentGroupItems.size() == 4,
+    "Number of component items including children (" << componentGroupItems.size()
+                                                     << ") does not equal 4");
   std::cout << "  All passed" << std::endl;
 
   std::cout << "Use entity group operator to test filterItems function in attribute." << std::endl;
@@ -128,7 +141,8 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
   smtkTest(allCEItems.size() == 6, "Number of items including all children does not equal 6");
   smtkTest(CEIntItems.size() == 3, "Number of int items including all children does not equal 3");
   smtkTest(CEIntItems[0]->name() == std::string("debug level"), "Int item debug level is missing");
-  smtkTest(CEIntItems[1]->name() == std::string("construction method"),
+  smtkTest(
+    CEIntItems[1]->name() == std::string("construction method"),
     "Int item construction method is missing");
   smtkTest(
     CEIntItems[2]->name() == std::string("HelperGlobalID"), "Int item HelperGlobalID is missing");

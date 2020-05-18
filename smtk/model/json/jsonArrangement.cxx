@@ -35,8 +35,8 @@ void from_json(const json& j, smtk::model::Arrangement& arr)
   arr = smtk::model::Arrangement();
   if (!j.is_null())
   {
-    arr.details() = j.get<std::vector<int> >();
+    arr.details() = j.get<std::vector<int>>();
   }
 }
-}
-}
+} // namespace model
+} // namespace smtk

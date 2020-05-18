@@ -76,7 +76,7 @@ typedef std::map<internal::Id, LoopInfo> LoopsById;
 
 typedef std::vector<EdgeFragment> FragmentArray; // List of all output fragments forming loops.
 
-typedef std::vector<std::pair<smtk::model::Edge, bool> > OrientedEdges;
+typedef std::vector<std::pair<smtk::model::Edge, bool>> OrientedEdges;
 
 static void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
 {
@@ -310,7 +310,9 @@ CreateFaces::Result CreateFaces::operateInternal()
 }
 
 void CreateFaces::evaluateLoop(
-  RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders)
+  RegionId faceNumber,
+  OrientedEdges& loop,
+  std::set<RegionId>& borders)
 {
   (void)borders;
 
@@ -337,7 +339,9 @@ void CreateFaces::evaluateLoop(
         {
           if (m_debugLevel > 0)
           {
-            smtkDebugMacro(this->log(), "  Skipping loop because edge "
+            smtkDebugMacro(
+              this->log(),
+              "  Skipping loop because edge "
                 << oit->first.name() << " (" << oit->first.entity() << ")"
                 << " is already attached to face " << fu.face().name() << " (" << fu.face().entity()
                 << ")");
@@ -432,7 +436,9 @@ void CreateFaces::evaluateLoop(
   * face in the direction of the model's normal vector). Otherwise, it lies to the right.
   */
 void CreateFaces::updateLoopVertices(
-  const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW)
+  const smtk::model::Loop& loop,
+  const smtk::model::Face& brd,
+  bool isCCW)
 {
   smtk::model::EdgeUses edgesOfLoop = loop.uses<smtk::model::EdgeUses>();
   smtk::common::UUIDs done;
@@ -499,7 +505,7 @@ void CreateFaces::updateLoopVertices(
   }
 }
 
-template <typename T>
+template<typename T>
 void printPts(const std::string& msg, T begin, T end)
 {
   std::cout << msg << "\n";
@@ -564,7 +570,7 @@ void CreateFaces::addTessellations()
   bool denom = denx > 1 || deny > 1;
 
   smtk::model::EntityRefs emptyFaces; // Faces that should not have been created.
-  std::map<RegionId, std::vector<OrientedEdges> >::iterator rit; // Face iterator
+  std::map<RegionId, std::vector<OrientedEdges>>::iterator rit; // Face iterator
   for (rit = m_regionLoops.begin(); rit != m_regionLoops.end(); ++rit)
   {
     if (m_debugLevel > 2)
@@ -586,7 +592,7 @@ void CreateFaces::addTessellations()
     poly::polygon_data<internal::Coord> pface;
     bool isOuter = true;
     size_t npp = rit->second.end() - rit->second.begin();
-    std::vector<std::vector<internal::Point> > pp2(npp);
+    std::vector<std::vector<internal::Point>> pp2(npp);
     size_t ppi = 0;
     for (lit = rit->second.begin(); lit != rit->second.end(); ++lit, ++ppi)
     {
@@ -629,7 +635,7 @@ void CreateFaces::addTessellations()
       }
     }
 
-    std::vector<poly::polygon_data<internal::Coord> > tess;
+    std::vector<poly::polygon_data<internal::Coord>> tess;
     polys.get_trapezoids(tess);
     //polys.get(tess);
     if (tess.empty())
@@ -638,7 +644,7 @@ void CreateFaces::addTessellations()
       continue; // Skip to next face/region.
     }
 
-    std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
+    std::vector<poly::polygon_data<internal::Coord>>::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =
       m_resource->setTessellationAndBoundingBox(modelFace.entity(), blank);

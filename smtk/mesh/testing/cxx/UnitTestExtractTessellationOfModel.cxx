@@ -42,8 +42,11 @@ class VerifyCells : public smtk::mesh::CellForEach
   bool m_is_vtk;
 
 public:
-  VerifyCells(const smtk::mesh::CellSet& cells, const std::vector<std::int64_t>& conn,
-    const std::vector<std::int64_t>& locations, const std::vector<unsigned char>& types,
+  VerifyCells(
+    const smtk::mesh::CellSet& cells,
+    const std::vector<std::int64_t>& conn,
+    const std::vector<std::int64_t>& locations,
+    const std::vector<unsigned char>& types,
     bool is_vtk_conn)
     : m_points(cells.points())
     , m_conn(conn)
@@ -90,7 +93,7 @@ public:
   }
 };
 
-template <typename T>
+template<typename T>
 class VerifyPoints : public smtk::mesh::PointForEach
 {
   const std::vector<T>& m_points;
@@ -103,7 +106,9 @@ public:
     , m_currentIndex(0)
   {
   }
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     coordinatesModified = false; //we are not modifying the coords
@@ -149,7 +154,8 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 }
 
 void verify_alloc_lengths_entityref(
-  const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& mr)
+  const smtk::model::EntityRef& eRef,
+  const smtk::mesh::ResourcePtr& mr)
 {
 
   smtk::mesh::MeshSet mesh = mr->findAssociatedMeshes(eRef);
@@ -197,7 +203,8 @@ void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::Resour
 }
 
 void verify_extract_volume_meshes_by_global_points_to_vtk(
-  const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& mr)
+  const smtk::model::EntityRef& eRef,
+  const smtk::mesh::ResourcePtr& mr)
 {
   smtk::mesh::CellSet cells = mr->findAssociatedCells(eRef);
 
@@ -244,7 +251,7 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
     ents.erase(*i);
   }
 }
-}
+} // namespace
 
 int UnitTestExtractTessellationOfModel(int /*unused*/, char** const /*unused*/)
 {
@@ -261,8 +268,9 @@ int UnitTestExtractTessellationOfModel(int /*unused*/, char** const /*unused*/)
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
 
-  EntityTypeBits etypes[4] = { smtk::model::VERTEX, smtk::model::EDGE, smtk::model::FACE,
-    smtk::model::VOLUME };
+  EntityTypeBits etypes[4] = {
+    smtk::model::VERTEX, smtk::model::EDGE, smtk::model::FACE, smtk::model::VOLUME
+  };
   for (int i = 0; i != 4; ++i)
   {
     //extract all the coordinates from every tessellation and make a single

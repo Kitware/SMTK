@@ -193,8 +193,11 @@ smtk::mesh::HandleRange convertVTKDataSet(vtkDataSet* dataset, smtk::mesh::Resou
   return alloc->cells() - initRange;
 }
 
-smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::InterfacePtr& iface,
-  const smtk::mesh::HandleRange& cells, const std::string& materialPropertyName)
+smtk::mesh::HandleRange convertDomain(
+  vtkCellData* cellData,
+  const smtk::mesh::InterfacePtr& iface,
+  const smtk::mesh::HandleRange& cells,
+  const std::string& materialPropertyName)
 {
   if (cellData == nullptr)
   {
@@ -244,19 +247,23 @@ smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::I
 
   return meshHandles;
 }
-}
+} // namespace
 
 ImportVTKData::ImportVTKData() = default;
 
-smtk::mesh::ResourcePtr ImportVTKData::operator()(const std::string& filename,
-  const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
+smtk::mesh::ResourcePtr ImportVTKData::operator()(
+  const std::string& filename,
+  const smtk::mesh::InterfacePtr& interface,
+  std::string materialPropertyName) const
 {
   smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(interface);
   return this->operator()(filename, resource, materialPropertyName) ? resource
                                                                     : smtk::mesh::ResourcePtr();
 }
 
-bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
+bool ImportVTKData::operator()(
+  const std::string& filename,
+  smtk::mesh::ResourcePtr resource,
   std::string materialPropertyName) const
 {
   ImportAsVTKData importAsVTKData;
@@ -281,8 +288,8 @@ bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   }
 }
 
-smtk::mesh::MeshSet ImportVTKData::operator()(
-  vtkDataSet* dataset, smtk::mesh::ResourcePtr resource) const
+smtk::mesh::MeshSet ImportVTKData::operator()(vtkDataSet* dataset, smtk::mesh::ResourcePtr resource)
+  const
 {
   //make sure we have a valid dataset
   if (!dataset)
@@ -309,7 +316,9 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
 }
 
 bool ImportVTKData::operator()(
-  vtkDataSet* dataset, smtk::mesh::ResourcePtr resource, std::string materialPropertyName) const
+  vtkDataSet* dataset,
+  smtk::mesh::ResourcePtr resource,
+  std::string materialPropertyName) const
 {
   //make sure we have valid data
   if (!dataset)
@@ -361,16 +370,22 @@ bool ImportVTKData::operator()(
         vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
         if (array != nullptr)
         {
-          mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
-            smtk::mesh::FieldType::Double, static_cast<const void*>(array->GetVoidPointer(0)));
+          mesh.createCellField(
+            array->GetName(),
+            array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Double,
+            static_cast<const void*>(array->GetVoidPointer(0)));
         }
       }
       {
         vtkIntArray* array = vtkIntArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
         if (array != nullptr)
         {
-          mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
-            smtk::mesh::FieldType::Integer, static_cast<const void*>(array->GetVoidPointer(0)));
+          mesh.createCellField(
+            array->GetName(),
+            array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Integer,
+            static_cast<const void*>(array->GetVoidPointer(0)));
         }
       }
     }
@@ -381,16 +396,22 @@ bool ImportVTKData::operator()(
         vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
         if (array != nullptr)
         {
-          mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
-            smtk::mesh::FieldType::Double, static_cast<const void*>(array->GetVoidPointer(0)));
+          mesh.createPointField(
+            array->GetName(),
+            array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Double,
+            static_cast<const void*>(array->GetVoidPointer(0)));
         }
       }
       {
         vtkIntArray* array = vtkIntArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
         if (array != nullptr)
         {
-          mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
-            smtk::mesh::FieldType::Integer, static_cast<const void*>(array->GetVoidPointer(0)));
+          mesh.createPointField(
+            array->GetName(),
+            array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Integer,
+            static_cast<const void*>(array->GetVoidPointer(0)));
         }
       }
     }
@@ -399,14 +420,16 @@ bool ImportVTKData::operator()(
   return !mesh.is_empty();
 }
 
-smtk::mesh::ResourcePtr ImportVTKData::operator()(vtkDataSet* dataset,
-  const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
+smtk::mesh::ResourcePtr ImportVTKData::operator()(
+  vtkDataSet* dataset,
+  const smtk::mesh::InterfacePtr& interface,
+  std::string materialPropertyName) const
 {
   smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create(interface);
   return this->operator()(dataset, c, materialPropertyName) ? c : smtk::mesh::ResourcePtr();
 }
-}
-}
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

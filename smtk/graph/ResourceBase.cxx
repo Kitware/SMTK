@@ -17,7 +17,8 @@ namespace smtk
 {
 namespace graph
 {
-bool ResourceBase::Compare::operator()(const std::shared_ptr<smtk::resource::Component>& lhs,
+bool ResourceBase::Compare::operator()(
+  const std::shared_ptr<smtk::resource::Component>& lhs,
   const std::shared_ptr<smtk::resource::Component>& rhs) const
 {
   return (!lhs ? true : (!rhs ? false : lhs->id() < rhs->id()));

@@ -84,7 +84,8 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 }
 
 std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
-  const smtk::model::Loop& loop, smtk::mesh::ResourcePtr& resource) const
+  const smtk::model::Loop& loop,
+  smtk::mesh::ResourcePtr& resource) const
 {
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -119,7 +120,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 
   return points;
 }
-}
-}
-}
-}
+} // namespace io
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk

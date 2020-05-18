@@ -37,7 +37,7 @@ namespace smtk
 namespace common
 {
 
-template <typename KeyType>
+template<typename KeyType>
 void to_json(nlohmann::json& j, const TypeMapBase<KeyType>& typemap)
 {
   for (auto& entry : typemap.data())
@@ -53,7 +53,7 @@ void to_json(nlohmann::json& j, const TypeMapBase<KeyType>& typemap)
   }
 }
 
-template <typename KeyType>
+template<typename KeyType>
 void from_json(const nlohmann::json& j, TypeMapBase<KeyType>& typemap)
 {
   for (auto& entry : typemap.data())
@@ -79,7 +79,7 @@ void from_json(const nlohmann::json& j, TypeMapBase<KeyType>& typemap)
     }
   }
 }
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

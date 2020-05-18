@@ -37,9 +37,13 @@ class StructuredGrid;
 class SMTKCORE_EXPORT InverseDistanceWeighting
 {
 public:
-  InverseDistanceWeighting(const PointCloud& pointcloud, double power = 1.,
+  InverseDistanceWeighting(
+    const PointCloud& pointcloud,
+    double power = 1.,
     std::function<bool(double)> prefilter = [](double) { return true; });
-  InverseDistanceWeighting(const StructuredGrid& structuredgrid, double power = 1.,
+  InverseDistanceWeighting(
+    const StructuredGrid& structuredgrid,
+    double power = 1.,
     std::function<bool(double)> prefilter = [](double) { return true; });
 
   double operator()(std::array<double, 3> x) const { return m_function(x); }
@@ -47,7 +51,7 @@ public:
 private:
   std::function<double(std::array<double, 3>)> m_function;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

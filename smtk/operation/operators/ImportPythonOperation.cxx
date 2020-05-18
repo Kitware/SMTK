@@ -44,10 +44,10 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/regex.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <set>
@@ -76,7 +76,8 @@ bool ImportPythonOperation::ableToOperate()
 }
 
 std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
-  const std::string& moduleName, smtk::operation::Manager& manager)
+  const std::string& moduleName,
+  smtk::operation::Manager& manager)
 {
   // Query the module for SMTK operations
   std::stringstream cmd;
@@ -123,7 +124,9 @@ std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
 }
 
 bool ImportPythonOperation::importOperation(
-  smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName)
+  smtk::operation::Manager& manager,
+  const std::string& moduleName,
+  const std::string& opName)
 {
   std::string typeName = moduleName + "." + opName;
   smtk::operation::Operation::Index index = std::hash<std::string>{}(typeName);
@@ -199,5 +202,5 @@ ImportPythonOperation::Specification ImportPythonOperation::createSpecification(
 
   return spec;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

@@ -107,7 +107,8 @@ ImportResource::Result ImportResource::operateInternal()
     importerFileItem->setValue(filename);
 
     smtk::operation::Operation::Result importOperationResult = importOperation->operate();
-    if (importOperationResult->findInt("outcome")->value() !=
+    if (
+      importOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       // An error message should already enter the logger from the local
@@ -200,8 +201,10 @@ ImportResource::Specification ImportResource::createSpecification()
       // Add this metadata observer to the set of metadata observers,
       // invoking it immediately on all extant metadata.
       manager->metadataObservers().insert(observer);
-      std::for_each(manager->metadata().begin(), manager->metadata().end(),
-        [&](const Metadata& metadata) { observer(metadata, true); });
+      std::for_each(
+        manager->metadata().begin(), manager->metadata().end(), [&](const Metadata& metadata) {
+          observer(metadata, true);
+        });
     }
   }
 
@@ -232,5 +235,5 @@ void ImportResource::generateSummary(ImportResource::Result& res)
     smtkErrorMacro(this->log(), label << ": failed to import \"" << fitem->value(0) << "\"");
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

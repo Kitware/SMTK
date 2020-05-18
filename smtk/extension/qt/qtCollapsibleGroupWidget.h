@@ -47,7 +47,7 @@ protected:
 
 private:
 };
-};
-};
+}; // namespace extension
+}; // namespace smtk
 
 #endif /* __smtk_extension_qtCollapsibleGroupWidget_h */

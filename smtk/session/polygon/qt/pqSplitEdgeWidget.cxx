@@ -23,7 +23,6 @@
 #include "vtkMemberFunctionCommand.h"
 #include "vtkNew.h"
 #include "vtkPVRenderView.h"
-#include "vtkPVRenderView.h"
 #include "vtkPVSelectionInformation.h"
 #include "vtkPolygonArcInfo.h"
 #include "vtkRenderWindow.h"
@@ -115,7 +114,7 @@ void EdgePointPicker::donePicking(pqRenderView* view)
     view->setUseMultipleRepresentationSelection(true);
   }
 }
-}
+} // namespace pqSplitEdgeWidgetInternals
 
 class pqSplitEdgeWidget::pqInternals
 {
@@ -216,10 +215,18 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
     }
 
     // things are selected
-    QObject::connect(this->View, SIGNAL(selected(pqOutputPort*)), this,
-      SLOT(arcPointPicked(pqOutputPort*)), Qt::UniqueConnection);
+    QObject::connect(
+      this->View,
+      SIGNAL(selected(pqOutputPort*)),
+      this,
+      SLOT(arcPointPicked(pqOutputPort*)),
+      Qt::UniqueConnection);
     // selection is done
-    QObject::connect(this->View, SIGNAL(selectionModeChanged(bool)), this, SLOT(resetWidget()),
+    QObject::connect(
+      this->View,
+      SIGNAL(selectionModeChanged(bool)),
+      this,
+      SLOT(resetWidget()),
       Qt::UniqueConnection);
 
     emit hideAllFaces(true); // hide faces before selection
@@ -318,7 +325,8 @@ void pqSplitEdgeWidget::onSelectionModeChanged()
     vtkSMRenderViewProxy* rmp = this->View->getRenderViewProxy();
     int curSelMode = 0;
     vtkSMPropertyHelper(rmp, "InteractionMode").Get(&curSelMode);
-    if (curSelMode != vtkPVRenderView::INTERACTION_MODE_SELECTION &&
+    if (
+      curSelMode != vtkPVRenderView::INTERACTION_MODE_SELECTION &&
       curSelMode != vtkPVRenderView::INTERACTION_MODE_2D &&
       curSelMode != vtkPVRenderView::INTERACTION_MODE_3D)
     {

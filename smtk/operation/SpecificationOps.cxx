@@ -24,8 +24,10 @@ namespace smtk
 namespace operation
 {
 
-Operation::Parameters createParameters(Operation::Specification specification,
-  const std::string& operatorName, const std::string& parametersName)
+Operation::Parameters createParameters(
+  Operation::Specification specification,
+  const std::string& operatorName,
+  const std::string& parametersName)
 {
   Operation::Definition parameterDefinition =
     extractParameterDefinition(specification, operatorName);
@@ -41,7 +43,8 @@ Operation::Parameters createParameters(Operation::Specification specification,
 }
 
 Operation::Parameters extractParameters(
-  Operation::Specification specification, const std::string& operatorName)
+  Operation::Specification specification,
+  const std::string& operatorName)
 {
   Operation::Definition parameterDefinition =
     extractParameterDefinition(specification, operatorName);
@@ -75,7 +78,8 @@ Operation::Parameters extractParameters(
 }
 
 Operation::Definition extractParameterDefinition(
-  Operation::Specification specification, const std::string& operatorName)
+  Operation::Specification specification,
+  const std::string& operatorName)
 {
   Operation::Definition parameterDefinition;
 
@@ -108,7 +112,8 @@ Operation::Definition extractParameterDefinition(
 }
 
 Operation::Definition extractResultDefinition(
-  Operation::Specification specification, const std::string& operatorName)
+  Operation::Specification specification,
+  const std::string& operatorName)
 {
   smtk::attribute::DefinitionPtr resultDefinition;
 
@@ -150,7 +155,8 @@ Operation::Definition extractResultDefinition(
 namespace
 {
 void resourcesFromItem(
-  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ReferenceItem::Ptr& item)
+  ResourceAccessMap& resourcesAndLockTypes,
+  const smtk::attribute::ReferenceItem::Ptr& item)
 {
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
@@ -187,10 +193,11 @@ void resourcesFromItem(
     }
   }
 }
-}
+} // namespace
 
-std::set<std::weak_ptr<smtk::resource::Resource>,
-  std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+std::set<
+  std::weak_ptr<smtk::resource::Resource>,
+  std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
 extractResources(Operation::Result result)
 {
   ResourceAccessMap resourcesAndLockTypes;
@@ -221,8 +228,9 @@ extractResources(Operation::Result result)
   }
 
   // We are only interested in the resources, so we strip away the lock types.
-  std::set<std::weak_ptr<smtk::resource::Resource>,
-    std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+  std::set<
+    std::weak_ptr<smtk::resource::Resource>,
+    std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
     resources;
   for (const auto& resourceAndLockType : resourcesAndLockTypes)
   {
@@ -332,8 +340,8 @@ ComponentDefinitionVector extractComponentDefinitions(Operation::Specification s
     specification->definitions(definitions);
 
     // For each definition, gather all of the components using a filter.
-    auto componentItemDefinitionFilter = [](
-      smtk::attribute::ComponentItemDefinition::Ptr /*unused*/) { return true; };
+    auto componentItemDefinitionFilter =
+      [](smtk::attribute::ComponentItemDefinition::Ptr /*unused*/) { return true; };
     for (auto& definition : definitions)
     {
       definition->filterItemDefinitions(componentItemDefinitions, componentItemDefinitionFilter);
@@ -386,7 +394,10 @@ enum class Action
 
 std::set<std::string> emptyTagValues;
 
-bool actOnTag(Operation::Specification specification, const std::string& tagName, Action action,
+bool actOnTag(
+  Operation::Specification specification,
+  const std::string& tagName,
+  Action action,
   const std::set<std::string>& tagValues)
 {
   // If we are passed a bad specification, then its associated operation cannot
@@ -448,7 +459,7 @@ bool actOnTag(Operation::Specification specification, const std::string& tagName
 
   return modified;
 }
-}
+} // namespace
 /// @endcond
 
 bool addTag(Operation::Specification specification, const std::string& tagName)
@@ -456,7 +467,9 @@ bool addTag(Operation::Specification specification, const std::string& tagName)
   return actOnTag(specification, tagName, Action::ADD, emptyTagValues);
 }
 
-bool addTag(Operation::Specification specification, const std::string& tagName,
+bool addTag(
+  Operation::Specification specification,
+  const std::string& tagName,
   const std::set<std::string>& tagValues)
 {
   return actOnTag(specification, tagName, Action::ADD, tagValues);
@@ -474,5 +487,5 @@ std::set<std::string> tagValues(Operation::Specification specification, const st
   return tagValues;
 }
 
-} // operation namespace
-} // smtk namespace
+} // namespace operation
+} // namespace smtk

@@ -60,7 +60,8 @@ public:
   smtkCreateMacro(DefaultSession);
 
   void backsRemoteSession(
-    const std::string& remoteSessionName, const smtk::common::UUID& sessionId);
+    const std::string& remoteSessionName,
+    const smtk::common::UUID& sessionId);
   virtual std::string remoteName() const;
   // OperationPtr op(const std::string& opName) const override;
 
@@ -72,8 +73,8 @@ protected:
 
   DefaultSession();
 
-  SessionInfoBits transcribeInternal(
-    const EntityRef& entity, SessionInfoBits flags, int depth = -1) override;
+  SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1)
+    override;
 
   void setImportingOperations(bool isImporting);
 

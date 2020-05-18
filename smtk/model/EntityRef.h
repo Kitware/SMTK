@@ -37,7 +37,7 @@ namespace mesh
 {
 class MeshSet;
 }
-}
+} // namespace smtk
 
 /// A macro to implement mandatory EntityRef-subclass constructors.
 #define SMTK_ENTITYREF_CLASS(thisclass, superclass, typecheck)                                     \
@@ -65,7 +65,7 @@ class MeshSet;
   {                                                                                                \
     EntityPtr er;                                                                                  \
     if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \
-      this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))            \
+        this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))          \
     {                                                                                              \
       if (entRec)                                                                                  \
         *entRec = er;                                                                              \
@@ -193,32 +193,33 @@ public:
     * entityref subclass to perform sanity checks; this method
     * will happily return an invalid object.
     */
-  template <typename T>
+  template<typename T>
   T as() const
   {
     return T(*this);
   }
 
-  template <typename S, typename T>
+  template<typename S, typename T>
   static void EntityRefsFromUUIDs(S& result, ResourcePtr, const T& uids);
 
-  template <typename S, typename T>
+  template<typename S, typename T>
   static void EntityRefsToUUIDs(S& uids, const T& entRefs);
 
   EntityRefs bordantEntities(int ofDimension = -2) const;
   EntityRefs boundaryEntities(int ofDimension = -2) const;
 
   std::vector<double> boundingBox() const;
+  std::vector<double> unionBoundingBox(const std::vector<double>& b1, const std::vector<double>& b2)
+    const;
   std::vector<double> unionBoundingBox(
-    const std::vector<double>& b1, const std::vector<double>& b2) const;
-  std::vector<double> unionBoundingBox(
-    const std::vector<double>& b1, const std::array<double, 6>& b2) const;
+    const std::vector<double>& b1,
+    const std::array<double, 6>& b2) const;
 
   EntityRefs lowerDimensionalBoundaries(int lowerDimension);
   EntityRefs higherDimensionalBordants(int higherDimension);
   EntityRefs adjacentEntities(int ofDimension);
 
-  template <typename T>
+  template<typename T>
   T relationsAs() const;
   EntityRefs relations() const;
   EntityRef& addRawRelation(const EntityRef& ent);
@@ -248,15 +249,19 @@ public:
   bool hasAttributes(smtk::attribute::ConstResourcePtr attRes) const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
   bool associateAttribute(
-    smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId);
+    smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId);
   bool disassociateAttribute(
-    smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId);
+    smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId);
   bool disassociateAttribute(
-    smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool reverse);
+    smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId,
+    bool reverse);
   bool disassociateAllAttributes(smtk::attribute::ResourcePtr attResource);
   bool disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool reverse);
   /// Returns true if at least 1 attribute in the set of \a attribPtrs was removed.
-  template <typename T>
+  template<typename T>
   bool disassociateAttributes(const T& attribPtrs)
   {
     bool removedAny = false;
@@ -275,7 +280,7 @@ public:
   smtk::attribute::Attributes attributes() const;
 
   // For T = {IntegerData, FloatData, StringData}:
-  template <typename T>
+  template<typename T>
   bool removeProperty(const std::string& name);
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
@@ -316,17 +321,17 @@ public:
 
   // Manage embedded_in/includes relationships
   EntityRef& embedEntity(const EntityRef& thingToEmbed, bool checkExistence = true);
-  template <typename T>
+  template<typename T>
   EntityRef& embedEntities(const T& container, bool checkExistence = true);
   bool isEmbedded(EntityRef& ent) const;
   EntityRef embeddedIn() const;
   bool unembedEntity(const EntityRef& thingToUnembed);
-  template <typename T>
+  template<typename T>
   EntityRef& unembedEntities(const T& container);
-  template <typename T>
+  template<typename T>
   T embeddedEntities() const;
 
-  template <typename T>
+  template<typename T>
   T instances() const;
 
   Model owningModel() const;
@@ -354,11 +359,11 @@ protected:
 
   // Manage subset_of/superset_of relationships
   EntityRef& addMemberEntity(const EntityRef& memberToAdd);
-  template <typename T>
+  template<typename T>
   EntityRef& addMemberEntities(T begin, T end);
   EntityRef& removeMemberEntity(const EntityRef& memberToRemove);
   EntityRef& removeMemberEntity(int indexOfMemberToRemove);
-  template <typename T>
+  template<typename T>
   EntityRef& removeMemberEntities(T begin, T end);
 
   ResourceEventRelationType subsetRelationType(const EntityRef& member) const;
@@ -369,7 +374,7 @@ SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const EntityRef& c);
 
 SMTKCORE_EXPORT std::size_t entityrefHash(const EntityRef& c);
 
-template <typename T>
+template<typename T>
 T EntityRef::relationsAs() const
 {
   T result;
@@ -390,7 +395,7 @@ T EntityRef::relationsAs() const
   return result;
 }
 
-template <typename S, typename T>
+template<typename S, typename T>
 void EntityRef::EntityRefsFromUUIDs(S& result, ResourcePtr mgr, const T& uids)
 {
   for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it)
@@ -403,7 +408,7 @@ void EntityRef::EntityRefsFromUUIDs(S& result, ResourcePtr mgr, const T& uids)
   }
 }
 
-template <typename S, typename T>
+template<typename S, typename T>
 void EntityRef::EntityRefsToUUIDs(S& uids, const T& entRefs)
 {
   for (typename T::const_iterator it = entRefs.begin(); it != entRefs.end(); ++it)
@@ -415,7 +420,7 @@ void EntityRef::EntityRefsToUUIDs(S& uids, const T& entRefs)
   }
 }
 
-template <typename T>
+template<typename T>
 EntityRef& EntityRef::embedEntities(const T& container, bool checkExistence)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -425,7 +430,7 @@ EntityRef& EntityRef::embedEntities(const T& container, bool checkExistence)
   return *this;
 }
 
-template <typename T>
+template<typename T>
 EntityRef& EntityRef::unembedEntities(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -435,7 +440,7 @@ EntityRef& EntityRef::unembedEntities(const T& container)
   return *this;
 }
 
-template <typename T>
+template<typename T>
 EntityRef& EntityRef::addMemberEntities(T begin, T end)
 {
   for (T it = begin; it != end; ++it)
@@ -443,7 +448,7 @@ EntityRef& EntityRef::addMemberEntities(T begin, T end)
   return *this;
 }
 
-template <typename T>
+template<typename T>
 EntityRef& EntityRef::removeMemberEntities(T begin, T end)
 {
   for (T it = begin; it != end; ++it)

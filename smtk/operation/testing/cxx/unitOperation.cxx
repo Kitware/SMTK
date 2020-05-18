@@ -99,9 +99,9 @@ struct
   { smtk::operation::EventType::DID_OPERATE, true, 3 },
 };
 int obs = 0;
-}
+} // namespace
 
-int unitOperation(int /*unused*/, char* /*unused*/ [])
+int unitOperation(int /*unused*/, char* /*unused*/[])
 {
   auto manager = smtk::operation::Manager::create();
 
@@ -116,7 +116,9 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
   std::shared_ptr<TestOp> testOp;
 
   smtk::operation::Observers::Key handleTmp = manager->observers().insert(
-    [&handleTmp, &manager](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [&handleTmp, &manager](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result /*unused*/) -> int {
       std::cout << "[x] " << op.typeName() << " event " << static_cast<int>(event)
                 << " testing that an observer can remove itself.\n";
@@ -125,7 +127,9 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
     });
 
   auto handle = manager->observers().insert(
-    [&testOp](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [&testOp](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       int outcome = -1;
       std::cout << "[" << obs << "] " << op.typeName() << " event " << static_cast<int>(event)
@@ -149,7 +153,9 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
     });
 
   auto another = manager->observers().insert(
-    [](const smtk::operation::Operation& /*unused*/, smtk::operation::EventType /*unused*/,
+    [](
+      const smtk::operation::Operation& /*unused*/,
+      smtk::operation::EventType /*unused*/,
       smtk::operation::Operation::Result /*unused*/) -> int {
       smtkTest(false, "This observer should never be called");
       return 1;
@@ -180,10 +186,12 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
   smtkTest(
     static_cast<int>(manager->observers().erase(handle)), "Could not remove operation observer");
 
-  smtkTest(obs == sizeof(expectedObservations) / sizeof(expectedObservations[0]), "Observed "
-      << obs << " events,"
-                " expected "
-      << (sizeof(expectedObservations) / sizeof(expectedObservations[0])));
+  smtkTest(
+    obs == sizeof(expectedObservations) / sizeof(expectedObservations[0]),
+    "Observed " << obs
+                << " events,"
+                   " expected "
+                << (sizeof(expectedObservations) / sizeof(expectedObservations[0])));
 
   return 0;
 }

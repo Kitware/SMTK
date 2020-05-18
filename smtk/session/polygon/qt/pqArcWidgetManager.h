@@ -80,8 +80,12 @@ protected:
   void getDefaultArcPlane(int& normal, double& pos);
   void resetArcPlane(int normal, double pos);
   qtArcWidget* createContourWidget(int normal, double position);
-  pqPolygonArc* createLegacyV1Contour(const int& normal, const double& position,
-    const int& closedLoop, vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices);
+  pqPolygonArc* createLegacyV1Contour(
+    const int& normal,
+    const double& position,
+    const int& closedLoop,
+    vtkDoubleArray* nodePositions,
+    vtkIdTypeArray* SelIndices);
   void disableArcWidget();
 
   QPointer<qtArcWidget> ArcWidget;

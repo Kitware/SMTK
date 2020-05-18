@@ -30,7 +30,9 @@ namespace
 bool testItem(StringItemPtr& item, int index, const std::vector<std::string>& vals);
 bool testItem(GroupItemPtr& groupItem, int index, const std::vector<std::string>& vals);
 bool testConfigiration(
-  ResourcePtr& attRes, const std::string& configName, const std::vector<std::string>& vals)
+  ResourcePtr& attRes,
+  const std::string& configName,
+  const std::vector<std::string>& vals)
 {
   bool status = true;
   std::cerr << "Testing configuration: " << configName;
@@ -174,9 +176,9 @@ bool testItem(StringItemPtr& item, int index, const std::vector<std::string>& va
   }
   return testItem(gitem, nextLevel, vals);
 }
-}
+} // namespace
 
-int unitAnalysisConfigurations(int /*unused*/, char* /*unused*/ [])
+int unitAnalysisConfigurations(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test configurations files
   bool status = true;
@@ -194,8 +196,9 @@ int unitAnalysisConfigurations(int /*unused*/, char* /*unused*/ [])
   {
     std::cerr << "Errors Generated when reading SBT file :\n" << logger.convertToString();
   }
-  std::vector<std::vector<std::string> > configs = { { "A" }, { "B" }, { "B", "B-D" },
-    { "C", "C-D" }, { "C", "C-E", "C-E-F" } };
+  std::vector<std::vector<std::string>> configs = {
+    { "A" }, { "B" }, { "B", "B-D" }, { "C", "C-D" }, { "C", "C-E", "C-E-F" }
+  };
   // The above test template should have contained the following Test Configurations:
   /*Test A
     - Set top level to A

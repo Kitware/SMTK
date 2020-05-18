@@ -32,10 +32,10 @@ public:
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
-}
-}
-}
-}
+} // namespace appcomponents
+} // namespace paraview
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif // smtk_extension_paraview_appcomponents_Registrar_h

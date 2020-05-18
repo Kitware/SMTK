@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 import os
 import smtk
@@ -63,6 +63,7 @@ def test_read_cell_field(mesh_path):
                 "cell field was not correctly saved and retrieved")
 
     os.remove(mesh_path)
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

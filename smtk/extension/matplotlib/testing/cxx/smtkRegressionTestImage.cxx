@@ -12,8 +12,11 @@
 #include <vtksys/SystemTools.hxx>
 
 // This function returns vtkTesting::PASSED on success
-vtkIdType smtkRegressionTestImage(vtkRenderWindow* rw, const double thresh,
-  const std::string& fileName, const std::string& fileType)
+vtkIdType smtkRegressionTestImage(
+  vtkRenderWindow* rw,
+  const double thresh,
+  const std::string& fileName,
+  const std::string& fileType)
 {
   // Append the testing temporary directory, the baseline image to the commandline arguments
   std::vector<std::string> args;

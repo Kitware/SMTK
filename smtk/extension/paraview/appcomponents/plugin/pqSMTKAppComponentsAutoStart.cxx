@@ -51,13 +51,16 @@ public:
   const char* GetVTKSourceVersion() override { return VTK_SOURCE_VERSION; }
   vtkSMTKAppComponentsFactory()
   {
-    this->RegisterOverride("vtkPVEncodeSelectionForServer", "vtkSMTKEncodeSelection",
-      "Override ParaView selection processing for SMTK", 1,
+    this->RegisterOverride(
+      "vtkPVEncodeSelectionForServer",
+      "vtkSMTKEncodeSelection",
+      "Override ParaView selection processing for SMTK",
+      1,
       []() -> vtkObject* { return vtkSMTKEncodeSelection::New(); });
   }
 };
 vtkStandardNewMacro(vtkSMTKAppComponentsFactory);
-}
+} // namespace
 
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)

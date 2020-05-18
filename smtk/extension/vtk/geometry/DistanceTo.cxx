@@ -34,14 +34,15 @@ namespace
 {
 struct CellLocatorCache : public smtk::operation::SynchronizedCache
 {
-  void synchronize(
-    const smtk::operation::Operation&, const smtk::operation::Operation::Result&) override;
+  void synchronize(const smtk::operation::Operation&, const smtk::operation::Operation::Result&)
+    override;
 
-  std::unordered_map<smtk::common::UUID, vtkSmartPointer<vtkCellLocator> > m_caches;
+  std::unordered_map<smtk::common::UUID, vtkSmartPointer<vtkCellLocator>> m_caches;
 };
 
 void CellLocatorCache::synchronize(
-  const smtk::operation::Operation&, const smtk::operation::Operation::Result& result)
+  const smtk::operation::Operation&,
+  const smtk::operation::Operation::Result& result)
 {
   for (auto& component : { result->findComponent("expunged"), result->findComponent("modified") })
   {
@@ -51,7 +52,7 @@ void CellLocatorCache::synchronize(
     }
   }
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -61,11 +62,12 @@ namespace vtk
 {
 namespace geometry
 {
-std::pair<double, std::array<double, 3> > DistanceTo::operator()(
-  const smtk::resource::ComponentPtr& component, const std::array<double, 3>& input) const
+std::pair<double, std::array<double, 3>> DistanceTo::operator()(
+  const smtk::resource::ComponentPtr& component,
+  const std::array<double, 3>& input) const
 {
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
-  std::pair<double, std::array<double, 3> > returnValue(nan, { { nan, nan, nan } });
+  std::pair<double, std::array<double, 3>> returnValue(nan, { { nan, nan, nan } });
 
   smtk::geometry::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::geometry::Resource>(component->resource());
@@ -142,7 +144,7 @@ std::pair<double, std::array<double, 3> > DistanceTo::operator()(
 
   return returnValue;
 };
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

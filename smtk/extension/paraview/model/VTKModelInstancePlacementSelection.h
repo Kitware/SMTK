@@ -56,7 +56,8 @@ protected:
     * more information about the instance's lifecycle.
     */
   smtk::model::EntityPtr temporaryInstance(
-    const smtk::model::EntityPtr& sourceInstance, vtkIdTypeArray* sourcePlacements);
+    const smtk::model::EntityPtr& sourceInstance,
+    vtkIdTypeArray* sourcePlacements);
 
   /**\brief A convenience method that subclasses may use internally
     *       to handle VTK index selections.

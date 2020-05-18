@@ -38,9 +38,10 @@ std::string dataRoot = SMTK_DATA_DIR;
 
 void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
 {
-  smtk::model::EntityRefArray children = (root.isModel()
-      ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
-      : (root.isCellEntity()
+  smtk::model::EntityRefArray children =
+    (root.isModel()
+       ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+       : (root.isCellEntity()
             ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
             : (root.isGroup() ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
                               : smtk::model::EntityRefArray())));
@@ -73,7 +74,7 @@ void ParseModelTopology(smtk::model::Model model, std::size_t* count)
     }
   }
 }
-}
+} // namespace
 
 int UnitTestImportFrom3dm(int argc, char* argv[])
 {
@@ -130,7 +131,8 @@ int UnitTestImportFrom3dm(int argc, char* argv[])
     model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
     // Test for success
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";

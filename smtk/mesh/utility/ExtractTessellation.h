@@ -22,7 +22,7 @@ namespace model
 {
 class EntityRef;
 class Loop;
-}
+} // namespace model
 namespace mesh
 {
 namespace utility
@@ -34,18 +34,30 @@ public:
   // Todo: Document that connectivityLength is just pure length of connectivity
   // if you are enabling vtk length you need to allocate for connectivityLength
   // + numberOfCells
-  static void determineAllocationLengths(const smtk::mesh::MeshSet& ms,
-    std::int64_t& connectivityLength, std::int64_t& numberOfCells, std::int64_t& numberOfPoints);
-
-  static void determineAllocationLengths(const smtk::mesh::CellSet& cs,
-    std::int64_t& connectivityLength, std::int64_t& numberOfCells, std::int64_t& numberOfPoints);
-
-  static void determineAllocationLengths(const smtk::model::EntityRef& eRef,
-    const smtk::mesh::ResourcePtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
+  static void determineAllocationLengths(
+    const smtk::mesh::MeshSet& ms,
+    std::int64_t& connectivityLength,
+    std::int64_t& numberOfCells,
     std::int64_t& numberOfPoints);
 
-  static void determineAllocationLengths(const smtk::model::Loop& loop,
-    const smtk::mesh::ResourcePtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
+  static void determineAllocationLengths(
+    const smtk::mesh::CellSet& cs,
+    std::int64_t& connectivityLength,
+    std::int64_t& numberOfCells,
+    std::int64_t& numberOfPoints);
+
+  static void determineAllocationLengths(
+    const smtk::model::EntityRef& eRef,
+    const smtk::mesh::ResourcePtr& c,
+    std::int64_t& connectivityLength,
+    std::int64_t& numberOfCells,
+    std::int64_t& numberOfPoints);
+
+  static void determineAllocationLengths(
+    const smtk::model::Loop& loop,
+    const smtk::mesh::ResourcePtr& c,
+    std::int64_t& connectivityLength,
+    std::int64_t& numberOfCells,
     std::int64_t& numberOfPoints);
 
   //Only converts connectivity. The following properties will not be
@@ -62,15 +74,23 @@ public:
 
   //Converts everything but Points.
   PreAllocatedTessellation(
-    std::int64_t* connectivity, std::int64_t* cellLocations, unsigned char* cellTypes);
+    std::int64_t* connectivity,
+    std::int64_t* cellLocations,
+    unsigned char* cellTypes);
 
   //Converts everything and stores the points as floats
-  PreAllocatedTessellation(std::int64_t* connectivity, std::int64_t* cellLocations,
-    unsigned char* cellTypes, float* points);
+  PreAllocatedTessellation(
+    std::int64_t* connectivity,
+    std::int64_t* cellLocations,
+    unsigned char* cellTypes,
+    float* points);
 
   //Converts everything and stores the points as doubles
-  PreAllocatedTessellation(std::int64_t* connectivity, std::int64_t* cellLocations,
-    unsigned char* cellTypes, double* points);
+  PreAllocatedTessellation(
+    std::int64_t* connectivity,
+    std::int64_t* cellLocations,
+    unsigned char* cellTypes,
+    double* points);
 
   //determine if you want VTK 6.0 style connectivity array where each cell
   //is preceded with an entry that states the length of the cell. Passing
@@ -93,9 +113,11 @@ public:
   bool useVTKCellTypes() const { return m_useVTKCellTypes; }
 
 private:
-  template <class PointConnectivity>
+  template<class PointConnectivity>
   friend SMTKCORE_EXPORT void extractTessellationInternal(
-    PointConnectivity&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
+    PointConnectivity&,
+    const smtk::mesh::PointSet&,
+    PreAllocatedTessellation&);
   std::int64_t* m_connectivity;
   std::int64_t* m_cellLocations;
   unsigned char* m_cellTypes;
@@ -150,29 +172,50 @@ private:
 SMTKCORE_EXPORT void extractTessellation(const smtk::mesh::MeshSet&, PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractTessellation(const smtk::mesh::CellSet&, PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractTessellation(
-  const smtk::model::EntityRef&, const smtk::mesh::ResourcePtr&, PreAllocatedTessellation&);
+  const smtk::model::EntityRef&,
+  const smtk::mesh::ResourcePtr&,
+  PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractOrderedTessellation(
-  const smtk::model::EdgeUse&, const smtk::mesh::ResourcePtr&, PreAllocatedTessellation&);
+  const smtk::model::EdgeUse&,
+  const smtk::mesh::ResourcePtr&,
+  PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractOrderedTessellation(
-  const smtk::model::Loop&, const smtk::mesh::ResourcePtr&, PreAllocatedTessellation&);
+  const smtk::model::Loop&,
+  const smtk::mesh::ResourcePtr&,
+  PreAllocatedTessellation&);
 
 //Extract Tessellation in respect to another PointSet instead of the PointSet
 //contained by the meshset. This is useful if you are sharing a single
 //PointSet among multiple Tessellations.
 SMTKCORE_EXPORT void extractTessellation(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractTessellation(
-  const smtk::mesh::CellSet&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
+  const smtk::mesh::CellSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractTessellation(
-  smtk::mesh::PointConnectivity&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
-SMTKCORE_EXPORT void extractTessellation(const smtk::model::EntityRef&,
-  const smtk::mesh::ResourcePtr&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
-SMTKCORE_EXPORT void extractOrderedTessellation(const smtk::model::EdgeUse&,
-  const smtk::mesh::ResourcePtr&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
-SMTKCORE_EXPORT void extractOrderedTessellation(const smtk::model::Loop&,
-  const smtk::mesh::ResourcePtr&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
-}
-}
-}
+  smtk::mesh::PointConnectivity&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
+SMTKCORE_EXPORT void extractTessellation(
+  const smtk::model::EntityRef&,
+  const smtk::mesh::ResourcePtr&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
+SMTKCORE_EXPORT void extractOrderedTessellation(
+  const smtk::model::EdgeUse&,
+  const smtk::mesh::ResourcePtr&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
+SMTKCORE_EXPORT void extractOrderedTessellation(
+  const smtk::model::Loop&,
+  const smtk::mesh::ResourcePtr&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedTessellation&);
+} // namespace utility
+} // namespace mesh
+} // namespace smtk
 
 #endif

@@ -108,7 +108,8 @@ protected:
   QListWidgetItem* addFunctionListItem(smtk::attribute::AttributePtr childData);
   void addNewValue(double* vals, int numVals);
   void updateFunctionEditorUI(
-    smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem);
+    smtk::attribute::ValueItemPtr expressionItem,
+    smtk::attribute::GroupItemPtr arrayItem);
   void pasteFunctionValues(QString& values, bool clearExp = true);
   virtual void clearFuncExpression();
   virtual void getAllDefinitions(QList<smtk::attribute::DefinitionPtr>& defs);
@@ -116,7 +117,7 @@ protected:
   qtSimpleExpressionViewInternals* Internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

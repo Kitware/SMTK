@@ -74,8 +74,8 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
   file.close();
 }
 
-smtk::mesh::MeshSet make_MeshPoint(
-  smtk::mesh::ResourcePtr meshResource, double x, double y, double z)
+smtk::mesh::MeshSet
+make_MeshPoint(smtk::mesh::ResourcePtr meshResource, double x, double y, double z)
 {
   smtk::mesh::InterfacePtr interface = meshResource->interface();
   smtk::mesh::AllocatorPtr allocator = interface->allocator();
@@ -251,7 +251,7 @@ void verify_write_valid_meshResource_hdf5_after_merge()
   points = mr1->points();
   test(points.size() == 32, "Should have 32 points in saved resource");
 }
-}
+} // namespace
 
 int UnitTestMergeContactPoints(int /*unused*/, char** const /*unused*/)
 {

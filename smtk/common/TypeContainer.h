@@ -40,10 +40,10 @@ class SMTKCORE_EXPORT TypeContainer
     virtual std::unique_ptr<Wrapper> clone() const = 0;
   };
 
-  template <typename Type>
+  template<typename Type>
   struct WrapperFor : Wrapper
   {
-    template <typename... Args>
+    template<typename... Args>
     WrapperFor(Args&&... v)
       : value(std::forward<Args>(v)...)
     {
@@ -52,7 +52,7 @@ class SMTKCORE_EXPORT TypeContainer
     std::unique_ptr<Wrapper> clone() const
     {
 #ifdef SMTK_HAVE_CXX_14
-      return std::make_unique<WrapperFor<Type> >(std::make_unique<Type>(*value));
+      return std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(*value));
 #else
       return std::unique_ptr<Wrapper>(new WrapperFor<Type>(new Type(*value)));
 #endif
@@ -90,7 +90,9 @@ public:
   /// Construct a TypeContainer instance from any number of elements. Elements
   /// are added in the order they appear in the constructor, so subsequent values
   /// for the same type will be ignored.
-  template <typename Arg, typename... Args,
+  template<
+    typename Arg,
+    typename... Args,
     typename std::enable_if<!std::is_base_of<TypeContainer, Arg>::value, int>::type = 0>
   TypeContainer(const Arg& arg, const Args&... args)
   {
@@ -100,20 +102,21 @@ public:
   virtual ~TypeContainer();
 
   /// Check if a Type is present in the TypeContainer.
-  template <typename Type>
+  template<typename Type>
   bool contains() const
   {
     return (m_container.find(typeid(Type).hash_code()) != m_container.end());
   }
 
   /// Insert a Type instance into the TypeContainer.
-  template <typename Type>
+  template<typename Type>
   bool insert(const Type& value)
   {
     return m_container
-      .emplace(std::make_pair(typeid(Type).hash_code(),
+      .emplace(std::make_pair(
+        typeid(Type).hash_code(),
 #ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type> >(std::make_unique<Type>(value))))
+        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))))
 #else
         std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))))
 #endif
@@ -121,22 +124,23 @@ public:
   }
 
   /// Emplace a Type instance into the TypeContainer.
-  template <typename Type, typename... Args>
+  template<typename Type, typename... Args>
   bool emplace(Args&&... args)
   {
     return m_container
-      .emplace(std::make_pair(typeid(Type).hash_code(),
+      .emplace(std::make_pair(
+        typeid(Type).hash_code(),
 #ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type> >(std::make_unique<Type>(std::forward<Args>(args)...))))
+        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))))
 #else
-        std::unique_ptr<Wrapper>(new WrapperFor<Type>(
-          std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))))
+        std::unique_ptr<Wrapper>(
+          new WrapperFor<Type>(std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))))
 #endif
       .second;
   }
 
   /// Access a Type instance, and throw if it is not in the TypeContainer.
-  template <typename Type>
+  template<typename Type>
   const Type& get() const
   {
     auto search = m_container.find(typeid(Type).hash_code());
@@ -150,16 +154,17 @@ public:
 
   /// For default-constructible types, access a Type instance, creating one if it
   /// is not in the TypeContainer.
-  template <typename Type>
+  template<typename Type>
   typename std::enable_if<std::is_default_constructible<Type>::value, Type&>::type get() noexcept
   {
     auto search = m_container.find(typeid(Type).hash_code());
     if (search == m_container.end())
     {
       search = m_container
-                 .emplace(std::make_pair(typeid(Type).hash_code(),
+                 .emplace(std::make_pair(
+                   typeid(Type).hash_code(),
 #ifdef SMTK_HAVE_CXX_14
-                   std::make_unique<WrapperFor<Type> >(std::make_unique<Type>())))
+                   std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())))
 #else
                    std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type)))))
 #endif
@@ -171,7 +176,7 @@ public:
 
   /// For non-default-constructible types, access a Type instance; throw if it is
   /// not in the TypeContainer.
-  template <typename Type>
+  template<typename Type>
   typename std::enable_if<!std::is_default_constructible<Type>::value, Type&>::type get()
   {
     auto search = m_container.find(typeid(Type).hash_code());
@@ -183,7 +188,7 @@ public:
     return *(static_cast<WrapperFor<Type>*>(search->second.get()))->value;
   }
 
-  template <typename Type>
+  template<typename Type>
   bool erase()
   {
     return m_container.erase(typeid(Type).hash_code()) > 0;
@@ -196,17 +201,18 @@ public:
   void clear() noexcept { m_container.clear(); }
 
 private:
-  template <typename Arg, typename... Args>
+  template<typename Arg, typename... Args>
   typename std::enable_if<!std::is_base_of<TypeContainer, Arg>::value, bool>::type insertAll(
-    const Arg& arg, const Args&... args)
+    const Arg& arg,
+    const Args&... args)
   {
     return insert<Arg>(arg) && insertAll(args...);
   }
   bool insertAll() { return true; }
 
-  std::unordered_map<std::size_t, std::unique_ptr<Wrapper> > m_container;
+  std::unordered_map<std::size_t, std::unique_ptr<Wrapper>> m_container;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

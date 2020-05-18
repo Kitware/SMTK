@@ -40,8 +40,8 @@ class SMTKCORE_EXPORT PythonRule : public Rule
 public:
   smtkTypenameMacro(smtk::attribute::PythonRule);
 
-  bool operator()(
-    const Attribute::ConstPtr&, const smtk::resource::PersistentObject::ConstPtr&) const override;
+  bool operator()(const Attribute::ConstPtr&, const smtk::resource::PersistentObject::ConstPtr&)
+    const override;
 
   const PythonRule& operator>>(nlohmann::json& json) const override;
   PythonRule& operator<<(const nlohmann::json& json) override;
@@ -53,7 +53,7 @@ private:
   std::vector<std::string> m_sourceFiles;
   std::string m_functionString;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

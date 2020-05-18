@@ -51,7 +51,7 @@ public:
 
   /// Register a Query type using the default priority functor. Queries must be
   /// default constructible.
-  template <typename QueryType>
+  template<typename QueryType>
   bool registerQuery()
   {
     return m_factory.registerQuery<QueryType>();
@@ -59,30 +59,30 @@ public:
 
   /// Register a Query type using a provided priority functor. Queries must be
   /// default constructible.
-  template <typename QueryType>
+  template<typename QueryType>
   bool registerQuery(std::function<int(const std::size_t&)>&& priority)
   {
     return m_factory.registerQuery<QueryType>(
-      std::forward<std::function<int(const std::size_t&)> >(priority));
+      std::forward<std::function<int(const std::size_t&)>>(priority));
   }
 
   /// Register a tuple of Query types using the default priority functor.
   /// Queries must be default constructibel.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerQueries()
   {
     return m_factory.registerQueries<Tuple>();
   }
 
   /// Unregister a Query type.
-  template <typename QueryType>
+  template<typename QueryType>
   bool unregisterQuery()
   {
     return m_factory.unregisterQuery<QueryType>();
   }
 
   /// Unregister a tuple of Query types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool unregisterQueries()
   {
     return m_factory.unregisterQueries<Tuple>();
@@ -90,14 +90,14 @@ public:
 
   /// Determine whether or not a Query type (or a suitable replacement for it)
   /// is available.
-  template <typename QueryType>
+  template<typename QueryType>
   bool contains() const
   {
     return m_factory.contains<QueryType>();
   }
 
   /// Access a Query type, constructing one if necessary.
-  template <typename QueryType>
+  template<typename QueryType>
   QueryType& get() const
   {
     std::size_t index = m_factory.indexFor<QueryType>();
@@ -123,14 +123,14 @@ public:
   }
 
   /// Access a Query Cache.
-  template <typename CacheType>
+  template<typename CacheType>
   CacheType& cache() const
   {
     return m_caches.get<CacheType>();
   }
 
-  decltype(std::declval<Container<Cache> >().data()) caches() { return m_caches.data(); }
-  decltype(std::declval<Container<Query> >().data()) data() { return m_queries.data(); }
+  decltype(std::declval<Container<Cache>>().data()) caches() { return m_caches.data(); }
+  decltype(std::declval<Container<Query>>().data()) data() { return m_queries.data(); }
   Factory& factory() { return m_factory; }
 
 private:
@@ -138,8 +138,8 @@ private:
   mutable Container<Query> m_queries;
   Factory m_factory;
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

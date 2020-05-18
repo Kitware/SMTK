@@ -42,7 +42,8 @@ smtk::attribute::Resource::Ptr SimulationAttribute::create()
 }
 
 bool SimulationAttribute::lint(
-  const smtk::attribute::ResourcePtr& simulation, smtk::io::Logger& feedback)
+  const smtk::attribute::ResourcePtr& simulation,
+  smtk::io::Logger& feedback)
 {
   if (!simulation)
   {
@@ -78,8 +79,10 @@ bool SimulationAttribute::lint(
   }
   if (volumes.size() > 1)
   {
-    smtkErrorMacro(feedback, "The oscillator simulation only supports a single domain but "
-        << volumes.size() << " were found.");
+    smtkErrorMacro(
+      feedback,
+      "The oscillator simulation only supports a single domain but " << volumes.size()
+                                                                     << " were found.");
     return false;
   }
   auto volume = *volumes.begin();
@@ -101,8 +104,9 @@ bool SimulationAttribute::lint(
     auto assocPoints = sourceAttrib->associatedObjects<EntitySet>();
     if (assocPoints.empty())
     {
-      smtkWarningMacro(feedback, "Source term \"" << sourceAttrib->name()
-                                                  << "\" has no associated source point geometry.");
+      smtkWarningMacro(
+        feedback,
+        "Source term \"" << sourceAttrib->name() << "\" has no associated source point geometry.");
       continue;
     }
     for (const auto& assocPoint : assocPoints)
@@ -113,8 +117,10 @@ bool SimulationAttribute::lint(
   }
   if (!sourcePoints.empty())
   {
-    smtkErrorMacro(feedback, "There are "
-        << sourcePoints.size() << " source points with no associated source term information.");
+    smtkErrorMacro(
+      feedback,
+      "There are " << sourcePoints.size()
+                   << " source points with no associated source term information.");
     return false;
   }
   m_sources = sourceAttribs;

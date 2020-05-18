@@ -21,7 +21,7 @@ namespace common
 {
 
 /// Internal storage for the UnionFind class.
-template <typename T>
+template<typename T>
 struct UnionFindSet
 {
   UnionFindSet(T parent, T rank = 0)
@@ -49,7 +49,7 @@ struct UnionFindSet
   * for instance, calling Find() on an integer not returned by
   * NewSet or MergeSets is an error and will return -1.
   */
-template <typename T>
+template<typename T>
 class UnionFind
 {
 public:
@@ -69,10 +69,10 @@ public:
   /// Return the number of sets that have been created.
   T size() const { return static_cast<T>(m_sets.size()); }
 
-  std::vector<UnionFindSet<T> > m_sets;
+  std::vector<UnionFindSet<T>> m_sets;
 };
 
-template <typename T>
+template<typename T>
 T UnionFind<T>::newSet()
 {
   T setId = this->size();
@@ -81,7 +81,7 @@ T UnionFind<T>::newSet()
   return setId;
 }
 
-template <typename T>
+template<typename T>
 T UnionFind<T>::mergeSets(T a, T b)
 {
   T aRoot = this->find(a);
@@ -112,7 +112,7 @@ T UnionFind<T>::mergeSets(T a, T b)
   return aRoot;
 }
 
-template <typename T>
+template<typename T>
 T UnionFind<T>::find(T src)
 {
   if (src < 0 || src >= this->size())
@@ -127,11 +127,11 @@ T UnionFind<T>::find(T src)
   return m_sets[src].m_parent;
 }
 
-template <typename T>
+template<typename T>
 std::set<T> UnionFind<T>::roots()
 {
   typename std::set<T> roots;
-  typename std::vector<UnionFindSet<T> >::iterator it;
+  typename std::vector<UnionFindSet<T>>::iterator it;
   T i = 0;
   for (it = m_sets.begin(); it != m_sets.end(); ++it, ++i)
   {
@@ -143,7 +143,7 @@ std::set<T> UnionFind<T>::roots()
   return roots;
 }
 
-template <typename T>
+template<typename T>
 void UnionFind<T>::collapseIds(std::map<T, T>& collapsedIds, T startCount)
 {
   std::set<T> roots = this->roots();

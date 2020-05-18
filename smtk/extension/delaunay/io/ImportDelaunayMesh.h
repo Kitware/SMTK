@@ -22,7 +22,7 @@ namespace Mesh
 {
 class Mesh;
 }
-}
+} // namespace Delaunay
 
 namespace smtk
 {
@@ -30,7 +30,7 @@ namespace mesh
 {
 class MeshSet;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -38,7 +38,7 @@ namespace model
 {
 class EntityRef;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -67,9 +67,9 @@ public:
   //Import a Delaunay mesh as a tessellation for an entity.
   bool operator()(const Delaunay::Mesh::Mesh&, smtk::model::EntityRef&) const;
 };
-}
-}
-}
-}
+} // namespace io
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk
 
 #endif

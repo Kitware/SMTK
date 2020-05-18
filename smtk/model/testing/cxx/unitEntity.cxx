@@ -38,7 +38,7 @@ namespace
 std::string dataRoot = SMTK_DATA_DIR;
 std::string writeRoot = SMTK_SCRATCH_DIR;
 std::string filename("/model/2d/smtk/epic-trex-drummer.smtk");
-}
+} // namespace
 
 static const char* correct = "0x00000101  vertex\n"
                              "0x00000102  edge\n"
@@ -292,82 +292,115 @@ int TestEntityIOSpecs()
     BitFlags value;
   } testToValValues[] = {
     // First, let's test the dimensions which require some leading, non-numeric token
-    { "none|0", smtk::model::DIMENSION_0 }, { "none|1", smtk::model::DIMENSION_1 },
-    { "none|2", smtk::model::DIMENSION_2 }, { "none|3", smtk::model::DIMENSION_3 },
+    { "none|0", smtk::model::DIMENSION_0 },
+    { "none|1", smtk::model::DIMENSION_1 },
+    { "none|2", smtk::model::DIMENSION_2 },
+    { "none|3", smtk::model::DIMENSION_3 },
     { "none|4", smtk::model::DIMENSION_4 },
     // Try multiple dimensions
     { "none|410", smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
     { "none|104", smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
     { "none|12", smtk::model::DIMENSION_1 | smtk::model::DIMENSION_2 },
     // Things that have common names
-    { "cell|0", smtk::model::VERTEX }, { "cell|1", smtk::model::EDGE },
-    { "cell|2", smtk::model::FACE }, { "cell|3", smtk::model::VOLUME },
+    { "cell|0", smtk::model::VERTEX },
+    { "cell|1", smtk::model::EDGE },
+    { "cell|2", smtk::model::FACE },
+    { "cell|3", smtk::model::VOLUME },
     // Spurious input that should not crash
-    { "||3", smtk::model::DIMENSION_3 }, { "|3|", smtk::model::DIMENSION_3 }, { "none||", 0 },
+    { "||3", smtk::model::DIMENSION_3 },
+    { "|3|", smtk::model::DIMENSION_3 },
+    { "none||", 0 },
     { "none|domain|nodim", smtk::model::MODEL_DOMAIN }, // ensure string split works.
     { "!", 0 },
     // Test all of the keywords to ensure ordering is proper.
-    { "any", smtk::model::ANY_ENTITY }, { "anydim", smtk::model::ANY_DIMENSION },
-    { "aux_geom", smtk::model::AUX_GEOM_ENTITY }, { "b", smtk::model::SESSION },
-    { "bdy", smtk::model::MODEL_BOUNDARY }, { "session", smtk::model::SESSION },
-    { "cell", smtk::model::CELL_ENTITY }, { "chain", smtk::model::CHAIN },
-    { "closed", smtk::model::CLOSED }, { "cover", smtk::model::COVER },
-    { "domain", smtk::model::MODEL_DOMAIN }, { "e", smtk::model::EDGE }, // Backwards-compatibility
-    { "edge", smtk::model::EDGE }, { "edge_use", smtk::model::EDGE_USE },
+    { "any", smtk::model::ANY_ENTITY },
+    { "anydim", smtk::model::ANY_DIMENSION },
+    { "aux_geom", smtk::model::AUX_GEOM_ENTITY },
+    { "b", smtk::model::SESSION },
+    { "bdy", smtk::model::MODEL_BOUNDARY },
+    { "session", smtk::model::SESSION },
+    { "cell", smtk::model::CELL_ENTITY },
+    { "chain", smtk::model::CHAIN },
+    { "closed", smtk::model::CLOSED },
+    { "cover", smtk::model::COVER },
+    { "domain", smtk::model::MODEL_DOMAIN },
+    { "e", smtk::model::EDGE }, // Backwards-compatibility
+    { "edge", smtk::model::EDGE },
+    { "edge_use", smtk::model::EDGE_USE },
     { "ef", smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
     { "efr",
       smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
-    { "ev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 |
+    { "ev",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 |
         smtk::model::DIMENSION_0 }, // Backwards compatibility
     { "f", smtk::model::FACE },     // Backwards-compatibility
     { "face", smtk::model::FACE },
     { "face_use", smtk::model::FACE_USE },
-    { "fe", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
+    { "fe",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
         smtk::model::DIMENSION_1 }, // Backwards compatibility
-    { "fev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 |
+    { "fev",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 |
         smtk::model::DIMENSION_0 }, // Backwards compatibility
     { "flat", smtk::model::NO_SUBGROUPS },
     { "fr", smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
-    { "fv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
+    { "fv",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
         smtk::model::DIMENSION_0 },     // Backwards compatibility
     { "g", smtk::model::GROUP_ENTITY }, // Backwards compatibility
-    { "gmrfev", smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
+    { "gmrfev",
+      smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
         smtk::model::ANY_DIMENSION }, // Backwards compatibility
     { "group", smtk::model::GROUP_ENTITY },
-    { "homg", smtk::model::HOMOGENOUS_GROUP }, { "instance", smtk::model::INSTANCE_ENTITY },
-    { "invalid", smtk::model::INVALID }, { "loop", smtk::model::LOOP },
+    { "homg", smtk::model::HOMOGENOUS_GROUP },
+    { "instance", smtk::model::INSTANCE_ENTITY },
+    { "invalid", smtk::model::INVALID },
+    { "loop", smtk::model::LOOP },
     { "m", smtk::model::MODEL_ENTITY }, // Backwards compatibility
     { "model", smtk::model::MODEL_ENTITY },
-    { "mrfev", smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
+    { "mrfev",
+      smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
         smtk::model::ANY_DIMENSION }, // Backwards compatibility
     { "nodim", 0 },
-    { "none", 0 }, { "open", smtk::model::OPEN }, { "partition", smtk::model::PARTITION },
+    { "none", 0 },
+    { "open", smtk::model::OPEN },
+    { "partition", smtk::model::PARTITION },
     { "r", smtk::model::VOLUME }, // Backwards compatibility
-    { "re", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+    { "re",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
         smtk::model::DIMENSION_1 }, // Backwards compatibility
     { "region", smtk::model::VOLUME },
-    { "rev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 |
+    { "rev",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 |
         smtk::model::DIMENSION_0 }, // Backwards compatibility
-    { "rf", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+    { "rf",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
         smtk::model::DIMENSION_2 }, // Backwards compatibility
-    { "rfe", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+    { "rfe",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
         smtk::model::DIMENSION_1 }, // Backwards compatibility
-    { "rfev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+    { "rfev",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
         smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
-    { "rfv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+    { "rfv",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
         smtk::model::DIMENSION_0 }, // Backwards compatibility
-    { "rv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+    { "rv",
+      smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
         smtk::model::DIMENSION_0 }, // Backwards compatibility
     { "shell", smtk::model::SHELL_ENTITY },
-    { "shell2", smtk::model::SHELL }, { "use", smtk::model::USE_ENTITY },
+    { "shell2", smtk::model::SHELL },
+    { "use", smtk::model::USE_ENTITY },
     { "v", smtk::model::VERTEX },                      // Backwards-compatibility
     { "ve", smtk::model::VERTEX | smtk::model::EDGE }, // Backwards-compatibility
     { "vef",
       smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
-    { "vefr", smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE |
+    { "vefr",
+      smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE |
         smtk::model::VOLUME }, // Backwards-compatibility
     { "vertex", smtk::model::VERTEX },
-    { "vertex_use", smtk::model::VERTEX_USE }, { "volume", smtk::model::VOLUME },
+    { "vertex_use", smtk::model::VERTEX_USE },
+    { "volume", smtk::model::VOLUME },
     { "volume_use", smtk::model::VOLUME_USE },
     // Test all the values of Entity.cxx's entityTypeNames array:
     { "model|cell", smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY },
@@ -395,29 +428,46 @@ int TestEntityIOSpecs()
     std::string name;
     BitFlags value;
   } testToSpecValues[] = {
-    { "any", smtk::model::ANY_ENTITY }, { "none|anydim", smtk::model::ANY_DIMENSION },
-    { "none|bdy|nodim", smtk::model::MODEL_BOUNDARY }, { "session|nodim", smtk::model::SESSION },
+    { "any", smtk::model::ANY_ENTITY },
+    { "none|anydim", smtk::model::ANY_DIMENSION },
+    { "none|bdy|nodim", smtk::model::MODEL_BOUNDARY },
+    { "session|nodim", smtk::model::SESSION },
     { "cell|nodim", smtk::model::CELL_ENTITY },
     { "cell|anydim", smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION },
-    { "chain", smtk::model::CHAIN }, { "none|closed|nodim", smtk::model::CLOSED },
-    { "none|cover|nodim", smtk::model::COVER }, { "none|domain|nodim", smtk::model::MODEL_DOMAIN },
-    { "edge", smtk::model::EDGE }, { "edge_use", smtk::model::EDGE_USE },
-    { "face", smtk::model::FACE }, { "face_use", smtk::model::FACE_USE },
-    { "none|flat|nodim", smtk::model::NO_SUBGROUPS }, { "group|nodim", smtk::model::GROUP_ENTITY },
+    { "chain", smtk::model::CHAIN },
+    { "none|closed|nodim", smtk::model::CLOSED },
+    { "none|cover|nodim", smtk::model::COVER },
+    { "none|domain|nodim", smtk::model::MODEL_DOMAIN },
+    { "edge", smtk::model::EDGE },
+    { "edge_use", smtk::model::EDGE_USE },
+    { "face", smtk::model::FACE },
+    { "face_use", smtk::model::FACE_USE },
+    { "none|flat|nodim", smtk::model::NO_SUBGROUPS },
+    { "group|nodim", smtk::model::GROUP_ENTITY },
     { "none|homg|nodim", smtk::model::HOMOGENOUS_GROUP },
-    { "instance|nodim", smtk::model::INSTANCE_ENTITY }, { "invalid", smtk::model::INVALID },
-    { "loop", smtk::model::LOOP }, { "model|nodim", smtk::model::MODEL_ENTITY },
-    { "none|nodim", 0 }, { "none|open|nodim", smtk::model::OPEN },
+    { "instance|nodim", smtk::model::INSTANCE_ENTITY },
+    { "invalid", smtk::model::INVALID },
+    { "loop", smtk::model::LOOP },
+    { "model|nodim", smtk::model::MODEL_ENTITY },
+    { "none|nodim", 0 },
+    { "none|open|nodim", smtk::model::OPEN },
     { "none|partition|nodim", smtk::model::PARTITION },
-    { "shell|nodim", smtk::model::SHELL_ENTITY }, { "shell2", smtk::model::SHELL },
-    { "use|nodim", smtk::model::USE_ENTITY }, { "vertex", smtk::model::VERTEX },
-    { "vertex_use", smtk::model::VERTEX_USE }, { "volume", smtk::model::VOLUME },
-    { "volume_use", smtk::model::VOLUME_USE }, { "none|0", smtk::model::DIMENSION_0 },
-    { "none|1", smtk::model::DIMENSION_1 }, { "none|2", smtk::model::DIMENSION_2 },
-    { "none|3", smtk::model::DIMENSION_3 }, { "none|4", smtk::model::DIMENSION_4 },
+    { "shell|nodim", smtk::model::SHELL_ENTITY },
+    { "shell2", smtk::model::SHELL },
+    { "use|nodim", smtk::model::USE_ENTITY },
+    { "vertex", smtk::model::VERTEX },
+    { "vertex_use", smtk::model::VERTEX_USE },
+    { "volume", smtk::model::VOLUME },
+    { "volume_use", smtk::model::VOLUME_USE },
+    { "none|0", smtk::model::DIMENSION_0 },
+    { "none|1", smtk::model::DIMENSION_1 },
+    { "none|2", smtk::model::DIMENSION_2 },
+    { "none|3", smtk::model::DIMENSION_3 },
+    { "none|4", smtk::model::DIMENSION_4 },
     { "none|014", smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
     { "cell|open|0", smtk::model::VERTEX | smtk::model::OPEN },
-    { "cell|model|nodim", smtk::model::MODEL_ENTITY |
+    { "cell|model|nodim",
+      smtk::model::MODEL_ENTITY |
         smtk::model::CELL_ENTITY }, // > 1 entity type (e.g., membership mask)
     { "aux_geom|0", smtk::model::AUX_GEOM_ENTITY | smtk::model::DIMENSION_0 }, // auxiliary point
   };

@@ -91,11 +91,11 @@ const char* testInput = R"(
     <Att Name="att4" Type="Example"/>
   </Attributes>
 </SMTK_AttributeResource>)";
-  // clang-format on
+// clang-format on
 
-  // A testing structure to perform regression testing against the results of
-  // interpolation.
-  class HistogramFieldData
+// A testing structure to perform regression testing against the results of
+// interpolation.
+class HistogramFieldData
 {
 public:
   HistogramFieldData(std::size_t nBins, double min, double max)
@@ -113,7 +113,9 @@ protected:
   double m_max;
 };
 
-class HistogramPointFieldData : public smtk::mesh::PointForEach, public HistogramFieldData
+class HistogramPointFieldData
+  : public smtk::mesh::PointForEach
+  , public HistogramFieldData
 {
 public:
   HistogramPointFieldData(std::size_t nBins, double min, double max, smtk::mesh::PointField& pf)
@@ -122,7 +124,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& /*xyz*/,
     bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
@@ -156,7 +160,8 @@ smtk::session::mesh::Resource::Ptr readMeshResource(const std::string& importFil
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
 
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -209,7 +214,8 @@ smtk::session::vtk::Resource::Ptr readVTKResource(const std::string& importFileP
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
 
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -243,7 +249,7 @@ smtk::session::vtk::Resource::Ptr readVTKResource(const std::string& importFileP
   }
   return resource;
 }
-}
+} // namespace
 
 int TestInterpolateAnnotatedValues(int argc, char* argv[])
 {
@@ -294,7 +300,9 @@ int TestInterpolateAnnotatedValues(int argc, char* argv[])
 
     // Arrange the model faces with a consistent ordering
     std::vector<smtk::model::EntityRef> eRefs(currentEnts.begin(), currentEnts.end());
-    std::sort(eRefs.begin(), eRefs.end(),
+    std::sort(
+      eRefs.begin(),
+      eRefs.end(),
       [](const smtk::model::EntityRef& lhs, const smtk::model::EntityRef& rhs) {
         return lhs.name() < rhs.name();
       });
@@ -342,8 +350,9 @@ int TestInterpolateAnnotatedValues(int argc, char* argv[])
 
     // Construct a grid of sample points
     std::array<double, 3> origin = { extent[0], extent[2], extent[4] };
-    std::array<double, 3> size = { (extent[1] - extent[0]), (extent[3] - extent[2]),
-      (extent[5] - extent[4]) };
+    std::array<double, 3> size = { (extent[1] - extent[0]),
+                                   (extent[3] - extent[2]),
+                                   (extent[5] - extent[4]) };
 
     // Offset the grid from the model surface
     origin[2] += .25;
@@ -405,15 +414,18 @@ int TestInterpolateAnnotatedValues(int argc, char* argv[])
     smtk::mesh::for_each(gridResource->meshes().points(), histogramPointFieldData);
     histogram = histogramPointFieldData.histogram();
 
-    std::array<std::size_t, 10> expectedForMeshSession = { { 0, 301, 84, 112, 69, 55, 109, 100, 241,
-      0 } };
-    std::array<std::size_t, 10> expectedForVTKSession = { { 0, 303, 81, 112, 70, 55, 109, 101, 240,
-      0 } };
+    std::array<std::size_t, 10> expectedForMeshSession = {
+      { 0, 301, 84, 112, 69, 55, 109, 100, 241, 0 }
+    };
+    std::array<std::size_t, 10> expectedForVTKSession = {
+      { 0, 303, 81, 112, 70, 55, 109, 101, 240, 0 }
+    };
 
     std::size_t counter = 0;
     for (auto& bin : histogram)
     {
-      if (bin !=
+      if (
+        bin !=
         (testNumber == 0 ? expectedForMeshSession[counter++] : expectedForVTKSession[counter++]))
       {
         std::cerr << "\"interpolate annotations\" produced unexpected results\n";

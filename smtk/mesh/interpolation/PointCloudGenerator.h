@@ -36,8 +36,8 @@ namespace mesh
 {
 
 class SMTKCORE_EXPORT PointCloudGenerator
-  : public smtk::common::Generator<std::string, PointCloud>,
-    public smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>
+  : public smtk::common::Generator<std::string, PointCloud>
+  , public smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>
 {
 public:
   using smtk::common::Generator<std::string, PointCloud>::operator();
@@ -47,7 +47,7 @@ public:
 
   virtual ~PointCloudGenerator();
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

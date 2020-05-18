@@ -89,8 +89,8 @@ private:
   std::map<smtk::common::UUID, int> m_visibleThings;
   const smtk::view::BadgeSet* m_parent;
 };
-}
-}
-}
-}
+} // namespace appcomponents
+} // namespace paraview
+} // namespace extension
+} // namespace smtk
 #endif

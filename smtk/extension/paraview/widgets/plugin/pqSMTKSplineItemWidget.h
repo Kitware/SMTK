@@ -22,7 +22,8 @@ class pqSMTKSplineItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKSplineItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKSplineItemWidget();
 
   static qtItem* createSplineItemWidget(const qtAttributeItemInfo& info);
@@ -38,7 +39,8 @@ protected:
     * If errors are encountered, this method returns false.
     */
   bool fetchPointsAndClosedItems(
-    smtk::attribute::DoubleItemPtr& pointsItem, smtk::attribute::VoidItemPtr& closedItem);
+    smtk::attribute::DoubleItemPtr& pointsItem,
+    smtk::attribute::VoidItemPtr& closedItem);
 
   vtkEventQtSlotConnect* m_handleConnection;
 };

@@ -31,9 +31,10 @@ adl_serializer<smtk::resource::detail::ResourceLinkBase>::from_json(const json& 
 }
 
 void adl_serializer<smtk::resource::detail::ResourceLinkBase>::to_json(
-  json& j, const smtk::resource::detail::ResourceLinkBase& linkBase)
+  json& j,
+  const smtk::resource::detail::ResourceLinkBase& linkBase)
 {
   j["surrogate"] = static_cast<const smtk::resource::Surrogate&>(linkBase);
   j["linkData"] = static_cast<const smtk::resource::Component::Links::Data&>(linkBase);
 }
-}
+} // namespace nlohmann

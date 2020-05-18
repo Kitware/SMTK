@@ -22,8 +22,8 @@ namespace detail
 struct SMTKCORE_EXPORT Sentinel
 {
 };
-}
-}
-}
+} // namespace detail
+} // namespace plugin
+} // namespace smtk
 
 #endif

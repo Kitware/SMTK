@@ -29,7 +29,8 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::ReferenceItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::ReferenceItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
   nlohmann::json accept;
@@ -99,8 +100,10 @@ SMTKCORE_EXPORT void to_json(
   j["ConditionalInfo"] = defPtr->conditionalInformation();
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ReferenceItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::ReferenceItemDefinitionPtr& defPtr,
+  const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -117,7 +120,8 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   auto accept = j.find("Accepts");
   if (accept == j.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Can not find Accept key for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
@@ -144,7 +148,8 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   auto numberOfRequiredValues = j.find("NumberOfRequiredValues");
   if (numberOfRequiredValues == j.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Can not find NumberOfRequiredValues key for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
@@ -207,42 +212,46 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(jIdef, defPtr, resPtr);
   }
   std::vector<std::string> compQueries, resourceQueries;
-  std::vector<std::vector<std::string> > conditionalInfo;
+  std::vector<std::vector<std::string>> conditionalInfo;
 
   result = j.find("ResourceQueries");
   if (result == j.end())
   {
     // We are missing information!
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Can not find Resource Queries for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
-  resourceQueries = result->get<std::vector<std::string> >();
+  resourceQueries = result->get<std::vector<std::string>>();
 
   result = j.find("ComponentQueries");
   if (result == j.end())
   {
     // We are missing information!
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Can not find Component Queries for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
-  compQueries = result->get<std::vector<std::string> >();
+  compQueries = result->get<std::vector<std::string>>();
 
   result = j.find("ConditionalInfo");
   if (result == j.end())
   {
     // We are missing information!
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Can not find Conditional Information for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
-  conditionalInfo = result->get<std::vector<std::vector<std::string> > >();
+  conditionalInfo = result->get<std::vector<std::vector<std::string>>>();
   std::size_t i, n = conditionalInfo.size();
   if ((resourceQueries.size() != n) || (compQueries.size() != n))
   {
     // We have inconsistent information!
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Conditional Information for ReferenceItemDefinition:" << defPtr->name()
                                                              << " have different sizes");
     return;
@@ -252,5 +261,5 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     defPtr->addConditional(resourceQueries[i], compQueries[i], conditionalInfo[i]);
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

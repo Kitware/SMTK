@@ -39,9 +39,12 @@ void verifyParsers()
   test(!dtInvalid.deserialize("20160231"), "failed to detect invalid date");
 
   smtk::common::DateTime dtValid;
-  const char* validCases[] = { "20161026T141559", "Failed to parse iso string",
-    "20161026T141559.123456+0200", "Failed to parse iso string with tz offset", "20161026T141559Z",
-    "Failed to parse iso string with Z suffix" };
+  const char* validCases[] = { "20161026T141559",
+                               "Failed to parse iso string",
+                               "20161026T141559.123456+0200",
+                               "Failed to parse iso string with tz offset",
+                               "20161026T141559Z",
+                               "Failed to parse iso string with Z suffix" };
   for (std::size_t i = 0; i < sizeof(validCases) / sizeof(const char*); i += 2)
   {
     test(!!dtValid.deserialize(validCases[i]), validCases[i + 1]);
@@ -103,7 +106,8 @@ void verifySetGets()
   // Set with time zone
   smtk::common::TimeZone tzCST;
   tzCST.setPosixString("CST-6");
-  test(dt.setComponents(tzCST, yr2, month2, day2, hr2, minute2, sec2, msec2),
+  test(
+    dt.setComponents(tzCST, yr2, month2, day2, hr2, minute2, sec2, msec2),
     "Failed to setComponents() with time zone");
   dt.components(yr, month, day, hr, minute, sec, msec),
     // Returned hour should be ahead by 6
@@ -112,7 +116,8 @@ void verifySetGets()
   // Get with time zone
   smtk::common::TimeZone tzPST;
   tzPST.setPosixString("PST-8");
-  test(dt.components(tzPST, yr, month, day, hr, minute, sec, msec),
+  test(
+    dt.components(tzPST, yr, month, day, hr, minute, sec, msec),
     "Failed components() with time zone");
   std::cout << "hr: " << hr << ",  hr2: " << hr2 << std::endl;
   // Returned hour should be behind by 2 (plus 6 minus 8)

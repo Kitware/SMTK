@@ -35,7 +35,9 @@ namespace mesh
 /// A GeneratorType for creating PointClouds from VTK auxiliary geometry. This
 /// class extends smtk::mesh::PointCloudGenerator.
 class VTKSMTKSOURCEEXT_EXPORT PointCloudFromVTKAuxiliaryGeometry
-  : public smtk::common::GeneratorType<smtk::model::AuxiliaryGeometry, smtk::mesh::PointCloud,
+  : public smtk::common::GeneratorType<
+      smtk::model::AuxiliaryGeometry,
+      smtk::mesh::PointCloud,
       PointCloudFromVTKAuxiliaryGeometry>
 {
 public:
@@ -43,10 +45,10 @@ public:
 
   smtk::mesh::PointCloud operator()(const smtk::model::AuxiliaryGeometry& auxGeom) override;
 };
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif

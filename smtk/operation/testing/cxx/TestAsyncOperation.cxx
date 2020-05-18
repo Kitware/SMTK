@@ -87,7 +87,7 @@ const char* MyOperation::xmlDescription() const
 {
   return myOperationXML;
 }
-}
+} // namespace
 
 int TestAsyncOperation(int /*unused*/, char** const /*unused*/)
 {

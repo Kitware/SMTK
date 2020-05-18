@@ -52,7 +52,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   operationManager->registerOperations<OperationList>();
 
   smtk::operation::CreatorGroup(operationManager)
-    .registerOperation<smtk::session::oscillator::Resource,
+    .registerOperation<
+      smtk::session::oscillator::Resource,
       smtk::session::oscillator::EditDomain>();
 
   // smtk::operation::ImporterGroup(operationManager)
@@ -90,6 +91,6 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   operationManager->unregisterOperations<OperationList>();
 }
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk

@@ -27,18 +27,19 @@ class ActiveFragmentTree : public ActiveFragmentTreeType
 public:
   ActiveFragmentTree(FragmentArray& fragments, SweeplinePosition& posn);
 
-  using ActiveFragmentTreeType::insert;
-  using ActiveFragmentTreeType::erase;
-  using ActiveFragmentTreeType::upper_bound;
-  using ActiveFragmentTreeType::lower_bound;
   using ActiveFragmentTreeType::begin;
   using ActiveFragmentTreeType::end;
+  using ActiveFragmentTreeType::erase;
+  using ActiveFragmentTreeType::insert;
+  using ActiveFragmentTreeType::lower_bound;
   using ActiveFragmentTreeType::rbegin;
   using ActiveFragmentTreeType::rend;
+  using ActiveFragmentTreeType::upper_bound;
 
   void insertActiveFragment(FragmentId f);
   std::pair<FragmentId, FragmentId> boundingFragments(
-    const internal::Point& pt, bool strict = false) const;
+    const internal::Point& pt,
+    bool strict = false) const;
 
   const EdgeFragment& fragment(FragmentId f) const;
 };

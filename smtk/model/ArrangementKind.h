@@ -75,7 +75,7 @@ SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
 
 SMTKCORE_EXPORT ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k);
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif // __smtk_model_ArrangementKind_h

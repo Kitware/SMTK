@@ -20,7 +20,9 @@ namespace smtk
 {
 namespace common
 {
-class SMTKCORE_EXPORT Managers : public TypeContainer, public std::enable_shared_from_this<Managers>
+class SMTKCORE_EXPORT Managers
+  : public TypeContainer
+  , public std::enable_shared_from_this<Managers>
 {
 public:
   typedef TypeContainer Container;
@@ -33,7 +35,7 @@ public:
 protected:
   Managers();
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

@@ -68,7 +68,8 @@ bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, 
 }
 
 void ComponentPhraseModel::handleResourceEvent(
-  const Resource& resource, smtk::resource::EventType event)
+  const Resource& resource,
+  smtk::resource::EventType event)
 {
   if (event != smtk::resource::EventType::MODIFIED)
   {
@@ -125,10 +126,13 @@ void ComponentPhraseModel::processResource(const smtk::resource::ResourcePtr& rs
     {
       m_resources.erase(it);
       DescriptivePhrases children(m_root->subphrases());
-      children.erase(std::remove_if(children.begin(), children.end(),
-                       [&rsrc](const DescriptivePhrase::Ptr& phr) -> bool {
-                         return phr->relatedResource() == rsrc;
-                       }),
+      children.erase(
+        std::remove_if(
+          children.begin(),
+          children.end(),
+          [&rsrc](const DescriptivePhrase::Ptr& phr) -> bool {
+            return phr->relatedResource() == rsrc;
+          }),
         children.end());
       this->updateChildren(m_root, children, std::vector<int>());
     }

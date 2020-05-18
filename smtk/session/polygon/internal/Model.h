@@ -40,59 +40,110 @@ public:
   pmodel();
   ~pmodel();
 
-  bool computeModelScaleAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,
-    std::vector<double>& y_axis, double featureSize, smtk::io::Logger& log);
+  bool computeModelScaleAndNormal(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& y_axis,
+    double featureSize,
+    smtk::io::Logger& log);
 
-  bool computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<double>& x_axis,
-    std::vector<double>& z_axis, double featureSize, smtk::io::Logger& log);
+  bool computeModelScaleAndYAxis(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& z_axis,
+    double featureSize,
+    smtk::io::Logger& log);
 
-  bool computeFeatureSizeAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,
-    std::vector<double>& y_axis, long long modelScale, smtk::io::Logger& log);
+  bool computeFeatureSizeAndNormal(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& y_axis,
+    long long modelScale,
+    smtk::io::Logger& log);
 
-  bool restoreModel(std::vector<double>& origin, std::vector<double>& x_axis,
-    std::vector<double>& y_axis, std::vector<double>& z_axis, std::vector<double>& i_axis,
-    std::vector<double>& j_axis, double featureSize, long long modelScale);
+  bool restoreModel(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& y_axis,
+    std::vector<double>& z_axis,
+    std::vector<double>& i_axis,
+    std::vector<double>& j_axis,
+    double featureSize,
+    long long modelScale);
 
   smtk::model::Vertices findOrAddModelVertices(
-    smtk::model::ResourcePtr resource, const std::vector<double>& points, int numCoordsPerPt);
+    smtk::model::ResourcePtr resource,
+    const std::vector<double>& points,
+    int numCoordsPerPt);
 
-  smtk::model::Vertex findOrAddModelVertex(
-    smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
+  smtk::model::Vertex
+  findOrAddModelVertex(smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
 
-  smtk::model::Vertex addModelVertex(
-    smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
+  smtk::model::Vertex
+  addModelVertex(smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
 
-  bool demoteModelVertex(smtk::model::ResourcePtr resource, internal::VertexPtr vert,
-    smtk::model::EntityRefs& created, smtk::model::EntityRefs& modified,
-    smtk::model::EntityRefs& expunged, int debugLevel = 0);
+  bool demoteModelVertex(
+    smtk::model::ResourcePtr resource,
+    internal::VertexPtr vert,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified,
+    smtk::model::EntityRefs& expunged,
+    int debugLevel = 0);
 
   model::Edge createModelEdgeFromVertices(
-    smtk::model::ResourcePtr resource, internal::VertexPtr v0, internal::VertexPtr v1);
+    smtk::model::ResourcePtr resource,
+    internal::VertexPtr v0,
+    internal::VertexPtr v1);
 
-  template <typename T, typename U>
-  model::Edge createModelEdgeFromSegments(smtk::model::ResourcePtr resource, T begin, T end,
-    bool addToModel, const U& splitEdgeFaces, bool headIsNewVertex,
+  template<typename T, typename U>
+  model::Edge createModelEdgeFromSegments(
+    smtk::model::ResourcePtr resource,
+    T begin,
+    T end,
+    bool addToModel,
+    const U& splitEdgeFaces,
+    bool headIsNewVertex,
     smtk::model::VertexSet& newVerts);
 
-  template <typename T>
-  model::Edge createModelEdgeFromPoints(
-    smtk::model::ResourcePtr resource, T begin, T end, bool isFreeCell);
+  template<typename T>
+  model::Edge
+  createModelEdgeFromPoints(smtk::model::ResourcePtr resource, T begin, T end, bool isFreeCell);
 
-  template <typename T>
+  template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
-  bool splitModelEdgeAtPoint(smtk::model::ResourcePtr resource, const Id& edgeId,
-    const std::vector<double>& point, smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtIndex(smtk::model::ResourcePtr resource, const Id& edgeId,
-    int splitPointIndex, smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, const Id& edgeId,
-    const Id& vertexId, smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, EdgePtr edgeToSplit,
-    VertexPtr splitPoint, PointSeq::const_iterator location, smtk::model::EntityRefArray& created,
+  bool splitModelEdgeAtPoint(
+    smtk::model::ResourcePtr resource,
+    const Id& edgeId,
+    const std::vector<double>& point,
+    smtk::model::EntityRefArray& created,
     int debugLevel = 0);
-  bool splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, EdgePtr edgeToSplit,
-    std::vector<VertexPtr>& splitPoints, std::vector<PointSeq::const_iterator>& locations,
-    smtk::model::EntityRefArray& created, int debugLevel = 0);
+  bool splitModelEdgeAtIndex(
+    smtk::model::ResourcePtr resource,
+    const Id& edgeId,
+    int splitPointIndex,
+    smtk::model::EntityRefArray& created,
+    int debugLevel = 0);
+  bool splitModelEdgeAtModelVertex(
+    smtk::model::ResourcePtr resource,
+    const Id& edgeId,
+    const Id& vertexId,
+    smtk::model::EntityRefArray& created,
+    int debugLevel = 0);
+  bool splitModelEdgeAtModelVertex(
+    smtk::model::ResourcePtr resource,
+    EdgePtr edgeToSplit,
+    VertexPtr splitPoint,
+    PointSeq::const_iterator location,
+    smtk::model::EntityRefArray& created,
+    int debugLevel = 0);
+  bool splitModelEdgeAtModelVertices(
+    smtk::model::ResourcePtr resource,
+    EdgePtr edgeToSplit,
+    std::vector<VertexPtr>& splitPoints,
+    std::vector<PointSeq::const_iterator>& locations,
+    smtk::model::EntityRefArray& created,
+    int debugLevel = 0);
 
   std::pair<Id, Id> removeModelEdgeFromEndpoints(smtk::model::ResourcePtr resource, EdgePtr edg);
   bool removeVertexLookup(const internal::Point& location, const Id& vid);
@@ -146,19 +197,27 @@ public:
     return smtk::model::Vertex(resource, this->pointId(p));
   }
 
-  template <typename T>
+  template<typename T>
   Point projectPoint(T coordBegin, T coordEnd);
 
-  template <typename T>
+  template<typename T>
   void liftPoint(const Point& ix, T coordBegin);
 
-  template <typename T>
-  bool tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd,
+  template<typename T>
+  bool tweakEdge(
+    smtk::model::Edge edge,
+    int numCoordsPerPt,
+    T coordBegin,
+    T coordEnd,
     smtk::model::EntityRefArray& modified);
   bool tweakEdge(
-    smtk::model::Edge edge, internal::PointSeq& replacement, smtk::model::EntityRefArray& modified);
+    smtk::model::Edge edge,
+    internal::PointSeq& replacement,
+    smtk::model::EntityRefArray& modified);
 
-  bool tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
+  bool tweakVertex(
+    smtk::model::Vertex vertRec,
+    const Point& vertPosn,
     smtk::model::EntityRefs& modifiedEdgesAndFaces);
 
   void addVertexIndex(VertexPtr vert);

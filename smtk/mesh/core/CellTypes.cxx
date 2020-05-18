@@ -30,13 +30,13 @@ int verticesPerCell(CellType ctype)
 std::string cellTypeSummary(CellType ctype, int flag)
 {
   static const char* cellTypeNamesSingular[CellType_MAX + 1] = {
-    "vertex", "line", "triangle", "quad", "polygon", "tetrahedron", "pyramid", "wedge",
-    "hexahedron",
+    "vertex",      "line",    "triangle", "quad",       "polygon",
+    "tetrahedron", "pyramid", "wedge",    "hexahedron",
     "invalid" // CellType_MAX
   };
   static const char* cellTypeNamesPlural[CellType_MAX + 1] = {
-    "vertices", "lines", "triangles", "quads", "polygons", "tetrahedra", "pyramids", "wedges",
-    "hexahedra",
+    "vertices",   "lines",    "triangles", "quads",     "polygons",
+    "tetrahedra", "pyramids", "wedges",    "hexahedra",
     "invalid" // CellType_MAX
   };
   return ctype >= 0 && ctype <= CellType_MAX

@@ -200,6 +200,6 @@ void SweeplinePosition::advance(const internal::Point& pt)
   */
 }
 
-} // namespace smtk
-} // namespace session
 } // namespace polygon
+} // namespace session
+} // namespace smtk

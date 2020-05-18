@@ -39,7 +39,7 @@ enum class EventType
 typedef std::function<void(const Resource&, EventType)> Observer;
 
 typedef smtk::common::Observers<Observer> Observers;
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // __smtk_resource_Observer_h

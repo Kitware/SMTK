@@ -66,7 +66,9 @@ public:
 };
 
 ///\brief A base class for all view types implemented using Qt
-class SMTKQTEXT_EXPORT qtBaseView : public QObject, public smtk::view::BaseView
+class SMTKQTEXT_EXPORT qtBaseView
+  : public QObject
+  , public smtk::view::BaseView
 {
   Q_OBJECT
 
@@ -154,7 +156,7 @@ protected:
   bool m_advOverlayVisible;
 }; // class
 
-} // namespace attribute
+} // namespace extension
 } // namespace smtk
 
 #endif

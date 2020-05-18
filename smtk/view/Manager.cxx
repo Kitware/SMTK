@@ -24,5 +24,5 @@ Manager::Manager()
 
 Manager::~Manager() = default;
 
-} // view
-} // smtk
+} // namespace view
+} // namespace smtk

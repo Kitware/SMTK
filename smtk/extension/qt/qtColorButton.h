@@ -53,6 +53,6 @@ protected:
 
   QColor Color;
 };
-};
-};
+}; // namespace attribute
+}; // namespace smtk
 #endif

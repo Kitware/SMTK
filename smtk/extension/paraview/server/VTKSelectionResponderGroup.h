@@ -46,15 +46,16 @@ class SMTKPVSERVEREXT_EXPORT VTKSelectionResponderGroup : protected smtk::operat
 public:
   using Operation = smtk::operation::Operation;
   using smtk::operation::Group::contains;
-  using smtk::operation::Group::operations;
-  using smtk::operation::Group::operationNames;
-  using smtk::operation::Group::operationName;
   using smtk::operation::Group::operationLabel;
+  using smtk::operation::Group::operationName;
+  using smtk::operation::Group::operationNames;
+  using smtk::operation::Group::operations;
   using smtk::operation::Group::unregisterOperation;
 
   static constexpr const char* const type_name = "vtk selection responder";
 
-  VTKSelectionResponderGroup(const std::shared_ptr<smtk::operation::Manager>& manager,
+  VTKSelectionResponderGroup(
+    const std::shared_ptr<smtk::operation::Manager>& manager,
     const std::shared_ptr<smtk::resource::Manager>& resourceManager)
     : Group(type_name, manager)
     , m_resourceManager(resourceManager)
@@ -63,7 +64,7 @@ public:
 
   /// Register an IO operation identified by its class type and the name of the
   /// resource it reads.
-  template <typename ResourceType, typename OperationType>
+  template<typename ResourceType, typename OperationType>
   bool registerOperation();
 
   /// Given a resource, return the set of operators that are
@@ -76,10 +77,11 @@ protected:
   std::weak_ptr<smtk::resource::Manager> m_resourceManager;
 };
 
-template <typename ResourceType, typename OperationType>
+template<typename ResourceType, typename OperationType>
 bool VTKSelectionResponderGroup::registerOperation()
 {
-  static_assert(std::is_base_of<RespondToVTKSelection, OperationType>::value,
+  static_assert(
+    std::is_base_of<RespondToVTKSelection, OperationType>::value,
     "Operations assigned to VTKSelectionResponderGroup must inherit RespondToVTKSelection");
   return Group::registerOperation(
     std::type_index(typeid(OperationType)).hash_code(), { smtk::common::typeName<ResourceType>() });

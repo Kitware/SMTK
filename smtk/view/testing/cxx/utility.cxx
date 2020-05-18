@@ -38,8 +38,12 @@ namespace smtk
 namespace view
 {
 
-PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewManager,
-  const Configuration& viewConfig, std::vector<char*>& dataArgs)
+PhraseModel::Ptr loadTestData(
+  int argc,
+  char* argv[],
+  const ManagerPtr& viewManager,
+  const Configuration& viewConfig,
+  std::vector<char*>& dataArgs)
 {
   if (argc < 2)
   {
@@ -60,8 +64,9 @@ PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewMana
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto registry = smtk::plugin::
+    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
   smtk::view::Registrar::registerTo(viewManager);
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(&viewConfig);
   // auto phraseModel = smtk::view::ResourcePhraseModel::create();
@@ -77,5 +82,5 @@ PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewMana
 
   return phraseModel;
 }
-}
-}
+} // namespace view
+} // namespace smtk

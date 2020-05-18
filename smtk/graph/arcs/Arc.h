@@ -22,7 +22,7 @@ namespace graph
 ///
 /// The endpoint nodes must be types derived from smtk::graph::Component and
 /// are specified as template parameters.
-template <typename from_type, typename to_type>
+template<typename from_type, typename to_type>
 class SMTK_ALWAYS_EXPORT Arc
 {
 public:
@@ -43,10 +43,11 @@ public:
 
   /// An API for accessing this class's information using
   /// smtk::graph::Component's API.
-  template <typename SelfType>
+  template<typename SelfType>
   class API
   {
-    static_assert(std::is_base_of<Arc, SelfType>::value,
+    static_assert(
+      std::is_base_of<Arc, SelfType>::value,
       "Invalid cast: cannot access Arc from unrelated type.");
 
   protected:
@@ -82,7 +83,7 @@ private:
   const FromType& m_from;
   ToType& m_to;
 };
-}
-}
+} // namespace graph
+} // namespace smtk
 
 #endif

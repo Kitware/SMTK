@@ -153,5 +153,5 @@ void Registrar::unregisterFrom(const smtk::attribute::EvaluatorManager::Ptr& man
 {
   manager->unregisterEvaluator<smtk::attribute::InfixExpressionEvaluator>();
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

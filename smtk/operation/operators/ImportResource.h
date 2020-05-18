@@ -37,7 +37,7 @@ protected:
   Specification createSpecification() override;
   void generateSummary(Result&) override;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

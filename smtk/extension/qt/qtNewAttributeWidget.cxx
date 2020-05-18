@@ -68,8 +68,11 @@ int qtNewAttributeWidget::showWidget(const QString& name, const QList<QString>& 
   mappedPoint.setX(0);
   mappedPoint = this->Private->BaseWidget->mapToGlobal(mappedPoint);
   mappedPoint = this->mapFromGlobal(mappedPoint);
-  this->setGeometry(mappedPoint.x(), mappedPoint.y() - 2 * this->height(),
-    this->Private->BaseWidget->width(), this->height());
+  this->setGeometry(
+    mappedPoint.x(),
+    mappedPoint.y() - 2 * this->height(),
+    this->Private->BaseWidget->width(),
+    this->height());
   this->setModal(true);
   return this->exec();
 }

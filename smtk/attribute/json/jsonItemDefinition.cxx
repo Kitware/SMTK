@@ -25,11 +25,13 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::ItemDefinitionPtr& itemDefPtr)
+  nlohmann::json& j,
+  const smtk::attribute::ItemDefinitionPtr& itemDefPtr)
 {
   j = {
     { "Type", smtk::attribute::Item::type2String(itemDefPtr->type()) },
-    { "Name", itemDefPtr->name() }, { "TypeName", itemDefPtr->typeName() },
+    { "Name", itemDefPtr->name() },
+    { "TypeName", itemDefPtr->typeName() },
     { "Version", itemDefPtr->version() },
   };
   if (itemDefPtr->label() != itemDefPtr->name())
@@ -85,7 +87,7 @@ SMTKCORE_EXPORT void to_json(
   const auto& tags = itemDefPtr->tags();
   if (!tags.empty())
   {
-    std::map<std::string, std::set<std::string> > tagInfo;
+    std::map<std::string, std::set<std::string>> tagInfo;
     for (const auto& tag : tags)
     {
       tagInfo[tag.name()] = tag.values();
@@ -96,7 +98,8 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::ItemDefinitionPtr& itemDefPtr)
+  const nlohmann::json& j,
+  smtk::attribute::ItemDefinitionPtr& itemDefPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!itemDefPtr.get())
@@ -177,7 +180,9 @@ SMTKCORE_EXPORT void from_json(
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << itemDefPtr->label()
             << " has an invalid top level combination mode = " << *combineMode);
       }
@@ -192,7 +197,9 @@ SMTKCORE_EXPORT void from_json(
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << itemDefPtr->label()
             << " has an invalid inclusion combination mode = " << *combineMode);
       }
@@ -215,7 +222,9 @@ SMTKCORE_EXPORT void from_json(
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << itemDefPtr->label()
             << " has an invalid exclusion combination mode = " << *combineMode);
       }
@@ -243,8 +252,10 @@ SMTKCORE_EXPORT void from_json(
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, itemDefinition "
-            << itemDefPtr->name() << " has an invalid InclusionMode = " << *result);
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, itemDefinition " << itemDefPtr->name()
+                                                  << " has an invalid InclusionMode = " << *result);
       }
     }
     for (const auto& category : *categories)
@@ -262,7 +273,7 @@ SMTKCORE_EXPORT void from_json(
   result = j.find("Tags");
   if (result != j.end())
   {
-    std::map<std::string, std::set<std::string> > tagInfo = *result;
+    std::map<std::string, std::set<std::string>> tagInfo = *result;
     for (const auto& t : tagInfo)
     {
       smtk::attribute::Tag tag(t.first, t.second);
@@ -270,5 +281,5 @@ SMTKCORE_EXPORT void from_json(
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

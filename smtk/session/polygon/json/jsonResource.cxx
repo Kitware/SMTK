@@ -51,7 +51,7 @@ void to_json(json& j, const smtk::session::polygon::Resource::Ptr& resource)
     smtk::session::polygon::internal::edge::Ptr edge;
     smtk::session::polygon::internal::vertex::Ptr vertex;
     if ((pmodel =
-            smtk::dynamic_pointer_cast<smtk::session::polygon::internal::pmodel>(sit->second)))
+           smtk::dynamic_pointer_cast<smtk::session::polygon::internal::pmodel>(sit->second)))
     {
       smtk::model::Model mm(resource, pmodel->id());
       entry = pmodel;
@@ -68,13 +68,13 @@ void to_json(json& j, const smtk::session::polygon::Resource::Ptr& resource)
       }
     }
     else if ((edge =
-                 smtk::dynamic_pointer_cast<smtk::session::polygon::internal::edge>(sit->second)))
+                smtk::dynamic_pointer_cast<smtk::session::polygon::internal::edge>(sit->second)))
     {
       entry = edge;
       entry["t"] = *(smtk::model::Edge(resource, sit->second->id()).hasTessellation());
     }
     else if ((vertex =
-                 smtk::dynamic_pointer_cast<smtk::session::polygon::internal::vertex>(sit->second)))
+                smtk::dynamic_pointer_cast<smtk::session::polygon::internal::vertex>(sit->second)))
     {
       entry = vertex;
       entry["t"] = *(smtk::model::Vertex(resource, sit->second->id()).hasTessellation());
@@ -296,6 +296,6 @@ void from_json(const json& j, smtk::session::polygon::Resource::Ptr& resource)
     }
   }
 }
-}
-}
-}
+} // namespace polygon
+} // namespace session
+} // namespace smtk

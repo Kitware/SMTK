@@ -83,7 +83,8 @@ namespace
 QAction* findActiveAction(const QString& name)
 {
   pqView* activeView = pqActiveObjects::instance().activeView();
-  if (activeView && activeView->widget() && activeView->widget()->parentWidget() &&
+  if (
+    activeView && activeView->widget() && activeView->widget()->parentWidget() &&
     activeView->widget()->parentWidget()->parentWidget())
   {
     return activeView->widget()->parentWidget()->parentWidget()->findChild<QAction*>(name);
@@ -99,7 +100,7 @@ void triggerAction(const QString& name)
     atcn->trigger();
   }
 }
-}
+} // namespace
 
 pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   : Superclass(parent)
@@ -140,15 +141,23 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   this->onFilterChanged(m_p->Actions.actionSelnAcceptModelVertices);
 
   QObject::connect(this, SIGNAL(triggered(QAction*)), this, SLOT(onFilterChanged(QAction*)));
-  QObject::connect(m_p->Actions.actionStartSMTKSelection, SIGNAL(triggered(bool)), this,
+  QObject::connect(
+    m_p->Actions.actionStartSMTKSelection,
+    SIGNAL(triggered(bool)),
+    this,
     SLOT(startBlockSelectionInActiveView()));
 
   // Track server connects/disconnects
   auto rsrcBehavior = pqSMTKBehavior::instance();
-  QObject::connect(rsrcBehavior, SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
-    this, SLOT(filterSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
-  QObject::connect(rsrcBehavior,
-    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)), this,
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
+    SLOT(filterSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
     SLOT(unfilterSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
 }
 
@@ -176,7 +185,8 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
   // Update all action toggle states to be consistent
   bool acceptMesh = false;
   smtk::model::BitFlags modelFlags = 0;
-  if ((a == m_p->Actions.actionSelnAcceptMeshSets && a->isChecked()) ||
+  if (
+    (a == m_p->Actions.actionSelnAcceptMeshSets && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModels && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelVolumes && a->isChecked()))
   { // model-volume and mesh-set selection do not allow other types to be selected at the same time.
@@ -191,7 +201,8 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
       (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME
                                                               : smtk::model::NOTHING);
   }
-  else if ((a == m_p->Actions.actionSelnAcceptModelVertices && a->isChecked()) ||
+  else if (
+    (a == m_p->Actions.actionSelnAcceptModelVertices && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelEdges && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelFaces && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelAuxGeoms && a->isChecked()) ||
@@ -240,7 +251,8 @@ void pqSMTKSelectionFilterBehavior::startBlockSelectionInActiveView()
 }
 
 void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -250,7 +262,8 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
 #endif
     return;
   }
-  if (pqLiveInsituManager::isInsituServer(server) ||
+  if (
+    pqLiveInsituManager::isInsituServer(server) ||
     pqLiveInsituManager::instance()->isDisplayServer(server))
   {
 #if !defined(NDEBUG) && DEBUG_FILTER
@@ -271,7 +284,8 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
 
   if (m_selection)
   {
-    smtkWarningMacro(smtk::io::Logger::instance(),
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
       "pqSMTKSelectionFilterBehavior can currently only manage a single ParaView server. "
       "No more updates will be provided for "
         << m_selection << " in favor of " << seln);
@@ -285,7 +299,8 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
 }
 
 void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
 #if !defined(NDEBUG) && DEBUG_FILTER
@@ -330,8 +345,10 @@ void pqSMTKSelectionFilterBehavior::installFilter()
   bool acceptMeshes = m_acceptMeshes;
   smtk::model::BitFlags modelFlags = m_modelFilterMask;
 
-  m_selection->setFilter([acceptMeshes, modelFlags](smtk::resource::PersistentObjectPtr comp,
-    int value, smtk::view::Selection::SelectionMap& suggestions) {
+  m_selection->setFilter([acceptMeshes, modelFlags](
+                           smtk::resource::PersistentObjectPtr comp,
+                           int value,
+                           smtk::view::Selection::SelectionMap& suggestions) {
     if (acceptMeshes)
     {
       auto mesh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);

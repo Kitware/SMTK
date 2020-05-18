@@ -31,7 +31,7 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif // __smtk_attribute_operators_Export_h

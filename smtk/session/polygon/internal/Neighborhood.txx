@@ -25,7 +25,7 @@ namespace polygon
   * that accepts an array of oriented fragments, a region ID, and a set
   * of "border" region IDs.
   */
-template <typename T>
+template<typename T>
 void Neighborhood::getLoops(T evaluator)
 {
   FragmentArray::iterator fit;

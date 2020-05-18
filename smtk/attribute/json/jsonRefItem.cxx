@@ -31,7 +31,9 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void processFromRefItem(
-  const json& j, smtk::attribute::ComponentItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos)
+  const json& j,
+  smtk::attribute::ComponentItemPtr& itemPtr,
+  std::vector<AttRefInfo>& attRefInfos)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -110,5 +112,5 @@ SMTKCORE_EXPORT void processFromRefItem(
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

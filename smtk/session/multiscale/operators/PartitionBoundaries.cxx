@@ -67,14 +67,15 @@ public:
     const smtk::mesh::Handle* const ptIds = this->pointIds();
     for (int i = 0; i < numPts; ++i)
     {
-      const double r =
-        sqrt((coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
-          (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
+      const double r = sqrt(
+        (coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
+        (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
       const double currValue[2] = { coords[(i * 3) + 1], r };
       //add in a small tolerance
       if (currValue[0] >= (this->yvalue - 0.002) && currValue[0] <= (this->yvalue + 0.002))
       {
-        if ((this->lessThan && (currValue[1] < this->rvalue)) ||
+        if (
+          (this->lessThan && (currValue[1] < this->rvalue)) ||
           ((!this->lessThan) && (currValue[1] >= this->rvalue)))
         {
           this->validPoints.insert(ptIds[i]);
@@ -109,9 +110,9 @@ public:
     {
       // reject any cells whose first coordinate is less than a distance <rmin>
       // from the axis of rotation
-      const double r =
-        sqrt((coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
-          (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
+      const double r = sqrt(
+        (coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
+        (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
       if (r > rmin)
       {
         this->validPoints.insert(ptIds[i]);
@@ -120,8 +121,11 @@ public:
   }
 };
 
-bool labelIntersection(const smtk::mesh::ResourcePtr& meshResource,
-  const smtk::mesh::MeshSet& shell, Filter& filter, smtk::model::EntityRefArray& created,
+bool labelIntersection(
+  const smtk::mesh::ResourcePtr& meshResource,
+  const smtk::mesh::MeshSet& shell,
+  Filter& filter,
+  smtk::model::EntityRefArray& created,
   smtk::session::mesh::Topology& topology)
 {
   typedef smtk::session::mesh::Topology Topology;
@@ -165,7 +169,7 @@ bool labelIntersection(const smtk::mesh::ResourcePtr& meshResource,
 
   return true;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -276,6 +280,6 @@ const char* PartitionBoundaries::xmlDescription() const
 {
   return PartitionBoundaries_xml;
 }
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk

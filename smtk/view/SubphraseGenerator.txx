@@ -24,7 +24,7 @@ namespace smtk
 {
 namespace view
 {
-template <typename T>
+template<typename T>
 void SubphraseGenerator::PreparePath(T& result, const T& parentPath, int childIndex)
 {
   result.reserve(parentPath.size() + 1);
@@ -35,7 +35,7 @@ void SubphraseGenerator::PreparePath(T& result, const T& parentPath, int childIn
   result.push_back(childIndex);
 }
 
-template <typename T>
+template<typename T>
 int SubphraseGenerator::IndexFromTitle(const std::string& title, const T& phrases)
 {
   // TODO: Use bisection to speed this up.
@@ -77,7 +77,7 @@ int SubphraseGenerator::IndexFromTitle(const std::string& title, const T& phrase
 //   return content;
 // }
 
-template <typename T>
+template<typename T>
 void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
 {
   T filteredEntities;
@@ -93,9 +93,13 @@ void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
   filteredEntities.swap(ents);
 }
 
-template <typename T>
-PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
-  DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result, int mutability,
+template<typename T>
+PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(
+  const T& ents,
+  DescriptivePhrase::Ptr parent,
+  int limit,
+  DescriptivePhrases& result,
+  int mutability,
   std::function<bool(const DescriptivePhrasePtr&, const DescriptivePhrasePtr&)> comparator)
 {
   if (limit < 0 || static_cast<int>(ents.size()) < limit)

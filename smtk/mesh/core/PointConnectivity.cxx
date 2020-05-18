@@ -17,7 +17,8 @@ namespace mesh
 {
 
 PointConnectivity::PointConnectivity(
-  const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& range)
+  const smtk::mesh::ResourcePtr& parent,
+  const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_connectivity(parent->interface()->connectivityStorage(range))
 {
@@ -80,9 +81,11 @@ bool PointConnectivity::fetchNextCell(int& numPts, const smtk::mesh::Handle*& po
 }
 
 bool PointConnectivity::fetchNextCell(
-  smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points)
+  smtk::mesh::CellType& cellType,
+  int& numPts,
+  const smtk::mesh::Handle*& points)
 {
   return m_connectivity->fetchNextCell(m_iteratorLocation, cellType, numPts, points);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

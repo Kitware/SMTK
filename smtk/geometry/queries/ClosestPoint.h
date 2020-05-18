@@ -32,16 +32,18 @@ struct SMTKCORE_EXPORT ClosestPoint
   : public smtk::resource::query::DerivedFrom<ClosestPoint, smtk::resource::query::Query>
 {
   virtual std::array<double, 3> operator()(
-    const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const = 0;
+    const smtk::resource::Component::Ptr&,
+    const std::array<double, 3>&) const = 0;
 };
 
 inline std::array<double, 3> ClosestPoint::operator()(
-  const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const
+  const smtk::resource::Component::Ptr&,
+  const std::array<double, 3>&) const
 {
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
   return { { nan, nan, nan } };
 }
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

@@ -35,13 +35,17 @@ enum class PhraseModelEvent
 };
 
 /// Events that alter the phrase model trigger callbacks of this type.
-typedef std::function<void(DescriptivePhrasePtr, PhraseModelEvent, const std::vector<int>&,
-  const std::vector<int>&, const std::vector<int>&)>
+typedef std::function<void(
+  DescriptivePhrasePtr,
+  PhraseModelEvent,
+  const std::vector<int>&,
+  const std::vector<int>&,
+  const std::vector<int>&)>
   PhraseModelObserver;
 
 /// A class for holding PhraseModelObserver functors that observe phrase model events.
 typedef smtk::common::Observers<PhraseModelObserver> PhraseModelObservers;
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif // __smtk_view_PhraseModelObserver_h

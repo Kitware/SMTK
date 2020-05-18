@@ -37,7 +37,7 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
   smtk::attribute::IntItemPtr flagsItem = this->parameters()->findInt("flags");
 
   auto associations = this->parameters()->associations();
-  auto entities = associations->as<std::vector<smtk::model::Entity::Ptr> >(
+  auto entities = associations->as<std::vector<smtk::model::Entity::Ptr>>(
     [](smtk::resource::PersistentObjectPtr obj) {
       return std::dynamic_pointer_cast<smtk::model::Entity>(obj);
     });

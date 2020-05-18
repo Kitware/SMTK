@@ -31,8 +31,9 @@ void MarkGeometry::markModified(const smtk::resource::PersistentObjectPtr& objec
   {
     if (m_resource)
     {
-      m_resource->visitGeometry([&object](
-        std::unique_ptr<geometry::Geometry>& provider) { provider->markModified(object); });
+      m_resource->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+        provider->markModified(object);
+      });
     }
     else
     {
@@ -43,18 +44,21 @@ void MarkGeometry::markModified(const smtk::resource::PersistentObjectPtr& objec
         rsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(comp->resource());
         if (rsrc)
         {
-          rsrc->visitGeometry([&object](
-            std::unique_ptr<geometry::Geometry>& provider) { provider->markModified(object); });
+          rsrc->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+            provider->markModified(object);
+          });
         }
       }
       else if ((rsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(object)))
       {
-        rsrc->visitGeometry([&object](
-          std::unique_ptr<geometry::Geometry>& provider) { provider->markModified(object); });
+        rsrc->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+          provider->markModified(object);
+        });
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "MarkGeometry must be constructed with a resource to be used this way.");
       }
     }
@@ -67,8 +71,9 @@ void MarkGeometry::erase(const smtk::resource::PersistentObjectPtr& object)
   {
     if (m_resource)
     {
-      m_resource->visitGeometry([&object](
-        std::unique_ptr<geometry::Geometry>& provider) { provider->erase(object->id()); });
+      m_resource->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+        provider->erase(object->id());
+      });
     }
     else
     {
@@ -79,18 +84,21 @@ void MarkGeometry::erase(const smtk::resource::PersistentObjectPtr& object)
         rsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(comp->resource());
         if (rsrc)
         {
-          rsrc->visitGeometry([&object](
-            std::unique_ptr<geometry::Geometry>& provider) { provider->erase(object->id()); });
+          rsrc->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+            provider->erase(object->id());
+          });
         }
       }
       else if ((rsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(object)))
       {
-        rsrc->visitGeometry([&object](
-          std::unique_ptr<geometry::Geometry>& provider) { provider->erase(object->id()); });
+        rsrc->visitGeometry([&object](std::unique_ptr<geometry::Geometry>& provider) {
+          provider->erase(object->id());
+        });
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "MarkGeometry must be constructed with a resource to be used this way.");
       }
     }
@@ -101,7 +109,8 @@ void MarkGeometry::erase(const smtk::common::UUID& objectId)
 {
   if (!m_resource)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "MarkGeometry must be constructed with a resource to use this method.");
     return;
   }

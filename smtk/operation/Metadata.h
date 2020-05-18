@@ -39,7 +39,9 @@ public:
   using Observers = MetadataObservers;
   using Association = smtk::attribute::ConstReferenceItemDefinitionPtr;
 
-  Metadata(const std::string& typeName, Operation::Index index,
+  Metadata(
+    const std::string& typeName,
+    Operation::Index index,
     Operation::Specification specification,
     std::function<std::shared_ptr<smtk::operation::Operation>(void)> createFunctor);
 
@@ -77,7 +79,7 @@ private:
   std::function<bool(const smtk::resource::ComponentPtr&)> m_acceptsComponent;
   Association m_primaryAssociation;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_Metadata_h

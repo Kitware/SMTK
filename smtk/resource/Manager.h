@@ -57,8 +57,9 @@ public:
 
   /// Register a resource identified by its class type, read and write
   /// operations.
-  template <typename ResourceType>
-  bool registerResource(const std::function<ResourcePtr(const std::string&)>& read = nullptr,
+  template<typename ResourceType>
+  bool registerResource(
+    const std::function<ResourcePtr(const std::string&)>& read = nullptr,
     const std::function<bool(const ResourcePtr&)>& write = nullptr,
     const std::function<ResourcePtr(const smtk::common::UUID&)>& create = nullptr);
 
@@ -66,7 +67,7 @@ public:
   bool registerResource(Metadata&&);
 
   /// Unregister a resource identified by its class type.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool unregisterResource();
 
   /// Unregister a resource identified by its type name.
@@ -76,7 +77,7 @@ public:
   bool unregisterResource(const Resource::Index&);
 
   /// Check if a resource identified by its class type is registered.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registered() const;
 
   /// Check if a resource idenfified by its type name is registered.
@@ -96,7 +97,7 @@ public:
   ResourcePtr create(const Resource::Index&);
 
   /// Construct a resource identified by its class type.
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> create();
 
   /// Construct a resource with a given UUID identified by its type name.
@@ -106,7 +107,7 @@ public:
   ResourcePtr create(const Resource::Index&, const smtk::common::UUID&);
 
   /// Construct a resource with a given UUID identified by its class type.
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> create(const smtk::common::UUID&);
 
   /// Returns the resource that relates to the given uuid.  If no association exists
@@ -116,9 +117,9 @@ public:
 
   /// Returns the resource that relates to the given uuid.  If no association
   /// exists of this type, this will return a null pointer.
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> get(const smtk::common::UUID&);
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const smtk::common::UUID&) const;
 
   /// Returns the resource that relates to the given \a url.  If no association exists
@@ -128,9 +129,9 @@ public:
 
   /// Returns the resource that relates to the given \a url.  If no association
   /// exists of this type, this will return a null pointer.
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> get(const std::string& url);
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string& url) const;
 
   /// Returns a set of resources that have a given type name.
@@ -144,8 +145,8 @@ public:
   std::set<ResourcePtr> find(const Resource::Index& typeIndex, bool strict = false);
 
   /// Returns a set of resources that are of the type \a ResourceType.
-  template <typename ResourceType>
-  std::set<smtk::shared_ptr<ResourceType> > find();
+  template<typename ResourceType>
+  std::set<smtk::shared_ptr<ResourceType>> find();
 
   /// Read resource identified by its type index from file.
   ResourcePtr read(const std::string&, const std::string&);
@@ -154,7 +155,7 @@ public:
   ResourcePtr read(const Resource::Index&, const std::string&);
 
   /// Read resource from file.
-  template <typename ResourceType>
+  template<typename ResourceType>
   smtk::shared_ptr<ResourceType> read(const std::string&);
 
   /// Write resource to file. The resource's write location is held by the
@@ -172,7 +173,7 @@ public:
 
   /// Add a resource identified by its class type. Returns true if the resource
   /// was added or already is part of this manager.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool add(const smtk::shared_ptr<ResourceType>&);
 
   /// Returns true if the resource was added or already is part of this manager.
@@ -201,7 +202,9 @@ public:
   /// This method cannot be called directly (only Resource can create its arguments).
   /// Instead, call Resource::setLocation(), which will invoke this method if the
   /// resource has a manager set.
-  void reviseLocation(const smtk::common::UUID& uid, const Resource::SetLocation& source,
+  void reviseLocation(
+    const smtk::common::UUID& uid,
+    const Resource::SetLocation& source,
     const Resource::SetLocation& destination);
 
   /// Visit resources held by this manager.
@@ -266,7 +269,7 @@ private:
   Metadata::Observers m_metadataObservers;
 
   /// A map connecting legacy resource names to legacy readers.
-  std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;
+  std::map<std::string, std::function<ResourcePtr(const std::string&)>> m_legacyReaders;
 
   /// A set of operations to delete ephemeral objects.
   GarbageCollectorPtr m_garbageCollector;
@@ -275,58 +278,58 @@ private:
   mutable Lock m_lock;
 };
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool Manager::unregisterResource()
 {
   return this->unregisterResource(std::type_index(typeid(ResourceType)).hash_code());
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool Manager::registered() const
 {
   return this->registered(std::type_index(typeid(ResourceType)).hash_code());
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::create()
 {
   return smtk::static_pointer_cast<ResourceType>(
     this->create(std::type_index(typeid(ResourceType)).hash_code()));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::create(const smtk::common::UUID& id)
 {
   return smtk::static_pointer_cast<ResourceType>(
     this->create(std::type_index(typeid(ResourceType)).hash_code(), id));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::get(const smtk::common::UUID& id)
 {
   return smtk::static_pointer_cast<ResourceType>(this->get(id));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<const ResourceType> Manager::get(const smtk::common::UUID& id) const
 {
   return smtk::static_pointer_cast<const ResourceType>(this->get(id));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::get(const std::string& url)
 {
   return smtk::static_pointer_cast<ResourceType>(this->get(url));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<const ResourceType> Manager::get(const std::string& url) const
 {
   return smtk::static_pointer_cast<const ResourceType>(this->get(url));
 }
 
-template <typename ResourceType>
-std::set<smtk::shared_ptr<ResourceType> > Manager::find()
+template<typename ResourceType>
+std::set<smtk::shared_ptr<ResourceType>> Manager::find()
 {
   Resource::Index index(typeid(ResourceType).hash_code());
   std::set<Resource::Index> validIndices;
@@ -338,7 +341,7 @@ std::set<smtk::shared_ptr<ResourceType> > Manager::find()
     }
   }
 
-  std::set<smtk::shared_ptr<ResourceType> > values;
+  std::set<smtk::shared_ptr<ResourceType>> values;
 
   {
     ScopedLockGuard guard(m_lock, LockType::Read);
@@ -357,14 +360,14 @@ std::set<smtk::shared_ptr<ResourceType> > Manager::find()
   return values;
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::read(const std::string& url)
 {
   return smtk::static_pointer_cast<ResourceType>(
     this->read(std::type_index(typeid(ResourceType)).hash_code(), url));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool Manager::add(const smtk::shared_ptr<ResourceType>& resource)
 {
   return this->add(std::type_index(typeid(ResourceType)).hash_code(), resource);
@@ -383,7 +386,7 @@ namespace detail
 
 // A compile-time test to check whether or not a class has a ParentResource
 // defined.
-template <typename T>
+template<typename T>
 class is_derived_resource
 {
   class No
@@ -394,9 +397,9 @@ class is_derived_resource
     No no[2];
   };
 
-  template <typename C>
+  template<typename C>
   static Yes Test(typename C::ParentResource*);
-  template <typename C>
+  template<typename C>
   static No Test(...);
 
 public:
@@ -407,14 +410,14 @@ public:
 };
 
 // The signature for our index generator has two template parameters.
-template <typename ResourceType, bool derived_resource>
+template<typename ResourceType, bool derived_resource>
 struct resource_index_set_generator;
 
 // This partial template specialization deals with the case where
 // <ResourceType> is not derived from another Resource. In this case, only the
 // indices for the Resource and smtk::resource::Resource are added to the set of
 // associated indices.
-template <typename ResourceType>
+template<typename ResourceType>
 struct resource_index_set_generator<ResourceType, false>
 {
   static std::set<Resource::Index> indices()
@@ -431,7 +434,7 @@ struct resource_index_set_generator<ResourceType, false>
 // <ResourceType> is derived from another Resource. In this case, we
 // recursively add the parent Resource's associated indices to the returned
 // set.
-template <typename ResourceType>
+template<typename ResourceType>
 struct resource_index_set_generator<ResourceType, true>
 {
   static std::set<Resource::Index> indices()
@@ -439,18 +442,19 @@ struct resource_index_set_generator<ResourceType, true>
     std::set<Resource::Index> indices;
     indices.insert(std::type_index(typeid(ResourceType)).hash_code());
 
-    std::set<Resource::Index> parentIndices =
-      resource_index_set_generator<typename ResourceType::ParentResource,
-        is_derived_resource<typename ResourceType::ParentResource>::value>::indices();
+    std::set<Resource::Index> parentIndices = resource_index_set_generator<
+      typename ResourceType::ParentResource,
+      is_derived_resource<typename ResourceType::ParentResource>::value>::indices();
     indices.insert(parentIndices.begin(), parentIndices.end());
 
     return indices;
   }
 };
-}
+} // namespace detail
 
-template <typename ResourceType>
-bool Manager::registerResource(const std::function<ResourcePtr(const std::string&)>& read,
+template<typename ResourceType>
+bool Manager::registerResource(
+  const std::function<ResourcePtr(const std::string&)>& read,
   const std::function<bool(const ResourcePtr&)>& write,
   const std::function<ResourcePtr(const smtk::common::UUID&)>& create)
 {
@@ -477,7 +481,7 @@ bool Manager::registerResource(const std::function<ResourcePtr(const std::string
     (read ? read : [](const std::string&){ return ResourcePtr(); }),
     (write ? write : [](const ResourcePtr&){ return false; })));
 }
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Manager_h

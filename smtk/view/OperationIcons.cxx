@@ -21,7 +21,8 @@ void OperationIcons::registerDefaultIconConstructor(IconConstructor&& functor)
 }
 
 std::string OperationIcons::createIcon(
-  const std::string& operationName, const std::string& secondaryColor) const
+  const std::string& operationName,
+  const std::string& secondaryColor) const
 {
   auto nameIt = m_indices.find(operationName);
   FunctorMap::const_iterator ctorIt;
@@ -49,5 +50,5 @@ std::string OperationIcons::createIcon(const Index& index, const std::string& se
   }
   return ctorIt->second(secondaryColor);
 }
-}
-}
+} // namespace view
+} // namespace smtk

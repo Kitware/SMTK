@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/FileItem.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
@@ -63,7 +63,7 @@ int testFileItemSerialization()
   return 0;
 }
 
-int main(int /*argc*/, char* /*argv*/ [])
+int main(int /*argc*/, char* /*argv*/[])
 {
   testFileItemSerialization();
   return 0;

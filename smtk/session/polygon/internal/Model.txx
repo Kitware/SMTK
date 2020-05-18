@@ -60,9 +60,15 @@ namespace internal
   *
   * Finally \a newVerts will be populated with any vertices created when creating the edge.
   */
-template <typename T, typename U>
-model::Edge pmodel::createModelEdgeFromSegments(model::ResourcePtr resource, T begin, T end,
-  bool addToModel, const U& splitEdgeFaces, bool headIsNewVertex, smtk::model::VertexSet& newVerts)
+template<typename T, typename U>
+model::Edge pmodel::createModelEdgeFromSegments(
+  model::ResourcePtr resource,
+  T begin,
+  T end,
+  bool addToModel,
+  const U& splitEdgeFaces,
+  bool headIsNewVertex,
+  smtk::model::VertexSet& newVerts)
 {
   if (!resource || begin == end)
     return smtk::model::Edge();
@@ -100,7 +106,9 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ResourcePtr resource, T b
     }
     if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
     {
-      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+      smtkErrorMacro(
+        m_session->log(),
+        "Edge would overlap face in neighborhood of first vertex ("
           << smtk::model::Vertex(resource, vInit).name() << ")E.");
       return smtk::model::Edge();
     }
@@ -114,7 +122,9 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ResourcePtr resource, T b
     }
     if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
     {
-      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+      smtkErrorMacro(
+        m_session->log(),
+        "Edge would overlap face in neighborhood of last vertex ("
           << smtk::model::Vertex(resource, vFini).name() << ")F.");
       return smtk::model::Edge();
     }
@@ -195,9 +205,9 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ResourcePtr resource, T b
   * If these preconditions do not hold, either an invalid (empty) edge will be
   * returned or the model will become inconsistent.
   */
-template <typename T>
-model::Edge pmodel::createModelEdgeFromPoints(
-  model::ResourcePtr resource, T begin, T end, bool isFreeCell)
+template<typename T>
+model::Edge
+pmodel::createModelEdgeFromPoints(model::ResourcePtr resource, T begin, T end, bool isFreeCell)
 {
   if (!resource || begin == end)
     return smtk::model::Edge();
@@ -221,7 +231,9 @@ model::Edge pmodel::createModelEdgeFromPoints(
   { // Ensure edge can be inserted without splitting a face.
     if (!vInitStorage->canInsertEdge(*begin, &whereBegin))
     {
-      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+      smtkErrorMacro(
+        m_session->log(),
+        "Edge would overlap face in neighborhood of first vertex ("
           << smtk::model::Vertex(resource, vInit).name() << ")C.");
       return smtk::model::Edge();
     }
@@ -231,7 +243,9 @@ model::Edge pmodel::createModelEdgeFromPoints(
   { // Ensure edge can be inserted without splitting a face.
     if (!vFiniStorage->canInsertEdge(*(end - 1), &whereEnd))
     {
-      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+      smtkErrorMacro(
+        m_session->log(),
+        "Edge would overlap face in neighborhood of last vertex ("
           << smtk::model::Vertex(resource, vFini).name() << ")D.");
       return smtk::model::Edge();
     }
@@ -278,7 +292,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
   return created;
 }
 
-template <typename T>
+template<typename T>
 Point pmodel::projectPoint(T coordBegin, T coordEnd)
 {
   double xyz[3] = { 0, 0, 0 };
@@ -301,12 +315,13 @@ Point pmodel::projectPoint(T coordBegin, T coordEnd)
     py += xyz[i] * m_yAxis[i];
   }
   // Scale point and round to integer
-  Point result(static_cast<Point::coordinate_type>(px * m_scale),
+  Point result(
+    static_cast<Point::coordinate_type>(px * m_scale),
     static_cast<Point::coordinate_type>(py * m_scale));
   return result;
 }
 
-template <typename T>
+template<typename T>
 void pmodel::liftPoint(const Point& ix, T coordBegin)
 {
   T coord = coordBegin;
@@ -329,8 +344,12 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
   * edge's, then any model vertices are tweaked as well.
   * Faces attached to the edge are retessellated.
   */
-template <typename T>
-bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd,
+template<typename T>
+bool pmodel::tweakEdge(
+  smtk::model::Edge edge,
+  int numCoordsPerPt,
+  T coordBegin,
+  T coordEnd,
   smtk::model::EntityRefArray& modified)
 {
   internal::PointSeq pseq;

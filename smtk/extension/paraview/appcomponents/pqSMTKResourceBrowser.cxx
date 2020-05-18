@@ -81,9 +81,15 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::Information& info
     return false;
   });
   // Now listen for future connections.
-  QObject::connect(smtkBehavior, SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)), this,
+  QObject::connect(
+    smtkBehavior,
+    SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)),
+    this,
     SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
-  QObject::connect(smtkBehavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
+  QObject::connect(
+    smtkBehavior,
+    SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)),
+    this,
     SLOT(resourceManagerRemoved(pqSMTKWrapper*, pqServer*)));
 
   this->updateSettings();
@@ -149,7 +155,8 @@ void pqSMTKResourceBrowser::initSubphraseGenerator()
         break;
     }
   }
-  if (m_p->m_resourceTreeType.empty() || m_p->m_resourceTreeType != subphraseViewType ||
+  if (
+    m_p->m_resourceTreeType.empty() || m_p->m_resourceTreeType != subphraseViewType ||
     (subphraseViewType == "default" && resourceTreeStyle != m_p->m_resourceTreeStyle))
   {
     smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();

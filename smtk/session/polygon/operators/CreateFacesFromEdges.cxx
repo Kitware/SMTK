@@ -70,8 +70,10 @@ bool CreateFacesFromEdges::populateEdgeMap()
       {
         if (model != edgeIn.owningModel())
         {
-          smtkErrorMacro(this->log(), "Edges from different models ("
-              << model.name() << " and " << edgeIn.owningModel().name() << ") selected.");
+          smtkErrorMacro(
+            this->log(),
+            "Edges from different models (" << model.name() << " and "
+                                            << edgeIn.owningModel().name() << ") selected.");
           m_result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
           return false;
         }

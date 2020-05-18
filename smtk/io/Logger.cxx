@@ -42,7 +42,10 @@ Logger& Logger::operator=(const Logger& logger)
 }
 
 void Logger::addRecord(
-  Severity s, const std::string& m, const std::string& fname, unsigned int line)
+  Severity s,
+  const std::string& m,
+  const std::string& fname,
+  unsigned int line)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
   if ((s == Logger::ERROR) || (s == Logger::FATAL))

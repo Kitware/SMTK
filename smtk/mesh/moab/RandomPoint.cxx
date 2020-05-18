@@ -41,7 +41,7 @@ struct MersenneTwisterCache : public smtk::resource::query::Cache
   std::size_t seed{ 0 };
   std::mt19937 mt;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -90,7 +90,8 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
 
   // If the entity has a mesh tessellation, and the mesh backend is moab, and
   // the tessellation has triangles...
-  if (meshset.isValid() && meshset.resource()->interfaceName() == "moab" &&
+  if (
+    meshset.isValid() && meshset.resource()->interfaceName() == "moab" &&
     meshset.types().hasCell(smtk::mesh::Triangle))
   {
     //...then we can use Moab's AdaptiveKDTree to find closest points.
@@ -107,7 +108,8 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
 
       search =
         pointLocatorCache.m_caches
-          .emplace(std::make_pair(meshset.id(),
+          .emplace(std::make_pair(
+            meshset.id(),
             std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
               interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
           .first;
@@ -165,9 +167,11 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
       double cosPhiPlusPiOver2 = std::cos(phi + M_PI / 2.);
 
       const std::array<double, 3> tangent1 = { sinThetaPlusPiOver2 * cosPhi,
-        sinThetaPlusPiOver2 * sinPhi, cosThetaPlusPiOver2 };
+                                               sinThetaPlusPiOver2 * sinPhi,
+                                               cosThetaPlusPiOver2 };
       const std::array<double, 3> tangent2 = { sinTheta * cosPhiPlusPiOver2,
-        sinTheta * sinPhiPlusPiOver2, cosTheta };
+                                               sinTheta * sinPhiPlusPiOver2,
+                                               cosTheta };
 
       // Construct a random point on a disk with radius equal to the radius of
       // our bounding sphere
@@ -192,10 +196,17 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
       std::array<double, 3> dir = { -dUnit[0], -dUnit[1], -dUnit[2] };
 
       // Compute the intersection of our ray and the surface
-      std::vector< ::moab::EntityHandle> trianglesOut;
+      std::vector<::moab::EntityHandle> trianglesOut;
       std::vector<double> distanceOut;
-      tree.ray_intersect_triangles(search->second->m_treeRootSet, tolerance, dir.data(), p.data(),
-        trianglesOut, distanceOut, 0, diameter);
+      tree.ray_intersect_triangles(
+        search->second->m_treeRootSet,
+        tolerance,
+        dir.data(),
+        p.data(),
+        trianglesOut,
+        distanceOut,
+        0,
+        diameter);
 
       if (!distanceOut.empty())
       {
@@ -211,6 +222,6 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
   }
   return returnValue;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

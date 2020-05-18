@@ -14,18 +14,18 @@
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
 /// A utility to adapt PV point-picking helpers across an API change.
-template <typename PickHelper>
+template<typename PickHelper>
 struct pqPointPickingVisibilityHelper
 {
   // pqPointPickingHelper::setShortcutEnabled is no longer available.
-  template <typename Test>
+  template<typename Test>
   static void test(pqInteractivePropertyWidget&, Test&, ...)
   {
     // Do nothing
   }
 
   // Older ParaView requires pqPointPickingHelper::setShortcutEnabled be connected.
-  template <typename Test>
+  template<typename Test>
   static void test(pqInteractivePropertyWidget& w, Test& obj, decltype(&Test::setShortcutEnabled))
   {
     QObject::connect(

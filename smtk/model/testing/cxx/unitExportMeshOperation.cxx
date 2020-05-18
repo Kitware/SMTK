@@ -67,7 +67,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int main(int argc, char* argv[])
 {
@@ -124,7 +124,8 @@ int main(int argc, char* argv[])
   // Execute "export mesh" operator...
   smtk::operation::Operation::Result exportMeshOpResult = exportMeshOp->operate();
   // ...and test the results for success.
-  if (exportMeshOpResult->findInt("outcome")->value() !=
+  if (
+    exportMeshOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Export mesh operator failed\n";

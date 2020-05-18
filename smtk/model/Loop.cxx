@@ -103,8 +103,9 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   if (uit == uses.end())
   {
     didFind = false;
-    smtkErrorMacro(resource->log(), "Found use-record " << original.name()
-                                                        << " in loop but could not replace it.");
+    smtkErrorMacro(
+      resource->log(),
+      "Found use-record " << original.name() << " in loop but could not replace it.");
   }
   else
   { // Insert the replacements and remove the original:
@@ -158,8 +159,11 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
       ua->clear();
     }
     // Now add the shell arrangement:
-    resource->arrangeEntity(rit->entity(), HAS_SHELL,
-      Arrangement::UseHasShellWithIndex(useRec->appendRelation(m_entity)), -1);
+    resource->arrangeEntity(
+      rit->entity(),
+      HAS_SHELL,
+      Arrangement::UseHasShellWithIndex(useRec->appendRelation(m_entity)),
+      -1);
   }
 
   return didFind;

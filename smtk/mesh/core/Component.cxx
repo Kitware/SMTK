@@ -46,7 +46,8 @@ bool Component::operator<(const Component& other) const
 }
 
 std::shared_ptr<Component> Component::create(
-  const smtk::mesh::ResourcePtr& resource, const smtk::common::UUID& id)
+  const smtk::mesh::ResourcePtr& resource,
+  const smtk::common::UUID& id)
 {
   // If the mesh resource is invalid, return an invalid component
   if (resource == nullptr)
@@ -169,5 +170,5 @@ smtk::mesh::MeshSet Component::mesh()
 
   return smtk::mesh::MeshSet();
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

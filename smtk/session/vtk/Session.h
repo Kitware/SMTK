@@ -73,7 +73,11 @@ struct SMTKVTKSESSION_EXPORT EntityHandle
   EntityHandle();
   EntityHandle(int emod, vtkDataObject* obj, SessionPtr sess);
   EntityHandle(
-    int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, SessionPtr sess);
+    int emod,
+    vtkDataObject* obj,
+    vtkDataObject* parent,
+    int idxInParent,
+    SessionPtr sess);
 
   bool isValid() const;
 
@@ -86,10 +90,10 @@ struct SMTKVTKSESSION_EXPORT EntityHandle
 
   EntityHandle parent() const;
 
-  template <typename T>
+  template<typename T>
   T* object() const;
 
-  template <typename T>
+  template<typename T>
   T childrenAs(int depth) const
   {
     T container;
@@ -97,7 +101,7 @@ struct SMTKVTKSESSION_EXPORT EntityHandle
     return container;
   }
 
-  template <typename T>
+  template<typename T>
   void appendChildrenTo(T& container, int depth) const;
 
   bool operator==(const EntityHandle& other) const
@@ -125,7 +129,7 @@ typedef std::vector<EntityHandle> EntityHandleArray;
 class SMTKVTKSESSION_EXPORT Session : public smtk::model::Session
 {
 public:
-  typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;
+  typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet>> ModelVector_t;
   typedef std::map<smtk::model::EntityRef, EntityHandle> ReverseIdMap_t;
   typedef std::pair<vtkDataObject*, int> ParentAndIndex_t;
   typedef std::map<vtkDataObject*, ParentAndIndex_t> ChildParentMap_t;
@@ -153,7 +157,8 @@ public:
   static vtkInformationObjectBaseVectorKey* SMTK_CHILDREN();
   static vtkInformationDoubleKey* SMTK_LABEL_VALUE();
 
-  smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model,
+  smtk::model::Model addModel(
+    vtkSmartPointer<vtkMultiBlockDataSet>& model,
     SessionInfoBits requestedInfo = smtk::model::SESSION_EVERYTHING);
 
   std::string defaultFileExtension(const smtk::model::Model& model) const override;
@@ -170,7 +175,9 @@ protected:
   Session();
 
   SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
+    const smtk::model::EntityRef& entity,
+    SessionInfoBits requestedInfo,
+    int depth = -1) override;
 
   ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
@@ -185,13 +192,13 @@ protected:
 
   smtk::common::UUID uuidOfHandleObject(vtkDataObject* obj) const;
 
-  template <typename T>
+  template<typename T>
   T* modelOfHandleAs(const EntityHandle& h) const
   {
     return T::SafeDownCast(this->modelOfHandle(h));
   }
 
-  template <typename T>
+  template<typename T>
   T* parentAs(vtkDataObject* obj) const
   {
     return T::SafeDownCast(this->parent(obj));
@@ -205,11 +212,12 @@ private:
 };
 
 // ++ 3 ++
-template <typename T>
+template<typename T>
 T* EntityHandle::object() const
 {
   // Never return the pointer if the other data is invalid:
-  if (!this->m_session || !this->m_object || this->m_modelNumber < 0 ||
+  if (
+    !this->m_session || !this->m_object || this->m_modelNumber < 0 ||
     this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
   {
     return NULL;
@@ -220,7 +228,7 @@ T* EntityHandle::object() const
 // -- 3 --
 
 // ++ 4 ++
-template <typename T>
+template<typename T>
 void EntityHandle::appendChildrenTo(T& container, int depth) const
 {
   if (!this->m_session)

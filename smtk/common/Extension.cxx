@@ -16,7 +16,7 @@ namespace smtk
 namespace common
 {
 
-static std::map<std::string, std::pair<std::function<Extension::Ptr(void)>, bool> > s_extensionMap;
+static std::map<std::string, std::pair<std::function<Extension::Ptr(void)>, bool>> s_extensionMap;
 
 // std::map<std::string, std::pair<std::function<Extension::Ptr(void)>, bool>>
 // Extension::s_extensionMap;
@@ -26,7 +26,9 @@ Extension::Extension() = default;
 Extension::~Extension() = default;
 
 bool Extension::registerExtension(
-  const std::string& name, std::function<Extension::Ptr(void)> ctor, bool oneShot)
+  const std::string& name,
+  std::function<Extension::Ptr(void)> ctor,
+  bool oneShot)
 {
   if (name.empty() || !ctor)
   {
@@ -95,5 +97,5 @@ Extension::Ptr Extension::find(const std::string& name, bool removeOneShot)
   }
   return result;
 }
-}
-}
+} // namespace common
+} // namespace smtk

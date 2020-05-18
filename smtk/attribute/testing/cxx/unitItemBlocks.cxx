@@ -20,7 +20,7 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-int unitItemBlocks(int /*unused*/, char* /*unused*/ [])
+int unitItemBlocks(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test configurations files
   bool status = true;

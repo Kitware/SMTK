@@ -22,24 +22,25 @@ namespace operation
 
 namespace
 {
-template <typename OperationIdentifier>
+template<typename OperationIdentifier>
 struct IdentifierTag;
 
-template <>
+template<>
 struct IdentifierTag<std::string>
 {
   typedef NameTag value;
 };
 
-template <>
+template<>
 struct IdentifierTag<Operation::Index>
 {
   typedef IndexTag value;
 };
 
-template <typename OperationIdentifier>
+template<typename OperationIdentifier>
 Operation::Specification getSpecification(
-  const OperationIdentifier& uniqueId, const std::weak_ptr<smtk::operation::Manager>& managerWkPtr)
+  const OperationIdentifier& uniqueId,
+  const std::weak_ptr<smtk::operation::Manager>& managerWkPtr)
 {
   auto manager = managerWkPtr.lock();
 
@@ -58,7 +59,7 @@ Operation::Specification getSpecification(
     ? md->specification()
     : Operation::Specification();
 }
-}
+} // namespace
 
 bool Group::registerOperation(const std::string& typeName, std::set<std::string> values)
 {
@@ -303,7 +304,8 @@ std::string Group::operationLabel(const Operation::Index& index) const
 }
 
 std::size_t Group::operationObjectDistance(
-  const Operation::Index& index, const smtk::resource::PersistentObject& obj) const
+  const Operation::Index& index,
+  const smtk::resource::PersistentObject& obj) const
 {
   std::size_t gen = std::numeric_limits<std::size_t>::max();
   auto assocRule = this->operationAssociationsRule(index);
@@ -390,5 +392,5 @@ smtk::attribute::ConstReferenceItemDefinitionPtr Group::operationAssociationsRul
     extractParameterDefinition(spec, metadata->typeName());
   return parameterDefinition->associationRule();
 }
-}
-}
+} // namespace operation
+} // namespace smtk

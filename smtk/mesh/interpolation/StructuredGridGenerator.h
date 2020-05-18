@@ -36,8 +36,8 @@ namespace mesh
 {
 
 class SMTKCORE_EXPORT StructuredGridGenerator
-  : public smtk::common::Generator<std::string, StructuredGrid>,
-    public smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>
+  : public smtk::common::Generator<std::string, StructuredGrid>
+  , public smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>
 {
 public:
   using smtk::common::Generator<std::string, StructuredGrid>::operator();
@@ -47,7 +47,7 @@ public:
 
   virtual ~StructuredGridGenerator();
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

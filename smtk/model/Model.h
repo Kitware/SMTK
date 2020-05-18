@@ -48,41 +48,41 @@ public:
   Models submodels() const;
   AuxiliaryGeometries auxiliaryGeometry() const;
 
-  template <typename T>
+  template<typename T>
   T cellsAs() const;
-  template <typename T>
+  template<typename T>
   T groupsAs() const;
-  template <typename T>
+  template<typename T>
   T submodelsAs() const;
-  template <typename T>
+  template<typename T>
   void appendCells(T& container) const;
 
   Model& addCell(const CellEntity& c, bool checkExists = true);
   Model& removeCell(const CellEntity& c);
-  template <typename T>
+  template<typename T>
   Model& addCells(const T& container, bool checkExists = true);
-  template <typename T>
+  template<typename T>
   Model& removeCells(const T& container);
 
   Model& addGroup(const Group& g);
   Model& removeGroup(const Group& g);
-  template <typename T>
+  template<typename T>
   Model& addGroups(const T& container);
-  template <typename T>
+  template<typename T>
   Model& removeGroups(const T& container);
 
   Model& addSubmodel(const Model& m);
   Model& removeSubmodel(const Model& m);
-  template <typename T>
+  template<typename T>
   Model& addSubmodels(const T& container);
-  template <typename T>
+  template<typename T>
   Model& removeSubmodels(const T& container);
 
   Model& addAuxiliaryGeometry(const AuxiliaryGeometry& ag);
   Model& removeAuxiliaryGeometry(const AuxiliaryGeometry& ag);
-  template <typename T>
+  template<typename T>
   Model& addAuxiliaryGeometries(const T& container);
-  template <typename T>
+  template<typename T>
   Model& removeAuxiliaryGeometries(const T& container);
 
   void assignDefaultNames();
@@ -91,7 +91,7 @@ public:
 };
 
 /// Return the top-level (free) cells of this model in a container of the template type.
-template <typename T>
+template<typename T>
 T Model::cellsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
@@ -107,7 +107,7 @@ T Model::cellsAs() const
 }
 
 /// Return the top-level (free) groups of this model in a container of the template type.
-template <typename T>
+template<typename T>
 T Model::groupsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
@@ -123,7 +123,7 @@ T Model::groupsAs() const
 }
 
 /// Return the child models of this model in a container of the template type.
-template <typename T>
+template<typename T>
 T Model::submodelsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
@@ -139,7 +139,7 @@ T Model::submodelsAs() const
 }
 
 /// Append free cells of this model to the given \a container. Only valid cells are inserted.
-template <typename T>
+template<typename T>
 void Model::appendCells(T& container) const
 {
   // TODO: This could be done more efficiently without a copy.
@@ -157,7 +157,7 @@ void Model::appendCells(T& container) const
 /// If \a checkExistence is true, then cells will only be
 /// added if the model does not already reference them.
 /// See addCell() for more information.
-template <typename T>
+template<typename T>
 Model& Model::addCells(const T& container, bool checkExistence)
 {
   this->embedEntities(container, checkExistence);
@@ -165,7 +165,7 @@ Model& Model::addCells(const T& container, bool checkExistence)
 }
 
 /// Remove all the free cells in \a container from this model.
-template <typename T>
+template<typename T>
 Model& Model::removeCells(const T& container)
 {
   this->unembedEntities(container);
@@ -173,7 +173,7 @@ Model& Model::removeCells(const T& container)
 }
 
 /// Add all the groups in \a container to this model.
-template <typename T>
+template<typename T>
 Model& Model::addGroups(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -184,7 +184,7 @@ Model& Model::addGroups(const T& container)
 }
 
 /// Add all the groups in \a container to this model.
-template <typename T>
+template<typename T>
 Model& Model::removeGroups(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -195,7 +195,7 @@ Model& Model::removeGroups(const T& container)
 }
 
 /// Add all the models in \a container as submodels to this model.
-template <typename T>
+template<typename T>
 Model& Model::addSubmodels(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -206,7 +206,7 @@ Model& Model::addSubmodels(const T& container)
 }
 
 /// Remove all the models in \a container from this model (if they are submodels).
-template <typename T>
+template<typename T>
 Model& Model::removeSubmodels(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -217,7 +217,7 @@ Model& Model::removeSubmodels(const T& container)
 }
 
 /// Add all the auxiliary geometry entities in \a container to this model.
-template <typename T>
+template<typename T>
 Model& Model::addAuxiliaryGeometries(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -228,7 +228,7 @@ Model& Model::addAuxiliaryGeometries(const T& container)
 }
 
 /// Remove all the auxiliary geometry entities in \a container from this model.
-template <typename T>
+template<typename T>
 Model& Model::removeAuxiliaryGeometries(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)

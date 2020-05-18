@@ -39,22 +39,32 @@ public:
   ~AttributeReader();
 
   // Returns true if there was a problem with reading the file
-  bool read(smtk::attribute::ResourcePtr resource, const std::string& filename, bool includePath,
-    smtk::io::Logger& logger);
   bool read(
-    smtk::attribute::ResourcePtr resource, const std::string& filename, smtk::io::Logger& logger)
+    smtk::attribute::ResourcePtr resource,
+    const std::string& filename,
+    bool includePath,
+    smtk::io::Logger& logger);
+  bool
+  read(smtk::attribute::ResourcePtr resource, const std::string& filename, smtk::io::Logger& logger)
   {
     return this->read(resource, filename, true, logger);
   }
 
-  bool readContents(smtk::attribute::ResourcePtr resource, const std::string& filecontents,
-    smtk::io::Logger& logger);
-
-  bool readContents(smtk::attribute::ResourcePtr resource, const char* contents, std::size_t length,
+  bool readContents(
+    smtk::attribute::ResourcePtr resource,
+    const std::string& filecontents,
     smtk::io::Logger& logger);
 
   bool readContents(
-    smtk::attribute::ResourcePtr resource, pugi::xml_node& rootNode, smtk::io::Logger& logger);
+    smtk::attribute::ResourcePtr resource,
+    const char* contents,
+    std::size_t length,
+    smtk::io::Logger& logger);
+
+  bool readContents(
+    smtk::attribute::ResourcePtr resource,
+    pugi::xml_node& rootNode,
+    smtk::io::Logger& logger);
 
   void setSearchPaths(const std::vector<std::string>& paths) { m_searchPaths = paths; }
 
@@ -66,7 +76,7 @@ private:
   std::vector<std::string> m_searchPaths;
   AttributeReaderInternals* m_internals;
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_AttributeReader_h */

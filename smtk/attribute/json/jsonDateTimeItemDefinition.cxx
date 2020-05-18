@@ -23,7 +23,8 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::DateTimeItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::DateTimeItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
   j["NumberOfRequiredValues"] = defPtr->numberOfRequiredValues();
@@ -43,7 +44,8 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::DateTimeItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::DateTimeItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -85,5 +87,5 @@ SMTKCORE_EXPORT void from_json(
     defPtr->setDefaultValue(dtz);
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

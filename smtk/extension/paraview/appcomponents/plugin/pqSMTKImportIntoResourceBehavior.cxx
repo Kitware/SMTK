@@ -109,8 +109,9 @@ void pqImportIntoResourceReaction::importIntoResource()
   // TODO: handle the selection of import operations more intelligently.
   if (operationIndices.empty())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "No import operation registered to resource type <"
-        << resource->typeName() << ">.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "No import operation registered to resource type <" << resource->typeName() << ">.");
     return;
   }
   auto operationIndex = *operationIndices.begin();
@@ -121,7 +122,9 @@ void pqImportIntoResourceReaction::importIntoResource()
   // Associate the active resource to the operation's parameters
   if (!importIntoOp->parameters()->associate(resource))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Import operation for resource type <"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Import operation for resource type <"
         << resource->typeName() << "> is not configured for importing into an extant resource.");
     return;
   }
@@ -130,7 +133,11 @@ void pqImportIntoResourceReaction::importIntoResource()
   auto fileItemDef = importerGroup.fileItemDefinitionForOperation(operationIndex);
 
   // Construct a file dialog to let the user select the file to import.
-  pqFileDialog fileDialog(server, pqCoreUtilities::mainWidget(), tr("Import File:"), QString(),
+  pqFileDialog fileDialog(
+    server,
+    pqCoreUtilities::mainWidget(),
+    tr("Import File:"),
+    QString(),
     QString::fromStdString(fileItemDef->getFileFilters()));
   fileDialog.setObjectName("FileSaveDialog");
   fileDialog.setFileMode(pqFileDialog::ExistingFiles);
@@ -193,7 +200,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKImportIntoResourceBehavior* g_instance = nullptr;
 

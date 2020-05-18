@@ -61,9 +61,7 @@ void qtItem::markForDeletion()
   this->deleteLater();
 }
 
-void qtItem::updateItemData()
-{
-}
+void qtItem::updateItemData() {}
 
 void qtItem::addChildItem(qtItem* child)
 {
@@ -144,7 +142,10 @@ void qtItem::showAdvanceLevelOverlay(bool show)
         QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
     }
 
-    QObject::connect(this->Internals->AdvLevelCombo, SIGNAL(currentIndexChanged(int)), this,
+    QObject::connect(
+      this->Internals->AdvLevelCombo,
+      SIGNAL(currentIndexChanged(int)),
+      this,
       SLOT(onAdvanceLevelChanged(int)));
   }
 

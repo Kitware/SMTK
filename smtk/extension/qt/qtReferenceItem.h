@@ -62,7 +62,8 @@ public:
     * calling after the initial render.
     */
   bool setSelectionIconPaths(
-    const std::string& selectedIconPath, const std::string& unselectedIconPath);
+    const std::string& selectedIconPath,
+    const std::string& unselectedIconPath);
 
   /// Return the paths to icons used to display the membership in the item.
   std::pair<std::string, std::string> selectionIconPaths() const;
@@ -155,12 +156,16 @@ protected:
   /// retrieve membership from the phraseModel's badge
   smtk::extension::qt::MembershipBadge::MemberMap& members() const;
 
-  void checkRemovedComponents(smtk::view::DescriptivePhrasePtr, smtk::view::PhraseModelEvent,
-    const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
+  void checkRemovedComponents(
+    smtk::view::DescriptivePhrasePtr,
+    smtk::view::PhraseModelEvent,
+    const std::vector<int>&,
+    const std::vector<int>&,
+    const std::vector<int>&);
 
   qtReferenceItemData* m_p;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

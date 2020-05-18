@@ -197,8 +197,10 @@ int main(int argc, char* argv[])
       // Should Have 2 children Child1 and Child3 by default
       if (vitem->numberOfActiveChildrenItems() != 2)
       {
-        smtkErrorMacro(logger, "Error:DoubleItem2 = A has " << vitem->numberOfActiveChildrenItems()
-                                                            << " active children");
+        smtkErrorMacro(
+          logger,
+          "Error:DoubleItem2 = A has " << vitem->numberOfActiveChildrenItems()
+                                       << " active children");
       }
       else
       {
@@ -218,8 +220,9 @@ int main(int argc, char* argv[])
     vitem->setDiscreteIndex(1);
     if (vitem->numberOfActiveChildrenItems() != 2)
     {
-      smtkErrorMacro(logger, "Error:DoubleItem2 has " << vitem->numberOfActiveChildrenItems()
-                                                      << " active children");
+      smtkErrorMacro(
+        logger,
+        "Error:DoubleItem2 has " << vitem->numberOfActiveChildrenItems() << " active children");
     }
     else
     {
@@ -238,8 +241,9 @@ int main(int argc, char* argv[])
     vitem->setDiscreteIndex(1);
     if (vitem->numberOfActiveChildrenItems() != 0)
     {
-      smtkErrorMacro(logger, "Error:DoubleItem2 = C has " << vitem->numberOfActiveChildrenItems()
-                                                          << " active children");
+      smtkErrorMacro(
+        logger,
+        "Error:DoubleItem2 = C has " << vitem->numberOfActiveChildrenItems() << " active children");
     }
 
     smtk::attribute::ItemPtr item;

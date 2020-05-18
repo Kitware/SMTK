@@ -48,15 +48,15 @@
   defined(SMTK_MSVC)
 #include <regex>
 using std::regex;
-using std::sregex_token_iterator;
 using std::regex_replace;
+using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 using namespace smtk::attribute;
@@ -84,8 +84,8 @@ public:
 
   // for extensible items
   QList<QToolButton*> MinusButtonIndices;
-  QList<QPointer<QWidget> > m_editors;
-  QList<QPointer<QFrame> > m_editFrames;
+  QList<QPointer<QWidget>> m_editors;
+  QList<QPointer<QFrame>> m_editFrames;
   QPointer<QToolButton> AddItemButton;
   QPointer<QFrame> Contents;
   QPointer<QCheckBox> OptionalCheck;
@@ -125,7 +125,7 @@ qtFileItem::qtFileItem(const qtAttributeItemInfo& info)
       auto attResource = attribute->resource();
       if (attResource)
       {
-        auto vals = attResource->properties().get<std::vector<std::string> >()[propname];
+        auto vals = attResource->properties().get<std::vector<std::string>>()[propname];
         if (!vals.empty())
         {
           m_internals->m_hasDefaultDirectory = true;
@@ -164,7 +164,7 @@ QString extractFileTypeExtension(const std::string& fileTypeDescription)
 
   return QString::fromStdString(acceptableSuffix);
 }
-}
+} // namespace
 
 qtFileItem::~qtFileItem()
 {
@@ -225,7 +225,8 @@ void qtFileItem::enableFileBrowser(bool state)
   }
 }
 
-QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
+QWidget* qtFileItem::createFileBrowseWidget(
+  int elementIdx,
   const smtk::attribute::FileSystemItem& item,
   const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
@@ -489,7 +490,8 @@ void qtFileItem::updateItemValue(int elementIdx)
     }
 
     QFile theFile(item->value(elementIdx).c_str());
-    if ((fSystemItemDef->isValueValid(item->value(elementIdx))) &&
+    if (
+      (fSystemItemDef->isValueValid(item->value(elementIdx))) &&
       (!fSystemItemDef->shouldExist() || theFile.exists()))
     {
       if (item->isUsingDefault(elementIdx))
@@ -543,8 +545,8 @@ void qtFileItem::updateEditorValue(int elementIdx)
     }
 
     QFile theFile(value.c_str());
-    if ((fSystemItemDef->isValueValid(value)) &&
-      (!fSystemItemDef->shouldExist() || theFile.exists()))
+    if (
+      (fSystemItemDef->isValueValid(value)) && (!fSystemItemDef->shouldExist() || theFile.exists()))
     {
       if (item->isUsingDefault(elementIdx))
       {
@@ -763,7 +765,9 @@ void qtFileItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& item,
+void qtFileItem::addInputEditor(
+  int i,
+  const smtk::attribute::FileSystemItem& item,
   const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
   int n = static_cast<int>(item.numberOfValues());
@@ -792,7 +796,7 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
     minusButton->setToolTip("Remove value");
     editorLayout->addWidget(minusButton);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveValue()));
-    QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
+    QPair<QPointer<QLayout>, QPointer<QWidget>> pair;
     pair.first = editorLayout;
     pair.second = editBox;
     m_internals->MinusButtonIndices.push_back(minusButton);
@@ -829,7 +833,8 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
   m_internals->m_editFrames.push_back(editFrame);
 }
 
-void qtFileItem::loadInputValues(const smtk::attribute::FileSystemItem& item,
+void qtFileItem::loadInputValues(
+  const smtk::attribute::FileSystemItem& item,
   const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
   int n = static_cast<int>(item.numberOfValues());

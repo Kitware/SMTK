@@ -57,7 +57,8 @@ public:
   ~StringPhraseContent() override = default;
 
   static DescriptivePhrasePtr createPhrase(
-    const std::string& title, DescriptivePhrasePtr parent = DescriptivePhrasePtr())
+    const std::string& title,
+    DescriptivePhrasePtr parent = DescriptivePhrasePtr())
   {
     auto result =
       DescriptivePhrase::create()->setup(DescriptivePhraseType::STRING_PROPERTY_VALUE, parent);
@@ -97,10 +98,11 @@ public:
     m_root->setDelegate(generator);
   }
   DescriptivePhrasePtr root() const override { return m_root; }
+
 protected:
   DescriptivePhrasePtr m_root;
 };
-}
+} // namespace
 
 void print(const PhraseModel* phraseModel)
 {
@@ -125,68 +127,71 @@ void loadPhrases(PhraseModel* phraseModel, const std::vector<std::string>& title
   }
   std::vector<int> path;
   int abort = 0;
-  auto key =
-    phraseModel->observers().insert([&abort](DescriptivePhrasePtr phr, PhraseModelEvent event,
-      const std::vector<int>& path1, const std::vector<int>& path2, const std::vector<int>& range) {
-      std::cout << "  ";
-      switch (event)
-      {
-        case PhraseModelEvent::ABOUT_TO_INSERT:
-          std::cout << "will insert";
-          break;
-        case PhraseModelEvent::INSERT_FINISHED:
-          std::cout << "did  insert";
-          break;
-        case PhraseModelEvent::ABOUT_TO_REMOVE:
-          std::cout << "will remove";
-          break;
-        case PhraseModelEvent::REMOVE_FINISHED:
-          std::cout << "did  remove";
-          break;
-        case PhraseModelEvent::ABOUT_TO_MOVE:
-          std::cout << "will move";
-          break;
-        case PhraseModelEvent::MOVE_FINISHED:
-          std::cout << "did  move";
-          break;
-        case PhraseModelEvent::PHRASE_MODIFIED:
-          std::cout << "refresh";
-          break;
-      }
-      std::cout << "   (";
-      for (const auto& pp : path1)
-      {
-        std::cout << " " << pp;
-      }
-      std::cout << " )  (";
-      for (const auto& pp : path2)
-      {
-        std::cout << " " << pp;
-      }
-      std::cout << " )  {";
-      for (const auto& rr : range)
-      {
-        std::cout << " " << rr;
-      }
-      std::cout << " }\n";
-      if (event == PhraseModelEvent::ABOUT_TO_MOVE)
-      {
-        const auto& phrases(phr->subphrases());
-        std::cout << "       move " << phrases[range[0]]->title() << " +" << (range[1] - range[0])
-                  << " to just before "
-                  << (range[2] >= static_cast<int>(phrases.size()) ? "end"
-                                                                   : phrases[range[2]]->title())
-                  << "\n";
-        // print(phr->phraseModel().get());
-      }
+  auto key = phraseModel->observers().insert([&abort](
+                                               DescriptivePhrasePtr phr,
+                                               PhraseModelEvent event,
+                                               const std::vector<int>& path1,
+                                               const std::vector<int>& path2,
+                                               const std::vector<int>& range) {
+    std::cout << "  ";
+    switch (event)
+    {
+      case PhraseModelEvent::ABOUT_TO_INSERT:
+        std::cout << "will insert";
+        break;
+      case PhraseModelEvent::INSERT_FINISHED:
+        std::cout << "did  insert";
+        break;
+      case PhraseModelEvent::ABOUT_TO_REMOVE:
+        std::cout << "will remove";
+        break;
+      case PhraseModelEvent::REMOVE_FINISHED:
+        std::cout << "did  remove";
+        break;
+      case PhraseModelEvent::ABOUT_TO_MOVE:
+        std::cout << "will move";
+        break;
+      case PhraseModelEvent::MOVE_FINISHED:
+        std::cout << "did  move";
+        break;
+      case PhraseModelEvent::PHRASE_MODIFIED:
+        std::cout << "refresh";
+        break;
+    }
+    std::cout << "   (";
+    for (const auto& pp : path1)
+    {
+      std::cout << " " << pp;
+    }
+    std::cout << " )  (";
+    for (const auto& pp : path2)
+    {
+      std::cout << " " << pp;
+    }
+    std::cout << " )  {";
+    for (const auto& rr : range)
+    {
+      std::cout << " " << rr;
+    }
+    std::cout << " }\n";
+    if (event == PhraseModelEvent::ABOUT_TO_MOVE)
+    {
+      const auto& phrases(phr->subphrases());
+      std::cout << "       move " << phrases[range[0]]->title() << " +" << (range[1] - range[0])
+                << " to just before "
+                << (range[2] >= static_cast<int>(phrases.size()) ? "end"
+                                                                 : phrases[range[2]]->title())
+                << "\n";
+      // print(phr->phraseModel().get());
+    }
 
-      ++abort;
-      if (abort > 200)
-      {
-        // Don't take forever if a regression occurs, just error out.
-        throw std::runtime_error("Grrk!");
-      }
-    });
+    ++abort;
+    if (abort > 200)
+    {
+      // Don't take forever if a regression occurs, just error out.
+      throw std::runtime_error("Grrk!");
+    }
+  });
   phraseModel->updateChildren(phraseModel->root(), phrases, path);
   phraseModel->observers().erase(key);
 }
@@ -195,14 +200,18 @@ int unitPhraseModel(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  json j = { { "Name", "Test" }, { "Type", "DummyPhraseModel" },
-    { "Component",
-      { { "Name", "Details" }, { "Type", "DummyPhraseModel" },
-        { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
-        { "Children",
-          { { { "Name", "PhraseModel" }, { "Attributes", { { "Type", "DummyPhraseModel" } } },
-            { "Children", { { { "Name", "SubphraseGenerator" },
-                            { "Attributes", { { "Type", "default" } } } } } } } } } } } };
+  json j = { { "Name", "Test" },
+             { "Type", "DummyPhraseModel" },
+             { "Component",
+               { { "Name", "Details" },
+                 { "Type", "DummyPhraseModel" },
+                 { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+                 { "Children",
+                   { { { "Name", "PhraseModel" },
+                       { "Attributes", { { "Type", "DummyPhraseModel" } } },
+                       { "Children",
+                         { { { "Name", "SubphraseGenerator" },
+                             { "Attributes", { { "Type", "default" } } } } } } } } } } } };
   auto viewManager = smtk::view::Manager::create();
   smtk::view::Registrar::registerTo(viewManager);
   viewManager->phraseModelFactory().registerType<DummyPhraseModel>();
@@ -210,17 +219,65 @@ int unitPhraseModel(int argc, char* argv[])
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(viewConfig.get());
 
   // Test updateChildren bulk insertion.
-  std::vector<std::string> titles0{ "a", "p", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "m",
-    "n", "o", "q", "r", "r", /* purposeful duplication to cause trouble */ "s", "t", "u", "v", "w",
-    "x", "l", "y", "z" };
+  std::vector<std::string> titles0{ "a",
+                                    "p",
+                                    "b",
+                                    "c",
+                                    "d",
+                                    "e",
+                                    "f",
+                                    "g",
+                                    "h",
+                                    "i",
+                                    "j",
+                                    "k",
+                                    "m",
+                                    "n",
+                                    "o",
+                                    "q",
+                                    "r",
+                                    "r",
+                                    /* purposeful duplication to cause trouble */ "s",
+                                    "t",
+                                    "u",
+                                    "v",
+                                    "w",
+                                    "x",
+                                    "l",
+                                    "y",
+                                    "z" };
   loadPhrases(phraseModel.get(), titles0);
   print(phraseModel.get());
   std::cout << "\n----\n\n";
 
   // Test updateChildren phrase-moves that resulted in infinite loop of old technique.
-  std::vector<std::string> titles1{ "a", "b", "c", "d", "e", "f", "g", "h", "i", "y", "j", "k", "l",
-    "m", "n", "o", "p", "q", "r", "r", /* purposeful duplication to cause trouble */ "w", "v", "u",
-    "x", "s", "t", "z" };
+  std::vector<std::string> titles1{ "a",
+                                    "b",
+                                    "c",
+                                    "d",
+                                    "e",
+                                    "f",
+                                    "g",
+                                    "h",
+                                    "i",
+                                    "y",
+                                    "j",
+                                    "k",
+                                    "l",
+                                    "m",
+                                    "n",
+                                    "o",
+                                    "p",
+                                    "q",
+                                    "r",
+                                    "r",
+                                    /* purposeful duplication to cause trouble */ "w",
+                                    "v",
+                                    "u",
+                                    "x",
+                                    "s",
+                                    "t",
+                                    "z" };
   loadPhrases(phraseModel.get(), titles1);
   print(phraseModel.get());
   std::cout << "\n----\n\n";

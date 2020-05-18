@@ -86,27 +86,33 @@ int main(int argc, char* argv[])
   }
   else
   {
-    jconfig = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
+    jconfig = {
+      { "Name", "Test" },
+      { "Type", "smtk::view::ResourcePhraseModel" },
       { "Component",
-        { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },
+        { { "Name", "Details" },
+          { "Type", "smtk::view::ResourcePhraseModel" },
           { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
           { "Children",
             { { { "Name", "PhraseModel" },
-              { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
-              { "Children",
-                { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "default" } } } },
-                  { { "Name", "Badges" },
-                    { "Children",
-                      {
-                        { { "Name", "Badge" },
-                          { "Attributes", { { "Type", "smtk::view::ObjectIconBadge" } } } },
-                      } } },
-                  { { "Name", "Accepts" },
-                    { "Children", {
-                                    { { "Name", "Resource" },
-                                      { "Attributes", { { "Name", "smtk::resource::Resource" },
-                                                        { "Filter", "any" } } } },
-                                  } } } } } } } } } } };
+                { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+                { "Children",
+                  { { { "Name", "SubphraseGenerator" },
+                      { "Attributes", { { "Type", "default" } } } },
+                    { { "Name", "Badges" },
+                      { "Children",
+                        {
+                          { { "Name", "Badge" },
+                            { "Attributes", { { "Type", "smtk::view::ObjectIconBadge" } } } },
+                        } } },
+                    { { "Name", "Accepts" },
+                      { "Children",
+                        {
+                          { { "Name", "Resource" },
+                            { "Attributes",
+                              { { "Name", "smtk::resource::Resource" }, { "Filter", "any" } } } },
+                        } } } } } } } } } }
+    };
   }
 
   std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));

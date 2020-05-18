@@ -22,7 +22,10 @@
 #include <vector>
 
 // This function returns 1 on success
-vtkIdType smtkRegressionTestImage(vtkRenderWindow* rw, const double thresh,
-  const std::string& fileName, const std::string& fileType = ".png");
+vtkIdType smtkRegressionTestImage(
+  vtkRenderWindow* rw,
+  const double thresh,
+  const std::string& fileName,
+  const std::string& fileType = ".png");
 
 #endif

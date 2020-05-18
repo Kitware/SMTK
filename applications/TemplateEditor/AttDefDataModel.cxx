@@ -51,7 +51,8 @@ void AttDefDataModel::populate(smtk::attribute::ResourcePtr resource)
 
 // -----------------------------------------------------------------------------
 void AttDefDataModel::appendRecursively(
-  smtk::attribute::DefinitionPtr parentDef, QTreeWidgetItem* parentItem)
+  smtk::attribute::DefinitionPtr parentDef,
+  QTreeWidgetItem* parentItem)
 {
   DefinitionPtrVec defsConcrete;
   this->Resource->derivedDefinitions(parentDef, defsConcrete);
@@ -134,7 +135,8 @@ void AttDefDataModel::remove(const QModelIndex& attDefIndex)
 
 // -----------------------------------------------------------------------------
 QModelIndex AttDefDataModel::findElementByData(
-  QTreeWidgetItem* parent, const smtk::attribute::DefinitionPtr& dataMatch)
+  QTreeWidgetItem* parent,
+  const smtk::attribute::DefinitionPtr& dataMatch)
 {
   const int count = parent->childCount();
   for (int i = 0; i < count; i++)

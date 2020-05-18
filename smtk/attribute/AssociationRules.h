@@ -26,8 +26,8 @@ namespace attribute
 class SMTKCORE_EXPORT AssociationRules
 {
 public:
-  typedef std::unordered_map<std::string, std::unique_ptr<Rule> > AssociationRuleContainer;
-  typedef std::unordered_map<std::string, std::unique_ptr<Rule> > DissociationRuleContainer;
+  typedef std::unordered_map<std::string, std::unique_ptr<Rule>> AssociationRuleContainer;
+  typedef std::unordered_map<std::string, std::unique_ptr<Rule>> DissociationRuleContainer;
 
   AssociationRules() = default;
 
@@ -95,7 +95,7 @@ private:
   AssociationRuleFactory m_associationRuleFactory;
   DissociationRuleFactory m_dissociationRuleFactory;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

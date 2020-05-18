@@ -38,17 +38,26 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT Operation : public smtk::operation::XMLOperation
 {
 protected:
-  template <typename T, typename U, typename V>
+  template<typename T, typename U, typename V>
+  void
+  pointsForLoop(T& polypts, int numPtsToUse, U& start, U finish, int numCoordsPerPoint, V pmodel);
+
+  template<typename T, typename U, typename V, typename W>
   void pointsForLoop(
-    T& polypts, int numPtsToUse, U& start, U finish, int numCoordsPerPoint, V pmodel);
+    T& polypts,
+    int numEdgesToUse,
+    U& curEdge,
+    U edgesFinish,
+    V& curEdgeDir,
+    V edgeDirFinish,
+    W& outerLoopEdges);
 
-  template <typename T, typename U, typename V, typename W>
-  void pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish, V& curEdgeDir,
-    V edgeDirFinish, W& outerLoopEdges);
-
-  template <typename T, typename U>
+  template<typename T, typename U>
   void pointsInLoopOrderFromOrientedEdges(
-    T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel);
+    T& polypts,
+    U begin,
+    U end,
+    smtk::shared_ptr<internal::pmodel> pmodel);
 };
 
 } // namespace polygon

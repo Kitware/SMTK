@@ -87,7 +87,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
     model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
     // Test for success
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -108,7 +109,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
     eulerOp->parameters()->associateEntity(model->referenceAs<smtk::model::Model>());
 
     smtk::operation::Operation::Result eulerOpResult = eulerOp->operate();
-    if (eulerOpResult->findInt("outcome")->value() !=
+    if (
+      eulerOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"Euler characteristic ratio\" operator failed\n";

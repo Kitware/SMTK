@@ -33,8 +33,8 @@ bool write_neumann(const std::string& path, const smtk::mesh::ResourcePtr& c);
 
 //Write all the dirichlet sets in a file into an existing resource
 bool write_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& c);
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

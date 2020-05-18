@@ -60,7 +60,7 @@ void Registrar::unregisterFrom(const smtk::resource::query::Manager::Ptr& queryM
 {
   queryManager->unregisterQueries<QueryList>();
 }
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

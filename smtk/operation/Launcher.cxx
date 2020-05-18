@@ -36,7 +36,11 @@ public:
   {
   }
 
-  DefaultLauncher(DefaultLauncher&& other) noexcept : m_pool() { m_pool.swap(other.m_pool); }
+  DefaultLauncher(DefaultLauncher&& other) noexcept
+    : m_pool()
+  {
+    m_pool.swap(other.m_pool);
+  }
 
   DefaultLauncher& operator=(DefaultLauncher&& other) noexcept
   {
@@ -55,9 +59,9 @@ public:
   }
 
 private:
-  std::unique_ptr<smtk::common::ThreadPool<smtk::operation::Operation::Result> > m_pool;
+  std::unique_ptr<smtk::common::ThreadPool<smtk::operation::Operation::Result>> m_pool;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -103,7 +107,8 @@ Launchers::LauncherMap::size_type Launchers::erase(const Launchers::LauncherMap:
 }
 
 std::shared_future<Operation::Result> Launchers::operator()(
-  const Operation::Ptr& op, const Launchers::LauncherMap::key_type& k_type)
+  const Operation::Ptr& op,
+  const Launchers::LauncherMap::key_type& k_type)
 {
   assert(op != nullptr);
 
@@ -114,7 +119,9 @@ std::shared_future<Operation::Result> Launchers::operator()(
   }
   else
   {
-    smtkWarningMacro(op->log(), "Could not find operation launcher type \""
+    smtkWarningMacro(
+      op->log(),
+      "Could not find operation launcher type \""
         << k_type << "\". Falling back to default operation launcher.");
     return this->operator()(op, "default");
   }
@@ -125,5 +132,5 @@ std::shared_future<Operation::Result> Launchers::operator()(const Operation::Ptr
   return this->operator()(op, default_key);
 }
 
-} // operation namespace
-} // smtk namespace
+} // namespace operation
+} // namespace smtk

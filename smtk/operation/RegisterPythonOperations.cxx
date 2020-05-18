@@ -33,7 +33,8 @@ namespace operation
 {
 
 bool registerPythonOperations(
-  const smtk::operation::Manager::Ptr& operationManager, const std::string& moduleName)
+  const smtk::operation::Manager::Ptr& operationManager,
+  const std::string& moduleName)
 {
   if (operationManager == nullptr)
   {
@@ -69,5 +70,5 @@ bool registerPythonOperations(
     return true;
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

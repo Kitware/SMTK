@@ -71,14 +71,25 @@ public:
     QObject::connect(
       this->UseSelection, SIGNAL(toggled(bool)), panel, SLOT(toggleFilterBySelection(bool)));
 
-    QObject::connect(OperationList->listWidget(), SIGNAL(itemClicked(QListWidgetItem*)), panel,
+    QObject::connect(
+      OperationList->listWidget(),
+      SIGNAL(itemClicked(QListWidgetItem*)),
+      panel,
       SLOT(operationListClicked(QListWidgetItem*)));
-    QObject::connect(OperationList->listWidget(), SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-      panel, SLOT(operationListDoubleClicked(QListWidgetItem*)));
-    QObject::connect(OperationList->listWidget(), SIGNAL(itemActivated(QListWidgetItem*)), panel,
+    QObject::connect(
+      OperationList->listWidget(),
+      SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+      panel,
+      SLOT(operationListDoubleClicked(QListWidgetItem*)));
+    QObject::connect(
+      OperationList->listWidget(),
+      SIGNAL(itemActivated(QListWidgetItem*)),
+      panel,
       SLOT(operationListActivated(QListWidgetItem*)));
-    QObject::connect(OperationList->listWidget(),
-      SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), panel,
+    QObject::connect(
+      OperationList->listWidget(),
+      SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+      panel,
       SLOT(operationListCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)));
   }
 };
@@ -99,9 +110,15 @@ pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
   m_p->setup(this);
 
   auto behavior = pqSMTKBehavior::instance();
-  QObject::connect(behavior, SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)), this,
+  QObject::connect(
+    behavior,
+    SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)),
+    this,
     SLOT(observeWrapper(pqSMTKWrapper*, pqServer*)));
-  QObject::connect(behavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
+  QObject::connect(
+    behavior,
+    SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)),
+    this,
     SLOT(unobserveWrapper(pqSMTKWrapper*, pqServer*)));
   // Initialize with current wrapper(s), if any:
   behavior->visitResourceManagersOnServers([this](pqSMTKWrapper* wrapper, pqServer* server) {
@@ -243,7 +260,8 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   }
 
   // Create a new UI.
-  m_attrUIMgr = new smtk::extension::qtUIManager(m_editing,
+  m_attrUIMgr = new smtk::extension::qtUIManager(
+    m_editing,
     m_wrapper ? m_wrapper->smtkResourceManager() : nullptr,
     m_wrapper ? m_wrapper->smtkViewManager() : nullptr);
   m_attrUIMgr->setSelection(m_wrapper ? m_wrapper->smtkSelection() : nullptr);
@@ -262,18 +280,23 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   // run to a lambda that extracts any newly added resources and queries the
   // singleton pqSMTKBehavior for pipeline sources associated with the resource.
   // If there is no pipeline source available, we create one.
-  if (smtk::extension::qtOperationView* operationView =
-        dynamic_cast<smtk::extension::qtOperationView*>(baseView))
+  if (
+    smtk::extension::qtOperationView* operationView =
+      dynamic_cast<smtk::extension::qtOperationView*>(baseView))
   {
-    QObject::connect(operationView, &smtk::extension::qtOperationView::doneEditing, this,
+    QObject::connect(
+      operationView,
+      &smtk::extension::qtOperationView::doneEditing,
+      this,
       &pqSMTKOperationPanel::cancelEditing);
-    QObject::connect(operationView, &smtk::extension::qtOperationView::operationExecuted,
+    QObject::connect(
+      operationView,
+      &smtk::extension::qtOperationView::operationExecuted,
       [&](const smtk::operation::Operation::Result& result) {
-
         // Gather all resource items
         std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-        std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
-          smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
+        std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
+          [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
         result->filterItems(resourceItems, filter);
 
         // For each resource item found...
@@ -307,7 +330,8 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
       [this, weakResourceManager](
         const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
         auto rsrc = m_rsrc.lock();
-        if (rsrc == nullptr ||
+        if (
+          rsrc == nullptr ||
           (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
         {
           // The application is removing the attribute resource we are viewing.
@@ -398,7 +422,8 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     bool anyAssociations = false;
     for (const auto& entry : smap)
     {
-      if ((entry.second & 0x01) ==
+      if (
+        (entry.second & 0x01) ==
         0x01) // FIXME: properly select entities from the map based on a specific bit flag
       {
         params->associate(entry.first);
@@ -430,7 +455,8 @@ void pqSMTKOperationPanel::operationListActivated(QListWidgetItem* item)
 }
 
 void pqSMTKOperationPanel::operationListCurrentItemChanged(
-  QListWidgetItem* item, QListWidgetItem* prev)
+  QListWidgetItem* item,
+  QListWidgetItem* prev)
 {
   (void)prev;
   if (item)

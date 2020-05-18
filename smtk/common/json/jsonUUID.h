@@ -26,7 +26,7 @@ namespace common
 SMTKCORE_EXPORT void to_json(json& j, const smtk::common::UUID& opt);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::common::UUID& opt);
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

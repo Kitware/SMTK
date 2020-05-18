@@ -41,8 +41,16 @@ namespace mesh
 
 namespace
 {
-typedef std::tuple<CreateUniformGrid, EulerCharacteristicRatio, Export, Import, Merge, Print, Read,
-  Transform, Write>
+typedef std::tuple<
+  CreateUniformGrid,
+  EulerCharacteristicRatio,
+  Export,
+  Import,
+  Merge,
+  Print,
+  Read,
+  Transform,
+  Write>
   OperationList;
 }
 
@@ -98,9 +106,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
   operationManager->unregisterOperations<OperationList>();
 }
 
-void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr&)
-{
-}
-}
-}
-}
+void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr&) {}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

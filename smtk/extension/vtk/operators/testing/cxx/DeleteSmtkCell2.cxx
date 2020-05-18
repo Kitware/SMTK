@@ -93,7 +93,8 @@ int main(int argc, char* argv[])
   std::cout << "Importing " << argv[1] << "\n";
 
   smtk::operation::Operation::Result readOpResult = readOp->operate();
-  test(readOpResult->findInt("outcome")->value() ==
+  test(
+    readOpResult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Read operator failed");
 
@@ -146,7 +147,8 @@ int main(int argc, char* argv[])
 
   // it's designed to fail.
   smtk::session::polygon::Delete::Result deleteOpResult = deleteOp->operate();
-  if (deleteOpResult->findInt("outcome")->value() ==
+  if (
+    deleteOpResult->findInt("outcome")->value() ==
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Delete operator should not succeed!\n";

@@ -34,7 +34,8 @@ class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 public:
   smtkTypedefs(smtk::project::Manager);
   static smtk::project::ManagerPtr create(
-    smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
+    smtk::resource::ManagerPtr&,
+    smtk::operation::ManagerPtr&);
 
   virtual ~Manager();
 
@@ -44,14 +45,17 @@ public:
   /// Create project for given specification, which includes filesystem path to store persistent data.
   /// Will not write to existing directory unless replaceExistingDirectory flag is set.
   /// Return value (pointer) is empty on error.
-  ProjectPtr createProject(smtk::attribute::AttributePtr specification,
-    bool replaceExistingDirectory = false, smtk::io::Logger& logger = smtk::io::Logger::instance());
+  ProjectPtr createProject(
+    smtk::attribute::AttributePtr specification,
+    bool replaceExistingDirectory = false,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Open a new project from the filesystem. Returns outcome and project pointer
   /// The path argument can be set to either the project directory or the .cmbproject
   /// contained in the project directory.
   ProjectPtr openProject(
-    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
+    const std::string& path,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Return project instance
   ProjectPtr getCurrentProject() const { return m_project; }
@@ -62,7 +66,8 @@ public:
   /// Copy the current project's contents and make the new project current.
   /// Returns nullptr in case of error.
   ProjectPtr saveAsProject(
-    const std::string& directory, smtk::io::Logger& logger = smtk::io::Logger::instance());
+    const std::string& directory,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Close the project resources. Returns true on success
   bool closeProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
@@ -71,7 +76,8 @@ public:
   /// If reset flag is true, will create new operator in order to
   /// reset contents to their default values.
   smtk::operation::OperationPtr getExportOperator(
-    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false) const;
+    smtk::io::Logger& logger = smtk::io::Logger::instance(),
+    bool reset = false) const;
 
   // Future:
   // * introduce "analysis" class to extend project structure

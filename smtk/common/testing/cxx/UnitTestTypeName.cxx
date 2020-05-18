@@ -54,15 +54,16 @@ namespace bar
 class NestedClass
 {
 };
-}
-}
+} // namespace bar
+} // namespace foo
 
 int UnitTestTypeName(int /*unused*/, char** const /*unused*/)
 {
   using namespace std;
 
 #define testNamed(CLASS_WITH_NAME)                                                                 \
-  test(smtk::common::typeName<CLASS_WITH_NAME>() == std::string(#CLASS_WITH_NAME),                 \
+  test(                                                                                            \
+    smtk::common::typeName<CLASS_WITH_NAME>() == std::string(#CLASS_WITH_NAME),                    \
     std::string("Incorrect name for ") + std::string(#CLASS_WITH_NAME))
 
   testNamed(char);
@@ -96,15 +97,18 @@ int UnitTestTypeName(int /*unused*/, char** const /*unused*/)
 
 #undef testNamed
 
-  test(smtk::common::typeName<tuple<int, double, ConstExprNamed, vector<FunctionNamed> > >() ==
+  test(
+    smtk::common::typeName<tuple<int, double, ConstExprNamed, vector<FunctionNamed>>>() ==
       "tuple<int, double, ConstExprNamed, vector<FunctionNamed>>",
     "Tuple type name failed.");
 
-  test(smtk::common::typeName<map<ConstExprNamed, set<vector<FunctionNamed> > > >() ==
+  test(
+    smtk::common::typeName<map<ConstExprNamed, set<vector<FunctionNamed>>>>() ==
       "map<ConstExprNamed, set<vector<FunctionNamed>>>",
     "Complex type name failed.");
 
-  test(smtk::common::typeName<unordered_map<ConstExprNamed, set<vector<FunctionNamed> > > >() ==
+  test(
+    smtk::common::typeName<unordered_map<ConstExprNamed, set<vector<FunctionNamed>>>>() ==
       "unordered_map<ConstExprNamed, set<vector<FunctionNamed>>>",
     "unordered map type name failed.");
 

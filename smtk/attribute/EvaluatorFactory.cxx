@@ -19,7 +19,8 @@ namespace attribute
 {
 
 bool EvaluatorFactory::addDefinitionForEvaluator(
-  const std::string& alias, const std::string& definitionName)
+  const std::string& alias,
+  const std::string& definitionName)
 {
   if (isDefinitionRegistered(definitionName))
   {
@@ -111,9 +112,9 @@ bool EvaluatorFactory::isDefinitionRegistered(const std::string& definitionName)
   return false;
 }
 
-std::map<std::string, std::vector<std::string> > EvaluatorFactory::aliasesToDefinitions() const
+std::map<std::string, std::vector<std::string>> EvaluatorFactory::aliasesToDefinitions() const
 {
-  std::map<std::string, std::vector<std::string> > result;
+  std::map<std::string, std::vector<std::string>> result;
   for (const auto& p : m_aliasesToFactoryInfo)
   {
     std::vector<std::string> aliasDefinitions;

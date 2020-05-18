@@ -88,13 +88,16 @@ protected:
 
   // This widget needs to handle changes made to resources as a result of an operation.
   // This method is used by the observation mechanism to address these changes
-  int handleOperationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
+  int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
     smtk::operation::Operation::Result result);
 
   // This widget needs to handle changes made to resources as a result of resources being removed.
   // This method is used by the observation mechanism to address this via the resource manager
   void handleResourceEvent(
-    const smtk::resource::Resource& resource, smtk::resource::EventType event);
+    const smtk::resource::Resource& resource,
+    smtk::resource::EventType event);
 
 private:
   qtReferenceItemEditorInternals* m_internals;
@@ -110,7 +113,7 @@ private:
   // This is used to indicate that the current value is not considered valid
   bool m_currentValueIsInvalid = false;
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

@@ -39,8 +39,11 @@ class qtUIManager;
 class SMTKQTEXT_EXPORT qtAttributeItemInfo
 {
 public:
-  qtAttributeItemInfo(smtk::attribute::ItemPtr item, smtk::view::Configuration::Component itemComp,
-    QPointer<QWidget> parent, qtBaseView* bview);
+  qtAttributeItemInfo(
+    smtk::attribute::ItemPtr item,
+    smtk::view::Configuration::Component itemComp,
+    QPointer<QWidget> parent,
+    qtBaseView* bview);
 
   qtAttributeItemInfo() {}
   virtual ~qtAttributeItemInfo() {}
@@ -49,7 +52,7 @@ public:
   /// \brief Methods to set and retrieve the item to be used by the generated qtItem
   void setItem(smtk::attribute::ItemPtr& item) { m_item = item; }
   smtk::attribute::ItemPtr item() const { return m_item.lock(); }
-  template <typename ItemType>
+  template<typename ItemType>
   std::shared_ptr<ItemType> itemAs() const
   {
     return std::dynamic_pointer_cast<ItemType>(this->item());
@@ -93,8 +96,10 @@ public:
   /// the child Component is assigned to the corresponding qtAttributeItemInfo, else
   /// the new path and the child Component are inserted into the qtAttributeItemInfo's
   /// children view information.
-  static bool buildFromComponent(smtk::view::Configuration::Component comp,
-    qtBaseAttributeView* view, std::map<std::string, qtAttributeItemInfo>& dict);
+  static bool buildFromComponent(
+    smtk::view::Configuration::Component comp,
+    qtBaseAttributeView* view,
+    std::map<std::string, qtAttributeItemInfo>& dict);
 
   /// \brief A  method that can construct a dictionary from the qtAttributeItemInfo's
   /// children view information as well as from its configuration component.

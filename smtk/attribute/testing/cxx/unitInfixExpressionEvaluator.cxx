@@ -37,10 +37,9 @@ const std::string sbt = R"(
   </SMTK_AttributeResource>
 )";
 
-  // clang-format on
+// clang-format on
 
-  smtk::attribute::ResourcePtr
-  createResourceForTest()
+smtk::attribute::ResourcePtr createResourceForTest()
 {
   smtk::attribute::ResourcePtr attRes = smtk::attribute::Resource::create();
   smtk::io::Logger logger;
@@ -73,8 +72,10 @@ void testSimpleEvaluation()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) == true,
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) ==
+      true,
     "Failed to evalute 2 + 2.")
     smtkTest(log.numberOfRecords() == 0, "Expected log to have no records.")
 
@@ -97,8 +98,10 @@ void testOneChildExpression()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) == true,
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) ==
+      true,
     "Failed to evalute b, where b = 5 + {a}, a = 2 * 2..")
     smtkTest(log.numberOfRecords() == 0, "Expected log to have no records.")
     //  smtkTest(infixEvaluator.getContext()->childExpressions.count("a") == true,
@@ -121,10 +124,14 @@ void testSelfReferencingExpressionFails()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) == false,
-    "a = {a} + 2 should not evaluate.") smtkTest(log.numberOfRecords() == 2,
-    "Expected log to have 2 records: 1 from subevaluation and 1 from logError().")
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) ==
+      false,
+    "a = {a} + 2 should not evaluate.")
+    smtkTest(
+      log.numberOfRecords() == 2,
+      "Expected log to have 2 records: 1 from subevaluation and 1 from logError().")
   //  smtkTest(infixEvaluator.getContext()->childExpressions.size() == 0,
   //           "\"a\" should have no child expressions.")
 }
@@ -143,10 +150,13 @@ void testCyclicReferenceExpressionFails()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) == false,
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) ==
+      false,
     "A child expression referencing a parent expression should not evaluate.")
-    smtkTest(log.numberOfRecords() == 4,
+    smtkTest(
+      log.numberOfRecords() == 4,
       "Expected log to have 4 records: 1 from each subevaluation and 1 from each logError().")
   // smtkTest(infixEvaluator.getContext()->childExpressions.count("b"), )
 }
@@ -163,10 +173,14 @@ void testReferencingNonexistentSubexressionFails()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) == false,
-    "A reference to a nonexistent subexpression should fail.") smtkTest(log.numberOfRecords() == 2,
-    "Expected log to have 2 records: 1 from subevalution and 1 from logError().")
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS) ==
+      false,
+    "A reference to a nonexistent subexpression should fail.")
+    smtkTest(
+      log.numberOfRecords() == 2,
+      "Expected log to have 2 records: 1 from subevalution and 1 from logError().")
   //  smtkTest(infixEvaluator.getContext()->childExpressions.count("b") == 1,
   //           "\"b\" should be a child expression of \"a\".")
 }
@@ -187,8 +201,9 @@ void testMultipleReferencesInParentExpression()
   smtk::attribute::Evaluator::ValueType result;
   smtk::io::Logger log;
 
-  smtkTest(infixEvaluator.evaluate(result, log, 0,
-             smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS),
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS),
     "{b} + {c} should evaluate successfully.")
     smtkTest(log.numberOfRecords() == 0, "Expected log to have no records.")
   //  smtkTest(infixEvaluator.getContext()->childExpressions.size() == 2,
@@ -219,7 +234,8 @@ void testDoesEvaluate()
   smtk::attribute::InfixExpressionEvaluator infixEvaluator(expressionAtt);
 
   expressionAtt->findString("expression")->setValue("");
-  smtkTest(infixEvaluator.doesEvaluate() == false,
+  smtkTest(
+    infixEvaluator.doesEvaluate() == false,
     "An empty string is not considered a proper evaluation.")
     smtkTest(infixEvaluator.doesEvaluate(0) == false, "Expected evaluation at index 0 to fail.")
 
@@ -235,11 +251,13 @@ void testDoesEvaluate()
 
     expressionAtt->findString("expression")
       ->appendValue("2");
-  smtkTest(infixEvaluator.doesEvaluate() == false,
+  smtkTest(
+    infixEvaluator.doesEvaluate() == false,
     "Expected doesEvaluate() to return false if any expression is not"
     " evaluatable")
 
-    smtkTest(infixEvaluator.doesEvaluate(5) == false,
+    smtkTest(
+      infixEvaluator.doesEvaluate(5) == false,
       "Expected index 5, which deos not exist, to not be evaluatable")
 }
 
@@ -251,12 +269,14 @@ void testNumberOfEvaluatableElements()
 
   smtk::attribute::InfixExpressionEvaluator infixEvaluator(expressionAtt);
 
-  smtkTest(infixEvaluator.numberOfEvaluatableElements() == 1,
+  smtkTest(
+    infixEvaluator.numberOfEvaluatableElements() == 1,
     "A default infix expression should have 1 evaluatable element.")
 
     expressionAtt->findString("expression")
       ->appendValue("");
-  smtkTest(infixEvaluator.numberOfEvaluatableElements() == 2,
+  smtkTest(
+    infixEvaluator.numberOfEvaluatableElements() == 2,
     "Expected to have 2 evalutable elements after appending a string.")
 }
 

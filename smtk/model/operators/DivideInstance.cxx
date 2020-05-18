@@ -133,8 +133,10 @@ smtk::model::Instance DivideInstance::parentOfClones(
     }
     else if (result != instance)
     {
-      smtkErrorMacro(this->log(), "The given instance has clones with different parent "
-                                  "instances ("
+      smtkErrorMacro(
+        this->log(),
+        "The given instance has clones with different parent "
+        "instances ("
           << result.name() << ", " << instance.name() << ").");
       return smtk::model::Instance();
     }

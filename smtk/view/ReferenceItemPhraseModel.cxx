@@ -63,17 +63,20 @@ void ReferenceItemPhraseModel::populateRoot()
   //        should be displayed. If so, we need to handle it here. On the other hand
   //        if nothing should be displayed, then no action is needed.
   smtk::resource::ManagerPtr resourceManager;
-  this->visitSources([&resourceManager](const smtk::resource::ManagerPtr& rsrcMgr,
-                       const smtk::operation::ManagerPtr& /*unused*/,
-                       const smtk::view::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
-                       /*unused*/) -> bool {
-    if (rsrcMgr)
-    {
-      resourceManager = rsrcMgr;
-      return false;
-    }
-    return true;
-  });
+  this->visitSources(
+    [&resourceManager](
+      const smtk::resource::ManagerPtr& rsrcMgr,
+      const smtk::operation::ManagerPtr& /*unused*/,
+      const smtk::view::ManagerPtr& /*unused*/,
+      const smtk::view::SelectionPtr &
+      /*unused*/) -> bool {
+      if (rsrcMgr)
+      {
+        resourceManager = rsrcMgr;
+        return false;
+      }
+      return true;
+    });
 
   auto objSet = smtk::attribute::utility::associatableObjects(
     m_refItem, resourceManager, m_useAttributeAssociatons);

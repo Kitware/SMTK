@@ -35,12 +35,14 @@ namespace polygon
 {
 using json = nlohmann::json;
 SMTKPOLYGONSESSION_EXPORT void to_json(
-  json& j, const smtk::session::polygon::Resource::Ptr& resource);
+  json& j,
+  const smtk::session::polygon::Resource::Ptr& resource);
 
 SMTKPOLYGONSESSION_EXPORT void from_json(
-  const json& j, smtk::session::polygon::Resource::Ptr& resource);
-}
-}
-}
+  const json& j,
+  smtk::session::polygon::Resource::Ptr& resource);
+} // namespace polygon
+} // namespace session
+} // namespace smtk
 
 #endif

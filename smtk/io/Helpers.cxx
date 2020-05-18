@@ -21,7 +21,9 @@ namespace io
 {
 
 bool Helpers::isDirectoryASubdirectory(
-  const std::string& aas, const std::string& bbs, std::string& brela)
+  const std::string& aas,
+  const std::string& bbs,
+  std::string& brela)
 {
   using namespace boost::filesystem;
   path aa(aas);
@@ -101,8 +103,12 @@ bool Helpers::isSMTKFilename(const std::string& pathToFile, std::string& contain
   return false;
 }
 
-std::string Helpers::uniqueFilename(const std::string& start, std::set<std::string>& preExisting,
-  const std::string& defaultStem, const std::string& defaultExtension, const std::string& base)
+std::string Helpers::uniqueFilename(
+  const std::string& start,
+  std::set<std::string>& preExisting,
+  const std::string& defaultStem,
+  const std::string& defaultExtension,
+  const std::string& base)
 {
   using namespace ::boost::filesystem;
   std::string init(start);

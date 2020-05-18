@@ -73,7 +73,8 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
     return;
   };
 
-  QObject::connect(pqSMTKBehavior::instance(),
+  QObject::connect(
+    pqSMTKBehavior::instance(),
     (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
     onAddedManagerOnServer);
 }

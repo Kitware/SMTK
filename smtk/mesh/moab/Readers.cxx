@@ -44,13 +44,15 @@ smtk::mesh::ResourcePtr verifyAndMake(const smtk::mesh::moab::InterfacePtr inter
   return smtk::mesh::Resource::create(interface);
 }
 
-template <typename T>
+template<typename T>
 bool is_valid(const T& t)
 {
   return (!!t && t->isValid());
 }
 
-bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::string& path,
+bool moab_load(
+  const smtk::mesh::moab::InterfacePtr& interface,
+  const std::string& path,
   const char* subset_name_to_load)
 {
   //currently the moab::interface doesn't allow loading a subset of a file
@@ -59,7 +61,7 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   //ones we want to load. If we get back no tag values and we wanted
   //to load a subset we fail.
   ::moab::Interface* m_iface = interface->moabInterface();
-  ::moab::Core* core = dynamic_cast< ::moab::Core*>(m_iface);
+  ::moab::Core* core = dynamic_cast<::moab::Core*>(m_iface);
   if (!core)
   {
     return false;
@@ -75,7 +77,9 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   //for that tag to be a failure to load, and not to load in the entire file
   if (subset_name_to_load)
   {
-    ::moab::ErrorCode tag_err = core->serial_read_tag(path.c_str(), subset_name_to_load,
+    ::moab::ErrorCode tag_err = core->serial_read_tag(
+      path.c_str(),
+      subset_name_to_load,
       nullptr, //options
       tag_values);
 
@@ -90,10 +94,13 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
     num_tag_values = static_cast<int>(tag_values.size());
   }
 
-  ::moab::ErrorCode err = m_iface->load_file(path.c_str(),
+  ::moab::ErrorCode err = m_iface->load_file(
+    path.c_str(),
     nullptr, //file set to append to
     nullptr, //options
-    subset_name_to_load, tag_values_ptr, num_tag_values);
+    subset_name_to_load,
+    tag_values_ptr,
+    num_tag_values);
 #ifndef NDEBUG
   if (err != ::moab::MB_SUCCESS)
   {
@@ -128,7 +135,9 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
 
 //requires that interface is not a null shared ptr
 smtk::mesh::moab::InterfacePtr load_file(
-  smtk::mesh::moab::InterfacePtr interface, const std::string& path, const char* tag_name = nullptr)
+  smtk::mesh::moab::InterfacePtr interface,
+  const std::string& path,
+  const char* tag_name = nullptr)
 {
   const bool loaded = moab_load(interface, path, tag_name);
   if (!loaded)
@@ -141,12 +150,14 @@ smtk::mesh::moab::InterfacePtr load_file(
 }
 
 //requires that interface is not a null shared ptr
-bool append_file(const smtk::mesh::moab::InterfacePtr& interface, const std::string& path,
+bool append_file(
+  const smtk::mesh::moab::InterfacePtr& interface,
+  const std::string& path,
   const char* tag_name = nullptr)
 {
   return moab_load(interface, path, tag_name);
 }
-}
+} // namespace
 
 //construct an interface to a given file. will load all meshes inside the
 //file
@@ -206,6 +217,6 @@ bool import_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& c)
   const std::string tag("DIRICHLET_SET");
   return is_valid(c) && append_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

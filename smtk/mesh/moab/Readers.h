@@ -52,8 +52,8 @@ bool import_neumann(const std::string& path, const smtk::mesh::ResourcePtr& reso
 
 //Import all the dirichlet sets in a file into an existing resource
 bool import_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& resource);
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

@@ -55,7 +55,8 @@
 #define smtkDeclareExtension(exportmacro, name, cls)                                               \
   void exportmacro smtk_##name##_extension_AutoInit_Construct()                                    \
   {                                                                                                \
-    smtk::common::Extension::registerExtension(#name,                                              \
+    smtk::common::Extension::registerExtension(                                                    \
+      #name,                                                                                       \
       []() { return std::dynamic_pointer_cast<smtk::common::Extension>(cls::create()); },          \
       /* Never register class-static extension constructor as one-shot */ false);                  \
   }                                                                                                \
@@ -107,7 +108,9 @@ public:
     * by the called of find().
     */
   static bool registerExtension(
-    const std::string& name, std::function<Extension::Ptr(void)> ctor, bool oneShot = true);
+    const std::string& name,
+    std::function<Extension::Ptr(void)> ctor,
+    bool oneShot = true);
 
   /// Remove an extension from the registry.
   static bool unregisterExtension(const std::string& name);
@@ -127,7 +130,7 @@ public:
     *
     * \sa visitAll for more information on how \a visitor is used.
     */
-  template <typename T>
+  template<typename T>
   static void visit(std::function<std::pair<bool, bool>(const std::string&, T)> visitor)
   {
     T result;
@@ -145,7 +148,7 @@ public:
   static Extension::Ptr find(const std::string& name, bool removeOneShot = true);
 
   /// Find the first extension with a given \a name and type.
-  template <typename T>
+  template<typename T>
   static typename T::Ptr findAs(const std::string& name)
   {
     typename T::Ptr result = std::dynamic_pointer_cast<T>(Extension::find(name, false));
@@ -155,7 +158,7 @@ public:
 protected:
   Extension();
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

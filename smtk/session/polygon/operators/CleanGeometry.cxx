@@ -36,9 +36,9 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
+typedef std::vector<std::pair<size_t, internal::Segment>> SegmentSplitsT;
 
-template <typename T>
+template<typename T>
 smtk::model::Edge findEdgeFromSegmentId(size_t cur, T& lkup)
 {
   typename T::iterator it = lkup.lower_bound(cur);
@@ -49,9 +49,12 @@ smtk::model::Edge findEdgeFromSegmentId(size_t cur, T& lkup)
   return it->second;
 }
 
-template <typename T>
-smtk::model::Vertex findOrAddInputModelVertex(smtk::model::ResourcePtr resource,
-  const internal::Point& splitPt, T& endpoints, internal::pmodel* mod,
+template<typename T>
+smtk::model::Vertex findOrAddInputModelVertex(
+  smtk::model::ResourcePtr resource,
+  const internal::Point& splitPt,
+  T& endpoints,
+  internal::pmodel* mod,
   smtk::model::EntityRefArray& created)
 {
   typename T::iterator eit = endpoints.find(splitPt);
@@ -77,10 +80,18 @@ smtk::model::Vertex findOrAddInputModelVertex(smtk::model::ResourcePtr resource,
   return vv;
 }
 
-template <typename T, typename U, typename V, typename W, typename X>
-bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal::edge::Ptr storage,
-  T& result, U& lkup, V& revlkup, W& reslkup, X& endpoints, smtk::model::EntityRefArray& created,
-  smtk::model::EntityRefArray& modified, smtk::model::EntityRefArray& expunged)
+template<typename T, typename U, typename V, typename W, typename X>
+bool CleanGeometry::splitEdgeAsNeeded(
+  const smtk::model::Edge& curEdge,
+  internal::edge::Ptr storage,
+  T& result,
+  U& lkup,
+  V& revlkup,
+  W& reslkup,
+  X& endpoints,
+  smtk::model::EntityRefArray& created,
+  smtk::model::EntityRefArray& modified,
+  smtk::model::EntityRefArray& expunged)
 {
   (void)lkup;
   (void)revlkup;
@@ -210,8 +221,9 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
     if (!mod->splitModelEdgeAtModelVertices(
           resource, storage, splitVerts, splitPts, created, m_debugLevel))
     {
-      smtkOpDebug("Could not split " << curEdge.name() << " at " << splitPts.size()
-                                     << " intersection points.");
+      smtkOpDebug(
+        "Could not split " << curEdge.name() << " at " << splitPts.size()
+                           << " intersection points.");
       return false;
     }
     for (smtk::model::EntityRefArray::iterator cit = created.begin() + precre; cit != created.end();
@@ -235,7 +247,7 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
   return true;
 }
 
-template <typename T>
+template<typename T>
 void CleanGeometry::addVertex(const smtk::model::Vertex& vertex, T& pointMap)
 {
   smtk::session::polygon::Resource::Ptr resource =
@@ -249,7 +261,7 @@ void CleanGeometry::addVertex(const smtk::model::Vertex& vertex, T& pointMap)
   pointMap[storage->point()].insert(vertex);
 }
 
-template <typename T>
+template<typename T>
 void CleanGeometry::addEdgePoints(const smtk::model::Edge& edge, T& pointMap)
 {
   smtk::session::polygon::Resource::Ptr resource =
@@ -267,7 +279,7 @@ void CleanGeometry::addEdgePoints(const smtk::model::Edge& edge, T& pointMap)
   }
 }
 
-template <typename T>
+template<typename T>
 void CleanGeometry::addEdgeEndpoints(const smtk::model::Edge& edge, T& pointMap)
 {
   smtk::session::polygon::Resource::Ptr resource =
@@ -286,8 +298,11 @@ void CleanGeometry::addEdgeEndpoints(const smtk::model::Edge& edge, T& pointMap)
   }
 }
 
-bool needEdgeSplit(const smtk::model::EntityRefs& prev, const smtk::model::EntityRefs& next,
-  bool& splitPrev, bool& splitNext)
+bool needEdgeSplit(
+  const smtk::model::EntityRefs& prev,
+  const smtk::model::EntityRefs& next,
+  bool& splitPrev,
+  bool& splitNext)
 {
   splitPrev = splitNext = false;
   smtk::model::EntityRefs diff;
@@ -308,9 +323,13 @@ bool needEdgeSplit(const smtk::model::EntityRefs& prev, const smtk::model::Entit
   return splitPrev || splitNext;
 }
 
-template <typename T, typename U, typename V>
+template<typename T, typename U, typename V>
 void CleanGeometry::addDeferredSplits(
-  const smtk::model::Edge& edge, T& actions, U& allpoints, U& endpoints, V& created)
+  const smtk::model::Edge& edge,
+  T& actions,
+  U& allpoints,
+  U& endpoints,
+  V& created)
 {
   smtk::session::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::session::polygon::Resource>(edge.component()->resource());
@@ -369,7 +388,7 @@ void CleanGeometry::addDeferredSplits(
   }
 }
 
-template <typename T, typename U, typename V, typename W>
+template<typename T, typename U, typename V, typename W>
 bool CleanGeometry::applyDeferredSplit(T resource, U& action, V& allpoints, W& created)
 {
   internal::edge::Ptr storage =
@@ -391,8 +410,9 @@ bool CleanGeometry::applyDeferredSplit(T resource, U& action, V& allpoints, W& c
   if (!mod->splitModelEdgeAtModelVertices(
         resource, storage, action.m_splitVerts, action.m_splitPts, created, m_debugLevel))
   {
-    smtkOpDebug("Could not split " << action.m_edge.name() << " at " << action.m_splitPts.size()
-                                   << " intersection points.");
+    smtkOpDebug(
+      "Could not split " << action.m_edge.name() << " at " << action.m_splitPts.size()
+                         << " intersection points.");
     return false;
   }
   for (typename W::const_iterator ncre = created.begin() + crepre; ncre != created.end(); ++ncre)
@@ -405,7 +425,7 @@ bool CleanGeometry::applyDeferredSplit(T resource, U& action, V& allpoints, W& c
   return true;
 }
 
-template <typename T, typename U>
+template<typename T, typename U>
 bool checkOneDirection(T& p0, T& q0, const U& p1, const U& q1)
 {
   T t0;
@@ -422,7 +442,7 @@ bool checkOneDirection(T& p0, T& q0, const U& p1, const U& q1)
   // point sequences match at every point: true
 }
 
-template <typename T>
+template<typename T>
 bool checkBothDirections3(T& p0, T& pt, T& q0, T& p1, T& q1, bool& matchDir)
 {
   T t0;
@@ -478,7 +498,7 @@ bool checkBothDirections3(T& p0, T& pt, T& q0, T& p1, T& q1, bool& matchDir)
 }
 
 /// Given a std::pair<Edge, Edge>, merge properties and then delete the second if they are duplicates. Returns true if deleted.
-template <typename T, typename U>
+template<typename T, typename U>
 bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
 {
   if (!edgePair.first.isValid() || !edgePair.second.isValid())
@@ -668,12 +688,12 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  std::map<internal::Point, std::set<smtk::model::EntityRef> > endpoints;
+  std::map<internal::Point, std::set<smtk::model::EntityRef>> endpoints;
   std::list<internal::Segment> segs;
   internal::pmodel* pp = nullptr;
   internal::pmodel* mod;
   std::map<size_t, smtk::model::Edge> lkup;
-  std::map<smtk::model::Edge, std::pair<size_t, size_t> > revlkup;
+  std::map<smtk::model::Edge, std::pair<size_t, size_t>> revlkup;
   // I. Prepare to intersect
   // Prepare lookup and reverse-lookup tables for the inputs.
   // Prepare an array of segments to intersect for all model edges in the input.
@@ -692,9 +712,10 @@ CleanGeometry::Result CleanGeometry::operateInternal()
       mod = storage->parentAs<internal::pmodel>();
       if (!mod || (pp && pp != mod))
       {
-        smtkErrorMacro(this->log(), "Input edge " << iit->name() << " has no parent model (" << mod
-                                                  << ") or a different parent (" << pp
-                                                  << ") from other inputs.");
+        smtkErrorMacro(
+          this->log(),
+          "Input edge " << iit->name() << " has no parent model (" << mod
+                        << ") or a different parent (" << pp << ") from other inputs.");
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       else if (!pp)
@@ -731,9 +752,10 @@ CleanGeometry::Result CleanGeometry::operateInternal()
       {
         if (pp && ((mod = vv->parentAs<internal::pmodel>()) != pp))
         {
-          smtkErrorMacro(this->log(), "Input vertex " << iit->name() << " has no parent model ("
-                                                      << mod << ") or a different parent (" << pp
-                                                      << ") from other inputs.");
+          smtkErrorMacro(
+            this->log(),
+            "Input vertex " << iit->name() << " has no parent model (" << mod
+                            << ") or a different parent (" << pp << ") from other inputs.");
           return this->createResult(smtk::operation::Operation::Outcome::FAILED);
         }
         else if (!pp)
@@ -745,7 +767,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     }
   }
 
-  std::map<internal::Point, std::set<smtk::model::EntityRef> > allpoints;
+  std::map<internal::Point, std::set<smtk::model::EntityRef>> allpoints;
   smtk::model::EntityRefArray created;
   smtk::model::EntityRefArray modified;
   smtk::model::EntityRefArray expunged;
@@ -755,8 +777,8 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     intersect_segments(result, segs.begin(), segs.end());
 
     // III. Prepare a lookup table for the results as well
-    std::map<smtk::model::Edge, std::pair<size_t, size_t> > reslkup;
-    std::map<smtk::model::Edge, std::pair<size_t, size_t> >::iterator rlit = revlkup.begin();
+    std::map<smtk::model::Edge, std::pair<size_t, size_t>> reslkup;
+    std::map<smtk::model::Edge, std::pair<size_t, size_t>>::iterator rlit = revlkup.begin();
     std::set<smtk::model::Edge> edgesToSplit;
     size_t last = 0;
     size_t cur = 0;
@@ -786,7 +808,8 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     smtkDebugMacro(
       this->log(), segs.size() << " segments in, " << result.size() << " segments out\n");
     for (std::set<smtk::model::Edge>::iterator esit = edgesToSplit.begin();
-         esit != edgesToSplit.end(); ++esit)
+         esit != edgesToSplit.end();
+         ++esit)
     {
       smtk::model::Edge curEdge = *esit;
       internal::edge::Ptr storage = resource->findStorage<internal::edge>(curEdge.entity());
@@ -855,7 +878,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
   // VI. Remove overlapping model edges
   //     We do this by pairwise comparison of model edges that share endpoints.
   //     No model edges should overlap
-  std::set<std::pair<smtk::model::Edge, smtk::model::Edge> > processedPairs;
+  std::set<std::pair<smtk::model::Edge, smtk::model::Edge>> processedPairs;
   for (auto piter = allpoints.begin(); piter != allpoints.end(); ++piter)
   {
     if (piter->second.size() > 1)

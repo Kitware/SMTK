@@ -55,7 +55,8 @@ VTKModelInstancePlacementSelection::VTKModelInstancePlacementSelection() = defau
 VTKModelInstancePlacementSelection::~VTKModelInstancePlacementSelection() = default;
 
 smtk::model::EntityPtr VTKModelInstancePlacementSelection::temporaryInstance(
-  const smtk::model::EntityPtr& sourceInstance, vtkIdTypeArray* sourcePlacements)
+  const smtk::model::EntityPtr& sourceInstance,
+  vtkIdTypeArray* sourcePlacements)
 {
   using Instance = smtk::model::Instance;
 
@@ -160,7 +161,8 @@ bool VTKModelInstancePlacementSelection::transcribePlacementSelection(Result& re
     {
       continue;
     }
-    if (propId == source->GetGlyphEntitiesActorPickId() ||
+    if (
+      propId == source->GetGlyphEntitiesActorPickId() ||
       propId == source->GetSelectedGlyphEntitiesActorPickId())
     {
       vtkIdTypeArray* ids = vtkIdTypeArray::SafeDownCast(selnNode->GetSelectionList());
@@ -209,8 +211,13 @@ bool VTKModelInstancePlacementSelection::transcribePlacementSelection(Result& re
     // so we can rebuild it in its entirety from the VTK selection via successive operations
     // on each of the resources involved. Also, never notify observers since this is an
     // intermediate result.
-    didModify = selnMgr->modifySelection(seln, m_smtkSelectionSource, m_smtkSelectionValue, action,
-      /* bitwise */ true, /* notify */ false);
+    didModify = selnMgr->modifySelection(
+      seln,
+      m_smtkSelectionSource,
+      m_smtkSelectionValue,
+      action,
+      /* bitwise */ true,
+      /* notify */ false);
   }
 
   return didModify;

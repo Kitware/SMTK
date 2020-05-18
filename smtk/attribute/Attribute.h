@@ -52,12 +52,14 @@ public:
   struct SMTKCORE_EXPORT CompareByName
   {
     bool operator()(
-      const smtk::attribute::AttributePtr& lhs, const smtk::attribute::AttributePtr& rhs) const
+      const smtk::attribute::AttributePtr& lhs,
+      const smtk::attribute::AttributePtr& rhs) const
     {
       return lhs->name() < rhs->name();
     }
 
-    bool operator()(const smtk::attribute::WeakAttributePtr& lhs,
+    bool operator()(
+      const smtk::attribute::WeakAttributePtr& lhs,
       const smtk::attribute::WeakAttributePtr& rhs) const
     {
       auto left = lhs.lock();
@@ -75,13 +77,16 @@ public:
   };
 
   static smtk::attribute::AttributePtr New(
-    const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
+    const std::string& myName,
+    const smtk::attribute::DefinitionPtr& myDefinition)
   {
     return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition));
   }
 
-  static smtk::attribute::AttributePtr New(const std::string& myName,
-    const smtk::attribute::DefinitionPtr& myDefinition, const smtk::common::UUID& myId)
+  static smtk::attribute::AttributePtr New(
+    const std::string& myName,
+    const smtk::attribute::DefinitionPtr& myDefinition,
+    const smtk::common::UUID& myId)
   {
     return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId));
   }
@@ -154,28 +159,30 @@ public:
   /// If activeOnly is true then all items in the path must active (with repsect to a parent ValueItem)
   /// else nullptr will be returned.  This parameter will have no effect on other types of items.
   /// Note that the path should not start with a separator character.
-  smtk::attribute::ConstItemPtr itemAtPath(
-    const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
-  smtk::attribute::ItemPtr itemAtPath(
-    const std::string& path, const std::string& seps = "/", bool activeOnly = false);
+  smtk::attribute::ConstItemPtr
+  itemAtPath(const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
+  smtk::attribute::ItemPtr
+  itemAtPath(const std::string& path, const std::string& seps = "/", bool activeOnly = false);
 
-  template <typename T>
+  template<typename T>
   typename T::ConstPtr itemAtPathAs(
-    const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
-  template <typename T>
-  typename T::Ptr itemAtPathAs(
-    const std::string& path, const std::string& seps = "/", bool activeOnly = false);
+    const std::string& path,
+    const std::string& seps = "/",
+    bool activeOnly = false) const;
+  template<typename T>
+  typename T::Ptr
+  itemAtPathAs(const std::string& path, const std::string& seps = "/", bool activeOnly = false);
   /// @}
 
   smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
-  smtk::attribute::ConstItemPtr find(
-    const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
+  smtk::attribute::ConstItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE)
+    const;
   std::size_t numberOfItems() const { return m_items.size(); }
 
-  template <typename T>
+  template<typename T>
   typename T::Ptr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
 
-  template <typename T>
+  template<typename T>
   typename T::ConstPtr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
 
   /**
@@ -188,9 +195,11 @@ public:
    *  [](ModelEntity::Ptr item) { return true; }
    * @param activeChildren a flag indicates whether it should be applied to active children only or not
    */
-  template <typename T>
+  template<typename T>
   void filterItems(
-    T& values, std::function<bool(typename T::value_type)> test, bool activeChildren = true);
+    T& values,
+    std::function<bool(typename T::value_type)> test,
+    bool activeChildren = true);
 
   IntItemPtr findInt(const std::string& name);
   ConstIntItemPtr findInt(const std::string& name) const;
@@ -221,7 +230,7 @@ public:
 
   ReferenceItemPtr findReference(const std::string& name);
   ConstReferenceItemPtr findReference(const std::string& name) const;
-  template <typename T>
+  template<typename T>
   T entityRefsAs(const std::string& name) const;
 
   ResourceItemPtr findResource(const std::string& name);
@@ -237,8 +246,8 @@ public:
   bool isObjectAssociated(const smtk::resource::PersistentObjectPtr& componentPtr) const;
 
   bool canBeAssociated(const smtk::resource::PersistentObjectPtr& obj) const;
-  bool canBeDisassociated(
-    const smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const;
+  bool canBeDisassociated(const smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt)
+    const;
   ConstReferenceItemPtr associations() const { return m_associatedObjects; }
   ReferenceItemPtr associations() { return m_associatedObjects; }
 
@@ -246,10 +255,10 @@ public:
   bool isEntityAssociated(const smtk::model::EntityRef& entityref) const;
 
   smtk::common::UUIDs associatedModelEntityIds() const;
-  template <typename T>
+  template<typename T>
   T associatedModelEntities() const;
 
-  template <typename T>
+  template<typename T>
   T associatedObjects() const;
 
   bool associate(smtk::resource::PersistentObjectPtr obj);
@@ -260,8 +269,8 @@ public:
   void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
   /// Disassociate attribute from an object.  Returns true if successful, else
   /// it will set probAtt to attribute using this as a prerequisite
-  bool disassociate(
-    smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse = true);
+  bool
+  disassociate(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse = true);
   /// Disassociate attribute from an object.  Returns true if successful.
   bool disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
 
@@ -391,7 +400,9 @@ public:
   GuardedLinks guardedLinks();
 
 protected:
-  Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
+  Attribute(
+    const std::string& myName,
+    const smtk::attribute::DefinitionPtr& myDefinition,
     const smtk::common::UUID& myId);
   Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition);
 
@@ -440,7 +451,7 @@ inline void Attribute::setColor(double r, double g, double b, double a)
   m_color[3] = a;
 }
 
-template <typename T>
+template<typename T>
 T Attribute::entityRefsAs(const std::string& iname) const
 {
   T result;
@@ -466,7 +477,7 @@ T Attribute::entityRefsAs(const std::string& iname) const
   return result;
 }
 
-template <typename T>
+template<typename T>
 T Attribute::associatedObjects() const
 {
   T result;
@@ -491,7 +502,7 @@ T Attribute::associatedObjects() const
   return result;
 }
 
-template <typename T>
+template<typename T>
 T Attribute::associatedModelEntities() const
 {
   T result;
@@ -518,49 +529,51 @@ T Attribute::associatedModelEntities() const
 
 /**\brief Return an item given its path, converted to a given pointer type.
       */
-template <typename T>
-typename T::Ptr Attribute::itemAtPathAs(
-  const std::string& path, const std::string& seps, bool activeOnly)
+template<typename T>
+typename T::Ptr
+Attribute::itemAtPathAs(const std::string& path, const std::string& seps, bool activeOnly)
 {
   return smtk::dynamic_pointer_cast<T>(this->itemAtPath(path, seps, activeOnly));
 }
 
-template <typename T>
-typename T::ConstPtr Attribute::itemAtPathAs(
-  const std::string& path, const std::string& seps, bool activeOnly) const
+template<typename T>
+typename T::ConstPtr
+Attribute::itemAtPathAs(const std::string& path, const std::string& seps, bool activeOnly) const
 {
   return smtk::dynamic_pointer_cast<const T>(this->itemAtPath(path, seps, activeOnly));
 }
 
-template <typename T>
+template<typename T>
 typename T::Ptr Attribute::findAs(const std::string& iname, SearchStyle style)
 {
   return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
 }
 
-template <typename T>
+template<typename T>
 typename T::ConstPtr Attribute::findAs(const std::string& iname, SearchStyle style) const
 {
   return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
 }
 
-template <typename T>
+template<typename T>
 void Attribute::filterItems(
-  T& filtered, std::function<bool(typename T::value_type)> test, bool activeChildren)
+  T& filtered,
+  std::function<bool(typename T::value_type)> test,
+  bool activeChildren)
 {
   // Given an item, this lambda function which would recursively visit all children and apply test function
-  std::function<void(ItemPtr, bool)> visitor = [&filtered, test, &visitor](
-    smtk::attribute::ItemPtr item, bool activeChildrenLocal) {
-    typename T::value_type testItem =
-      smtk::dynamic_pointer_cast<typename T::value_type::element_type>(item);
-    // base condition
-    if (testItem && test(testItem))
-    {
-      filtered.insert(filtered.end(), testItem);
-    }
-    // Only items which have children would have a non-empty visitChildren method
-    item->visitChildren(visitor, activeChildrenLocal);
-  };
+  std::function<void(ItemPtr, bool)> visitor =
+    [&filtered, test, &visitor](smtk::attribute::ItemPtr item, bool activeChildrenLocal) {
+      typename T::value_type testItem =
+        smtk::dynamic_pointer_cast<typename T::value_type::element_type>(item);
+      // base condition
+      if (testItem && test(testItem))
+      {
+        filtered.insert(filtered.end(), testItem);
+      }
+      // Only items which have children would have a non-empty visitChildren method
+      item->visitChildren(visitor, activeChildrenLocal);
+    };
 
   for (std::size_t index = 0; index < this->numberOfItems(); ++index)
   {
@@ -568,7 +581,7 @@ void Attribute::filterItems(
   }
 }
 
-} // attribute namespace
-} // smtk namespace
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_Attribute_h */

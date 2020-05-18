@@ -27,9 +27,10 @@ using BitFlags = smtk::model::BitFlags;
 using json = nlohmann::json;
 void to_json(json& j, const smtk::model::EntityPtr& ent)
 {
-  j = { { "id", ent->id() }, { "d", ent->dimensionBits() },
-    { "e", smtk::model::Entity::flagToSpecifierString(ent->entityFlags()) },
-    { "r", ent->relations() } };
+  j = { { "id", ent->id() },
+        { "d", ent->dimensionBits() },
+        { "e", smtk::model::Entity::flagToSpecifierString(ent->entityFlags()) },
+        { "r", ent->relations() } };
 }
 
 void from_json(const json& j, smtk::model::EntityPtr& ent)
@@ -62,9 +63,11 @@ void to_json(json& j, const UUIDsToEntities& emap)
   j = json::object();
   for (const auto& epair : emap)
   {
-    j[epair.first.toString()] = { { "d", epair.second->dimensionBits() },
+    j[epair.first.toString()] = {
+      { "d", epair.second->dimensionBits() },
       { "e", smtk::model::Entity::flagToSpecifierString(epair.second->entityFlags()) },
-      { "r", epair.second->relations() } };
+      { "r", epair.second->relations() }
+    };
   };
 }
 
@@ -84,5 +87,5 @@ void from_json(const json& j, UUIDsToEntities& emap)
     }
   }
 }
-}
-}
+} // namespace model
+} // namespace smtk

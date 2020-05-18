@@ -63,7 +63,9 @@ GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
 
   // Transform
   smtk::attribute::DoubleItemPtr transformItems[3] = { this->parameters()->findDouble("scale"),
-    this->parameters()->findDouble("rotate"), this->parameters()->findDouble("translate") };
+                                                       this->parameters()->findDouble("rotate"),
+                                                       this->parameters()->findDouble(
+                                                         "translate") };
   bool transformIsDefault[3] = { true, true, true };
   for (int ii = 0; ii < 3; ++ii)
   {
@@ -93,7 +95,8 @@ GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
   {
     if (!transformIsDefault[ii])
     {
-      auxGeom.setFloatProperty(transformItems[ii]->name(),
+      auxGeom.setFloatProperty(
+        transformItems[ii]->name(),
         FloatList(transformItems[ii]->begin(), transformItems[ii]->end()));
     }
   }

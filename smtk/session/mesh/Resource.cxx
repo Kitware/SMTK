@@ -51,6 +51,6 @@ smtk::mesh::ResourcePtr Resource::resource() const
   Topology* topology = m_session->topology(shared_from_this());
   return (topology != nullptr ? topology->m_resource : smtk::mesh::ResourcePtr());
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

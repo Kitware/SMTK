@@ -52,7 +52,8 @@ public:
   /// meshset with this id; if this is the case, the resolved mesh() will return
   /// a default-constructed (and invalid) mesh.
   static std::shared_ptr<Component> create(
-    const smtk::mesh::ResourcePtr&, const smtk::common::UUID&);
+    const smtk::mesh::ResourcePtr&,
+    const smtk::common::UUID&);
 
   /// Construct a mesh component correpsonding to the input meshset.
   static std::shared_ptr<Component> create(const smtk::mesh::MeshSet&);

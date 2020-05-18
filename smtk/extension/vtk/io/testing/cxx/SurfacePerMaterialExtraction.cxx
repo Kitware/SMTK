@@ -32,7 +32,7 @@
 namespace
 {
 
-template <typename TReader>
+template<typename TReader>
 vtkDataSet* readXMLFile(const std::string& fileName)
 {
   vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
@@ -130,7 +130,7 @@ void breakMaterialsByCellType(const smtk::mesh::ResourcePtr& c)
   }
 }
 
-template <typename vtkDataSetType>
+template<typename vtkDataSetType>
 smtk::mesh::ResourcePtr convert(vtkDataSetType* input, std::string material)
 {
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
@@ -178,7 +178,7 @@ void extractSurfaces(smtk::mesh::ResourcePtr c, std::string outputFile)
 
   smtk::io::writeMesh(outputFile, c, smtk::io::mesh::Subset::EntireResource);
 }
-}
+} // namespace
 
 //MultiScaleConverter
 //Another executalbe that is SurfacePerMaterial

@@ -36,7 +36,10 @@ void RedirectOutputToQt(QObject* context, smtk::io::Logger& log)
   // Connect to the emitting string buffer's flush signal. Since the emitting
   // string buffer is local to the logger and is scoped by its lifetime, we do
   // not need to guard against the logger being out of scope.
-  QObject::connect(stringBuf, &qtEmittingStringBuffer::flush, context,
+  QObject::connect(
+    stringBuf,
+    &qtEmittingStringBuffer::flush,
+    context,
     [&]() {
       QLoggingCategory smtkCategory("SMTK", QtInfoMsg);
       for (auto& record : log.records())
@@ -69,6 +72,6 @@ void RedirectOutputToQt(QObject* context, smtk::io::Logger& log)
   log.setFlushToStream(stream, false, false);
   log.setCallback(cleanup);
 }
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk

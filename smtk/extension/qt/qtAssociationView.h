@@ -59,7 +59,7 @@ public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtAssociationView(const smtk::view::Information& info);
   virtual ~qtAssociationView();
-  const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& attDefinitionMap() const;
+  const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& attDefinitionMap() const;
 
   bool isEmpty() const override;
 
@@ -76,7 +76,8 @@ signals:
 protected:
   void createWidget() override;
   virtual smtk::extension::qtAssociationWidget* createAssociationWidget(
-    QWidget* parent, qtBaseView* view);
+    QWidget* parent,
+    qtBaseView* view);
   virtual void getAllDefinitions();
   smtk::attribute::AttributePtr getAttributeFromIndex(int index);
 
@@ -84,7 +85,7 @@ private:
   qtAssociationViewInternals* Internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

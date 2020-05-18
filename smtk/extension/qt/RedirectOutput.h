@@ -20,7 +20,7 @@ namespace io
 {
 class Logger;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -31,8 +31,8 @@ namespace qt
 
 //Redirect the output from smtk::io::Logger to Qt's messaging stream.
 SMTKQTEXT_EXPORT void RedirectOutputToQt(QObject* context, smtk::io::Logger& log);
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk
 
 #endif

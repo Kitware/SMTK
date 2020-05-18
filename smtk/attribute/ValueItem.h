@@ -60,7 +60,8 @@ public:
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
-  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+  void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
     bool activeChildren = true) override;
 
   int discreteIndex(std::size_t elementIndex = 0) const
@@ -140,8 +141,8 @@ protected:
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   /// \brief Internal implementation of the find method
   smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
-  smtk::attribute::ConstItemPtr findInternal(
-    const std::string& name, SearchStyle style) const override;
+  smtk::attribute::ConstItemPtr findInternal(const std::string& name, SearchStyle style)
+    const override;
   virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
   virtual void updateActiveChildrenItems();
   bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
@@ -153,7 +154,7 @@ protected:
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_ValueItem_h */

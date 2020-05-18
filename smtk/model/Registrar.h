@@ -28,7 +28,7 @@ public:
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
 };
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

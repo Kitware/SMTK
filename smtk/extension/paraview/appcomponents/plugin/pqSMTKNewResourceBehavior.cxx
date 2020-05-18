@@ -50,7 +50,8 @@
 using json = nlohmann::json;
 
 pqNewResourceReaction::pqNewResourceReaction(
-  const std::string& operationName, QAction* parentObject)
+  const std::string& operationName,
+  QAction* parentObject)
   : Superclass(parentObject)
   , m_operationName(operationName)
 {
@@ -148,7 +149,7 @@ QAction* findSaveResourceAction(QMenu* menu)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKNewResourceBehavior* g_instance = nullptr;
 
@@ -193,7 +194,9 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       if (wrapper != nullptr)
       {
         m_key = wrapper->smtkOperationManager()->groupObservers().insert(
-          [](const smtk::operation::Operation::Index& /*unused*/, const std::string& groupName,
+          [](
+            const smtk::operation::Operation::Index& /*unused*/,
+            const std::string& groupName,
             bool /*unused*/) {
             if (g_instance != nullptr && groupName == smtk::operation::CreatorGroup::type_name)
             {

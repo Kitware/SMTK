@@ -18,7 +18,7 @@
 
 using namespace smtk::common;
 
-template <typename T, typename U>
+template<typename T, typename U>
 void checkRanges(T rd, U expected)
 {
   std::map<int, int>::const_iterator rdit;

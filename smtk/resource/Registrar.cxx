@@ -36,5 +36,5 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   managers->erase<smtk::resource::Manager::Ptr>();
 }
-}
-}
+} // namespace resource
+} // namespace smtk

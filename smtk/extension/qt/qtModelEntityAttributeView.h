@@ -61,7 +61,7 @@ public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtModelEntityAttributeView(const smtk::view::Information& info);
   virtual ~qtModelEntityAttributeView();
-  const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& attDefinitionMap() const;
+  const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& attDefinitionMap() const;
   void updateModelEntities();
   QTableWidgetItem* getSelectedItem();
   /**\brief method used to update the view when the selected row of the table widget is changed
@@ -115,11 +115,11 @@ public:
   qModelEntityAttributeViewComboBoxItemDelegate(const QStringList& vals, QObject* parent = 0);
   ~qModelEntityAttributeViewComboBoxItemDelegate();
 
-  virtual QWidget* createEditor(
-    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  virtual QWidget*
+  createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
   virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
-  virtual void setModelData(
-    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
+  virtual void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
+    const;
 
 signals:
   void choiceMade();
@@ -128,7 +128,7 @@ protected:
   QStringList m_values;
 };
 
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

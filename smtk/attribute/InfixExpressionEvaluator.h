@@ -30,7 +30,10 @@ public:
 
   InfixExpressionEvaluator(smtk::attribute::ConstAttributePtr att);
 
-  bool evaluate(ValueType& result, smtk::io::Logger& log, const std::size_t& element,
+  bool evaluate(
+    ValueType& result,
+    smtk::io::Logger& log,
+    const std::size_t& element,
     const DependentEvaluationMode& evalutionMode) override;
 
   bool canEvaluate(smtk::io::Logger& log) override;

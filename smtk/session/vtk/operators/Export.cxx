@@ -121,12 +121,17 @@ Export::Result Export::exportSLAC()
   return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 }
 
-template <typename T>
-void RewriteLabels(vtkImageData* img, T* lblp, double thresh,
+template<typename T>
+void RewriteLabels(
+  vtkImageData* img,
+  T* lblp,
+  double thresh,
 
-  vtkVector3d& scenter, double sradius,
+  vtkVector3d& scenter,
+  double sradius,
 
-  vtkVector3d& basept, vtkVector3d& normal)
+  vtkVector3d& basept,
+  vtkVector3d& normal)
 {
   enum SimulationVoxelCodes
   {
@@ -156,8 +161,8 @@ void RewriteLabels(vtkImageData* img, T* lblp, double thresh,
       lblp[p] = VOXEL_VOID;
     else if ((dist < delta) && (lblp[p] == 1)) // "On" the lower cutoff plane?
       lblp[p] = static_cast<char>(OUTLET);
-    else if ((dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) <
-      delta) // In or on the nose sphere?
+    else if (
+      (dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) < delta) // In or on the nose sphere?
     {
       invitro = den->GetTuple1(p) >= thresh;
       // In or on the nose sphere, anything marked "airway" must stay that way:
@@ -196,7 +201,8 @@ Export::Result Export::exportLabelMap()
   const smtk::resource::Component::Properties& properties = component->properties();
   const smtk::resource::ConstPropertiesOfType<StringList> stringProperties =
     properties.get<StringList>();
-  if (!stringProperties.contains("type") || stringProperties.at("type").empty() ||
+  if (
+    !stringProperties.contains("type") || stringProperties.at("type").empty() ||
     stringProperties.at("type").at(0) != "label map" || !stringProperties.contains("label array") ||
     stringProperties.at("label array").empty() || stringProperties.at("label array").at(0).empty())
   {
@@ -211,7 +217,8 @@ Export::Result Export::exportLabelMap()
   vtkMultiBlockDataSet* mbds = handle.object<vtkMultiBlockDataSet>();
   vtkImageData* img;
   vtkDataArray* lbl;
-  if (!mbds || mbds->GetNumberOfBlocks() < 1 ||
+  if (
+    !mbds || mbds->GetNumberOfBlocks() < 1 ||
     !(img = vtkImageData::SafeDownCast(mbds->GetBlock(0))) ||
     !(lbl = img->GetPointData()->GetArray(labelStr.c_str())))
   {

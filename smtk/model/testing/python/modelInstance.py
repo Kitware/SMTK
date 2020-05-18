@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.attribute
 import smtk.session.polygon
@@ -112,6 +112,7 @@ class TestEntityInstances(smtk.testing.TestCase):
         inst.setRule('tabular')
         inst.setFloatProperty('placements', [1, 0, 0, 0, 1, 0, 0, 0, 1])
         tess = inst.hasTessellation()
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

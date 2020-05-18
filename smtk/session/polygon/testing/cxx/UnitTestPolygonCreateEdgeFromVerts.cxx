@@ -105,15 +105,17 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
     test(point != nullptr, "Could not find point");
     for (int j = 0; j < numCoordsPerVertex; ++j)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
-             j, points[i * numCoordsPerVertex + j]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
+          j, points[i * numCoordsPerVertex + j]),
         "Setting points failed");
     }
   }
 
   // Apply the create vertices operation
   smtk::operation::Operation::Result res = createVerticesOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create vertices operator failed");
 
@@ -135,7 +137,8 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
   {
     for (int j = 0; j < numCoordsPerVertex; ++j)
     {
-      test(std::abs(verts[i].coordinates()[j] - points[i * numCoordsPerVertex + j]) < tolerance,
+      test(
+        std::abs(verts[i].coordinates()[j] - points[i * numCoordsPerVertex + j]) < tolerance,
         "Incorrect vertex coordinates");
     }
   }
@@ -154,7 +157,8 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
 
   // Apply the create edge from vertices operation
   res = createEdgeFromVerticesOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create edge from vertices operator failed");
 

@@ -54,7 +54,8 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr
   {
     for (auto&& format : exporter->FileFormats())
     {
-      if (format.CanExport() &&
+      if (
+        format.CanExport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -66,8 +67,11 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr
   return false;
 }
 
-bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
+bool ExportMesh::operator()(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -78,7 +82,8 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr
   {
     for (auto&& format : exporter->FileFormats())
     {
-      if (format.CanExport() &&
+      if (
+        format.CanExport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -96,11 +101,14 @@ bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResourc
   return exportM(filePath, meshResource);
 }
 
-bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName)
+bool exportMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName)
 {
   ExportMesh exportM;
   return exportM(filePath, meshResource, resource, modelPropertyName);
 }
-}
-}
+} // namespace io
+} // namespace smtk

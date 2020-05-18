@@ -42,16 +42,22 @@ public:
     * to **subclasses** of DescriptivePhrase are also accepted.
     * It is mostly intended for use by SubphraseGenerator and its subclasses.
     */
-  Ptr setup(DescriptivePhrasePtr parent, smtk::model::BitFlags commonFlags,
-    smtk::model::BitFlags unionFlags, int mutability = 0);
+  Ptr setup(
+    DescriptivePhrasePtr parent,
+    smtk::model::BitFlags commonFlags,
+    smtk::model::BitFlags unionFlags,
+    int mutability = 0);
 
   /**\brief Create a descriptive phrase whose content is a PhraseListContent instance.
     *
     * This is for creating a phrase that a subphrase generator knows how to populate
     * by inspecting the commonFlags() and unionFlags() values.
     */
-  static DescriptivePhrasePtr createPhrase(DescriptivePhrasePtr parent,
-    smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability = 0,
+  static DescriptivePhrasePtr createPhrase(
+    DescriptivePhrasePtr parent,
+    smtk::model::BitFlags commonFlags,
+    smtk::model::BitFlags unionFlags,
+    int mutability = 0,
     const DescriptivePhrases& children = DescriptivePhrases());
 
   virtual ~PhraseListContent() {}
@@ -79,7 +85,7 @@ public:
     * subclass of smtk::resource::Component (e.g., smtk::model::Entity) by passing in
     * a container of that type (e.g., relatedComponentsAs<smtk::model::EntityArray>()).
     */
-  template <typename T>
+  template<typename T>
   T relatedComponentsAs() const
   {
     T result;
@@ -123,8 +129,8 @@ public:
 protected:
   PhraseListContent();
 
-  std::string generateTitle(
-    smtk::model::BitFlags& flagCommon, smtk::model::BitFlags& flagUnion) const;
+  std::string generateTitle(smtk::model::BitFlags& flagCommon, smtk::model::BitFlags& flagUnion)
+    const;
 
   int m_mutability;
   mutable smtk::model::BitFlags m_commonFlags;
@@ -132,7 +138,7 @@ protected:
   mutable std::string m_title;
 };
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk
 
 #endif

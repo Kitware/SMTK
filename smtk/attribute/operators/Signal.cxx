@@ -50,13 +50,11 @@ Signal::Result Signal::operateInternal()
   return result;
 }
 
-void Signal::generateSummary(Operation::Result& /*unused*/)
-{
-}
+void Signal::generateSummary(Operation::Result& /*unused*/) {}
 
 const char* Signal::xmlDescription() const
 {
   return Signal_xml;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

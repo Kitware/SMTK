@@ -42,5 +42,5 @@ void from_json(const json& j, smtk::attribute::VoidItemPtr& itemPtr)
   auto itemDef = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, itemDef);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -58,8 +58,9 @@ LegacyRead::Result LegacyRead::operateInternal()
   }
 
   operation::MarkGeometry markGeometry(rsrc);
-  smtk::resource::Component::Visitor visitor = [&markGeometry](
-    const resource::ComponentPtr& comp) { markGeometry.markModified(comp); };
+  smtk::resource::Component::Visitor visitor = [&markGeometry](const resource::ComponentPtr& comp) {
+    markGeometry.markModified(comp);
+  };
   rsrc->visit(visitor);
 
   return result;

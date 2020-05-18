@@ -94,7 +94,9 @@ protected:
   double m_max;
 };
 
-class HistogramCellFieldData : public smtk::mesh::CellForEach, public HistogramFieldData
+class HistogramCellFieldData
+  : public smtk::mesh::CellForEach
+  , public HistogramFieldData
 {
 public:
   HistogramCellFieldData(std::size_t nBins, double min, double max, smtk::mesh::CellField& cf)
@@ -104,7 +106,9 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+  void forCell(
+    const smtk::mesh::Handle& cellId,
+    smtk::mesh::CellType /*cellType*/,
     int /*numPointIds*/) override
   {
     smtk::mesh::HandleRange range;
@@ -119,7 +123,9 @@ protected:
   smtk::mesh::CellField& m_cellField;
 };
 
-class HistogramPointFieldData : public smtk::mesh::PointForEach, public HistogramFieldData
+class HistogramPointFieldData
+  : public smtk::mesh::PointForEach
+  , public HistogramFieldData
 {
 public:
   HistogramPointFieldData(std::size_t nBins, double min, double max, smtk::mesh::PointField& pf)
@@ -128,7 +134,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& /*xyz*/,
     bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
@@ -144,7 +152,7 @@ public:
 protected:
   smtk::mesh::PointField& m_pointField;
 };
-}
+} // namespace
 
 // Load in a model, convert it to a mesh, and construct a dataset for that mesh
 // using interpolation points. Then, histogram the values of the mesh cells
@@ -237,8 +245,9 @@ int main(int argc, char* argv[])
 
   // Set the operator's input points
   std::size_t numberOfPoints = 4;
-  double pointData[4][4] = { { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. },
-    { 10., 6., 0., 40. } };
+  double pointData[4][4] = {
+    { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. }, { 10., 6., 0., 40. }
+  };
 
   bool fromCSV = false;
   if (argc > 3)
@@ -304,7 +313,8 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (interpolateOntoMeshOpResult->findInt("outcome")->value() !=
+  if (
+    interpolateOntoMeshOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"interpolate onto mesh\" operator failed\n";

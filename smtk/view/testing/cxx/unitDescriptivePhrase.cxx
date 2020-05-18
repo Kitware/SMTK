@@ -63,8 +63,12 @@ void testUpdateChildren(smtk::view::PhraseModel::Ptr phraseModel)
   int numObservations = 0;
   phraseModel->observers()
     .insert(
-      [&numObservations](DescriptivePhrasePtr pp, PhraseModelEvent pe, const std::vector<int>& src,
-        const std::vector<int>& dst, const std::vector<int>& delta) {
+      [&numObservations](
+        DescriptivePhrasePtr pp,
+        PhraseModelEvent pe,
+        const std::vector<int>& src,
+        const std::vector<int>& dst,
+        const std::vector<int>& delta) {
         (void)src;
         (void)dst;
         std::cout << "Phrase event " << static_cast<int>(pe) << " " << pp->title() << " "
@@ -84,19 +88,23 @@ void testUpdateChildren(smtk::view::PhraseModel::Ptr phraseModel)
 
 int unitDescriptivePhrase(int argc, char* argv[])
 {
-  json j = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
-    { "Component",
-      { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },
-        { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
-        { "Children",
-          { { { "Name", "PhraseModel" },
-            { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
-            { "Children", { { { "Name", "SubphraseGenerator" },
-                            { "Attributes", { { "Type", "default" } } } } } } } } } } } };
+  json j = { { "Name", "Test" },
+             { "Type", "smtk::view::ResourcePhraseModel" },
+             { "Component",
+               { { "Name", "Details" },
+                 { "Type", "smtk::view::ResourcePhraseModel" },
+                 { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+                 { "Children",
+                   { { { "Name", "PhraseModel" },
+                       { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+                       { "Children",
+                         { { { "Name", "SubphraseGenerator" },
+                             { "Attributes", { { "Type", "default" } } } } } } } } } } } };
   auto viewManager = smtk::view::Manager::create();
   smtk::view::ConfigurationPtr viewConfig = j;
   auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
-  test(phraseModel->root()->root() == phraseModel->root(),
+  test(
+    phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");
   phraseModel->root()->visitChildren(
     [](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
@@ -112,8 +120,9 @@ int unitDescriptivePhrase(int argc, char* argv[])
         {
           idxStr << " " << ii;
         }
-        smtkTest(p->at(idx) == p, "Index " << idxStr.str()
-                                           << " passed to visitor did not produce phrase!");
+        smtkTest(
+          p->at(idx) == p,
+          "Index " << idxStr.str() << " passed to visitor did not produce phrase!");
       }
       return indent > maxIndent ? 1 : 0;
     });

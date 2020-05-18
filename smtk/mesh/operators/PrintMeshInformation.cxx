@@ -14,7 +14,6 @@
 #include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Session.h"
-#include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -36,21 +35,28 @@ smtk::mesh::PrintMeshInformation::Result PrintMeshInformation::operateInternal()
     smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
     smtk::mesh::MeshSet meshset = meshComponent->mesh();
 
-    smtkInfoMacro(this->log(), "Mesh Component <"
-        << meshComponent->id() << ">\n"
-        << "  name:         " << meshset.name() << "\n"
-                                                   "  # meshes:     "
-        << meshset.size() << "\n"
-                             "  # cells:      "
-        << meshset.cells().size() << "\n"
-                                     "  # points:     "
-        << meshset.points().size() << "\n"
-                                      "  # domains:    "
-        << meshset.domains().size() << "\n"
-                                       "  # dirichlets: "
-        << meshset.dirichlets().size() << "\n"
-                                          "  # neumanns:   "
-        << meshset.neumanns().size());
+    smtkInfoMacro(
+      this->log(),
+      "Mesh Component <" << meshComponent->id() << ">\n"
+                         << "  name:         " << meshset.name()
+                         << "\n"
+                            "  # meshes:     "
+                         << meshset.size()
+                         << "\n"
+                            "  # cells:      "
+                         << meshset.cells().size()
+                         << "\n"
+                            "  # points:     "
+                         << meshset.points().size()
+                         << "\n"
+                            "  # domains:    "
+                         << meshset.domains().size()
+                         << "\n"
+                            "  # dirichlets: "
+                         << meshset.dirichlets().size()
+                         << "\n"
+                            "  # neumanns:   "
+                         << meshset.neumanns().size());
   }
 
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

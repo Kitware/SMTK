@@ -58,7 +58,7 @@ public:
 
 /// Custom items inherit from a specialization of this template class, using the
 /// corresponding custom item type as the template parameter.
-template <typename ItemType>
+template<typename ItemType>
 class CustomItem : public CustomItemBase
 {
 public:
@@ -85,7 +85,7 @@ public:
 
   Item::Type type() const override { return this->definition()->type(); }
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

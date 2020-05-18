@@ -23,7 +23,8 @@ namespace io
 {
 
 XmlV4StringWriter::XmlV4StringWriter(
-  const attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+  const attribute::ResourcePtr myResource,
+  smtk::io::Logger& logger)
   : XmlV3StringWriter(myResource, logger)
 {
 }
@@ -41,14 +42,15 @@ unsigned int XmlV4StringWriter::fileVersion() const
 }
 
 void XmlV4StringWriter::processDefinitionInternal(
-  pugi::xml_node& definition, smtk::attribute::DefinitionPtr def)
+  pugi::xml_node& definition,
+  smtk::attribute::DefinitionPtr def)
 {
   XmlV3StringWriter::processDefinitionInternal(definition, def);
 
   auto associationRuleForDef =
     m_resource->associationRules().associationRulesForDefinitions().find(def->type());
-  if (associationRuleForDef !=
-    m_resource->associationRules().associationRulesForDefinitions().end())
+  if (
+    associationRuleForDef != m_resource->associationRules().associationRulesForDefinitions().end())
   {
     definition.append_child("AssociationRule")
       .append_attribute("Name")
@@ -57,7 +59,8 @@ void XmlV4StringWriter::processDefinitionInternal(
 
   auto dissociationRuleForDef =
     m_resource->associationRules().dissociationRulesForDefinitions().find(def->type());
-  if (dissociationRuleForDef !=
+  if (
+    dissociationRuleForDef !=
     m_resource->associationRules().dissociationRulesForDefinitions().end())
   {
     definition.append_child("DissociationRule")
@@ -67,7 +70,8 @@ void XmlV4StringWriter::processDefinitionInternal(
 }
 
 void XmlV4StringWriter::processItemDefinitionAttributes(
-  pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+  pugi::xml_node& node,
+  smtk::attribute::ItemDefinitionPtr idef)
 {
   XmlV3StringWriter::processItemDefinitionAttributes(node, idef);
   // Add support for ItemDef Tags

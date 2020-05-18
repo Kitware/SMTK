@@ -27,6 +27,6 @@ Resource::Resource(smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::session::mesh::Resource>(manager)
 {
 }
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk

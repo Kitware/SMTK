@@ -27,8 +27,8 @@ using json = nlohmann::json;
 SMTKCORE_EXPORT void from_json(const json&, smtk::resource::detail::ComponentLinkBase&);
 
 SMTKCORE_EXPORT void to_json(json&, const smtk::resource::detail::ComponentLinkBase&);
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk
 
 #endif

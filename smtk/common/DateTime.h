@@ -35,29 +35,50 @@ public:
   DateTime();
 
   /// Explicitly sets each component WITH time zone conversion
-  bool setComponents(TimeZone timeZone, int year, int month = 1, int day = 1, int hour = 0,
-    int minute = 0, int second = 0, int millisecond = 0)
+  bool setComponents(
+    TimeZone timeZone,
+    int year,
+    int month = 1,
+    int day = 1,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0)
   {
     return this->setComponents(year, month, day, hour, minute, second, millisecond, &timeZone);
   }
 
   /// Explicitly sets each component WITHOUT time zone conversion
-  bool setComponents(int year, int month = 1, int day = 1, int hour = 0, int minute = 0,
-    int second = 0, int millisecond = 0)
+  bool setComponents(
+    int year,
+    int month = 1,
+    int day = 1,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0)
   {
     return this->setComponents(year, month, day, hour, minute, second, millisecond, NULL);
   }
 
   // Returns each component WITH time zone conversion
-  bool components(TimeZone timeZone, int& year, int& month, int& day, int& hour, int& minute,
-    int& second, int& millisecond) const
+  bool components(
+    TimeZone timeZone,
+    int& year,
+    int& month,
+    int& day,
+    int& hour,
+    int& minute,
+    int& second,
+    int& millisecond) const
   {
     return this->components(year, month, day, hour, minute, second, millisecond, &timeZone);
   }
 
   // Returns each component WITHOUT time zone conversion
-  bool components(
-    int& year, int& month, int& day, int& hour, int& minute, int& second, int& millisecond) const
+  bool
+  components(int& year, int& month, int& day, int& hour, int& minute, int& second, int& millisecond)
+    const
   {
     return this->components(year, month, day, hour, minute, second, millisecond, NULL);
   }
@@ -85,11 +106,25 @@ public:
 protected:
   boost::posix_time::ptime m_ptime;
 
-  bool setComponents(int year, int month, int day, int hour, int minute, int second,
-    int millisecond, TimeZone* timeZone);
+  bool setComponents(
+    int year,
+    int month,
+    int day,
+    int hour,
+    int minute,
+    int second,
+    int millisecond,
+    TimeZone* timeZone);
 
-  bool components(int& year, int& month, int& day, int& hour, int& minute, int& second,
-    int& millisecond, TimeZone* timeZone) const;
+  bool components(
+    int& year,
+    int& month,
+    int& day,
+    int& hour,
+    int& minute,
+    int& second,
+    int& millisecond,
+    TimeZone* timeZone) const;
 };
 
 } // namespace common

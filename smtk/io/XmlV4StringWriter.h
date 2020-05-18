@@ -41,14 +41,15 @@ protected:
   // Three virtual methods for writing contents
   std::string className() const override;
   unsigned int fileVersion() const override;
-  void processDefinitionInternal(
-    pugi::xml_node& definition, smtk::attribute::DefinitionPtr def) override;
+  void processDefinitionInternal(pugi::xml_node& definition, smtk::attribute::DefinitionPtr def)
+    override;
   void processItemDefinitionAttributes(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+    pugi::xml_node& node,
+    smtk::attribute::ItemDefinitionPtr idef) override;
 
 private:
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif // __smtk_io_XmlV3StringWriter_h

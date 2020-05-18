@@ -46,8 +46,8 @@ public:
   virtual ~Geometry() = default;
 
   smtk::geometry::Resource::Ptr resource() const override;
-  void queryGeometry(
-    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override;
+  void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+    const override;
   int dimension(const smtk::resource::PersistentObject::Ptr& obj) const override;
   Purpose purpose(const smtk::resource::PersistentObject::Ptr& obj) const override;
   void update() const override;
@@ -56,7 +56,7 @@ public:
 
   std::weak_ptr<smtk::session::mesh::Resource> m_parent;
 };
-}
+} // namespace vtk
 
 class SMTKMESHSESSION_EXPORT RegisterVTKBackend
   : public smtk::geometry::Supplier<RegisterVTKBackend>
@@ -80,8 +80,8 @@ public:
     return nullptr;
   }
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

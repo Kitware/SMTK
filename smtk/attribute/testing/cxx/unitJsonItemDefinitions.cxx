@@ -43,7 +43,8 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   /********************** ModelEntityItemDefinition ********************/
   smtk::attribute::ModelEntityItemDefinitionPtr meiDef = ModelEntityItemDefinition::New("mei-def");
   smtkTest(!!meiDef, "Failed to instantiate ModelEntityItemDefinition");
-  smtkTest(meiDef->type() == Item::ModelEntityType,
+  smtkTest(
+    meiDef->type() == Item::ModelEntityType,
     "Failed to return ModelEntityItemDefinition as definition type");
   meiDef->setMembershipMask(smtk::model::MODEL_ENTITY);
   meiDef->setNumberOfRequiredValues(2);
@@ -63,7 +64,8 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   /********************** ReferenceItemDefinition ********************/
   smtk::attribute::ReferenceItemDefinitionPtr riDef = ReferenceItemDefinition::New("ri-def");
   smtkTest(!!riDef, "Failed to instantiate ReferenceItemDefinition");
-  smtkTest(riDef->type() == Item::ReferenceType,
+  smtkTest(
+    riDef->type() == Item::ReferenceType,
     "Failed to return ReferenceItemDefinition as definition type");
   riDef->setAcceptsEntries("smtk::model::Resource", "model", true);
   riDef->setNumberOfRequiredValues(2);
@@ -96,7 +98,8 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   json compDefFromJson = compDef2;
   //std::cout << " from_json result:\n" <<compDefFromJson.dump(2) <<std::endl;
 
-  test(compDefToJson == compDefFromJson,
+  test(
+    compDefToJson == compDefFromJson,
     "Failed to serialize and deserialize ComponentItemDefinition");
 
   /********************** DoubleItemDefinition ********************/
@@ -125,8 +128,10 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   smtk::attribute::from_json(doubleItemToJson, doubleDef2, resptr);
   json doubleItemFromJson = doubleDef2;
   std::cout << "DoubleItem from_jsom result:\n" << doubleItemFromJson.dump(2) << std::endl;
-  test(doubleItemToJson == doubleItemFromJson, "Failed to serialize and deserialize "
-                                               "DoubleItemDefinition");
+  test(
+    doubleItemToJson == doubleItemFromJson,
+    "Failed to serialize and deserialize "
+    "DoubleItemDefinition");
 
   return 0;
 }

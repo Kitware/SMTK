@@ -76,7 +76,7 @@ private:
   class qtDateTimeItemInternals;
   qtDateTimeItemInternals* Internals;
 }; // class qDateTimeItem
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

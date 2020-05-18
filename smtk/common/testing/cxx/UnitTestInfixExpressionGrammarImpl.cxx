@@ -33,12 +33,14 @@ int tryParse(const std::string& expression)
   smtk::common::EvaluationStacks s;
   smtk::common::InfixFunctions funcs;
   smtk::common::InfixExpressionError infixErr = smtk::common::InfixExpressionError::ERROR_NONE;
-  smtk::common::SubsymbolVisitor subsymbolFunc = [](
-    const std::string&) { return std::make_pair(0.0, true); };
+  smtk::common::SubsymbolVisitor subsymbolFunc = [](const std::string&) {
+    return std::make_pair(0.0, true);
+  };
 
   try
   {
-    tao::pegtl::parse<smtk::common::expression_internal::expression_grammar,
+    tao::pegtl::parse<
+      smtk::common::expression_internal::expression_grammar,
       smtk::common::expression_internal::ExpressionAction>(
       in, ops, s, funcs, subsymbolFunc, infixErr);
   }
@@ -63,12 +65,14 @@ double evaluateExpression(const std::string& expression)
   smtk::common::EvaluationStacks s;
   smtk::common::InfixFunctions funcs;
   smtk::common::InfixExpressionError infixErr = smtk::common::InfixExpressionError::ERROR_NONE;
-  smtk::common::SubsymbolVisitor subsymbolFunc = [](
-    const std::string&) { return std::make_pair(0.0, true); };
+  smtk::common::SubsymbolVisitor subsymbolFunc = [](const std::string&) {
+    return std::make_pair(0.0, true);
+  };
 
   try
   {
-    tao::pegtl::parse<smtk::common::expression_internal::expression_grammar,
+    tao::pegtl::parse<
+      smtk::common::expression_internal::expression_grammar,
       smtk::common::expression_internal::ExpressionAction>(
       in, ops, s, funcs, subsymbolFunc, infixErr);
   }

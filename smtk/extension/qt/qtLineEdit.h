@@ -72,7 +72,7 @@ class SMTKQTEXT_EXPORT qtLineEdit : public QLineEdit
   Q_OBJECT
   Q_PROPERTY(QString text2 READ text WRITE setTextAndResetCursor)
   Q_PROPERTY(bool resetCursorPositionOnEditingFinished READ resetCursorPositionOnEditingFinished
-      WRITE setResetCursorPositionOnEditingFinished)
+               WRITE setResetCursorPositionOnEditingFinished)
 
   typedef QLineEdit Superclass;
 
@@ -138,6 +138,6 @@ private:
   bool EditingFinishedPending;
   bool ResetCursorPositionOnEditingFinished;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif

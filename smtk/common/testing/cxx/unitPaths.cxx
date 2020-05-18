@@ -35,18 +35,24 @@ int main(int argc, char* argv[])
   std::cout << "Toplevel without hint \"" << instp1 << "\"\n";
 #ifdef __APPLE__
   test(instp1 == fmwkp1, "On Mac OS X, default toplevel dir should be bundle dir.");
-  test(exedirp1 == fmwkp1 + "/Contents/MacOS",
+  test(
+    exedirp1 == fmwkp1 + "/Contents/MacOS",
     "On Mac OS X, the executable directory should be inside the bundle.");
 #else
-  test(instp1 == instcfgp1, "On this platform, default toplevel dir "
-                            "should be configure-time install prefix.");
+  test(
+    instp1 == instcfgp1,
+    "On this platform, default toplevel dir "
+    "should be configure-time install prefix.");
 #if !defined(_WIN32) || defined(__CYGWIN__)
-  test(exedirp1 == instp1 + "/bin",
+  test(
+    exedirp1 == instp1 + "/bin",
     "On this platform, the executable directory should be inside the "
     "configure-time install prefix when no executable path is provided.");
 #else
-  test(exedirp1 == instp1, "On this platform, the executable directory should be exactly the "
-                           "configure-time install prefix when no executable path is provided.");
+  test(
+    exedirp1 == instp1,
+    "On this platform, the executable directory should be exactly the "
+    "configure-time install prefix when no executable path is provided.");
 #endif
 #endif
 
@@ -76,13 +82,14 @@ int main(int argc, char* argv[])
   test(instcfgp3 == instcfgp1, "Stage 1 and stage 3 config-time toplevel dirs should match.");
   test(instp3 == instp1, "Stage 1 and stage 3 toplevel dirs should match.");
 
-  Environment::setVariable("SMTK_WORKER_SEARCH_PATH",
+  Environment::setVariable(
+    "SMTK_WORKER_SEARCH_PATH",
 #if !defined(_WIN32) || defined(__CYGWIN__)
     "EnvTestA:EnvTestB"
 #else
     "EnvTestA;EnvTestB" // Note semicolon separator
 #endif
-    );
+  );
   p3.forceUpdate();
   int testCount = 0;
   typedef std::vector<std::string> StringList;
@@ -103,11 +110,13 @@ int main(int argc, char* argv[])
   auto stem = smtk::common::Paths::stem(example);
   smtkTest(stem == "example.tar", "Expected \"example\" stem, got \"" << stem << "\".");
   auto filename = smtk::common::Paths::filename(example);
-  smtkTest(filename == example, "Expected filename and example path to match, got \"" << filename
-                                                                                      << "\".");
+  smtkTest(
+    filename == example,
+    "Expected filename and example path to match, got \"" << filename << "\".");
   auto replacement = smtk::common::Paths::replaceExtension(example, ".bz2");
-  smtkTest(replacement == "example.tar.bz2", "Expected \"example.tar.bz2\", got \"" << replacement
-                                                                                    << "\".");
+  smtkTest(
+    replacement == "example.tar.bz2",
+    "Expected \"example.tar.bz2\", got \"" << replacement << "\".");
   auto dir = smtk::common::Paths::directory(example);
   smtkTest(dir.empty(), "Expected empty directory, got \"" << dir << "\".");
   // TODO: Add more tests of directory (absolute and relative paths).

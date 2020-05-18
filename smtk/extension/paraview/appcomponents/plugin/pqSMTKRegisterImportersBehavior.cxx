@@ -35,15 +35,15 @@
   defined(SMTK_MSVC)
 #include <regex>
 using std::regex;
-using std::sregex_token_iterator;
 using std::regex_replace;
+using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 namespace
@@ -59,8 +59,9 @@ std::string trim(const std::string& str)
   return str.substr(first, (last - first + 1));
 }
 
-void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
-  std::vector<std::pair<std::string, std::string> >& extensionsAndDescriptions)
+void extensionsAndDescriptionsFromFileFilters(
+  const std::string& fileFilters,
+  std::vector<std::pair<std::string, std::string>>& extensionsAndDescriptions)
 {
   regex re(";;");
   sregex_token_iterator it(fileFilters.begin(), fileFilters.end(), re, -1), last;
@@ -83,7 +84,9 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
 }
 
 std::string proxyName(
-  const std::string& resource, const std::string& /*unused*/, const std::string& description)
+  const std::string& resource,
+  const std::string& /*unused*/,
+  const std::string& description)
 {
   std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;
@@ -92,7 +95,9 @@ std::string proxyName(
 }
 
 std::string xmlForSMTKImporter(
-  const std::string& resource, const std::string& extensions, const std::string& description)
+  const std::string& resource,
+  const std::string& extensions,
+  const std::string& description)
 {
   std::stringstream s;
   s << "<ServerManagerConfiguration>\n";
@@ -137,12 +142,14 @@ std::string xmlForSMTKImporter(
 }
 
 void registerSMTKImporter(
-  pqServer* server, const std::string& resource, const std::string& fileFilters)
+  pqServer* server,
+  const std::string& resource,
+  const std::string& fileFilters)
 {
   auto app = pqApplicationCore::instance();
   if (app)
   {
-    std::vector<std::pair<std::string, std::string> > extensionsAndDescriptions;
+    std::vector<std::pair<std::string, std::string>> extensionsAndDescriptions;
     extensionsAndDescriptionsFromFileFilters(fileFilters, extensionsAndDescriptions);
     for (auto& token : extensionsAndDescriptions)
     {
@@ -176,16 +183,18 @@ void unregisterSMTKImporter(
   }
 }
 #endif
-}
+} // namespace
 
 static pqSMTKRegisterImportersBehavior* g_instance = nullptr;
 
 pqSMTKRegisterImportersBehavior::pqSMTKRegisterImportersBehavior(QObject* parent)
   : Superclass(parent)
 {
-  QObject::connect(pqSMTKBehavior::instance(),
+  QObject::connect(
+    pqSMTKBehavior::instance(),
     (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
-    this, &pqSMTKRegisterImportersBehavior::constructImporters);
+    this,
+    &pqSMTKRegisterImportersBehavior::constructImporters);
 }
 
 pqSMTKRegisterImportersBehavior* pqSMTKRegisterImportersBehavior::instance(QObject* parent)
@@ -231,25 +240,26 @@ void pqSMTKRegisterImportersBehavior::constructImporters(pqSMTKWrapper* wrapper,
   }
 
   std::weak_ptr<smtk::operation::Manager> opManager = wrapper->smtkOperationManager();
-  wrapper->smtkOperationManager()->groupObservers().insert([opManager, server](
-    const smtk::operation::Operation::Index& index, const std::string& groupName, bool adding) {
-    if (!adding)
-    {
-      return;
-    }
-
-    if (auto operationManager = opManager.lock())
-    {
-      if (groupName == smtk::operation::ImporterGroup::type_name)
+  wrapper->smtkOperationManager()->groupObservers().insert(
+    [opManager, server](
+      const smtk::operation::Operation::Index& index, const std::string& groupName, bool adding) {
+      if (!adding)
       {
-        auto importerGroup = smtk::operation::ImporterGroup(operationManager);
-        assert(importerGroup.contains(index));
-        auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
-        registerSMTKImporter(
-          server, importerGroup.resourceForOperation(index), fileItemDef->getFileFilters());
+        return;
       }
-    }
-  });
+
+      if (auto operationManager = opManager.lock())
+      {
+        if (groupName == smtk::operation::ImporterGroup::type_name)
+        {
+          auto importerGroup = smtk::operation::ImporterGroup(operationManager);
+          assert(importerGroup.contains(index));
+          auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
+          registerSMTKImporter(
+            server, importerGroup.resourceForOperation(index), fileItemDef->getFileFilters());
+        }
+      }
+    });
 
 // TODO: Once ParaView has the ability to unregister configurations for
 // readers, the logic below can be used to ensure that removed operations are

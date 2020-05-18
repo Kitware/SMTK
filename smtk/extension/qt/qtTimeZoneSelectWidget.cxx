@@ -29,12 +29,12 @@ public:
     : QSortFilterProxyModel(parent)
   {
   }
-  QVariant headerData(
-    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+  QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole)
+    const override;
 };
 
-QVariant TimeZoneRegionProxyModel::headerData(
-  int section, Qt::Orientation orientation, int role) const
+QVariant TimeZoneRegionProxyModel::headerData(int section, Qt::Orientation orientation, int role)
+  const
 {
   const char* regionHeaders[] = { "TimeZone", "Offset/DST", "Abbrev." };
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -77,8 +77,10 @@ qtTimeZoneSelectWidget::qtTimeZoneSelectWidget(QWidget* parent)
   this->UI->ContinentView->setRootIndex(rootIndex);
 
   QItemSelectionModel* selectionModel = this->UI->ContinentView->selectionModel();
-  QObject::connect(selectionModel,
-    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
+  QObject::connect(
+    selectionModel,
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    this,
     SLOT(onContinentChanged(const QItemSelection&, const QItemSelection&)));
 
   // Set all stretch to RegionView. and other cosmetic stuff
@@ -140,7 +142,8 @@ QString qtTimeZoneSelectWidget::selectedRegion() const
 }
 
 void qtTimeZoneSelectWidget::onContinentChanged(
-  const QItemSelection& selected, const QItemSelection& deselected)
+  const QItemSelection& selected,
+  const QItemSelection& deselected)
 {
   (void)deselected;
 
@@ -169,7 +172,8 @@ void qtTimeZoneSelectWidget::onContinentChanged(
 }
 
 void qtTimeZoneSelectWidget::onRegionChanged(
-  const QItemSelection& selected, const QItemSelection& deselected)
+  const QItemSelection& selected,
+  const QItemSelection& deselected)
 {
   (void)deselected;
 
@@ -196,8 +200,10 @@ void qtTimeZoneSelectWidget::setContinent(const QModelIndex index)
       this->Internal->TimeZoneRegionModel);
     this->UI->RegionView->setModel(this->Internal->RegionProxyModel);
     QItemSelectionModel* selectionModel = this->UI->RegionView->selectionModel();
-    QObject::connect(selectionModel,
-      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
+    QObject::connect(
+      selectionModel,
+      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+      this,
       SLOT(onRegionChanged(const QItemSelection&, const QItemSelection&)));
   }
 

@@ -17,10 +17,10 @@ namespace resource
 namespace filter
 {
 /// A class template for describing the grammar for a given property type.
-template <typename Type>
+template<typename Type>
 struct Property;
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

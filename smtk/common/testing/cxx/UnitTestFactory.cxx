@@ -39,7 +39,7 @@ public:
     value += "_derived";
   }
 };
-}
+} // namespace basic
 
 namespace json
 {
@@ -96,7 +96,7 @@ Derived::Derived(const nlohmann::json& json)
 {
   (*this) = json.get<Derived>();
 }
-}
+} // namespace json
 
 namespace two_parameters
 {
@@ -123,8 +123,8 @@ public:
     value2 += 1;
   }
 };
-}
-}
+} // namespace two_parameters
+} // namespace test_space
 
 int UnitTestFactory(int /*unused*/, char** const /*unused*/)
 {
@@ -133,12 +133,14 @@ int UnitTestFactory(int /*unused*/, char** const /*unused*/)
   {
     smtk::common::Factory<test_space::basic::Base, void, std::string> factory;
 
-    test(!factory.contains<test_space::basic::Derived>(),
+    test(
+      !factory.contains<test_space::basic::Derived>(),
       "Factory instance should not have type registered to it");
 
     factory.registerType<test_space::basic::Derived>();
 
-    test(factory.contains<test_space::basic::Derived>(),
+    test(
+      factory.contains<test_space::basic::Derived>(),
       "Factory instance should have type registered to it");
 
     {
@@ -164,24 +166,28 @@ int UnitTestFactory(int /*unused*/, char** const /*unused*/)
     auto my_derived_wstring =
       factory.createFromName("test_space::basic::Derived", std::string("bar"));
 
-    test(my_derived_wstring && (my_derived_wstring->value == "bar_derived"),
+    test(
+      my_derived_wstring && (my_derived_wstring->value == "bar_derived"),
       "Type not created properly");
 
     factory.unregisterType<test_space::basic::Derived>();
 
-    test(!factory.contains<test_space::basic::Derived>(),
+    test(
+      !factory.contains<test_space::basic::Derived>(),
       "Factory instance should not have type registered to it");
   }
 
   {
     smtk::common::Factory<test_space::json::Base, std::string, nlohmann::json> factory;
 
-    test(!factory.contains<test_space::json::Derived>(),
+    test(
+      !factory.contains<test_space::json::Derived>(),
       "Factory instance should not have type registered to it");
 
     factory.registerType<test_space::json::Derived>();
 
-    test(factory.contains<test_space::json::Derived>(),
+    test(
+      factory.contains<test_space::json::Derived>(),
       "Factory instance should have type registered to it");
 
     auto my_derived = factory.create<test_space::json::Derived>(std::string("bar"));
@@ -202,38 +208,44 @@ int UnitTestFactory(int /*unused*/, char** const /*unused*/)
 
     factory.unregisterType<test_space::json::Derived>();
 
-    test(!factory.contains<test_space::json::Derived>(),
+    test(
+      !factory.contains<test_space::json::Derived>(),
       "Factory instance should not have type registered to it");
   }
 
   {
-    smtk::common::Factory<test_space::two_parameters::Base, Inputs<std::string, int> > factory;
+    smtk::common::Factory<test_space::two_parameters::Base, Inputs<std::string, int>> factory;
 
-    test(!factory.contains<test_space::two_parameters::Derived>(),
+    test(
+      !factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should not have type registered to it");
 
     typedef std::tuple<test_space::two_parameters::Derived> Types;
     factory.registerTypes<Types>();
 
-    test(factory.contains<test_space::two_parameters::Derived>(),
+    test(
+      factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should have type registered to it");
 
     {
       auto my_derived = factory.create<test_space::two_parameters::Derived>(std::string("bar"), 1);
-      test(my_derived && (my_derived->value1 == "bar_derived") && (my_derived->value2 == 2),
+      test(
+        my_derived && (my_derived->value1 == "bar_derived") && (my_derived->value2 == 2),
         "Type not created properly");
     }
 
     auto my_derived_wstring =
       factory.createFromName("test_space::two_parameters::Derived", std::string("bar"), 1);
 
-    test(my_derived_wstring && (my_derived_wstring->value1 == "bar_derived") &&
+    test(
+      my_derived_wstring && (my_derived_wstring->value1 == "bar_derived") &&
         (my_derived_wstring->value2 == 2),
       "Type not created properly");
 
     factory.unregisterTypes<Types>();
 
-    test(!factory.contains<test_space::two_parameters::Derived>(),
+    test(
+      !factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should not have type registered to it");
   }
 

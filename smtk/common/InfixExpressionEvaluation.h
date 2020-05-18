@@ -117,7 +117,7 @@ public:
     m_functionForNextOpen = functionForNextOpen;
   }
 
-  template <typename T>
+  template<typename T>
   void push(const T& t)
   {
     m_stacks.back().first.push(t);
@@ -134,7 +134,7 @@ public:
   double finish() { return m_stacks.back().first.finish(); }
 
 private:
-  using StackLevel = std::pair<EvaluationStack, std::function<double(double)> >;
+  using StackLevel = std::pair<EvaluationStack, std::function<double(double)>>;
 
   std::vector<StackLevel> m_stacks;
   std::function<double(double)> m_functionForNextOpen;
@@ -152,7 +152,9 @@ public:
     insert("^", EvaluationOrder(4), [](const double l, const double r) { return std::pow(l, r); });
   }
 
-  void insert(const std::string& name, const EvaluationOrder p,
+  void insert(
+    const std::string& name,
+    const EvaluationOrder p,
     const std::function<double(double, double)>& f)
   {
     m_ops.insert(std::make_pair(name, InfixOperator{ p, f }));

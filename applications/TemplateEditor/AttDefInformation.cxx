@@ -33,14 +33,26 @@ AttDefInformation::AttDefInformation(QWidget* parent)
   connect(this->Ui->pbAddItemDef, SIGNAL(clicked()), this, SLOT(onAddItemDef()));
   connect(this->Ui->pbDeleteItemDef, SIGNAL(clicked()), this, SLOT(onRemoveItemDef()));
 
-  connect(this->Ui->tvInheritedItems, SIGNAL(doubleClicked(const QModelIndex&)), this,
+  connect(
+    this->Ui->tvInheritedItems,
+    SIGNAL(doubleClicked(const QModelIndex&)),
+    this,
     SLOT(showInheritedItemDetails(const QModelIndex&)));
-  connect(this->Ui->tvInheritedItems, SIGNAL(showDialog(const QModelIndex&)), this,
+  connect(
+    this->Ui->tvInheritedItems,
+    SIGNAL(showDialog(const QModelIndex&)),
+    this,
     SLOT(showInheritedItemDetails(const QModelIndex&)));
 
-  connect(this->Ui->tvOwnedItems, SIGNAL(doubleClicked(const QModelIndex&)), this,
+  connect(
+    this->Ui->tvOwnedItems,
+    SIGNAL(doubleClicked(const QModelIndex&)),
+    this,
     SLOT(showOwnedItemDetails(const QModelIndex&)));
-  connect(this->Ui->tvOwnedItems, SIGNAL(showDialog(const QModelIndex&)), this,
+  connect(
+    this->Ui->tvOwnedItems,
+    SIGNAL(showDialog(const QModelIndex&)),
+    this,
     SLOT(showOwnedItemDetails(const QModelIndex&)));
 
   this->Ui->tvInheritedItems->setExpandsOnDoubleClick(false);
@@ -52,7 +64,8 @@ AttDefInformation::~AttDefInformation() = default;
 
 // -----------------------------------------------------------------------------
 void AttDefInformation::onAttDefChanged(
-  const QModelIndex& currentDef, const QModelIndex& previousDef)
+  const QModelIndex& currentDef,
+  const QModelIndex& previousDef)
 {
   Q_UNUSED(previousDef);
   this->updateAttDefData(currentDef);

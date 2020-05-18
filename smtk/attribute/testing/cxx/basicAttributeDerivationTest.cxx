@@ -19,8 +19,8 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
 
-std::string itemNames[] = { "IntComp1", "IntComp2", "DoubleComp1", "DoubleComp2", "StringComp1",
-  "StringComp2" };
+std::string itemNames[] = { "IntComp1",    "IntComp2",    "DoubleComp1",
+                            "DoubleComp2", "StringComp1", "StringComp2" };
 
 int main()
 {

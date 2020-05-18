@@ -96,7 +96,7 @@ public:
   }
 
   /// Register <CustomItemDefinitionType> to all attribute resources.
-  template <typename CustomDefinitionType>
+  template<typename CustomDefinitionType>
   bool registerDefinition()
   {
     // Construct a functor for adding the new definition type to an attribute
@@ -114,12 +114,13 @@ public:
     {
       // ...add an observer that adds the new definition to all current and
       // future attribute resources associated with this manager.
-      auto registerCustomTypeObserver = [=](
-        const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+      auto registerCustomTypeObserver =
+        [=](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
         if (eventType == smtk::resource::EventType::ADDED)
         {
-          if (const smtk::attribute::Resource* attributeResource =
-                dynamic_cast<const smtk::attribute::Resource*>(&resource))
+          if (
+            const smtk::attribute::Resource* attributeResource =
+              dynamic_cast<const smtk::attribute::Resource*>(&resource))
           {
             registerCustomType(const_cast<smtk::attribute::Resource&>(*attributeResource));
           }
@@ -128,16 +129,19 @@ public:
 
       // Associate the observer key with the definition type, so we can remove it
       // later if requested.
-      m_observers.insert(std::make_pair(typeid(CustomDefinitionType).hash_code(),
-        manager->observers().insert(registerCustomTypeObserver, "Register custom attribute type <" +
-            smtk::common::typeName<CustomDefinitionType>() + ">.")));
+      m_observers.insert(std::make_pair(
+        typeid(CustomDefinitionType).hash_code(),
+        manager->observers().insert(
+          registerCustomTypeObserver,
+          "Register custom attribute type <" + smtk::common::typeName<CustomDefinitionType>() +
+            ">.")));
     }
 
     return true;
   }
 
   /// Unregister <CustomItemDefinitionType> from all attribute resources.
-  template <typename CustomDefinitionType>
+  template<typename CustomDefinitionType>
   bool unregisterDefinition()
   {
     // Remove the definiton from the container of register functions.
@@ -160,14 +164,14 @@ public:
   }
 
   /// Register multiple definitions to all attribute resources.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerDefinitions()
   {
     return ItemDefinitionManager::registerDefinitions<0, Tuple>();
   }
 
   /// Unregister multiple definitions from all attribute resources.
-  template <typename Tuple>
+  template<typename Tuple>
   bool unregisterDefinitions()
   {
     return ItemDefinitionManager::unregisterDefinitions<0, Tuple>();
@@ -177,7 +181,7 @@ protected:
   ItemDefinitionManager();
   ItemDefinitionManager(const std::shared_ptr<smtk::resource::Manager>&);
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
   registerDefinitions()
   {
@@ -185,14 +189,14 @@ protected:
     return registered && ItemDefinitionManager::registerDefinitions<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
   registerDefinitions()
   {
     return true;
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
   unregisterDefinitions()
   {
@@ -200,21 +204,21 @@ protected:
     return unregistered && ItemDefinitionManager::unregisterDefinitions<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
   unregisterDefinitions()
   {
     return true;
   }
 
-  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >
+  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>
     m_registerFunctions;
 
   std::weak_ptr<smtk::resource::Manager> m_manager;
 
   std::unordered_map<std::size_t, smtk::resource::Observers::Key> m_observers;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

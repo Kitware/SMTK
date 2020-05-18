@@ -58,9 +58,11 @@ void UnitTest()
   inserted = links.insert(1, 3, 5, 101);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.size() == 2, "Should have 2 links.");
-  smtkTest(links.get<MyLinks::Right>().find(5)->left == 3,
+  smtkTest(
+    links.get<MyLinks::Right>().find(5)->left == 3,
     "Should be able to access the left value via the right value.");
-  smtkTest(links.get<MyLinks::Role>().find(101)->left == 3,
+  smtkTest(
+    links.get<MyLinks::Role>().find(101)->left == 3,
     "Should be able to access the left value via the role.");
 
   // Access values by id
@@ -100,7 +102,8 @@ void UnitTest()
     {
       // The values in the sets should be in the same order because the right
       // values and indices are both monotonically increasing.
-      smtkTest(*valueIt == links.at<MyLinks::Right>(*idIt),
+      smtkTest(
+        *valueIt == links.at<MyLinks::Right>(*idIt),
         "Values accessed by Id should equal values accessed by left value type.");
     }
     std::vector<short> linkedValues(valuesLinkedTo3.begin(), valuesLinkedTo3.end());
@@ -196,18 +199,18 @@ struct MyMoveOnlyBase
   virtual ~MyMoveOnlyBase() = default;
   std::string value;
 };
-}
+} // namespace
 
 namespace nlohmann
 {
-template <>
+template<>
 struct adl_serializer<MyMoveOnlyBase>
 {
   static MyMoveOnlyBase from_json(const json& j) { return { j.get<std::string>() }; }
 
   static void to_json(json& j, const MyMoveOnlyBase& t) { j = t.value; }
 };
-}
+} // namespace nlohmann
 
 namespace
 {
@@ -231,9 +234,11 @@ void MoveOnlyTest()
   inserted = links.insert(MyMoveOnlyBase("m"), 1, 3, 5, 101);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.size() == 2, "Should have 2 links.");
-  smtkTest(links.get<MyLinks::Right>().find(5)->left == 3,
+  smtkTest(
+    links.get<MyLinks::Right>().find(5)->left == 3,
     "Should be able to access the left value via the right value.");
-  smtkTest(links.get<MyLinks::Role>().find(101)->left == 3,
+  smtkTest(
+    links.get<MyLinks::Role>().find(101)->left == 3,
     "Should be able to access the left value via the role.");
 
   // Access values by id
@@ -273,7 +278,8 @@ void MoveOnlyTest()
     {
       // The values in the sets should be in the same order because the right
       // values and indices are both monotonically increasing.
-      smtkTest(*valueIt == links.at<MyLinks::Right>(*idIt),
+      smtkTest(
+        *valueIt == links.at<MyLinks::Right>(*idIt),
         "Values accessed by Id should equal values accessed by left value type.");
     }
     std::vector<short> linkedValues(valuesLinkedTo3.begin(), valuesLinkedTo3.end());
@@ -393,7 +399,7 @@ void MoveOnlyRecursionTest()
   smtkTest(metaLinks.at(0).size() == 2, "first set of links should have 2 links.");
   smtkTest(metaLinks.at(1).size() == 3, "second set of links should have 3 links.");
 }
-}
+} // namespace
 
 int UnitTestLinks(int /*unused*/, char** const /*unused*/)
 {

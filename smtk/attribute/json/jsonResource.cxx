@@ -58,7 +58,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     std::vector<std::string> eInfo;
     std::vector<std::string> rInfo;
     // we need this for backward compatibility
-    std::map<std::string, std::set<std::string> > aInfo;
+    std::map<std::string, std::set<std::string>> aInfo;
     for (auto analysis : analyses.analyses())
     {
       aNames.push_back(analysis->name());
@@ -144,7 +144,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   json excsObj = json::array();
   json presObj = json::array();
 
-  std::queue<smtk::attribute::DefinitionPtr, std::deque<smtk::attribute::DefinitionPtr> > defsQueue(
+  std::queue<smtk::attribute::DefinitionPtr, std::deque<smtk::attribute::DefinitionPtr>> defsQueue(
     std::deque<smtk::attribute::DefinitionPtr>(baseDefPtrs.begin(), baseDefPtrs.end()));
   while (!defsQueue.empty())
   {
@@ -300,7 +300,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
   // Process evaluators.
   json evaluatorsArray = json::array();
-  const std::map<std::string, std::vector<std::string> > aliasesToDefinitionsTable =
+  const std::map<std::string, std::vector<std::string>> aliasesToDefinitionsTable =
     res->evaluatorFactory().aliasesToDefinitions();
   for (const auto& p : aliasesToDefinitionsTable)
   {
@@ -333,13 +333,13 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     smtk::attribute::Analyses& analyses = res->analyses();
     std::vector<std::string> eInfo;
     // we need this for backward compatibility
-    auto aInfo = result->get<std::map<std::string, std::set<std::string> > >();
+    auto aInfo = result->get<std::map<std::string, std::set<std::string>>>();
 
     // Get the order of analysis creation if it exists
     auto analysesOrder = j.find("AnalysesOrder");
     if (analysesOrder != j.end())
     {
-      auto aNames = analysesOrder->get<std::vector<std::string> >();
+      auto aNames = analysesOrder->get<std::vector<std::string>>();
       for (auto const& name : aNames)
       {
         // Lets find its local categories
@@ -373,7 +373,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       {
         if (!analyses.setAnalysisParent(val.key(), val.value()))
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "Analysis: " << val.key() << " could not set parent to: " << val.value() << "!");
         }
       }
@@ -382,7 +383,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     auto analysesExclusiveInfo = j.find("AnalysesExclusiveInfo");
     if (analysesExclusiveInfo != j.end())
     {
-      auto eNames = analysesExclusiveInfo->get<std::vector<std::string> >();
+      auto eNames = analysesExclusiveInfo->get<std::vector<std::string>>();
       for (auto const& name : eNames)
       {
         auto a = analyses.find(name);
@@ -392,7 +393,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "Could not find Analysis: " << name << " to set its exclusive property!");
         }
       }
@@ -401,7 +403,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     auto analysesRequiredInfo = j.find("AnalysesRequiredInfo");
     if (analysesRequiredInfo != j.end())
     {
-      auto rNames = analysesRequiredInfo->get<std::vector<std::string> >();
+      auto rNames = analysesRequiredInfo->get<std::vector<std::string>>();
       for (auto const& name : rNames)
       {
         auto a = analyses.find(name);
@@ -411,7 +413,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "Could not find Analysis: " << name << " to set its required property!");
         }
       }
@@ -429,7 +432,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "Could not find Analysis: " << val.key() << " to set its label property!");
         }
       }
@@ -504,15 +508,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         baseDef = res->findDefinition(*baseType);
         if (!baseDef)
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "Could not find Base Definition: "
-              << *baseType << " needed to create Definition: " << *type);
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Could not find Base Definition: " << *baseType
+                                               << " needed to create Definition: " << *type);
           continue;
         }
       }
       def = res->createDefinition(*type, baseDef);
       if (!def)
       {
-        smtkWarningMacro(smtk::io::Logger::instance(),
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
           "Definition: " << *type << " already exists in the Resource");
         continue;
       }
@@ -598,7 +605,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "Cannot find prerequisite definiion: " << defName << " for Definition: " << *type);
         }
       }
@@ -614,7 +622,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       if (!res->associationRules().associationRuleFactory().containsAlias(
             associationRuleObj["Alias"].get<std::string>()))
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Could not find association rule Alias \""
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not find association rule Alias \""
             << associationRuleObj["Alias"].get<std::string>() << "\"");
         continue;
       }
@@ -637,7 +647,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       if (!res->associationRules().dissociationRuleFactory().containsAlias(
             dissociationRuleObj["Alias"].get<std::string>()))
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Could not find dissociation rule Alias \""
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not find dissociation rule Alias \""
             << dissociationRuleObj["Alias"].get<std::string>() << "\"");
         continue;
       }
@@ -680,15 +692,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
         if (!res->findDefinition(def))
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "Missing Definitions \""
-              << def << "\" while parsing Evaluators");
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Missing Definitions \"" << def << "\" while parsing Evaluators");
         }
 
         bool defWasSet = res->evaluatorFactory().addDefinitionForEvaluator(*evaluatorName, def);
         if (!defWasSet)
         {
-          smtkWarningMacro(smtk::io::Logger::instance(), "Evaluator with alias \""
-              << *evaluatorName << "\" was not found.");
+          smtkWarningMacro(
+            smtk::io::Logger::instance(),
+            "Evaluator with alias \"" << *evaluatorName << "\" was not found.");
         }
       }
     }
@@ -714,14 +728,16 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       auto type = jAtt.find("Type");
       if (type == jAtt.end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Invalid Attribute! - Missing Type for attribute:" << *name);
         continue;
       }
       smtk::attribute::DefinitionPtr def = res->findDefinition(*type);
       if (def == nullptr)
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Invalid Attribute! - Cannot find Definition of Type:" << *type
                                                                  << " for attribute:" << *name);
         continue;
@@ -729,15 +745,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       // Is the definition abstract?
       if (def->isAbstract())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Attribute: "
-            << *name << " of Type: " << *type << "  - is based on an abstract definition");
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Attribute: " << *name << " of Type: " << *type
+                        << "  - is based on an abstract definition");
         continue;
       }
 
       auto id = jAtt.find("ID");
       if (id == jAtt.end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Invalid Attribute! - Missing ID for attribute:" << *name << " of type:" << *type);
         continue;
       }
@@ -748,8 +767,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
       if (att == nullptr)
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Attribute: "
-            << *name << " of Type: " << *type << "  - could not be created - is the name in use?");
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Attribute: " << *name << " of Type: " << *type
+                        << "  - could not be created - is the name in use?");
         continue;
       }
       smtk::attribute::from_json(jAtt, att, itemExpressionInfo, attRefInfo, convertedAttDefs);
@@ -766,9 +787,11 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
     else
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "Expression Attribute: "
-          << itemExpressionInfo[i].expName
-          << " is missing and required by Item : " << itemExpressionInfo[i].item->name());
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Expression Attribute: " << itemExpressionInfo[i].expName
+                                 << " is missing and required by Item : "
+                                 << itemExpressionInfo[i].item->name());
     }
   }
   for (size_t i = 0; i < attRefInfo.size(); i++)
@@ -780,9 +803,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
     else
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "Referenced Attribute: "
-          << attRefInfo[i].attName
-          << " is missing and required by Item: " << attRefInfo[i].item->name());
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Referenced Attribute: " << attRefInfo[i].attName << " is missing and required by Item: "
+                                 << attRefInfo[i].item->name());
     }
   }
 
@@ -804,8 +828,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "Can not read Style information for Type: "
-              << *defName << " missing Styles information");
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Can not read Style information for Type: " << *defName
+                                                        << " missing Styles information");
           continue;
         }
       }
@@ -846,5 +872,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
   res->setActiveCategoriesEnabled(enabled);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -36,8 +36,12 @@ class SMTKQTEXT_EXPORT qtAttribute : public QObject
   Q_OBJECT
 
 public:
-  qtAttribute(smtk::attribute::AttributePtr, const smtk::view::Configuration::Component& comp,
-    QWidget* parent, qtBaseView* view, bool createWidgetWhenEmpty = false);
+  qtAttribute(
+    smtk::attribute::AttributePtr,
+    const smtk::view::Configuration::Component& comp,
+    QWidget* parent,
+    qtBaseView* view,
+    bool createWidgetWhenEmpty = false);
   virtual ~qtAttribute();
 
   ///\brief Return the SMTK attribute referenced by the instance
@@ -91,7 +95,7 @@ private:
   bool m_isEmpty;
 };
 
-} // namespace attribute
+} // namespace extension
 } // namespace smtk
 
 #endif

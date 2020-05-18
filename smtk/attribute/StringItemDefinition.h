@@ -32,8 +32,8 @@ public:
   ~StringItemDefinition() override;
   Item::Type type() const override;
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
   bool isMultiline() const { return m_multiline; }
   void setIsMultiline(bool val) { m_multiline = val; }
 
@@ -53,7 +53,7 @@ protected:
 private:
   bool m_secure;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_StringItemDefinition_h */

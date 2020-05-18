@@ -39,15 +39,22 @@ class SMTKCORE_EXPORT Allocator
 public:
   virtual ~Allocator() {}
 
-  virtual bool allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
+  virtual bool allocatePoints(
+    std::size_t numPointsToAlloc,
+    smtk::mesh::Handle& firstVertexHandle,
     std::vector<double*>& coordinateMemory) = 0;
 
-  virtual bool allocateCells(smtk::mesh::CellType cellType, std::size_t numCellsToAlloc,
-    int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
+  virtual bool allocateCells(
+    smtk::mesh::CellType cellType,
+    std::size_t numCellsToAlloc,
+    int numVertsPerCell,
+    smtk::mesh::HandleRange& createdCellIds,
     smtk::mesh::Handle*& connectivityArray) = 0;
 
-  template <int CellType>
-  bool allocateCells(std::size_t numCellsToAlloc, smtk::mesh::HandleRange& createdCellIds,
+  template<int CellType>
+  bool allocateCells(
+    std::size_t numCellsToAlloc,
+    smtk::mesh::HandleRange& createdCellIds,
     smtk::mesh::Handle*& connectivityArray)
   {
     typedef typename smtk::mesh::CellEnumToType<CellType>::Traits Traits;
@@ -57,8 +64,10 @@ public:
       cellType, numCellsToAlloc, Traits::NUM_VERTICES, createdCellIds, connectivityArray);
   }
 
-  virtual bool connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate,
-    int numVertsPerCell, const smtk::mesh::Handle* connectivityArray) = 0;
+  virtual bool connectivityModified(
+    const smtk::mesh::HandleRange& cellsToUpdate,
+    int numVertsPerCell,
+    const smtk::mesh::Handle* connectivityArray) = 0;
 };
 
 // BufferedCellAllocator allows for the allocation of meshes by
@@ -78,10 +87,10 @@ public:
   virtual bool reserveNumberOfCoordinates(std::size_t nCoordinates) = 0;
   virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
 
-  virtual bool addCell(
-    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) = 0;
-  virtual bool addCell(
-    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) = 0;
+  virtual bool
+  addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) = 0;
+  virtual bool
+  addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) = 0;
   virtual bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0) = 0;
 
   virtual bool flush() = 0;
@@ -123,10 +132,10 @@ public:
   virtual std::size_t addCoordinate(double* xyz) = 0;
   virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
 
-  virtual bool addCell(
-    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) = 0;
-  virtual bool addCell(
-    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) = 0;
+  virtual bool
+  addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) = 0;
+  virtual bool
+  addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) = 0;
   virtual bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0) = 0;
 
   virtual bool flush() = 0;
@@ -183,7 +192,10 @@ public:
 
   virtual void initTraversal(IterationState& state) = 0;
 
-  virtual bool fetchNextCell(IterationState& state, smtk::mesh::CellType& cellType, int& numPts,
+  virtual bool fetchNextCell(
+    IterationState& state,
+    smtk::mesh::CellType& cellType,
+    int& numPts,
     const smtk::mesh::Handle*& points) = 0;
 
   virtual bool equal(ConnectivityStorage* other) const = 0;
@@ -222,8 +234,8 @@ public:
   //returns all the point ids that are inside the locator
   virtual smtk::mesh::HandleRange range() const = 0;
 
-  virtual void locatePointsWithinRadius(
-    double x, double y, double z, double radius, Results& results) = 0;
+  virtual void
+  locatePointsWithinRadius(double x, double y, double z, double radius, Results& results) = 0;
 };
 
 class SMTKCORE_EXPORT Interface
@@ -289,7 +301,8 @@ public:
   //get back an efficient point locator for a range of points
   //This allows for efficient point locator on a per interface basis.
   virtual smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points) = 0;
-  virtual smtk::mesh::PointLocatorImplPtr pointLocator(std::size_t numPoints,
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(
+    std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates) = 0;
 
   virtual smtk::mesh::Handle getRoot() const = 0;
@@ -311,41 +324,48 @@ public:
   virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, int dimension) const = 0;
 
   //find all entity sets that have this exact name tag
-  virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const std::string& name) const = 0;
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, const std::string& name)
+    const = 0;
 
   //find all entity sets that have this exact domain tag
   virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Domain& domain) const = 0;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::Domain& domain) const = 0;
 
   //find all entity sets that have this exact dirichlet tag
   virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Dirichlet& dirichlet) const = 0;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::Dirichlet& dirichlet) const = 0;
 
   //find all entity sets that have this exact neumann tag
   virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Neumann& neumann) const = 0;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::Neumann& neumann) const = 0;
 
   //get all cells held by this range
   virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //get all cells held by this range handle of a given cell type
   virtual smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, smtk::mesh::CellType cellType) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    smtk::mesh::CellType cellType) const = 0;
 
   //get all cells held by this range handle of a given cell type(s)
   virtual smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellTypes& cellTypes) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellTypes& cellTypes) const = 0;
 
   //get all cells held by this range handle of a given dimension
   virtual smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    smtk::mesh::DimensionType dim) const = 0;
 
   //get all points held by this range of handle of a given dimension. If
   //boundary_only is set to true, ignore the higher order points of the
   //cells
   virtual smtk::mesh::HandleRange getPoints(
-    const smtk::mesh::HandleRange& cells, bool boundary_only = false) const = 0;
+    const smtk::mesh::HandleRange& cells,
+    bool boundary_only = false) const = 0;
 
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
@@ -386,42 +406,49 @@ public:
   virtual smtk::mesh::TypeSet computeTypes(const smtk::mesh::HandleRange& range) const = 0;
 
   //compute the cells that make the shell/skin of the set of meshes
-  virtual bool computeShell(
-    const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const = 0;
+  virtual bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell)
+    const = 0;
 
   //compute adjacencies of a given dimension, creating them if necessary
   virtual bool computeAdjacenciesOfDimension(
-    const smtk::mesh::HandleRange& meshes, int dimension, smtk::mesh::HandleRange& adj) const = 0;
+    const smtk::mesh::HandleRange& meshes,
+    int dimension,
+    smtk::mesh::HandleRange& adj) const = 0;
 
   //given a handle to a cell, return its parent handle and canonical index.
-  virtual bool canonicalIndex(
-    const smtk::mesh::Handle& cell, smtk::mesh::Handle& parent, int& index) const = 0;
+  virtual bool
+  canonicalIndex(const smtk::mesh::Handle& cell, smtk::mesh::Handle& parent, int& index) const = 0;
 
   //merge any duplicate points used by the cells that have been passed
   //Note: Will mark the interface as modified when successful
   virtual bool mergeCoincidentContactPoints(
-    const smtk::mesh::HandleRange& meshes, double tolerance) = 0;
+    const smtk::mesh::HandleRange& meshes,
+    double tolerance) = 0;
 
   //given a handle to a cell, return its dimension-equivalent neighbors.
   virtual smtk::mesh::HandleRange neighbors(const smtk::mesh::Handle& cell) const = 0;
 
   // Note: Will mark the interface as modified when successful
-  virtual bool setDomain(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain) const = 0;
+  virtual bool setDomain(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain)
+    const = 0;
 
   // Note: Will mark the interface as modified when successful
   virtual bool setDirichlet(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Dirichlet& dirichlet) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::Dirichlet& dirichlet) const = 0;
 
   // Note: Will mark the interface as modified when successful
   virtual bool setNeumann(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::Neumann& neumann) const = 0;
 
   virtual bool setId(const smtk::mesh::Handle& meshset, const smtk::common::UUID& id) const = 0;
 
   virtual smtk::common::UUID getId(const smtk::mesh::Handle& meshset) const = 0;
 
-  virtual bool findById(const smtk::mesh::Handle& root, const smtk::common::UUID& id,
+  virtual bool findById(
+    const smtk::mesh::Handle& root,
+    const smtk::common::UUID& id,
     smtk::mesh::Handle& meshset) const = 0;
 
   // Specify for a given sets of handles what the associated model entity is.
@@ -431,12 +458,14 @@ public:
   // undefined behavior
   // Note: Will mark the interface as modified when successful
   virtual bool setAssociation(
-    const smtk::common::UUID& modelUUID, const smtk::mesh::HandleRange& meshsets) const = 0;
+    const smtk::common::UUID& modelUUID,
+    const smtk::mesh::HandleRange& meshsets) const = 0;
 
   // For a given handle root, find all meshsets that have an association to
   // the given model uuid
   virtual smtk::mesh::HandleRange findAssociations(
-    const smtk::mesh::Handle& root, const smtk::common::UUID& modelUUID) const = 0;
+    const smtk::mesh::Handle& root,
+    const smtk::common::UUID& modelUUID) const = 0;
 
   // Specify the model uuid that the root of this interface is associated too
   // This represents generally is the MODEL_ENTITY that owns all associations
@@ -446,79 +475,115 @@ public:
 
   virtual smtk::common::UUID rootAssociation() const = 0;
 
-  virtual bool createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) = 0;
+  virtual bool createCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const std::string& name,
+    std::size_t dimension,
+    const smtk::mesh::FieldType& type,
+    const void* data) = 0;
 
   virtual int getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const = 0;
 
   virtual smtk::mesh::FieldType getCellFieldType(const smtk::mesh::CellFieldTag& cfTag) const = 0;
 
   virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const = 0;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::CellFieldTag& cfTag) const = 0;
 
   virtual bool hasCellField(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag) const = 0;
 
-  virtual bool getCellField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::CellFieldTag& cfTag, void* data) const = 0;
-
-  virtual bool setCellField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::CellFieldTag& cfTag, const void* const data) = 0;
-
-  virtual bool getField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+  virtual bool getCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag,
     void* data) const = 0;
 
-  virtual bool setField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+  virtual bool setCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag,
+    const void* const data) = 0;
+
+  virtual bool getField(
+    const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::CellFieldTag& cfTag,
+    void* data) const = 0;
+
+  virtual bool setField(
+    const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::CellFieldTag& cfTag,
     const void* const data) = 0;
 
   virtual std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const = 0;
 
   virtual bool deleteCellField(
-    const smtk::mesh::CellFieldTag& dsTag, const smtk::mesh::HandleRange& meshsets) = 0;
+    const smtk::mesh::CellFieldTag& dsTag,
+    const smtk::mesh::HandleRange& meshsets) = 0;
 
-  virtual bool createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) = 0;
+  virtual bool createPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const std::string& name,
+    std::size_t dimension,
+    const smtk::mesh::FieldType& type,
+    const void* data) = 0;
 
   virtual int getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const = 0;
 
   virtual smtk::mesh::FieldType getPointFieldType(const smtk::mesh::PointFieldTag& pfTag) const = 0;
 
   virtual smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const = 0;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::PointFieldTag& pfTag) const = 0;
 
   virtual bool hasPointField(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const = 0;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag) const = 0;
 
-  virtual bool getPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, void* data) const = 0;
+  virtual bool getPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag,
+    void* data) const = 0;
 
-  virtual bool setPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, const void* const data) = 0;
+  virtual bool setPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag,
+    const void* const data) = 0;
 
-  virtual bool getField(const smtk::mesh::HandleRange& points,
-    const smtk::mesh::PointFieldTag& pfTag, void* data) const = 0;
+  virtual bool getField(
+    const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag,
+    void* data) const = 0;
 
-  virtual bool setField(const smtk::mesh::HandleRange& points,
-    const smtk::mesh::PointFieldTag& pfTag, const void* const data) = 0;
+  virtual bool setField(
+    const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag,
+    const void* const data) = 0;
 
   virtual std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const = 0;
 
   virtual bool deletePointField(
-    const smtk::mesh::PointFieldTag& dsTag, const smtk::mesh::HandleRange& meshsets) = 0;
+    const smtk::mesh::PointFieldTag& dsTag,
+    const smtk::mesh::HandleRange& meshsets) = 0;
 
-  virtual smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
-    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+  virtual smtk::mesh::HandleRange pointIntersect(
+    const smtk::mesh::HandleRange& a,
+    const smtk::mesh::HandleRange& b,
+    smtk::mesh::PointConnectivity& bpc,
     smtk::mesh::ContainmentType containmentType) const = 0;
 
-  virtual smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
-    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+  virtual smtk::mesh::HandleRange pointDifference(
+    const smtk::mesh::HandleRange& a,
+    const smtk::mesh::HandleRange& b,
+    smtk::mesh::PointConnectivity& bpc,
     smtk::mesh::ContainmentType containmentType) const = 0;
 
   virtual void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const = 0;
 
-  virtual void cellForEach(const HandleRange& cells, smtk::mesh::PointConnectivity& a,
+  virtual void cellForEach(
+    const HandleRange& cells,
+    smtk::mesh::PointConnectivity& a,
     smtk::mesh::CellForEach& filter) const = 0;
 
   virtual void meshForEach(const HandleRange& meshes, smtk::mesh::MeshForEach& filter) const = 0;
@@ -535,7 +600,7 @@ public:
   //state to be proper after serialization / deserialization.
   virtual void setModifiedState(bool state) = 0;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

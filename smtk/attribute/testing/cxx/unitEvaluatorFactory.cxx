@@ -34,7 +34,10 @@ public:
 
   bool canEvaluate(smtk::io::Logger& /*log*/) override { return true; }
 
-  bool evaluate(ValueType& /*result*/, smtk::io::Logger& /*log*/, const std::size_t& /*element*/,
+  bool evaluate(
+    ValueType& /*result*/,
+    smtk::io::Logger& /*log*/,
+    const std::size_t& /*element*/,
     const DependentEvaluationMode& /*evaluationMode*/) override
   {
     return true;
@@ -56,7 +59,10 @@ public:
 
   bool canEvaluate(smtk::io::Logger& /*log*/) override { return true; }
 
-  bool evaluate(ValueType& /*result*/, smtk::io::Logger& /*log*/, const std::size_t& /*element*/,
+  bool evaluate(
+    ValueType& /*result*/,
+    smtk::io::Logger& /*log*/,
+    const std::size_t& /*element*/,
     const DependentEvaluationMode& /*evaluationMode*/) override
   {
     return true;
@@ -78,18 +84,22 @@ void multipleDefinitionsForSameEvaluator()
   smtk::attribute::EvaluatorFactory& factory = attRes->evaluatorFactory();
 
   factory.registerEvaluator<FooEvaluator>("FooEvaluator");
-  smtkTest(factory.addDefinitionForEvaluator("FooEvaluator", fooDef1->type()) == true,
+  smtkTest(
+    factory.addDefinitionForEvaluator("FooEvaluator", fooDef1->type()) == true,
     "Expected to add Definition \"fooDef1\" for Evaluator \"FooEvaluator\".")
-    smtkTest(factory.addDefinitionForEvaluator("FooEvaluator", fooDef2->type()) == true,
+    smtkTest(
+      factory.addDefinitionForEvaluator("FooEvaluator", fooDef2->type()) == true,
       "Expected to add Definition \"fooDef2 for Evaluator \"FooEvaluator\".")
 
       smtk::attribute::AttributePtr fooAtt1 = attRes->createAttribute(fooDef1);
-  smtkTest(attRes->createEvaluator(fooAtt1) != nullptr,
+  smtkTest(
+    attRes->createEvaluator(fooAtt1) != nullptr,
     "Expected an Evaluator for \"fooAtt1\" because its Definition was associated"
     "to \"FooEvaluator\".")
 
     smtk::attribute::AttributePtr fooAtt2 = attRes->createAttribute(fooDef2);
-  smtkTest(attRes->createEvaluator(fooAtt2) != nullptr,
+  smtkTest(
+    attRes->createEvaluator(fooAtt2) != nullptr,
     "Expected an Evaluator for \"fooAtt2\" because its Definition was associated"
     "to \"FooEvaluator\".")
 
@@ -102,7 +112,8 @@ void doesNotCreateEvaluatorForUnknownDefinition()
   smtk::attribute::DefinitionPtr fooDef = attRes->createDefinition("fooDef");
 
   smtk::attribute::AttributePtr fooAtt = attRes->createAttribute(fooDef);
-  smtkTest(attRes->createEvaluator(fooAtt) == nullptr,
+  smtkTest(
+    attRes->createEvaluator(fooAtt) == nullptr,
     "Expected null Evaluator for \"fooAtt\" because its Definition is not"
     "known to the factory.")
 }
@@ -117,11 +128,13 @@ void derivedDefinitions()
   smtk::attribute::EvaluatorFactory& factory = attRes->evaluatorFactory();
 
   factory.registerEvaluator<FooEvaluator>("FooEvaluator");
-  smtkTest(factory.addDefinitionForEvaluator("FooEvaluator", baseDef->type()) == true,
+  smtkTest(
+    factory.addDefinitionForEvaluator("FooEvaluator", baseDef->type()) == true,
     "Expected to add Definition \"baseDef\" for Evaluator \"FooEvaluator\".")
 
     smtk::attribute::AttributePtr derivedAtt = attRes->createAttribute(derivedDef);
-  smtkTest(attRes->createEvaluator(derivedAtt) != nullptr,
+  smtkTest(
+    attRes->createEvaluator(derivedAtt) != nullptr,
     "Expected an Evaluator for \"derivedAtt\" since it has Definition type \"derivedDef\","
     " which is derived from \"baseDef\". \"baseDef\" is known to the factory.")
 }
@@ -138,11 +151,12 @@ void getsAliasesAndDefinitions()
   factory.addDefinitionForEvaluator("FooEvaluator", "c");
   factory.addDefinitionForEvaluator("FooEvaluator", "d");
 
-  std::map<std::string, std::vector<std::string> > expectedAliasesAndDefinitions;
+  std::map<std::string, std::vector<std::string>> expectedAliasesAndDefinitions;
   expectedAliasesAndDefinitions["BarEvaluator"] = { "a", "b" };
   expectedAliasesAndDefinitions["FooEvaluator"] = { "c", "d" };
 
-  smtkTest(factory.aliasesToDefinitions() == expectedAliasesAndDefinitions,
+  smtkTest(
+    factory.aliasesToDefinitions() == expectedAliasesAndDefinitions,
     "Expected aliasesToDefinitions as above.")
 }
 
@@ -157,17 +171,21 @@ void testDefinitionAlreadyRegistered()
   smtkTest(
     factory.isDefinitionRegistered("abc") == false, "Expected \"abc\" to not be registered yet")
 
-    smtkTest(factory.addDefinitionForEvaluator("BarEvaluator", "abc") == true,
+    smtkTest(
+      factory.addDefinitionForEvaluator("BarEvaluator", "abc") == true,
       "Expected to add definition because \"abc\" is not registered yet.")
       smtkTest(
         factory.isDefinitionRegistered("abc") == true, "Expected \"abc\" to not be registered yet")
-        smtkTest(factory.addDefinitionForEvaluator("FooEvaluator", "abc") == false,
+        smtkTest(
+          factory.addDefinitionForEvaluator("FooEvaluator", "abc") == false,
           "\"abc\" should not register because it is already registered to \"BarEvaluator\".")
 
-          smtkTest(factory.addDefinitionForEvaluator("BarEvaluator", "abc") == false,
+          smtkTest(
+            factory.addDefinitionForEvaluator("BarEvaluator", "abc") == false,
             "Already registered \"abc\" to \"BarEvaluator\".")
 
-            smtkTest(factory.isDefinitionRegistered("xyz") == false,
+            smtkTest(
+              factory.isDefinitionRegistered("xyz") == false,
               "Expected \"xyz\" tp not have been registered.")
 }
 

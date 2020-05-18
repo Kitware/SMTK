@@ -28,8 +28,8 @@ namespace resource
 namespace testing
 {
 
-ResourceArray loadTestResources(
-  smtk::resource::Manager::Ptr resourceManager, int argc, char* argv[])
+ResourceArray
+loadTestResources(smtk::resource::Manager::Ptr resourceManager, int argc, char* argv[])
 {
   smtk::model::Registrar::registerTo(resourceManager);
 
@@ -47,6 +47,6 @@ ResourceArray loadTestResources(
 
   return result;
 }
-}
-}
-}
+} // namespace testing
+} // namespace resource
+} // namespace smtk

@@ -56,7 +56,7 @@ private:
   bool m_useSelectionManager;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

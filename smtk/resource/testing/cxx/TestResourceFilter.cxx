@@ -74,8 +74,9 @@ public:
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override
   {
-    auto it = std::find_if(m_components.begin(), m_components.end(),
-      [&](const Component::Ptr& c) { return c->id() == id; });
+    auto it = std::find_if(m_components.begin(), m_components.end(), [&](const Component::Ptr& c) {
+      return c->id() == id;
+    });
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
@@ -93,7 +94,7 @@ protected:
 private:
   std::unordered_set<Component::Ptr> m_components;
 };
-}
+} // namespace
 
 int TestResourceFilter(int /*unused*/, char** const /*unused*/)
 {
@@ -123,31 +124,39 @@ int TestResourceFilter(int /*unused*/, char** const /*unused*/)
   auto queryOp8 = resource->queryOperation("[ floating-point { /f.o/ = 3.14159 } ]");
   auto queryOp9 = resource->queryOperation("[ floating-point { /f.o/ = 2.71828 } ]");
 
-  std::array<decltype(queryOp1)*, 9> queryOps = { &queryOp1, &queryOp2, &queryOp3, &queryOp4,
-    &queryOp5, &queryOp6, &queryOp7, &queryOp8, &queryOp9 };
+  std::array<decltype(queryOp1)*, 9> queryOps = { &queryOp1, &queryOp2, &queryOp3,
+                                                  &queryOp4, &queryOp5, &queryOp6,
+                                                  &queryOp7, &queryOp8, &queryOp9 };
 
-  std::array<std::array<bool, 3>, 9> expected = { { { true, false, false }, { true, false, false },
-    { false, false, false }, { false, true, false }, { false, true, false },
-    { false, false, false }, { false, false, true }, { false, false, true },
-    { false, false, false } } };
+  std::array<std::array<bool, 3>, 9> expected = { { { true, false, false },
+                                                    { true, false, false },
+                                                    { false, false, false },
+                                                    { false, true, false },
+                                                    { false, true, false },
+                                                    { false, false, false },
+                                                    { false, false, true },
+                                                    { false, false, true },
+                                                    { false, false, false } } };
 
   for (std::size_t i = 0; i < 9; ++i)
   {
     for (std::size_t j = 0; j < 3; ++j)
     {
-      test((*queryOps[i])(*components[j]) == expected[i][j], "Filter operation " +
-          std::to_string(i) + ", " + std::to_string(j) + " returned unexpected result");
+      test(
+        (*queryOps[i])(*components[j]) == expected[i][j],
+        "Filter operation " + std::to_string(i) + ", " + std::to_string(j) +
+          " returned unexpected result");
     }
   }
 
   Component::Ptr component4 = resource->newComponent();
-  component4->properties().emplace<std::vector<long> >("foo", { 0, 1, 2 });
+  component4->properties().emplace<std::vector<long>>("foo", { 0, 1, 2 });
 
   Component::Ptr component5 = resource->newComponent();
-  component5->properties().emplace<std::vector<std::string> >("foo", { "bar", "baz", "bat" });
+  component5->properties().emplace<std::vector<std::string>>("foo", { "bar", "baz", "bat" });
 
   Component::Ptr component6 = resource->newComponent();
-  component6->properties().emplace<std::vector<double> >("foo", { 0.1, 2.3, 4.5 });
+  component6->properties().emplace<std::vector<double>>("foo", { 0.1, 2.3, 4.5 });
 
   std::array<Component*, 3> components2 = { component4.get(), component5.get(), component6.get() };
 
@@ -161,20 +170,28 @@ int TestResourceFilter(int /*unused*/, char** const /*unused*/)
   auto queryOp17 = resource->queryOperation("[ vector<floating-point> { 'foo' = (0.1, 2.3, 4.5)}]");
   auto queryOp18 = resource->queryOperation("[ vector<floating-point> { 'foo' = (0.2, 4.6, 8.1)}]");
 
-  std::array<decltype(queryOp1)*, 9> queryOps2 = { &queryOp10, &queryOp11, &queryOp12, &queryOp13,
-    &queryOp14, &queryOp15, &queryOp16, &queryOp17, &queryOp18 };
+  std::array<decltype(queryOp1)*, 9> queryOps2 = { &queryOp10, &queryOp11, &queryOp12,
+                                                   &queryOp13, &queryOp14, &queryOp15,
+                                                   &queryOp16, &queryOp17, &queryOp18 };
 
-  std::array<std::array<bool, 3>, 9> expected2 = { { { true, false, false }, { true, false, false },
-    { false, false, false }, { false, true, false }, { false, true, false },
-    { false, false, false }, { false, false, true }, { false, false, true },
-    { false, false, false } } };
+  std::array<std::array<bool, 3>, 9> expected2 = { { { true, false, false },
+                                                     { true, false, false },
+                                                     { false, false, false },
+                                                     { false, true, false },
+                                                     { false, true, false },
+                                                     { false, false, false },
+                                                     { false, false, true },
+                                                     { false, false, true },
+                                                     { false, false, false } } };
 
   for (std::size_t i = 0; i < 9; ++i)
   {
     for (std::size_t j = 0; j < 3; ++j)
     {
-      test((*queryOps2[i])(*components2[j]) == expected2[i][j], "Filter operation " +
-          std::to_string(i) + ", " + std::to_string(j) + " returned unexpected result");
+      test(
+        (*queryOps2[i])(*components2[j]) == expected2[i][j],
+        "Filter operation " + std::to_string(i) + ", " + std::to_string(j) +
+          " returned unexpected result");
     }
   }
 

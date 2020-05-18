@@ -179,10 +179,15 @@ void qtSimpleExpressionEvaluationView::createWidget()
 
   frame->addWidget(leftFrame);
   frame->addWidget(rightFrame);
-  QObject::connect(this->Internals->FuncList,
-    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    this,
     SLOT(onFuncSelectionChanged(QListWidgetItem*, QListWidgetItem*)));
-  QObject::connect(this->Internals->FuncList, SIGNAL(itemChanged(QListWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncList,
+    SIGNAL(itemChanged(QListWidgetItem*)),
+    this,
     SLOT(onFuncNameChanged(QListWidgetItem*)));
 
   QObject::connect(this->Internals->AddButton, SIGNAL(clicked()), this, SLOT(onCreateNew()));
@@ -194,9 +199,15 @@ void qtSimpleExpressionEvaluationView::createWidget()
     this->Internals->RemoveValueButton, SIGNAL(clicked()), this, SLOT(onRemoveSelectedValues()));
   QObject::connect(this->Internals->LoadCSVButton, SIGNAL(clicked()), this, SLOT(onCSVLoad()));
 
-  QObject::connect(this->Internals->FuncTable, SIGNAL(itemChanged(QTableWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncTable,
+    SIGNAL(itemChanged(QTableWidgetItem*)),
+    this,
     SLOT(onFuncValueChanged(QTableWidgetItem*)));
-  QObject::connect(this->Internals->FuncTable, SIGNAL(keyPressed(QKeyEvent*)), this,
+  QObject::connect(
+    this->Internals->FuncTable,
+    SIGNAL(keyPressed(QKeyEvent*)),
+    this,
     SLOT(onFuncTableKeyPress(QKeyEvent*)));
   this->Internals->FuncTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->FuncList->setSelectionMode(QAbstractItemView::SingleSelection);

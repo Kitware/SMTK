@@ -43,8 +43,8 @@ public:
   virtual ~Geometry() = default;
 
   smtk::geometry::Resource::Ptr resource() const override;
-  void queryGeometry(
-    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override;
+  void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+    const override;
   int dimension(const smtk::resource::PersistentObject::Ptr& obj) const override;
   Purpose purpose(const smtk::resource::PersistentObject::Ptr& obj) const override;
   void update() const override;

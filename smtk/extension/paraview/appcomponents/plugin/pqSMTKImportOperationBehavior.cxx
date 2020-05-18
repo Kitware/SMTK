@@ -88,7 +88,8 @@ void pqImportOperationReaction::importOperation()
     auto result = importPythonOp->operate();
 
     // Test the results for success
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"import python operation\" operation failed\n";
@@ -126,7 +127,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKImportOperationBehavior* g_instance = nullptr;
 

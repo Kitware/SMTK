@@ -70,7 +70,9 @@ bool GarbageCollector::add(const smtk::operation::OperationPtr& deleter)
   if (oit == m_observers.end())
   {
     Key key = manager->observers().insert(
-      [this](const smtk::operation::Operation& op, smtk::operation::EventType event,
+      [this](
+        const smtk::operation::Operation& op,
+        smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         return this->GarbageCollector::collectGarbage(op, event, result);
       },
@@ -92,8 +94,10 @@ bool GarbageCollector::add(const smtk::operation::OperationPtr& deleter)
   }
 }
 
-int GarbageCollector::collectGarbage(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, smtk::operation::Operation::Result /*unused*/)
+int GarbageCollector::collectGarbage(
+  const smtk::operation::Operation& op,
+  smtk::operation::EventType event,
+  smtk::operation::Operation::Result /*unused*/)
 {
   (void)op;
   if (event == smtk::operation::EventType::DID_OPERATE)

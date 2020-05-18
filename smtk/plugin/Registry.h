@@ -62,23 +62,25 @@ namespace detail
 /// ensure that Registrars clean up after themselves when their plugins go
 /// away). The resulting compile-time value "type" reflects whether or not the
 /// Registrar registers to the Manager.
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 class RegistersTo
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testRegisterTo(
-    decltype(std::declval<Registrar>().registerTo(std::declval<std::shared_ptr<X> >()))*);
-  template <typename X>
+    decltype(std::declval<Registrar>().registerTo(std::declval<std::shared_ptr<X>>()))*);
+  template<typename X>
   static std::false_type testRegisterTo(...);
 
-  template <typename X>
+  template<typename X>
   static std::true_type testUnregisterFrom(
-    decltype(std::declval<Registrar>().unregisterFrom(std::declval<std::shared_ptr<X> >()))*);
-  template <typename X>
+    decltype(std::declval<Registrar>().unregisterFrom(std::declval<std::shared_ptr<X>>()))*);
+  template<typename X>
   static std::false_type testUnregisterFrom(...);
 
-  static_assert(std::is_same<decltype(testRegisterTo<Manager>(nullptr)),
-                  decltype(testUnregisterFrom<Manager>(nullptr))>::value == true,
+  static_assert(
+    std::is_same<
+      decltype(testRegisterTo<Manager>(nullptr)),
+      decltype(testUnregisterFrom<Manager>(nullptr))>::value == true,
     "Registrar must be able to both register and unregister from a manager.");
 
 public:
@@ -92,7 +94,7 @@ class SMTKCORE_EXPORT ManagerCount
 public:
   static ManagerCount& instance() { return m_instance; }
 
-  template <typename Registrar, typename Manager>
+  template<typename Registrar, typename Manager>
   std::size_t& operator[](Manager* manager)
   {
     return this->operator[](
@@ -117,24 +119,24 @@ private:
 /// for each Manager is set up to call the Registrar exactly once when a
 /// Registry enters the program's scope and again when the Registry leaves
 /// scope.
-template <typename Registrar, typename Manager, typename Choice>
+template<typename Registrar, typename Manager, typename Choice>
 class MaybeRegister;
 
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 class MaybeRegister<Registrar, Manager, std::false_type>
 {
 public:
   MaybeRegister(const std::shared_ptr<Manager>&) {}
   virtual ~MaybeRegister() {}
 
-  template <typename M>
+  template<typename M>
   bool contains(const std::shared_ptr<M>&) const
   {
     return false;
   }
 };
 
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 class SMTK_ALWAYS_EXPORT MaybeRegister<Registrar, Manager, std::true_type>
 {
 public:
@@ -156,7 +158,7 @@ public:
     }
   }
 
-  template <typename M>
+  template<typename M>
   bool contains(const std::shared_ptr<M>&) const
   {
     return false;
@@ -177,22 +179,22 @@ private:
 /// optional; if omitted, then a Registrar will only register the things it
 /// explicitly lists. The detail::Dependencies class either returns a
 /// Registrar's dependencies or an empty tuple if none are defined.
-template <typename Registrar>
+template<typename Registrar>
 class Dependencies
 {
-  template <typename R>
+  template<typename R>
   static typename R::Dependencies deps(typename R::Dependencies*);
 
-  template <typename R>
+  template<typename R>
   static std::tuple<> deps(...);
 
-  template <typename>
+  template<typename>
   struct is_tuple : std::false_type
   {
   };
 
-  template <typename... T>
-  struct is_tuple<std::tuple<T...> > : std::true_type
+  template<typename... T>
+  struct is_tuple<std::tuple<T...>> : std::true_type
   {
   };
 
@@ -200,15 +202,16 @@ public:
   using type = decltype(deps<Registrar>(nullptr));
 
   static_assert(
-    is_tuple<type>::value == true, "Registrar dependencies must be given as a std::tuple.");
+    is_tuple<type>::value == true,
+    "Registrar dependencies must be given as a std::tuple.");
 };
 
 /// AllDependenciesWithDuplicates is an intermediate step in constructing a flat
 /// list of all of the dependencies of a Registrar.
-template <typename... Registrars>
+template<typename... Registrars>
 struct AllDependenciesWithDuplicates;
 
-template <typename Registrar, typename... Registrars>
+template<typename Registrar, typename... Registrars>
 struct AllDependenciesWithDuplicates<Registrar, Registrars...>
 {
   // We are combining:
@@ -223,21 +226,21 @@ struct AllDependenciesWithDuplicates<Registrar, Registrars...>
 };
 
 // Specialization to strip out the contents of tuples.
-template <typename T>
-struct AllDependenciesWithDuplicates<std::tuple<T> >
+template<typename T>
+struct AllDependenciesWithDuplicates<std::tuple<T>>
 {
   using type = typename AllDependenciesWithDuplicates<T>::type;
 };
 
 // Specialization to handle Registrars with no dependencies.
-template <>
-struct AllDependenciesWithDuplicates<std::tuple<> >
+template<>
+struct AllDependenciesWithDuplicates<std::tuple<>>
 {
   using type = std::tuple<>;
 };
 
 // Specialization to end the list walk.
-template <>
+template<>
 struct AllDependenciesWithDuplicates<>
 {
   using type = std::tuple<>;
@@ -246,14 +249,16 @@ struct AllDependenciesWithDuplicates<>
 /// AllDependencies accepts a Registrar and returns a tuple of all of its
 /// dependencies. It performs a recursive search across its dependent
 /// Registrars.
-template <typename Registrar>
+template<typename Registrar>
 struct AllDependencies
 {
-  using type = decltype(typename smtk::remove_from_tuple<Registrar,
-    typename smtk::unique_tuple<typename smtk::flatten_tuple<
-      typename AllDependenciesWithDuplicates<Registrar>::type>::type>::type>::type());
+  using type =
+    decltype(typename smtk::remove_from_tuple<
+             Registrar,
+             typename smtk::unique_tuple<typename smtk::flatten_tuple<
+               typename AllDependenciesWithDuplicates<Registrar>::type>::type>::type>::type());
 };
-}
+} // namespace detail
 
 /// Since the Registry class is a template class, we introduce a non-templated
 /// base class RegistryBase so that Registries can be manipulated in aggregate.
@@ -293,17 +298,18 @@ protected:
 
 #ifndef SMTK_MSVC
 
-template <typename Registrar, typename Manager, typename... T>
+template<typename Registrar, typename Manager, typename... T>
 class Registry
-  : public detail::MaybeRegister<Registrar, Manager,
-      typename detail::RegistersTo<Registrar, Manager>::type>,
-    public detail::MaybeRegister<Registrar, T, typename detail::RegistersTo<Registrar, T>::type>...,
-    public RegistryBase
+  : public detail::
+      MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>
+  , public detail::MaybeRegister<Registrar, T, typename detail::RegistersTo<Registrar, T>::type>...
+  , public RegistryBase
 {
 public:
   Registry(const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)
-    : detail::MaybeRegister<Registrar, Manager,
-        typename detail::RegistersTo<Registrar, Manager>::type>(manager)
+    : detail::
+        MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>(
+          manager)
     , detail::MaybeRegister<Registrar, T, typename detail::RegistersTo<Registrar, T>::type>(
         managers)...
     , RegistryBase()
@@ -312,7 +318,7 @@ public:
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
 
-  template <typename M>
+  template<typename M>
   bool contains(const std::shared_ptr<M>& m)
   {
     auto tmp = dynamic_cast<
@@ -324,10 +330,13 @@ public:
 
   typedef int DoNotRegisterDependencies;
 
-  Registry(DoNotRegisterDependencies, const std::shared_ptr<Manager>& manager,
+  Registry(
+    DoNotRegisterDependencies,
+    const std::shared_ptr<Manager>& manager,
     const std::shared_ptr<T>&... managers)
-    : detail::MaybeRegister<Registrar, Manager,
-        typename detail::RegistersTo<Registrar, Manager>::type>(manager)
+    : detail::
+        MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>(
+          manager)
     , detail::MaybeRegister<Registrar, T, typename detail::RegistersTo<Registrar, T>::type>(
         managers)...
     , RegistryBase()
@@ -335,9 +344,10 @@ public:
   }
 
 private:
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
-    const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)
+    const std::shared_ptr<Manager>& manager,
+    const std::shared_ptr<T>&... managers)
   {
     m_registries.push_back(new Registry<typename std::tuple_element<I, Tuple>::type, Manager, T...>(
       0, manager, std::forward<const std::shared_ptr<T>&>(managers)...));
@@ -345,9 +355,10 @@ private:
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
-    const std::shared_ptr<Manager>&, const std::shared_ptr<T>&...)
+    const std::shared_ptr<Manager>&,
+    const std::shared_ptr<T>&...)
   {
     return;
   }
@@ -355,15 +366,17 @@ private:
 
 #else
 
-template <typename Registrar, typename Manager = detail::Sentinel, typename... T>
-class Registry : public detail::MaybeRegister<Registrar, Manager,
-                   typename detail::RegistersTo<Registrar, Manager>::type>,
-                 public Registry<Registrar, T...>
+template<typename Registrar, typename Manager = detail::Sentinel, typename... T>
+class Registry
+  : public detail::
+      MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>
+  , public Registry<Registrar, T...>
 {
 public:
   Registry(const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)
-    : detail::MaybeRegister<Registrar, Manager,
-        typename detail::RegistersTo<Registrar, Manager>::type>(manager)
+    : detail::
+        MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>(
+          manager)
     , Registry<Registrar, T...>(managers...)
   {
     this->registerDependencies<0, typename detail::AllDependencies<Registrar>::type>(
@@ -372,7 +385,7 @@ public:
 
   virtual ~Registry() {}
 
-  template <typename M>
+  template<typename M>
   bool contains(const std::shared_ptr<M>& m)
   {
     auto tmp = dynamic_cast<
@@ -381,16 +394,18 @@ public:
   }
 
   Registry(int, const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)
-    : detail::MaybeRegister<Registrar, Manager,
-        typename detail::RegistersTo<Registrar, Manager>::type>(manager)
+    : detail::
+        MaybeRegister<Registrar, Manager, typename detail::RegistersTo<Registrar, Manager>::type>(
+          manager)
     , Registry<Registrar, T...>(managers...)
   {
   }
 
 private:
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
-    const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)
+    const std::shared_ptr<Manager>& manager,
+    const std::shared_ptr<T>&... managers)
   {
     m_registries.push_back(new Registry<typename std::tuple_element<I, Tuple>::type, Manager, T...>(
       0, manager, std::forward<const std::shared_ptr<T>&>(managers)...));
@@ -398,15 +413,16 @@ private:
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
-    const std::shared_ptr<Manager>&, const std::shared_ptr<T>&...)
+    const std::shared_ptr<Manager>&,
+    const std::shared_ptr<T>&...)
   {
     return;
   }
 };
 
-template <typename Registrar>
+template<typename Registrar>
 class Registry<Registrar, detail::Sentinel> : public RegistryBase
 {
 public:
@@ -419,7 +435,7 @@ public:
 };
 
 #endif
-}
-}
+} // namespace plugin
+} // namespace smtk
 
 #endif

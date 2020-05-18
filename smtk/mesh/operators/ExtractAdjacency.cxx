@@ -91,5 +91,5 @@ const char* ExtractAdjacency::xmlDescription() const
 {
   return ExtractAdjacency_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

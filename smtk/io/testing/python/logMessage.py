@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import os
 import smtk
 import smtk.io
@@ -43,6 +43,7 @@ class LogMessage(smtk.testing.TestCase):
             rec = logger.toString(i, True)
             if 'INFO' not in rec:
                 self.assertTrue(__file__ in rec)
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

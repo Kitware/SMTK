@@ -103,8 +103,9 @@ void qtAvailableOperations::updateList()
       }
     }
     auto item = new QListWidgetItem(m_operationList);
-    item->setData(Qt::UserRole + 47, // TODO: why 47?
-      QVariant::fromValue(op));      // Store the operation's index with the list item.
+    item->setData(
+      Qt::UserRole + 47,        // TODO: why 47?
+      QVariant::fromValue(op)); // Store the operation's index with the list item.
     item->setText(label.c_str());
     if (!toolTip.empty())
     {
@@ -117,5 +118,5 @@ void qtAvailableOperations::updateList()
     m_operationList->sortItems();
   }
 }
-}
-}
+} // namespace extension
+} // namespace smtk

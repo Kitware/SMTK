@@ -39,7 +39,7 @@ namespace mesh
 
 namespace
 {
-typedef std::unordered_map<smtk::mesh::Handle, std::array<double, 3> > NormalsMap;
+typedef std::unordered_map<smtk::mesh::Handle, std::array<double, 3>> NormalsMap;
 
 // For each cell, compute the cell's normal and add it to the map.
 class ComputeNormals : public smtk::mesh::CellForEach
@@ -60,8 +60,9 @@ public:
     std::array<double, 3> v1 = { p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2] };
     std::array<double, 3> v2 = { p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2] };
 
-    std::array<double, 3> n = { v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
-      v1[0] * v2[1] - v1[1] * v2[0] };
+    std::array<double, 3> n = { v1[1] * v2[2] - v1[2] * v2[1],
+                                v1[2] * v2[0] - v1[0] * v2[2],
+                                v1[0] * v2[1] - v1[1] * v2[0] };
 
     double magnitude = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
     for (std::size_t i = 0; i < n.size(); i++)
@@ -72,7 +73,9 @@ public:
     return n;
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+  void forCell(
+    const smtk::mesh::Handle& cellId,
+    smtk::mesh::CellType /*cellType*/,
     int /*numPointIds*/) override
   {
     m_normalsMap[cellId] = this->unitNormal();
@@ -99,15 +102,16 @@ public:
 
   void clear() { m_newCells.clear(); }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*unused*/, int nPoints) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*unused*/, int nPoints)
+    override
   {
     (void)nPoints;
     assert(nPoints == 3);
     std::array<double, 3> normal = this->unitNormal();
     smtk::mesh::HandleRange neighborCells = m_interface->neighbors(cellId);
     for (auto i = smtk::mesh::rangeElementsBegin(neighborCells);
-         i != smtk::mesh::rangeElementsEnd(neighborCells); ++i)
+         i != smtk::mesh::rangeElementsEnd(neighborCells);
+         ++i)
     {
       auto it = m_normalsMap.find(*i);
       if (it != m_normalsMap.end())
@@ -129,7 +133,7 @@ private:
   double m_cosDihedralAngle;
   smtk::mesh::HandleRange m_newCells;
 };
-}
+} // namespace
 
 bool ExtractByDihedralAngle::ableToOperate()
 {
@@ -194,7 +198,8 @@ smtk::mesh::ExtractByDihedralAngle::Result ExtractByDihedralAngle::operateIntern
     // Compute the next layer of neighbors to check for inclusion in the
     // extraction set
     for (auto i = smtk::mesh::rangeElementsBegin(newCells);
-         i != smtk::mesh::rangeElementsEnd(newCells); ++i)
+         i != smtk::mesh::rangeElementsEnd(newCells);
+         ++i)
     {
       // Take the intersection of the cell's neighbors with the surface mesh.
       toCheck += (resource->interface()->neighbors(*i) & surfaceMesh.cells().range());

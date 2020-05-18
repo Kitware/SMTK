@@ -30,13 +30,9 @@ namespace session
 namespace multiscale
 {
 
-Session::Session()
-{
-}
+Session::Session() {}
 
-Session::~Session()
-{
-}
+Session::~Session() {}
 
 } // namespace multiscale
 } // namespace session

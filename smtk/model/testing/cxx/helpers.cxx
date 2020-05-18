@@ -46,8 +46,8 @@ namespace testing
 UUIDArray createTet(smtk::model::ResourcePtr sm)
 {
   static const double x[][3] = {
-    { 0., 0., 0. }, { 4., 0., 0. }, { 2., 4., 0. }, { 1., 1., 0. }, { 2., 3., 0. }, { 3., 1., 0. },
-    { 2., 0., -4. },
+    { 0., 0., 0. }, { 4., 0., 0. }, { 2., 4., 0. },  { 1., 1., 0. },
+    { 2., 3., 0. }, { 3., 1., 0. }, { 2., 0., -4. },
   };
 
   UUID uc00 = sm->insertCellOfDimension(0)->first; // keep just the UUID around.
@@ -110,24 +110,26 @@ UUIDArray createTet(smtk::model::ResourcePtr sm)
                                  ->pushRelation(uc20))
                 ->first;
 
-  sm->setTessellationAndBoundingBox(uc21, Tessellation()
-                                            .addCoords(x[0][0], x[0][1], x[0][2])
-                                            .addCoords(x[1][0], x[1][1], x[1][2])
-                                            .addCoords(x[2][0], x[2][1], x[2][2])
-                                            .addCoords(x[3][0], x[3][1], x[3][2])
-                                            .addCoords(x[4][0], x[4][1], x[4][2])
-                                            .addCoords(x[5][0], x[5][1], x[5][2])
-                                            .addCoords(x[6][0], x[6][1], x[6][2])
-                                            .addTriangle(0, 3, 5)
-                                            .addTriangle(0, 5, 1)
-                                            .addTriangle(1, 5, 4)
-                                            .addTriangle(1, 4, 2)
-                                            .addTriangle(2, 4, 3)
-                                            .addTriangle(2, 3, 0)
-                                            .addTriangle(3, 5, 4)
-                                            .addTriangle(0, 6, 1)
-                                            .addTriangle(1, 6, 2)
-                                            .addTriangle(2, 6, 0));
+  sm->setTessellationAndBoundingBox(
+    uc21,
+    Tessellation()
+      .addCoords(x[0][0], x[0][1], x[0][2])
+      .addCoords(x[1][0], x[1][1], x[1][2])
+      .addCoords(x[2][0], x[2][1], x[2][2])
+      .addCoords(x[3][0], x[3][1], x[3][2])
+      .addCoords(x[4][0], x[4][1], x[4][2])
+      .addCoords(x[5][0], x[5][1], x[5][2])
+      .addCoords(x[6][0], x[6][1], x[6][2])
+      .addTriangle(0, 3, 5)
+      .addTriangle(0, 5, 1)
+      .addTriangle(1, 5, 4)
+      .addTriangle(1, 4, 2)
+      .addTriangle(2, 4, 3)
+      .addTriangle(2, 3, 0)
+      .addTriangle(3, 5, 4)
+      .addTriangle(0, 6, 1)
+      .addTriangle(1, 6, 2)
+      .addTriangle(2, 6, 0));
 
   UUIDArray uids;
   uids.push_back(uc00);
@@ -193,15 +195,16 @@ UUIDArray createTet(smtk::model::ResourcePtr sm)
     { 0, 1 }, { 1, 2 }, { 2, 0 }, { 3, 4 }, { 4, 5 }, { 5, 3 }, { 0, 6 }, { 1, 6 }, { 2, 6 },
   };
   int eul[6][3] = { // edge-use-to-loop uid offsets
-    { 9, 8, 7 }, { 10, 11, 12 }, { 12, 11, 10 }, { 7, 14, 13 }, { 8, 15, 14 }, { 9, 13, 15 }
+                    { 9, 8, 7 },   { 10, 11, 12 }, { 12, 11, 10 },
+                    { 7, 14, 13 }, { 8, 15, 14 },  { 9, 13, 15 }
   };
   int eus[6][3] = { // edge-use sense
-    { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 }, { 1, 1, 0 }, { 1, 1, 0 }, { 1, 1, 0 }
+                    { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 }, { 1, 1, 0 }, { 1, 1, 0 }, { 1, 1, 0 }
   };
   Orientation euo[6][3] = { // edge-use orientations
-    { NEGATIVE, NEGATIVE, NEGATIVE }, { NEGATIVE, NEGATIVE, NEGATIVE },
-    { POSITIVE, POSITIVE, POSITIVE }, { POSITIVE, POSITIVE, NEGATIVE },
-    { POSITIVE, POSITIVE, NEGATIVE }, { POSITIVE, POSITIVE, NEGATIVE }
+                            { NEGATIVE, NEGATIVE, NEGATIVE }, { NEGATIVE, NEGATIVE, NEGATIVE },
+                            { POSITIVE, POSITIVE, POSITIVE }, { POSITIVE, POSITIVE, NEGATIVE },
+                            { POSITIVE, POSITIVE, NEGATIVE }, { POSITIVE, POSITIVE, NEGATIVE }
   };
   for (int i = 0; i < 6; ++i)
   {

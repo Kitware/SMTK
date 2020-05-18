@@ -53,10 +53,10 @@ using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 namespace
@@ -69,7 +69,9 @@ enum
 };
 
 bool readCSVFile(
-  const std::string& fileName, std::vector<double>& coordinates, std::vector<double>& values)
+  const std::string& fileName,
+  std::vector<double>& coordinates,
+  std::vector<double>& values)
 {
   std::ifstream infile(fileName.c_str());
   if (!infile.good())
@@ -104,9 +106,11 @@ bool readCSVFile(
 std::array<double, 6> bounds(const smtk::mesh::PointCloud& pc)
 {
   std::array<double, 6> b = { { std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest() } };
+                                std::numeric_limits<double>::lowest(),
+                                std::numeric_limits<double>::max(),
+                                std::numeric_limits<double>::lowest(),
+                                std::numeric_limits<double>::max(),
+                                std::numeric_limits<double>::lowest() } };
 
   for (std::size_t i = 0; i < pc.size(); i++)
   {
@@ -131,9 +135,11 @@ std::array<double, 6> bounds(const smtk::mesh::PointCloud& pc)
 std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
 {
   std::array<double, 6> b = { { std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest() } };
+                                std::numeric_limits<double>::lowest(),
+                                std::numeric_limits<double>::max(),
+                                std::numeric_limits<double>::lowest(),
+                                std::numeric_limits<double>::max(),
+                                std::numeric_limits<double>::lowest() } };
 
   class Extent : public smtk::mesh::PointForEach
   {
@@ -144,7 +150,9 @@ std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
       m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
     }
 
-    void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    void forPoints(
+      const smtk::mesh::HandleRange& /*pointIds*/,
+      std::vector<double>& xyz,
       bool& /*coordinatesModified*/) override
     {
       for (std::size_t i = 0; i < xyz.size(); i += 3)
@@ -174,7 +182,7 @@ std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
   }
   return b;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -316,5 +324,5 @@ const char* GenerateHotStartData::xmlDescription() const
 {
   return GenerateHotStartData_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

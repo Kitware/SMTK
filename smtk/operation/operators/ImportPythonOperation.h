@@ -37,13 +37,15 @@ public:
   static std::vector<std::string> importOperationsFromModule(const std::string&, Manager&);
 
   static bool importOperation(
-    smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName);
+    smtk::operation::Manager& manager,
+    const std::string& moduleName,
+    const std::string& opName);
 
 protected:
   Result operateInternal() override;
   Specification createSpecification() override;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_model_ImportPythonOperation_h

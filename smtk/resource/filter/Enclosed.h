@@ -50,8 +50,8 @@ struct quoted : enclosed<'\'', '\'', arguments...> {};
 template <typename... arguments>
 struct slashed : enclosed<'/', '/', arguments...> {};
 // clang-format on
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

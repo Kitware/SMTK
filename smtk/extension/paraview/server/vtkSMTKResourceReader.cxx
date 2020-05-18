@@ -80,7 +80,8 @@ smtk::resource::ResourcePtr vtkSMTKResourceReader::GenerateResource() const
   oper->parameters()->findFile("filename")->setValue(this->FileName);
 
   auto result = oper->operate();
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     return smtk::resource::ResourcePtr();

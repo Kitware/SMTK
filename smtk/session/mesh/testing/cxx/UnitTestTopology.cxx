@@ -59,8 +59,10 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
   std::string dataRoot = SMTK_DATA_DIR;
   std::string writeRoot = SMTK_SCRATCH_DIR;
 
-  int ImportModel(smtk::model::Entity::Ptr & model,
-    smtk::operation::Manager::Ptr & operationManager, const std::string& filename,
+  int ImportModel(
+    smtk::model::Entity::Ptr & model,
+    smtk::operation::Manager::Ptr & operationManager,
+    const std::string& filename,
     std::string label = std::string())
   {
     {
@@ -84,7 +86,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
       model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
-      if (importOpResult->findInt("outcome")->value() !=
+      if (
+        importOpResult->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Import operator failed\n";
@@ -96,13 +99,14 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
   void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
   {
-    smtk::model::EntityRefArray children = (root.isModel()
-        ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
-        : (root.isCellEntity()
+    smtk::model::EntityRefArray children =
+      (root.isModel()
+         ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+         : (root.isCellEntity()
               ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
               : (root.isGroup()
-                    ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
-                    : smtk::model::EntityRefArray())));
+                   ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
+                   : smtk::model::EntityRefArray())));
 
     for (smtk::model::EntityRefArray::const_iterator it = children.begin(); it != children.end();
          ++it)
@@ -167,10 +171,10 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
     iac->Start();
 #else
-    (void)model;
+  (void)model;
 #endif
   }
-}
+} // namespace
 
 int UnitTestTopology(int argc, char* argv[])
 {
@@ -203,7 +207,8 @@ int UnitTestTopology(int argc, char* argv[])
     std::string readFilePath(dataRoot);
     readFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
 
-    test(ImportModel(model, operationManager, readFilePath) == 0,
+    test(
+      ImportModel(model, operationManager, readFilePath) == 0,
       "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };
@@ -231,7 +236,8 @@ int UnitTestTopology(int argc, char* argv[])
     std::string readFilePath(dataRoot);
     readFilePath += "/model/3d/genesis/gun-1fourth.gen";
 
-    test(ImportModel(model, operationManager, readFilePath) == 0,
+    test(
+      ImportModel(model, operationManager, readFilePath) == 0,
       "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };
@@ -260,7 +266,8 @@ int UnitTestTopology(int argc, char* argv[])
     std::string readFilePath(dataRoot);
     readFilePath += "/mesh/3d/nickel_superalloy.vtu";
 
-    test(ImportModel(model, operationManager, readFilePath, "ZoneIds") == 0,
+    test(
+      ImportModel(model, operationManager, readFilePath, "ZoneIds") == 0,
       "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };

@@ -124,7 +124,7 @@ void verify_DimsType_usage()
   test(!dtypes_3d_only[smtk::mesh::Dims2]);
   test(dtypes_3d_only[smtk::mesh::Dims3]);
 }
-}
+} // namespace
 
 int UnitTestQueryTypes(int /*unused*/, char** const /*unused*/)
 {

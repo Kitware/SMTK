@@ -81,10 +81,18 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
     // we only want selection on one representation.
     view->setUseMultipleRepresentationSelection(false);
     // things are selected
-    QObject::connect(view, SIGNAL(selected(pqOutputPort*)), this, SLOT(selectedInfo(pqOutputPort*)),
+    QObject::connect(
+      view,
+      SIGNAL(selected(pqOutputPort*)),
+      this,
+      SLOT(selectedInfo(pqOutputPort*)),
       Qt::UniqueConnection);
     // selection is done
-    QObject::connect(view, SIGNAL(selectionModeChanged(bool)), this, SLOT(onPickingFinished()),
+    QObject::connect(
+      view,
+      SIGNAL(selectionModeChanged(bool)),
+      this,
+      SLOT(onPickingFinished()),
       Qt::UniqueConnection);
 
     this->Arc = arc;
@@ -100,7 +108,8 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
 }
 
 vtkSelectionNode* ArcPicker::gatherSelectionNode(
-  pqPipelineSource* source, vtkPVSelectionInformation* selInfo)
+  pqPipelineSource* source,
+  vtkPVSelectionInformation* selInfo)
 {
   vtkSMSourceProxy* smSource = vtkSMSourceProxy::SafeDownCast(source->getProxy());
   vtkSMSourceProxy* selSource = smSource->GetSelectionInput(0);
@@ -195,7 +204,7 @@ void ArcPicker::onPickingFinished()
   m_isActive = false;
   emit this->pickFinished();
 }
-}
+} // namespace Ui
 
 class pqArcWidgetPanel::pqInternals : public Ui::qtArcWidgetPanel
 {

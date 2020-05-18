@@ -51,8 +51,8 @@ class SMTKCORE_EXPORT MeshIO
 public:
   virtual ~MeshIO() {}
 
-  virtual smtk::mesh::ResourcePtr importMesh(
-    const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const
+  virtual smtk::mesh::ResourcePtr
+  importMesh(const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const
   {
     return smtk::mesh::ResourcePtr();
   }
@@ -63,13 +63,16 @@ public:
 
   virtual bool exportMesh(const std::string&, smtk::mesh::ResourcePtr) const { return false; }
   virtual bool exportMesh(
-    const std::string&, smtk::mesh::ResourcePtr, smtk::model::ResourcePtr, const std::string&) const
+    const std::string&,
+    smtk::mesh::ResourcePtr,
+    smtk::model::ResourcePtr,
+    const std::string&) const
   {
     return false;
   }
 
-  virtual smtk::mesh::ResourcePtr read(
-    const std::string&, const smtk::mesh::InterfacePtr&, Subset) const
+  virtual smtk::mesh::ResourcePtr read(const std::string&, const smtk::mesh::InterfacePtr&, Subset)
+    const
   {
     return smtk::mesh::ResourcePtr();
   }
@@ -83,8 +86,8 @@ public:
 protected:
   std::vector<smtk::io::mesh::Format> Formats;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk
 
 #endif

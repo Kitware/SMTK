@@ -32,14 +32,19 @@ class Resource;
 
 namespace detail
 {
-class ResourceLinkBase : public Surrogate, public ComponentLinks::Data
+class ResourceLinkBase
+  : public Surrogate
+  , public ComponentLinks::Data
 {
 public:
   ResourceLinkBase(const ResourceLinkBase&) = default;
   ResourceLinkBase(ResourceLinkBase&&) = default;
 
-  ResourceLinkBase(const std::size_t& index, const std::string& typeName,
-    const smtk::common::UUID& id, const std::string& location)
+  ResourceLinkBase(
+    const std::size_t& index,
+    const std::string& typeName,
+    const smtk::common::UUID& id,
+    const std::string& location)
     : Surrogate(index, typeName, id, location)
     , ComponentLinks::Data()
   {
@@ -74,9 +79,9 @@ class SMTKCORE_EXPORT ResourceLinks : public Links
 public:
   friend class smtk::resource::Resource;
 
-  typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
-    ResourceLinkBase>
-    ResourceLinkData;
+  typedef smtk::common::
+    Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int, ResourceLinkBase>
+      ResourceLinkData;
 
   typedef ResourceLinkData::Link Link;
 
@@ -103,8 +108,8 @@ private:
   Resource* m_resource;
   ResourceLinkData m_data;
 };
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_ResourceLinks_h

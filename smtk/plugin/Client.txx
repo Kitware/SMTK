@@ -19,16 +19,16 @@ namespace smtk
 {
 namespace plugin
 {
-template <typename Registrar_t, typename Manager_t, typename... T>
+template<typename Registrar_t, typename Manager_t, typename... T>
 std::shared_ptr<ClientBase> Client<Registrar_t, Manager_t, T...>::create()
 {
-  std::shared_ptr<Client<Registrar_t, Manager_t, T...> > shared(
+  std::shared_ptr<Client<Registrar_t, Manager_t, T...>> shared(
     new Client<Registrar_t, Manager_t, T...>);
   smtk::plugin::Manager::instance()->addClient(
     std::static_pointer_cast<ClientBase>(shared->ClientBase::shared_from_this()));
   return std::static_pointer_cast<ClientBase>(shared);
 }
-}
-}
+} // namespace plugin
+} // namespace smtk
 
 #endif

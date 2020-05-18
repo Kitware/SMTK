@@ -64,7 +64,8 @@ Resource::~Resource()
 }
 
 smtk::attribute::DefinitionPtr Resource::createDefinition(
-  const std::string& typeName, const std::string& baseTypeName)
+  const std::string& typeName,
+  const std::string& baseTypeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist
@@ -94,7 +95,8 @@ smtk::attribute::DefinitionPtr Resource::createDefinition(
 }
 
 smtk::attribute::DefinitionPtr Resource::createDefinition(
-  const std::string& typeName, smtk::attribute::DefinitionPtr baseDef)
+  const std::string& typeName,
+  smtk::attribute::DefinitionPtr baseDef)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
@@ -119,8 +121,9 @@ bool Resource::removeDefinition(DefinitionPtr def)
 {
   if (!def || def->resource() != shared_from_this())
   {
-    std::cerr << "ERROR: " << def->type() << " does not belong to the specified"
-                                             " attribute Resource!";
+    std::cerr << "ERROR: " << def->type()
+              << " does not belong to the specified"
+                 " attribute Resource!";
     return false;
   }
 
@@ -152,7 +155,8 @@ bool Resource::removeDefinition(DefinitionPtr def)
 }
 
 smtk::attribute::AttributePtr Resource::createAttribute(
-  const std::string& name, smtk::attribute::DefinitionPtr def)
+  const std::string& name,
+  smtk::attribute::DefinitionPtr def)
 {
   // Make sure the definition belongs to this Resource or if the definition
   // is abstract
@@ -196,7 +200,8 @@ smtk::attribute::AttributePtr Resource::createAttribute(const std::string& typeN
 }
 
 smtk::attribute::AttributePtr Resource::createAttribute(
-  const std::string& name, const std::string& typeName)
+  const std::string& name,
+  const std::string& typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   if ((def == nullptr) || def->isAbstract())
@@ -246,7 +251,9 @@ void Resource::attributes(std::vector<smtk::attribute::AttributePtr>& result) co
 // For Reader classes - Note that since these methods are restoring an attribute
 // into the resource it does not call setClean(false)
 smtk::attribute::AttributePtr Resource::createAttribute(
-  const std::string& name, smtk::attribute::DefinitionPtr def, const smtk::common::UUID& id)
+  const std::string& name,
+  smtk::attribute::DefinitionPtr def,
+  const smtk::common::UUID& id)
 {
   // Lets make sure the definition is valid
   if ((def == nullptr) || (def->resource() != shared_from_this()) || def->isAbstract())
@@ -270,7 +277,9 @@ smtk::attribute::AttributePtr Resource::createAttribute(
 }
 
 smtk::attribute::AttributePtr Resource::createAttribute(
-  const std::string& name, const std::string& typeName, const smtk::common::UUID& id)
+  const std::string& name,
+  const std::string& typeName,
+  const smtk::common::UUID& id)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   if (def == nullptr)
@@ -310,7 +319,8 @@ bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
   *
   */
 void Resource::findDefinitions(
-  unsigned long mask, std::vector<smtk::attribute::DefinitionPtr>& result) const
+  unsigned long mask,
+  std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   smtk::attribute::DefinitionPtr def;
   result.clear();
@@ -327,7 +337,8 @@ void Resource::findDefinitions(
 }
 
 smtk::attribute::AttributePtr Resource::findAttribute(
-  const smtk::resource::ComponentPtr& comp, const smtk::resource::Links::RoleType& role) const
+  const smtk::resource::ComponentPtr& comp,
+  const smtk::resource::Links::RoleType& role) const
 {
   for (const auto& attInfo : m_attributes)
   {
@@ -339,7 +350,8 @@ smtk::attribute::AttributePtr Resource::findAttribute(
   return smtk::attribute::AttributePtr();
 }
 void Resource::findAttributes(
-  smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
+  smtk::attribute::DefinitionPtr def,
+  std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
   if (def && (def->resource() == shared_from_this()))
@@ -349,7 +361,8 @@ void Resource::findAttributes(
 }
 
 void Resource::internalFindAttributes(
-  smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
+  smtk::attribute::DefinitionPtr def,
+  std::vector<smtk::attribute::AttributePtr>& result) const
 {
   if (!def->isAbstract())
   {
@@ -370,7 +383,9 @@ void Resource::internalFindAttributes(
   }
 }
 
-void Resource::findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
+void Resource::findAllDerivedDefinitions(
+  smtk::attribute::DefinitionPtr def,
+  bool onlyConcrete,
   std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   result.clear();
@@ -380,8 +395,10 @@ void Resource::findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, boo
   }
 }
 
-void Resource::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
-  bool onlyConcrete, std::vector<smtk::attribute::DefinitionPtr>& result) const
+void Resource::internalFindAllDerivedDefinitions(
+  smtk::attribute::DefinitionPtr def,
+  bool onlyConcrete,
+  std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   if (!(def->isAbstract() && onlyConcrete))
   {
@@ -485,7 +502,8 @@ void Resource::finalizeDefinitions()
 }
 
 void Resource::derivedDefinitions(
-  smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::DefinitionPtr>& result) const
+  smtk::attribute::DefinitionPtr def,
+  std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   auto it = m_derivedDefInfo.find(def);
   result.clear();
@@ -604,7 +622,7 @@ void Resource::addAdvanceLevel(int level, std::string label, const double* l_col
 
 const double* Resource::advanceLevelColor(int level) const
 {
-  std::map<int, std::vector<double> >::const_iterator it = m_advLevelColors.find(level);
+  std::map<int, std::vector<double>>::const_iterator it = m_advLevelColors.find(level);
   if (it != m_advLevelColors.end() && it->second.size() == 4)
   {
     return &it->second[0];
@@ -630,7 +648,8 @@ void Resource::setAdvanceLevelColor(int level, const double* l_color)
 // If definition contains ValueItem instances, might have to
 // copy additional definitions for expressions.
 smtk::attribute::DefinitionPtr Resource::copyDefinition(
-  const smtk::attribute::DefinitionPtr sourceDef, unsigned int /*options*/)
+  const smtk::attribute::DefinitionPtr sourceDef,
+  unsigned int /*options*/)
 {
   // Returns defintion
   smtk::attribute::DefinitionPtr newDef = smtk::attribute::DefinitionPtr();
@@ -686,7 +705,8 @@ smtk::attribute::DefinitionPtr Resource::copyDefinition(
 
 // Copies attribute definition into this Resource, returning true if successful
 bool Resource::copyDefinitionImpl(
-  smtk::attribute::DefinitionPtr sourceDef, smtk::attribute::ItemDefinition::CopyInfo& info)
+  smtk::attribute::DefinitionPtr sourceDef,
+  smtk::attribute::ItemDefinition::CopyInfo& info)
 {
   // Check for type conflict
   std::string typeName = sourceDef->type();
@@ -776,8 +796,10 @@ bool Resource::copyDefinitionImpl(
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains ExpressionType instances, might also
 // copy additional attributes from the source attribute Resource.
-smtk::attribute::AttributePtr Resource::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
-  const bool& copyModelAssocs, const unsigned int& itemCopyOptions)
+smtk::attribute::AttributePtr Resource::copyAttribute(
+  const smtk::attribute::AttributePtr sourceAtt,
+  const bool& copyModelAssocs,
+  const unsigned int& itemCopyOptions)
 {
   smtk::attribute::AttributePtr newAtt;
   smtk::attribute::DefinitionPtr newDef;
@@ -907,7 +929,8 @@ std::vector<smtk::view::ConfigurationPtr> Resource::findTopLevelViews() const
 }
 
 void Resource::addStyle(
-  const std::string& definitionType, const smtk::view::Configuration::Component style)
+  const std::string& definitionType,
+  const smtk::view::Configuration::Component style)
 {
   //Find the name of the style
   m_styles[definitionType][style.name()] = style;
@@ -915,7 +938,8 @@ void Resource::addStyle(
 }
 
 const smtk::view::Configuration::Component& Resource::findStyle(
-  const smtk::attribute::DefinitionPtr& def, const std::string& styleName) const
+  const smtk::attribute::DefinitionPtr& def,
+  const std::string& styleName) const
 {
   static smtk::view::Configuration::Component emptyStyle;
   auto attStyles = m_styles.find(def->type());

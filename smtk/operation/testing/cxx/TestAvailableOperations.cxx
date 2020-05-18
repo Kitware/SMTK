@@ -226,7 +226,7 @@ const char* OperationB::xmlDescription() const
 {
   return operationB_xml;
 }
-}
+} // namespace
 
 // Test the operation manager's ability to filter available operations based on
 // the operation's input resource component type. There are three resources
@@ -235,7 +235,7 @@ const char* OperationB::xmlDescription() const
 // components from ResourceA and OperationB accepts components from ResourceB.
 // We query the operation manager using each of the three resource types and
 // test how many operations are available for each type.
-int TestAvailableOperations(int /*unused*/, char* /*unused*/ [])
+int TestAvailableOperations(int /*unused*/, char* /*unused*/[])
 {
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();

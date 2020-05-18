@@ -21,14 +21,14 @@ VoidItemDefinition::VoidItemDefinition(const std::string& myName)
 
 VoidItemDefinition::~VoidItemDefinition() = default;
 
-smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+smtk::attribute::ItemPtr VoidItemDefinition::buildItem(Attribute* owningAttribute, int itemPosition)
+  const
 {
   return smtk::attribute::ItemPtr(new VoidItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+VoidItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new VoidItem(owningItem, itemPosition, subGroupPosition));
 }

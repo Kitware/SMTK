@@ -50,10 +50,27 @@ namespace mesh
 {
 namespace
 {
-typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractAdjacency, ExtractByDihedralAngle,
-  ExtractSkin, GenerateHotStartData, Import, InterpolateOntoMesh, MergeCoincidentPoints,
-  PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName, Subtract, Transform,
-  UndoElevateMesh, Write, WriteResource>
+typedef std::tuple<
+  DeleteMesh,
+  ElevateMesh,
+  Export,
+  ExtractAdjacency,
+  ExtractByDihedralAngle,
+  ExtractSkin,
+  GenerateHotStartData,
+  Import,
+  InterpolateOntoMesh,
+  MergeCoincidentPoints,
+  PrintMeshInformation,
+  Read,
+  ReadResource,
+  SelectCells,
+  SetMeshName,
+  Subtract,
+  Transform,
+  UndoElevateMesh,
+  Write,
+  WriteResource>
   OperationList;
 }
 
@@ -102,5 +119,5 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 {
   resourceManager->unregisterResource<smtk::mesh::Resource>();
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

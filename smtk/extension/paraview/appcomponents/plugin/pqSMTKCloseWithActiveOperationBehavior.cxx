@@ -52,9 +52,11 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
 {
   // Whenever a new server is connected, attach an operation observer that
   // tracks the number of active operations.
-  QObject::connect(pqSMTKBehavior::instance(),
+  QObject::connect(
+    pqSMTKBehavior::instance(),
     (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
-    this, &pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations);
+    this,
+    &pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations);
 
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
@@ -67,8 +69,10 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
     {
       // This functor is connected to the main window's "close" signal, and
       // it allows the user to cancel the close if there is an active operation.
-      QObject::connect(pqApplicationCore::instance()->getMainWindowEventManager(),
-        &pqMainWindowEventManager::close, [](QCloseEvent* closeEvent) {
+      QObject::connect(
+        pqApplicationCore::instance()->getMainWindowEventManager(),
+        &pqMainWindowEventManager::close,
+        [](QCloseEvent* closeEvent) {
           int ret = QMessageBox::Close;
           if (g_numberOfActiveOperations > 0)
           {
@@ -84,7 +88,8 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
 }
 
 void pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations(
-  pqSMTKWrapper* wrapper, pqServer* server)
+  pqSMTKWrapper* wrapper,
+  pqServer* server)
 {
   (void)server;
 
@@ -96,7 +101,9 @@ void pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations(
   m_weakManager = wrapper->smtkOperationManager();
 
   m_key = wrapper->smtkOperationManager()->observers().insert(
-    [](const smtk::operation::Operation&, smtk::operation::EventType event,
+    [](
+      const smtk::operation::Operation&,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result) -> int {
       if (event == smtk::operation::EventType::WILL_OPERATE)
       {

@@ -69,15 +69,18 @@
 namespace
 {
 
-void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtkDataObject* block,
-  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
+void SetAttributeBlockColorToEntity(
+  vtkCompositeDataDisplayAttributes* atts,
+  vtkDataObject* block,
+  const smtk::common::UUID& uuid,
+  const smtk::resource::ResourcePtr& res)
 {
   std::vector<double> color = { { 1., 1., 1., 1. } };
 
   auto component = res->find(uuid);
-  if (component != nullptr && component->properties().contains<std::vector<double> >("color"))
+  if (component != nullptr && component->properties().contains<std::vector<double>>("color"))
   {
-    color = component->properties().at<std::vector<double> >("color");
+    color = component->properties().at<std::vector<double>>("color");
   }
 
   atts->SetBlockColor(block, color.data());
@@ -91,20 +94,27 @@ void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtk
   }
 }
 
-void ColorBlockAsEntity(vtkGlyph3DMapper* mapper, vtkDataObject* block,
-  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
+void ColorBlockAsEntity(
+  vtkGlyph3DMapper* mapper,
+  vtkDataObject* block,
+  const smtk::common::UUID& uuid,
+  const smtk::resource::ResourcePtr& res)
 {
   SetAttributeBlockColorToEntity(mapper->GetBlockAttributes(), block, uuid, res);
 }
 
-void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* block,
-  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
+void ColorBlockAsEntity(
+  vtkCompositePolyDataMapper2* mapper,
+  vtkDataObject* block,
+  const smtk::common::UUID& uuid,
+  const smtk::resource::ResourcePtr& res)
 {
   SetAttributeBlockColorToEntity(mapper->GetCompositeDataDisplayAttributes(), block, uuid, res);
 }
 
 void AddRenderables(
-  vtkMultiBlockDataSet* data, vtkSMTKResourceRepresentation::RenderableDataMap& renderables)
+  vtkMultiBlockDataSet* data,
+  vtkSMTKResourceRepresentation::RenderableDataMap& renderables)
 {
   if (!data)
   {
@@ -128,12 +138,12 @@ void AddRenderables(
 
 // The API of vtkPVRenderView has changed. Report whether the API is
 // new (value == true) or old (value == false) in a struct:
-template <typename RenderView>
+template<typename RenderView>
 struct HasNewAPI
 {
-  template <typename Class>
+  template<typename Class>
   static std::true_type test(decltype(&Class::SetOrderedCompositingConfiguration));
-  template <typename Class>
+  template<typename Class>
   static std::false_type test(...);
 
   static constexpr bool value = decltype(test<RenderView>(nullptr))::value;
@@ -141,17 +151,19 @@ struct HasNewAPI
 
 // Use HasNewAPI to enable one of the MarkRedistributable functions below:
 // 1. New API:
-template <typename RenderView, typename Info, typename Representation>
+template<typename RenderView, typename Info, typename Representation>
 typename std::enable_if<HasNewAPI<RenderView>::value, void>::type MarkRedistributable(
-  Info* inInfo, Representation* self)
+  Info* inInfo,
+  Representation* self)
 {
   RenderView::SetOrderedCompositingConfiguration(inInfo, self, RenderView::DATA_IS_REDISTRIBUTABLE);
 }
 
 // 2. Old API:
-template <typename RenderView, typename Info, typename Representation>
+template<typename RenderView, typename Info, typename Representation>
 typename std::enable_if<!HasNewAPI<RenderView>::value, void>::type MarkRedistributable(
-  Info* inInfo, Representation* self)
+  Info* inInfo,
+  Representation* self)
 {
   RenderView::MarkAsRedistributable(inInfo, self);
 }
@@ -217,7 +229,8 @@ void vtkSMTKResourceRepresentation::SetupDefaults()
 }
 
 void vtkSMTKResourceRepresentation::SetOutputExtent(
-  vtkAlgorithmOutput* output, vtkInformation* inInfo)
+  vtkAlgorithmOutput* output,
+  vtkInformation* inInfo)
 {
   if (inInfo->Has(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()))
   {
@@ -263,7 +276,9 @@ bool vtkSMTKResourceRepresentation::GetModelBounds()
 }
 
 bool vtkSMTKResourceRepresentation::GetEntityBounds(
-  vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes)
+  vtkDataObject* dataObject,
+  double bounds[6],
+  vtkCompositeDataDisplayAttributes* cdAttributes)
 {
   vtkMath::UninitializeBounds(bounds);
   if (vtkCompositeDataSet* cd = vtkCompositeDataSet::SafeDownCast(dataObject))
@@ -279,7 +294,9 @@ bool vtkSMTKResourceRepresentation::GetEntityBounds(
 }
 
 int vtkSMTKResourceRepresentation::RequestData(
-  vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
+  vtkInformation* request,
+  vtkInformationVector** inVec,
+  vtkInformationVector* outVec)
 {
   this->CurrentData->Initialize();
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
@@ -327,7 +344,9 @@ int vtkSMTKResourceRepresentation::RequestData(
 }
 
 int vtkSMTKResourceRepresentation::ProcessViewRequest(
-  vtkInformationRequestKey* request_type, vtkInformation* inInfo, vtkInformation* outInfo)
+  vtkInformationRequestKey* request_type,
+  vtkInformation* inInfo,
+  vtkInformation* outInfo)
 {
   if (!Superclass::ProcessViewRequest(request_type, inInfo, outInfo))
   {
@@ -353,7 +372,8 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     // Tell the view if this representation needs ordered compositing. We need
     // ordered compositing when rendering translucent geometry. We need to extend
     // this condition to consider translucent LUTs once we start supporting them.
-    if (this->Entities->HasTranslucentPolygonalGeometry() ||
+    if (
+      this->Entities->HasTranslucentPolygonalGeometry() ||
       this->GlyphEntities->HasTranslucentPolygonalGeometry() ||
       this->SelectedEntities->HasTranslucentPolygonalGeometry() ||
       this->SelectedGlyphEntities->HasTranslucentPolygonalGeometry())
@@ -487,7 +507,8 @@ void vtkSMTKResourceRepresentation::GetEntityVisibilities(
 }
 
 bool vtkSMTKResourceRepresentation::SetEntityVisibility(
-  smtk::resource::PersistentObjectPtr ent, bool visible)
+  smtk::resource::PersistentObjectPtr ent,
+  bool visible)
 {
   bool didChange = false;
   if (!ent || !ent->id())
@@ -533,8 +554,10 @@ bool vtkSMTKResourceRepresentation::SetEntityVisibility(
   return didChange;
 }
 
-bool vtkSMTKResourceRepresentation::ApplyStyle(smtk::view::SelectionPtr seln,
-  RenderableDataMap& renderables, vtkSMTKResourceRepresentation* self)
+bool vtkSMTKResourceRepresentation::ApplyStyle(
+  smtk::view::SelectionPtr seln,
+  RenderableDataMap& renderables,
+  vtkSMTKResourceRepresentation* self)
 {
   // See if any plugins have registered a generator, and use that.
   auto resource = this->GetResource();
@@ -556,8 +579,10 @@ bool vtkSMTKResourceRepresentation::ApplyStyle(smtk::view::SelectionPtr seln,
   return false;
 }
 
-bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr seln,
-  RenderableDataMap& renderables, vtkSMTKResourceRepresentation* self)
+bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(
+  smtk::view::SelectionPtr seln,
+  RenderableDataMap& renderables,
+  vtkSMTKResourceRepresentation* self)
 {
   bool atLeastOneSelected = false;
   smtk::attribute::Attribute::Ptr attr;
@@ -612,7 +637,9 @@ bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr s
 }
 
 bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
-  smtk::resource::PersistentObject* item, int selnBits, RenderableDataMap& renderables)
+  smtk::resource::PersistentObject* item,
+  int selnBits,
+  RenderableDataMap& renderables)
 {
   bool atLeastOneSelected = false;
   if (!item)
@@ -714,8 +741,8 @@ void vtkSMTKResourceRepresentation::SetMapScalars(int val)
 {
   if (val < 0 || val > 1)
   {
-    vtkWarningMacro(<< "Invalid parameter for vtkSMTKResourceRepresentation::SetMapScalars: "
-                    << val);
+    vtkWarningMacro(
+      << "Invalid parameter for vtkSMTKResourceRepresentation::SetMapScalars: " << val);
     val = 0;
   }
 
@@ -731,9 +758,11 @@ void vtkSMTKResourceRepresentation::SetInterpolateScalarsBeforeMapping(int val)
 }
 
 void vtkSMTKResourceRepresentation::UpdateRenderableData(
-  vtkMultiBlockDataSet* resourceData, vtkMultiBlockDataSet* instanceData)
+  vtkMultiBlockDataSet* resourceData,
+  vtkMultiBlockDataSet* instanceData)
 {
-  if ((resourceData && resourceData->GetMTime() > this->RenderableTime) ||
+  if (
+    (resourceData && resourceData->GetMTime() > this->RenderableTime) ||
     (instanceData && instanceData->GetMTime() > this->RenderableTime) ||
     (this->SelectionTime > this->RenderableTime))
   {
@@ -745,7 +774,8 @@ void vtkSMTKResourceRepresentation::UpdateRenderableData(
 }
 
 void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
-  vtkMultiBlockDataSet* resourceData, vtkMultiBlockDataSet* instanceData)
+  vtkMultiBlockDataSet* resourceData,
+  vtkMultiBlockDataSet* instanceData)
 {
   auto rm = this->GetWrapper();
   auto sm = rm ? rm->GetSelection() : nullptr;
@@ -768,7 +798,8 @@ void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
     return;
   }
 
-  if (resourceData->GetMTime() < this->ApplyStyleTime &&
+  if (
+    resourceData->GetMTime() < this->ApplyStyleTime &&
     (!instanceData || instanceData->GetMTime() < this->ApplyStyleTime) &&
     this->RenderableTime < this->ApplyStyleTime && this->SelectionTime < this->ApplyStyleTime)
   {
@@ -822,7 +853,9 @@ void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
 }
 
 void vtkSMTKResourceRepresentation::UpdateSelection(
-  vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
+  vtkMultiBlockDataSet* data,
+  vtkCompositeDataDisplayAttributes* blockAttr,
+  vtkActor* actor)
 {
   auto rm = this->GetWrapper(); // vtkSMTKWrapper::Instance(); // TODO: Remove the need for this.
   auto sm = rm ? rm->GetSelection() : nullptr;
@@ -866,7 +899,8 @@ void vtkSMTKResourceRepresentation::UpdateSelection(
 }
 
 vtkDataObject* vtkSMTKResourceRepresentation::FindNode(
-  vtkMultiBlockDataSet* data, const smtk::common::UUID& uuid)
+  vtkMultiBlockDataSet* data,
+  const smtk::common::UUID& uuid)
 {
   const int numBlocks = data->GetNumberOfBlocks();
   for (int index = 0; index < numBlocks; index++)
@@ -1283,8 +1317,8 @@ void vtkSMTKResourceRepresentation::ColorByField()
 
   bool using_scalar_coloring = false;
   vtkInformation* info = this->GetInputArrayInformation(0);
-  if (info && info->Has(vtkDataObject::FIELD_ASSOCIATION()) &&
-    info->Has(vtkDataObject::FIELD_NAME()))
+  if (
+    info && info->Has(vtkDataObject::FIELD_ASSOCIATION()) && info->Has(vtkDataObject::FIELD_NAME()))
   {
     const char* colorArrayName = info->Get(vtkDataObject::FIELD_NAME());
     int fieldAssociation = info->Get(vtkDataObject::FIELD_ASSOCIATION());
@@ -1618,7 +1652,9 @@ void vtkSMTKResourceRepresentation::RemoveBlockOpacities()
 }
 
 void vtkSMTKResourceRepresentation::SetSelectedState(
-  vtkDataObject* data, int selectionValue, bool isGlyph)
+  vtkDataObject* data,
+  int selectionValue,
+  bool isGlyph)
 {
   auto nrm = isGlyph ? this->GlyphMapper->GetBlockAttributes()
                      : this->EntityMapper->GetCompositeDataDisplayAttributes();
@@ -1666,7 +1702,10 @@ void vtkSMTKResourceRepresentation::RemoveInstanceVisibilities()
 }
 
 void vtkSMTKResourceRepresentation::SetInstanceColor(
-  unsigned int index, double r, double g, double b)
+  unsigned int index,
+  double r,
+  double g,
+  double b)
 {
   std::array<double, 3> color = { { r, g, b } };
   this->InstanceColors[index] = color;

@@ -57,7 +57,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   operationManager->unregisterOperations<OperationList>();
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace paraview
+} // namespace extension
+} // namespace smtk

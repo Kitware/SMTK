@@ -87,15 +87,14 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const smtk::mesh::Handle
   return smtk::mesh::PointLocatorImplPtr();
 }
 
-smtk::mesh::PointLocatorImplPtr Interface::pointLocator(std::size_t /*numPoints*/,
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+  std::size_t /*numPoints*/,
   const std::function<std::array<double, 3>(std::size_t)>& /*coordinates*/)
 {
   return smtk::mesh::PointLocatorImplPtr();
 }
 
-void Interface::registerQueries(smtk::mesh::Resource&) const
-{
-}
+void Interface::registerQueries(smtk::mesh::Resource&) const {}
 
 smtk::mesh::Handle Interface::getRoot() const
 {
@@ -103,7 +102,8 @@ smtk::mesh::Handle Interface::getRoot() const
 }
 
 bool Interface::createMesh(
-  const smtk::mesh::HandleRange& /*cells*/, smtk::mesh::Handle& /*meshHandle*/)
+  const smtk::mesh::HandleRange& /*cells*/,
+  smtk::mesh::Handle& /*meshHandle*/)
 {
   //this interface can't create new meshes
   return false;
@@ -157,14 +157,16 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle, int di
 
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle /*handle*/, const std::string& /*name*/) const
+  smtk::mesh::Handle /*handle*/,
+  const std::string& /*name*/) const
 {
   return smtk::mesh::HandleRange();
 }
 
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle handle, const smtk::mesh::Domain& domain) const
+  smtk::mesh::Handle handle,
+  const smtk::mesh::Domain& domain) const
 {
   if (handle != this->getRoot())
   {
@@ -185,7 +187,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle handle, const smtk::mesh::Dirichlet& dirichlet) const
+  smtk::mesh::Handle handle,
+  const smtk::mesh::Dirichlet& dirichlet) const
 {
   if (handle != this->getRoot())
   {
@@ -206,7 +209,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle handle, const smtk::mesh::Neumann& neumann) const
+  smtk::mesh::Handle handle,
+  const smtk::mesh::Neumann& neumann) const
 {
   if (handle != this->getRoot())
   {
@@ -230,7 +234,8 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange& meshsets) const
 {
   smtk::mesh::HandleRange cells;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
@@ -243,11 +248,13 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange& meshsets) const
 
 //get all cells held by this range handle of a given cell type
 smtk::mesh::HandleRange Interface::getCells(
-  const HandleRange& meshsets, smtk::mesh::CellType cellType) const
+  const HandleRange& meshsets,
+  smtk::mesh::CellType cellType) const
 {
   smtk::mesh::HandleRange cells;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
@@ -260,11 +267,13 @@ smtk::mesh::HandleRange Interface::getCells(
 
 //get all cells held by this range handle of a given cell type(s)
 smtk::mesh::HandleRange Interface::getCells(
-  const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellTypes& cellTypes) const
+  const smtk::mesh::HandleRange& meshsets,
+  const smtk::mesh::CellTypes& cellTypes) const
 {
   smtk::mesh::HandleRange cells;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
@@ -277,11 +286,13 @@ smtk::mesh::HandleRange Interface::getCells(
 
 //get all cells held by this range handle of a given dimension
 smtk::mesh::HandleRange Interface::getCells(
-  const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const
+  const smtk::mesh::HandleRange& meshsets,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::HandleRange cells;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
@@ -294,7 +305,8 @@ smtk::mesh::HandleRange Interface::getCells(
 
 //get all points held by this range handle
 smtk::mesh::HandleRange Interface::getPoints(
-  const smtk::mesh::HandleRange& cells, bool boundary_only) const
+  const smtk::mesh::HandleRange& cells,
+  bool boundary_only) const
 {
   // We don't support modifying operations via the JSON interface (like meshset
   // construction, point merging, etc.); in keeping with this paradigm, the only
@@ -330,13 +342,15 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& /*points*/, float*
 }
 
 bool Interface::setCoordinates(
-  const smtk::mesh::HandleRange& /*points*/, const double* const /*xyz*/)
+  const smtk::mesh::HandleRange& /*points*/,
+  const double* const /*xyz*/)
 {
   return false;
 }
 
 bool Interface::setCoordinates(
-  const smtk::mesh::HandleRange& /*points*/, const float* const /*xyz*/)
+  const smtk::mesh::HandleRange& /*points*/,
+  const float* const /*xyz*/)
 {
   return false;
 }
@@ -362,7 +376,8 @@ std::vector<smtk::mesh::Domain> Interface::computeDomainValues(
 {
   std::set<smtk::mesh::Domain> domains;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Domain>& t = m->domains();
@@ -378,7 +393,8 @@ std::vector<smtk::mesh::Dirichlet> Interface::computeDirichletValues(
 {
   std::set<smtk::mesh::Dirichlet> boundary;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Dirichlet>& t = m->dirichlets();
@@ -394,7 +410,8 @@ std::vector<smtk::mesh::Neumann> Interface::computeNeumannValues(
 {
   std::set<smtk::mesh::Neumann> boundary;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Neumann>& t = m->neumanns();
@@ -413,7 +430,8 @@ smtk::common::UUIDArray Interface::computeModelEntities(
 {
   smtk::common::UUIDArray uuids;
   for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
-       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
+       i != smtk::mesh::rangeElementsEnd(meshsets);
+       ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m == m_meshInfo.end())
@@ -453,7 +471,7 @@ smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range
       //now we need to convert from CellEnum to MoabType
       const CellEnum ce = static_cast<CellEnum>(i);
       const ::moab::EntityType moabEType =
-        static_cast< ::moab::EntityType>(smtk::mesh::moab::smtkToMOABCell(ce));
+        static_cast<::moab::EntityType>(smtk::mesh::moab::smtkToMOABCell(ce));
 
       //if num_of_type is greater than zero we have cells of that type
       if (cells.num_of_type(moabEType) > 0)
@@ -472,25 +490,31 @@ smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range
 }
 
 bool Interface::computeShell(
-  const smtk::mesh::HandleRange& /*meshes*/, smtk::mesh::HandleRange& /*shell*/) const
+  const smtk::mesh::HandleRange& /*meshes*/,
+  smtk::mesh::HandleRange& /*shell*/) const
 {
   return false;
 }
 
-bool Interface::computeAdjacenciesOfDimension(const smtk::mesh::HandleRange& /*meshes*/,
-  int /*dimension*/, smtk::mesh::HandleRange& /*adj*/) const
+bool Interface::computeAdjacenciesOfDimension(
+  const smtk::mesh::HandleRange& /*meshes*/,
+  int /*dimension*/,
+  smtk::mesh::HandleRange& /*adj*/) const
 {
   return false;
 }
 
 bool Interface::canonicalIndex(
-  const smtk::mesh::Handle& /*cell*/, smtk::mesh::Handle& /*parent*/, int& /*index*/) const
+  const smtk::mesh::Handle& /*cell*/,
+  smtk::mesh::Handle& /*parent*/,
+  int& /*index*/) const
 {
   return false;
 }
 
 bool Interface::mergeCoincidentContactPoints(
-  const smtk::mesh::HandleRange& /*meshes*/, double /*tolerance*/)
+  const smtk::mesh::HandleRange& /*meshes*/,
+  double /*tolerance*/)
 {
   return false;
 }
@@ -502,19 +526,22 @@ smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) c
 }
 
 bool Interface::setDomain(
-  const smtk::mesh::HandleRange& /*meshsets*/, const smtk::mesh::Domain& /*domain*/) const
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::Domain& /*domain*/) const
 {
   return false;
 }
 
 bool Interface::setDirichlet(
-  const smtk::mesh::HandleRange& /*meshsets*/, const smtk::mesh::Dirichlet& /*dirichlet*/) const
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::Dirichlet& /*dirichlet*/) const
 {
   return false;
 }
 
 bool Interface::setNeumann(
-  const smtk::mesh::HandleRange& /*meshsets*/, const smtk::mesh::Neumann& /*neumann*/) const
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::Neumann& /*neumann*/) const
 {
   return false;
 }
@@ -538,7 +565,9 @@ smtk::common::UUID Interface::getId(const smtk::mesh::Handle& meshset) const
   return smtk::common::UUID::null();
 }
 
-bool Interface::findById(const smtk::mesh::Handle& /*root*/, const smtk::common::UUID& id,
+bool Interface::findById(
+  const smtk::mesh::Handle& /*root*/,
+  const smtk::common::UUID& id,
   smtk::mesh::Handle& meshset) const
 {
   smtk::mesh::HandleRange meshes;
@@ -557,7 +586,8 @@ bool Interface::findById(const smtk::mesh::Handle& /*root*/, const smtk::common:
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
 bool Interface::setAssociation(
-  const smtk::common::UUID& /*modelUUID*/, const smtk::mesh::HandleRange& /*meshsets*/) const
+  const smtk::common::UUID& /*modelUUID*/,
+  const smtk::mesh::HandleRange& /*meshsets*/) const
 {
   return false;
 }
@@ -566,7 +596,8 @@ bool Interface::setAssociation(
   *
   */
 smtk::mesh::HandleRange Interface::findAssociations(
-  const smtk::mesh::Handle& /*root*/, const smtk::common::UUID& modelUUID) const
+  const smtk::mesh::Handle& /*root*/,
+  const smtk::common::UUID& modelUUID) const
 {
   smtk::mesh::HandleRange result;
   if (!modelUUID)
@@ -601,8 +632,11 @@ smtk::common::UUID Interface::rootAssociation() const
   return m_associated_model;
 }
 
-bool Interface::createCellField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const std::string& /*name*/, std::size_t /*dimension*/, const smtk::mesh::FieldType& /*type*/,
+bool Interface::createCellField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const std::string& /*name*/,
+  std::size_t /*dimension*/,
+  const smtk::mesh::FieldType& /*type*/,
   const void* /*data*/)
 {
   return false;
@@ -619,37 +653,47 @@ smtk::mesh::FieldType Interface::getCellFieldType(const smtk::mesh::CellFieldTag
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle /*handle*/, const smtk::mesh::CellFieldTag& /*cfTag*/) const
+  smtk::mesh::Handle /*handle*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/) const
 {
   return smtk::mesh::HandleRange();
 }
 
 bool Interface::hasCellField(
-  const smtk::mesh::HandleRange& /*meshsets*/, const smtk::mesh::CellFieldTag& /*cfTag*/) const
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/) const
 {
   return false;
 }
 
-bool Interface::getCellField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const smtk::mesh::CellFieldTag& /*cfTag*/, void* /*data*/) const
+bool Interface::getCellField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/,
+  void* /*data*/) const
 {
   return false;
 }
 
-bool Interface::setCellField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const smtk::mesh::CellFieldTag& /*cfTag*/, const void* const /*data*/)
+bool Interface::setCellField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/,
+  const void* const /*data*/)
 {
   return false;
 }
 
-bool Interface::getField(const smtk::mesh::HandleRange& /*cells*/,
-  const smtk::mesh::CellFieldTag& /*cfTag*/, void* /*data*/) const
+bool Interface::getField(
+  const smtk::mesh::HandleRange& /*cells*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/,
+  void* /*data*/) const
 {
   return false;
 }
 
-bool Interface::setField(const smtk::mesh::HandleRange& /*cells*/,
-  const smtk::mesh::CellFieldTag& /*cfTag*/, const void* const /*data*/)
+bool Interface::setField(
+  const smtk::mesh::HandleRange& /*cells*/,
+  const smtk::mesh::CellFieldTag& /*cfTag*/,
+  const void* const /*data*/)
 {
   return false;
 }
@@ -661,13 +705,17 @@ std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
 }
 
 bool Interface::deleteCellField(
-  const smtk::mesh::CellFieldTag& /*dsTag*/, const smtk::mesh::HandleRange& /*meshsets*/)
+  const smtk::mesh::CellFieldTag& /*dsTag*/,
+  const smtk::mesh::HandleRange& /*meshsets*/)
 {
   return false;
 }
 
-bool Interface::createPointField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const std::string& /*name*/, std::size_t /*dimension*/, const smtk::mesh::FieldType& /*type*/,
+bool Interface::createPointField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const std::string& /*name*/,
+  std::size_t /*dimension*/,
+  const smtk::mesh::FieldType& /*type*/,
   const void* /*data*/)
 {
   return false;
@@ -684,37 +732,47 @@ smtk::mesh::FieldType Interface::getPointFieldType(const smtk::mesh::PointFieldT
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(
-  smtk::mesh::Handle /*handle*/, const smtk::mesh::PointFieldTag& /*pfTag*/) const
+  smtk::mesh::Handle /*handle*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/) const
 {
   return smtk::mesh::HandleRange();
 }
 
 bool Interface::hasPointField(
-  const smtk::mesh::HandleRange& /*meshsets*/, const smtk::mesh::PointFieldTag& /*pfTag*/) const
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/) const
 {
   return false;
 }
 
-bool Interface::getPointField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const smtk::mesh::PointFieldTag& /*pfTag*/, void* /*data*/) const
+bool Interface::getPointField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/,
+  void* /*data*/) const
 {
   return false;
 }
 
-bool Interface::setPointField(const smtk::mesh::HandleRange& /*meshsets*/,
-  const smtk::mesh::PointFieldTag& /*pfTag*/, const void* const /*data*/)
+bool Interface::setPointField(
+  const smtk::mesh::HandleRange& /*meshsets*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/,
+  const void* const /*data*/)
 {
   return false;
 }
 
-bool Interface::getField(const smtk::mesh::HandleRange& /*points*/,
-  const smtk::mesh::PointFieldTag& /*pfTag*/, void* /*data*/) const
+bool Interface::getField(
+  const smtk::mesh::HandleRange& /*points*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/,
+  void* /*data*/) const
 {
   return false;
 }
 
-bool Interface::setField(const smtk::mesh::HandleRange& /*points*/,
-  const smtk::mesh::PointFieldTag& /*pfTag*/, const void* const /*data*/)
+bool Interface::setField(
+  const smtk::mesh::HandleRange& /*points*/,
+  const smtk::mesh::PointFieldTag& /*pfTag*/,
+  const void* const /*data*/)
 {
   return false;
 }
@@ -726,37 +784,45 @@ std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
 }
 
 bool Interface::deletePointField(
-  const smtk::mesh::PointFieldTag& /*dsTag*/, const smtk::mesh::HandleRange& /*meshsets*/)
+  const smtk::mesh::PointFieldTag& /*dsTag*/,
+  const smtk::mesh::HandleRange& /*meshsets*/)
 {
   return false;
 }
 
-smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& /*a*/,
-  const smtk::mesh::HandleRange& /*b*/, smtk::mesh::PointConnectivity& /*bpc*/,
+smtk::mesh::HandleRange Interface::pointIntersect(
+  const smtk::mesh::HandleRange& /*a*/,
+  const smtk::mesh::HandleRange& /*b*/,
+  smtk::mesh::PointConnectivity& /*bpc*/,
   smtk::mesh::ContainmentType /*containmentType*/) const
 {
   return smtk::mesh::HandleRange();
 }
 
-smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& /*a*/,
-  const smtk::mesh::HandleRange& /*b*/, smtk::mesh::PointConnectivity& /*bpc*/,
+smtk::mesh::HandleRange Interface::pointDifference(
+  const smtk::mesh::HandleRange& /*a*/,
+  const smtk::mesh::HandleRange& /*b*/,
+  smtk::mesh::PointConnectivity& /*bpc*/,
   smtk::mesh::ContainmentType /*containmentType*/) const
 {
   return smtk::mesh::HandleRange();
 }
 
-void Interface::pointForEach(
-  const HandleRange& /*points*/, smtk::mesh::PointForEach& /*filter*/) const
+void Interface::pointForEach(const HandleRange& /*points*/, smtk::mesh::PointForEach& /*filter*/)
+  const
 {
 }
 
-void Interface::cellForEach(const HandleRange& /*cells*/, smtk::mesh::PointConnectivity& /*a*/,
+void Interface::cellForEach(
+  const HandleRange& /*cells*/,
+  smtk::mesh::PointConnectivity& /*a*/,
   smtk::mesh::CellForEach& /*filter*/) const
 {
 }
 
 void Interface::meshForEach(
-  const smtk::mesh::HandleRange& /*meshes*/, smtk::mesh::MeshForEach& /*filter*/) const
+  const smtk::mesh::HandleRange& /*meshes*/,
+  smtk::mesh::MeshForEach& /*filter*/) const
 {
 }
 
@@ -770,6 +836,6 @@ Interface::MeshInfoVecType::const_iterator Interface::find(smtk::mesh::Handle ha
   MeshInfoVecType::const_iterator result = std::find(m_meshInfo.begin(), m_meshInfo.end(), handle);
   return result;
 }
-}
-}
-}
+} // namespace json
+} // namespace mesh
+} // namespace smtk

@@ -22,7 +22,7 @@
 
 using json = nlohmann::json;
 
-int unitOperationFilterSort(int, char* [])
+int unitOperationFilterSort(int, char*[])
 {
   bool ok = true;
   smtk::io::Logger::instance().setFlushToStdout(true);

@@ -31,8 +31,10 @@ using namespace smtk;
 namespace
 {
 
-bool testCategories(const attribute::ResourcePtr& attRes, const std::string& prefix,
-  const std::vector<std::pair<std::set<std::string>, std::vector<bool> > >& answers)
+bool testCategories(
+  const attribute::ResourcePtr& attRes,
+  const std::string& prefix,
+  const std::vector<std::pair<std::set<std::string>, std::vector<bool>>>& answers)
 {
   std::cerr << prefix << " Testing Attribute Definition's Item Categories:\n";
   smtk::attribute::DefinitionPtr def = attRes->findDefinition("A");
@@ -134,9 +136,9 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef->localCategories() = testCats;
   attRes->finalizeDefinitions();
 }
-}
+} // namespace
 
-int unitExclusionCategories(int /*unused*/, char* /*unused*/ [])
+int unitExclusionCategories(int /*unused*/, char* /*unused*/[])
 {
   //
   // I. Let's create an attribute resource and some definitions
@@ -144,7 +146,7 @@ int unitExclusionCategories(int /*unused*/, char* /*unused*/ [])
   setupAttributeResource(attRes);
 
   // Lets define what expected results will be for each item in the attribute
-  std::vector<std::pair<std::set<std::string>, std::vector<bool> > > answers = {
+  std::vector<std::pair<std::set<std::string>, std::vector<bool>>> answers = {
     { { "a" }, { false, false, true, true, true, true, true, true } },
     { { "b" }, { false, false, true, true, true, true, true, true } },
     { { "c" }, { false, false, true, false, false, false, true, false } },
@@ -176,7 +178,8 @@ int unitExclusionCategories(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -184,7 +187,8 @@ int unitExclusionCategories(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -196,15 +200,17 @@ int unitExclusionCategories(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(
     testCategories(attRes, "XML Pass - ", answers), "Failed checking Categories in XML Pass");

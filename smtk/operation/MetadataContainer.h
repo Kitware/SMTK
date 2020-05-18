@@ -40,11 +40,12 @@ using namespace boost::multi_index;
 typedef boost::multi_index_container<
   Metadata,
   indexed_by<
-    ordered_unique<tag<NameTag>, const_mem_fun<Metadata, const std::string&, &Metadata::typeName> >,
-    ordered_unique<tag<IndexTag>,
-      const_mem_fun<Metadata, const smtk::operation::Operation::Index&, &Metadata::index> > > >
+    ordered_unique<tag<NameTag>, const_mem_fun<Metadata, const std::string&, &Metadata::typeName>>,
+    ordered_unique<
+      tag<IndexTag>,
+      const_mem_fun<Metadata, const smtk::operation::Operation::Index&, &Metadata::index>>>>
   MetadataContainer;
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_MetadataContainer_h

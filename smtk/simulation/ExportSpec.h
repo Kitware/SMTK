@@ -50,7 +50,7 @@ private:
   smtk::attribute::ResourcePtr m_exportResource;
   smtk::io::LoggerPtr m_logger;
 };
-}
-}
+} // namespace simulation
+} // namespace smtk
 
 #endif /* __smtk_simulation_ExportSpec_h */

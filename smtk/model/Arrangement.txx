@@ -19,11 +19,11 @@ namespace model
 {
 
 /// A helper to extract the relationship from an arrangement that stores only an index.
-template <bool (Arrangement::*M)(int&) const>
+template<bool (Arrangement::*M)(int&) const>
 struct Arrangement::IndexHelper
 {
-  bool operator()(
-    smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
+  bool operator()(smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr)
+    const
   {
     if (entity)
     {
@@ -48,11 +48,11 @@ struct Arrangement::IndexHelper
 };
 
 /// A helper to extract the relationship from an arrangement that stores an index and sense.
-template <bool (Arrangement::*M)(int&, int&) const>
+template<bool (Arrangement::*M)(int&, int&) const>
 struct Arrangement::IndexAndSenseHelper
 {
-  bool operator()(
-    smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
+  bool operator()(smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr)
+    const
   {
     if (entity)
     {
@@ -77,11 +77,11 @@ struct Arrangement::IndexAndSenseHelper
 };
 
 /// A helper to extract relationships from an arrangement that stores an index range.
-template <bool (Arrangement::*M)(int&, int&) const>
+template<bool (Arrangement::*M)(int&, int&) const>
 struct Arrangement::IndexRangeHelper
 {
-  bool operator()(
-    smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
+  bool operator()(smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr)
+    const
   {
     if (entity)
     {
@@ -108,11 +108,11 @@ struct Arrangement::IndexRangeHelper
 };
 
 /// A helper to extract the relationship from an arrangement that stores an index, sense, and orientation.
-template <bool (Arrangement::*M)(int&, int&, Orientation&) const>
+template<bool (Arrangement::*M)(int&, int&, Orientation&) const>
 struct Arrangement::IndexSenseAndOrientationHelper
 {
-  bool operator()(
-    smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
+  bool operator()(smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr)
+    const
   {
     if (entity)
     {
@@ -138,7 +138,7 @@ struct Arrangement::IndexSenseAndOrientationHelper
   }
 };
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif

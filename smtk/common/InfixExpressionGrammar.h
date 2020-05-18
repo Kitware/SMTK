@@ -54,7 +54,9 @@ public:
 
 private:
   InfixExpressionError testExpressionSyntax(
-    const std::string& expression, InfixOperators& ops, EvaluationStacks& stacks) const;
+    const std::string& expression,
+    InfixOperators& ops,
+    EvaluationStacks& stacks) const;
 
   InfixFunctions m_functions;
   SubsymbolVisitor m_subsymbolVisitor;

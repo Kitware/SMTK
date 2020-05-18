@@ -52,7 +52,7 @@ public:
     std::function<std::string(const smtk::resource::PersistentObject&, const std::string&)>;
 
   /// Register an icon constructor identified by the resource it represents.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registerIconConstructor(IconConstructor&&);
 
   /// Register an icon constructor identified by the type name of the resource
@@ -64,7 +64,7 @@ public:
   bool registerDefaultIconConstructor(IconConstructor&&);
 
   /// Unregister an icon identified by the resource it represents.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool unregisterIconConstructor();
 
   /// Unregister an icon identified by the type name of the resource it
@@ -73,27 +73,27 @@ public:
 
   /// construct an icon idenfified by the resource or component it represents.
   /// secondaryColor is used for edges, and should contrast any background.
-  std::string createIcon(
-    const smtk::resource::PersistentObject&, const std::string& secondaryColor) const;
+  std::string createIcon(const smtk::resource::PersistentObject&, const std::string& secondaryColor)
+    const;
 
 private:
   /// A container for all registered icon constructors.
   std::map<std::string, IconConstructor> m_iconConstructors;
 };
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool ObjectIcons::registerIconConstructor(IconConstructor&& iconConstructor)
 {
   return registerIconConstructor(
     smtk::common::typeName<ResourceType>(), std::forward<IconConstructor>(iconConstructor));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool ObjectIcons::unregisterIconConstructor()
 {
   return unregisterIconConstructor(smtk::common::typeName<ResourceType>());
 }
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

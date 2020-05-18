@@ -114,9 +114,10 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     // name is requested by the user, warn and continue.
     if (!writerFileItem && setFileName)
     {
-      smtkWarningMacro(this->log(), "File name \""
-          << fileName << "\" was provided, but the registered writer for type \""
-          << resource->typeName() << "\" does not accept an input file item.");
+      smtkWarningMacro(
+        this->log(),
+        "File name \"" << fileName << "\" was provided, but the registered writer for type \""
+                       << resource->typeName() << "\" does not accept an input file item.");
     }
 
     // If the writer does accept a filename input, set it.
@@ -144,7 +145,8 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     }
 
     smtk::operation::Operation::Result writeOperationResult = writeOperation->operate(Key());
-    if (writeOperationResult->findInt("outcome")->value() !=
+    if (
+      writeOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       // An error message should already enter the logger from the local
@@ -158,8 +160,9 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 
     // Gather all of the file items in the write operation's result.
     std::vector<smtk::attribute::Item::Ptr> items;
-    auto filter = [](
-      smtk::attribute::Item::Ptr item) { return item->type() == smtk::attribute::Item::FileType; };
+    auto filter = [](smtk::attribute::Item::Ptr item) {
+      return item->type() == smtk::attribute::Item::FileType;
+    };
     writeOperationResult->filterItems(items, filter, false);
 
     // For each item found...
@@ -218,5 +221,5 @@ void WriteResource::generateSummary(WriteResource::Result& res)
     smtkErrorMacro(this->log(), msg.str());
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

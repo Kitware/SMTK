@@ -51,7 +51,7 @@ public:
   /// Given an object return an operation that can delete it.
   Operation::Index matchingOperation(const smtk::resource::PersistentObject& obj) const;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_DeleterGroup_h

@@ -88,7 +88,7 @@ public:
   static const char* GetVolumeTagName() { return "Volume"; }
   static const char* GetAttributeTagName() { return "Attribute"; }
 
-  template <typename T>
+  template<typename T>
   static T GetDataObjectEntityAs(smtk::model::ResourcePtr resource, vtkInformation* info)
   {
     return T(resource, vtkResourceMultiBlockSource::GetDataObjectUUID(info));
@@ -101,33 +101,54 @@ protected:
   ~vtkModelMultiBlockSource() override;
 
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
-    const smtk::model::EntityRef& entity, bool genNormals);
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
-    const smtk::model::EntityRef& entity, const smtk::model::Tessellation* tess, bool genNormals);
+    const smtk::model::EntityRef& entity,
+    const smtk::model::Tessellation* tess,
+    bool genNormals);
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromMeshTessellation(
-    const smtk::model::EntityRef& entity, bool genNormals);
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
 
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
-  void AddInstanceMetadata(vtkIdType& npts, smtk::model::InstanceSet& modelInstances,
+    vtkPolyData* poly,
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
+  void AddInstanceMetadata(
+    vtkIdType& npts,
+    smtk::model::InstanceSet& modelInstances,
     const smtk::model::Instance& inst,
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
-  void PreparePrototypeOutput(vtkMultiBlockDataSet* mbds, vtkMultiBlockDataSet* protoBlocks,
+  void PreparePrototypeOutput(
+    vtkMultiBlockDataSet* mbds,
+    vtkMultiBlockDataSet* protoBlocks,
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
-  void PrepareInstanceOutput(vtkMultiBlockDataSet* instanceBlocks, const smtk::model::InstanceSet&,
+  void PrepareInstanceOutput(
+    vtkMultiBlockDataSet* instanceBlocks,
+    const smtk::model::InstanceSet&,
     std::map<smtk::model::EntityRef, vtkIdType>&);
-  void AddInstancePoints(vtkPolyData* instancePoly, const smtk::model::Instance& inst,
+  void AddInstancePoints(
+    vtkPolyData* instancePoly,
+    const smtk::model::Instance& inst,
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
-  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
-    vtkMultiBlockDataSet* instancePoly, vtkMultiBlockDataSet* protoBlocks,
+  void GenerateRepresentationFromModel(
+    vtkMultiBlockDataSet* mbds,
+    vtkMultiBlockDataSet* instancePoly,
+    vtkMultiBlockDataSet* protoBlocks,
     const smtk::model::ResourcePtr& model);
   void GenerateRepresentationFromMeshTessellation(
-    vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
+    vtkPolyData* poly,
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
   void GenerateRepresentationFromModel(
-    vtkMultiBlockDataSet* mbds, const smtk::model::ResourcePtr& model);
+    vtkMultiBlockDataSet* mbds,
+    const smtk::model::ResourcePtr& model);
 
   int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+    vtkInformation* request,
+    vtkInformationVector** inInfo,
+    vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*, vtkMultiBlockDataSet*, vtkMultiBlockDataSet*);
 

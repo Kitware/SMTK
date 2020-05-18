@@ -57,20 +57,20 @@ public:
 
   CellEntity cell() const;
   ShellEntity boundingShellEntity() const;
-  template <typename T>
+  template<typename T>
   T boundingShellEntities() const;
-  template <typename T>
+  template<typename T>
   T shellEntities() const;
   Orientation orientation() const;
   int sense() const;
 
   UseEntity& setBoundingShellEntity(const ShellEntity& shell);
   UseEntity& addShellEntity(const ShellEntity& shell);
-  template <typename T>
+  template<typename T>
   UseEntity& addShellEntities(const T& shellContainer);
 };
 
-template <typename T>
+template<typename T>
 T UseEntity::boundingShellEntities() const
 {
   T container;
@@ -78,7 +78,7 @@ T UseEntity::boundingShellEntities() const
   return container;
 }
 
-template <typename T>
+template<typename T>
 T UseEntity::shellEntities() const
 {
   T container;
@@ -86,7 +86,7 @@ T UseEntity::shellEntities() const
   return container;
 }
 
-template <typename T>
+template<typename T>
 UseEntity& UseEntity::addShellEntities(const T& shellContainer)
 {
   for (typename T::const_iterator it = shellContainer.begin(); it != shellContainer.end(); ++it)

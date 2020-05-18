@@ -35,6 +35,6 @@ void from_json(const json& j, smtk::session::vtk::Resource::Ptr& resource)
   auto temp = std::static_pointer_cast<smtk::model::Resource>(resource);
   smtk::model::from_json(j, temp);
 }
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk

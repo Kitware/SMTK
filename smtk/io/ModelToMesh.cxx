@@ -79,9 +79,11 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
   }
 }
 
-template <typename MappingType>
+template<typename MappingType>
 bool convert_vertices(
-  const smtk::model::EntityRefs& ents, MappingType& mapping, const smtk::mesh::AllocatorPtr& ialloc)
+  const smtk::model::EntityRefs& ents,
+  MappingType& mapping,
+  const smtk::mesh::AllocatorPtr& ialloc)
 {
   //count the number of points in the tessellation so that we can properly
   //allocate a single pool large enough for all the points
@@ -137,10 +139,14 @@ bool convert_vertices(
   return (pos == numPointsToAlloc);
 }
 
-template <typename HandleData>
-void convert_fixed_size_cell(std::vector<int>& cell_conn, smtk::mesh::CellType cellType,
-  smtk::model::Tessellation::size_type numVerts, std::vector<std::size_t>& numCellsOfType,
-  std::vector<HandleData>& cellMBConn, std::size_t global_coordinate_offset)
+template<typename HandleData>
+void convert_fixed_size_cell(
+  std::vector<int>& cell_conn,
+  smtk::mesh::CellType cellType,
+  smtk::model::Tessellation::size_type numVerts,
+  std::vector<std::size_t>& numCellsOfType,
+  std::vector<HandleData>& cellMBConn,
+  std::size_t global_coordinate_offset)
 {
   std::size_t idx = numCellsOfType[cellType]++;
 
@@ -156,10 +162,14 @@ void convert_fixed_size_cell(std::vector<int>& cell_conn, smtk::mesh::CellType c
   }
 }
 
-template <typename HandleData>
-void convert_vertex(std::vector<int>& /*unused*/, smtk::mesh::CellType cellType,
-  smtk::model::Tessellation::size_type numVerts, std::vector<std::size_t>& numCellsOfType,
-  std::vector<HandleData>& cellMBConn, std::size_t global_coordinate_offset)
+template<typename HandleData>
+void convert_vertex(
+  std::vector<int>& /*unused*/,
+  smtk::mesh::CellType cellType,
+  smtk::model::Tessellation::size_type numVerts,
+  std::vector<std::size_t>& numCellsOfType,
+  std::vector<HandleData>& cellMBConn,
+  std::size_t global_coordinate_offset)
 {
   numCellsOfType[cellType]++;
 
@@ -174,10 +184,14 @@ void convert_vertex(std::vector<int>& /*unused*/, smtk::mesh::CellType cellType,
     smtk::mesh::HandleInterval(global_coordinate_offset, global_coordinate_offset + numVerts - 1));
 }
 
-template <typename HandleData>
-void convert_poly_line(std::vector<int>& cell_conn, smtk::mesh::CellType cellType,
-  smtk::model::Tessellation::size_type numCellsInPolyCell, std::vector<std::size_t>& numCellsOfType,
-  std::vector<HandleData>& cellMBConn, std::size_t global_coordinate_offset)
+template<typename HandleData>
+void convert_poly_line(
+  std::vector<int>& cell_conn,
+  smtk::mesh::CellType cellType,
+  smtk::model::Tessellation::size_type numCellsInPolyCell,
+  std::vector<std::size_t>& numCellsOfType,
+  std::vector<HandleData>& cellMBConn,
+  std::size_t global_coordinate_offset)
 {
   //numVerts represents the number of verts in the tessellation, not
   //the number of verts in the mesh cell
@@ -197,9 +211,11 @@ void convert_poly_line(std::vector<int>& cell_conn, smtk::mesh::CellType cellTyp
   }
 }
 
-template <typename MappingType>
+template<typename MappingType>
 std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
-  const smtk::model::EntityRefs& ents, MappingType& mapping, const smtk::mesh::AllocatorPtr& ialloc)
+  const smtk::model::EntityRefs& ents,
+  MappingType& mapping,
+  const smtk::mesh::AllocatorPtr& ialloc)
 {
   typedef smtk::model::Tessellation Tess;
 
@@ -230,7 +246,8 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
       Tess::size_type cell_type;
       Tess::size_type numVertsPerCell = tess->numberOfCellVertices(start_off, &cell_type);
       Tess::size_type cell_shape = Tess::cellShapeFromType(cell_type);
-      if (cell_shape == smtk::model::TESS_VERTEX || cell_shape == smtk::model::TESS_TRIANGLE ||
+      if (
+        cell_shape == smtk::model::TESS_VERTEX || cell_shape == smtk::model::TESS_TRIANGLE ||
         cell_shape == smtk::model::TESS_QUAD)
       {
         numCellsOfType[tessToSMTKCell(cell_shape)]++;
@@ -301,7 +318,12 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
       }
       else if (cell_shape == smtk::model::TESS_POLYLINE)
       {
-        convert_poly_line(cell_conn, cellType, (numVerts - 1), numCellsOfType, cellMBConn,
+        convert_poly_line(
+          cell_conn,
+          cellType,
+          (numVerts - 1),
+          numCellsOfType,
+          cellMBConn,
           global_coordinate_offset);
       }
 
@@ -343,16 +365,18 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
 }
 
 /// Recursively find all the entities with tessellation
-void find_entities_with_tessellation(const smtk::model::EntityRef& root,
-  smtk::model::EntityRefs& tessEntities, smtk::model::EntityRefs& touched)
+void find_entities_with_tessellation(
+  const smtk::model::EntityRef& root,
+  smtk::model::EntityRefs& tessEntities,
+  smtk::model::EntityRefs& touched)
 {
   typedef smtk::model::EntityRefArray EntityRefArray;
-  EntityRefArray children = (root.isModel()
-      ? root.as<smtk::model::Model>().cellsAs<EntityRefArray>()
-      : (root.isCellEntity()
-            ? root.as<smtk::model::CellEntity>().boundingCellsAs<EntityRefArray>()
-            : (root.isGroup() ? root.as<smtk::model::Group>().members<EntityRefArray>()
-                              : EntityRefArray())));
+  EntityRefArray children =
+    (root.isModel() ? root.as<smtk::model::Model>().cellsAs<EntityRefArray>()
+                    : (root.isCellEntity()
+                         ? root.as<smtk::model::CellEntity>().boundingCellsAs<EntityRefArray>()
+                         : (root.isGroup() ? root.as<smtk::model::Group>().members<EntityRefArray>()
+                                           : EntityRefArray())));
 
   if (root.isModel())
   {
@@ -414,8 +438,9 @@ smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::ResourcePtr& 
   // meshes.
   CoordinateOffsetMap coordinateLocationMapping;
 
-  EntityTypeBits etypes[4] = { smtk::model::VERTEX, smtk::model::EDGE, smtk::model::FACE,
-    smtk::model::VOLUME };
+  EntityTypeBits etypes[4] = {
+    smtk::model::VERTEX, smtk::model::EDGE, smtk::model::FACE, smtk::model::VOLUME
+  };
   for (int i = 0; i != 4; ++i)
   {
     //extract all the coordinates from every tessellation and make a single
@@ -539,5 +564,5 @@ smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::Model& model)
 
   return meshResource;
 }
-}
-}
+} // namespace io
+} // namespace smtk

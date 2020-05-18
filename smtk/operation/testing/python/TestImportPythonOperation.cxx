@@ -55,7 +55,8 @@ int main(int argc, char** const argv)
   auto result = importPythonOp->operate();
 
   // Test the results for success
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"import python operation\" operation failed\n";
@@ -83,7 +84,8 @@ int main(int argc, char** const argv)
   result = testOp->operate();
 
   // Test the results for success
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"test op\" operation failed\n";
@@ -91,7 +93,8 @@ int main(int argc, char** const argv)
   }
 
   // Confirm that the operation passed the input string to the output
-  test(result->findString("my string")->value() ==
+  test(
+    result->findString("my string")->value() ==
     testOp->parameters()->findString("my string")->value());
 
   return 0;

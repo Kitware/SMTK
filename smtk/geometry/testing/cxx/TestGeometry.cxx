@@ -65,7 +65,7 @@ public:
 
   std::string name() const override { return "Backend2"; }
 
-  template <typename Geometry>
+  template<typename Geometry>
   int geometry(const Geometry& p, const smtk::resource::PersistentObject::Ptr& obj)
   {
     int val;
@@ -139,8 +139,9 @@ public:
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override
   {
-    auto it = std::find_if(m_components.begin(), m_components.end(),
-      [&](const ComponentA::Ptr& c) { return c->id() == id; });
+    auto it = std::find_if(m_components.begin(), m_components.end(), [&](const ComponentA::Ptr& c) {
+      return c->id() == id;
+    });
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
@@ -169,7 +170,7 @@ private:
   std::unordered_set<ComponentA::Ptr> m_components;
 };
 
-class Geometry2 : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
+class Geometry2 : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>>
 {
 public:
   Geometry2(const ResourceA::Ptr& parent)
@@ -186,8 +187,8 @@ public:
 
   smtk::geometry::Resource::Ptr resource() const override { return m_parent.lock(); }
 
-  void queryGeometry(
-    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override
+  void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+    const override
   {
     auto comp = std::dynamic_pointer_cast<ComponentA>(obj);
     if (comp && comp->value() >= 0)
@@ -214,18 +215,18 @@ public:
     auto rsrc = m_parent.lock();
     if (rsrc)
     {
-      smtk::resource::Component::Visitor visitor = [this](
-        const smtk::resource::Component::Ptr& comp) {
-        auto compA = std::dynamic_pointer_cast<ComponentA>(comp);
-        if (compA && compA->value() >= 0)
-        {
-          m_cache[compA->id()] = CacheEntry{ Initial, compA->value() };
-        }
-        else
-        {
-          m_cache.erase(compA->id());
-        }
-      };
+      smtk::resource::Component::Visitor visitor =
+        [this](const smtk::resource::Component::Ptr& comp) {
+          auto compA = std::dynamic_pointer_cast<ComponentA>(comp);
+          if (compA && compA->value() >= 0)
+          {
+            m_cache[compA->id()] = CacheEntry{ Initial, compA->value() };
+          }
+          else
+          {
+            m_cache.erase(compA->id());
+          }
+        };
       rsrc->visit(visitor);
       // Also erase the cache entry for the resource itself (since
       // we know it does not have valid geometry).
@@ -322,7 +323,8 @@ int TestGeometry(int /*unused*/, char** const /*unused*/)
   smtk::geometry::Geometry::BoundingBox bbox;
   count = 0;
   geomA2->visit([&geomA2, &bbox, &count](
-    const smtk::resource::PersistentObject::Ptr& obj, smtk::geometry::Geometry::GenerationNumber) {
+                  const smtk::resource::PersistentObject::Ptr& obj,
+                  smtk::geometry::Geometry::GenerationNumber) {
     if (obj)
     {
       // Here is an example of how to fetch the "actual"
@@ -342,12 +344,14 @@ int TestGeometry(int /*unused*/, char** const /*unused*/)
   smtkTest(count == 2, "Expected to visit 2 components with valid \"geometry\".");
 
   auto generation = geomA2->generationNumber(compM1);
-  smtkTest(generation == smtk::geometry::Geometry::Invalid,
+  smtkTest(
+    generation == smtk::geometry::Geometry::Invalid,
     "Expected invalid generation number for component with negative value.");
 
   smtk::geometry::Geometry::BoundingBox bds;
   geomA2->bounds(compM1, bds);
-  smtkTest(bds[1] < bds[0] && bds[3] < bds[2] && bds[5] < bds[4],
+  smtkTest(
+    bds[1] < bds[0] && bds[3] < bds[2] && bds[5] < bds[4],
     "Expected invalid bounds for component with no \"geometry\".");
 
   return 0;

@@ -78,7 +78,7 @@ private:
 protected:
   Manager();
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif // smtk_view_Manager_h

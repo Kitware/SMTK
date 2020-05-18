@@ -51,7 +51,7 @@ void verify_json_allocator_creation()
   //verify that is modified is true
   test(!resource->isModified(), "resource shouldn't be modified");
 }
-}
+} // namespace
 
 int UnitTestAllocator(int /*unused*/, char** const /*unused*/)
 {

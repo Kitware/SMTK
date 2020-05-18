@@ -27,7 +27,7 @@ namespace moab
 
 smtk::mesh::CellType moabToSMTKCell(int t)
 {
-  ::moab::EntityType et = static_cast< ::moab::EntityType>(t);
+  ::moab::EntityType et = static_cast<::moab::EntityType>(t);
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
   switch (et)
   {
@@ -103,6 +103,6 @@ int smtkToMOABCell(smtk::mesh::CellType t)
   }
   return ctype;
 }
-}
-}
-} //namespace smtk::mesh::moab
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

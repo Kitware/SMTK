@@ -48,6 +48,6 @@ private:
   smtk::view::ConfigurationPtr m_view;
   smtk::attribute::AttributePtr m_attribute;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif // !_qtViewInfoDialog_h

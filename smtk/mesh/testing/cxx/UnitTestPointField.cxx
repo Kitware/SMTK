@@ -216,18 +216,22 @@ private:
 
 public:
   SetPointData(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::PointField& ds)
     : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i)
     {
       double value = m_dataGenerator(xyz[counter + 0], xyz[counter + 1], xyz[counter + 2]);
       counter += 3;
@@ -247,18 +251,22 @@ private:
 
 public:
   ValidatePointData(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::PointField& ds)
     : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i)
     {
       double expectedValue = m_dataGenerator(xyz[counter + 0], xyz[counter + 1], xyz[counter + 2]);
       counter += 3;
@@ -275,8 +283,8 @@ void verify_incremental_data_assignment()
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
   smtk::mesh::MeshSet mesh = mr->meshes();
-  std::function<double(double, double, double)> euclideanDistance = [](
-    double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
+  std::function<double(double, double, double)> euclideanDistance =
+    [](double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
   smtk::mesh::PointField distancePointField =
     mesh.createPointField("euclidean distance", 1, smtk::mesh::FieldType::Double);
 
@@ -345,7 +353,7 @@ void verify_pointfield_persistency()
     }
   }
 }
-}
+} // namespace
 
 int UnitTestPointField(int /*unused*/, char** const /*unused*/)
 {

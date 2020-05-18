@@ -67,7 +67,8 @@ protected slots:
   // picking arc end point finished
   void onPickingFinished();
   vtkSelectionNode* gatherSelectionNode(
-    pqPipelineSource* source, vtkPVSelectionInformation* selInfo);
+    pqPipelineSource* source,
+    vtkPVSelectionInformation* selInfo);
 
 private:
   PickInfo* Info;
@@ -76,7 +77,7 @@ private:
   pqRenderViewSelectionReaction* Selecter;
   bool m_isActive;
 };
-}
+} // namespace Ui
 
 class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetPanel : public QWidget
 {

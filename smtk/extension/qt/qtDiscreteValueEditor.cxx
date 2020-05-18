@@ -62,7 +62,9 @@ public:
 };
 
 qtDiscreteValueEditor::qtDiscreteValueEditor(
-  qtInputsItem* item, int elementIdx, QLayout* childLayout)
+  qtInputsItem* item,
+  int elementIdx,
+  QLayout* childLayout)
   : QWidget(item->widget())
   , m_useSelectionManager(false)
 {
@@ -136,7 +138,8 @@ void qtDiscreteValueEditor::createWidget()
       // enum failed category check
       continue;
     }
-    if (itemDef->hasEnumAdvanceLevel(enumText) && (uiManager != nullptr) &&
+    if (
+      itemDef->hasEnumAdvanceLevel(enumText) && (uiManager != nullptr) &&
       !uiManager->passAdvancedCheck(itemDef->enumAdvanceLevel(enumText)))
     {
       // enum failed advance level check
@@ -155,7 +158,10 @@ void qtDiscreteValueEditor::createWidget()
     combo->setToolTip(tooltip);
   }
   QPointer<qtDiscreteValueEditor> guardedObject(this);
-  QObject::connect(combo, (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged, this,
+  QObject::connect(
+    combo,
+    (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged,
+    this,
     [guardedObject]() {
       if (guardedObject)
       {
@@ -284,7 +290,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
   }
 
   // If the current selection matches the current value of the item then we can just return
-  if (item->isSet(this->Internals->m_elementIndex) &&
+  if (
+    item->isSet(this->Internals->m_elementIndex) &&
     (curIdx == item->discreteIndex(this->Internals->m_elementIndex)))
   {
     return; // There is nothing to update
@@ -356,7 +363,8 @@ void qtDiscreteValueEditor::updateContents()
         item->activeChildItem(static_cast<int>(i))->definition();
       std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
         itemDef->childrenItemDefinitions().find(itDef->name());
-      if ((it != itemDef->childrenItemDefinitions().end()) && attResource &&
+      if (
+        (it != itemDef->childrenItemDefinitions().end()) && attResource &&
         attResource->passActiveCategoryCheck(itemDef->categories()))
       {
         activeChildDefs.push_back(it->second);
@@ -394,7 +402,10 @@ void qtDiscreteValueEditor::updateContents()
       else
       {
         smtk::view::Configuration::Component comp; // create a default view style
-        qtAttributeItemInfo info(citem, comp, this->Internals->m_childrenFrame.data(),
+        qtAttributeItemInfo info(
+          citem,
+          comp,
+          this->Internals->m_childrenFrame.data(),
           this->Internals->m_inputItem->m_itemInfo.baseView());
         childItem = this->Internals->m_inputItem->uiManager()->createItem(info);
       }

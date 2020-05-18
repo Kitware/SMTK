@@ -26,8 +26,10 @@ class TestOperationLauncher : public QObject
   Q_OBJECT
 
 public:
-  TestOperationLauncher(const smtk::resource::Manager::Ptr& resourceManager,
-    const smtk::operation::Manager::Ptr& operationManager, QObject* parent)
+  TestOperationLauncher(
+    const smtk::resource::Manager::Ptr& resourceManager,
+    const smtk::operation::Manager::Ptr& operationManager,
+    QObject* parent)
     : QObject(parent)
     , m_resourceManager(resourceManager)
     , m_operationManager(operationManager)
@@ -35,7 +37,7 @@ public:
   {
   }
 
-  std::vector<std::future<smtk::operation::Operation::Result> > OpenFiles(
+  std::vector<std::future<smtk::operation::Operation::Result>> OpenFiles(
     const std::vector<std::string>& files);
 
   std::size_t numberOfReadFiles() const { return m_nReadFiles; }

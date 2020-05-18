@@ -51,10 +51,10 @@ public:
     return nullptr;
   }
 };
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif // smtk_extension_vtk_mesh_RegisterVTKBackend_h

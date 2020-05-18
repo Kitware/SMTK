@@ -72,7 +72,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemDe
   auto result = j.find("MembershipMask");
   if (result == j.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "JSON MembershipMask missing "
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "JSON MembershipMask missing "
         << "for ModelEntityDefinition:" << defPtr->type());
     return;
   }
@@ -85,7 +87,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemDe
   result = j.find("NumberOfRequriedValues");
   if (result == j.end())
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "JSON NumberOfRequriedValues missing "
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "JSON NumberOfRequriedValues missing "
         << "for ModelEntityDefinition:" << defPtr->type());
     return;
   }
@@ -127,5 +131,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemDe
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

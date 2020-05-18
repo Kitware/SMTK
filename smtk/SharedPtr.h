@@ -42,5 +42,5 @@ using std::enable_shared_from_this;
 //bring in the correct owner_less so that
 //we store weak ptr in sets/maps even more safely
 using std::owner_less;
-}
+} // namespace smtk
 #endif /* __smtk_SharedPtr_h */

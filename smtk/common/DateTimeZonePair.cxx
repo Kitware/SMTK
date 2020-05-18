@@ -101,7 +101,8 @@ bool DateTimeZonePair::deserialize(const std::string& content)
   auto utcJson = inputJson.find("timezone-utc");
   auto regionJson = inputJson.find("timezone-region");
   auto ptzJson = inputJson.find("timezone-posix");
-  if (utcJson != inputJson.end() && utcJson->type() == nlohmann::json::value_t::boolean &&
+  if (
+    utcJson != inputJson.end() && utcJson->type() == nlohmann::json::value_t::boolean &&
     utcJson->get_ref<const nlohmann::json::boolean_t&>())
   {
     m_timezone.setUTC();
@@ -131,8 +132,17 @@ std::string DateTimeZonePair::jsonString() const
   }
 
   char buffer[64];
-  snprintf(buffer, sizeof(buffer), "%4d-%02d-%02dT%02d:%02d:%02d.%03dZ", year, month, day, hour,
-    minute, second, millisecond);
+  snprintf(
+    buffer,
+    sizeof(buffer),
+    "%4d-%02d-%02dT%02d:%02d:%02d.%03dZ",
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second,
+    millisecond);
 
   std::string json = buffer;
   return json;

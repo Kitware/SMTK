@@ -119,7 +119,7 @@ namespace moab
 namespace json
 {
 }
-}
+} // namespace mesh
 
 /**\brief Projects organize a user workspace.
   *
@@ -191,7 +191,7 @@ namespace oscillator
 namespace polygon
 {
 }
-}
+} // namespace session
 
 /**\brief Extensions to SMTK that introduce external dependencies.
   *
@@ -249,7 +249,7 @@ namespace vtk
 namespace vxl
 {
 }
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif // __smtk_doc_h

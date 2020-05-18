@@ -78,9 +78,13 @@ public:
   static std::string GeometrySourceConvert(GeometrySource val);
 
   pqSMTKAttributeItemWidget(
-    const qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
-  pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr, QWidget* p,
-    smtk::extension::qtBaseView* bview, Qt::Orientation orient = Qt::Horizontal);
+    const qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
+  pqSMTKAttributeItemWidget(
+    smtk::attribute::ItemPtr,
+    QWidget* p,
+    smtk::extension::qtBaseView* bview,
+    Qt::Orientation orient = Qt::Horizontal);
   ~pqSMTKAttributeItemWidget() override;
 
   /// Subclasses must override this method to create the ParaView widget of their choice.

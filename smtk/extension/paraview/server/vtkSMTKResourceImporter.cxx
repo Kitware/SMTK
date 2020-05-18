@@ -119,7 +119,8 @@ smtk::resource::ResourcePtr vtkSMTKResourceImporter::GenerateResource() const
   importerFileItem->setValue(this->FileName);
 
   auto result = oper->operate();
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     return smtk::resource::ResourcePtr();

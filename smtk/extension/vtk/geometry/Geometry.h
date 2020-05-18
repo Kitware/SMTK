@@ -42,7 +42,7 @@ namespace geometry
   * must implement so the backend can query for the information above.
   */
 class VTKSMTKGEOMETRYEXT_EXPORT Geometry
-  : public smtk::geometry::GeometryForBackend<vtkSmartPointer<vtkDataObject> >
+  : public smtk::geometry::GeometryForBackend<vtkSmartPointer<vtkDataObject>>
 {
 public:
   using DataType = vtkSmartPointer<vtkDataObject>;
@@ -72,7 +72,9 @@ public:
   virtual Purpose purpose(const smtk::resource::PersistentObjectPtr& obj) const = 0;
 
   /// A convenience to add a field-data color array to a cache entry (used to set object color).
-  static void addColorArray(vtkDataObject* data, const std::vector<double>& color,
+  static void addColorArray(
+    vtkDataObject* data,
+    const std::vector<double>& color,
     const std::string& name = "entity color");
 
 protected:

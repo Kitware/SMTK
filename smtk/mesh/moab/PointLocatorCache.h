@@ -33,7 +33,9 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
   struct CacheForIndex
   {
     CacheForIndex(
-      ::moab::Interface* interface, const ::moab::Range& range, ::moab::FileOptions* fileOptions)
+      ::moab::Interface* interface,
+      const ::moab::Range& range,
+      ::moab::FileOptions* fileOptions)
       : m_interface(interface)
       , m_tree(m_interface, range, &m_treeRootSet, fileOptions)
     {
@@ -61,10 +63,10 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
 
   void synchronize(const smtk::operation::Operation&, const smtk::operation::Operation::Result&);
 
-  std::unordered_map<smtk::common::UUID, std::unique_ptr<CacheForIndex> > m_caches;
+  std::unordered_map<smtk::common::UUID, std::unique_ptr<CacheForIndex>> m_caches;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

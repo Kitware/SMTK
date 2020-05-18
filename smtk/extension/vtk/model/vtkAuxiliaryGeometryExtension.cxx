@@ -172,10 +172,12 @@ vtkAuxiliaryGeometryExtension::vtkAuxiliaryGeometryExtension()
 vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension() = default;
 
 bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
-  smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
+  smtk::model::AuxiliaryGeometry& entity,
+  std::vector<double>& bboxOut)
 {
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().empty()) ||
+  if (
+    !entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().empty()) ||
     (!entity.url().empty() && !importAsVTKData.valid(entity.url())))
   {
     return false;
@@ -247,8 +249,11 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
 }
 
-void vtkAuxiliaryGeometryExtension::addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,
-  const AuxiliaryGeometry& entity, std::time_t& mtime, bool trimCache)
+void vtkAuxiliaryGeometryExtension::addCacheGeometry(
+  const vtkSmartPointer<vtkDataObject> dataset,
+  const AuxiliaryGeometry& entity,
+  std::time_t& mtime,
+  bool trimCache)
 {
   s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime), trimCache);
 }
@@ -261,7 +266,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::fetchCachedGeometr
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::fetchCachedGeometry(
-  const smtk::model::AuxiliaryGeometry& entity, std::time_t& cachedTime)
+  const smtk::model::AuxiliaryGeometry& entity,
+  std::time_t& cachedTime)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
   auto entry = s_p->fetch(entity);
@@ -338,7 +344,8 @@ void vtkAuxiliaryGeometryExtension::destroyCache()
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRepresentation(
-  const smtk::model::AuxiliaryGeometry& auxGeom, bool genNormals)
+  const smtk::model::AuxiliaryGeometry& auxGeom,
+  bool genNormals)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
 
@@ -357,7 +364,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRepresenta
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
-  const smtk::model::AuxiliaryGeometry& auxGeom, bool genNormals)
+  const smtk::model::AuxiliaryGeometry& auxGeom,
+  bool genNormals)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
 
@@ -369,27 +377,28 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
   vtkSmartPointer<vtkDataObject> data = importAsVTKData(std::make_pair(fileType, auxGeom.url()));
 
   smtk::resource::Component::Ptr component = auxGeom.component();
-  if (component->properties().contains<std::vector<double> >("rotate") ||
-    component->properties().contains<std::vector<double> >("translate") ||
-    component->properties().contains<std::vector<double> >("scale"))
+  if (
+    component->properties().contains<std::vector<double>>("rotate") ||
+    component->properties().contains<std::vector<double>>("translate") ||
+    component->properties().contains<std::vector<double>>("scale"))
   {
     vtkNew<vtkTransform> transform;
-    if (component->properties().contains<std::vector<double> >("translate"))
+    if (component->properties().contains<std::vector<double>>("translate"))
     {
       const std::vector<double>& translate =
-        component->properties().get<std::vector<double> >()["translate"];
+        component->properties().get<std::vector<double>>()["translate"];
       transform->Translate(translate[0], translate[1], translate[2]);
     }
-    if (component->properties().contains<std::vector<double> >("scale"))
+    if (component->properties().contains<std::vector<double>>("scale"))
     {
       const std::vector<double>& scale =
-        component->properties().get<std::vector<double> >()["scale"];
+        component->properties().get<std::vector<double>>()["scale"];
       transform->Scale(scale[0], scale[1], scale[2]);
     }
-    if (component->properties().contains<std::vector<double> >("rotate"))
+    if (component->properties().contains<std::vector<double>>("rotate"))
     {
       const std::vector<double>& rotate =
-        component->properties().get<std::vector<double> >()["rotate"];
+        component->properties().get<std::vector<double>>()["rotate"];
 
       // From https://en.wikipedia.org/wiki/Euler_angles#Intrinsic_rotations :
       // VTK uses Tait-Bryan Y_1 X_2 Z_3 angles to store orientation;
@@ -411,7 +420,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
-  const smtk::model::AuxiliaryGeometry& src, const smtk::model::AuxiliaryGeometries& children,
+  const smtk::model::AuxiliaryGeometry& src,
+  const smtk::model::AuxiliaryGeometries& children,
   bool genNormals)
 {
   (void)src;
@@ -428,8 +438,10 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
   return mbds.GetPointer();
 }
 
-bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
-  std::vector<double>& bboxOut, vtkSmartPointer<vtkDataObject> dataobj)
+bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
+  smtk::model::AuxiliaryGeometry& aux,
+  std::vector<double>& bboxOut,
+  vtkSmartPointer<vtkDataObject> dataobj)
 {
   vtkDataSet* dataset;
   vtkGraph* graph;

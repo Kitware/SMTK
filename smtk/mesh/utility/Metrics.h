@@ -38,8 +38,8 @@ smtk::mesh::DimensionType highestDimension(const smtk::mesh::MeshSet& ms);
 // Compute the Euler-Poincare characteristic of a mesh set
 SMTKCORE_EXPORT
 int eulerCharacteristic(const smtk::mesh::MeshSet& ms);
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk
 
 #endif

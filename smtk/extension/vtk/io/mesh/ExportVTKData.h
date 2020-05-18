@@ -28,7 +28,7 @@ namespace mesh
 {
 class MeshSet;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -49,21 +49,29 @@ public:
 
   //Export a resource as a VTK xml polydata or xml unstructured grid file
   //(determined by the file name suffix .vtp or .vtu).
-  bool operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
+  bool operator()(
+    const std::string& filename,
+    smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName) const;
 
   //Export a meshset as a VTK xml polydata or xml unstructured grid file
   //(determined by the file name suffix .vtp or .vtu).
-  bool operator()(const std::string& filename, const smtk::mesh::MeshSet& meshset,
+  bool operator()(
+    const std::string& filename,
+    const smtk::mesh::MeshSet& meshset,
     std::string domainPropertyName) const;
 
   //Export the highest dimension cells of a mesh set to polydata. If the highest
   //dimension is Dims3, export its shell.
-  void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd,
+  void operator()(
+    const smtk::mesh::MeshSet& meshset,
+    vtkPolyData* pd,
     std::string domainPropertyName = std::string()) const;
 
   //Export a mesh set to an unstructured grid.
-  void operator()(const smtk::mesh::MeshSet& meshset, vtkUnstructuredGrid* ug,
+  void operator()(
+    const smtk::mesh::MeshSet& meshset,
+    vtkUnstructuredGrid* ug,
     std::string domainPropertyName = std::string()) const;
 
 private:
@@ -71,10 +79,10 @@ private:
   ExportVTKData(const ExportVTKData& other);
   ExportVTKData& operator=(const ExportVTKData& other);
 };
-}
-}
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif //__smtk_extension_vtk_io_mesh_ExportVTKData_h

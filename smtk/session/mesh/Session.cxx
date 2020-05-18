@@ -28,7 +28,8 @@ namespace mesh
 Session::Session() = default;
 
 void Session::addTopology(
-  const std::shared_ptr<smtk::session::mesh::Resource>& modelResource, Topology t)
+  const std::shared_ptr<smtk::session::mesh::Resource>& modelResource,
+  Topology t)
 {
   std::vector<Topology>::iterator it =
     find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
@@ -63,7 +64,9 @@ Topology* Session::topology(
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entityRef, SessionInfoBits requestedInfo, int depth)
+  const smtk::model::EntityRef& entityRef,
+  SessionInfoBits requestedInfo,
+  int depth)
 {
   // Start with a null return value
   SessionInfoBits actual = smtk::model::SESSION_NOTHING;
@@ -223,6 +226,6 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 
   return actual;
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

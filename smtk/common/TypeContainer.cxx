@@ -30,5 +30,5 @@ TypeContainer& TypeContainer::operator=(const TypeContainer& other)
 
   return *this;
 }
-}
-}
+} // namespace common
+} // namespace smtk

@@ -22,7 +22,7 @@ namespace model
 {
 class EntityRef;
 class Loop;
-}
+} // namespace model
 namespace mesh
 {
 namespace utility
@@ -33,14 +33,18 @@ class SMTKCORE_EXPORT PreAllocatedMeshConstants
 
 public:
   static void determineAllocationLengths(
-    const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells, std::int64_t& numberOfPoints);
+    const smtk::mesh::MeshSet& ms,
+    std::int64_t& numberOfCells,
+    std::int64_t& numberOfPoints);
 
   PreAllocatedMeshConstants(std::int64_t* cellMeshConstants, std::int64_t* pointMeshConstants);
 
 private:
-  template <typename QueryTag>
+  template<typename QueryTag>
   friend SMTKCORE_EXPORT void extractMeshConstants(
-    const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+    const smtk::mesh::MeshSet&,
+    const smtk::mesh::PointSet&,
+    PreAllocatedMeshConstants&);
 
   std::int64_t* m_cellMeshConstants;
   std::int64_t* m_pointMeshConstants;
@@ -66,7 +70,7 @@ public:
   const std::vector<std::int64_t>& pointData() const { return m_pointData; }
 
 private:
-  template <typename QueryTag>
+  template<typename QueryTag>
   void extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
 
   std::vector<std::int64_t> m_cellData;
@@ -77,27 +81,38 @@ private:
 //the extract method
 
 SMTKCORE_EXPORT void extractDirichletMeshConstants(
-  const smtk::mesh::MeshSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  PreAllocatedMeshConstants&);
 SMTKCORE_EXPORT void extractNeumannMeshConstants(
-  const smtk::mesh::MeshSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  PreAllocatedMeshConstants&);
 SMTKCORE_EXPORT void extractDomainMeshConstants(
-  const smtk::mesh::MeshSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  PreAllocatedMeshConstants&);
 
 //Extract MeshConstants with respect to another PointSet instead of the PointSet
 //contained by the meshset. This is useful if you are sharing a single
 //PointSet among multiple MeshConstantss.
 SMTKCORE_EXPORT void extractDirichletMeshConstants(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 SMTKCORE_EXPORT void extractNeumannMeshConstants(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 SMTKCORE_EXPORT void extractDomainMeshConstants(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 
-template <typename QueryTag>
+template<typename QueryTag>
 SMTKCORE_EXPORT void extractMeshConstants(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
-}
-}
-}
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
+} // namespace utility
+} // namespace mesh
+} // namespace smtk
 
 #endif

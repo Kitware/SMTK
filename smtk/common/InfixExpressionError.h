@@ -27,7 +27,7 @@ enum class InfixExpressionError
   ERROR_SUBEVALUATION_FAILED = 6
 };
 
-} // namsepace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_InfixExpressionError_h

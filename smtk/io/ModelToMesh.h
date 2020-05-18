@@ -46,7 +46,7 @@ private:
   bool m_mergeDuplicates;
   double m_tolerance;
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif

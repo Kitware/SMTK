@@ -33,7 +33,8 @@ class pqSMTKLineItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKLineItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKLineItemWidget();
 
   static qtItem* createLineItemWidget(const qtAttributeItemInfo& info);
@@ -49,7 +50,8 @@ protected:
     * If errors are encountered, this method returns false.
     */
   bool fetchEndpointItems(
-    smtk::attribute::DoubleItemPtr& endpt1, smtk::attribute::DoubleItemPtr& endpt2);
+    smtk::attribute::DoubleItemPtr& endpt1,
+    smtk::attribute::DoubleItemPtr& endpt2);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKLineItemWidget_h

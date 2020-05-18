@@ -365,7 +365,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     //verify the coordinates and the number of points match
@@ -374,7 +376,8 @@ public:
     coordinatesModified = false; //we are not modifying the coords
 
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i)
     { //we could just increment by size of pointIds, but I want
       //to have an example of how to do iteration over the point ids
       this->numPointsIteratedOver++;
@@ -395,7 +398,9 @@ void verify_pointset_for_each_read(const smtk::mesh::ResourcePtr& mr)
 class FlattenZ : public smtk::mesh::PointForEach
 {
 public:
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     //verify the coordinates and the number of points match
@@ -415,7 +420,9 @@ public:
 class VerifyZ : public smtk::mesh::PointForEach
 {
 public:
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     (void)coordinatesModified;
@@ -442,7 +449,7 @@ void verify_pointset_for_each_modify(const smtk::mesh::ResourcePtr& mr)
   VerifyZ functorB;
   smtk::mesh::for_each(volMeshes.points(), functorB);
 }
-}
+} // namespace
 
 int UnitTestPointSet(int /*unused*/, char** const /*unused*/)
 {

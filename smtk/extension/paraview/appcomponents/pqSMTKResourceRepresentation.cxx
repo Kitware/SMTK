@@ -30,7 +30,11 @@
 #include "vtkCommand.h"
 
 pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
-  const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
+  const QString& group,
+  const QString& name,
+  vtkSMProxy* repr,
+  pqServer* server,
+  QObject* parent)
   : Superclass(group, name, repr, server, parent)
 {
   auto smtk = pqSMTKBehavior::instance();
@@ -64,7 +68,8 @@ pqSMTKResourceRepresentation::~pqSMTKResourceRepresentation()
 }
 
 void pqSMTKResourceRepresentation::handleSMTKSelectionChange(
-  const std::string& src, smtk::view::SelectionPtr seln)
+  const std::string& src,
+  smtk::view::SelectionPtr seln)
 {
   (void)src;
   (void)seln;

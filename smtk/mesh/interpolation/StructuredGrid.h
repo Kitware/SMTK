@@ -49,8 +49,12 @@ public:
     }
   }
 
-  StructuredGrid(const int extent[4], const double origin[2], const double spacing[2],
-    const std::function<double(int, int)>& data, const std::function<bool(int, int)>& valid)
+  StructuredGrid(
+    const int extent[4],
+    const double origin[2],
+    const double spacing[2],
+    const std::function<double(int, int)>& data,
+    const std::function<bool(int, int)>& valid)
     : m_data(data)
     , m_valid(valid)
   {
@@ -65,7 +69,10 @@ public:
     }
   }
 
-  StructuredGrid(const int extent[4], const double origin[2], const double spacing[2],
+  StructuredGrid(
+    const int extent[4],
+    const double origin[2],
+    const double spacing[2],
     const std::function<double(int, int)>& data)
     : StructuredGrid(extent, origin, spacing, data, [](int, int) { return true; })
   {
@@ -92,7 +99,7 @@ private:
   std::function<double(int, int)> m_data;
   std::function<bool(int, int)> m_valid;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

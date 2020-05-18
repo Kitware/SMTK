@@ -175,6 +175,6 @@ const char* TriangulateFaces::xmlDescription() const
 {
   return TriangulateFaces_xml;
 }
-}
-}
-}
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk

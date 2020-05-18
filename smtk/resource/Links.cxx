@@ -28,14 +28,22 @@ namespace resource
 {
 bool Links::isLinkedTo(const ResourcePtr& rhs1, const RoleType& role) const
 {
-  return this->isLinkedTo(this->leftHandSideResource(), this->leftHandSideComponentId(), rhs1->id(),
-    linkToResource, role);
+  return this->isLinkedTo(
+    this->leftHandSideResource(),
+    this->leftHandSideComponentId(),
+    rhs1->id(),
+    linkToResource,
+    role);
 }
 
 bool Links::isLinkedTo(const ComponentPtr& rhs2, const RoleType& role) const
 {
-  return this->isLinkedTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
-    rhs2->resource()->id(), rhs2->id(), role);
+  return this->isLinkedTo(
+    this->leftHandSideResource(),
+    this->leftHandSideComponentId(),
+    rhs2->resource()->id(),
+    rhs2->id(),
+    role);
 }
 
 Links::Key Links::addLinkTo(const ResourcePtr& rhs1, const RoleType& role)
@@ -46,8 +54,12 @@ Links::Key Links::addLinkTo(const ResourcePtr& rhs1, const RoleType& role)
 
 Links::Key Links::addLinkTo(const ComponentPtr& rhs2, const RoleType& role)
 {
-  return this->addLinkTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
-    rhs2->resource(), rhs2->id(), role);
+  return this->addLinkTo(
+    this->leftHandSideResource(),
+    this->leftHandSideComponentId(),
+    rhs2->resource(),
+    rhs2->id(),
+    role);
 }
 
 PersistentObjectSet Links::linkedFrom(const RoleType& role) const
@@ -68,14 +80,22 @@ bool Links::removeLink(const Key& key)
 
 bool Links::removeLinksTo(const ResourcePtr& rhs1, const RoleType& role)
 {
-  return this->removeLinksTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
-    rhs1->id(), linkToResource, role);
+  return this->removeLinksTo(
+    this->leftHandSideResource(),
+    this->leftHandSideComponentId(),
+    rhs1->id(),
+    linkToResource,
+    role);
 }
 
 bool Links::removeLinksTo(const ComponentPtr& rhs2, const RoleType& role)
 {
-  return this->removeLinksTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
-    rhs2->resource()->id(), rhs2->id(), role);
+  return this->removeLinksTo(
+    this->leftHandSideResource(),
+    this->leftHandSideComponentId(),
+    rhs2->resource()->id(),
+    rhs2->id(),
+    role);
 }
 
 std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(const Key& key) const
@@ -103,8 +123,12 @@ const smtk::common::UUID& Links::leftHandSideComponentId() const
   return linkToResource;
 }
 
-bool Links::isLinkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2,
-  const smtk::common::UUID& rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const
+bool Links::isLinkedTo(
+  const Resource* lhs1,
+  const smtk::common::UUID& lhs2,
+  const smtk::common::UUID& rhs1,
+  const smtk::common::UUID& rhs2,
+  const RoleType& role) const
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then there is no link.
@@ -135,8 +159,12 @@ bool Links::isLinkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2,
   return (linkedTo.find(rhs2) != linkedTo.end());
 }
 
-Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, const ResourcePtr& rhs1,
-  const smtk::common::UUID& rhs2, const RoleType& role)
+Links::Key Links::addLinkTo(
+  Resource* lhs1,
+  const smtk::common::UUID& lhs2,
+  const ResourcePtr& rhs1,
+  const smtk::common::UUID& rhs2,
+  const RoleType& role)
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then create a new resource link.
@@ -197,8 +225,8 @@ Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, cons
   return std::make_pair(resourceLinkId, componentLinkId);
 }
 
-PersistentObjectSet Links::linkedTo(
-  const Resource* lhs1, const smtk::common::UUID& lhs2, const RoleType& role) const
+PersistentObjectSet
+Links::linkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2, const RoleType& role) const
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then there is no link.
@@ -240,8 +268,11 @@ PersistentObjectSet Links::linkedTo(
   return objectSet;
 }
 
-PersistentObjectSet Links::linkedFrom(const ResourcePtr& lhs1, const Resource* rhs1,
-  const smtk::common::UUID& rhs2, const RoleType& role) const
+PersistentObjectSet Links::linkedFrom(
+  const ResourcePtr& lhs1,
+  const Resource* rhs1,
+  const smtk::common::UUID& rhs2,
+  const RoleType& role) const
 {
   PersistentObjectSet objectSet;
 
@@ -292,8 +323,8 @@ PersistentObjectSet Links::linkedFrom(const ResourcePtr& lhs1, const Resource* r
   return objectSet;
 }
 
-PersistentObjectSet Links::linkedFrom(
-  const Resource* rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const
+PersistentObjectSet
+Links::linkedFrom(const Resource* rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const
 {
   PersistentObjectSet objectSet;
 
@@ -331,8 +362,12 @@ bool Links::removeLink(Resource* lhs1, const Links::Key& key)
   return returnValue;
 }
 
-bool Links::removeLinksTo(Resource* lhs1, const smtk::common::UUID& /*unused*/,
-  const smtk::common::UUID& rhs1, const smtk::common::UUID& rhs2, const RoleType& role)
+bool Links::removeLinksTo(
+  Resource* lhs1,
+  const smtk::common::UUID& /*unused*/,
+  const smtk::common::UUID& rhs1,
+  const smtk::common::UUID& rhs2,
+  const RoleType& role)
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then there is no link.
@@ -364,7 +399,8 @@ bool Links::removeLinksTo(Resource* lhs1, const smtk::common::UUID& /*unused*/,
 }
 
 std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
-  const Resource* lhs1, const Links::Key& key) const
+  const Resource* lhs1,
+  const Links::Key& key) const
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
@@ -402,7 +438,8 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
 }
 
 std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(
-  const Resource* lhs1, const Links::Key& key) const
+  const Resource* lhs1,
+  const Links::Key& key) const
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = lhs1->links().data();

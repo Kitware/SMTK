@@ -35,7 +35,8 @@ namespace smtk
 namespace attribute
 {
 
-bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
+bool PythonRule::operator()(
+  const Attribute::ConstPtr& attribute,
   const smtk::resource::PersistentObject::ConstPtr& object) const
 {
   // Initialize SMTK's embedded interpreter. This will locate SMTK's Python
@@ -54,16 +55,19 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
           .string();
     }
 
-    if (!boost::filesystem::is_regular_file(boost::filesystem::path(sourceFile)) &&
+    if (
+      !boost::filesystem::is_regular_file(boost::filesystem::path(sourceFile)) &&
       !boost::filesystem::is_symlink(boost::filesystem::path(sourceFile)))
     {
-      smtkWarningMacro(smtk::io::Logger::instance(), "Could not locate Python source file \""
-          << sourceFile << "\".");
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Could not locate Python source file \"" << sourceFile << "\".");
     }
     else if (!smtk::common::PythonInterpreter::instance().loadPythonSourceFile(sourceFile))
     {
-      smtkWarningMacro(smtk::io::Logger::instance(), "Could not load Python source file \""
-          << sourceFile << "\".");
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Could not load Python source file \"" << sourceFile << "\".");
     }
   }
 
@@ -80,7 +84,8 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
   if (functionNameStart != std::string::npos)
   {
     functionNameStart += 4;
-    functionName = m_functionString.substr(functionNameStart,
+    functionName = m_functionString.substr(
+      functionNameStart,
       m_functionString.find_first_of('(', functionNameStart) - functionNameStart);
   }
 
@@ -88,7 +93,8 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
   {
     // If we cannot find the call function, we log the Python function and treat
     // this rule as an all-pass filter.
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Could not determine Python function to call from the following:\n\n"
         << m_functionString);
     return true;
@@ -109,8 +115,10 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
     // If something went wrong with the Python execution, we log the Python
     // function and the error and treat this rule as an all-pass filter.
     s << "\n\n" << e.what();
-    smtk::io::Logger::instance().addRecord(smtk::io::Logger::ERROR, "PythonRule for definition \"" +
-        attribute->definition()->type() + "\" encountered an error:\n" + s.str());
+    smtk::io::Logger::instance().addRecord(
+      smtk::io::Logger::ERROR,
+      "PythonRule for definition \"" + attribute->definition()->type() +
+        "\" encountered an error:\n" + s.str());
     return true;
   }
 
@@ -149,7 +157,7 @@ PythonRule& PythonRule::operator<<(const nlohmann::json& json)
 {
   // See the explanation in operator>>() above.
 
-  m_sourceFiles = json["SourceFiles"].get<std::vector<std::string> >();
+  m_sourceFiles = json["SourceFiles"].get<std::vector<std::string>>();
 
   auto locals = pybind11::dict();
   locals["b64encodedStr"] = json["Function"].get<std::string>();
@@ -206,5 +214,5 @@ PythonRule& PythonRule::operator<<(const pugi::xml_node& node)
   m_functionString = node.text().data().value();
   return *this;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

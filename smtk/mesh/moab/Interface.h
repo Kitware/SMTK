@@ -111,7 +111,8 @@ public:
   //get back an efficient point locator for a range of points
   //This allows for efficient point locator on a per interface basis.
   smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points) override;
-  smtk::mesh::PointLocatorImplPtr pointLocator(std::size_t numPoints,
+  smtk::mesh::PointLocatorImplPtr pointLocator(
+    std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates) override;
 
   smtk::mesh::Handle getRoot() const override;
@@ -134,41 +135,46 @@ public:
   smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, int dimension) const override;
 
   //find all entity sets that have this exact name tag
-  smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const std::string& name) const override;
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, const std::string& name)
+    const override;
 
   //find all entity sets that have this exact domain tag
-  smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Domain& domain) const override;
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, const smtk::mesh::Domain& domain)
+    const override;
 
   //find all entity sets that have this exact dirichlet tag
   smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Dirichlet& dirichlet) const override;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::Dirichlet& dirichlet) const override;
 
   //find all entity sets that have this exact neumann tag
-  smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::Neumann& neumann) const override;
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, const smtk::mesh::Neumann& neumann)
+    const override;
 
   //get all cells held by this range
   smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const override;
 
   //get all cells held by this range handle of a given cell type
   smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, smtk::mesh::CellType cellType) const override;
+    const smtk::mesh::HandleRange& meshsets,
+    smtk::mesh::CellType cellType) const override;
 
   //get all cells held by this range handle of a given cell type(s)
   smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellTypes& cellTypes) const override;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellTypes& cellTypes) const override;
 
   //get all cells held by this range handle of a given dimension
   smtk::mesh::HandleRange getCells(
-    const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const override;
+    const smtk::mesh::HandleRange& meshsets,
+    smtk::mesh::DimensionType dim) const override;
 
   //get all points held by this range of handle of a given dimension. If
   //boundary_only is set to true, ignore the higher order points of the
   //cells
   smtk::mesh::HandleRange getPoints(
-    const smtk::mesh::HandleRange& cells, bool boundary_only = false) const override;
+    const smtk::mesh::HandleRange& cells,
+    bool boundary_only = false) const override;
 
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
@@ -209,122 +215,162 @@ public:
   smtk::mesh::TypeSet computeTypes(const smtk::mesh::HandleRange& range) const override;
 
   //compute the cells that make the shell/skin of the set of meshes
-  bool computeShell(
-    const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const override;
+  bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell)
+    const override;
 
   //compute adjacencies of a given dimension, creating them if necessary
-  bool computeAdjacenciesOfDimension(const smtk::mesh::HandleRange& meshes, int dimension,
+  bool computeAdjacenciesOfDimension(
+    const smtk::mesh::HandleRange& meshes,
+    int dimension,
     smtk::mesh::HandleRange& adj) const override;
 
   //given a handle to a cell, return its parent handle and canonical index.
-  bool canonicalIndex(
-    const smtk::mesh::Handle& cell, smtk::mesh::Handle& parent, int& index) const override;
+  bool canonicalIndex(const smtk::mesh::Handle& cell, smtk::mesh::Handle& parent, int& index)
+    const override;
 
   //merge any duplicate points used by the cells that have been passed
   //Note: Will mark the interface as modified when successful
-  bool mergeCoincidentContactPoints(
-    const smtk::mesh::HandleRange& meshes, double tolerance) override;
+  bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes, double tolerance)
+    override;
 
   //given a handle to a cell, return its dimension-equivalent neighbors.
   virtual smtk::mesh::HandleRange neighbors(const smtk::mesh::Handle& cell) const override;
 
-  bool setDomain(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain) const override;
+  bool setDomain(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain)
+    const override;
 
-  bool setDirichlet(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Dirichlet& dirichlet) const override;
+  bool setDirichlet(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Dirichlet& dirichlet)
+    const override;
 
-  bool setNeumann(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann) const override;
+  bool setNeumann(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann)
+    const override;
 
   bool setId(const smtk::mesh::Handle& meshset, const smtk::common::UUID& id) const override;
 
   smtk::common::UUID getId(const smtk::mesh::Handle& meshset) const override;
 
-  bool findById(const smtk::mesh::Handle& root, const smtk::common::UUID& id,
+  bool findById(
+    const smtk::mesh::Handle& root,
+    const smtk::common::UUID& id,
     smtk::mesh::Handle& meshset) const override;
 
-  bool setAssociation(
-    const smtk::common::UUID& modelUUID, const smtk::mesh::HandleRange& range) const override;
+  bool setAssociation(const smtk::common::UUID& modelUUID, const smtk::mesh::HandleRange& range)
+    const override;
 
   smtk::mesh::HandleRange findAssociations(
-    const smtk::mesh::Handle& root, const smtk::common::UUID& modelUUID) const override;
+    const smtk::mesh::Handle& root,
+    const smtk::common::UUID& modelUUID) const override;
 
   bool setRootAssociation(const smtk::common::UUID& modelUUID) const override;
 
   smtk::common::UUID rootAssociation() const override;
 
-  bool createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) override;
+  bool createCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const std::string& name,
+    std::size_t dimension,
+    const smtk::mesh::FieldType& type,
+    const void* data) override;
 
   int getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const override;
   smtk::mesh::FieldType getCellFieldType(const smtk::mesh::CellFieldTag& pfTag) const override;
 
   smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const override;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::CellFieldTag& cfTag) const override;
 
-  bool hasCellField(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const override;
+  bool hasCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag)
+    const override;
 
-  bool getCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
+  bool getCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag,
     void* data) const override;
 
-  bool getField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+  bool getField(
+    const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::CellFieldTag& cfTag,
     void* data) const override;
 
-  bool setField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+  bool setField(
+    const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::CellFieldTag& cfTag,
     const void* const data) override;
 
-  bool setCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
+  bool setCellField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag,
     const void* const data) override;
 
   std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const override;
 
   bool deleteCellField(
-    const smtk::mesh::CellFieldTag& cfTag, const smtk::mesh::HandleRange& meshsets) override;
+    const smtk::mesh::CellFieldTag& cfTag,
+    const smtk::mesh::HandleRange& meshsets) override;
 
-  bool createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) override;
+  bool createPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const std::string& name,
+    std::size_t dimension,
+    const smtk::mesh::FieldType& type,
+    const void* data) override;
 
   int getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const override;
   smtk::mesh::FieldType getPointFieldType(const smtk::mesh::PointFieldTag& pfTag) const override;
 
   smtk::mesh::HandleRange getMeshsets(
-    smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const override;
+    smtk::mesh::Handle handle,
+    const smtk::mesh::PointFieldTag& pfTag) const override;
 
   bool hasPointField(
-    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const override;
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag) const override;
 
-  bool getPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, void* data) const override;
-
-  bool getField(const smtk::mesh::HandleRange& points, const smtk::mesh::PointFieldTag& pfTag,
+  bool getPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag,
     void* data) const override;
 
-  bool setField(const smtk::mesh::HandleRange& points, const smtk::mesh::PointFieldTag& pfTag,
+  bool getField(
+    const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag,
+    void* data) const override;
+
+  bool setField(
+    const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag,
     const void* const data) override;
 
-  bool setPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, const void* const data) override;
+  bool setPointField(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag,
+    const void* const data) override;
 
   std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const override;
 
   bool deletePointField(
-    const smtk::mesh::PointFieldTag& pfTag, const smtk::mesh::HandleRange& meshsets) override;
+    const smtk::mesh::PointFieldTag& pfTag,
+    const smtk::mesh::HandleRange& meshsets) override;
 
-  smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
-    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+  smtk::mesh::HandleRange pointIntersect(
+    const smtk::mesh::HandleRange& a,
+    const smtk::mesh::HandleRange& b,
+    smtk::mesh::PointConnectivity& bpc,
     smtk::mesh::ContainmentType containmentType) const override;
 
-  smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
-    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+  smtk::mesh::HandleRange pointDifference(
+    const smtk::mesh::HandleRange& a,
+    const smtk::mesh::HandleRange& b,
+    smtk::mesh::PointConnectivity& bpc,
     smtk::mesh::ContainmentType containmentType) const override;
 
   void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const override;
 
-  void cellForEach(const HandleRange& cells, smtk::mesh::PointConnectivity& pc,
+  void cellForEach(
+    const HandleRange& cells,
+    smtk::mesh::PointConnectivity& pc,
     smtk::mesh::CellForEach& filter) const override;
 
   void meshForEach(const HandleRange& meshes, smtk::mesh::MeshForEach& filter) const override;
@@ -337,20 +383,24 @@ public:
 
 private:
   void callPointForEach(
-    const HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const;
+    const HandleRange& points,
+    std::vector<double>& coords,
+    smtk::mesh::PointForEach& filter) const;
 
   void pointForEachRecursive(
-    HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const;
+    HandleRange& points,
+    std::vector<double>& coords,
+    smtk::mesh::PointForEach& filter) const;
 
   //holds a reference to the real moab interface
-  smtk::shared_ptr< ::moab::Interface> m_iface;
+  smtk::shared_ptr<::moab::Interface> m_iface;
   smtk::mesh::AllocatorPtr m_alloc;
   smtk::mesh::BufferedCellAllocatorPtr m_bcAlloc;
   smtk::mesh::IncrementalAllocatorPtr m_iAlloc;
   mutable bool m_modified;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

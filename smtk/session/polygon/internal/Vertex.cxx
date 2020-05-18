@@ -82,8 +82,8 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
     bool inside =
       (axb > 0 && axt > 0 && txb > 0) || // A->B < 180 degrees => A->T and T->B also < 180 degrees
       (axb < 0 &&
-        !(axt < 0 &&
-          txb < 0)) || // A->B > 180 degrees => if B->T and T->A < 180 degrees, T outside A->B
+       !(axt < 0 &&
+         txb < 0)) || // A->B > 180 degrees => if B->T and T->A < 180 degrees, T outside A->B
       (axb == 0 && axt < 0 && txb < 0); // A->B = 180 degrees => A->T and T->B also < 180 degrees
 
     if (inside)
@@ -143,8 +143,8 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
   * \a edgeOutwards indicates whether the forward-direction edge
   * is outward or inward-pointing (from/to this vertex).
   */
-vertex::incident_edges::iterator vertex::insertEdgeAt(
-  incident_edges::iterator where, const Id& edgeId, bool edgeOutwards)
+vertex::incident_edges::iterator
+vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards)
 {
   incident_edge_data edgeData;
   edgeData.m_edgeId = edgeId;
@@ -160,7 +160,10 @@ vertex::incident_edges::iterator vertex::insertEdgeAt(
   * \a faceId is the UUID of the face immediately **clockwise (CW)** of this edge relative to the vertex.
   */
 vertex::incident_edges::iterator vertex::insertEdgeAt(
-  incident_edges::iterator where, const Id& edgeId, bool edgeOutwards, const Id& faceId)
+  incident_edges::iterator where,
+  const Id& edgeId,
+  bool edgeOutwards,
+  const Id& faceId)
 {
   incident_edge_data edgeData;
   edgeData.m_edgeId = edgeId;
@@ -179,20 +182,24 @@ void vertex::removeEdgeAt(incident_edges::iterator where)
 }
 
 bool vertex::setFaceAdjacency(
-  const Id& incidentEdge, const Id& adjacentFace, bool isCCW, int edgeDir)
+  const Id& incidentEdge,
+  const Id& adjacentFace,
+  bool isCCW,
+  int edgeDir)
 {
   incident_edges::iterator it;
   for (it = m_edges.begin(); it != m_edges.end(); ++it)
   {
     // This conditional is complex because we must handle the case when
     // an edge has both endpoints into the same vertex:
-    if (it->edgeId() == incidentEdge &&
-      (                   // The edge ID matches and either:
-          edgeDir == 0 || // we don't care about edge direction or
-          (edgeDir != 0 &&
-            (edgeDir > 0) ==
-              it->isEdgeOutgoing()) // the edge direction also matches (i.e., head at vertex)
-          ))
+    if (
+      it->edgeId() == incidentEdge &&
+      (                 // The edge ID matches and either:
+        edgeDir == 0 || // we don't care about edge direction or
+        (edgeDir != 0 &&
+         (edgeDir > 0) ==
+           it->isEdgeOutgoing()) // the edge direction also matches (i.e., head at vertex)
+        ))
     {
       if (isCCW)
       {

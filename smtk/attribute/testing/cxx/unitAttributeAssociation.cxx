@@ -28,7 +28,7 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
+int unitAttributeAssociation(int /*unused*/, char* /*unused*/[])
 {
   // ----
   // I. First see how things work when Resource is not yet set.
@@ -44,7 +44,8 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
   AttributePtr att = resptr->createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
-  smtkTest(!att->associateEntity(fakeEntityId),
+  smtkTest(
+    !att->associateEntity(fakeEntityId),
     "Was able to associate a \"fake\" object with an attribute.");
 
   // Attempt to disassociate an entity that was never associated.
@@ -56,13 +57,15 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
   //     a valid model modelMgr pointer.
   model::Resource::Ptr modelMgr = model::Resource::create();
   resptr->associate(modelMgr);
-  smtkTest(*resptr->associations().begin() == modelMgr,
+  smtkTest(
+    *resptr->associations().begin() == modelMgr,
     "Could not set attribute resource's model-resource.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
   att->associateEntity(v0);
-  smtkTest(att->associatedModelEntityIds().count(v0.entity()) == 1,
+  smtkTest(
+    att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
 
   att->disassociateEntity(v0);
@@ -74,18 +77,21 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
 
   v1.associateAttribute(att->attributeResource(), att->id());
   att->removeAllAssociations();
-  smtkTest(att->associatedModelEntityIds().empty(),
+  smtkTest(
+    att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
 
   smtk::model::Vertex v2 = modelMgr->addVertex();
   v0.associateAttribute(att->attributeResource(), att->id());
   v1.associateAttribute(att->attributeResource(), att->id());
-  smtkTest(v2.associateAttribute(att->attributeResource(), att->id()) == false,
+  smtkTest(
+    v2.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate more than 2 entities.");
 
   att->removeAllAssociations();
   smtk::model::Edge e0 = modelMgr->addEdge();
-  smtkTest(e0.associateAttribute(att->attributeResource(), att->id()) == false,
+  smtkTest(
+    e0.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
   {
@@ -95,26 +101,31 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
     associateOperation->parameters()->associate(resptr);
 
     modelMgr = model::Resource::create();
-    smtkTest(associateOperation->parameters()->findResource("associate to") != nullptr,
+    smtkTest(
+      associateOperation->parameters()->findResource("associate to") != nullptr,
       "Cannot access associate opration's input resource parameter.");
     associateOperation->parameters()->findResource("associate to")->setValue(modelMgr);
 
     auto result = associateOperation->operate();
 
-    smtkTest(result->findInt("outcome")->value() ==
+    smtkTest(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Associate operator failed");
 
-    smtkTest(*(resptr->associations().begin()) == modelMgr,
+    smtkTest(
+      *(resptr->associations().begin()) == modelMgr,
       "Could not set attribute resource's model-resource.");
 
-    smtkTest(resptr->hasAssociations(),
+    smtkTest(
+      resptr->hasAssociations(),
       "Attribute Resource::hasAssociations() did not return true after association");
     auto dissociateOperation = smtk::attribute::Dissociate::create();
 
     dissociateOperation->parameters()->associate(resptr);
 
-    smtkTest(dissociateOperation->parameters()->findResource("dissociate from") != nullptr,
+    smtkTest(
+      dissociateOperation->parameters()->findResource("dissociate from") != nullptr,
       "Cannot access dissociate opration's input resource parameter.");
     dissociateOperation->parameters()->findResource("dissociate from")->setValue(modelMgr);
 
@@ -122,13 +133,16 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
 
     result = dissociateOperation->operate();
 
-    smtkTest(result->findInt("outcome")->value() ==
+    smtkTest(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Dissociate operator failed");
 
-    smtkTest(!resptr->hasAssociations(),
+    smtkTest(
+      !resptr->hasAssociations(),
       "Attribute Resource::hasAssociations() did return true after disassociation");
-    smtkTest(resptr->associations().empty() == true,
+    smtkTest(
+      resptr->associations().empty() == true,
       "Could not dissociate model-resource from attribute resource.");
   }
 

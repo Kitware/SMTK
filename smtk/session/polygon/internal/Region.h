@@ -47,7 +47,7 @@ public:
 };
 
 /// A map to hold each region's definition indexed by its UF region ID.
-typedef std::map<RegionIdSet::value_type, smtk::shared_ptr<Region> > RegionDefinitions;
+typedef std::map<RegionIdSet::value_type, smtk::shared_ptr<Region>> RegionDefinitions;
 
 } // namespace polygon
 } //namespace session

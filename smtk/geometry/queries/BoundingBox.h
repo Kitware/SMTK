@@ -38,7 +38,7 @@ inline std::array<double, 6> BoundingBox::operator()(
 {
   return { { 1., 0., 1., 0., 1., 0. } };
 }
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

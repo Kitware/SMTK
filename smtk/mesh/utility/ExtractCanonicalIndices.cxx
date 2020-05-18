@@ -33,20 +33,23 @@ namespace utility
 {
 
 void PreAllocatedCanonicalIndices::determineAllocationLengths(
-  const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells)
+  const smtk::mesh::MeshSet& ms,
+  std::int64_t& numberOfCells)
 {
   numberOfCells = ms.cells().size();
 }
 
 PreAllocatedCanonicalIndices::PreAllocatedCanonicalIndices(
-  std::int64_t* referenceCellIndices, std::int64_t* canonicalIndices)
+  std::int64_t* referenceCellIndices,
+  std::int64_t* canonicalIndices)
   : m_referenceCellIndices(referenceCellIndices)
   , m_canonicalIndices(canonicalIndices)
 {
 }
 
 void CanonicalIndices::extract(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::MeshSet& referenceMS)
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::MeshSet& referenceMS)
 {
   //determine the lengths
   std::int64_t numberOfCells = -1;
@@ -60,7 +63,9 @@ void CanonicalIndices::extract(
   extractCanonicalIndices(ms, referenceMS, field);
 }
 
-void extractCanonicalIndices(const smtk::mesh::MeshSet& ms, const smtk::mesh::MeshSet& referenceMS,
+void extractCanonicalIndices(
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::MeshSet& referenceMS,
   PreAllocatedCanonicalIndices& field)
 {
   // Check that the mesh sets come from the same resource.
@@ -121,6 +126,6 @@ void extractCanonicalIndices(const smtk::mesh::MeshSet& ms, const smtk::mesh::Me
     field.m_canonicalIndices[counter] = static_cast<std::size_t>(canonicalIndex);
   }
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

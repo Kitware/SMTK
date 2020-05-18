@@ -30,9 +30,9 @@ struct VTKSMTKGEOMETRYEXT_EXPORT BoundingBox
 {
   std::array<double, 6> operator()(const smtk::resource::PersistentObject::Ptr&) const override;
 };
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

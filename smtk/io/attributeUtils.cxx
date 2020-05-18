@@ -28,8 +28,13 @@ namespace smtk
 {
 namespace io
 {
-bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename, Logger& logger,
-  bool appendToGroup, const std::string& sep, const std::string& comment)
+bool importFromCSV(
+  smtk::attribute::GroupItem& item,
+  const std::string& filename,
+  Logger& logger,
+  bool appendToGroup,
+  const std::string& sep,
+  const std::string& comment)
 {
   // First lets determine the number of values each group as well as determining if the
   // group is acceptable for import - this means the following:
@@ -41,7 +46,8 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
   auto def = item.definitionAs<GroupItemDefinition>();
   if (!def->isExtensible())
   {
-    smtkErrorMacro(logger,
+    smtkErrorMacro(
+      logger,
       "GroupItem: " << item.name() << " is not extensible and is inappropriate for CSV Import");
     return false;
   }
@@ -52,10 +58,12 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
       std::dynamic_pointer_cast<ValueItemDefinition>(def->itemDefinition(static_cast<int>(i)));
     if ((vdef == nullptr) || vdef->isOptional() || vdef->isExtensible())
     {
-      smtkErrorMacro(logger,
+      smtkErrorMacro(
+        logger,
         "GroupItem: " << item.name() << " is not appropriate for CSV Import due to child item "
-                      << vdef->name() << " either not being a ValueItem or it is either extensible "
-                                         "or optional which are not supported.");
+                      << vdef->name()
+                      << " either not being a ValueItem or it is either extensible "
+                         "or optional which are not supported.");
       return false;
     }
     numValues += vdef->numberOfRequiredValues();
@@ -90,9 +98,10 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
     std::vector<std::string> svals = smtk::common::StringUtil::split(line, sep, false, true);
     if (svals.size() != numValues)
     {
-      smtkWarningMacro(logger, "Skipping line "
-          << lineCount << ": \"" << line << "\" - incorrect number of values. Found "
-          << svals.size() << " should have been " << numValues);
+      smtkWarningMacro(
+        logger,
+        "Skipping line " << lineCount << ": \"" << line << "\" - incorrect number of values. Found "
+                         << svals.size() << " should have been " << numValues);
       lineCount++;
       continue;
     }
@@ -111,9 +120,10 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
       {
         if (!vitem->setValueFromString(j, svals.at(currentVal++)))
         {
-          smtkErrorMacro(logger, "Could not set Group[" << groupIndex << "]'s Item "
-                                                        << vitem->name() << "[" << j << "] to "
-                                                        << svals.at(currentVal - 1));
+          smtkErrorMacro(
+            logger,
+            "Could not set Group[" << groupIndex << "]'s Item " << vitem->name() << "[" << j
+                                   << "] to " << svals.at(currentVal - 1));
         }
       }
     }
@@ -124,8 +134,13 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
   return true;
 }
 
-bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& filename,
-  Logger& logger, bool appendToGroup, const std::string& optionalSep, const std::string& comment)
+bool importFromDoubleFile(
+  smtk::attribute::GroupItem& item,
+  const std::string& filename,
+  Logger& logger,
+  bool appendToGroup,
+  const std::string& optionalSep,
+  const std::string& comment)
 {
   // First lets determine the number of values each group as well as determining if the
   // group is acceptable for import - this means the following:
@@ -137,7 +152,8 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
   auto def = item.definitionAs<GroupItemDefinition>();
   if (!def->isExtensible())
   {
-    smtkErrorMacro(logger,
+    smtkErrorMacro(
+      logger,
       "GroupItem: " << item.name() << " is not extensible and is inappropriate for CSV Import");
     return false;
   }
@@ -148,10 +164,13 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
       std::dynamic_pointer_cast<DoubleItemDefinition>(def->itemDefinition(static_cast<int>(i)));
     if ((ddef == nullptr) || ddef->isOptional() || ddef->isExtensible())
     {
-      smtkErrorMacro(logger, "GroupItem: "
-          << item.name() << " is not appropriate for Double File  Import due to child item "
-          << ddef->name() << " either not being a DoubleItem or it is either extensible "
-                             "or optional which are not supported.");
+      smtkErrorMacro(
+        logger,
+        "GroupItem: " << item.name()
+                      << " is not appropriate for Double File  Import due to child item "
+                      << ddef->name()
+                      << " either not being a DoubleItem or it is either extensible "
+                         "or optional which are not supported.");
       return false;
     }
     numValues += ddef->numberOfRequiredValues();
@@ -218,17 +237,20 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
       // Did we encounter the end of line?
       if (iss.eof())
       {
-        smtkWarningMacro(logger, "Skipping line "
-            << lineCount << ": \"" << line << "\" - incorrect number of values. Found " << numFound
-            << " should have been " << numValues);
+        smtkWarningMacro(
+          logger,
+          "Skipping line " << lineCount << ": \"" << line
+                           << "\" - incorrect number of values. Found " << numFound
+                           << " should have been " << numValues);
       }
       else
       {
         std::string probString;
         std::getline(iss, probString);
-        smtkWarningMacro(logger, "Skipping line " << lineCount << ": \"" << line
-                                                  << "\" - encountered a format issue near \""
-                                                  << probString << "\"");
+        smtkWarningMacro(
+          logger,
+          "Skipping line " << lineCount << ": \"" << line
+                           << "\" - encountered a format issue near \"" << probString << "\"");
       }
       lineCount++;
       continue;
@@ -251,9 +273,10 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
       {
         if (!ditem->setValue(j, vals.at(currentVal++)))
         {
-          smtkErrorMacro(logger, "Could not set Group[" << groupIndex << "]'s Item "
-                                                        << ditem->name() << "[" << j << "] to "
-                                                        << vals.at(currentVal - 1));
+          smtkErrorMacro(
+            logger,
+            "Could not set Group[" << groupIndex << "]'s Item " << ditem->name() << "[" << j
+                                   << "] to " << vals.at(currentVal - 1));
         }
       }
     }
@@ -263,5 +286,5 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
   }
   return true;
 }
-}
-}
+} // namespace io
+} // namespace smtk

@@ -240,7 +240,7 @@ void verify_shared_iteration(const smtk::mesh::ResourcePtr& mr)
     test(twoDimCopy.fetchNextCell(size, points));
   }
 }
-}
+} // namespace
 
 int UnitTestPointConnectivity(int /*unused*/, char** const /*unused*/)
 {

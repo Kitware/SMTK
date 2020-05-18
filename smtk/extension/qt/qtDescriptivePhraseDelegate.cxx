@@ -119,7 +119,8 @@ void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 }
 
 QSize qtDescriptivePhraseDelegate::sizeHint(
-  const QStyleOptionViewItem& option, const QModelIndex& idx) const
+  const QStyleOptionViewItem& option,
+  const QModelIndex& idx) const
 {
   QSize iconsize;
   auto badges =
@@ -156,7 +157,9 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
 }
 
 void qtDescriptivePhraseDelegate::paint(
-  QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& idx) const
+  QPainter* painter,
+  const QStyleOptionViewItem& option,
+  const QModelIndex& idx) const
 {
   bool setBackground = false;
   QColor background;
@@ -192,8 +195,9 @@ void qtDescriptivePhraseDelegate::paint(
   auto phrase =
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   std::array<float, 4> backgroundArray = { static_cast<float>(background.redF()),
-    static_cast<float>(background.greenF()), static_cast<float>(background.blueF()),
-    static_cast<float>(background.alphaF()) };
+                                           static_cast<float>(background.greenF()),
+                                           static_cast<float>(background.blueF()),
+                                           static_cast<float>(background.alphaF()) };
 
   QIcon icon;
   if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 1)
@@ -252,7 +256,8 @@ void qtDescriptivePhraseDelegate::paint(
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
   titleRect.setTop(titleRect.top() + m_textVerticalPad / 2.0);
-  titleRect.setBottom(titleRect.top() +
+  titleRect.setBottom(
+    titleRect.top() +
     (m_drawSubtitle ? titleFM.height() : option.rect.height() - m_textVerticalPad));
   subtitleRect.setTop(titleRect.bottom() + m_textVerticalPad);
 
@@ -273,7 +278,9 @@ void qtDescriptivePhraseDelegate::paint(
 }
 
 QWidget* qtDescriptivePhraseDelegate::createEditor(
-  QWidget* owner, const QStyleOptionViewItem& option, const QModelIndex& idx) const
+  QWidget* owner,
+  const QStyleOptionViewItem& option,
+  const QModelIndex& idx) const
 {
   (void)option;
 
@@ -293,7 +300,9 @@ QWidget* qtDescriptivePhraseDelegate::createEditor(
 }
 
 void qtDescriptivePhraseDelegate::updateEditorGeometry(
-  QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& idx) const
+  QWidget* editor,
+  const QStyleOptionViewItem& option,
+  const QModelIndex& idx) const
 {
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
@@ -351,7 +360,9 @@ void qtDescriptivePhraseDelegate::setEditorData(QWidget* editor, const QModelInd
 }
 
 void qtDescriptivePhraseDelegate::setModelData(
-  QWidget* editor, QAbstractItemModel* model, const QModelIndex& idx) const
+  QWidget* editor,
+  QAbstractItemModel* model,
+  const QModelIndex& idx) const
 {
   QLineEdit* titleEditor = qobject_cast<QLineEdit*>(editor);
   if (titleEditor)
@@ -367,8 +378,11 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
-  const smtk::view::BadgeSet::BadgeList& badges, const smtk::view::DescriptivePhrase* phrase)
+int determineAction(
+  const QPoint& pPos,
+  const QStyleOptionViewItem& option,
+  const smtk::view::BadgeSet::BadgeList& badges,
+  const smtk::view::DescriptivePhrase* phrase)
 {
 
   int badgeIndex = -1;
@@ -410,7 +424,10 @@ int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
 }
 
 bool qtDescriptivePhraseDelegate::editorEvent(
-  QEvent* evt, QAbstractItemModel* mod, const QStyleOptionViewItem& option, const QModelIndex& idx)
+  QEvent* evt,
+  QAbstractItemModel* mod,
+  const QStyleOptionViewItem& option,
+  const QModelIndex& idx)
 {
   bool res = this->QStyledItemDelegate::editorEvent(evt, mod, option, idx);
   if (evt->type() != QEvent::MouseButtonPress)
@@ -436,5 +453,5 @@ bool qtDescriptivePhraseDelegate::editorEvent(
 
   return res;
 }
-}
-}
+} // namespace extension
+} // namespace smtk

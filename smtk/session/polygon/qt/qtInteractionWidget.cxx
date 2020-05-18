@@ -20,7 +20,8 @@
 #include "vtkSMSessionProxyManager.h"
 
 qtInteractionWidget::qtInteractionWidget(
-  const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& smproxy, QWidget* parentWdg)
+  const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& smproxy,
+  QWidget* parentWdg)
   : Superclass(parentWdg)
   , WidgetProxy(smproxy.Get())
   , Interactivity(false)
@@ -41,7 +42,8 @@ qtInteractionWidget::~qtInteractionWidget()
 }
 
 vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> qtInteractionWidget::createWidget(
-  const char* smgroup, const char* smname)
+  const char* smgroup,
+  const char* smname)
 {
   pqServer* server = pqActiveObjects::instance().activeServer();
   Q_ASSERT(server);
