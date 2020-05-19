@@ -31,13 +31,13 @@ using BadgeList = std::tuple<VisibilityBadge>;
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().registerTypes<ViewWidgetList>();
   viewManager->badgeFactory().registerTypes<BadgeList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
   viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
 }

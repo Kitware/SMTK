@@ -61,6 +61,11 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
 
+  qtOperationView(const smtk::view::Information& info)
+    : qtOperationView(static_cast<const OperationViewInfo&>(info))
+  {
+  }
+
   qtOperationView(const OperationViewInfo& info);
   virtual ~qtOperationView();
 

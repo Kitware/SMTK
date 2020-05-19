@@ -37,16 +37,16 @@ typedef std::tuple<
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerViewWidgets<ViewList>();
+  viewManager->viewWidgetFactory().registerTypes<ViewList>();
 #ifdef VTK_SUPPORT
-  viewManager->addWidgetAlias<qtExtractContoursView>("smtkPolygonContourView");
+  viewManager->viewWidgetFactory().addAlias<qtExtractContoursView>("smtkPolygonContourView");
 #endif
-  viewManager->addWidgetAlias<qtPolygonEdgeOperationView>("smtkPolygonEdgeView");
+  viewManager->viewWidgetFactory().addAlias<qtPolygonEdgeOperationView>("smtkPolygonEdgeView");
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterViewWidgets<ViewList>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewList>();
 }
 }
 }

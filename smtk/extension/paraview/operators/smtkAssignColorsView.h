@@ -28,6 +28,10 @@ class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkAssignColorsView
 public:
   smtkTypenameMacro(smtkAssignColorsView);
 
+  smtkAssignColorsView(const smtk::view::Information& info)
+    : smtkAssignColorsView(static_cast<const smtk::extension::OperationViewInfo&>(info))
+  {
+  }
   smtkAssignColorsView(const smtk::extension::OperationViewInfo& info);
   virtual ~smtkAssignColorsView();
 

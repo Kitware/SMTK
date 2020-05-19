@@ -26,6 +26,7 @@ public:
   smtkTypeMacro(smtk::view::EmptySubphraseGenerator);
   smtkSuperclassMacro(smtk::view::SubphraseGenerator);
   smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
+  EmptySubphraseGenerator();
   virtual ~EmptySubphraseGenerator() {}
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.
@@ -33,9 +34,6 @@ public:
     * Subclasses must override this method.
     */
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
-
-protected:
-  EmptySubphraseGenerator();
 };
 
 } // namespace view

@@ -26,6 +26,7 @@ public:
   smtkTypeMacro(smtk::view::TwoLevelSubphraseGenerator);
   smtkSuperclassMacro(smtk::view::SubphraseGenerator);
   smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
+  TwoLevelSubphraseGenerator();
   virtual ~TwoLevelSubphraseGenerator();
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.
@@ -35,8 +36,6 @@ public:
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
 
 protected:
-  TwoLevelSubphraseGenerator();
-
   bool findSortedLocation(Path& pathInOut, smtk::model::EntityPtr entity,
     DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const override;
 

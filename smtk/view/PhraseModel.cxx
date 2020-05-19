@@ -149,7 +149,7 @@ SubphraseGeneratorPtr PhraseModel::configureSubphraseGenerator(
       {
         spType = "smtk::view::SubphraseGenerator";
       }
-      result = manager->createSubphrase(&subphraseConfig);
+      result = manager->subphraseGeneratorFactory().createFromConfiguration(&subphraseConfig);
     }
   }
   if (!result)

@@ -266,7 +266,13 @@ void qtUIManager::initializeUI(
 
 bool qtUIManager::hasViewConstructor(const std::string& vtype) const
 {
-  return m_viewManager ? m_viewManager->hasViewWidget(vtype) : false;
+  if (!m_viewManager)
+  {
+    return false;
+  }
+
+  return m_viewManager->viewWidgetFactory().contains(vtype) ||
+    m_viewManager->viewWidgetFactory().containsAlias(vtype);
 }
 
 smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
@@ -938,27 +944,38 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     return nullptr;
   }
 
-  // std::map<std::string, widgetConstructor>::const_iterator it;
-  // it = m_constructors.find(info.m_view->type());
-  // if (it == m_constructors.end())
-  // {
-  //   // Constructor for that type could not be found)
-  //   std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
-  //   return nullptr;
-  // }
-  // qtBaseView* qtView = (it->second)(info);
   if (!m_viewManager)
   {
     std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
     return nullptr;
   }
-  qtBaseView* qtView =
-    dynamic_cast<qtBaseView*>(m_viewManager->createViewWidget(info.m_view->type(), info));
+  qtBaseView* qtView = nullptr;
+  if (m_viewManager->viewWidgetFactory().contains(info.m_view->type()))
+  {
+    qtView = dynamic_cast<qtBaseView*>(
+      m_viewManager->viewWidgetFactory()
+        .createFromName(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
+        .release());
+  }
+  else if (m_viewManager->viewWidgetFactory().containsAlias(info.m_view->type()))
+  {
+    qtView = dynamic_cast<qtBaseView*>(
+      m_viewManager->viewWidgetFactory()
+        .createFromAlias(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
+        .release());
+  }
   if (!qtView)
   {
     // Constructor for that type could not be found)
     std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
   }
+
+  // Views do not follow RAII. They require a call to the protected virtual
+  // method buildUI() to be initialized. Since objects that inherit from
+  // qtBaseView are only ever called by qtUIManager, we can code around this
+  // issue by making qtBaseView a friend of qtUIManager and by calling buildUI()
+  // immediately upon construction in qtUIManager.
+  qtView->buildUI();
   return qtView;
 }
 

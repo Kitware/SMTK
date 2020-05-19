@@ -29,12 +29,12 @@ typedef std::tuple<smtkAssignColorsView> ViewWidgetList;
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().registerTypes<ViewWidgetList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
 }
 }
 }

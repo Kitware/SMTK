@@ -49,6 +49,7 @@ public:
 
   smtkTypeMacroBase(smtk::view::SubphraseGenerator);
   smtkCreateMacro(smtk::view::SubphraseGenerator);
+  SubphraseGenerator();
   virtual ~SubphraseGenerator() {}
 
   using Path = std::vector<int>;
@@ -138,8 +139,6 @@ public:
   friend Manager;
 
 protected:
-  SubphraseGenerator();
-
   virtual Path indexOfObjectInParent(const smtk::resource::PersistentObjectPtr& obj,
     smtk::view::DescriptivePhrasePtr& parent, const Path& parentPath);
 
