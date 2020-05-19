@@ -123,7 +123,7 @@ Import::Result Import::operateInternal()
   auto created = result->findComponent("created");
 
   BRep_Builder builder;
-  TopoDS_Shape shape;
+  TopoDS_Shape& shape = resource->compound();
   if (filetype == "occ")
   {
     auto ok = BRepTools::Read(shape, filename.c_str(), builder);
@@ -227,6 +227,7 @@ Import::Result Import::operateInternal()
     smtkErrorMacro(this->log(), "Unknown file type for \"" << filename << "\".");
     return result;
   }
+
   auto topNode = this->createNode(shape, resource.get(), true);
   // std::cout
   //   << "  Added " << " " << topNode->id() << " " << topNode->name()

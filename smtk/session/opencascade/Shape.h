@@ -18,6 +18,8 @@
 
 #include "smtk/session/opencascade/Exports.h"
 
+class TopoDS_Shape;
+
 namespace smtk
 {
 namespace session
@@ -56,6 +58,9 @@ public:
   {
     this->properties().get<std::string>()["name"] = name;
   }
+
+  const TopoDS_Shape* data() const;
+  TopoDS_Shape* data();
 
   /// Return the parent resource as a session::opencascade::Resource, not a resource::Resource.
   Resource* occResource() const;

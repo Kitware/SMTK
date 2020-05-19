@@ -12,6 +12,8 @@
 
 #include "smtk/session/opencascade/Resource.h"
 
+#include <BRep_Builder.hxx>
+
 namespace smtk
 {
 namespace session
@@ -22,11 +24,15 @@ namespace opencascade
 Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager)
   : Superclass(uid, manager)
 {
+  BRep_Builder aBuilder;
+  aBuilder.MakeCompound(m_compound);
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
   : Superclass(manager)
 {
+  BRep_Builder aBuilder;
+  aBuilder.MakeCompound(m_compound);
 }
 
 void Resource::setSession(const Session::Ptr& session)

@@ -14,6 +14,9 @@
 
 #include "smtk/session/opencascade/Exports.h"
 
+#include "smtk/session/opencascade/arcs/Children.h"
+#include "smtk/session/opencascade/arcs/Parents.h"
+
 #include <tuple>
 
 namespace smtk
@@ -39,7 +42,7 @@ class Shape;
 struct SMTKOPENCASCADESESSION_EXPORT Traits
 {
   typedef std::tuple<Shape, Compound, CompSolid, Solid, Shell, Face, Wire, Edge, Vertex> NodeTypes;
-  typedef std::tuple<> ArcTypes;
+  typedef std::tuple<Children, Parents> ArcTypes;
 };
 }
 }

@@ -35,6 +35,8 @@
 #include "TopoDS_Shape.hxx"
 #include "gp_Pnt.hxx" // "gp/gp_Pnt.hxx"
 
+#include "smtk/session/opencascade/Vertex.h"
+
 namespace smtk
 {
 namespace session
@@ -66,6 +68,8 @@ CreateBox::Result CreateBox::operateInternal()
     p2.SetCoord(ii + 1, ctr + sz / 2.0);
   }
   TopoDS_Solid shape = BRepPrimAPI_MakeBox(p1, p2);
+  BRep_Builder aBuilder;
+  aBuilder.Add(resource->compound(), shape);
   std::ostringstream boxName;
   boxName << "Box " << CreateBox::s_counter++;
   auto topNode = this->createNode(shape, resource.get(), true, boxName.str());
@@ -76,20 +80,75 @@ CreateBox::Result CreateBox::operateInternal()
   //   << "  Added " << " " << topNode->id() << " " << topNode->name()
   //   << " " << TopAbs::ShapeTypeToString(shape.ShapeType()) << "\n";
 
-  std::size_t indent = 2;
-  std::function<bool(Shape*)> visitor;
-  visitor = [&indent, &visitor](Shape* subshape) -> bool {
-    for (std::size_t ii = 0; ii < indent; ++ii)
-    {
-      std::cout << " ";
-    }
-    std::cout << subshape->typeName() << " " << subshape->name() << "\n";
-    indent += 2;
-    subshape->visitSubshapes(visitor);
-    indent -= 2;
-    return false; // do not stop
-  };
-  visitor(topNode);
+  if (true)
+  {
+    std::set<const Vertex*> vertices;
+
+    std::size_t indent = 2;
+    std::function<bool(const Shape&)> visitor;
+    visitor = [&indent, &visitor, &vertices](const Shape& shape) {
+      if (const Vertex* vertex = dynamic_cast<const Vertex*>(&shape))
+      {
+        vertices.insert(vertex);
+      }
+
+      for (std::size_t ii = 0; ii < indent; ++ii)
+      {
+        std::cout << " ";
+      }
+      std::cout << shape.typeName() << " " << shape.name() << "\n";
+
+      indent += 2;
+      shape.visit<Children>(visitor);
+      // for (const Shape& subShape : shape.get<SubShapes>())
+      // {
+      //   visitor(subShape);
+      // }
+      indent -= 2;
+      return false;
+    };
+
+    visitor(*topNode);
+
+    std::cout << "visited " << vertices.size() << " vertices" << std::endl;
+
+    visitor = [&indent, &visitor](const Shape& shape) {
+      for (std::size_t ii = 0; ii < indent; ++ii)
+      {
+        std::cout << " ";
+      }
+      std::cout << shape.typeName() << " " << shape.name() << "\n";
+
+      indent += 2;
+      shape.visit<Parents>(visitor);
+      // for (const Shape& subShape : shape.get<SubShapes>())
+      // {
+      //   visitor(subShape);
+      // }
+      indent -= 2;
+      return false;
+    };
+
+    visitor(**vertices.begin());
+  }
+
+  if (false)
+  {
+    std::size_t indent = 2;
+    std::function<bool(Shape*)> visitor;
+    visitor = [&indent, &visitor](Shape* subshape) -> bool {
+      for (std::size_t ii = 0; ii < indent; ++ii)
+      {
+        std::cout << " ";
+      }
+      std::cout << subshape->typeName() << " " << subshape->name() << "\n";
+      indent += 2;
+      subshape->visitSubshapes(visitor);
+      indent -= 2;
+      return false; // do not stop
+    };
+    visitor(topNode);
+  }
 
   result->findInt("outcome")->setValue(static_cast<int>(CreateBox::Outcome::SUCCEEDED));
   return result;

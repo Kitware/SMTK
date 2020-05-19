@@ -23,6 +23,16 @@ namespace session
 namespace opencascade
 {
 
+const TopoDS_Shape* Shape::data() const
+{
+  return this->occResource()->session()->findShape(this->id());
+}
+
+TopoDS_Shape* Shape::data()
+{
+  return const_cast<TopoDS_Shape*>(const_cast<const Shape*>(this)->data());
+}
+
 Resource* Shape::occResource() const
 {
   return dynamic_cast<Resource*>(this->resource().get());
