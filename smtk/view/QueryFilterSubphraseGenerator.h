@@ -26,6 +26,7 @@ public:
   smtkTypeMacro(smtk::view::QueryFilterSubphraseGenerator);
   smtkSuperclassMacro(smtk::view::SubphraseGenerator);
   smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
+  QueryFilterSubphraseGenerator();
   virtual ~QueryFilterSubphraseGenerator();
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.
@@ -34,8 +35,6 @@ public:
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
 
 protected:
-  QueryFilterSubphraseGenerator();
-
   Path indexOfObjectInParent(const smtk::resource::PersistentObjectPtr& obj,
     smtk::view::DescriptivePhrasePtr& parent, const Path& parentPath) override;
 };

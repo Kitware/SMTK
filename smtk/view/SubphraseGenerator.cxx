@@ -77,7 +77,7 @@ SubphraseGeneratorPtr SubphraseGenerator::create(
   }
 
   // find things that match the typeName, and create one.
-  return manager->createSubphrase(typeName);
+  return manager->subphraseGeneratorFactory().createFromName(typeName);
 }
 
 SubphraseGenerator::SubphraseGenerator()

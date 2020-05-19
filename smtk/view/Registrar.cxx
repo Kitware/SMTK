@@ -46,7 +46,7 @@ using BadgeList = std::tuple<AssociationBadge, ObjectIconBadge>;
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->phraseModelFactory().registerTypes<PhraseModelList>();
-  viewManager->registerSubphraseGenerators<SubphraseGeneratorList>();
+  viewManager->subphraseGeneratorFactory().registerTypes<SubphraseGeneratorList>();
 
   viewManager->iconFactory().registerIconConstructor<smtk::attribute::Resource>(
     AttributeIconConstructor());
@@ -59,7 +59,7 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->phraseModelFactory().unregisterTypes<PhraseModelList>();
-  viewManager->unregisterSubphraseGenerators<SubphraseGeneratorList>();
+  viewManager->subphraseGeneratorFactory().unregisterTypes<SubphraseGeneratorList>();
 
   viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
