@@ -16,6 +16,8 @@
 
 #include "smtk/resource/Properties.h"
 
+#include "smtk/session/opencascade/Exports.h"
+
 namespace smtk
 {
 namespace session
@@ -25,9 +27,15 @@ namespace opencascade
 
 class Resource;
 
+/**\brief The basic topological entity of OpenCASCADE is a shape.
+  *
+  * This is an SMTK component that represents OCC shapes.
+  */
 class SMTKOPENCASCADESESSION_EXPORT Shape : public smtk::graph::Component
 {
 public:
+  using Visitor = std::function<bool(Shape*)>;
+
   smtkTypeMacro(Shape);
   smtkSuperclassMacro(smtk::graph::Component);
   Shape(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
@@ -48,6 +56,12 @@ public:
   {
     this->properties().get<std::string>()["name"] = name;
   }
+
+  /// Return the parent resource as a session::opencascade::Resource, not a resource::Resource.
+  Resource* occResource() const;
+
+  /// Invoke \a visitor on every subshape until visitor returns true (to terminate early).
+  void visitSubshapes(Visitor visitor);
 };
 
 } // namespace opencascade

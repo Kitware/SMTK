@@ -10,9 +10,17 @@
 
 #include "smtk/session/opencascade/Operation.h"
 
+#include "smtk/session/opencascade/CompSolid.h"
+#include "smtk/session/opencascade/Compound.h"
+#include "smtk/session/opencascade/Edge.h"
+#include "smtk/session/opencascade/Face.h"
 #include "smtk/session/opencascade/Resource.h"
 #include "smtk/session/opencascade/Session.h"
 #include "smtk/session/opencascade/Shape.h"
+#include "smtk/session/opencascade/Shell.h"
+#include "smtk/session/opencascade/Solid.h"
+#include "smtk/session/opencascade/Vertex.h"
+#include "smtk/session/opencascade/Wire.h"
 
 #include "smtk/operation/MarkGeometry.h"
 
@@ -85,6 +93,70 @@ void Operation::prepareResourceAndSession(
   }
 }
 
+Shape* Operation::createNode(
+  TopoDS_Shape& shape, Resource* resource, bool mark, const std::string& name)
+{
+  auto shapeType = shape.ShapeType();
+  Shape::Ptr node;
+  switch (shapeType)
+  {
+    case TopAbs_COMPOUND:
+      node = resource->create<Compound>();
+      break;
+    case TopAbs_COMPSOLID:
+      mark = false;
+      node = resource->create<CompSolid>();
+      break;
+    case TopAbs_SOLID:
+      mark = false;
+      node = resource->create<Solid>();
+      break;
+    case TopAbs_SHELL:
+      mark = false;
+      node = resource->create<Shell>();
+      break;
+    case TopAbs_FACE:
+      node = resource->create<Face>();
+      break;
+    case TopAbs_WIRE:
+      mark = false;
+      node = resource->create<Wire>();
+      break;
+    case TopAbs_EDGE:
+      node = resource->create<Edge>();
+      break;
+    case TopAbs_VERTEX:
+      node = resource->create<Vertex>();
+      break;
+    case TopAbs_SHAPE: // fall through
+    default:
+      mark = false;
+      node = resource->create<Shape>();
+      break;
+  }
+  std::string nname;
+  if (name.empty())
+  {
+    std::ostringstream nodeName;
+    std::string topologyType = TopAbs::ShapeTypeToString(shapeType);
+    std::transform(topologyType.begin(), topologyType.end(), topologyType.begin(),
+      [](unsigned char c) { return std::tolower(c); });
+    nodeName << topologyType << " " << resource->session()->shapeCounters()[shapeType]++;
+    nname = nodeName.str();
+  }
+  else
+  {
+    nname = name;
+  }
+  node->setName(nname);
+  resource->session()->addShape(node->id(), shape);
+  if (mark)
+  {
+    operation::MarkGeometry(resource->shared_from_this()).markModified(node);
+  }
+  return node.get();
+}
+
 void Operation::iterateChildren(Shape& parent, Result& result)
 {
   Resource* resource = dynamic_cast<Resource*>(parent.resource().get());
@@ -98,23 +170,13 @@ void Operation::iterateChildren(Shape& parent, Result& result)
   auto shape = session->findShape(parent.id());
   if (shape)
   {
-    operation::MarkGeometry geom(resource->shared_from_this());
     TopoDS_Iterator iter;
     for (iter.Initialize(*shape); iter.More(); iter.Next())
     {
       TopoDS_Shape childShape = iter.Value();
       if (session->findID(childShape).isNull())
       {
-        auto node = resource->create<Shape>();
-        std::ostringstream nodeName;
-        auto shapeType = childShape.ShapeType();
-        std::string topologyType = TopAbs::ShapeTypeToString(shapeType);
-        std::transform(topologyType.begin(), topologyType.end(), topologyType.begin(),
-          [](unsigned char c) { return std::tolower(c); });
-        nodeName << topologyType << " " << session->shapeCounters()[shapeType]++;
-        node->setName(nodeName.str());
-        session->addShape(node->id(), childShape);
-        geom.markModified(node);
+        auto node = this->createNode(childShape, resource, true);
         // created->appendValue(node); // This is problematic for large models.
         this->iterateChildren(*node, result);
       }

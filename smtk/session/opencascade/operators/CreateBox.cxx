@@ -66,19 +66,30 @@ CreateBox::Result CreateBox::operateInternal()
     p2.SetCoord(ii + 1, ctr + sz / 2.0);
   }
   TopoDS_Solid shape = BRepPrimAPI_MakeBox(p1, p2);
-  auto topNode = resource->create<Shape>();
-  session->addShape(topNode->id(), shape);
-  operation::MarkGeometry geom(resource);
-  created->appendValue(topNode);
-  geom.markModified(topNode);
   std::ostringstream boxName;
   boxName << "Box " << CreateBox::s_counter++;
-  topNode->setName(boxName.str());
+  auto topNode = this->createNode(shape, resource.get(), true, boxName.str());
+  this->iterateChildren(*topNode, result);
+  created->appendValue(topNode->shared_from_this());
+
   // std::cout
   //   << "  Added " << " " << topNode->id() << " " << topNode->name()
   //   << " " << TopAbs::ShapeTypeToString(shape.ShapeType()) << "\n";
 
-  this->iterateChildren(*topNode, result);
+  std::size_t indent = 2;
+  std::function<bool(Shape*)> visitor;
+  visitor = [&indent, &visitor](Shape* subshape) -> bool {
+    for (std::size_t ii = 0; ii < indent; ++ii)
+    {
+      std::cout << " ";
+    }
+    std::cout << subshape->typeName() << " " << subshape->name() << "\n";
+    indent += 2;
+    subshape->visitSubshapes(visitor);
+    indent -= 2;
+    return false; // do not stop
+  };
+  visitor(topNode);
 
   result->findInt("outcome")->setValue(static_cast<int>(CreateBox::Outcome::SUCCEEDED));
   return result;

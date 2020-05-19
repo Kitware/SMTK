@@ -16,6 +16,8 @@
 #include "smtk/operation/ResourceManagerOperation.h"
 #include "smtk/session/opencascade/Exports.h"
 
+#include "TopoDS_Shape.hxx"
+
 namespace smtk
 {
 namespace session
@@ -48,6 +50,14 @@ protected:
   /// and append it.
   void prepareResourceAndSession(
     Result& result, std::shared_ptr<Resource>& rsrc, std::shared_ptr<Session>& sess);
+
+  /// Create a node of the proper type, optionally naming it.
+  ///
+  /// If \a mark is true, then — when appropriate (only vertices, edges, and faces) —
+  /// the node will have its geometry marked as modified.
+  /// If \a name is empty, one will be generated automatically.
+  Shape* createNode(TopoDS_Shape& shape, Resource* resource, bool mark = true,
+    const std::string& name = std::string());
 
   /// Add children of the given shape to the session.
   ///

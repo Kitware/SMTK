@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_session_opencascade_Traits_h
-#define smtk_session_opencascade_Traits_h
+#ifndef smtk_session_opencascade_Solid_h
+#define smtk_session_opencascade_Solid_h
 /*!\file */
 
-#include "smtk/session/opencascade/Exports.h"
+#include "smtk/graph/Component.h"
 
-#include <tuple>
+#include "smtk/resource/Properties.h"
 
 namespace smtk
 {
@@ -23,26 +23,21 @@ namespace session
 namespace opencascade
 {
 
-class Compound;
-class CompSolid;
-class Solid;
-class Shell;
-class Face;
-class Wire;
-class Edge;
-class Vertex;
-class Shape;
+class Resource;
 
-/**\brief Traits that describe OpenCASCADE node and arc types.
-  *
-  */
-struct SMTKOPENCASCADESESSION_EXPORT Traits
+class SMTKOPENCASCADESESSION_EXPORT Solid : public Shape
 {
-  typedef std::tuple<Shape, Compound, CompSolid, Solid, Shell, Face, Wire, Edge, Vertex> NodeTypes;
-  typedef std::tuple<> ArcTypes;
+public:
+  smtkTypeMacro(Solid);
+  smtkSuperclassMacro(smtk::session::opencascade::Shape);
+  Solid(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
+    : Shape(rsrc)
+  {
+  }
 };
-}
-}
-}
 
-#endif
+} // namespace opencascade
+} // namespace session
+} // namespace smtk
+
+#endif // smtk_session_opencascade_Solid_h
