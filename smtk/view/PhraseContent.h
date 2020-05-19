@@ -54,19 +54,19 @@ public:
   };
 
   /// Should \a attr be present in the visual display of the phrase?
-  virtual bool displayable(ContentType attr) const { return false; }
+  virtual bool displayable(ContentType /*attr*/) const { return false; }
   /// Is \a attr editable or fixed (for information/display only)?
-  virtual bool editable(ContentType attr) const { return false; }
+  virtual bool editable(ContentType /*attr*/) const { return false; }
 
   /// Return a string that reflects the given \a attr value.
-  virtual std::string stringValue(ContentType attr) const { return std::string(); }
+  virtual std::string stringValue(ContentType /*attr*/) const { return std::string(); }
   /// Return an integer bit-flag that reflects the given \a attr value.
-  virtual int flagValue(ContentType attr) const { return 0; }
+  virtual int flagValue(ContentType /*attr*/) const { return 0; }
 
   /// Edit the \a attr value to become the given string (or returns false if no-change/invalid).
-  virtual bool editStringValue(ContentType attr, const std::string& val) { return false; }
+  virtual bool editStringValue(ContentType /*attr*/, const std::string& /*val*/) { return false; }
   /// Edit the \a attr value to become the given flag (or returns false if no-change/invalid).
-  virtual bool editFlagValue(ContentType attr, int val) { return false; }
+  virtual bool editFlagValue(ContentType /*attr*/, int /*val*/) { return false; }
 
   /// Return the resource related to this phrase (or nullptr if not well defined).
   virtual smtk::resource::ResourcePtr relatedResource() const { return nullptr; }

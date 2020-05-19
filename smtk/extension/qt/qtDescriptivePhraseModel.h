@@ -64,10 +64,10 @@ public:
   {
     TitleTextRole = Qt::UserRole + 100,    //!< Phrase title (usu. user-editable component name)
     SubtitleTextRole = Qt::UserRole + 101, //!< Phrase subtitle (usu. type of phrase)
-    PhraseIconRole_LightBG = Qt::UserRole + 102, //!< Phrase type icon on light background
-    PhraseIconRole_DarkBG = Qt::UserRole + 103,  //!< Phrase type icon on dark background
+    // PhraseIconRole_LightBG = Qt::UserRole + 102, //!< Phrase type icon on light background
+    // PhraseIconRole_DarkBG = Qt::UserRole + 103,  //!< Phrase type icon on dark background
     // PhraseColorRole = Qt::UserRole + 104, //!< Phrase-specific color (e.g., component color)
-    PhraseVisibilityRole = Qt::UserRole + 105, //!< Visibility of phrase's subject
+    // PhraseVisibilityRole = Qt::UserRole + 105, //!< Visibility of phrase's subject
     PhraseCleanRole = Qt::UserRole + 106,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
     PhraseLockRole = Qt::UserRole + 107,       //!< Is resource free (0) or locked (1)?
     ModelActiveRole = Qt::UserRole + 108,      //!< Is resource the active resource?

@@ -85,8 +85,9 @@ std::string ObjectIconBadge::icon(
   {
     return icon;
   }
-  std::string bg = smtk::common::Color::floatRGBToString(background.data());
-  icon = manager->iconFactory().createIcon(*obj, bg);
+  float lightness = smtk::common::Color::floatRGBToLightness(background.data());
+  // white or black for our edge color, based on background.
+  icon = manager->iconFactory().createIcon(*obj, lightness < 0.5 ? "#ffffff" : "#000000");
   return icon;
 }
 }

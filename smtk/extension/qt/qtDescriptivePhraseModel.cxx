@@ -350,16 +350,6 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       {
         return QVariant(item->subtitle().c_str());
       }
-      else if (role == PhraseIconRole_LightBG)
-      {
-        return QVariant(QIcon(new SVGIconEngine(
-          item->content()->stringValue(smtk::view::PhraseContent::ICON_LIGHTBG))));
-      }
-      else if (role == PhraseIconRole_DarkBG)
-      {
-        return QVariant(QIcon(
-          new SVGIconEngine(item->content()->stringValue(smtk::view::PhraseContent::ICON_DARKBG))));
-      }
       else if (role == PhraseCleanRole)
       {
         int clean = -1;

@@ -224,7 +224,6 @@ protected:
     * That phrase will added to \a result.
     * It will have its subphrases populated with new phrases, one per entry of
     * the \a components container, each with ComponentPhraseContent.
-    * If directed, its children will be decorated.
     * If a comparator is passed in, then the children of this new phrase will be
     * sorted using the comparator.
     */
@@ -233,7 +232,6 @@ protected:
     DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
-    bool decorate = true,
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 
@@ -251,7 +249,6 @@ protected:
     int limit, DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
-    bool decorate = true,
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 

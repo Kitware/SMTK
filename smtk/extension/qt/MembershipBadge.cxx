@@ -42,7 +42,7 @@ MembershipBadge::MembershipBadge()
 }
 
 MembershipBadge::MembershipBadge(
-  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& comp)
+  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&)
   : m_iconOn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg width=\"64\" height=\"64\" "
              "version=\"1.1\" viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\">  <g "
              "transform=\"translate(0 -988.36)\">    <rect x=\"10.64\" y=\"1009.1\" "

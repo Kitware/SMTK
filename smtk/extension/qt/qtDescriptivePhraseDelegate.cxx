@@ -120,8 +120,20 @@ void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 QSize qtDescriptivePhraseDelegate::sizeHint(
   const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-  QSize iconsize = icon.actualSize(option.decorationSize);
+  QSize iconsize;
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
+  // find out the size of a badge
+  for (auto badge : badges)
+  {
+    QIcon badgeIcon =
+      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    iconsize = badgeIcon.actualSize(option.decorationSize);
+    break;
+  }
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
   titleFont.setBold(this->titleFontWeight() > 1);
@@ -183,22 +195,8 @@ void qtDescriptivePhraseDelegate::paint(
     static_cast<float>(background.greenF()), static_cast<float>(background.blueF()),
     static_cast<float>(background.alphaF()) };
 
-  // TODO: Rip out all the icon-related stuff below and use badges to paint SVG.
-
   QIcon icon;
-  if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 0)
-  {
-    if ((setBackground && background.lightness() >= 128) ||
-      (!setBackground && option.palette.color(QPalette::Background).lightness() >= 128))
-    {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-    }
-    else
-    {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_DarkBG));
-    }
-  }
-  else
+  if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 1)
   {
     icon = QIcon(":/icons/display/locked.png");
   }
@@ -252,34 +250,12 @@ void qtDescriptivePhraseDelegate::paint(
     iconRect.setLeft(iconRect.right());
   }
 
-  // QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
-  // QSize visiconsize = visicon.actualSize(option.decorationSize);
-
-  // iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
-  // iconRect.setRight(iconRect.left() + iconsize.width() + 7);
-  // iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
   titleRect.setTop(titleRect.top() + m_textVerticalPad / 2.0);
   titleRect.setBottom(titleRect.top() +
     (m_drawSubtitle ? titleFM.height() : option.rect.height() - m_textVerticalPad));
   subtitleRect.setTop(titleRect.bottom() + m_textVerticalPad);
-
-  // painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
-  // NOTE -  the following QPainter::save() and QPainter::restore() calls are a workaround to fix
-  // a crash with Qt - Need to check to see if future versions (> 5.12.6) still needs this.
-  // painter->save();
-  // painter->drawPixmap(
-  //   QPoint(iconRect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
-  //   icon.pixmap(iconsize.width(), iconsize.height()));
-  // painter->restore();
-  // if (!visicon.isNull())
-  // {
-  //   painter->drawPixmap(
-  //     QPoint(option.rect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) /
-  //     2.),
-  //     visicon.pixmap(visiconsize.width(), visiconsize.height()));
-  // }
 
   if (setBackground && background.lightness() < 128)
   {
@@ -320,8 +296,6 @@ QWidget* qtDescriptivePhraseDelegate::createEditor(
 void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-  QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);

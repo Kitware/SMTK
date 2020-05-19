@@ -96,7 +96,6 @@ void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
 template <typename T>
 PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
   DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result, int mutability,
-  bool /*decorate*/,
   std::function<bool(const DescriptivePhrasePtr&, const DescriptivePhrasePtr&)> comparator)
 {
   if (limit < 0 || static_cast<int>(ents.size()) < limit)
