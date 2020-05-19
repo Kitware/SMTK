@@ -10,16 +10,18 @@
 #include "smtk/extension/qt/qtReferenceItem.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
 
+#include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/ReferenceItemPhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/VisibilityContent.h"
+#include "smtk/view/json/jsonView.h"
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
@@ -36,6 +38,7 @@
 
 using namespace smtk::extension;
 using namespace smtk::attribute;
+using MembershipBadge = smtk::extension::qt::MembershipBadge;
 
 namespace
 {
@@ -48,6 +51,22 @@ void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->setPalette(pal);
   lbl->update();
 }
+
+nlohmann::json j = { { "Name", "RefItem" }, { "Type", "smtk::view::ReferenceItemPhraseModel" },
+  { "Component",
+    { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+      { "Children",
+        { { { "Name", "PhraseModel" },
+          { "Attributes", { { "Type", "smtk::view::ReferenceItemPhraseModel" } } },
+          { "Children",
+            { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
+              { { "Name", "Badges" },
+                { "Children",
+                  { { { "Name", "Badge" },
+                    { "Attributes",
+                      { { "Type",
+                        "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
+smtk::view::ConfigurationPtr phraseModelViewConfig = j;
 }
 
 qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -95,7 +114,6 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
 qtReferenceItem::~qtReferenceItem()
 {
   this->removeObservers();
-  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr /*unused*/) {});
   delete m_p;
   m_p = nullptr;
 }
@@ -112,6 +130,7 @@ void qtReferenceItem::removeObservers()
   {
     m_p->m_phraseModel->observers().erase(m_p->m_modelObserverId);
   }
+  QObject::disconnect(this);
 }
 
 qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
@@ -203,7 +222,7 @@ void qtReferenceItem::linkHover(bool link)
   {
     // Traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
     // in the application selection.
-    for (const auto& member : m_p->m_members)
+    for (const auto& member : this->members())
     {
       if (member.second)
       {
@@ -301,7 +320,7 @@ void qtReferenceItem::copyToSelection()
   if (seln)
   {
     smtk::resource::PersistentObjectArray nextSeln;
-    for (const auto& entry : m_p->m_members)
+    for (const auto& entry : this->members())
     {
       if (auto object = entry.first.lock())
       {
@@ -343,13 +362,11 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   auto operMgr = m_itemInfo.uiManager()->operationManager();
   auto viewMgr = m_itemInfo.uiManager()->viewManager();
   auto seln = m_itemInfo.uiManager()->selection();
-  // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
-  // to point back to the model (thus ensuring subphrases are decorated). This is required
-  // since we need to decorate phrases to show+edit "visibility" as set membership:
-  // If given a component item, use a ComponentItemPhraseModel
-  auto phraseModel = smtk::view::ReferenceItemPhraseModel::create(m_itemInfo.component());
+  // Constructing the PhraseModel with a factory from our config, that includes
+  // the MembershipBadge.
+  auto phraseModel =
+    viewMgr->phraseModelFactory().createFromConfiguration(phraseModelViewConfig.get());
   phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
-  phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
     m_itemInfo.item()->definition());
   auto refItem = std::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(m_itemInfo.item());
@@ -407,18 +424,7 @@ void qtReferenceItem::updateUI()
   m_p->m_qtDelegate->setTitleFontWeight(1);
   m_p->m_qtDelegate->setDrawSubtitle(false);
   m_p->m_qtDelegate->setVisibilityMode(true);
-  if (m_p->m_phraseModel)
-  {
-    QPointer<qtReferenceItem> guardedObject(this);
-    m_p->m_phraseModel->setDecorator([guardedObject](smtk::view::DescriptivePhrasePtr phr) {
-      if (guardedObject)
-      {
-        guardedObject->decorateWithMembership(phr);
-      }
-    });
-  }
-  m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL);
-  m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL);
+
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
@@ -432,6 +438,11 @@ void qtReferenceItem::updateUI()
         }
       },
       "qtReferenceItem: Check for removed components.");
+    // we need to know when membership is changed, to update our labels
+    MembershipBadge* badge =
+      m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>();
+    QObject::connect(
+      badge, &MembershipBadge::membershipChange, this, &qtReferenceItem::membershipChanged);
   }
 
   // Create a container for the item:
@@ -563,8 +574,8 @@ void qtReferenceItem::updateUI()
   m_p->m_editBtn->setMaximumSize(QSize(16, 20));
 
   QObject::connect(m_p->m_editBtn->menu(), SIGNAL(aboutToHide()), this, SLOT(popupClosing()));
-  QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
-    m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
+  // QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
+  //   m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
   m_p->m_grid->addLayout(labelLayout, 0, 0);
   m_p->m_grid->addLayout(entryLayout, 0, 1);
@@ -606,7 +617,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
-  for (const auto& entry : m_p->m_members)
+  for (const auto& entry : this->members())
   {
     if (entry.second > 0)
     {
@@ -616,8 +627,8 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto ment = (m_p->m_members.empty() ? smtk::resource::PersistentObjectPtr()
-                                        : m_p->m_members.begin()->first.lock());
+    auto ment = (this->members().empty() ? smtk::resource::PersistentObjectPtr()
+                                         : this->members().begin()->first.lock());
     label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
                           : (numSel > 0 ? "too many" : "(none)"));
     ok = numSel >= numRequired && numSel <= maxAllowed;
@@ -722,7 +733,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
             this->synchronizeAndHide(true);
             return true;
             break;
-          //case Qt::Key_Return:
+          // case Qt::Key_Return:
           case Qt::Key_Enter:
             this->synchronizeAndHide(false);
             return true;
@@ -760,78 +771,43 @@ void qtReferenceItem::toggleCurrentItem()
                 .value<smtk::view::DescriptivePhrasePtr>();
   if (cphr)
   {
-    auto currentMembership = cphr->relatedVisibility();
+    int currentMembership = 0;
+    auto persistentObj = cphr->relatedObject();
+    auto valIt = this->members().find(persistentObj);
+    if (valIt != this->members().end())
+    {
+      currentMembership = valIt->second;
+    }
     // Selecting a new item when only 1 is allowed should reset all other membership.
-    if (!currentMembership && !m_p->m_members.empty())
+    if (!currentMembership && !this->members().empty())
     {
       auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
       if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
       {
-        m_p->m_members.clear();
+        this->members().clear();
         m_p->m_phraseModel->triggerDataChanged();
       }
     }
-    cphr->setRelatedVisibility(!currentMembership);
+    (m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
+      ->action(cphr.get());
     this->updateSynopsisLabels();
   }
 }
 
-int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
+void qtReferenceItem::membershipChanged(int val)
 {
-  smtk::view::VisibilityContent::decoratePhrase(
-    phr, [this](smtk::view::VisibilityContent::Query qq, int val,
-           smtk::view::ConstPhraseContentPtr data) {
-      auto comp = data ? data->relatedComponent() : nullptr;
-      auto rsrc = comp ? comp->resource() : (data ? data->relatedResource() : nullptr);
-      auto pobj = comp ? std::dynamic_pointer_cast<smtk::resource::PersistentObject>(comp)
-                       : std::dynamic_pointer_cast<smtk::resource::PersistentObject>(rsrc);
-
-      switch (qq)
-      {
-        case smtk::view::VisibilityContent::DISPLAYABLE:
-          return pobj ? 1 : 0;
-        case smtk::view::VisibilityContent::EDITABLE:
-          return pobj ? 1 : 0;
-        case smtk::view::VisibilityContent::GET_VALUE:
-          if (pobj)
-          {
-            auto valIt = m_p->m_members.find(pobj);
-            if (valIt != m_p->m_members.end())
-            {
-              return valIt->second;
-            }
-            return 0; // visibility is assumed if there is no entry.
-          }
-          return 0; // visibility is false if the component is not a model entity or NULL.
-        case smtk::view::VisibilityContent::SET_VALUE:
-          if (pobj)
-          {
-            if (val && !m_p->m_members.empty())
-            {
-              auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-              if (item->numberOfRequiredValues() <= 1 &&
-                (!item->isExtensible() || item->maxNumberOfValues() == 1))
-              { // Clear all other members since only 1 is allowed and the user just chose it.
-                m_p->m_members.clear();
-                m_p->m_phraseModel->triggerDataChanged();
-              }
-            }
-            if (val)
-            {
-              m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
-            }
-            else
-            {
-              m_p->m_members.erase(pobj);
-            }
-            this->updateSynopsisLabels();
-            this->linkHoverTrue();
-            return 1;
-          }
-      }
-      return 0;
-    });
-  return 0;
+  if (val && !this->members().empty())
+  {
+    auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
+    if (item->numberOfRequiredValues() <= 1 &&
+      (!item->isExtensible() || item->maxNumberOfValues() == 1))
+    { // Clear all other members since only 1 is allowed and the user just chose it.
+      this->members().clear();
+      m_p->m_phraseModel->triggerDataChanged();
+    }
+  }
+  this->updateSynopsisLabels();
+  this->linkHoverTrue();
 }
 
 void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr phr,
@@ -859,15 +835,15 @@ void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr ph
                     .value<smtk::view::DescriptivePhrasePtr>();
       auto comp = rphr ? rphr->relatedComponent() : nullptr;
       auto rsrc = rphr ? rphr->relatedResource() : nullptr;
-      if (comp && m_p->m_members.find(comp) != m_p->m_members.end())
+      if (comp && this->members().find(comp) != this->members().end())
       {
-        m_p->m_members.erase(comp);
+        this->members().erase(comp);
         itm->removeValue(itm->find(comp));
         didChange = true;
       }
-      else if (rsrc && m_p->m_members.find(rsrc) != m_p->m_members.end())
+      else if (rsrc && this->members().find(rsrc) != this->members().end())
       {
-        m_p->m_members.erase(rsrc);
+        this->members().erase(rsrc);
         itm->removeValue(itm->find(rsrc));
         didChange = true;
       }
@@ -888,7 +864,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
   }
 
   std::size_t uiMembers = 0;
-  for (const auto& member : m_p->m_members)
+  for (const auto& member : this->members())
   {
     if (member.second)
     {
@@ -906,7 +882,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         return false;
       }
       int idx = 0;
-      for (const auto& member : m_p->m_members)
+      for (const auto& member : this->members())
       {
         if (member.second)
         {
@@ -924,7 +900,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
     break;
 
     case UpdateSource::GUI_FROM_ITEM:
-      m_p->m_members.clear();
+      this->members().clear();
       m_p->m_phraseModel->triggerDataChanged();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
@@ -935,10 +911,17 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         // the association from being edited by the user.
         if (vit.isSet())
         {
-          m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
+          this->members()[*vit] = 1; // FIXME: Use a bit specified by the application.
         }
       }
       break;
   }
   return true;
+}
+
+smtk::extension::qt::MembershipBadge::MemberMap& qtReferenceItem::members() const
+{
+  // We expect there to be only one badge, a MembershipBadge, on our phraseModel
+  return (m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
+    ->getMemberMap();
 }

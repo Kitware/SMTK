@@ -67,12 +67,6 @@ public:
   /// Return the phrase model (if any) used to adapt phrases to a user interface.
   PhraseModelPtr model() const { return m_model.lock(); }
 
-  /// If model() is non-null, ask it to decorate each phrase
-  void decoratePhrase(DescriptivePhrase::Ptr& phrase);
-
-  /// If model() is non-null, ask it to decorate each phrase
-  void decoratePhrases(DescriptivePhrases& phrases);
-
   /**\brief Append subphrases and their paths that the given set of created objects implies.
     *
     * After an operation, newly-created objects (components and resources) need to be
@@ -230,7 +224,6 @@ protected:
     * That phrase will added to \a result.
     * It will have its subphrases populated with new phrases, one per entry of
     * the \a components container, each with ComponentPhraseContent.
-    * If directed, its children will be decorated.
     * If a comparator is passed in, then the children of this new phrase will be
     * sorted using the comparator.
     */
@@ -239,7 +232,6 @@ protected:
     DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
-    bool decorate = true,
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 
@@ -257,7 +249,6 @@ protected:
     int limit, DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
-    bool decorate = true,
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 

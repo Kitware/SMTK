@@ -22,6 +22,7 @@ namespace smtk
 {
 namespace extension
 {
+const int padding = 7;
 
 qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   : QStyledItemDelegate(owner)
@@ -119,8 +120,20 @@ void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 QSize qtDescriptivePhraseDelegate::sizeHint(
   const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-  QSize iconsize = icon.actualSize(option.decorationSize);
+  QSize iconsize;
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
+  // find out the size of a badge
+  for (auto badge : badges)
+  {
+    QIcon badgeIcon =
+      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    iconsize = badgeIcon.actualSize(option.decorationSize);
+    break;
+  }
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
   titleFont.setBold(this->titleFontWeight() > 1);
@@ -158,6 +171,10 @@ void qtDescriptivePhraseDelegate::paint(
     background = option.palette.highlight().color();
     setBackground = true;
   }
+  else
+  {
+    background = option.palette.color(QPalette::Background);
+  }
   if (setBackground)
   {
     painter->save();
@@ -170,29 +187,20 @@ void qtDescriptivePhraseDelegate::paint(
   painter->save();
 
   // Fetch the badges for this QModelIndex:
-  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
-    idx.data(qtDescriptivePhraseModel::BadgesRole));
-
-  // TODO: Rip out all the icon-related stuff below and use badges to paint SVG.
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  std::array<float, 4> backgroundArray = { static_cast<float>(background.redF()),
+    static_cast<float>(background.greenF()), static_cast<float>(background.blueF()),
+    static_cast<float>(background.alphaF()) };
 
   QIcon icon;
-  if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 0)
-  {
-    if ((setBackground && background.lightness() >= 128) ||
-      (!setBackground && option.palette.color(QPalette::Background).lightness() >= 128))
-    {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-    }
-    else
-    {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_DarkBG));
-    }
-  }
-  else
+  if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 1)
   {
     icon = QIcon(":/icons/display/locked.png");
   }
-  QSize iconsize = icon.actualSize(option.decorationSize);
+  // QSize iconsize = icon.actualSize(option.decorationSize);
 
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
@@ -207,7 +215,7 @@ void qtDescriptivePhraseDelegate::paint(
   subtitleFont.setPixelSize(m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1);
 
-  //subtitleFont.setWeight(subtitleFont.weight() - 2);
+  // subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
 
   QString titleText = qvariant_cast<QString>(idx.data(qtDescriptivePhraseModel::TitleTextRole));
@@ -221,33 +229,33 @@ void qtDescriptivePhraseDelegate::paint(
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
-  QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
-  QSize visiconsize = visicon.actualSize(option.decorationSize);
-
-  iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
-  iconRect.setRight(iconRect.left() + iconsize.width() + 7);
   iconRect.setTop(iconRect.top() + 1);
+  // make zero size if there are no badges.
+  iconRect.setRight(iconRect.left() + padding);
+
+  for (auto badge : badges)
+  {
+    QIcon badgeIcon =
+      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QSize iconsize = badgeIcon.actualSize(option.decorationSize);
+    // shift each icon to the right, adding some padding.
+    iconRect.setRight(iconRect.left() + iconsize.width() + padding);
+    // NOTE -  the following QPainter::save() and QPainter::restore() calls are a workaround to fix
+    // a crash with Qt - Need to check to see if future versions (> 5.12.6) still needs this.
+    // painter->save();
+    painter->drawPixmap(
+      QPoint(iconRect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
+      badgeIcon.pixmap(iconsize.width(), iconsize.height()));
+    // painter->restore();
+    iconRect.setLeft(iconRect.right());
+  }
+
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
   titleRect.setTop(titleRect.top() + m_textVerticalPad / 2.0);
   titleRect.setBottom(titleRect.top() +
     (m_drawSubtitle ? titleFM.height() : option.rect.height() - m_textVerticalPad));
   subtitleRect.setTop(titleRect.bottom() + m_textVerticalPad);
-
-  //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
-  // NOTE -  the following QPainter::save() and QPainter::restore() calls are a workaround to fix
-  // a crash with Qt - Need to check to see if future versions (> 5.12.6) still needs this.
-  painter->save();
-  painter->drawPixmap(
-    QPoint(iconRect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
-    icon.pixmap(iconsize.width(), iconsize.height()));
-  painter->restore();
-  if (!visicon.isNull())
-  {
-    painter->drawPixmap(
-      QPoint(option.rect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
-      visicon.pixmap(visiconsize.width(), visiconsize.height()));
-  }
 
   if (setBackground && background.lightness() < 128)
   {
@@ -288,12 +296,10 @@ QWidget* qtDescriptivePhraseDelegate::createEditor(
 void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-  QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
-  /// add a method to set/get title font
+  // add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1);
   // bold the active model title
   if (idx.data(qtDescriptivePhraseModel::ModelActiveRole).toBool())
@@ -303,7 +309,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   subtitleFont.setPixelSize(m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1);
 
-  //subtitleFont.setWeight(subtitleFont.weight() - 2);
+  // subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
 
   QString titleText = qvariant_cast<QString>(idx.data(qtDescriptivePhraseModel::TitleTextRole));
@@ -316,12 +322,22 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
 
   QRect titleRect = option.rect;
   QRect iconRect = option.rect;
-  QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
-  QSize visiconsize = visicon.actualSize(option.decorationSize);
-
-  iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
-  iconRect.setRight(iconRect.left() + iconsize.width() + 7);
-  iconRect.setTop(iconRect.top() + 1);
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
+  // find out the size of each badge, so we can shift the editor over correctly.
+  for (auto badge : badges)
+  {
+    QIcon badgeIcon =
+      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QSize iconsize = badgeIcon.actualSize(option.decorationSize);
+    // shift each icon to the right, adding some padding.
+    iconRect.setRight(iconRect.left() + iconsize.width() + padding);
+    // painting would be here...
+    iconRect.setLeft(iconRect.right());
+  }
   titleRect.setLeft(iconRect.right());
 
   editor->setGeometry(titleRect);
@@ -353,45 +369,41 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-std::string qtDescriptivePhraseDelegate::determineAction(
-  const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option) const
+int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
+  const smtk::view::BadgeSet::BadgeList& badges, const smtk::view::DescriptivePhrase* phrase)
 {
-  std::string res;
-  if (m_visibilityMode)
-  {
-    res = "visible";
-    return res;
-  }
-  // with the help of styles, return where the pPos is on:
-  // the eyeball or the icon
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
-  QSize iconsize = icon.actualSize(option.decorationSize);
-  QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
-  QSize visiconsize = visicon.actualSize(option.decorationSize);
+
+  int badgeIndex = -1;
+  // if (m_visibilityMode)
+  // {
+  //   return -1;
+  // }
+  // with the help of styles, return which badge the pPos is on.
+  // Mirrors paint() code.
+  QRect iconRect = option.rect;
+  iconRect.setTop(iconRect.top() + 1);
+  // make zero size if there are no badges.
+  iconRect.setRight(iconRect.left() + padding);
+  std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
   int px = pPos.x();
   int py = pPos.y();
-  bool bvis = false, bcolor = false;
-  if (!visicon.isNull())
-  {
-    bvis = px > option.rect.left() && px < (option.rect.left() + visiconsize.width()) &&
-      py > option.rect.top() && py < (option.rect.top() + option.rect.height());
-  }
-  if (!bvis && idx.data(qtDescriptivePhraseModel::ColorMutableRole).toBool())
-  {
-    bcolor = px > (option.rect.left() + visiconsize.width() + 7) &&
-      px < (option.rect.left() + visiconsize.width() + iconsize.width() + 7) &&
-      py > option.rect.top() && py < (option.rect.top() + option.rect.height());
-  }
 
-  if (bvis)
+  int i = 0;
+  for (auto badge : badges)
   {
-    res = "visible";
+    QIcon badgeIcon = qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase, backgroundArray));
+    QSize iconsize = badgeIcon.actualSize(option.decorationSize);
+    // shift each icon to the right, adding some padding.
+    iconRect.setRight(iconRect.left() + iconsize.width() + padding);
+    if (iconRect.contains(px, py))
+    {
+      badgeIndex = i;
+      break;
+    }
+    ++i;
+    iconRect.setLeft(iconRect.right());
   }
-  else if (bcolor)
-  {
-    res = "color";
-  }
-  return res;
+  return badgeIndex;
 }
 
 bool qtDescriptivePhraseDelegate::editorEvent(
@@ -408,20 +420,18 @@ bool qtDescriptivePhraseDelegate::editorEvent(
     return res;
   }
 
-  std::string whichIcon;
-  whichIcon = this->determineAction(e->pos(), idx, option);
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  int badgeIndex = determineAction(e->pos(), option, badges, phrase.get());
 
-  if (whichIcon == "visible")
+  if (badgeIndex >= 0)
   {
-    emit this->requestVisibilityChange(idx);
-  }
-  else if (whichIcon == "color")
-  {
-    emit this->requestColorChange(idx);
+    badges[badgeIndex]->action(phrase.get());
   }
 
   return res;
 }
-
-} // namespace model
-} // namespace smtk
+}
+}

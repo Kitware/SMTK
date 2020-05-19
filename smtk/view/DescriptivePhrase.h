@@ -88,7 +88,7 @@ public:
     * return 0 to continue iterating, 1 to skip children of this phrase, or 2 to terminate immediately.
     */
   using Visitor = std::function<int(DescriptivePhrasePtr, std::vector<int>&)>;
-  using Badges = std::vector<const Badge*>;
+  using Badges = std::vector<Badge*>;
 
   smtkTypeMacroBase(DescriptivePhrase);
   smtkCreateMacro(DescriptivePhrase);
@@ -102,8 +102,6 @@ public:
   bool setContent(PhraseContentPtr content);
   /// Return the content (state) of the phrase.
   PhraseContentPtr content() const;
-  /// Return the content free of any decoration (i.e., the bottom-most content)
-  PhraseContentPtr undecoratedContent() const;
   /// Return an ordered subset of badges that apply to this phrase.
   ///
   /// It is better to ask the PhraseModel directly than to invoke this
@@ -115,7 +113,7 @@ public:
   ///@{
 
   /// Return the title text that should be displayed.
-  virtual std::string title()
+  virtual std::string title() const
   {
     return m_content ? m_content->stringValue(PhraseContent::TITLE) : std::string();
   }
@@ -173,46 +171,6 @@ public:
   virtual smtk::resource::PropertyType relatedPropertyType() const
   {
     return smtk::resource::INVALID_PROPERTY;
-  }
-
-  /// Returns true if the visibility value should be illustrated; false otherwise.
-  bool displayRelatedColor() const
-  {
-    return m_content ? m_content->displayable(PhraseContent::COLOR) : false;
-  }
-  /// If this phrase has a related color, return it; otherwise return an array with -1 for opacity.
-  virtual resource::FloatList relatedColor() const
-  {
-    return m_content ? m_content->colorValue(PhraseContent::COLOR)
-                     : resource::FloatList({ 0, 0, 0, -1 });
-  }
-  /// Return true if users should be allowed to change the color of the phrase.
-  virtual bool isRelatedColorMutable() const { return m_content->editable(PhraseContent::COLOR); }
-  /// A method user interfaces may call to change the color (if it was marked mutable).
-  virtual bool setRelatedColor(const resource::FloatList& rgba)
-  {
-    return m_content->editColorValue(PhraseContent::COLOR, rgba);
-  }
-
-  /// Returns true if the visibility value should be illustrated; false otherwise.
-  bool displayVisibility() const
-  {
-    return m_content ? m_content->displayable(PhraseContent::VISIBILITY) : false;
-  }
-  /// If this phrase has a related visibility value, return it; otherwise return -1.
-  int relatedVisibility() const
-  {
-    return m_content ? m_content->flagValue(PhraseContent::VISIBILITY) : 0;
-  }
-  /// Return true if users should be allowed to change the visibility; false otherwise.
-  virtual bool isRelatedVisibilityMutable() const
-  {
-    return m_content ? m_content->editable(PhraseContent::VISIBILITY) : false;
-  }
-  /// A method user interfaces may call to change the visibility.
-  virtual bool setRelatedVisibility(int visibility)
-  {
-    return m_content ? m_content->editFlagValue(PhraseContent::VISIBILITY, visibility) : false;
   }
 
   ///@}

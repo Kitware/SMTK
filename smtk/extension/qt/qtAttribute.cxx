@@ -50,7 +50,7 @@ public:
     m_view = myView;
     m_attComp = comp;
 
-    // Does the component reprsenting the attribute contain a Style block?
+    // Does the component representing the attribute contain a Style block?
     int sindex = m_attComp.findChild("ItemViews");
     if (sindex == -1)
     {

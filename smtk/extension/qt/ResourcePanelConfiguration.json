@@ -25,7 +25,18 @@
             {
               "Name": "Badges",
               "Children": [
-                { "Name": "Badge", "Attributes": { "Type": "smtk::view::ObjectIconBadge" } }
+                {
+                  "Name": "Badge",
+                  "Attributes": {
+                    "Type": "smtk::extension::paraview::appcomponents::VisibilityBadge"
+                  }
+                },
+                {
+                  "Name": "Badge",
+                  "Attributes": {
+                    "Type": "smtk::extension::qt::TypeAndColorBadge"
+                  }
+                }
               ]
             }
           ]

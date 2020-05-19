@@ -94,7 +94,7 @@ protected slots:
   /// This pops up a color editor dialog, which we can make ParaView-specific if needed
   /// and which can be a "singleton" (i.e., re-use the same dialog so that users do not
   /// accidentally pop up one per descriptive phrase and get confused).
-  virtual void editObjectColor(const QModelIndex&);
+  // virtual void editObjectColor(const QModelIndex&);
 
 protected:
   virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);

@@ -220,17 +220,16 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
   }
 
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  // std::string entName = ownerPhrase->relatedComponent().name();
+  // std::string entName = ownerPhrase->relatedComponent() ? ownerPhrase->relatedComponent()->name() : "no name";
   // std::cout << "Owner index for: " << entName << std::endl;
   view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
   {
-    //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
-    //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
-
     view::DescriptivePhrasePtr entry = subphrases[row];
     if (entry)
     {
+      // std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
+      // std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
       this->P->ptrs[entry->phraseId()] = entry;
       return this->createIndex(row, column, entry->phraseId());
     }
@@ -319,6 +318,11 @@ QVariant qtDescriptivePhraseModel::headerData(
   return QVariant();
 }
 
+QIcon qtDescriptivePhraseModel::getSVGIcon(const std::string& iconBuffer)
+{
+  return QIcon(new SVGIconEngine(iconBuffer));
+}
+
 /// Relate information, by its \a role, from a \a DescriptivePhrasePtr to the Qt model.
 QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
 {
@@ -345,89 +349,6 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       else if (role == SubtitleTextRole)
       {
         return QVariant(item->subtitle().c_str());
-      }
-      else if (role == PhraseIconRole_LightBG)
-      {
-        return QVariant(QIcon(new SVGIconEngine(
-          item->content()->stringValue(smtk::view::PhraseContent::ICON_LIGHTBG))));
-      }
-      else if (role == PhraseIconRole_DarkBG)
-      {
-        return QVariant(QIcon(
-          new SVGIconEngine(item->content()->stringValue(smtk::view::PhraseContent::ICON_DARKBG))));
-      }
-      else if (role == PhraseVisibilityRole)
-      {
-        bool drawVisibility = item->displayVisibility();
-        if (!drawVisibility)
-        {
-          return QVariant();
-        }
-        // by default, everything should be visible
-        bool visible = item->relatedVisibility();
-        if (visible)
-          return QVariant(QIcon(m_visibleIconURL.c_str()));
-        else
-          return QVariant(QIcon(m_invisibleIconURL.c_str()));
-      }
-      else if (role == PhraseColorRole &&
-        (item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))
-      {
-        QColor color;
-        FloatList rgba = item->relatedColor();
-        bool gotColor = false;
-        if (rgba.size() >= 4 && rgba[3] < 0)
-        {
-          auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
-          if (modelComp)
-          {
-            smtk::model::EntityRef ent(modelComp);
-            if (ent.isFace())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Face");
-              gotColor = true;
-            }
-            else if (ent.isEdge())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Edge");
-              gotColor = true;
-            }
-            else if (ent.isVertex())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Vertex");
-              gotColor = true;
-            }
-          }
-          if (!gotColor)
-          {
-            // return an invalid color by default
-            color = QColor();
-          }
-        }
-        else
-        {
-          // Color may be luminance, luminance+alpha, rgb, or rgba:
-          switch (rgba.size())
-          {
-            case 0:
-              color = QColor(0, 0, 0, 0);
-              break;
-            case 1:
-              color.setHslF(0., 0., rgba[0], 1.);
-              break;
-            case 2:
-              color.setHslF(0., 0., rgba[0], rgba[1]);
-              break;
-            case 3:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
-              break;
-            case 4:
-            default:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
-              break;
-          }
-        }
-        return color;
       }
       else if (role == PhraseCleanRole)
       {
@@ -471,10 +392,6 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       else if (role == TitleTextMutableRole)
       {
         return QVariant(item->isTitleMutable());
-      }
-      else if (role == ColorMutableRole)
-      {
-        return QVariant(item->isRelatedColorMutable());
       }
       else if (role == BadgesRole)
       {
@@ -520,26 +437,6 @@ bool qtDescriptivePhraseModel::setData(const QModelIndex& idx, const QVariant& v
     {
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setSubtitle(sval);
-    }
-    else if (role == PhraseColorRole && phrase->isRelatedColorMutable() &&
-      phrase->relatedComponent())
-    {
-      QColor color = value.value<QColor>();
-      FloatList rgba(4);
-      rgba[0] = color.redF();
-      rgba[1] = color.greenF();
-      rgba[2] = color.blueF();
-      rgba[3] = color.alphaF();
-      didChange = phrase->setRelatedColor(rgba);
-    }
-    else if (role == PhraseVisibilityRole && phrase->relatedComponent())
-    {
-      /*
-      int vis = value.toInt();
-      phrase->relatedComponent().setVisible(vis > 0 ? true : false);
-      didChange = true;
-      */
-      didChange = false;
     }
   }
   return didChange;
@@ -626,34 +523,6 @@ Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
   return Qt::CopyAction;
 }
 
-void qtDescriptivePhraseModel::toggleVisibility(const QModelIndex& idx)
-{
-  auto phrase = idx.data(PhrasePtrRole).value<smtk::view::DescriptivePhrase::Ptr>();
-  if (!phrase)
-  {
-    smtkErrorMacro(
-      smtk::io::Logger::instance(), "Asked to toggle visibility for item unrelated to SMTK.");
-    return;
-  }
-  if (!phrase->setRelatedVisibility(!phrase->relatedVisibility()))
-  {
-    smtkErrorMacro(
-      smtk::io::Logger::instance(), "Could not toggle visibility of \"" << phrase->title() << "\"");
-  }
-}
-
-void qtDescriptivePhraseModel::editColor(const QModelIndex& idx)
-{
-  auto phrase = idx.data(PhrasePtrRole).value<smtk::view::DescriptivePhrase::Ptr>();
-  if (!phrase)
-  {
-    smtkErrorMacro(
-      smtk::io::Logger::instance(), "Asked to toggle visibility for item unrelated to SMTK.");
-    return;
-  }
-  smtkWarningMacro(smtk::io::Logger::instance(), "Color editing not implemented yet.");
-}
-
 void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr phrase,
   smtk::view::PhraseModelEvent event, const std::vector<int>& src, const std::vector<int>& dst,
   const std::vector<int>& range)
@@ -688,6 +557,5 @@ void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr p
       break;
   }
 }
-
-} // namespace extension
-} // namespace smtk
+}
+}

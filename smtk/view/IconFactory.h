@@ -72,6 +72,7 @@ public:
   bool unregisterIconConstructor(const std::string&);
 
   /// construct an icon idenfified by the resource or component it represents.
+  /// secondaryColor is used for edges, and should contrast any background.
   std::string createIcon(
     const smtk::resource::PersistentObject&, const std::string& secondaryColor) const;
 

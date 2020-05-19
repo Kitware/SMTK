@@ -172,7 +172,6 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
     children.push_back(
       smtk::view::ResourcePhraseContent::createPhrase(resource, m_mutableAspects, m_root));
     std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
-    this->root()->findDelegate()->decoratePhrases(children);
     this->updateChildren(m_root, children, std::vector<int>());
   }
   else

@@ -87,15 +87,15 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
 }
 
 /// Return ordered list of badge ptrs, ignoring any names without a matching badge.
-std::vector<const Badge*> BadgeSet::badgesFor(const DescriptivePhrase* phrase) const
+BadgeSet::BadgeList BadgeSet::badgesFor(const DescriptivePhrase* phrase) const
 {
-  std::vector<const Badge*> result;
+  BadgeSet::BadgeList result;
   if (!phrase)
   {
     return result;
   }
 
-  for (const auto& badge : m_badges)
+  for (auto& badge : m_badges)
   {
     if (badge->appliesToPhrase(phrase))
     {

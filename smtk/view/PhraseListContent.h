@@ -64,11 +64,9 @@ public:
 
   std::string stringValue(ContentType attr) const override;
   int flagValue(ContentType attr) const override;
-  resource::FloatList colorValue(ContentType attr) const override;
 
   bool editStringValue(ContentType attr, const std::string& val) override;
   bool editFlagValue(ContentType attr, int val) override;
-  bool editColorValue(ContentType attr, const resource::FloatList& val) override;
 
   /// A convenience method for obtaining related components for each of the phrases in the list.
   smtk::resource::ComponentArray relatedComponents() const;

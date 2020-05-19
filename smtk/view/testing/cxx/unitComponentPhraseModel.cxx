@@ -61,11 +61,6 @@ int printer(DescriptivePhrasePtr p, const std::vector<int>& idx)
   if (p)
   {
     std::cout << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
-    smtk::resource::FloatList rgba = p->relatedColor();
-    if (rgba[3] >= 0.)
-    {
-      std::cout << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3] << ")";
-    }
     auto sub = p->subphrases(); // force subphrases to get built, though we may not visit them
     (void)sub;
     std::cout << "\n";

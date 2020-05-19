@@ -53,140 +53,50 @@ public:
     EVERYTHING = 0xff    //!< Every aspect of the phrase content.
   };
 
-  /**\brief Append the given decorator at the tail of this object's chain of decorators.
-    *
-    * Note that this will force this instance's location to match \a other,
-    * and will prefer \a other's location to its own if they are both non-null.
-    */
-  Ptr appendDecorator(Ptr other)
-  {
-    if (other)
-    {
-      auto locn = other->location();
-      if (!locn)
-      {
-        locn = this->location();
-        other->setLocation(locn);
-      }
-      PhraseContent* attr = this;
-      attr->m_decorator = other;
-      for (; attr->m_decorator; attr = attr->m_decorator.get())
-      {
-        attr->m_location = locn;
-      }
-    }
-    return shared_from_this();
-  }
-
-  /// Remove the front-most decorator from this object while retaining its children.
-  Ptr popDecorator()
-  {
-    Ptr attr = m_decorator;
-    if (attr)
-    {
-      m_decorator = attr->m_decorator;
-      attr->m_decorator = Ptr();
-    }
-    return attr;
-  }
-
-  /// Return the content which this instance decorates (or a nullptr).
-  Ptr peek() const { return m_decorator; }
-
-  /// Return the original content without any decoration
-  Ptr undecoratedContent()
-  {
-    Ptr content = shared_from_this();
-    for (; content->peek(); content = content->peek())
-      ;
-    return content;
-  }
-
   /// Should \a attr be present in the visual display of the phrase?
-  virtual bool displayable(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->displayable(attr) : false;
-  }
+  virtual bool displayable(ContentType /*attr*/) const { return false; }
   /// Is \a attr editable or fixed (for information/display only)?
-  virtual bool editable(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->editable(attr) : false;
-  }
+  virtual bool editable(ContentType /*attr*/) const { return false; }
 
   /// Return a string that reflects the given \a attr value.
-  virtual std::string stringValue(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->stringValue(attr) : std::string();
-  }
+  virtual std::string stringValue(ContentType /*attr*/) const { return std::string(); }
   /// Return an integer bit-flag that reflects the given \a attr value.
-  virtual int flagValue(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->flagValue(attr) : 0;
-  }
-  /// Return a color vector that reflects the given \a attr value.
-  virtual resource::FloatList colorValue(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->colorValue(attr) : resource::FloatList({ 0., 0., 0., -1. });
-  }
+  virtual int flagValue(ContentType /*attr*/) const { return 0; }
 
   /// Edit the \a attr value to become the given string (or returns false if no-change/invalid).
-  virtual bool editStringValue(ContentType attr, const std::string& val)
-  {
-    return m_decorator ? m_decorator->editStringValue(attr, val) : false;
-  }
+  virtual bool editStringValue(ContentType /*attr*/, const std::string& /*val*/) { return false; }
   /// Edit the \a attr value to become the given flag (or returns false if no-change/invalid).
-  virtual bool editFlagValue(ContentType attr, int val)
-  {
-    return m_decorator ? m_decorator->editFlagValue(attr, val) : false;
-  }
-  /// Edit the \a attr value to become the given color (or returns false if no-change/invalid).
-  virtual bool editColorValue(ContentType attr, const resource::FloatList& val)
-  {
-    return m_decorator ? m_decorator->editColorValue(attr, val) : false;
-  }
+  virtual bool editFlagValue(ContentType /*attr*/, int /*val*/) { return false; }
 
   /// Return the resource related to this phrase (or nullptr if not well defined).
-  virtual smtk::resource::ResourcePtr relatedResource() const
-  {
-    return m_decorator ? m_decorator->relatedResource() : nullptr;
-  }
+  virtual smtk::resource::ResourcePtr relatedResource() const { return nullptr; }
   /// Return the resource component related to this phrase (or nullptr if not well defined).
-  virtual smtk::resource::ComponentPtr relatedComponent() const
-  {
-    return m_decorator ? m_decorator->relatedComponent() : nullptr;
-  }
+  virtual smtk::resource::ComponentPtr relatedComponent() const { return nullptr; }
   /// Return the persistent object related to this phrase (or nullptr if not well defined).
   ///
   /// This method simply calls relatedComponent() and relatedResource() under the hood, but
   /// that may change in the future.
   virtual smtk::resource::PersistentObjectPtr relatedObject() const
   {
-    if (m_decorator)
+    auto comp = this->relatedComponent();
+    if (comp)
     {
-      auto comp = m_decorator->relatedComponent();
-      if (comp)
-      {
-        return comp;
-      }
-      auto rsrc = m_decorator->relatedResource();
-      if (rsrc)
-      {
-        return rsrc;
-      }
+      return comp;
+    }
+    auto rsrc = this->relatedResource();
+    if (rsrc)
+    {
+      return rsrc;
     }
     return nullptr;
   }
   /// Return an operator related to this phrase (or nullptr if not well defined).
-  virtual smtk::operation::OperationPtr relatedOperation() const
-  {
-    return m_decorator ? m_decorator->relatedOperation() : nullptr;
-  }
+  virtual smtk::operation::OperationPtr relatedOperation() const { return nullptr; }
 
   /// Test for use in derived-class equality operators.
   bool equalTo(const PhraseContent& other) const
   {
-    return this->location() == other.location() && (typeid(*this) == typeid(other)) &&
-      *m_decorator.get() == *other.m_decorator.get();
+    return this->location() == other.location() && (typeid(*this) == typeid(other));
   }
 
   /**\brief Return the location of this content in a DescriptivePhrase hierarchy.
@@ -221,7 +131,6 @@ public:
 protected:
   PhraseContent() {}
 
-  Ptr m_decorator;
   WeakDescriptivePhrasePtr m_location;
 };
 }

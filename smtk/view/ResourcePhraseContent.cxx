@@ -136,28 +136,6 @@ int ResourcePhraseContent::flagValue(ContentType contentType) const
   return -1;
 }
 
-resource::FloatList ResourcePhraseContent::colorValue(ContentType contentType) const
-{
-  if (auto resource = m_resource.lock())
-  {
-    switch (contentType)
-    {
-      case PhraseContent::COLOR:
-        return smtk::resource::FloatList({ 0., 0., 0., -1. });
-        break;
-      case PhraseContent::TITLE:
-      case PhraseContent::SUBTITLE:
-      case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON_LIGHTBG:
-      case PhraseContent::ICON_DARKBG:
-      default:
-        break;
-    }
-  }
-  smtk::resource::FloatList rgba({ 0., 0., 0., -1. });
-  return rgba;
-}
-
 bool ResourcePhraseContent::editStringValue(ContentType contentType, const std::string& val)
 {
   if (auto resource = m_resource.lock())
@@ -185,15 +163,6 @@ bool ResourcePhraseContent::editStringValue(ContentType contentType, const std::
 
 bool ResourcePhraseContent::editFlagValue(ContentType contentType, int val)
 {
-  (void)contentType;
-  (void)val;
-  return false;
-}
-
-bool ResourcePhraseContent::editColorValue(ContentType contentType, const resource::FloatList& val)
-{
-  // This should create and call a "set entity property" operator on the
-  // related component's color for contentType == COLOR.
   (void)contentType;
   (void)val;
   return false;

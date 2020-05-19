@@ -105,11 +105,6 @@ PhraseContentPtr DescriptivePhrase::content() const
   return m_content;
 }
 
-PhraseContentPtr DescriptivePhrase::undecoratedContent() const
-{
-  return m_content->undecoratedContent();
-}
-
 DescriptivePhrase::Badges DescriptivePhrase::badges() const
 {
   DescriptivePhrase::Badges result;
@@ -503,8 +498,8 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
 
 bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const
 {
-  smtk::view::PhraseContent* c0 = this->undecoratedContent().get();
-  smtk::view::PhraseContent* c1 = other.undecoratedContent().get();
+  smtk::view::PhraseContent* c0 = this->content().get();
+  smtk::view::PhraseContent* c1 = other.content().get();
   bool same = (*c0 == *c1);
   return same &&
     // You wouldn't think typeid(baseClassReference) would work, but it does virtual lookup:

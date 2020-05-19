@@ -114,7 +114,6 @@ PhraseModel::PhraseModel()
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
   , m_mutableAspects(PhraseContent::EVERYTHING)
 {
-  m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
 }
 
 PhraseModel::PhraseModel(const Configuration* config, Manager* manager)
@@ -123,7 +122,6 @@ PhraseModel::PhraseModel(const Configuration* config, Manager* manager)
   , m_mutableAspects(PhraseContent::EVERYTHING)
   , m_manager(manager->shared_from_this())
 {
-  m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
 }
 
 PhraseModel::~PhraseModel()
@@ -470,17 +468,6 @@ void PhraseModel::handleCreated(
 
 void PhraseModel::redecorate()
 {
-  this->root()->visitChildren(
-    [this](DescriptivePhrasePtr phr, std::vector<int> & /*unused*/) -> int {
-      PhraseContentPtr topContent = phr->content();
-      PhraseContentPtr content = topContent->undecoratedContent();
-      if (content != topContent)
-      {
-        phr->setContent(content);
-      }
-      this->decoratePhrase(phr);
-      return 0; // Continue iterating, incl. children.
-    });
 }
 
 void PhraseModel::updateChildren(
@@ -677,26 +664,6 @@ void PhraseModel::updateChildren(
       }
     }
   }
-}
-
-void PhraseModel::decoratePhrase(smtk::view::DescriptivePhrasePtr phr) const
-{
-  m_decorator(phr);
-}
-
-bool PhraseModel::setDecorator(const PhraseDecorator& phraseDecorator)
-{
-  if (!phraseDecorator)
-  {
-    return false;
-  }
-
-  m_decorator = phraseDecorator;
-
-  // We should un-decorate and re-decorate.
-  this->redecorate();
-
-  return true;
 }
 
 void PhraseModel::triggerDataChanged()

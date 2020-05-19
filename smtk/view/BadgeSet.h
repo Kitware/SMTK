@@ -45,8 +45,9 @@ public:
 
   void configure(const Configuration* viewSpec, const smtk::view::ManagerPtr& manager);
 
+  using BadgeList = std::vector<Badge*>;
   /// Return ordered list of badge ptrs, ignoring any names without a matching badge.
-  std::vector<const Badge*> badgesFor(const DescriptivePhrase* phrase) const;
+  BadgeList badgesFor(const DescriptivePhrase* phrase) const;
 
   /// Return the manager (if any) used to create this badge-set.
   ///
@@ -55,10 +56,26 @@ public:
   /// access to the manager's IconFactory to obtain SVG icons.
   smtk::view::ManagerPtr manager() const { return m_manager.lock(); }
 
+  /// Get the first existing badge matching a type.
+  template <typename T>
+  T* findBadgeOfType();
+
 private:
   std::weak_ptr<Manager> m_manager;
   std::vector<std::unique_ptr<Badge> > m_badges;
 };
+
+template <typename T>
+T* BadgeSet::findBadgeOfType()
+{
+  for (auto& badge : m_badges)
+  {
+    T* result = dynamic_cast<T*>(badge.get());
+    if (result)
+      return result;
+  }
+  return nullptr;
+}
 }
 }
 #endif

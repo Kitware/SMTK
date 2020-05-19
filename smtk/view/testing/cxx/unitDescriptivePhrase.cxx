@@ -104,13 +104,6 @@ int unitDescriptivePhrase(int argc, char* argv[])
       if (p)
       {
         std::cout << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
-        smtk::resource::FloatList rgba = p->relatedColor();
-        smtkTest(rgba.size() == 4, "Unexpected size for color vector: " << rgba.size());
-        if (rgba[3] >= 0.)
-        {
-          std::cout << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3]
-                    << ")";
-        }
         auto sub = p->subphrases(); // force subphrases to get built, though we may not visit them
         (void)sub;
         std::cout << "\n";
