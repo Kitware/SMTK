@@ -9,6 +9,7 @@ set(graphSrcs
 set(graphHeaders
   Component.h
   Resource.h
+  TypeTraits.h
   arcs/Arc.h
   arcs/Arcs.h
   arcs/OrderedArcs.h

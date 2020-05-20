@@ -17,7 +17,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/graph/arcs/Extensions.h"
+#include "smtk/graph/TypeTraits.h"
 
 namespace smtk
 {

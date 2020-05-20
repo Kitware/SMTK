@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_graph_Extensions_h
-#define smtk_graph_Extensions_h
+#ifndef smtk_graph_TypeTraits_h
+#define smtk_graph_TypeTraits_h
 
 #include <functional>
 #include <type_traits>
@@ -47,6 +47,7 @@ class is_iterable
 
 public:
   using type = decltype(testIterable<Iterable>(nullptr));
+  static constexpr bool value = type::value;
 };
 
 template <typename Container>
@@ -60,6 +61,34 @@ class is_container
 
 public:
   using type = decltype(testContainer<Container>(nullptr));
+  static constexpr bool value = type::value;
+};
+
+template <typename API, typename Functor, typename Input>
+class has_custom_visit
+{
+  template <typename X>
+  static std::true_type testVisitable(
+    decltype(std::declval<X>().visit(std::declval<Input>(), std::declval<const Functor&>()))*);
+  template <typename X>
+  static std::false_type testVisitable(...);
+
+public:
+  using type = decltype(testVisitable<API>(nullptr));
+  static constexpr bool value = type::value;
+};
+
+template <typename Functor, typename Input>
+class accepts
+{
+  template <typename X>
+  static std::true_type testAccepts(decltype(std::declval<X>()(std::declval<Input>()))*);
+  template <typename X>
+  static std::false_type testAccepts(...);
+
+public:
+  using type = decltype(testAccepts<Functor>(nullptr));
+  static constexpr bool value = type::value;
 };
 }
 }

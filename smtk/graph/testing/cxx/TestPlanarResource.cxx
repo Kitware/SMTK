@@ -74,6 +74,7 @@ public:
 // describes the "to" type. The underlying datastructure is a vector.
 class Vertices : public smtk::graph::OrderedArcs<Edge, Vertex>
 {
+public:
   // We expose the parent class's constructor, which accepts vertices as
   // explicitly listed, as an iterator range or from an iterable collection.
   using smtk::graph::OrderedArcs<Edge, Vertex>::OrderedArcs;
@@ -83,6 +84,7 @@ class Vertices : public smtk::graph::OrderedArcs<Edge, Vertex>
 // The underlying datastructure is an unordered set.
 class Edges : public smtk::graph::Arcs<Vertex, Edge>
 {
+public:
   // We expose the parent class's constructor, which accepts edges as explicitly
   // listed, as an iterator range or from an iterable collection.
   using smtk::graph::Arcs<Vertex, Edge>::Arcs;
@@ -92,12 +94,14 @@ class Edges : public smtk::graph::Arcs<Vertex, Edge>
 // it.
 class Loop : public smtk::graph::OrderedArcs<Face, Edge>
 {
+public:
   using smtk::graph::OrderedArcs<Face, Edge>::OrderedArcs;
 };
 
 // Faces describes a connection between an edge and the faces that contain it.
 class Faces : public smtk::graph::Arcs<Edge, Face>
 {
+public:
   using smtk::graph::Arcs<Edge, Face>::Arcs;
 };
 
