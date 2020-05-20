@@ -20,8 +20,14 @@
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseModel.h"
 
 #include "smtk/io/Logger.h"
+
+#include <QObject>
+
+class pqView;
+class pqRepresentation;
 
 namespace smtk
 {
@@ -33,8 +39,9 @@ namespace appcomponents
 {
 using DescriptivePhrase = smtk::view::DescriptivePhrase;
 
-class SMTKPQCOMPONENTSEXT_EXPORT VisibilityBadge : public smtk::view::Badge
+class SMTKPQCOMPONENTSEXT_EXPORT VisibilityBadge : public QObject, public smtk::view::Badge
 {
+  Q_OBJECT
 public:
   smtkTypeMacro(smtk::extension::paraview::appcomponents::VisibilityBadge);
   smtkSuperclassMacro(smtk::view::Badge);
@@ -56,6 +63,16 @@ public:
 
   /// take an action when the badge is clicked.
   void action(const DescriptivePhrase* phrase) override;
+
+protected slots:
+  /// handle the active view changing, change the visible icons.
+  void activeViewChanged(pqView* view);
+  void representationAddedToActiveView(pqRepresentation* rep);
+  void representationRemovedFromActiveView(pqRepresentation* rep);
+  void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
+
+protected:
+  smtk::view::PhraseModel* phraseModel() const { return this->m_parent->phraseModel(); }
 
 private:
   bool phraseVisibility(const DescriptivePhrase* phrase) const;

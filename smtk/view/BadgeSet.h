@@ -31,11 +31,15 @@ class SMTKCORE_EXPORT BadgeSet
 {
 public:
   /// Remove this once view::Manager uses the new factory method to construct PhraseModel with arguments.
-  BadgeSet() {}
+  BadgeSet()
+    : m_phraseModel(nullptr)
+  {
+  }
 
   /// Construct and configure a set of badges for a view.
-  BadgeSet(const Configuration* viewSpec, const ManagerPtr& manager)
+  BadgeSet(const Configuration* viewSpec, const ManagerPtr& manager, PhraseModel* phraseModel)
     : m_manager(manager)
+    , m_phraseModel(phraseModel)
   {
     this->configure(viewSpec, manager);
   }
@@ -56,12 +60,16 @@ public:
   /// access to the manager's IconFactory to obtain SVG icons.
   smtk::view::ManagerPtr manager() const { return m_manager.lock(); }
 
+  /// Return the phraseModel (if any) that owns this badge-set.
+  PhraseModel* phraseModel() const { return m_phraseModel; }
+
   /// Get the first existing badge matching a type.
   template <typename T>
   T* findBadgeOfType();
 
 private:
   std::weak_ptr<Manager> m_manager;
+  PhraseModel* m_phraseModel;
   std::vector<std::unique_ptr<Badge> > m_badges;
 };
 
