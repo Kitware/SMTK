@@ -271,6 +271,11 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
     Query::GET_VALUE, -1, phrase->content(), const_cast<VisibilityBadge*>(this)->m_visibleThings);
 }
 
+void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int val)
+{
+  vizQuery(Query::SET_VALUE, !!val ? 1 : 0, phrase->content(), this->m_visibleThings);
+}
+
 std::string VisibilityBadge::icon(
   const DescriptivePhrase* phrase, const std::array<float, 4>& /*background*/) const
 {

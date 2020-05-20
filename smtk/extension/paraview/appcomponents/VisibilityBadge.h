@@ -64,6 +64,10 @@ public:
   /// take an action when the badge is clicked.
   void action(const DescriptivePhrase* phrase) override;
 
+  /// Set visibility for this phrase.
+  void setPhraseVisibility(const DescriptivePhrase* phrase, int val);
+  bool phraseVisibility(const DescriptivePhrase* phrase) const;
+
 protected slots:
   /// handle the active view changing, change the visible icons.
   void activeViewChanged(pqView* view);
@@ -75,7 +79,6 @@ protected:
   smtk::view::PhraseModel* phraseModel() const { return this->m_parent->phraseModel(); }
 
 private:
-  bool phraseVisibility(const DescriptivePhrase* phrase) const;
   // borrowed from paraview Qt/Components
   std::string m_icon;
   std::string m_iconClosed;
