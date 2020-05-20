@@ -19,9 +19,6 @@ namespace smtk
 {
 namespace extension
 {
-class qtAssociationWidget;
-class qtBaseView;
-
 ///\brief Simple delegate that prevents contents from being modified
 
 class SMTKQTEXT_EXPORT qtNotEditableDelegate : public QItemDelegate

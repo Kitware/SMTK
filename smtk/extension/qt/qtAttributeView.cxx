@@ -16,6 +16,7 @@
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtNotEditableDelegate.h"
+#include "smtk/extension/qt/qtRegexDelegate.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -194,6 +195,7 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
     view->details().attributeAsBool("DisableNameField", m_disableNameField);
     view->details().attributeAsBool("DisplaySearchBox", m_searchBoxVisibility);
     view->details().attribute("SearchBoxText", m_searchBoxText);
+    view->details().attribute("AttributeNameRegex", m_attributeNameRegex);
   }
 }
 
@@ -284,6 +286,13 @@ void qtAttributeView::createWidget()
   m_internals->ListTable->setSizePolicy(tableSizePolicy);
   m_internals->ListTable->setItemDelegateForColumn(
     status_column, new qtNotEditableDelegate(m_internals->ListTable));
+
+  if (!m_attributeNameRegex.empty())
+  {
+    auto nameDelegate = new qtRegexDelegate(m_internals->ListTable);
+    nameDelegate->setExpression(m_attributeNameRegex);
+    m_internals->ListTable->setItemDelegateForColumn(name_column, nameDelegate);
+  }
 
   m_internals->ListTableProxyModel = new QSortFilterProxyModel(m_internals->ListTable);
   m_internals->ListTableModel = new QStandardItemModel(m_internals->ListTable);

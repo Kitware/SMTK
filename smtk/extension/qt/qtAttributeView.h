@@ -76,6 +76,9 @@ public:
   void setAttributeNamesConstant(bool mode) { m_disableNameField = mode; }
   bool attributeNamesConstant() const { return m_disableNameField; }
 
+  void setAttributeNameRegex(const std::string& pattern) { m_attributeNameRegex = pattern; }
+  const std::string& attributeNameRegex() const { return m_attributeNameRegex; }
+
   smtk::attribute::DefinitionPtr getCurrentDef() const;
 
   enum enumViewBy
@@ -162,8 +165,9 @@ private:
   bool m_disableNameField;  //!< Indicates that attribute names can not be modified
   bool m_searchBoxVisibility;  //!< Indicates if the search box should be displayed
   std::string m_searchBoxText; //!< Text to be displayed in the search box when no text is entered
-};                             // class
-};                             // namespace attribute
-};                             // namespace smtk
+  std::string m_attributeNameRegex; //!< Regex pattern for attribute names
+};
+};
+};
 
 #endif
