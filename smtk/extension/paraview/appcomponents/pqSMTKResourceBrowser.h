@@ -60,16 +60,6 @@ protected slots:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
-  /// Used to update phrase model with new visibility info for the active view.
-  virtual void activeViewChanged(pqView*);
-
-  /// Used to keep list of resource representations in active view up-to-date.
-  virtual void representationAddedToActiveView(pqRepresentation*);
-  virtual void representationRemovedFromActiveView(pqRepresentation*);
-
-  /// Used to listen for self and others making changes to component visibilities in active view's representations.
-  virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
-
   /// Called when vtkSMTKSettings is modified, indicating highlight-on-hover behavior may change.
   virtual void updateSettings();
 

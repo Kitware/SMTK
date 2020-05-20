@@ -118,7 +118,7 @@ PhraseModel::PhraseModel()
 
 PhraseModel::PhraseModel(const Configuration* config, Manager* manager)
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
-  , m_badges(config, manager->shared_from_this())
+  , m_badges(config, manager->shared_from_this(), this)
   , m_mutableAspects(PhraseContent::EVERYTHING)
   , m_manager(manager->shared_from_this())
 {

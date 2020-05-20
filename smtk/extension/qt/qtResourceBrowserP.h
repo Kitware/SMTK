@@ -58,7 +58,6 @@ public:
   std::string m_selnLabel;
   std::string m_hoverLabel;
   std::string m_viewName;
-  std::map<smtk::common::UUID, int> m_visibleThings;
   std::string m_resourceTreeType; // "default" or specific type.
   int m_resourceTreeStyle;        // Which default subphrase generator should be used?
 

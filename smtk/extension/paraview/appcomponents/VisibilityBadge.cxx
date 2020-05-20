@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h" // FIXME: Remove the need for me
 
 #include "smtk/common/Color.h"
 #include "smtk/mesh/core/Component.h"
@@ -29,6 +30,8 @@
 #include "smtk/view/Manager.h"
 
 #include "pqActiveObjects.h"
+#include "vtkCompositeRepresentation.h"
+#include "vtkSMProxy.h"
 
 namespace smtk
 {
@@ -241,6 +244,14 @@ VisibilityBadge::VisibilityBadge(
                  "41L12,45.52A1.11,1.11,0,0,1,11.15,45.94Z\" style=\"fill:#787878\"/></svg>")
   , m_parent(&parent)
 {
+  // Reset eyeball icons when the active view changes:
+  pqActiveObjects& act(pqActiveObjects::instance());
+  QObject::connect(&act, SIGNAL(viewChanged(pqView*)), this, SLOT(activeViewChanged(pqView*)));
+  // Now call immediately, since in at least some circumstances, a view may already be active.
+  if (this->phraseModel() && this->phraseModel()->root())
+  {
+    this->activeViewChanged(act.activeView());
+  }
 }
 
 VisibilityBadge::~VisibilityBadge()
@@ -258,6 +269,11 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
 {
   return !!vizQuery(
     Query::GET_VALUE, -1, phrase->content(), const_cast<VisibilityBadge*>(this)->m_visibleThings);
+}
+
+void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int val)
+{
+  vizQuery(Query::SET_VALUE, !!val ? 1 : 0, phrase->content(), this->m_visibleThings);
 }
 
 std::string VisibilityBadge::icon(
@@ -284,6 +300,93 @@ void VisibilityBadge::action(const DescriptivePhrase* phrase)
   {
     model->triggerDataChanged();
   }
+}
+
+void VisibilityBadge::activeViewChanged(pqView* view)
+{
+  // Disconnect old representations, clear local visibility map.
+  QObject::disconnect(this, SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+  this->m_visibleThings.clear();
+  // Connect new representations, initialize visibility map..
+  if (view)
+  {
+    foreach (pqRepresentation* rep, view->getRepresentations())
+    {
+      this->representationAddedToActiveView(rep);
+    }
+    QObject::connect(view, SIGNAL(representationAdded(pqRepresentation*)), this,
+      SLOT(representationAddedToActiveView(pqRepresentation*)));
+    QObject::connect(view, SIGNAL(representationRemoved(pqRepresentation*)), this,
+      SLOT(representationRemovedFromActiveView(pqRepresentation*)));
+  }
+  auto rsrcPhrases = this->phraseModel()->root()->subphrases();
+  auto behavior = pqSMTKBehavior::instance();
+  for (const auto& rsrcPhrase : rsrcPhrases)
+  {
+    auto rsrc = rsrcPhrase->relatedResource();
+    if (!rsrc)
+    {
+      continue;
+    }
+    auto pvr = behavior->getPVResource(rsrc);
+    auto rep = pvr ? pvr->getRepresentation(view) : nullptr;
+    // TODO: At a minimum, we can update the representation's visibility now
+    //       since if rep is null it is invisible and if not null, we can ask
+    //       for its visibility.
+    if (rep)
+    {
+      this->m_visibleThings[rsrc->id()] = rep->isVisible() ? 1 : 0;
+      auto thingy = rep->getProxy()->GetClientSideObject();
+      auto thingy2 = vtkCompositeRepresentation::SafeDownCast(thingy);
+      auto srvrep = vtkSMTKResourceRepresentation::SafeDownCast(
+        thingy2 ? thingy2->GetActiveRepresentation() : nullptr);
+      if (srvrep)
+      {
+        // TODO: This assumes we are running in built-in mode. Remove the need for me.
+        srvrep->GetEntityVisibilities(this->m_visibleThings);
+      }
+    }
+    else
+    {
+      // This is a sign that things are going poorly.
+      // The representation should already have been created either when
+      // the view was created or the resource loaded.
+      this->m_visibleThings[rsrc->id()] = behavior->createRepresentation(pvr, view) ? 1 : 0;
+    }
+  }
+  // Indicate to the Qt model that it needs to refresh every row,
+  // since visibility may be altered on each one:
+  // this->phraseModel()->triggerDataChanged();
+  this->phraseModel()->triggerDataChanged();
+}
+
+void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
+{
+  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  if (modelRep)
+  {
+    QObject::connect(modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+      SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+  }
+}
+
+void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
+{
+  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  if (modelRep)
+  {
+    QObject::disconnect(modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+      SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+  }
+}
+
+void VisibilityBadge::componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible)
+{
+  // The visibilty should change for every row displaying the same \a ent:
+  this->m_visibleThings[comp->id()] = visible;
+  this->phraseModel()->triggerDataChangedFor(comp);
 }
 }
 }
