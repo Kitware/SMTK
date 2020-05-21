@@ -51,7 +51,7 @@ TopoDS_Shape* Session::findShape(const smtk::common::UUID& uid)
 
 smtk::common::UUID Session::findID(const TopoDS_Shape& shape) const
 {
-  auto it = m_reverse.find(shape);
+  auto it = m_reverse.find(shape.HashCode(std::numeric_limits<Standard_Integer>::max()));
   if (it != m_reverse.end())
   {
     return it->second;
@@ -67,7 +67,7 @@ void Session::addShape(const smtk::common::UUID& uid, TopoDS_Shape& storage)
   }
 
   m_storage[uid] = storage;
-  m_reverse[storage] = uid;
+  m_reverse[storage.HashCode(std::numeric_limits<Standard_Integer>::max())] = uid;
 }
 
 bool Session::removeShape(const smtk::common::UUID& uid)
@@ -83,7 +83,7 @@ bool Session::removeShape(const smtk::common::UUID& uid)
     return false;
   }
 
-  m_reverse.erase(it->second);
+  m_reverse.erase(it->second.HashCode(std::numeric_limits<Standard_Integer>::max()));
   m_storage.erase(it);
   return true;
 }
