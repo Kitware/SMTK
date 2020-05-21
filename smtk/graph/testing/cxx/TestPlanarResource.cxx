@@ -119,17 +119,13 @@ struct PlanarTraits
 Edge::Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource, Vertex& v1, Vertex& v2)
   : Component(resource)
 {
-  // Access our resource in its derived form, so we can take advantage of the
-  // compile-time grammar checking we have put in place.
-  auto planarResource = std::static_pointer_cast<smtk::graph::Resource<PlanarTraits> >(resource);
-
   // Create a Vertices arc that connects this edge to its two vertices.
   // Alternatively, we could have called the following:
   // ```
   // this->get<Vertices>().push_back(v1);
   // this->get<Vertices>().push_back(v2);
   // ```
-  planarResource->create<Vertices>(*this, v1, v2);
+  this->set<Vertices>(v1, v2);
 
   // Add the created edge to the vertices' edge list. Note that
   // const-correctness is observed (if we had a reference to a const Vertex&, we
@@ -144,10 +140,15 @@ template <typename... T, typename>
 Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... edges)
   : Component(resource)
 {
-  // Access our resource in its derived form.
+  // Access our resource in its derived form, so we can take advantage of the
+  // compile-time grammar checking we have put in place.
   auto planarResource = std::static_pointer_cast<smtk::graph::Resource<PlanarTraits> >(resource);
 
   // Create a Loop that connects this face to its edges.
+  // Alternatively, we could have called the following:
+  // ```
+  // this->set<Loop>(std::forward<T>(edges)...);
+  // ```
   planarResource->create<Loop>(*this, std::forward<T>(edges)...);
 
   // Add the created face to the edges' face lists.

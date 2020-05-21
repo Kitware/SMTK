@@ -9,12 +9,20 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/graph/Resource.h"
+#include "smtk/graph/ResourceBase.h"
+
+#include "smtk/graph/Component.h"
 
 namespace smtk
 {
 namespace graph
 {
+bool ResourceBase::Compare::operator()(const std::shared_ptr<smtk::resource::Component>& lhs,
+  const std::shared_ptr<smtk::resource::Component>& rhs) const
+{
+  return (!lhs ? true : (!rhs ? false : lhs->id() < rhs->id()));
+}
+
 std::shared_ptr<smtk::resource::Component> ResourceBase::find(
   const smtk::common::UUID& compId) const
 {

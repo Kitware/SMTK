@@ -15,6 +15,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/graph/ResourceBase.h"
 #include "smtk/graph/TypeTraits.h"
 
 #include <memory>
@@ -26,8 +27,6 @@ namespace smtk
 {
 namespace graph
 {
-
-class ResourceBase;
 
 template <typename GraphTraits>
 class Resource;
@@ -66,10 +65,39 @@ public:
     return API().contains(*static_cast<const typename ArcType::FromType*>(this));
   }
 
+  /// Set the node (or nodes) associated with this ArcType. If there is a
+  /// preexisting value associated with this ArcType, it is replaced. Return true
+  /// on success.
+  ///
+  /// NOTE: This method cannot be guarded by compile-time checks, so it is
+  ///       instead allowed to fail at runtime. For compile-time checking, prefer
+  ///       smtk::graph::Resource's API for creating ArcTypes.
+  template <typename ArcType, typename... Args>
+  bool set(Args&&... args)
+  {
+    // Since this method exists in the base Component class, we must check RTTI
+    // to ensure the node type is appropriate for the ArcType's LHS.
+    if (!dynamic_cast<typename ArcType::FromType*>(this))
+    {
+      return false;
+    }
+
+    auto resource = std::static_pointer_cast<smtk::graph::ResourceBase>(this->resource());
+
+    auto& arcs = resource->arcs();
+    if (arcs.containsType<ArcType>())
+    {
+      arcs.erase<ArcType>(this->id());
+      arcs.emplace<ArcType>(this->id(),
+        ArcType(static_cast<typename ArcType::FromType&>(*this), std::forward<Args>(args)...));
+      return true;
+    }
+    return false;
+  }
+
   /// The get() method returns the node (or nodes) connected to this node via
   /// the input arc type. The return type of this method is determined by the API
   /// of ArcType.
-  /// \return ArcType::FromType&
   // This overload handles const access to nodes
   template <typename ArcType>
   auto get() const -> decltype(std::declval<const typename ArcType::template API<ArcType> >().get(
@@ -91,7 +119,6 @@ public:
   /// type, visit() allows you to pass your calling code to each connected node
   /// without having to return a reference to each node. Input lambdas return a
   /// boolean value; when they return true, visitation is terminated early.
-  /// \return bool
   // This overload handles const access to arcs that have no explicit
   // API::visit defined and return a container from get().
   template <typename ArcType, typename Visitor>

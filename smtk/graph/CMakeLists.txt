@@ -2,13 +2,14 @@ set(graphOperations
 )
 
 set(graphSrcs
-  Resource.cxx
+  ResourceBase.cxx
   Component.cxx
 )
 
 set(graphHeaders
   Component.h
   Resource.h
+  ResourceBase.h
   TypeTraits.h
   arcs/Arc.h
   arcs/Arcs.h
