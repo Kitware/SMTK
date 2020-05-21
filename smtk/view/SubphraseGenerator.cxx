@@ -335,16 +335,27 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
   // Determine if the component is a direct-ish child of parent
   if (!actualParent->relatedComponent() && actualParent->relatedResource())
   {
+    rsrc = comp->resource();
     // Attribute and mesh resources own all their components directly.
     // Model resources have only _free_ models as direct children.
-    if (comp->resource() == actualParent->relatedResource() &&
-      (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
-          std::dynamic_pointer_cast<smtk::mesh::Component>(comp) ||
-          ((ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp)) && ment->isModel() &&
-            !smtk::model::Model(ment).owningModel().isValid())))
+    if (rsrc == actualParent->relatedResource())
     {
-      PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
-      added = true;
+      if (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
+        std::dynamic_pointer_cast<smtk::mesh::Component>(comp) ||
+        ((ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp)) && ment->isModel() &&
+            !smtk::model::Model(ment).owningModel().isValid()))
+      {
+        PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
+        added = true;
+      }
+      else if (!std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc) &&
+        !std::dynamic_pointer_cast<smtk::model::Resource>(rsrc) &&
+        !std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc))
+      {
+        // Resources of unknown type... plop all the components in the top-level
+        PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
+        added = true;
+      }
     }
   }
   if (!added &&

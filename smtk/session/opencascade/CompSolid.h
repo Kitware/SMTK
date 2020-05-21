@@ -8,11 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/Logger.h"
+#ifndef smtk_session_opencascade_CompSolid_h
+#define smtk_session_opencascade_CompSolid_h
+/*!\file */
 
-#include "smtk/session/opencascade/Resource.h"
+#include "smtk/graph/Component.h"
 
-#include <BRep_Builder.hxx>
+#include "smtk/resource/Properties.h"
+
+#include "smtk/session/opencascade/Shape.h"
 
 namespace smtk
 {
@@ -21,25 +25,21 @@ namespace session
 namespace opencascade
 {
 
-Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager)
-  : Superclass(uid, manager)
-{
-  BRep_Builder aBuilder;
-  aBuilder.MakeCompound(m_compound);
-}
+class Resource;
 
-Resource::Resource(smtk::resource::ManagerPtr manager)
-  : Superclass(manager)
+class SMTKOPENCASCADESESSION_EXPORT CompSolid : public Shape
 {
-  BRep_Builder aBuilder;
-  aBuilder.MakeCompound(m_compound);
-}
-
-void Resource::setSession(const Session::Ptr& session)
-{
-  m_session = session->shared_from_this();
-}
+public:
+  smtkTypeMacro(CompSolid);
+  smtkSuperclassMacro(smtk::session::opencascade::Shape);
+  CompSolid(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
+    : Shape(rsrc)
+  {
+  }
+};
 
 } // namespace opencascade
 } // namespace session
 } // namespace smtk
+
+#endif // smtk_session_opencascade_CompSolid_h

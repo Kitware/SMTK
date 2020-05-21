@@ -83,43 +83,6 @@ namespace opencascade
 template <typename T>
 using handle = ::opencascade::handle<T>;
 
-void Import::iterateChildren(Shape& parent, Result& result, int& numItems)
-{
-  Resource* resource = dynamic_cast<Resource*>(parent.resource().get());
-  if (!resource)
-  {
-    return;
-  }
-
-  // auto created = result->findComponent("created");
-  auto session = resource->session();
-  auto shape = session->findShape(parent.id());
-  if (shape)
-  {
-    operation::MarkGeometry geom(resource->shared_from_this());
-    TopoDS_Iterator iter;
-    for (iter.Initialize(*shape); iter.More(); iter.Next())
-    {
-      TopoDS_Shape childShape = iter.Value();
-      if (session->findID(childShape).isNull())
-      {
-        auto node = resource->create<Shape>();
-        std::ostringstream nodeName;
-        std::string topologyType = TopAbs::ShapeTypeToString(childShape.ShapeType());
-        std::transform(topologyType.begin(), topologyType.end(), topologyType.begin(),
-          [](unsigned char c) { return std::tolower(c); });
-        nodeName << topologyType << " " << numItems;
-        node->setName(nodeName.str());
-        session->addStorage(node->id(), childShape);
-        geom.markModified(node);
-        ++numItems;
-        // created->appendValue(node); // This is problematic for large models.
-        this->iterateChildren(*node, result, numItems);
-      }
-    }
-  }
-}
-
 Import::Result Import::operateInternal()
 {
   smtk::session::opencascade::Resource::Ptr resource;
@@ -127,39 +90,14 @@ Import::Result Import::operateInternal()
 
   auto result = this->createResult(Import::Outcome::FAILED);
 
-  auto assoc = this->parameters()->associations();
-  if (assoc->isEnabled() && assoc->isSet(0))
-  {
-    resource = dynamic_pointer_cast<Resource>(assoc->value(0));
-    if (resource)
-    {
-      session = resource->session();
-    }
-  }
+  this->prepareResourceAndSession(result, resource, session);
 
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
   std::string filename = filenameItem->value(0);
-
-  // Create a new resource for the import if needed.
-  if (!resource)
+  if (resource->location().empty())
   {
-    auto manager = this->specification()->manager();
-    if (manager)
-    {
-      resource = manager->create<smtk::session::opencascade::Resource>();
-    }
-    else
-    {
-      resource = smtk::session::opencascade::Resource::create();
-    }
-    result->findResource("resource")->setValue(resource);
+    resource->setLocation(filename);
   }
-  if (!session)
-  {
-    session = smtk::session::opencascade::Session::create();
-    resource->setSession(session);
-  }
-
   std::string potentialName = smtk::common::Paths::stem(filename);
   if (resource->name().empty() && !potentialName.empty())
   {
@@ -185,7 +123,7 @@ Import::Result Import::operateInternal()
   auto created = result->findComponent("created");
 
   BRep_Builder builder;
-  TopoDS_Shape shape;
+  TopoDS_Shape& shape = resource->compound();
   if (filetype == "occ")
   {
     auto ok = BRepTools::Read(shape, filename.c_str(), builder);
@@ -289,18 +227,14 @@ Import::Result Import::operateInternal()
     smtkErrorMacro(this->log(), "Unknown file type for \"" << filename << "\".");
     return result;
   }
-  auto topNode = resource->create<Shape>();
-  session->addStorage(topNode->id(), shape);
-  operation::MarkGeometry geom(resource);
-  created->appendValue(topNode);
-  geom.markModified(topNode);
+
+  auto topNode = this->createNode(shape, resource.get(), true);
   // std::cout
   //   << "  Added " << " " << topNode->id() << " " << topNode->name()
   //   << " " << TopAbs::ShapeTypeToString(shape.ShapeType()) << "\n";
 
   // NB: This visits shared children multiple times (e.g., vertex bounding 2+ edges)
-  int numItems = 1;
-  this->iterateChildren(*topNode, result, numItems);
+  this->iterateChildren(*topNode, result);
 
   result->findInt("outcome")->setValue(static_cast<int>(Import::Outcome::SUCCEEDED));
   return result;

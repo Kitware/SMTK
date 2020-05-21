@@ -20,6 +20,8 @@
 
 #include "smtk/session/opencascade/Exports.h"
 
+#include <TopoDS_Compound.hxx>
+
 namespace smtk
 {
 namespace session
@@ -55,11 +57,18 @@ public:
   const Session::Ptr& session() const { return m_session; }
   void setSession(const Session::Ptr&);
 
+  /// set/get this resource's top-level modeling object
+  TopoDS_Compound& compound() { return m_compound; }
+  const TopoDS_Compound& compound() const { return m_compound; }
+  void setCompound(const TopoDS_Compound& compound) { m_compound = compound; }
+
   using Superclass::create;
 
 protected:
   Resource(const smtk::common::UUID&, smtk::resource::Manager::Ptr manager = nullptr);
   Resource(smtk::resource::Manager::Ptr manager = nullptr);
+
+  TopoDS_Compound m_compound;
 
   Session::Ptr m_session;
 };

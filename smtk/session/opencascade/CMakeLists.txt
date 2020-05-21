@@ -1,16 +1,31 @@
 # Classes have both a header and a source file:
 set(classes
   IconConstructor
+  Operation
   Session
   Registrar
   Resource
+  Shape
+  arcs/Children
+  arcs/Parents
 )
 # Operations have header, source, and sbt files:
 set(operators
+  CreateBox
+  CreateResource
+  Cut
   Import
 )
 # This should be initialized with a list of standalone header files:
 set(headers
+  Compound.h
+  CompSolid.h
+  Solid.h
+  Shell.h
+  Face.h
+  Wire.h
+  Edge.h
+  Vertex.h
 )
 # This should be initialized with a list of standalone source files:
 set(sources
@@ -39,6 +54,7 @@ target_include_directories(smtkOpencascadeSession
     $<BUILD_INTERFACE:${OpenCASCADE_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:${OpenCASCADE_INCLUDE_DIR}>
 )
+
 target_link_libraries(smtkOpencascadeSession
   PUBLIC
     smtkCore
@@ -81,6 +97,6 @@ endif()
 #   add_subdirectory(pybind11)
 # endif()
 
-# if (SMTK_ENABLE_TESTING)
-#   add_subdirectory(testing)
-# endif()
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif()

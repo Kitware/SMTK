@@ -12,8 +12,12 @@
 
 #include "smtk/session/opencascade/IconConstructor.h"
 #include "smtk/session/opencascade/Resource.h"
+#include "smtk/session/opencascade/operators/CreateBox.h"
+#include "smtk/session/opencascade/operators/CreateResource.h"
+#include "smtk/session/opencascade/operators/Cut.h"
 #include "smtk/session/opencascade/operators/Import.h"
 
+#include "smtk/operation/groups/CreatorGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 
 namespace smtk
@@ -25,7 +29,7 @@ namespace opencascade
 
 namespace
 {
-using OperationList = std::tuple<Import>;
+using OperationList = std::tuple<CreateBox, CreateResource, Cut, Import>;
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
@@ -39,6 +43,9 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   // Register operations to the operation manager
   operationManager->registerOperations<OperationList>();
 
+  smtk::operation::CreatorGroup(operationManager)
+    .registerOperation<smtk::session::opencascade::Resource,
+      smtk::session::opencascade::CreateResource>();
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::session::opencascade::Resource, smtk::session::opencascade::Import>();
 }
@@ -55,6 +62,8 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::opencascade::CreateResource>();
   smtk::operation::ImporterGroup(operationManager)
     .unregisterOperation<smtk::session::opencascade::Import>();
 
