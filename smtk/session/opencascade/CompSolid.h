@@ -16,6 +16,8 @@
 
 #include "smtk/resource/Properties.h"
 
+#include "smtk/session/opencascade/Shape.h"
+
 namespace smtk
 {
 namespace session
