@@ -4,6 +4,7 @@
 set(unit_tests
   TestPlanarResource.cxx
   TestNodalResource.cxx
+  TestVisitArcs.cxx
 )
 
 smtk_unit_tests(

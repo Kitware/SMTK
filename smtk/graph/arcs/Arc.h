@@ -30,7 +30,7 @@ public:
   typedef from_type FromType;
 
   /// Force arcs to connect components of the proper type at construction.
-  Arc(const FromType& from, const ToType& to)
+  Arc(const FromType& from, ToType& to)
     : m_from(from)
     , m_to(to)
   {
@@ -39,6 +39,7 @@ public:
   /// Return the origin (from) and destination (to) components of the arc.
   const FromType& from() const { return m_from; }
   const ToType& to() const { return m_to; }
+  ToType& to() { return m_to; }
 
   /// An API for accessing this class's information using
   /// smtk::graph::Component's API.
@@ -48,7 +49,16 @@ public:
     static_assert(std::is_base_of<Arc, SelfType>::value,
       "Invalid cast: cannot access Arc from unrelated type.");
 
+  protected:
     const SelfType& self(const FromType& lhs) const
+    {
+      return std::static_pointer_cast<smtk::graph::ResourceBase>(lhs.resource())
+        ->arcs()
+        .template get<SelfType>()
+        .at(lhs.id());
+    }
+
+    SelfType& self(const FromType& lhs)
     {
       return std::static_pointer_cast<smtk::graph::ResourceBase>(lhs.resource())
         ->arcs()
@@ -58,6 +68,7 @@ public:
 
   public:
     const ToType& get(const FromType& lhs) const { return self(lhs).to(); }
+    ToType& get(const FromType& lhs) { return self(lhs).to(); }
     bool contains(const FromType& lhs) const
     {
       return std::static_pointer_cast<smtk::graph::ResourceBase>(lhs.resource())
@@ -69,7 +80,7 @@ public:
 
 private:
   const FromType& m_from;
-  const ToType& m_to;
+  ToType& m_to;
 };
 }
 }
