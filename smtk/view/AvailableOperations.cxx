@@ -229,7 +229,10 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
       {
         // The actual selection is empty and the operation does not want
         // or need associations, mark it as available.
-        workingSetOut.insert(md.index());
+        if (!internalOperations.contains(md.index()))
+        {
+          workingSetOut.insert(md.index());
+        }
         continue;
       }
       else if (numSel == 0)
