@@ -128,7 +128,6 @@ public:
     {
       if (m_observers)
       {
-        std::unique_lock<std::mutex> lock(m_observers->m_mutex);
         m_observers->erase(*this);
       }
 
