@@ -14,8 +14,18 @@
 
 #include "smtk/session/opencascade/Exports.h"
 
-#include "smtk/session/opencascade/arcs/Children.h"
-#include "smtk/session/opencascade/arcs/Parents.h"
+#include "smtk/session/opencascade/arcs/ChildrenAs.h"
+#include "smtk/session/opencascade/arcs/ParentsAs.h"
+
+#include "smtk/session/opencascade/CompSolid.h"
+#include "smtk/session/opencascade/Compound.h"
+#include "smtk/session/opencascade/Edge.h"
+#include "smtk/session/opencascade/Face.h"
+#include "smtk/session/opencascade/Shape.h"
+#include "smtk/session/opencascade/Shell.h"
+#include "smtk/session/opencascade/Solid.h"
+#include "smtk/session/opencascade/Vertex.h"
+#include "smtk/session/opencascade/Wire.h"
 
 #include <tuple>
 
@@ -26,23 +36,17 @@ namespace session
 namespace opencascade
 {
 
-class Compound;
-class CompSolid;
-class Solid;
-class Shell;
-class Face;
-class Wire;
-class Edge;
-class Vertex;
-class Shape;
-
 /**\brief Traits that describe OpenCASCADE node and arc types.
   *
   */
 struct SMTKOPENCASCADESESSION_EXPORT Traits
 {
   typedef std::tuple<Shape, Compound, CompSolid, Solid, Shell, Face, Wire, Edge, Vertex> NodeTypes;
-  typedef std::tuple<Children, Parents> ArcTypes;
+  typedef std::tuple<ChildrenAs<CompSolid>, ChildrenAs<Solid>, ChildrenAs<Shell>, ChildrenAs<Face>,
+    ChildrenAs<Wire>, ChildrenAs<Edge>, ChildrenAs<Vertex>, Children, ParentsAs<Compound>,
+    ParentsAs<CompSolid>, ParentsAs<Solid>, ParentsAs<Shell>, ParentsAs<Face>, ParentsAs<Wire>,
+    ParentsAs<Edge>, Parents>
+    ArcTypes;
 };
 }
 }

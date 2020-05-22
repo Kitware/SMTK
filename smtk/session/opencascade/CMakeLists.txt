@@ -5,9 +5,15 @@ set(classes
   Session
   Registrar
   Resource
+  Compound
+  CompSolid
   Shape
-  arcs/Children
-  arcs/Parents
+  Solid
+  Shell
+  Face
+  Wire
+  Edge
+  Vertex
 )
 # Operations have header, source, and sbt files:
 set(operators
@@ -18,15 +24,9 @@ set(operators
 )
 # This should be initialized with a list of standalone header files:
 set(headers
-  Compound.h
-  CompSolid.h
-  Solid.h
-  Shell.h
-  Face.h
-  Wire.h
-  Edge.h
-  Vertex.h
   queries/SelectionFootprint.h
+  arcs/ChildrenAs.h
+  arcs/ParentsAs.h
 )
 # This should be initialized with a list of standalone source files:
 set(sources

@@ -10,13 +10,14 @@
 
 #ifndef smtk_session_opencascade_Shape_h
 #define smtk_session_opencascade_Shape_h
-/*!\file */
 
 #include "smtk/graph/Component.h"
 
 #include "smtk/resource/Properties.h"
 
 #include "smtk/session/opencascade/Exports.h"
+
+#include <TopAbs_ShapeEnum.hxx>
 
 class TopoDS_Shape;
 
@@ -40,6 +41,9 @@ public:
 
   smtkTypeMacro(Shape);
   smtkSuperclassMacro(smtk::graph::Component);
+
+  static constexpr decltype(TopAbs_SHAPE) OCC_ShapeType = TopAbs_SHAPE;
+
   Shape(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
     : Component(rsrc)
   {
@@ -68,9 +72,8 @@ public:
   /// Invoke \a visitor on every subshape until visitor returns true (to terminate early).
   void visitSubshapes(Visitor visitor);
 };
+}
+}
+}
 
-} // namespace opencascade
-} // namespace session
-} // namespace smtk
-
-#endif // smtk_session_opencascade_Shape_h
+#endif

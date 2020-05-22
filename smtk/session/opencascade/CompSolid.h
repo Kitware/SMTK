@@ -10,11 +10,6 @@
 
 #ifndef smtk_session_opencascade_CompSolid_h
 #define smtk_session_opencascade_CompSolid_h
-/*!\file */
-
-#include "smtk/graph/Component.h"
-
-#include "smtk/resource/Properties.h"
 
 #include "smtk/session/opencascade/Shape.h"
 
@@ -25,21 +20,30 @@ namespace session
 namespace opencascade
 {
 
-class Resource;
+class Compound;
+class Solid;
 
 class SMTKOPENCASCADESESSION_EXPORT CompSolid : public Shape
 {
 public:
   smtkTypeMacro(CompSolid);
   smtkSuperclassMacro(smtk::session::opencascade::Shape);
+
   CompSolid(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
     : Shape(rsrc)
   {
   }
+
+  std::vector<std::reference_wrapper<const Compound> > compounds() const;
+  bool visitCompounds(const std::function<bool(const Compound&)>& fn) const;
+  bool visitCompounds(const std::function<bool(Compound&)>& fn);
+
+  std::vector<std::reference_wrapper<const Solid> > solids() const;
+  bool visitSolids(const std::function<bool(const Solid&)>& fn) const;
+  bool visitSolids(const std::function<bool(Solid&)>& fn);
 };
+}
+}
+}
 
-} // namespace opencascade
-} // namespace session
-} // namespace smtk
-
-#endif // smtk_session_opencascade_CompSolid_h
+#endif
