@@ -78,6 +78,7 @@ public:
   };
 
   void setPhraseModel(smtk::view::PhraseModelPtr model);
+  smtk::view::PhraseModelPtr phraseModel() const { return m_model; }
 
   QModelIndex index(int row, int column, const QModelIndex& parent) const override;
   QModelIndex parent(const QModelIndex& child) const override;

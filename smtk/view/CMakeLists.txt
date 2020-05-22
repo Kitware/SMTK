@@ -64,9 +64,11 @@ set(viewHeaders
   SelectionObserver.h
   SelectionPhraseModel.h
   SubphraseGenerator.h
+  SubphraseGeneratorFactory.h
   SubphraseGenerator.txx
   SVGIconConstructor.h
   TwoLevelSubphraseGenerator.h
+  ViewWidgetFactory.h
   Configuration.h
   ${jsonViewHeaders}
 )
