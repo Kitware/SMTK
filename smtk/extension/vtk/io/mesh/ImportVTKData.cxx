@@ -72,29 +72,65 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
       ctype = smtk::mesh::Vertex;
       break;
     case VTK_LINE:
+    case VTK_QUADRATIC_EDGE:
+    case VTK_CUBIC_LINE:
+    case VTK_PARAMETRIC_CURVE:
+    case VTK_HIGHER_ORDER_EDGE:
+    case VTK_LAGRANGE_CURVE:
       ctype = smtk::mesh::Line;
       break;
     case VTK_TRIANGLE:
+    case VTK_QUADRATIC_TRIANGLE:
+    case VTK_BIQUADRATIC_TRIANGLE:
+    case VTK_PARAMETRIC_TRI_SURFACE:
+    case VTK_HIGHER_ORDER_TRIANGLE:
+    case VTK_LAGRANGE_TRIANGLE:
       ctype = smtk::mesh::Triangle;
       break;
     case VTK_QUAD:
     case VTK_PIXEL:
+    case VTK_QUADRATIC_QUAD:
+    case VTK_BIQUADRATIC_QUAD:
+    case VTK_QUADRATIC_LINEAR_QUAD:
+    case VTK_PARAMETRIC_QUAD_SURFACE:
+    case VTK_HIGHER_ORDER_QUAD:
+    case VTK_LAGRANGE_QUADRILATERAL:
       ctype = smtk::mesh::Quad;
       break;
     case VTK_POLYGON:
+    case VTK_QUADRATIC_POLYGON:
+    case VTK_HIGHER_ORDER_POLYGON:
       ctype = smtk::mesh::Polygon;
       break;
     case VTK_TETRA:
+    case VTK_QUADRATIC_TETRA:
+    case VTK_PARAMETRIC_TETRA_REGION:
+    case VTK_HIGHER_ORDER_TETRAHEDRON:
+    case VTK_LAGRANGE_TETRAHEDRON:
       ctype = smtk::mesh::Tetrahedron;
       break;
     case VTK_PYRAMID:
+    case VTK_QUADRATIC_PYRAMID:
+    case VTK_HIGHER_ORDER_PYRAMID:
+    case VTK_LAGRANGE_PYRAMID:
       ctype = smtk::mesh::Pyramid;
       break;
     case VTK_WEDGE:
+    case VTK_QUADRATIC_WEDGE:
+    case VTK_QUADRATIC_LINEAR_WEDGE:
+    case VTK_BIQUADRATIC_QUADRATIC_WEDGE:
+    case VTK_HIGHER_ORDER_WEDGE:
+    case VTK_LAGRANGE_WEDGE:
       ctype = smtk::mesh::Wedge;
       break;
     case VTK_HEXAHEDRON:
     case VTK_VOXEL:
+    case VTK_QUADRATIC_HEXAHEDRON:
+    case VTK_TRIQUADRATIC_HEXAHEDRON:
+    case VTK_BIQUADRATIC_QUADRATIC_HEXAHEDRON:
+    case VTK_PARAMETRIC_HEX_REGION:
+    case VTK_HIGHER_ORDER_HEXAHEDRON:
+    case VTK_LAGRANGE_HEXAHEDRON:
       ctype = smtk::mesh::Hexahedron;
       break;
     default:

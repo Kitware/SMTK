@@ -18,7 +18,14 @@
 #include "smtk/geometry/Generator.h"
 
 #include <vtkCompositeDataSet.h>
+#include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
+
+namespace
+{
+constexpr bool Support_Higher_Order_Cells = true;
+}
 
 namespace smtk
 {
@@ -53,7 +60,28 @@ void Geometry::queryGeometry(
   // Convert the meshset into a vtkPolyData
   smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
   entry.m_geometry = vtkSmartPointer<vtkPolyData>::New();
-  exportVTKData(component->mesh(), vtkPolyData::SafeDownCast(entry.m_geometry));
+
+  if (Support_Higher_Order_Cells)
+  {
+    // To support higher order cells, we must first convert our mesh into an
+    // unstructured grid and then skin it to get vtkPolyData. vtkPolyData only
+    // supports a subset of linear cells.
+    //
+    // TODO: modify smtk::extension::vtk::io::mesh::ExportVTKData to correctly
+    //       convert smtk::mesh meshes with higher order elements into
+    //       vtkPolyData.
+
+    vtkNew<vtkUnstructuredGrid> ugrid;
+    exportVTKData(component->mesh(), ugrid);
+    vtkNew<vtkDataSetSurfaceFilter> geometryFilter;
+    geometryFilter->SetInputData(ugrid);
+    geometryFilter->Update();
+    entry.m_geometry->ShallowCopy(geometryFilter->GetOutput());
+  }
+  else
+  {
+    exportVTKData(component->mesh(), vtkPolyData::SafeDownCast(entry.m_geometry));
+  }
 
   ++entry.m_generation;
 

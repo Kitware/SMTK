@@ -97,12 +97,12 @@ bool BufferedCellAllocator::addCell(
     return false;
   }
 
-  if (ctype != m_activeCellType || (ctype == smtk::mesh::Polygon && nCoordinates != m_nCoords))
+  if (ctype != m_activeCellType || nCoordinates != m_nCoords)
   {
     m_validState = this->flush();
     m_activeCellType = ctype;
-    m_nCoords = ctype != smtk::mesh::Polygon ? smtk::mesh::verticesPerCell(ctype)
-                                             : static_cast<int>(nCoordinates);
+    m_nCoords =
+      nCoordinates != 0 ? static_cast<int>(nCoordinates) : smtk::mesh::verticesPerCell(ctype);
   }
 
   assert(m_activeCellType != smtk::mesh::CellType_MAX);
