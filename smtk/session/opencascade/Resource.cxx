@@ -11,6 +11,9 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/session/opencascade/Resource.h"
+#include "smtk/session/opencascade/queries/SelectionFootprint.h"
+
+#include "smtk/resource/query/Queries.h"
 
 #include <BRep_Builder.hxx>
 
@@ -21,11 +24,17 @@ namespace session
 namespace opencascade
 {
 
+namespace
+{
+using QueryTypes = std::tuple<SelectionFootprint>;
+}
+
 Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager)
   : Superclass(uid, manager)
 {
   BRep_Builder aBuilder;
   aBuilder.MakeCompound(m_compound);
+  this->queries().registerQueries<QueryTypes>();
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
@@ -33,6 +42,7 @@ Resource::Resource(smtk::resource::ManagerPtr manager)
 {
   BRep_Builder aBuilder;
   aBuilder.MakeCompound(m_compound);
+  this->queries().registerQueries<QueryTypes>();
 }
 
 void Resource::setSession(const Session::Ptr& session)

@@ -19,6 +19,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/attribute/queries/SelectionFootprint.h"
 
 #include "smtk/model/Resource.h"
 
@@ -37,14 +38,21 @@ using namespace smtk::attribute;
 constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
 constexpr smtk::resource::Links::RoleType Resource::ReferenceRole;
 
+namespace
+{
+using QueryList = std::tuple<SelectionFootprint>;
+}
+
 Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(myID, manager)
 {
+  queries().registerQueries<QueryList>();
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(manager)
 {
+  queries().registerQueries<QueryList>();
 }
 
 Resource::~Resource()

@@ -33,6 +33,7 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
+#include "smtk/model/queries/SelectionFootprint.h"
 
 #include "smtk/mesh/core/Resource.h"
 
@@ -68,6 +69,11 @@ namespace model
 constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
 constexpr smtk::resource::Links::RoleType Resource::TessellationRole;
 
+namespace
+{
+using QueryList = std::tuple<SelectionFootprint>;
+}
+
 /**@name Constructors and destructors.
   *\brief Model resource instances should always be created using the static create() method.
   *
@@ -84,6 +90,7 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
+  this->queries().registerQueries<QueryList>();
   this->properties().insertPropertyType<smtk::common::UUID>();
 }
 
@@ -97,6 +104,7 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
+  this->queries().registerQueries<QueryList>();
   this->properties().insertPropertyType<smtk::common::UUID>();
 }
 
@@ -112,6 +120,7 @@ Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTes
   , m_sessions(new UUIDsToSessions)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
+  this->queries().registerQueries<QueryList>();
   this->properties().insertPropertyType<smtk::common::UUID>();
 }
 

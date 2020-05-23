@@ -15,6 +15,7 @@ set(geometryHeaders
   queries/ClosestPoint.h
   queries/DistanceTo.h
   queries/RandomPoint.h
+  queries/SelectionFootprint.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

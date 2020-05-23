@@ -20,6 +20,7 @@
 #include "smtk/resource/PersistentObject.h"
 #include "smtk/resource/ResourceLinks.h"
 
+#include "smtk/resource/query/BadTypeError.h"
 #include "smtk/resource/query/Queries.h"
 
 #include <string>
@@ -211,6 +212,31 @@ Collection Resource::findAs(const std::string& queryString) const
   this->visit(visitor);
 
   return col;
+}
+
+/// Given an object, return a query for interrogating it.
+///
+/// This method will test whether the object is a resource
+/// (in which case it asks the resource to construct the query)
+/// or a component (in which case it asks the component's
+/// owning resource to construct the query).
+template <typename QueryType>
+SMTKCORE_EXPORT QueryType& queryForObject(const PersistentObject& object)
+{
+  auto resource = dynamic_cast<const Resource*>(&object);
+  if (!resource)
+  {
+    const auto component = dynamic_cast<const Component*>(&object);
+    if (component)
+    {
+      resource = component->resource().get();
+    }
+  }
+  if (resource)
+  {
+    return resource->queries().get<QueryType>();
+  }
+  throw query::BadTypeError(smtk::common::typeName<QueryType>());
 }
 }
 }

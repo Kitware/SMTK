@@ -181,6 +181,29 @@ void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* so
           return false;
         }
 
+        // Do not erase a selection the user just made in the render view
+        // just because the ParaView pipeline port changed in response!
+        bool alreadyHasResourceAtLeastPartiallySelected = false;
+        seln->visitSelection([&activeResources, &alreadyHasResourceAtLeastPartiallySelected](
+          smtk::resource::PersistentObjectPtr obj, int val) {
+          if (activeResources.find(obj) != activeResources.end() && val != 0)
+          {
+            alreadyHasResourceAtLeastPartiallySelected = true;
+          }
+          else
+          {
+            auto comp = dynamic_pointer_cast<smtk::resource::Component>(obj);
+            if (comp && activeResources.find(comp->resource()) != activeResources.end() && val != 0)
+            {
+              alreadyHasResourceAtLeastPartiallySelected = true;
+            }
+          }
+        });
+        if (alreadyHasResourceAtLeastPartiallySelected)
+        {
+          return false;
+        }
+
         int value = seln->selectionValueFromLabel(m_selectionValue);
         seln->modifySelection(activeResources, "pqSMTKPipelineSelectionBehavior", value,
           smtk::view::SelectionAction::UNFILTERED_REPLACE, true);

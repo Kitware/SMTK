@@ -3,6 +3,7 @@
 ################################################################################
 set(unit_tests
   TestGeometry.cxx
+  TestSelectionFootprint.cxx
 )
 
 smtk_unit_tests(

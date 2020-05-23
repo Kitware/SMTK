@@ -26,6 +26,7 @@ set(headers
   Wire.h
   Edge.h
   Vertex.h
+  queries/SelectionFootprint.h
 )
 # This should be initialized with a list of standalone source files:
 set(sources
