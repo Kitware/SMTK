@@ -126,7 +126,6 @@ if (SPHINX_FOUND)
     userguide/model/user-interface.rst
     userguide/model/concepts.rst
     userguide/model/operators.rst
-    userguide/model/session-cgm.rst
     userguide/model/session-discrete.rst
     userguide/model/session-exodus.rst
     userguide/view/index.rst

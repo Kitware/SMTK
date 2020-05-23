@@ -23,15 +23,17 @@ In order to build SMTK you must have
  + Visual Studio 2013 64 bit or newer
 + [CMake](http://cmake.org) 3.5 or newer
 + [Boost](http://boost.org) 1.60.0 or newer
++ [MOAB](https://bitbucket.org/fathomteam/moab),
+  (optionally built with
+  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
+  for importing and exporting mesh files).
 
 
 We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 
 You may optionally provide
 
-+ [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer,
-  built with
-  [OpenCascade](http://opencascade.org/) for importing CAD models;
++ [OpenCascade](http://opencascade.org/) 7.4.0 or newer for importing CAD models;
 + [Python](http://python.org) version 2.7.3 or newer and
   [Pybind11](http://github.com/pybind/pybind11), for Python wrappings of
   SMTK's C++ classes;
@@ -43,10 +45,6 @@ You may optionally provide
 + [ParaView](http://paraview.org) version 4.3 or newer,
   or [VTK](http://VTK.org) version 6.2 or newer,
   for graphical presentation and selection of geometric models.
-+ [MOAB](https://bitbucket.org/fathomteam/moab),
-  built with
-  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
-  for importing and exporting mesh files.
 
 If you want to build the documentation you will need
 
@@ -87,8 +85,8 @@ To begin:
     cmake -G Ninja -DSMTK_DATA_DIR:PATH=/data/SMTK /source/SMTK
 
 At this point, CMake will likely complain that you are missing Boost.
-It will also default to not build python wrappings, Qt, VTK, or CGMA
-functionality since those require optional dependencies.
+It will also default to not build python wrappings, Qt, VTK, ParaView,
+or OpenCASCADE functionality since those require optional dependencies.
 To change these defaults and specify where Boost is located, you may
 do any of the following:
 

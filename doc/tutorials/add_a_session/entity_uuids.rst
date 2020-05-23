@@ -27,7 +27,7 @@ UUIDs:
    Note that it is important to verify that attributes
    can be stored on all the entities you wish SMTK to be
    able to track.
-   For instance, CGM does not provide a way to store
+   For instance, OpenCASCADE does not provide a way to store
    attributes on "use" records or on loops and shells.
    This means we must use another method if we want
    to preserve UUIDs assigned to these entities.
@@ -40,16 +40,19 @@ UUIDs:
    "restore" a modeling session so that the same files
    are loaded on the server and the UUIDs preserved.
 
-The Exodus session follows the first approach and
+The VTK session follows the first approach and
 expects UUIDs to be saved as field-data
 on each data object to be represented in SMTK.
 To accelerate lookups of UUIDs,
-the Exodus session stores the UUID as a string value
+the VTK session stores the UUID as a string value
 on each :cxx:`vtkDataObject`'s information object using the :cxx:`SMTK_UUID_KEY` key.
+It uses a method provided by SMTK's VTK-based rendering
+support to fetch and store UUIDs so that picking can be
+coordinated with VTK.
 
-.. literalinclude:: ../../../smtk/session/exodus/ReadOperator.cxx
-   :start-after: // ++ 1 ++
-   :end-before: // -- 1 --
+.. literalinclude:: ../../../smtk/session/vtk/Session.cxx
+   :start-after: // ++ 13 ++
+   :end-before: // -- 13 --
 
 The advantage to the first approach is that modeling
 kernels with attribute resources generally provide a way
@@ -69,7 +72,7 @@ as will the input parameter of the inverse method that
 returns a UUID given a foreign entity;
 for our example, we've created a new type named :cxx:`EntityHandle`.
 
-.. literalinclude:: ../../../smtk/session/exodus/Session.h
+.. literalinclude:: ../../../smtk/session/vtk/Session.h
    :start-after: // ++ 2 ++
    :end-before: // -- 2 --
 
@@ -108,7 +111,7 @@ from inputs to corresponding outputs, so (for filters that support
 pedigree IDs) VTK behaves much like an attribute resource in a geometric
 modeling kernel.
 
-If we ever expose individual points and cells in the SMTK Exodus session,
+If we ever expose individual points and cells in the SMTK VTK session,
 we could search for point- and cell-data arrays containing UUIDs.
 Currently, we only search for field data specifying the UUID of a dataset
 as shown above.
@@ -128,26 +131,12 @@ traversal order, then you should
 1. store the arrays in your session class in the proper order and use
    them to perform the lookups.
 
-2. subclass :smtk:`SessionIOJSON <smtk::model::SessionIOJSON>` in order to preserve the UUID arrays.
-   The Exodus session illustrates how to do this but does not currently
+2. write from_json and to_json functions for your resource
+   that serialize information beyond what native file formats can accommodate,
+   including UUIDs.
+   The VTK session illustrates how to do this but does not currently
    export any session information.
 
-   The Exodus session class provides a method to create an IO delegate:
-
-   .. literalinclude:: ../../../smtk/session/exodus/Session.cxx
-      :start-after: // ++ 12 ++
-      :end-before: // -- 12 --
-
-   The IO delegate class is then implemented to provide methods for
-   importing and exporting session-specific information:
-
-   .. literalinclude:: ../../../smtk/session/exodus/SessionExodusIOJSON.h
-      :start-after: // ++ 1 ++
-      :end-before: // -- 1 --
-
-Note that you can use the :smtk:`smtk::session::exodus::SessionIOJSON` class
-to import and export information other than UUID arrays, should the session
-store some other state that should be preserved across processes.
 
 Summary
 -------

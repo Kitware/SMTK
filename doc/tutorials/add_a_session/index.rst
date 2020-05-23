@@ -40,4 +40,3 @@ obtain a tessellation for each element block, side set, and node set.
    session_subclass.rst
    transcribing.rst
    operators.rst
-   troubleshooting.rst
