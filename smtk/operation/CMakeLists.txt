@@ -11,6 +11,7 @@ set(operationSrcs
   XMLOperation.cxx
 
   groups/CreatorGroup.cxx
+  groups/DeleterGroup.cxx
   groups/ImporterGroup.cxx
   groups/InternalGroup.cxx
   groups/ExporterGroup.cxx
@@ -38,6 +39,7 @@ set(operationHeaders
   XMLOperation.h
 
   groups/CreatorGroup.h
+  groups/DeleterGroup.h
   groups/ImporterGroup.h
   groups/InternalGroup.h
   groups/ExporterGroup.h

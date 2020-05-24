@@ -27,6 +27,7 @@
 #include "smtk/model/operators/SetInstancePrototype.h"
 #include "smtk/model/operators/TerrainExtraction.h"
 
+#include "smtk/operation/groups/DeleterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
 
 #include <tuple>
@@ -49,6 +50,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::InternalGroup internalGroup(operationManager);
   internalGroup.registerOperation<Delete>();
+  smtk::operation::DeleterGroup deleters(operationManager);
+  deleters.registerOperation<Delete>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
@@ -57,6 +60,8 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   smtk::operation::InternalGroup internalGroup(operationManager);
   internalGroup.unregisterOperation<Delete>();
+  smtk::operation::DeleterGroup deleters(operationManager);
+  deleters.unregisterOperation<Delete>();
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)

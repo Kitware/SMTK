@@ -45,6 +45,10 @@ add_executable(benchmarkModel benchmarkModel.cxx)
 target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 #add_test(NAME benchmarkModel COMMAND benchmarkModel)
 
+set(unit_tests
+  unitDeleterGroup
+)
+
 ################################################################################
 # Tests that require SMTK_DATA_DIR
 ################################################################################
@@ -78,7 +82,7 @@ set(external_libs ${Boost_LIBRARIES})
 
 smtk_unit_tests(
   LABEL "Model"
-  # SOURCES ${unit_tests}
+  SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore smtkCoreModelTesting ${additional_libs} ${external_libs}
 )
