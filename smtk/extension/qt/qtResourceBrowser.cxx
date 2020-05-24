@@ -28,6 +28,11 @@
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Resource.h"
 
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/groups/DeleterGroup.h"
+
+#include "smtk/attribute/Attribute.h"
+
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -415,6 +420,52 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
           // phrase->setRelatedVisibility(toggleTo);
         }
         return true;
+      }
+    }
+    else if (evt->key() == Qt::Key_Backspace || evt->key() == Qt::Key_Delete)
+    {
+      auto operationManager = m_p->m_phraseModel->operationManager();
+      if (operationManager)
+      {
+        auto selected = m_p->m_view->selectionModel()->selection();
+        std::set<smtk::resource::PersistentObjectPtr> objects;
+        for (const auto& idx : selected.indexes())
+        {
+          auto phrase = idx.data(qtDescriptivePhraseModel::PhrasePtrRole)
+                          .value<smtk::view::DescriptivePhrase::Ptr>();
+          if (phrase && phrase->relatedObject())
+          {
+            objects.insert(phrase->relatedObject());
+          }
+        }
+        smtk::operation::DeleterGroup deleters(operationManager);
+        while (!objects.empty())
+        {
+          std::set<smtk::resource::PersistentObjectPtr> candidates;
+          smtk::operation::OperationPtr op;
+          for (const auto& object : objects)
+          {
+            if (!op)
+            {
+              auto index = deleters.matchingOperation(*object);
+              op = operationManager->create(index);
+            }
+            if (op && op->parameters()->associate(object))
+            {
+              candidates.insert(object);
+            }
+          }
+          for (const auto& object : candidates)
+          {
+            objects.erase(object);
+          }
+          if (!op)
+          {
+            // No operation was found for anything selected and unprocessed.
+            break;
+          }
+          operationManager->launchers()(op);
+        }
       }
     }
   }
