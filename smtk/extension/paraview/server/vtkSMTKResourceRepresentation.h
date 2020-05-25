@@ -297,7 +297,7 @@ public:
 
   /// A helper used by ApplyDefaultStyle to handle a single component.
   bool SelectComponentFootprint(
-    smtk::resource::PersistentObjectPtr item, int selnBits, RenderableDataMap& renderables);
+    smtk::resource::PersistentObject* item, int selnBits, RenderableDataMap& renderables);
 
   /// A helper used by ApplyDefaultStyle to handle model entity components.
   bool SelectComponentFootprint(

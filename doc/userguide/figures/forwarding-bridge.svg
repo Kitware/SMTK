@@ -413,7 +413,7 @@
          y="205.56483"
          x="510.21936"
          id="tspan3847"
-         sodipodi:role="line">CGM/other Session</tspan></text>
+         sodipodi:role="line">OCC/other Session</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3849"
@@ -435,7 +435,7 @@
          sodipodi:role="line"
          id="tspan3855"
          x="570.21936"
-         y="265.56482">CGM/other Kernel</tspan></text>
+         y="265.56482">OCC/other Kernel</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow2Mstart);marker-end:url(#DotS)"
        d="m 500.46189,265.92167 8.38889,16.44234"

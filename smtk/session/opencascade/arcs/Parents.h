@@ -65,7 +65,7 @@ public:
         .contains(lhs.id());
     }
 
-    void visit(const FromType& lhs) const {}
+    void visit(const FromType& lhs) const { (void)lhs; }
   };
 
 private:

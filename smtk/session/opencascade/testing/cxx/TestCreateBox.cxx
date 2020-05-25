@@ -27,7 +27,7 @@
 
 #include "smtk/operation/Manager.h"
 
-int TestCreateBox(int argc, char* argv[])
+int TestCreateBox(int, char* [])
 {
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();

@@ -165,3 +165,31 @@ to fetch geometry and convert it into something the rendering backend can use.
 In this way, it is possible for one backend to use providers originally written
 for different backends. As an example, a VTK-m backend might include an adaptor
 for dealing with providers that can supply VTK data objects.
+
+Geometric queries
+-----------------
+
+SMTK's geometry system provides abstract :smtk:`Query <smtk::resource::Query>`
+objects that define consistent APIs for several common geometric queries:
+
+:smtk:`Bounding box <smtk::geometry::BoundingBox>`
+  which returns axis-aligned bounds for objects with geometry.
+
+:smtk:`Closest point <smtk::geometry::ClosestPoint>`
+  which identifies, for a provided (x,y,z) location, the closest modeled
+  point on an object with geometry. This will always "snap" to the nearest
+  point on the component's discretization instead of choosing the absolutely
+  closest point.
+
+:smtk:`Distance to <smtk::geometry::DistanceTo>`
+  which computes the distance from a provided (x,y,z) location to the closest
+  point on an object with geometry. Unlike the closest-point query, this query
+  will return points that are not points in the discretization of the objects.
+
+:smtk:`Random point <smtk::geometry::RandomPoint>`
+  which computes random point on a geometric resource component.
+
+:smtk:`Selection footprint <smtk::geometry::SelectionFootprint>`
+  which is used by the ParaView user-interface components of SMTK to determine
+  what entities should be highlighted when a selected entity does not have any
+  renderable geometry itself (but has children that do have geometry).

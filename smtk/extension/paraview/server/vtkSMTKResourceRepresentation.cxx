@@ -42,6 +42,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
+#include "smtk/extension/vtk/geometry/Backend.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
@@ -55,8 +56,12 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/geometry/queries/SelectionFootprint.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/query/BadTypeError.h"
+#include "smtk/resource/query/Queries.h"
 
 #include "smtk/view/Selection.h"
 
@@ -649,24 +654,42 @@ bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr s
       continue;
     }
 
-    // If the item is an attribute, it will not be directly renderable,
-    // so preview its associated entities.
-    attr = std::dynamic_pointer_cast<smtk::attribute::Attribute>(item.first);
-    if (attr)
+    // If the selected item is a resource, ask for its footprint directly.
+    std::unordered_set<smtk::resource::PersistentObject*> footprint;
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(item.first);
+    if (resource)
     {
-      auto assoc = attr->associations();
-      if (assoc)
+      if (resource->queries().contains<smtk::geometry::SelectionFootprint>())
       {
-        assoc->visit([&](const smtk::resource::PersistentObjectPtr& obj) {
-          atLeastOneSelected |=
-            self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
-          return true;
-        });
+        auto& query = resource->queries().get<smtk::geometry::SelectionFootprint>();
+        query(*resource, footprint, smtk::extension::vtk::geometry::Backend());
+      }
+      else
+      {
+        // resource has no footprint query. Try inserting the resource itself.
+        footprint.insert(resource.get());
       }
     }
-    else
+
+    // If the selected item is a component, ask its resource for the footprint.
+    auto component = std::dynamic_pointer_cast<smtk::resource::Component>(item.first);
+    if (component)
     {
-      atLeastOneSelected |= self->SelectComponentFootprint(item.first, item.second, renderables);
+      if (component->resource()->queries().contains<smtk::geometry::SelectionFootprint>())
+      {
+        auto& query = component->resource()->queries().get<smtk::geometry::SelectionFootprint>();
+        query(*component, footprint, smtk::extension::vtk::geometry::Backend());
+      }
+      else
+      {
+        // component has no footprint query. Try inserting the component itself.
+        footprint.insert(component.get());
+      }
+    }
+
+    for (const auto& obj : footprint)
+    {
+      atLeastOneSelected |= self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
     }
   }
 
@@ -674,7 +697,7 @@ bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr s
 }
 
 bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
-  smtk::resource::PersistentObjectPtr item, int selnBits, RenderableDataMap& renderables)
+  smtk::resource::PersistentObject* item, int selnBits, RenderableDataMap& renderables)
 {
   bool atLeastOneSelected = false;
   if (!item)
@@ -706,77 +729,6 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
   {
     this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, isGlyphed);
     atLeastOneSelected |= !hidden;
-  }
-  else
-  {
-    // The component does not have any geometry of its own... but perhaps
-    // we can render its children highlighted instead.
-    auto ent = item->as<smtk::model::Entity>();
-    if (ent)
-    {
-      if (ent->isGroup())
-      {
-        auto members = smtk::model::Group(ent).members<smtk::model::EntityRefs>();
-        atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
-      }
-      else if (ent->isModel())
-      {
-        auto model = smtk::model::Model(ent);
-        auto cells = model.cellsAs<smtk::model::EntityRefs>();
-        for (const auto& cell : cells)
-        {
-          // If the cell has no geometry, then add its boundary cells.
-          if (renderables.find(cell.entity()) == renderables.end())
-          {
-            auto bdys = smtk::model::CellEntity(cell).boundingCellsAs<smtk::model::EntityRefs>();
-            cells.insert(bdys.begin(), bdys.end());
-          }
-        }
-        atLeastOneSelected |= this->SelectComponentFootprint(cells, selnBits, renderables);
-
-        auto groups = model.groups();
-        for (const auto& group : groups)
-        {
-          auto members = group.members<smtk::model::EntityRefs>();
-          atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
-        }
-
-        // TODO: Auxiliary geometry may also be handled by a separate representation.
-        //       Need to ensure that representation also renders selection properly.
-        auto auxGeoms = model.auxiliaryGeometry();
-        // Convert auxGeoms to EntityRefs to match SelectComponentFootprint() API:
-        smtk::model::EntityRefs auxEnts;
-        for (const auto& auxGeom : auxGeoms)
-        {
-          auxEnts.insert(auxGeom);
-        }
-        atLeastOneSelected |= this->SelectComponentFootprint(auxEnts, selnBits, renderables);
-      }
-      else if (ent->isCellEntity())
-      {
-        auto bdys = smtk::model::CellEntity(ent).boundingCellsAs<smtk::model::EntityRefs>();
-        atLeastOneSelected |= this->SelectComponentFootprint(bdys, selnBits, renderables);
-      }
-    }
-  }
-  return atLeastOneSelected;
-}
-
-bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
-  const smtk::model::EntityRefs& items, int selnBits, RenderableDataMap& renderables)
-{
-  bool atLeastOneSelected = false;
-  auto& smap = this->GetComponentState();
-  for (const auto& item : items)
-  {
-    auto dataIt = renderables.find(item.entity());
-    auto cstate = smap.find(item.entity());
-    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
-    if (dataIt != renderables.end())
-    {
-      this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, item.isInstance());
-      atLeastOneSelected |= !hidden;
-    }
   }
   return atLeastOneSelected;
 }

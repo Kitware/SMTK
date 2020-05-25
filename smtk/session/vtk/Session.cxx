@@ -519,6 +519,7 @@ bool Session::ensureChildParentMapEntry(
     .second;
 }
 
+// ++ 13 ++
 smtk::common::UUID Session::uuidOfHandleObject(vtkDataObject* obj) const
 {
   smtk::common::UUID uid;
@@ -535,6 +536,7 @@ smtk::common::UUID Session::uuidOfHandleObject(vtkDataObject* obj) const
   }
   return uid;
 }
+// -- 13 --
 
 /**\brief Return a delegate to export session-specific data.
   *

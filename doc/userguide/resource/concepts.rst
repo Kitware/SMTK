@@ -52,3 +52,26 @@ In addition to these useful base classes,
   resources and components; on the resource, the properties subclass
   provides actual storage, while on components, the subclass asks its
   parent resource for the properties object to search for values.
+
+:smtk:`Queries <smtk::resource::Queries>`
+  Resources hold a container of relevant :smtk:`Query <smtk::resource::Query>` objects.
+  Queries prevent the resource or component classes from growing large APIs
+  and internal state by splitting methods that perform queries — such as
+  identifying the spatial bounds of a mesh or model object, finding the closest point
+  on a mesh or model component to some location in space, etc. — into separate
+  classes that are easy to create and invoke.
+
+  Furthermore, query objects can inherit their API from other queries, so it is
+  possible to provide a uniform API with different implementations for each
+  resource type.
+
+  Queries may also need to store state in order to be performed efficiently.
+  A good example is :smtk:`closest-point searches <smtk::geometry::ClosestPoint>`;
+  usually many queries of this type are performed in a batch and a point locator
+  structure is built to accelerate the query.
+  The cache should outlive the query object, which is usually constructed on the
+  fly by an algorithm, but also be marked dirty when the resource's components are
+  modified. The Queries object owned by each resource provides a container for
+  cache objects that individual Query objects may use. Multiple query classes can
+  share the same cache object (e.g., ClosestPoint and ClosestCell might both use
+  a PointLocator cache object).

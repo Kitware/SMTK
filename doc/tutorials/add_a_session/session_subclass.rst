@@ -64,7 +64,7 @@ and node sets).
 The :cxx:`toEntity` and :cxx:`toEntityRef` methods do this and will
 be discussed in more detail in the next section.
 Depending on your modeling kernel, you may use an existing type
-from the foreign modeler (like the CGM session does) or a new class
+from the foreign modeler (like the OpenCASCADE session does) or a new class
 like the :cxx:`EntityHandle` class in our example.
 
 Now that we have defined a mapping between UUIDs
