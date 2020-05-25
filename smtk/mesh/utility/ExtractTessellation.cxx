@@ -34,12 +34,13 @@ namespace utility
 namespace detail
 {
 
-inline unsigned char smtkToSMTKCell(smtk::mesh::CellType t)
+inline unsigned char smtkToSMTKCell(smtk::mesh::CellType t, int numPts)
 {
+  (void)numPts;
   return t;
 }
 
-inline unsigned char smtkToVTKCell(smtk::mesh::CellType t)
+inline unsigned char smtkToVTKCell(smtk::mesh::CellType t, int numPts)
 {
   unsigned char ctype = 0; //VTK_EMPTY_CELL
   switch (t)
@@ -48,28 +49,28 @@ inline unsigned char smtkToVTKCell(smtk::mesh::CellType t)
       ctype = 1; //VTK_VERTEX
       break;
     case smtk::mesh::Line:
-      ctype = 3; //VTK_LINE
+      ctype = (numPts == 2 ? 3 : 68); //VTK_LINE or VTK_LAGRANGE_CURVE
       break;
     case smtk::mesh::Triangle:
-      ctype = 5; //VTK_TRIANGLE
+      ctype = (numPts == 3 ? 5 : 69); //VTK_TRIANGLE or VTK_LAGRANGE_TRIANGLE
       break;
     case smtk::mesh::Quad:
-      ctype = 9; //VTK_QUAD
+      ctype = (numPts == 4 ? 9 : 70); //VTK_QUAD or VTK_LAGRANGE_QUADRILATERAL
       break;
     case smtk::mesh::Polygon:
       ctype = 7; //VTK_POLYGON
       break;
     case smtk::mesh::Tetrahedron:
-      ctype = 10; //VTK_TETRA
+      ctype = (numPts == 4 ? 10 : 71); //VTK_TETRA or VTK_LAGRANGE_TETRAHEDRON
       break;
     case smtk::mesh::Pyramid:
-      ctype = 14; //VTK_PYRAMID
+      ctype = (numPts == 5 ? 14 : 74); //VTK_PYRAMID or VTK_LAGRANGE_PYRAMID
       break;
     case smtk::mesh::Wedge:
-      ctype = 13; //VTK_WEDGE
+      ctype = (numPts == 6 ? 13 : 75); //VTK_WEDGE or VTK_LAGRANGE_WEDGE
       break;
     case smtk::mesh::Hexahedron:
-      ctype = 12; //VTK_HEXAHEDRON
+      ctype = (numPts == 8 ? 12 : 72); //VTK_HEXAHEDRON or VTK_LAGRANGE_HEXAHEDRON
       break;
     default:
       ctype = 0; //VTK_EMPTY_CELL
@@ -349,7 +350,8 @@ void extractTessellationInternal(
   if (fetch_cellLocations)
   {
     //determine the function pointer to use for the cell type conversion
-    unsigned char (*convertCellTypeFunction)(smtk::mesh::CellType t) = detail::smtkToSMTKCell;
+    unsigned char (*convertCellTypeFunction)(smtk::mesh::CellType t, int numPts) =
+      detail::smtkToSMTKCell;
     if (tess.m_useVTKCellTypes)
     {
       convertCellTypeFunction = detail::smtkToVTKCell;
@@ -382,7 +384,7 @@ void extractTessellationInternal(
         tess.m_connectivity[conn_index + i] = pointMap[pointIds[i]];
       }
 
-      tess.m_cellTypes[index] = convertCellTypeFunction(ctype);
+      tess.m_cellTypes[index] = convertCellTypeFunction(ctype, numPts);
     }
   }
   else
