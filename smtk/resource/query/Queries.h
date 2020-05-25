@@ -102,14 +102,22 @@ public:
   {
     std::size_t index = m_factory.indexFor<QueryType>();
 
+    // Attempt to access an existing query object.
     try
     {
       return static_cast<QueryType&>(m_queries.get(index));
     }
     catch (BadTypeError&)
     {
+      // If none is found, attempt to create a new one.
       auto& queries = m_queries.data();
-      auto inserted = queries.emplace(std::make_pair(index, m_factory.create(index))).first;
+      auto query = m_factory.create(index);
+      // If one cannot be created, rethrow.
+      if (!query)
+      {
+        throw;
+      }
+      auto inserted = queries.emplace(std::make_pair(index, std::move(query))).first;
       return static_cast<QueryType&>(*(inserted->second));
     }
   }
