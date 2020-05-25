@@ -48,15 +48,8 @@ public:
   using Group::registerOperation;
   using Group::unregisterOperation;
 
-  // Given an object return an operation that can delete it.
+  /// Given an object return an operation that can delete it.
   Operation::Index matchingOperation(const smtk::resource::PersistentObject& obj) const;
-
-  bool operationAcceptsObject(
-    const Operation::Index& index, const smtk::resource::PersistentObject& obj) const;
-
-protected:
-  smtk::attribute::ConstReferenceItemDefinitionPtr operationAssociationsRule(
-    const Operation::Index& index) const;
 };
 }
 }

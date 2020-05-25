@@ -17,6 +17,7 @@
 #include "smtk/operation/SpecificationOps.h"
 
 #include <cassert>
+#include <limits>
 
 namespace smtk
 {
@@ -25,52 +26,22 @@ namespace operation
 
 Operation::Index DeleterGroup::matchingOperation(const smtk::resource::PersistentObject& obj) const
 {
-  Operation::Index index;
+  Operation::Index index = 0;
+  std::size_t indexGen = std::numeric_limits<std::size_t>::max();
   for (const auto& candidate : this->operations())
   {
-    if (this->operationAcceptsObject(candidate, obj))
+    std::size_t gen = this->operationObjectDistance(candidate, obj);
+    if (gen < indexGen)
     {
-      // TODO: We could wait and see if other candidates match better.
+      indexGen = gen;
       index = candidate;
-      break;
+      if (gen == 0)
+      { // This is the most exact
+        break;
+      }
     }
   }
   return index;
-}
-
-bool DeleterGroup::operationAcceptsObject(
-  const Operation::Index& index, const smtk::resource::PersistentObject& obj) const
-{
-  auto assocRule = this->operationAssociationsRule(index);
-  bool acceptable = assocRule && assocRule->isValueValid(obj.shared_from_this());
-  return acceptable;
-}
-
-smtk::attribute::ConstReferenceItemDefinitionPtr DeleterGroup::operationAssociationsRule(
-  const Operation::Index& index) const
-{
-  using smtk::attribute::ConstReferenceItemDefinitionPtr;
-  auto manager = m_manager.lock();
-  if (manager == nullptr)
-  {
-    return ConstReferenceItemDefinitionPtr();
-  }
-
-  auto metadata = manager->metadata().get<IndexTag>().find(index);
-  if (metadata == manager->metadata().get<IndexTag>().end())
-  {
-    return ConstReferenceItemDefinitionPtr();
-  }
-
-  Operation::Specification spec = specification(metadata->typeName());
-  if (spec == nullptr)
-  {
-    return ConstReferenceItemDefinitionPtr();
-  }
-
-  Operation::Definition parameterDefinition =
-    extractParameterDefinition(spec, metadata->typeName());
-  return parameterDefinition->associationRule();
 }
 }
 }

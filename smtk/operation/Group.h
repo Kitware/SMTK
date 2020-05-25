@@ -130,6 +130,29 @@ public:
 protected:
   std::weak_ptr<smtk::operation::Manager> m_manager;
 
+  /// Return a "degree of fit" measure indicating how well an operation matches an object.
+  ///
+  /// This method is intended for use by subclasses that need to choose a single operation
+  /// among multiple allowable operations in the group.
+  ///
+  /// This method examines each operation in the group.
+  /// If the operation's associationRule allows the object \a obj to be associated with
+  /// the operation, then an integer is returned that indicates how well the object matches
+  /// the operation's list of acceptable associations. Smaller numbers indicate better fits.
+  /// If association is disallowed, the returned value is std::numeric_limits<std::size_t>::max().
+  ///
+  /// The "degree of fit" returned is the smallest number of hops along the inheritance diagram
+  /// of obj (or the resource owning \a obj if it is a component) to reach any entry in the
+  /// operation's "accepts" rules that allows association.
+  ///
+  /// \sa smtk::operation::DeleterGroup
+  std::size_t operationObjectDistance(
+    const Operation::Index& index, const smtk::resource::PersistentObject& obj) const;
+
+  /// A utility to fetch association rules for a given operation (used in operationObjectDistance).
+  smtk::attribute::ConstReferenceItemDefinitionPtr operationAssociationsRule(
+    const Operation::Index& index) const;
+
 private:
   std::string m_name;
 };
