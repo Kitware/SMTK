@@ -193,7 +193,9 @@ public:
   // API::visit defined.
   template <typename ArcType, typename Visitor>
   auto visit(const Visitor& visitor) const ->
-    typename std::enable_if<accepts<Visitor, const typename ArcType::ToType&>::value,
+    typename std::enable_if<has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
+                              const typename ArcType::ToType&>::value &&
+        accepts<Visitor, const typename ArcType::ToType&>::value,
       decltype(std::declval<const typename ArcType::template API<ArcType> >().visit(
         std::declval<const typename ArcType::FromType&>(), visitor))>::type
   {
@@ -204,7 +206,9 @@ public:
   // API::visit defined.
   template <typename ArcType, typename Visitor>
   auto visit(const Visitor& visitor) ->
-    typename std::enable_if<accepts<Visitor, typename ArcType::ToType&>::value,
+    typename std::enable_if<has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
+                              const typename ArcType::ToType&>::value &&
+        accepts<Visitor, typename ArcType::ToType&>::value,
       decltype(std::declval<typename ArcType::template API<ArcType> >().visit(
         std::declval<typename ArcType::FromType&>(), visitor))>::type
   {

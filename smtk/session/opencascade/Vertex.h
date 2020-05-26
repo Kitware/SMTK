@@ -10,11 +10,8 @@
 
 #ifndef smtk_session_opencascade_Vertex_h
 #define smtk_session_opencascade_Vertex_h
-/*!\file */
 
-#include "smtk/graph/Component.h"
-
-#include "smtk/resource/Properties.h"
+#include "smtk/session/opencascade/Shape.h"
 
 namespace smtk
 {
@@ -23,21 +20,25 @@ namespace session
 namespace opencascade
 {
 
-class Resource;
+class Edge;
 
 class SMTKOPENCASCADESESSION_EXPORT Vertex : public Shape
 {
 public:
   smtkTypeMacro(Vertex);
   smtkSuperclassMacro(smtk::session::opencascade::Shape);
+
   Vertex(const std::shared_ptr<smtk::graph::ResourceBase>& rsrc)
     : Shape(rsrc)
   {
   }
+
+  std::vector<std::reference_wrapper<const Edge> > edges() const;
+  bool visitEdges(const std::function<bool(const Edge&)>& fn) const;
+  bool visitEdges(const std::function<bool(Edge&)>& fn);
 };
+}
+}
+}
 
-} // namespace opencascade
-} // namespace session
-} // namespace smtk
-
-#endif // smtk_session_opencascade_Vertex_h
+#endif
