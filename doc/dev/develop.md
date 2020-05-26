@@ -45,7 +45,7 @@ Before you begin, perform initial setup:
     "Subscribe to this project" on the right of SMTK.
 
 [GitLab Access]: https://gitlab.kitware.com/users/sign_in
-[Fork SMTK]: https://gitlab.kitware.com/cmb/smtk/forks/new
+[Fork SMTK]: https://gitlab.kitware.com/cmb/smtk/-/forks/new
 [developer setup script]: ../../utilities/SetupForDevelopment.sh
 
 Workflow
@@ -165,7 +165,7 @@ left, and use the "**New Merge Request**" button in the upper right to
 reach the URL printed at the end of the [previous step](#share-a-topic).
 It should be of the form:
 
-    https://gitlab.kitware.com/<username>/smtk/merge_requests/new
+    https://gitlab.kitware.com/<username>/smtk/-/merge_requests/new
 
 Follow these steps:
 
@@ -446,6 +446,6 @@ Contributing CMB, VTK or ParaView Changes
 If you have any CMB, VTK or ParaView changes, then you are required to get your changes
 incorporated into CMB using [CMB's development workflow][], VTK using [VTK's development workflow][] and/or into ParaView using [ParaView's development workflow][].
 
-[CMB's development workflow]: https://gitlab.kitware.com/cmb/cmb/tree/master/Documentation/dev
-[VTK's development workflow]: https://gitlab.kitware.com/vtk/vtk/tree/master/Documentation/dev/git
-[ParaView's development workflow]: https://gitlab.kitware.com/paraview/paraview/tree/master/Documentation/dev/git
+[CMB's development workflow]: https://gitlab.kitware.com/cmb/cmb/-/tree/master/Documentation/dev
+[VTK's development workflow]: https://gitlab.kitware.com/vtk/vtk/-/tree/master/Documentation/dev/git
+[ParaView's development workflow]: https://gitlab.kitware.com/paraview/paraview/-/tree/master/Documentation/dev/git
