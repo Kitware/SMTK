@@ -167,7 +167,7 @@ to provide support.
 [SMTK Git README]: doc/dev/README.md
 [developer instructions]: doc/dev/develop.md
 [GitLab Access]: https://gitlab.kitware.com/users/sign_in
-[Fork SMTK]: https://gitlab.kitware.com/cmb/smtk/forks/new
+[Fork SMTK]: https://gitlab.kitware.com/cmb/smtk/-/forks/new
 [use SSH instead of HTTPS]: doc/dev/download.md#use-ssh-instead-of-https
 [download instructions]: doc/dev/download.md#clone
 [developer setup script]: Utilities/SetupForDevelopment.sh
@@ -178,12 +178,12 @@ to provide support.
 [Create a Merge Request]: doc/dev/develop.md#create-a-merge-request
 [Review a Merge Request]: doc/dev/develop.md#review-a-merge-request
 [review]: doc/dev/develop.md#review-a-merge-request
-[Issues]: https://gitlab.kitware.com/cmb/smtk/issues
-[Merge Requests]: https://gitlab.kitware.com/cmb/smtk/merge_requests
-[Labels]: https://gitlab.kitware.com/cmb/smtk/labels
-[Milestones]: https://gitlab.kitware.com/cmb/smtk/milestones
-[Wiki]: https://gitlab.kitware.com/cmb/smtk/wikis/pages
+[Issues]: https://gitlab.kitware.com/cmb/smtk/-/issues
+[Merge Requests]: https://gitlab.kitware.com/cmb/smtk/-/merge_requests
+[Labels]: https://gitlab.kitware.com/cmb/smtk/-/labels
+[Milestones]: https://gitlab.kitware.com/cmb/smtk/-/milestones
+[Wiki]: https://gitlab.kitware.com/cmb/smtk/-/wikis/pages
 [Mailing Lists]: http://www.computationalmodelbuilder.org/mailinglist/
 [Gitlab Markdown]: https://gitlab.kitware.com/help/user/markdown.md
-[new issue]: https://gitlab.kitware.com/cmb/smtk/issues/new
+[new issue]: https://gitlab.kitware.com/cmb/smtk/-/issues/new
 [Labels Glossary]: doc/dev/labels.md

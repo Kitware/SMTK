@@ -40,4 +40,4 @@ rebuilds. This happens when any of:
 Once the updated image is pushed, the `.gitlab-ci.yml` file here needs to be
 updated to the new tag to use the new image.
 
-[its pipelines page]: https://gitlab.kitware.com/cmb/cmb-superbuild/pipelines
+[its pipelines page]: https://gitlab.kitware.com/cmb/cmb-superbuild/-/pipelines

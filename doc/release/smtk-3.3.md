@@ -442,7 +442,7 @@ Example SBT Code:
       </InstancedAttributes>
     </View>
 ```
-See [SMTK Issue 270 to see what the resulting UI looks like.](https://gitlab.kitware.com/cmb/smtk/issues/270)
+See [SMTK Issue 270 to see what the resulting UI looks like.](https://gitlab.kitware.com/cmb/smtk/-/issues/270)
 
 ### Added qtAttributeEditorDialog class
 

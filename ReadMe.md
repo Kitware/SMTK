@@ -51,7 +51,7 @@ If you have found a bug:
 3. Finally, if the issue is not resolved by the above steps, open
    an entry in the [SMTK Issue Tracker][].
 
-[SMTK Issue Tracker]: https://gitlab.kitware.com/cmb/smtk/issues
+[SMTK Issue Tracker]: https://gitlab.kitware.com/cmb/smtk/-/issues
 
 Contributing
 ============

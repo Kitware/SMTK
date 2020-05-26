@@ -664,7 +664,7 @@ ParaView's icon for saving data. In the future we may want a unique
 icon for reading/writing SMTK native resources.
 These changes are an alternative to the changes in model builder
 described
-[here](https://gitlab.kitware.com/cmb/cmb/merge_requests/612); the
+[here](https://gitlab.kitware.com/cmb/cmb/-/merge_requests/612); the
 concerns identified therein are still applicable.
 
 ParaView applications that load SMTK's pqAppComponents plugin now have
