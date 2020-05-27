@@ -221,7 +221,7 @@ Collection Resource::findAs(const std::string& queryString) const
 /// or a component (in which case it asks the component's
 /// owning resource to construct the query).
 template <typename QueryType>
-SMTKCORE_EXPORT QueryType& queryForObject(const PersistentObject& object)
+SMTKCORE_NO_EXPORT QueryType& queryForObject(const PersistentObject& object)
 {
   auto resource = dynamic_cast<const Resource*>(&object);
   if (!resource)

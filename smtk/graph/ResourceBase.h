@@ -38,7 +38,7 @@ class SMTKCORE_EXPORT ResourceBase
   : public smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>
 {
 protected:
-  struct Compare
+  struct SMTKCORE_EXPORT Compare
   {
     bool operator()(const std::shared_ptr<smtk::resource::Component>& lhs,
       const std::shared_ptr<smtk::resource::Component>& rhs) const;
