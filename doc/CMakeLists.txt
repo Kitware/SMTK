@@ -142,7 +142,6 @@ if (SPHINX_FOUND)
     tutorials/add_a_session/index.rst
     tutorials/add_a_session/operators.rst
     tutorials/add_a_session/transcribing.rst
-    tutorials/add_a_session/troubleshooting.rst
     tutorials/add_a_session/session_subclass.rst
     tutorials/add_a_session/entity_uuids.rst
     tutorials/python_first_steps/index.rst
