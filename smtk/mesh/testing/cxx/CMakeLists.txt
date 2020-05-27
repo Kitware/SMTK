@@ -58,18 +58,6 @@ if(SMTK_ENABLE_VTK_SUPPORT)
        )
 endif()
 
-if(SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
-  list(APPEND unit_tests_which_require_data
-       TestElevateMesh.cxx
-       UnitTestExtractOrderedTessellation.cxx
-       )
-  list(APPEND extra_libs
-       smtkDiscreteSession
-       smtkIOVTK
-       vtkSMTKSourceExt
-       )
-endif()
-
 if(SMTK_ENABLE_MESH_SESSION)
   list(APPEND unit_tests_which_require_data
        TestSamplePointsOnSurface.cxx
@@ -77,6 +65,7 @@ if(SMTK_ENABLE_MESH_SESSION)
        )
   if (SMTK_ENABLE_VTK_SUPPORT)
     list(APPEND unit_tests_which_require_data
+         TestElevateMesh.cxx
          TestElevateMeshOnStructuredGrid.cxx
          )
     if (SMTK_ENABLE_UNSTABLE_TESTS)

@@ -16,8 +16,6 @@
 
 #include "smtk/extension/vtk/filter/vtkImageDual.h"
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
-#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
-#include "smtk/extension/vtk/reader/vtkSMTKLASReader.h"
 
 #include "vtkAppendFilter.h"
 #include "vtkAppendPoints.h"
@@ -51,6 +49,7 @@
 #include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkSLACReader.h"
+#include "vtkSTLReader.h"
 #include "vtkStringArray.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLImageDataReader.h"
@@ -138,9 +137,8 @@ DeclareReader_type(ply);
 DeclareReader_type(pts);
 DeclareReader_type(tif);
 DeclareReader_type(png);
-DeclareReader_type(cmb);
-DeclareReader_type(las);
 DeclareReader_type(slac);
+DeclareReader_type(stl);
 
 #undef DeclareReader_type
 
@@ -168,6 +166,7 @@ BasicReader_type(vtu, "VTK Unstructured Grid", vtkUnstructuredGrid, vtkXMLUnstru
 BasicReader_type(vti, "VTK Image Data", vtkImageData, vtkXMLImageDataReader)
 BasicReader_type(vtm, "VTK MultiBlock Data Set", vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader)
 BasicReader_type(png, "Portable Network Graphics File", vtkImageData, vtkPNGReader)
+BasicReader_type(stl, "Stereolithography File", vtkPolyData, vtkSTLReader)
 #ifdef HELP_CLANG_FORMAT
 ;
 #endif
@@ -330,61 +329,6 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
   }
 
   return data;
-}
-
-ImportAsVTKData_cmb::ImportAsVTKData_cmb()
-  : ImportAsVTKDataType<ImportAsVTKData_cmb>({ smtk::extension::vtk::io::ImportFormat(
-      "CMB File", { "bin", "2dm", "3dm", "tin", "poly", "smesh", "fac", "sol", "stl" }) })
-{
-}
-
-vtkSmartPointer<vtkDataObject> ImportAsVTKData_cmb::operator()(
-  const std::pair<std::string, std::string>& fileInfo)
-{
-  vtkNew<vtkCMBGeometryReader> reader;
-  reader->SetFileName(fileInfo.second.c_str());
-  reader->SetPrepNonClosedSurfaceForModelCreation(false);
-  reader->SetEnablePostProcessMesh(false);
-  reader->Update();
-
-  auto polyOutput = vtkSmartPointer<vtkPolyData>::New();
-  polyOutput->ShallowCopy(reader->GetOutput());
-  return polyOutput;
-}
-
-ImportAsVTKData_las::ImportAsVTKData_las()
-  : ImportAsVTKDataType<ImportAsVTKData_las>(
-      { smtk::extension::vtk::io::ImportFormat("LIDAR Data Exchange File", { "las" }) })
-{
-}
-
-vtkSmartPointer<vtkDataObject> ImportAsVTKData_las::operator()(
-  const std::pair<std::string, std::string>& fileInfo)
-{
-  vtkNew<vtkSMTKLASReader> reader;
-  reader->SetFileName(fileInfo.second.c_str());
-  reader->Update();
-
-  vtkMultiBlockDataSet* readout = reader->GetOutput();
-  vtkNew<vtkAppendPoints> appendPoints;
-
-  vtkCompositeDataIterator* iter = readout->NewIterator();
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-  {
-    vtkPolyData* blockPoly = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
-    if (!blockPoly)
-    {
-      vtkGenericWarningMacro(<< "This block from LAS reader is not a polydata!\n");
-      continue;
-    }
-    appendPoints->AddInputData(blockPoly);
-  }
-  iter->Delete();
-  appendPoints->Update();
-
-  auto polyOutput = vtkSmartPointer<vtkPolyData>::New();
-  polyOutput->ShallowCopy(appendPoints->GetOutput());
-  return polyOutput;
 }
 
 ImportAsVTKData_slac::ImportAsVTKData_slac()

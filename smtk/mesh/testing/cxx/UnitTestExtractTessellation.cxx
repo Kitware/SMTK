@@ -336,6 +336,7 @@ void verify_extract_packed_single_type(const smtk::mesh::ResourcePtr& mr)
 
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);
+  // smtk::mesh::utility::extractTessellation(quads, ftess);
   smtk::mesh::utility::extractTessellation(quads, ftess);
 
   //lets iterate the points and make sure they all match

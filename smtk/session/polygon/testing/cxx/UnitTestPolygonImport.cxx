@@ -26,7 +26,7 @@
 namespace
 {
 std::string readFilePath(SMTK_DATA_DIR);
-std::string filename("/model/2d/map/simple.map");
+std::string filename("/model/2d/map/simple.vtp");
 const int numEdgesExpected = 5;
 const int numVerticesExpected = 5;
 }

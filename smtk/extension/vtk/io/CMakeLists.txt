@@ -26,7 +26,6 @@ target_link_libraries(smtkIOVTK
   LINK_PUBLIC
     smtkCore
     vtkSMTKFilterExt
-    vtkSMTKReaderExt
     VTK::CommonCore
     VTK::IOCore
   LINK_PRIVATE
@@ -51,7 +50,6 @@ vtk_module_autoinit(
   TARGETS smtkIOVTK
   MODULES VTK::CommonCore
           vtkSMTKFilterExt
-          vtkSMTKReaderExt
           VTK::IOCore
           VTK::CommonDataModel
           VTK::CommonExecutionModel

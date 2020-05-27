@@ -141,17 +141,10 @@ mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 cmake_dependent_option(SMTK_ENABLE_APPLICATIONS "Build Qt-enabled applications" ON SMTK_ENABLE_QT_SUPPORT OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
-# SMTK uses the vxl library for terrain extraction. It also depends on VTK and ParaView.
-cmake_dependent_option(SMTK_ENABLE_VXL_SUPPORT "Build VXL component" ON
-  "SMTK_ENABLE_PARAVIEW_SUPPORT;SMTK_ENABLE_QT_SUPPORT;SMTK_ENABLE_VTK_SUPPORT" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_QT_SUPPORT" OFF)
 
-cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
-  SMTK_ENABLE_VTK_SUPPORT OFF)
-cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
-  "SMTK_ENABLE_DISCRETE_SESSION" OFF)
 option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
 cmake_dependent_option(SMTK_ENABLE_VTK_SESSION "Build a session that uses VTK multiblock datasets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
@@ -368,9 +361,6 @@ find_package(MOAB REQUIRED)
 ################################################################################
 # NOTE: This has be before any find_package(VTK), because currently ParaView
 # and VTK can NOT be easily switched due to modules and macros intermixed
-################################################################################
-################################################################################
-# Look for Discrete session discrete model modules
 ################################################################################
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
@@ -663,7 +653,7 @@ install(
 
 # Add the current directory so we can include files like: <smtk/internal/Test.h>
 # Save the include directories in a variable so that VTK modules (inside the
-# extension/vtk and session/discrete directories) can reuse them.
+# extension/vtk directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"

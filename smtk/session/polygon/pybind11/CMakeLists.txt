@@ -10,7 +10,6 @@ target_include_directories(${library_name} PUBLIC
 set(import_vtk_depends)
 if(SMTK_ENABLE_VTK_SUPPORT)
   list(APPEND import_vtk_depends
-    vtkSMTKReaderExt
     VTK::CommonCore
     VTK::CommonDataModel
     VTK::FiltersGeometry

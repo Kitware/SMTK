@@ -146,16 +146,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewVTKModules-vtk-module-properties.cmake")
   endif ()
 
-  if (@SMTK_ENABLE_VXL_SUPPORT@) # SMTK_ENABLE_VXL_SUPPORT
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-targets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-vtk-module-properties.cmake")
-  endif ()
-
-  if (@SMTK_ENABLE_VXL_SUPPORT@) # SMTK_ENABLE_VXL_SUPPORT
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-targets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-vtk-module-properties.cmake")
-  endif ()
-
   if (@SMTK_ENABLE_POLYGON_SESSION@) # SMTK_ENABLE_POLYGON_SESSION
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKPolygonExt-targets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKPolygonExt-vtk-module-properties.cmake")
@@ -164,11 +154,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   if (@SMTK_ENABLE_OPENCASCADE_SESSION@) # SMTK_ENABLE_OPENCASCADE_SESSION
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKOpencascadeExt-targets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKOpencascadeExt-vtk-module-properties.cmake")
-  endif ()
-
-  if (@SMTK_ENABLE_DISCRETE_SESSION@) # SMTK_ENABLE_DISCRETE_SESSION
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-targets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-vtk-module-properties.cmake")
   endif ()
 endif ()
 

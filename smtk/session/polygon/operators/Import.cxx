@@ -37,12 +37,6 @@
 
 #include "smtk/common/Paths.h"
 
-#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
-#ifdef SMTK_ENABLE_REMUS_SUPPORT
-#include "smtk/extension/vtk/reader/vtkCMBMapReader.h"
-#include "smtk/extension/vtk/reader/vtkCMBPolygonModelImporter.h"
-#endif
-
 #include "smtk/session/polygon/Import_xml.h"
 
 #include "vtkCellArray.h"
@@ -54,6 +48,7 @@
 #include "vtkPDataSetReader.h"
 #include "vtkPolyData.h"
 #include "vtkStripper.h"
+#include "vtkXMLPolyDataReader.h"
 #include "vtkXMLPolyDataWriter.h"
 #include <vtksys/SystemTools.hxx>
 
@@ -361,14 +356,9 @@ bool Import::ableToOperate()
   std::string filename = this->parameters()->findFile("filename")->value();
   if (filename.empty())
     return false;
-  // support 2d models by vtkCMBGeometryReader
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  return (ext == ".2dm" ||
-#ifdef SMTK_ENABLE_REMUS_SUPPORT
-    ext == ".poly" || ext == ".smesh" || ext == ".map" || ext == ".shp" ||
-#endif
-    ext == ".stl" || ext == ".vtp" || ext == ".vtk");
+  return (ext == ".vtp" || ext == ".vtk");
 }
 
 Import::Result Import::operateInternal()
@@ -387,39 +377,17 @@ Import::Result Import::operateInternal()
   // This is where we should have the logic to import files other than .cmb formats
   // ******************************************************************************
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
-  if (ext == ".2dm" || ext == ".3dm" ||
-#ifdef SMTK_ENABLE_REMUS_SUPPORT
-    ext == ".poly" || ext == ".smesh" ||
-#endif
-    /*  ext == ".tin" ||
-      ext == ".fac" ||
-      ext == ".obj" ||
-      ext == ".sol" || */
-    ext == ".stl" || ext == ".vtp")
+  if (ext == ".vtp")
   {
-    vtkNew<vtkCMBGeometryReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->SetPrepNonClosedSurfaceForModelCreation(false);
-    reader->SetEnablePostProcessMesh(false);
-    reader->Update();
-    polyOutput->ShallowCopy(reader->GetOutput());
-  }
-#ifdef SMTK_ENABLE_REMUS_SUPPORT
-  else if (ext == ".map")
-  {
-    vtkNew<vtkCMBMapReader> reader;
+    vtkNew<vtkXMLPolyDataReader> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
-    polyOutput->ShallowCopy(reader->GetOutput());
+
+    vtkNew<vtkDataSetSurfaceFilter> surface;
+    surface->SetInputData(0, reader->GetOutputDataObject(0));
+    surface->Update();
+    polyOutput->ShallowCopy(surface->GetOutput());
   }
-  else if (ext == ".shp")
-  {
-    vtkNew<vtkCMBPolygonModelImporter> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-    polyOutput->ShallowCopy(reader->GetOutput());
-  }
-#endif
   else if (ext == ".vtk")
   {
     vtkNew<vtkPDataSetReader> reader;

@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Try running a "universal" operator (close model) on imported models.
 """
@@ -17,7 +17,6 @@ import os
 import sys
 import smtk
 import smtk.session
-import smtk.session.discrete
 import smtk.session.vtk
 import smtk.io
 import smtk.model
@@ -51,16 +50,6 @@ class TestModelCloseModelOp(unittest.TestCase):
             session = smtk.model.Session.create()
             actSession = smtk.model.SessionRef(actMgr, session)
             [smtk.model.Model(x).setSession(actSession) for x in models]
-        elif sessionname == 'discrete':
-            readOp = smtk.session.discrete.ReadOperation.create()
-            readOp.parameters().find('filename').setValue(filename)
-            result = readOp.operate()
-            self.assertEqual(
-                result.find('outcome').value(0),
-                int(smtk.operation.Operation.SUCCEEDED),
-                'discrete read operation failed')
-            models = smtk.model.Resource.CastTo(
-                result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
         elif sessionname == 'vtk':
             readOp = smtk.session.vtk.Import.create()
             readOp.parameters().find('filename').setValue(filename)
@@ -89,9 +78,7 @@ class TestModelCloseModelOp(unittest.TestCase):
         if smtk.testing.DATA_DIR != '':
             session_files = {
                 'native': ['model', '2d', 'smtk', 'pyramid.json'],
-                'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
                 'vtk': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
-                #                'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep']
             }
 
             for (session_type, path) in session_files.items():

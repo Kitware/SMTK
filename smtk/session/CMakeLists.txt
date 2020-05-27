@@ -1,21 +1,12 @@
 ################################################################################
 # Initialize flags for configuring Pybind11 session module
 ################################################################################
-set(SMTK_DISCRETE_SESSION_ENABLED "False")
 set(SMTK_POLYGON_SESSION_ENABLED "False")
 set(SMTK_MESH_SESSION_ENABLED "False")
 set(SMTK_MULTISCALE_SESSION_ENABLED "False")
 set(SMTK_VTK_SESSION_ENABLED "False")
 set(SMTK_OPENCASCADE_SESSION_ENABLED "False")
 set(SMTK_OSCILLATOR_SESSION_ENABLED "False")
-
-################################################################################
-# Build Discrete session
-################################################################################
-if(SMTK_ENABLE_DISCRETE_SESSION)
-  set(SMTK_DISCRETE_SESSION_ENABLED "True")
-  add_subdirectory(discrete)
-endif()
 
 ################################################################################
 # Build Boost.Polygon session
