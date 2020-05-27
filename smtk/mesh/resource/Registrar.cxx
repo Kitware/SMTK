@@ -37,6 +37,7 @@
 #include "smtk/mesh/operators/Write.h"
 #include "smtk/mesh/operators/WriteResource.h"
 
+#include "smtk/operation/groups/DeleterGroup.h"
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
@@ -72,6 +73,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::mesh::Resource, smtk::mesh::WriteResource>();
 
+  smtk::operation::DeleterGroup(operationManager).registerOperation<DeleteMesh>();
+
   smtk::operation::InternalGroup(operationManager).registerOperation<smtk::mesh::SelectCells>();
 }
 
@@ -84,6 +87,8 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
   smtk::operation::ReaderGroup(operationManager).unregisterOperation<smtk::mesh::ReadResource>();
 
   smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::mesh::WriteResource>();
+
+  smtk::operation::DeleterGroup(operationManager).unregisterOperation<DeleteMesh>();
 
   operationManager->unregisterOperations<OperationList>();
 }

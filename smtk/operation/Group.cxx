@@ -13,6 +13,8 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
 
+#include <limits>
+
 namespace smtk
 {
 namespace operation
@@ -298,6 +300,88 @@ std::string Group::operationLabel(const Operation::Index& index) const
   }
 
   return parameterDefinition->label();
+}
+
+std::size_t Group::operationObjectDistance(
+  const Operation::Index& index, const smtk::resource::PersistentObject& obj) const
+{
+  std::size_t gen = std::numeric_limits<std::size_t>::max();
+  auto assocRule = this->operationAssociationsRule(index);
+  bool acceptable = assocRule && assocRule->isValueValid(obj.shared_from_this());
+  if (!acceptable)
+  {
+    return gen;
+  }
+  auto resource = dynamic_cast<const smtk::resource::Resource*>(&obj);
+  bool ruleRequiresResources = assocRule->onlyResources();
+  assert(
+    !(ruleRequiresResources ^ static_cast<bool>(resource))); // acceptable == true => this assert.
+  if (!resource)
+  {
+    auto component = dynamic_cast<const smtk::resource::Component*>(&obj);
+    if (component)
+    {
+      resource = component->resource().get();
+    }
+  }
+  if (!resource)
+  {
+    return gen;
+  }
+
+  for (const auto& acceptEntry : assocRule->acceptableEntries())
+  {
+    if (acceptEntry.first == resource->typeName())
+    { // An exact match.
+      gen = 0;
+      return gen;
+    }
+
+    // NB: This assumes acceptEntry.first is a resource typeName,
+    //     which may not be true in the future.
+    int nn = resource->numberOfGenerationsFromBase(acceptEntry.first);
+    if (nn < 0)
+    {
+      continue;
+    }
+    else
+    {
+      std::size_t ns = static_cast<std::size_t>(nn);
+      if (ns < gen)
+      {
+        gen = ns;
+      }
+    }
+  }
+
+  return gen;
+}
+
+smtk::attribute::ConstReferenceItemDefinitionPtr Group::operationAssociationsRule(
+  const Operation::Index& index) const
+{
+  using smtk::attribute::ConstReferenceItemDefinitionPtr;
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(index);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  Operation::Specification spec = specification(metadata->typeName());
+  if (spec == nullptr)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(spec, metadata->typeName());
+  return parameterDefinition->associationRule();
 }
 }
 }
