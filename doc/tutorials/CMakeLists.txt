@@ -40,4 +40,3 @@ add_test(NAME implement_an_operator
 endif()
 
 add_subdirectory(python_first_steps)
-add_subdirectory(debugging_python_tests)

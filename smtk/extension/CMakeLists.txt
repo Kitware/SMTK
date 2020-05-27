@@ -48,7 +48,3 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   add_subdirectory(pybind11)
 endif()
-
-if (SMTK_ENABLE_VXL_SUPPORT AND SMTK_ENABLE_QT_SUPPORT)
-  add_subdirectory(vxl)
-endif()

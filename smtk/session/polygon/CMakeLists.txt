@@ -91,7 +91,6 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     list(APPEND _polygonDependencies ${headerName})
   endforeach()
   list(APPEND import_vtk_depends
-    vtkSMTKReaderExt
     VTK::CommonCore
     VTK::CommonDataModel
     VTK::FiltersGeometry

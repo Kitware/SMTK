@@ -18,8 +18,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/session/discrete/Resource.h"
-#include "smtk/session/discrete/operators/ImportOperation.h"
+#include "smtk/session/mesh/Resource.h"
+#include "smtk/session/mesh/operators/Import.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -46,12 +46,12 @@ int TestGroupPropertyQuery(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  // Import a mesh as a discrete model
-  smtk::session::discrete::Resource::Ptr resource;
+  // Import a mesh as a mesh model
+  smtk::session::mesh::Resource::Ptr resource;
   smtk::model::Model model;
   smtk::model::Face face;
   {
-    smtk::operation::Operation::Ptr importOp = smtk::session::discrete::ImportOperation::create();
+    smtk::operation::Operation::Ptr importOp = smtk::session::mesh::Import::create();
 
     if (!importOp)
     {
@@ -80,7 +80,7 @@ int TestGroupPropertyQuery(int argc, char* argv[])
         importOpResult->findResource("resource"));
 
     // Access the generated resource
-    resource = std::dynamic_pointer_cast<smtk::session::discrete::Resource>(resourceItem->value());
+    resource = std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
 
     // Retrieve the resulting model
     smtk::attribute::ComponentItemPtr componentItem =

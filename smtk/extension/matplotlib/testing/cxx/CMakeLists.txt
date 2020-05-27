@@ -47,7 +47,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     VTK::InteractionImage
     VTK::TestingRendering
     vtkSMTKSourceExt
-    vtkSMTKReaderExt
     )
 endif()
 

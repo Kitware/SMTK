@@ -18,8 +18,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/session/discrete/Resource.h"
-#include "smtk/session/discrete/operators/ImportOperation.h"
+#include "smtk/session/mesh/Resource.h"
+#include "smtk/session/mesh/operators/Import.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -107,7 +107,7 @@ int TestElevateMesh(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  smtk::operation::Operation::Ptr importOp = smtk::session::discrete::ImportOperation::create();
+  smtk::operation::Operation::Ptr importOp = smtk::session::mesh::Import::create();
 
   if (!importOp)
   {
@@ -136,8 +136,8 @@ int TestElevateMesh(int argc, char* argv[])
       importOpResult->findResource("resource"));
 
   // Access the generated resource
-  smtk::session::discrete::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::session::discrete::Resource>(resourceItem->value());
+  smtk::session::mesh::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =
@@ -160,14 +160,10 @@ int TestElevateMesh(int argc, char* argv[])
 
   smtk::model::Face meshedFace = meshedFaceItem->valueAs<smtk::model::Entity>();
 
-  // The first resource is associated with the created model. The second
-  // resource is the created mesh resource.
   auto resources = std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
     importOpResult->findResource("resource"));
 
-  // Access the created mesh resource.
-  smtk::mesh::ResourcePtr meshResource =
-    std::dynamic_pointer_cast<smtk::mesh::Resource>(resources->value(1));
+  smtk::mesh::ResourcePtr meshResource = resource->resource();
 
   smtk::mesh::MeshSet mesh = meshResource->meshes();
 
@@ -182,7 +178,7 @@ int TestElevateMesh(int argc, char* argv[])
 
   {
     std::string file_path(data_root);
-    file_path += "/mesh/2d/SimpleBathy.2dm";
+    file_path += "/mesh/2d/SimpleBathy.vtu";
     auxGeoOp->parameters()->findFile("url")->setValue(file_path);
   }
 
@@ -239,6 +235,7 @@ int TestElevateMesh(int argc, char* argv[])
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Elevate mesh operator failed\n";
+      std::cerr << elevateMesh->log().convertToString() << "\n";
       return 1;
     }
   }
