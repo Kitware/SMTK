@@ -57,8 +57,10 @@ set(QAttrLibSrcs
   qtViewInterface.cxx
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
+
   MembershipBadge.cxx
   RedirectOutput.cxx
+  SVGIconEngine.cxx
   TypeAndColorBadge.cxx
   )
 
@@ -132,6 +134,7 @@ set(QAttrLibMocHeaders
   qtTimeZoneSelectWidget.h
 
   MembershipBadge.h
+  SVGIconEngine.h
 )
 
 set(QAttrLibHeaders

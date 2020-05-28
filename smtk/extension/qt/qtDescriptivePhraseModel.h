@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtDescriptivePhraseModel_h
-#define __smtk_extension_qtDescriptivePhraseModel_h
+#ifndef smtk_extension_qtDescriptivePhraseModel_h
+#define smtk_extension_qtDescriptivePhraseModel_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h" // For EXPORT macro.
@@ -49,9 +49,6 @@ public:
     s_defaultColors[entityType] = color;
   }
   static QColor defaultPhraseColor(const std::string& entityType);
-
-  /// make a QIcon from an svg string buffer.
-  static QIcon getSVGIcon(const std::string& iconBuffer);
 
   /// Set and get the icons to be used when visibility is to be drawn
   std::string visibleIconURL() const { return m_visibleIconURL; }
@@ -188,4 +185,4 @@ bool qtDescriptivePhraseModel::foreach_phrase(
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_extension_qtDescriptivePhraseModel_h
+#endif // smtk_extension_qtDescriptivePhraseModel_h

@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include "smtk/extension/qt/SVGIconEngine.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
@@ -69,51 +70,6 @@ static void cleanupIconResource()
   {
     Q_CLEANUP_RESOURCE(qtDescriptivePhraseModelIcons);
   }
-}
-
-class SVGIconEngine : public QIconEngine
-{
-
-  QByteArray data;
-
-public:
-  explicit SVGIconEngine(const std::string& iconBuffer);
-  void paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state) override;
-  QIconEngine* clone() const override;
-  QPixmap pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state) override;
-};
-
-SVGIconEngine::SVGIconEngine(const std::string& iconBuffer)
-{
-  data = QByteArray::fromStdString(iconBuffer);
-}
-
-void SVGIconEngine::paint(
-  QPainter* painter, const QRect& rect, QIcon::Mode /*mode*/, QIcon::State /*state*/)
-{
-  QSvgRenderer renderer(data);
-  renderer.render(painter, rect);
-}
-
-QIconEngine* SVGIconEngine::clone() const
-{
-  return new SVGIconEngine(*this);
-}
-
-QPixmap SVGIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state)
-{
-  // This function is necessary to create an EMPTY pixmap. It's called always
-  // before paint()
-
-  QImage img(size, QImage::Format_ARGB32);
-  img.fill(qRgba(0, 0, 0, 0));
-  QPixmap pix = QPixmap::fromImage(img, Qt::NoFormatConversion);
-  {
-    QPainter painter(&pix);
-    QRect r(QPoint(0.0, 0.0), size);
-    this->paint(&painter, r, mode, state);
-  }
-  return pix;
 }
 
 using namespace smtk::model;
@@ -316,11 +272,6 @@ QVariant qtDescriptivePhraseModel::headerData(
   }
   // ... could add "else" here to present per-row header.
   return QVariant();
-}
-
-QIcon qtDescriptivePhraseModel::getSVGIcon(const std::string& iconBuffer)
-{
-  return QIcon(new SVGIconEngine(iconBuffer));
 }
 
 /// Relate information, by its \a role, from a \a DescriptivePhrasePtr to the Qt model.
