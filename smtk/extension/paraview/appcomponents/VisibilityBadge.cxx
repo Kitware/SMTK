@@ -26,7 +26,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/DescriptivePhrase.h"
-#include "smtk/view/IconFactory.h"
 #include "smtk/view/Manager.h"
 
 #include "pqActiveObjects.h"

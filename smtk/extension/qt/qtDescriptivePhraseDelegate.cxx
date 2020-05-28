@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 
+#include "smtk/extension/qt/SVGIconEngine.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
@@ -129,8 +130,7 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
   // find out the size of a badge
   for (auto badge : badges)
   {
-    QIcon badgeIcon =
-      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     iconsize = badgeIcon.actualSize(option.decorationSize);
     break;
   }
@@ -235,8 +235,7 @@ void qtDescriptivePhraseDelegate::paint(
 
   for (auto badge : badges)
   {
-    QIcon badgeIcon =
-      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
     // shift each icon to the right, adding some padding.
     iconRect.setRight(iconRect.left() + iconsize.width() + padding);
@@ -330,8 +329,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   // find out the size of each badge, so we can shift the editor over correctly.
   for (auto badge : badges)
   {
-    QIcon badgeIcon =
-      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
     // shift each icon to the right, adding some padding.
     iconRect.setRight(iconRect.left() + iconsize.width() + padding);
@@ -391,7 +389,7 @@ int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
   int i = 0;
   for (auto badge : badges)
   {
-    QIcon badgeIcon = qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase, backgroundArray));
+    QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase, backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
     // shift each icon to the right, adding some padding.
     iconRect.setRight(iconRect.left() + iconsize.width() + padding);

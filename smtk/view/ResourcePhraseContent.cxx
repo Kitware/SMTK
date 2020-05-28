@@ -90,7 +90,7 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
           {
             if (ManagerPtr viewManager = location->phraseModel()->manager())
             {
-              return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+              return viewManager->objectIcons().createIcon(*relatedObject(), "#000000");
             }
           }
         }
@@ -104,7 +104,7 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
           {
             if (ManagerPtr viewManager = location->phraseModel()->manager())
             {
-              return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+              return viewManager->objectIcons().createIcon(*relatedObject(), "#ffffff");
             }
           }
         }

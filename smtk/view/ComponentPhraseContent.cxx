@@ -137,7 +137,7 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
             if (ManagerPtr viewManager = phraseModel->manager())
             {
               // TODO: propagate secondary color instead of hard-coding it here
-              return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+              return viewManager->objectIcons().createIcon(*relatedObject(), "#000000");
             }
           }
         }
@@ -152,7 +152,7 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
             if (ManagerPtr viewManager = phraseModel->manager())
             {
               // TODO: propagate secondary color instead of hard-coding it here
-              return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+              return viewManager->objectIcons().createIcon(*relatedObject(), "#ffffff");
             }
           }
         }

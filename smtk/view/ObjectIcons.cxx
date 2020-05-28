@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/view/IconFactory.h"
+#include "smtk/view/ObjectIcons.h"
 
 #include "smtk/common/Color.h"
 
@@ -28,24 +28,24 @@ namespace smtk
 {
 namespace view
 {
-bool IconFactory::registerIconConstructor(
+bool ObjectIcons::registerIconConstructor(
   const std::string& typeName, IconConstructor&& iconConstructor)
 {
   return m_iconConstructors.insert({ typeName, std::forward<IconConstructor>(iconConstructor) })
     .second;
 }
 
-bool IconFactory::registerDefaultIconConstructor(IconConstructor&& iconConstructor)
+bool ObjectIcons::registerDefaultIconConstructor(IconConstructor&& iconConstructor)
 {
   return registerIconConstructor(defaultName, std::forward<IconConstructor>(iconConstructor));
 }
 
-bool IconFactory::unregisterIconConstructor(const std::string& typeName)
+bool ObjectIcons::unregisterIconConstructor(const std::string& typeName)
 {
   return (m_iconConstructors.erase(typeName) > 0);
 }
 
-std::string IconFactory::createIcon(
+std::string ObjectIcons::createIcon(
   const smtk::resource::PersistentObject& object, const std::string& secondaryColor) const
 {
   // If there is an IconConstructor registered directly to this

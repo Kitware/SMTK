@@ -39,7 +39,7 @@ public:
 
   /// Returns an SVG string for rendering the badge icon.
   ///
-  /// This uses an IconFactory.
+  /// This uses a ObjectIcons to generate the badge.
   std::string icon(
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const override;
 

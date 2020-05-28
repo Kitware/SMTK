@@ -52,7 +52,7 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->iconFactory().registerIconConstructor<Resource>(IconConstructor());
+  viewManager->objectIcons().registerIconConstructor<Resource>(IconConstructor());
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)

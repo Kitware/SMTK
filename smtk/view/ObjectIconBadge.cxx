@@ -12,8 +12,8 @@
 
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/DescriptivePhrase.h"
-#include "smtk/view/IconFactory.h"
 #include "smtk/view/Manager.h"
+#include "smtk/view/ObjectIcons.h"
 
 #include "smtk/common/Color.h"
 
@@ -87,7 +87,7 @@ std::string ObjectIconBadge::icon(
   }
   float lightness = smtk::common::Color::floatRGBToLightness(background.data());
   // white or black for our edge color, based on background.
-  icon = manager->iconFactory().createIcon(*obj, lightness < 0.5 ? "#ffffff" : "#000000");
+  icon = manager->objectIcons().createIcon(*obj, lightness < 0.5 ? "#ffffff" : "#000000");
   return icon;
 }
 }
