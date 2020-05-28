@@ -85,8 +85,10 @@ set(iconFiles
   icons/face.svg
   icons/mesh.svg
   icons/model.svg
+  icons/selected.svg
   icons/vertex.svg
   icons/volume.svg
+  icons/unselected.svg
 )
 
 include(EncodeStringFunctions)

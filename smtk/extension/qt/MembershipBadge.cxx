@@ -16,6 +16,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/common/Color.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -29,6 +30,11 @@
 #include "smtk/view/IconFactory.h"
 #include "smtk/view/Manager.h"
 
+#include "smtk/view/icons/selected_svg.h"
+#include "smtk/view/icons/unselected_svg.h"
+
+#include <regex>
+
 namespace smtk
 {
 namespace extension
@@ -37,22 +43,16 @@ namespace qt
 {
 
 MembershipBadge::MembershipBadge()
-  : m_parent(nullptr)
+  : m_iconOn(selected_svg)
+  , m_iconOff(unselected_svg)
+  , m_parent(nullptr)
 {
 }
 
 MembershipBadge::MembershipBadge(
   smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&)
-  : m_iconOn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg width=\"64\" height=\"64\" "
-             "version=\"1.1\" viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\">  <g "
-             "transform=\"translate(0 -988.36)\">    <rect x=\"10.64\" y=\"1009.1\" "
-             "width=\"42.72\" height=\"22.555\" ry=\"7.9581\" stroke=\"#000\" "
-             "stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>  </g></svg>")
-  , m_iconOff("<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg width=\"64\" height=\"64\" "
-              "version=\"1.1\" viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\">  <g "
-              "transform=\"translate(0 -988.36)\">    <rect x=\"7.6513\" y=\"1006.1\" "
-              "width=\"48.697\" height=\"28.533\" ry=\"7.9581\" fill=\"none\" stroke=\"#000\" "
-              "stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>  </g></svg>")
+  : m_iconOn(selected_svg)
+  , m_iconOff(unselected_svg)
   , m_parent(&parent)
 {
 }
@@ -60,7 +60,7 @@ MembershipBadge::MembershipBadge(
 MembershipBadge::~MembershipBadge() = default;
 
 std::string MembershipBadge::icon(
-  const DescriptivePhrase* phrase, const std::array<float, 4>& /*background*/) const
+  const DescriptivePhrase* phrase, const std::array<float, 4>& background) const
 {
   auto persistentObj = phrase->relatedObject();
   auto valIt = m_members.find(persistentObj);
@@ -69,9 +69,9 @@ std::string MembershipBadge::icon(
   {
     member = valIt->second;
   }
-  if (member)
-    return m_iconOn;
-  return m_iconOff;
+  float lightness = smtk::common::Color::floatRGBToLightness(background.data());
+  const std::string& icon = member ? m_iconOn : m_iconOff;
+  return lightness >= 0.5 ? icon : std::regex_replace(icon, std::regex("black"), "white");
 }
 
 void MembershipBadge::action(const smtk::view::DescriptivePhrase* phrase)
