@@ -388,7 +388,7 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
       // index's current state).
       auto selected = m_p->m_view->selectionModel()->selection();
       smtk::view::DescriptivePhrase::Ptr phrase;
-      bool toggleTo = false;
+      // bool toggleTo = false;
       bool found = false;
       for (auto idx : selected.indexes())
       {
