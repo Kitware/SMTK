@@ -19,7 +19,8 @@
 
 #include "smtk/view/BadgeFactory.h"
 #include "smtk/view/Configuration.h"
-#include "smtk/view/IconFactory.h"
+#include "smtk/view/ObjectIcons.h"
+#include "smtk/view/OperationIcons.h"
 #include "smtk/view/PhraseModelFactory.h"
 #include "smtk/view/SubphraseGeneratorFactory.h"
 #include "smtk/view/ViewWidgetFactory.h"
@@ -48,8 +49,11 @@ public:
   BadgeFactory& badgeFactory() { return m_badgeFactory; }
   const BadgeFactory& badgeFactory() const { return m_badgeFactory; }
 
-  IconFactory& iconFactory() { return m_iconFactory; }
-  const IconFactory& iconFactory() const { return m_iconFactory; }
+  ObjectIcons& objectIcons() { return m_objectIcons; }
+  const ObjectIcons& objectIcons() const { return m_objectIcons; }
+
+  OperationIcons& operationIcons() { return m_operationIcons; }
+  const OperationIcons& operationIcons() const { return m_operationIcons; }
 
   PhraseModelFactory& phraseModelFactory() { return m_phraseModelFactory; }
   const PhraseModelFactory& phraseModelFactory() const { return m_phraseModelFactory; }
@@ -65,7 +69,8 @@ public:
 
 private:
   BadgeFactory m_badgeFactory;
-  IconFactory m_iconFactory;
+  ObjectIcons m_objectIcons;
+  OperationIcons m_operationIcons;
   PhraseModelFactory m_phraseModelFactory;
   SubphraseGeneratorFactory m_subphraseGeneratorFactory;
   ViewWidgetFactory m_viewWidgetFactory;

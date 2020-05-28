@@ -8,12 +8,13 @@ set(viewSrcs
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
-  IconFactory.cxx
   Information.cxx
   json/jsonView.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
   ObjectIconBadge.cxx
+  ObjectIcons.cxx
+  OperationIcons.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
   PhraseModelFactory.cxx
@@ -44,11 +45,12 @@ set(viewHeaders
   ComponentPhraseModel.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
-  IconFactory.h
   Information.h
   Manager.h
   ObjectGroupPhraseContent.h
   ObjectIconBadge.h
+  ObjectIcons.h
+  OperationIcons.h
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h
@@ -81,6 +83,7 @@ smtk_public_headers(smtkCore ${viewHeaders})
 set(iconFiles
   icons/attribute.svg
   icons/attributeResource.svg
+  icons/default_operation_opt.svg
   icons/edge.svg
   icons/face.svg
   icons/mesh.svg

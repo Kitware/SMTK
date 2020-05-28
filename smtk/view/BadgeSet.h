@@ -57,7 +57,7 @@ public:
   ///
   /// Some badges may need access to the manager to function.
   /// One example is the ObjectTypeAndColorBadge, which needs
-  /// access to the manager's IconFactory to obtain SVG icons.
+  /// access to the manager's ObjectIcons to obtain SVG icons.
   smtk::view::ManagerPtr manager() const { return m_manager.lock(); }
 
   /// Return the phraseModel (if any) that owns this badge-set.

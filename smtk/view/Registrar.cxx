@@ -17,6 +17,7 @@
 
 #include "smtk/view/AssociationBadge.h"
 #include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/DefaultOperationIcon.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/ObjectIconBadge.h"
 #include "smtk/view/PhraseModel.h"
@@ -48,10 +49,14 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
   viewManager->phraseModelFactory().registerTypes<PhraseModelList>();
   viewManager->subphraseGeneratorFactory().registerTypes<SubphraseGeneratorList>();
 
-  viewManager->iconFactory().registerIconConstructor<smtk::attribute::Resource>(
+  // Per-object icons
+  viewManager->objectIcons().registerIconConstructor<smtk::attribute::Resource>(
     AttributeIconConstructor());
-  viewManager->iconFactory().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
-  viewManager->iconFactory().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
+  viewManager->objectIcons().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
+  viewManager->objectIcons().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
+
+  // Per-operation icons
+  viewManager->operationIcons().registerDefaultIconConstructor(DefaultOperationIcon);
 
   viewManager->badgeFactory().registerTypes<BadgeList>();
 }

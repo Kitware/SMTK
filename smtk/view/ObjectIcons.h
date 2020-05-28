@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_view_IconFactory_h
-#define smtk_view_IconFactory_h
+#ifndef smtk_view_ObjectIcons_h
+#define smtk_view_ObjectIcons_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -45,7 +45,7 @@ namespace view
 /// defined for any PersistentObject, however; if an IconConstructor is
 /// registered to a PersistentObject type, this IconConstructor will have highest
 /// priority when an icon for this PersistentObject is requested.
-class SMTKCORE_EXPORT IconFactory
+class SMTKCORE_EXPORT ObjectIcons
 {
 public:
   using IconConstructor =
@@ -82,14 +82,14 @@ private:
 };
 
 template <typename ResourceType>
-bool IconFactory::registerIconConstructor(IconConstructor&& iconConstructor)
+bool ObjectIcons::registerIconConstructor(IconConstructor&& iconConstructor)
 {
   return registerIconConstructor(
     smtk::common::typeName<ResourceType>(), std::forward<IconConstructor>(iconConstructor));
 }
 
 template <typename ResourceType>
-bool IconFactory::unregisterIconConstructor()
+bool ObjectIcons::unregisterIconConstructor()
 {
   return unregisterIconConstructor(smtk::common::typeName<ResourceType>());
 }
