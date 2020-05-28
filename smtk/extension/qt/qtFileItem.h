@@ -16,6 +16,8 @@
 
 class qtFileItemInternals;
 class QBoxLayout;
+class QComboBox;
+class QLineEdit;
 class QWidget;
 
 namespace smtk
@@ -39,6 +41,28 @@ namespace extension
   *
   * This qtItem is the default type used by smtk::extension::qtUIManager.
   *
+  * ItemView Configuration Options:
+  *
+  * ShowRecentFiles="true/false" - if the file must already exist, this option, when true, will
+  * display previous values using a combobox - default is false
+  *
+  * ShowFileExtensions="true/false" - if the file is not required to already exist, and there are
+  * a set of suffixes associated with the item, this option, when true, will display the suffixes
+  * using a combobox - default is false
+  *
+  * UseFileDirectory="true/false" - if true and if the value is set, the file browser will open in
+  * the directory of the current value.  If the current value's directory does not exist the browser
+  * will either use the DefaultDirectoryProperty value or revert to its default behavior - default
+  * is true
+  *
+  * DefaultDirectoryProperty="nameOfResourceStringProperty" - if set and the string vector property
+  * value on the item's attribute resource exists and refers to an existing directory.
+  * the file browser will open in the directory refereed to by the property value
+  *
+  * See fileItemExample.sbt and fileItemExample.smtk as examples.  Note that to demonstrate
+  * DefaultDirectoryProperty using these files you will need to create a string property called
+  * testDir and set it to something valid.
+  *
   * \sa qtItem
   */
 class SMTKQTEXT_EXPORT qtFileItem : public qtItem
@@ -46,21 +70,40 @@ class SMTKQTEXT_EXPORT qtFileItem : public qtItem
   Q_OBJECT
 
 public:
-  /**\brief Factor method that can be registered with smtk::extension::qtUIManager */
+  ///\brief Factory method that can be registered with smtk::extension::qtUIManager
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtFileItem(const qtAttributeItemInfo& info);
   virtual ~qtFileItem();
   void setLabelVisible(bool) override;
 
   void enableFileBrowser(bool state = true);
-  bool isDirectory();
-  virtual void setInputValue(const QString&);
-
+  ///\brief Are the fileItem's values directories?
+  bool isDirectory() const;
+  ///\brief In the case of files that should exist, should we
+  /// show values that have been used in the past?
+  bool showRecentFiles() const;
+  ///\brief In the case of files that may or may not exist
+  /// should we show valid file extensions?
+  bool showExtensions() const;
+  ///\brief When changing an value should we try to use that
+  /// file's directory as the file browser's starting point?
+  ///
+  ///  Note that if this not true or if the directory does not
+  /// exist then the default directory (if one
+  /// has been specified) or the browser's default behavior
+  /// will be used
+  bool useFileDirectory() const;
+  ///\brief Is there a default directory for the file browser
+  bool hasDefaultDirectory() const;
+  ///\brief Return the default directory
+  const std::string& defaultDirectory() const;
+  virtual void setInputValue(int i, const QString&);
+  void updateItemValue(int i);
+  void updateEditorValue(int i);
 public slots:
-  virtual void onInputValueChanged();
+  virtual void onUpdateItemValue();
   void setOutputOptional(int);
   virtual bool onLaunchFileBrowser();
-  virtual void updateFileComboList(const QString&);
   void updateItemData() override;
 
 signals:
@@ -69,7 +112,6 @@ signals:
 protected slots:
   virtual void onAddNewValue();
   virtual void onRemoveValue();
-  virtual void setActiveField(QWidget*);
 
 protected:
   void createWidget() override;
@@ -80,8 +122,10 @@ protected:
   virtual void updateUI();
   virtual void addInputEditor(int i, const smtk::attribute::FileSystemItem& item,
     const smtk::attribute::FileSystemItemDefinition& itemDef);
-  virtual void updateExtensibleState();
   virtual void clearChildWidgets();
+  bool updateRecentValues(const std::string& val);
+  virtual void updateFileComboLists();
+  void getEditor(int i, QComboBox** cbox, QLineEdit** lineEdit);
 
 private:
   qtFileItemInternals* m_internals;
