@@ -36,7 +36,6 @@ class qtItem;
 class qtFileItem;
 class qtModelEntityItem;
 class qtBaseView;
-class qtModelView;
 
 typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
 typedef qtItem* (*qtItemConstructor)(const qtAttributeItemInfo& info);
@@ -94,9 +93,6 @@ public:
   void setViewManager(smtk::view::ManagerPtr mgr) { m_viewManager = mgr; }
 
   smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
-
-  void setActiveModelView(smtk::extension::qtModelView*);
-  smtk::extension::qtModelView* activeModelView();
 
   ///@{
   /// Set/Get the color used for indicating items with default values
@@ -284,7 +280,6 @@ private:
   qtBaseView* m_topView;
   smtk::view::ConfigurationPtr m_smtkView;
   QWidget* m_parentWidget;
-  qtModelView* m_activeModelView;
 
   QFont advFont;
   QColor DefaultValueColor;

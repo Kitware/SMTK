@@ -15,7 +15,6 @@
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
-#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -69,7 +68,6 @@ public:
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
   QMap<std::string, OperationInfo> OperationMap;
-  QPointer<qtModelView> ModelView;
   QPointer<qtCollapsibleGroupWidget> opLogInfo;
   QTextEdit* ResultLog;
   std::map<std::string, std::string> m_operatorLabelMap;
@@ -233,19 +231,6 @@ void qtModelOperationWidget::refreshOperationList()
   auto selection = this->Internals->OperationCombo->currentText();
   this->setSession(session);
   this->Internals->OperationCombo->setCurrentText(selection);
-}
-
-void qtModelOperationWidget::setModelView(qtModelView* mv)
-{
-  if (this->Internals->ModelView != mv)
-  {
-    this->Internals->ModelView = mv;
-  }
-}
-
-qtModelView* qtModelOperationWidget::modelView()
-{
-  return this->Internals->ModelView;
 }
 
 void qtModelOperationWidget::cancelCurrentOperation()

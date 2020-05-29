@@ -46,7 +46,6 @@ set(QAttrLibSrcs
   qtInputsItem.cxx
   qtGroupItem.cxx
   qtVoidItem.cxx
-  qtModelView.cxx
   qtNewAttributeWidget.cxx
   qtOverlay.cxx
   qtModelOperationWidget.cxx
@@ -106,7 +105,6 @@ set(QAttrLibMocHeaders
   qtResourceBrowser.h
   qtOperationLauncher.h
   qtOperationView.h
-  #qtModelView.h
   qtSelectorView.h
   qtSimpleExpressionView.h
   qtViewInfoDialog.h
@@ -121,7 +119,6 @@ set(QAttrLibMocHeaders
   qtInputsItem.h
   qtGroupItem.h
   qtVoidItem.h
-  qtModelView.h
   qtNewAttributeWidget.h
   qtOverlay.h
   qtModelOperationWidget.h

@@ -25,7 +25,6 @@
 #include "smtk/extension/qt/qtIntItem.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtModelEntityAttributeView.h"
-#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtResourceItem.h"
@@ -152,7 +151,6 @@ void qtUIManager::commonConstructor()
 {
   m_useInternalFileBrowser = true;
   m_topView = nullptr;
-  m_activeModelView = nullptr;
   m_maxValueLabelLength = 200;
   m_minValueLabelLength = 50;
   m_topLevelCategoriesSet = false;
@@ -387,19 +385,6 @@ qtBaseView* qtUIManager::setSMTKView(
     this->initializeUI(pWidget, useInternalFileBrowser);
   }
   return m_topView;
-}
-
-void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
-{
-  if (m_activeModelView != mv)
-  {
-    m_activeModelView = mv;
-  }
-}
-
-smtk::extension::qtModelView* qtUIManager::activeModelView()
-{
-  return m_activeModelView;
 }
 
 void qtUIManager::internalInitialize()
