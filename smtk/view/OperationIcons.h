@@ -71,7 +71,7 @@ public:
 
   /// Unregister an icon identified by the resource it represents.
   template <typename OperationType>
-  bool unregisterIconConstructor()
+  bool unregisterOperation()
   {
     Index index = typeid(OperationType).hash_code();
     for (auto it = m_indices.cbegin(); it != m_indices.cend(); /* do nothing */)

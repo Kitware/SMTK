@@ -27,6 +27,7 @@
 
 int unitOperationIcon(int, char* [])
 {
+  // Setup: create some managers, register operations, register icons:
   smtk::io::Logger::instance().setFlushToStdout(true);
   auto viewManager = smtk::view::Manager::create();
   auto resourceManager = smtk::resource::Manager::create();
@@ -35,6 +36,8 @@ int unitOperationIcon(int, char* [])
   smtk::attribute::Registrar::registerTo(operationManager);
   smtk::view::Registrar::registerTo(viewManager);
   std::string color = "dark";
+
+  // Create some "icon constructor" functors that really just increment counters:
   int genericCount = 0;
   int signalCount = 0;
   viewManager->operationIcons().registerDefaultIconConstructor([&genericCount](const std::string&) {
@@ -49,6 +52,7 @@ int unitOperationIcon(int, char* [])
       return result;
     });
 
+  // See which icon constructors get called when we ask for icons.
   for (const auto& op : operationManager->metadata().get<smtk::operation::NameTag>())
   {
     auto iconFromName = viewManager->operationIcons().createIcon(op.typeName(), color);
@@ -65,5 +69,18 @@ int unitOperationIcon(int, char* [])
   genericCount = 0;
   viewManager->operationIcons().createIcon<smtk::attribute::Associate>(color);
   smtkTest(genericCount == 1, "Did not use default icon for Associate.");
+
+  // Test that unregistration compiles and reports itself as working.
+  smtkTest(viewManager->operationIcons().unregisterOperation<smtk::attribute::Signal>(),
+    "Could not unregister Signal icon.");
+  smtkTest(!viewManager->operationIcons().unregisterOperation<smtk::attribute::Associate>(),
+    "Could unregister Associate icon.");
+
+  // Verify that unregistration did in fact unregister.
+  signalCount = 0;
+  genericCount = 0;
+  viewManager->operationIcons().createIcon<smtk::attribute::Signal>(color);
+  smtkTest(genericCount == 1 && signalCount == 0, "Unregistering icon had no effect.");
+
   return 0;
 }
