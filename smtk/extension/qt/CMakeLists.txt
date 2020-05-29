@@ -47,7 +47,6 @@ set(QAttrLibSrcs
   qtGroupItem.cxx
   qtVoidItem.cxx
   qtModelView.cxx
-  qtModelPanel.cxx
   qtNewAttributeWidget.cxx
   qtOverlay.cxx
   qtModelOperationWidget.cxx
@@ -69,7 +68,6 @@ set(QAttrLibUIs
   qtAttributeAssociation.ui
   qtAttributeEditorWidget.ui
   qtCollapsibleGroupWidgetInternals.ui
-  qtModelPanel.ui
   qtNewAttributeWidget.ui
   qtTimeZoneSelectWidget.ui
   qtViewInfoDialog.ui
@@ -124,7 +122,6 @@ set(QAttrLibMocHeaders
   qtGroupItem.h
   qtVoidItem.h
   qtModelView.h
-  qtModelPanel.h
   qtNewAttributeWidget.h
   qtOverlay.h
   qtModelOperationWidget.h
