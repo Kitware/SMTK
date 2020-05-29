@@ -26,7 +26,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/json/jsonResource.h"
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"

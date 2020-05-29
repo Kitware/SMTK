@@ -34,6 +34,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "pqApplicationCore.h"
+
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
@@ -106,6 +108,12 @@ pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
     this->observeWrapper(wrapper, server);
     return false; // terminate early
   });
+
+  auto pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    pqCore->registerManager("smtk operation panel", this);
+  }
 }
 
 pqSMTKOperationPanel::~pqSMTKOperationPanel()
