@@ -16,7 +16,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/view/Configuration.h"

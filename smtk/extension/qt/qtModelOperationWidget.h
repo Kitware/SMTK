@@ -33,7 +33,6 @@ namespace extension
 {
 class qtBaseView;
 class qtFileItem;
-class qtModelView;
 
 class SMTKQTEXT_EXPORT qtModelOperationWidget : public QWidget
 {
@@ -45,7 +44,6 @@ public:
   virtual void setSession(smtk::model::SessionPtr session);
   virtual void refreshOperationList();
   QSize sizeHint() const override;
-  virtual qtModelView* modelView();
   virtual smtk::operation::OperationPtr existingOperation(const std::string& opname);
   virtual qtBaseView* existingOperationView(const std::string& opname);
 
@@ -72,8 +70,6 @@ signals:
   void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
   void operatorSet(const smtk::operation::OperationPtr& brOp);
 
-  friend class qtModelView;
-
 protected slots:
   virtual void onOperationSelected();
   virtual void cancelCurrentOperation();
@@ -82,7 +78,6 @@ protected slots:
 
 protected:
   virtual void initWidget();
-  void setModelView(qtModelView* mv);
 
 private:
   qtModelOperationWidgetInternals* Internals;
