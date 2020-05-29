@@ -57,11 +57,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
       "${smtk_cmake_build_dir}/SMTKParaViewVTKModules-vtk-module-properties.cmake")
   endif ()
 
-  if (SMTK_ENABLE_VXL_SUPPORT)
-    list(APPEND smtk_cmake_files_to_install
-      "${smtk_cmake_build_dir}/SMTKVXLExt-vtk-module-properties.cmake")
-  endif ()
-
   if (SMTK_ENABLE_POLYGON_SESSION)
     list(APPEND smtk_cmake_files_to_install
       "${smtk_cmake_build_dir}/SMTKPolygonExt-vtk-module-properties.cmake")
@@ -70,11 +65,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   if (SMTK_ENABLE_OPENCASCADE_SESSION)
     list(APPEND smtk_cmake_files_to_install
       "${smtk_cmake_build_dir}/SMTKOpencascadeExt-vtk-module-properties.cmake")
-  endif ()
-
-  if (SMTK_ENABLE_DISCRETE_SESSION)
-    list(APPEND smtk_cmake_files_to_install
-      "${smtk_cmake_build_dir}/SMTKDiscreteModules-vtk-module-properties.cmake")
   endif ()
 endif ()
 
