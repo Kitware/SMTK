@@ -5,8 +5,6 @@ set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000 )
 ## Ignore warnings in generated code during the build process
 set (CTEST_CUSTOM_WARNING_EXCEPTION
   ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  # VXL has a macro conversion that we don't intend to fix.
-  "VCL_STATIC_CONST_INIT_INT_DECL"
   # For *NIX builds, MOAB does not generate export headers. Instead, it builds
   # its libraries with default (i.e. public) visibility. SMTK builds with hidden
   # visibility, so on MacOS we get warnings that match the following pattern

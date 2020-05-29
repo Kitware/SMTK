@@ -21,7 +21,6 @@ smtk/plugin/             tj.corona@kitware.com
 smtk/project/            john.tourtellott@kitware.com
 smtk/pybind11/           tj.corona@kitware.com
 smtk/resource/           tj.corona@kitware.com
-smtk/session/discrete/   bob.obara@kitware.com
 smtk/session/multiscale/ tj.corona@kitware.com
 smtk/session/oscillator/ david.thompson@kitware.com
 smtk/session/polygon/    david.thompson@kitware.com
