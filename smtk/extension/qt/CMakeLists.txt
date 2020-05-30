@@ -48,8 +48,6 @@ set(QAttrLibSrcs
   qtVoidItem.cxx
   qtNewAttributeWidget.cxx
   qtOverlay.cxx
-  qtModelOperationWidget.cxx
-  qtOperationDockWidget.cxx
   qtTimeZoneRegionModel.cxx
   qtTimeZoneSelectWidget.cxx
   qtViewInterface.cxx
@@ -121,8 +119,6 @@ set(QAttrLibMocHeaders
   qtVoidItem.h
   qtNewAttributeWidget.h
   qtOverlay.h
-  qtModelOperationWidget.h
-  qtOperationDockWidget.h
   qtDateTimeItem.h
   qtTimeZoneRegionModel.h
   qtTimeZoneSelectWidget.h
