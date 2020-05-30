@@ -63,6 +63,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <QtGlobal>
 
 #include <iostream>
 #include <set>
@@ -250,6 +251,11 @@ void qtAttributeView::createWidget()
 
   // Initialize definition info
   this->getAllDefinitions();
+  if (m_internals->AllDefs.empty())
+  {
+    qWarning("WARNING: View \"%s\" has no AttributeTypes defined.", view->name().c_str());
+    return;
+  }
 
   QSplitter* frame = new QSplitter(this->parentWidget());
   //this panel looks better in a over / under layout, rather than left / right

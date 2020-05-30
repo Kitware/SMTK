@@ -28,6 +28,7 @@
 #include <QScrollArea>
 #include <QTableWidget>
 #include <QVBoxLayout>
+#include <QtGlobal>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -148,7 +149,7 @@ void qtInstancedView::updateUI()
   int index = view->details().findChild("InstancedAttributes");
   if (index < 0)
   {
-    // Should present error message
+    qWarning("WARNING: View \"%s\" has no InstancedAttributes defined.", view->name().c_str());
     return;
   }
 
