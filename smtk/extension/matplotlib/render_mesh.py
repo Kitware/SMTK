@@ -16,18 +16,20 @@ Render a 2-dmensional mesh using matplotlib.
 
 """
 # use the 'sites' module to set up our path so we can find matplotlib
-from . import render_mesh_xml
-import smtk
-import smtk.attribute
-import smtk.io
-import smtk.mesh
-import smtk.operation
-import matplotlib
-import matplotlib.tri as tri
-import matplotlib.pyplot as plt
+import site  # nopep8
+site.main()  # nopep8
+
 import numpy as np
-import site
-site.main()
+import matplotlib.pyplot as plt
+import matplotlib.tri as tri
+import matplotlib
+
+import smtk.operation
+import smtk.mesh
+import smtk.io
+import smtk.attribute
+import smtk
+from . import render_mesh_xml
 
 
 class RenderMesh(smtk.operation.Operation):
