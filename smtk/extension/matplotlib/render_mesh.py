@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,25 +8,26 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 """ render_mesh.py:
 
 Render a 2-dmensional mesh using matplotlib.
 
 """
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import matplotlib.tri as tri
-
-import render_mesh_xml
-
+# use the 'sites' module to set up our path so we can find matplotlib
+from . import render_mesh_xml
 import smtk
 import smtk.attribute
 import smtk.io
 import smtk.mesh
 import smtk.operation
+import matplotlib
+import matplotlib.tri as tri
+import matplotlib.pyplot as plt
+import numpy as np
+import site
+site.main()
 
 
 class RenderMesh(smtk.operation.Operation):
@@ -76,10 +77,11 @@ class RenderMesh(smtk.operation.Operation):
 
         # Construct a pyplot, populate it with the triangles and color it by the
         # z-coordinate of the mesh
-        plt.figure(figsize=(3, 2), dpi=100)
-        plt.tricontourf([c[0] for c in coords], [c[1]
-                        for c in coords], tris, [c[2] for c in coords])
-        plt.colorbar()
+        fig1, ax1 = plt.subplots()
+        ax1.set_aspect('equal')
+        tcf = ax1.tricontourf([c[0] for c in coords], [c[1]
+                                                       for c in coords], tris, [c[2] for c in coords])
+        fig1.colorbar(tcf)
         plt.title('Mesh Elevation')
         plt.xlabel('X (units)')
         plt.ylabel('Y (units)')

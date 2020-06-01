@@ -7,12 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_matplotlib_RegisterOperations_h
-#define __smtk_extension_matplotlib_RegisterOperations_h
+#ifndef __smtk_extension_matplotlib_Registrar_h
+#define __smtk_extension_matplotlib_Registrar_h
 
 #include "smtk/extension/matplotlib/Exports.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Registrar.h"
+#include "smtk/session/mesh/Registrar.h"
 
 namespace smtk
 {
@@ -20,7 +22,14 @@ namespace extension
 {
 namespace matplotlib
 {
-SMTKMATPLOTLIBEXT_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
+class SMTKMATPLOTLIBEXT_EXPORT Registrar
+{
+public:
+  using Dependencies = std::tuple<operation::Registrar, mesh::Registrar>;
+
+  static void registerTo(const smtk::operation::Manager::Ptr&);
+  static void unregisterFrom(const smtk::operation::Manager::Ptr&);
+};
 }
 }
 }

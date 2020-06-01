@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import os
 import sys
 import unittest
@@ -48,7 +48,6 @@ class RenderMesh(smtk.testing.TestCase):
             raise RuntimeError('Could not find operator \'render mesh\'')
 
         # Set the operator's parameters
-        print renderMesh.parameters()
         renderMesh.parameters().associate(
             smtk.mesh.Component.create(self.meshResource.meshes()))
 
