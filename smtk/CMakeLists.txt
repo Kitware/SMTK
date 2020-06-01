@@ -100,6 +100,9 @@ set(smtkCore_private_link_libraries
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
+  set_property(SOURCE common/PythonInterpreter.cxx APPEND PROPERTY COMPILE_DEFINITIONS
+    "PYTHON_MODULEDIR=\"${SMTK_PYTHON_MODULEDIR}\"")
+
   # For code to optionally include ImportPythonOperator
   add_definitions(-DSMTK_PYTHON_ENABLED)
 
