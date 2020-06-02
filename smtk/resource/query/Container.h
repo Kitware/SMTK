@@ -48,8 +48,11 @@ public:
     return static_cast<Type&>(get(typeid(Type).hash_code()));
   }
 
+  // If the input type is default constructible, we can always create a new
+  // instance of it if it is not found. The method can therefore be marked
+  // noexcept.
   template <typename Type>
-  Type& get() noexcept
+  typename std::enable_if<std::is_default_constructible<Type>::value, Type&>::type get() noexcept
   {
     auto search = m_container.find(typeid(Type).hash_code());
     if (search == m_container.end())
@@ -57,6 +60,20 @@ public:
       search =
         m_container.emplace(std::make_pair(typeid(Type).hash_code(), std::unique_ptr<T>(new Type)))
           .first;
+    }
+
+    return static_cast<Type&>(*(search->second));
+  }
+
+  // If the input type is not default constructible, we throw an error that
+  // The type is not in the container.
+  template <typename Type>
+  typename std::enable_if<!std::is_default_constructible<Type>::value, Type&>::type get()
+  {
+    auto search = m_container.find(typeid(Type).hash_code());
+    if (search == m_container.end())
+    {
+      throw BadTypeError(smtk::common::typeName<T>());
     }
 
     return static_cast<Type&>(*(search->second));

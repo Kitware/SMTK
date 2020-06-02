@@ -47,7 +47,9 @@ std::unique_ptr<Query> Factory::create(const std::size_t& typeIndex) const
 
 std::size_t Factory::indexFor(const std::size_t& typeIndex) const
 {
-  int priority = std::numeric_limits<int>::lowest();
+  // Priority must be at least 0, and the query type with the highest priority
+  // is the most suitable.
+  int priority = -1;
   const Metadata* metadata = nullptr;
   for (auto& metadatum : m_metadata)
   {
