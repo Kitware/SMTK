@@ -93,15 +93,26 @@ public:
   /// is available using its type index.
   bool contains(const std::size_t typeIndex) const;
 
-  /// Create an instance of a Query type (or a suitable replacement for it).
+  /// Create an instance of a concrete Query type (or a suitable replacement for
+  /// it), registering the Query type if it is not already registered.
   template <typename QueryType>
-  std::unique_ptr<QueryType> create()
+  typename std::enable_if<!std::is_abstract<QueryType>::value, std::unique_ptr<QueryType> >::type
+  create()
   {
     if (!contains<QueryType>())
     {
       registerQuery<QueryType>();
     }
 
+    return std::unique_ptr<QueryType>{ static_cast<QueryType*>(
+      create(typeid(QueryType).hash_code()).release()) };
+  }
+
+  /// Create a a suitable replacement for an abstract Query type.
+  template <typename QueryType>
+  typename std::enable_if<std::is_abstract<QueryType>::value, std::unique_ptr<QueryType> >::type
+  create()
+  {
     return std::unique_ptr<QueryType>{ static_cast<QueryType*>(
       create(typeid(QueryType).hash_code()).release()) };
   }
@@ -115,16 +126,24 @@ public:
     return indexFor(typeid(QueryType).hash_code());
   }
 
-  /// Given an input Query type (which may be abstract), return the type index
-  /// of a registered Query type to perform the query.
+  /// Given a concrete input Query type, return the type index of a registered
+  /// Query type to perform the query, adding it if necessary.
   template <typename QueryType>
-  std::size_t indexFor()
+  typename std::enable_if<!std::is_abstract<QueryType>::value, std::size_t>::type indexFor()
   {
     if (!contains<QueryType>())
     {
       registerQuery<QueryType>();
     }
 
+    return indexFor(typeid(QueryType).hash_code());
+  }
+
+  /// Given an abstract input Query type, return the type index of a registered
+  /// Query type to perform the query.
+  template <typename QueryType>
+  typename std::enable_if<std::is_abstract<QueryType>::value, std::size_t>::type indexFor()
+  {
     return indexFor(typeid(QueryType).hash_code());
   }
 
