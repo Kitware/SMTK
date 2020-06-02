@@ -9,7 +9,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/extension/matplotlib/RegisterOperations.h"
+#include "smtk/extension/matplotlib/Registrar.h"
 
 #include "smtk/operation/RegisterPythonOperations.h"
 
@@ -20,10 +20,15 @@ namespace extension
 namespace matplotlib
 {
 
-void registerOperations(smtk::operation::Manager::Ptr& operationManager)
+void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
   smtk::operation::registerPythonOperations(
     operationManager, "smtk.extension.matplotlib.render_mesh");
+}
+
+void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperation("smtk.extension.matplotlib.render_mesh.render_mesh");
 }
 }
 }

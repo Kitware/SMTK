@@ -10,50 +10,45 @@
 #
 #=============================================================================
 
+set(unit_tests)
+set(unit_tests_which_require_data)
 set(additional_sources)
 
+set(external_libs ${Boost_LIBRARIES})
+
 if (SMTK_ENABLE_VTK_SUPPORT)
+  list(APPEND unit_tests_which_require_data
+  RenderMesh.cxx)
   list(APPEND additional_sources
-    ${PROJECT_SOURCE_DIR}/smtk/extension/vtk/reader/testing/cxx/smtkRegressionTestImage.cxx
-    )
+    smtkRegressionTestImage.cxx)
 endif()
 
-add_executable(RenderMesh RenderMesh.cxx ${additional_sources})
-
-# Include pybind and python directories
-target_include_directories(RenderMesh PRIVATE ${PYBIND11_INCLUDE_DIR})
-
-# Add hooks to the data and scratch directories
-target_compile_definitions(RenderMesh PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
-target_compile_definitions(RenderMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
-
-set(additional_libraries
-  Python${SMTK_PYTHON_VERSION}::Python
-  ${Boost_LIBRARIES}
-  )
-
-# We use VTK to perform an image comparison. If it is not present, the check is skipped
-if (SMTK_ENABLE_VTK_SUPPORT)
-
-  # Add compile definitions to force linking to implementation modules
-  set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
-
-# Do not enable VTK integration for testing
-#target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
-
-  list(APPEND additional_libraries
-    VTK::RenderingGL2PSOpenGL2
+smtk_unit_tests(
+  LABEL "vtk"
+  SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+  EXTRA_SOURCES ${additional_sources}
+  LIBRARIES
+    smtkCore
+    smtkMatplotlibExt
+    ${external_libs}
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::InteractionStyle
     VTK::IOImage
-    VTK::InteractionImage
+    VTK::RenderingCore
+    VTK::RenderingOpenGL2
     VTK::TestingRendering
-    vtkSMTKSourceExt
-    )
-endif()
+)
 
-target_link_libraries(RenderMesh smtkCore smtkMatplotlibExt smtkCoreModelTesting ${additional_libraries})
-
-if (SMTK_DATA_DIR)
-  add_test(NAME RenderMesh COMMAND $<TARGET_FILE:RenderMesh>)
-  set_tests_properties(RenderMesh PROPERTIES
-                       LABELS "ExtMatplotlib")
-endif()
+# This is required in order to get VTK's object factories hooked up.
+if (TARGET UnitTests_smtk_extension_matplotlib_testing_cxx)
+  vtk_module_autoinit(
+    TARGETS UnitTests_smtk_extension_matplotlib_testing_cxx
+    MODULES
+      VTK::CommonCore
+      VTK::CommonDataModel
+      VTK::RenderingCore
+      VTK::RenderingOpenGL2
+      VTK::TestingRendering)
+endif ()

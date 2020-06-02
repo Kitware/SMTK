@@ -8,15 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/PythonAutoInit.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
 #include "smtk/common/PythonInterpreter.h"
 
-#include "smtk/extension/matplotlib/RegisterOperations.h"
+#include "smtk/extension/matplotlib/Registrar.h"
 
 #include "smtk/io/ReadMesh.h"
 
@@ -33,16 +31,14 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-#ifdef USE_VTK
-#include "smtk/extension/vtk/reader/testing/cxx/smtkRegressionTestImage.h"
-#include <vtkImageViewer2.h>
+#include "smtkRegressionTestImage.h"
+#include <vtkImageActor.h>
+#include <vtkImageMapper3D.h>
 #include <vtkPNGReader.h>
 #include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkTesting.h>
-#endif
 
 namespace
 {
@@ -63,7 +59,7 @@ void cleanup(const std::string& file_path)
 
 // Demonstrate/test the ability to call python SMTK operators within the C++
 // environment.
-int main(int argc, char* argv[])
+int RenderMesh(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
@@ -73,7 +69,8 @@ int main(int argc, char* argv[])
 
   // Register matplotlib operators to the operation manager
   {
-    smtk::extension::matplotlib::registerOperations(operationManager);
+    smtk::extension::matplotlib::Registrar registrar;
+    registrar.registerTo(operationManager);
   }
 
   // Access a 2-dimensional mesh with interesting z-features from the
@@ -119,28 +116,27 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-#ifdef USE_VTK
   // Read the image
   vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
   reader->SetFileName(write_path.c_str());
 
   // Visualize
-  vtkSmartPointer<vtkImageViewer2> imageViewer = vtkSmartPointer<vtkImageViewer2>::New();
-  imageViewer->SetInputConnection(reader->GetOutputPort());
-  vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-    vtkSmartPointer<vtkRenderWindowInteractor>::New();
-  imageViewer->SetupInteractor(renderWindowInteractor);
-  imageViewer->Render();
-  imageViewer->GetRenderer()->ResetCamera();
-  imageViewer->Render();
+  vtkSmartPointer<vtkImageActor> actor = vtkSmartPointer<vtkImageActor>::New();
+  actor->GetMapper()->SetInputConnection(reader->GetOutputPort());
+
+  vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+  renderer->AddActor(actor);
+  renderer->ResetCamera();
+
+  vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
 
   // Compare the resulting image with the baseline
-  if (smtkRegressionTestImage(
-        imageViewer->GetRenderWindow(), 10., "matplotlib_rendered_mesh.png") != vtkTesting::PASSED)
+  if (smtkRegressionTestImage(renderWindow, 10., "matplotlib_rendered_mesh.png") !=
+    vtkTesting::PASSED)
   {
     return 1;
   }
-#endif
 
   // Remove the generated file
   cleanup(write_path);

@@ -55,6 +55,13 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <cstdlib>
 #include <sstream>
 
+namespace
+{
+
+//PYTHON_MODULEDIR is defined by cmake
+std::string python_moduledir = PYTHON_MODULEDIR;
+}
+
 namespace smtk
 {
 namespace common
@@ -193,21 +200,22 @@ bool PythonInterpreter::addPathToPluginModule(const std::string& module, const s
     return true;
   }
 
+  std::string dir = boost::filesystem::path(libdir).parent_path().string();
+
   // Otherwise, locate the directory containing a library in the plugin.
   // We first look for SMTK as run from the build tree.
-  bool found =
-    this->addPathToBuildTree(boost::filesystem::path(libdir).parent_path().string(), module);
+  bool found = this->addPathToBuildTree(dir, module);
 
   // If we don't find it, then we look for the module as an installed project.
   if (!found)
   {
-    found = this->addPathToInstalledModule(libdir, module);
+    found = this->addPathToInstalledModule(dir, module);
   }
 
   // If we don't find it, then we look for the module as a packaged project.
   if (!found)
   {
-    found = this->addPathToPackagedModule(libdir, module);
+    found = this->addPathToPackagedModule(dir, module);
   }
 
   return found;
@@ -238,60 +246,41 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
   pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
 
   found = locals["found"].cast<bool>();
-
   return found;
 }
 
 bool PythonInterpreter::addPathToPackagedModule(
-  const std::string& libPackageDir, const std::string& module)
+  const std::string& packageDir, const std::string& module)
 {
-#ifdef SMTK_MSVC
-  // If <module> is run out of a package, we expect that the directory that
-  // contains its libraries to contain "Lib/site-packages/<module>", so we
-  // attempt to add this directory to the PYTHONPATH.
-
-  boost::filesystem::path bundledPyInit =
-    boost::filesystem::path(libPackageDir) / "Lib" / "site-packages" / module / "__init__.py";
-
-  if (boost::filesystem::is_regular_file(bundledPyInit))
-  {
-    this->addToPythonPath(bundledPyInit.parent_path().parent_path().string());
-    return true;
-  }
-#else
   // If <module> is run out of a package, we expect that the directory that
   // contains its libraries is at the same level as "Python/<module>", so we
   // attempt to add this directory to the PYTHONPATH.
 
-  boost::filesystem::path bundledPyInit =
-    boost::filesystem::path(libPackageDir).parent_path() / "Python" / module / "__init__.py";
+  boost::filesystem::path pythonPath = boost::filesystem::path(packageDir) / python_moduledir;
+  boost::filesystem::path bundledPyInit = pythonPath / module / "__init__.py";
 
   if (boost::filesystem::is_regular_file(bundledPyInit))
   {
-    this->addToPythonPath(bundledPyInit.parent_path().parent_path().string());
+    this->addToPythonPath(pythonPath.string());
     return true;
   }
-#endif
   return false;
 }
 
 bool PythonInterpreter::addPathToInstalledModule(
-  const std::string& libInstallDir, const std::string& module)
+  const std::string& installDir, const std::string& module)
 {
   // If <module> is run out of the install tree, we expect that the directory
   // that contains its libraries also contains a directory called
   // "python<PY_MAJOR_VERSION>.<PY_MINOR_VERSION>"/site-packages/<module>", so
   // we attempt to add this directory to the PYTHONPATH.
 
-  std::stringstream installedPyInitStream;
-  installedPyInitStream << libInstallDir << "/"
-                        << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
-                        << "/site-packages/" << module << "/__init__.py";
-  boost::filesystem::path installedPyInit(installedPyInitStream.str());
+  boost::filesystem::path pythonPath = boost::filesystem::path(installDir) / python_moduledir;
+  boost::filesystem::path installedPyInit = pythonPath / module / "__init__.py";
 
   if (boost::filesystem::is_regular_file(installedPyInit))
   {
-    this->addToPythonPath(installedPyInit.parent_path().parent_path().string());
+    this->addToPythonPath(pythonPath.string());
     return true;
   }
   return false;
@@ -304,12 +293,12 @@ bool PythonInterpreter::addPathToBuildTree(
   // contains its libraries to reside one level below the build directory,
   // so we attempt to add the build directory to the PYTHONPATH.
 
-  boost::filesystem::path buildTreePyInit =
-    boost::filesystem::path(buildTreePath) / module / "__init__.py";
+  boost::filesystem::path pythonPath = boost::filesystem::path(buildTreePath) / python_moduledir;
+  boost::filesystem::path buildTreePyInit = pythonPath / module / "__init__.py";
 
   if (boost::filesystem::is_regular_file(buildTreePyInit))
   {
-    this->addToPythonPath(buildTreePath);
+    this->addToPythonPath(pythonPath.string());
     return true;
   }
   return false;

@@ -1,15 +1,8 @@
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-
-  add_paraview_plugin(smtkMatplotlibPlugin "1.0"
-    SERVER_SOURCES
-      sessionInit.cxx
-  )
-
-  target_link_libraries(smtkMatplotlibPlugin
-    LINK_PUBLIC
-      smtkCore
-    LINK_PRIVATE
-      vtkPVServerManagerApplicationCS
-  )
-  smtk_install_library(smtkMatplotlibPlugin DEPENDS smtkCore)
-endif()
+smtk_add_plugin(smtkMatplotlibPlugin
+  REGISTRAR smtk::extension::matplotlib::Registrar
+  MANAGERS smtk::operation::Manager
+  PARAVIEW_PLUGIN_ARGS
+    VERSION 1.0)
+target_link_libraries(smtkMatplotlibPlugin
+  PRIVATE
+    smtkMatplotlibExt)
