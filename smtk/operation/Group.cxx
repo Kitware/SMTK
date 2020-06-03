@@ -314,6 +314,7 @@ std::size_t Group::operationObjectDistance(
   }
   auto resource = dynamic_cast<const smtk::resource::Resource*>(&obj);
   bool ruleRequiresResources = assocRule->onlyResources();
+  (void)ruleRequiresResources;
   assert(
     !(ruleRequiresResources ^ static_cast<bool>(resource))); // acceptable == true => this assert.
   if (!resource)
