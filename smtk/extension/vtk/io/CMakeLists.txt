@@ -33,6 +33,7 @@ target_link_libraries(smtkIOVTK
     VTK::CommonExecutionModel
     VTK::FiltersCore
     VTK::FiltersGeneral
+    VTK::IOExodus
     VTK::IOGDAL
     VTK::IOGeometry
     VTK::IOImage
@@ -55,6 +56,7 @@ vtk_module_autoinit(
           VTK::CommonExecutionModel
           VTK::FiltersCore
           VTK::FiltersGeneral
+          VTK::IOExodus
           VTK::IOGDAL
           VTK::IOGeometry
           VTK::IOImage

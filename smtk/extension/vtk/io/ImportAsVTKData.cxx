@@ -27,6 +27,7 @@
 #include "vtkDataSet.h"
 #include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
+#include "vtkExodusIIReader.h"
 #include "vtkGDALRasterReader.h"
 #include "vtkGraph.h"
 #include "vtkIdTypeArray.h"
@@ -137,6 +138,7 @@ DeclareReader_type(ply);
 DeclareReader_type(pts);
 DeclareReader_type(tif);
 DeclareReader_type(png);
+DeclareReader_type(exo);
 DeclareReader_type(slac);
 DeclareReader_type(stl);
 
@@ -328,6 +330,23 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
     data->ShallowCopy(flipImage->GetOutput());
   }
 
+  return data;
+}
+
+ImportAsVTKData_exo::ImportAsVTKData_exo()
+  : ImportAsVTKDataType<ImportAsVTKData_exo>({ smtk::extension::vtk::io::ImportFormat(
+      "Exodus File", { ".ex2", ".exo", ".exoII", ".exo2", ".e", ".g", ".gen" }) })
+{
+}
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_exo::operator()(
+  const std::pair<std::string, std::string>& fileInfo)
+{
+  vtkNew<vtkExodusIIReader> rdr;
+  rdr->SetFileName(fileInfo.second.c_str());
+  rdr->Update();
+
+  vtkSmartPointer<vtkUnstructuredGrid> data = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  data->ShallowCopy(rdr->GetOutput());
   return data;
 }
 
