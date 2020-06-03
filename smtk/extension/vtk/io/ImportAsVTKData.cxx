@@ -341,13 +341,30 @@ ImportAsVTKData_exo::ImportAsVTKData_exo()
 vtkSmartPointer<vtkDataObject> ImportAsVTKData_exo::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
-  vtkNew<vtkExodusIIReader> rdr;
-  rdr->SetFileName(fileInfo.second.c_str());
-  rdr->Update();
+  vtkNew<vtkExodusIIReader> reader;
+  reader->SetFileName(fileInfo.second.c_str());
+  reader->Update();
 
-  vtkSmartPointer<vtkUnstructuredGrid> data = vtkSmartPointer<vtkUnstructuredGrid>::New();
-  data->ShallowCopy(rdr->GetOutput());
-  return data;
+  vtkMultiBlockDataSet* readout = reader->GetOutput();
+  vtkNew<vtkAppendFilter> appendFilter;
+
+  vtkCompositeDataIterator* iter = readout->NewIterator();
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+  {
+    vtkUnstructuredGrid* block = vtkUnstructuredGrid::SafeDownCast(iter->GetCurrentDataObject());
+    if (!block)
+    {
+      vtkGenericWarningMacro(<< "This block from SLAC reader is not an unstructured grid!\n");
+      continue;
+    }
+    appendFilter->AddInputData(block);
+  }
+  iter->Delete();
+  appendFilter->Update();
+
+  auto uGridOutput = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  uGridOutput->ShallowCopy(appendFilter->GetOutput());
+  return uGridOutput;
 }
 
 ImportAsVTKData_slac::ImportAsVTKData_slac()
