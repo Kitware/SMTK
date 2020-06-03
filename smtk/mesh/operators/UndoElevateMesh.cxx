@@ -21,6 +21,8 @@
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/utility/ApplyToMesh.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/model/Model.h"
 
 namespace smtk
@@ -65,10 +67,6 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
-  // Access the attribute associated with the changed tessellation
-  auto modifiedEntities = result->findComponent("tess_changed");
-  modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
-
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
@@ -84,6 +82,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
     }
 
     modified->appendValue(meshComponent);
+    smtk::operation::MarkGeometry().markModified(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
@@ -91,7 +90,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model.component());
+      smtk::operation::MarkGeometry().markModified(model.component());
     }
   }
 

@@ -74,10 +74,6 @@
     <AttDef Type="result(generate hotstart data)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-        <Component Name="tess_changed" NumberOfRequiredValues="0"
-                     Extensible="true" AdvanceLevel="11">
-          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
-        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

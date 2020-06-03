@@ -20,6 +20,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/ExtractAdjacency_xml.h"
 
 namespace smtk
@@ -76,6 +78,10 @@ smtk::mesh::ExtractAdjacency::Result ExtractAdjacency::operateInternal()
 
   // Access the attribute associated with modified components
   result->findComponent("created")->appendValue(adjacencyComponent);
+
+  // Mark the created component as having a modified geometry so it will be
+  // propertly rendered
+  smtk::operation::MarkGeometry().markModified(adjacencyComponent);
 
   // Return with success
   return result;

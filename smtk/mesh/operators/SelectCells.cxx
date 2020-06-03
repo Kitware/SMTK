@@ -24,6 +24,8 @@
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/resource/Selection.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/operation/Manager.h"
 
 namespace smtk
@@ -63,6 +65,7 @@ SelectCells::Result SelectCells::operateInternal()
 
   // Access the attribute associated with created components
   result->findComponent("created")->appendValue(meshSelection);
+  smtk::operation::MarkGeometry().markModified(meshSelection);
 
   // Return with success
   return result;

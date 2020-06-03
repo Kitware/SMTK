@@ -20,6 +20,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/DeleteMesh_xml.h"
 
 namespace smtk
@@ -47,6 +49,7 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
     if (removed)
     {
       result->findComponent("expunged")->appendValue(meshComponent);
+      smtk::operation::MarkGeometry().erase(meshComponent);
     }
 
     allRemoved &= removed;

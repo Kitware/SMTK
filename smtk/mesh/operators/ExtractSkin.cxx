@@ -20,6 +20,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/ExtractSkin_xml.h"
 
 namespace smtk
@@ -56,6 +58,10 @@ smtk::mesh::ExtractSkin::Result ExtractSkin::operateInternal()
 
   // Access the attribute associated with modified components
   result->findComponent("created")->appendValue(skinComponent);
+
+  // Mark the created component as having a modified geometry so it will be
+  // propertly rendered
+  smtk::operation::MarkGeometry().markModified(skinComponent);
 
   // Return with success
   return result;

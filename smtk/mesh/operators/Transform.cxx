@@ -21,6 +21,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/Transform_xml.h"
 
 #include <cmath>
@@ -121,10 +123,6 @@ smtk::mesh::Transform::Result Transform::operateInternal()
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
-  // Access the attribute associated with the changed tessellation
-  auto modifiedEntities = result->findComponent("tess_changed");
-  modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
-
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
@@ -140,6 +138,7 @@ smtk::mesh::Transform::Result Transform::operateInternal()
     }
 
     modified->appendValue(meshComponent);
+    smtk::operation::MarkGeometry().markModified(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
@@ -147,7 +146,7 @@ smtk::mesh::Transform::Result Transform::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model.component());
+      smtk::operation::MarkGeometry().markModified(model.component());
     }
   }
 
