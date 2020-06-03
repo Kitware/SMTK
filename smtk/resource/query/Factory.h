@@ -86,7 +86,7 @@ public:
   template <typename QueryType>
   bool contains() const
   {
-    return contains(QueryType::type_index);
+    return contains(QueryType::typeIndex());
   }
 
   /// Determine whether or not a Query type (or a suitable replacement for it)
@@ -105,7 +105,7 @@ public:
     }
 
     return std::unique_ptr<QueryType>{ static_cast<QueryType*>(
-      create(typeid(QueryType).hash_code()).release()) };
+      create(QueryType::typeIndex()).release()) };
   }
 
   /// Create a a suitable replacement for an abstract Query type.
@@ -114,7 +114,7 @@ public:
   create()
   {
     return std::unique_ptr<QueryType>{ static_cast<QueryType*>(
-      create(typeid(QueryType).hash_code()).release()) };
+      create(QueryType::typeIndex()).release()) };
   }
 
   /// Create an instance of a Query type (or a suitable replacement for it).
@@ -123,7 +123,7 @@ public:
   template <typename QueryType>
   std::size_t indexFor() const
   {
-    return indexFor(typeid(QueryType).hash_code());
+    return indexFor(QueryType::typeIndex());
   }
 
   /// Given a concrete input Query type, return the type index of a registered
@@ -136,7 +136,7 @@ public:
       registerQuery<QueryType>();
     }
 
-    return indexFor(typeid(QueryType).hash_code());
+    return indexFor(QueryType::typeIndex());
   }
 
   /// Given an abstract input Query type, return the type index of a registered
@@ -144,7 +144,7 @@ public:
   template <typename QueryType>
   typename std::enable_if<std::is_abstract<QueryType>::value, std::size_t>::type indexFor()
   {
-    return indexFor(typeid(QueryType).hash_code());
+    return indexFor(QueryType::typeIndex());
   }
 
   /// Given an input Query type (which may be abstract), return the type index

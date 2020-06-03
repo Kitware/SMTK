@@ -31,12 +31,12 @@ class SMTKCORE_EXPORT Query
   friend class Metadata;
 
 public:
-  static const std::size_t type_index;
+  static std::size_t typeIndex();
 
 protected:
   static int numberOfGenerationsFromType(const std::size_t index)
   {
-    return (type_index == index ? 0 : std::numeric_limits<int>::lowest());
+    return (Query::typeIndex() == index ? 0 : std::numeric_limits<int>::lowest());
   }
 };
 }
