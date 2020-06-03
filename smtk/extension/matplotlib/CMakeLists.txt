@@ -24,7 +24,8 @@ foreach(pyfile ${matplotlibPySrcs})
     "${CMAKE_CURRENT_SOURCE_DIR}/${pyfile}"
     "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/${relativedir}/${filename}" @ONLY
     )
-  list(APPEND matplotlib_pymodulefiles "${CMAKE_BINARY_DIR}/${relativedir}/${filename}")
+  list(APPEND matplotlib_pymodulefiles
+    "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/${relativedir}/${filename}")
 endforeach()
 
 foreach(pyfile ${matplotlib_pyxmlfiles})
@@ -34,7 +35,8 @@ foreach(pyfile ${matplotlib_pyxmlfiles})
     "${pyfile}"
     "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/${relativefile}" @ONLY
     )
-  list(APPEND matplotlib_pymodulefiles "${CMAKE_BINARY_DIR}/${relativefile}")
+  list(APPEND matplotlib_pymodulefiles
+    "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/${relativefile}")
 endforeach()
 
 file(RELATIVE_PATH relativedir ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
