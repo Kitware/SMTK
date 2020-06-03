@@ -18,7 +18,10 @@ namespace resource
 {
 namespace query
 {
-const std::size_t Query::type_index = std::type_index(typeid(Query)).hash_code();
+std::size_t Query::typeIndex()
+{
+  return std::type_index(typeid(Query)).hash_code();
+}
 }
 }
 }

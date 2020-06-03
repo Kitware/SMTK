@@ -55,13 +55,14 @@ int TestQuery(int /*unused*/, char** const /*unused*/)
   test(factory.unregisterQuery<QueryA>(), "Could not unregister QueryA");
 
   test(factory.registerQuery<QueryB>([](const std::size_t& index) {
-    if (index == QueryB::type_index)
+    if (index == QueryB::typeIndex())
       return std::numeric_limits<int>::max();
     return -1;
   }),
     "Could not register QueryB with a custom priority function");
   {
     std::unique_ptr<QueryB> queryB = factory.create<QueryB>();
+    test(queryB != nullptr, "Could not create an instance of QueryB");
     test(fabs(queryB->foo() - QueryB().foo()) < EPSILON, "Unexpected query result");
     test(fabs(queryB->bar() - QueryB().bar()) < EPSILON, "Unexpected query result");
   }
