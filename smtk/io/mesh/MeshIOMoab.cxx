@@ -28,7 +28,7 @@ MeshIOMoab::MeshIOMoab()
   this->Formats.emplace_back("moab", std::vector<std::string>({ ".h5m", ".mhdf" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
   this->Formats.emplace_back("exodus",
-    std::vector<std::string>({ ".ex2", ".exo", ".exoII", ".exo2", ".g", ".gen" }),
+    std::vector<std::string>({ ".ex2", ".exo", ".exoII", ".exo2", ".e", ".g", ".gen" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
   this->Formats.emplace_back(
     "slac", std::vector<std::string>({ ".slac" }), Format::Import | Format::Export);
