@@ -47,9 +47,15 @@ struct SMTKMESHSESSION_EXPORT BoundingBox
       resource = std::dynamic_pointer_cast<smtk::session::mesh::Resource>(entity->resource());
       if (resource)
       {
-        smtk::mesh::Resource::Ptr meshResource = resource->resource();
-        return meshResource->queries().get<smtk::geometry::BoundingBox>().operator()(
-          smtk::mesh::Component::create(meshResource->findAssociatedMeshes(object->id())));
+        smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
+        auto elementIt = topology->m_elements.find(object->id());
+
+        if (elementIt != topology->m_elements.end())
+        {
+          smtk::mesh::Resource::Ptr meshResource = resource->resource();
+          return meshResource->queries().get<smtk::geometry::BoundingBox>().operator()(
+            smtk::mesh::Component::create(elementIt->second.m_mesh));
+        }
       }
     }
     return smtk::geometry::BoundingBox::operator()(object);

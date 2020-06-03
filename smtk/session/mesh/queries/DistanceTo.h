@@ -40,10 +40,15 @@ struct SMTKMESHSESSION_EXPORT DistanceTo
     if (auto resource =
           std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
     {
-      smtk::mesh::Resource::Ptr meshResource = resource->resource();
-      return meshResource->queries().get<smtk::geometry::DistanceTo>().operator()(
-        smtk::mesh::Component::create(meshResource->findAssociatedMeshes(component->id())),
-        sourcePoint);
+      smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
+      auto elementIt = topology->m_elements.find(component->id());
+
+      if (elementIt != topology->m_elements.end())
+      {
+        smtk::mesh::Resource::Ptr meshResource = resource->resource();
+        return meshResource->queries().get<smtk::geometry::DistanceTo>().operator()(
+          smtk::mesh::Component::create(elementIt->second.m_mesh), sourcePoint);
+      }
     }
 
     return smtk::geometry::DistanceTo::operator()(component, sourcePoint);
