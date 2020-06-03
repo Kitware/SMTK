@@ -18,6 +18,7 @@
 #include "smtk/session/mesh/operators/Merge.h"
 #include "smtk/session/mesh/operators/Print.h"
 #include "smtk/session/mesh/operators/Read.h"
+#include "smtk/session/mesh/operators/Transform.h"
 #include "smtk/session/mesh/operators/Write.h"
 
 #include "smtk/session/mesh/Resource.h"
@@ -41,7 +42,7 @@ namespace mesh
 namespace
 {
 typedef std::tuple<CreateUniformGrid, EulerCharacteristicRatio, Export, Import, Merge, Print, Read,
-  Write>
+  Transform, Write>
   OperationList;
 }
 

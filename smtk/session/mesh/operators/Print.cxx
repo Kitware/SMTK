@@ -53,7 +53,7 @@ Print::Result Print::operateInternal()
   // Access the model resource's associated topology
   smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
 
-  // For each model entity to be merged...
+  // For each model entity to be printed...
   for (auto it = associations->begin(); it != associations->end(); ++it)
   {
     //...access its associated topology element.
