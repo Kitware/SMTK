@@ -4,15 +4,15 @@
 # of files changed in the MR.
 
 # Subsystems have specific owners
-conda/                   tj.corona@kitware.com john.tourtellott@kitware.com
+conda/                   john.tourtellott@kitware.com
 doc/tutorials/           david.thompson@kitware.com
 doc/userguide/           david.thompson@kitware.com
 smtk/attribute/          bob.obara@kitware.com
-smtk/common/             david.thompson@kitware.com
-smtk/extension/opencv/   jacob.becker@kitware.com
+smtk/common/             david.thompson@kitware.com tj.corona@kitware.com
 smtk/extension/paraview/ david.thompson@kitware.com
 smtk/extension/qt/       bob.obara@kitware.com
 smtk/extension/vtk/      david.thompson@kitware.com tj.corona@kitware.com
+smtk/graph/              tj.corona@kitware.com david.thompson@kitware.com
 smtk/io/                 bob.obara@kitware.com
 smtk/mesh/               tj.corona@kitware.com
 smtk/model/              david.thompson@kitware.com
