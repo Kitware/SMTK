@@ -954,13 +954,15 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     // Constructor for that type could not be found)
     std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
   }
-
-  // Views do not follow RAII. They require a call to the protected virtual
-  // method buildUI() to be initialized. Since objects that inherit from
-  // qtBaseView are only ever called by qtUIManager, we can code around this
-  // issue by making qtBaseView a friend of qtUIManager and by calling buildUI()
-  // immediately upon construction in qtUIManager.
-  qtView->buildUI();
+  else
+  {
+    // Views do not follow RAII. They require a call to the protected virtual
+    // method buildUI() to be initialized. Since objects that inherit from
+    // qtBaseView are only ever called by qtUIManager, we can code around this
+    // issue by making qtBaseView a friend of qtUIManager and by calling buildUI()
+    // immediately upon construction in qtUIManager.
+    qtView->buildUI();
+  }
   return qtView;
 }
 
