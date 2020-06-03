@@ -4,9 +4,6 @@ DEPENDS
   VTK::CommonCore
   VTK::CommonDataModel
   VTK::CommonExecutionModel
-  # Only required if OpenCV support is enabled.
-  # TODO: Split this into a separate module.
-  # VTK::IOImage
 PRIVATE_DEPENDS
   VTK::CommonMisc
   VTK::CommonTransforms

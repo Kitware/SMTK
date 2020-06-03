@@ -2,13 +2,6 @@
 set(CMAKE_C_CLANG_TIDY "")
 set(CMAKE_CXX_CLANG_TIDY "")
 
-#if(SMTK_ENABLE_OPENCV)
-#  set(Delaunay_USE_OPENCV ON)
-#endif()
-#if(SMTK_ENABLE_VTK_SUPPORT)
-#  set(Delaunay_USE_VTK ON)
-#endif()
-
 set(CMAKE_INSTALL_CMAKEDIR
   "${SMTK_INSTALL_CONFIG_DIR}/Delaunay")
 set(CMAKE_INSTALL_INCLUDEDIR
