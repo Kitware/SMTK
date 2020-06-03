@@ -27,6 +27,7 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/MarkGeometry.h"
 
 #include "smtk/io/Logger.h"
 
@@ -186,6 +187,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
       smtk::attribute::ComponentItem::Ptr created = selectionResult->findComponent("created");
       selection.insert(created->value());
       result->findComponent("created")->appendValue(created->value());
+      smtk::operation::MarkGeometry().markModified(created->value());
 
       created->reset();
 

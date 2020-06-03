@@ -40,6 +40,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include <array>
 #include <cmath>
 #include <fstream>
@@ -359,9 +361,8 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
-  // Access the attribute associated with the changed tessellation
-  auto modifiedEntities = result->findComponent("tess_changed");
-  modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
+  // Mark the modified mesh components to update their representative geometry
+  smtk::operation::MarkGeometry markGeometry(resource);
 
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
@@ -372,6 +373,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     smtk::mesh::utility::applyWarp(fn, mesh, true);
 
     modified->appendValue(meshComponent);
+    markGeometry.markModified(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
@@ -379,7 +381,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model.component());
+      smtk::operation::MarkGeometry().markModified(model.component());
     }
   }
 

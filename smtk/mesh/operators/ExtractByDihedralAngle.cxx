@@ -22,6 +22,8 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/ExtractByDihedralAngle_xml.h"
 
 #include <cmath>
@@ -226,7 +228,12 @@ smtk::mesh::ExtractByDihedralAngle::Result ExtractByDihedralAngle::operateIntern
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  result->findComponent("created")->appendValue(smtk::mesh::Component::create(createdMesh));
+  auto created = smtk::mesh::Component::create(createdMesh);
+  result->findComponent("created")->appendValue(created);
+
+  // Mark the created component as having a modified geometry so it will be
+  // propertly rendered
+  smtk::operation::MarkGeometry().markModified(created);
 
   return result;
 }

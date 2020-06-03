@@ -48,13 +48,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(transform mesh)" BaseType="result">
-      <ItemDefinitions>
-        <Component Name="tess_changed" NumberOfRequiredValues="0"
-                     Extensible="true" AdvanceLevel="11">
-          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
-        </Component>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(transform mesh)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

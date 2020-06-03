@@ -32,6 +32,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include <array>
 #include <cmath>
 #include <fstream>
@@ -263,10 +265,6 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
-  // Access the attribute associated with the changed tessellation
-  auto modifiedEntities = result->findComponent("tess_changed");
-  modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
-
   std::function<double(std::array<double, 3>)> fn;
   std::string name;
 
@@ -299,6 +297,7 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
     smtk::mesh::utility::applyScalarPointField(fn, name, mesh);
 
     modified->appendValue(meshComponent);
+    smtk::operation::MarkGeometry().markModified(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
@@ -306,7 +305,7 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model.component());
+      smtk::operation::MarkGeometry().markModified(model.component());
     }
   }
 

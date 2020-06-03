@@ -18,6 +18,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/mesh/Subtract_xml.h"
 
 namespace smtk
@@ -53,6 +55,11 @@ smtk::mesh::Subtract::Result Subtract::operateInternal()
 
   // Access the attribute associated with modified components
   result->findComponent("created")->appendValue(differenceComponent);
+
+  // Mark the minuend and difference as having a modified geometry.
+  smtk::operation::MarkGeometry().markModified(
+    this->parameters()->associations()->valueAs<smtk::mesh::Component>());
+  smtk::operation::MarkGeometry().markModified(differenceComponent);
 
   // Return with success
   return result;
