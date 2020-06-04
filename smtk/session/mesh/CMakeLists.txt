@@ -33,6 +33,7 @@ set(meshOperators
   Merge
   Print
   Read
+  Transform
   Write
   )
 

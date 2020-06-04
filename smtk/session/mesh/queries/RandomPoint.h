@@ -41,11 +41,15 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
     if (auto resource =
           std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
     {
-      smtk::mesh::Resource::Ptr meshResource = resource->resource();
-      auto& randomPoint = meshResource->queries().get<smtk::geometry::RandomPoint>();
-      randomPoint.seed(m_seed);
-      return randomPoint(
-        smtk::mesh::Component::create(meshResource->findAssociatedMeshes(component->id())));
+      smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
+      auto elementIt = topology->m_elements.find(component->id());
+
+      if (elementIt != topology->m_elements.end())
+      {
+        smtk::mesh::Resource::Ptr meshResource = resource->resource();
+        return meshResource->queries().get<smtk::geometry::RandomPoint>().operator()(
+          smtk::mesh::Component::create(elementIt->second.m_mesh));
+      }
     }
 
     return smtk::geometry::RandomPoint::operator()(component);
