@@ -49,13 +49,52 @@
 #include <algorithm>
 #include <cctype>
 
+namespace
+{
+// A modification to pqBoxPropertyWidget has been developed concurrently with
+// this class that adds a constructor argument to hide reference bounds
+// information. This logic will use the new constructor argument if it is
+// available.
+template <typename MyClass>
+class CanHideReferenceBounds
+{
+  template <typename X>
+  static std::true_type testConstructorWithArgs(decltype(X{ std::declval<vtkSMProxy*>(),
+    std::declval<vtkSMPropertyGroup*>(), std::declval<QWidget*>(), std::declval<bool>() })*);
+  template <typename X>
+  static std::false_type testConstructorWithArgs(...);
+
+public:
+  using type = decltype(testConstructorWithArgs<MyClass>(nullptr));
+  static constexpr bool value = type::value;
+};
+
+struct CreateAndHideReferenceBounds
+{
+  template <typename BoxPropertyWidget>
+  typename std::enable_if<CanHideReferenceBounds<BoxPropertyWidget>::value,
+    BoxPropertyWidget*>::type
+  operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
+  {
+    return new BoxPropertyWidget(smproxy, smgroup, nullptr, true);
+  }
+
+  template <typename BoxPropertyWidget>
+  typename std::enable_if<!CanHideReferenceBounds<BoxPropertyWidget>::value,
+    BoxPropertyWidget*>::type
+  operator()(vtkSMProxy* smproxy, vtkSMPropertyGroup* smgroup)
+  {
+    return new BoxPropertyWidget(smproxy, smgroup);
+  }
+};
+}
+
 using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 struct pqSMTKTransformWidget::Internal
 {
   smtk::operation::Observers::Key m_opObserver;
-  std::mutex m_mutex;
 };
 
 pqSMTKTransformWidget::pqSMTKTransformWidget(
@@ -123,8 +162,11 @@ bool pqSMTKTransformWidget::createProxyAndWidget(
     return false;
   }
   vtkSMPropertyHelper(proxy, "UseReferenceBounds").Set(true);
-  // vtkSMPropertyHelper(proxy, "Bounds").Set(&boundingBox[0], 6);
-  widget = new pqBoxPropertyWidget(proxy, proxy->GetPropertyGroup(0));
+
+  // Construct a pqBoxPropertyWidget and hide its reference bounds if the version
+  // of ParaView we are using supports it.
+  widget = CreateAndHideReferenceBounds().operator()<pqBoxPropertyWidget>(
+    proxy, proxy->GetPropertyGroup(0));
 
   // Unlike traditional boolean-valued XML attributes, ShowControls defaults
   // to true (even when not present) to preserve existing behavior.
@@ -209,8 +251,6 @@ void pqSMTKTransformWidget::resetWidget()
 
 void pqSMTKTransformWidget::updateItemFromWidgetInternal()
 {
-  std::lock_guard<std::mutex> guard(m_internal->m_mutex);
-
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
   smtk::attribute::StringItemPtr control;
@@ -267,8 +307,6 @@ void pqSMTKTransformWidget::updateItemFromWidgetInternal()
 
 void pqSMTKTransformWidget::updateWidgetFromItemInternal()
 {
-  std::lock_guard<std::mutex> guard(m_internal->m_mutex);
-
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
   smtk::attribute::StringItemPtr control;
