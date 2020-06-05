@@ -1306,6 +1306,7 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
         statusItem->setSizeHint(m_internals->m_alertSize);
         m_internals->ListTableModel->setItem(i, status_column, statusItem);
       }
+      break;
     }
   }
 }
@@ -1406,7 +1407,9 @@ bool qtAttributeView::isValid() const
 {
   for (int i = 0; i < m_internals->ListTableModel->rowCount(); i++)
   {
-    if (m_internals->ListTableModel->item(i, status_column) != nullptr)
+    QStandardItem* item = m_internals->ListTableModel->item(i, status_column);
+    // If there is an alert icon in the status column then we know the attribute is invalid
+    if (!((item == nullptr) || item->icon().isNull()))
     {
       return false;
     }
