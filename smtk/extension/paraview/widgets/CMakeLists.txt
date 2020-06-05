@@ -5,6 +5,7 @@ set(classes
   Registrar
   pqSMTKAttributeItemWidget
   pqSMTKBoxItemWidget
+  pqSMTKTransformWidget
   qtSimpleExpressionEvaluationView)
 
 set(CMAKE_AUTOMOC 1)

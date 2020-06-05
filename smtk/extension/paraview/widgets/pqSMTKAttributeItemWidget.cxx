@@ -243,22 +243,22 @@ void pqSMTKAttributeItemWidget::updateItemFromWidget()
   {
     m_p->m_state = Internal::State::UpdatingFromAttribute;
     this->updateItemFromWidgetInternal();
-
-    // Only return to idle after event queue is processed
-    // since the "modified()" signal's connected slots must
-    // be allowed to run before changing state.
-    QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
-    QTimer::singleShot(1, [guardedObject]() {
-      if (guardedObject)
-      {
-        guardedObject->m_p->m_state = Internal::State::Idle;
-      }
-    });
+    m_p->m_state = Internal::State::DoneUpdatingFromAttribute;
   }
 }
 
 void pqSMTKAttributeItemWidget::updateWidgetFromItem()
 {
+  if (m_p->m_state == Internal::State::DoneUpdatingFromAttribute)
+  {
+    // This happens when updateItemFromWidget() causes a modification to the
+    // attribute, resulting in a Signal operation that triggers this method.
+    // We complete the update from widget to item by resetting the state to
+    // idle.
+    m_p->m_state = Internal::State::Idle;
+    return;
+  }
+
   if (m_p->m_state == Internal::State::Idle)
   {
     m_p->m_state = Internal::State::UpdatingFromUI;
@@ -475,11 +475,9 @@ void pqSMTKAttributeItemWidget::createEditor()
   pqActiveObjects& actives(pqActiveObjects::instance());
   pvwidget->setView(actives.activeView());
   m_p->m_pvwidget = pvwidget;
-  // changeFinished is emitted when users modify properties using Qt widgets:
-  QObject::connect(pvwidget, SIGNAL(changeFinished()), this, SLOT(updateItemFromWidget()));
-  // interaction/endInteraction are emitted when users modify properties using ParaView widgets:
-  QObject::connect(pvwidget, SIGNAL(interaction()), this, SLOT(updateItemFromWidget()));
+  // When the user is done interacting with the widget, update the attribute values
   QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(acceptWidgetValues()));
+  QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(updateItemFromWidget()));
   // When the active view changes, move the widget to that view.
   QObject::connect(&actives, SIGNAL(viewChanged(pqView*)), pvwidget, SLOT(setView(pqView*)));
 

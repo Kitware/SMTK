@@ -37,9 +37,11 @@ class pqSMTKAttributeItemWidget::Internal
 public:
   enum class State
   {
-    Idle,                 //!< Widget is not being manipulated by attribute system or user
-    UpdatingFromUI,       //!< Widget is being manipulated by user.
-    UpdatingFromAttribute //!< Widget is being manipulated by attribute system.
+    Idle,                      //!< Widget is not being manipulated by attribute system or user
+    UpdatingFromUI,            //!< Widget is being manipulated by user.
+    UpdatingFromAttribute,     //!< Widget is being manipulated by attribute system.
+    DoneUpdatingFromAttribute, //!< Widget was manipulated by UI, resulting in a signal
+                               //!<   from attribute system.
   };
 
   Internal(smtk::attribute::ItemPtr itm, QWidget* p, smtk::extension::qtBaseView* bview,
