@@ -46,7 +46,7 @@ void Geometry::queryGeometry(
 {
   // Access the mesh component
   auto component = std::dynamic_pointer_cast<smtk::mesh::Component>(obj);
-  if (!component)
+  if (!component || !component->mesh().isValid())
   {
     entry.m_generation = Invalid;
     return;
@@ -71,7 +71,7 @@ void Geometry::queryGeometry(
 int Geometry::dimension(const smtk::resource::PersistentObject::Ptr& obj) const
 {
   auto component = std::dynamic_pointer_cast<smtk::mesh::Component>(obj);
-  if (component)
+  if (component && component->mesh().isValid())
   {
     int highestDim = static_cast<int>(smtk::mesh::utility::highestDimension(component->mesh()));
 
