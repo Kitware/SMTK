@@ -946,7 +946,13 @@ void qtAttributeView::onViewBy()
     // so switch tabs would not reset selection
     if (!m_internals->AssociationsWidget->hasSelectedItem())
     {
-      m_internals->ListTable->selectRow(0);
+      // In this case there was no previous selection so lets select the
+      // first attribute
+      QModelIndex mi = m_internals->ListTableProxyModel->index(0, 1);
+      if (mi.isValid())
+      {
+        m_internals->ListTable->setCurrentIndex(mi);
+      }
     }
   }
   else
