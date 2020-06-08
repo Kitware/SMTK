@@ -166,13 +166,14 @@ public:
 
   Resource(Resource&&) noexcept;
 
-private:
+protected:
   // Derived resources should inherit
   // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's
   // constructors are declared private to enforce this relationship.
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
 
+private:
   smtk::common::UUID m_id;
   std::string m_location;
   std::string m_name;

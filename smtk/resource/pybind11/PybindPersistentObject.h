@@ -15,6 +15,8 @@
 
 #include "smtk/resource/PersistentObject.h"
 
+#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+
 namespace py = pybind11;
 
 PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_resource_PersistentObject(py::module &m)

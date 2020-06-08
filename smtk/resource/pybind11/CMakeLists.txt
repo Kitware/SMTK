@@ -19,6 +19,12 @@ set_target_properties(${library_name}
 # Install library
 install(TARGETS ${library_name} DESTINATION "${install_path}")
 
+# Install PyResource header
+install(
+  FILES PyComponent.h PyResource.h
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk/resource/pybind11
+  )
+
 # Create and install module __init__.py
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
