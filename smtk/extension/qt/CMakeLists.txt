@@ -9,6 +9,7 @@ set(QAttrLibSrcs
   qtAttributeDisplay.cxx
   qtAttributeEditorDialog.cxx
   qtAttributeItemInfo.cxx
+  qtBadgeActionToggle.cxx
   qtBaseAttributeView.cxx
   qtBaseView.cxx
   qtCategorySelectorView.cxx
@@ -58,6 +59,7 @@ set(QAttrLibSrcs
   RedirectOutput.cxx
   SVGIconEngine.cxx
   TypeAndColorBadge.cxx
+  VisibilityBadge.cxx
   )
 
 set(QAttrLibUIs
@@ -125,12 +127,14 @@ set(QAttrLibMocHeaders
 
   MembershipBadge.h
   SVGIconEngine.h
+  VisibilityBadge.h
 )
 
 set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
   RedirectOutput.h
   qtAttributeItemInfo.h
+  qtBadgeActionToggle.h
   qtDirectoryItem.h
   qtDoubleItem.h
   qtIntItem.h

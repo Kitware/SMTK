@@ -426,7 +426,7 @@ bool qtDescriptivePhraseDelegate::editorEvent(
 
   if (badgeIndex >= 0)
   {
-    badges[badgeIndex]->action(phrase.get());
+    badges[badgeIndex]->action(phrase.get(), smtk::view::BadgeActionToggle());
   }
 
   return res;

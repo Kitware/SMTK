@@ -12,6 +12,7 @@
 #define smtk_extension_paraview_appcomponents_VisibilityBadge_h
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+#include "smtk/extension/qt/VisibilityBadge.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
@@ -37,16 +38,18 @@ namespace paraview
 {
 namespace appcomponents
 {
-using DescriptivePhrase = smtk::view::DescriptivePhrase;
 
-class SMTKPQCOMPONENTSEXT_EXPORT VisibilityBadge : public QObject, public smtk::view::Badge
+class SMTKPQCOMPONENTSEXT_EXPORT VisibilityBadge : public smtk::extension::qt::VisibilityBadge
 {
   Q_OBJECT
 public:
   smtkTypeMacro(smtk::extension::paraview::appcomponents::VisibilityBadge);
-  smtkSuperclassMacro(smtk::view::Badge);
+  smtkSuperclassMacro(smtk::extension::qt::VisibilityBadge);
   smtkSharedFromThisMacro(smtk::view::Badge);
   smtkCreateMacro(smtk::view::Badge);
+
+  using DescriptivePhrase = smtk::view::DescriptivePhrase;
+  using BadgeAction = smtk::view::BadgeAction;
 
   VisibilityBadge();
   VisibilityBadge(smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&);
@@ -62,7 +65,7 @@ public:
   std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>&) const override;
 
   /// take an action when the badge is clicked.
-  void action(const DescriptivePhrase* phrase) override;
+  bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override;
 
   /// Set visibility for this phrase.
   void setPhraseVisibility(const DescriptivePhrase* phrase, int val);

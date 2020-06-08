@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
+#include "smtk/extension/qt/VisibilityBadge.h"
+#include "smtk/extension/qt/qtBadgeActionToggle.h"
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
@@ -388,37 +390,23 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
       // index's current state).
       auto selected = m_p->m_view->selectionModel()->selection();
       smtk::view::DescriptivePhrase::Ptr phrase;
-      // bool toggleTo = false;
-      bool found = false;
+      qt::VisibilityBadge* badge = nullptr;
       for (auto idx : selected.indexes())
       {
         phrase = idx.data(qtDescriptivePhraseModel::PhrasePtrRole)
                    .value<smtk::view::DescriptivePhrase::Ptr>();
-        if (!phrase)
+        if (phrase)
         {
-          continue;
-        }
-        // TODO moved to VisibilityBadge
-        // if (phrase->displayVisibility())
-        // {
-        //   toggleTo = !phrase->relatedVisibility();
-        //   found = true;
-        //   break;
-        // }
-      }
-      if (found)
-      {
-        for (auto idx : selected.indexes())
-        {
-          phrase = idx.data(qtDescriptivePhraseModel::PhrasePtrRole)
-                     .value<smtk::view::DescriptivePhrase::Ptr>();
-          if (!phrase)
+          badge = phrase->phraseModel()->badges().findBadgeOfType<qt::VisibilityBadge>();
+          if (badge)
           {
-            continue;
+            break;
           }
-          // TODO moved to VisibilityBadge
-          // phrase->setRelatedVisibility(toggleTo);
         }
+      }
+      if (badge)
+      {
+        badge->action(phrase.get(), qtBadgeActionToggle(selected));
         return true;
       }
     }

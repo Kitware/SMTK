@@ -57,13 +57,19 @@ public:
     std::string tip = "A"; // "A(" + this->ObjectIconBadge::tooltip(phrase) + ")";
     return tip;
   }
-  void action(const DescriptivePhrase* phrase) override
+  bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override
   {
+    if (!dynamic_cast<const BadgeActionToggle*>(&act))
+    {
+      return false; // we only support single clicks.
+    }
     if (phrase && phrase->relatedComponent())
     {
       // Do something as evidence the call was made:
       ++BadgeA::testCounter;
+      return true;
     }
+    return false;
   }
 };
 int BadgeA::testCounter = 0;
@@ -87,13 +93,19 @@ public:
   {
     return phrase ? "yes" : "no";
   }
-  void action(const DescriptivePhrase* phrase) override
+  bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override
   {
+    if (!dynamic_cast<const BadgeActionToggle*>(&act))
+    {
+      return false; // we only support single clicks.
+    }
     if (phrase && !phrase->relatedComponent() && phrase->relatedResource())
     {
       // Do something as evidence the call was made:
       ++BadgeB::testCounter;
+      return true;
     }
+    return false;
   }
 };
 int BadgeB::testCounter = 0;
@@ -186,7 +198,7 @@ int unitBadge(int argc, char* argv[])
             ++bcBadgeCounter;
           }
           // Exercise each badge's action:
-          badge->action(p.get());
+          badge->action(p.get(), BadgeActionToggle());
         }
         auto sub = p->subphrases(); // force subphrases to get built, though we may not visit them
         (void)sub;

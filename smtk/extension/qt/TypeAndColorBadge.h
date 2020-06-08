@@ -31,12 +31,14 @@ class SMTKQTEXT_EXPORT TypeAndColorBadge : public smtk::view::ObjectIconBadge
 public:
   smtkTypeMacro(smtk::extension::qt::TypeAndColorBadge);
   smtkSuperclassMacro(smtk::view::ObjectIconBadge);
+  using DescriptivePhrase = smtk::view::DescriptivePhrase;
+  using BadgeAction = smtk::view::BadgeAction;
 
   TypeAndColorBadge();
   TypeAndColorBadge(smtk::view::BadgeSet&, const smtk::view::Configuration::Component&);
   virtual ~TypeAndColorBadge();
 
-  void action(const smtk::view::DescriptivePhrase* phrase) override;
+  bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override;
 };
 }
 }
