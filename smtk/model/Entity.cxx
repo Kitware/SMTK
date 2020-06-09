@@ -1195,7 +1195,7 @@ bool IsValueValid(const smtk::resource::Component& comp, smtk::model::BitFlags m
       return true; // Fast-track the trivial case.
     }
 
-    smtk::model::BitFlags itemType = c.entityFlags();
+    smtk::model::BitFlags itemType = modelEnt->entityFlags();
     // The m_membershipMask must match the entity type, the dimension, and (if the
     // item is a group) group constraint flags separately;
     // In other words, we require the entity type, the dimension, and the
