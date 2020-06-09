@@ -243,7 +243,7 @@ void pqSMTKTransformWidget::resetWidget()
     for (std::size_t j = 0; j < 3; ++j)
     {
       items[i]->setValue(j, defaults[i]);
-      vector[j] = defaults[i];
+      vector[static_cast<int>(j)] = defaults[i];
     }
     vtkSMPropertyHelper(widget, names[i].c_str()).Set(vector.GetData(), 3);
   }
@@ -291,10 +291,10 @@ void pqSMTKTransformWidget::updateItemFromWidgetInternal()
     vtkSMPropertyHelper(widget, names[i].c_str()).Get(widgetParameter.GetData(), 3);
     for (std::size_t j = 0; j < 3; ++j)
     {
-      if (items[i]->value(j) != widgetParameter[j])
+      if (items[i]->value(j) != widgetParameter[static_cast<int>(j)])
       {
         didChange = true;
-        items[i]->setValue(j, widgetParameter[j]);
+        items[i]->setValue(j, widgetParameter[static_cast<int>(j)]);
       }
     }
   }

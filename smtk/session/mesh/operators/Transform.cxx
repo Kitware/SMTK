@@ -99,10 +99,8 @@ Transform::Result Transform::operateInternal()
   // Construct a MarkGeometry instance.
   smtk::operation::MarkGeometry markGeometry(resource);
 
-  // Access the model resource's associated topology...
+  // Access the model resource's associated topology.
   smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
-  //...and find the element associated with the model.
-  auto elementIt = topology->m_elements.find(model.entity());
 
   std::function<void(const smtk::common::UUID&)> mark;
 
