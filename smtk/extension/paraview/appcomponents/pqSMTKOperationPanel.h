@@ -7,6 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKOperationPanel_h
+#define smtk_extension_paraview_appcomponents_pqSMTKOperationPanel_h
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/operation/Operation.h" // for Index
@@ -39,7 +42,7 @@ class QListWidgetItem;
   * This panel will create a new SMTK attribute UI manager each time the
   * operation to be displayed is switched for a different resource.
   */
-class pqSMTKOperationPanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationPanel : public QDockWidget
 {
   Q_OBJECT
   typedef QDockWidget Superclass;
@@ -105,3 +108,5 @@ protected:
   smtk::view::AvailableOperationsPtr m_availableOperations;
   smtk::resource::Observers::Key m_observer;
 };
+
+#endif // smtk_extension_paraview_appcomponents_pqSMTKOperationPanel_h

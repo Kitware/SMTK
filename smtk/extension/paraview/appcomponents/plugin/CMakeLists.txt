@@ -21,8 +21,6 @@ set(sources
   pqSMTKImportOperationBehavior.h
   pqSMTKNewResourceBehavior.cxx
   pqSMTKNewResourceBehavior.h
-  pqSMTKOperationPanel.cxx
-  pqSMTKOperationPanel.h
   pqSMTKPipelineSelectionBehavior.cxx
   pqSMTKPipelineSelectionBehavior.h
   pqSMTKRegisterImportersBehavior.cxx
@@ -105,7 +103,6 @@ paraview_plugin_add_dock_window(
 
 set(ui_files
   resources/pqSMTKColorByWidget.ui
-  resources/pqSMTKOperationPanel.ui
   resources/pqSMTKSelectionFilterBehavior.ui)
 set(CMAKE_AUTOUIC_SEARCH_PATHS
   "${CMAKE_CURRENT_SOURCE_DIR}/resources")
