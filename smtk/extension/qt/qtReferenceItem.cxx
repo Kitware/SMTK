@@ -11,6 +11,7 @@
 #include "smtk/extension/qt/qtReferenceItemData.h"
 
 #include "smtk/extension/qt/MembershipBadge.h"
+#include "smtk/extension/qt/qtBadgeActionToggle.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
@@ -52,7 +53,7 @@ void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->update();
 }
 
-nlohmann::json j = { { "Name", "RefItem" }, { "Type", "smtk::view::ReferenceItemPhraseModel" },
+nlohmann::json jcfg = { { "Name", "RefItem" }, { "Type", "smtk::view::ReferenceItemPhraseModel" },
   { "Component",
     { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
       { "Children",
@@ -66,7 +67,6 @@ nlohmann::json j = { { "Name", "RefItem" }, { "Type", "smtk::view::ReferenceItem
                     { "Attributes",
                       { { "Type",
                         "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
-smtk::view::ConfigurationPtr phraseModelViewConfig = j;
 }
 
 qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -364,12 +364,25 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   auto seln = m_itemInfo.uiManager()->selection();
   // Constructing the PhraseModel with a factory from our config, that includes
   // the MembershipBadge.
-  auto phraseModel =
-    viewMgr->phraseModelFactory().createFromConfiguration(phraseModelViewConfig.get());
+  smtk::view::ConfigurationPtr phraseModelConfig;
+  auto refItem = std::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(m_itemInfo.item());
+  // If the item only allows single selection, configure the membership badge for it.
+  if (refItem && refItem->numberOfRequiredValues() < 2 &&
+    ((!refItem->isExtensible()) || (refItem->isExtensible() && refItem->maxNumberOfValues() == 1)))
+  {
+    json jj = jcfg;
+    jj["Component"]["Children"][0]["Children"][1]["Children"][0]["Attributes"]["SingleSelect"] =
+      true;
+    phraseModelConfig = jj;
+  }
+  else
+  {
+    phraseModelConfig = jcfg;
+  }
+  auto phraseModel = viewMgr->phraseModelFactory().createFromConfiguration(phraseModelConfig.get());
   phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
     m_itemInfo.item()->definition());
-  auto refItem = std::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(m_itemInfo.item());
   std::static_pointer_cast<smtk::view::ReferenceItemPhraseModel>(phraseModel)
     ->setReferenceItem(refItem);
   return phraseModel;
@@ -561,6 +574,9 @@ void qtReferenceItem::updateUI()
   entryLayout->addWidget(m_p->m_editBtn);
 
   // Create a popup for editing the item's contents
+  auto refItem = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
+  bool multiselect = refItem && (refItem->numberOfRequiredValues() > 1 ||
+                                  (refItem->isExtensible() && refItem->maxNumberOfValues() != 1));
   m_p->m_popup = new QDialog(m_p->m_editBtn);
   m_p->m_popupLayout = new QVBoxLayout(m_p->m_popup);
   m_p->m_popupList = new QListView(m_p->m_popup);
@@ -568,6 +584,9 @@ void qtReferenceItem::updateUI()
   m_p->m_popupLayout->addWidget(m_p->m_popupList);
   m_p->m_popup->installEventFilter(this);
   m_p->m_popupList->setModel(m_p->m_qtModel);
+  m_p->m_popupList->setSelectionMode(
+    multiselect ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
+  m_p->m_popupList->setSelectionBehavior(QAbstractItemView::SelectRows);
   auto action = new QWidgetAction(m_p->m_editBtn);
   action->setDefaultWidget(m_p->m_popup);
   m_p->m_editBtn->menu()->addAction(action);
@@ -733,7 +752,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
             this->synchronizeAndHide(true);
             return true;
             break;
-          // case Qt::Key_Return:
+          case Qt::Key_Return:
           case Qt::Key_Enter:
             this->synchronizeAndHide(false);
             return true;
@@ -741,6 +760,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
           case Qt::Key_Space:
             // std::cout << "    Toggling\n";
             this->toggleCurrentItem();
+            return true;
             break;
           default:
             break;
@@ -754,6 +774,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
           // The user has clicked outside the popup.
           // Decide whether to update the item state or abandon.
           this->synchronizeAndHide(false);
+          return true;
         }
       }
       break;
@@ -761,7 +782,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
         break;
     }
   }
-  return false;
+  return false; // QObject::eventFilter(src, event);
 }
 
 void qtReferenceItem::toggleCurrentItem()
@@ -771,41 +792,18 @@ void qtReferenceItem::toggleCurrentItem()
                 .value<smtk::view::DescriptivePhrasePtr>();
   if (cphr)
   {
-    int currentMembership = 0;
     auto persistentObj = cphr->relatedObject();
-    auto valIt = this->members().find(persistentObj);
-    if (valIt != this->members().end())
-    {
-      currentMembership = valIt->second;
-    }
-    // Selecting a new item when only 1 is allowed should reset all other membership.
-    if (!currentMembership && !this->members().empty())
-    {
-      auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-      if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
-      {
-        this->members().clear();
-        m_p->m_phraseModel->triggerDataChanged();
-      }
-    }
-    (m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
-      ->action(cphr.get());
+    auto badge =
+      m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>();
+    auto selected = m_p->m_popupList->selectionModel()->selection();
+    badge->action(cphr.get(), smtk::extension::qtBadgeActionToggle(selected));
     this->updateSynopsisLabels();
   }
 }
 
-void qtReferenceItem::membershipChanged(int val)
+void qtReferenceItem::membershipChanged(int)
 {
-  if (val && !this->members().empty())
-  {
-    auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-    if (item->numberOfRequiredValues() <= 1 &&
-      (!item->isExtensible() || item->maxNumberOfValues() == 1))
-    { // Clear all other members since only 1 is allowed and the user just chose it.
-      this->members().clear();
-      m_p->m_phraseModel->triggerDataChanged();
-    }
-  }
+  m_p->m_phraseModel->triggerDataChanged(); // Any change in membership should cause a redraw.
   this->updateSynopsisLabels();
   this->linkHoverTrue();
 }

@@ -23,6 +23,40 @@ namespace smtk
 namespace view
 {
 
+/**\brief A base class for actions taken on badges.
+  *
+  * This class contains no information; its subclasses do.
+  * When passed to Badge::action(), the badge should attempt
+  * to cast this class to the subclasses it can handle.
+  * If no subclass can be handled, the badge does not
+  * support the given action.
+  */
+class SMTKCORE_EXPORT BadgeAction
+{
+public:
+  /// When visiting multiple phrases to which a badge action
+  /// should apply, this function is supplied by the badge.
+  /// Returning true indicates early termination.
+  using PhraseVisitor = std::function<bool(DescriptivePhrase*)>;
+
+  /// Some actions may apply to multiple phrases
+  /// (e.g., those selected when a key is pressed).
+  /// In those cases, subclasses of BadgeAction may provide
+  /// a method to visit all phrases to which the action applies.
+  virtual void visitRelatedPhrases(PhraseVisitor visitor) const { (void)visitor; }
+};
+
+/**\brief The basic badge action: the user clicked on a badge.
+  *
+  * No additional information is provided.
+  * Some frameworks may override visitRelatedPhrases in a subclass
+  * to indicate that multiple phrases were selected when the user
+  * clicked on the primary phrase passed to Badge::action().
+  */
+class SMTKCORE_EXPORT BadgeActionToggle : public BadgeAction
+{
+};
+
 /**\brief A base class for descriptive-phrase badges.
   *
   * A badge is responsible for
@@ -67,7 +101,10 @@ public:
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
 
   /// Take an action when the badge is clicked.
-  virtual void action(const DescriptivePhrase*) {}
+  ///
+  /// Return true if the action is supported (and was taken) by the badge for the given phrase;
+  /// otherwise return false.
+  virtual bool action(const DescriptivePhrase*, const BadgeAction&) { return false; }
 };
 }
 }

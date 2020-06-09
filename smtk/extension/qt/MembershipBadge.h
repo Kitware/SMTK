@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_qt_MembershipBadge_h
-#define __smtk_extension_qt_MembershipBadge_h
+#ifndef smtk_extension_qt_MembershipBadge_h
+#define smtk_extension_qt_MembershipBadge_h
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -27,7 +27,6 @@ namespace extension
 {
 namespace qt
 {
-using DescriptivePhrase = smtk::view::DescriptivePhrase;
 
 /**\brief A badge that lets the user choose from a set of objects.
   *
@@ -40,6 +39,7 @@ public:
   smtkSuperclassMacro(smtk::view::Badge);
   smtkSharedFromThisMacro(smtk::view::Badge);
   smtkCreateMacro(smtk::view::Badge);
+  using DescriptivePhrase = smtk::view::DescriptivePhrase;
 
   MembershipBadge();
   MembershipBadge(smtk::view::BadgeSet&, const smtk::view::Configuration::Component&);
@@ -49,22 +49,25 @@ public:
 
   std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>&) const override;
 
-  void action(const smtk::view::DescriptivePhrase* phrase) override;
+  bool action(const smtk::view::DescriptivePhrase*, const smtk::view::BadgeAction&) override;
 
   using MemberMap = std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
     std::owner_less<std::weak_ptr<smtk::resource::PersistentObject> > >;
 
-  /// provide external access to which items are selected.
+  /// Provide external access to which items are selected.
   MemberMap& getMemberMap() { return m_members; };
+
+  /// Returns true if this badge is set to only allow a single member at a time.
+  bool singleSelect() const { return m_singleSelect; }
 
 signals:
   void membershipChange(int val);
 
 protected:
-  /// from available items, has this object been turned on?
-  MemberMap m_members;
-  std::string m_iconOn;
-  std::string m_iconOff;
+  MemberMap m_members;   //!< From available items, has this object been turned on?
+  bool m_singleSelect;   //!< If true, only 1 item may be a member; toggling an item resets others.
+  std::string m_iconOn;  //!< SVG for icon showing membership.
+  std::string m_iconOff; //!< SVG for icon showing non-membership.
   const smtk::view::BadgeSet* m_parent;
 };
 }

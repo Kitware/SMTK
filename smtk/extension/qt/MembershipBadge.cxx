@@ -42,18 +42,29 @@ namespace qt
 {
 
 MembershipBadge::MembershipBadge()
-  : m_iconOn(selected_svg)
+  : m_singleSelect(false)
+  , m_iconOn(selected_svg)
   , m_iconOff(unselected_svg)
   , m_parent(nullptr)
 {
 }
 
 MembershipBadge::MembershipBadge(
-  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&)
-  : m_iconOn(selected_svg)
+  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& config)
+  : m_singleSelect(false)
+  , m_iconOn(selected_svg)
   , m_iconOff(unselected_svg)
   , m_parent(&parent)
 {
+  config.attributeAsBool("SingleSelect", m_singleSelect);
+  if (config.attribute("MemberIcon"))
+  {
+    config.attribute("MemberIcon", m_iconOn);
+  }
+  if (config.attribute("NonMemberIcon"))
+  {
+    config.attribute("NonMemberIcon", m_iconOff);
+  }
 }
 
 MembershipBadge::~MembershipBadge() = default;
@@ -73,25 +84,70 @@ std::string MembershipBadge::icon(
   return lightness >= 0.5 ? icon : std::regex_replace(icon, std::regex("black"), "white");
 }
 
-void MembershipBadge::action(const smtk::view::DescriptivePhrase* phrase)
+bool MembershipBadge::action(
+  const smtk::view::DescriptivePhrase* phrase, const smtk::view::BadgeAction& act)
 {
+  using smtk::view::DescriptivePhrase;
+
+  if (!dynamic_cast<const smtk::view::BadgeActionToggle*>(&act))
+  {
+    return false; // we only support toggling.
+  }
+
   auto persistentObj = phrase->relatedObject();
   if (phrase->content() == nullptr || !persistentObj)
   {
     smtkWarningMacro(
       smtk::io::Logger::instance(), "Can not access content or object for membership!");
-    return;
+    return false;
   }
   auto valIt = m_members.find(persistentObj);
-  if (valIt != m_members.end())
+  int newValue = (valIt == m_members.end()) ? 1 : !valIt->second;
+
+  if (m_singleSelect)
   {
-    this->m_members[valIt->first] = !valIt->second;
+    // Selecting a new item when only 1 is allowed should reset all other membership
+    // and ignore any multiple-selection passed via the action.
+    if (newValue && !m_members.empty())
+    {
+      m_members.clear();
+    }
+    m_members[persistentObj] = newValue;
+    emit membershipChange(newValue);
+    return true;
   }
-  else
+
+  bool didVisit = false;
+  act.visitRelatedPhrases([this, newValue, &didVisit](const DescriptivePhrase* related) -> bool {
+    auto obj = related->relatedObject();
+    if (obj)
+    {
+      auto it = m_members.find(obj);
+      if (it == m_members.end())
+      {
+        if (newValue)
+        {
+          m_members[obj] = newValue;
+          didVisit = true;
+        }
+      }
+      else
+      {
+        if (it->second != newValue)
+        {
+          it->second = newValue;
+          didVisit = true;
+        }
+      }
+    }
+    return false; // do not terminate early
+  });
+  if (!didVisit)
   {
-    this->m_members[persistentObj] = 1;
+    m_members[persistentObj] = newValue;
   }
-  emit membershipChange(this->m_members[persistentObj]);
+  emit membershipChange(newValue);
+  return true;
 }
 }
 }

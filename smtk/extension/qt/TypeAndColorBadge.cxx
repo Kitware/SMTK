@@ -158,12 +158,16 @@ bool editColorValue(smtk::view::PhraseModelPtr model, smtk::resource::ComponentP
   return false;
 }
 
-void TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase)
+bool TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase, const BadgeAction& act)
 {
+  if (!dynamic_cast<const smtk::view::BadgeActionToggle*>(&act))
+  {
+    return false;
+  }
   if (phrase->phraseModel() == nullptr)
   {
     smtkWarningMacro(smtk::io::Logger::instance(), "Can not access phraseModel for editing color!");
-    return;
+    return false;
   }
   std::string dialogInstructions =
     "Choose Color for " + phrase->title() + " (click Cancel to remove color)";
@@ -184,8 +188,19 @@ void TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase)
   {
     smtk::model::FloatList rgba{ nextColor.red() / 255.0, nextColor.green() / 255.0,
       nextColor.blue() / 255.0, nextColor.alpha() / 255.0 };
-    editColorValue(phrase->phraseModel(), phrase->relatedComponent(), rgba);
+    bool didVisit = false;
+    auto model = phrase->phraseModel();
+    act.visitRelatedPhrases([&didVisit, &rgba, &model](const DescriptivePhrase* related) -> bool {
+      didVisit = true;
+      editColorValue(model, related->relatedComponent(), rgba);
+      return false;
+    });
+    if (!didVisit)
+    {
+      editColorValue(model, phrase->relatedComponent(), rgba);
+    }
   }
+  return true;
 }
 }
 }
