@@ -147,7 +147,6 @@ if (SPHINX_FOUND)
     tutorials/python_first_steps/index.rst
     tutorials/cxx_first_steps/index.rst
     tutorials/implement_an_operator/index.rst
-    tutorials/debugging_python_tests/index.rst
   )
   if (DOXYGEN_FOUND)
     # Need doxygen docs built if possible
