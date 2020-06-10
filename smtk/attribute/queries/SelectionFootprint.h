@@ -68,8 +68,13 @@ struct SMTKCORE_EXPORT SelectionFootprint
         auto assocs = attr->associations();
         if (assocs)
         {
-          for (auto obj : *assocs)
+          for (std::size_t ii = 0; ii < assocs->numberOfValues(); ++ii)
           {
+            if (!assocs->isSet(ii))
+            {
+              continue;
+            }
+            const auto& obj = assocs->value(ii);
             // Don't call ourselves recursively because obj may be
             // (or be owned by) a different type of resource that has
             // a different implementation. Instead, ask obj's resource
