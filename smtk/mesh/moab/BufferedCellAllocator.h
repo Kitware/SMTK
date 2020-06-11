@@ -97,7 +97,7 @@ bool BufferedCellAllocator::addCell(
     return false;
   }
 
-  if (ctype != m_activeCellType || nCoordinates != m_nCoords)
+  if (ctype != m_activeCellType || (nCoordinates != 0 && nCoordinates != m_nCoords))
   {
     m_validState = this->flush();
     m_activeCellType = ctype;
