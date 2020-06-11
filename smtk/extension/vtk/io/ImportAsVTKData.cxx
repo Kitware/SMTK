@@ -335,7 +335,7 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
 
 ImportAsVTKData_exo::ImportAsVTKData_exo()
   : ImportAsVTKDataType<ImportAsVTKData_exo>({ smtk::extension::vtk::io::ImportFormat(
-      "Exodus File", { ".ex2", ".exo", ".exoII", ".exo2", ".e", ".g", ".gen" }) })
+      "Exodus File via VTK", { "ex2", "exo", "exoII", "exo2", "e", "g", "gen" }) })
 {
 }
 vtkSmartPointer<vtkDataObject> ImportAsVTKData_exo::operator()(
@@ -369,7 +369,7 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_exo::operator()(
 
 ImportAsVTKData_slac::ImportAsVTKData_slac()
   : ImportAsVTKDataType<ImportAsVTKData_slac>(
-      { smtk::extension::vtk::io::ImportFormat("SLAC File", { "nc", "ncdf", "slac" }) })
+      { smtk::extension::vtk::io::ImportFormat("SLAC File via VTK", { "nc", "ncdf", "slac" }) })
 {
 }
 

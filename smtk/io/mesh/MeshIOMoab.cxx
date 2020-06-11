@@ -25,28 +25,28 @@ namespace mesh
 
 MeshIOMoab::MeshIOMoab()
 {
-  this->Formats.emplace_back("moab", std::vector<std::string>({ ".h5m", ".mhdf" }),
+  this->Formats.emplace_back("MOAB File", std::vector<std::string>({ ".h5m", ".mhdf" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
-  this->Formats.emplace_back("exodus",
+  this->Formats.emplace_back("Exodus File via MOAB",
     std::vector<std::string>({ ".ex2", ".exo", ".exoII", ".exo2", ".e", ".g", ".gen" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
   this->Formats.emplace_back(
-    "slac", std::vector<std::string>({ ".slac" }), Format::Import | Format::Export);
+    "SLAC File via MOAB", std::vector<std::string>({ ".slac" }), Format::Import | Format::Export);
   this->Formats.emplace_back(
-    "general mesh viewer", std::vector<std::string>({ ".gmv" }), Format::Import | Format::Export);
+    "General Mesh Viewer", std::vector<std::string>({ ".gmv" }), Format::Import | Format::Export);
   this->Formats.emplace_back(
-    "ansys", std::vector<std::string>({ ".ans" }), Format::Import | Format::Export);
+    "ANSYS File", std::vector<std::string>({ ".ans" }), Format::Import | Format::Export);
   this->Formats.emplace_back(
-    "gmsh", std::vector<std::string>({ ".msh", ".gmsh" }), Format::Import | Format::Export);
+    "Gmsh File", std::vector<std::string>({ ".msh", ".gmsh" }), Format::Import | Format::Export);
 #ifdef MOAB_IMPORT_STL
   // An update to MOAB's lastest master caused the stl importer to fail. Until
   // this is fixed, we temporarily disable MOAB's stl reader (we still have
   // VTK's stl reader, if VTK is enabled).
-  this->Formats.push_back(
-    Format("stl", std::vector<std::string>({ ".stl" }), Format::Import | Format::Export));
+  this->Formats.push_back(Format("Stereolithography File", std::vector<std::string>({ ".stl" }),
+    Format::Import | Format::Export));
 #endif
   this->Formats.emplace_back(
-    "obj", std::vector<std::string>({ ".obj" }), Format::Import | Format::Export);
+    "Wavefront OBJ File", std::vector<std::string>({ ".obj" }), Format::Import | Format::Export);
 }
 
 smtk::mesh::ResourcePtr MeshIOMoab::importMesh(const std::string& filePath,

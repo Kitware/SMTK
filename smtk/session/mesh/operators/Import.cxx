@@ -143,7 +143,7 @@ Import::Result Import::operateInternal()
   }
 
   auto format = smtk::io::meshFileFormat(filePath);
-  if (format.Name == "exodus")
+  if (format.Name.find("Exodus") != std::string::npos)
   {
     session->facade()["domain"] = "Element Block";
     session->facade()["dirichlet"] = "Node Set";
