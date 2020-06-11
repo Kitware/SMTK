@@ -70,6 +70,7 @@ set(viewHeaders
   SubphraseGenerator.txx
   SVGIconConstructor.h
   TwoLevelSubphraseGenerator.h
+  ViewWidgetFactory.h
   Configuration.h
   ${jsonViewHeaders}
 )
