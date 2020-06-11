@@ -667,85 +667,227 @@ WARN_LOGFILE           =
 # documented source files. You may enter file names like "myfile.cpp" or
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
+#
+# To update this list of directories, run these two commands and paste the
+# result below:
+#   find smtk -type d  | grep -v "pybind11\|json\|testing" | awk '{print "  \"@smtk_SOURCE_dir/"$1"\" \\"; }'
+#   find smtk -type d  | grep -v "pybind11\|json\|testing" | awk '{print "  \"@smtk_BINARY_dir/"$1"\" \\"; }'
 
 INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk" \
-  "@smtk_SOURCE_DIR@/smtk/attribute" \
-  "@smtk_SOURCE_DIR@/smtk/attribute/operators" \
-  "@smtk_SOURCE_DIR@/smtk/common" \
-  "@smtk_SOURCE_DIR@/smtk/common/testing/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser" \
-  "@smtk_SOURCE_DIR@/smtk/extension/delaunay" \
-  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/io" \
-  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/operators" \
-  "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/server" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/operators" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
-  "@smtk_SOURCE_DIR@/smtk/extension/qt" \
-  "@smtk_SOURCE_DIR@/smtk/extension/qt/examples/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
-  "@smtk_SOURCE_DIR@/smtk/geometry" \
-  "@smtk_SOURCE_DIR@/smtk/graph" \
-  "@smtk_SOURCE_DIR@/smtk/graph/arcs" \
-  "@smtk_SOURCE_DIR@/smtk/io" \
-  "@smtk_SOURCE_DIR@/smtk/io/mesh" \
   "@smtk_SOURCE_DIR@/smtk/mesh" \
   "@smtk_SOURCE_DIR@/smtk/mesh/core" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/interpolation" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/json" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/moab" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/core/queries" \
   "@smtk_SOURCE_DIR@/smtk/mesh/operators" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/moab" \
   "@smtk_SOURCE_DIR@/smtk/mesh/resource" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/interpolation" \
   "@smtk_SOURCE_DIR@/smtk/mesh/utility" \
+  "@smtk_SOURCE_DIR@/smtk/operation" \
+  "@smtk_SOURCE_DIR@/smtk/operation/operators" \
+  "@smtk_SOURCE_DIR@/smtk/operation/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/operation/queries" \
+  "@smtk_SOURCE_DIR@/smtk/operation/groups" \
+  "@smtk_SOURCE_DIR@/smtk/extension" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/server" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/server/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/resources" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin/resources" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin/resources" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt/icons" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/io" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/source" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/io" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/io/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/model" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/geometry" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/filter" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/widgets" \
+  "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
+  "@smtk_SOURCE_DIR@/smtk/extension/matplotlib/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/ui" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser/ui" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser/icons" \
+  "@smtk_SOURCE_DIR@/smtk/attribute" \
+  "@smtk_SOURCE_DIR@/smtk/attribute/operators" \
+  "@smtk_SOURCE_DIR@/smtk/attribute/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/attribute/queries" \
+  "@smtk_SOURCE_DIR@/smtk/attribute/utility" \
+  "@smtk_SOURCE_DIR@/smtk/io" \
+  "@smtk_SOURCE_DIR@/smtk/io/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/graph" \
+  "@smtk_SOURCE_DIR@/smtk/graph/arcs" \
+  "@smtk_SOURCE_DIR@/smtk/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/simulation" \
+  "@smtk_SOURCE_DIR@/smtk/project" \
+  "@smtk_SOURCE_DIR@/smtk/common" \
+  "@smtk_SOURCE_DIR@/smtk/workflow" \
   "@smtk_SOURCE_DIR@/smtk/model" \
   "@smtk_SOURCE_DIR@/smtk/model/operators" \
-  "@smtk_SOURCE_DIR@/smtk/model/testing/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/operation" \
-  "@smtk_SOURCE_DIR@/smtk/operation/groups" \
-  "@smtk_SOURCE_DIR@/smtk/operation/operators" \
-  "@smtk_SOURCE_DIR@/smtk/project" \
+  "@smtk_SOURCE_DIR@/smtk/model/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/model/queries" \
+  "@smtk_SOURCE_DIR@/smtk/model/utility" \
+  "@smtk_SOURCE_DIR@/smtk/smtk" \
+  "@smtk_SOURCE_DIR@/smtk/view" \
+  "@smtk_SOURCE_DIR@/smtk/view/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/view/icons" \
+  "@smtk_SOURCE_DIR@/smtk/geometry" \
+  "@smtk_SOURCE_DIR@/smtk/geometry/queries" \
   "@smtk_SOURCE_DIR@/smtk/resource" \
+  "@smtk_SOURCE_DIR@/smtk/resource/query" \
   "@smtk_SOURCE_DIR@/smtk/session" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete/operation" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete/operators" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete/kernel" \
   "@smtk_SOURCE_DIR@/smtk/session/mesh" \
   "@smtk_SOURCE_DIR@/smtk/session/mesh/operators" \
-  "@smtk_SOURCE_DIR@/smtk/session/multiscale" \
-  "@smtk_SOURCE_DIR@/smtk/session/multiscale/operators" \
-  "@smtk_SOURCE_DIR@/smtk/session/oscillator" \
-  "@smtk_SOURCE_DIR@/smtk/session/oscillator/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/mesh/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/session/mesh/queries" \
+  "@smtk_SOURCE_DIR@/smtk/session/mesh/vtk" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon/qt" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon/internal" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/session/multiscale" \
+  "@smtk_SOURCE_DIR@/smtk/session/multiscale/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade/queries" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/session/opencascade/arcs" \
   "@smtk_SOURCE_DIR@/smtk/session/vtk" \
   "@smtk_SOURCE_DIR@/smtk/session/vtk/operators" \
-  "@smtk_SOURCE_DIR@/smtk/simulation" \
-  "@smtk_SOURCE_DIR@/smtk/view" \
-  "@smtk_SOURCE_DIR@/smtk/workflow" \
+  "@smtk_SOURCE_DIR@/smtk/session/vtk/plugin" \
+  "@smtk_SOURCE_DIR@/smtk/session/oscillator" \
+  "@smtk_SOURCE_DIR@/smtk/session/oscillator/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/oscillator/plugin" \
+  \
   "@smtk_BINARY_DIR@/smtk" \
-  "@smtk_BINARY_DIR@/smtk/attribute" \
-  "@smtk_BINARY_DIR@/smtk/common" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/server" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/operators" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
-  "@smtk_BINARY_DIR@/smtk/extension/qt" \
-  "@smtk_BINARY_DIR@/smtk/extension/vtk" \
-  "@smtk_BINARY_DIR@/smtk/geometry" \
-  "@smtk_BINARY_DIR@/smtk/io" \
   "@smtk_BINARY_DIR@/smtk/mesh" \
-  "@smtk_BINARY_DIR@/smtk/model" \
-  "@smtk_BINARY_DIR@/smtk/model/testing" \
+  "@smtk_BINARY_DIR@/smtk/mesh/core" \
+  "@smtk_BINARY_DIR@/smtk/mesh/core/queries" \
+  "@smtk_BINARY_DIR@/smtk/mesh/operators" \
+  "@smtk_BINARY_DIR@/smtk/mesh/plugin" \
+  "@smtk_BINARY_DIR@/smtk/mesh/moab" \
+  "@smtk_BINARY_DIR@/smtk/mesh/resource" \
+  "@smtk_BINARY_DIR@/smtk/mesh/interpolation" \
+  "@smtk_BINARY_DIR@/smtk/mesh/utility" \
   "@smtk_BINARY_DIR@/smtk/operation" \
-  "@smtk_BINARY_DIR@/smtk/resource" \
+  "@smtk_BINARY_DIR@/smtk/operation/operators" \
+  "@smtk_BINARY_DIR@/smtk/operation/plugin" \
+  "@smtk_BINARY_DIR@/smtk/operation/queries" \
+  "@smtk_BINARY_DIR@/smtk/operation/groups" \
+  "@smtk_BINARY_DIR@/smtk/extension" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/operators" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/server" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/server/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/resources" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin/resources" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin/resources" \
+  "@smtk_BINARY_DIR@/smtk/extension/qt" \
+  "@smtk_BINARY_DIR@/smtk/extension/qt/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/qt/icons" \
+  "@smtk_BINARY_DIR@/smtk/extension/delaunay" \
+  "@smtk_BINARY_DIR@/smtk/extension/delaunay/operators" \
+  "@smtk_BINARY_DIR@/smtk/extension/delaunay/io" \
+  "@smtk_BINARY_DIR@/smtk/extension/delaunay/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/mesh" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/operators" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/operators/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/source" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/io" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/io/mesh" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/model" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/geometry" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/filter" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk/widgets" \
+  "@smtk_BINARY_DIR@/smtk/extension/matplotlib" \
+  "@smtk_BINARY_DIR@/smtk/extension/matplotlib/plugin" \
+  "@smtk_BINARY_DIR@/smtk/extension/cumulus" \
+  "@smtk_BINARY_DIR@/smtk/extension/cumulus/ui" \
+  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser" \
+  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser/ui" \
+  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser/icons" \
+  "@smtk_BINARY_DIR@/smtk/attribute" \
+  "@smtk_BINARY_DIR@/smtk/attribute/operators" \
+  "@smtk_BINARY_DIR@/smtk/attribute/plugin" \
+  "@smtk_BINARY_DIR@/smtk/attribute/queries" \
+  "@smtk_BINARY_DIR@/smtk/attribute/utility" \
+  "@smtk_BINARY_DIR@/smtk/io" \
+  "@smtk_BINARY_DIR@/smtk/io/mesh" \
+  "@smtk_BINARY_DIR@/smtk/graph" \
+  "@smtk_BINARY_DIR@/smtk/graph/arcs" \
+  "@smtk_BINARY_DIR@/smtk/plugin" \
   "@smtk_BINARY_DIR@/smtk/simulation" \
+  "@smtk_BINARY_DIR@/smtk/project" \
+  "@smtk_BINARY_DIR@/smtk/common" \
+  "@smtk_BINARY_DIR@/smtk/workflow" \
+  "@smtk_BINARY_DIR@/smtk/model" \
+  "@smtk_BINARY_DIR@/smtk/model/operators" \
+  "@smtk_BINARY_DIR@/smtk/model/plugin" \
+  "@smtk_BINARY_DIR@/smtk/model/queries" \
+  "@smtk_BINARY_DIR@/smtk/model/utility" \
+  "@smtk_BINARY_DIR@/smtk/smtk" \
   "@smtk_BINARY_DIR@/smtk/view" \
+  "@smtk_BINARY_DIR@/smtk/view/plugin" \
+  "@smtk_BINARY_DIR@/smtk/view/icons" \
+  "@smtk_BINARY_DIR@/smtk/geometry" \
+  "@smtk_BINARY_DIR@/smtk/geometry/queries" \
+  "@smtk_BINARY_DIR@/smtk/resource" \
+  "@smtk_BINARY_DIR@/smtk/resource/query" \
+  "@smtk_BINARY_DIR@/smtk/session" \
+  "@smtk_BINARY_DIR@/smtk/session/mesh" \
+  "@smtk_BINARY_DIR@/smtk/session/mesh/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/mesh/plugin" \
+  "@smtk_BINARY_DIR@/smtk/session/mesh/queries" \
+  "@smtk_BINARY_DIR@/smtk/session/mesh/vtk" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon/plugin" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon/qt" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon/internal" \
+  "@smtk_BINARY_DIR@/smtk/session/polygon/vtk" \
+  "@smtk_BINARY_DIR@/smtk/session/multiscale" \
+  "@smtk_BINARY_DIR@/smtk/session/multiscale/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade/plugin" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade/queries" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade/vtk" \
+  "@smtk_BINARY_DIR@/smtk/session/opencascade/arcs" \
+  "@smtk_BINARY_DIR@/smtk/session/vtk" \
+  "@smtk_BINARY_DIR@/smtk/session/vtk/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/vtk/plugin" \
+  "@smtk_BINARY_DIR@/smtk/session/oscillator" \
+  "@smtk_BINARY_DIR@/smtk/session/oscillator/operators" \
+  "@smtk_BINARY_DIR@/smtk/session/oscillator/plugin" \
+
 
 
 # This tag can be used to specify the character encoding of the source files
