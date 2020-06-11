@@ -2095,7 +2095,7 @@ void Interface::pointForEachRecursive(
     coords.resize(3 * numPointsPerCall);
   }
 
-  Handle partition = lastLower + size - numPointsPerCall;
+  Handle partition = lastLower + numPointsPerCall - 1;
 
   pts.insert(pts.end(), HandleInterval(lastLower, partition));
   callPointForEach(pts, coords, filter);
