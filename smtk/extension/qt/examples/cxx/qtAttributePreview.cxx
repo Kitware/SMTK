@@ -19,14 +19,18 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/operators/Read.h"
 #include "smtk/extension/qt/qtViewRegistrar.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Registrar.h"
 #include "smtk/resource/Manager.h"
-#include "smtk/view/Configuration.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Manager.h"
 
@@ -69,7 +73,7 @@ int main(int argc, char* argv[])
   QCommandLineParser parser;
   parser.setApplicationDescription("Load attribute template and display editor panel");
   parser.addHelpOption();
-  parser.addPositionalArgument("attribute_filename", "Attribute file (.sbt)");
+  parser.addPositionalArgument("attribute_filename", "Attribute file (.sbt, .smtk, .sbi)");
   parser.addOptions({
 #ifdef VTK_SESSION
     { { "m", "model-file" }, "Model file (using vtk session)", "path" },
@@ -104,34 +108,66 @@ int main(int argc, char* argv[])
   resourceManager->registerResource<smtk::attribute::Resource>();
 
   // Instantiate and load attribute resource
-  smtk::attribute::ResourcePtr attResource = smtk::attribute::Resource::create();
-  smtk::io::AttributeReader reader;
-  smtk::io::Logger inputLogger;
+  smtk::attribute::ResourcePtr attResource;
 
-  if (parser.isSet("preload-operation"))
+  QString inputPath = positionalArguments.first();
+  qInfo() << "Loading attribute file:" << inputPath;
+  QFileInfo attFileInfo(inputPath);
+  // Load the input file. Supported file formats: .smtk, .sbt and .sbi
+  if (attFileInfo.suffix() == "smtk")
   {
-    qInfo() << "Loading operation template";
-    bool opErr = reader.readContents(attResource, Operation_xml, inputLogger);
-    if (opErr)
+    smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
+    readOp->parameters()->findFile("filename")->setValue(inputPath.toStdString());
+    auto result = readOp->operate();
+
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
-      qCritical() << "Error loading operation template -- exiting"
+      qCritical() << "Error loading attribute file -- exiting"
+                  << "\n";
+      qCritical() << QString::fromStdString(readOp->log().convertToString());
+      return 1;
+    }
+
+    attResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
+      result->findResource("resource")->value());
+  }
+  else if (attFileInfo.suffix() == "sbt" || attFileInfo.suffix() == "sbi")
+  {
+    attResource = smtk::attribute::Resource::create();
+    smtk::io::AttributeReader sbtReader;
+    smtk::io::Logger inputLogger;
+
+    if (parser.isSet("preload-operation"))
+    {
+      qInfo() << "Loading operation template";
+      bool opErr = sbtReader.readContents(attResource, Operation_xml, inputLogger);
+
+      if (opErr)
+      {
+        qCritical() << "Error loading operation template -- exiting"
+                    << "\n";
+        qCritical() << QString::fromStdString(inputLogger.convertToString());
+        return 1;
+      }
+    }
+
+    bool err = sbtReader.read(attResource, inputPath.toStdString(), true, inputLogger);
+    if (err)
+    {
+      qCritical() << "Error loading attribute file -- exiting"
                   << "\n";
       qCritical() << QString::fromStdString(inputLogger.convertToString());
       return 1;
     }
   }
-
-  QString inputPath = positionalArguments.first();
-  qInfo() << "Loading attribute file:" << inputPath;
-  bool err = reader.read(attResource, inputPath.toStdString(), true, inputLogger);
-  if (err)
+  else
   {
-    qCritical() << "Error loading attribute file -- exiting"
-                << "\n";
-    qCritical() << QString::fromStdString(inputLogger.convertToString());
+    qCritical() << "Unsupported file format " << attFileInfo.suffix() << "\n";
+    parser.showHelp();
     return 1;
   }
-  QFileInfo attFileInfo(inputPath);
+
   attResource->setName(attFileInfo.baseName().toStdString());
   resourceManager->add(attResource);
 
@@ -249,12 +285,18 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Instantiate smtk's qtUIManager
+  // Initialize operation manager and view manager
+  auto operationManager = smtk::operation::Manager::create();
+  smtk::attribute::Registrar::registerTo(operationManager);
   auto viewManager = smtk::view::Manager::create();
+  smtk::view::Registrar::registerTo(viewManager);
   smtk::extension::qtViewRegistrar::registerTo(viewManager);
+
+  // Instantiate smtk's qtUIManager
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);
   uiManager->setResourceManager(resourceManager);
   uiManager->setViewManager(viewManager);
+  uiManager->setOperationManager(operationManager);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget* widget = new QWidget();
@@ -280,6 +322,7 @@ int main(int argc, char* argv[])
     uiManager->setSMTKView(root, widget, useInternalFileBrowser);
   }
 
+  widget->resize(640, 480);
   widget->show();
   int retcode = app.exec();
   QCoreApplication::processEvents();

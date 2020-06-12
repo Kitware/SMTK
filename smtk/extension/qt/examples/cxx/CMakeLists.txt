@@ -29,6 +29,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
 endif()
 
 target_link_libraries(qtAttributePreview
+  smtkCore
   smtkQtExt
   ${vtk_session_lib}
 )

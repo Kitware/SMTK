@@ -7,11 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_view_Registrar_h
-#define __smtk_view_Registrar_h
+#ifndef smtk_extension_qt_qtViewRegistrar_h
+#define smtk_extension_qt_qtViewRegistrar_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/view/Manager.h"
+#include "smtk/view/Registrar.h"
 
 namespace smtk
 {
@@ -20,6 +21,8 @@ namespace extension
 class SMTKQTEXT_EXPORT qtViewRegistrar
 {
 public:
+  using Dependencies = std::tuple<view::Registrar>;
+
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
