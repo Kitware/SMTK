@@ -13,7 +13,6 @@
 #include "smtk/CoreExports.h"
 
 #include "smtk/view/Manager.h"
-#include "smtk/view/Registrar.h"
 
 namespace smtk
 {
