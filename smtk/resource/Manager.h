@@ -57,6 +57,9 @@ public:
     const std::function<bool(const ResourcePtr&)>& write = nullptr,
     const std::function<ResourcePtr(const smtk::common::UUID&)>& create = nullptr);
 
+  /// Register a resource identified by its metadata.
+  bool registerResource(Metadata&&);
+
   /// Unregister a resource identified by its class type.
   template <typename ResourceType>
   bool unregisterResource();
@@ -190,9 +193,6 @@ public:
 
 private:
   Manager();
-
-  /// Register a resource identified by its type index.
-  bool registerResource(Metadata&&);
 
   /// All resources are tracked using a map between the resource's UUID and a
   /// shared pointer to the resource itself.

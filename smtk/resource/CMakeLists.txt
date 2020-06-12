@@ -55,6 +55,11 @@ set(resourceHeaders
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list (APPEND resourceSrcs
+    RegisterPythonResource.cxx)
+  list (APPEND resourceHeaders
+    RegisterPythonResource.h)
+
   add_subdirectory(pybind11)
 endif()
 
