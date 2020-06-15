@@ -34,7 +34,7 @@ namespace geometry
   *       from cached geometry
   *
   */
-template <typename BaseClass, typename ThisClass>
+template <typename BaseClass>
 class Cache : public BaseClass
 {
 public:
@@ -149,8 +149,7 @@ public:
       bool found = it != m_cache.end();
       if (found && it->second.m_geometry)
       { // Cache is clean:
-        auto& self = static_cast<const ThisClass&>(*this);
-        self.geometricBounds(it->second.m_geometry, bds);
+        this->geometricBounds(it->second.m_geometry, bds);
         return;
       }
       else if (found)
@@ -158,8 +157,7 @@ public:
         this->queryGeometry(obj, it->second);
         if (it->second.isValid())
         {
-          auto& self = static_cast<const ThisClass&>(*this);
-          self.geometricBounds(it->second.m_geometry, bds);
+          this->geometricBounds(it->second.m_geometry, bds);
           return;
         }
         else
@@ -174,8 +172,7 @@ public:
         if (entry.isValid())
         {
           m_cache[obj->id()] = entry;
-          auto& self = static_cast<const ThisClass&>(*this);
-          self.geometricBounds(entry.m_geometry, bds);
+          this->geometricBounds(entry.m_geometry, bds);
           return;
         }
       }
@@ -237,8 +234,7 @@ public:
   /// iteration.
   virtual void visit(Visitor visitor) const override
   {
-    auto& self = static_cast<const ThisClass&>(*this);
-    self.update();
+    this->update();
     auto rsrc = this->resource();
     if (rsrc)
     {

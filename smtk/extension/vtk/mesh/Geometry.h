@@ -30,12 +30,12 @@ namespace mesh
   *
   */
 class VTKSMTKMESHEXT_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry>
 {
 public:
   using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::extension::vtk::geometry::Geometry);
-  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
+  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType>);
   using DataType = Superclass::DataType;
 
   Geometry(const std::shared_ptr<smtk::mesh::Resource>& parent);

@@ -45,6 +45,9 @@ public:
 
   virtual ~GeometryForBackend() {}
 
+  virtual void update() const {}
+  virtual void geometricBounds(const Format&, BoundingBox&) const = 0;
+
   /// Return the data associated with an object.
   ///
   /// Only call this method after ensuring that generationNumber(obj) != Invalid.

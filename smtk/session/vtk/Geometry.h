@@ -31,12 +31,12 @@ class Resource;
   *
   */
 class SMTKVTKSESSION_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry>
 {
 public:
   using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::session::vtk::Geometry);
-  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
+  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType>);
   using DataType = Superclass::DataType;
 
   Geometry(const std::shared_ptr<smtk::session::vtk::Resource>& parent);
