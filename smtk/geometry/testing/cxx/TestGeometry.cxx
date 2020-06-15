@@ -44,8 +44,8 @@ struct Format
   {
   }
   Format(const Format& other) = default;
-  operator bool() { return m_data <= 0; }
-  operator int() { return m_data <= 0 ? -1 : m_data; }
+  operator bool() const { return m_data <= 0; }
+  operator int() const { return m_data <= 0 ? -1 : m_data; }
 };
 
 class Backend1 : public smtk::geometry::Backend
@@ -169,8 +169,7 @@ private:
   std::unordered_set<ComponentA::Ptr> m_components;
 };
 
-class Geometry2
-  : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>, Geometry2>
+class Geometry2 : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
 {
 public:
   Geometry2(const ResourceA::Ptr& parent)
@@ -202,14 +201,14 @@ public:
     }
   }
 
-  void geometricBounds(const int& value, BoundingBox& bds) const
+  void geometricBounds(const Format& value, BoundingBox& bds) const override
   {
     bds[0] = bds[2] = bds[4] = +0.0;
-    bds[1] = bds[3] = bds[5] = static_cast<double>(value);
+    bds[1] = bds[3] = bds[5] = static_cast<double>((int)value);
   }
 
   // Ensure every component with renderable geometry has a cache entry.
-  void update() const
+  void update() const override
   {
     std::cout << "  Updating geometry before iteration\n";
     auto rsrc = m_parent.lock();

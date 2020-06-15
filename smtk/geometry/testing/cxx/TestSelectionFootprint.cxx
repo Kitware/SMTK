@@ -52,8 +52,8 @@ struct Format
   {
   }
   Format(const Format& other) = default;
-  operator bool() { return m_data <= 0; }
-  operator int() { return m_data <= 0 ? -1 : m_data; }
+  operator bool() const { return m_data <= 0; }
+  operator int() const { return m_data <= 0 ? -1 : m_data; }
 };
 
 class Backend : public smtk::geometry::Backend
@@ -65,7 +65,7 @@ public:
   std::string name() const override { return "Backend"; }
 };
 
-class Geometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>, Geometry>
+class Geometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
 {
 public:
   smtkTypeMacro(Geometry);
@@ -98,14 +98,14 @@ public:
     }
   }
 
-  void geometricBounds(const int& value, BoundingBox& bds) const
+  void geometricBounds(const Format& value, BoundingBox& bds) const override
   {
     bds[0] = bds[2] = bds[4] = +0.0;
-    bds[1] = bds[3] = bds[5] = static_cast<double>(value);
+    bds[1] = bds[3] = bds[5] = static_cast<double>((int)value);
   }
 
   // Ensure every component with renderable geometry has a cache entry.
-  void update() const
+  void update() const override
   {
     auto rsrc = m_parent.lock();
     if (rsrc)

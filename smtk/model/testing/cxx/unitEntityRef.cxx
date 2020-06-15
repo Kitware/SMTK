@@ -67,10 +67,10 @@ struct Format
 
   // This *must* return false when m_data is the default value.
   // It *may* return false under other conditions.
-  operator bool() { return m_data > 0; }
+  operator bool() const { return m_data > 0; }
 
   // Return some nonsense "geometry":
-  operator int() { return m_data <= 0 ? -1 : m_data; }
+  operator int() const { return m_data <= 0 ? -1 : m_data; }
 };
 
 class TestBackend : public smtk::geometry::Backend
@@ -82,8 +82,7 @@ public:
   std::string name() const override { return "TestBackend"; }
 };
 
-class TestGeometry
-  : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>, TestGeometry>
+class TestGeometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
 {
 public:
   TestGeometry(const TestResource::Ptr& parent)
@@ -114,14 +113,14 @@ public:
     }
   }
 
-  void geometricBounds(const int& value, BoundingBox& bds) const
+  void geometricBounds(const Format& value, BoundingBox& bds) const override
   {
     bds[0] = bds[2] = bds[4] = +0.0;
-    bds[1] = bds[3] = bds[5] = static_cast<double>(value);
+    bds[1] = bds[3] = bds[5] = static_cast<double>((int)value);
   }
 
   // Ensure every component with renderable geometry has a cache entry.
-  void update() const {}
+  void update() const override {}
 
   TestResource::WeakPtr m_parent;
 };
