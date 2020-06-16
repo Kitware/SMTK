@@ -492,12 +492,33 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(const QStand
   return raw->shared_from_this();
 }
 
+smtk::attribute::AttributePtr qtAttributeView::getAttributeFromIndex(const QModelIndex& index)
+{
+  if (!index.isValid())
+  {
+    return smtk::attribute::AttributePtr();
+  }
+
+  QModelIndex attIndex = index.siblingAtColumn(name_column);
+  smtk::attribute::Attribute* raw =
+    static_cast<Attribute*>(attIndex.data(Qt::UserRole).value<void*>());
+  if (raw == nullptr)
+  {
+    return smtk::attribute::AttributePtr();
+  }
+
+  return raw->shared_from_this();
+}
+
+// The selected item will always refer to the item that has the attribute data assigned to
+// it
 QStandardItem* qtAttributeView::getSelectedItem()
 {
   QStandardItem* item = nullptr;
 
-  //This is a proxy model index
-  QModelIndex selectedIndex = m_internals->ListTable->currentIndex();
+  //Get the index that corresponds to the item that corresponds to the selected attribute
+  // Note that this is related to the proxy model
+  QModelIndex selectedIndex = m_internals->ListTable->currentIndex().siblingAtColumn(name_column);
 
   //Trust nobody
   if (selectedIndex.isValid())
@@ -517,7 +538,10 @@ QStandardItem* qtAttributeView::getSelectedItem()
 
 smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 {
-  return this->getAttributeFromItem(this->getSelectedItem());
+  // Using the index does not require mapping between the ProxyModel and
+  // the underlying model (in contrast with getting the actual item)
+  QModelIndex selectedIndex = m_internals->ListTable->currentIndex();
+  return this->getAttributeFromIndex(selectedIndex);
 }
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
@@ -553,11 +577,10 @@ void qtAttributeView::onListBoxSelectionChanged()
   m_internals->ValuesTable->clear();
   m_internals->ValuesTable->setRowCount(0);
   m_internals->ValuesTable->setColumnCount(0);
-  QStandardItem* current = this->getSelectedItem();
+  smtk::attribute::AttributePtr dataItem = this->getSelectedAttribute();
 
-  if (current)
+  if (dataItem)
   {
-    smtk::attribute::AttributePtr dataItem = this->getAttributeFromItem(current);
     this->updateAssociationEnableState(dataItem);
     if (dataItem)
     {
@@ -611,7 +634,7 @@ void qtAttributeView::onAttributeItemChanged(QStandardItem* item)
     return;
   }
 
-  if (item->index().column() == 0)
+  if (item->index().column() == name_column)
   {
     this->onAttributeNameChanged(item);
   }
@@ -948,7 +971,7 @@ void qtAttributeView::onViewBy()
     {
       // In this case there was no previous selection so lets select the
       // first attribute
-      QModelIndex mi = m_internals->ListTableProxyModel->index(0, 1);
+      QModelIndex mi = m_internals->ListTableProxyModel->index(0, name_column);
       if (mi.isValid())
       {
         m_internals->ListTable->setCurrentIndex(mi);

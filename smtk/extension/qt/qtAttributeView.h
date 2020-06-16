@@ -114,7 +114,9 @@ protected:
   void createWidget() override;
   virtual smtk::extension::qtAssociationWidget* createAssociationWidget(
     QWidget* parent, qtBaseView* view);
+  // Methods for fetching attributes corresponding to either a StandardItem or ModelIndex.
   smtk::attribute::AttributePtr getAttributeFromItem(const QStandardItem* item);
+  smtk::attribute::AttributePtr getAttributeFromIndex(const QModelIndex& index);
   smtk::attribute::Attribute* getRawAttributeFromItem(const QStandardItem* item);
 
   ///\brief Method used to delete an attribute from its resource
