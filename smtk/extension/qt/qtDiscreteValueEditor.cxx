@@ -188,9 +188,15 @@ void qtDiscreteValueEditor::updateItemData()
   {
     setIndex = item->discreteIndex(elementIdx);
   }
-  // If combo's current value matches the state of the item just return
+  // If combo's current value matches the state of the item then we just need
+  // to tell our children items to update their data
   if ((setIndex >= 0) && (setIndex == combo->currentData().toInt()))
   {
+    int n = Internals->m_childItems.size();
+    for (int i = 0; i < n; i++)
+    {
+      Internals->m_childItems.at(i)->updateItemData();
+    }
     return;
   }
   if (setIndex < 0 && itemDef->hasDefault())
