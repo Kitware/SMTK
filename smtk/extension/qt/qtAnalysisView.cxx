@@ -117,6 +117,8 @@ void qtAnalysisView::analysisChanged()
   }
   attRes->analyses().getAnalysisAttributeCategories(m_analysisAttribute, cats);
   this->uiManager()->setTopLevelCategories(cats);
+  // let the outside world know the analysis attribute has changed
+  this->attributeChanged(m_analysisAttribute);
   // We shouldn't need to modified since this should have caused all the Qt views to
   // update
 }
