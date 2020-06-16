@@ -47,9 +47,9 @@ public:
     const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override;
   int dimension(const smtk::resource::PersistentObject::Ptr& obj) const override;
   Purpose purpose(const smtk::resource::PersistentObject::Ptr& obj) const override;
-  void update() const;
+  void update() const override;
 
-  void geometricBounds(const DataType&, BoundingBox& bbox) const;
+  void geometricBounds(const DataType&, BoundingBox& bbox) const override;
 
   static int dimensionOf(const DataType& geom, const smtk::model::EntityPtr& ent);
 

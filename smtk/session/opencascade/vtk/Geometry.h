@@ -40,12 +40,12 @@ namespace vtk
   *
   */
 class VTKOPENCASCADEGEOMETRYEXT_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry>
 {
 public:
   using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::session::opencascade::vtk::Geometry);
-  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
+  smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType>);
   using DataType = Superclass::DataType;
   using Shape = TopoDS_Shape;
   using Vertex = TopoDS_Vertex;
@@ -61,9 +61,9 @@ public:
     const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override;
   int dimension(const smtk::resource::PersistentObject::Ptr& obj) const override;
   Purpose purpose(const smtk::resource::PersistentObject::Ptr& obj) const override;
-  void update() const;
+  void update() const override;
 
-  void geometricBounds(const DataType&, BoundingBox& bbox) const;
+  void geometricBounds(const DataType&, BoundingBox& bbox) const override;
 
 protected:
   void updateVertex(const Vertex& face, CacheEntry& entry) const;
