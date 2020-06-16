@@ -119,7 +119,8 @@ Added a class for utility methods.  The current ones include:
   * appendObjectValues replaced by appendValues
   * setObjectValues replaced by setValues
 * Added Methods
-  * isValueValid - the validity of the item now factors in the state of the instance.  This is needed to support Unique Constraints
+  * isValueValid - the validity of the item now factors in the state of the instance. This is needed to support Unique Constraints
+  * removeInvalidValues() - will remove all values that are considered invalid - meaning that the resource of the associated object is loaded but the object no longer exists.
 
 ### Custom attribute item and definition types
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:

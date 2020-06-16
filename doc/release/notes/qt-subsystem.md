@@ -178,3 +178,4 @@ Here is an example of customizing the AssociationWidget for an AttributeView:
       CurrentLabel="Surfaces associated with the current boundary condition"
       AssociationTitle="Boundary condition association information">
 ```
+* qtAssociation2ColumnWidget will now remove all invalid values from the attribute's association information.

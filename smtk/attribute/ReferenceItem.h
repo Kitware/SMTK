@@ -126,6 +126,15 @@ public:
   std::size_t numberOfValues() const;
   /// Set the number of entities to be associated with this item (returns true if permitted).
   bool setNumberOfValues(std::size_t newSize);
+  ///\brief Remove all invalid references.
+  ///
+  /// Go through all values that are set and verify that they are still valid.
+  /// If the value's resource is loaded in memory, the associated value is checked to
+  /// see if it exists within the resource.  If it is not then it is removed.
+  /// The method returns true if there were values removed.
+  /// Note that if the resource is not loaded the values are left alone.
+  bool removeInvalidValues();
+
   /// Return this item's definition.
   virtual std::shared_ptr<const ReferenceItemDefinition> definition() const;
   /// Return the association constraints for this item
