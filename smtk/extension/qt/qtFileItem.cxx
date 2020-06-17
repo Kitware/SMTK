@@ -763,7 +763,7 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
   QBoxLayout* editorLayout = new QHBoxLayout(editFrame);
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
-  if (item.isExtensible() && (i >= itemDef.numberOfRequiredValues()))
+  if (item.isExtensible() && (i >= static_cast<int>(itemDef.numberOfRequiredValues())))
   {
     QToolButton* minusButton = new QToolButton(m_internals->Contents);
     QString iconName(":/icons/attribute/minus.png");

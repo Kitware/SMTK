@@ -19,14 +19,6 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-namespace
-{
-
-void setupAttributeResource(attribute::ResourcePtr& attRes)
-{
-}
-}
-
 int unitAssociationTest(int /*unused*/, char* /*unused*/ [])
 {
   //
