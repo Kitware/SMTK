@@ -499,7 +499,7 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromIndex(const QMode
     return smtk::attribute::AttributePtr();
   }
 
-  QModelIndex attIndex = index.siblingAtColumn(name_column);
+  QModelIndex attIndex = index.sibling(index.row(), name_column);
   smtk::attribute::Attribute* raw =
     static_cast<Attribute*>(attIndex.data(Qt::UserRole).value<void*>());
   if (raw == nullptr)
@@ -518,7 +518,8 @@ QStandardItem* qtAttributeView::getSelectedItem()
 
   //Get the index that corresponds to the item that corresponds to the selected attribute
   // Note that this is related to the proxy model
-  QModelIndex selectedIndex = m_internals->ListTable->currentIndex().siblingAtColumn(name_column);
+  QModelIndex currentIndex = m_internals->ListTable->currentIndex();
+  QModelIndex selectedIndex = currentIndex.sibling(currentIndex.row(), name_column);
 
   //Trust nobody
   if (selectedIndex.isValid())
