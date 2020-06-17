@@ -131,6 +131,47 @@ Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the defaul
   </Views>
 </SMTK_AttributeResource>
 ```
+### FileItemChanges
+Added ItemView Options to control aspects of the GUI:
+
+1. ShowRecentFiles="true/false" - if the FileItemDefinition **ShouldExist** option is enabled,
+   this option, when true, will display previous values using a combobox - default is false
+2. ShowFileExtensions="true/false" - if the FileItemDefinition **ShouldExist** option is not
+   enabled, and there are a set of suffixes associated with the item, this option, when true,
+   will display the suffixes using a combobox - default is false
+3. UseFileDirectory="true/false" - if true and if the FileItem value is set, the file browser will open in
+   the directory of the current value.  If the current value's directory does not exist the browser
+   will either use the DefaultDirectoryProperty value or revert to its default behavior - default
+   is true
+4. DefaultDirectoryProperty="nameOfResourceStringProperty" - if the FileItem value is set and the
+   string vector property value on the item's attribute resource exists and refers to an existing directory,
+   the file browser will open in the directory referred to by the property value
+
+See fileItemExample.sbt and fileItemExample.smtk as examples.  Note that to demonstrate
+DefaultDirectoryProperty using these files you will need to create a string property called
+testDir and set it to something valid.
+
+Here is an snippet of fileItemExample.sbt showing the item view section:
+
+```xml
+  <Views>
+    <View Type="Attribute" Title="A" Label="A Atts"
+      SearchBoxText="Search by name...">
+      <AttributeTypes>
+        <Att Type="A">
+          <ItemViews>
+            <View Item="f0" ShowRecentFiles="true"/>
+            <View Item="f0a" ShowRecentFiles="true" ShowFileExtensions="true"/>
+            <View Item="f0b" ShowRecentFiles="true" ShowFileExtensions="true"/>
+            <View Item="f1" ShowRecentFiles="true"/>
+            <View Item="f3" DefaultDirectoryProperty="testDir"/>
+          </ItemViews>
+        </Att>
+      </AttributeTypes>
+    </View>
+
+```
+
 ### Overriding ItemViews
 You can now specify ItemViews with an Item's Configuration.  If there was already an ItemView for a specific Item, it will be overridden.  Below is an example."
 

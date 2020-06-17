@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="set property" Label="Set Property" BaseType="operation" AdvanceLevel="10">
+    <AttDef Type="set property" Label="Set Property" BaseType="operation">
       <AssociationsDef Name="Entities" NumberOfRequiredValues="1" Extensible="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
