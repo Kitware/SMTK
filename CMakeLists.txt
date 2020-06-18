@@ -482,7 +482,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # location of the module's install).
     set(smtk_pythonpaths
       "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}")
-    set(smtk_libpaths "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+    set(smtk_libpaths
+      "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND smtk_pythonpaths
@@ -503,6 +504,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     set(libpath_envvar)
     if (WIN32)
+      list(INSERT smtk_libpaths 0
+        $ENV{PATH})
       set(libpath_envvar "PATH")
     endif ()
 
