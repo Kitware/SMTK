@@ -1,7 +1,7 @@
 function (_smtk_package_append_variables)
   set(_smtk_package_variables)
   foreach (var IN LISTS ARGN)
-    if (NOT ${var})
+    if (NOT DEFINED "${var}")
       continue ()
     endif ()
 
