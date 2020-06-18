@@ -517,6 +517,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       list(REMOVE_DUPLICATES smtk_libpaths)
     endif ()
 
+    # Append paths as needed.
+    list(APPEND smtk_pythonpaths "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    if (libpath_envvar)
+      string(APPEND smtk_libpath_env "${envsep}$ENV{${libpath_envvar}}")
+    endif ()
+
     string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
     string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
     if (WIN32)
@@ -525,7 +531,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
-      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+      "PYTHONPATH=${smtk_pythonpath_env}")
 
     if (SMTK_ENABLE_SANITIZER)
       set(preload_libraries)
