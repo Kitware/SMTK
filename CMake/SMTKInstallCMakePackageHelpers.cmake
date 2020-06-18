@@ -43,7 +43,8 @@ set(_smtk_packages
 
 # Per-package variable forwarding goes here.
 set(Boost_find_package_vars
-  Boost_INCLUDE_DIR)
+  Boost_INCLUDE_DIR
+  Boost_USE_STATIC_LIBS)
 set(LibArchive_find_package_vars
   LibArchive_INCLUDE_DIR
   LibArchive_LIBRARY)
