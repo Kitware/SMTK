@@ -482,7 +482,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # location of the module's install).
     set(smtk_pythonpaths
       "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}")
-    set(smtk_libpaths "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+    set(smtk_libpaths
+      "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND smtk_pythonpaths
@@ -503,6 +504,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     set(libpath_envvar)
     if (WIN32)
+      list(INSERT smtk_libpaths 0
+        $ENV{PATH})
       set(libpath_envvar "PATH")
     endif ()
 
@@ -514,6 +517,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       list(REMOVE_DUPLICATES smtk_libpaths)
     endif ()
 
+    # Append paths as needed.
+    list(APPEND smtk_pythonpaths "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    if (libpath_envvar)
+      string(APPEND smtk_libpath_env "${envsep}$ENV{${libpath_envvar}}")
+    endif ()
+
     string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
     string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
     if (WIN32)
@@ -522,7 +531,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
-      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+      "PYTHONPATH=${smtk_pythonpath_env}")
 
     if (SMTK_ENABLE_SANITIZER)
       set(preload_libraries)
@@ -542,7 +551,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       endif ()
     endif ()
 
-    if (libpath_envvar)
+    if (libpath_envvar AND smtk_libpath_env)
       list(APPEND smtk_python_test_environment
         "${libpath_envvar}=${smtk_libpath_env}")
     endif ()
