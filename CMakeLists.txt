@@ -551,7 +551,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       endif ()
     endif ()
 
-    if (libpath_envvar)
+    if (libpath_envvar AND smtk_libpath_env)
       list(APPEND smtk_python_test_environment
         "${libpath_envvar}=${smtk_libpath_env}")
     endif ()
