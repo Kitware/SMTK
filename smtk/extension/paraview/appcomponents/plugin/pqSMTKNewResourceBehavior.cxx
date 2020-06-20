@@ -193,11 +193,11 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       if (wrapper != nullptr)
       {
         m_key = wrapper->smtkOperationManager()->groupObservers().insert(
-          [this](const smtk::operation::Operation::Index& /*unused*/, const std::string& groupName,
+          [](const smtk::operation::Operation::Index& /*unused*/, const std::string& groupName,
             bool /*unused*/) {
             if (g_instance != nullptr && groupName == smtk::operation::CreatorGroup::type_name)
             {
-              this->updateNewMenu();
+              g_instance->updateNewMenu();
             }
           });
         // Access the creator group.
@@ -249,6 +249,10 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
     bool visible = false;
 
     pqServer* server = pqActiveObjects::instance().activeServer();
+    if (!server)
+    {
+      return;
+    }
     pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
     if (wrapper != nullptr)
     {
