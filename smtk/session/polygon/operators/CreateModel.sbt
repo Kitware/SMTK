@@ -3,7 +3,7 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="create model" Label="Model - Create" BaseType="operation">
+    <AttDef Type="create model" Label="Planar Polygonal Model" BaseType="operation">
       <BriefDescription>Create a planar model.</BriefDescription>
       <DetailedDescription>
         Create a model given a set of coordinate axes in 3D and a minimum feature size.

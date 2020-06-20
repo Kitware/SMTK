@@ -3,7 +3,7 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="create resource" Label="Model - Create" BaseType="operation">
+    <AttDef Type="create resource" Label="OpenCASCADE Model" BaseType="operation">
 
       <ItemDefinitions>
         <File Name="location" Label="File" NumberOfRequiredValues="1"

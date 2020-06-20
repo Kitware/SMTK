@@ -279,6 +279,12 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
         // then there is no need to display the Create operation's label.
         if (operationIndices.size() == 1)
         {
+          auto index = *operationIndices.begin();
+          std::string oplabel = creatorGroup.operationLabel(index);
+          if (!oplabel.empty())
+          {
+            label = oplabel.c_str();
+          }
           QAction* newResourceAction = new QAction(label, m_newMenu);
           newResourceAction->setObjectName(QString::fromStdString(resourceName));
           m_newMenu->addAction(newResourceAction);
@@ -298,14 +304,9 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
           for (auto& index : operationIndices)
           {
             std::string operationName = creatorGroup.operationName(index);
+            label = QString::fromStdString(creatorGroup.operationLabel(index));
 
-            QString opLabel = QString::fromStdString(creatorGroup.operationLabel(index));
-            // The pattern for the labels of create operations is "Model - XXX".
-            // That seems superfluous, so let's strip out the first part.
-            QStringList splitOpLabel = opLabel.split(" - ");
-            opLabel = *splitOpLabel.rbegin();
-
-            QAction* newResourceAction = new QAction(opLabel, resourceMenu);
+            QAction* newResourceAction = new QAction(label, resourceMenu);
             newResourceAction->setObjectName(QString::fromStdString(operationName));
             resourceMenu->addAction(newResourceAction);
 
