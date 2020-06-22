@@ -2,7 +2,7 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="editDomain" Label="Model - Edit domain" BaseType="operation">
+    <AttDef Type="editDomain" Label="oscillator model domain" BaseType="operation">
       <BriefDescription>Edit a simulation domain that is a uniform grid</BriefDescription>
       <AssociationsDef Name="input" Label="Input"
                        NumberOfRequiredValues="0"

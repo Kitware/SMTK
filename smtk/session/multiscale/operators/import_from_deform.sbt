@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="import from deform" Label="Model - Import" BaseType="operation">
+    <AttDef Type="import from deform" Label="DEFORM-2D Multiscale Model" BaseType="operation">
       <BriefDescription>
         Import and partition a DEFORM-2D model using Dream3D
       </BriefDescription>

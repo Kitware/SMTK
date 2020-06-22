@@ -5,7 +5,7 @@
 
     <!-- Operator -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="create model" Label="Model - Create" BaseType="operation">
+    <AttDef Type="create model" Label="Oscillator Model" BaseType="operation">
       <BriefDescription>Create an oscillator model.</BriefDescription>
       <DetailedDescription>
         Create a geometric oscillator model.
