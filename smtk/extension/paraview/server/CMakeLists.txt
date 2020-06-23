@@ -1,6 +1,6 @@
 set(headers
   vtkSMTKRepresentationStyleGenerator.h
-  )
+)
 
 set(classes
   Registrar
@@ -20,8 +20,6 @@ set(classes
 
 set(pvServerOps
   RespondToVTKSelection
-  VTKMeshCellSelection
-  VTKModelInstancePlacementSelection
 )
 foreach (operator ${pvServerOps})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"

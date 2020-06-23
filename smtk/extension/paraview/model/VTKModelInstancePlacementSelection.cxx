@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/VTKModelInstancePlacementSelection.h"
-#include "smtk/extension/paraview/server/VTKModelInstancePlacementSelection_xml.h"
+#include "smtk/extension/paraview/model/VTKModelInstancePlacementSelection.h"
+#include "smtk/extension/paraview/model/VTKModelInstancePlacementSelection_xml.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 

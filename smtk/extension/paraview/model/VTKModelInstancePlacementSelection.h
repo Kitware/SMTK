@@ -11,8 +11,9 @@
 #define smtk_view_VTKModelInstancePlacementSelection_h
 #ifndef __VTK_WRAP__
 
+#include "smtk/extension/paraview/model/smtkPVModelExtModule.h" // For export macro
+
 #include "smtk/extension/paraview/server/RespondToVTKSelection.h"
-#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" // For export macro
 
 class vtkIdTypeArray;
 
@@ -31,7 +32,7 @@ namespace view
   * This operation, invoked with a vtkSelection dataset, creates a
   * new instance and adds it to the SMTK selection.
   */
-class SMTKPVSERVEREXT_EXPORT VTKModelInstancePlacementSelection
+class SMTKPVMODELEXT_EXPORT VTKModelInstancePlacementSelection
   : public smtk::view::RespondToVTKSelection
 {
 public:

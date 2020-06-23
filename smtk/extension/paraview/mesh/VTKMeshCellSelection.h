@@ -11,8 +11,9 @@
 #define smtk_view_VTKMeshCellSelection_h
 #ifndef __VTK_WRAP__
 
+#include "smtk/extension/paraview/mesh/smtkPVMeshExtModule.h" // For export macro
+
 #include "smtk/extension/paraview/server/RespondToVTKSelection.h"
-#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" // For export macro
 
 namespace smtk
 {
@@ -25,7 +26,7 @@ namespace view
   * new meshset and adds it to the SMTK selection when VTK cell indices
   * are provided.
   */
-class SMTKPVSERVEREXT_EXPORT VTKMeshCellSelection : public smtk::view::RespondToVTKSelection
+class SMTKPVMESHEXT_EXPORT VTKMeshCellSelection : public smtk::view::RespondToVTKSelection
 {
 public:
   using Result = smtk::operation::Operation::Result;

@@ -9,9 +9,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/extension/paraview/server/Registrar.h"
+#include "smtk/extension/paraview/mesh/Registrar.h"
 
-#include "smtk/extension/paraview/server/RespondToVTKSelection.h"
+#include "smtk/extension/paraview/mesh/VTKMeshCellSelection.h"
+
 #include "smtk/extension/paraview/server/VTKSelectionResponderGroup.h"
 
 #include "smtk/operation/groups/InternalGroup.h"
@@ -25,12 +26,12 @@ namespace extension
 {
 namespace paraview
 {
-namespace server
+namespace mesh
 {
 
 namespace
 {
-using OperationList = std::tuple<smtk::view::RespondToVTKSelection>;
+using OperationList = std::tuple<smtk::view::VTKMeshCellSelection>;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
@@ -39,19 +40,20 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   operationManager->registerOperations<OperationList>();
 
   smtk::view::VTKSelectionResponderGroup responders(operationManager, nullptr);
-  responders.registerOperation<smtk::resource::Resource, smtk::view::RespondToVTKSelection>();
+  responders.registerOperation<smtk::mesh::Resource, smtk::view::VTKMeshCellSelection>();
+  // responders.registerOperation<smtk::session::mesh::Resource, smtk::view::VTKMeshCellSelection>();
 
   smtk::operation::InternalGroup internal(operationManager);
-  internal.registerOperation<smtk::view::RespondToVTKSelection>();
+  internal.registerOperation<smtk::view::VTKMeshCellSelection>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
   smtk::view::VTKSelectionResponderGroup responders(operationManager, nullptr);
-  responders.unregisterOperation<smtk::view::RespondToVTKSelection>();
+  responders.unregisterOperation<smtk::view::VTKMeshCellSelection>();
 
   smtk::operation::InternalGroup internal(operationManager);
-  internal.unregisterOperation<smtk::view::RespondToVTKSelection>();
+  internal.unregisterOperation<smtk::view::VTKMeshCellSelection>();
 
   operationManager->unregisterOperations<OperationList>();
 }
