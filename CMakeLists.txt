@@ -431,7 +431,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   if (SMTK_ENABLE_VTK_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
     if (NOT SMTK_PYTHON_VERSION STREQUAL VTK_PYTHON_VERSION)
       message(FATAL_ERROR
-        "SMTK and VTK must agree on a Python major version.")
+        "SMTK (${SMTK_PYTHON_VERSION}) and VTK (${VTK_PYTHON_VERSION}) "
+        "must agree on a Python major version.")
     endif ()
   endif ()
   find_package("Python${SMTK_PYTHON_VERSION}" REQUIRED
