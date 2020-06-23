@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/VTKMeshCellSelection.h"
-#include "smtk/extension/paraview/server/VTKMeshCellSelection_xml.h"
+#include "smtk/extension/paraview/mesh/VTKMeshCellSelection.h"
+#include "smtk/extension/paraview/mesh/VTKMeshCellSelection_xml.h"
 
 #include "smtk/extension/vtk/io/mesh/MeshIOVTK.h"
 

@@ -1,0 +1,14 @@
+NAME
+  smtkPVModelExtPlugin
+DESCRIPTION
+  Server-side SMTK extension for ParaView that exposes base model operations.
+REQUIRES_MODULES
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonMath
+  VTK::CommonTransforms
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  smtkPVModelExt
+  smtkPVServerExt
