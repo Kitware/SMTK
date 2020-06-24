@@ -204,16 +204,28 @@ bool ComponentPhraseContent::editStringValue(ContentType contentType, const std:
       smtk::operation::Operation::Ptr op;
       if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component))
       {
-        op = opManager ? opManager->create<smtk::mesh::SetMeshName>()
-                       : smtk::mesh::SetMeshName::create();
-        ;
+        if (opManager)
+        {
+          op = opManager->create<smtk::mesh::SetMeshName>();
+        }
+        if (!op)
+        {
+          op = smtk::mesh::SetMeshName::create();
+        }
+
         op->parameters()->findString("name")->setValue(val);
       }
       else
       {
-        op = opManager ? opManager->create<smtk::operation::SetProperty>()
-                       : smtk::operation::SetProperty::create();
-        ;
+        if (opManager)
+        {
+          op = opManager->create<smtk::operation::SetProperty>();
+        }
+        if (!op)
+        {
+          op = smtk::operation::SetProperty::create();
+        }
+
         op->parameters()->findString("name")->setValue("name");
         op->parameters()->findString("string value")->appendValue(val);
       }
