@@ -198,7 +198,12 @@ public                                                                          
     return smtk::static_pointer_cast<const SelfType>(SharedPtrBaseType::shared_from_this());       \
   }
 
-/// A convenience macro for declaring shared_from_this and create methods.
+/**\brief A convenience macro for declaring shared_from_this and create methods.
+ *
+ *  Same as smtkSharedFromThisMacro(), the argument is the <b>base class</b>
+ *  and this macro should not be used on base classes. The usage can be found
+ *  in smtkSharedFromThisMacro().
+ */
 #define smtkSharedPtrCreateMacro(...)                                                              \
   smtkSharedFromThisMacro(__VA_ARGS__);                                                            \
   smtkCreateMacro(__VA_ARGS__)
