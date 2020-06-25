@@ -200,12 +200,14 @@ void qtReferenceItem::selectionLinkToggled(bool linked)
 void qtReferenceItem::setOutputOptional(int state)
 {
   auto itm = m_itemInfo.item();
-  if (itm)
+  bool optionalVal = (state != 0);
+  // Lets set the item 's optional state if it is different
+  if (itm && (itm->localEnabledState() != optionalVal))
   {
-    itm->setIsEnabled(state != 0);
+    itm->setIsEnabled(optionalVal);
     emit modified();
   }
-  m_p->m_editBtn->setEnabled(state != 0);
+  m_p->m_editBtn->setEnabled(optionalVal);
   this->updateSynopsisLabels();
 }
 
