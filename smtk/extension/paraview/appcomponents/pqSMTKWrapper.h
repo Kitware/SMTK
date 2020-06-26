@@ -12,6 +12,8 @@
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
 
@@ -68,6 +70,9 @@ public:
   smtk::project::ManagerPtr smtkProjectManager() const;
   /// Return the client-side view manager which mirrors the server version.
   smtk::view::ManagerPtr smtkViewManager() const;
+
+  /// Return the client-side collection of managers which mirrors the server version.
+  smtk::common::TypeContainer& smtkManagers() const;
 
   /// Return the pqSMTKResource which owns the given smtk::resource::ResourcePtr.
   pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc) const;

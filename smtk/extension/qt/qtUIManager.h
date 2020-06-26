@@ -12,9 +12,18 @@
 
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
+
+#include "smtk/common/TypeContainer.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/view/Manager.h"
+#include "smtk/view/Selection.h"
+
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/extension/qt/qtItem.h"
+
 #include <QColor>
 #include <QFont>
 #include <QMap>
@@ -83,14 +92,35 @@ public:
   smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
   ///}@
 
-  smtk::resource::ManagerPtr resourceManager() const { return m_resourceManager; }
-  void setResourceManager(smtk::resource::ManagerPtr mgr) { m_resourceManager = mgr; }
+  smtk::resource::ManagerPtr& resourceManager()
+  {
+    return m_managers.get<smtk::resource::ManagerPtr>();
+  }
 
-  smtk::operation::ManagerPtr operationManager() const { return m_operationManager; }
-  void setOperationManager(smtk::operation::ManagerPtr mgr) { m_operationManager = mgr; }
+  void setResourceManager(const smtk::resource::ManagerPtr& mgr)
+  {
+    m_managers.get<smtk::resource::ManagerPtr>() = mgr;
+  }
 
-  smtk::view::ManagerPtr viewManager() const { return m_viewManager; }
-  void setViewManager(smtk::view::ManagerPtr mgr) { m_viewManager = mgr; }
+  smtk::operation::ManagerPtr& operationManager()
+  {
+    return m_managers.get<smtk::operation::ManagerPtr>();
+  }
+
+  void setOperationManager(const smtk::operation::ManagerPtr& mgr)
+  {
+    m_managers.get<smtk::operation::ManagerPtr>() = mgr;
+  }
+
+  smtk::view::ManagerPtr& viewManager() { return m_managers.get<smtk::view::ManagerPtr>(); }
+
+  void setViewManager(const smtk::view::ManagerPtr& mgr)
+  {
+    m_managers.get<smtk::view::ManagerPtr>() = mgr;
+  }
+
+  const smtk::common::TypeContainer& managers() const { return m_managers; }
+  smtk::common::TypeContainer& managers() { return m_managers; }
 
   smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
 
@@ -202,9 +232,15 @@ public:
   qtItem* createItem(const qtAttributeItemInfo& info);
 
   /// Methods for dealing with selection process
-  smtk::view::SelectionPtr selection() const { return m_selection; }
+  const smtk::view::SelectionPtr& selection() const
+  {
+    return m_managers.get<smtk::view::SelectionPtr>();
+  }
 
-  void setSelection(smtk::view::SelectionPtr newSel) { m_selection = newSel; }
+  void setSelection(const smtk::view::SelectionPtr& newSel)
+  {
+    m_managers.get<smtk::view::SelectionPtr>() = newSel;
+  }
 
   int selectionBit() const { return m_selectionBit; }
   void setSelectionBit(int val) { m_selectionBit = val; }
@@ -288,10 +324,8 @@ private:
   bool AdvancedItalic; // false by default
 
   std::weak_ptr<smtk::attribute::Resource> m_attResource;
-  smtk::resource::ManagerPtr m_resourceManager;
-  smtk::operation::ManagerPtr m_operationManager;
+  smtk::common::TypeContainer m_managers;
   smtk::operation::OperationPtr m_operation;
-  smtk::view::ManagerPtr m_viewManager;
   bool m_useInternalFileBrowser;
 
   int m_maxValueLabelLength;
@@ -309,7 +343,6 @@ private:
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
   std::map<std::string, qtItemConstructor> m_itemConstructors;
 
-  smtk::view::SelectionPtr m_selection;
   int m_selectionBit;
 
   // For Hover-based information

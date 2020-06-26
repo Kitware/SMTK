@@ -113,8 +113,7 @@ void pqSMTKResourceBrowser::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServe
   {
     return;
   }
-  this->addSource(wrapper->smtkResourceManager(), wrapper->smtkOperationManager(),
-    wrapper->smtkViewManager(), wrapper->smtkSelection());
+  this->addSource(wrapper->smtkManagers());
 }
 
 void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
@@ -123,8 +122,7 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
   {
     return;
   }
-  this->removeSource(mgr->smtkResourceManager(), mgr->smtkOperationManager(),
-    mgr->smtkViewManager(), mgr->smtkSelection());
+  this->removeSource(mgr->smtkManagers());
 }
 
 void pqSMTKResourceBrowser::initSubphraseGenerator()

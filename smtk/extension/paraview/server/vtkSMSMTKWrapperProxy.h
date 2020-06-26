@@ -12,6 +12,8 @@
 
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/resource/Manager.h"
 
 #include "smtk/view/Selection.h"
@@ -63,6 +65,9 @@ public:
 
   /// Return the client-side view manager (mirrored on the server via this proxy).
   smtk::view::ManagerPtr GetViewManager() const;
+
+  /// Return the client-side managers (mirrored on the server via this proxy).
+  smtk::common::TypeContainer& GetManagers() const;
 
   /// Call this to indicate which PV data has the active PV selection.
   void SetSelectedPortProxy(vtkSMSourceProxy* pxy);

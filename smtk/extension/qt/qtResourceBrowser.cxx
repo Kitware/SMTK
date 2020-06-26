@@ -262,11 +262,9 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
   m_p->m_updatingPanelSelectionFromSMTK = false;
 }
 
-void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
-  smtk::view::SelectionPtr seln)
+void qtResourceBrowser::addSource(smtk::common::TypeContainer& managers)
 {
-  m_p->m_seln = seln;
+  m_p->m_seln = managers.get<smtk::view::SelectionPtr>();
   if (m_p->m_seln)
   {
     m_p->m_selnValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_selnLabel);
@@ -282,20 +280,18 @@ void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
       },
       "qtResourceBrowser: Update from SMTK selection.");
   }
-  m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
+  m_p->m_phraseModel->addSource(managers);
 }
 
-void qtResourceBrowser::removeSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
-  smtk::view::SelectionPtr seln)
+void qtResourceBrowser::removeSource(smtk::common::TypeContainer& managers)
 {
-  if (m_p->m_seln == seln)
+  if (m_p->m_seln == managers.get<smtk::view::SelectionPtr>())
   {
     m_p->m_seln->observers().erase(m_p->m_selnHandle);
   }
   m_p->m_seln = nullptr;
 
-  m_p->m_phraseModel->removeSource(rsrcMgr, operMgr, viewMgr, seln);
+  m_p->m_phraseModel->removeSource(managers);
 }
 
 void qtResourceBrowser::hoverRow(const QModelIndex& idx)

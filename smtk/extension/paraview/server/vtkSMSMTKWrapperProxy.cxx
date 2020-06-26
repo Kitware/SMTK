@@ -102,6 +102,17 @@ smtk::view::ManagerPtr vtkSMSMTKWrapperProxy::GetViewManager() const
   return wrapper ? wrapper->GetViewManager() : nullptr;
 }
 
+smtk::common::TypeContainer& vtkSMSMTKWrapperProxy::GetManagers() const
+{
+  // TODO: This should just "return this->Managers;" but we are getting things
+  //       working in built-in mode first, so just directly fetch the version
+  //       on the server and return it.
+  static smtk::common::TypeContainer nullContainer;
+  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetManagers() : nullContainer;
+}
+
 void vtkSMSMTKWrapperProxy::SetSelectedPortProxy(vtkSMSourceProxy* pxy)
 {
   vtkSMPropertyHelper(this, "SelectedPort").Set(pxy);

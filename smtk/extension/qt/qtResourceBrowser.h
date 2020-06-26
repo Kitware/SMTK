@@ -13,6 +13,8 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include <QWidget>
@@ -81,10 +83,8 @@ public slots:
     const QItemSelection& selected, const QItemSelection& deselected);
   virtual void sendSMTKSelectionToPanel(const std::string& src, smtk::view::SelectionPtr seln);
 
-  virtual void addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
-  virtual void removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
+  virtual void addSource(smtk::common::TypeContainer& managers);
+  virtual void removeSource(smtk::common::TypeContainer& managers);
 
 protected slots:
   virtual void hoverRow(const QModelIndex& idx);
