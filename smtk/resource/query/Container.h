@@ -26,7 +26,10 @@ namespace query
 {
 /// A container for caching and retrieving instances of types that share a
 /// common base class. Instances are retrieved using type information as a key,
-/// allowing for simultaneous lookup and static downcast into that type.
+/// allowing for simultaneous lookup and static downcast into that type. This
+/// class differs from smtk::common::TypeContainer by the requirement that each
+/// contained element have a common base class; this restriction enables us to
+/// retrieve derived elements using base element indices as keys.
 template <typename T>
 class SMTK_ALWAYS_EXPORT Container
 {
