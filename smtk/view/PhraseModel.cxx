@@ -105,7 +105,7 @@ smtk::operation::ManagerPtr PhraseModel::operationManager() const
 {
   if (!m_sources.empty())
   {
-    return m_sources.front().m_operMgr;
+    return m_sources.front().m_managers.get<smtk::operation::ManagerPtr>();
   }
   return nullptr;
 }
@@ -198,8 +198,10 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
 {
   for (const auto& source : m_sources)
   {
-    if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_viewMgr == viewMgr &&
-      source.m_seln == seln)
+    if (source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+      source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
+      source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
+      source.m_managers.get<smtk::view::SelectionPtr>() == seln)
     {
       return false; // Do not add what we already have
     }
@@ -238,14 +240,104 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
   return true;
 }
 
+bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
+{
+  auto& rsrcMgr =
+    (managers.contains<smtk::resource::ManagerPtr>() ? managers.get<smtk::resource::ManagerPtr>()
+                                                     : smtk::resource::ManagerPtr());
+  auto& operMgr =
+    (managers.contains<smtk::operation::ManagerPtr>() ? managers.get<smtk::operation::ManagerPtr>()
+                                                      : smtk::operation::ManagerPtr());
+  auto& viewMgr =
+    (managers.contains<smtk::view::ManagerPtr>() ? managers.get<smtk::view::ManagerPtr>()
+                                                 : smtk::view::ManagerPtr());
+  auto& seln =
+    (managers.contains<smtk::view::SelectionPtr>() ? managers.get<smtk::view::SelectionPtr>()
+                                                   : smtk::view::SelectionPtr());
+
+  for (const auto& source : m_sources)
+  {
+    if (source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+      source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
+      source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
+      source.m_managers.get<smtk::view::SelectionPtr>() == seln)
+    {
+      return false; // Do not add what we already have
+    }
+  }
+  std::ostringstream description;
+  description << "PhraseModel " << this << ": ";
+  auto rsrcHandle = rsrcMgr
+    ? rsrcMgr->observers().insert(
+        [this](const Resource& rsrc, const resource::EventType& event) {
+          this->handleResourceEvent(rsrc, event);
+          return 0;
+        },
+        0,    // assign a neutral priority
+        true, // observeImmediately
+        description.str() + "Update phrases when resources change.")
+    : smtk::resource::Observers::Key();
+  auto operHandle = operMgr
+    ? operMgr->observers().insert(
+        [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
+          this->handleOperationEvent(op, event, res);
+          return 0;
+        },
+        description.str() + "Update phrases based on operation results.")
+    : smtk::operation::Observers::Key();
+  auto selnHandle = seln
+    ? seln->observers().insert(
+        [this](const std::string& src, smtk::view::SelectionPtr seln) {
+          this->handleSelectionEvent(src, seln);
+        },
+        0,    // assign a neutral priority
+        true, // observeImmediately
+        description.str() + "Update phrases when selection changes.")
+    : smtk::view::SelectionObservers::Key();
+  m_sources.emplace_back(
+    managers, std::move(rsrcHandle), std::move(operHandle), std::move(selnHandle));
+  return true;
+}
+
 bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
   smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
   smtk::view::SelectionPtr seln)
 {
   for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
   {
-    if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_viewMgr == viewMgr &&
-      it->m_seln == seln)
+    if (it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+      it->m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
+      it->m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
+      it->m_managers.get<smtk::view::SelectionPtr>() == seln)
+    {
+      m_sources.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool PhraseModel::removeSource(const smtk::common::TypeContainer& managers)
+{
+  auto& rsrcMgr =
+    (managers.contains<smtk::resource::ManagerPtr>() ? managers.get<smtk::resource::ManagerPtr>()
+                                                     : smtk::resource::ManagerPtr());
+  auto& operMgr =
+    (managers.contains<smtk::operation::ManagerPtr>() ? managers.get<smtk::operation::ManagerPtr>()
+                                                      : smtk::operation::ManagerPtr());
+  auto& viewMgr =
+    (managers.contains<smtk::view::ManagerPtr>() ? managers.get<smtk::view::ManagerPtr>()
+                                                 : smtk::view::ManagerPtr());
+  auto& seln =
+    (managers.contains<smtk::view::SelectionPtr>() ? managers.get<smtk::view::SelectionPtr>()
+                                                   : smtk::view::SelectionPtr());
+
+  for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
+  {
+    if (it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+      it->m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
+      it->m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
+      it->m_managers.get<smtk::view::SelectionPtr>() == seln)
     {
       m_sources.erase(it);
       return true;
@@ -260,7 +352,7 @@ bool PhraseModel::resetSources()
   while (!m_sources.empty())
   {
     auto src = m_sources.begin();
-    if (this->removeSource(src->m_rsrcMgr, src->m_operMgr, src->m_viewMgr, src->m_seln))
+    if (this->removeSource(src->m_managers))
     {
       removedAny = true;
     }
@@ -276,7 +368,10 @@ void PhraseModel::visitSources(SourceVisitor visitor)
 {
   for (const auto& src : m_sources)
   {
-    if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_viewMgr, src.m_seln))
+    if (!visitor(src.m_managers.get<smtk::resource::ManagerPtr>(),
+          src.m_managers.get<smtk::operation::ManagerPtr>(),
+          src.m_managers.get<smtk::view::ManagerPtr>(),
+          src.m_managers.get<smtk::view::SelectionPtr>()))
     {
       break;
     }

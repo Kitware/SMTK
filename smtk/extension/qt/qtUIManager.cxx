@@ -94,16 +94,14 @@ QSize qtTextEdit::sizeHint() const
 {
   return QSize(200, 70);
 }
-
 qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   : m_parentWidget(nullptr)
   , m_attResource(resource)
-  , m_resourceManager(nullptr)
   , m_useInternalFileBrowser(false)
 {
   if (auto attResource = m_attResource.lock())
   {
-    m_resourceManager = attResource->manager();
+    m_managers.insert(attResource->manager());
   }
   this->commonConstructor();
 }
@@ -111,10 +109,11 @@ qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
 qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
   const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
-  , m_resourceManager(resourceManager)
   , m_operation(op)
-  , m_viewManager(viewManager)
 {
+  m_managers.insert(resourceManager);
+  m_managers.insert(viewManager);
+
   if (!op)
   {
     smtkErrorMacro(
@@ -136,10 +135,12 @@ qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
 qtUIManager::qtUIManager(
   const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
-  , m_resourceManager(resourceManager)
-  , m_viewManager(viewManager)
 {
-  if (!m_resourceManager || !m_viewManager)
+  m_managers.insert(resourceManager);
+  m_managers.insert(viewManager);
+
+  if (!m_managers.get<smtk::resource::Manager::Ptr>() ||
+    !m_managers.get<smtk::view::Manager::Ptr>())
   {
     smtkErrorMacro(smtk::io::Logger::instance(),
       "Asked to create a browser view with missing resource or view manager.");
@@ -264,13 +265,14 @@ void qtUIManager::initializeUI(
 
 bool qtUIManager::hasViewConstructor(const std::string& vtype) const
 {
-  if (!m_viewManager)
+  auto& viewManager = m_managers.get<smtk::view::Manager::Ptr>();
+  if (!viewManager)
   {
     return false;
   }
 
-  return m_viewManager->viewWidgetFactory().contains(vtype) ||
-    m_viewManager->viewWidgetFactory().containsAlias(vtype);
+  return viewManager->viewWidgetFactory().contains(vtype) ||
+    viewManager->viewWidgetFactory().containsAlias(vtype);
 }
 
 smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
@@ -929,23 +931,24 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     return nullptr;
   }
 
-  if (!m_viewManager)
+  auto& viewManager = m_managers.get<smtk::view::Manager::Ptr>();
+  if (!viewManager)
   {
     std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
     return nullptr;
   }
   qtBaseView* qtView = nullptr;
-  if (m_viewManager->viewWidgetFactory().contains(info.m_view->type()))
+  if (viewManager->viewWidgetFactory().contains(info.m_view->type()))
   {
     qtView = dynamic_cast<qtBaseView*>(
-      m_viewManager->viewWidgetFactory()
+      viewManager->viewWidgetFactory()
         .createFromName(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
         .release());
   }
-  else if (m_viewManager->viewWidgetFactory().containsAlias(info.m_view->type()))
+  else if (viewManager->viewWidgetFactory().containsAlias(info.m_view->type()))
   {
     qtView = dynamic_cast<qtBaseView*>(
-      m_viewManager->viewWidgetFactory()
+      viewManager->viewWidgetFactory()
         .createFromAlias(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
         .release());
   }

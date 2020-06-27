@@ -34,6 +34,10 @@
 #define SMTK_HAVE_CXX_11
 #endif
 
+#if __cplusplus >= 201402L || (defined(SMTK_MSVC) && _MSC_VER >= 1910)
+#define SMTK_HAVE_CXX_14
+#endif
+
 // Issue:
 // Dynamic cast is not just based on the name of the class, but also the
 // combined visibility of the class on OSX. When building the hash_code of

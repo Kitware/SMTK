@@ -40,6 +40,7 @@ set(unit_tests
   UnitTestObservers
   UnitTestRegistry.cxx
   UnitTestThreadPool
+  UnitTestTypeContainer
   UnitTestTypeMap
   UnitTestTypeName
 )

@@ -65,7 +65,7 @@ PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewMana
   smtk::view::Registrar::registerTo(viewManager);
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(&viewConfig);
   // auto phraseModel = smtk::view::ResourcePhraseModel::create();
-  phraseModel->addSource(rsrcMgr, operMgr, nullptr, nullptr);
+  phraseModel->addSource({ rsrcMgr, operMgr });
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {

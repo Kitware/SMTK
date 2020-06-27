@@ -358,10 +358,6 @@ void qtReferenceItem::cleverlyShowButtons()
 
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 {
-  auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
-  auto operMgr = m_itemInfo.uiManager()->operationManager();
-  auto viewMgr = m_itemInfo.uiManager()->viewManager();
-  auto seln = m_itemInfo.uiManager()->selection();
   // Constructing the PhraseModel with a factory from our config, that includes
   // the MembershipBadge.
   smtk::view::ConfigurationPtr phraseModelConfig;
@@ -379,8 +375,10 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   {
     phraseModelConfig = jcfg;
   }
-  auto phraseModel = viewMgr->phraseModelFactory().createFromConfiguration(phraseModelConfig.get());
-  phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
+  auto phraseModel =
+    m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
+      phraseModelConfig.get());
+  phraseModel->addSource(m_itemInfo.uiManager()->managers());
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
     m_itemInfo.item()->definition());
   std::static_pointer_cast<smtk::view::ReferenceItemPhraseModel>(phraseModel)
@@ -423,10 +421,6 @@ void qtReferenceItem::updateUI()
   }
 
   // TODO: this need to connect to the right managers
-  auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
-  auto operMgr = m_itemInfo.uiManager()->operationManager();
-  auto viewMgr = m_itemInfo.uiManager()->viewManager();
-  auto seln = m_itemInfo.uiManager()->selection();
 
   auto phraseModel = this->createPhraseModel();
   m_p->m_phraseModel = phraseModel;
@@ -440,7 +434,7 @@ void qtReferenceItem::updateUI()
 
   if (m_p->m_phraseModel)
   {
-    m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
+    m_p->m_phraseModel->addSource(m_itemInfo.uiManager()->managers());
     QPointer<qtReferenceItem> guardedObject(this);
     m_p->m_modelObserverId = m_p->m_phraseModel->observers().insert(
       [guardedObject](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,

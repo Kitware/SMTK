@@ -14,6 +14,7 @@ set(commonSrcs
   StringUtil.cxx
   TimeZone.cxx
   timezonespec.cxx
+  TypeContainer.cxx
   UUID.cxx
   UUIDGenerator.cxx
 )
@@ -45,6 +46,7 @@ set(commonHeaders
   timezonespec.h
   TypeMap.h
   TypeName.h
+  TypeContainer.h
   UUID.h
   UUIDGenerator.h
 

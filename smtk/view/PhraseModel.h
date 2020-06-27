@@ -14,6 +14,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
@@ -93,15 +95,19 @@ public:
     */
   ///@{
   /// Indicate a resource and operation manager that should be monitored for changes.
-  bool addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
+  [[deprecated("PhraseModel::addSource now accepts const smtk::common::TypeContainer&")]] bool
+  addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
     smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
+  virtual bool addSource(const smtk::common::TypeContainer& managers);
   /// Indicate a resource and operation manager that should no longer be monitored for changes.
-  bool removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
+  [[deprecated("PhraseModel::removeSource now accepts const smtk::common::TypeContainer&")]] bool
+  removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
     smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
+  virtual bool removeSource(const smtk::common::TypeContainer& managers);
   /// Stop listening for changes from all sources.
-  bool resetSources();
+  virtual bool resetSources();
   /// Invoke the visitor on each source that has been added to the model.
-  void visitSources(SourceVisitor visitor);
+  virtual void visitSources(SourceVisitor visitor);
   ///@}
 
   /// Return the root phrase of the hierarchy.
@@ -217,21 +223,30 @@ protected:
 
   struct Source
   {
-    smtk::resource::ManagerPtr m_rsrcMgr;
-    smtk::operation::ManagerPtr m_operMgr;
-    smtk::view::ManagerPtr m_viewMgr;
-    smtk::view::SelectionPtr m_seln;
+    smtk::common::TypeContainer m_managers;
     smtk::resource::Observers::Key m_rsrcHandle;
     smtk::operation::Observers::Key m_operHandle;
     smtk::view::SelectionObservers::Key m_selnHandle;
-    Source() {}
-    Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm,
-      smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh,
+    Source(){}
+
+      [[deprecated("PhraseModel::Source::Source now accepts managers held in a const "
+                   "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm,
+        smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn,
+        smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh,
+        smtk::view::SelectionObservers::Key&& sh)
+      : m_rsrcHandle(std::move(rh))
+      , m_operHandle(std::move(oh))
+      , m_selnHandle(std::move(sh))
+    {
+      m_managers.insert(rm);
+      m_managers.insert(om);
+      m_managers.insert(vm);
+      m_managers.insert(sn);
+    }
+
+    Source(const smtk::common::TypeContainer& managers, smtk::resource::Observers::Key&& rh,
       smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)
-      : m_rsrcMgr(rm)
-      , m_operMgr(om)
-      , m_viewMgr(vm)
-      , m_seln(sn)
+      : m_managers(managers)
       , m_rsrcHandle(std::move(rh))
       , m_operHandle(std::move(oh))
       , m_selnHandle(std::move(sh))

@@ -35,6 +35,7 @@
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/common/Registry.h"
+#include "smtk/common/TypeContainer.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -290,7 +291,7 @@ int unitQtComponentItem(int argc, char* argv[])
     }
   };
 
-  phraseModel->addSource(rsrcMgr, operMgr, viewMgr, nullptr);
+  phraseModel->addSource({ rsrcMgr, operMgr, viewMgr });
 
   auto oper = operMgr->create<smtk::operation::ReadResource>();
   if (!oper)

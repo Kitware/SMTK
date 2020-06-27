@@ -81,30 +81,36 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   , JSONResponse(nullptr)
   , SelectionSource("paraview")
 {
-  this->ResourceManager = smtk::resource::Manager::create();
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->ResourceManager);
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(resourceManager);
+  this->Managers.insert(resourceManager);
 
-  this->OperationManager = smtk::operation::Manager::create();
-  this->OperationManager->registerResourceManager(this->ResourceManager);
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
+  auto operationManager = smtk::operation::Manager::create();
+  operationManager->registerResourceManager(resourceManager);
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(operationManager);
+  this->Managers.insert(operationManager);
 
-  this->GeometryManager = smtk::geometry::Manager::create();
-  this->GeometryManager->registerResourceManager(this->ResourceManager);
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->GeometryManager);
+  auto geometryManager = smtk::geometry::Manager::create();
+  geometryManager->registerResourceManager(resourceManager);
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(geometryManager);
+  this->Managers.insert(geometryManager);
 
-  this->ProjectManager =
-    smtk::project::Manager::create(this->ResourceManager, this->OperationManager);
+  auto projectManager = smtk::project::Manager::create(resourceManager, operationManager);
+  this->Managers.insert(projectManager);
 
-  this->ViewManager = smtk::view::Manager::create();
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->ViewManager);
+  auto viewManager = smtk::view::Manager::create();
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(viewManager);
+  this->Managers.insert(viewManager);
 
-  // NB: this->Selection may never be overwritten with a different instance
+  // NB: selection may never be overwritten with a different instance
   //     of smtk::view::Selection once a wrapper is created; consumers of the
   //     wrapper assume it is constant, will add observers, etc..
-  this->Selection = smtk::view::Selection::create();
-  this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
-  this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");
-  this->HoveredValue = this->Selection->findOrCreateLabeledValue("hovered");
+  auto selection = smtk::view::Selection::create();
+  selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
+  this->Managers.insert(selection);
+
+  this->SelectedValue = selection->findOrCreateLabeledValue("selected");
+  this->HoveredValue = selection->findOrCreateLabeledValue("hovered");
 }
 
 vtkSMTKWrapper::~vtkSMTKWrapper()
@@ -123,7 +129,7 @@ void vtkSMTKWrapper::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "JSONRequest: " << (this->JSONRequest ? this->JSONRequest : "null") << "\n"
      << indent << "JSONResponse: " << (this->JSONResponse ? this->JSONResponse : "null") << "\n"
      << indent << "ResourceManager: " << this->GetResourceManager() << "\n"
-     << indent << "Selection: " << this->Selection.get() << "\n"
+     << indent << "Selection: " << this->GetSelection() << "\n"
      << indent << "SelectedPort: " << this->SelectedPort << "\n"
      << indent << "SelectionObj: " << this->SelectionObj << "\n"
      << indent << "ActiveResource: " << this->ActiveResource << "\n"
@@ -240,7 +246,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
             }
           }
         }
-        this->Selection->modifySelection(seln, "paraview", 1);
+        this->GetSelection()->modifySelection(seln, "paraview", 1);
         response["selection"] = seln; // this->Selection->currentSelection();
       }
     }
@@ -248,7 +254,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
   std::cout << "Hardware selection!!!\n\n"
             << "  Port " << this->SelectedPort << "\n"
             << "  Seln " << this->SelectionObj << "\n"
-            << "  # " << seln.size() << "  from " << this->Selection << "\n\n";
+            << "  # " << seln.size() << "  from " << this->GetSelection() << "\n\n";
 }
 
 void vtkSMTKWrapper::AddResourceFilter(json& response)

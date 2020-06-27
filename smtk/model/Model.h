@@ -12,13 +12,14 @@
 
 #include "smtk/model/EntityRef.h"
 
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Group.h"
+
 namespace smtk
 {
 namespace model
 {
 
-class CellEntity;
-class Group;
 class Model;
 typedef std::vector<CellEntity> CellEntities;
 typedef std::vector<Model> Models;

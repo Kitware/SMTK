@@ -24,6 +24,8 @@
 
 #include "smtk/attribute/Registrar.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -131,7 +133,7 @@ int main(int argc, char* argv[])
   ModelBrowser* qview = new ModelBrowser;
   smtk::view::ConfigurationPtr config = jconfig;
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(config.get());
-  phraseModel->addSource(resourceManager, operationManager, viewManager, nullptr);
+  phraseModel->addSource({ resourceManager, operationManager, viewManager });
   qmodel->setPhraseModel(phraseModel);
   qview->setup(resourceManager, qmodel, qdelegate);
 
