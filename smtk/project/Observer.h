@@ -21,8 +21,9 @@ namespace project
 /// Enumerate events that the project manager may encounter.
 enum class EventType
 {
-  ADDED,  //!< A new project's contents now available in memory.
-  REMOVED //!< An existing project's contents are being removed from memory.
+  ADDED,    //!< A new project's contents now available in memory.
+  MODIFIED, //!< An existing project's contents have been modified.
+  REMOVED   //!< An existing project's contents are being removed from memory.
 };
 
 typedef std::function<void(const Project&, EventType)> Observer;

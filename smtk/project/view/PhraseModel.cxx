@@ -7,38 +7,40 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/PhraseModel.h"
+#include "smtk/project/view/PhraseModel.h"
 
 #include "smtk/project/Manager.h"
-#include "smtk/project/PhraseContent.h"
+#include "smtk/project/view/PhraseContent.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/ResourcePhraseContent.h"
 #include "smtk/view/SubphraseGenerator.h"
+
+#include <sstream>
 
 namespace smtk
 {
 namespace project
 {
+namespace view
+{
 
 smtk::view::PhraseModel::Ptr PhraseModel::create(const smtk::view::ConfigurationPtr& view)
 {
   (void)view;
-  auto model = PhraseModel::Ptr(new PhraseModel);
+  auto model = std::make_shared<PhraseModel>();
   model->root()->findDelegate()->setModel(model);
   return model;
 }
 
-PhraseModel::PhraseModel()
-  : Superclass()
-{
-}
+PhraseModel::PhraseModel() = default;
 
 PhraseModel::PhraseModel(const smtk::view::Configuration* config, smtk::view::Manager* manager)
   : Superclass(config, manager)
 {
 }
 
-PhraseModel::~PhraseModel() {}
+PhraseModel::~PhraseModel() = default;
 
 bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
 {
@@ -47,22 +49,23 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
     return false;
   }
 
-  auto& projectMgr =
+  auto& projectManager =
     (managers.contains<smtk::project::ManagerPtr>() ? managers.get<smtk::project::ManagerPtr>()
                                                     : smtk::project::ManagerPtr());
-
-  std::ostringstream s;
-  s << "PhraseModel " << this << ": Update phrases when projects change.";
-  auto projectHandle = projectMgr
-    ? projectMgr->observers().insert(
-        [this](const smtk::project::Project& project, const smtk::project::EventType& event) {
-          this->handleProjectEvent(project, event);
-          return 0;
-        },
-        0,    // assign a neutral priority
-        true, // observeImmediately
-        s.str())
-    : smtk::project::Observers::Key();
+  if (projectManager)
+  {
+    std::ostringstream s;
+    s << "PhraseModel " << this << ": Update phrases when projects change.";
+    auto projectHandle = projectManager->observers().insert(
+      [this](const smtk::project::Project& project, const smtk::project::EventType& event) {
+        this->handleProjectEvent(project, event);
+        return 0;
+      },
+      0,    // assign a neutral priority
+      true, // observeImmediately
+      s.str());
+    m_projectHandles.emplace_back(std::move(projectHandle));
+  }
 
   return true;
 }
@@ -79,11 +82,11 @@ void PhraseModel::handleProjectEvent(const Project& proj, smtk::project::EventTy
   // this pattern.
   smtk::project::ProjectPtr project = const_cast<smtk::project::Project&>(proj).shared_from_this();
 
-  // if (event == smtk::project::EventType::MODIFIED)
-  // {
-  //   this->triggerModified(project);
-  // }
-  // else
+  if (event == smtk::project::EventType::MODIFIED)
+  {
+    this->updateProject(project);
+  }
+  else
   {
     this->processProject(project, event == smtk::project::EventType::ADDED);
   }
@@ -101,6 +104,12 @@ void PhraseModel::processProject(const smtk::project::Project::Ptr& project, boo
 {
   if (adding)
   {
+    // Only attempt to filter project out if there are filters defined.
+    if (m_filter && project && m_filter(*project))
+    {
+      return;
+    }
+
     const auto& subphrases(m_root->subphrases());
     smtk::view::DescriptivePhrases::const_iterator it;
     for (it = subphrases.begin(); it != subphrases.end(); ++it)
@@ -111,10 +120,10 @@ void PhraseModel::processProject(const smtk::project::Project::Ptr& project, boo
       }
     }
 
-    // Resource was not there; need to add it:
+    // Project was not there; need to add it:
     smtk::view::DescriptivePhrases children(subphrases);
     children.push_back(
-      smtk::project::PhraseContent::createPhrase(project, m_mutableAspects, m_root));
+      smtk::project::view::PhraseContent::createPhrase(project, m_mutableAspects, m_root));
     std::sort(
       children.begin(), children.end(), smtk::view::DescriptivePhrase::compareByTypeThenTitle);
     this->updateChildren(m_root, children, std::vector<int>());
@@ -134,5 +143,21 @@ void PhraseModel::processProject(const smtk::project::Project::Ptr& project, boo
     this->updateChildren(m_root, children, std::vector<int>());
   }
 }
+
+void PhraseModel::updateProject(const Project::Ptr& project)
+{
+  int childIndex = m_root->argFindChild(project, true);
+  if (childIndex >= 0)
+  {
+    std::vector<int> idx(1, childIndex);
+    auto pp = m_root->at(idx);
+    pp->markDirty(true);
+    smtk::view::DescriptivePhrases sorted(pp->subphrases().begin(), pp->subphrases().end());
+    std::sort(sorted.begin(), sorted.end(), smtk::view::DescriptivePhrase::compareByTypeThenTitle);
+    std::vector<int> pidx(idx.begin(), idx.begin() + idx.size() - 1);
+    this->updateChildren(pp, sorted, pidx);
+  }
+}
+} // namespace view
 } // namespace project
 } // namespace smtk

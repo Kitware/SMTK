@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_project_CreateProject_h
-#define __smtk_project_CreateProject_h
+#ifndef __smtk_project_Read_h
+#define __smtk_project_Read_h
 
 #include "smtk/project/Operation.h"
 
@@ -18,18 +18,19 @@ namespace smtk
 namespace project
 {
 
-class SMTKCORE_EXPORT CreateProject : public smtk::project::Operation
+class SMTKCORE_EXPORT Read : public smtk::project::Operation
 {
 public:
-  smtkTypeMacro(smtk::project::CreateProject);
-  smtkCreateMacro(CreateProject);
+  smtkTypeMacro(smtk::project::Read);
+  smtkCreateMacro(Read);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;
-  Specification createSpecification() override;
   virtual const char* xmlDescription() const override;
 };
+
+SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);
 } // namespace project
 } // namespace smtk
 

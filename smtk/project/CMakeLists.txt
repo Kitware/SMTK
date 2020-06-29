@@ -17,8 +17,6 @@ set(projectSrcs
   Manager.cxx
   Operation.cxx
   OperationFactory.cxx
-  PhraseContent.cxx
-  PhraseModel.cxx
   Project.cxx
   Registrar.cxx
   ResourceContainer.cxx
@@ -26,6 +24,11 @@ set(projectSrcs
   json/jsonOperationFactory.cxx
   json/jsonProject.cxx
   json/jsonResourceContainer.cxx
+
+  view/IconConstructor.cxx
+  view/PhraseContent.cxx
+  view/PhraseModel.cxx
+  view/SubphraseGenerator.cxx
   )
 
 set(projectHeaders
@@ -40,8 +43,6 @@ set(projectHeaders
   MetadataContainer.h
   Operation.h
   OperationFactory.h
-  PhraseContent.h
-  PhraseModel.h
   Project.h
   Registrar.h
   ResourceContainer.h
@@ -50,10 +51,15 @@ set(projectHeaders
   json/jsonOperationFactory.h
   json/jsonProject.h
   json/jsonResourceContainer.h
+
+  view/IconConstructor.h
+  view/PhraseContent.h
+  view/PhraseModel.h
+  view/SubphraseGenerator.h
 )
 
 set(iconFiles
-  icons/project.svg
+  view/icons/project.svg
 )
 
 include(EncodeStringFunctions)
@@ -66,14 +72,18 @@ configureFileAsCVariable(
 
 foreach (iconFile ${iconFiles})
   get_filename_component(genFileBase "${iconFile}" NAME_WE)
-  set(genFile "${CMAKE_CURRENT_BINARY_DIR}/icons/${genFileBase}_svg.h")
+  set(genFile "${CMAKE_CURRENT_BINARY_DIR}/view/icons/${genFileBase}_svg.h")
   configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
 endforeach()
 
 set(projectOperators
-  AddToProject
-  CreateProject
-  DefineProject
+  Add
+  Create
+  Define
+  Print
+  Read
+  Remove
+  Write
   )
 
 foreach (operator ${projectOperators})
@@ -89,13 +99,17 @@ set(projectDependencies ${_projectDependencies} PARENT_SCOPE)
 # Install the headers
 smtk_public_headers(smtkCore ${projectHeaders})
 
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND
     PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(old/pybind11)
+endif()
+
+if (SMTK_ENABLE_EXAMPLES)
+  add_subdirectory(examples)
 endif()
 
 if (SMTK_ENABLE_TESTING)

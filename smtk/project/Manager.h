@@ -64,8 +64,8 @@ public:
   /// instance of smtk::project::Project.
   bool registerProject(
     const std::string& name,
-    const std::set<std::string>& resources,
-    const std::set<std::string>& operations,
+    const std::set<std::string>& resources = {},
+    const std::set<std::string>& operations = {},
     const std::string& version = "0.0.0");
 
   /// Register a project identified by its metadata.
@@ -88,6 +88,13 @@ public:
   {
     return Manager::registerOperations<0, Tuple>();
   }
+
+  /// Check if a project identified by its typename, type index or class type is
+  /// registered.
+  bool registered(const std::string&) const;
+  bool registered(const Project::Index&) const;
+  template<typename ProjectType>
+  bool registered() const;
 
   /// Unegister an operation identified by its typename, type index or class type.
   bool unregisterOperation(const std::string&);
@@ -269,6 +276,12 @@ bool Manager::registerProject(const std::string& version)
     detail::tupleToTypeNames<ResourcesTuple>(),
     detail::tupleToTypeNames<OperationsTuple>(),
     version));
+}
+
+template<typename ProjectType>
+bool Manager::registered() const
+{
+  return this->registered(std::type_index(typeid(ProjectType)).hash_code());
 }
 
 template<typename OperationType>

@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/project/operators/DefineProject.h"
+#include "smtk/project/operators/Define.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -25,7 +25,7 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/DefineProject_xml.h"
+#include "smtk/project/Define_xml.h"
 
 #include <sstream>
 
@@ -76,7 +76,7 @@ namespace smtk
 namespace project
 {
 
-DefineProject::Result DefineProject::operateInternal()
+Define::Result Define::operateInternal()
 {
   std::string name;
   {
@@ -125,7 +125,7 @@ DefineProject::Result DefineProject::operateInternal()
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
-DefineProject::Specification DefineProject::createSpecification()
+Define::Specification Define::createSpecification()
 {
   Specification spec = this->smtk::operation::XMLOperation::createSpecification();
   auto defineDef = spec->findDefinition("define");
@@ -166,7 +166,7 @@ DefineProject::Specification DefineProject::createSpecification()
 
         resourcesDef->addDiscreteValue(md.typeName());
       },
-      "DefineProject: Update resources list when new resource types are added"));
+      "Define: Update resources list when new resource types are added"));
 
   smtk::attribute::StringItemDefinitionPtr operationsDef;
   {
@@ -180,10 +180,6 @@ DefineProject::Specification DefineProject::createSpecification()
 
   operationsDef->setIsExtensible(true);
   operationsDef->clearDiscreteValues();
-  for (auto& metadatum : projectManager->operationManager()->metadata())
-  {
-    operationsDef->addDiscreteValue(metadatum.typeName());
-  }
 
   spec->properties().insertPropertyType<OperationMetadataKeyContainer>();
 
@@ -198,14 +194,14 @@ DefineProject::Specification DefineProject::createSpecification()
 
         operationsDef->addDiscreteValue(md.typeName());
       },
-      "DefineProject: Update operations list when new operation types are added"));
+      "Define: Update operations list when new operation types are added"));
 
   return spec;
 }
 
-const char* DefineProject::xmlDescription() const
+const char* Define::xmlDescription() const
 {
-  return DefineProject_xml;
+  return Define_xml;
 }
 } // namespace project
 } // namespace smtk

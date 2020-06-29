@@ -18,7 +18,7 @@
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
-#include "smtk/project/operators/DefineProject.h"
+#include "smtk/project/operators/Define.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -65,7 +65,7 @@ struct Registrar
 };
 } // namespace
 
-int TestDefineProjectOp(int /*unused*/, char** const /*unused*/)
+int TestDefineOp(int /*unused*/, char** const /*unused*/)
 {
   // Create a resource manager
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
@@ -88,9 +88,9 @@ int TestDefineProjectOp(int /*unused*/, char** const /*unused*/)
   // Register project operations with the project manager
   smtk::project::Registrar::registerTo(projectManager);
 
-  auto createProjectTypeOp = operationManager->create<smtk::project::DefineProject>();
+  auto createProjectTypeOp = operationManager->create<smtk::project::Define>();
 
-  smtkTest(!!createProjectTypeOp, "Could not create \"Define Project\" operation.");
+  smtkTest(!!createProjectTypeOp, "Could not create \"Define\" operation.");
 
   smtkTest(projectManager->metadata().empty(), "New project manager should have no types.");
   smtkTest(projectManager->projects().empty(), "New project manager should have no projects.");

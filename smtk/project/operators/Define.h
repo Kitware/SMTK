@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_project_AddToProject_h
-#define __smtk_project_AddToProject_h
+#ifndef __smtk_project_Define_h
+#define __smtk_project_Define_h
 
 #include "smtk/project/Operation.h"
 
@@ -18,17 +18,16 @@ namespace smtk
 namespace project
 {
 
-class SMTKCORE_EXPORT AddToProject : public smtk::project::Operation
+class SMTKCORE_EXPORT Define : public smtk::project::Operation
 {
 public:
-  smtkTypeMacro(smtk::project::AddToProject);
-  smtkCreateMacro(AddToProject);
+  smtkTypeMacro(smtk::project::Define);
+  smtkCreateMacro(Define);
   smtkSharedFromThisMacro(smtk::operation::Operation);
-
-  bool configure(const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr&) override;
 
 protected:
   Result operateInternal() override;
+  Specification createSpecification() override;
   virtual const char* xmlDescription() const override;
 };
 } // namespace project

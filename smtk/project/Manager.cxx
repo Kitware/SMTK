@@ -9,8 +9,14 @@
 //=========================================================================
 #include "smtk/project/Manager.h"
 
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
+
 #include "smtk/project/Operation.h"
 #include "smtk/project/Project.h"
+
+#include "smtk/project/operators/Read.h"
+#include "smtk/project/operators/Write.h"
 
 #include "smtk/common/UUIDGenerator.h"
 
@@ -29,6 +35,19 @@ void InitializeObserver(smtk::project::Manager* manager, smtk::project::Observer
     fn(*project, smtk::project::EventType::ADDED);
   }
 }
+
+void InitializeMetadataObserver(smtk::project::Manager* manager, smtk::project::MetadataObserver fn)
+{
+  if (!manager || !fn)
+  {
+    return;
+  }
+
+  for (const auto& metadata : manager->metadata())
+  {
+    fn(metadata, true);
+  }
+}
 } // namespace
 
 namespace smtk
@@ -39,6 +58,7 @@ Manager::Manager(
   const smtk::resource::ManagerPtr& resourceManager,
   const smtk::operation::ManagerPtr& operationManager)
   : m_observers(std::bind(InitializeObserver, this, std::placeholders::_1))
+  , m_metadataObservers(std::bind(InitializeMetadataObserver, this, std::placeholders::_1))
   , m_resourceManager(resourceManager)
   , m_operationManager(operationManager)
 {
@@ -75,10 +95,6 @@ Manager::Manager(
     operationMetadataObserver,
     "Append the assignment of the project manager to the create functor "
     "for operations that inherit from smtk::project::Operation");
-  auto& metadata = operationManager->metadata();
-  std::for_each(metadata.begin(), metadata.end(), [&](const smtk::operation::Metadata& md) {
-    operationMetadataObserver(md, true);
-  });
 }
 
 bool Manager::registerProject(
@@ -108,6 +124,35 @@ bool Manager::registerProject(Metadata&& metadata)
     auto inserted = m_metadata.get<IndexTag>().insert(metadata);
     if (inserted.second)
     {
+      if (auto operationManager = m_operationManager.lock())
+      {
+        if (!operationManager->registered<smtk::project::Read>())
+        {
+          operationManager->registerOperation<smtk::project::Read>();
+        }
+        if (!operationManager->registered<smtk::project::Write>())
+        {
+          operationManager->registerOperation<smtk::project::Write>();
+        }
+      }
+
+      if (auto resourceManager = m_resourceManager.lock())
+      {
+        resourceManager->registerResource(smtk::resource::Metadata(
+          inserted.first->typeName(),
+          inserted.first->index(),
+          {},
+          inserted.first->create,
+          &smtk::project::read,
+          &smtk::project::write));
+      }
+      smtk::operation::ReaderGroup(this->operationManager())
+        .registerOperation(
+          smtk::common::typeName<smtk::project::Read>(), inserted.first->typeName());
+      smtk::operation::WriterGroup(this->operationManager())
+        .registerOperation(
+          smtk::common::typeName<smtk::project::Write>(), inserted.first->typeName());
+
       m_metadataObservers(*inserted.first, true);
       return true;
     }
@@ -141,11 +186,25 @@ bool Manager::unregisterProject(const Project::Index& index)
   return false;
 }
 
+bool Manager::registered(const std::string& typeName) const
+{
+  const auto metadata = m_metadata.get<NameTag>().find(typeName);
+  return metadata != m_metadata.get<NameTag>().end();
+}
+
+bool Manager::registered(const Project::Index& index) const
+{
+  const auto metadata = m_metadata.get<IndexTag>().find(index);
+  return metadata != m_metadata.get<IndexTag>().end();
+}
+
 bool Manager::registerOperation(smtk::operation::Metadata&& metadata)
 {
   if (auto operationManager = this->operationManager())
   {
-    return operationManager->registerOperation(std::move(metadata));
+    return operationManager->registered(metadata.typeName())
+      ? true
+      : operationManager->registerOperation(std::move(metadata));
   }
   return false;
 }
@@ -343,7 +402,8 @@ bool Manager::add(const Project::Index& index, const smtk::project::Project::Ptr
   smtk::project::Project::Ptr p = const_cast<ProjectPtr&>(project);
 
   {
-    // Set the project's operation manager
+    // Set the project's managers
+    p->m_manager = this;
     p->resources().setManager(m_resourceManager);
     p->operations().setManager(m_operationManager);
 

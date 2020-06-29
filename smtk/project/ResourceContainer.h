@@ -29,10 +29,14 @@ namespace detail
 const std::string& role(const smtk::resource::ResourcePtr& r);
 }
 
+class Project;
+
 /// A ResourceContainer is a container for a Project's Resources. It holds a
 /// searchable collection of its Resources.
 class SMTKCORE_EXPORT ResourceContainer
 {
+  friend class Project;
+
   /// A multi-index container for accessing resources. This class is primarily
   /// intended to be used in the implementation of smtk::resource::Manager only.
   typedef boost::multi_index_container<
@@ -62,7 +66,7 @@ class SMTKCORE_EXPORT ResourceContainer
           const smtk::resource::ResourcePtr&,
           const std::string&,
           &smtk::resource::detail::location>>,
-      boost::multi_index::ordered_non_unique<
+      boost::multi_index::ordered_unique<
         boost::multi_index::tag<RoleTag>,
         boost::multi_index::global_fun<
           const smtk::resource::ResourcePtr&,
@@ -74,11 +78,6 @@ public:
   /// A property key for accessing string-valued roles assigned to a resource
   /// held by a project.
   static constexpr const char* const role_name = "project_role";
-
-  ResourceContainer(const std::weak_ptr<smtk::resource::Manager>& manager)
-    : m_manager(manager)
-  {
-  }
 
   ~ResourceContainer();
 
@@ -108,14 +107,23 @@ public:
   template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const smtk::common::UUID&) const;
 
-  /// Returns the resource that relates to the given url.  If no association exists
-  /// this will return a null pointer
+  /// Returns the resource that relates to the given url.  If no association
+  /// exists this will return a null pointer
   smtk::resource::ResourcePtr get(const std::string&);
   smtk::resource::ConstResourcePtr get(const std::string&) const;
   template<typename ResourceType>
   smtk::shared_ptr<ResourceType> get(const std::string&);
   template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string&) const;
+
+  /// Returns the resource that relates to the given role.  If no association
+  /// exists this will return a null pointer
+  smtk::resource::ResourcePtr getByRole(const std::string&);
+  smtk::resource::ConstResourcePtr getByRole(const std::string&) const;
+  template<typename ResourceType>
+  smtk::shared_ptr<ResourceType> getByRole(const std::string&);
+  template<typename ResourceType>
+  smtk::shared_ptr<const ResourceType> getByRole(const std::string&) const;
 
   /// Returns a set of resources that have a given typename, type index or class
   /// type.
@@ -124,16 +132,13 @@ public:
   template<typename ResourceType>
   std::set<smtk::shared_ptr<ResourceType>> find() const;
 
-  /// Returns a set of resources that have a given role.
-  std::set<smtk::resource::ResourcePtr> findByRole(const std::string&) const;
-
   /// Add a resource identified by its index or class type and by its role.
   /// Returns true if the resource was added or already is part of this manager.
   bool add(const smtk::resource::ResourcePtr&, const std::string& role = std::string());
   bool add(
     const smtk::resource::Resource::Index&,
     const smtk::resource::ResourcePtr&,
-    const std::string& role = std::string());
+    std::string role = std::string());
   template<typename ResourceType>
   bool add(const smtk::shared_ptr<ResourceType>&, const std::string& role = std::string());
 
@@ -153,10 +158,24 @@ public:
   std::shared_ptr<smtk::resource::Manager> manager() const { return m_manager.lock(); }
   void setManager(const std::weak_ptr<smtk::resource::Manager>& manager) { m_manager = manager; }
 
+  Container::const_iterator begin() const { return m_resources.begin(); }
+  Container::iterator begin() { return m_resources.begin(); }
+
+  Container::const_iterator end() const { return m_resources.end(); }
+  Container::iterator end() { return m_resources.end(); }
+
+  bool empty() const { return m_resources.empty(); }
+  std::size_t size() const { return m_resources.size(); }
+  void clear() { m_resources.clear(); }
+
 private:
+  ResourceContainer(const smtk::project::Project*, const std::weak_ptr<smtk::resource::Manager>&);
+
+  const smtk::project::Project* m_project;
   std::weak_ptr<smtk::resource::Manager> m_manager;
   std::set<std::string> m_types;
   Container m_resources;
+  int m_undefinedRoleCounter;
 };
 
 template<typename ResourceType>
@@ -193,6 +212,18 @@ template<typename ResourceType>
 smtk::shared_ptr<const ResourceType> ResourceContainer::get(const std::string& url) const
 {
   return smtk::static_pointer_cast<const ResourceType>(this->get(url));
+}
+
+template<typename ResourceType>
+smtk::shared_ptr<ResourceType> ResourceContainer::getByRole(const std::string& role)
+{
+  return smtk::static_pointer_cast<ResourceType>(this->getByRole(role));
+}
+
+template<typename ResourceType>
+smtk::shared_ptr<const ResourceType> ResourceContainer::getByRole(const std::string& role) const
+{
+  return smtk::static_pointer_cast<const ResourceType>(this->getByRole(role));
 }
 
 template<typename ResourceType>

@@ -26,6 +26,8 @@ namespace smtk
 namespace project
 {
 
+class Manager;
+
 template<typename Self, typename Parent>
 using DerivedFrom = smtk::resource::DerivedFrom<Self, Parent>;
 
@@ -37,15 +39,14 @@ using DerivedFrom = smtk::resource::DerivedFrom<Self, Parent>;
 class SMTKCORE_EXPORT Project
   : public smtk::resource::DerivedFrom<Project, smtk::resource::Resource>
 {
+  friend class Manager;
+
 public:
   smtkTypedefs(smtk::project::Project);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  std::string typeName() const override
-  {
-    return (
-      m_typeName.empty() ? boost::typeindex::type_id_runtime(*this).pretty_name() : m_typeName);
-  }
+  static constexpr const char* const type_name = "smtk::project::Project";
+  std::string typeName() const override { return (m_typeName.empty() ? type_name : m_typeName); }
 
   static std::shared_ptr<smtk::project::Project> create(const std::string& typeName = "")
   {
@@ -90,6 +91,8 @@ public:
     return smtk::resource::ComponentPtr();
   }
 
+  const smtk::project::Manager* manager() const { return m_manager; }
+
 private:
   Project(const std::string& typeName = "");
 
@@ -97,6 +100,7 @@ private:
   OperationFactory m_operations;
   std::string m_typeName;
   std::string m_version;
+  smtk::project::Manager* m_manager;
 };
 } // namespace project
 } // namespace smtk

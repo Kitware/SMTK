@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/project/operators/AddToProject.h"
+#include "smtk/project/operators/Remove.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -24,7 +24,7 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/AddToProject_xml.h"
+#include "smtk/project/Remove_xml.h"
 
 #include <sstream>
 
@@ -33,42 +33,7 @@ namespace smtk
 namespace project
 {
 
-bool AddToProject::configure(
-  const smtk::attribute::AttributePtr&,
-  const smtk::attribute::ItemPtr& changedItem)
-{
-  smtk::attribute::ReferenceItem::Ptr projectItem = this->parameters()->associations();
-  if (!changedItem || changedItem != projectItem || projectItem->numberOfValues() != 1)
-  {
-    return false;
-  }
-
-  smtk::project::ProjectPtr project = projectItem->valueAs<smtk::project::Project>();
-
-  smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
-  resourceItem->reset();
-
-  auto resourceDef = std::const_pointer_cast<smtk::attribute::ResourceItemDefinition>(
-    resourceItem->definitionAs<smtk::attribute::ResourceItemDefinition>());
-
-  resourceDef->clearAcceptableEntries();
-
-  if (!project->resources().types().empty())
-  {
-    for (auto& type : project->resources().types())
-    {
-      resourceDef->setAcceptsEntries(type, true);
-    }
-  }
-  else
-  {
-    resourceDef->setAcceptsEntries(smtk::common::typeName<smtk::resource::Resource>(), true);
-  }
-
-  return true;
-}
-
-AddToProject::Result AddToProject::operateInternal()
+Remove::Result Remove::operateInternal()
 {
   smtk::attribute::ReferenceItem::Ptr projectItem = this->parameters()->associations();
   smtk::project::ProjectPtr project = projectItem->valueAs<smtk::project::Project>();
@@ -76,13 +41,7 @@ AddToProject::Result AddToProject::operateInternal()
   smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
   smtk::resource::ResourcePtr resource = resourceItem->valueAs<smtk::resource::Resource>();
 
-  std::string role;
-  {
-    smtk::attribute::StringItem::Ptr roleItem = this->parameters()->findString("role");
-    role = roleItem->value();
-  }
-
-  if (!project->resources().add(resource, role))
+  if (!project->resources().remove(resource))
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
@@ -90,9 +49,9 @@ AddToProject::Result AddToProject::operateInternal()
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
-const char* AddToProject::xmlDescription() const
+const char* Remove::xmlDescription() const
 {
-  return AddToProject_xml;
+  return Remove_xml;
 }
 } // namespace project
 } // namespace smtk

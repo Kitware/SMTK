@@ -25,7 +25,7 @@
     <AttDef Type="result(create)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="project" HoldReference="true">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::project::Project"/>
           </Accepts>
@@ -33,6 +33,5 @@
 
       </ItemDefinitions>
     </AttDef>
-
   </Definitions>
 </SMTK_AttributeResource>

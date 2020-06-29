@@ -7,20 +7,31 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
 
-#include "smtk/resource/Manager.h"
+#ifndef __smtk_project_Add_h
+#define __smtk_project_Add_h
+
+#include "smtk/project/Operation.h"
 
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(this, smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
-  , m_manager(nullptr)
+
+class SMTKCORE_EXPORT Add : public smtk::project::Operation
 {
-}
+public:
+  smtkTypeMacro(smtk::project::Add);
+  smtkCreateMacro(Add);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+
+  bool configure(const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr&) override;
+
+protected:
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
+};
 } // namespace project
 } // namespace smtk
+
+#endif

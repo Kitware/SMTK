@@ -7,10 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/PhraseContent.h"
+#include "smtk/project/view/PhraseContent.h"
 
 #include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/ResourcePhraseContent.h"
 
 #include "smtk/attribute/Attribute.h"
 
@@ -25,9 +26,12 @@ namespace smtk
 {
 namespace project
 {
+namespace view
+{
 
 PhraseContent::PhraseContent()
-  : m_mutability(0)
+  : m_isProject(false)
+  , m_mutability(0)
 {
 }
 
@@ -36,12 +40,19 @@ PhraseContent::~PhraseContent() = default;
 PhraseContent::Ptr PhraseContent::setup(const smtk::project::ProjectPtr& project, int mutability)
 {
   m_mutability = mutability;
-  m_project = project;
+  m_resource = project;
+  m_isProject = true;
   return shared_from_this();
 }
 
-// smtk::view::DescriptivePhrasePtr PhraseContent::createPhrase(
-//   const smtk::project::Project& project, int mutability, smtk::view::DescriptivePhrase::Ptr parent)
+PhraseContent::Ptr PhraseContent::setup(const smtk::resource::ResourcePtr& resource, int mutability)
+{
+  m_mutability = mutability;
+  m_resource = resource;
+  m_isProject = false;
+  return shared_from_this();
+}
+
 smtk::view::DescriptivePhrasePtr PhraseContent::createPhrase(
   const smtk::project::ProjectPtr& project,
   int mutability,
@@ -55,31 +66,57 @@ smtk::view::DescriptivePhrasePtr PhraseContent::createPhrase(
   return result;
 }
 
+smtk::view::DescriptivePhrasePtr PhraseContent::createPhrase(
+  const smtk::resource::ResourcePtr& resource,
+  int mutability,
+  smtk::view::DescriptivePhrase::Ptr parent)
+{
+  auto result = smtk::view::DescriptivePhrase::create()->setup(
+    smtk::view::DescriptivePhraseType::RESOURCE_SUMMARY, parent);
+  auto content = smtk::project::view::PhraseContent::create()->setup(resource, mutability);
+  content->setLocation(result);
+  result->setContent(content);
+  return result;
+}
+
 std::string PhraseContent::stringValue(ContentType contentType) const
 {
-  if (auto project = m_project.lock())
+  if (auto resource = m_resource.lock())
   {
     switch (contentType)
     {
       case PhraseContent::TITLE:
       {
-        std::string name = project->name();
-        std::string locn = project->location();
-        std::string file = smtk::common::Paths::filename(locn);
-        std::string dir = smtk::common::Paths::directory(locn);
-        if (dir.empty())
+        if (m_isProject)
         {
-          dir = smtk::common::Paths::currentDirectory();
+          std::string name = resource->name();
+          std::string locn = resource->location();
+          std::string file = smtk::common::Paths::filename(locn);
+          std::string dir = smtk::common::Paths::directory(locn);
+          if (dir.empty())
+          {
+            dir = smtk::common::Paths::currentDirectory();
+          }
+          if (name.empty())
+          {
+            name = "New Project";
+          }
+          return name + " (" + (locn.empty() ? dir : locn) + ")";
         }
-        if (name.empty())
+        else
         {
-          name = "New Project";
+          std::string name = resource->name();
+          const std::string& role = detail::role(resource);
+          if (name.empty())
+          {
+            name = "New Resource";
+          }
+          return role + ": " + name;
         }
-        return name + " (" + (locn.empty() ? dir : locn) + ")";
       }
       break;
       case PhraseContent::SUBTITLE:
-        return project->typeName();
+        return resource->typeName();
         break;
 
       // We will not provide strings for these:
@@ -117,12 +154,13 @@ std::string PhraseContent::stringValue(ContentType contentType) const
         break;
     }
   }
+  // else if (auto resource = m_resource.lock())
   return std::string();
 }
 
 int PhraseContent::flagValue(ContentType contentType) const
 {
-  if (auto project = m_project.lock())
+  if (auto resource = m_resource.lock())
   {
     switch (contentType)
     {
@@ -141,15 +179,15 @@ int PhraseContent::flagValue(ContentType contentType) const
 
 bool PhraseContent::editStringValue(ContentType contentType, const std::string& val)
 {
-  if (auto project = m_project.lock())
+  if (auto resource = m_resource.lock())
   {
     switch (contentType)
     {
       case PhraseContent::TITLE:
-        return project->setName(val);
+        return resource->setName(val);
         break;
       case PhraseContent::SUBTITLE:
-        return project->setLocation(val);
+        return resource->setLocation(val);
         break;
 
       // We will not provide strings for these:
@@ -171,28 +209,21 @@ bool PhraseContent::editFlagValue(ContentType contentType, int val)
   return false;
 }
 
-smtk::resource::PersistentObjectPtr PhraseContent::relatedObject() const
-{
-  if (auto project = this->relatedProject())
-  {
-    return project;
-  }
-  return this->PhraseContent::relatedObject();
-}
-
 smtk::resource::ResourcePtr PhraseContent::relatedResource() const
 {
-  return m_project.lock();
+  return m_resource.lock();
 }
 
 smtk::project::ProjectPtr PhraseContent::relatedProject() const
 {
-  return m_project.lock();
+  return m_isProject ? std::static_pointer_cast<smtk::project::Project>(m_resource.lock())
+                     : smtk::project::ProjectPtr();
 }
 
 void PhraseContent::setMutability(int whatsMutable)
 {
   m_mutability = whatsMutable;
 }
+} // namespace view
 } // namespace project
 } // namespace smtk

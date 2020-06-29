@@ -1,11 +1,13 @@
 # Using smtk test harness
 
 set(unit_tests
-  TestDefineProjectOp
+  TestDefineOp
   TestProject
   TestProjectResources
 )
-set(unit_tests_which_require_data)
+set(unit_tests_which_require_data
+  TestProjectReadWrite
+)
 set(extra_libs)
 
 smtk_unit_tests(

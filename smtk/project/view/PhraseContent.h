@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_project_PhraseContent_h
-#define smtk_project_PhraseContent_h
+#ifndef smtk_project_view_PhraseContent_h
+#define smtk_project_view_PhraseContent_h
 
 #include "smtk/view/PhraseContent.h"
 
@@ -20,6 +20,8 @@ namespace smtk
 {
 namespace project
 {
+namespace view
+{
 
 /**\brief Describe a project for user presentation.
   *
@@ -27,13 +29,19 @@ namespace project
 class SMTKCORE_EXPORT PhraseContent : public smtk::view::PhraseContent
 {
 public:
-  smtkTypeMacro(smtk::project::PhraseContent);
+  smtkTypeMacro(smtk::project::view::PhraseContent);
   smtkSharedPtrCreateMacro(smtk::view::PhraseContent);
   Ptr setup(const smtk::project::ProjectPtr& project, int mutability = 0);
+  Ptr setup(const smtk::resource::ResourcePtr& resource, int mutability = 0);
   virtual ~PhraseContent();
 
   static smtk::view::DescriptivePhrasePtr createPhrase(
     const smtk::project::ProjectPtr& project,
+    int mutability = 0,
+    smtk::view::DescriptivePhrase::Ptr parent = smtk::view::DescriptivePhrasePtr());
+
+  static smtk::view::DescriptivePhrasePtr createPhrase(
+    const smtk::resource::ResourcePtr& resource,
     int mutability = 0,
     smtk::view::DescriptivePhrase::Ptr parent = smtk::view::DescriptivePhrasePtr());
 
@@ -52,7 +60,6 @@ public:
   bool editStringValue(ContentType contentType, const std::string& val) override;
   bool editFlagValue(ContentType contentType, int val) override;
 
-  smtk::resource::PersistentObjectPtr relatedObject() const override;
   smtk::resource::ResourcePtr relatedResource() const override;
   virtual smtk::project::ProjectPtr relatedProject() const;
 
@@ -61,16 +68,18 @@ public:
   bool operator==(const smtk::view::PhraseContent& other) const override
   {
     return this->equalTo(other) &&
-      !(m_project.owner_before(static_cast<const PhraseContent&>(other).m_project)) &&
-      !(static_cast<const PhraseContent&>(other).m_project.owner_before(m_project));
+      !(m_resource.owner_before(static_cast<const PhraseContent&>(other).m_resource)) &&
+      !(static_cast<const PhraseContent&>(other).m_resource.owner_before(m_resource));
   }
 
 protected:
   PhraseContent();
 
-  std::weak_ptr<smtk::project::Project> m_project;
+  std::weak_ptr<smtk::resource::Resource> m_resource;
+  bool m_isProject;
   int m_mutability;
 };
+} // namespace view
 } // namespace project
 } // namespace smtk
 

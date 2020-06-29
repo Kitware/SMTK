@@ -7,20 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
+#include "smtk/project/view/IconConstructor.h"
 
-#include "smtk/resource/Manager.h"
+#include <regex>
 
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(this, smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
-  , m_manager(nullptr)
+namespace view
 {
+std::string IconConstructor::operator()(const std::string& secondaryColor) const
+{
+  std::string fill = "gray";
+
+  std::string svg = std::regex_replace(
+    std::regex_replace(this->svg(), std::regex(m_defaultColor), fill),
+    std::regex(m_secondaryColor),
+    secondaryColor);
+
+  return svg;
 }
+} // namespace view
 } // namespace project
 } // namespace smtk

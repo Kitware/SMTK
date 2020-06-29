@@ -9,6 +9,9 @@
 //=========================================================================
 #include "smtk/project/ResourceContainer.h"
 
+#include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
+
 #include "smtk/resource/Manager.h"
 
 namespace
@@ -58,7 +61,19 @@ const std::string& role(const smtk::resource::ResourcePtr& r)
 }
 } // namespace detail
 
-ResourceContainer::~ResourceContainer() {}
+ResourceContainer::ResourceContainer(
+  const smtk::project::Project* project,
+  const std::weak_ptr<smtk::resource::Manager>& manager)
+  : m_project(project)
+  , m_manager(manager)
+  , m_undefinedRoleCounter(0)
+{
+  // NOTE: When modifying this constructor, do not use the project parameter
+  // or m_project field! The parent Project is still in construction and is in
+  // an indeterminate state.
+}
+
+ResourceContainer::~ResourceContainer() = default;
 
 bool ResourceContainer::registerResource(const std::string& typeName)
 {
@@ -205,6 +220,36 @@ smtk::resource::ConstResourcePtr ResourceContainer::get(const std::string& url) 
   return smtk::resource::ConstResourcePtr();
 }
 
+smtk::resource::ResourcePtr ResourceContainer::getByRole(const std::string& role)
+{
+  // No type casting is required, so we simply find and return the resource by
+  // key.
+  typedef Container::index<RoleTag>::type ResourcesByRole;
+  ResourcesByRole& resources = m_resources.get<RoleTag>();
+  ResourcesByRole::iterator resourceIt = resources.find(role);
+  if (resourceIt != resources.end())
+  {
+    return *resourceIt;
+  }
+
+  return smtk::resource::ResourcePtr();
+}
+
+smtk::resource::ConstResourcePtr ResourceContainer::getByRole(const std::string& role) const
+{
+  // No type casting is required, so we simply find and return the resource by
+  // key.
+  typedef Container::index<RoleTag>::type ResourcesByRole;
+  const ResourcesByRole& resources = m_resources.get<RoleTag>();
+  ResourcesByRole::const_iterator resourceIt = resources.find(role);
+  if (resourceIt != resources.end())
+  {
+    return *resourceIt;
+  }
+
+  return smtk::resource::ConstResourcePtr();
+}
+
 std::set<smtk::resource::ResourcePtr> ResourceContainer::find(const std::string& typeName) const
 {
   std::set<smtk::resource::ResourcePtr> values;
@@ -308,7 +353,7 @@ bool ResourceContainer::add(const smtk::resource::ResourcePtr& resource, const s
 bool ResourceContainer::add(
   const smtk::resource::Resource::Index& index,
   const smtk::resource::ResourcePtr& resource,
-  const std::string& role)
+  std::string role)
 {
   if (!resource)
   {
@@ -334,6 +379,11 @@ bool ResourceContainer::add(
   }
 
   // Assign the resource's role.
+  if (role.empty())
+  {
+    role = "undefined_role_" + std::to_string(this->m_undefinedRoleCounter++);
+  }
+
   if (detail::role(resource) != role)
   {
     resource->properties().get<std::string>()[role_name] = role;
@@ -356,6 +406,13 @@ bool ResourceContainer::add(
   // Insert the resource into the project's set of resources
   m_resources.insert(shared);
 
+  // Alert observers that the parent project has been modified.
+  if (m_project->manager())
+  {
+    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
+    observers(*m_project, smtk::project::EventType::MODIFIED);
+  }
+
   return true;
 }
 
@@ -372,6 +429,13 @@ bool ResourceContainer::remove(const smtk::resource::ResourcePtr& resource)
     // Remove it from the project's set of resources
     m_resources.erase(resourceIt);
     return true;
+  }
+
+  // Alert observers that the parent project has been modified.
+  if (m_project->manager())
+  {
+    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
+    observers(*m_project, smtk::project::EventType::MODIFIED);
   }
 
   return false;

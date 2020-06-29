@@ -18,19 +18,6 @@ set_target_properties(
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 
 
-add_executable(browseProject
-  browseProject.cxx
-  ProjectBrowser.cxx
-  ProjectBrowser.ui)
-target_link_libraries(browseProject
-  smtkCore
-  smtkQtExt
-)
-
-set_target_properties(
-  browseProject PROPERTIES AUTOMOC TRUE
-  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
-
 ##
 ## Create an application to test attribute editing
 add_executable(qtAttributePreview MACOSX_BUNDLE qtAttributePreview.cxx)

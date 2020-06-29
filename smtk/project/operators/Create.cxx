@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/project/operators/CreateProject.h"
+#include "smtk/project/operators/Create.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -25,7 +25,7 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/CreateProject_xml.h"
+#include "smtk/project/Create_xml.h"
 
 #include <sstream>
 
@@ -59,7 +59,7 @@ namespace smtk
 namespace project
 {
 
-CreateProject::Result CreateProject::operateInternal()
+Create::Result Create::operateInternal()
 {
   std::string typeName;
   {
@@ -77,14 +77,14 @@ CreateProject::Result CreateProject::operateInternal()
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("project");
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
     created->setValue(project);
   }
 
   return result;
 }
 
-CreateProject::Specification CreateProject::createSpecification()
+Create::Specification Create::createSpecification()
 {
   Specification spec = this->smtk::operation::XMLOperation::createSpecification();
   auto createDef = spec->findDefinition("create");
@@ -105,13 +105,7 @@ CreateProject::Specification CreateProject::createSpecification()
     projectDef = stringItemDefinitions[0];
   }
 
-  for (auto& metadatum : projectManager->metadata())
-  {
-    projectDef->addDiscreteValue(metadatum.typeName());
-  }
-
   spec->properties().insertPropertyType<KeyContainer>();
-
   spec->properties().emplace<KeyContainer>(
     "update_project_list",
     projectManager->metadataObservers().insert(
@@ -123,14 +117,14 @@ CreateProject::Specification CreateProject::createSpecification()
 
         projectDef->addDiscreteValue(md.typeName());
       },
-      "CreateProject: Update project list when new project types are added"));
+      "Create: Update project list when new project types are added"));
 
   return spec;
 }
 
-const char* CreateProject::xmlDescription() const
+const char* Create::xmlDescription() const
 {
-  return CreateProject_xml;
+  return Create_xml;
 }
 } // namespace project
 } // namespace smtk

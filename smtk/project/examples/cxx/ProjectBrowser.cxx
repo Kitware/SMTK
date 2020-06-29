@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/examples/cxx/ProjectBrowser.h"
+#include "smtk/project/examples/cxx/ProjectBrowser.h"
 
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
-#include "smtk/extension/qt/examples/cxx/ui_ProjectBrowser.h"
+#include "smtk/project/examples/cxx/ui_ProjectBrowser.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseContent.h"

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_project_DefineProject_h
-#define __smtk_project_DefineProject_h
+#ifndef __smtk_project_Create_h
+#define __smtk_project_Create_h
 
 #include "smtk/project/Operation.h"
 
@@ -18,11 +18,11 @@ namespace smtk
 namespace project
 {
 
-class SMTKCORE_EXPORT DefineProject : public smtk::project::Operation
+class SMTKCORE_EXPORT Create : public smtk::project::Operation
 {
 public:
-  smtkTypeMacro(smtk::project::DefineProject);
-  smtkCreateMacro(DefineProject);
+  smtkTypeMacro(smtk::project::Create);
+  smtkCreateMacro(Create);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:

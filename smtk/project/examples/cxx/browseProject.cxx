@@ -24,7 +24,7 @@
 
 #include "smtk/attribute/Registrar.h"
 
-#include "smtk/extension/qt/examples/cxx/ProjectBrowser.h"
+#include "smtk/project/examples/cxx/ProjectBrowser.h"
 
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -107,18 +107,21 @@ int main(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
 
+  // Register project resources with the resource manager
+  smtk::project::Registrar::registerTo(resourceManager);
+
   // Register MyResource
   ::Registrar::registerTo(resourceManager);
 
   // Create an operation manager
   smtk::operation::ManagerPtr operationManager = smtk::operation::Manager::create();
 
+  // Register project operations with the operation manager
+  smtk::project::Registrar::registerTo(operationManager);
+
   // Create a project manager
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
-
-  // Register project operations with the project manager
-  smtk::project::Registrar::registerTo(projectManager);
 
   // Register our not-so-custom Project with the manager.
   ::Registrar::registerTo(projectManager);
@@ -128,6 +131,7 @@ int main(int argc, char* argv[])
 
   // Create a resource
   auto myResource = resourceManager->create<MyResource>();
+  myResource->setName("My Resource");
 
   // Add the resource to the project
   project->resources().add(myResource);
@@ -155,17 +159,17 @@ int main(int argc, char* argv[])
   {
     jconfig = {
       { "Name", "Test" },
-      { "Type", "smtk::project::PhraseModel" },
+      { "Type", "smtk::project::view::PhraseModel" },
       { "Component",
         { { "Name", "Details" },
-          { "Type", "smtk::project::PhraseModel" },
-          { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+          { "Type", "smtk::project::view::PhraseModel" },
+          { "Attributes", { { "TopLevel", true }, { "Title", "Projects" } } },
           { "Children",
             { { { "Name", "PhraseModel" },
-                { "Attributes", { { "Type", "smtk::project::PhraseModel" } } },
+                { "Attributes", { { "Type", "smtk::project::view::PhraseModel" } } },
                 { "Children",
                   { { { "Name", "SubphraseGenerator" },
-                      { "Attributes", { { "Type", "default" } } } },
+                      { "Attributes", { { "Type", "smtk::project::view::SubphraseGenerator" } } } },
                     { { "Name", "Badges" },
                       { "Children",
                         {
@@ -183,6 +187,7 @@ int main(int argc, char* argv[])
   }
 
   auto qmodel = new smtk::extension::qtDescriptivePhraseModel;
+  qmodel->setColumnName("Project");
   auto qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);

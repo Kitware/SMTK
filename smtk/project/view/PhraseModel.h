@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_project_PhraseModel_h
-#define smtk_project_PhraseModel_h
+#ifndef smtk_project_view_PhraseModel_h
+#define smtk_project_view_PhraseModel_h
 
 #include "smtk/project/Observer.h"
 #include "smtk/project/Project.h"
@@ -20,6 +20,8 @@ namespace smtk
 {
 namespace project
 {
+namespace view
+{
 
 /**\brief Present phrases describing a set of projects held by one or more project managers.
   *
@@ -27,7 +29,7 @@ namespace project
 class SMTKCORE_EXPORT PhraseModel : public smtk::view::ResourcePhraseModel
 {
 public:
-  smtkTypeMacro(smtk::project::PhraseModel);
+  smtkTypeMacro(smtk::project::view::PhraseModel);
   smtkSuperclassMacro(smtk::view::ResourcePhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
 
@@ -48,9 +50,11 @@ public:
 protected:
   void processResource(const smtk::resource::Resource::Ptr& rsrc, bool adding) override;
   virtual void processProject(const smtk::project::Project::Ptr& project, bool adding);
+  virtual void updateProject(const Project::Ptr& project);
 
   std::list<smtk::project::Observers::Key> m_projectHandles;
 };
+} // namespace view
 } // namespace project
 } // namespace smtk
 

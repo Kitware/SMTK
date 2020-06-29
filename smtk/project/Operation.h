@@ -34,6 +34,14 @@ public:
   void setProjectManager(smtk::project::WeakManagerPtr);
   smtk::project::ManagerPtr projectManager();
 
+  /// This method is redeclared to give it public access.
+  ///
+  /// Many of the project operations use a project manager to propertly define
+  /// their input parameters. We must therefore call `createSpecification` from
+  /// an instance that has the project manager set when registering these
+  /// operations with the operation manager.
+  using smtk::operation::XMLOperation::createSpecification;
+
 private:
   smtk::project::WeakManagerPtr m_projectManager;
 };
