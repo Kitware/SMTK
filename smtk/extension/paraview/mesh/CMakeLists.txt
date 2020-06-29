@@ -24,6 +24,7 @@ vtk_module_link(smtkPVMeshExt
   PUBLIC
     nlohmann_json
     smtkPluginSupport
+    vtkSMTKMeshExt
 )
 
 # if (SMTK_ENABLE_TESTING)
