@@ -100,6 +100,24 @@ void PythonInterpreter::initialize()
   // We are initializing the embedded python.
   m_embedded = true;
 
+#ifdef __APPLE__
+  // On macOS, see if we are running inside a packaged bundle.
+  // If so, set the python path appropriately
+  smtk::common::Paths paths;
+  auto bundleDir = paths.bundleDirectory();
+  std::ostringstream bundlePythonPath;
+  bundlePythonPath << bundleDir << "/Contents/Libraries/lib/python" << PY_MAJOR_VERSION << "."
+                   << PY_MINOR_VERSION;
+  if (paths.directoryExists(bundlePythonPath.str()))
+  {
+    std::vector<wchar_t> pythonPath;
+    pythonPath.resize(bundlePythonPath.str().size() + 1);
+    mbstowcs(
+      &pythonPath[0], bundlePythonPath.str().c_str(), static_cast<size_t>(pythonPath.size()));
+    Py_SetPath(&pythonPath[0]);
+  }
+#endif
+
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
