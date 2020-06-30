@@ -113,7 +113,7 @@ public:
 #ifdef SMTK_HAVE_CXX_14
         std::make_unique<WrapperFor<Type> >(std::make_unique<Type>(value))))
 #else
-        new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value))))))
+        std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))))
 #endif
       .second;
   }
@@ -127,7 +127,8 @@ public:
 #ifdef SMTK_HAVE_CXX_14
         std::make_unique<WrapperFor<Type> >(std::make_unique<Type>(std::forward<Args>(args)...))))
 #else
-        new WrapperFor<Type>(std::unique_ptr<Type>(new Type(std::forward<Args>(args)...)))))
+        std::unique_ptr<Wrapper>(new WrapperFor<Type>(
+          std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))))
 #endif
       .second;
   }
@@ -158,7 +159,7 @@ public:
 #ifdef SMTK_HAVE_CXX_14
                    std::make_unique<WrapperFor<Type> >(std::make_unique<Type>())))
 #else
-                   new WrapperFor<Type>(std::unique_ptr<Type>(new Type))))
+                   std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type)))))
 #endif
                  .first;
     }
