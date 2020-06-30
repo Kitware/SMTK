@@ -50,6 +50,8 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
   viewManager->subphraseGeneratorFactory().registerTypes<SubphraseGeneratorList>();
 
   // Per-object icons
+  viewManager->objectIcons().registerIconConstructor<smtk::resource::Resource>(
+    ResourceIconConstructor());
   viewManager->objectIcons().registerIconConstructor<smtk::attribute::Resource>(
     AttributeIconConstructor());
   viewManager->objectIcons().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());

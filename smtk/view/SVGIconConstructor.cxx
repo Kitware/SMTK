@@ -14,6 +14,8 @@
 
 #include "smtk/common/Color.h"
 
+#include "smtk/mesh/core/Resource.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
 
@@ -23,13 +25,18 @@
 #include "smtk/view/icons/attribute_svg.h"
 #include "smtk/view/icons/edge_svg.h"
 #include "smtk/view/icons/face_svg.h"
+#include "smtk/view/icons/meshResource_svg.h"
 #include "smtk/view/icons/mesh_svg.h"
+#include "smtk/view/icons/modelResource_svg.h"
 #include "smtk/view/icons/model_svg.h"
+#include "smtk/view/icons/resource_svg.h"
 #include "smtk/view/icons/vertex_svg.h"
 #include "smtk/view/icons/volume_svg.h"
 
 #include <regex>
 #include <vector>
+
+#include <fstream>
 
 namespace
 {
@@ -72,6 +79,11 @@ std::string DefaultIconConstructor::operator()(
   return "";
 }
 
+std::string ResourceIconConstructor::svg(const smtk::resource::PersistentObject&) const
+{
+  return resource_svg;
+}
+
 std::string AttributeIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
   if (dynamic_cast<const smtk::attribute::Resource*>(&object) != nullptr)
@@ -84,14 +96,25 @@ std::string AttributeIconConstructor::svg(const smtk::resource::PersistentObject
   }
 }
 
-std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject&) const
+std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
-  return mesh_svg;
+  if (auto resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
+  {
+    return meshResource_svg;
+  }
+  else
+  {
+    return mesh_svg;
+  }
 }
 
 std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
-  if (auto entity = dynamic_cast<const smtk::model::Entity*>(&object))
+  if (auto resource = dynamic_cast<const smtk::model::Resource*>(&object))
+  {
+    return modelResource_svg;
+  }
+  else if (auto entity = dynamic_cast<const smtk::model::Entity*>(&object))
   {
     smtk::model::BitFlags flags = entity->entityFlags();
 

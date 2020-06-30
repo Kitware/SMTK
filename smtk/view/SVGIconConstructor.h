@@ -54,6 +54,11 @@ public:
   std::string operator()(const smtk::resource::PersistentObject&, const std::string&) const;
 };
 
+class SMTKCORE_EXPORT ResourceIconConstructor : public SVGIconConstructor
+{
+  std::string svg(const smtk::resource::PersistentObject&) const override;
+};
+
 class SMTKCORE_EXPORT AttributeIconConstructor : public SVGIconConstructor
 {
   std::string svg(const smtk::resource::PersistentObject&) const override;
