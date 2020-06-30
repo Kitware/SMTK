@@ -89,7 +89,10 @@ set(iconFiles
   icons/edge.svg
   icons/face.svg
   icons/mesh.svg
+  icons/meshResource.svg
   icons/model.svg
+  icons/modelResource.svg
+  icons/resource.svg
   icons/selected.svg
   icons/vertex.svg
   icons/volume.svg
