@@ -41,6 +41,7 @@ public:
 protected:
   Resource(const smtk::common::UUID&, smtk::resource::ManagerPtr manager = nullptr);
   Resource(smtk::resource::ManagerPtr manager = nullptr);
+  Resource(Resource&&) = default;
 
   Session::Ptr m_session;
 };
