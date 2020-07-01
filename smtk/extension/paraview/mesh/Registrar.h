@@ -18,6 +18,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/view/Registrar.h"
 
 namespace smtk
 {
