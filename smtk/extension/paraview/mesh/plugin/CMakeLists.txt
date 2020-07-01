@@ -6,6 +6,7 @@ smtk_add_plugin(smtkPVMeshExtPlugin
     smtk::extension::paraview::mesh::Registrar
   MANAGERS
     smtk::geometry::Manager
+    smtk::operation::Manager
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0
