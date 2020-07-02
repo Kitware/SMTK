@@ -36,6 +36,8 @@
 #endif
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
 #include <boost/dll.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
@@ -163,6 +165,16 @@ std::string Paths::extension(const std::string& path)
 std::string Paths::replaceExtension(const std::string& path, const std::string& newExtension)
 {
   return boost::filesystem::path(path).replace_extension(newExtension).string();
+}
+
+std::string Paths::tempDirectory()
+{
+  return boost::filesystem::temp_directory_path().string();
+}
+
+std::string Paths::uniquePath()
+{
+  return boost::filesystem::unique_path().string();
 }
 
 /**\brief Return the best guess at the directory containing the current process's executable.

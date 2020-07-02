@@ -67,6 +67,11 @@ Archive::~Archive()
   }
 }
 
+bool Archive::isArchive(const std::string& archivePath)
+{
+  return !Archive(archivePath).contents().empty();
+}
+
 bool Archive::insert(const std::string& filePath, const std::string& archivedPath)
 {
   if (m_internals->filePaths.find(archivedPath) != m_internals->filePaths.end())
@@ -355,24 +360,12 @@ std::set<std::string> Archive::contents() const
 std::ifstream Archive::get(const std::string& archivedFilePath)
 {
 #if !defined(SMTK_GCC) || (__GNUC__ >= 5)
-  // if there are any files archived, extract them first
-  if (m_internals->archived)
+  std::string location = this->location(archivedFilePath);
+  if (!location.empty())
   {
-    this->extract();
+    return std::ifstream(location);
   }
-
-  // find the file whose filename corresponds to the query
-  auto filepath = m_internals->filePaths.find(archivedFilePath);
-
-  if (filepath != m_internals->filePaths.end())
-  {
-    // return a stream to that file
-    return std::ifstream(filepath->second);
-  }
-
-  // we were unable to find an associated file; return the empty stream
   return std::ifstream();
-
 #else
   throw std::ios_base::failure("This method cannot be used with GCC < 5 due to a bug in GCC (see "
                                "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626)");
@@ -380,6 +373,15 @@ std::ifstream Archive::get(const std::string& archivedFilePath)
 }
 
 void Archive::get(const std::string& archivedFilePath, std::ifstream& stream)
+{
+  std::string location = this->location(archivedFilePath);
+  if (!location.empty())
+  {
+    stream.open(location);
+  }
+}
+
+std::string Archive::location(const std::string& archivedFilePath)
 {
   // if there are any files archived, extract them first
   if (m_internals->archived)
@@ -392,8 +394,12 @@ void Archive::get(const std::string& archivedFilePath, std::ifstream& stream)
 
   if (filepath != m_internals->filePaths.end())
   {
-    stream.open(filepath->second);
+    // return the location of that file
+    return filepath->second;
   }
+
+  // we were unable to find an associated file; return an empty string
+  return std::string();
 }
 }
 }

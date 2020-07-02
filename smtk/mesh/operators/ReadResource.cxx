@@ -29,6 +29,7 @@
 #include "smtk/mesh/ReadResource_xml.h"
 #include "smtk/mesh/operators/Read.h"
 
+#include "smtk/common/Archive.h"
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -46,7 +47,20 @@ ReadResource::Result ReadResource::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
 
-  std::ifstream file(filename);
+  std::ifstream file;
+
+  smtk::common::Archive archive(filename);
+  if (!archive.contents().empty())
+  {
+    std::string smtkFilename = "index.json";
+
+    archive.get(smtkFilename, file);
+  }
+  else
+  {
+    file = std::ifstream(filename);
+  }
+
   if (!file.good())
   {
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
@@ -66,8 +80,16 @@ ReadResource::Result ReadResource::operateInternal()
 
   std::string meshFilename = j.at("Mesh URL");
 
-  auto refDirectory = smtk::common::Paths::directory(filename);
-  smtk::common::FileLocation meshFileLocation(meshFilename, refDirectory);
+  smtk::common::FileLocation meshFileLocation;
+  if (!archive.contents().empty())
+  {
+    meshFileLocation = archive.location(meshFilename);
+  }
+  else
+  {
+    auto refDirectory = smtk::common::Paths::directory(filename);
+    meshFileLocation = smtk::common::FileLocation(meshFilename, refDirectory);
+  }
 
   smtk::io::ReadMesh read;
   smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();

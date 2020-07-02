@@ -15,6 +15,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
+#include "smtk/common/Archive.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
@@ -75,52 +77,66 @@ ReadResource::Result ReadResource::operateInternal()
   {
     std::string filename = *fileIt;
 
+    smtk::common::Archive archive(filename);
+
     // Scope so file is only open for a short time:
     {
-      std::ifstream file(filename, std::ios::in);
-      if (!file.good())
+      std::ifstream file;
+      if (!archive.contents().empty())
       {
-        smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\" for reading.");
-        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+        std::string smtkFilename = "index.json";
+        archive.get(smtkFilename, file);
+      }
+      else
+      {
+        file = std::ifstream(filename, std::ios::in);
       }
 
-      bool fileTypeKnown = false;
-      json j;
+      {
+        if (!file.good())
+        {
+          smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\" for reading.");
+          return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+        }
 
-      try
-      {
-        j = json::parse(file);
-        type = j.at("type").get<std::string>();
-        fileTypeKnown = true;
-      }
-      catch (std::exception&)
-      {
-      }
+        bool fileTypeKnown = false;
+        json j;
 
-      if (!fileTypeKnown)
-      {
         try
         {
-          for (json::iterator it = j.begin(); it != j.end(); ++it)
-          {
-            auto jtype = it->find("type");
-            if (jtype != it->end() && jtype.value() == "session")
-            {
-              type = it->find("name").value().get<std::string>();
-              fileTypeKnown = true;
-            }
-          }
+          j = json::parse(file);
+          type = j.at("type").get<std::string>();
+          fileTypeKnown = true;
         }
         catch (std::exception&)
         {
         }
-      }
 
-      if (!fileTypeKnown)
-      {
-        smtkErrorMacro(
-          this->log(), "Could not determine resource type for file \"" << filename << "\".");
-        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+        if (!fileTypeKnown)
+        {
+          try
+          {
+            for (json::iterator it = j.begin(); it != j.end(); ++it)
+            {
+              auto jtype = it->find("type");
+              if (jtype != it->end() && jtype.value() == "session")
+              {
+                type = it->find("name").value().get<std::string>();
+                fileTypeKnown = true;
+              }
+            }
+          }
+          catch (std::exception&)
+          {
+          }
+        }
+
+        if (!fileTypeKnown)
+        {
+          smtkErrorMacro(
+            this->log(), "Could not determine resource type for file \"" << filename << "\".");
+          return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+        }
       }
     }
 
