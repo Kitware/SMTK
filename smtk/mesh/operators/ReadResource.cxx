@@ -17,6 +17,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/Archive.h"
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/FileLocation.h"
 #include "smtk/common/Paths.h"
 
@@ -28,9 +30,6 @@
 
 #include "smtk/mesh/ReadResource_xml.h"
 #include "smtk/mesh/operators/Read.h"
-
-#include "smtk/common/Archive.h"
-#include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"

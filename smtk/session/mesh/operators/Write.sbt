@@ -7,6 +7,15 @@
       <AssociationsDef LockType="Read" OnlyResources="true">
           <Accepts><Resource Name="smtk::session::mesh::Resource"/></Accepts>
       </AssociationsDef>
+      <ItemDefinitions>
+
+        <Void Name="archive" Label="Archive files" Optional="true" IsEnabledByDefault="true" AdvanceLevel="1">
+          <BriefDescription>
+            Archive all related files into a single archive.
+          </BriefDescription>
+        </Void>
+
+      </ItemDefinitions>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
