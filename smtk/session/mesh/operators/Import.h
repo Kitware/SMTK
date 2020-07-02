@@ -20,9 +20,12 @@ namespace session
 {
 namespace mesh
 {
+class Read;
 
 class SMTKMESHSESSION_EXPORT Import : public smtk::operation::XMLOperation
 {
+  friend class Read;
+
 public:
   smtkTypeMacro(smtk::session::mesh::Import);
   smtkCreateMacro(Import);
@@ -32,6 +35,8 @@ protected:
   Result operateInternal() override;
   Specification createSpecification() override;
   virtual const char* xmlDescription() const override;
+
+  bool callFromRead = false;
 };
 }
 }

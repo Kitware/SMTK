@@ -33,6 +33,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/resource/Manager.h"
 
 #include "smtk/session/mesh/Import_xml.h"
@@ -122,17 +124,17 @@ Import::Result Import::operateInternal()
     resource->setSession(session);
   }
 
-  // Get the mesh resource from the file
-  smtk::mesh::MeshSet preexistingMeshes = meshResource->meshes();
-  smtk::io::importMesh(filePath, meshResource, label);
-  smtk::mesh::MeshSet allMeshes = meshResource->meshes();
-  smtk::mesh::MeshSet newMeshes = smtk::mesh::set_difference(allMeshes, preexistingMeshes);
-
   if (!meshResource || !meshResource->isValid())
   {
     // The file was not correctly read.
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+
+  // Get the mesh resource from the file
+  smtk::mesh::MeshSet preexistingMeshes = meshResource->meshes();
+  smtk::io::importMesh(filePath, meshResource, label);
+  smtk::mesh::MeshSet allMeshes = meshResource->meshes();
+  smtk::mesh::MeshSet newMeshes = smtk::mesh::set_difference(allMeshes, preexistingMeshes);
 
   // Name the mesh according to the stem of the file
   std::string name = smtk::common::Paths::stem(filePath);
@@ -205,7 +207,10 @@ Import::Result Import::operateInternal()
   model.setSession(smtk::model::SessionRef(resource, resource->session()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
-  resource->session()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
+  resource->session()->transcribe(model,
+    (this->callFromRead ? smtk::model::SESSION_EVERYTHING & ~smtk::model::SESSION_PROPERTIES
+                        : smtk::model::SESSION_EVERYTHING),
+    false);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -221,6 +226,31 @@ Import::Result Import::operateInternal()
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
     created->appendValue(model.component());
   }
+
+  // Access the model resource's associated topology.
+  smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
+
+  // Mark the modified model components to update their representative geometry
+  smtk::operation::MarkGeometry markGeometry(resource);
+
+  std::function<void(const smtk::common::UUID&)> mark;
+
+  mark = [&](const smtk::common::UUID& id) {
+    markGeometry.markModified(resource->find(id));
+    auto elementIt = topology->m_elements.find(id);
+    if (elementIt == topology->m_elements.end())
+    {
+      return;
+    }
+    Topology::Element& element = elementIt->second;
+
+    for (const smtk::common::UUID& childId : element.m_children)
+    {
+      mark(childId);
+    }
+  };
+
+  mark(model.entity());
 
   result->findComponent("mesh_created")->setValue(model.component());
 

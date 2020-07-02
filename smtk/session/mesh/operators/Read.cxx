@@ -99,6 +99,7 @@ Read::Result Read::operateInternal()
 
   // Create an import operator
   smtk::session::mesh::Import::Ptr importOp = smtk::session::mesh::Import::create();
+  importOp->callFromRead = true;
   importOp->parameters()->associate(resource);
   importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   importOp->parameters()->findFile("filename")->setValue(meshFilename);
