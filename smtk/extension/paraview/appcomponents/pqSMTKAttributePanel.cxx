@@ -46,9 +46,10 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
   , m_attrUIMgr(nullptr)
 {
-  this->setObjectName("AttributeEditor");
+  this->setObjectName("attributeEditor");
   this->setWindowTitle("Attribute Editor");
   QWidget* w = new QWidget(this);
+  w->setObjectName("attributePanel");
   this->setWidget(w);
   w->setLayout(new QVBoxLayout);
   QObject::connect(&pqActiveObjects::instance(), SIGNAL(sourceChanged(pqPipelineSource*)), this,

@@ -461,6 +461,7 @@ void qtReferenceItem::updateUI()
   }
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  m_widget->setObjectName("ReferenceItemFrame");
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
@@ -536,6 +537,7 @@ void qtReferenceItem::updateUI()
   m_p->m_copyFromSelection = new QPushButton(copyFromSelection, "");
   m_p->m_copyFromSelection->setSizePolicy(sizeFixedPolicy);
   m_p->m_copyFromSelection->setToolTip("Replace this item's members with the selection.");
+  m_p->m_copyFromSelection->setObjectName("CopyFromSelection");
   entryLayout->addWidget(m_p->m_copyFromSelection);
   QObject::connect(m_p->m_copyFromSelection, SIGNAL(clicked()), this, SLOT(copyFromSelection()));
 
@@ -544,6 +546,7 @@ void qtReferenceItem::updateUI()
   m_p->m_clear = new QPushButton(clearItem, "");
   m_p->m_clear->setSizePolicy(sizeFixedPolicy);
   m_p->m_clear->setToolTip("Clear this item's members.");
+  m_p->m_clear->setObjectName("ClearMembership");
   entryLayout->addWidget(m_p->m_clear);
   QObject::connect(m_p->m_clear, SIGNAL(clicked()), this, SLOT(clearItem()));
 
@@ -552,6 +555,7 @@ void qtReferenceItem::updateUI()
   m_p->m_copyToSelection = new QPushButton(copyToSelection, "");
   m_p->m_copyToSelection->setSizePolicy(sizeFixedPolicy);
   m_p->m_copyToSelection->setToolTip("Replace the selection with this item's members.");
+  m_p->m_copyToSelection->setObjectName("CopyToSelection");
   entryLayout->addWidget(m_p->m_copyToSelection);
   QObject::connect(m_p->m_copyToSelection, SIGNAL(clicked()), this, SLOT(copyToSelection()));
 
@@ -562,11 +566,14 @@ void qtReferenceItem::updateUI()
   m_p->m_synopsis->setSizePolicy(sizeStretchyXPolicy);
   m_p->m_synopsis->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   entryLayout->addWidget(m_p->m_synopsis);
+  entryLayout->setObjectName("ReferenceItemLayout");
 
   // ... a button to pop up an editor for the item contents.
   m_p->m_editBtn = new QToolButton(m_widget);
   m_p->m_editBtn->setPopupMode(QToolButton::InstantPopup);
   m_p->m_editBtn->setMenu(new QMenu(m_p->m_editBtn));
+  m_p->m_editBtn->setObjectName("EditReferenceItemMembers");
+  m_p->m_editBtn->menu()->setObjectName("Candidates");
   entryLayout->addWidget(m_p->m_editBtn);
 
   // Create a popup for editing the item's contents

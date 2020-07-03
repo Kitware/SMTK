@@ -140,6 +140,7 @@ void qtAttribute::createWidget(bool createWidgetWhenEmpty)
   }
   m_isEmpty = false;
   QFrame* attFrame = new QFrame(this->parentWidget());
+  attFrame->setObjectName(att->name().c_str());
   attFrame->setFrameShape(QFrame::Box);
   m_widget = attFrame;
 

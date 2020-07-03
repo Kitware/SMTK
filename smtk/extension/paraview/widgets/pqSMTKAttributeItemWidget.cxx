@@ -373,6 +373,7 @@ void pqSMTKAttributeItemWidget::updateUI()
   }
 
   m_widget = new QFrame(this->parentWidget());
+  m_widget->setObjectName(dataObj->name().c_str());
   this->m_p->m_layout = new QGridLayout(m_widget);
   this->m_p->m_layout->setMargin(0);
   this->m_p->m_layout->setSpacing(0);

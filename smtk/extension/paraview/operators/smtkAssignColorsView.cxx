@@ -276,6 +276,7 @@ void smtkAssignColorsView::createWidget()
 
   // Create a new frame and lay it out
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName("assignColorsView");
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);

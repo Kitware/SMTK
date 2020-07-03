@@ -420,6 +420,7 @@ void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::Configurat
   if ((!view->details().attributeAsBool("FilterByAdvanceLevel", flag)) || flag)
   {
     this->Internals->AdvLevelCombo = new QComboBox(this->parentWidget());
+    this->Internals->AdvLevelCombo->setObjectName("advanceLevel");
     this->uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
 
     this->Internals->AdvLevelLabel = new QLabel("Show Level:");
@@ -436,6 +437,7 @@ void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::Configurat
     editButton->setIcon(QIcon(resourceName));
     editButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     editButton->setToolTip("Edit access level");
+    editButton->setObjectName("editAccessLevel");
     connect(editButton, SIGNAL(toggled(bool)), this, SLOT(showAdvanceLevelOverlay(bool)));
     this->Internals->AdvLevelEditButton = editButton;
   }
@@ -466,6 +468,7 @@ void qtBaseAttributeView::topLevelPrepCategories(
       this->Internals->FilterByCategory->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
     this->Internals->ShowCategoryCombo = new QComboBox(this->parentWidget());
+    this->Internals->ShowCategoryCombo->setObjectName("categoryCombo");
     std::set<std::string>::const_iterator it;
     const std::set<std::string>& cats = attResource->categories();
     for (it = cats.begin(); it != cats.end(); it++)

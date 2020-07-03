@@ -592,6 +592,7 @@ void qtInputsItem::updateUI()
   }
 
   m_widget = new QFrame(this->parentWidget());
+  m_widget->setObjectName(dataObj->name().c_str());
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
@@ -899,6 +900,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   }
 
   QFrame* checkFrame = new QFrame(m_widget);
+  checkFrame->setObjectName("expressionFrame");
   QHBoxLayout* mainlayout = new QHBoxLayout(checkFrame);
 
   QToolButton* funCheck = new QToolButton(checkFrame);

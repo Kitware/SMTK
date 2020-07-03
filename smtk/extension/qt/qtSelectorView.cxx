@@ -78,6 +78,7 @@ void qtSelectorView::createWidget()
   }
   this->clearChildViews();
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName(view->name().c_str());
 
   // First we need to create the basic layout and the
   // View Selection Mechanism

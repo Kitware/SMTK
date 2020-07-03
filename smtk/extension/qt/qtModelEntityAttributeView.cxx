@@ -265,11 +265,14 @@ void qtModelEntityAttributeView::createWidget()
   this->getAllDefinitions();
 
   QSplitter* frame = new QSplitter(this->parentWidget());
+  frame->setObjectName(view->name().c_str());
   //this panel looks better in a over / under layout, rather than left / right
   frame->setOrientation(Qt::Vertical);
 
   QFrame* TopFrame = new QFrame(frame);
+  TopFrame->setObjectName("top");
   QFrame* BottomFrame = new QFrame(frame);
+  BottomFrame->setObjectName("bottom");
 
   this->Internals->TopFrame = TopFrame;
   this->Internals->BottomFrame = BottomFrame;
@@ -327,6 +330,7 @@ void qtModelEntityAttributeView::createWidget()
 
   // Attribte frame
   this->Internals->AttFrame = new QFrame(frame);
+  this->Internals->AttFrame->setObjectName("attribute");
   new QVBoxLayout(this->Internals->AttFrame);
   BottomLayout->addWidget(this->Internals->AttFrame);
 

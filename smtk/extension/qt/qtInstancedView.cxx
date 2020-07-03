@@ -95,6 +95,7 @@ void qtInstancedView::createWidget()
   }
 
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName(this->getObject()->name().c_str());
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);

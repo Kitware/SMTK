@@ -74,6 +74,7 @@ void qtCategorySelectorView::createWidget()
   }
   this->clearChildViews();
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName(view->name().c_str());
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
 
