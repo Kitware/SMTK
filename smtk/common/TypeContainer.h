@@ -187,13 +187,6 @@ public:
 
   void clear() noexcept { m_container.clear(); }
 
-  /// Access the underlying data for the container.
-  const std::unordered_map<std::size_t, std::unique_ptr<Wrapper> >& data() const
-  {
-    return m_container;
-  }
-  std::unordered_map<std::size_t, std::unique_ptr<Wrapper> >& data() { return m_container; }
-
 private:
   template <typename Arg, typename... Args>
   typename std::enable_if<!std::is_base_of<TypeContainer, Arg>::value, bool>::type insertAll(
