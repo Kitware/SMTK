@@ -17,14 +17,15 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/Archive.h"
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/model/json/jsonResource.h"
 
 #include "smtk/session/mesh/Resource.h"
 
 #include "smtk/session/mesh/Read_xml.h"
 #include "smtk/session/mesh/operators/Import.h"
-
-#include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
@@ -43,7 +44,20 @@ Read::Result Read::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
 
-  std::ifstream file(filename);
+  std::ifstream file;
+
+  smtk::common::Archive archive(filename);
+  if (!archive.contents().empty())
+  {
+    std::string smtkFilename = "index.json";
+
+    archive.get(smtkFilename, file);
+  }
+  else
+  {
+    file = std::ifstream(filename);
+  }
+
   if (!file.good())
   {
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
@@ -78,8 +92,14 @@ Read::Result Read::operateInternal()
 
   std::string meshFilename = j.at("Mesh URL");
 
+  if (!archive.contents().empty())
+  {
+    meshFilename = archive.location(meshFilename);
+  }
+
   // Create an import operator
   smtk::session::mesh::Import::Ptr importOp = smtk::session::mesh::Import::create();
+  importOp->callFromRead = true;
   importOp->parameters()->associate(resource);
   importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   importOp->parameters()->findFile("filename")->setValue(meshFilename);

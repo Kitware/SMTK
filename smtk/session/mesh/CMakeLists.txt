@@ -72,6 +72,7 @@ target_link_libraries(smtkMeshSession
   LINK_PRIVATE
     ${vtk_dependencies}
     ${__dependencies}
+    Boost::filesystem
 )
 
 smtk_export_header(smtkMeshSession Exports.h)

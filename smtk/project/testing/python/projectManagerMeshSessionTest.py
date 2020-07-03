@@ -120,7 +120,7 @@ class TestProjectManager(unittest.TestCase):
 
         filenames = [
             '.smtkproject', 'sbi.default.smtk',
-            'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
+            'gun-1fourth.gen', 'gun-1fourth.gen.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
@@ -184,7 +184,7 @@ class TestProjectManager(unittest.TestCase):
         project_folder = os.path.join(
             smtk.testing.TEMP_DIR, self.project.name())
         filenames = [
-            'disk_out_ref.ex2', 'disk_out_ref.ex2.h5m', 'disk_out_ref.ex2.smtk']
+            'disk_out_ref.ex2', 'disk_out_ref.ex2.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))

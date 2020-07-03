@@ -42,6 +42,9 @@ public:
   Archive(const std::string& archivePath);
   virtual ~Archive();
 
+  /// Check if the input file located at <archivePath> is an archive.
+  static bool isArchive(const std::string& archivePath);
+
   /// Add a file (identified by its path) to the archive. Once in the archive,
   /// a stream to the file is accessible using the file's archived path. Each
   /// file in the archive must therefore have a unique path. Return true upon
@@ -76,6 +79,11 @@ public:
   /// but is provided as a workaround for a bug in GCC <5 (see
   /// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626).
   void get(const std::string& archivedFilePath, std::ifstream&);
+
+  /// Acquire the path to the file in the archive, accessed by its archived file
+  /// path. Return the empty string if the archived file path is not in the
+  /// archive.
+  std::string location(const std::string& archivedFilePath);
 
 private:
   struct Internals;
