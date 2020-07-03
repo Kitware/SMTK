@@ -27,6 +27,6 @@ vtk_module_link(smtkPVMeshExt
     vtkSMTKMeshExt
 )
 
-# if (SMTK_ENABLE_TESTING)
-#   add_subdirectory(testing)
-# endif ()
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif ()
