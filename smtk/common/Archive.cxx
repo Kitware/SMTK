@@ -144,7 +144,7 @@ bool Archive::archive() const
 
 // open the file for reading
 #ifdef _WIN32
-    fd = _open(filepath.second.c_str(), _O_RDONLY);
+    fd = _open(filepath.second.c_str(), (_O_RDONLY | _O_BINARY));
 #else
     fd = open(filepath.second.c_str(), O_RDONLY);
 #endif

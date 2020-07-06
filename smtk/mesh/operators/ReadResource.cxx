@@ -63,6 +63,7 @@ ReadResource::Result ReadResource::operateInternal()
   if (!file.good())
   {
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
+    file.close();
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -74,8 +75,10 @@ ReadResource::Result ReadResource::operateInternal()
   catch (...)
   {
     smtkErrorMacro(log(), "Cannot parse file \"" << filename << "\".");
+    file.close();
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+  file.close();
 
   std::string meshFilename = j.at("Mesh URL");
 
@@ -93,7 +96,12 @@ ReadResource::Result ReadResource::operateInternal()
   smtk::io::ReadMesh read;
   smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
   smtk::mesh::from_json(j, resource);
-  read(meshFileLocation.absolutePath(), resource);
+  bool success = read(meshFileLocation.absolutePath(), resource);
+  if (!success)
+  {
+    smtkErrorMacro(log(), "Cannot read mesh file \"" << meshFileLocation.absolutePath() << "\".");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
   resource->setLocation(filename);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
@@ -116,10 +124,13 @@ void ReadResource::markModifiedResources(ReadResource::Result& res)
   auto resourceItem = res->findResource("resource");
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
-    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+    if (rit.isSet())
+    {
+      auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
 
-    // Set the resource as unmodified from its persistent (i.e. on-disk) state
-    resource->setClean(true);
+      // Set the resource as unmodified from its persistent (i.e. on-disk) state
+      resource->setClean(true);
+    }
   }
 }
 
