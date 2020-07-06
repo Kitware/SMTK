@@ -32,6 +32,7 @@ class SMTKCORE_EXPORT Query
 
 public:
   static std::size_t typeIndex();
+  virtual ~Query() = default;
 
 protected:
   static int numberOfGenerationsFromType(const std::size_t index)
