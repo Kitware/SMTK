@@ -262,7 +262,9 @@ void qtAttributeView::createWidget()
   frame->setOrientation(Qt::Vertical);
 
   QFrame* TopFrame = new QFrame(frame);
+  TopFrame->setObjectName(view->name().c_str());
   m_internals->AttFrame = new QFrame(frame);
+  m_internals->AttFrame->setObjectName("attribute");
 
   m_internals->TopFrame = TopFrame;
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -291,6 +293,7 @@ void qtAttributeView::createWidget()
 
   // Buttons frame
   m_internals->ButtonsFrame = new QFrame(frame);
+  m_internals->ButtonsFrame->setObjectName("buttons");
   QHBoxLayout* buttonLayout = new QHBoxLayout(m_internals->ButtonsFrame);
   buttonLayout->setMargin(0);
   m_internals->ButtonsFrame->setSizePolicy(sizeFixedPolicy);
@@ -358,6 +361,7 @@ void qtAttributeView::createWidget()
   m_internals->ValuesTable->setSizePolicy(tableSizePolicy);
 
   m_internals->SearchBox = new QFrame(TopFrame);
+  m_internals->SearchBox->setObjectName("searchBox");
   QHBoxLayout* searchLayout = new QHBoxLayout(m_internals->SearchBox);
   searchLayout->setMargin(0);
 
@@ -394,6 +398,7 @@ void qtAttributeView::createWidget()
 
   // Attribte frame
   m_internals->AttFrame = new QFrame(frame);
+  m_internals->AttFrame->setObjectName("attribute");
   new QVBoxLayout(m_internals->AttFrame);
 
   frame->addWidget(TopFrame);

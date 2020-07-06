@@ -122,6 +122,7 @@ void qtGroupItem::createWidget()
   new QVBoxLayout(m_widget);
   m_widget->layout()->setMargin(0);
   this->Internals->ChildrensFrame = new QFrame(groupBox);
+  this->Internals->ChildrensFrame->setObjectName("groupitemFrame");
   new QVBoxLayout(this->Internals->ChildrensFrame);
 
   m_widget->layout()->addWidget(this->Internals->ChildrensFrame);
@@ -280,7 +281,7 @@ void qtGroupItem::addSubGroup(int i)
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
   QFrame* subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
-  subGroupFrame->setObjectName("groupitem_frame");
+  subGroupFrame->setObjectName("groupitemFrame");
   QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
   {

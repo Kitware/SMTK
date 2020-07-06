@@ -155,6 +155,7 @@ void qtAssociationView::createWidget()
   this->getAllDefinitions();
 
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName("associations");
   this->Internals->setupUi(this->Widget);
 
   // the association widget

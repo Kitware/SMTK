@@ -258,6 +258,7 @@ void qtGroupView::createWidget()
     tab->setUsesScrollButtons(true);
     this->Widget = tab;
   }
+  this->Widget->setObjectName(view->name().c_str());
 
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
@@ -416,6 +417,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
     return;
   }
   QWidget* content = new QWidget();
+  content->setObjectName("tabContent");
   content->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
   QScrollArea* tabPage = new QScrollArea(tabWidget);

@@ -110,8 +110,11 @@ void qtSimpleExpressionView::createWidget()
   // A common add/delete/(copy/paste ??) widget
 
   QSplitter* frame = new QSplitter(this->parentWidget());
+  frame->setObjectName(this->getObject()->name().c_str());
   QFrame* leftFrame = new QFrame(frame);
+  leftFrame->setObjectName("left");
   QFrame* rightFrame = new QFrame(frame);
+  rightFrame->setObjectName("right");
   //QGridLayout* gridLayout = new QGridLayout(frame);
   //gridLayout->setMargin(0);
   QVBoxLayout* leftLayout = new QVBoxLayout(leftFrame);

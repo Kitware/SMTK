@@ -71,6 +71,7 @@ void qtVoidItem::createWidget()
 
   this->clearChildItems();
   m_widget = new QFrame(this->parentWidget());
+  m_widget->setObjectName(dataObj->name().c_str());
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);

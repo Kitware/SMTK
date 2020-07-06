@@ -218,7 +218,7 @@ void qtFileItem::enableFileBrowser(bool state)
   else if (nullptr == m_internals->FileBrowser)
   {
     m_internals->FileBrowser = new QFileDialog(m_widget);
-    m_internals->FileBrowser->setObjectName("Select File Dialog");
+    m_internals->FileBrowser->setObjectName("selectFileDialog");
     m_internals->FileBrowser->setDirectory(QDir::currentPath());
   }
 }
@@ -232,6 +232,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
   QLineEdit* lineEdit = nullptr;
   QComboBox* fileExtCombo = nullptr;
   QFrame* frame = new QFrame(m_internals->Contents);
+  frame->setObjectName("fileBrowserContents");
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QString defaultText;
   if (item.type() == smtk::attribute::Item::FileType)

@@ -68,6 +68,7 @@ void qtAnalysisView::createWidget()
     return;
   }
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->setObjectName(view->name().c_str());
   //create the layout for the frame area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);

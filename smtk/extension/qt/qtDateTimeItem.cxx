@@ -381,6 +381,7 @@ void qtDateTimeItem::updateUI()
   }
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  m_widget->setObjectName(dataObj->name().c_str());
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
