@@ -312,11 +312,17 @@ std::size_t Group::operationObjectDistance(
   {
     return gen;
   }
+
+  // If the parameter is a resource, ensure that the operation's association
+  // rule requires a resource. If the parameter is not a resource, ensure that
+  // the operation's association rule does not require a resource.
   auto resource = dynamic_cast<const smtk::resource::Resource*>(&obj);
   bool ruleRequiresResources = assocRule->onlyResources();
-  (void)ruleRequiresResources;
-  assert(
-    !(ruleRequiresResources ^ static_cast<bool>(resource))); // acceptable == true => this assert.
+  if ((ruleRequiresResources ^ static_cast<bool>(resource)))
+  {
+    return gen;
+  }
+
   if (!resource)
   {
     auto component = dynamic_cast<const smtk::resource::Component*>(&obj);
