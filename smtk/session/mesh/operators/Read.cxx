@@ -61,6 +61,7 @@ Read::Result Read::operateInternal()
   if (!file.good())
   {
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
+    file.close();
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -72,8 +73,10 @@ Read::Result Read::operateInternal()
   catch (...)
   {
     smtkErrorMacro(log(), "Cannot parse file \"" << filename << "\".");
+    file.close();
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+  file.close();
 
   // Access the resource's id
   std::string resourceIdStr = j.at("id");
