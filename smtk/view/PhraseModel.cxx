@@ -198,10 +198,18 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
 {
   for (const auto& source : m_sources)
   {
-    if (source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
-      source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
-      source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
-      source.m_managers.get<smtk::view::SelectionPtr>() == seln)
+    if (((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
+            source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
+      ((!operMgr && !source.m_managers.contains<smtk::operation::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
+            source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
+      ((!viewMgr && !source.m_managers.contains<smtk::view::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::view::ManagerPtr>() &&
+            source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
+      ((!seln && !source.m_managers.contains<smtk::view::SelectionPtr>()) ||
+          (source.m_managers.contains<smtk::view::SelectionPtr>() &&
+            source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
     {
       return false; // Do not add what we already have
     }
@@ -257,10 +265,18 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
 
   for (const auto& source : m_sources)
   {
-    if (source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
-      source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
-      source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
-      source.m_managers.get<smtk::view::SelectionPtr>() == seln)
+    if (((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
+            source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
+      ((!operMgr && !source.m_managers.contains<smtk::operation::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
+            source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
+      ((!viewMgr && !source.m_managers.contains<smtk::view::ManagerPtr>()) ||
+          (source.m_managers.contains<smtk::view::ManagerPtr>() &&
+            source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
+      ((!seln && !source.m_managers.contains<smtk::view::SelectionPtr>()) ||
+          (source.m_managers.contains<smtk::view::SelectionPtr>() &&
+            source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
     {
       return false; // Do not add what we already have
     }
@@ -368,10 +384,18 @@ void PhraseModel::visitSources(SourceVisitor visitor)
 {
   for (const auto& src : m_sources)
   {
-    if (!visitor(src.m_managers.get<smtk::resource::ManagerPtr>(),
-          src.m_managers.get<smtk::operation::ManagerPtr>(),
-          src.m_managers.get<smtk::view::ManagerPtr>(),
-          src.m_managers.get<smtk::view::SelectionPtr>()))
+    if (!visitor((src.m_managers.contains<smtk::resource::ManagerPtr>()
+                     ? src.m_managers.get<smtk::resource::ManagerPtr>()
+                     : smtk::resource::ManagerPtr()),
+          (src.m_managers.contains<smtk::operation::ManagerPtr>()
+                     ? src.m_managers.get<smtk::operation::ManagerPtr>()
+                     : smtk::operation::ManagerPtr()),
+          (src.m_managers.contains<smtk::view::ManagerPtr>()
+                     ? src.m_managers.get<smtk::view::ManagerPtr>()
+                     : smtk::view::ManagerPtr()),
+          (src.m_managers.contains<smtk::view::SelectionPtr>()
+                     ? src.m_managers.get<smtk::view::SelectionPtr>()
+                     : smtk::view::SelectionPtr())))
     {
       break;
     }
