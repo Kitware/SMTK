@@ -197,10 +197,18 @@ Write::Result Write::operateInternal()
     smtk::operation::Operation::Result exportOpResult = exportOp->operate(Key());
 
     // Test for success
-    return (exportOpResult->findInt("outcome")->value() ==
-             static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-      ? this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED)
-      : this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    if (exportOpResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+    {
+      smtkErrorMacro(log(), "Unable to write files to \"" + meshFilename + "\".");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    // Add the mesh file to the result's list of additional files
+    auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+    result->findFile("additional files")->appendValue(meshFilename);
+
+    return result;
   }
 }
 
