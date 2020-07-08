@@ -89,10 +89,10 @@ set(smtkCore_public_link_libraries
   nlohmann_json
   taocpp::pegtl
   Threads::Threads
+  Boost::boost
   )
 
 set(smtkCore_private_link_libraries
-  Boost::boost
   Boost::date_time
   Boost::filesystem
   Boost::system
