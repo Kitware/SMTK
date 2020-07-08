@@ -19,6 +19,12 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(write)" BaseType="result"/>
+    <AttDef Type="result(write)" BaseType="result">
+      <ItemDefinitions>
+        <File Name="additional files" NumberOfRequiredValues="0"
+              Extensible="true" ShouldExist="true">
+        </File>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeResource>

@@ -183,10 +183,18 @@ WriteResource::Result WriteResource::operateInternal()
     smtk::operation::Operation::Result writeOpResult = writeOp->operate(Key());
 
     // Test for success
-    return (writeOpResult->findInt("outcome")->value() ==
-             static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-      ? this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED)
-      : this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    if (writeOpResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+    {
+      smtkErrorMacro(log(), "Unable to write files to \"" + meshPath + "\".");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    // Add the mesh file to the result's list of additional files
+    auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+    result->findFile("additional files")->appendValue(meshPath);
+
+    return result;
   }
 }
 

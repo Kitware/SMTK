@@ -79,6 +79,9 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 
   smtk::operation::WriterGroup writerGroup(manager);
 
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  auto resultFiles = result->findFile("files");
+
   int rr = 0;
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit, ++rr)
   {
@@ -149,8 +152,27 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
       resource->setLocation(originalLocation);
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
+    resultFiles->appendValue(fileName);
+
+    // Gather all of the file items in the write operation's result.
+    std::vector<smtk::attribute::Item::Ptr> items;
+    auto filter = [](
+      smtk::attribute::Item::Ptr item) { return item->type() == smtk::attribute::Item::FileType; };
+    writeOperationResult->filterItems(items, filter, false);
+
+    // For each item found...
+    for (auto& item : items)
+    {
+      // Extract the path and add it to this operation's list of files.
+      auto fileItem = std::static_pointer_cast<smtk::attribute::FileItem>(item);
+      for (int i = 0; i < fileItem->numberOfValues(); ++i)
+      {
+        resultFiles->appendValue(fileItem->value(i));
+      }
+    }
   }
-  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+
+  return result;
 }
 
 const char* WriteResource::xmlDescription() const

@@ -163,10 +163,16 @@ Write::Result Write::operateInternal()
   j["modelFiles"] = modelFiles;
 
   // Write JSON records to the specified URL:
-  bool ok = smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
+  smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
 
-  return ok ? this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED)
-            : this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  // Add the mesh file to the result's list of additional files
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  for (const auto& modelFile : modelFiles)
+  {
+    result->findFile("additional files")->appendValue(modelFile);
+  }
+
+  return result;
 }
 
 const char* Write::xmlDescription() const

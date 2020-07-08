@@ -28,6 +28,11 @@
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(write resource)" BaseType="result">
+      <ItemDefinitions>
+        <File Name="files" NumberOfRequiredValues="0"
+              Extensible="true" ShouldExist="true">
+        </File>
+      </ItemDefinitions>
     </AttDef>
   </Definitions>
 
