@@ -55,7 +55,7 @@ Read::Result Read::operateInternal()
   }
   else
   {
-    file = std::ifstream(filename);
+    file.open(filename);
   }
 
   if (!file.good())

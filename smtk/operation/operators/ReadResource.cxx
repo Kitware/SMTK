@@ -89,7 +89,7 @@ ReadResource::Result ReadResource::operateInternal()
       }
       else
       {
-        file = std::ifstream(filename, std::ios::in);
+        file.open(filename, std::ios::in);
       }
 
       {
