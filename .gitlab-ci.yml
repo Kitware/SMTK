@@ -181,6 +181,7 @@ before_script:
             - build/*/*/*/*/*/*/*.gcno
             - build/*/*/*/*/*/*/*/*.gcno
             - build/*/*/*/*/*/*/*/*/*.gcno
+            - build/smtk/*/*/*.cxx
             - build/smtk/*/*/*/*.cxx
             - build/smtk/*/*/*/*/*.cxx
             - build/smtk/*/*/*/*/*/*.cpp
@@ -427,6 +428,7 @@ test:fedora31-coverage:
             - build/*/*/*/*/*/*/*.gcda
             - build/*/*/*/*/*/*/*/*.gcda
             - build/*/*/*/*/*/*/*/*/*.gcda
+            - build/smtk/*/*/*.cxx
             - build/smtk/*/*/*/*.cxx
             - build/smtk/*/*/*/*/*.cxx
             - build/smtk/*/*/*/*/*/*.cpp
