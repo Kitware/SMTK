@@ -533,6 +533,19 @@ void XmlV3StringWriter::processReferenceDefCommon(
     }
   }
 
+  xml_node rejnode = node.append_child("Rejects");
+
+  auto rejectedEntries = idef->rejectedEntries();
+  for (const auto& entry : rejectedEntries)
+  {
+    xml_node rsrcnode = rejnode.append_child("Resource");
+    rsrcnode.append_attribute("Name").set_value(entry.first.c_str());
+    if (!entry.second.empty())
+    {
+      rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
+    }
+  }
+
   if (idef->onlyResources())
   {
     node.append_attribute("OnlyResources") = true;

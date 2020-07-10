@@ -38,6 +38,13 @@ SMTKCORE_EXPORT void to_json(
     accept.push_back(acceptable.second);
   }
   j["Accepts"] = accept;
+  nlohmann::json reject;
+  for (auto& rejected : defPtr->rejectedEntries())
+  {
+    reject.push_back(rejected.first);
+    reject.push_back(rejected.second);
+  }
+  j["Rejects"] = reject;
   j["NumberOfRequiredValues"] = defPtr->numberOfRequiredValues();
   if (defPtr->isExtensible())
   {
@@ -87,13 +94,24 @@ SMTKCORE_EXPORT void from_json(
       "Can not find Accept key for ReferenceItemDefinition:" << defPtr->name());
     return;
   }
-
   for (auto iterator = accept->begin(); iterator != accept->end(); ++iterator)
   {
     auto acc1 = (*iterator).get<std::string>();
     ++iterator;
     auto acc2 = (*iterator).get<std::string>();
     defPtr->setAcceptsEntries(acc1, acc2, true);
+  }
+
+  auto reject = j.find("Rejects");
+  if (reject != j.end())
+  {
+    for (auto iterator = reject->begin(); iterator != reject->end(); ++iterator)
+    {
+      auto acc1 = (*iterator).get<std::string>();
+      ++iterator;
+      auto acc2 = (*iterator).get<std::string>();
+      defPtr->setRejectsEntries(acc1, acc2, true);
+    }
   }
 
   auto numberOfRequiredValues = j.find("NumberOfRequiredValues");

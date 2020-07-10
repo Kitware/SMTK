@@ -571,7 +571,7 @@ void XmlDocV3Parser::processReferenceItem(
 void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
   smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelsElement)
 {
-  xml_node accepts, labels, child;
+  xml_node accepts, rejects, labels, child;
   xml_attribute xatt;
   int i;
   this->processItemDef(node, idef);
@@ -585,6 +585,20 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
       if (child.name() == resourceName)
       {
         idef->setAcceptsEntries(
+          child.attribute("Name").value(), child.attribute("Filter").value(), true);
+      }
+    }
+  }
+
+  rejects = node.child("Rejects");
+  if (rejects)
+  {
+    std::string resourceName("Resource");
+    for (child = rejects.first_child(); child; child = child.next_sibling())
+    {
+      if (child.name() == resourceName)
+      {
+        idef->setRejectsEntries(
           child.attribute("Name").value(), child.attribute("Filter").value(), true);
       }
     }

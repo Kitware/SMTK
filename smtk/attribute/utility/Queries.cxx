@@ -109,7 +109,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
           // itself can be associated with the attribute
           for (auto j = range.first; j != range.second; ++j)
           {
-            if (j->second.empty())
+            if (j->second.empty() && refItemDef->isValueValid(resource))
             {
               candidates.insert(resource);
             }
@@ -118,7 +118,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
               auto comps = resource->find(j->second);
               for (auto comp = comps.begin(); comp != comps.end(); ++comp)
               {
-                if (*comp)
+                if (*comp && refItemDef->isValueValid(*comp))
                 {
                   candidates.insert(*comp);
                 }
@@ -152,14 +152,20 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
         // itself can be associated with the attribute
         for (auto j = range.first; j != range.second; ++j)
         {
-          if (j->second.empty())
+          if (j->second.empty() && refItemDef->isValueValid(resource))
           {
             candidates.insert(resource);
           }
           else
           {
             auto comps = resource->find(j->second);
-            candidates.insert(comps.begin(), comps.end());
+            for (auto comp = comps.begin(); comp != comps.end(); ++comp)
+            {
+              if (*comp && refItemDef->isValueValid(*comp))
+              {
+                candidates.insert(*comp);
+              }
+            }
           }
         }
       }

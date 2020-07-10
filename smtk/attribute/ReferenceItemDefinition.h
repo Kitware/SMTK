@@ -59,6 +59,14 @@ public:
     const std::string& typeName, const std::string& queryString, bool accept);
 
   void clearAcceptableEntries() { m_acceptable.clear(); }
+
+  const std::multimap<std::string, std::string>& rejectedEntries() const { return m_rejected; }
+
+  virtual bool setRejectsEntries(
+    const std::string& typeName, const std::string& queryString, bool accept);
+
+  void clearRejectedEntries() { m_rejected.clear(); }
+
   virtual bool isValueValid(resource::ConstPersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.
@@ -140,6 +148,7 @@ protected:
   std::size_t m_numberOfRequiredValues;
   std::size_t m_maxNumberOfValues;
   std::multimap<std::string, std::string> m_acceptable;
+  std::multimap<std::string, std::string> m_rejected;
   smtk::resource::LockType m_lockType;
   smtk::resource::Links::RoleType m_role;
   bool m_holdReference;
