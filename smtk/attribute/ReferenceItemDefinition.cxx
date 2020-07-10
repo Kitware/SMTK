@@ -68,6 +68,32 @@ bool ReferenceItemDefinition::setAcceptsEntries(
   }
 }
 
+bool ReferenceItemDefinition::setRejectsEntries(
+  const std::string& typeName, const std::string& filter, bool add)
+{
+  if (add)
+  {
+    m_rejected.insert(std::make_pair(typeName, filter));
+    return true;
+  }
+  else
+  {
+    auto range = m_rejected.equal_range(typeName);
+    auto found = std::find_if(
+      range.first, range.second, [&](decltype(*range.first) it) { return it.second == filter; });
+
+    if (found != m_rejected.end())
+    {
+      m_rejected.erase(found);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
+
 bool ReferenceItemDefinition::isValueValid(resource::ConstPersistentObjectPtr entity) const
 {
   bool ok = false;
@@ -195,6 +221,10 @@ void ReferenceItemDefinition::copyTo(Ptr dest) const
   {
     dest->setAcceptsEntries(acceptable.first, acceptable.second, true);
   }
+  for (auto& rejected : m_rejected)
+  {
+    dest->setRejectsEntries(rejected.first, rejected.second, true);
+  }
   if (m_useCommonLabel)
   {
     dest->setCommonValueLabel(m_valueLabels[0]);
@@ -211,12 +241,6 @@ void ReferenceItemDefinition::copyTo(Ptr dest) const
 
 bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc) const
 {
-  // If there are no filter values, then we accept all resources.
-  if (m_acceptable.empty())
-  {
-    return true;
-  }
-
   // TODO:
   // Queries to filter resources as acceptable have not been implemented.
   // See smtk::attribute::ComponentItemDefinition::isValueValid() for
@@ -225,7 +249,26 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
   // For now all we do is test the resource names in m_acceptable
   // to see if any are exact matches for rsrc.
 
-  // For every element in the filter map...
+  // For every element in the rejected filter map...
+  for (auto& rejected : m_rejected)
+  {
+    // ...we check if the resource in question is of that type. Rejected
+    // entries for resources do not have a filter string, so we check that
+    // the filter string is empty.
+    ;
+    if ((rejected.second.empty() || m_onlyResources) && rsrc.isOfType(rejected.first))
+    {
+      return false;
+    }
+  }
+
+  // If there are no filter values, then we accept all resources.
+  if (m_acceptable.empty())
+  {
+    return true;
+  }
+
+  // For every element in the accepted filter map...
   for (auto& acceptable : m_acceptable)
   {
     // ...we check if the resource in question is of that type. Acceptable
@@ -249,13 +292,26 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component& co
     return false;
   }
 
+  // For every element in the rejected filter map...
+  for (auto& rejected : m_rejected)
+  {
+    // ...ask (a) if the filter explicitly rejects components, (b) if our
+    // resource is of the right type, and (b) if its associated filter accepts
+    // the component.
+    if (m_onlyResources ||
+      (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(comp)))
+    {
+      return false;
+    }
+  }
+
   // If there are no filter values, then we accept all components.
   if (m_acceptable.empty())
   {
     return true;
   }
 
-  // For every element in the filter map...
+  // For every element in the accepted filter map...
   for (auto& acceptable : m_acceptable)
   {
     // ...ask (a) if the filter explicitly rejects components, (b) if our
