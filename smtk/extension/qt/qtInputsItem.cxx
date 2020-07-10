@@ -947,7 +947,12 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   funCheck->setProperty("FuncEditor", veditor);
 
   QObject::connect(funCheck, SIGNAL(toggled(bool)), this, SLOT(displayExpressionWidget(bool)));
-  funCheck->setChecked(inputitem->isExpression(elementIdx));
+  // Lets see if the ItemView requested that the item can only be an expression
+  // If it does then make sure to disable the unction box to prevent the user from
+  // switching back to "value" mode.
+  bool expressionOnly = m_itemInfo.component().attributeAsBool("ExpressionOnly");
+  funCheck->setChecked(inputitem->isExpression(elementIdx) || expressionOnly);
+  funCheck->setEnabled(!expressionOnly);
   return checkFrame;
 }
 

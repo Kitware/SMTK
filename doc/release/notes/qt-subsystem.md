@@ -99,6 +99,37 @@ Consuming applications can now register icon sets for Resources and Components, 
 
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
+* Added Item View Option ExpressionOnly to indicate that the item must be assigned to an expression and not to a constant value
+```xml
+<?xml version="1.0"?>
+<!--Created by XmlV4StringWriter-->
+<SMTK_AttributeResource Version="4">
+  <!--**********  Attribute Definitions ***********-->
+  <Associations />
+  <Definitions>
+    <AttDef Type="doubleFunc" Association="None"/>
+    <AttDef Type="A" Label="A" BaseType="" Unique="false">
+      <ItemDefinitions>
+         <Double Name="d1" Label="Expression Double">
+          <ExpressionType>doubleFunc</ExpressionType>
+        </Double>
+      </ItemDefinitions>
+    </AttDef>
+   </Definitions>
+  <!--**********  Attribute Instances ***********-->
+  <Views>
+    <View Type="Instanced" Title="DoubleItemTest" Label="Simple Double Item Test" TopLevel="true">
+      <InstancedAttributes>
+        <Att Type="A" Name="doubleTestAttribute">
+          <ItemViews>
+            <View Item="d1" ExpressionOnly="true"/>
+          </ItemViews>
+        </Att>
+      </InstancedAttributes>
+    </View>
+  </Views>
+</SMTK_AttributeResource>
+```
 
 ### qtGroupItem Changes
 #### Added the ability to limit the min size of an extensible group's table
