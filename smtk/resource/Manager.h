@@ -342,7 +342,8 @@ struct resource_index_set_generator;
 
 // This partial template specialization deals with the case where
 // <ResourceType> is not derived from another Resource. In this case, only the
-// index for the Resource is added to the set of associated indices.
+// indices for the Resource and smtk::resource::Resource are added to the set of
+// associated indices.
 template <typename ResourceType>
 struct resource_index_set_generator<ResourceType, false>
 {
@@ -350,6 +351,7 @@ struct resource_index_set_generator<ResourceType, false>
   {
     std::set<Resource::Index> indices;
     indices.insert(typeid(ResourceType).hash_code());
+    indices.insert(smtk::resource::Resource::type_index);
 
     return indices;
   }

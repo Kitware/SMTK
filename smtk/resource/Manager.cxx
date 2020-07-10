@@ -226,6 +226,20 @@ smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
 std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
 {
   std::set<smtk::resource::ResourcePtr> values;
+
+  // If the typename matches the abstract smtk::resource::Resource, a search
+  // through the metadata to find the corresponding type index will fail because
+  // there is no metadata for this class. That is ok, though, because if we are
+  // looking for all resources, there's no need to perform a lookup.
+  if (typeName == smtk::common::typeName<smtk::resource::Resource>())
+  {
+    for (auto& resource : m_resources)
+    {
+      values.insert(resource);
+    }
+    return values;
+  }
+
   std::set<Resource::Index> validIndices;
 
   auto metadata = m_metadata.get<NameTag>().find(typeName);
