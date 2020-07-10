@@ -24,6 +24,8 @@ namespace smtk
 namespace resource
 {
 
+const Resource::Index Resource::type_index = std::type_index(typeid(Resource)).hash_code();
+
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
   : m_id(myID)
   , m_clean(false)

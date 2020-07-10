@@ -65,6 +65,8 @@ public:
   template <typename Child, typename Parent>
   friend class DerivedFrom;
 
+  static const Resource::Index type_index;
+
   smtkTypeMacro(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
