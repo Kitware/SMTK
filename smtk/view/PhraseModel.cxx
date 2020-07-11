@@ -554,8 +554,10 @@ void PhraseModel::handleCreated(
   smtk::resource::PersistentObjectArray objects;
   for (auto cre = data->begin(); cre != data->end(); ++cre)
   {
-    // std::cout << "    add " << (*cre)->id() << " somewhere\n";
-    objects.push_back(*cre);
+    if (cre.isSet())
+    {
+      objects.push_back(*cre);
+    }
   }
 
   SubphraseGenerator::PhrasesByPath phrasesToInsert;
