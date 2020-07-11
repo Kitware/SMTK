@@ -26,8 +26,6 @@ py::class_< smtk::common::UUIDGenerator > pybind11_init_smtk_common_UUIDGenerato
   py::class_< smtk::common::UUIDGenerator > instance(m, "UUIDGenerator");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::common::UUIDGenerator const &>())
-    .def("deepcopy", (smtk::common::UUIDGenerator & (smtk::common::UUIDGenerator::*)(::smtk::common::UUIDGenerator const &)) &smtk::common::UUIDGenerator::operator=)
     .def("random", &smtk::common::UUIDGenerator::random)
     .def("null", &smtk::common::UUIDGenerator::null)
     ;

@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/functional/hash.hpp>
@@ -56,13 +57,13 @@ UUID::UUID(const boost::uuids::uuid& data)
 
 /**\brief Generate a random UUID (RFC4122, version 4)
   *
-  * WARNING: This method will create a new basic_random_generator
-  * instance, which is very slow to construct.
+  * This uses a thread-local UUIDGenerator instance to
+  * avoid reinitializing a random-number generator each call.
   */
 UUID UUID::random()
 {
-  boost::uuids::basic_random_generator<boost::mt19937> gen;
-  return UUID(gen());
+  auto& generator = UUIDGenerator::instance();
+  return generator.random();
 }
 
 /// Generate a nil UUID.

@@ -17,13 +17,9 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cstdlib> // for getenv()/_dupenv_s()
 #include <ctime>   // for time()
-#include <mutex>   // for std::mutex
 
 namespace
 {
-// Guard against a non-thread-safe implementation of Mersenne Twister
-std::mutex m_generatorMutex;
-
 // Return true when \a vname exists in the environment (empty or not).
 bool checkenv(const char* vname)
 {
@@ -79,7 +75,6 @@ UUIDGenerator::~UUIDGenerator()
 
 UUID UUIDGenerator::random()
 {
-  std::lock_guard<std::mutex> lock(m_generatorMutex);
   return UUID((*this->P->m_randomGenerator)());
 }
 
@@ -89,9 +84,10 @@ UUID UUIDGenerator::null()
   return UUID(this->P->m_nullGenerator());
 }
 
+static thread_local UUIDGenerator s_generator;
+
 UUIDGenerator& UUIDGenerator::instance()
 {
-  static UUIDGenerator s_generator;
   return s_generator;
 }
 
