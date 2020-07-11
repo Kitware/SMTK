@@ -15,6 +15,8 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
+#include "smtk/common/UUIDGenerator.h"
+
 namespace
 {
 smtk::common::UUID linkToResource = smtk::common::UUID::null();
@@ -159,12 +161,12 @@ Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, cons
   // If the range of resources is empty, then there is no link.
   if (resourceRange.first == resourceRange.second)
   {
-    resourceLinkId = smtk::common::UUID::random();
+    resourceLinkId = smtk::common::UUIDGenerator::instance().random();
 
     // Keep spinning uuids until one is accepted.
     while (resourceLinkData.contains(resourceLinkId))
     {
-      resourceLinkId = smtk::common::UUID::random();
+      resourceLinkId = smtk::common::UUIDGenerator::instance().random();
     }
 
     resourceLinkData.insert(
@@ -183,12 +185,12 @@ Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, cons
 
   // Now that we have the resource link, access the component Link data that
   // connects this component to the input resource and create a new link.
-  smtk::common::UUID componentLinkId = smtk::common::UUID::random();
+  smtk::common::UUID componentLinkId = smtk::common::UUIDGenerator::instance().random();
 
   // Keep spinning uuids until one is accepted.
   while (componentLinkData->contains(componentLinkId))
   {
-    componentLinkId = smtk::common::UUID::random();
+    componentLinkId = smtk::common::UUIDGenerator::instance().random();
   }
 
   componentLinkData->insert(componentLinkId, lhs2, rhs2, role);
