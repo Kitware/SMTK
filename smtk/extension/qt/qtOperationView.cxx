@@ -162,7 +162,7 @@ void qtOperationView::createWidget()
   layout->addWidget(this->Internals->m_applyButton);
   //layout->addWidget( bbox);
   this->Internals->m_infoButton = new QPushButton("Info", this->Widget);
-  this->Internals->m_infoButton->setObjectName("OpViewApplyButton");
+  this->Internals->m_infoButton->setObjectName("OpViewInfoButton");
   this->Internals->m_infoButton->setMinimumHeight(32);
   this->Internals->m_infoButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QObject::connect(this->Internals->m_infoButton, SIGNAL(clicked()), this, SLOT(onInfo()));
