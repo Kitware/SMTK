@@ -100,6 +100,7 @@ Import::Result Import::operateInternal()
       // need a new mesh resource instead.
       if (meshResource == nullptr)
       {
+        newResource = true;
         meshResource = smtk::mesh::Resource::create();
       }
     }
