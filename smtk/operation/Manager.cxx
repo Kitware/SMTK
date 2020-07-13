@@ -67,6 +67,18 @@ bool Manager::unregisterOperation(const Operation::Index& index)
   return false;
 }
 
+bool Manager::registered(const std::string& typeName) const
+{
+  const auto metadata = m_metadata.get<NameTag>().find(typeName);
+  return metadata != m_metadata.get<NameTag>().end();
+}
+
+bool Manager::registered(const Operation::Index& index) const
+{
+  const auto metadata = m_metadata.get<IndexTag>().find(index);
+  return metadata != m_metadata.get<IndexTag>().end();
+}
+
 std::shared_ptr<Operation> Manager::create(const std::string& typeName)
 {
   std::shared_ptr<Operation> op;
