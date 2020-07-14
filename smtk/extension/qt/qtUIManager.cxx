@@ -188,6 +188,9 @@ void qtUIManager::commonConstructor()
 
   // register constructors coming from plugins.
   qtSMTKUtilities::updateItemConstructors(this);
+
+  // Initialize the selection object.
+  m_managers.insert<smtk::view::Selection::Ptr>(nullptr);
 }
 
 qtUIManager::~qtUIManager()
