@@ -70,6 +70,16 @@ public:
   /// Unregister a resource identified by its type index.
   bool unregisterResource(const Resource::Index&);
 
+  /// Check if a resource identified by its class type is registered.
+  template <typename ResourceType>
+  bool registered() const;
+
+  /// Check if a resource idenfified by its type name is registered.
+  bool registered(const std::string&) const;
+
+  /// Check if a resource identified by its type index is registered.
+  bool registered(const Resource::Index&) const;
+
   /// Remove all resources. This doesn't explicitly release the memory of the
   /// resources, it only stops the tracking of the resources by the manager.
   void clear();
@@ -218,6 +228,12 @@ template <typename ResourceType>
 bool Manager::unregisterResource()
 {
   return this->unregisterResource(std::type_index(typeid(ResourceType)).hash_code());
+}
+
+template <typename ResourceType>
+bool Manager::registered() const
+{
+  return this->registered(std::type_index(typeid(ResourceType)).hash_code());
 }
 
 template <typename ResourceType>

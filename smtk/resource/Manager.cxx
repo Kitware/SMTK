@@ -75,6 +75,18 @@ bool Manager::unregisterResource(const Resource::Index& index)
   return false;
 }
 
+bool Manager::registered(const std::string& typeName) const
+{
+  const auto metadata = m_metadata.get<NameTag>().find(typeName);
+  return metadata != m_metadata.get<NameTag>().end();
+}
+
+bool Manager::registered(const Resource::Index& index) const
+{
+  const auto metadata = m_metadata.get<IndexTag>().find(index);
+  return metadata != m_metadata.get<IndexTag>().end();
+}
+
 void Manager::clear()
 {
   for (auto resourceIt = m_resources.begin(); resourceIt != m_resources.end();)

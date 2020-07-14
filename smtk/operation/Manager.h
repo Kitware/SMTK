@@ -89,6 +89,11 @@ public:
     return Manager::unregisterOperations<0, Tuple>();
   }
 
+  bool registered(const std::string&) const;
+  bool registered(const Operation::Index&) const;
+  template <typename OperationNtype>
+  bool registered() const;
+
   /// Construct an operation identified by its type name.
   std::shared_ptr<smtk::operation::Operation> create(const std::string&);
 
@@ -242,6 +247,12 @@ bool Manager::registerOperation(const std::string& typeName)
     Metadata(typeName, std::type_index(typeid(OperationType)).hash_code(),
       std::dynamic_pointer_cast<Operation>(OperationType::create())->createSpecification(),
       []() { return OperationType::create(); }));
+}
+
+template <typename OperationType>
+bool Manager::registered() const
+{
+  return Manager::registered(std::type_index(typeid(OperationType)).hash_code());
 }
 }
 }
