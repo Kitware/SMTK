@@ -20,6 +20,28 @@ namespace smtk
 namespace operation
 {
 
+bool WriterGroup::registerOperation(
+  const std::string& operatorName, const std::string& resourceName, const std::string& fileItemName)
+{
+  Operation::Specification spec = specification(operatorName);
+
+  if (!spec)
+  {
+    return false;
+  }
+
+  Operation::Parameters parameters = extractParameters(spec, operatorName);
+
+  if (parameters == nullptr)
+  {
+    return false;
+  }
+
+  return (parameters->findFile(fileItemName) != nullptr &&
+    Group::registerOperation(operatorName, { resourceName }) &&
+    m_fileItemName.registerOperation(operatorName, { fileItemName }));
+}
+
 std::shared_ptr<smtk::operation::Operation> WriterGroup::writerForResource(
   const std::string& resourceName) const
 {

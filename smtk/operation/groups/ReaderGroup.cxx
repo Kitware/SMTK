@@ -24,6 +24,11 @@ bool ReaderGroup::registerOperation(
   const std::string& operatorName, const std::string& resourceName, const std::string& fileItemName)
 {
   Operation::Specification spec = specification(operatorName);
+  if (!spec)
+  {
+    return false;
+  }
+
   Operation::Parameters parameters = extractParameters(spec, operatorName);
 
   if (parameters == nullptr)
