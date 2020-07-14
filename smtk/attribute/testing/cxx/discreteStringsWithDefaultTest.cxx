@@ -12,6 +12,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 #include <iostream>
@@ -24,11 +25,11 @@ const char* testInput =
   "  <Definitions>                                                               "
   "    <AttDef Type=\"att1\" BaseType=\"\">                                      "
   "      <ItemDefinitions>                                                       "
-  "	<String Name=\"normalString\" Extensible=\"0\"                         "
+  "	<String Name=\"normalString\" Extensible=\"0\"                           "
   "               NumberOfRequiredValues=\"1\">                                  "
   "         <DefaultValue>normal</DefaultValue>                                  "
-  "	</String>                                                              "
-  "	<String Name=\"discreteString\" Extensible=\"0\"                       "
+  "	</String>                                                                "
+  "	<String Name=\"discreteString\" Extensible=\"0\"                         "
   "               NumberOfRequiredValues=\"1\">                                  "
   "          <DiscreteInfo DefaultIndex=\"1\">                                   "
   "            <Value Enum=\"String1\">String1</Value>                           "
@@ -38,7 +39,7 @@ const char* testInput =
   "            <Value Enum=\"String5\">String5</Value>                           "
   "            <Value Enum=\"String6\">String6</Value>                           "
   "          </DiscreteInfo>                                                     "
-  "	</String>                                                              "
+  "	</String>                                                                "
   "      </ItemDefinitions>                                                      "
   "    </AttDef>                                                                 "
   "  </Definitions>                                                              "
@@ -107,6 +108,53 @@ int main()
     return 1;
   }
   if (att->findString("discreteString")->valueAsString() != "String2")
+  {
+    return 1;
+  }
+
+  smtk::attribute::ResourcePtr resptr2 = smtk::attribute::Resource::create();
+  smtk::attribute::Resource& resource2(*resptr2.get());
+
+  if (reader.readContents(resptr2, testInput, logger))
+  {
+    std::cerr << "Encountered Errors while reading input data\n";
+    std::cerr << logger.convertToString();
+    return -2;
+  }
+
+  smtk::attribute::DefinitionPtr att1Def = resource2.findDefinition("att1");
+
+  smtk::attribute::StringItemDefinitionPtr discreteStringDef;
+  {
+    std::vector<smtk::attribute::StringItemDefinition::Ptr> stringItemDefinitions;
+    auto stringItemDefinitionFilter = [](
+      smtk::attribute::StringItemDefinition::Ptr ptr) { return ptr->name() == "discreteString"; };
+    att1Def->filterItemDefinitions(stringItemDefinitions, stringItemDefinitionFilter);
+    discreteStringDef = stringItemDefinitions[0];
+  }
+
+  discreteStringDef->clearDiscreteValues();
+  discreteStringDef->addDiscreteValue("MyString1");
+  discreteStringDef->addDiscreteValue("MyString2");
+  discreteStringDef->addDiscreteValue("MyString3");
+  if (!discreteStringDef->setDefaultValue("MyString2"))
+  {
+    return 1;
+  }
+
+  att = resource2.createAttribute("att1");
+
+  att->findString("discreteString")->setToDefault();
+
+  if (att->findString("discreteString")->defaultValue() != "MyString2")
+  {
+    return 1;
+  }
+  if (att->findString("discreteString")->value() != "MyString2")
+  {
+    return 1;
+  }
+  if (att->findString("discreteString")->valueAsString() != "MyString2")
   {
     return 1;
   }
