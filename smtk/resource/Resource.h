@@ -175,6 +175,8 @@ protected:
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
 
+  WeakManagerPtr m_manager;
+
 private:
   smtk::common::UUID m_id;
   std::string m_location;
@@ -186,8 +188,6 @@ private:
   Properties m_properties;
   Queries m_queries;
   mutable Lock m_lock;
-
-  WeakManagerPtr m_manager;
 };
 
 template <typename Collection>
