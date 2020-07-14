@@ -25,10 +25,10 @@ public:
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 
+  virtual bool ableToOperate() override;
+
 protected:
   ReadResource();
-
-  virtual bool ableToOperate() override;
 
   Result operateInternal() override;
 

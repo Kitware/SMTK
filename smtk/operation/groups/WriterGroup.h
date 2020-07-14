@@ -37,6 +37,11 @@ public:
   {
   }
 
+  /// Register an IO operation identified by the unique names of the resource
+  /// and operation and the file item name.
+  bool registerOperation(const std::string&, const std::string&,
+    const std::string& fileItemName = m_defaultFileItemName);
+
   bool requiresFileItem() const override { return false; }
 
   // Obtain the operation associated with the resource name.

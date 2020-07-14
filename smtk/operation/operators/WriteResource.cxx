@@ -149,6 +149,8 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     {
       // An error message should already enter the logger from the local
       // operation.
+      smtkErrorMacro(
+        this->log(), "Write operation \"" << writeOperation->typeName() << "\"failed.");
       resource->setLocation(originalLocation);
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
