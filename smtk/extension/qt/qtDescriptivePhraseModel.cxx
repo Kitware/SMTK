@@ -101,6 +101,7 @@ qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
   , m_visibleIconURL(":/icons/display/eyeball.png")
   , m_invisibleIconURL(":/icons/display/eyeballClosed.png")
+  , m_columnName("Resource")
 {
   m_deleteOnRemoval = true;
   this->P = new Internal;
@@ -161,11 +162,15 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
 {
   // When the model is empty, there are no valid indices:
   if (!m_model || m_model->root()->subphrases().empty())
+  {
     return QModelIndex();
+  }
 
   // We currently only support column 0:
   if (owner.isValid() && owner.column() != 0)
+  {
     return QModelIndex();
+  }
 
   // Check that the parent has the given row/column:
   int rows = this->rowCount(owner);
@@ -176,16 +181,12 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
   }
 
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  // std::string entName = ownerPhrase->relatedComponent() ? ownerPhrase->relatedComponent()->name() : "no name";
-  // std::cout << "Owner index for: " << entName << std::endl;
   view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
   {
     view::DescriptivePhrasePtr entry = subphrases[row];
     if (entry)
     {
-      // std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
-      // std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
       this->P->ptrs[entry->phraseId()] = entry;
       return this->createIndex(row, column, entry->phraseId());
     }
@@ -215,7 +216,6 @@ QModelIndex qtDescriptivePhraseModel::parent(const QModelIndex& child) const
   int rowInGrandparent = parentPhrase ? parentPhrase->indexInParent() : -1;
   if (rowInGrandparent < 0)
   {
-    //std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
     return QModelIndex();
   }
   this->P->ptrs[parentPhrase->phraseId()] = parentPhrase;
@@ -263,7 +263,7 @@ QVariant qtDescriptivePhraseModel::headerData(
     switch (section)
     {
       case 0:
-        return "Resource";
+        return m_columnName.c_str();
       case 1:
         return "Dimension";
       case 2:
@@ -420,8 +420,6 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
     std::map<unsigned int, view::WeakDescriptivePhrasePtr>::iterator it;
     if ((it = this->P->ptrs.find(phraseIdx)) == this->P->ptrs.end())
     {
-      //std::cout << "  Missing index " << phraseIdx << "\n";
-      // std::cout.flush();
       return m_model->root();
     }
     view::WeakDescriptivePhrasePtr weakPhrase = it->second;

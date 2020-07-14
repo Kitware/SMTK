@@ -113,6 +113,9 @@ public:
 
   Qt::DropActions supportedDropActions() const override;
 
+  void setColumnName(const std::string& name) { m_columnName = name; }
+  const std::string& columnName() const { return m_columnName; }
+
 signals:
   void phraseTitleChanged(const QModelIndex&);
 
@@ -126,6 +129,7 @@ protected:
   std::string m_visibleIconURL;
   std::string m_invisibleIconURL;
   static std::map<std::string, QColor> s_defaultColors;
+  std::string m_columnName;
   class Internal;
   Internal* P;
 };
