@@ -99,6 +99,7 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("isEntityAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::Attribute::isEntityAssociated, py::arg("entityref"))
     .def("isValid", (bool (smtk::attribute::Attribute::*)() const) &smtk::attribute::Attribute::isValid)
     .def("isValid", (bool (smtk::attribute::Attribute::*)(std::set<std::string> const &) const) &smtk::attribute::Attribute::isValid, py::arg("categories"))
+    .def("items", &smtk::attribute::Attribute::items)
     .def("_item", &smtk::attribute::Attribute::item, py::arg("ith"))
     .def("_itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &, bool)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/", py::arg("activeOnly") = false)
     .def("name", &smtk::attribute::Attribute::name)
