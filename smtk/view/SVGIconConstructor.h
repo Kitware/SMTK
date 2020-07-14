@@ -41,7 +41,7 @@ public:
 
   std::string operator()(const smtk::resource::PersistentObject&, const std::string&) const;
 
-private:
+protected:
   virtual std::string svg(const smtk::resource::PersistentObject&) const = 0;
 
   std::string m_defaultColor;
