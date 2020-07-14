@@ -255,7 +255,6 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
     // ...we check if the resource in question is of that type. Rejected
     // entries for resources do not have a filter string, so we check that
     // the filter string is empty.
-    ;
     if ((rejected.second.empty() || m_onlyResources) && rsrc.isOfType(rejected.first))
     {
       return false;
