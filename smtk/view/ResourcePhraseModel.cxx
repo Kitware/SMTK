@@ -69,29 +69,33 @@ DescriptivePhrasePtr ResourcePhraseModel::root() const
   return m_root;
 }
 
-bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, std::string>& src)
+bool ResourcePhraseModel::setResourceFilters(
+  const std::multimap<std::string, std::string>& resourceFilters)
 {
-  if (src == m_resourceFilters)
-  {
-    return false;
-  }
+  auto filter = [resourceFilters](const smtk::resource::Resource& resource) -> bool {
+    bool acceptable = false;
+    for (auto& filter : resourceFilters)
+    {
+      if (resource.isOfType(filter.first))
+      {
+        acceptable = true;
+        break;
+      }
+    }
+    return !acceptable;
+  };
+  return setFilter(filter);
+}
 
-  m_resourceFilters = src;
+bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Resource&)> filter)
+{
+  m_filter = filter;
 
   // Filter out current entries that do not pass the filter
   DescriptivePhrases children(m_root->subphrases());
   children.erase(std::remove_if(children.begin(), children.end(),
                    [this](const DescriptivePhrase::Ptr& phr) -> bool {
-                     bool acceptable = false;
-                     for (auto& filter : m_resourceFilters)
-                     {
-                       if (phr->relatedResource()->isOfType(filter.first))
-                       {
-                         acceptable = true;
-                         break;
-                       }
-                     }
-                     return !acceptable;
+                     return m_filter(*(phr->relatedResource()));
                    }),
     children.end());
   this->updateChildren(m_root, children, std::vector<int>());
@@ -142,17 +146,7 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
   if (adding)
   {
     // Only attempt to filter resource out if there are filters defined.
-    bool acceptable = m_resourceFilters.empty();
-    for (const auto& filter : m_resourceFilters)
-    {
-      if (resource->isOfType(filter.first))
-      {
-        acceptable = true;
-        break;
-      }
-    }
-
-    if (!acceptable)
+    if (m_filter && resource && !m_filter(*resource))
     {
       return;
     }
