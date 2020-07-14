@@ -472,7 +472,7 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
     // Clear the resource's manager
     rsrc->m_manager = Ptr();
 
-    // Tell observers we have yoinked it:
+    // Tell observers we have removed it
     m_observers(*rsrc, smtk::resource::EventType::REMOVED);
     return true;
   }

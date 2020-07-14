@@ -52,6 +52,10 @@ inline smtk::resource::Resource::Index index(const ResourcePtr& r)
 {
   return r->index();
 }
+inline std::string name(const smtk::resource::ResourcePtr& r)
+{
+  return r->typeName();
+}
 inline const std::string& location(const ResourcePtr& r)
 {
   return r->location();
@@ -68,6 +72,7 @@ typedef boost::multi_index_container<
                global_fun<const ResourcePtr&, const smtk::common::UUID&, &detail::id> >,
     ordered_non_unique<tag<IndexTag>,
                global_fun<const ResourcePtr&, smtk::resource::Resource::Index, &detail::index> >,
+    ordered_non_unique<tag<NameTag>, global_fun<const ResourcePtr&, std::string, &detail::name> >,
     ordered_non_unique<tag<LocationTag>,
                global_fun<const ResourcePtr&, const std::string&, &detail::location> > > >
   Container;

@@ -25,6 +25,7 @@ void to_json(json& j, const ResourcePtr& resource)
   j["id"] = resource->id().toString();
   j["version"] = "3.0";
   j["type"] = resource->typeName();
+  j["location"] = resource->location();
   j["links"] = resource->links().data();
   j["properties"] = resource->properties().data();
   if (resource->isNameSet())
@@ -39,6 +40,12 @@ void from_json(const json& j, ResourcePtr& resource)
   if (j.find("id") != j.end())
   {
     resource->setId(j.at("id"));
+  }
+
+  // For backwards compatibility, do not require "location" json item.
+  if (j.find("location") != j.end())
+  {
+    resource->setLocation(j.at("location"));
   }
 
   // For backwards compatibility, do not require "links" json item.
