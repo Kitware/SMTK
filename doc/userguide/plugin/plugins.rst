@@ -1,9 +1,10 @@
 Plugins
 ========
 
-SMTK plugins are extensions of ParaView plugins that allow for the automatic
-registration of components to SMTK managers. They are created using the
-CMake function "add_smtk_plugin", which requires the developer to explicitly list
+SMTK plugins are extensions of ParaView plugins that allow for the
+definition of SMTK managers and the automatic registration of
+components to these managers. They are created using the CMake
+function "add_smtk_plugin", which requires the developer to explicitly list
 a registration class "known as a Registrar" and a list of SMTK manager types
 to which the plugin registers. SMTK plugins can be introduced to a
 ParaView-based application in several ways. The consuming project can
@@ -28,3 +29,9 @@ plugin targets (which can be a part of the project or imported from another
 project) described by the global property "SMTK_PLUGINS" to generate a library
 against which the application can link to directly incorporate the associated
 plugins.
+
+Managers are introduced to SMTK by registering them with the instance
+of `smtk::common::Managers`. Upon registration, the singleton instance
+of `smtk::plugin::Manager` can be used to register additional plugins
+to the newly created manager. See `smtk/resource/Registrar.cxx` for an
+example of introducing a manager.

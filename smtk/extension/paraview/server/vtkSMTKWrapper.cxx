@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
-#include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
 #include "smtk/extension/paraview/server/RespondToVTKSelection.h"
 #include "smtk/extension/paraview/server/VTKSelectionResponderGroup.h"
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
@@ -29,6 +28,8 @@
 #include "smtk/operation/Manager.h"
 
 #include "smtk/geometry/Manager.h"
+
+#include "smtk/plugin/Manager.txx"
 
 #include "smtk/project/Manager.h"
 
@@ -75,42 +76,33 @@ vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation);
 
 vtkSMTKWrapper::vtkSMTKWrapper()
   : ActiveResource(nullptr)
+  , Managers(smtk::common::Managers::create())
   , SelectedPort(nullptr)
   , SelectionObj(nullptr)
   , JSONRequest(nullptr)
   , JSONResponse(nullptr)
   , SelectionSource("paraview")
 {
-  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(resourceManager);
-  this->Managers.insert(resourceManager);
+  smtk::plugin::Manager::instance()->registerPluginsTo(this->Managers);
 
-  auto operationManager = smtk::operation::Manager::create();
-  operationManager->registerResourceManager(resourceManager);
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(operationManager);
-  this->Managers.insert(operationManager);
+  // TODO: this logic can be removed with the introduction of the new project
+  //       infrastructure
+  if (this->Managers->contains<smtk::operation::Manager::Ptr>() &&
+    this->Managers->contains<smtk::resource::Manager::Ptr>())
+  {
+    auto operationManager = this->Managers->get<smtk::operation::Manager::Ptr>();
+    auto resourceManager = this->Managers->get<smtk::resource::Manager::Ptr>();
+    auto projectManager = smtk::project::Manager::create(resourceManager, operationManager);
+    this->Managers->insert(projectManager);
+  }
 
-  auto geometryManager = smtk::geometry::Manager::create();
-  geometryManager->registerResourceManager(resourceManager);
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(geometryManager);
-  this->Managers.insert(geometryManager);
-
-  auto projectManager = smtk::project::Manager::create(resourceManager, operationManager);
-  this->Managers.insert(projectManager);
-
-  auto viewManager = smtk::view::Manager::create();
-  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(viewManager);
-  this->Managers.insert(viewManager);
-
-  // NB: selection may never be overwritten with a different instance
-  //     of smtk::view::Selection once a wrapper is created; consumers of the
-  //     wrapper assume it is constant, will add observers, etc..
-  auto selection = smtk::view::Selection::create();
-  selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
-  this->Managers.insert(selection);
-
-  this->SelectedValue = selection->findOrCreateLabeledValue("selected");
-  this->HoveredValue = selection->findOrCreateLabeledValue("hovered");
+  if (this->Managers->contains<smtk::view::Selection::Ptr>())
+  {
+    this->SelectedValue =
+      this->Managers->get<smtk::view::Selection::Ptr>()->findOrCreateLabeledValue("selected");
+    this->HoveredValue =
+      this->Managers->get<smtk::view::Selection::Ptr>()->findOrCreateLabeledValue("hovered");
+  }
 }
 
 vtkSMTKWrapper::~vtkSMTKWrapper()

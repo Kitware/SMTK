@@ -7,16 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-#include "smtk/extension/paraview/pluginsupport/PluginClientBase.h"
+#include "smtk/common/Managers.h"
 
 namespace smtk
 {
-namespace extension
+namespace common
 {
-namespace paraview
-{
-PluginClientBase::~PluginClientBase() = default;
-}
+Managers::Managers() = default;
+Managers::~Managers() = default;
 }
 }

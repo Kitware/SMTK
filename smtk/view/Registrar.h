@@ -12,6 +12,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/Managers.h"
 #include "smtk/view/Manager.h"
 
 namespace smtk
@@ -21,6 +22,9 @@ namespace view
 class SMTKCORE_EXPORT Registrar
 {
 public:
+  static void registerTo(const smtk::common::Managers::Ptr&);
+  static void unregisterFrom(const smtk::common::Managers::Ptr&);
+
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };

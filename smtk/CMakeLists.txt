@@ -42,6 +42,9 @@ smtk_source_group(view)
 add_subdirectory(workflow)
 smtk_source_group(workflow)
 
+add_subdirectory(plugin)
+smtk_source_group(plugin)
+
 set(smtk_headers
   ${commonHeaders}
   ${resourceHeaders}
@@ -54,6 +57,7 @@ set(smtk_headers
   ${projectHeaders}
   ${viewHeaders}
   ${workflowHeaders}
+  ${pluginHeaders}
   ${simulationHeaders}
   ${ioHeaders}
 )
@@ -69,6 +73,7 @@ set(smtk_srcs
   ${modelSrcs}
   ${viewSrcs}
   ${workflowSrcs}
+  ${pluginSrcs}
   ${simulationSrcs}
   ${ioSrcs}
 )
@@ -240,5 +245,21 @@ add_subdirectory(session)
 # single library for initializing them in a ParaView-derived application.
 ################################################################################
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_subdirectory(plugin)
+ get_property(smtk_paraview_plugin_files GLOBAL
+  PROPERTY _smtk_plugin_files)
+paraview_plugin_scan(
+  PLUGIN_FILES ${smtk_paraview_plugin_files}
+  PROVIDES_PLUGINS paraview_plugins
+  ENABLE_BY_DEFAULT ON
+  HIDE_PLUGINS_FROM_CACHE ON)
+paraview_plugin_build(
+  HEADERS_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${PROJECT_VERSION}"
+  LIBRARY_SUBDIRECTORY "${PROJECT_NAME}-${PROJECT_VERSION}"
+  PLUGINS ${paraview_plugins}
+  PLUGINS_FILE_NAME "smtk.paraview.xml"
+  AUTOLOAD ${paraview_plugins}
+  INSTALL_EXPORT SMTKParaViewPlugins
+  CMAKE_DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
+  ADD_INSTALL_RPATHS ON
+  TARGET smtk_paraview_plugins)
 endif()

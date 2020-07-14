@@ -7,24 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_Registrar_h
-#define smtk_resource_Registrar_h
 
-#include "smtk/CoreExports.h"
-
-#include "smtk/common/Managers.h"
+#include "smtk/plugin/ClientBase.h"
 
 namespace smtk
 {
-namespace resource
+namespace plugin
 {
-class SMTKCORE_EXPORT Registrar
-{
-public:
-  static void registerTo(const smtk::common::Managers::Ptr&);
-  static void unregisterFrom(const smtk::common::Managers::Ptr&);
-};
+ClientBase::~ClientBase() = default;
 }
 }
-
-#endif

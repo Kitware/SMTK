@@ -12,6 +12,8 @@
 #ifndef __VTK_WRAP__
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
+#include "smtk/common/Managers.h"
 #include "smtk/view/Manager.h"
 
 namespace smtk

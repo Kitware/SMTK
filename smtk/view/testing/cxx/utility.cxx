@@ -16,7 +16,7 @@
 
 #include "smtk/session/polygon/Registrar.h"
 
-#include "smtk/common/Registry.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/operation/operators/ReadResource.h"
 
@@ -60,7 +60,7 @@ PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewMana
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
+  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
   smtk::view::Registrar::registerTo(viewManager);
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(&viewConfig);

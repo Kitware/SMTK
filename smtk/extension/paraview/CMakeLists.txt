@@ -1,8 +1,6 @@
 ################################################################################
 # Build widgets
 ################################################################################
-add_subdirectory(pluginsupport)
-
 set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/appcomponents/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"

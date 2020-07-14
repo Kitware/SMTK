@@ -1,4 +1,5 @@
 set(geometrySrcs
+  Registrar.cxx
   Resource.cxx
   Manager.cxx
 )
@@ -10,6 +11,7 @@ set(geometryHeaders
   Geometry.h
   GeometryForBackend.h
   Manager.h
+  Registrar.h
   Resource.h
   queries/BoundingBox.h
   queries/ClosestPoint.h
@@ -24,6 +26,11 @@ endif()
 
 #install the headers
 smtk_public_headers(smtkCore ${geometryHeaders})
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)

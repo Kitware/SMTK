@@ -7,24 +7,35 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_Registrar_h
-#define smtk_resource_Registrar_h
-
-#include "smtk/CoreExports.h"
-
-#include "smtk/common/Managers.h"
+#include "smtk/plugin/Registry.h"
 
 namespace smtk
 {
-namespace resource
+namespace plugin
 {
-class SMTKCORE_EXPORT Registrar
+namespace detail
 {
-public:
-  static void registerTo(const smtk::common::Managers::Ptr&);
-  static void unregisterFrom(const smtk::common::Managers::Ptr&);
+ManagerCount ManagerCount::m_instance;
+
+struct ManagerCount::Internals
+{
+  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
 };
-}
+
+ManagerCount::ManagerCount()
+  : m_internals(new Internals())
+{
 }
 
-#endif
+ManagerCount::~ManagerCount()
+{
+  delete m_internals;
+}
+
+std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
+{
+  return m_internals->m_ManagerMap[key];
+}
+}
+}
+}

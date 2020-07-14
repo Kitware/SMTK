@@ -34,8 +34,8 @@
 
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/common/Registry.h"
 #include "smtk/common/TypeContainer.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -177,7 +177,7 @@ int unitQtComponentItem(int argc, char* argv[])
   // those resources registered with rsrcMgr:
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
+  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
   smtk::view::Registrar::registerTo(viewMgr);
 

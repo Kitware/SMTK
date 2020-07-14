@@ -15,6 +15,8 @@
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/plugin/Manager.h"
+
 #include "smtk/view/AssociationBadge.h"
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/DefaultOperationIcon.h"
@@ -42,6 +44,24 @@ using PhraseModelList = std::tuple<ResourcePhraseModel, ComponentPhraseModel,
 using SubphraseGeneratorList = std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator,
   EmptySubphraseGenerator, QueryFilterSubphraseGenerator>;
 using BadgeList = std::tuple<AssociationBadge, ObjectIconBadge>;
+}
+
+void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
+{
+  managers->insert(smtk::view::Manager::create());
+  smtk::plugin::Manager::instance()->registerPluginsTo(managers->get<smtk::view::Manager::Ptr>());
+
+  // NB: selection should never be overwritten with a different instance
+  //     of smtk::view::Selection once it is created; consumers of the
+  //     selection assume it is constant, will add observers, etc..
+  managers->insert(smtk::view::Selection::create());
+  managers->get<smtk::view::Selection::Ptr>()->setDefaultAction(
+    smtk::view::SelectionAction::FILTERED_REPLACE);
+}
+
+void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
+{
+  managers->erase<smtk::view::Manager::Ptr>();
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)

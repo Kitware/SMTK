@@ -181,6 +181,12 @@ public:
     return *(static_cast<WrapperFor<Type>*>(search->second.get()))->value;
   }
 
+  template <typename Type>
+  bool erase()
+  {
+    return m_container.erase(typeid(Type).hash_code()) > 0;
+  }
+
   bool empty() const noexcept { return m_container.empty(); }
 
   std::size_t size() const noexcept { return m_container.size(); }

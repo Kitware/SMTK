@@ -20,6 +20,8 @@
 #include "smtk/operation/operators/SetProperty.h"
 #include "smtk/operation/operators/WriteResource.h"
 
+#include "smtk/plugin/Manager.h"
+
 #include <tuple>
 
 namespace smtk
@@ -34,6 +36,24 @@ typedef std::tuple<
 #endif
   ImportResource, ReadResource, RemoveResource, SetProperty, WriteResource>
   OperationList;
+}
+
+void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
+{
+  managers->insert(smtk::operation::Manager::create());
+
+  if (managers->contains<smtk::resource::Manager>())
+  {
+    managers->get<smtk::operation::Manager::Ptr>()->registerResourceManager(
+      managers->get<smtk::resource::Manager::Ptr>());
+  }
+  smtk::plugin::Manager::instance()->registerPluginsTo(
+    managers->get<smtk::operation::Manager::Ptr>());
+}
+
+void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
+{
+  managers->erase<smtk::operation::Manager::Ptr>();
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

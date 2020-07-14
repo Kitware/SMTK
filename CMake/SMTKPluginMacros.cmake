@@ -81,6 +81,5 @@ function (smtk_add_plugin name)
     ${_smtk_plugin_PARAVIEW_PLUGIN_ARGS})
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE
-      smtkCore
-      smtkPluginSupport)
+      smtkCore)
 endfunction ()

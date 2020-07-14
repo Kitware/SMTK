@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_Registry_h
-#define __smtk_common_Registry_h
+#ifndef __smtk_plugin_Registry_h
+#define __smtk_plugin_Registry_h
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -24,7 +24,7 @@
 
 namespace smtk
 {
-namespace common
+namespace plugin
 {
 
 /// Resources and operations both have optional managers that can be used as an

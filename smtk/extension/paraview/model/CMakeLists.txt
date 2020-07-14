@@ -23,7 +23,6 @@ vtk_module_add_module(smtkPVModelExt
 vtk_module_link(smtkPVModelExt
   PUBLIC
     nlohmann_json
-    smtkPluginSupport
 )
 
 # if (SMTK_ENABLE_TESTING)

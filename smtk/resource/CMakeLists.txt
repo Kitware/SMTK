@@ -8,6 +8,7 @@ set(resourceSrcs
   Manager.cxx
   PersistentObject.cxx
   Properties.cxx
+  Registrar.cxx
   Resource.cxx
   ResourceLinks.cxx
   Surrogate.cxx
@@ -65,6 +66,11 @@ endif()
 
 #install the headers
 smtk_public_headers(smtkCore ${resourceHeaders})
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
