@@ -6,7 +6,6 @@ set(QAttrLibSrcs
   qtAvailableOperations.cxx
   qtUIManager.cxx
   qtAttribute.cxx
-  qtAttributeDisplay.cxx
   qtAttributeEditorDialog.cxx
   qtAttributeItemInfo.cxx
   qtBadgeActionToggle.cxx
@@ -80,7 +79,6 @@ set(QAttrLibMocHeaders
   qtAssociationWidget.h
   qtAssociation2ColumnWidget.h
   qtAttribute.h
-  qtAttributeDisplay.h
   qtAttributeEditorDialog.h
   qtBaseAttributeView.h
   qtBaseView.h
