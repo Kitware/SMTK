@@ -8,29 +8,31 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_paraview_pluginsupport_PluginClientBase_h
-#define __smtk_extension_paraview_pluginsupport_PluginClientBase_h
+#ifndef __smtk_common_Managers_h
+#define __smtk_common_Managers_h
 
-#include "smtk/extension/paraview/pluginsupport/Exports.h"
+#include "smtk/CoreExports.h"
+#include "smtk/SharedFromThis.h"
 
-#include "smtk/SystemConfig.h"
-
-#include <memory>
+#include "smtk/common/TypeContainer.h"
 
 namespace smtk
 {
-namespace extension
+namespace common
 {
-namespace paraview
-{
-/// A base class for Plugin Clients.
-class SMTKPLUGINSUPPORT_EXPORT PluginClientBase
-  : public std::enable_shared_from_this<PluginClientBase>
+class SMTKCORE_EXPORT Managers : public TypeContainer, public std::enable_shared_from_this<Managers>
 {
 public:
-  virtual ~PluginClientBase();
+  typedef TypeContainer Container;
+
+  smtkTypeMacroBase(smtk::common::Managers);
+  smtkCreateMacro(Managers);
+
+  virtual ~Managers();
+
+protected:
+  Managers();
 };
-}
 }
 }
 

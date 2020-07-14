@@ -8,27 +8,25 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
+#include "smtk/plugin/Manager.txx"
 
 namespace
 {
-bool instantiatePluginManager()
+bool instantiateManager()
 {
-  return smtk::extension::paraview::PluginManager::instance() != nullptr;
+  return smtk::plugin::Manager::instance() != nullptr;
 }
 }
 
 namespace smtk
 {
-namespace extension
-{
-namespace paraview
+namespace plugin
 {
 namespace detail
 {
-PluginManager::~PluginManager() = default;
+Manager::~Manager() = default;
 
-void PluginManager::addPluginClient(const std::weak_ptr<PluginClientBase>& pluginClient)
+void Manager::addClient(const std::weak_ptr<ClientBase>& pluginClient)
 {
   m_clients.push_back(pluginClient);
 
@@ -48,8 +46,7 @@ void PluginManager::addPluginClient(const std::weak_ptr<PluginClientBase>& plugi
   }
 }
 }
+}
 
-bool instantiated = instantiatePluginManager();
-}
-}
+bool instantiated = instantiateManager();
 }

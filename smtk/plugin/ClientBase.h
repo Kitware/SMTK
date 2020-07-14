@@ -7,35 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/common/Registry.h"
+
+#ifndef __smtk_plugin_ClientBase_h
+#define __smtk_plugin_ClientBase_h
+
+#include "smtk/CoreExports.h"
+
+#include "smtk/SystemConfig.h"
+
+#include <memory>
 
 namespace smtk
 {
-namespace common
+namespace plugin
 {
-namespace detail
+/// A base class for Plugin Clients.
+class SMTKCORE_EXPORT ClientBase : public std::enable_shared_from_this<ClientBase>
 {
-ManagerCount ManagerCount::m_instance;
-
-struct ManagerCount::Internals
-{
-  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
+public:
+  virtual ~ClientBase();
 };
-
-ManagerCount::ManagerCount()
-  : m_internals(new Internals())
-{
+}
 }
 
-ManagerCount::~ManagerCount()
-{
-  delete m_internals;
-}
-
-std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
-{
-  return m_internals->m_ManagerMap[key];
-}
-}
-}
-}
+#endif

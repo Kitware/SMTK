@@ -16,7 +16,7 @@ set(smtkPVPluginSupportPythonTests
 set(smtkPVPluginSupportPythonDataTests
 )
 
-if (SMTK_ENABLE_POLYGON_SESSION)
+if (SMTK_PARAVIEW_SUPPORT_ENABLED AND SMTK_ENABLE_POLYGON_SESSION)
   list (APPEND smtkPVPluginSupportPythonDataTests
     loadSMTKPluginInParaView)
 endif()

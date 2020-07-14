@@ -9,8 +9,8 @@ set(commonSrcs
   FileLocation.cxx
   json/jsonLinks.cxx
   json/jsonUUID.cxx
+  Managers.cxx
   Paths.cxx
-  Registry.cxx
   StringUtil.cxx
   TimeZone.cxx
   timezonespec.cxx
@@ -35,10 +35,10 @@ set(commonHeaders
   json/jsonTypeMap.h
   json/jsonUUID.h
   Links.h
+  Managers.h
   Observers.h
   Paths.h
   RangeDetector.h
-  Registry.h
   Singleton.h
   StringUtil.h
   ThreadPool.h

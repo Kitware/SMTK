@@ -25,7 +25,7 @@
 
 #include "smtk/session/polygon/Registrar.h"
 
-#include "smtk/common/Registry.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/io/Logger.h"
 
@@ -59,11 +59,11 @@ int unitDetachReferenceItem(int argc, char* argv[])
   auto operationManager = smtk::operation::Manager::create();
   operationManager->registerResourceManager(resourceManager);
 
-  auto attributeRegistry = smtk::common::Registry<smtk::attribute::Registrar,
+  auto attributeRegistry = smtk::plugin::Registry<smtk::attribute::Registrar,
     smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
-  auto operationRegistry = smtk::common::Registry<smtk::operation::Registrar,
+  auto operationRegistry = smtk::plugin::Registry<smtk::operation::Registrar,
     smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
-  auto polygonRegistry = smtk::common::Registry<smtk::session::polygon::Registrar,
+  auto polygonRegistry = smtk::plugin::Registry<smtk::session::polygon::Registrar,
     smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
 
   for (int i = 1; i < argc; i++)

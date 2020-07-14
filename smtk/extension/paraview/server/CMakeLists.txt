@@ -36,8 +36,7 @@ vtk_module_add_module(smtkPVServerExt
 
 vtk_module_link(smtkPVServerExt
   PUBLIC
-    nlohmann_json
-    smtkPluginSupport)
+    nlohmann_json)
 
 paraview_add_server_manager_xmls(
   XMLS smconfig.xml)

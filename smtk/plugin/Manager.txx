@@ -8,30 +8,28 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_paraview_pluginsupport_PluginManager_txx
-#define __smtk_extension_paraview_pluginsupport_PluginManager_txx
+#ifndef __smtk_plugin_Manager_txx
+#define __smtk_plugin_Manager_txx
 
-#include "smtk/extension/paraview/pluginsupport/PluginClient.h"
-#include "smtk/extension/paraview/pluginsupport/PluginManager.h"
+#include "smtk/plugin/Client.h"
+#include "smtk/plugin/Manager.h"
 
 namespace smtk
 {
-namespace extension
-{
-namespace paraview
+namespace plugin
 {
 namespace detail
 {
 
-template <typename Manager>
-void PluginManager::setRegistryStatus(const std::shared_ptr<Manager>& manager, bool status)
+template <typename Manager_t>
+void Manager::setRegistryStatus(const std::shared_ptr<Manager_t>& manager, bool status)
 {
   for (auto clientIt = m_clients.begin(); clientIt != m_clients.end();)
   {
     if (auto client = clientIt->lock())
     {
-      // Cross cast to the PluginClient's Manager-fixed API
-      auto clientForManager = dynamic_cast<PluginClientFor<Manager>*>(client.get());
+      // Cross cast to the Client's Manager-fixed API
+      auto clientForManager = dynamic_cast<ClientFor<Manager_t>*>(client.get());
       if (clientForManager)
       {
         if (status)
@@ -57,13 +55,13 @@ void PluginManager::setRegistryStatus(const std::shared_ptr<Manager>& manager, b
     // ...then we also construct a functor for registering this manager to
     // future plugins. It accepts as input the plugin client and returns true is
     // the manager has not yet expired.
-    std::weak_ptr<Manager> weakMgr = manager;
-    auto registerToFuturePlugins = [=](const std::weak_ptr<PluginClientBase>& pluginClient) {
+    std::weak_ptr<Manager_t> weakMgr = manager;
+    auto registerToFuturePlugins = [=](const std::weak_ptr<ClientBase>& pluginClient) {
       if (auto manager = weakMgr.lock())
       {
         if (auto client = pluginClient.lock())
         {
-          auto clientForManager = dynamic_cast<PluginClientFor<Manager>*>(client.get());
+          auto clientForManager = dynamic_cast<ClientFor<Manager_t>*>(client.get());
           if (clientForManager)
           {
             clientForManager->registerPluginTo(manager);
@@ -78,7 +76,6 @@ void PluginManager::setRegistryStatus(const std::shared_ptr<Manager>& manager, b
     };
     m_registerToExistingManagers.insert(registerToFuturePlugins);
   }
-}
 }
 }
 }

@@ -137,9 +137,9 @@ smtk_add_plugin(smtkPQComponentsPlugin
     smtk::extension::paraview::server::Registrar
     smtk::extension::paraview::appcomponents::Registrar
   MANAGERS
+    smtk::geometry::Manager
     smtk::operation::Manager
     smtk::resource::Manager
-    smtk::geometry::Manager
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"

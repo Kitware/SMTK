@@ -12,12 +12,20 @@ smtk_add_client_tests(
 #  LABEL "pv_meshsession"
   TEST_SCRIPTS ${TESTS_WITH_BASELINES}
   LOAD_PLUGINS
+    smtkResourcePlugin
+    smtkOperationPlugin
+    smtkGeometryPlugin
+    smtkViewPlugin
     smtkMeshPlugin
     smtkQtPlugin
     smtkPVServerExtPlugin
     smtkPQComponentsPlugin
     smtkPVMeshExtPlugin
   PLUGIN_PATHS
+    $<TARGET_FILE_DIR:smtkResourcePlugin>/..
+    $<TARGET_FILE_DIR:smtkOperationPlugin>/..
+    $<TARGET_FILE_DIR:smtkGeometryPlugin>/..
+    $<TARGET_FILE_DIR:smtkViewPlugin>/..
     $<TARGET_FILE_DIR:smtkMeshPlugin>/..
     $<TARGET_FILE_DIR:smtkQtPlugin>/..
     $<TARGET_FILE_DIR:smtkPVMeshExtPlugin>/..

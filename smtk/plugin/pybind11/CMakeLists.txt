@@ -1,13 +1,13 @@
-set(library_name "_smtkPybindParaviewPluginSupport")
-set(module_path "extension/paraview/pluginsupport")
+set(library_name "_smtkPybindPlugin")
+set(module_path "plugin")
 set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
-pybind11_add_module(${library_name} PybindParaviewPluginSupport.cxx)
+pybind11_add_module(${library_name} PybindPlugin.cxx)
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkPluginSupport VTK::vtksys)
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore)
 set_target_properties(${library_name}
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${build_path}"

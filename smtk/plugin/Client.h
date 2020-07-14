@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_paraview_pluginsupport_PluginClient_h
-#define __smtk_extension_paraview_pluginsupport_PluginClient_h
+#ifndef __smtk_plugin_Client_h
+#define __smtk_plugin_Client_h
 
-#include "smtk/common/Registry.h"
-#include "smtk/extension/paraview/pluginsupport/PluginClientBase.h"
+#include "smtk/plugin/ClientBase.h"
+#include "smtk/plugin/Registry.h"
 
 #include <functional>
 #include <memory>
@@ -20,29 +20,27 @@
 
 namespace smtk
 {
-namespace extension
-{
-namespace paraview
+namespace plugin
 {
 namespace detail
 {
 template <typename Registrar, typename Manager>
-class PluginClient;
+class Client;
 }
 
-/// PluginClients are static objects that live in a plugin. Their lifetime is
+/// plugin::Clients are static objects that live in a plugin. Their lifetime is
 /// therefore confined to the lifetime to the plugin's own scope. Upon creation,
-/// a PluginClient adds a weak pointer to itself to the singleton PluginManager.
+/// a Client adds a weak pointer to itself to the singleton PluginManager.
 /// The PluginManager has an API for registering/unregistering Managers to/from
-/// each of its available PluginClients. When a Manager is registered to a
-/// PluginClient, a Registry object is created; it tethers the manager
+/// each of its available Clients. When a Manager is registered to a
+/// Client, a Registry object is created; it tethers the manager
 /// instance's extensions imbued by the plugin to its own lifetime. These
-/// registry objects are held by the PluginClient, guaranteeing that they go out
-/// of scope when the PluginClient goes out of scope.
+/// registry objects are held by the Client, guaranteeing that they go out
+/// of scope when the Client goes out of scope.
 ///
-/// A PluginClient is a composition of detail::PluginClients, one for each
+/// A Client is a composition of detail::Clients, one for each
 /// Manager the plugin can augment. To facilitate the registration of managers
-/// to a PluginClient without explicitly referring to the plugin's Registrar,
+/// to a Client without explicitly referring to the plugin's Registrar,
 /// the Manager-specific API is separated from the implementation that uses
 /// the Registrar to perform the actual registration.
 ///
@@ -56,19 +54,19 @@ class PluginClient;
 #ifndef SMTK_MSVC
 
 template <typename Registrar, typename Manager, typename... T>
-class SMTK_ALWAYS_EXPORT PluginClient : public detail::PluginClient<Registrar, Manager>,
-                                        public detail::PluginClient<Registrar, T>...,
-                                        public PluginClientBase
+class SMTK_ALWAYS_EXPORT Client : public detail::Client<Registrar, Manager>,
+                                  public detail::Client<Registrar, T>...,
+                                  public ClientBase
 {
 public:
-  static std::shared_ptr<PluginClientBase> create();
-  virtual ~PluginClient() {}
+  static std::shared_ptr<ClientBase> create();
+  virtual ~Client() {}
 
 private:
-  PluginClient()
-    : detail::PluginClient<Registrar, Manager>()
-    , detail::PluginClient<Registrar, T>()...
-    , PluginClientBase()
+  Client()
+    : detail::Client<Registrar, Manager>()
+    , detail::Client<Registrar, T>()...
+    , ClientBase()
   {
   }
 };
@@ -83,59 +81,59 @@ struct Sentinel
 }
 
 template <typename Registrar, typename Manager = detail::Sentinel, typename... T>
-class SMTK_ALWAYS_EXPORT PluginClient : public detail::PluginClient<Registrar, Manager>,
-                                        public PluginClient<Registrar, T...>
+class SMTK_ALWAYS_EXPORT Client : public detail::Client<Registrar, Manager>,
+                                  public Client<Registrar, T...>
 {
 public:
-  static std::shared_ptr<PluginClientBase> create();
-  virtual ~PluginClient() {}
+  static std::shared_ptr<ClientBase> create();
+  virtual ~Client() {}
 
 protected:
-  PluginClient()
-    : detail::PluginClient<Registrar, Manager>()
-    , PluginClient<Registrar, T...>()
+  Client()
+    : detail::Client<Registrar, Manager>()
+    , Client<Registrar, T...>()
   {
   }
 };
 
 template <typename Registrar>
-class SMTK_ALWAYS_EXPORT PluginClient<Registrar, detail::Sentinel> : public PluginClientBase
+class SMTK_ALWAYS_EXPORT Client<Registrar, detail::Sentinel> : public ClientBase
 {
 public:
-  PluginClient()
-    : PluginClientBase()
+  Client()
+    : ClientBase()
   {
   }
 
-  virtual ~PluginClient() {}
+  virtual ~Client() {}
 };
 
 #endif
 
 namespace detail
 {
-/// PluginClients are a composition of Registrars and Managers. When a developer
+/// Clients are a composition of Registrars and Managers. When a developer
 /// wishes to register a manager to all available plugins, the Registrar
 /// for each plugin is not known but the Manager type is. We therefore present
 /// an API that only depends on the Manager type to the user, and we implement
-/// it in detail::PluginClient.
+/// it in detail::Client.
 template <typename Manager>
-class SMTK_ALWAYS_EXPORT PluginClientFor
+class SMTK_ALWAYS_EXPORT ClientFor
 {
 public:
-  virtual ~PluginClientFor();
+  virtual ~ClientFor();
 
   virtual bool registerPluginTo(const std::shared_ptr<Manager>&) = 0;
   virtual bool unregisterPluginFrom(const std::shared_ptr<Manager>&) = 0;
 
 protected:
-  virtual smtk::common::RegistryBase* find(const std::shared_ptr<Manager>&) = 0;
+  virtual smtk::plugin::RegistryBase* find(const std::shared_ptr<Manager>&) = 0;
 
-  std::unordered_set<smtk::common::RegistryBase*> m_registries;
+  std::unordered_set<smtk::plugin::RegistryBase*> m_registries;
 };
 
 template <typename Manager>
-PluginClientFor<Manager>::~PluginClientFor()
+ClientFor<Manager>::~ClientFor()
 {
   for (auto base_registry : m_registries)
   {
@@ -143,24 +141,24 @@ PluginClientFor<Manager>::~PluginClientFor()
   }
 }
 
-/// The "public" PluginClient is simply a composition of detail::PluginClients,
-/// one for each Manager type. The detail::PluginClient constructs a Registry
+/// The "public" Client is simply a composition of detail::Clients,
+/// one for each Manager type. The detail::Client constructs a Registry
 /// object for its Registrar/Manager pair and stores it in its set of
 /// Registries. The lifetime of these Registries are therefore tethered to the
-/// lifetime of the PluginClient, which lives in the plugin's library.
+/// lifetime of the Client, which lives in the plugin's library.
 template <typename Registrar, typename Manager>
-class SMTK_ALWAYS_EXPORT PluginClient : public PluginClientFor<Manager>
+class SMTK_ALWAYS_EXPORT Client : public ClientFor<Manager>
 {
 public:
   bool registerPluginTo(const std::shared_ptr<Manager>&) override;
   bool unregisterPluginFrom(const std::shared_ptr<Manager>&) override;
 
 private:
-  smtk::common::RegistryBase* find(const std::shared_ptr<Manager>&) override;
+  smtk::plugin::RegistryBase* find(const std::shared_ptr<Manager>&) override;
 };
 
 template <typename Registrar, typename Manager>
-smtk::common::RegistryBase* PluginClient<Registrar, Manager>::find(
+smtk::plugin::RegistryBase* Client<Registrar, Manager>::find(
   const std::shared_ptr<Manager>& manager)
 {
   // We are looking for a registry that links the Registrar and Manager. If one
@@ -168,8 +166,8 @@ smtk::common::RegistryBase* PluginClient<Registrar, Manager>::find(
   // Registrar and another Manager. That's ok, because Registries are in turn
   // compositions of Registrar/Manager pairs, so a dynamic_cast to a Registry
   // that only contains the queried Manager will still succeed.
-  typedef smtk::common::Registry<Registrar, Manager> QueriedRegistry;
-  for (auto base_registry : PluginClientFor<Manager>::m_registries)
+  typedef smtk::plugin::Registry<Registrar, Manager> QueriedRegistry;
+  for (auto base_registry : ClientFor<Manager>::m_registries)
   {
     QueriedRegistry* registry = dynamic_cast<QueriedRegistry*>(base_registry);
 
@@ -187,32 +185,31 @@ smtk::common::RegistryBase* PluginClient<Registrar, Manager>::find(
 }
 
 template <typename Registrar, typename Manager>
-bool PluginClient<Registrar, Manager>::registerPluginTo(const std::shared_ptr<Manager>& manager)
+bool Client<Registrar, Manager>::registerPluginTo(const std::shared_ptr<Manager>& manager)
 {
   // We search to ensure that a Registry object does not already exist for this
   // manager. That way, Registrars only register themselves to a manager once.
   if (this->find(manager) == nullptr)
   {
-    auto val = PluginClientFor<Manager>::m_registries.insert(
-      new smtk::common::Registry<Registrar, Manager>(manager));
+    auto val = ClientFor<Manager>::m_registries.insert(
+      new smtk::plugin::Registry<Registrar, Manager>(manager));
     return val.second;
   }
   return false;
 }
 
 template <typename Registrar, typename Manager>
-bool PluginClient<Registrar, Manager>::unregisterPluginFrom(const std::shared_ptr<Manager>& manager)
+bool Client<Registrar, Manager>::unregisterPluginFrom(const std::shared_ptr<Manager>& manager)
 {
   // We search for the Registry object that connects to this manager. If one
   // exists, we break the connection by deleting the registry.
   if (auto registry = this->find(manager))
   {
-    PluginClientFor<Manager>::m_registries.erase(registry);
+    ClientFor<Manager>::m_registries.erase(registry);
     delete registry;
     return true;
   }
   return false;
-}
 }
 }
 }

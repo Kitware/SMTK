@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/common/Registry.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -138,7 +138,7 @@ int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
   test(manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
     "New managers should not be managing anything");
   {
-    smtk::common::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_1(
+    smtk::plugin::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_1(
       manager_1, manager_2, manager_3);
     test(manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
         manager_3->managed.size() == 1,
@@ -146,7 +146,7 @@ int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
   }
   test(manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
     "Cleared managers should not be managing anything");
-  smtk::common::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_2(
+  smtk::plugin::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_2(
     manager_1, manager_2, manager_3);
   test(manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
       manager_3->managed.size() == 1,
@@ -155,7 +155,7 @@ int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
   auto manager_22 = std::make_shared<Manager_2>();
   auto manager_33 = std::make_shared<Manager_3>();
   {
-    smtk::common::Registry<Registrar_2, Manager_1, Manager_2, Manager_3> registry_3(
+    smtk::plugin::Registry<Registrar_2, Manager_1, Manager_2, Manager_3> registry_3(
       manager_1, manager_22, manager_33);
 
     test(manager_1->managed.size() == 2, "Manager_1 should be managing two things");

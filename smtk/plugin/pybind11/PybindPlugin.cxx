@@ -15,10 +15,10 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/stl.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include "smtk/resource/Manager.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/resource/Manager.h"
 
-#include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
+#include "smtk/plugin/Manager.txx"
 
 #include <memory>
 #include <utility>
@@ -30,7 +30,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_MODULE(_smtkPybindParaviewPluginSupport, pluginsupport)
+PYBIND11_MODULE(_smtkPybindPlugin, plugin)
 {
   // We need to explicitly list all of the managers we want our plugin manager
   // to accept. I'm sure there's a way to do this more elegantly, but for now I
@@ -38,18 +38,20 @@ PYBIND11_MODULE(_smtkPybindParaviewPluginSupport, pluginsupport)
   // has full access to the "environment" managers anyway). This module is
   // really only supposed to be used for testing; it may move into the testing
   // directory.
-  pluginsupport
-    .def("registerPluginsTo", [](const std::shared_ptr<smtk::resource::Manager>& manager) {
-        smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(manager);
+  plugin
+    .def("registerPluginsTo",
+      [](const std::shared_ptr<smtk::resource::Manager>& manager) {
+        smtk::plugin::Manager::instance()->registerPluginsTo(manager);
       })
-    .def("unregisterPluginsFrom", [](const std::shared_ptr<smtk::resource::Manager>& manager) {
-        smtk::extension::paraview::PluginManager::instance()->unregisterPluginsFrom(manager);
+    .def("unregisterPluginsFrom",
+      [](const std::shared_ptr<smtk::resource::Manager>& manager) {
+        smtk::plugin::Manager::instance()->unregisterPluginsFrom(manager);
       })
-    .def("registerPluginsTo", [](const std::shared_ptr<smtk::operation::Manager>& manager) {
-        smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(manager);
+    .def("registerPluginsTo",
+      [](const std::shared_ptr<smtk::operation::Manager>& manager) {
+        smtk::plugin::Manager::instance()->registerPluginsTo(manager);
       })
     .def("unregisterPluginsFrom", [](const std::shared_ptr<smtk::operation::Manager>& manager) {
-        smtk::extension::paraview::PluginManager::instance()->unregisterPluginsFrom(manager);
-      })
-    ;
+      smtk::plugin::Manager::instance()->unregisterPluginsFrom(manager);
+    });
 }

@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,9 +8,9 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 import smtk.resource
 import smtk.operation
 
-from ._smtkPybindParaviewPluginSupport import *
+from ._smtkPybindPlugin import *

@@ -38,7 +38,6 @@ set(unit_tests
   UnitTestFactory
   UnitTestLinks
   UnitTestObservers
-  UnitTestRegistry.cxx
   UnitTestThreadPool
   UnitTestTypeContainer
   UnitTestTypeMap

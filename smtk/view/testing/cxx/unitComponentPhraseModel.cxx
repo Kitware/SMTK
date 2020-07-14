@@ -13,7 +13,7 @@
 
 #include "smtk/session/polygon/Registrar.h"
 
-#include "smtk/common/Registry.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -94,7 +94,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
+  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
 
   // I. Construct a ComponentPhraseModel that displays edges and faces. Load some geometry.

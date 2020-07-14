@@ -23,7 +23,6 @@ vtk_module_add_module(smtkPVMeshExt
 vtk_module_link(smtkPVMeshExt
   PUBLIC
     nlohmann_json
-    smtkPluginSupport
     vtkSMTKMeshExt
 )
 

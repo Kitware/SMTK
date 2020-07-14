@@ -26,7 +26,7 @@ import smtk
 import smtk.common
 import smtk.resource
 import smtk.operation
-import smtk.extension.paraview.pluginsupport as pluginsupport
+import smtk.extension.paraview.plugin as plugin
 import smtk.testing
 
 
@@ -37,7 +37,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
         operationManager = smtk.operation.Manager.create()
 
         # Register any loaded plugins to the operation manager
-        pluginsupport.registerPluginsTo(operationManager)
+        plugin.registerPluginsTo(operationManager)
 
         # Record the number of available operations
         beforePlugin = len(operationManager.availableOperations())
@@ -47,7 +47,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPolygonSessionPlugin>", True)
 
         # Register loaded plugins to the operation manager
-        pluginsupport.registerPluginsTo(operationManager)
+        plugin.registerPluginsTo(operationManager)
 
         # Record the number of available operations
         availableOps = operationManager.availableOperations()
@@ -61,7 +61,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
             raise RuntimeError('Automatic plugin registration failed')
 
         # Register loaded plugins to the operation manager again
-        pluginsupport.registerPluginsTo(operationManager)
+        plugin.registerPluginsTo(operationManager)
 
         # Record the number of available operations
         afterReload = len(operationManager.availableOperations())
@@ -72,7 +72,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
             raise RuntimeError('reregistering plugins should have no effect')
 
         # Unregister loaded plugins from the operation manager
-        pluginsupport.unregisterPluginsFrom(operationManager)
+        plugin.unregisterPluginsFrom(operationManager)
 
         # Record the number of available operations
         afterUnload = len(operationManager.availableOperations())

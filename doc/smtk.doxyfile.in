@@ -698,7 +698,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin/resources" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin/resources" \
@@ -805,7 +804,6 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin/resources" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin/resources" \

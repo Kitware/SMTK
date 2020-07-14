@@ -35,7 +35,7 @@
 
 #include "smtk/session/polygon/Registrar.h"
 
-#include "smtk/common/Registry.h"
+#include "smtk/plugin/Registry.h"
 
 #include "smtk/io/Logger.h"
 
@@ -74,11 +74,11 @@ int unitJsonItems(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto attRegistry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
+  auto attRegistry = smtk::plugin::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto opRegistry = smtk::common::Registry<smtk::operation::Registrar, smtk::resource::Manager,
+  auto opRegistry = smtk::plugin::Registry<smtk::operation::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto polyRegistry = smtk::common::Registry<smtk::session::polygon::Registrar,
+  auto polyRegistry = smtk::plugin::Registry<smtk::session::polygon::Registrar,
     smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
 
   smtk::resource::ResourceArray rsrcs;

@@ -12,7 +12,7 @@
 
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
-#include "smtk/common/TypeContainer.h"
+#include "smtk/common/Managers.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/geometry/Manager.h"
@@ -77,37 +77,37 @@ public:
   /// Return the server's application-wide resource manager.
   smtk::resource::ManagerPtr GetResourceManager() const
   {
-    return this->Managers.get<smtk::resource::ManagerPtr>();
+    return this->Managers->get<smtk::resource::ManagerPtr>();
   }
   /// Return the server's application-wide operation manager.
   smtk::operation::ManagerPtr GetOperationManager() const
   {
-    return this->Managers.get<smtk::operation::ManagerPtr>();
+    return this->Managers->get<smtk::operation::ManagerPtr>();
   }
   /// Return the server's application-wide geometry manager.
   smtk::geometry::ManagerPtr GetGeometryManager() const
   {
-    return this->Managers.get<smtk::geometry::ManagerPtr>();
+    return this->Managers->get<smtk::geometry::ManagerPtr>();
   }
   /// Return the server's application-wide project manager.
   smtk::project::ManagerPtr GetProjectManager() const
   {
-    return this->Managers.get<smtk::project::ManagerPtr>();
+    return this->Managers->get<smtk::project::ManagerPtr>();
   }
   /// Return the server's application-wide view manager.
   smtk::view::ManagerPtr GetViewManager() const
   {
-    return this->Managers.get<smtk::view::ManagerPtr>();
+    return this->Managers->get<smtk::view::ManagerPtr>();
   }
 
   /// Return the server's application-wide selection handler.
   smtk::view::SelectionPtr GetSelection() const
   {
-    return this->Managers.get<smtk::view::SelectionPtr>();
+    return this->Managers->get<smtk::view::SelectionPtr>();
   }
 
-  const smtk::common::TypeContainer& GetManagers() const { return this->Managers; }
-  smtk::common::TypeContainer& GetManagers() { return this->Managers; }
+  const smtk::common::TypeContainer& GetManagers() const { return *this->Managers; }
+  smtk::common::TypeContainer& GetManagers() { return *this->Managers; }
 
   /// Return the SMTK selection source used by this class to indicate a hardware selection was made.
   const std::string& GetSelectionSource() const { return this->SelectionSource; }
@@ -156,7 +156,7 @@ protected:
   vtkAlgorithmOutput* SelectionObj;
   char* JSONRequest;
   char* JSONResponse;
-  smtk::common::TypeContainer Managers;
+  smtk::common::Managers::Ptr Managers;
 
   std::string SelectionSource;
   int HoveredValue;
