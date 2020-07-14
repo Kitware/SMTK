@@ -318,15 +318,27 @@ int vtkResourceMultiBlockSource::RequestData(
     return 0;
   }
 
-  auto resource = std::dynamic_pointer_cast<smtk::geometry::Resource>(this->GetResource());
+  // Check if the source has an associated resource.
+  auto resource = this->GetResource();
   if (!resource)
   {
-    vtkErrorMacro("Input resource is not a geometry resource");
+    vtkErrorMacro("No input resource.");
     return 0;
   }
 
+  // Check if the associated resource is a geometry resource.
+  auto geometryResource = std::dynamic_pointer_cast<smtk::geometry::Resource>(this->GetResource());
+  if (!geometryResource)
+  {
+    // If it is not, then set the source's resource id and pass on the empty
+    // dataset.
+    vtkDebugMacro("Input resource is not a geometry resource");
+    vtkResourceMultiBlockSource::SetResourceId(output, resource->id());
+    return 1;
+  }
+
   smtk::extension::vtk::geometry::Backend vtk;
-  const auto& geom = resource->geometry(vtk);
+  const auto& geom = geometryResource->geometry(vtk);
   if (!geom)
   {
     vtkErrorMacro("Input resource does not have geometry");
