@@ -18,6 +18,10 @@
 #include <memory>
 #include <unordered_set>
 
+#ifdef SMTK_MSVC
+#include "smtk/plugin/Sentinel.h"
+#endif
+
 namespace smtk
 {
 namespace plugin
@@ -72,13 +76,6 @@ private:
 };
 
 #else
-
-namespace detail
-{
-struct Sentinel
-{
-};
-}
 
 template <typename Registrar, typename Manager = detail::Sentinel, typename... T>
 class SMTK_ALWAYS_EXPORT Client : public detail::Client<Registrar, Manager>,
