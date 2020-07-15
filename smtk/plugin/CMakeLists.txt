@@ -4,7 +4,7 @@ set(pluginSrcs
   Registry.cxx
 )
 
-set(pluginHdrs
+set(pluginHeaders
   ClientBase.h
   Client.h
   Client.txx
