@@ -37,9 +37,17 @@ bool WriterGroup::registerOperation(
     return false;
   }
 
-  return (parameters->findFile(fileItemName) != nullptr &&
-    Group::registerOperation(operatorName, { resourceName }) &&
-    m_fileItemName.registerOperation(operatorName, { fileItemName }));
+  // If we have a valid file item name, ensure it is propertly registered.
+  // Operations for this group are not required to have a file name.
+  if (parameters->findFile(fileItemName) != nullptr)
+  {
+    if (!m_fileItemName.registerOperation(operatorName, { fileItemName }))
+    {
+      return false;
+    }
+  }
+
+  return Group::registerOperation(operatorName, { resourceName });
 }
 
 std::shared_ptr<smtk::operation::Operation> WriterGroup::writerForResource(
