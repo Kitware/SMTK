@@ -39,6 +39,7 @@ public:
   const DataT& discreteValue(std::size_t element) const { return m_discreteValues[element]; }
   void addDiscreteValue(const DataT& val);
   void addDiscreteValue(const DataT& val, const std::string& discreteEnum);
+  void clearDiscreteValues();
   bool hasRange() const override { return m_minRangeSet || m_maxRangeSet; }
   bool hasMinRange() const { return m_minRangeSet; }
   const DataT& minRange() const { return m_minRange; }
@@ -146,6 +147,13 @@ void ValueItemDefinitionTemplate<DataT>::addDiscreteValue(
 {
   m_discreteValues.push_back(dvalue);
   m_discreteValueEnums.push_back(dlabel);
+}
+
+template <typename DataT>
+void ValueItemDefinitionTemplate<DataT>::clearDiscreteValues()
+{
+  m_discreteValues.clear();
+  m_discreteValueEnums.clear();
 }
 
 template <typename DataT>

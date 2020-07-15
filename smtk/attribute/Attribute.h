@@ -133,6 +133,7 @@ public:
     return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
   }
 
+  const std::vector<smtk::attribute::ItemPtr>& items() const { return m_items; }
   smtk::attribute::ItemPtr item(int ith) const
   {
     return (ith < 0)
