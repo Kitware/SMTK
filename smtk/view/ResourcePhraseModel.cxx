@@ -91,14 +91,17 @@ bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Res
 {
   m_filter = filter;
 
-  // Filter out current entries that do not pass the filter
-  DescriptivePhrases children(m_root->subphrases());
-  children.erase(std::remove_if(children.begin(), children.end(),
-                   [this](const DescriptivePhrase::Ptr& phr) -> bool {
-                     return m_filter(*(phr->relatedResource()));
-                   }),
-    children.end());
-  this->updateChildren(m_root, children, std::vector<int>());
+  if (m_filter)
+  {
+    // Filter out current entries that do not pass the filter
+    DescriptivePhrases children(m_root->subphrases());
+    children.erase(std::remove_if(children.begin(), children.end(),
+                     [this](const DescriptivePhrase::Ptr& phr) -> bool {
+                       return m_filter(*(phr->relatedResource()));
+                     }),
+      children.end());
+    this->updateChildren(m_root, children, std::vector<int>());
+  }
 
   return true;
 }
