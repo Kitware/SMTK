@@ -733,6 +733,16 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
   return atLeastOneSelected;
 }
 
+vtkCompositeDataDisplayAttributes* vtkSMTKResourceRepresentation::GetEntityMapperDisplayAttributes()
+{
+  return this->EntityMapper->GetCompositeDataDisplayAttributes();
+}
+vtkCompositeDataDisplayAttributes*
+vtkSMTKResourceRepresentation::GetSelectedEntityMapperDisplayAttributes()
+{
+  return this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
+}
+
 int vtkSMTKResourceRepresentation::FillInputPortInformation(int port, vtkInformation* info)
 {
   // Saying INPUT_IS_OPTIONAL() is essential, since representations don't have
