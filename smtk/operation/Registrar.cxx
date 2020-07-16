@@ -42,7 +42,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   managers->insert(smtk::operation::Manager::create());
 
-  if (managers->contains<smtk::resource::Manager>())
+  if (managers->contains<smtk::resource::Manager::Ptr>())
   {
     managers->get<smtk::operation::Manager::Ptr>()->registerResourceManager(
       managers->get<smtk::resource::Manager::Ptr>());
