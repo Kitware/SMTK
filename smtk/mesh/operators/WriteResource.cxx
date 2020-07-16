@@ -92,18 +92,27 @@ WriteResource::Result WriteResource::operateInternal()
   auto archive = this->parameters()->findVoid("archive");
   if (archive && archive->isEnabled())
   {
-    std::string smtkFilename = "index.json";
-    std::string meshFilename = "mesh.h5m";
-    std::string tmpsmtkPath = smtk::common::Paths::tempDirectory() + "/" + smtkFilename;
-    std::string tmpMeshPath = smtk::common::Paths::tempDirectory() + "/" + meshFilename;
-    j["Mesh URL"] = meshFilename;
+    boost::filesystem::path smtkFilename("index.json");
+    boost::filesystem::path meshFilename("mesh.h5m");
+
+    boost::filesystem::path temp =
+      boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+    if (!boost::filesystem::create_directories(temp))
+    {
+      smtkErrorMacro(this->log(), "Failed to create a temporary directory.");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    boost::filesystem::path tmpsmtkPath = temp / smtkFilename;
+    boost::filesystem::path tmpMeshPath = temp / meshFilename;
+    j["Mesh URL"] = meshFilename.string();
 
     // Write the smtk index
     {
-      std::ofstream file(tmpsmtkPath);
+      std::ofstream file(tmpsmtkPath.string());
       if (!file.good())
       {
-        smtkErrorMacro(log(), "Unable to open \"" << tmpsmtkPath << "\" for writing.");
+        smtkErrorMacro(log(), "Unable to open \"" << tmpsmtkPath.string() << "\" for writing.");
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       file << j.dump(2);
@@ -114,7 +123,7 @@ WriteResource::Result WriteResource::operateInternal()
     {
       // Create a write operator
       smtk::mesh::Write::Ptr writeOp = smtk::mesh::Write::create();
-      writeOp->parameters()->findFile("filename")->setValue(tmpMeshPath);
+      writeOp->parameters()->findFile("filename")->setValue(tmpMeshPath.string());
 
       // Set the entity association
       writeOp->parameters()->associate(resource);
@@ -126,8 +135,8 @@ WriteResource::Result WriteResource::operateInternal()
       if (writeOpResult->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
-        smtkErrorMacro(log(), "Unable to write mesh to  \"" << tmpMeshPath << "\".");
-        cleanup(tmpsmtkPath);
+        smtkErrorMacro(log(), "Unable to write mesh to  \"" << tmpMeshPath.string() << "\".");
+        ::boost::filesystem::remove_all(temp);
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }
@@ -135,21 +144,19 @@ WriteResource::Result WriteResource::operateInternal()
     // Populate an archive with the smtk index and mesh file
     {
       smtk::common::Archive archive(resource->location());
-      archive.insert(tmpsmtkPath, smtkFilename);
-      archive.insert(tmpMeshPath, meshFilename);
+      archive.insert(tmpsmtkPath.string(), smtkFilename.string());
+      archive.insert(tmpMeshPath.string(), meshFilename.string());
       if (!archive.archive())
       {
         smtkErrorMacro(log(), "Unable to archive files to \"" + resource->location() + "\".");
-        cleanup(tmpsmtkPath);
-        cleanup(tmpMeshPath);
+        ::boost::filesystem::remove_all(temp);
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }
 
     // Clean up temporary files.
     {
-      cleanup(tmpsmtkPath);
-      cleanup(tmpMeshPath);
+      ::boost::filesystem::remove_all(temp);
     }
 
     return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
