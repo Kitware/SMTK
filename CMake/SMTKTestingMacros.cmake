@@ -10,7 +10,7 @@
 function(smtk_unit_tests)
   set(options)
   set(oneValueArgs)
-  set(multiValueArgs LABEL SOURCES SOURCES_REQUIRE_DATA EXTRA_SOURCES LIBRARIES)
+  set(multiValueArgs LABEL SOURCES SOURCES_SERIAL SOURCES_REQUIRE_DATA SOURCES_SERIAL_REQUIRE_DATA EXTRA_SOURCES LIBRARIES)
   cmake_parse_arguments(SMTK_ut
     "${options}" "${oneValueArgs}" "${multiValueArgs}"
     ${ARGN}
@@ -20,7 +20,9 @@ function(smtk_unit_tests)
   if (SMTK_DATA_DIR)
     set(have_testing_data ON)
     list(APPEND SMTK_ut_SOURCES ${SMTK_ut_SOURCES_REQUIRE_DATA})
+    list(APPEND SMTK_ut_SOURCES_SERIAL ${SMTK_ut_SOURCES_SERIAL_REQUIRE_DATA})
   endif()
+  list(APPEND SMTK_ut_SOURCES ${SMTK_ut_SOURCES_SERIAL})
 
   list(LENGTH SMTK_ut_SOURCES num_sources)
   if(NOT ${num_sources})
@@ -59,6 +61,12 @@ function(smtk_unit_tests)
         set_tests_properties(${tname} PROPERTIES LABELS ${SMTK_ut_LABEL})
       endif()
     endforeach(test)
+
+    foreach (test ${SMTK_ut_SOURCES_SERIAL})
+      get_filename_component(tname ${test} NAME_WE)
+      set_tests_properties(${tname} PROPERTIES RUN_SERIAL TRUE)
+    endforeach(test)
+
   endif (SMTK_ENABLE_TESTING)
 endfunction(smtk_unit_tests)
 
