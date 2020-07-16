@@ -325,6 +325,10 @@ public:
   void SetSliceYZ(vtkImageSliceRepresentation* rep);
   void SetSliceXZ(vtkImageSliceRepresentation* rep);
 
+  /// Accessor for clients to use with vtkSMTKRepresentationStyleSupplier.
+  vtkCompositeDataDisplayAttributes* GetEntityMapperDisplayAttributes();
+  vtkCompositeDataDisplayAttributes* GetSelectedEntityMapperDisplayAttributes();
+
 protected:
   vtkSMTKResourceRepresentation();
   ~vtkSMTKResourceRepresentation();
