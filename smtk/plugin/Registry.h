@@ -23,7 +23,7 @@
 #include <vector>
 
 #ifdef SMTK_MSVC
-#include "smtk/plugin/Sentinel.h" "
+#include "smtk/plugin/Sentinel.h"
 #endif
 
 namespace smtk
