@@ -13,7 +13,7 @@ set(pluginHeaders
   Registry.h
 )
 
-smtk_public_headers(smtkCore ${hdrs})
+smtk_public_headers(smtkCore ${pluginHeaders})
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
