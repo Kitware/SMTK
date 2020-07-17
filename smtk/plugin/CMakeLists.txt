@@ -11,6 +11,7 @@ set(pluginHeaders
   Manager.h
   Manager.txx
   Registry.h
+  Sentinel.h
 )
 
 smtk_public_headers(smtkCore ${pluginHeaders})
