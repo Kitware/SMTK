@@ -826,10 +826,11 @@ bool ReferenceItem::resolve() const
   // Iterate over the objects' keys and values.
   auto key = m_keys.begin();
   auto value = m_cache->begin();
+  access_reference accessReference;
   for (; value != m_cache->end(); ++value, ++key)
   {
     // If a value is not currently resolved...
-    auto reference = boost::apply_visitor(access_reference(), *value);
+    auto reference = boost::apply_visitor(accessReference, *value);
     // TODO: There is a problem with resources being freed once they are no
     //       longer needed.  A side effect of this is that we cannot trust the
     //       weak pointer result since we are not sure if the returned object is
