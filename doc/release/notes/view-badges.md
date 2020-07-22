@@ -17,6 +17,10 @@ simplifies how PhraseModel subclasses are constructed and configured.
 + Add a badge (AssociationBadge) showing an exclamation mark when
   matching persistent objects are not associated to attributes with a
   given set of definitions.
-+ Replace VisibilityContent decorator with VisibilityBadge
++ Replace VisibilityContent decorator with VisibilityBadge.
++ Enhance VisibilityBadge so it also applies to all smtk::geometry::Resources
+  instead of just mesh and model resources. We special-case attribute
+  resources so Attributes do not have visibility eyeballs unless they explicitly
+  have geometry.
 + Use TypeAndColorBadge to replace the hard-coded icon for displaying type
   and setting color.
