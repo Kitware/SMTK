@@ -63,8 +63,8 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
     auto builder = pqCore->getObjectBuilder();
     QObject::connect(
       builder, SIGNAL(proxyCreated(pqProxy*)), this, SLOT(handleNewSMTKProxies(pqProxy*)));
-    QObject::connect(
-      builder, SIGNAL(destroying(pqProxy*)), this, SLOT(handleOldSMTKProxies(pqProxy*)));
+    QObject::connect(builder, SIGNAL(destroying(pqPipelineSource*)), this,
+      SLOT(handleOldSMTKProxies(pqPipelineSource*)));
 
     QObject::connect(pqCore->getServerManagerModel(), SIGNAL(serverReady(pqServer*)), this,
       SLOT(addManagerOnServer(pqServer*)));
@@ -275,7 +275,7 @@ void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
   }
 }
 
-void pqSMTKBehavior::handleOldSMTKProxies(pqProxy* pxy)
+void pqSMTKBehavior::handleOldSMTKProxies(pqPipelineSource* pxy)
 {
   auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
   if (rsrc)

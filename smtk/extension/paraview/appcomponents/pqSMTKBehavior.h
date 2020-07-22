@@ -19,6 +19,7 @@
 #include <functional>
 
 class pqOutputPort;
+class pqPipelineSource;
 class pqProxy;
 class pqSelectionManager;
 class pqServer;
@@ -128,7 +129,7 @@ protected slots:
   /// Track when SMTK proxies are added (not all \a pxy may cast to SMTK objects but some may)
   virtual void handleNewSMTKProxies(pqProxy* pxy);
   /// Track when resources are removed (not all \a pxy may cast to SMTK objects but some may)
-  virtual void handleOldSMTKProxies(pqProxy* pxy);
+  virtual void handleOldSMTKProxies(pqPipelineSource* pxy);
 
 private:
   Q_DISABLE_COPY(pqSMTKBehavior);
