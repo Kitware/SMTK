@@ -92,11 +92,18 @@ Consuming applications can now register icon sets for Resources and Components, 
   *  Mode to indicate that attribute names are not allowed to be changed.
      * void setAttributeNamesConstant(bool mode);
      * bool attributeNamesConstant() const;
+  * Added the ability to force the attribute name to be limited by a regular expression using **AttributeNameRegex**. ***NOTE: Currently the expression string should end with an '*'.***  If it does not the user will be able to initially enter invalid characters the first time but the widget will not allow the change to be saved.  Subsequent edits will work as expected.  This seems to be a bug in Qt.
 
-
+```xml
+    <View Type="Attribute" Title="A" Label="A Atts"
+      SearchBoxText="Search by name..." AttributeNameRegex="[a-zA-Z_][a-zA-Z0-9\-]*" TopLevel="true">
+      <AttributeTypes>
+        <Att Type="A" />
+      </AttributeTypes>
+    </View>
+```
 ### qtUIManager Changes
 * There is now a method to return the size of a string based on the font being used
-
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
 * Added Item View Option ExpressionOnly to indicate that the item must be assigned to an expression and not to a constant value

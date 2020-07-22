@@ -99,6 +99,7 @@ set(QAttrLibMocHeaders
   qtReferenceItem.h
   qtReferenceItemComboBox.h
   qtReferenceItemData.h
+  qtRegexDelegate.h
   qtResourceItem.h
   qtResourceBrowser.h
   qtOperationLauncher.h
