@@ -20,6 +20,7 @@
 #include "smtk/geometry/Geometry.h"
 #include "smtk/geometry/Resource.h"
 #include "smtk/geometry/queries/SelectionFootprint.h"
+#include "smtk/resource/query/BadTypeError.h"
 
 #include "smtk/extension/paraview/appcomponents/pqEyeballClosed_svg.h"
 #include "smtk/extension/paraview/appcomponents/pqEyeball_svg.h"
@@ -121,24 +122,37 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
       smtk::extension::vtk::geometry::Backend vtk;
       // const auto& geom = resource->geometry(vtk);
       // if (geom)
-      const auto& query = resource->queries().template get<smtk::geometry::SelectionFootprint>();
-      std::unordered_set<smtk::resource::PersistentObject*> footprint;
-      query(*comp, footprint, vtk);
-      // Even if the footprint does not include the component itself, we need to include it
-      // here so that the descriptive phrase shows a response to user input.
-      visibleThings[comp->id()] = visible;
-      for (auto& item : footprint)
+      if (resource->queries().template contains<smtk::geometry::SelectionFootprint>())
       {
-        visibleThings[item->id()] = visible;
-        auto itemComp = dynamic_cast<smtk::resource::Component*>(item);
-        if (itemComp)
+        const auto& query = resource->queries().template get<smtk::geometry::SelectionFootprint>();
+        std::unordered_set<smtk::resource::PersistentObject*> footprint;
+        query(*comp, footprint, vtk);
+        // Even if the footprint does not include the component itself, we need to include it
+        // here so that the descriptive phrase shows a response to user input.
+        visibleThings[comp->id()] = visible;
+        for (auto& item : footprint)
         {
-          int vv = smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
-          rval |= vv;
-          if (vv)
+          visibleThings[item->id()] = visible;
+          auto itemComp = dynamic_cast<smtk::resource::Component*>(item);
+          if (itemComp)
           {
-            didUpdate = true;
+            int vv = smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
+            rval |= vv;
+            if (vv)
+            {
+              didUpdate = true;
+            }
           }
+        }
+      }
+      else
+      {
+        visibleThings[comp->id()] = visible;
+        int vv = smap->setVisibility(comp, visible != 0) ? 1 : 0;
+        rval |= vv;
+        if (vv)
+        {
+          didUpdate = true;
         }
       }
     }
