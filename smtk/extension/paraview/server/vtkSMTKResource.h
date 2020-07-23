@@ -41,7 +41,7 @@ public:
 
   /// Set/get the SMTK resource.
   void SetResource(const smtk::resource::ResourcePtr& resource);
-  smtk::resource::ResourcePtr GetResource() const { return Resource; }
+  smtk::resource::ResourcePtr GetResource() const { return Resource.lock(); }
 
   /// This accessor facilitates the lazy construction of the converter.
   virtual vtkAlgorithm* GetConverter();
@@ -60,7 +60,7 @@ protected:
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
-  smtk::resource::ResourcePtr Resource;
+  std::weak_ptr<smtk::resource::Resource> Resource;
   smtk::common::UUID ResourceId;
   vtkSmartPointer<vtkAlgorithm> Converter;
   vtkSMTKWrapper* Wrapper;

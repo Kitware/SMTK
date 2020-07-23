@@ -30,8 +30,7 @@ vtkStandardNewMacro(vtkSMTKResource);
 vtkCxxSetObjectMacro(vtkSMTKResource, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKResource::vtkSMTKResource()
-  : Resource(nullptr)
-  , Converter(nullptr)
+  : Converter(nullptr)
   , Wrapper(nullptr)
 {
   this->SetNumberOfInputPorts(0);
@@ -68,7 +67,7 @@ void vtkSMTKResource::SetResourceById(const char* resourceIdStr)
 
 void vtkSMTKResource::SetResource(const smtk::resource::ResourcePtr& resource)
 {
-  if (this->Resource != resource)
+  if (this->Resource.lock() != resource)
   {
     this->Resource = resource;
     this->Modified();

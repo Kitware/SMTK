@@ -68,9 +68,9 @@ void vtkSMTKResourceCreator::PrintSelf(ostream& os, vtkIndent indent)
 
 smtk::resource::ResourcePtr vtkSMTKResourceCreator::GenerateResource() const
 {
-  if (this->Resource && this->Wrapper)
+  if (!this->Resource.expired() && this->Wrapper)
   {
-    this->Wrapper->GetResourceManager()->remove(this->Resource);
+    this->Wrapper->GetResourceManager()->remove(this->GetResource());
   }
 
   if (!this->TypeName || !this->Parameters)
