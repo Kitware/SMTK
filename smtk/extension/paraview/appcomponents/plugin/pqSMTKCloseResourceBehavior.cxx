@@ -45,6 +45,25 @@
 #include <QMenu>
 #include <QMenuBar>
 
+#include <stdexcept>
+
+namespace
+{
+class UnreleasedMemoryError : public std::exception
+{
+public:
+  explicit UnreleasedMemoryError(const std::string& name, const std::string& typeName)
+    : message(
+        "Resource \"" + name + "\" (Type \"" + typeName + "\") has not been released from memory.")
+  {
+  }
+  const char* what() const noexcept override { return message.c_str(); }
+
+private:
+  std::string message;
+};
+}
+
 void initCloseResourceBehaviorResources()
 {
   Q_INIT_RESOURCE(pqSMTKCloseResourceBehavior);
@@ -123,6 +142,15 @@ void pqCloseResourceReaction::closeResource()
       selections.erase(resource);
     }
   }
+
+// If we are not holding the last reference to the resource, then there is a
+// memory leak.
+#ifndef NDEBUG
+  if (resource && resource.use_count() != 1)
+  {
+    throw UnreleasedMemoryError(resource->name(), resource->typeName());
+  }
+#endif
 }
 
 namespace
