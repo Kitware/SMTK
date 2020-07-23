@@ -25,6 +25,7 @@
 #include "smtk/view/icons/attribute_svg.h"
 #include "smtk/view/icons/edge_svg.h"
 #include "smtk/view/icons/face_svg.h"
+#include "smtk/view/icons/loop_svg.h"
 #include "smtk/view/icons/meshResource_svg.h"
 #include "smtk/view/icons/mesh_svg.h"
 #include "smtk/view/icons/modelResource_svg.h"
@@ -127,6 +128,8 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
             return vertex_svg;
           case smtk::model::EDGE:
             return edge_svg;
+          case smtk::model::SHELL_1D:
+            return loop_svg;
           case smtk::model::FACE:
             return face_svg;
           case smtk::model::VOLUME:
