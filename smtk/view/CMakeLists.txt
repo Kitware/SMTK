@@ -88,6 +88,7 @@ set(iconFiles
   icons/default_operation_opt.svg
   icons/edge.svg
   icons/face.svg
+  icons/loop.svg
   icons/mesh.svg
   icons/meshResource.svg
   icons/model.svg
