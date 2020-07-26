@@ -10,7 +10,6 @@
 
 #ifndef smtk_session_opencascade_Resource_h
 #define smtk_session_opencascade_Resource_h
-/*!\file */
 
 #include "smtk/graph/Resource.h"
 #include "smtk/resource/DerivedFrom.h"
@@ -26,6 +25,7 @@ namespace smtk
 {
 namespace session
 {
+/// OpenCASCADE session
 namespace opencascade
 {
 
@@ -41,15 +41,16 @@ class Shape;
 struct CellBoundary;
 struct FreeCell;
 
+using GraphResource = smtk::graph::Resource<Traits>;
 /**\brief A resource for boundary representations via OpenCASCADE.
   *
   */
 class SMTKOPENCASCADESESSION_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::graph::Resource<Traits> >
+  : public smtk::resource::DerivedFrom<smtk::session::opencascade::Resource, GraphResource>
 {
 public:
   smtkTypeMacro(smtk::session::opencascade::Resource);
-  smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, smtk::graph::Resource<Traits> >);
+  smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, GraphResource>);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() = default;
@@ -62,7 +63,12 @@ public:
   const TopoDS_Compound& compound() const { return m_compound; }
   void setCompound(const TopoDS_Compound& compound) { m_compound = compound; }
 
-  using Superclass::create;
+  // wrap to avoid name conflict in msvc
+  template <typename componentT>
+  smtk::shared_ptr<componentT> createShape()
+  {
+    return GraphResource::create<componentT>();
+  }
 
 protected:
   Resource(const smtk::common::UUID&, smtk::resource::Manager::Ptr manager = nullptr);
