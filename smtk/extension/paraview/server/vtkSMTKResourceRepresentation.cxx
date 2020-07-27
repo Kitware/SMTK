@@ -1170,9 +1170,29 @@ void vtkSMTKResourceRepresentation::SetLineColor(double r, double g, double b)
   this->Property->SetEdgeColor(r, g, b);
 }
 
+void vtkSMTKResourceRepresentation::SetEdgeVisibility(int val)
+{
+  this->Property->SetEdgeVisibility(val);
+}
+
 void vtkSMTKResourceRepresentation::SetOpacity(double val)
 {
   this->Property->SetOpacity(val);
+}
+
+void vtkSMTKResourceRepresentation::SetRenderLinesAsTubes(int val)
+{
+  this->Property->SetRenderLinesAsTubes(val);
+}
+
+void vtkSMTKResourceRepresentation::SetRenderPointsAsSpheres(int val)
+{
+  this->Property->SetRenderPointsAsSpheres(val);
+}
+
+void vtkSMTKResourceRepresentation::SetVertexVisibility(int val)
+{
+  this->Property->SetVertexVisibility(val);
 }
 
 void vtkSMTKResourceRepresentation::SetPosition(double x, double y, double z)

@@ -1363,6 +1363,42 @@
                            min="0 0 0"
                            name="range" />
       </DoubleVectorProperty>
+      <IntVectorProperty command="SetEdgeVisibility"
+                         default_values="0"
+                         name="EdgeVisibility"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>On some renderers it is possible to render the
+        edges of geometric primitives separately from the interior.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty command="SetRenderLinesAsTubes"
+                         default_values="0"
+                         name="RenderLinesAsTubes"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>The width of the line in pixels is controlled
+        by the LineWidth attribute. May not be supported on every
+        platform and the implementation may be half tubes, or
+        something only tube like in appearance.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty command="SetRenderPointsAsSpheres"
+                         default_values="0"
+                         name="RenderPointsAsSpheres"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>The size of the sphere in pixels is controlled
+        by the PointSize attribute. Note that half spheres may be
+        rendered instead of spheres.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty command="SetVertexVisibility"
+                         default_values="0"
+                         name="VertexVisibility"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
       <DoubleVectorProperty command="SetPointSize"
                             default_values="6.0"
                             name="PointSize"
@@ -1866,7 +1902,15 @@
                       panel_visibility_default_for_representation="wireframe" />
             <Property name="SelectionRenderStyle"
                       panel_visibility="never"/>
-          </PropertyGroup>
+            <Property name="RenderLinesAsTubes"
+                      panel_visibility="never"/>
+            <Property name="RenderPointsAsSpheres"
+                      panel_visibility="never"/>
+            <Property name="EdgeVisibility"
+                      panel_visibility="never"/>
+            <Property name="VertexVisibility"
+                      panel_visibility="never"/>
+         </PropertyGroup>
 
           <PropertyGroup label="Lighting">
             <Property name="SpecularPower"
