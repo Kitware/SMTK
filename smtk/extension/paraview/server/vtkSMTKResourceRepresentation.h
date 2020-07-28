@@ -135,6 +135,10 @@ public:
   void SetLineWidth(double val);
   void SetLineColor(double r, double g, double b);
   void SetLookupTable(vtkScalarsToColors* val);
+  void SetEdgeVisibility(int val);
+  void SetRenderLinesAsTubes(int val);
+  void SetRenderPointsAsSpheres(int val);
+  void SetVertexVisibility(int val);
 
   //@{
   /**
