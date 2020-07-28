@@ -109,6 +109,7 @@ set(attributeHeaders
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
+  ItemDefinitionManager.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
   PathGrammar.h
@@ -157,6 +158,7 @@ set(attributeSrcs
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
+  ItemDefinitionManager.cxx
   ModelEntityItem.cxx
   ModelEntityItemDefinition.cxx
   ReferenceItem.cxx

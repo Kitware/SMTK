@@ -126,12 +126,11 @@ Added a class for utility methods.  The current ones include:
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
 
 ```c++
-void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
+void Registrar::registerTo(const smtk::attribute::ItemDefinitionManager::Ptr& manager)
 {
   typedef std::tuple<CustomItemDefinition1, CustomItemDefinition2> CustomItemDefinitions;
 
-  smtk::attribute::CustomItemDefinitions(resourceManager)
-    .registerDefinitions<CustomItemDefinitions>();
+  manager->registerDefinitions<CustomItemDefinitions>();
 }
 ```
 

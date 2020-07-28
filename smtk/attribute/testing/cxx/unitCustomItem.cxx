@@ -24,6 +24,7 @@
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
+#include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/operators/Export.h"
 #include "smtk/attribute/operators/Import.h"
@@ -239,6 +240,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
 {
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();
+  auto itemDefinitionManager = smtk::attribute::ItemDefinitionManager::create(resourceManager);
   {
     // Initialize smtk managers
     smtk::attribute::Registrar::registerTo(resourceManager);
@@ -247,8 +249,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     operationManager->registerResourceManager(resourceManager);
   }
 
-  smtk::attribute::CustomItemDefinitions(resourceManager)
-    .registerDefinitions<CustomItemDefinitionsList>();
+  itemDefinitionManager->registerDefinitions<CustomItemDefinitionsList>();
 
   // 1. Construct an attribute with a custom item
 
@@ -438,6 +439,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
   {
     return status;
   }
+
+  itemDefinitionManager->unregisterDefinitions<CustomItemDefinitionsList>();
 
   return 0;
 }
