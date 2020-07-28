@@ -101,37 +101,37 @@ Shape* Operation::createNode(
   switch (shapeType)
   {
     case TopAbs_COMPOUND:
-      node = resource->create<Compound>();
+      node = resource->createShape<Compound>();
       break;
     case TopAbs_COMPSOLID:
       mark = false;
-      node = resource->create<CompSolid>();
+      node = resource->createShape<CompSolid>();
       break;
     case TopAbs_SOLID:
       mark = false;
-      node = resource->create<Solid>();
+      node = resource->createShape<Solid>();
       break;
     case TopAbs_SHELL:
       mark = false;
-      node = resource->create<Shell>();
+      node = resource->createShape<Shell>();
       break;
     case TopAbs_FACE:
-      node = resource->create<Face>();
+      node = resource->createShape<Face>();
       break;
     case TopAbs_WIRE:
       mark = false;
-      node = resource->create<Wire>();
+      node = resource->createShape<Wire>();
       break;
     case TopAbs_EDGE:
-      node = resource->create<Edge>();
+      node = resource->createShape<Edge>();
       break;
     case TopAbs_VERTEX:
-      node = resource->create<Vertex>();
+      node = resource->createShape<Vertex>();
       break;
     case TopAbs_SHAPE: // fall through
     default:
       mark = false;
-      node = resource->create<Shape>();
+      node = resource->createShape<Shape>();
       break;
   }
   std::string nname;

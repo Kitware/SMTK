@@ -29,7 +29,7 @@ namespace opencascade
 /**\brief Identify b-rep components highlighted to display a selection.
   *
   */
-struct SMTKCORE_EXPORT SelectionFootprint
+struct SMTKOPENCASCADESESSION_EXPORT SelectionFootprint
   : public smtk::resource::query::DerivedFrom<SelectionFootprint,
       smtk::geometry::SelectionFootprint>
 {

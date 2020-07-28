@@ -117,7 +117,7 @@ Cut::Result Cut::operateInternal()
       else
       {
         std::cerr << "Grrk! unknown shape marked modified.\n";
-        auto topNode = resource->create<Shape>();
+        auto topNode = resource->createShape<Shape>();
         session->addShape(topNode->id(), *shapeIn);
         created->appendValue(topNode);
         geom.markModified(topNode);
@@ -133,7 +133,7 @@ Cut::Result Cut::operateInternal()
     std::size_t ii = 0;
     for (auto& shape : newShapes)
     {
-      auto topNode = resource->create<Shape>();
+      auto topNode = resource->createShape<Shape>();
       session->addShape(topNode->id(), shape);
       created->appendValue(topNode);
       geom.markModified(topNode);
