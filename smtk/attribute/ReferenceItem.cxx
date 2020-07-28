@@ -568,9 +568,9 @@ bool ReferenceItem::removeValue(std::size_t i)
   {
     return false;
   }
-  // If i < the required number of values this is the same as unset - else if
-  // its extensible remove it completely
-  if (i < def->numberOfRequiredValues())
+  // If removing the value would still satisfy the item's number of required
+  // values then just remove it.  Else unset the value instead
+  if (m_keys.size() <= def->numberOfRequiredValues())
   {
     this->unset(i);
     return true;

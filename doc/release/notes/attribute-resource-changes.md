@@ -121,6 +121,9 @@ Added a class for utility methods.  The current ones include:
 * Added Methods
   * isValueValid - the validity of the item now factors in the state of the instance. This is needed to support Unique Constraints
   * removeInvalidValues() - will remove all values that are considered invalid - meaning that the resource of the associated object is loaded but the object no longer exists.
+* **Behavior Changes**
+  * removedValue() - will now remove a value regardless of what it's index is.  Previously, if the index was less than the NumberOfRequiredValues it would not be removed but simply unset.  Now, as long as the resulting number of values is greater than or equal to the number of required values, it will be removed.
+  Else it will be unset.
 
 ### Custom attribute item and definition types
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
