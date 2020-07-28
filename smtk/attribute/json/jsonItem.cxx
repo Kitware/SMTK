@@ -10,6 +10,7 @@
 #include "jsonItem.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
+#include "smtk/attribute/ItemDefinition.h"
 
 #include "nlohmann/json.hpp"
 #include "smtk/CoreExports.h"
@@ -26,9 +27,10 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ItemPtr& itemPtr)
 {
   j["Name"] = itemPtr->name();
-  if (itemPtr->isOptional())
+  if (itemPtr->definition()->isOptional())
   {
-    j["Enabled"] = itemPtr->isEnabled();
+    j["Enabled"] = itemPtr->localEnabledState();
+    j["ForceRequired"] = itemPtr->forceRequired();
   }
   // Does the item have explicit advance level information
   if (itemPtr->hasLocalAdvanceLevelInfo(0))
@@ -49,16 +51,20 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
   {
     return;
   }
-  if (itemPtr->isOptional())
+
+  auto result = j.find("Enabled");
+  if (result != j.end())
   {
-    auto enabled = j.find("Enabled");
-    if (enabled != j.end())
-    {
-      itemPtr->setIsEnabled(*enabled);
-    }
+    itemPtr->setIsEnabled(*result);
   }
 
-  auto result = j.find("AdvanceReadLevel");
+  result = j.find("ForceRequired");
+  if (result != j.end())
+  {
+    itemPtr->setForceRequired(*result);
+  }
+
+  result = j.find("AdvanceReadLevel");
   if (result != j.end())
   {
     itemPtr->setLocalAdvanceLevel(0, *result);

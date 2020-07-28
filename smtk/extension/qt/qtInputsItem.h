@@ -86,7 +86,7 @@ protected:
   void updateStringItemData(QWidget* iwidget, const smtk::attribute::StringItemPtr& sitem);
 
 private:
-  qtInputsItemInternals* Internals;
+  qtInputsItemInternals* m_internals;
 
 }; // class
 

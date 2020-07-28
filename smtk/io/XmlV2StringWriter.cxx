@@ -1074,9 +1074,10 @@ void XmlV2StringWriter::processItem(xml_node& node, ItemPtr item)
 void XmlV2StringWriter::processItemAttributes(xml_node& node, ItemPtr item)
 {
   node.append_attribute("Name").set_value(item->name().c_str());
-  if (item->isOptional())
+  if (item->definition()->isOptional())
   {
-    node.append_attribute("Enabled").set_value(item->isEnabled());
+    node.append_attribute("Enabled").set_value(item->localEnabledState());
+    node.append_attribute("ForceRequired").set_value(item->forceRequired());
   }
 
   // Does the item have explicit advance level information

@@ -125,6 +125,13 @@ Added a class for utility methods.  The current ones include:
   * removedValue() - will now remove a value regardless of what it's index is.  Previously, if the index was less than the NumberOfRequiredValues it would not be removed but simply unset.  Now, as long as the resulting number of values is greater than or equal to the number of required values, it will be removed.
   Else it will be unset.
 
+### Changes to Item
+* Added the concept of **ForceRequired**.  Some work-flows may need to force an optional item to be required base on external factors.  If
+an item's ForceRequired is set then even if it's definition indicates it should be optional,  Item::isOptional will return false.  Note if the item's definition states it is required, setting ForceRequied is basically a no op.
+    * New API
+        * void Item::setForceRequired(bool)
+        * bool Item::forceRequired()
+
 ### Custom attribute item and definition types
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
 

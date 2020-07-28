@@ -139,12 +139,12 @@ public:
 
   int subGroupPosition() const { return m_subGroupPosition; }
 
-  /// Returns true if the item is optional
+  /// \brief Returns true if the item is optional
   bool isOptional() const;
 
-  /// An item is enabled under the following coditions:
+  /// An item is enabled under the following conditions:
   /// 1. If it is not owned by another item (such as a group), and either
-  /// it is not optional or it has been explicitly enabled
+  /// it is not optional or  it has been explicitly enabled
   /// 2. If it's owning item is enabled and  either
   /// it is not optional or it has been explicitly enabled
   bool isEnabled() const;
@@ -153,6 +153,20 @@ public:
   bool localEnabledState() const { return m_isEnabled; }
   /// Set the instance's local enabled state
   void setIsEnabled(bool isEnabledValue) { m_isEnabled = isEnabledValue; }
+
+  /// @{
+  /// \brief Controls if an item should be forced to be required regardless of
+  /// its local enable property.
+  ///
+  ///  There are cases within a work-flow when an item which can be considered
+  /// optional in general must be required based on the state of the overall
+  /// work-flow.  These methods allow the programmer to explicitly force an
+  /// optional item to be required.  If the Definition states that the item
+  /// is required naturally, this will have no effect.
+  /// By default forceRequired is false.
+  void setForceRequired(bool val) { m_forceRequired = val; }
+  bool forceRequired() const { return m_forceRequired; }
+  /// @}
 
   ///\brief return the categories associated with the item (via its Definition)
   const smtk::attribute::Categories& categories() const;
@@ -240,6 +254,7 @@ protected:
 private:
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
+  bool m_forceRequired;
 };
 
 inline smtk::simulation::UserDataPtr Item::userData(const std::string& key) const

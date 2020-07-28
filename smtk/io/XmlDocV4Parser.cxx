@@ -104,3 +104,13 @@ void XmlDocV4Parser::processItemDef(pugi::xml_node& node, smtk::attribute::ItemD
     }
   }
 }
+
+void XmlDocV4Parser::processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item)
+{
+  this->XmlDocV3Parser::processItem(node, item);
+  xml_attribute xatt = node.attribute("ForceRequired");
+  if (xatt)
+  {
+    item->setForceRequired(xatt.as_bool());
+  }
+}

@@ -87,6 +87,7 @@ public:
   QList<QPointer<QFrame> > m_editFrames;
   QPointer<QToolButton> AddItemButton;
   QPointer<QFrame> Contents;
+  QPointer<QCheckBox> OptionalCheck;
 };
 
 qtItem* qtFileItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -736,6 +737,18 @@ void qtFileItem::createWidget()
 
 void qtFileItem::updateItemData()
 {
+  auto item = m_itemInfo.itemAs<FileSystemItem>();
+  if (item->isOptional())
+  {
+    m_internals->OptionalCheck->setVisible(true);
+    this->setOutputOptional(item->localEnabledState() ? 1 : 0);
+  }
+  else if (m_internals->OptionalCheck)
+  {
+    m_internals->OptionalCheck->setVisible(false);
+    m_internals->Contents->setVisible(true);
+  }
+
   int i, n = m_internals->m_editors.size();
   for (i = 0; i < n; i++)
   {
@@ -883,15 +896,24 @@ void qtFileItem::updateUI()
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
-  if (item->isOptional())
+  // Note that the definition could be optional but the item maybe forced
+  // to be required.  We need to still create the check box in case
+  // the item's force required state is changed
+  if (itemDef->isOptional())
   {
-    QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    optionalCheck->setChecked(item->localEnabledState());
-    optionalCheck->setText(" ");
-    optionalCheck->setSizePolicy(sizeFixedPolicy);
-    padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
-    QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
-    labelLayout->addWidget(optionalCheck);
+    m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    m_internals->OptionalCheck->setChecked(item->localEnabledState());
+    m_internals->OptionalCheck->setText(" ");
+    m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
+    padding = m_internals->OptionalCheck->iconSize().width() + 3; // 6 is for layout spacing
+    QObject::connect(
+      m_internals->OptionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
+    labelLayout->addWidget(m_internals->OptionalCheck);
+    if (!item->isOptional())
+    {
+      m_internals->OptionalCheck->setVisible(false);
+      m_internals->Contents->setVisible(true);
+    }
   }
 
   QString labelText;
