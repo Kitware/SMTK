@@ -59,6 +59,12 @@ function(smtk_test_plugin test_plugin_file_url)
   # clone a repo and build a project.
   set_tests_properties(${test_name} PROPERTIES TIMEOUT 600)
 
+  # Plugin tests require compiling plugins, which can take up a lot of memory.
+  # Running them serially may prevent memory-related issues (c++: fatal error:
+  # Killed signal terminated program cc1plus) that sporadically appear on our
+  # dashboards.
+  set_tests_properties(${test_name} PROPERTIES RUN_SERIAL TRUE)
+
   # If on Windows, pass the environment PATH to the test.
   if (WIN32)
     # We need to add this smtk's binary directory to the path so the plugin
