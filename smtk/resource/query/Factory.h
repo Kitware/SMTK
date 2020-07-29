@@ -169,11 +169,11 @@ private:
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     bool unregistered = this->unregisterQuery<typename std::tuple_element<I, Tuple>::type>();
-    return unregistered && unregisterQuery<I + 1, Tuple>();
+    return unregistered && unregisterQueries<I + 1, Tuple>();
   }
 
   template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterQuery()
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     return true;
   }
