@@ -140,6 +140,7 @@ smtk_add_plugin(smtkPQComponentsPlugin
     smtk::geometry::Manager
     smtk::operation::Manager
     smtk::resource::Manager
+    smtk::resource::query::Manager
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"

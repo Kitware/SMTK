@@ -5,6 +5,7 @@ smtk_add_plugin(smtkPVModelExtPlugin
   REGISTRAR
     smtk::extension::paraview::model::Registrar
   MANAGERS
+    smtk::resource::query::Manager
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0

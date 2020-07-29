@@ -15,6 +15,8 @@
 
 #include "smtk/geometry/Manager.h"
 
+#include "smtk/resource/query/Manager.h"
+
 namespace smtk
 {
 namespace extension
@@ -29,6 +31,9 @@ class VTKSMTKGEOMETRYEXT_EXPORT Registrar
 public:
   static void registerTo(const smtk::geometry::Manager::Ptr&);
   static void unregisterFrom(const smtk::geometry::Manager::Ptr&);
+
+  static void registerTo(const smtk::resource::query::Manager::Ptr&);
+  static void unregisterFrom(const smtk::resource::query::Manager::Ptr&);
 };
 }
 }

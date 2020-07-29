@@ -12,6 +12,7 @@
 #include "smtk/resource/Registrar.h"
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/query/Manager.h"
 
 #include "smtk/plugin/Manager.h"
 
@@ -24,6 +25,11 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   managers->insert(smtk::resource::Manager::create());
   smtk::plugin::Manager::instance()->registerPluginsTo(
     managers->get<smtk::resource::Manager::Ptr>());
+
+  managers->insert(
+    smtk::resource::query::Manager::create(managers->get<smtk::resource::Manager::Ptr>()));
+  smtk::plugin::Manager::instance()->registerPluginsTo(
+    managers->get<smtk::resource::query::Manager::Ptr>());
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
