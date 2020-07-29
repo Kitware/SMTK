@@ -22,6 +22,7 @@ vtk_module_add_module(smtkPVModelExt
 
 vtk_module_link(smtkPVModelExt
   PUBLIC
+    vtkSMTKGeometryExt
     nlohmann_json
 )
 

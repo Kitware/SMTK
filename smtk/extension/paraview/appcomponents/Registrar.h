@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
 
 #include "smtk/common/Managers.h"
+#include "smtk/resource/query/Manager.h"
 #include "smtk/view/Manager.h"
 
 namespace smtk

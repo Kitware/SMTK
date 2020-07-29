@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/attribute/Registrar.h"
 
+#include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute/operators/Associate.h"
@@ -27,6 +28,8 @@
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
+#include "smtk/plugin/Manager.h"
+
 namespace smtk
 {
 namespace attribute
@@ -34,6 +37,23 @@ namespace attribute
 namespace
 {
 typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> OperationList;
+}
+
+void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
+{
+  if (managers->contains<smtk::resource::Manager::Ptr>())
+  {
+    managers->insert(smtk::attribute::ItemDefinitionManager::create(
+      managers->get<smtk::resource::Manager::Ptr>()));
+
+    smtk::plugin::Manager::instance()->registerPluginsTo(
+      managers->get<smtk::attribute::ItemDefinitionManager::Ptr>());
+  }
+}
+
+void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
+{
+  managers->erase<smtk::attribute::ItemDefinitionManager::Ptr>();
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

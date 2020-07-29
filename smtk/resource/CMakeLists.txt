@@ -17,6 +17,7 @@ set(resourceSrcs
   json/jsonResourceLinkBase.cxx
   json/jsonSurrogate.cxx
   query/Factory.cxx
+  query/Manager.cxx
   query/Query.cxx
 )
 
@@ -50,6 +51,7 @@ set(resourceHeaders
   query/Container.h
   query/Factory.h
   query/DerivedFrom.h
+  query/Manager.h
   query/Metadata.h
   query/Queries.h
   query/Query.h

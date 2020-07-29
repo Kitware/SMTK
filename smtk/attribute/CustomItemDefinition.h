@@ -80,49 +80,6 @@ public:
     return ItemPtr(new ItemType(owningItem, position, subGroupPosition));
   }
 };
-
-/// Convenience code for simplifying the regsitration of custom item definitions
-/// with a resource manager.
-class SMTKCORE_EXPORT CustomItemDefinitions
-{
-public:
-  CustomItemDefinitions(std::shared_ptr<smtk::resource::Manager> manager)
-    : m_manager(manager)
-  {
-  }
-
-  template <typename CustomDefinitionTypes>
-  bool registerDefinitions()
-  {
-    auto registerCustomTypes = [](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
-      if (eventType == smtk::resource::EventType::ADDED)
-      {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
-        {
-          const_cast<smtk::attribute::Resource*>(attributeResource)
-            ->customItemDefinitionFactory()
-            .registerTypes<CustomDefinitionTypes>();
-        }
-      }
-    };
-
-    if (auto manager = m_manager.lock())
-    {
-      manager->observers()
-        .insert(registerCustomTypes, "Register custom attribute types.")
-        .release();
-
-      return true;
-    }
-
-    return false;
-  }
-
-private:
-  std::weak_ptr<smtk::resource::Manager> m_manager;
-};
 }
 }
 

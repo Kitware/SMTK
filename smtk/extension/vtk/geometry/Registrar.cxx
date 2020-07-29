@@ -17,6 +17,10 @@
 
 #include "smtk/mesh/core/Resource.h"
 
+#include "smtk/extension/vtk/geometry/BoundingBox.h"
+#include "smtk/extension/vtk/geometry/ClosestPoint.h"
+#include "smtk/extension/vtk/geometry/DistanceTo.h"
+
 namespace smtk
 {
 namespace extension
@@ -25,6 +29,11 @@ namespace vtk
 {
 namespace geometry
 {
+namespace
+{
+typedef std::tuple<BoundingBox, /*ClosestPoint,*/ DistanceTo> QueryList;
+}
+
 void Registrar::registerTo(const smtk::geometry::Manager::Ptr& geometryManager)
 {
   geometryManager->registerBackend<smtk::extension::vtk::geometry::Backend>();
@@ -33,6 +42,23 @@ void Registrar::registerTo(const smtk::geometry::Manager::Ptr& geometryManager)
 void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr& geometryManager)
 {
   geometryManager->unregisterBackend<smtk::extension::vtk::geometry::Backend>();
+}
+
+void Registrar::registerTo(const smtk::resource::query::Manager::Ptr& queryManager)
+{
+  queryManager->registerQueriesIf<QueryList>([](smtk::resource::Resource& resource) -> bool {
+    if (auto geometryResource = dynamic_cast<smtk::geometry::Resource*>(&resource))
+    {
+      smtk::extension::vtk::geometry::Backend vtk;
+      return !!geometryResource->geometry(vtk);
+    }
+    return false;
+  });
+}
+
+void Registrar::unregisterFrom(const smtk::resource::query::Manager::Ptr& queryManager)
+{
+  queryManager->unregisterQueries<QueryList>();
 }
 }
 }
