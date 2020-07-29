@@ -259,7 +259,10 @@ def parse_file(filename, project_source_directory, include_directories,
 
     # output file preamble
     fileguard = "pybind_" + \
-        filename.replace('.', '_').replace('/', '_').replace('-', '_')
+        os.path.relpath(os.path.abspath(filename),
+                        os.path.commonprefix(
+            [os.path.abspath(project_source_directory),
+             os.path.abspath(filename)])).replace('.', '_').replace('/', '_').replace('-', '_')
 
     stream("""//=========================================================================
 //  Copyright (c) Kitware, Inc.
@@ -527,7 +530,7 @@ def parse_class(class_, stream, top_level=True):
             continue
         if variable.access_type == "public":
             static = '_static' if variable.type_qualifiers.has_static else ''
-            if variable.type_qualifiers.has_const:
+            if declarations.is_const(variable):
                 stream("    .def_readonly%s(\"%s\", &%s::%s)" %
                        (static, variable.name, full_class_name_, variable.name))
             else:
