@@ -37,6 +37,7 @@ class SMTKCORE_EXPORT ResourceContainer
 {
   friend class Project;
 
+public:
   /// A multi-index container for accessing resources. This class is primarily
   /// intended to be used in the implementation of smtk::resource::Manager only.
   typedef boost::multi_index_container<
@@ -74,7 +75,6 @@ class SMTKCORE_EXPORT ResourceContainer
           &smtk::project::detail::role>>>>
     Container;
 
-public:
   /// A property key for accessing string-valued roles assigned to a resource
   /// held by a project.
   static constexpr const char* const role_name = "project_role";

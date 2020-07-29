@@ -77,9 +77,9 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
-#if (SMTK_ENABLE_PYTHON_WRAPPING)
-#  add_subdirectory(pybind11)
-#endif()
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  add_subdirectory(pybind11)
+endif()
 
 if (SMTK_ENABLE_EXAMPLES)
   add_subdirectory(examples)
