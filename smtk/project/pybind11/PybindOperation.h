@@ -22,6 +22,8 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_project_Operation(py::module &m)
 {
+  py::module::import("smtk.operation");
+
   PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > instance(m, "Operation");
   instance
     .def("deepcopy", (smtk::project::Operation & (smtk::project::Operation::*)(::smtk::project::Operation const &)) &smtk::project::Operation::operator=)
@@ -30,7 +32,6 @@ PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > pybi
     .def("shared_from_this", (std::shared_ptr<const smtk::project::Operation> (smtk::project::Operation::*)() const) &smtk::project::Operation::shared_from_this)
     .def("setProjectManager", &smtk::project::Operation::setProjectManager, py::arg("arg0"))
     .def("projectManager", &smtk::project::Operation::projectManager)
-    .def_readonly_static("type_name", &smtk::project::Operation::type_name)
     ;
   return instance;
 }

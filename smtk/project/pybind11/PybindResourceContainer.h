@@ -56,7 +56,6 @@ py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project_Resour
     .def("types", (std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > & (smtk::project::ResourceContainer::*)()) &smtk::project::ResourceContainer::types)
     .def("unregisterResource", (bool (smtk::project::ResourceContainer::*)(::std::string const &)) &smtk::project::ResourceContainer::unregisterResource, py::arg("arg0"))
     .def("unregisterResource", (bool (smtk::project::ResourceContainer::*)(::smtk::resource::Resource::Index const &)) &smtk::project::ResourceContainer::unregisterResource, py::arg("arg0"))
-    .def_readonly_static("role_name", &smtk::project::ResourceContainer::role_name)
     ;
   return instance;
 }

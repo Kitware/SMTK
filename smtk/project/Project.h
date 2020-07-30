@@ -93,9 +93,10 @@ public:
 
   const smtk::project::Manager* manager() const { return m_manager; }
 
-private:
+protected:
   Project(const std::string& typeName = "");
 
+private:
   ResourceContainer m_resources;
   OperationFactory m_operations;
   std::string m_typeName;

@@ -8,7 +8,12 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/pybind11.h>
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include <utility>
 
 namespace py = pybind11;
@@ -30,13 +35,13 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_MODULE(project, m)
+PYBIND11_MODULE(_smtkPybindProject, project)
 {
-  m.doc() = "<description of project>";
-  py::module std = m.def_submodule("std", "<description>");
-  py::module smtk = m.def_submodule("smtk", "<description>");
-  py::module project = smtk.def_submodule("project", "<description>");
+  project.doc() = "<description of project>";
   py::module detail = project.def_submodule("detail", "<description>");
+
+  py::module::import("smtk.common");
+  py::module::import("smtk.resource");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -67,7 +72,6 @@ PYBIND11_MODULE(project, m)
   pybind11_init_smtk_project_detail_role(detail);
   PySharedPtrClass<smtk::project::Operation, smtk::operation::XMLOperation> smtk_project_Operation =
     pybind11_init_smtk_project_Operation(project);
-  PySharedPtrClass<smtk::project::Project,
-    smtk::resource::DerivedFrom<smtk::project::Project, smtk::resource::Resource> >
-    smtk_project_Project = pybind11_init_smtk_project_Project(project);
+  PySharedPtrClass<smtk::project::Project> smtk_project_Project =
+    pybind11_init_smtk_project_Project(project);
 }

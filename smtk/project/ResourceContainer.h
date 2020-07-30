@@ -26,7 +26,7 @@ namespace project
 {
 namespace detail
 {
-const std::string& role(const smtk::resource::ResourcePtr& r);
+SMTKCORE_EXPORT const std::string& role(const smtk::resource::ResourcePtr& r);
 }
 
 class Project;

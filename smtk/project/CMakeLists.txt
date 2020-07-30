@@ -3,6 +3,7 @@ set(projectSrcs
   Operation.cxx
   OperationFactory.cxx
   Project.cxx
+  RegisterPythonProject.cxx
   Registrar.cxx
   ResourceContainer.cxx
 
@@ -23,6 +24,7 @@ set(projectHeaders
   Operation.h
   OperationFactory.h
   Project.h
+  RegisterPythonProject.h
   Registrar.h
   ResourceContainer.h
   Tags.h
