@@ -1,0 +1,104 @@
+# Lists of paths for artifacts of various stages.
+
+.cmake_build_artifacts:
+    artifacts:
+        expire_in: 1d
+        paths:
+            # The artifacts of the build.
+            - build/bin/
+            - build/include/
+            - build/lib/
+            - build/smtkConfig.cmake
+            - build/smtkConfigVersion.cmake
+            # Generated headers.
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/smtk/*.h
+            - build/smtk/*/*.h
+            - build/smtk/*/*/*.h
+            - build/smtk/*/*/*/*.h
+            - build/smtk/*/*/*/*/*.h
+            - build/smtk/*/*/*/*/*/*.h
+
+            # CTest files.
+            - build/PluginTests/
+            - build/smtk/extension/paraview/*/testing/python/*.py
+            - build/CTestCustom*.cmake
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/CTestTestfile.cmake
+            - build/*/CTestTestfile.cmake
+            - build/*/*/CTestTestfile.cmake
+            - build/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/*/*/CTestTestfile.cmake
+            - build/Testing/
+
+            # CTest coverage files.
+            - build/CMakeFiles/TargetDirectories.txt
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/*/*/*/*.gcno
+            - build/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*/*.gcno
+            - build/smtk/*/*/*.cxx
+            - build/smtk/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*/*.h
+            - build/smtk/extension/*/CMakeFiles/*.cxx
+
+            # CDash files.
+            - build/DartConfiguration.tcl
+
+.cmake_coverage_artifacts:
+    artifacts:
+        expire_in: 1d
+        paths:
+            # Generated headers.
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/smtk/*.h
+            - build/smtk/*/*.h
+            - build/smtk/*/*/*.h
+            - build/smtk/*/*/*/*.h
+            - build/smtk/*/*/*/*/*.h
+            - build/smtk/*/*/*/*/*/*.h
+
+            # CTest files.
+            - build/CTestCustom*.cmake
+            - build/Testing/
+
+            # CTest coverage files.
+            - build/CMakeFiles/TargetDirectories.txt
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/*/*/*/*.gcno
+            - build/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*.gcda
+            - build/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*/*/*.gcda
+            - build/smtk/*/*/*.cxx
+            - build/smtk/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*/*.h
+            - build/smtk/extension/*/CMakeFiles/*.cxx
+
+            # CDash files.
+            - build/DartConfiguration.tcl

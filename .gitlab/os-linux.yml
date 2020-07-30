@@ -1,0 +1,170 @@
+# Linux-specific builder configurations and build commands
+
+## Base images
+
+### Fedora
+
+.fedora31:
+    image: "kitware/cmb:ci-smtk-fedora31-20200219"
+
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+        CMAKE_CONFIGURATION: fedora31_plain
+        GIT_CLONE_PATH: $CI_BUILDS_DIR/gitlab-kitware-sciviz-ci
+
+### Lint builds
+
+.fedora31_tidy:
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_tidy
+        CTEST_NO_WARNINGS_ALLOWED: 1
+
+.fedora31_memcheck:
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_BUILD_TYPE: RelWithDebInfo
+
+.fedora31_asan:
+    extends: .fedora31_memcheck
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_asan
+        CTEST_MEMORYCHECK_TYPE: AddressSanitizer
+        # Disable LeakSanitizer for now. It's catching all kinds of errors that
+        # need investigated or suppressed.
+        CTEST_MEMORYCHECK_SANITIZER_OPTIONS: detect_leaks=0
+
+.fedora31_ubsan:
+    extends: .fedora31_memcheck
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_ubsan
+        CTEST_MEMORYCHECK_TYPE: UndefinedBehaviorSanitizer
+
+.fedora31_coverage:
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_BUILD_TYPE: Debug
+        CMAKE_CONFIGURATION: fedora31_coverage
+        CTEST_COVERAGE: 1
+        CMAKE_GENERATOR: Unix Makefiles
+
+.fedora31_nodata:
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_nodata
+        GIT_STRATEGY: clone
+        GIT_LFS_SKIP_SMUDGE: 1
+
+### Build and test
+
+.fedora31_vtk:
+    extends: .fedora31
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-20200602"
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_vtk
+
+.fedora31_paraview:
+    extends: .fedora31_vtk
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20200219"
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_paraview
+
+.fedora31_vtk_python2:
+    extends: .fedora31
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20200602"
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_vtk_python2
+
+## Tags
+
+.linux_builder_tags:
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
+
+.linux_test_tags:
+    tags:
+        - cmb
+        - docker
+        - linux
+        - x11
+
+.linux_test_priv_tags:
+    tags:
+        - cmb
+        - docker
+        - linux
+        - privileged
+        - x11
+
+## Linux-specific scripts
+
+.before_script_linux: &before_script_linux
+    - .gitlab/ci/cmake.sh
+    - .gitlab/ci/ninja.sh
+    - export PATH=$PWD/.gitlab:$PWD/.gitlab/cmake/bin:$PATH
+    - cmake --version
+    - ninja --version
+
+.cmake_build_linux:
+    stage: build
+
+    script:
+        - *before_script_linux
+        - .gitlab/ci/sccache.sh
+        - sccache --start-server
+        - sccache --show-stats
+        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_build.cmake"
+        - sccache --show-stats
+    interruptible: true
+
+.cmake_build_linux_tidy:
+    stage: build
+
+    script:
+        - *before_script_linux
+        - dnf install -y --setopt=install_weak_deps=False clang-tools-extra
+        - .gitlab/ci/sccache.sh
+        - sccache --start-server
+        - sccache --show-stats
+        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_build.cmake"
+        - sccache --show-stats
+    interruptible: true
+
+.cmake_test_linux:
+    stage: test
+
+    script:
+        - *before_script_linux
+        - "$LAUNCHER ctest --output-on-failure -V -S .gitlab/ci/ctest_test.cmake"
+    interruptible: true
+
+.cmake_memcheck_linux:
+    stage: test
+
+    script:
+        - *before_script_linux
+        - "$LAUNCHER ctest --output-on-failure -V -S .gitlab/ci/ctest_memcheck.cmake"
+    interruptible: true
+
+.cmake_coverage_linux:
+    stage: analyze
+
+    script:
+        - *before_script_linux
+        - "$LAUNCHER ctest --output-on-failure -V -S .gitlab/ci/ctest_coverage.cmake"
+    coverage: '/Percentage Coverage: \d+.\d+%/'
+    interruptible: true
