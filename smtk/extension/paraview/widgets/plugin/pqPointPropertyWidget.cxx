@@ -43,6 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "pqPointPropertyWidget.h"
 #include "ui_pqPointPropertyWidget.h"
 
+#include "smtk/extension/paraview/widgets/pqPointPickingVisibilityHelper.h"
+
 #include "pqActiveObjects.h"
 #include "pqPointPickingHelper.h"
 
@@ -143,10 +145,9 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
     {
       m_surfacePickHelper = new pqPointPickingHelper(QKeySequence(tr("P")), false, this);
       m_surfacePickHelper->connect(this, SIGNAL(viewChanged(pqView*)), SLOT(setView(pqView*)));
-      m_surfacePickHelper->connect(
-        this, SIGNAL(widgetVisibilityUpdated(bool)), SLOT(setShortcutEnabled(bool)));
       this->connect(m_surfacePickHelper, SIGNAL(pick(double, double, double)),
         SLOT(setWorldPosition(double, double, double)));
+      pqPointPickingVisibilityHelper<pqPointPickingHelper>{ *this, *m_surfacePickHelper };
       m_surfacePickHelper->setView(currView);
     }
 
@@ -154,10 +155,9 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
     {
       m_pointPickHelper = new pqPointPickingHelper(QKeySequence(tr("Ctrl+P")), true, this);
       m_pointPickHelper->connect(this, SIGNAL(viewChanged(pqView*)), SLOT(setView(pqView*)));
-      m_pointPickHelper->connect(
-        this, SIGNAL(widgetVisibilityUpdated(bool)), SLOT(setShortcutEnabled(bool)));
       this->connect(m_pointPickHelper, SIGNAL(pick(double, double, double)),
         SLOT(setWorldPosition(double, double, double)));
+      pqPointPickingVisibilityHelper<pqPointPickingHelper>{ *this, *m_pointPickHelper };
       m_pointPickHelper->setView(currView);
     }
   }

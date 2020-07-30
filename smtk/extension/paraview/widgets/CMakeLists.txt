@@ -1,5 +1,7 @@
 set(headers
-  pqSMTKAttributeItemWidgetP.h)
+  pqPointPickingVisibilityHelper.h
+  pqSMTKAttributeItemWidgetP.h
+)
 
 set(classes
   Registrar
