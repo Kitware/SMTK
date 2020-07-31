@@ -50,7 +50,7 @@ namespace query
 /// Upon registration, all appropriate resources associated with the same
 /// resource manager as the smtk::resource::query::Manager will be able to
 /// construct instances of the newly registered Query.
-class SMTKCORE_EXPORT Manager : std::enable_shared_from_this<Manager>
+class SMTKCORE_EXPORT Manager : public std::enable_shared_from_this<Manager>
 {
 public:
   smtkTypedefs(smtk::resource::query::Manager);

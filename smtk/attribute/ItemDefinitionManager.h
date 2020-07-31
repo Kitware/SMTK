@@ -50,7 +50,8 @@ namespace attribute
 /// Upon registration, attribute resources associated with the same resource
 /// manager as the ItemDefinitionManager will be able to read, write and create
 /// attributes that contain the newly registered custom items.
-class SMTKCORE_EXPORT ItemDefinitionManager : std::enable_shared_from_this<ItemDefinitionManager>
+class SMTKCORE_EXPORT ItemDefinitionManager
+  : public std::enable_shared_from_this<ItemDefinitionManager>
 {
 public:
   smtkTypedefs(smtk::attribute::ItemDefinitionManager);
