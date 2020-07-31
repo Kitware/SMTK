@@ -1458,7 +1458,7 @@ bool qtAttributeView::isValid() const
       return false;
     }
   }
-  if (m_internals->AssociationsWidget != nullptr)
+  if ((m_internals->AssociationsWidget != nullptr) && m_internals->AssociationsWidget->isVisible())
   {
     return m_internals->AssociationsWidget->isValid();
   }

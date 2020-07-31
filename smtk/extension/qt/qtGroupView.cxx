@@ -341,7 +341,21 @@ qtBaseView* qtGroupView::getChildView(int pageIndex)
 
 bool qtGroupView::isValid() const
 {
-  foreach (qtBaseView* childView, m_internals->m_TabbedViews)
+  // If the view is tabbed lets look at the tabbed views which
+  // is a subset of the children views which are visible tabs
+  // else we need to examine the children views
+  if (m_internals->m_style == qtGroupViewInternals::TABBED)
+  {
+    foreach (qtBaseView* childView, m_internals->m_TabbedViews)
+    {
+      if (!childView->isValid())
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+  foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
     if (!childView->isValid())
     {
@@ -534,6 +548,7 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
   {
     return;
   }
+  QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
   smtk::extension::qtCollapsibleGroupWidget* gw = new qtCollapsibleGroupWidget(frame);
   this->Widget->layout()->addWidget(gw);
   gw->setName(child->getObject()->label().c_str());
@@ -548,6 +563,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   {
     return;
   }
+  QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
   QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
   m_internals->m_Labels.append(label);
   QFont titleFont;
