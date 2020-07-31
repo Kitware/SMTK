@@ -35,6 +35,7 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_position(itemPosition)
   , m_subGroupPosition(inSubGroupPosition)
   , m_isEnabled(true)
+  , m_forceRequired(false)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
