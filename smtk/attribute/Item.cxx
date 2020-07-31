@@ -22,6 +22,7 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_owningItem(nullptr)
   , m_position(itemPosition)
   , m_isEnabled(true)
+  , m_forceRequired(false)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -122,7 +123,7 @@ bool Item::isOptional() const
   {
     return false;
   }
-  return m_definition->isOptional();
+  return ((!m_forceRequired) && m_definition->isOptional());
 }
 
 bool Item::isEnabled() const

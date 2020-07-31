@@ -55,7 +55,7 @@ protected:
   bool m_prependMode;
 
 private:
-  qtGroupItemInternals* Internals;
+  qtGroupItemInternals* m_internals;
 
 }; // class
 }; // namespace attribute

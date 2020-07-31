@@ -1933,14 +1933,14 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
 void XmlDocV1Parser::processItem(xml_node& node, ItemPtr item)
 {
   xml_attribute xatt;
-  if (item->isOptional())
+  // See if there is enabled info - note that since we have added
+  // forceRequired, we can't just look at the isOptional information.
+  xatt = node.attribute("Enabled");
+  if (xatt)
   {
-    xatt = node.attribute("Enabled");
-    if (xatt)
-    {
-      item->setIsEnabled(xatt.as_bool());
-    }
+    item->setIsEnabled(xatt.as_bool());
   }
+
   // If using AdvanceLevel then we are setting
   // both read and write
   xatt = node.attribute("AdvanceLevel");

@@ -88,6 +88,7 @@ set(unit_tests
   unitDefinitionTags
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
+  unitOptionalItems
   unitPassCategories
   unitPathGrammar.cxx
 )

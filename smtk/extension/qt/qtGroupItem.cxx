@@ -41,6 +41,7 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
+  QPointer<QGroupBox> GroupBox;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
@@ -57,8 +58,8 @@ qtItem* qtGroupItem::createItemWidget(const qtAttributeItemInfo& info)
 qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
-  this->Internals = new qtGroupItemInternals;
-  m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
+  m_internals = new qtGroupItemInternals;
+  m_itemInfo.createNewDictionary(m_internals->m_itemViewMap);
   m_isLeafItem = true;
   std::string insertMode;
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
@@ -75,7 +76,7 @@ qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
 qtGroupItem::~qtGroupItem()
 {
   this->clearChildItems();
-  delete this->Internals;
+  delete m_internals;
 }
 
 void qtGroupItem::setLabelVisible(bool visible)
@@ -90,8 +91,7 @@ void qtGroupItem::setLabelVisible(bool visible)
     return;
   }
 
-  QGroupBox* groupBox = qobject_cast<QGroupBox*>(m_widget);
-  groupBox->setTitle(visible ? item->label().c_str() : "");
+  m_internals->GroupBox->setTitle(visible ? item->label().c_str() : "");
 }
 
 void qtGroupItem::createWidget()
@@ -108,8 +108,8 @@ void qtGroupItem::createWidget()
   }
 
   QString title = item->label().c_str();
-  QGroupBox* groupBox = new QGroupBox(title, m_itemInfo.parentWidget());
-  m_widget = groupBox;
+  m_internals->GroupBox = new QGroupBox(title, m_itemInfo.parentWidget());
+  m_widget = m_internals->GroupBox;
 
   if (this->isReadOnly())
   {
@@ -121,11 +121,11 @@ void qtGroupItem::createWidget()
   // leak because the layout instance is parented by the widget.)
   new QVBoxLayout(m_widget);
   m_widget->layout()->setMargin(0);
-  this->Internals->ChildrensFrame = new QFrame(groupBox);
-  this->Internals->ChildrensFrame->setObjectName("groupitemFrame");
-  new QVBoxLayout(this->Internals->ChildrensFrame);
+  m_internals->ChildrensFrame = new QFrame(m_internals->GroupBox);
+  m_internals->ChildrensFrame->setObjectName("groupitemFrame");
+  new QVBoxLayout(m_internals->ChildrensFrame);
 
-  m_widget->layout()->addWidget(this->Internals->ChildrensFrame);
+  m_widget->layout()->addWidget(m_internals->ChildrensFrame);
 
   if (m_itemInfo.parentWidget())
   {
@@ -134,21 +134,21 @@ void qtGroupItem::createWidget()
   }
   this->updateItemData();
 
-  // If the group is optional, we need a checkbox
+  // If the group is optional, we need a check box
   if (item->isOptional())
   {
-    groupBox->setCheckable(true);
-    groupBox->setChecked(item->localEnabledState());
+    m_internals->GroupBox->setCheckable(true);
+    m_internals->GroupBox->setChecked(item->localEnabledState());
     //Hides empty frame when not enabled.
-    groupBox->setStyleSheet("QGroupBox::unchecked {border: none;}");
-    this->Internals->ChildrensFrame->setVisible(item->isEnabled());
-    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
+    m_internals->GroupBox->setStyleSheet("QGroupBox::unchecked {border: none;}");
+    m_internals->ChildrensFrame->setVisible(item->isEnabled());
+    connect(m_internals->GroupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
   }
 }
 
 void qtGroupItem::setEnabledState(bool checked)
 {
-  this->Internals->ChildrensFrame->setVisible(checked);
+  m_internals->ChildrensFrame->setVisible(checked);
   auto item = m_itemInfo.item();
   if (item == nullptr)
   {
@@ -169,14 +169,25 @@ void qtGroupItem::setEnabledState(bool checked)
 
 void qtGroupItem::updateItemData()
 {
+  // Since an item's optional status can change (using
+  // forceRequired) we need to reevaluate the optional status
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  if (item->isOptional())
+  {
+    m_internals->GroupBox->setCheckable(true);
+    m_internals->GroupBox->setChecked(item->localEnabledState());
+  }
+  else
+  {
+    m_internals->GroupBox->setCheckable(false);
+  }
   this->clearChildItems();
-  auto myChildren = this->Internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame");
+  auto myChildren = m_internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame");
   for (auto myChild : myChildren)
   {
     myChild->deleteLater();
   }
 
-  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
@@ -186,31 +197,31 @@ void qtGroupItem::updateItemData()
   if (item->isExtensible())
   {
     //clear mapping
-    this->Internals->ExtensibleMap.clear();
-    this->Internals->MinusButtonIndices.clear();
-    if (this->Internals->ItemsTable)
+    m_internals->ExtensibleMap.clear();
+    m_internals->MinusButtonIndices.clear();
+    if (m_internals->ItemsTable)
     {
-      this->Internals->ItemsTable->blockSignals(true);
-      this->Internals->ItemsTable->clear();
-      this->Internals->ItemsTable->setRowCount(0);
-      this->Internals->ItemsTable->setColumnCount(1);
-      this->Internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
-      this->Internals->ItemsTable->blockSignals(false);
+      m_internals->ItemsTable->blockSignals(true);
+      m_internals->ItemsTable->clear();
+      m_internals->ItemsTable->setRowCount(0);
+      m_internals->ItemsTable->setColumnCount(1);
+      m_internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
+      m_internals->ItemsTable->blockSignals(false);
     }
 
     // The new item button
-    if (!this->Internals->AddItemButton)
+    if (!m_internals->AddItemButton)
     {
-      this->Internals->AddItemButton = new QToolButton(this->Internals->ChildrensFrame);
-      this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+      m_internals->AddItemButton = new QToolButton(m_internals->ChildrensFrame);
+      m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       QString iconName(":/icons/attribute/plus.png");
       std::string extensibleLabel = "Add Row";
       m_itemInfo.component().attribute("ExtensibleLabel", extensibleLabel);
-      this->Internals->AddItemButton->setText(extensibleLabel.c_str());
-      this->Internals->AddItemButton->setIcon(QIcon(iconName));
-      this->Internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      connect(this->Internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
-      this->Internals->ChildrensFrame->layout()->addWidget(this->Internals->AddItemButton);
+      m_internals->AddItemButton->setText(extensibleLabel.c_str());
+      m_internals->AddItemButton->setIcon(QIcon(iconName));
+      m_internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+      connect(m_internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
+      m_internals->ChildrensFrame->layout()->addWidget(m_internals->AddItemButton);
     }
     m_widget->layout()->setSpacing(3);
   }
@@ -279,8 +290,8 @@ void qtGroupItem::addSubGroup(int i)
   }
 
   const std::size_t numItems = item->numberOfItemsPerGroup();
-  QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
-  QFrame* subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
+  QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(m_internals->ChildrensFrame->layout());
+  QFrame* subGroupFrame = new QFrame(m_internals->ChildrensFrame);
   subGroupFrame->setObjectName("groupitemFrame");
   QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
@@ -320,9 +331,9 @@ void qtGroupItem::addSubGroup(int i)
   for (std::size_t j = 0; j < numItems; j++)
   {
     auto citem = item->item(i, static_cast<int>(j));
-    auto it = Internals->m_itemViewMap.find(citem->name());
+    auto it = m_internals->m_itemViewMap.find(citem->name());
     qtItem* childItem;
-    if (it != Internals->m_itemViewMap.end())
+    if (it != m_internals->m_itemViewMap.end())
     {
       auto info = it->second;
       info.setParentWidget(m_widget);
@@ -352,12 +363,12 @@ void qtGroupItem::addSubGroup(int i)
 void qtGroupItem::onRemoveSubGroup()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(QObject::sender());
-  if (!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
+  if (!minusButton || !m_internals->ExtensibleMap.contains(minusButton))
   {
     return;
   }
 
-  int gIdx = this->Internals->MinusButtonIndices.indexOf(
+  int gIdx = m_internals->MinusButtonIndices.indexOf(
     minusButton); //minusButton->property("SubgroupIndex").toInt();
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfGroups()))
@@ -365,19 +376,19 @@ void qtGroupItem::onRemoveSubGroup()
     return;
   }
 
-  foreach (qtItem* qi, this->Internals->ExtensibleMap.value(minusButton))
+  foreach (qtItem* qi, m_internals->ExtensibleMap.value(minusButton))
   {
     // We need to remove the child from our list
     this->removeChildItem(qi);
   }
-  //  delete this->Internals->ExtensibleMap.value(minusButton).first;
-  this->Internals->ExtensibleMap.remove(minusButton);
+  //  delete m_internals->ExtensibleMap.value(minusButton).first;
+  m_internals->ExtensibleMap.remove(minusButton);
 
   item->removeGroup(gIdx);
   int rowIdx = -1, rmIdx = -1;
   // normally rowIdx is same as gIdx, but we need to find
   // explicitly since minusButton could be NULL in MinusButtonIndices
-  foreach (QToolButton* tb, this->Internals->MinusButtonIndices)
+  foreach (QToolButton* tb, m_internals->MinusButtonIndices)
   {
     rowIdx = tb != nullptr ? rowIdx + 1 : rowIdx;
     if (tb == minusButton)
@@ -386,11 +397,11 @@ void qtGroupItem::onRemoveSubGroup()
       break;
     }
   }
-  if (rmIdx >= 0 && rmIdx < this->Internals->ItemsTable->rowCount())
+  if (rmIdx >= 0 && rmIdx < m_internals->ItemsTable->rowCount())
   {
-    this->Internals->ItemsTable->removeRow(rmIdx);
+    m_internals->ItemsTable->removeRow(rmIdx);
   }
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
+  m_internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
   this->calculateTableHeight();
   this->updateExtensibleState();
@@ -406,11 +417,11 @@ void qtGroupItem::updateExtensibleState()
   }
   bool maxReached =
     (item->maxNumberOfGroups() > 0) && (item->maxNumberOfGroups() == item->numberOfGroups());
-  this->Internals->AddItemButton->setEnabled(!maxReached);
+  m_internals->AddItemButton->setEnabled(!maxReached);
 
   bool minReached = (item->numberOfRequiredGroups() > 0) &&
     (item->numberOfRequiredGroups() == item->numberOfGroups());
-  foreach (QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+  foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
   {
     tButton->setEnabled(!minReached);
   }
@@ -425,22 +436,21 @@ void qtGroupItem::addItemsToTable(int index)
   }
 
   std::size_t j, m = item->numberOfItemsPerGroup();
-  QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
-  if (!this->Internals->ItemsTable)
+  QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(m_internals->ChildrensFrame->layout());
+  if (!m_internals->ItemsTable)
   {
-    this->Internals->ItemsTable = new qtTableWidget(this->Internals->ChildrensFrame);
-    this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_internals->ItemsTable = new qtTableWidget(m_internals->ChildrensFrame);
+    m_internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    this->Internals->ItemsTable->setColumnCount(1); // for minus button
-    this->Internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
-    this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+    m_internals->ItemsTable->setColumnCount(1); // for minus button
+    m_internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
+    m_internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
       0, QHeaderView::ResizeToContents);
-    this->Internals->ItemsTable->verticalHeader()->setSectionResizeMode(
-      QHeaderView::ResizeToContents);
-    frameLayout->addWidget(this->Internals->ItemsTable);
+    m_internals->ItemsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    frameLayout->addWidget(m_internals->ItemsTable);
   }
 
-  this->Internals->ItemsTable->blockSignals(true);
+  m_internals->ItemsTable->blockSignals(true);
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QList<qtItem*> itemList;
   int added = 0;
@@ -455,9 +465,9 @@ void qtGroupItem::addItemsToTable(int index)
   for (j = 0; j < m; j++)
   {
     auto citem = item->item(index, static_cast<int>(j));
-    auto it = Internals->m_itemViewMap.find(citem->name());
+    auto it = m_internals->m_itemViewMap.find(citem->name());
     qtItem* childItem;
-    if (it != Internals->m_itemViewMap.end())
+    if (it != m_internals->m_itemViewMap.end())
     {
       auto info = it->second;
       info.setParentWidget(m_widget);
@@ -475,29 +485,29 @@ void qtGroupItem::addItemsToTable(int index)
       this->addChildItem(childItem);
       if (added == 0)
       {
-        this->Internals->ItemsTable->insertRow(index);
+        m_internals->ItemsTable->insertRow(index);
       }
-      int numCols = this->Internals->ItemsTable->columnCount() - 1;
+      int numCols = m_internals->ItemsTable->columnCount() - 1;
       if (added >= numCols)
       {
-        this->Internals->ItemsTable->insertColumn(numCols + 1);
+        m_internals->ItemsTable->insertColumn(numCols + 1);
         std::string strItemLabel = citem->label().empty() ? citem->name() : citem->label();
-        this->Internals->ItemsTable->setHorizontalHeaderItem(
+        m_internals->ItemsTable->setHorizontalHeaderItem(
           numCols + 1, new QTableWidgetItem(strItemLabel.c_str()));
         if (childItem->isFixedWidth())
         {
-          this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+          m_internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
             numCols + 1, QHeaderView::ResizeToContents);
         }
         else
         {
-          this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+          m_internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
             numCols + 1, QHeaderView::Interactive);
           stretchLastColumn = false;
         }
       }
       childItem->setLabelVisible(false);
-      this->Internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
+      m_internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()),
         Qt::QueuedConnection);
@@ -511,12 +521,12 @@ void qtGroupItem::addItemsToTable(int index)
   {
     stretchLastColumn = true;
   }
-  this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(stretchLastColumn);
+  m_internals->ItemsTable->horizontalHeader()->setStretchLastSection(stretchLastColumn);
   QToolButton* minusButton = nullptr;
   // if there are items
   if (added > 0)
   {
-    minusButton = new QToolButton(this->Internals->ChildrensFrame);
+    minusButton = new QToolButton(m_internals->ChildrensFrame);
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(16, 16));
     minusButton->setIcon(QIcon(iconName));
@@ -525,34 +535,34 @@ void qtGroupItem::addItemsToTable(int index)
     //QVariant vdata(static_cast<int>(i));
     //minusButton->setProperty("SubgroupIndex", vdata);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveSubGroup()));
-    this->Internals->ItemsTable->setCellWidget(index, 0, minusButton);
+    m_internals->ItemsTable->setCellWidget(index, 0, minusButton);
 
-    this->Internals->ExtensibleMap[minusButton] = itemList;
+    m_internals->ExtensibleMap[minusButton] = itemList;
   }
-  this->Internals->MinusButtonIndices.insert(index, minusButton);
+  m_internals->MinusButtonIndices.insert(index, minusButton);
   this->updateExtensibleState();
 
   this->calculateTableHeight();
-  this->Internals->ItemsTable->blockSignals(false);
+  m_internals->ItemsTable->blockSignals(false);
   this->onChildWidgetSizeChanged();
 }
 
 void qtGroupItem::onChildWidgetSizeChanged()
 {
-  if (this->Internals->ItemsTable)
+  if (m_internals->ItemsTable)
   {
     // There seems to be a bug in QT - if you ask the table to
     // resize all of its columns to fit their data, the table may
     // not fill up the space provided.  resizing each column seperately
     // does not seem to have this issue.
-    int i, n = this->Internals->ItemsTable->columnCount();
+    int i, n = m_internals->ItemsTable->columnCount();
     for (i = 0; i < n; i++)
     {
-      this->Internals->ItemsTable->resizeColumnToContents(i);
+      m_internals->ItemsTable->resizeColumnToContents(i);
     }
     // We need to resize the height of the cell incase the
     // child's height has changed
-    this->Internals->ItemsTable->resizeRowsToContents();
+    m_internals->ItemsTable->resizeRowsToContents();
     emit this->widgetSizeChanged();
   }
 }
@@ -565,7 +575,7 @@ void qtGroupItem::onChildItemModified()
 
 void qtGroupItem::calculateTableHeight()
 {
-  if (this->Internals->ItemsTable == nullptr)
+  if (m_internals->ItemsTable == nullptr)
   {
     return;
   }
@@ -574,14 +584,14 @@ void qtGroupItem::calculateTableHeight()
 
   if (numRows == -1)
   {
-    numRows = this->Internals->ItemsTable->verticalHeader()->count();
+    numRows = m_internals->ItemsTable->verticalHeader()->count();
   }
 
-  int totalHeight = this->Internals->ItemsTable->horizontalScrollBar()->height() +
-    this->Internals->ItemsTable->horizontalHeader()->height();
+  int totalHeight = m_internals->ItemsTable->horizontalScrollBar()->height() +
+    m_internals->ItemsTable->horizontalHeader()->height();
   for (int i = 0; i < numRows; i++)
   {
-    totalHeight += this->Internals->ItemsTable->verticalHeader()->sectionSize(i);
+    totalHeight += m_internals->ItemsTable->verticalHeader()->sectionSize(i);
   }
-  this->Internals->ItemsTable->setMinimumHeight(totalHeight);
+  m_internals->ItemsTable->setMinimumHeight(totalHeight);
 }

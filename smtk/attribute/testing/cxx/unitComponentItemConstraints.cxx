@@ -241,7 +241,7 @@ int unitComponentItemConstraints(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. Let's create an attribute resource and some definitions
-  // The first definition will have three compomemt items:
+  // The first definition will have three component items:
 
   // comp0 will have an unique role and have 2 values so we
   // can uniqueness when trying to assign to the same item
