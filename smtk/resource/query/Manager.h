@@ -60,6 +60,18 @@ public:
     return smtk::shared_ptr<Manager>(new Manager(resourceManager));
   }
 
+  // Our map of observer keys is move-only, so this class needs to be at least
+  // move-only as well. MSVC 2019 does not correctly intuit this fact when
+  // generating default constructors and assignment operators, so we explicitly
+  // remove them. We remove the move constructor and move assignment operator
+  // for good measure, since they are not needed anyway.
+  Manager() = delete;
+  Manager(const Manager&) = delete;
+  Manager(Manager&&) = delete;
+
+  Manager& operator=(const Manager&) = delete;
+  Manager& operator=(Manager&&) = delete;
+
   virtual ~Manager();
 
   /// Register <QueryType> to all resources for which the input functor <fn>
