@@ -62,6 +62,18 @@ public:
     return smtk::shared_ptr<ItemDefinitionManager>(new ItemDefinitionManager(resourceManager));
   }
 
+  // Our map of observer keys is move-only, so this class needs to be at least
+  // move-only as well. MSVC 2019 does not correctly intuit this fact when
+  // generating default constructors and assignment operators, so we explicitly
+  // remove them. We remove the move constructor and move assignment operator
+  // for good measure, since they are not needed anyway.
+  ItemDefinitionManager() = delete;
+  ItemDefinitionManager(const ItemDefinitionManager&) = delete;
+  ItemDefinitionManager(ItemDefinitionManager&&) = delete;
+
+  ItemDefinitionManager& operator=(const ItemDefinitionManager&) = delete;
+  ItemDefinitionManager& operator=(ItemDefinitionManager&&) = delete;
+
   virtual ~ItemDefinitionManager();
 
   /// Register <CustomItemDefinitionType> to all attribute resources.
