@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::geometry::Geometry > pybind11_init_smtk_geometry_Geometr
 {
   PySharedPtrClass< smtk::geometry::Geometry > instance(m, "Geometry");
   instance
-    .def("deepcopy", (smtk::geometry::Geometry & (smtk::geometry::Geometry::*)(::smtk::geometry::Geometry const &)) &smtk::geometry::Geometry::operator=)
     .def("backend", &smtk::geometry::Geometry::backend)
     .def("bounds", &smtk::geometry::Geometry::bounds, py::arg("arg0"), py::arg("bds"))
     .def("erase", &smtk::geometry::Geometry::erase, py::arg("uid"))
