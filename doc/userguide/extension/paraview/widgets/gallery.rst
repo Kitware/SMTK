@@ -1,10 +1,7 @@
-Widgets
+Gallery
 -------
 
-SMTK provides special widgets for interacting with
-model and mesh resources inside ParaView.
-These qtItem subclasses may be used by specifying
-them in an attribute's View configuration.
+SMTK's existing widgets are listed below with instructions for their use.
 
 Point
 ^^^^^

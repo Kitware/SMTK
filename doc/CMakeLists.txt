@@ -95,7 +95,9 @@ if (SPHINX_FOUND)
     userguide/extension/index.rst
     userguide/extension/paraview/index.rst
     userguide/extension/paraview/representations.rst
-    userguide/extension/paraview/widgets.rst
+    userguide/extension/paraview/widgets/index.rst
+    userguide/extension/paraview/widgets/design.rst
+    userguide/extension/paraview/widgets/gallery.rst
     userguide/extension/paraview/plugins.rst
     userguide/extension/paraview/panels.rst
     userguide/extension/paraview/lifecycle.rst
