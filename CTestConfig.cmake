@@ -9,7 +9,7 @@ set(CTEST_NIGHTLY_START_TIME "21:00:00 EDT")
 
 set(drop_sites kitware)
 
-set(CTEST_DROP_METHOD_kitware "http")
+set(CTEST_DROP_METHOD_kitware "https")
 set(CTEST_DROP_SITE_kitware "www.kitware.com/CDash")
 set(CTEST_DROP_LOCATION_kitware "/submit.php?project=SMTK")
 set(CTEST_DROP_SITE_CDASH_kitware TRUE)
@@ -18,7 +18,7 @@ if (NOT DEFINED SMTK_PUBLIC_DROP_SITE OR SMTK_PUBLIC_DROP_SITE)
 
   list(APPEND drop_sites open)
 
-  set(CTEST_DROP_METHOD_open "http")
+  set(CTEST_DROP_METHOD_open "https")
   set(CTEST_DROP_SITE_open "open.cdash.org")
   set(CTEST_DROP_LOCATION_open "/submit.php?project=SMTK")
   set(CTEST_DROP_SITE_CDASH_open TRUE)
