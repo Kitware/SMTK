@@ -79,9 +79,6 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 
-#install the headers
-smtk_public_headers(smtkCore ${viewHeaders})
-
 set(iconFiles
   icons/attribute.svg
   icons/attributeResource.svg
@@ -106,7 +103,11 @@ foreach (iconFile ${iconFiles})
   get_filename_component(genFileBase "${iconFile}" NAME_WE)
   set(genFile "${CMAKE_CURRENT_BINARY_DIR}/icons/${genFileBase}_svg.h")
   configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
+  list(APPEND viewHeaders ${genFile})
 endforeach()
+
+#install the headers
+smtk_public_headers(smtkCore ${viewHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND
