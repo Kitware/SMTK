@@ -50,6 +50,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 // if it is not included before the stl headers our header file includes.
 #include "smtk/common/PythonInterpreter.h"
 
+#include "smtk/common/Environment.h"
 #include "smtk/common/Paths.h"
 
 #include <cstdlib>
@@ -258,9 +259,17 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
   std::stringstream testCmd;
   testCmd << "found = True\n"
           << "try:\n"
-          << "    import " << module << "\n"
-          << "except ImportError:\n"
-          << "    found = False";
+          << "    import " << module << "\n";
+  if (Environment::hasVariable("SMTK_PYTHON_MODULE_LOAD_VERBOSE"))
+  {
+    testCmd << "except ImportError as error:\n"
+            << "    print(str(error))\n";
+  }
+  else
+  {
+    testCmd << "except ImportError:\n";
+  }
+  testCmd << "    found = False";
   pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
 
   found = locals["found"].cast<bool>();
