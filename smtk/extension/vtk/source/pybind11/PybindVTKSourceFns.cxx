@@ -33,10 +33,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
 
 
-PYBIND11_VTK_TYPECASTER(vtkInformation)
-PYBIND11_VTK_TYPECASTER(vtkModelMultiBlockSource)
-PYBIND11_VTK_TYPECASTER(vtkResourceMultiBlockSource)
-
 PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
 {
   source.doc() = "<description>";
