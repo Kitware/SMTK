@@ -15,4 +15,4 @@ These plugins form the core of the ModelBuilder application (version 6 and later
    representations.rst
    selection.rst
    panels.rst
-   widgets.rst
+   widgets/index.rst
