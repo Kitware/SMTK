@@ -138,4 +138,7 @@ void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* 
 {
   m_model = qmodel;
   m_view->setModel(m_model);
+  QObject::connect(m_view->selectionModel(),
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
+    SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
 }
