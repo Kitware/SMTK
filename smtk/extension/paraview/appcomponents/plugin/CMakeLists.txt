@@ -13,12 +13,8 @@ set(sources
   pqSMTKColorByWidget.h
   pqSMTKDisplayAttributeOnLoadBehavior.cxx
   pqSMTKDisplayAttributeOnLoadBehavior.h
-  pqSMTKExportSimulationBehavior.cxx
-  pqSMTKExportSimulationBehavior.h
   pqSMTKImportIntoResourceBehavior.cxx
   pqSMTKImportIntoResourceBehavior.h
-  pqSMTKImportOperationBehavior.cxx
-  pqSMTKImportOperationBehavior.h
   pqSMTKNewResourceBehavior.cxx
   pqSMTKNewResourceBehavior.h
   pqSMTKPipelineSelectionBehavior.cxx
@@ -109,9 +105,20 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 
 set(rc_files
   resources/pqSMTKCloseResourceBehavior.qrc
-  resources/pqSMTKImportOperationBehavior.qrc
   resources/pqSMTKSaveResourceBehavior.qrc
   resources/pqSMTKSelectionFilterBehavior.qrc)
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND sources
+  pqSMTKExportSimulationBehavior.cxx
+  pqSMTKExportSimulationBehavior.h
+  pqSMTKImportOperationBehavior.cxx
+  pqSMTKImportOperationBehavior.h
+  )
+  list(APPEND rc_files
+  resources/pqSMTKImportOperationBehavior.qrc
+  )
+endif()
 
 set(interfaces
   ${auto_start_interfaces}
