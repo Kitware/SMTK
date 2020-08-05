@@ -20,6 +20,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "vtkPVRenderView.h"
+
 #include "vtkCompositeDataIterator.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
@@ -71,6 +73,29 @@ RespondToVTKSelection::~RespondToVTKSelection()
   {
     m_vtkData->UnRegister(nullptr);
   }
+}
+
+bool RespondToVTKSelection::setInteractionMode(int mode)
+{
+  if (mode == m_interactionMode)
+  {
+    return false;
+  }
+  switch (mode)
+  {
+    case vtkPVRenderView::INTERACTION_MODE_UNINTIALIZED: // fall through
+    case vtkPVRenderView::INTERACTION_MODE_3D:           // fall through
+    case vtkPVRenderView::INTERACTION_MODE_2D:           // fall through
+    case vtkPVRenderView::INTERACTION_MODE_SELECTION:    // fall through
+    case vtkPVRenderView::INTERACTION_MODE_ZOOM:         // fall through
+    case vtkPVRenderView::INTERACTION_MODE_POLYGON:      // fall through
+      m_interactionMode = mode;
+      return true;
+    default:
+      vtkGenericWarningMacro("Unknown interaction mode (" << mode << ") during selection.");
+      break;
+  }
+  return false;
 }
 
 bool RespondToVTKSelection::setVTKData(vtkMultiBlockDataSet* mbds)
