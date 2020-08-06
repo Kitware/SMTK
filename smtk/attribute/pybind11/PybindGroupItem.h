@@ -32,6 +32,7 @@ PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pybind11_i
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::GroupItem::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::IMMEDIATE)
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::GroupItem::find, py::arg("element"), py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::IMMEDIATE)
     .def("_find", (smtk::attribute::ConstItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::GroupItem::find, py::arg("element"), py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::IMMEDIATE)
+    .def("insertGroups", &smtk::attribute::GroupItem::insertGroups, py::arg("element"), py::arg("num"))
     .def("isExtensible", &smtk::attribute::GroupItem::isExtensible)
     .def("item", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t) const) &smtk::attribute::GroupItem::item, py::arg("ith"))
     .def("item", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::size_t) const) &smtk::attribute::GroupItem::item, py::arg("element"), py::arg("ith"))

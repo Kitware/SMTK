@@ -219,7 +219,7 @@ void GroupItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool a
   }
 }
 
-bool GroupItem::appendGroup()
+bool GroupItem::insertGroups(std::size_t pos, std::size_t num)
 {
   if (!this->isExtensible())
   {
@@ -229,35 +229,34 @@ bool GroupItem::appendGroup()
   const GroupItemDefinition* def =
     static_cast<const GroupItemDefinition*>(this->definition().get());
   std::size_t maxN = def->maxNumberOfGroups(), n = this->numberOfGroups();
-  if (maxN && (n >= maxN))
+
+  if ((pos > n) || (maxN && ((n + num) > maxN)))
   {
-    // max number of groups reached
+    // inserting beyond the end of the vector or
+    // inserting these groups would violate the max size
     return false;
   }
-  m_items.resize(n + 1);
-  def->buildGroup(this, static_cast<int>(n));
+
+  std::vector<smtk::attribute::ItemPtr> placeHolder;
+
+  m_items.insert(m_items.begin() + pos, num, placeHolder);
+
+  for (std::size_t i = pos; i < pos + num; i++)
+  {
+    def->buildGroup(this, static_cast<int>(i));
+  }
+
   return true;
+}
+
+bool GroupItem::appendGroup()
+{
+  return this->insertGroups(m_items.size(), 1);
 }
 
 bool GroupItem::prependGroup()
 {
-  if (!this->isExtensible())
-  {
-    return false;
-  }
-
-  const GroupItemDefinition* def =
-    static_cast<const GroupItemDefinition*>(this->definition().get());
-  std::size_t maxN = def->maxNumberOfGroups(), n = this->numberOfGroups();
-  if (maxN && (n >= maxN))
-  {
-    // max number of groups reached
-    return false;
-  }
-  std::vector<smtk::attribute::ItemPtr> placeHolder;
-  m_items.insert(m_items.begin(), placeHolder);
-  def->buildGroup(this, 0);
-  return true;
+  return this->insertGroups(0, 1);
 }
 
 bool GroupItem::removeGroup(std::size_t element)
