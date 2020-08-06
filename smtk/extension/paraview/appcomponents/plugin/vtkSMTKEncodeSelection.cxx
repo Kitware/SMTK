@@ -31,6 +31,7 @@
 #include "pqView.h"
 
 #include "vtkSMPropertyHelper.h"
+#include "vtkSMRenderViewProxy.h"
 
 #include "vtkInformation.h"
 #include "vtkMultiBlockDataSet.h"
@@ -163,7 +164,7 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
 bool vtkSMTKEncodeSelection::ProcessResource(pqSMTKWrapper* wrapper,
   const smtk::resource::ResourcePtr& resource, const smtk::view::SelectionPtr& smtkSelection,
   vtkSMTKResourceRepresentation* resourceRep, vtkSelection* rawSelection,
-  vtkSMRenderViewProxy* vtkNotUsed(viewProxy) /*unused*/, int modifier, bool selectBlocks)
+  vtkSMRenderViewProxy* viewProxy, int modifier, bool selectBlocks)
 {
   (void)resource;
   (void)rawSelection;
@@ -187,6 +188,8 @@ bool vtkSMTKEncodeSelection::ProcessResource(pqSMTKWrapper* wrapper,
     {
       continue;
     }
+    int mode = vtkSMPropertyHelper(viewProxy, "InteractionMode").GetAsInt();
+    operation->setInteractionMode(mode);
     operation->setSMTKSelection(smtkSelection);
     operation->setVTKSelection(rawSelection);
     operation->setVTKData(mbds);

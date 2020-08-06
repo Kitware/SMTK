@@ -45,6 +45,27 @@ public:
   smtkSuperclassMacro(smtk::operation::XMLOperation);
   virtual ~RespondToVTKSelection();
 
+  /**\brief Set/get the interaction mode.
+    *
+    * The interaction mode values correspond to the
+    * vtkPVRenderView::InteractionModes enum:
+    *
+    * + INTERACTION_MODE_3D = 0,
+    * + INTERACTION_MODE_2D,
+    * + INTERACTION_MODE_SELECTION,
+    * + INTERACTION_MODE_ZOOM,
+    * + INTERACTION_MODE_POLYGON
+    *
+    * Generally speaking, primitive selections should not be created
+    * when the interaction mode is INTERACTION_MODE_3D, INTERACTION_MODE_2D,
+    * or INTERACTION_MODE_ZOOM (as these modes are for camera manipulation
+    * and whole-object picking).
+    *
+    * This is set by the vtkSMTKWrapper before the operation is invoked.
+    */
+  bool setInteractionMode(int mode);
+  int interactionMode() const { return m_interactionMode; }
+
   /**\brief Set/get the multiblock data holding per-component tessellation info.
     *
     * This is set by the vtkSMTKWrapper before the operation is invoked.
@@ -127,6 +148,7 @@ protected:
   /// Fail or succeed quietly.
   void generateSummary(Operation::Result&) override{};
 
+  int m_interactionMode;
   ::vtkSelection* m_vtkSelection;
   vtkMultiBlockDataSet* m_vtkData;
   smtk::view::WeakSelectionPtr m_smtkSelection;
