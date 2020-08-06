@@ -76,6 +76,9 @@ public:
   std::size_t numberOfItemsPerGroup() const;
   bool appendGroup();
   bool prependGroup();
+  ///\brief Insert num groups before index pos - so append is pos = numberOfGroups
+  /// and prepend would be pos = 0
+  bool insertGroups(std::size_t pos, std::size_t num);
   bool removeGroup(std::size_t element);
 
   /// Return the i-th item in the first entry of the group.

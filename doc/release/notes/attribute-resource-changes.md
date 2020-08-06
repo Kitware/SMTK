@@ -132,6 +132,10 @@ an item's ForceRequired is set then even if it's definition indicates it should 
         * void Item::setForceRequired(bool)
         * bool Item::forceRequired()
 
+### Changes to GroupItem
+* New Methods
+    * bool insertGroups(std::size_t ith, std::size_t num) - inserts num groups before ith element.  If inserting num groups would violate the item's maximum number of groups or if ith is greater than the original number of groups, then the item is left unchanged and false is returned. Append and Prepend methods have been modified to call this new method with num= 1 and ith = numberOfGroups or 0 respectively.
+
 ### Custom attribute item and definition types
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
 
