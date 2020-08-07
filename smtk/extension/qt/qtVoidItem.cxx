@@ -63,7 +63,7 @@ void qtVoidItem::setLabelVisible(bool visible)
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -140,7 +140,7 @@ void qtVoidItem::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);

@@ -124,7 +124,7 @@ void qtAnalysisView::analysisChanged()
   // update
 }
 
-bool qtAnalysisView::categoryTest(smtk::attribute::ItemPtr /*unused*/) const
+bool qtAnalysisView::categoryTest(const smtk::attribute::ConstItemDefinitionPtr& /*unused*/) const
 {
   // Analysis View contents ignores category filtering
   return true;

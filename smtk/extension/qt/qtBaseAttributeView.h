@@ -40,8 +40,9 @@ public:
 
   /// Determines if an item should be displayed
   virtual bool displayItem(smtk::attribute::ItemPtr) const;
+  virtual bool displayItemDefinition(const smtk::attribute::ItemDefinitionPtr&) const;
   /// Determines if an item can be modified
-  virtual bool isItemWriteable(smtk::attribute::ItemPtr) const;
+  virtual bool isItemWriteable(const smtk::attribute::ItemPtr&) const;
   virtual void getDefinitions(
     smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs);
   int fixedLabelWidth() { return m_fixedLabelWidth; }
@@ -96,11 +97,11 @@ protected:
 
   /// \brief Test for category filtering.
   /// Returns true if the item's categories pass
-  virtual bool categoryTest(smtk::attribute::ItemPtr) const;
+  virtual bool categoryTest(const smtk::attribute::ConstItemDefinitionPtr&) const;
 
   /// \brief Test for advance level filtering.
   /// Returns true if the item's advance level pass
-  virtual bool advanceLevelTest(smtk::attribute::ItemPtr) const;
+  virtual bool advanceLevelTest(const smtk::attribute::ItemPtr&) const;
 
   void topLevelPrepCategories(
     const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource);

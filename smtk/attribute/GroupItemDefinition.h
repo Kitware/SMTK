@@ -74,7 +74,7 @@ public:
 
   int findItemPosition(const std::string& name) const;
 
-  // Returns or Sets the def's extensiblity property.  If true then items from this def
+  // Returns or Sets the def's extensibility property.  If true then items from this def
   // can have a variable number of groups.  The number of sub groups is always <= to number of
   // required groups and max number of groups (provided max number of groups > 0)
   // Default value is false.

@@ -75,7 +75,7 @@ protected:
   ///
   /// Since the items of the Analysis Attribute have no categories, this view turns off this
   // check by always returning true.
-  bool categoryTest(smtk::attribute::ItemPtr) const override;
+  bool categoryTest(const smtk::attribute::ConstItemDefinitionPtr&) const override;
 
 private:
   smtk::attribute::AttributePtr m_analysisAttribute; ///< Analysis Attribute used by the View

@@ -7,9 +7,15 @@ It was discovered that passing the **this** pointer into an Observer's lambda ex
 * Observation for attribute creation, modification, and expungement have been added to qtAttributeView.
 * Observation for attribute modification has been added to qtInstanceView
 
-### Changes to qtGroupItem
-* The first Column is no longer marked with 1 for extensible groups.
-* Fixed issue with updating extensible qtGroupItems due to the number of columns being set to 0 instead of 1
+### Changes to qtBaseAttributeView
+* CategoryTest was changed to take in a const attribute::ItemDefinitionPtr& instead of an attribute::ItemPtr since only the definition is needed.  This also eliminated the construction/destruction of a shared pointer.
+* Added displayItemDefinition method which is similar to displayItem.
+* isItemWriteable now takes in a const attribute::ItemPtr & instead of a attribute::ItemPtr which eliminates  the construction/destruction of a shared pointer.
+* advaceLevelTest now takes in a const attribute::ItemPtr & instead of a attribute::ItemPtr which eliminates  the construction/destruction of a shared pointer.
+
+### Changes to qtGroupView
+* GroupBox Style icon has been changed from a check box to a closed/expand icon pair.  This change reduces confusion between optional items and viewing control widgets.
+* Tabbed Group Views now show indicate invalid children views in their tabs using the alert icon
 
 ### API Changes
 These changes were made to help simplify/cleanup the qtView infrastructure.  There were several places where onShowCategory() was being called in order to update the UI.  This resulted in confusion as to the role of the method.  In many cases these calls have been replaced with updateUI.

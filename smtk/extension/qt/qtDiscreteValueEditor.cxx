@@ -355,8 +355,7 @@ void qtDiscreteValueEditor::updateContents()
       }
     }
 
-    auto iiview = dynamic_cast<qtBaseAttributeView*>(
-      this->Internals->m_inputItem->m_itemInfo.baseView().data());
+    auto iiview = this->Internals->m_inputItem->m_itemInfo.baseView();
     int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
     if (this->Internals->m_inputItem->uiManager())
     {

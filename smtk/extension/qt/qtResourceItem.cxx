@@ -13,7 +13,7 @@
 
 #include "smtk/common/Paths.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/Manager.h"

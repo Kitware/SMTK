@@ -60,6 +60,7 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
     .def("unset", &smtk::attribute::ValueItem::unset, py::arg("elementIndex") = 0)
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)() const) &smtk::attribute::ValueItem::valueAsString)
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)(::size_t) const) &smtk::attribute::ValueItem::valueAsString, py::arg("elementIndex"))
+    .def("valueLabel", &smtk::attribute::ValueItem::valueLabel, py::arg("element"))
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::ValueItem>(i);
       })

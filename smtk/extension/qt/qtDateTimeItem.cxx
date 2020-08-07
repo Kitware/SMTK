@@ -253,7 +253,7 @@ void qtDateTimeItem::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -345,7 +345,7 @@ void qtDateTimeItem::onTimeZoneRegion()
 void qtDateTimeItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -374,7 +374,7 @@ void qtDateTimeItem::loadInputValues()
 void qtDateTimeItem::updateUI()
 {
   auto dataObj = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;

@@ -12,7 +12,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Item.h"
@@ -22,13 +22,12 @@ using namespace smtk::attribute;
 using namespace smtk::extension;
 
 qtAttributeItemInfo::qtAttributeItemInfo(ItemPtr item,
-  smtk::view::Configuration::Component itemComp, QPointer<QWidget> parent,
-  QPointer<qtBaseView> bview)
+  smtk::view::Configuration::Component itemComp, QPointer<QWidget> parent, qtBaseView* bview)
   : m_item(item)
   , m_component(itemComp)
   , m_parentWidget(parent)
-  , m_baseView(bview)
 {
+  m_baseView = qobject_cast<qtBaseAttributeView*>(bview);
 }
 
 qtUIManager* qtAttributeItemInfo::uiManager() const
@@ -41,7 +40,7 @@ qtUIManager* qtAttributeItemInfo::uiManager() const
 }
 
 bool qtAttributeItemInfo::buildFromComponent(smtk::view::Configuration::Component comp,
-  QPointer<qtBaseView> view, std::map<std::string, qtAttributeItemInfo>& dict)
+  qtBaseAttributeView* view, std::map<std::string, qtAttributeItemInfo>& dict)
 {
   std::string iname, path;
   std::size_t i, n = comp.numberOfChildren();
@@ -175,4 +174,9 @@ bool qtAttributeItemInfo::createNewDictionary(std::map<std::string, qtAttributeI
   buildFromComponent(iviews, m_baseView, dict);
 
   return true;
+}
+
+qtBaseAttributeView* qtAttributeItemInfo::baseView() const
+{
+  return m_baseView;
 }

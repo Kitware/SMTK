@@ -484,6 +484,7 @@ typedef smtk::shared_ptr<smtk::attribute::FileSystemItem> FileSystemItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::FileSystemItemDefinition> FileSystemItemDefinitionPtr;
 /// @see smtk::attribute::GroupItem
 typedef smtk::shared_ptr<smtk::attribute::GroupItem> GroupItemPtr;
+typedef smtk::weak_ptr<smtk::attribute::GroupItem> WeakGroupItemPtr;
 /// @see smtk::attribute::GroupItemDefinition
 typedef smtk::shared_ptr<smtk::attribute::GroupItemDefinition> GroupItemDefinitionPtr;
 /// @see smtk::attribute::IntItem

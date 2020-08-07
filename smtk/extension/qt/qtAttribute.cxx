@@ -43,7 +43,7 @@ class qtAttributeInternals
 {
 public:
   qtAttributeInternals(smtk::attribute::AttributePtr myAttribute,
-    const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView)
+    const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseAttributeView* myView)
   {
     m_parentWidget = p;
     m_attribute = myAttribute;
@@ -64,7 +64,7 @@ public:
   smtk::attribute::WeakAttributePtr m_attribute;
   QPointer<QWidget> m_parentWidget;
   QList<smtk::extension::qtItem*> m_items;
-  QPointer<qtBaseView> m_view;
+  QPointer<qtBaseAttributeView> m_view;
   smtk::view::Configuration::Component m_attComp;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
@@ -73,7 +73,8 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
   const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView,
   bool createWidgetWhenEmpty)
 {
-  m_internals = new qtAttributeInternals(myAttribute, comp, p, myView);
+  auto attView = dynamic_cast<qtBaseAttributeView*>(myView);
+  m_internals = new qtAttributeInternals(myAttribute, comp, p, attView);
   m_widget = nullptr;
   m_useSelectionManager = false;
   this->createWidget(createWidgetWhenEmpty);
@@ -114,18 +115,17 @@ void qtAttribute::createWidget(bool createWidgetWhenEmpty)
 
   int numShowItems = 0;
   std::size_t i, n = att->numberOfItems();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_internals->m_view.data());
-  if (iview)
+  if (m_internals->m_view)
   {
     for (i = 0; i < n; i++)
     {
-      if (iview->displayItem(att->item(static_cast<int>(i))))
+      if (m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
       {
         numShowItems++;
       }
     }
     // also check associations
-    if (iview->displayItem(att->associations()))
+    if (m_internals->m_view->displayItem(att->associations()))
     {
       numShowItems++;
     }
