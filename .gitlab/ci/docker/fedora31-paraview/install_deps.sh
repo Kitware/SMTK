@@ -19,7 +19,8 @@ dnf install -y \
     git-core \
     git-lfs \
     ninja-build \
-    make
+    make \
+    chrpath
 
 # Install memcheck tools
 dnf install -y \

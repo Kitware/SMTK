@@ -19,6 +19,7 @@ dnf install -y \
     git-core \
     git-lfs \
     ninja-build \
-    make
+    make \
+    chrpath
 
 dnf clean all
