@@ -158,13 +158,25 @@ foreach(plugin IN LISTS qt_plugins)
 endforeach()
 
 #-----------------------------------------------------------------------------
-# For UNIX, explicitly copy zlib and libxml2 into the bundle
+# For UNIX, some libraries may be system installed, but we still
+# want them bundled. For example, LibXml2 is frequently installed
+# as a dependency of emacs. If this setup has system libraries that
+# we want, the call to GET_RUNTIME_DEPENDENCIES below will omit them
+# from them package. We therefore force their inclusion if they are
+# available as system libraries.
 if (UNIX AND NOT APPLE)
-  find_package(ZLIB REQUIRED)
-  find_package(LibXml2 REQUIRED)
+  set(required_libs)
+  find_package(ZLIB QUIET)
+  find_package(LibXml2 QUIET)
 
-  set(missing_libs ZLIB::ZLIB LibXml2::LibXml2)
-  foreach(lib IN LISTS missing_libs)
+  if (ZLIB_FOUND)
+    list(APPEND required_libs ZLIB::ZLIB)
+  endif()
+  if (LibXml2_FOUND)
+    list(APPEND required_libs LibXml2::LibXml2)
+  endif()
+#  set(required_libs ZLIB::ZLIB LibXml2::LibXml2)
+  foreach(lib IN LISTS required_libs)
     get_target_property(loc ${lib} LOCATION)
     get_filename_component(real_loc ${loc} REALPATH)
     get_filename_component(real_loc_wle ${real_loc} NAME_WLE)
@@ -200,7 +212,7 @@ install(CODE
    file(GLOB_RECURSE qt_plugins \"\${CMAKE_INSTALL_PREFIX}/\${plugin_dest_dir}/*/*\${suffix}\")
 
    # Construct a list of libraries already in the application bundle
-   file(GLOB_RECURSE missing_libs \"\${CMAKE_INSTALL_PREFIX}/\${lib_dest_dir}/*\${suffix}\")
+   file(GLOB_RECURSE required_libs \"\${CMAKE_INSTALL_PREFIX}/\${lib_dest_dir}/*\${suffix}\")
 
    # Construct a list of the application's runtime dependencies
    file(GET_RUNTIME_DEPENDENCIES
@@ -209,14 +221,14 @@ install(CODE
           CONFLICTING_DEPENDENCIES_PREFIX conflicting_deps
           POST_EXCLUDE_REGEXES \"^/(System|usr/lib)\"
           EXECUTABLES \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer
-          LIBRARIES \${qt_plugins} \${missing_libs}
+          LIBRARIES \${qt_plugins} \${required_libs}
           DIRECTORIES \${lib_search_dirs}
           )
 
    include(BundleUtilities)
 
    # Copy each resolved dependency into the application bundle
-   foreach (lib IN LISTS resolved_deps missing_libs)
+   foreach (lib IN LISTS resolved_deps required_libs)
       get_filename_component(libname \${lib} NAME)
 
       # Copy the library into the bundle
