@@ -344,7 +344,7 @@ void pqSMTKAttributeItemWidget::update3DWidgetVisibility(bool visible)
 void pqSMTKAttributeItemWidget::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->item();
-  auto iview = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -366,7 +366,7 @@ void pqSMTKAttributeItemWidget::clearChildWidgets()
 void pqSMTKAttributeItemWidget::updateUI()
 {
   auto dataObj = this->item();
-  auto iview = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;

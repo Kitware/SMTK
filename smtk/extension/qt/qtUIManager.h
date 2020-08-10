@@ -139,6 +139,14 @@ public:
   QColor invalidValueColor() const { return this->InvalidValueColor; }
   QVariantList invalidValueColorRgbF() const;
   ///}@
+  ///@{
+  /// Get color values corrected based on the text color - this allows
+  /// the system to change color themes and the resulting GUI can still be
+  /// legible
+  QColor correctedInvalidValueColor() const;
+  QColor correctedNormalValueColor() const;
+  QColor correctedDefaultValueColor() const;
+  ///@}
 
   ///@{
   /// Set the advanced values font to be bold and/or italic

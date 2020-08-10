@@ -391,7 +391,7 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 void qtReferenceItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -416,7 +416,7 @@ void qtReferenceItem::clearWidgets()
 void qtReferenceItem::updateUI()
 {
   smtk::attribute::ItemPtr itm = m_itemInfo.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(itm))
   {
     return;

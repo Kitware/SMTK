@@ -179,6 +179,16 @@ bool ValueItem::isDiscreteIndexValid(int value) const
   return def->isDiscreteIndexValid(value);
 }
 
+std::string ValueItem::valueLabel(std::size_t element) const
+{
+  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+  if (!def)
+  {
+    return "";
+  }
+  return def->valueLabel(element);
+}
+
 bool ValueItem::isExtensible() const
 {
   const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());

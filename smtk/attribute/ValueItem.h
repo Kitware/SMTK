@@ -40,6 +40,8 @@ public:
   std::size_t numberOfRequiredValues() const;
   std::size_t maxNumberOfValues() const;
 
+  std::string valueLabel(std::size_t element) const;
+
   bool isExtensible() const;
 
   bool allowsExpressions() const;

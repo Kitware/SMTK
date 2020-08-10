@@ -206,7 +206,7 @@ void qtReferenceItemComboBox::createWidget()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview)
   {
     label->setFixedWidth(iview->fixedLabelWidth() - padding);
@@ -584,7 +584,7 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);

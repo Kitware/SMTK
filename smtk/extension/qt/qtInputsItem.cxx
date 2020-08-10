@@ -197,7 +197,7 @@ void qtInputsItem::unsetValue(int elementIndex)
   {
     item->unset(elementIndex);
     emit modified();
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -219,7 +219,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -233,7 +233,7 @@ void qtInputsItem::forceUpdate()
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
   emit this->modified();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview)
   {
     iview->valueChanged(item);
@@ -248,7 +248,7 @@ void qtInputsItem::setLabelVisible(bool visible)
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -596,7 +596,7 @@ void qtInputsItem::updateUI()
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
   auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -752,7 +752,7 @@ void qtInputsItem::setOutputOptional(int state)
   if (!(item->forceRequired() || (enable == item->localEnabledState())))
   {
     item->setIsEnabled(enable);
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -1175,7 +1175,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     }
   }
 
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (iview)
   {
     iview->valueChanged(inputitem->shared_from_this());
@@ -1588,7 +1588,7 @@ void qtInputsItem::doubleValueChanged(double newVal)
   // Lets determine if the item is set to the default value -
   isDefault = ditem->isUsingDefault(elementIdx);
   isInvalid = !ditem->isSet(elementIdx);
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)
@@ -1630,7 +1630,7 @@ void qtInputsItem::intValueChanged(int newVal)
   // Lets determine if the item is set to the default value -
   isDefault = iitem->isUsingDefault(elementIdx);
   isInvalid = !iitem->isSet(elementIdx);
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)
@@ -1742,7 +1742,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   // Lets determine if the item is set to the default value -
   isDefault = rawitem->isUsingDefault(elementIdx);
   isInvalid = !rawitem->isSet(elementIdx);
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)

@@ -115,20 +115,31 @@ bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item) const
   {
     return false;
   }
-  return this->advanceLevelTest(item) && this->categoryTest(item);
+  auto idef = item->definition();
+  return this->advanceLevelTest(item) && this->categoryTest(idef);
 }
 
-bool qtBaseAttributeView::categoryTest(smtk::attribute::ItemPtr item) const
+bool qtBaseAttributeView::displayItemDefinition(
+  const smtk::attribute::ItemDefinitionPtr& idef) const
 {
-  return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(item->definition());
+  if (!idef)
+  {
+    return false;
+  }
+  return this->uiManager()->passAdvancedCheck(idef->advanceLevel(0)) && this->categoryTest(idef);
 }
 
-bool qtBaseAttributeView::isItemWriteable(smtk::attribute::ItemPtr item) const
+bool qtBaseAttributeView::categoryTest(const smtk::attribute::ConstItemDefinitionPtr& idef) const
+{
+  return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(idef);
+}
+
+bool qtBaseAttributeView::isItemWriteable(const smtk::attribute::ItemPtr& item) const
 {
   return this->uiManager()->passAdvancedCheck(item->advanceLevel(1));
 }
 
-bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item) const
+bool qtBaseAttributeView::advanceLevelTest(const smtk::attribute::ItemPtr& item) const
 {
   return this->uiManager()->passAdvancedCheck(item->advanceLevel(0));
 }

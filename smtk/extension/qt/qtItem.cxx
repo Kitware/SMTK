@@ -179,7 +179,7 @@ void qtItem::setLocalAdvanceLevel(unsigned int l)
 bool qtItem::isReadOnly() const
 {
   auto item = m_itemInfo.item();
-  auto view = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto view = m_itemInfo.baseView();
   return (
     (m_readOnly || (item == nullptr) || (view == nullptr)) ? true : !view->isItemWriteable(item));
 }

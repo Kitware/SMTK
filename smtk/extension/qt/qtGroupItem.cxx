@@ -159,7 +159,7 @@ void qtGroupItem::setEnabledState(bool checked)
   {
     item->setIsEnabled(checked);
     emit this->modified();
-    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    auto iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -283,7 +283,7 @@ void qtGroupItem::addSubGroup(int i)
   {
     return;
   }
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  auto iview = m_itemInfo.baseView();
   if (!iview)
   {
     return;

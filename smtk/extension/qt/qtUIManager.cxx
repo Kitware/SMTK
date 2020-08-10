@@ -678,6 +678,20 @@ QVariantList qtUIManager::invalidValueColorRgbF() const
   return val;
 }
 
+QColor qtUIManager::correctedInvalidValueColor() const
+{
+  return qtUIManager::contrastWithText(this->InvalidValueColor);
+}
+
+QColor qtUIManager::correctedNormalValueColor() const
+{
+  return qtUIManager::contrastWithText(Qt::white);
+}
+QColor qtUIManager::correctedDefaultValueColor() const
+{
+  return qtUIManager::contrastWithText(this->DefaultValueColor);
+}
+
 void qtUIManager::setInvalidValueColorRgbF(const QVariantList& color)
 {
   if (color.size() != 3)
@@ -701,21 +715,21 @@ void qtUIManager::setInvalidValueColorRgbF(const QVariantList& color)
 void qtUIManager::setWidgetColorToInvalid(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(this->InvalidValueColor));
+  pal.setColor(QPalette::Base, this->correctedInvalidValueColor());
   widget->setPalette(pal);
 }
 
 void qtUIManager::setWidgetColorToDefault(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(this->DefaultValueColor));
+  pal.setColor(QPalette::Base, this->correctedDefaultValueColor());
   widget->setPalette(pal);
 }
 
 void qtUIManager::setWidgetColorToNormal(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(Qt::white));
+  pal.setColor(QPalette::Base, this->correctedNormalValueColor());
   widget->setPalette(pal);
 }
 
@@ -983,7 +997,7 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
   // If there is a View associated with the item - does it want it
   // displayed?
   auto item = info.item();
-  auto iview = dynamic_cast<qtBaseAttributeView*>(info.baseView().data());
+  auto iview = info.baseView();
   if (iview && (!iview->displayItem(item)))
   {
     return nullptr;

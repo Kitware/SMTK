@@ -49,6 +49,7 @@ Consuming applications can now register icon sets for Resources and Components, 
 ### qtAttribute Changes
 * Added a removeItems methods - this removes all of the qtItems from the qtAttribute and allows createBasicLayout to be called again
 * Added an option to createWidget that will allow a widget to be created even if the attribute's items are filtered out by categories and/or advanced level filtering.
+* qtAttributeInternal now stores a QPointer  to a qtBaseAttributeView instead of a qtBaseView - this is more conceptually consistent and eliminated the need for dynamic casts.
 
 ### Changes to qtBaseView
 * Added a virtual isValid method to indicate if a view is valid
@@ -102,8 +103,14 @@ Consuming applications can now register icon sets for Resources and Components, 
       </AttributeTypes>
     </View>
 ```
+
 ### qtUIManager Changes
 * There is now a method to return the size of a string based on the font being used
+* Added the following methods that take into consideration the current text color (which changes based on the system’s theme):
+    * correctedInvalidColor()
+    * correctedDefaultColor()
+    * correctedNormalColor()
+
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
 * Added Item View Option ExpressionOnly to indicate that the item must be assigned to an expression and not to a constant value
@@ -138,7 +145,15 @@ Consuming applications can now register icon sets for Resources and Components, 
 </SMTK_AttributeResource>
 ```
 
+### qtAttributeItemInfo Changes
+* Now stores a QPointer  to a qtBaseAttributeView instead of a qtBaseView - this is more conceptually consistent and eliminated the need for dynamic casts.
+* Changed the API not to require it to be passed as a QPointer which was also unnecessary.
+* baseView method no longer returns a QPointer to a qtBaseAttributeView.  It now returns a raw pointer.  There was no benefit using QPointer and it made it difficult for the compiler to properly down cast.
+
 ### qtGroupItem Changes
+* The first Column is no longer marked with 1 for extensible groups.
+* Fixed issue with updating extensible qtGroupItems due to the number of columns being set to 0 instead of 1
+
 #### Added the ability to limit the min size of an extensible group's table
 Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the default) the size is set to the total number of rows.
 
@@ -234,10 +249,6 @@ You can now specify ItemViews with an Item's Configuration.  If there was alread
         </Att>
 ```
 Note that item /c contain ItemView for its children.
-
-### Changes to qtGroupView
-* GroupBox Style icon has been changed from a check box to a closed/expand icon pair.  This change reduces confusion between optional items and viewing control widgets.
-* Tabbed Group Views now show indicate invalid children views in their tabs using the alert icon
 
 ### Changed to qtAssociation Widget
 * Added the ability to indicate that all persistent objects that can be associated to a particular type of attribute must be.
