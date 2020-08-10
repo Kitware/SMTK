@@ -197,11 +197,21 @@ def create_container(ci_file_path, *args):
 
     # The script and before_script could be anywhere!
     script_search_locations = [ci_state, subset, runner]
+    before_script = None
     for loc in script_search_locations:
         if 'before_script' in loc:
             before_script = loc['before_script']
         if 'script' in loc:
             script = loc['script']
+
+    tmp = []
+    for item in script:
+        if type(item) is list:
+            for subitem in item:
+                tmp.append(subitem)
+        else:
+            tmp.append(item)
+    script = tmp
 
     docker_template = string.Template('''
 FROM $image
@@ -226,8 +236,8 @@ RUN echo "$before_script || true" >> /setup-gitlab-env.sh && \
                                                 src_dir=src_dir,
                                                 gitlab_env=" ".join(
                                                     gitlab_env),
-                                                before_script=" && ".join(
-                                                    before_script),
+                                                before_script=(" && ".join(
+                                                    before_script) if before_script else 'echo "no before script"'),
                                                 script=" && ".join(script))
 
     # Write out the file
