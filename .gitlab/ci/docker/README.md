@@ -21,8 +21,8 @@ build sequence:
 
 ```sh
 cd $name
-docker build -t kitware/cmb/ci-smtk-$name-$YYMMDD .
-docker push kitware/cmb/ci-smtk-$name-$YYMMDD
+docker build -t kitware/cmb:ci-smtk-$name-$YYYYMMDD .
+docker push kitware/cmb:ci-smtk-$name-$YYYYMMDD
 ```
 
 ### Superbuild method

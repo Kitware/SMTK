@@ -5,7 +5,7 @@
 ### Fedora
 
 .fedora31:
-    image: "kitware/cmb:ci-smtk-fedora31-20200219"
+    image: "kitware/cmb:ci-smtk-fedora31-20200810"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -65,14 +65,14 @@
 
 .fedora31_vtk:
     extends: .fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-vtk-20200602"
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-20200810"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk
 
 .fedora31_paraview:
     extends: .fedora31_vtk
-    image: "kitware/cmb:ci-smtk-fedora31-paraview-20200219"
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20200810"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
