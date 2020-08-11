@@ -111,7 +111,7 @@ elseif(UNIX)
   # For Linux + system Qt5, GET_RUNTIME_DEPENDENCIES has difficulty finding Qt5
   # libraries. We help it out by passing the directories in which these libraries
   # can be found to the algorithm.
-  set(targets_to_find Qt5::Gui Qt5::Svg Qt5::Widgets)
+  set(targets_to_find Qt5::Gui Qt5::Svg Qt5::Widgets VTK::verdict)
   foreach(target IN LISTS targets_to_find)
     get_target_property(loc ${target} LOCATION)
     get_filename_component(real_loc ${loc} REALPATH)
@@ -175,7 +175,6 @@ if (UNIX AND NOT APPLE)
   if (LibXml2_FOUND)
     list(APPEND required_libs LibXml2::LibXml2)
   endif()
-#  set(required_libs ZLIB::ZLIB LibXml2::LibXml2)
   foreach(lib IN LISTS required_libs)
     get_target_property(loc ${lib} LOCATION)
     get_filename_component(real_loc ${loc} REALPATH)
