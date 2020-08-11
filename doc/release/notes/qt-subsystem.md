@@ -153,6 +153,26 @@ Consuming applications can now register icon sets for Resources and Components, 
 ### qtGroupItem Changes
 * The first Column is no longer marked with 1 for extensible groups.
 * Fixed issue with updating extensible qtGroupItems due to the number of columns being set to 0 instead of 1
+* Added the ability to load values from a  file using the ItemView option: ImportFromFile="true"  When set you can use following additional options:
+    * LoadButtonText - for setting the name of the load button.  The default is "Load from File"
+    * FileFormat - defines the format of the file to be read.  The options are:
+        * csv - string, integer, double data separated by a separation character (Default)
+        * double - a more flexible file format that contains only doubles.  They are separated by either white space or by an optional separator character
+        * Note - that the above is case insensitive so you can use for example CSV, csv, or Csv
+    * BrowserTitle - for setting the title of the file browser window.  The default is "Load from File..."
+    * ValueSeparator - for defining the separation character.  The default is ",".
+    * CommentChar - for defining the comment character that indicates that a line is a comment.  Line that start with this character are quietly skipped (not reported to the user). The default is '#'.
+    * FileExtensions - for defining the list of file extensions to be allowed in the file browser.  The default is "Data Files (*.csv *.dat *.txt);;All files (*.*)"
+
+```xml
+        <Att Name="outputs-att" Type="outputs">
+          <ItemViews>
+            <View Path="/output-times" ImportFromFile="true" LoadButtonText="Import from File"
+              FileFormat="Double" BrowserTitle="Import from Double File"
+              ValueSeparator="," CommentChar="#" FileExtensions="Time Files (*.txt *.csv *.dat)"/>
+          </ItemViews>
+        </Att>
+```
 
 #### Added the ability to limit the min size of an extensible group's table
 Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the default) the size is set to the total number of rows.

@@ -46,6 +46,7 @@ public:
   std::string valueAsString(std::size_t element) const override;
   bool setValue(const DataT& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const DataT& val);
+  bool setValueFromString(std::size_t element, const std::string& val) override;
   template <typename I>
   bool setValues(I vbegin, I vend)
   {
@@ -144,6 +145,26 @@ bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitio
     {
       m_values.resize(n);
     }
+  }
+  return true;
+}
+
+template <typename DataT>
+bool ValueItemTemplate<DataT>::setValueFromString(std::size_t element, const std::string& sval)
+{
+  // If the string is empty then unset the value.
+  if (sval.empty())
+  {
+    this->unset(element);
+    return true;
+  }
+
+  std::istringstream iss(sval);
+  DataT val;
+  iss >> val;
+  if (iss.fail() || !this->setValue(element, val))
+  {
+    return false;
   }
   return true;
 }

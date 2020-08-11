@@ -1,5 +1,6 @@
 # set up sources to build
 set(ioSrcs
+  attributeUtils.cxx
   AttributeReader.cxx
   AttributeWriter.cxx
   Helpers.cxx
@@ -17,6 +18,7 @@ set(ioSrcs
 )
 
 set(ioHeaders
+  attributeUtils.h
   AttributeReader.h
   AttributeWriter.h
   Helpers.h

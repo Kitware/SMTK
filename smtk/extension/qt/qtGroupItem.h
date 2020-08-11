@@ -43,6 +43,7 @@ protected slots:
   virtual void onRemoveSubGroup();
   void onChildWidgetSizeChanged() override;
   virtual void onChildItemModified();
+  void onImportFromFile();
 
 protected:
   void createWidget() override;
