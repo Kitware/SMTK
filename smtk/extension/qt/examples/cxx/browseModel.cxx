@@ -40,10 +40,9 @@
 #include <iomanip>
 #include <iostream>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace std;
-using smtk::model::testing::hexconst;
 
 int main(int argc, char* argv[])
 {
@@ -147,7 +146,7 @@ int main(int argc, char* argv[])
   {
     QTimer::singleShot(1000, &app, SLOT(quit()));
   }
-  int status = app.exec();
+  int status = QApplication::exec();
 
   delete qview;
   delete qmodel;
