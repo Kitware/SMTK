@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
   // Instantiate and load attribute resource
   smtk::attribute::ResourcePtr attResource;
 
-  QString inputPath = positionalArguments.first();
+  const QString& inputPath = positionalArguments.first();
   qInfo() << "Loading attribute file:" << inputPath;
   QFileInfo attFileInfo(inputPath);
   // Load the input file. Supported file formats: .smtk, .sbt and .sbi
@@ -324,7 +324,7 @@ int main(int argc, char* argv[])
 
   widget->resize(640, 480);
   widget->show();
-  int retcode = app.exec();
+  int retcode = QApplication::exec();
   QCoreApplication::processEvents();
 
   if (parser.isSet("output-file"))
