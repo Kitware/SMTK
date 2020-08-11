@@ -79,7 +79,7 @@
 
 .fedora31_vtk_python2:
     extends: .fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20200602"
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20200810"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk_python2
