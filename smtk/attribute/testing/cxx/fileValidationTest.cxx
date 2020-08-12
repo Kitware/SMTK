@@ -11,6 +11,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -122,6 +123,34 @@ int main()
     if (!ok)
     {
       std::cerr << "File name with appropriate extension was rejected.\n";
+      return 1;
+    }
+  }
+
+  {
+    smtk::attribute::FileItemPtr file = att->findFile("multipleExtensions");
+    auto def = file->definitionAs<smtk::attribute::FileItemDefinition>();
+
+    std::string aggregateFileFilters =
+      smtk::attribute::FileItemDefinition::aggregateFileFilters(def->getFileFilters());
+
+    if (aggregateFileFilters != "(*.ex1 *.ex2 *.ex3)")
+    {
+      std::cout << aggregateFileFilters << std::endl;
+      return 1;
+    }
+  }
+
+  {
+    smtk::attribute::FileItemPtr file = att->findFile("anyExtension");
+    auto def = file->definitionAs<smtk::attribute::FileItemDefinition>();
+
+    std::string aggregateFileFilters =
+      smtk::attribute::FileItemDefinition::aggregateFileFilters(def->getFileFilters());
+
+    if (aggregateFileFilters != "(*.*)")
+    {
+      std::cout << "aggregateFileFilters: " << aggregateFileFilters << std::endl;
       return 1;
     }
   }

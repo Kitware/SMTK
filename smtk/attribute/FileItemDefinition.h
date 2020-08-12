@@ -52,6 +52,11 @@ public:
   void setFileFilters(const std::string& filters) { m_fileFilters = filters; }
   //@}
 
+  /// Combine individual file filters into a single filter entry. For example:
+  /// "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3)" -> "(*.ex1 *.ex2 *.ex3)"
+  /// "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3);;All (*.*)" -> "(*.*)"
+  static std::string aggregateFileFilters(const std::string&);
+
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 

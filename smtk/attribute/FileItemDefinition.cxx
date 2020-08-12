@@ -91,6 +91,57 @@ int FileItemDefinition::filterId(const std::string& val) const
   return -1;
 }
 
+std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersStr)
+{
+  // Condense multiple file filters into a single expression
+  regex re(";;");
+  sregex_token_iterator it(filtersStr.begin(), filtersStr.end(), re, -1), last;
+  std::set<std::string> filters;
+  for (int id = 0; it != last; ++it, ++id)
+  {
+    std::size_t begin = it->str().find_first_not_of(" \n\r\t", it->str().find_last_of('(') + 1);
+    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(')'));
+    std::string suffixes = it->str().substr(begin, end - begin);
+
+    // If the suffixes string is empty, we have a permissive filter (*.*). All
+    // entries are accepted.
+    if (suffixes.empty())
+    {
+      return "(*.*)";
+    }
+
+    // Collect all of the suffixes using a set to guarantee uniqueness.
+    for (auto i = std::strtok(&suffixes[0], " "); i != nullptr; i = std::strtok(nullptr, " "))
+    {
+      // If all entries are accepted, there is no need to aggregate.
+      if (std::string(i) == "*.*")
+      {
+        return "(*.*)";
+      }
+      filters.insert(i);
+    }
+  }
+
+  std::stringstream s;
+  s << "(";
+  bool first = true;
+  for (const std::string& filter : filters)
+  {
+    if (first)
+    {
+      first = false;
+    }
+    else
+    {
+      s << " ";
+    }
+    s << filter;
+  }
+  s << ")";
+
+  return s.str();
+}
+
 bool FileItemDefinition::isValueValid(const std::string& val) const
 {
   // If the base class method's validity conditions are not satisfied, then the
