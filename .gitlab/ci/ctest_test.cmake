@@ -17,6 +17,13 @@ ctest_test(
   PARALLEL_LEVEL "${nproc}"
   RETURN_VALUE test_result
   EXCLUDE "${test_exclusions}")
+
+file(GLOB packages
+  "${CTEST_BINARY_DIRECTORY}/PluginTests/*/build/plugin/build/*.tar.gz")
+
+if (NOT packages STREQUAL "")
+  ctest_upload(FILES ${packages})
+endif()
 ctest_submit_multi(PARTS Test)
 
 if (test_result)
