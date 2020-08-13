@@ -47,6 +47,16 @@ target_link_libraries(ModelViewer
   Qt5::Widgets
 )
 
+vtk_module_autoinit(
+    TARGETS ModelViewer
+    MODULES VTK::CommonCore
+            VTK::CommonDataModel
+            VTK::InteractionStyle
+            VTK::RenderingCore
+            VTK::RenderingOpenGL2
+            VTK::GUISupportQt
+)
+
 set_target_properties(
   ModelViewer PROPERTIES
     AUTOMOC TRUE
@@ -117,7 +127,14 @@ elseif(UNIX)
   # For Linux + system Qt5, GET_RUNTIME_DEPENDENCIES has difficulty finding Qt5
   # libraries. We help it out by passing the directories in which these libraries
   # can be found to the algorithm.
-  set(targets_to_find Qt5::Gui Qt5::Svg Qt5::Widgets VTK::verdict)
+  set(targets_to_find Qt5::Gui Qt5::Svg Qt5::Widgets)
+
+  # For VTK-only builds (no ParaView), VTK is often built with kits enabled.
+  # VTK's Filters kit brings in VTK::FiltersVerdict, which depends on
+  # VTK::verdict. For some reason, GET_RUNTIME_DEPENDENCIES has difficulty
+  # finding VTK::verdict, so we add it here too.
+  list(APPEND targets_to_find VTK::verdict)
+
   foreach(target IN LISTS targets_to_find)
     get_target_property(loc ${target} LOCATION)
     get_filename_component(real_loc ${loc} REALPATH)
