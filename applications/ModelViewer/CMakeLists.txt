@@ -52,9 +52,15 @@ set_target_properties(
     AUTOMOC TRUE
     AUTORCC TRUE
     AUTOUIC TRUE
-    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin"
-    INSTALL_RPATH_USE_LINK_PATH TRUE
     )
+
+if (NOT DEFINED CMAKE_INSTALL_NAME_DIR)
+  set_target_properties(ModelViewer PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+endif ()
+
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
+  set_target_properties(ModelViewer PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
 
 if (APPLE)
   install(TARGETS ModelViewer DESTINATION . COMPONENT Runtime)
