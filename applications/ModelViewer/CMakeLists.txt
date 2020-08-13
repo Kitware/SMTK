@@ -182,9 +182,9 @@ endforeach()
 
 #-----------------------------------------------------------------------------
 # For UNIX, some libraries may be system installed, but we still
-# want them bundled. For example, LibXml2 is frequently installed
-# as a dependency of emacs. If this setup has system libraries that
-# we want, the call to GET_RUNTIME_DEPENDENCIES below will omit them
+# want them bundled. For example, LibXml2 is frequently installed as
+# a system library. If this setup has system libraries that we want,
+# bundled, the call to GET_RUNTIME_DEPENDENCIES below will omit them
 # from them package. We therefore force their inclusion if they are
 # available as system libraries.
 if (UNIX AND NOT APPLE)
