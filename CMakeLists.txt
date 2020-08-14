@@ -217,6 +217,19 @@ if (SMTK_ENABLE_TESTING)
   endif()
   # -- contract-example --
 
+  # Build an example application (Windows is not yet supported)
+  if (NOT WIN32)
+    if (SMTK_ENABLE_EXAMPLES AND SMTK_ENABLE_MESH_SESSION AND
+        SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_QT_SUPPORT)
+      configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/applications/ModelViewer/model-viewer.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/applications/ModelViewer/model-viewer.cmake"
+        @ONLY)
+      list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
+        "file://${CMAKE_CURRENT_BINARY_DIR}/applications/ModelViewer/model-viewer.cmake")
+    endif()
+  endif()
+
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)
     set(SMTK_COVERAGE_ENABLED ON)
