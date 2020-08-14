@@ -29,6 +29,7 @@ target_link_libraries(smtkIOVTK
     VTK::CommonCore
     VTK::IOCore
   LINK_PRIVATE
+    MOAB
     VTK::CommonDataModel
     VTK::CommonExecutionModel
     VTK::FiltersCore
@@ -74,9 +75,6 @@ smtk_export_header(smtkIOVTK IOVTKExports.h)
 
 target_include_directories(smtkIOVTK
   PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-
-target_include_directories(smtkIOVTK
-  PRIVATE ${MOAB_INCLUDE_DIRS})
 
 #install the headers
 smtk_public_headers(smtkIOVTK ${headers})

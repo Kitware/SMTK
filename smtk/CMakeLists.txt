@@ -79,18 +79,13 @@ set(smtk_srcs
 )
 
 set(smtkCore_public_include_directories
-  ${MOAB_INCLUDE_DIRS}
   $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
   $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
   )
 
-set(moab_libs ${MOAB_LIBRARIES})
-if(WIN32)
-  set(moab_libs "MOAB")
-endif()
 set(smtkCore_public_link_libraries
-  ${moab_libs}
+  MOAB
   nlohmann_json
   taocpp::pegtl
   Threads::Threads

@@ -46,8 +46,8 @@ target_link_libraries(MultiScaleConverter
                                   VTK::CommonDataModel
                                   VTK::FiltersSources
                                   VTK::IOXML
-                                  VTK::vtksys)
-target_include_directories(MultiScaleConverter PRIVATE ${MOAB_INCLUDE_DIRS})
+                                  VTK::vtksys
+                      LINK_PRIVATE MOAB)
 
 add_executable(SurfacePerMaterialExtraction SurfacePerMaterialExtraction.cxx)
 
@@ -58,5 +58,5 @@ target_link_libraries(SurfacePerMaterialExtraction
                                   VTK::CommonDataModel
                                   VTK::FiltersSources
                                   VTK::IOXML
-                                  VTK::vtksys)
-target_include_directories(SurfacePerMaterialExtraction PRIVATE ${MOAB_INCLUDE_DIRS})
+                                  VTK::vtksys
+                      LINK_PRIVATE MOAB)
