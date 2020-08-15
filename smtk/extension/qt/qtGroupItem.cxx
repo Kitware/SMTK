@@ -20,11 +20,16 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "smtk/io/Logger.h"
+#include "smtk/io/attributeUtils.h"
+
 #include <QCoreApplication>
+#include <QFileDialog>
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QLabel>
 #include <QMap>
+#include <QMessageBox>
 #include <QPointer>
 #include <QScrollBar>
 #include <QTableWidget>
@@ -36,6 +41,7 @@ using namespace smtk::extension;
 class qtGroupItemInternals
 {
 public:
+  QPointer<QFrame> ButtonsFrame;
   QPointer<QFrame> ChildrensFrame;
   QMap<QToolButton*, QList<qtItem*> > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
@@ -121,6 +127,12 @@ void qtGroupItem::createWidget()
   // leak because the layout instance is parented by the widget.)
   new QVBoxLayout(m_widget);
   m_widget->layout()->setMargin(0);
+  m_internals->ButtonsFrame = new QFrame(m_internals->GroupBox);
+  m_internals->ButtonsFrame->setObjectName("groupitemButtonFrame");
+  new QHBoxLayout(m_internals->ButtonsFrame);
+  m_internals->GroupBox->layout()->addWidget(m_internals->ButtonsFrame);
+  m_internals->ButtonsFrame->layout()->setMargin(0);
+
   m_internals->ChildrensFrame = new QFrame(m_internals->GroupBox);
   m_internals->ChildrensFrame->setObjectName("groupitemFrame");
   new QVBoxLayout(m_internals->ChildrensFrame);
@@ -212,7 +224,7 @@ void qtGroupItem::updateItemData()
     // The new item button
     if (!m_internals->AddItemButton)
     {
-      m_internals->AddItemButton = new QToolButton(m_internals->ChildrensFrame);
+      m_internals->AddItemButton = new QToolButton(m_internals->ButtonsFrame);
       m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       QString iconName(":/icons/attribute/plus.png");
       std::string extensibleLabel = "Add Row";
@@ -221,7 +233,20 @@ void qtGroupItem::updateItemData()
       m_internals->AddItemButton->setIcon(QIcon(iconName));
       m_internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       connect(m_internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
-      m_internals->ChildrensFrame->layout()->addWidget(m_internals->AddItemButton);
+      m_internals->ButtonsFrame->layout()->addWidget(m_internals->AddItemButton);
+      qobject_cast<QHBoxLayout*>(m_internals->ButtonsFrame->layout())->addStretch();
+
+      // Do we show a load File option?
+      if (item->isExtensible() && m_itemInfo.component().attributeAsBool("ImportFromFile"))
+      {
+        std::string buttonText = "Load from File";
+        m_itemInfo.component().attribute("LoadButtonText", buttonText);
+        auto loadButton = new QToolButton(m_internals->ButtonsFrame);
+        loadButton->setObjectName("loadFileButton");
+        loadButton->setText(buttonText.c_str());
+        connect(loadButton, SIGNAL(clicked(bool)), this, SLOT(onImportFromFile()));
+        m_internals->ButtonsFrame->layout()->addWidget(loadButton);
+      }
     }
     m_widget->layout()->setSpacing(3);
   }
@@ -594,4 +619,49 @@ void qtGroupItem::calculateTableHeight()
     totalHeight += m_internals->ItemsTable->verticalHeader()->sectionSize(i);
   }
   m_internals->ItemsTable->setMinimumHeight(totalHeight);
+}
+
+void qtGroupItem::onImportFromFile()
+{
+  smtk::io::Logger logger;
+  std::string sep(","), comment("#"), format("csv"), broweserTitle("Load from File..."),
+    fileExten("Data Files (*.csv *.dat *.txt);;All files (*.*)");
+  m_itemInfo.component().attribute("ValueSeparator", sep);
+  m_itemInfo.component().attribute("CommentChar", comment);
+  m_itemInfo.component().attribute("FileFormat", format);
+  m_itemInfo.component().attribute("BrowserTitle", broweserTitle);
+  m_itemInfo.component().attribute("FileExtensions", fileExten);
+  QString fname =
+    QFileDialog::getOpenFileName(m_widget, tr(broweserTitle.c_str()), "", tr(fileExten.c_str()));
+  if (fname.isEmpty())
+  {
+    return;
+  }
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  // Lets make the format be case insensitive
+  std::transform(format.begin(), format.end(), format.begin(), ::tolower);
+  if (format == "csv")
+  {
+    if (smtk::io::importFromCSV(*item, fname.toStdString(), logger, false, sep, comment))
+    {
+      this->updateItemData();
+      emit this->modified();
+    }
+  }
+  else if (format == "double")
+  {
+    if (smtk::io::importFromDoubleFile(*item, fname.toStdString(), logger, false, sep, comment))
+    {
+      this->updateItemData();
+      emit this->modified();
+    }
+  }
+  else
+  {
+    smtkErrorMacro(logger, "Unsupported File Format: " << format);
+  }
+  if (logger.numberOfRecords())
+  {
+    QMessageBox::warning(m_widget, tr("GroupItem Import Log)"), logger.convertToString().c_str());
+  }
 }

@@ -6,6 +6,18 @@ set(ioTests
   loggerThreadTest
 )
 
+set(ioDataTests
+  groupItemCSVTest
+  groupItemDoubleFileTest
+  )
+
+  set(groupItemCSVTest_ARGUMENTS
+    "${SMTK_DATA_DIR}/attribute/csv/groupItemTestData.csv"
+    )
+  set(groupItemDoubleFileTest_ARGUMENTS
+    "${SMTK_DATA_DIR}/attribute/csv/heater.txt"
+  )
+
 foreach (test ${ioTests})
   add_executable(${test}  ${test}.cxx)
   target_link_libraries(${test} smtkCore smtkCoreModelTesting ${Boost_LIBRARIES} Threads::Threads)

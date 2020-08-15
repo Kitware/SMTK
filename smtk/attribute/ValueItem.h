@@ -97,6 +97,7 @@ public:
   virtual std::string valueAsString() const { return this->valueAsString(0); }
 
   virtual std::string valueAsString(std::size_t elementIndex) const = 0;
+  virtual bool setValueFromString(std::size_t elementIndex, const std::string& stringVal) = 0;
   virtual bool isSet(std::size_t elementIndex = 0) const
   {
     return m_isSet.size() > elementIndex ? m_isSet[elementIndex] : false;

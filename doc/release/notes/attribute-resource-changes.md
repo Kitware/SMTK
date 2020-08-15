@@ -139,6 +139,7 @@ an item's ForceRequired is set then even if it's definition indicates it should 
 ### Changes to ValueItem
 * New Methods
     * std::string valueLabel(ith) - convenience method to access its Definition's valueLabel method.
+    * bool setValueFromString(std::size_t ith, const std::string& val) - sets the ith value using a string which is converted to the appropriate data type.
 
 ### Custom attribute item and definition types
 SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
