@@ -59,6 +59,7 @@ protected:
 
   void processAttributeInformation();
   void processViews();
+  void processStyles();
   void processModelInfo();
 
   void processDefinition(smtk::attribute::DefinitionPtr def);
@@ -101,7 +102,7 @@ protected:
 
   virtual void processView(smtk::view::ConfigurationPtr view);
   virtual void processViewComponent(
-    smtk::view::Configuration::Component& comp, pugi::xml_node& node);
+    const smtk::view::Configuration::Component& comp, pugi::xml_node& node);
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 

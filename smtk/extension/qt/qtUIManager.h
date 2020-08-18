@@ -17,6 +17,7 @@
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/Selection.h"
 
@@ -90,6 +91,8 @@ public:
     smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
   smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
+  const smtk::view::Configuration::Component& findStyle(
+    const smtk::attribute::DefinitionPtr& def, const std::string& styleName = "") const;
   ///}@
 
   smtk::resource::ManagerPtr& resourceManager()

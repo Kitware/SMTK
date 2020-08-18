@@ -36,7 +36,6 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/view/Configuration.h"
 
 #include <QAbstractItemDelegate>
 #include <QBrush>
@@ -160,7 +159,12 @@ public:
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
   bool m_okToCreateModelEntities;
   smtk::model::BitFlags m_modelEntityMask;
+
+  // Used to store attribute styles defined within the View as well as
+  // style names explicitly assigned to an attribute type
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
+  std::map<std::string, std::string> m_attStyleMap;
+
   QIcon m_alertIcon;
   QSize m_alertSize;
   bool m_showTopButtons;
@@ -1053,16 +1057,10 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(
     att->definition(), this->uiManager()->advancedFont());
   this->setFixedLabelWidth(tmpLen);
-  auto it = m_internals->m_attCompMap.find(att->definition()->type());
-  if (it != m_internals->m_attCompMap.end())
-  {
-    m_internals->CurrentAtt = new qtAttribute(att, it->second, m_internals->AttFrame, this);
-  }
-  else
-  {
-    smtk::view::Configuration::Component comp;
-    m_internals->CurrentAtt = new qtAttribute(att, comp, m_internals->AttFrame, this);
-  }
+  smtk::attribute::DefinitionPtr def = att->definition();
+  // Lets get a style for this attribute
+  auto& style = this->findStyle(def);
+  m_internals->CurrentAtt = new qtAttribute(att, style, m_internals->AttFrame, this);
   m_internals->selectedAttribute = att;
   // By default use the basic layout with no model associations since this class
   // takes care of it
@@ -1144,7 +1142,7 @@ void qtAttributeView::getAllDefinitions()
 
   smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
-  std::string attName, defName, val;
+  std::string attName, defName, val, styleName;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;
   bool flag;
@@ -1194,6 +1192,12 @@ void qtAttributeView::getAllDefinitions()
     if (attDef == nullptr)
     {
       continue;
+    }
+
+    //Lets see if there is an explicit style name
+    if (attsComp.child(i).attribute("Style", styleName))
+    {
+      m_internals->m_attStyleMap[defName] = styleName;
     }
 
     m_internals->m_attCompMap[defName] = attsComp.child(i);
@@ -1513,4 +1517,44 @@ void smtk::extension::qtAttributeView::triggerEdit(const QModelIndex& index)
 int smtk::extension::qtAttributeView::numOfAttributes()
 {
   return m_internals->ListTableModel->rowCount();
+}
+
+const smtk::view::Configuration::Component& smtk::extension::qtAttributeView::findStyle(
+  const smtk::attribute::DefinitionPtr& def, bool isOriginalDef)
+{
+  // This is the order of preference in trying to find a style:
+  // 1. Is there an explicit style store in the View for this Definition?
+  // 2. Else, is there  a style name associated with the definition?
+  // 3. Lets Check the above conditions for the definition's base
+  // 4. Finally lets as the UI Manager for a default global style (if this is the original definition)
+  static smtk::view::Configuration::Component emptyStyle;
+
+  auto it = m_internals->m_attCompMap.find(def->type());
+  // Did we find a component that contained style information
+  if ((it != m_internals->m_attCompMap.end()) && it->second.numberOfChildren())
+  {
+    return it->second;
+  }
+  // Was there a global style associated with it?
+  auto it1 = m_internals->m_attStyleMap.find(def->type());
+  if (it1 != m_internals->m_attStyleMap.end())
+  {
+    return this->uiManager()->findStyle(def, it1->second);
+  }
+  // Are there more definitions for us to check?
+  if (def->baseDefinition())
+  {
+    auto& style = this->findStyle(def->baseDefinition(), false);
+    // Did we get an empty style?
+    if (style.numberOfChildren())
+    {
+      return style;
+    }
+  }
+  // Is this the original definition?
+  if (isOriginalDef)
+  {
+    return this->uiManager()->findStyle(def);
+  }
+  return emptyStyle;
 }

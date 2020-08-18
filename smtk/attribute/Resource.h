@@ -28,6 +28,7 @@
 #include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/view/Configuration.h"
 
 #include <iostream>
 #include <map>
@@ -191,6 +192,24 @@ public:
   std::vector<smtk::view::ConfigurationPtr> findTopLevelViews() const;
   const std::map<std::string, smtk::view::ConfigurationPtr>& views() const { return m_views; }
 
+  ///@{
+  ///\brief API for setting and accessing style information.
+  ///
+  /// A style is represented as a smtk::view::Configuration::Component and represents
+  /// customizations for displaying the attribute in a GUI.
+  void addStyle(
+    const std::string& definitionType, const smtk::view::Configuration::Component style);
+  const smtk::view::Configuration::Component& findStyle(
+    const smtk::attribute::DefinitionPtr& def, const std::string& styleName = "") const;
+  const std::map<std::string, smtk::view::Configuration::Component>& findStyles(
+    const smtk::attribute::DefinitionPtr& def) const;
+  const std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> >&
+  styles() const
+  {
+    return m_styles;
+  }
+  ///@}
+
   /// \brief Return a set of resources associated to this attribute resource.
   smtk::resource::ResourceSet associations() const;
 
@@ -303,6 +322,7 @@ protected:
   std::set<std::string> m_categories;
   smtk::attribute::Analyses m_analyses;
   std::map<std::string, smtk::view::ConfigurationPtr> m_views;
+  std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> > m_styles;
 
   // Advance levels, <int-level, <string-label, color[4]>
   // higher level means more advanced.

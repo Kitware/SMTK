@@ -55,6 +55,9 @@ Consuming applications can now register icon sets for Resources and Components, 
 * Added a virtual isValid method to indicate if a view is valid
 * Added a modified signal so that qtBaseViews can indicate they have been changed
 
+### qtInstancedView Changes
+* Added support for applying Configuration Styles stored in the attribute resource.  If an attribute does not have style information defined in the View, the View will check with the UIManager. **Note:** this process will also take into consideration the definitions that attribute's definition is based on.
+
 
 ### qtAttributeView Changes
 * There is now a splitter between the attribute editing area and the association information area.
@@ -103,6 +106,7 @@ Consuming applications can now register icon sets for Resources and Components, 
       </AttributeTypes>
     </View>
 ```
+* Added support for applying Configuration Styles stored in the attribute resource.  If an attribute does not have style information defined in the View, the View will check with the UIManager. **Note:** this process will also take into consideration the definitions that attribute's definition is based on.
 
 ### qtUIManager Changes
 * There is now a method to return the size of a string based on the font being used
@@ -110,6 +114,7 @@ Consuming applications can now register icon sets for Resources and Components, 
     * correctedInvalidColor()
     * correctedDefaultColor()
     * correctedNormalColor()
+* Added the ability to access attribute style information.  Currently this simply calls the Style API of the attribute resource.
 
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
