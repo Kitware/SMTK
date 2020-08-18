@@ -156,7 +156,11 @@ void pqSMTKSubtractUI::toggleMenuItem(
   // for more information.
   auto src = QString::fromStdString(itemPath);
   auto sep = QString::fromStdString(itemSep);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  auto spl = src.split(sep, Qt::SkipEmptyParts);
+#else
   auto spl = src.split(sep, QString::SkipEmptyParts);
+#endif
   if (spl.empty())
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Empty menu item path.");
