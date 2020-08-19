@@ -62,10 +62,6 @@ if (SMTK_ENABLE_VTK_SUPPORT)
       "${smtk_cmake_build_dir}/SMTKPolygonExt-vtk-module-properties.cmake")
   endif ()
 
-  if (SMTK_ENABLE_OPENCASCADE_SESSION)
-    list(APPEND smtk_cmake_files_to_install
-      "${smtk_cmake_build_dir}/SMTKOpencascadeExt-vtk-module-properties.cmake")
-  endif ()
 endif ()
 
 foreach (smtk_cmake_module_file IN LISTS smtk_cmake_module_files)
