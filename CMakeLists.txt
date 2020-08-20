@@ -156,7 +156,6 @@ if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "/path/to/afrl/data" CACHE PATH "Path to a directory of AFRL data.")
 endif()
 option(SMTK_ENABLE_OSCILLATOR_SESSION "Build example oscillator model session." ON)
-option(SMTK_ENABLE_OPENCASCADE_SESSION "Build a session for B-Rep modeling." OFF)
 
 # When SMTK_RELOCATABLE_INSTALL=OFF we add to smtkConfig.cmake
 # set(SMTK_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
@@ -410,14 +409,6 @@ endif()
 
 if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
-endif()
-
-################################################################################
-# OpenCASCADE package settings
-################################################################################
-
-if (SMTK_ENABLE_OPENCASCADE_SESSION)
-  find_package(OpenCASCADE REQUIRED)
 endif()
 
 ################################################################################

@@ -1,9 +1,0 @@
-NAME
-  vtkOpencascadeGeometryExt
-DEPENDS
-  VTK::CommonExecutionModel
-PRIVATE_DEPENDS
-  vtkSMTKSourceExt
-  vtkSMTKOperationsExt
-  VTK::CommonCore
-  VTK::CommonDataModel
