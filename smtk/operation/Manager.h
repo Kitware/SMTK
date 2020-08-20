@@ -15,6 +15,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
 
 #include "smtk/operation/Group.h"
@@ -126,6 +127,10 @@ public:
   Metadata::Observers& metadataObservers() { return m_metadataObservers; }
   const Metadata::Observers& metadataObservers() const { return m_metadataObservers; }
 
+  // Return the managers instance that contains this manager, if it exists.
+  smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
+  void setManagers(const smtk::common::Managers::Ptr& managers) { m_managers = managers; }
+
   /// Assign a resource manager to manage resources created by operations.
   ///
   /// This method constructs an observer that registers created resources to the
@@ -208,11 +213,12 @@ private:
   /// Observer index for resource manager.
   Observers::Key m_resourceObserver;
 
-  /// Metadata Observer index for resource manager.
-  Metadata::Observers::Key m_resourceMetadataObserver;
-
   /// A container for all registered operation metadata.
   MetadataContainer m_metadata;
+
+  /// A weak pointer to the managers instance that contains this manager, if it
+  /// exists.
+  std::weak_ptr<smtk::common::Managers> m_managers;
 };
 
 template <typename OperationType>

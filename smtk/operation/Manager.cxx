@@ -135,57 +135,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
     this->observers().erase(m_resourceObserver);
   }
 
-  // Use this resource manager to conduct resource manager-related operations
-  // (e.g. SaveResource, LoadResource, CreateResource).
-  if (m_resourceMetadataObserver.assigned())
-  {
-    this->metadataObservers().erase(m_resourceMetadataObserver);
-  }
-
   std::weak_ptr<smtk::resource::Manager> weakRMPtr = resourceManager;
-
-  // Define a metadata observer that appends the assignment of the resource
-  // manager to the create functor for operations that inherit from
-  // ResourceManagerOperation.
-  auto resourceMetadataObserver = [&, weakRMPtr](const smtk::operation::Metadata& md, bool adding) {
-    if (!adding)
-      return;
-    auto rsrcManager = weakRMPtr.lock();
-    if (!rsrcManager)
-    {
-      // The underlying resource manager has expired, so we can remove this
-      // metadata observer.
-      m_metadataObservers.erase(m_resourceMetadataObserver);
-      m_resourceMetadataObserver = MetadataObservers::Key();
-      return;
-    }
-
-    // We are only interested in operations that inherit from
-    // ResourceManagerOperation.
-    if (std::dynamic_pointer_cast<ResourceManagerOperation>(md.create()) == nullptr)
-    {
-      return;
-    }
-
-    // This metadata observer actually manipulates the metadata, so we need a
-    // const cast. This is an exception to the rule of metadata observers.
-    smtk::operation::Metadata& metadata = const_cast<smtk::operation::Metadata&>(md);
-
-    auto create = metadata.create;
-    metadata.create = [=]() {
-      auto op = create();
-      std::dynamic_pointer_cast<ResourceManagerOperation>(op)->setResourceManager(weakRMPtr);
-      return op;
-    };
-  };
-
-  // Add this metadata observer to the set of metadata observers, invoking it
-  // immediately on all extant metadata.
-  m_resourceMetadataObserver = this->metadataObservers().insert(resourceMetadataObserver,
-    "Append the assignment of the resource manager to the create functor "
-    "for operations that inherit from ResourceManagerOperation");
-  std::for_each(m_metadata.begin(), m_metadata.end(),
-    [&](const smtk::operation::Metadata& md) { resourceMetadataObserver(md, true); });
 
   // Define an observer that adds all created resources to the resource manager.
   m_resourceObserver = this->observers().insert(

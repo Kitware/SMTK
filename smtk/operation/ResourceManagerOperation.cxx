@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/operation/ResourceManagerOperation.h"
 
+#include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -16,14 +17,21 @@ namespace smtk
 namespace operation
 {
 
-void ResourceManagerOperation::setResourceManager(smtk::resource::WeakManagerPtr managerPtr)
-{
-  m_resourceManager = managerPtr;
-}
-
 smtk::resource::ManagerPtr ResourceManagerOperation::resourceManager()
 {
-  return m_resourceManager.lock();
+
+  if (auto mgr = manager())
+  {
+    if (auto mgrs = mgr->managers())
+    {
+      if (mgrs->contains<smtk::resource::Manager::Ptr>())
+      {
+        return mgrs->get<smtk::resource::Manager::Ptr>();
+      }
+    }
+  }
+
+  return smtk::resource::ManagerPtr();
 }
 }
 }

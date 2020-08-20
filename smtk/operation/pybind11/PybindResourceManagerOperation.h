@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::operation::ResourceManagerOperation, smtk::operation::XM
     .def("deepcopy", (smtk::operation::XMLOperation & (smtk::operation::XMLOperation::*)(::smtk::operation::XMLOperation const &)) &smtk::operation::XMLOperation::operator=)
     .def("shared_from_this", (std::shared_ptr<const smtk::operation::XMLOperation> (smtk::operation::XMLOperation::*)() const) &smtk::operation::XMLOperation::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::operation::XMLOperation> (smtk::operation::XMLOperation::*)()) &smtk::operation::XMLOperation::shared_from_this)
-    .def("setResourceManager", &smtk::operation::ResourceManagerOperation::setResourceManager)
     .def("resourceManager", &smtk::operation::ResourceManagerOperation::resourceManager)
     ;
   return instance;

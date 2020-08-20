@@ -22,6 +22,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Observer.h"
 
+#include <numeric>
 #include <string>
 
 namespace smtk
@@ -47,27 +48,27 @@ namespace attribute
 ///
 /// Additionally, the `smtk_add_plugin()` call for the plugin should be extended
 /// to include `smtk::attribute::ItemDefinitionManager` in its list of managers.
-/// Upon registration, attribute resources associated with the same resource
-/// manager as the ItemDefinitionManager will be able to read, write and create
-/// attributes that contain the newly registered custom items.
+/// Upon registration, attribute resources (a) associated with the same resource
+/// manager as the ItemDefinitionManager or (b) constructed by an operation that
+/// is managed by an operation manager with access to the ItemDefinitionManager
+/// will be able to read, write and create attributes that contain the newly
+/// registered custom items.
 class SMTKCORE_EXPORT ItemDefinitionManager
   : public std::enable_shared_from_this<ItemDefinitionManager>
 {
 public:
   smtkTypedefs(smtk::attribute::ItemDefinitionManager);
 
-  static std::shared_ptr<ItemDefinitionManager> create(
-    const smtk::resource::ManagerPtr& resourceManager)
+  static std::shared_ptr<ItemDefinitionManager> create()
   {
-    return smtk::shared_ptr<ItemDefinitionManager>(new ItemDefinitionManager(resourceManager));
+    return smtk::shared_ptr<ItemDefinitionManager>(new ItemDefinitionManager());
   }
 
   // Our map of observer keys is move-only, so this class needs to be at least
   // move-only as well. MSVC 2019 does not correctly intuit this fact when
-  // generating default constructors and assignment operators, so we explicitly
+  // generating copy constructors and assignment operators, so we explicitly
   // remove them. We remove the move constructor and move assignment operator
   // for good measure, since they are not needed anyway.
-  ItemDefinitionManager() = delete;
   ItemDefinitionManager(const ItemDefinitionManager&) = delete;
   ItemDefinitionManager(ItemDefinitionManager&&) = delete;
 
@@ -76,53 +77,86 @@ public:
 
   virtual ~ItemDefinitionManager();
 
+  /// Register to a resource manager. All attribute resources managed by the
+  /// resource manager (both preexisting and resources subsequently added to the
+  /// resource manager) will be able to read, write and create attributes that
+  /// contain definitions registered to this class.
+  bool registerResourceManager(smtk::resource::Manager::Ptr&);
+
+  /// Explicilty add the contained custom item definitions to an attribute
+  /// resource.
+  bool registerDefinitionsTo(smtk::attribute::Resource::Ptr& resource) const
+  {
+    for (auto& registerFunction : m_registerFunctions)
+    {
+      registerFunction.second(*resource);
+    }
+
+    return true;
+  }
+
   /// Register <CustomItemDefinitionType> to all attribute resources.
   template <typename CustomDefinitionType>
   bool registerDefinition()
   {
-    auto registerCustomType = [](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
-      if (eventType == smtk::resource::EventType::ADDED)
-      {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
-        {
-          const_cast<smtk::attribute::Resource*>(attributeResource)
-            ->customItemDefinitionFactory()
-            .registerType<CustomDefinitionType>();
-        }
-      }
+    // Construct a functor for adding the new definition type to an attribute
+    // resource.
+    auto registerCustomType = [](smtk::attribute::Resource& resource) {
+      resource.customItemDefinitionFactory().registerType<CustomDefinitionType>();
     };
 
+    // Add the functor to our container of register functions.
+    m_registerFunctions.insert(
+      std::make_pair(typeid(CustomDefinitionType).hash_code(), registerCustomType));
+
+    // If we currently have an associated resource manager...
     if (auto manager = m_manager.lock())
     {
-      m_observers.insert(std::make_pair(typeid(CustomDefinitionType).hash_code(),
-        manager->observers().insert(registerCustomType, "Register custom attribute type <" +
-            smtk::common::typeName<CustomDefinitionType>() + ">.")));
+      // ...add an observer that adds the new definition to all current and
+      // future attribute resources associated with this manager.
+      auto registerCustomTypeObserver = [=](
+        const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+        if (eventType == smtk::resource::EventType::ADDED)
+        {
+          if (const smtk::attribute::Resource* attributeResource =
+                dynamic_cast<const smtk::attribute::Resource*>(&resource))
+          {
+            registerCustomType(const_cast<smtk::attribute::Resource&>(*attributeResource));
+          }
+        }
+      };
 
-      return true;
+      // Associate the observer key with the definition type, so we can remove it
+      // later if requested.
+      m_observers.insert(std::make_pair(typeid(CustomDefinitionType).hash_code(),
+        manager->observers().insert(registerCustomTypeObserver, "Register custom attribute type <" +
+            smtk::common::typeName<CustomDefinitionType>() + ">.")));
     }
 
-    return false;
+    return true;
   }
 
   /// Unregister <CustomItemDefinitionType> from all attribute resources.
   template <typename CustomDefinitionType>
   bool unregisterDefinition()
   {
+    // Remove the definiton from the container of register functions.
+    m_registerFunctions.erase(typeid(CustomDefinitionType).hash_code());
+
+    // Also, remove the observer associated with the definition, if it exists.
+    m_observers.erase(typeid(CustomDefinitionType).hash_code());
+
+    // If there is an associated resource manager...
     if (auto manager = m_manager.lock())
     {
+      // ...remove the definition from all of its attribute resources.
       for (auto resource : manager->find<smtk::attribute::Resource>())
       {
         resource->customItemDefinitionFactory().unregisterType<CustomDefinitionType>();
       }
-
-      m_observers.erase(typeid(CustomDefinitionType).hash_code());
-
-      return true;
     }
 
-    return false;
+    return true;
   }
 
   /// Register multiple definitions to all attribute resources.
@@ -140,6 +174,7 @@ public:
   }
 
 protected:
+  ItemDefinitionManager();
   ItemDefinitionManager(const std::shared_ptr<smtk::resource::Manager>&);
 
   template <std::size_t I, typename Tuple>
@@ -171,6 +206,9 @@ protected:
   {
     return true;
   }
+
+  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >
+    m_registerFunctions;
 
   std::weak_ptr<smtk::resource::Manager> m_manager;
 

@@ -40,15 +40,18 @@ typedef std::tuple<
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
-  managers->insert(smtk::operation::Manager::create());
-
-  if (managers->contains<smtk::resource::Manager::Ptr>())
+  if (managers->insert(smtk::operation::Manager::create()))
   {
-    managers->get<smtk::operation::Manager::Ptr>()->registerResourceManager(
-      managers->get<smtk::resource::Manager::Ptr>());
+    managers->get<smtk::operation::Manager::Ptr>()->setManagers(managers);
+
+    if (managers->contains<smtk::resource::Manager::Ptr>())
+    {
+      managers->get<smtk::operation::Manager::Ptr>()->registerResourceManager(
+        managers->get<smtk::resource::Manager::Ptr>());
+    }
+    smtk::plugin::Manager::instance()->registerPluginsTo(
+      managers->get<smtk::operation::Manager::Ptr>());
   }
-  smtk::plugin::Manager::instance()->registerPluginsTo(
-    managers->get<smtk::operation::Manager::Ptr>());
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
