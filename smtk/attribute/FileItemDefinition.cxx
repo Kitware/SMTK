@@ -35,6 +35,8 @@ using boost::regex_search;
 using boost::regex_match;
 #endif
 
+#include <sstream>
+
 using namespace smtk::attribute;
 
 FileItemDefinition::FileItemDefinition(const std::string& myName)
