@@ -55,14 +55,22 @@ protected:
 
 int TestRemoveResource(int /*unused*/, char** const /*unused*/)
 {
-  // Create a resource manager
-  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
+  auto managers = smtk::common::Managers::create();
 
-  // Create an operation manager
-  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+  // Construct smtk managers
+  {
+    smtk::resource::Registrar::registerTo(managers);
+    smtk::operation::Registrar::registerTo(managers);
+  }
 
+  // access smtk managers
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+
+  // Initialize smtk managers
   {
     smtk::operation::Registrar::registerTo(operationManager);
+    operationManager->registerResourceManager(resourceManager);
   }
 
   // Register the resource manager to the operation manager (newly created

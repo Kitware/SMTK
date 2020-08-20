@@ -238,18 +238,26 @@ typedef std::tuple<MyItemDefinition> CustomItemDefinitionsList;
 
 int unitCustomItem(int /*unused*/, char* /*unused*/ [])
 {
-  auto resourceManager = smtk::resource::Manager::create();
-  auto operationManager = smtk::operation::Manager::create();
-  auto itemDefinitionManager = smtk::attribute::ItemDefinitionManager::create(resourceManager);
+  auto managers = smtk::common::Managers::create();
+
+  // Construct smtk managers
   {
-    // Initialize smtk managers
-    smtk::attribute::Registrar::registerTo(resourceManager);
-    smtk::attribute::Registrar::registerTo(operationManager);
-    smtk::operation::Registrar::registerTo(operationManager);
-    operationManager->registerResourceManager(resourceManager);
+    smtk::resource::Registrar::registerTo(managers);
+    smtk::operation::Registrar::registerTo(managers);
+    smtk::attribute::Registrar::registerTo(managers);
   }
 
-  itemDefinitionManager->registerDefinitions<CustomItemDefinitionsList>();
+  // access smtk managers
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  auto itemDefinitionManager = managers->get<smtk::attribute::ItemDefinitionManager::Ptr>();
+
+  // Initialize smtk managers
+  {
+    smtk::attribute::Registrar::registerTo(operationManager);
+    operationManager->registerResourceManager(resourceManager);
+    itemDefinitionManager->registerDefinitions<CustomItemDefinitionsList>();
+  }
 
   // 1. Construct an attribute with a custom item
 

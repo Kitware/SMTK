@@ -33,9 +33,6 @@ public:
 
   void setResourceManager(smtk::resource::WeakManagerPtr);
   smtk::resource::ManagerPtr resourceManager();
-
-private:
-  smtk::resource::WeakManagerPtr m_resourceManager;
 };
 }
 }
