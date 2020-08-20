@@ -41,14 +41,16 @@ typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> O
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
+  managers->insert(smtk::attribute::ItemDefinitionManager::create());
+
   if (managers->contains<smtk::resource::Manager::Ptr>())
   {
-    managers->insert(smtk::attribute::ItemDefinitionManager::create(
-      managers->get<smtk::resource::Manager::Ptr>()));
-
-    smtk::plugin::Manager::instance()->registerPluginsTo(
-      managers->get<smtk::attribute::ItemDefinitionManager::Ptr>());
+    managers->get<smtk::attribute::ItemDefinitionManager::Ptr>()->registerResourceManager(
+      managers->get<smtk::resource::Manager::Ptr>());
   }
+
+  smtk::plugin::Manager::instance()->registerPluginsTo(
+    managers->get<smtk::attribute::ItemDefinitionManager::Ptr>());
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)

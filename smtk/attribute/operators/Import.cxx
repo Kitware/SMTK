@@ -15,14 +15,18 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/Managers.h"
 #include "smtk/common/Paths.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+
+#include "smtk/operation/Manager.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -50,16 +54,27 @@ Import::Result Import::operateInternal()
   }
   else
   {
-    // Create an attribute resource. If available, use the resource manager to
-    // create the resource and add logic to handle custom items to it.
-    if (auto resourceManager = this->resourceManager())
+    // Create an attribute resource. If available, use the item definition
+    // manager to populate the resource with custom items.
+    resource = smtk::attribute::Resource::create();
+
+    // If the operation has an associated manager...
+    if (auto mgr = manager())
     {
-      resource = resourceManager->create<smtk::attribute::Resource>();
+      // ...and the manager has an associated container of managers...
+      if (auto mgrs = mgr->managers())
+      {
+        // ...and that container has an item definition manager...
+        if (mgrs->contains<smtk::attribute::ItemDefinitionManager::Ptr>())
+        {
+          // ...add custom item definitions to the newly created attribute
+          // resource.
+          auto itemDefinitionManager = mgrs->get<smtk::attribute::ItemDefinitionManager::Ptr>();
+          itemDefinitionManager->registerDefinitionsTo(resource);
+        }
+      }
     }
-    else
-    {
-      resource = smtk::attribute::Resource::create();
-    }
+
     auto name = smtk::common::Paths::stem(filename);
     resource->setName(name);
   }
@@ -70,18 +85,6 @@ Import::Result Import::operateInternal()
   {
     smtkErrorMacro(log(), "Encountered errors while reading \"" << filename << "\".");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-  }
-
-  // If the resource manager was used to create the resource, then the resource
-  // will have already been added to the manager. Now that the resource's
-  // contents are read into memory, manually resolve its surrogates.
-  if (auto resourceManager = this->resourceManager())
-  {
-    for (auto& rsrc : resourceManager->resources())
-    {
-      resource->links().resolve(rsrc);
-      rsrc->links().resolve(resource);
-    }
   }
 
   // Create a result object.
