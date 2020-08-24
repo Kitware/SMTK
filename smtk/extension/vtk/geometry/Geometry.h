@@ -48,11 +48,8 @@ public:
   using DataType = vtkSmartPointer<vtkDataObject>;
   smtkTypeMacro(smtk::extension::vtk::geometry::Geometry);
   smtkSuperclassMacro(smtk::geometry::GeometryForBackend<DataType>);
-  Geometry()
-  // : m_backend(this)
-  {
-  }
-  virtual ~Geometry() {}
+  Geometry() = default;
+  virtual ~Geometry() = default;
 
   /// The contextual purpose of geometry supplied by the provider.
   enum Purpose
@@ -63,12 +60,6 @@ public:
   };
 
   const Backend& backend() const override { return m_backend; }
-
-  /// VTK geometry providers are always for the VTK backend.
-  ///
-  /// The VTK backend provides additional, provider-agnostic accessors
-  /// if initialized properly, so we maintain an instance.
-  // const smtk::geometry::Backend& backend() const override { return m_backend; }
 
   /// The VTK backend requires the parametric dimension of each object's geometry.
   ///

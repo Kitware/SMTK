@@ -123,6 +123,25 @@ void vtkResourceMultiBlockSource::SetResource(const smtk::resource::ResourcePtr&
   this->Modified();
 }
 
+vtkMTimeType vtkResourceMultiBlockSource::GetMTime()
+{
+  auto geometryResource = std::dynamic_pointer_cast<smtk::geometry::Resource>(this->GetResource());
+  if (geometryResource)
+  {
+    smtk::extension::vtk::geometry::Backend vtk;
+    const auto& geom = geometryResource->geometry(vtk);
+    if (geom)
+    {
+      auto lastModified = geom->lastModified();
+      if (lastModified > this->LastModified || lastModified == smtk::geometry::Geometry::Invalid)
+      {
+        this->MTime.Modified();
+      }
+    }
+  }
+  return this->MTime;
+}
+
 void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
   vtkMultiBlockDataSet* dataset, int& counter, int indent)
 {
@@ -250,6 +269,13 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   {
     vtkErrorMacro("No output dataset");
     return 0;
+  }
+
+  // Remember how up-to-date we are with respect to our data source.
+  auto lastModified = geometry.lastModified();
+  if (lastModified > this->LastModified || lastModified == smtk::geometry::Geometry::Invalid)
+  {
+    this->LastModified = lastModified;
   }
 
   std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;

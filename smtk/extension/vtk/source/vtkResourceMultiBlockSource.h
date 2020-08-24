@@ -12,6 +12,8 @@
 
 #include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 
+#include "smtk/geometry/Geometry.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
 
@@ -113,6 +115,9 @@ public:
   smtk::resource::ResourcePtr GetResource();
   void SetResource(const smtk::resource::ResourcePtr&);
 
+  /// We are modified by updated parameters and by updated resource geometry.
+  vtkMTimeType GetMTime() override;
+
   /// A debug utility to print out the block structure of a multiblock dataset
   /// annotated with UUIDs (where present) and data type.
   static void DumpBlockStructureWithUUIDs(vtkMultiBlockDataSet* dataset, int indent = 0)
@@ -159,6 +164,7 @@ protected:
   std::weak_ptr<smtk::resource::Resource> Resource;
   std::map<UUID, CacheEntry> Cache;
   std::set<UUID> Visited; // Populated with extant entities during RequestData.
+  smtk::geometry::Geometry::GenerationNumber LastModified;
 
 private:
   vtkResourceMultiBlockSource(const vtkResourceMultiBlockSource&) = delete;

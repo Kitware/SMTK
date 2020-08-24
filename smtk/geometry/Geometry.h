@@ -14,6 +14,7 @@
 #include "smtk/resource/PersistentObject.h"
 
 #include <array>
+#include <atomic>
 #include <limits>
 
 namespace smtk
@@ -92,15 +93,30 @@ public:
   using UniquePtr = std::unique_ptr<smtk::geometry::Geometry>;
 
   smtkTypeMacroBase(Geometry);
-  Geometry() {}
+  Geometry()
+    : m_lastModified(Initial)
+  {
+  }
 
-  virtual ~Geometry() {}
+  virtual ~Geometry() = default;
 
   /// Every provider must indicate the backend for which it is specialized.
   virtual const Backend& backend() const = 0;
 
   /// Every provider must indicate the resource it provides geometry for.
   virtual ResourcePtr resource() const = 0;
+
+  /// Indication of when the geometry has last been updated.
+  ///
+  /// This may be used by consumers to determine whether any
+  /// object's renderable geometry has been updated.
+  ///
+  /// Consumers are responsible for remembering the previously
+  /// returned value. Whenever this method returns a larger number,
+  /// at least one object has been updated.
+  ///
+  /// Providers are responsible for updating m_lastModified.
+  GenerationNumber lastModified() const { return m_lastModified; }
 
   /// Query methods
   ///
@@ -137,6 +153,9 @@ public:
   /// for the geometry of the given \a uid again.
   virtual bool erase(const smtk::common::UUID& uid) = 0;
   //@}
+
+protected:
+  std::atomic<GenerationNumber> m_lastModified;
 };
 
 } // namespace geometry

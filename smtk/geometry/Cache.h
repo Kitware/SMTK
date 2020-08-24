@@ -265,6 +265,7 @@ public:
   {
     if (obj)
     {
+      ++this->BaseClass::m_lastModified;
       auto it = m_cache.find(obj->id());
       if (it != m_cache.end())
       {
