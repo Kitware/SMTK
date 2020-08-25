@@ -210,6 +210,25 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
   j["Attributes"] = attsObj;
 
+  // Process Styles
+  if (!res->styles().empty())
+  {
+    json stylesObj = json::array();
+    for (auto& def : res->styles())
+    {
+      json defsObj = json::array();
+      for (auto& style : def.second)
+      {
+        defsObj.push_back(style.second);
+      }
+      json defEntry = json::object();
+      defEntry["Type"] = def.first;
+      defEntry["Styles"] = defsObj;
+      stylesObj.push_back(defEntry);
+    }
+    j["Styles"] = stylesObj;
+  }
+
   // Process views
   // First write toplevel views and then write out the non-toplevel - note that the
   // attribute resource or views do not care about this - the assumption
@@ -620,7 +639,38 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
   }
 
-  // Proces view info
+  // Process style info
+  auto styles = j.find("Styles");
+  if (styles != j.end())
+  {
+    for (auto& defInfo : (styles.value()))
+    {
+      auto defName = defInfo.find("Type");
+      auto defStyles = defInfo.find("Styles");
+      if ((defName == defInfo.end()) || (defStyles == defInfo.end()))
+      {
+        if (defName == defInfo.end())
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Can not read Style information - missing Type field");
+          continue;
+        }
+        else
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "Can not read Style information for Type: "
+              << *defName << " missing Styles information");
+          continue;
+        }
+      }
+      for (auto& styleInfo : *defStyles)
+      {
+        smtk::view::Configuration::Component style = styleInfo;
+        res->addStyle(*defName, style);
+      }
+    }
+  }
+
+  // Process view info
   auto views = j.find("Views");
   if (views != j.end())
   {
@@ -631,7 +681,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
   }
 
-  // Update definition infomration
+  // Update definition information
   res->finalizeDefinitions();
 }
 }

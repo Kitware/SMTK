@@ -1232,3 +1232,15 @@ void qtUIManager::setHighlightOnHover(bool val)
   m_highlightOnHover = val;
   emit highlightOnHoverChanged(val);
 }
+
+const smtk::view::Configuration::Component& qtUIManager::findStyle(
+  const smtk::attribute::DefinitionPtr& def, const std::string& styleName) const
+{
+  static smtk::view::Configuration::Component emptyStyle;
+  auto attRes = m_attResource.lock();
+  if (attRes == nullptr)
+  {
+    return emptyStyle;
+  }
+  return attRes->findStyle(def, styleName);
+}

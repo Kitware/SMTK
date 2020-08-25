@@ -153,4 +153,69 @@ void Registrar::registerTo(const smtk::attribute::ItemDefinitionManager::Ptr& ma
 }
 ```
 
-For an exmaple of its use, see smtk/attribute/testing/unitCustomItem.cxx.
+For an example of its use, see smtk/attribute/testing/unitCustomItem.cxx.
+
+### Adding the Concept of Styles
+Previously any customization for displaying an attribute needed to be explicitly defined within the  View Configuration specification.  Therefore, if the an attribute appeared in two different Views, then the customization needed to be explicitly copied in order for the attribute to be displayed the same way within the Views.  In addition, if an attribute was being created "in place" such as expression attributes being created when setting a Value Item's expression, there was no way to provide customization for the newly created attribute being displayed in the Attribute Editor Dialog.  The Style concept provides the means of defining global "Styles" for an attribute.  These styles can be overridden by the View Configuration.
+
+In addition, Styles can be inherited. When asking the resource for a definition's style, if the name does not exist for that definition, the resource will check its base definition to see if the style exists for it.
+
+#### Default Styles
+A style with "" as its name is considered a default style;
+
+#### Styles and Inheritance
+There is no explicit checking to see if the item style information corresponds to items defined within the definition itself.  So a style could contain information that refers to items that exist in derived Definitions.
+#### Using Styles in View
+You can refer to a named style by adding Style="nameOfStyle" to your view configuration information.  If no Style is specified but a default style exists, the default style will be used.
+### New API
+  const smtk::view::Configuration::Component& findStyle(const smtk::attribute::DefinitionPtr& def,
+    const std::string& styleName="") const;
+  const std::map<std::string, smtk::view::Configuration::Component>& findStyles(const smtk::attribute::DefinitionPtr& def) const;
+  const std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> >& styles() const
+* void addStyle(const std::string& definitionType, const smtk::view::Configuration::Component style) - adds or replaces a style for an attribute type.  the style component may have a Name Configuration Attribute that indicates the name of the style. If no name is found it is assumed to be the default style for the attribute definition type.
+* const smtk::view::Configuration::Component& findStyle(const smtk::attribute::DefinitionPtr& def,
+    const std::string& styleName="") const - returns the style associated with definition based on the style name.  **Note** If a style can not be found for the definition, its base definition is then searched.
+* const std::map<std::string, smtk::view::Configuration::Component>& findStyles(const smtk::attribute::DefinitionPtr& def) const - returns all of the styles directly associated with an attribute definition.  **Note:**  That unlike findStyle, this method is not recursive.
+* const std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> >& styles() const - returns the map of styles contained in the resource.
+
+### I/O and Python
+Both XML and JSON have been updated to make use of Style Information.  Note that Version 4 XML files support Styles.  Python API has also been added.
+
+The following is a default style example in XML:
+
+```xml
+  <!-- Style specifications -->
+  <Styles>
+    <Att Type="outputs">
+      <Style>
+        <ItemViews>
+          <View Path="/output-times" ImportFromFile="true" LoadButtonText="Import from File"
+            FileFormat="Double" BrowserTitle="Import from Double File"
+            ValueSeparator="," CommentChar="#" FileExtensions="Time Files (*.txt *.csv *.dat)"/>
+        </ItemViews>
+      </Style>
+    </Att>
+  </Styles>
+```
+The following shows an example of using a named style:
+```xml
+  <!-- Style specifications -->
+  <Styles>
+    <Att Type="outputs">
+      <Style Name="foo">
+        <ItemViews>
+          <View Path="/output-times" ImportFromFile="true" LoadButtonText="Import from File"
+            FileFormat="Double" BrowserTitle="Import from Double File"
+            ValueSeparator="," CommentChar="#" FileExtensions="Time Files (*.txt *.csv *.dat)"/>
+        </ItemViews>
+      </Style>
+    </Att>
+  </Styles>
+<Views>
+    <View Type="Instanced" Title="General">
+      <InstancedAttributes>
+        <Att Name="outputs-att" Type="outputs" Style="foo"/>
+      </InstancedAttributes>
+    </View>
+</Views>
+```

@@ -10,8 +10,6 @@
 
 #include "smtk/attribute/Resource.h"
 
-#include "smtk/view/Configuration.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Definition.h"
@@ -906,6 +904,50 @@ std::vector<smtk::view::ConfigurationPtr> Resource::findTopLevelViews() const
     }
   }
   return topViews;
+}
+
+void Resource::addStyle(
+  const std::string& definitionType, const smtk::view::Configuration::Component style)
+{
+  //Find the name of the style
+  m_styles[definitionType][style.name()] = style;
+  this->setClean(false);
+}
+
+const smtk::view::Configuration::Component& Resource::findStyle(
+  const smtk::attribute::DefinitionPtr& def, const std::string& styleName) const
+{
+  static smtk::view::Configuration::Component emptyStyle;
+  auto attStyles = m_styles.find(def->type());
+  if (attStyles != m_styles.end())
+  {
+    auto theStyle = attStyles->second.find(styleName);
+    if (theStyle != attStyles->second.end())
+    {
+      return theStyle->second;
+    }
+  }
+  // Ok we didn't find a style for the definition with the requested style
+  // so lets check the definition's base definition if it has one else return an empty
+  //  style
+  if (def->baseDefinition())
+  {
+    return this->findStyle(def->baseDefinition(), styleName);
+  }
+  // we can't find any style for this definition
+  return emptyStyle;
+}
+
+const std::map<std::string, smtk::view::Configuration::Component>& Resource::findStyles(
+  const smtk::attribute::DefinitionPtr& def) const
+{
+  static std::map<std::string, smtk::view::Configuration::Component> dummy;
+  auto attStyles = m_styles.find(def->type());
+  if (attStyles != m_styles.end())
+  {
+    return attStyles->second;
+  }
+  return dummy;
 }
 
 smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& attId) const

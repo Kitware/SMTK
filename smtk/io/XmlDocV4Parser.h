@@ -34,6 +34,7 @@ public:
 protected:
   void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
+  void processViews(pugi::xml_node& root) override;
 
 private:
 };

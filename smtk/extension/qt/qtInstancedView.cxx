@@ -144,7 +144,7 @@ void qtInstancedView::updateUI()
   this->Internals->AttInstances.clear();
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  std::vector<std::reference_wrapper<smtk::view::Configuration::Component> > comps;
+  std::vector<smtk::view::Configuration::Component> comps;
   int longLabelWidth = 0;
   // Lets find the InstancedAttributes Infomation
   int index = view->details().findChild("InstancedAttributes");
@@ -158,7 +158,7 @@ void qtInstancedView::updateUI()
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
   {
-    smtk::view::Configuration::Component& attComp = comp.child(i);
+    smtk::view::Configuration::Component attComp = comp.child(i);
     if (attComp.name() != "Att")
     {
       continue;
@@ -195,7 +195,18 @@ void qtInstancedView::updateUI()
     }
 
     atts.push_back(att);
+    // Does the component contain style information?
+    if (attComp.numberOfChildren() == 0)
+    {
+      // Was there an explicit style name mentioned?  If a style name
+      // is not stated, the default style (StyleName == "") will be assumed
+      std::string styleName;
+      attComp.attribute("Style", styleName);
+      // Lets ask the UI Manager if there is a global style for this attribute
+      attComp = this->uiManager()->findStyle(attDef, styleName);
+    }
     comps.emplace_back(attComp);
+
     int labelWidth =
       this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
     longLabelWidth = std::max(labelWidth, longLabelWidth);

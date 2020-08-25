@@ -114,3 +114,50 @@ void XmlDocV4Parser::processItem(pugi::xml_node& node, smtk::attribute::ItemPtr 
     item->setForceRequired(xatt.as_bool());
   }
 }
+
+void XmlDocV4Parser::processViews(xml_node& root)
+{
+  xml_node styles = root.child("Styles");
+  if (!styles)
+  {
+    XmlDocV3Parser::processViews(root);
+    return;
+  }
+
+  xml_node child;
+  for (child = styles.first_child(); child; child = child.next_sibling())
+  {
+    xml_attribute xatt;
+    xatt = child.attribute("Type");
+    if (xatt)
+    {
+      // this is a valid style group for a smtk::attribute::Definition so lets
+      // process all of its children
+      xml_node styleNode;
+      for (styleNode = child.first_child(); styleNode; styleNode = styleNode.next_sibling())
+      {
+        xml_attribute xstyle;
+        xstyle = styleNode.attribute("Name");
+        if (xstyle)
+        {
+          smtk::view::Configuration::Component style(xstyle.value());
+          this->processViewComponent(style, styleNode, false);
+          m_resource->addStyle(xatt.value(), style);
+        }
+        else
+        {
+          // This is a default style (no name specified)
+          smtk::view::Configuration::Component style("");
+          this->processViewComponent(style, styleNode, false);
+          m_resource->addStyle(xatt.value(), style);
+        }
+      }
+    }
+    else
+    {
+      smtkErrorMacro(m_logger, "Could not find Style's attribute Type - skipping it!");
+      continue;
+    }
+  }
+  XmlDocV3Parser::processViews(root);
+}

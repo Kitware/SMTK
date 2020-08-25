@@ -471,6 +471,7 @@ void XmlV2StringWriter::generateXml()
   }
   if (m_includeViews)
   {
+    this->processStyles();
     this->processViews();
   }
 }
@@ -1365,6 +1366,37 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node& node, attribute::GroupI
   }
 }
 
+void XmlV2StringWriter::processStyles()
+{
+  // Since Styles don't have directory information (actually it can't since style can be
+  // overwritten by later style definitions), styles will be saved only in the top most
+  // file
+
+  if (m_resource->styles().empty())
+  {
+    return;
+  }
+
+  m_internals->m_roots.at(0)
+    .append_child(node_comment)
+    .set_value("********** Workflow Styles ***********");
+  xml_node stylesNode = m_internals->m_roots.at(0).append_child("Styles");
+
+  for (auto& defType : m_resource->styles())
+  {
+    xml_node defNode;
+    defNode = stylesNode.append_child("Att");
+    defNode.append_attribute("Type").set_value(defType.first.c_str());
+    // Now lets go through all the styles for this definition type
+    for (auto& style : defType.second)
+    {
+      xml_node styleNode;
+      styleNode = defNode.append_child("Style");
+      this->processViewComponent(style.second, styleNode);
+    }
+  }
+}
+
 void XmlV2StringWriter::processViews()
 {
   // First write toplevel views and then write out the non-toplevel - note that the
@@ -1418,7 +1450,7 @@ void XmlV2StringWriter::processView(smtk::view::ConfigurationPtr view)
 }
 
 void XmlV2StringWriter::processViewComponent(
-  smtk::view::Configuration::Component& comp, xml_node& node)
+  const smtk::view::Configuration::Component& comp, xml_node& node)
 {
   // Add the attributes of the component to the node
   std::map<std::string, std::string>::const_iterator iter;

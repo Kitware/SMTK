@@ -16,6 +16,7 @@
 
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
+#include "smtk/view/Configuration.h"
 
 #include <QItemSelection>
 #include <QMap>
@@ -157,6 +158,8 @@ protected:
   void setTableRowItemDelegate(int row, QAbstractItemDelegate* delegate);
   void triggerEdit(const QModelIndex& index);
   int numOfAttributes();
+  const smtk::view::Configuration::Component& findStyle(
+    const smtk::attribute::DefinitionPtr& def, bool isOriginalDef = true);
 
 private:
   qtAttributeViewInternals* m_internals;
