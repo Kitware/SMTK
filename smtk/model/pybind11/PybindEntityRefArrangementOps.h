@@ -27,6 +27,7 @@ py::class_< smtk::model::EntityRefArrangementOps > pybind11_init_smtk_model_Enti
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRefArrangementOps const &>())
     .def("deepcopy", (smtk::model::EntityRefArrangementOps & (smtk::model::EntityRefArrangementOps::*)(::smtk::model::EntityRefArrangementOps const &)) &smtk::model::EntityRefArrangementOps::operator=)
+    .def_static("addSimpleRelationship", &smtk::model::EntityRefArrangementOps::findOrAddSimpleRelationship, py::arg("a"), py::arg("k"), py::arg("b"))
     .def_static("findOrAddSimpleRelationship", &smtk::model::EntityRefArrangementOps::findOrAddSimpleRelationship, py::arg("a"), py::arg("k"), py::arg("b"))
     .def_static("findSimpleRelationship", &smtk::model::EntityRefArrangementOps::findSimpleRelationship, py::arg("a"), py::arg("k"), py::arg("b"))
     ;

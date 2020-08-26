@@ -1563,16 +1563,29 @@ bool EntityRef::removeArrangement(ArrangementKind k, int index)
   *
   * This adds an INCLUDES relation (if necessary) to this entity and
   * an EMBEDDED_IN relation (if necessary) to the \a thingToEmbed.
+  *
+  * If \a checkExistence is true, then the relationship is not added if it would be
+  * a duplicate. This check is expensive because relationships are not indexed, so
+  * if you know \a thingToEmbed is not already embedded, pass false to \a checkExistence.
+  * The default is true.
   */
-EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed)
+EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed, bool checkExistence)
 {
   ResourcePtr rsrc = m_resource.lock();
   //ResourceEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
   ResourceEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
   {
-    EntityRefArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
-    EntityRefArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+    if (checkExistence)
+    {
+      EntityRefArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
+      EntityRefArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+    }
+    else
+    {
+      EntityRefArrangementOps::addSimpleRelationship(*this, INCLUDES, thingToEmbed);
+      EntityRefArrangementOps::addSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+    }
     rsrc->trigger(event, *this, thingToEmbed);
   }
   return *this;

@@ -57,10 +57,10 @@ public:
   template <typename T>
   void appendCells(T& container) const;
 
-  Model& addCell(const CellEntity& c);
+  Model& addCell(const CellEntity& c, bool checkExists = true);
   Model& removeCell(const CellEntity& c);
   template <typename T>
-  Model& addCells(const T& container);
+  Model& addCells(const T& container, bool checkExists = true);
   template <typename T>
   Model& removeCells(const T& container);
 
@@ -153,10 +153,14 @@ void Model::appendCells(T& container) const
 }
 
 /// Add all the free cells in \a container to this model.
+///
+/// If \a checkExistence is true, then cells will only be
+/// added if the model does not already reference them.
+/// See addCell() for more information.
 template <typename T>
-Model& Model::addCells(const T& container)
+Model& Model::addCells(const T& container, bool checkExistence)
 {
-  this->embedEntities(container);
+  this->embedEntities(container, checkExistence);
   return *this;
 }
 

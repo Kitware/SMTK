@@ -74,7 +74,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("disassociateAttribute", (bool (smtk::model::EntityRef::*) (smtk::attribute::ResourcePtr, const smtk::common::UUID&)) &smtk::model::EntityRef::disassociateAttribute, py::arg("attResource"), py::arg("attribId"))
     .def("disassociateAttribute", (bool (smtk::model::EntityRef::*) (smtk::attribute::ResourcePtr, const smtk::common::UUID&, bool)) &smtk::model::EntityRef::disassociateAttribute, py::arg("attResource"), py::arg("attribId"), py::arg("reverse"))
     .def("elideRawRelation", &smtk::model::EntityRef::elideRawRelation, py::arg("ent"))
-    .def("embedEntity", &smtk::model::EntityRef::embedEntity, py::arg("thingToEmbed"))
+    .def("embedEntity", &smtk::model::EntityRef::embedEntity, py::arg("thingToEmbed"), py::arg("checkExists") = true)
     .def("embeddedIn", &smtk::model::EntityRef::embeddedIn)
     .def("embeddingDimension", &smtk::model::EntityRef::embeddingDimension)
     .def("entity", &smtk::model::EntityRef::entity)

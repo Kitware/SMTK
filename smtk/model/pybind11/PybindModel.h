@@ -40,7 +40,7 @@ py::class_< smtk::model::Model, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def("deepcopy", (smtk::model::Model & (smtk::model::Model::*)(::smtk::model::Model const &)) &smtk::model::Model::operator=)
     .def("__eq__", (bool (smtk::model::Model::*)(::smtk::model::EntityRef const &) const) &smtk::model::Model::operator==)
     .def("addAuxiliaryGeometry", &smtk::model::Model::addAuxiliaryGeometry, py::arg("ag"))
-    .def("addCell", &smtk::model::Model::addCell, py::arg("c"))
+    .def("addCell", &smtk::model::Model::addCell, py::arg("c"), py::arg("checkExists") = true)
     .def("addGroup", &smtk::model::Model::addGroup, py::arg("g"))
     .def("addSubmodel", &smtk::model::Model::addSubmodel, py::arg("m"))
     .def("assignDefaultNames", &smtk::model::Model::assignDefaultNames)
