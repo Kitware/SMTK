@@ -39,20 +39,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 
-namespace
-{
-void cleanup(const std::string& file_path)
-{
-  //first verify the file exists
-  ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
-  {
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
-  }
-}
-}
-
 namespace smtk
 {
 namespace mesh

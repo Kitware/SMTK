@@ -189,7 +189,7 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
     // set stream to skip white space
     iss >> std::skipws;
     int numFound = 0;
-    while (!((numFound == numValues) || iss.eof()))
+    while (!((static_cast<std::size_t>(numFound) == numValues) || iss.eof()))
     {
       // lets try to read the next double
       iss >> vals[numFound];
@@ -211,7 +211,7 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
         ++numFound; // we found a double
       }
     }
-    if (numFound != numValues)
+    if (static_cast<std::size_t>(numFound) != numValues)
     {
       // Did we encounter the end of line?
       if (iss.eof())
