@@ -167,7 +167,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     {
       // Extract the path and add it to this operation's list of files.
       auto fileItem = std::static_pointer_cast<smtk::attribute::FileItem>(item);
-      for (int i = 0; i < fileItem->numberOfValues(); ++i)
+      for (std::size_t i = 0; i < fileItem->numberOfValues(); ++i)
       {
         resultFiles->appendValue(fileItem->value(i));
       }

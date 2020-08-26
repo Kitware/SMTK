@@ -55,6 +55,7 @@ public:
     return ReferenceItemDefinition::setAcceptsEntries(typeName, "", accept);
   }
 
+  using ReferenceItemDefinition::setRejectsEntries;
   bool setRejectsEntries(const std::string& typeName, bool add)
   {
     return ReferenceItemDefinition::setRejectsEntries(typeName, "", add);

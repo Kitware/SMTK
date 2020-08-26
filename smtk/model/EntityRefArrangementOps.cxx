@@ -46,16 +46,25 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
   int relidx = EntityRefArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
   {
-    EntityPtr ent = a.resource()->findEntity(a.entity());
-    if (ent)
-    {
-      int offset = ent->findOrAppendRelation(b.entity());
-      relidx = a.resource()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
-    }
-    else
-    {
-      relidx = -1;
-    }
+    relidx = EntityRefArrangementOps::addSimpleRelationship(a, k, b);
+  }
+  return relidx;
+}
+
+/**\brief Create the relationship between \a a and \a b (whether or not it already exists).
+  *
+  * This method returns the index of the relationship added or -1
+  * if either of the entities do not exist.
+  */
+int EntityRefArrangementOps::addSimpleRelationship(
+  const EntityRef& a, ArrangementKind k, const EntityRef& b)
+{
+  int relidx = -1;
+  EntityPtr ent = a.resource()->findEntity(a.entity());
+  if (ent)
+  {
+    int offset = ent->findOrAppendRelation(b.entity());
+    relidx = a.resource()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
   }
   return relidx;
 }

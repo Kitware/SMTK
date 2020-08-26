@@ -315,9 +315,9 @@ public:
   bool removeArrangement(ArrangementKind k, int index = -1);
 
   // Manage embedded_in/includes relationships
-  EntityRef& embedEntity(const EntityRef& thingToEmbed);
+  EntityRef& embedEntity(const EntityRef& thingToEmbed, bool checkExistence = true);
   template <typename T>
-  EntityRef& embedEntities(const T& container);
+  EntityRef& embedEntities(const T& container, bool checkExistence = true);
   bool isEmbedded(EntityRef& ent) const;
   EntityRef embeddedIn() const;
   bool unembedEntity(const EntityRef& thingToUnembed);
@@ -416,11 +416,11 @@ void EntityRef::EntityRefsToUUIDs(S& uids, const T& entRefs)
 }
 
 template <typename T>
-EntityRef& EntityRef::embedEntities(const T& container)
+EntityRef& EntityRef::embedEntities(const T& container, bool checkExistence)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
   {
-    this->embedEntity(*it);
+    this->embedEntity(*it, checkExistence);
   }
   return *this;
 }

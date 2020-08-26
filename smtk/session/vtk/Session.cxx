@@ -268,7 +268,7 @@ void AddCellToParent(smtk::model::EntityRef& mutableEntityRef, EntityHandle& han
     }
     if (pp != handle)
     {
-      sess->toEntityRef(pp).as<smtk::model::Model>().addCell(mutableEntityRef);
+      sess->toEntityRef(pp).as<smtk::model::Model>().addCell(mutableEntityRef, false);
     }
   }
 }

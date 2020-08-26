@@ -161,9 +161,16 @@ AuxiliaryGeometries Model::auxiliaryGeometry() const
   return result;
 }
 
-Model& Model::addCell(const CellEntity& c)
+/// Add all the free cell \a c to this model.
+///
+/// If \a checkExistence is true, then \a c will only be
+/// added if the model does not already reference it.
+/// Because references like this are not indexed, this check
+/// is expensive; when adding many newly-created cells,
+/// pass false to avoid the overhead. The default is true.
+Model& Model::addCell(const CellEntity& c, bool checkExists)
 {
-  this->embedEntity(c);
+  this->embedEntity(c, checkExists);
   return *this;
 }
 

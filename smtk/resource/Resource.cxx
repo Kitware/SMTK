@@ -27,11 +27,11 @@ namespace resource
 const Resource::Index Resource::type_index = std::type_index(typeid(Resource)).hash_code();
 
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
-  : m_id(myID)
+  : m_manager(manager)
+  , m_id(myID)
   , m_clean(false)
   , m_links(this)
   , m_properties(this)
-  , m_manager(manager)
 {
 }
 
@@ -40,14 +40,14 @@ Resource::Resource(ManagerPtr manager)
 {
 }
 
-Resource::Resource(Resource&& rhs) noexcept : m_id(std::move(rhs.m_id)),
+Resource::Resource(Resource&& rhs) noexcept : m_manager(std::move(rhs.m_manager)),
+                                              m_id(std::move(rhs.m_id)),
                                               m_location(std::move(rhs.m_location)),
                                               m_name(std::move(rhs.m_name)),
                                               m_clean(std::move(rhs.m_clean)),
                                               m_links(std::move(rhs.m_links)),
                                               m_properties(std::move(rhs.m_properties)),
-                                              m_queries(std::move(rhs.m_queries)),
-                                              m_manager(std::move(rhs.m_manager))
+                                              m_queries(std::move(rhs.m_queries))
 {
 }
 

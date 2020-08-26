@@ -26,6 +26,7 @@ class SMTKCORE_EXPORT EntityRefArrangementOps
 public:
   static int findSimpleRelationship(const EntityRef& a, ArrangementKind k, const EntityRef& b);
   static int findOrAddSimpleRelationship(const EntityRef& a, ArrangementKind k, const EntityRef& b);
+  static int addSimpleRelationship(const EntityRef& a, ArrangementKind k, const EntityRef& b);
 
   /// Return the first relation of kind \a k as the specified entityref type \a T.
   template <typename T>
