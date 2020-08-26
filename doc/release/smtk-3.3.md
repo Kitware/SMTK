@@ -13,6 +13,18 @@ while maintaining much of smtk::model's property API. For more
 information, see the Properties section of the Resources description
 in the user guide.
 
+## Changes to Operations
+### Removal of MarkModified operation
+The MarkModified operation has been removed since it was considered redundant.  The attribute Signal operation should be used instead.
+
+### Removal of "Operation Created" Event
+
+Operation creation is often performed within observation events (so
+the created operation can be added to the launcher queue), so it is
+possible to deadlock ModelBuilder by repeatedly create operations when
+an operation is running. Since no call sites specifically filter for
+this event type, it has been removed.
+
 ## Changes to SMTK's Observer System
 ### Resource & Operation Observer signature
 
@@ -137,6 +149,41 @@ The resulting categories would be:
 * v1: s2, v1
 * v2: A, B, v2
 
+### Extending Advance Level Support
+
+A full description on how the new advance level support works can be found [here] (https://discourse.kitware.com/t/supporting-advance-read-and-write-at-the-attribute-level/346)
+
+For examples, see attribute/testing/cxx/unitAdvanceLevelTest.cxx and data/attribute/attribute_collection/unitAttributeAdvanceLevelTest.sbi
+
+* Advance Level Information can now be inherited by a Definition from its base Definition
+* Advance Level Information can now be inherited by an Item Definition from its Attribute Definition
+* Advance Level Information can now be inherited by an Item Definition from its owning Item Definition such as a Group Item Definition and/or Value Item Definition
+* Advance Level of an Item is now also based on the advance level of its owning Item or owning Attribute
+* **Advance Levels are know represented as unsigned integers instead of signed integers**
+
+#### Local Advance Level Information
+Attribute Definition, Item Definition, Attribute and Item now have the ability to have local advance level information for both GUI read and write access.  Related methods include:
+
+* setLocalAdvanceLevel: **note that this replaces setAdvanceLevel methods**
+* unsetLocalAdvanceLevel
+* hasAdvanceLevelInfo
+
+Local advance level information "overrides" the information that would be inherited. For example setting local advance read level for a Definition will override the advance read level that would have been inherited from its base Definition.  Similarly setting the local advance write level for an Attribute will override the advance write level that would have been inherited from its Definition.
+
+#### Item's advanceLevel
+An Item's Advance Level is now the max of its local level (or if not set, it's definition) and the advance level of its owning Item or owning Attribute.
+
+#### Applying Advance Levels
+Definition and ItemDefinition has methods for pushing its advance level information to their children Definitions and Item Definitions.  These method are used by Resource's finalizeDefinitions method.
+
+#### XML and JSON Support
+The same format used for setting local Advance Levels for Items is used for Attribute, Definition, and Item Definition
+
+``` xml
+    <AttDef Type="A" Label="A" BaseType="" Version="0" AdvanceWriteLevel="1" Unique="false"\>
+
+```
+
 ### attribute::ItemDefinition::passCategoryCheck
 attribute::ItemDefinition now has methods to compare its categories with a user provided set (or with respects to a single category).  If the input set of categories is empty then the method will always return true.  If the input set is not empty but the item's set of categories is then the method returns false.  Else the result will depend on the Definition's categoryCheckMode.
 
@@ -167,6 +214,84 @@ The following API have been added/changed to support this feature:
   * bool isValueValid(const ComponentPtr entity) const;
 * ReferenceItemDefinition::setRole has been made public
 
+### Supporting Required Analyses
+A smtk::attribute::Analyses::Analysis can now be marked as **required**.  A required Analysis indicates that it is not optional and is considered active if its parent analysis is active (or the analysis is at the top level).  The following methods have been added to smtk::attribute::Analyses::Analysis:
+
+* setRequired(bool)
+* bool isRequired() const
+
+The following is a example setting an Analysis to be required via a sbt file:
+
+```xml
+    <Analysis Type="Required Analysis" Required="true"/>
+```
+See smtk/data/attribute/attribute_collection/SimpleAnalysisTest.sbt for a complete example.
+
+**Note** that an Analysis's parent has Exclusive Children then the Analysis' required property is ignored.
+
+### Replacing updateCategories method
+The new method is now called finalizeDefinitions since it now does more including updating advance level information.
+
+### Adding Advance Level and Category Support for DiscreteItem Enums
+A Discrete Item's enums can now have a set of categories associated with it as well as advance level information.  This information is used by the GUI system to filter out enums based on category and advance level settings.
+
+#### New ValueItemDefinition Methods
+* setEnumCategories(const std::string& enumValue, const std::set\<std::string>& cats);
+* addEnumCategory(const std::string& enumValue, const std::string& cat);
+* std::set\<std::string> enumCategories(const std::string& enumValue) const;
+* const std::map\<std::string, std::set\<std::string>> enumCategoryInfo();
+* void setEnumAdvanceLevel(const std::string& enumValue, unsigned int level);
+* void unsetEnumAdvanceLevel(const std::string& enumValue);
+* unsigned int enumAdvanceLevel(const std::string& enumValue) const;
+* bool hasEnumAdvanceLevel(const std::string& enumValue) const;
+* const std::map<std::string, unsigned int> enumAdvanceLevelInfo() const;
+
+#### IO Support
+Both JSON and XML IO has been updated to support the new functionality.
+
+In terms of XML the following shows an example snippet for using the new capabilities:
+
+```xml
+       <String Name="s1" Label="Advance Level and Enum Test String" Version="0" OkToInheritCategories="true" CategoryCheckMode="Any" NumberOfRequiredValues="1">
+        <Categories>
+          <Cat>s1</Cat>
+        </Categories>
+        <DiscreteInfo>
+          <Structure>
+            <Value Enum="e1" AdvanceLevel="1">a</Value>
+            <Categories>
+              <Cat>ec1</Cat>
+            </Categories>
+          </Structure>
+          <Structure>
+            <Value Enum="e2">b</Value>
+            <Categories>
+              <Cat>ec2</Cat>
+            </Categories>
+          </Structure>
+          <Value Enum="e3" AdvanceLevel="1">c</Value>
+        </DiscreteInfo>
+      </String>
+
+```
+See smtk/attribute/testing/cxx/unitCategoryTest.cxx and smtk/data/attribute/attribute_collection/ConfigurationTest.sbt for examples.
+
+#### Support for ReferenceItems within detached Attributes
+When an attribute containing ReferenceItems (including associations)
+is detached, the links describing the connections between the
+ReferenceItems and their references are now severed (originally, this
+was only true for ReferenceItems representing associations). The ReferenceItems'
+caches remain populated after detachment to support the
+ReferenceItems' API once its parent attribute is removed from its
+Resource.
+
+#### Unset Value Error for Reference Item Iterator
+A custom exception is now thrown when an attempt is made to
+dereference an iterator to an unset reference item. This exception can
+be caught by consuming code (for an example, see the
+unitUnsetValueError test). An isSet() method is now available on
+ReferenceItem's const_iterator to check the iterator's validity prior
+to dereferencing.
 
 ### Other Changes
 * Added a static method attribute::Resource::createAttributeQuery that will return an appropriate string for querying attributes based on a specific definition.
@@ -226,6 +351,13 @@ int hiddenOptions = ent.hiddenOptionsStatus();
 // Query a specific hidden option status. 1 means isSet and 0 means notSet.
 int hideFromTessGenStatus = ent.hiddenOptionsStatus(HiddenOptions::HideTessellationGeneration);
 
+### Extensions to point Locator base class
+
+The point locator base class has been extended for implementations to
+provide routines for constructing uniform random point samples on a
+model surface. An implementation for this method currently exists for
+models with a mesh-based tessellation.
+
 ## Mesh Resource Changes
 
 ### Cell Selection
@@ -265,6 +397,11 @@ having to load SMTK's ParaView extensions.
 ### Merge Operation
 
 There is now an operation that merges model entities of like dimension.
+
+### Subtract Operation
+
+There is now an operation that subtracts meshsets from other meshsets.
+
 
 ## I/O Changes
 
@@ -414,6 +551,10 @@ See **data/attribute/attribute_collection/ConfigurationTest.sbt** as an example 
 #### Added Item names to attributeChanged method
 The names of the items being modified are now returned by the Signal operator. This is now used by the AttributeView class.
 
+#### Supporting extensions to Advance Levels
+* qtItem widgets now check to see if they are writable based on their Item's advance write level and the current advance level.  If they are not or if their ItemView has the readonly property, they will be readonly.
+* If the current advance level is below an attribute's advance write level, then the attribute will not be eligible for deletion in an AttributeView.
+
 ### Changes to displaying double items
 Using ItemViews you can now control how the double value item is displayed based using the following "attributes":
 
@@ -491,11 +632,57 @@ part of the attribute system along with point coordinates.
 
 #### Limitations
 
+### Changes to Processing DiscreteItems
+#### Added "Please Select" option
+In addition to showing all of the possible enum values, the qtDiscreteValueEditor will include a "Please Select" option.  This is used to show that the item is not set and can be used to unset the item.
+
+#### Processing Category and Advance Level
+Enums can now be filtered out based on the category and advance level information explicitly assigned to the enum.  If the item's current value is not considered "valid" based on the current category/advance level settings, it is added to the list but is colored red to indicate that it is not considered "valid".
+
+### Changes to qtResourceBrowser
+
+* Now inherits qtBaseView instead of QWidget, to allow configuration via a ViewInfo.
+* A default .json config specifies the default PhraseModel and SubphraseGenerator types to use.
+* The smtk::view::Manager class can dynamically construct PhraseModels and SubphraseGenerators based on typename.
+
+### Changes to qtAttributeView
+#### Added ability to hide the top row Create/Copy/Delete Buttons
+By using the **DisableTopButtons** the top buttons along with the attribute type selector combobox/label are not displayed.
+Here is an example:
+```xml
+    <View Type="Attribute" Title="Advance Level Test" TopLevel="true" DisableTopButtons="true">
+      <AttributeTypes>
+        <Att Type="A"/>
+      </AttributeTypes>
+    </View>
+```
+
 This change does not provide an easy way to distinguish multiple
 point-widgets in the 3-d scene yet, nor a way to force only 1 widget
 at a time to register shortcuts for "P" and "Ctrl+P".
 Thus, it is still possible for users to become frustrated when these
 keys do not work simply because multiple widgets are visible.
+
+### Improving Observer Stability
+It was discovered that passing the **this** pointer into an Observer's lambda expression in a Qt-based class can cause a crash if the object is deleted while there is an event still in the Qt Event loop.  The solution is to use a QPointer instead so that it can be tested for nullptr.
+
+### Adding Observers to Views
+* Observation for attribute creation, modification, and expungement have been added to qtAttributeView.
+* Observation for attribute modification has been added to qtInstanceView
+
+### Changes to qtGroupItem
+* The first Column is no longer marked with 1 for extensible groups.
+* Fixed issue with updating extensible qtGroupItems due to the number of columns being set to 0 instead of 1
+
+### API Changes
+These changes were made to help simplify/cleanup the qtView infrastructure.  There were several places where onShowCategory() was being called in order to update the UI.  This resulted in confusion as to the role of the method.  In many cases these calls have been replaced with updateUI.
+
+* **qtBaseView::updateViewUI - has been removed.** It was not being used.
+* **qtBaseAttributeView::updateAttributeData - has been removed.** This method's role was to update the attribute content of a View.  You should now call updateUI() instead.
+* qtBaseAttributeView no longer overrides updateUI()
+
+### Tracking Changes in Analysis Configuration Attributes
+Attributes that are deleted, created, or modified are now checked to see if they represent Analysis Configurations.  The configuration combobox is then updated appropriately.
 
 ### Other Changes
 * qtItem::updateItemData has been made public so that qtItems can be undated when their underlying attribute items are external changed.
@@ -523,6 +710,15 @@ is not visible (and visibility will be restored when this changes).
 The box widget (pqSMTKBoxItemWidget) now supports a binding that allows
 the visibility of the widget to be mapped to a discrete-valued string
 item with enumerants "active" and "inactive".
+
+#### Fixed Issues
++ An issue caused by widgets being asked to update from item contents during user interaction was fixed.
+  This fix requires a change to all subclasses of pqSMTKAttributeItemWidget; any override of either
+  `updateWidgetFromItem()` or `updateItemFromWidget()` should be renamed to `updateWidgetFromItemInternal()`
+  or `updateItemFromWidgetInternal()` (respectively).
+  Now, the non-`Internal()` methods update a new internal `m_p->m_state` variable so the widget does not
+  attempt updates caused by itself.
+
 
 ### Subtractive UI
 
@@ -578,6 +774,18 @@ now used to determine whether a cached VTK data object can be used
 instead of generating a new one from a model tessellation or mesh set.
 This reduces the time between operation completion and rendering for
 large geometries.
+
+### Preference to skip modified resource dialog
+
+When a user closes a modified resource or exits the application with a
+resource that is modified, a dialog is presented which asks the user
+to save, discard, or cancel. Add a checkbox to the dialog that sets
+the default response to this dialog, to save or discard the resource.
+
+If the user changes their mind, the preference can be changed in the
+Settings dialog.
+
+
 
 ## Test Changes
 
