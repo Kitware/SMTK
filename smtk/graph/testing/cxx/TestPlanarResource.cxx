@@ -13,6 +13,8 @@
 #include "smtk/graph/arcs/Arcs.h"
 #include "smtk/graph/arcs/OrderedArcs.h"
 
+#include <iostream>
+
 /// To Demonstrate the API of SMTK's graph resource, this test constructs a toy
 /// resource designed to describe 2-dimensional planar polygons. The resource
 /// models Vertex, Edge and Face nodes. The defined arc types facilitate the

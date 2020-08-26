@@ -16,7 +16,6 @@
 
 #include "smtk/attribute/ValueItemDefinition.h"
 #include <cassert>
-#include <iostream>
 #include <sstream>
 
 namespace smtk

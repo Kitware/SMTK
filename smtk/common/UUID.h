@@ -21,7 +21,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cstring>
-#include <iostream>
+#include <iosfwd>
 #include <set>
 #include <string>
 #include <vector>

@@ -30,7 +30,6 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/view/Configuration.h"
 
-#include <iostream>
 #include <map>
 #include <mutex>
 #include <set>

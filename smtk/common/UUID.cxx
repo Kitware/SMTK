@@ -14,6 +14,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/functional/hash.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+#include <iostream>
+
 SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk

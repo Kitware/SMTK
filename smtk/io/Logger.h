@@ -14,7 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 #include <functional>
-#include <iostream>
+#include <iosfwd>
 #include <mutex>
 #include <sstream>
 #include <string>

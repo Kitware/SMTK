@@ -12,7 +12,7 @@
 
 #include "smtk/common/DateTime.h"
 #include "smtk/common/TimeZone.h"
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 namespace smtk
