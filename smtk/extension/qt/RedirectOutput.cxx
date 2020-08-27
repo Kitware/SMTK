@@ -68,6 +68,10 @@ void RedirectOutputToQt(QObject* context, smtk::io::Logger& log)
 
   log.setFlushToStream(stream, false, false);
   log.setCallback(cleanup);
+
+  // Set Qt's message pattern to simply print the message. SMTK's logger will
+  // include the severity and file/line if requested.
+  qSetMessagePattern("%{message}");
 }
 }
 }
