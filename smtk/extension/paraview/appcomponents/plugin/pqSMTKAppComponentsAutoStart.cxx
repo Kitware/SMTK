@@ -68,6 +68,10 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart() = default;
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
+  // Set Qt's message pattern to simply print the message. SMTK's logger will
+  // include the severity and file/line if requested.
+  qSetMessagePattern("%{message}");
+
   vtkNew<vtkSMTKAppComponentsFactory> factory;
   vtkObjectFactory::RegisterFactory(factory);
 
