@@ -11,6 +11,8 @@
 #include "smtk/graph/Resource.h"
 #include "smtk/graph/arcs/Arc.h"
 
+#include <iostream>
+
 /// A basic example that constructs two nodes and noe arc that connects them.
 
 namespace

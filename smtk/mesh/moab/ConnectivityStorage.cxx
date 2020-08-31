@@ -19,6 +19,10 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Interface.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#ifndef NDEBUG
+#include <iostream>
+#endif
+
 namespace smtk
 {
 namespace mesh

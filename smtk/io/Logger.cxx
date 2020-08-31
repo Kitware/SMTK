@@ -11,6 +11,7 @@
 #include "smtk/io/Logger.h"
 
 #include <fstream>
+#include <iostream>
 
 namespace smtk
 {

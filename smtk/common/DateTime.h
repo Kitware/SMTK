@@ -19,7 +19,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/date_time/posix_time/ptime.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <iostream>
 #include <string>
 
 namespace smtk
