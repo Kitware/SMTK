@@ -153,6 +153,7 @@ void qtGroupItem::createWidget()
     m_internals->GroupBox->setChecked(item->localEnabledState());
     //Hides empty frame when not enabled.
     m_internals->GroupBox->setStyleSheet("QGroupBox::unchecked {border: none;}");
+    m_internals->ButtonsFrame->setVisible(item->isEnabled());
     m_internals->ChildrensFrame->setVisible(item->isEnabled());
     connect(m_internals->GroupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
   }
@@ -160,6 +161,7 @@ void qtGroupItem::createWidget()
 
 void qtGroupItem::setEnabledState(bool checked)
 {
+  m_internals->ButtonsFrame->setVisible(checked);
   m_internals->ChildrensFrame->setVisible(checked);
   auto item = m_itemInfo.item();
   if (item == nullptr)
@@ -234,7 +236,14 @@ void qtGroupItem::updateItemData()
       m_internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       connect(m_internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
       m_internals->ButtonsFrame->layout()->addWidget(m_internals->AddItemButton);
-      qobject_cast<QHBoxLayout*>(m_internals->ButtonsFrame->layout())->addStretch();
+      // There is a bug in qtGroupBox that causes a strange rendering bug where the button
+      // frame is not below the qtGroupBox text when it is optional.  As a result pushing the
+      // add button to the left results in it being on top of the check-box - the workaround is
+      // is to only move the button if the group item is not optional.
+      if (!item->isOptional())
+      {
+        qobject_cast<QHBoxLayout*>(m_internals->ButtonsFrame->layout())->addStretch();
+      }
 
       // Do we show a load File option?
       if (item->isExtensible() && m_itemInfo.component().attributeAsBool("ImportFromFile"))
