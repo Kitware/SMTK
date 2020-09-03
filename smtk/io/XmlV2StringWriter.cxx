@@ -518,6 +518,17 @@ void XmlV2StringWriter::processDefinition(DefinitionPtr def)
     this->processDefinitionInternal(node, def);
   }
 
+  if (!m_resource->associationRules().associationRuleContainer().empty() ||
+    !m_resource->associationRules().dissociationRuleContainer().empty())
+  {
+    std::size_t index = 0;
+    if (m_useDirectoryInfo)
+    {
+      index = def->includeIndex();
+    }
+    this->processAssociationRules(index);
+  }
+
   if (m_includeInstances)
   {
     // Process all attributes based on this class
@@ -1472,6 +1483,42 @@ void XmlV2StringWriter::processViewComponent(
     {
       child = node.append_child(comp.child(i).name().c_str());
       this->processViewComponent(comp.child(i), child);
+    }
+  }
+}
+
+void XmlV2StringWriter::processAssociationRules(std::size_t index)
+{
+  m_internals->m_roots.at(index)
+    .append_child(node_comment)
+    .set_value("**********  Attribute Association Rules ***********");
+
+  if (!m_resource->associationRules().associationRuleContainer().empty())
+  {
+    xml_node associationRulesNode = m_internals->m_roots.at(index).append_child("AssociationRules");
+    for (auto& associationRule : m_resource->associationRules().associationRuleContainer())
+    {
+      const std::string& alias =
+        m_resource->associationRules().associationRuleFactory().reverseLookup().at(
+          associationRule.second->typeName());
+      xml_node associationRuleNode = associationRulesNode.append_child(alias.c_str());
+      associationRuleNode.append_attribute("Name").set_value(associationRule.first.c_str());
+      (*associationRule.second) >> associationRuleNode;
+    }
+  }
+
+  if (!m_resource->associationRules().dissociationRuleContainer().empty())
+  {
+    xml_node dissociationRulesNode =
+      m_internals->m_roots.at(index).append_child("DissociationRules");
+    for (auto& dissociationRule : m_resource->associationRules().dissociationRuleContainer())
+    {
+      const std::string& alias =
+        m_resource->associationRules().dissociationRuleFactory().reverseLookup().at(
+          dissociationRule.second->typeName());
+      xml_node dissociationRuleNode = dissociationRulesNode.append_child(alias.c_str());
+      dissociationRuleNode.append_attribute("Name").set_value(dissociationRule.first.c_str());
+      (*dissociationRule.second) >> dissociationRuleNode;
     }
   }
 }

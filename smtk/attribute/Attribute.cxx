@@ -343,7 +343,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
     }
     // We need to precheck all of the objects
     AttributePtr probAtt;
-    for (auto obj : objs)
+    for (const auto& obj : objs)
     {
       if (!this->canBeDisassociated(obj, probAtt))
       {
@@ -453,6 +453,23 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
   return result;
 }
 
+bool Attribute::canBeAssociated(const smtk::resource::PersistentObjectPtr& obj) const
+{
+  if (!obj)
+  {
+    return false;
+  }
+
+  auto associationRule =
+    this->attributeResource()->associationRules().associationRuleForDefinition(m_definition);
+  if (associationRule)
+  {
+    std::shared_ptr<const Attribute> self = this->shared_from_this();
+    return (*associationRule)(self, obj);
+  }
+  return true;
+}
+
 /*! \fn template<typename T> T Attribute::associatedModelEntities() const
  *\brief Return a container of associated entityref-subclass instances.
  *
@@ -484,6 +501,12 @@ bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
   }
   // What about missing prerequisites?
   if (m_definition->checkForPrerequisites(obj) != nullptr)
+  {
+    return false;
+  }
+
+  // Do the user-defined association rules allow for this association?
+  if (!this->canBeAssociated(obj))
   {
     return false;
   }
@@ -597,7 +620,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
 }
 
 bool Attribute::canBeDisassociated(
-  smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const
+  const smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const
 {
   probAtt = nullptr;
   if (!m_associatedObjects)
@@ -612,12 +635,27 @@ bool Attribute::canBeDisassociated(
     return true;
   }
 
+  // Is there a user-defined dissociation rule that prevents this action?
+  {
+    auto dissociationRule =
+      this->attributeResource()->associationRules().dissociationRuleForDefinition(m_definition);
+    if (dissociationRule)
+    {
+      std::shared_ptr<const Attribute> self = this->shared_from_this();
+      if ((*dissociationRule)(self, obj))
+      {
+        return false;
+      }
+    }
+  }
+
   // Is this attribute's definition is not used as a prerequisite
   // we can safely remove it
   if (!m_definition->isUsedAsAPrerequisite())
   {
     return true;
   }
+
   // Ok we found the object - now will removing the association
   // invalidate a prerequisite condition? To determine this do the following:
   // 1. Get all of the attributes associated with the object

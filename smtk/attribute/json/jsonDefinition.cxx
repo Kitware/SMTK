@@ -142,6 +142,22 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
     j["Tags"] = tagInfo;
   }
+
+  auto associationRuleForDef =
+    defPtr->resource()->associationRules().associationRulesForDefinitions().find(defPtr->type());
+  if (associationRuleForDef !=
+    defPtr->resource()->associationRules().associationRulesForDefinitions().end())
+  {
+    j["AssociationRule"] = associationRuleForDef->second;
+  }
+
+  auto dissociationRuleForDef =
+    defPtr->resource()->associationRules().dissociationRulesForDefinitions().find(defPtr->type());
+  if (dissociationRuleForDef !=
+    defPtr->resource()->associationRules().dissociationRulesForDefinitions().end())
+  {
+    j["DissociationRule"] = dissociationRuleForDef->second;
+  }
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
@@ -324,6 +340,20 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       smtk::attribute::Tag tag(t.first, t.second);
       defPtr->addTag(tag);
     }
+  }
+
+  result = j.find("AssociationRule");
+  if (result != j.end())
+  {
+    defPtr->resource()->associationRules().associationRulesForDefinitions().emplace(
+      std::make_pair(defPtr->type(), result->get<std::string>()));
+  }
+
+  result = j.find("DissociationRule");
+  if (result != j.end())
+  {
+    defPtr->resource()->associationRules().dissociationRulesForDefinitions().emplace(
+      std::make_pair(defPtr->type(), result->get<std::string>()));
   }
 }
 }

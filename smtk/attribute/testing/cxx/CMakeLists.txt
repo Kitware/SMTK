@@ -75,6 +75,7 @@ endif()
 
 set(unit_tests
   unitAdvanceLevelTest
+  unitAssociationRulesTest
   unitAssociationTest
   unitAttributeBasics
   unitAttributeAssociation

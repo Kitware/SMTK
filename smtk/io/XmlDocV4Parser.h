@@ -32,11 +32,11 @@ public:
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
+  void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
   void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
   void processViews(pugi::xml_node& root) override;
-
-private:
+  void processAssociationRules(pugi::xml_node& root) override;
 };
 }
 }

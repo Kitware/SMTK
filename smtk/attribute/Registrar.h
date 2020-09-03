@@ -12,6 +12,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/common/Managers.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -25,6 +26,9 @@ class SMTKCORE_EXPORT Registrar
 public:
   static void registerTo(const smtk::common::Managers::Ptr&);
   static void unregisterFrom(const smtk::common::Managers::Ptr&);
+
+  static void registerTo(const smtk::attribute::AssociationRuleManager::Ptr&);
+  static void unregisterFrom(const smtk::attribute::AssociationRuleManager::Ptr&);
 
   static void registerTo(const smtk::operation::Manager::Ptr&);
   static void unregisterFrom(const smtk::operation::Manager::Ptr&);

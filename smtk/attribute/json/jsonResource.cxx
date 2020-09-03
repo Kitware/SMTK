@@ -210,6 +210,44 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
   j["Attributes"] = attsObj;
 
+  // Process Association Rules
+  if (!res->associationRules().associationRuleContainer().empty())
+  {
+    json associationRulesObj = json::array();
+
+    for (auto& associationRule : res->associationRules().associationRuleContainer())
+    {
+      const std::string& alias =
+        res->associationRules().associationRuleFactory().reverseLookup().at(
+          associationRule.second->typeName());
+      json associationRuleObj = json::object();
+      associationRuleObj["Alias"] = alias;
+      associationRuleObj["Name"] = associationRule.first;
+      (*associationRule.second) >> associationRuleObj;
+      associationRulesObj.push_back(associationRuleObj);
+    }
+    j["Association Rules"] = associationRulesObj;
+  }
+
+  // Process Dissociation Rules
+  if (!res->associationRules().dissociationRuleContainer().empty())
+  {
+    json dissociationRulesObj = json::array();
+
+    for (auto& dissociationRule : res->associationRules().dissociationRuleContainer())
+    {
+      const std::string& alias =
+        res->associationRules().dissociationRuleFactory().reverseLookup().at(
+          dissociationRule.second->typeName());
+      json dissociationRuleObj = json::object();
+      dissociationRuleObj["Alias"] = alias;
+      dissociationRuleObj["Name"] = dissociationRule.first;
+      (*dissociationRule.second) >> dissociationRuleObj;
+      dissociationRulesObj.push_back(dissociationRuleObj);
+    }
+    j["Dissociation Rules"] = dissociationRulesObj;
+  }
+
   // Process Styles
   if (!res->styles().empty())
   {
@@ -544,6 +582,52 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
             "Cannot find prerequisite definiion: " << defName << " for Definition: " << *type);
         }
       }
+    }
+  }
+
+  // Check for Association Rules
+  auto associationRules = j.find("Association Rules");
+  if (associationRules != j.end())
+  {
+    for (auto& associationRuleObj : *associationRules)
+    {
+      if (!res->associationRules().associationRuleFactory().containsAlias(
+            associationRuleObj["Alias"].get<std::string>()))
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Could not find association rule Alias \""
+            << associationRuleObj["Alias"].get<std::string>() << "\"");
+        continue;
+      }
+
+      std::unique_ptr<smtk::attribute::Rule> associationRule =
+        res->associationRules().associationRuleFactory().createFromAlias(
+          associationRuleObj["Alias"].get<std::string>());
+      (*associationRule) << associationRuleObj;
+      res->associationRules().associationRuleContainer().emplace(
+        std::make_pair(associationRuleObj["Name"].get<std::string>(), std::move(associationRule)));
+    }
+  }
+
+  // Check for Dissociation Rules
+  auto dissociationRules = j.find("Dissociation Rules");
+  if (dissociationRules != j.end())
+  {
+    for (auto& dissociationRuleObj : *dissociationRules)
+    {
+      if (!res->associationRules().dissociationRuleFactory().containsAlias(
+            dissociationRuleObj["Alias"].get<std::string>()))
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Could not find dissociation rule Alias \""
+            << dissociationRuleObj["Alias"].get<std::string>() << "\"");
+        continue;
+      }
+
+      std::unique_ptr<smtk::attribute::Rule> dissociationRule =
+        res->associationRules().dissociationRuleFactory().createFromAlias(
+          dissociationRuleObj["Alias"].get<std::string>());
+      (*dissociationRule) << dissociationRuleObj;
+      res->associationRules().dissociationRuleContainer().emplace(std::make_pair(
+        dissociationRuleObj["Name"].get<std::string>(), std::move(dissociationRule)));
     }
   }
 
