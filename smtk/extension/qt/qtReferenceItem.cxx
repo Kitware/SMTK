@@ -53,7 +53,8 @@ void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->update();
 }
 
-nlohmann::json jcfg = { { "Name", "RefItem" }, { "Type", "smtk::view::ReferenceItemPhraseModel" },
+nlohmann::json defaultConfiguration = { { "Name", "RefItem" },
+  { "Type", "smtk::view::ReferenceItemPhraseModel" },
   { "Component",
     { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
       { "Children",
@@ -368,14 +369,14 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   if (refItem && refItem->numberOfRequiredValues() < 2 &&
     ((!refItem->isExtensible()) || (refItem->isExtensible() && refItem->maxNumberOfValues() == 1)))
   {
-    json jj = jcfg;
+    json jj = defaultConfiguration;
     jj["Component"]["Children"][0]["Children"][1]["Children"][0]["Attributes"]["SingleSelect"] =
       true;
     phraseModelConfig = jj;
   }
   else
   {
-    phraseModelConfig = jcfg;
+    phraseModelConfig = defaultConfiguration;
   }
   auto phraseModel =
     m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
