@@ -20,6 +20,7 @@
 #include "smtk/view/PhraseModelFactory.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
+#include "smtk/view/json/jsonView.h"
 
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
@@ -30,6 +31,26 @@ namespace smtk
 {
 namespace extension
 {
+
+namespace
+{
+
+nlohmann::json defaultConfiguration = { { "Name", "RefItem" },
+  { "Type", "smtk::view::ResourcePhraseModel" },
+  { "Component",
+    { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+      { "Children",
+        { { { "Name", "PhraseModel" },
+          { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+          { "Children",
+            { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
+              { { "Name", "Badges" },
+                { "Children",
+                  { { { "Name", "Badge" },
+                    { "Attributes",
+                      { { "Type",
+                        "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
+}
 
 qtItem* qtResourceItem::createItemWidget(const qtAttributeItemInfo& info)
 {
@@ -74,6 +95,14 @@ smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
   auto phraseModel =
     m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
       m_itemInfo.baseView()->getObject().get());
+  if (!phraseModel ||
+    !m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
+  {
+    smtk::view::ConfigurationPtr config = defaultConfiguration;
+    phraseModel =
+      m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
+        config.get());
+  }
   phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ResourceItemDefinition>(
     m_itemInfo.item()->definition());
