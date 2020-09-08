@@ -78,6 +78,7 @@ public:
 protected:
   void processAttributeInformation(pugi::xml_node& root);
   virtual void processViews(pugi::xml_node& root);
+  virtual void processAssociationRules(pugi::xml_node&) {}
 
   void createDefinition(pugi::xml_node& defNode);
   virtual void processDefinitionInformation(pugi::xml_node& defNode);

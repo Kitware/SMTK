@@ -618,6 +618,7 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
     }
   }
 
+  this->processAssociationRules(amnode);
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
 

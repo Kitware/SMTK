@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Import_xml.h"
 
+#include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -71,6 +72,15 @@ Import::Result Import::operateInternal()
           // resource.
           auto itemDefinitionManager = mgrs->get<smtk::attribute::ItemDefinitionManager::Ptr>();
           itemDefinitionManager->registerDefinitionsTo(resource);
+        }
+
+        // if that container has an association rule manager...
+        if (mgrs->contains<smtk::attribute::AssociationRuleManager::Ptr>())
+        {
+          // ...add custom association rules to the newly created attribute
+          // resource.
+          auto associationRuleManager = mgrs->get<smtk::attribute::AssociationRuleManager::Ptr>();
+          associationRuleManager->registerRulesTo(resource);
         }
       }
     }

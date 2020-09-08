@@ -92,6 +92,11 @@ public:
     return static_pointer_cast<Attribute>(Component::shared_from_this());
   }
 
+  std::shared_ptr<const Attribute> shared_from_this() const
+  {
+    return static_pointer_cast<const Attribute>(Component::shared_from_this());
+  }
+
   // NOTE: To rename an attribute use the resource!
   std::string name() const override { return m_name; }
 
@@ -230,7 +235,9 @@ public:
   bool isObjectAssociated(const smtk::common::UUID& uid) const;
   bool isObjectAssociated(const smtk::resource::PersistentObjectPtr& componentPtr) const;
 
-  bool canBeDisassociated(smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const;
+  bool canBeAssociated(const smtk::resource::PersistentObjectPtr& obj) const;
+  bool canBeDisassociated(
+    const smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const;
   ConstReferenceItemPtr associations() const { return m_associatedObjects; }
   ReferenceItemPtr associations() { return m_associatedObjects; }
 

@@ -85,6 +85,10 @@ set(attributeOperators
 set(attributeHeaders
   ${jsonAttributeHeaders}
   Analyses.h
+  AssociationRule.h
+  AssociationRuleFactory.h
+  AssociationRuleManager.h
+  AssociationRules.h
   Attribute.h
   Categories.h
   ComponentItem.h
@@ -136,6 +140,8 @@ set(attributeHeaders
 set(attributeSrcs
   ${jsonAttributeSrcs}
   Analyses.cxx
+  AssociationRuleManager.cxx
+  AssociationRules.cxx
   Attribute.cxx
   Categories.cxx
   ComponentItem.cxx
@@ -186,6 +192,15 @@ foreach (operator ${attributeOperators})
 endforeach()
 add_custom_target(attibuteGenHeaders DEPENDS ${_attributeDependencies})
 # set(attributeDependencies ${_attributeDependencies} PARENT_SCOPE)
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND attributeHeaders
+    PythonRule.h
+    )
+  list(APPEND attributeSrcs
+    PythonRule.cxx
+    )
+endif()
 
 #install the headers
 smtk_public_headers(smtkCore ${attributeHeaders})

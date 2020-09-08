@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/attribute/Registrar.h"
 
+#include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Resource.h"
 
@@ -21,6 +22,10 @@
 #include "smtk/attribute/operators/Read.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/attribute/operators/Write.h"
+
+#ifdef SMTK_PYTHON_ENABLED
+#include "smtk/attribute/PythonRule.h"
+#endif
 
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
@@ -42,20 +47,49 @@ typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> O
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   managers->insert(smtk::attribute::ItemDefinitionManager::create());
+  managers->insert(smtk::attribute::AssociationRuleManager::create());
 
   if (managers->contains<smtk::resource::Manager::Ptr>())
   {
     managers->get<smtk::attribute::ItemDefinitionManager::Ptr>()->registerResourceManager(
       managers->get<smtk::resource::Manager::Ptr>());
+
+    managers->get<smtk::attribute::AssociationRuleManager::Ptr>()->registerResourceManager(
+      managers->get<smtk::resource::Manager::Ptr>());
   }
 
   smtk::plugin::Manager::instance()->registerPluginsTo(
     managers->get<smtk::attribute::ItemDefinitionManager::Ptr>());
+
+  smtk::plugin::Manager::instance()->registerPluginsTo(
+    managers->get<smtk::attribute::AssociationRuleManager::Ptr>());
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   managers->erase<smtk::attribute::ItemDefinitionManager::Ptr>();
+}
+
+void Registrar::registerTo(
+  const smtk::attribute::AssociationRuleManager::Ptr& associationRuleManager)
+{
+#ifdef SMTK_PYTHON_ENABLED
+  associationRuleManager->registerAssociationRule<smtk::attribute::PythonRule>("PythonRule");
+  associationRuleManager->registerDissociationRule<smtk::attribute::PythonRule>("PythonRule");
+#else
+  (void)associationRuleManager;
+#endif
+}
+
+void Registrar::unregisterFrom(
+  const smtk::attribute::AssociationRuleManager::Ptr& associationRuleManager)
+{
+#ifdef SMTK_PYTHON_ENABLED
+  associationRuleManager->unregisterAssociationRule<smtk::attribute::PythonRule>();
+  associationRuleManager->unregisterDissociationRule<smtk::attribute::PythonRule>();
+#else
+  (void)associationRuleManager;
+#endif
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

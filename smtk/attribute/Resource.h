@@ -23,6 +23,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Analyses.h"
+#include "smtk/attribute/AssociationRules.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
@@ -267,6 +268,9 @@ public:
     return m_customItemDefinitionFactory;
   }
 
+  AssociationRules& associationRules() { return m_associationRules; }
+  const AssociationRules& associationRules() const { return m_associationRules; }
+
   class GuardedLinks
   {
   public:
@@ -331,6 +335,8 @@ protected:
   std::set<smtk::resource::Links::RoleType> m_roles;
 
   CustomItemDefinitionFactory m_customItemDefinitionFactory;
+
+  AssociationRules m_associationRules;
 
 private:
   mutable std::mutex m_mutex;

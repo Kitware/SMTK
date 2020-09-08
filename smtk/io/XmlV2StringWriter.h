@@ -60,6 +60,7 @@ protected:
   void processAttributeInformation();
   void processViews();
   void processStyles();
+  void processAssociationRules(std::size_t index);
   void processModelInfo();
 
   void processDefinition(smtk::attribute::DefinitionPtr def);
