@@ -241,16 +241,38 @@ install(CODE
           RESOLVED_DEPENDENCIES_VAR resolved_deps
           UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
           CONFLICTING_DEPENDENCIES_PREFIX conflicting_deps
-          POST_EXCLUDE_REGEXES \"^/(System|usr/lib)\"
+          POST_EXCLUDE_REGEXES \"^/(System|lib|usr/lib)\"
           EXECUTABLES \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer
           LIBRARIES \${qt_plugins} \${required_libs}
           DIRECTORIES \${lib_search_dirs}
           )
 
+   # Conflicting dependencies are dependencies that are found in multiple
+   # places. If a dependency in this list matches our post_include_regex
+   # and is not in our ignore_items list, use the first instance of the
+   # dependency found.
+   set(conflicting_deps)
+   foreach (conflicting_dep IN LISTS conflicting_deps_FILENAMES)
+     string(REGEX MATCH \${post_include_regex} match \${conflicting_dep})
+     if (match)
+       set(add_to_list ON)
+         if (ignore_items)
+          if (\${conflicting_dep} NOT IN_LIST ignore_items)
+            set(add_to_list OFF)
+          endif()
+        endif()
+      if (add_to_list)
+         list(GET conflicting_deps_\${conflicting_dep} 0 dep)
+         list(APPEND conflicting_deps \${dep})
+      endif()
+       endif()
+     endif()
+   endforeach()
+
    include(BundleUtilities)
 
    # Copy each resolved dependency into the application bundle
-   foreach (lib IN LISTS resolved_deps required_libs)
+   foreach (lib IN LISTS resolved_deps conflicting_deps required_libs)
       get_filename_component(libname \${lib} NAME)
 
       # Copy the library into the bundle
