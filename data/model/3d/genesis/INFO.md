@@ -14,8 +14,11 @@ Three files that have been used to model simple casting problems with Truchas
 * casting-mesh2.gen: Quarter section of spherical mold including casting,
   5 element blocks & 16 side sets
 
-* casting-em-mesh: Quarter section of mesh enclosing either mesh 1/2,
+* casting-em-mesh.gen: Quarter section of mesh enclosing either mesh 1/2,
   5 element blocks (including void for mesh1/2) & 0 side sets.
+
+* filling1.gen: Quarted section of mesh representing liquid filling
+  the mold, use for flow analysis, 1 element block and 4 side sets.
 
 
 ## High energy physics
