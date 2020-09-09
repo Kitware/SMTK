@@ -520,22 +520,23 @@ void qtGroupView::childModified()
   {
     return;
   }
+  // Note that even though Child View A was modified, Child View B
+  // could have its validity changed - for example it could have reference item
+  // whose value is dependent on the contents of View A - so we should check all
+  // of the tabs not just the one modified explicitly.
   QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
   if (tabWidget != nullptr)
   {
     int i, n = m_internals->m_TabbedViews.count();
     for (i = 0; i < n; i++)
     {
-      if (m_internals->m_TabbedViews.value(i) == child)
+      if (m_internals->m_TabbedViews.value(i)->isValid())
       {
-        if (child->isValid())
-        {
-          tabWidget->setTabIcon(i, QIcon());
-        }
-        else
-        {
-          tabWidget->setTabIcon(i, m_internals->m_alertIcon);
-        }
+        tabWidget->setTabIcon(i, QIcon());
+      }
+      else
+      {
+        tabWidget->setTabIcon(i, m_internals->m_alertIcon);
       }
     }
   }
