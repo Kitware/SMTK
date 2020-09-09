@@ -9,9 +9,9 @@ set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download.
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2019")
-  # 20200814
-  set(file_item "5f36dc109014a6d84e7738ae")
-  set(file_hash "4e633d5812d795373fb4a6b9f4a3b4e0543dbe73f404afdb392825ff277bbf8d2dca2c67d72353e8c57083758207e017da746c2d5cf44f99fa44550612f8317c")
+  # 20200925
+  set(file_item "5f73425b50a41e3d19b6e3b9")
+  set(file_hash "44724f7513cef227f6ff953a0c3b023dd086bbdbe02314b602c6840594bc1703d824a4d49e1b0b586093ba016adcaf6c3cbbd4e0efac04a509f294b20a1a5dcb")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos")
   # 20200813
   set(file_item "5f36dbe19014a6d84e77387a")
