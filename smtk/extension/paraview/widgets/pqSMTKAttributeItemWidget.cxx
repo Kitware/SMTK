@@ -243,22 +243,13 @@ void pqSMTKAttributeItemWidget::updateItemFromWidget()
   {
     m_p->m_state = Internal::State::UpdatingFromAttribute;
     this->updateItemFromWidgetInternal();
-    m_p->m_state = Internal::State::DoneUpdatingFromAttribute;
+    emit this->modified();
+    m_p->m_state = Internal::State::Idle;
   }
 }
 
 void pqSMTKAttributeItemWidget::updateWidgetFromItem()
 {
-  if (m_p->m_state == Internal::State::DoneUpdatingFromAttribute)
-  {
-    // This happens when updateItemFromWidget() causes a modification to the
-    // attribute, resulting in a Signal operation that triggers this method.
-    // We complete the update from widget to item by resetting the state to
-    // idle.
-    m_p->m_state = Internal::State::Idle;
-    return;
-  }
-
   if (m_p->m_state == Internal::State::Idle)
   {
     m_p->m_state = Internal::State::UpdatingFromUI;
@@ -311,9 +302,19 @@ void pqSMTKAttributeItemWidget::updateItemData()
   this->qtItem::updateItemData();
 }
 
+void pqSMTKAttributeItemWidget::ignoreWidgetValues()
+{
+  m_p->m_state = Internal::State::Interacting;
+}
+
 void pqSMTKAttributeItemWidget::acceptWidgetValues()
 {
   this->m_p->m_pvwidget->apply();
+  if (m_p->m_state == Internal::State::Interacting)
+  {
+    m_p->m_state = Internal::State::Idle;
+    this->updateItemFromWidget();
+  }
 }
 
 bool pqSMTKAttributeItemWidget::eventFilter(QObject* obj, QEvent* event)
@@ -477,8 +478,9 @@ void pqSMTKAttributeItemWidget::createEditor()
   pvwidget->setView(actives.activeView());
   m_p->m_pvwidget = pvwidget;
   // When the user is done interacting with the widget, update the attribute values
+  QObject::connect(pvwidget, SIGNAL(startInteraction()), this, SLOT(ignoreWidgetValues()));
   QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(acceptWidgetValues()));
-  QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(updateItemFromWidget()));
+  QObject::connect(pvwidget, SIGNAL(changeAvailable()), this, SLOT(updateItemFromWidget()));
   // When the active view changes, move the widget to that view.
   QObject::connect(&actives, SIGNAL(viewChanged(pqView*)), pvwidget, SLOT(setView(pqView*)));
 
