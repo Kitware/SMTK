@@ -105,6 +105,7 @@ public slots:
 
 protected slots:
   void updateItemData() override;
+  virtual void ignoreWidgetValues();
   virtual void acceptWidgetValues();
   virtual void updateItemFromWidgetInternal() = 0;
   virtual void updateWidgetFromItemInternal() {}
