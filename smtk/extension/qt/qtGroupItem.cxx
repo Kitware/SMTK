@@ -188,8 +188,10 @@ void qtGroupItem::updateItemData()
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (item->isOptional())
   {
+    m_internals->GroupBox->blockSignals(true);
     m_internals->GroupBox->setCheckable(true);
     m_internals->GroupBox->setChecked(item->localEnabledState());
+    m_internals->GroupBox->blockSignals(false);
   }
   else
   {
