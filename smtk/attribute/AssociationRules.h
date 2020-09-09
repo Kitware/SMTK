@@ -29,6 +29,15 @@ public:
   typedef std::unordered_map<std::string, std::unique_ptr<Rule> > AssociationRuleContainer;
   typedef std::unordered_map<std::string, std::unique_ptr<Rule> > DissociationRuleContainer;
 
+  AssociationRules() = default;
+
+  // Our maps of rules are move-only, so this class needs to be at least
+  // move-only as well. MSVC 2019 does not correctly intuit this fact when
+  // generating copy constructors and assignment operators, so we explicitly
+  // remove them.
+  AssociationRules(const AssociationRules&) = delete;
+  AssociationRules& operator=(const AssociationRules&) = delete;
+
   /// Access the association/dissociation rule for a given definition, if one
   /// exists.
   const Rule* associationRuleForDefinition(const smtk::attribute::DefinitionPtr definition) const;

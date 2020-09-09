@@ -40,7 +40,7 @@ class SMTKCORE_EXPORT AssociationRuleManager
   struct Trait;
 
   template <typename BaseRuleType, bool>
-  friend class Trait;
+  friend struct Trait;
 
   template <bool dummy>
   struct Trait<AssociationRule, dummy>
