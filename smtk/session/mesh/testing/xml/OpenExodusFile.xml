@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <pqevents>
   <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
   <pqevent object="pqClientMainWindow/MainControlsToolbar/actionOpenData" command="activate" arguments="" />
   <pqevent object="pqClientMainWindow/FileOpenDialog" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/mesh/3d/cube_with_hole.exo" />
   <pqevent object="pqClientMainWindow/pqSelectReaderDialog/listWidget" command="setCurrent" arguments="2.0" />
