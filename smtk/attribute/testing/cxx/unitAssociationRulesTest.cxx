@@ -115,7 +115,7 @@ def canBeAssociated(attribute, object):
 </SMTK_AttributeResource>)xml";
 }
 
-int unitAssociationRulesTest(int argc, char** argv)
+int unitAssociationRulesTest(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
