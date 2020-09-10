@@ -72,5 +72,6 @@ def canBeAssociated(attribute, object):
 
 PythonRule instances expect a Python function that accepts "attribute"
 and "object" input parameters to determine whether an object can be
-associated/dissociated to/from an attribute. For an example of its use,
-see `unitAssociationRulesTest.cxx`.
+associated/dissociated to/from an attribute. Additionally, external Python
+source files describing different modules can be listed using the <SourceFiles>
+XML tag. For an example of its use, see `unitAssociationRulesTest.cxx`.

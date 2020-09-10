@@ -33,6 +33,7 @@
 using namespace boost::filesystem;
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
 namespace
@@ -87,6 +88,14 @@ int testAssociationRule(const smtk::attribute::AttributePtr& attribute)
   return 0;
 }
 
+const char* testPy = R"python(
+import smtk.mesh
+
+def mySpecialAssociationRule(object, attribute):
+    meshComponent = smtk.mesh.Component.CastTo(object)
+    return meshComponent != None
+)python";
+
 const char* testInput = R"xml(
 <?xml version="1.0" encoding="utf-8" ?>
 <SMTK_AttributeResource Version="4">
@@ -102,12 +111,16 @@ const char* testInput = R"xml(
     </AttDef>
   </Definitions>
   <AssociationRules>
-    <PythonRule Name="myPythonRule"><![CDATA[
+    <PythonRule Name="myPythonRule">
+      <SourceFiles>
+        <SourceFile>myPythonSource.py</SourceFile>
+      </SourceFiles>
+      <![CDATA[
 def canBeAssociated(attribute, object):
-    import smtk.mesh
-    meshComponent = smtk.mesh.Component.CastTo(object)
-    return meshComponent != None
-      ]]></PythonRule>
+    import myPythonSource
+    return myPythonSource.mySpecialAssociationRule(object, attribute)
+      ]]>
+    </PythonRule>
   </AssociationRules>
   <Attributes>
     <Att Name="att" Type="att1"/>
@@ -122,9 +135,17 @@ int unitAssociationRulesTest(int argc, char* argv[])
 
   // Construct an attribute resource from the test input, test its association
   // properties, and write it to disk.
+  std::string pyFileName;
   std::string sbiFileName;
   std::string smtkFileName;
   {
+    {
+      pyFileName = write_root + "/myPythonSource.py";
+      std::ofstream outfile(pyFileName.c_str(), std::ios::out);
+      outfile << testPy;
+      outfile.close();
+    }
+
     // Construct a new attribute resource
     smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
 
@@ -139,7 +160,9 @@ int unitAssociationRulesTest(int argc, char* argv[])
     // Read the input xml to construct an attribute instance.
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
-    if (reader.readContents(resource, testInput, logger))
+    std::string input = testInput;
+    input.replace(input.find("myPythonSource.py"), 17, pyFileName);
+    if (reader.readContents(resource, input, logger))
     {
       std::cerr << "Encountered Errors while reading input data\n";
       std::cerr << logger.convertToString();
@@ -166,8 +189,7 @@ int unitAssociationRulesTest(int argc, char* argv[])
 
     // Write the resource out to a .sbi file
     {
-      sbiFileName = write_root + "/associationRulesTest.sbi";
-      // sbiFileName = write_root + "/" + smtk::common::UUID::random().toString() + ".sbi";
+      sbiFileName = write_root + "/" + smtk::common::UUID::random().toString() + ".sbi";
 
       smtk::io::AttributeWriter writer;
       if (writer.write(resource, sbiFileName, logger))
@@ -180,8 +202,7 @@ int unitAssociationRulesTest(int argc, char* argv[])
 
     // Write the resource out to a .smtk file
     {
-      smtkFileName = write_root + "/associationRulesTest.json";
-      // smtkFileName = write_root + "/" + smtk::common::UUID::random().toString() + ".json";
+      smtkFileName = write_root + "/" + smtk::common::UUID::random().toString() + ".json";
       resource->setLocation(smtkFileName);
 
       smtk::attribute::Write::Ptr writeOp = smtk::attribute::Write::create();
@@ -269,8 +290,9 @@ int unitAssociationRulesTest(int argc, char* argv[])
     }
   }
 
-  // cleanup(smtkFileName);
-  // cleanup(sbiFileName);
+  cleanup(smtkFileName);
+  cleanup(sbiFileName);
+  cleanup(pyFileName);
 
   return 0;
 }

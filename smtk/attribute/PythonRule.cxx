@@ -18,8 +18,13 @@
 #include "smtk/io/Logger.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
+
 #include <pybind11/embed.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
@@ -36,6 +41,31 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
   // Initialize SMTK's embedded interpreter. This will locate SMTK's Python
   // bindings and ensure that they can be imported.
   smtk::common::PythonInterpreter::instance().initialize();
+
+  // Import all associated source files.
+  for (std::string sourceFile : m_sourceFiles)
+  {
+    // If the source file is described as a relative path, attempt to find it
+    // relative to the location of the attribute resource.
+    if (!boost::filesystem::path(sourceFile).is_absolute())
+    {
+      sourceFile =
+        (boost::filesystem::path(attribute->resource()->location()).parent_path() / sourceFile)
+          .c_str();
+    }
+
+    if (!boost::filesystem::is_regular_file(boost::filesystem::path(sourceFile)) &&
+      !boost::filesystem::is_symlink(boost::filesystem::path(sourceFile)))
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "Could not locate Python source file \""
+          << sourceFile << "\".");
+    }
+    else if (!smtk::common::PythonInterpreter::instance().loadPythonSourceFile(sourceFile))
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "Could not load Python source file \""
+          << sourceFile << "\".");
+    }
+  }
 
   // The inputs to our Python function will be the input attribute and object.
   auto locals = pybind11::dict();
@@ -94,6 +124,8 @@ const PythonRule& PythonRule::operator>>(nlohmann::json& json) const
   // string into something more digestible. Luckily, Python has routines to do
   // just this.
 
+  json["SourceFiles"] = m_sourceFiles;
+
   auto locals = pybind11::dict();
   locals["functionStr"] = m_functionString;
 
@@ -117,6 +149,8 @@ PythonRule& PythonRule::operator<<(const nlohmann::json& json)
 {
   // See the explanation in operator>>() above.
 
+  m_sourceFiles = json["SourceFiles"].get<std::vector<std::string> >();
+
   auto locals = pybind11::dict();
   locals["b64encodedStr"] = json["Function"].get<std::string>();
 
@@ -138,6 +172,15 @@ returnValue = base64.b64decode(b64encodedStr).decode('ascii'))python";
 
 const PythonRule& PythonRule::operator>>(pugi::xml_node& node) const
 {
+  if (!m_sourceFiles.empty())
+  {
+    pugi::xml_node subnode = node.append_child("SourceFiles");
+    for (const auto& sourceFile : m_sourceFiles)
+    {
+      subnode.append_child("SourceFile").text().set(sourceFile.c_str());
+    }
+  }
+
   // There are a handful of reserved characters in XML. We avoid complications
   // between these reserved characters and Python syntax by treating our Python
   // input as CDATA, which the parser ignores.
@@ -147,6 +190,18 @@ const PythonRule& PythonRule::operator>>(pugi::xml_node& node) const
 
 PythonRule& PythonRule::operator<<(const pugi::xml_node& node)
 {
+  m_sourceFiles.clear();
+
+  pugi::xml_node subnode = node.child("SourceFiles");
+  if (subnode)
+  {
+    for (pugi::xml_node child = subnode.child("SourceFile"); child;
+         child = child.next_sibling("SourceFile"))
+    {
+      m_sourceFiles.emplace_back(child.text().get());
+    }
+  }
+
   // See the explanation in operator>>() above.
   m_functionString = node.text().data().value();
   return *this;
