@@ -236,6 +236,10 @@ install(CODE
    # Construct a list of libraries already in the application bundle
    file(GLOB_RECURSE required_libs \"\${CMAKE_INSTALL_PREFIX}/\${lib_dest_dir}/*\${suffix}\")
 
+   # Construct a regex for libraries that we should package, even if they are
+   # considered system libraries (e.g., \"^.*(gfortran|quadmath).*\$\").
+   set(post_include_regex \"\")
+
    # Construct a list of the application's runtime dependencies
    file(GET_RUNTIME_DEPENDENCIES
           RESOLVED_DEPENDENCIES_VAR resolved_deps
