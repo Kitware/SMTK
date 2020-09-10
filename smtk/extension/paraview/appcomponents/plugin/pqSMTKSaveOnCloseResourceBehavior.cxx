@@ -82,7 +82,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
             {
               pqActiveObjects* activeObjects = &pqActiveObjects::instance();
               activeObjects->setActiveSource(smtkResource);
-              pqSaveResourceReaction::saveResource();
+              pqSaveResourceReaction::saveResource(smtkResource);
             }
           }
         });

@@ -18,6 +18,7 @@
 
 class pqPipelineSource;
 class pqServer;
+class pqSMTKResource;
 class vtkSMReaderFactory;
 
 /// A reaction for saving an SMTK resource to its internal location.
@@ -39,7 +40,7 @@ public:
     Aborted
   };
 
-  static State saveResource();
+  static State saveResource(pqSMTKResource* smtkResource = nullptr);
 
 public slots:
   /**
@@ -70,7 +71,7 @@ public:
   */
   pqSaveResourceAsReaction(QAction* parent);
 
-  static pqSaveResourceReaction::State saveResourceAs();
+  static pqSaveResourceReaction::State saveResourceAs(pqSMTKResource* smtkResource = nullptr);
 
 public slots:
   /**
