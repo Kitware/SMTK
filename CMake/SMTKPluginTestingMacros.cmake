@@ -74,7 +74,7 @@ function(smtk_test_plugin test_plugin_file_url)
 
     # We need to escape semicolons so they won't be erased from the path when
     # resolved by the test's cmake instance.
-    string(REPLACE ";" "\\\;" smtk_path_env "${smtk_test_path}")
+    string(REPLACE ";" "\;" smtk_path_env "${smtk_test_path}")
 
     # Finally, append the path to the test's environment.
     set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PATH=${smtk_path_env}")
@@ -89,7 +89,7 @@ function(smtk_test_plugin test_plugin_file_url)
 
   # We need to escape semicolons so they won't be erased from the pythonpath
   # when resolved by the test's cmake instance.
-  string(REPLACE ";" "\\\;" smtk_pythonpath_env "${smtk_test_path}")
+  string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_test_path}")
 
   # Finally, append the pythonpath to the test's environment.
   set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")

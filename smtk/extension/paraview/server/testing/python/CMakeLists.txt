@@ -26,7 +26,7 @@ foreach(test ${smtkPVServerPythonTests})
     file(GENERATE
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${test}.py
       INPUT ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py.in)
-    smtk_add_test_python_full_path(${test}Py ${CMAKE_CURRENT_BINARY_DIR}/${test}.py)
+    smtk_add_test_python(${test}Py ${CMAKE_CURRENT_BINARY_DIR}/${test}.py)
   else()
     smtk_add_test_python(${test}Py ${testfile})
   endif()
@@ -39,7 +39,7 @@ if (SMTK_DATA_DIR)
       file(GENERATE
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${test}.py
         INPUT ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py.in)
-      smtk_add_test_python_full_path(${test}Py ${CMAKE_CURRENT_BINARY_DIR}/${test}.py
+      smtk_add_test_python(${test}Py ${CMAKE_CURRENT_BINARY_DIR}/${test}.py
       --data-dir=${SMTK_DATA_DIR} )
     else()
       smtk_add_test_python(${test}Py ${test}.py

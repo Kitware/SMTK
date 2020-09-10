@@ -160,7 +160,7 @@ qtGroupView::qtGroupView(const smtk::view::Information& info)
 {
   m_internals = new qtGroupViewInternals;
   QPixmap image = this->uiManager()->alertPixmap();
-  QMatrix transform;
+  QTransform transform;
   std::string val;
   auto view = this->getObject();
   transform.scale(0.5, 0.5);
@@ -462,7 +462,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   if (QFile::exists(resourceName))
   {
     QPixmap image(resourceName);
-    QMatrix transform;
+    QTransform transform;
     if (tabWidget->tabPosition() == QTabWidget::East)
     {
       transform.rotate(-90);

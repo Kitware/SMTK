@@ -562,16 +562,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     endif ()
 
     function (smtk_add_test_python name file)
-      add_test(
-        NAME    "${name}"
-        COMMAND "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
-                ${ARGN})
-      set_tests_properties("${name}"
-        PROPERTIES
-          ENVIRONMENT "${smtk_python_test_environment}")
-    endfunction ()
-
-    function (smtk_add_test_python_full_path name file)
+      if (NOT IS_ABSOLUTE "${file}")
+        set(file "${CMAKE_CURRENT_SOURCE_DIR}/${file}")
+      endif ()
       add_test(
         NAME    "${name}"
         COMMAND "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>" "${file}"

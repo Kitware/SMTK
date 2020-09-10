@@ -6,6 +6,7 @@
         paths:
             # The artifacts of the build.
             - build/bin/
+            - build/cmake/
             - build/include/
             - build/lib/
             - build/smtkConfig.cmake
