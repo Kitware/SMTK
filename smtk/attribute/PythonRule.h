@@ -20,6 +20,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <string>
+#include <vector>
+
 namespace pugi
 {
 class xml_node;
@@ -47,6 +50,7 @@ public:
   PythonRule& operator<<(const pugi::xml_node& node) override;
 
 private:
+  std::vector<std::string> m_sourceFiles;
   std::string m_functionString;
 };
 }
