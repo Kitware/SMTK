@@ -1678,19 +1678,6 @@ void vtkSMTKResourceRepresentation::SetSelectedState(
   if (selectionValue > 0)
   {
     sel->SetBlockColor(data, selectionValue > 1 ? this->HoverColor : this->SelectionColor);
-    // WORKAROUND: Force the selection block to be rendered in a different pass.
-    //             For some reason, selection in SMTK has broken with the bump to
-    //             ParaView SHA 722af6ba9e4e0941f936f1ba1fbfbc907edcd6e7
-    //             (Thu Jun 25 11:16:37 2020). Setting the selected opacity to be
-    //             nearly, but not entirely, 1 forces the selection to be
-    //             rendered in a second pass.
-    if (PARAVIEW_VERSION_MAJOR == 5 &&
-        (PARAVIEW_VERSION_MINOR == 8 && PARAVIEW_VERSION_PATCH > 0) ||
-      PARAVIEW_VERSION_MINOR >= 9)
-    {
-      vtkDebugMacro("WORKAROUND: force the selection block to be rendered in a different pass.");
-      sel->SetBlockOpacity(data, .999);
-    }
   }
   sel->SetBlockVisibility(data, selectionValue > 0);
   nrm->SetBlockVisibility(data, selectionValue == 0);

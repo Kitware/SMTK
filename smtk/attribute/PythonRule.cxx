@@ -51,7 +51,7 @@ bool PythonRule::operator()(const Attribute::ConstPtr& attribute,
     {
       sourceFile =
         (boost::filesystem::path(attribute->resource()->location()).parent_path() / sourceFile)
-          .c_str();
+          .string();
     }
 
     if (!boost::filesystem::is_regular_file(boost::filesystem::path(sourceFile)) &&
