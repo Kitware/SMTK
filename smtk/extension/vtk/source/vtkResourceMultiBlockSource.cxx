@@ -31,6 +31,7 @@ vtkInformationKeyMacro(vtkResourceMultiBlockSource, COMPONENT_ID, String);
 
 //----------------------------------------------------------------------------
 vtkResourceMultiBlockSource::vtkResourceMultiBlockSource()
+  : LastModified(0)
 {
   this->SetNumberOfInputPorts(0);
 }
