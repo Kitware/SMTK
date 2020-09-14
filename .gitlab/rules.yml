@@ -2,9 +2,9 @@
 
 .run_automatically:
     rules:
+        - if: '$CI_MERGE_REQUEST_ID'
+          when: on_success
         - if: '$CI_PROJECT_PATH == "cmb/smtk"'
           when: delayed
           start_in: 30 minutes
-        - if: '$CI_MERGE_REQUEST_ID'
-          when: on_success
         - when: never
