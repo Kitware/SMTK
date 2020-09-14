@@ -31,7 +31,6 @@ public:
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 
-  void setResourceManager(smtk::resource::WeakManagerPtr);
   smtk::resource::ManagerPtr resourceManager();
 };
 }
