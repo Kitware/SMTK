@@ -21,9 +21,9 @@ offer type safety.
   above, you are expected to subclass this class with node types
   specific to your application.
 
-Arcs
-  describe a directed arc (or collection of arcs) from one node to
-  another node, and are typically subclassed to differentiate between
+Arc
+  describes a directed arc (or collection of arcs) from one node to
+  another node, and is typically subclassed to differentiate between
   different arc types within a multipartite graph. Developers can
   construct their own arc types to suit their needs; three commonly
   used arc type templates are provided. :smtk:`Arc <smtk::graph::Arc>`
