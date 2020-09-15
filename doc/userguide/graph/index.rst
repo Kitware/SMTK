@@ -15,3 +15,5 @@ between those components.
    :maxdepth: 3
 
    concepts.rst
+   nodes-and-arcs.rst
+   filtering-and-searching.rst
