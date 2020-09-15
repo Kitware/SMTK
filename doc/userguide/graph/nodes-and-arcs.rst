@@ -12,7 +12,7 @@ relationship between nodes and arcs is modeled using a generic
 accessor pattern, where the nodes are the first-class elements of the
 graph and the arcs augment the nodes' API to access neighboring nodes.
 
-As the first-class element of the graph structure, ::smtk:`Component
+As the first-class element of the graph structure, :smtk:`Component
 <smtk::graph::Component>` (and types that derive from it) have access
 to the parent resource and node id. The remainder of its API
 (`contains()`, `set()`, `get()` and `visit()`) is described in the
@@ -25,8 +25,8 @@ relationship from one to many nodes that has common features (e.g., a
 vertex can belong to several edges, or the edges of a face can be
 described in counterclockwise order).
 
-Classes describing arcs between nodes are expected to have public
-`alias`es describing the node type at the tail of the arc
+Classes describing arcs between nodes are expected to have a public
+`alias` describing the node type at the tail of the arc
 (`FromType`), the node type at the head of the arc (`ToType`), and a
 class template describing the arc's API when it is accessed from a
 node (the API is templated on the arc's `SelfType` to facililtate
