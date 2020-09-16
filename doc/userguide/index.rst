@@ -35,6 +35,7 @@ simulation domain.
 
    obtain-build-install.rst
    overview.rst
+   common/index.rst
    resource/index.rst
    geometry/index.rst
    attribute/index.rst
