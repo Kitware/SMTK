@@ -33,9 +33,13 @@ using namespace tao::pegtl;
 // clang-format off
 /// @cond dox_ignore
 // -----
-// This fragment schnorked shamelessly from PEGTL's example double:
-// Copyright (c) 2014-2018 Dr. Colin Hirsch and Daniel Frey
-// Visit https://github.com/taocpp/PEGTL/ for license information.
+/// Describe a grammar for floating point values.
+///
+/// This fragment has been adapted from PEGTL's example double:
+/// Copyright (c) 2014-2018 Dr. Colin Hirsch and Daniel Frey
+/// Visit https://github.com/taocpp/PEGTL/ for license information.
+namespace floating_point
+{
 struct plus_minus : opt< one< '+', '-' > > {};
 struct dot : one< '.' > {};
 struct inf : seq< TAO_PEGTL_ISTRING("inf"),
@@ -55,247 +59,115 @@ struct p : one< 'p', 'P' > {};
 struct exponent : seq< plus_minus, plus< digit > > {};
 struct decimal : seq< number< digit >, opt< e, exponent > > {};
 struct hexadecimal : seq< one< '0' >, one< 'x', 'X' >, number< xdigit >, opt< p, exponent > > {};
-struct fpnumber : seq< plus_minus, sor< hexadecimal, decimal, inf, nan > > {};
+struct value : seq< plus_minus, sor< hexadecimal, decimal, inf, nan > > {};
+}
 // -----
 
-// The following declarations specify a grammar for limiting clauses
-// on model-entity search strings (i.e., arguments passed to
-// the smtk::model::Resource::queryOperation() method).
+/// Define a syntax for expressions that occur inside a pair of symbols, and
+/// construct named specializations that fit our grammar.
+template <char left, char right, typename... arguments>
+struct enclosed : if_must<one<left>, until<one<right>,  arguments...> > {};
 
-// A. String literals.
-struct open_square : string<'['> {};
-struct close_square : string<']'> {};
-struct prop_int : TAO_PEGTL_ISTRING("integer") {};
-struct prop_float : TAO_PEGTL_ISTRING("floating-point") {};
-struct prop_string : TAO_PEGTL_ISTRING("string") {};
-struct open_curly : string<'{'> {};
-struct close_curly : string<'}'> {};
-struct open_paren : string<'('> {};
-struct close_paren : string<')'> {};
-struct comma : string<','> {};
-struct equal : string<'='> {};
-struct optspace : opt<plus<one<' ', '\t', '\n'> > > {};
+template <typename... arguments>
+struct bracketed : enclosed<'[', ']', arguments...> {};
 
-template<char Quote>
-struct quoted_string
-{
-  template<typename Input>
-  static bool match(Input& in)
-  {
-    if (!in.empty())
-    {
-      auto start = *in.current();
-      if (start == Quote)
-      {
-        in.bump(1);
-        auto curr = *in.current();
-        // Bump to the end of the string or return false if the terminator is unmatched.
-        while (curr != start)
-        {
-          in.bump(1);
-          if (in.empty())
-          {
-            return false;
-          }
-          curr = *in.current();
-          if (curr == '\\')
-          { // skip the character after the escape.
-            in.bump(2);
-            if (in.empty())
-            {
-              return false;
-            }
-            curr = *in.current();
-          }
-        }
-        if (in.empty())
-        {
-          return false;
-        }
-        if (*in.current() == start)
-        {
-          in.bump(1);
-          return true;
-        }
-        return false;
-      }
-    }
-    return false;
-  }
-};
+template <typename... arguments>
+struct braced : enclosed<'{', '}', arguments...> {};
 
-// B. Combinations, sequences, identifiers.
-struct prop_type : sor< prop_int, prop_float, prop_string > {};
-struct prop_name : quoted_string<'\''> {};
-struct prop_string_value : prop_name {}; // Tokenization is identical with prop_name above.
-struct prop_name_regex : quoted_string<'/'> {};
-struct prop_string_regex : quoted_string<'/'> {}; // Tokenization is identical with prop_name_regex above.
-struct prop_int_value : plus< digit > {};
-struct prop_fp_value : fpnumber {};
+template <typename... arguments>
+struct parenthesized : enclosed<'(', ')', arguments...> {};
 
-struct prop_fpn_seq :
-  sor<
-    prop_fp_value,
-    seq<
-      open_paren,
-      optspace,
-      prop_fp_value,
-      optspace,
-      opt<
-        plus<
-          seq<
-            comma,
-            optspace,
-            prop_fp_value,
-            optspace
-          >
-        >
-      >,
-      close_paren
-    >
-  > {};
+template <typename... arguments>
+struct quoted : enclosed<'\'', '\'', arguments...> {};
 
-struct prop_int_seq :
-  sor<
-    prop_int_value,
-    seq<
-      open_paren,
-      optspace,
-      prop_int_value,
-      optspace,
-      opt<
-        plus<
-          seq<
-            comma,
-            optspace,
-            prop_int_value,
-            optspace
-          >
-        >
-      >,
-      close_paren
-    >
-  > {};
+template <typename... arguments>
+struct slashed : enclosed<'/', '/', arguments...> {};
 
-struct prop_str_seq :
-  sor<
-    prop_string_value,
-    prop_string_regex,
-    seq<
-      open_paren,
-      optspace,
-      prop_string_value,
-      optspace,
-      opt<
-        plus<
-          seq<
-            comma,
-            optspace,
-            sor< prop_string_regex, prop_string_value >,
-            optspace
-          >
-        >
-      >,
-      close_paren
-    >,
-    seq<
-      open_paren,
-      optspace,
-      prop_string_regex,
-      optspace,
-      opt<
-        plus<
-          seq<
-            comma,
-            optspace,
-            sor< prop_string_regex, prop_string_value >,
-            optspace
-          >
-        >
-      >,
-      close_paren
-    >
-  > {};
+// Define tags for the three supported property types.
+struct int_property_name : pad<TAO_PEGTL_ISTRING("integer"), space> {};
+struct float_property_name : pad<TAO_PEGTL_ISTRING("floating-point"), space> {};
+struct string_property_name : pad<TAO_PEGTL_ISTRING("string"), space> {};
 
-// The total grammar for limiting clauses:
-// we accept any of 3 sequences (one for string-property limiters, one
-// for floating-point-property limiters, one for integer-property limiters)
-struct SMTKCORE_EXPORT FilterGrammar :
-  seq<
-    optspace,
-    sor<
-      seq<
-        open_square,
-        optspace,
-        prop_float,
-        optspace,
-        opt<
-          seq<
-            open_curly,
-            optspace,
-            sor< prop_name, prop_name_regex >,
-            optspace,
-            opt< equal, optspace, prop_fpn_seq>,
-            optspace,
-            close_curly,
-            optspace
-          >
-        >,
-        close_square
-      >,
-      seq<
-        open_square,
-        optspace,
-        prop_int,
-        optspace,
-        opt<
-          seq<
-            open_curly,
-            optspace,
-            sor< prop_name, prop_name_regex >,
-            optspace,
-            opt<
-              seq<
-                equal,
-                optspace,
-                prop_int_seq,
-                optspace
-              >
-            >,
-            close_curly
-          >
-        >,
-        close_square
-      >,
-      seq<
-        open_square,
-        optspace,
-        prop_string,
-        optspace,
-        opt<
-          seq<
-            open_curly,
-            optspace,
-            sor< prop_name, prop_name_regex >,
-            optspace,
-            opt<
-              seq<
-                equal,
-                optspace,
-                prop_str_seq,
-                optspace
-              >
-            >,
-            close_curly
-          >
-        >,
-        close_square
-      >
-    >
-  > {};
+/// Define a syntax for property names, regex strings, and values.
+///
+/// NB: - Enclosed values (e.g., quoted and slashed values) accept any ASCII
+///       symbol other than the enclosing symbols.
+///     - There are two structs for each property element in the query: the first
+///       matches the value we wish to extract, and the second matches the
+///       pattern of the requested element. We embed the former into the latter
+///       to facilitate the retrieval of the value without modification.
+
+struct name_property_value : plus<not_one<'\''> > {};
+struct name_property : pad<quoted<name_property_value>, space> {};
+
+struct name_property_regex_value : plus<not_one<'/'> > {};
+struct name_property_regex : pad<slashed<name_property_regex_value>, space> {};
+
+struct int_property_value : plus<digit> {};
+struct int_property : pad<int_property_value, space> {};
+
+struct float_property_value : floating_point::value {};
+struct float_property : pad<float_property_value, space>{};
+
+struct string_property_value : plus<not_one<'\''> > {};
+struct string_property : pad<quoted<string_property_value>, space> {};
+
+struct string_property_regex_value : plus<not_one<'/'> > {};
+struct string_property_regex : pad<slashed<string_property_regex_value>, space> {};
+
+/// All property types may be a list of values or a single value. To accommodate
+/// this pattern, we describe a property sequence as a list of values.
+template <typename property>
+struct property_sequence
+  : pad<sor<property, parenthesized<list<property, one<','>, space> > >, space> {};
 
 /// @endcond
 // clang-format on
+
+/// We use a traits class to describe analogous features between the different
+/// property types.
+template <typename property>
+struct property_traits;
+
+template <>
+struct property_traits<int_property>
+{
+  typedef int_property_name name;
+  typedef property_sequence<int_property> sequence;
+};
+
+template <>
+struct property_traits<float_property>
+{
+  typedef float_property_name name;
+  typedef property_sequence<float_property> sequence;
+};
+
+template <>
+struct property_traits<string_property>
+{
+  typedef string_property_name name;
+  typedef property_sequence<sor<string_property, string_property_regex> > sequence;
+};
+
+/// With the differences between the property types factored out into the above
+/// traits class, we can now construct a general description for the grammar for
+/// each property type.
+template <typename property>
+struct grammar_for
+  : pad<seq<typename property_traits<property>::name,
+          opt<braced<sor<name_property, name_property_regex>,
+            opt<pad<string<'='>, space>, typename property_traits<property>::sequence> > > >,
+      space>
+{
+};
+
+/// The filter grammar is a composition of the grammar for each property type.
+struct SMTKCORE_EXPORT FilterGrammar
+  : bracketed<
+      sor<grammar_for<int_property>, grammar_for<float_property>, grammar_for<string_property> > >
+{
+};
 
 /// Actions on the state in response to encountered grammar.
 template <typename Rule>
@@ -304,7 +176,7 @@ struct SMTKCORE_EXPORT FilterAction : nothing<Rule>
 };
 
 template <>
-struct FilterAction<prop_int>
+struct FilterAction<int_property_name>
 {
   template <typename Input>
   static void apply(const Input&, LimitingClause& clause)
@@ -314,7 +186,7 @@ struct FilterAction<prop_int>
 };
 
 template <>
-struct FilterAction<prop_float>
+struct FilterAction<float_property_name>
 {
   template <typename Input>
   static void apply(const Input&, LimitingClause& clause)
@@ -324,7 +196,7 @@ struct FilterAction<prop_float>
 };
 
 template <>
-struct FilterAction<prop_string>
+struct FilterAction<string_property_name>
 {
   template <typename Input>
   static void apply(const Input&, LimitingClause& clause)
@@ -334,32 +206,28 @@ struct FilterAction<prop_string>
 };
 
 template <>
-struct FilterAction<prop_name>
+struct FilterAction<name_property_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
-    auto pname = in.string(); // This has single quotes around it.
-    // std::cout << "prop_name <" << pname << "> plain\n";
-    clause.m_propName = pname.substr(1, pname.size() - 2);
+    clause.m_propName = in.string();
   }
 };
 
 template <>
-struct FilterAction<prop_name_regex>
+struct FilterAction<name_property_regex_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
-    auto pname = in.string(); // This has single quotes around it.
-    // std::cout << "prop_name <" << pname << "> regex\n";
-    clause.m_propName = pname.substr(1, pname.size() - 2);
+    clause.m_propName = in.string();
     clause.m_propNameIsRegex = true;
   }
 };
 
 template <>
-struct FilterAction<prop_int_value>
+struct FilterAction<int_property_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
@@ -369,7 +237,7 @@ struct FilterAction<prop_int_value>
 };
 
 template <>
-struct FilterAction<prop_fp_value>
+struct FilterAction<float_property_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
@@ -379,29 +247,26 @@ struct FilterAction<prop_fp_value>
 };
 
 template <>
-struct FilterAction<prop_string_value>
+struct FilterAction<string_property_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
-    auto pval = in.string(); // This has single quotes around it. Remove them below.
-    clause.m_propStringValues.push_back(pval.substr(1, pval.size() - 2));
+    clause.m_propStringValues.push_back(in.string());
     clause.m_propStringIsRegex.push_back(false);
   }
 };
 
 template <>
-struct FilterAction<prop_string_regex>
+struct FilterAction<string_property_regex_value>
 {
   template <typename Input>
   static void apply(const Input& in, LimitingClause& clause)
   {
-    auto pval = in.string(); // This has single quotes around it. Remove them below.
-    clause.m_propStringValues.push_back(pval.substr(1, pval.size() - 2));
+    clause.m_propStringValues.push_back(in.string());
     clause.m_propStringIsRegex.push_back(true);
   }
 };
-
 } // namespace model
 } // namespace smtk
 
