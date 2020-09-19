@@ -42,6 +42,15 @@ set(resourceHeaders
   Resource.h
   ResourceLinks.h
   Surrogate.h
+  filter/Enclosed.h
+  filter/Filter.h
+  filter/FloatingPoint.h
+  filter/Integer.h
+  filter/Name.h
+  filter/Property.h
+  filter/Rule.h
+  filter/String.h
+  filter/Vector.h
   json/jsonComponentLinkBase.h
   json/jsonResource.h
   json/jsonResourceLinkBase.h
