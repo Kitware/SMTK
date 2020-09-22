@@ -1,4 +1,5 @@
-smtk_public_headers(smtkCore helpers.h)
+# installed whether testing is on or not.
+# smtk_public_headers(smtkCore helpers.h)
 
 set(commonTests
   unitExtension

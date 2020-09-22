@@ -49,6 +49,7 @@ set(commonHeaders
   TypeContainer.h
   UUID.h
   UUIDGenerator.h
+  testing/cxx/helpers.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
