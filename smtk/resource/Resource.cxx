@@ -15,9 +15,13 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/resource/filter/Filter.h"
+
 #include "smtk/common/Paths.h"
 #include "smtk/common/TypeName.h"
 #include "smtk/common/UUIDGenerator.h"
+
+#include "smtk/io/Logger.h"
 
 namespace smtk
 {
@@ -53,9 +57,16 @@ Resource::Resource(Resource&& rhs) noexcept : m_manager(std::move(rhs.m_manager)
 
 Resource::~Resource() = default;
 
+std::function<bool(const Component&)> Resource::queryOperation(
+  const std::string& filterString) const
+{
+  // By default, return a filter that discriminates according to the default
+  // property types.
+  return smtk::resource::filter::Filter<>(filterString);
+}
+
 ComponentSet Resource::find(const std::string& queryString) const
 {
-  //  return this->findAs<ComponentSet>(queryString);
   // Construct a query operation from the query string
   auto queryOp = this->queryOperation(queryString);
 

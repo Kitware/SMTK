@@ -13,3 +13,4 @@ so that the provenance of all the inputs to a simulation can be tracked.
    :maxdepth: 3
 
    concepts.rst
+   filtering-and-searching.rst
