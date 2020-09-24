@@ -52,6 +52,11 @@ bool ResourceLinks::resolve(const ResourcePtr& resource) const
   }
   return false;
 }
+
+bool ResourceLinks::removeAllLinksTo(const ResourcePtr& resource)
+{
+  return this->data().erase_all<ResourceLinkData::Right>(resource->id());
+}
 }
 }
 }
