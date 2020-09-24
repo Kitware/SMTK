@@ -46,24 +46,6 @@ set(smtk_cmake_module_files
 set(smtk_cmake_files_to_install
   "${prefix_file}")
 
-# FIXME: This is required because the VTK module system thinks the headers
-# aren't being installed.
-if (SMTK_ENABLE_VTK_SUPPORT)
-  list(APPEND smtk_cmake_files_to_install
-    "${smtk_cmake_build_dir}/SMTKVTKModules-vtk-module-properties.cmake")
-
-  if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-    list(APPEND smtk_cmake_files_to_install
-      "${smtk_cmake_build_dir}/SMTKParaViewVTKModules-vtk-module-properties.cmake")
-  endif ()
-
-  if (SMTK_ENABLE_POLYGON_SESSION)
-    list(APPEND smtk_cmake_files_to_install
-      "${smtk_cmake_build_dir}/SMTKPolygonExt-vtk-module-properties.cmake")
-  endif ()
-
-endif ()
-
 foreach (smtk_cmake_module_file IN LISTS smtk_cmake_module_files)
   configure_file(
     "${smtk_cmake_dir}/${smtk_cmake_module_file}"
