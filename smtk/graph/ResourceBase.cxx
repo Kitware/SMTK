@@ -52,15 +52,6 @@ std::shared_ptr<smtk::resource::Component> ResourceBase::find(
   return std::shared_ptr<smtk::resource::Component>();
 }
 
-std::function<bool(const smtk::resource::Component&)> ResourceBase::queryOperation(
-  const std::string&) const
-{
-  return [](const smtk::resource::Component& comp) -> bool {
-    auto gcomp = dynamic_cast<const smtk::graph::Component*>(&comp);
-    return !!gcomp;
-  };
-}
-
 void ResourceBase::visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const
 {
   for (const auto& node : m_nodes)
