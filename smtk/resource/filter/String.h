@@ -119,7 +119,7 @@ struct Property<std::vector<std::string> >
   /// The PEGTL pattern to match when extracting the property value.
   struct Value : list<quoted<typename Property<std::string>::ValueDescription>, one<','>, space> {};
 
-  /// The PETL pattern to match when identifying this property value.
+  /// The PEGTL pattern to match when identifying this property value.
   struct ValueRepresentation : pad<parenthesized<pad<Value, space> >, space> {};
 
   /// The PEGTL pattern to match when extracting the property value regex.
@@ -145,11 +145,83 @@ template <> struct Action<Property<std::vector<std::string> >::Name>
   : NameAction<std::vector<std::string> > {};
 template <> struct Action<Property<std::vector<std::string> >::Regex>
   : RegexAction<std::vector<std::string> > {};
-template <> struct Action<Property<std::vector<std::string> >::Value>
-  : ValueAction<std::vector<std::string> > {};
-template <> struct Action<Property<std::vector<std::string> >::ValueRegex>
-  : ValueRegexAction<std::vector<std::string> > {};
 // clang-format on
+
+/// Specialization of ValueAction to accommodate vectors of types.
+template <>
+struct Action<Property<std::vector<std::string> >::Value>
+{
+  template <typename Input>
+  static void apply(const Input& input, Rules& rules)
+  {
+    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::vector<std::string> value;
+    std::regex re(",");
+    std::string in = input.string();
+    std::sregex_token_iterator it(in.begin(), in.end(), re, -1), last;
+    for (int id = 0; it != last; ++it, ++id)
+    {
+      std::string str = it->str();
+      str = str.substr(1 + str.find_first_of('\''));
+      str = str.substr(0, str.size() - 1);
+      value.push_back(str);
+    }
+
+    static_cast<RuleFor<std::vector<std::string> >*>(rule.get())->acceptableValue = [value](
+      const std::vector<std::string>& val) -> bool {
+      if (val.size() != value.size())
+      {
+        return false;
+      }
+      for (std::size_t i = 0; i < value.size(); ++i)
+      {
+        if (val[i] != value[i])
+        {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+};
+
+/// Specialization of ValueRegexAction to accommodate vectors of types.
+template <>
+struct Action<Property<std::vector<std::string> >::ValueRegex>
+{
+  template <typename Input>
+  static void apply(const Input& input, Rules& rules)
+  {
+    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::vector<std::regex> regex;
+
+    std::regex re(",");
+    std::sregex_token_iterator it(input.string().begin(), input.string().end(), re, -1), last;
+    for (int id = 0; it != last; ++it, ++id)
+    {
+      std::string str = it->str();
+      str = str.substr(1 + str.find_first_of('/'));
+      str = str.substr(0, str.size() - 1);
+      regex.emplace_back(str.c_str());
+    }
+
+    static_cast<RuleFor<std::vector<std::string> >*>(rule.get())->acceptableValue = [regex](
+      const std::vector<std::string>& val) -> bool {
+      if (val.size() != regex.size())
+      {
+        return false;
+      }
+      for (std::size_t i = 0; i < regex.size(); ++i)
+      {
+        if (!std::regex_match(val[i], regex[i]))
+        {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+};
 }
 }
 }
