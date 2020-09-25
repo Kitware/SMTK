@@ -42,7 +42,6 @@ struct Property<long>
   /// Syntax for the property name.
   struct Name : filter::Name<long> {};
 
-
   /// Syntax for the property name regex.
   struct Regex : filter::Regex<long> {};
 

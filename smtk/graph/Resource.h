@@ -11,16 +11,20 @@
 #ifndef smtk_graph_Resource_h
 #define smtk_graph_Resource_h
 
+#include "smtk/PublicPointerDefs.h"
+
+#include "smtk/common/CompilerInformation.h"
+#include "smtk/common/TypeMap.h"
+
 #include "smtk/geometry/Manager.h"
 #include "smtk/geometry/Resource.h"
 
 #include "smtk/graph/Component.h"
 #include "smtk/graph/ResourceBase.h"
 
-#include "smtk/PublicPointerDefs.h"
+#include "smtk/graph/filter/Grammar.h"
 
-#include "smtk/common/CompilerInformation.h"
-#include "smtk/common/TypeMap.h"
+#include "smtk/resource/filter/Filter.h"
 
 #include <memory>
 #include <string>
@@ -121,6 +125,12 @@ public:
   /// Access the arcs of the graph resource.
   const ResourceBase::ArcSet& arcs() const override { return m_arcs; }
   ResourceBase::ArcSet& arcs() override { return m_arcs; }
+
+  std::function<bool(const smtk::resource::Component&)> queryOperation(
+    const std::string& filterString) const override
+  {
+    return smtk::resource::filter::Filter<smtk::graph::filter::Grammar>(filterString);
+  }
 
 protected:
   Resource(smtk::resource::ManagerPtr manager = nullptr)

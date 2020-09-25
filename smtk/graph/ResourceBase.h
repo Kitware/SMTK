@@ -53,9 +53,6 @@ public:
 
   std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID&) const override;
 
-  std::function<bool(const smtk::resource::Component&)> queryOperation(
-    const std::string&) const override;
-
   void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const override;
 
   const NodeSet& nodes() const { return m_nodes; }

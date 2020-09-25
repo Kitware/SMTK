@@ -14,6 +14,8 @@ set(graphHeaders
   arcs/Arc.h
   arcs/Arcs.h
   arcs/OrderedArcs.h
+  filter/Grammar.h
+  filter/TypeName.h
 )
 
 foreach(operation ${graphOperations})

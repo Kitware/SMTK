@@ -49,6 +49,7 @@ set(resourceHeaders
   filter/Name.h
   filter/Property.h
   filter/Rule.h
+  filter/Rules.h
   filter/String.h
   filter/Vector.h
   json/jsonComponentLinkBase.h
