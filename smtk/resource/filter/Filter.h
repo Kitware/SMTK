@@ -18,7 +18,7 @@
 
 #include "smtk/resource/filter/Action.h"
 #include "smtk/resource/filter/Grammar.h"
-#include "smtk/resource/filter/Rule.h"
+#include "smtk/resource/filter/Rules.h"
 
 #include <string>
 
@@ -39,9 +39,10 @@ class Filter
 public:
   Filter(const std::string& str)
     : m_filterString(str)
-    , m_rule(constructRule(str))
+    , m_rules(std::move(constructRules(str)))
   {
   }
+  virtual ~Filter() = default;
 
   // Specific filter rules are composed by parsing string inputs, and are
   // therefore inherently runtime-constructed objects (and, thus, are allocated
@@ -54,49 +55,41 @@ public:
 
   Filter(const Filter& other)
     : m_filterString(other.m_filterString)
-    , m_rule(constructRule(other.m_filterString))
+    , m_rules(std::move(constructRules(other.m_filterString)))
   {
   }
 
   Filter(Filter&& other)
     : m_filterString(other.m_filterString)
-    , m_rule(std::move(other.m_rule))
+    , m_rules(std::move(other.m_rules))
   {
   }
 
   Filter& operator=(const Filter& other)
   {
     m_filterString = other.m_filterString;
-    m_rule = constructRule(other.m_filterString);
+    m_rules = constructRules(other.m_filterString);
     return *this;
   }
 
   Filter& operator=(Filter&& other)
   {
     m_filterString = other.m_filterString;
-    m_rule = std::move(other.m_rule);
+    m_rules = std::move(other.m_rules);
     return *this;
   }
 
-  bool operator()(const Component& component) const
-  {
-    if (m_rule)
-    {
-      return (*m_rule)(component);
-    }
-    return false;
-  }
+  bool operator()(const Component& component) const { return m_rules(component); }
 
 private:
-  static std::unique_ptr<smtk::resource::filter::Rule> constructRule(
-    const std::string& filterString)
+  smtk::resource::filter::Rules constructRules(const std::string& filterString)
   {
-    std::unique_ptr<smtk::resource::filter::Rule> rule;
+    smtk::resource::filter::Rules rules;
 
     tao::pegtl::string_input<> in(filterString, "constructRule");
     try
     {
-      tao::pegtl::parse<GrammarType, smtk::resource::filter::Action>(in, rule);
+      tao::pegtl::parse<GrammarType, smtk::resource::filter::Action>(in, rules);
     }
     catch (tao::pegtl::parse_error& err)
     {
@@ -105,14 +98,13 @@ private:
         "smtk::resource::filter::Filter: " << err.what() << "\n"
                                            << in.line_as_string(p) << "\n"
                                            << std::string(p.byte_in_line, ' ') << "^\n");
-      rule.release();
     }
 
-    return rule;
+    return rules;
   }
 
   std::string m_filterString;
-  std::unique_ptr<smtk::resource::filter::Rule> m_rule;
+  smtk::resource::filter::Rules m_rules;
 };
 }
 }

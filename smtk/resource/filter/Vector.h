@@ -71,8 +71,9 @@ template <typename Type>
 struct ValueAction<std::vector<Type> >
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& rule)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     std::vector<Type> value;
     std::regex re(",");
     std::string in = input.string();
@@ -106,8 +107,9 @@ template <typename Type>
 struct ValueRegexAction<std::vector<Type> >
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& rule)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     std::vector<std::regex> regex;
 
     std::regex re(",");

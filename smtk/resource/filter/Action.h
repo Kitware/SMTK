@@ -11,7 +11,7 @@
 #define smtk_resource_filter_Action_h
 
 #include "smtk/resource/filter/Property.h"
-#include "smtk/resource/filter/Rule.h"
+#include "smtk/resource/filter/Rules.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "tao/pegtl.hpp"
@@ -55,9 +55,9 @@ template <typename Type>
 struct TypeNameAction
 {
   template <typename Input>
-  static void apply(const Input&, std::unique_ptr<Rule>& functor)
+  static void apply(const Input&, Rules& rules)
   {
-    functor.reset(new RuleFor<Type>());
+    rules.emplace_back(new RuleFor<Type>());
   }
 };
 
@@ -67,10 +67,11 @@ template <typename Type>
 struct NameAction
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& functor)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     std::string name = input.string();
-    static_cast<RuleFor<Type>*>(functor.get())->acceptableKeys = [name](
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys = [name](
       const PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       if (object.properties().contains<Type>(name))
@@ -88,10 +89,11 @@ template <typename Type>
 struct RegexAction
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& functor)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     std::regex regex(input.string());
-    static_cast<RuleFor<Type>*>(functor.get())->acceptableKeys = [regex](
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys = [regex](
       const PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       for (const auto& key : object.properties().get<Type>().keys())
@@ -112,10 +114,11 @@ template <typename Type>
 struct ValueAction
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& functor)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     Type value = Property<Type>::convert(input.string());
-    static_cast<RuleFor<Type>*>(functor.get())->acceptableValue = [value](
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [value](
       const Type& val) -> bool { return val == value; };
   }
 };
@@ -126,10 +129,11 @@ template <typename Type>
 struct ValueRegexAction
 {
   template <typename Input>
-  static void apply(const Input& input, std::unique_ptr<Rule>& functor)
+  static void apply(const Input& input, Rules& rules)
   {
+    std::unique_ptr<Rule>& rule = rules.data().back();
     std::regex regex(input.string());
-    static_cast<RuleFor<Type>*>(functor.get())->acceptableValue = [regex](
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [regex](
       const Type& val) -> bool { return std::regex_match(val, regex); };
   }
 };

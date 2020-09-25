@@ -11,7 +11,6 @@
 #define smtk_resource_filter_Name_h
 
 #include "smtk/resource/filter/Enclosed.h"
-#include "smtk/resource/filter/Filter.h"
 
 #include "tao/pegtl.hpp"
 // PEGTL does not itself appear to do anything nasty, but

@@ -175,9 +175,6 @@ int TestResourceFilter(int /*unused*/, char** const /*unused*/)
   {
     for (std::size_t j = 0; j < 3; ++j)
     {
-      if (i != 3 || j != 1)
-        continue;
-      std::cout << i << " " << j << std::endl;
       test((*queryOps2[i])(*components2[j]) == expected2[i][j], "Filter operation " +
           std::to_string(i) + ", " + std::to_string(j) + " returned unexpected result");
     }
