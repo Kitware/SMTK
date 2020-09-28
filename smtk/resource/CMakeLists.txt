@@ -42,9 +42,11 @@ set(resourceHeaders
   Resource.h
   ResourceLinks.h
   Surrogate.h
+  filter/Action.h
   filter/Enclosed.h
   filter/Filter.h
   filter/FloatingPoint.h
+  filter/Grammar.h
   filter/Integer.h
   filter/Name.h
   filter/Property.h
