@@ -67,7 +67,7 @@ struct Property<long>
       space> {};
 
   /// Convert a string into a value of this type.
-  static long convert(const std::string& input) { return std::stoll(input); }
+  static long convert(const std::string& input) { return std::stol(input); }
 };
 
 /// Actions related to parsing rules for this type.

@@ -63,16 +63,16 @@ int TestNodalResource(int, char* [])
   std::cout << node1->typeName() << std::endl;
 
   // Construct an arc that connects our two node instance.
-  const auto& arc = resource->create<Arc>(*node1, *node2);
+  const auto& arc = resource->create< ::Arc>(*node1, *node2);
   (void)arc;
 
-  std::cout << smtk::common::typeName<Arc>() << std::endl;
+  std::cout << smtk::common::typeName< ::Arc>() << std::endl;
 
   std::cout << node1->id() << std::endl;
   std::cout << node2->id() << std::endl;
 
   // Access the second node using the first node's API.
-  std::cout << node1->get<Arc>().id() << std::endl;
+  std::cout << node1->get< ::Arc>().id() << std::endl;
 
   return 0;
 }
