@@ -15,7 +15,7 @@
 
 /// A basic example that constructs two nodes and noe arc that connects them.
 
-namespace
+namespace test_nodal_resource
 {
 /// Node inherits from smtk::graph::Component and uses its constructor.
 class Node : public smtk::graph::Component
@@ -43,8 +43,8 @@ public:
 /// graph resource.
 struct BasicTraits
 {
-  typedef std::tuple< ::Node> NodeTypes;
-  typedef std::tuple< ::Arc> ArcTypes;
+  typedef std::tuple<test_nodal_resource::Node> NodeTypes;
+  typedef std::tuple<test_nodal_resource::Arc> ArcTypes;
 };
 }
 
@@ -52,27 +52,27 @@ int TestNodalResource(int, char* [])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.
-  auto resource = smtk::graph::Resource< ::BasicTraits>::create();
+  auto resource = smtk::graph::Resource<test_nodal_resource::BasicTraits>::create();
 
   std::cout << resource->typeName() << std::endl;
 
   // Construct two instances of our node through the resource's API.
-  auto node1 = resource->create<Node>();
-  auto node2 = resource->create<Node>();
+  auto node1 = resource->create<test_nodal_resource::Node>();
+  auto node2 = resource->create<test_nodal_resource::Node>();
 
   std::cout << node1->typeName() << std::endl;
 
   // Construct an arc that connects our two node instance.
-  const auto& arc = resource->create< ::Arc>(*node1, *node2);
+  const auto& arc = resource->create<test_nodal_resource::Arc>(*node1, *node2);
   (void)arc;
 
-  std::cout << smtk::common::typeName< ::Arc>() << std::endl;
+  std::cout << smtk::common::typeName<test_nodal_resource::Arc>() << std::endl;
 
   std::cout << node1->id() << std::endl;
   std::cout << node2->id() << std::endl;
 
   // Access the second node using the first node's API.
-  std::cout << node1->get< ::Arc>().id() << std::endl;
+  std::cout << node1->get<test_nodal_resource::Arc>().id() << std::endl;
 
   return 0;
 }
