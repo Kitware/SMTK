@@ -43,8 +43,8 @@ public:
 /// graph resource.
 struct BasicTraits
 {
-  typedef std::tuple<Node> NodeTypes;
-  typedef std::tuple<Arc> ArcTypes;
+  typedef std::tuple< ::Node> NodeTypes;
+  typedef std::tuple< ::Arc> ArcTypes;
 };
 }
 
@@ -52,7 +52,7 @@ int TestNodalResource(int, char* [])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.
-  auto resource = smtk::graph::Resource<BasicTraits>::create();
+  auto resource = smtk::graph::Resource< ::BasicTraits>::create();
 
   std::cout << resource->typeName() << std::endl;
 
