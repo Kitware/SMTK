@@ -41,23 +41,23 @@ public:
 
 struct BasicTraits
 {
-  typedef std::tuple<NodeA, NodeB> NodeTypes;
+  typedef std::tuple< ::NodeA, ::NodeB> NodeTypes;
   typedef std::tuple<> ArcTypes;
 };
 }
 
 int TestNodalResourceFilter(int, char* [])
 {
-  auto resource = smtk::graph::Resource<BasicTraits>::create();
+  auto resource = smtk::graph::Resource< ::BasicTraits>::create();
 
   std::cout << resource->typeName() << std::endl;
 
-  auto nodeA = resource->create<NodeA>();
+  auto nodeA = resource->create< ::NodeA>();
   nodeA->properties().emplace<long>("foo", 2);
   nodeA->properties().emplace<std::string>("foo", "bar");
   nodeA->properties().emplace<double>("foo", 3.14159);
 
-  auto nodeB = resource->create<NodeB>();
+  auto nodeB = resource->create< ::NodeB>();
   nodeB->properties().emplace<long>("foo", 2);
   nodeB->properties().emplace<std::string>("foo", "bar");
   nodeB->properties().emplace<double>("foo", 3.14159);
