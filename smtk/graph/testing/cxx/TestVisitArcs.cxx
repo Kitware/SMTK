@@ -15,7 +15,7 @@
 
 /// A basic example that constructs two nodes and noe arc that connects them.
 
-namespace
+namespace test_visit_arcs
 {
 /// Node inherits from smtk::graph::Component and uses its constructor.
 class Node : public smtk::graph::Component
@@ -29,11 +29,11 @@ public:
 };
 
 /// Arc is a basic smtk::graph::Arc that connects from one node to another node.
-class Arc : public smtk::graph::Arc<Node, Node>
+class ArcWithoutVisit : public smtk::graph::Arc<Node, Node>
 {
 public:
   template <typename... Args>
-  Arc(Args&&... args)
+  ArcWithoutVisit(Args&&... args)
     : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
   {
   }
@@ -51,18 +51,20 @@ public:
   }
 
   template <typename SelfType>
-  class API : public smtk::graph::Arc<Node, Node>::API<SelfType>
+  class API : public smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>
   {
   public:
     bool visit(const FromType& lhs, std::function<bool(const Node&)> visitor) const
     {
-      smtk::graph::Arc<Node, Node>::API<SelfType>::self(lhs).constVisited = true;
+      smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>::self(lhs)
+        .constVisited = true;
       return visitor(this->get(lhs));
     }
 
     bool visit(const FromType& lhs, std::function<bool(Node&)> visitor)
     {
-      smtk::graph::Arc<Node, Node>::API<SelfType>::self(lhs).visited = true;
+      smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>::self(lhs)
+        .visited = true;
       return visitor(this->get(lhs));
     }
   };
@@ -75,8 +77,8 @@ public:
 /// graph resource.
 struct BasicTraits
 {
-  typedef std::tuple<Node> NodeTypes;
-  typedef std::tuple<Arc, ArcWithVisit> ArcTypes;
+  typedef std::tuple<test_visit_arcs::Node> NodeTypes;
+  typedef std::tuple<test_visit_arcs::ArcWithoutVisit, test_visit_arcs::ArcWithVisit> ArcTypes;
 };
 }
 
@@ -84,27 +86,29 @@ int TestVisitArcs(int, char* [])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.
-  auto resource = smtk::graph::Resource<BasicTraits>::create();
+  auto resource = smtk::graph::Resource<test_visit_arcs::BasicTraits>::create();
 
   // Construct two instances of our node through the resource's API.
-  auto node1 = resource->create<Node>();
-  auto node2 = resource->create<Node>();
+  auto node1 = resource->create<test_visit_arcs::Node>();
+  auto node2 = resource->create<test_visit_arcs::Node>();
 
   // Construct an arc that connects our two node instance.
-  const auto& arc = resource->create<Arc>(*node1, *node2);
+  const auto& arc = resource->create<test_visit_arcs::ArcWithoutVisit>(*node1, *node2);
   (void)arc;
 
   // test const get
   {
-    const Node& n = *node1;
-    test(node2->id() == n.get<Arc>().id(), "Cannot access connected node via get() const");
+    const test_visit_arcs::Node& n = *node1;
+    test(node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+      "Cannot access connected node via get() const");
   }
 
   // test non-const get
   {
-    Node& n = *node1;
-    n.get<Arc>().setId(smtk::common::UUID::random());
-    test(node2->id() == n.get<Arc>().id(), "Cannot access connected node via get()");
+    test_visit_arcs::Node& n = *node1;
+    n.get<test_visit_arcs::ArcWithoutVisit>().setId(smtk::common::UUID::random());
+    test(node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+      "Cannot access connected node via get()");
   }
 
   // Test const visit
@@ -116,9 +120,9 @@ int TestVisitArcs(int, char* [])
       return false;
     };
 
-    const Node& n = *node1;
+    const test_visit_arcs::Node& n = *node1;
 
-    n.visit<Arc>(constVisitor);
+    n.visit<test_visit_arcs::ArcWithoutVisit>(constVisitor);
     test(visited, "Cannot visit connected node via visit() const");
   }
 
@@ -132,12 +136,12 @@ int TestVisitArcs(int, char* [])
       return false;
     };
 
-    node1->visit<Arc>(visitor);
+    node1->visit<test_visit_arcs::ArcWithoutVisit>(visitor);
     test(visited, "Cannot visit connected node via visit() const");
   }
 
   // Construct an arc that connects our two node instance.
-  const auto& arcWithVisit = resource->create<ArcWithVisit>(*node1, *node2);
+  const auto& arcWithVisit = resource->create<test_visit_arcs::ArcWithVisit>(*node1, *node2);
   (void)arcWithVisit;
 
   test(!arcWithVisit.visited);
@@ -152,9 +156,9 @@ int TestVisitArcs(int, char* [])
       return false;
     };
 
-    const Node& n = *node1;
+    const test_visit_arcs::Node& n = *node1;
 
-    n.visit<ArcWithVisit>(constVisitor);
+    n.visit<test_visit_arcs::ArcWithVisit>(constVisitor);
     test(visited, "Cannot visit connected node via visit() const");
     test(!arcWithVisit.visited, "Incorrect custom visit() called");
     test(arcWithVisit.constVisited, "Failed to use custom visit() const");
@@ -171,9 +175,9 @@ int TestVisitArcs(int, char* [])
       return false;
     };
 
-    Node& n = *node1;
+    test_visit_arcs::Node& n = *node1;
 
-    n.visit<ArcWithVisit>(visitor);
+    n.visit<test_visit_arcs::ArcWithVisit>(visitor);
     test(visited, "Cannot visit connected node via visit() const");
     test(!arcWithVisit.constVisited, "Incorrect custom visit() const called");
     test(arcWithVisit.visited, "Failed to use custom visit()");
