@@ -75,6 +75,11 @@ RemoveResource::Result RemoveResource::operateInternal()
     {
       // ...and add it to the result.
       // TODO: the "expunged" item in the result should accept resources.
+
+      for (auto& rsrc : resourceManager->resources())
+      {
+        rsrc->links().removeAllLinksTo(resource);
+      }
     }
     else
     {

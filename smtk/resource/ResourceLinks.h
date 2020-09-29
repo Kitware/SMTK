@@ -86,9 +86,13 @@ public:
   ResourceLinkData& data() { return m_data; }
   const ResourceLinkData& data() const { return m_data; }
 
-  // Resolve any surrogates with the given resource. Returns true if a surrogate
-  // is successfully resolved.
+  /// Resolve any surrogates with the given resource. Returns true if a surrogate
+  /// is successfully resolved.
   bool resolve(const ResourcePtr&) const;
+
+  /// Remove all links from this resource to another resource. This is useful
+  /// when we know the resource parameter is being permanently deleted.
+  bool removeAllLinksTo(const ResourcePtr&);
 
 private:
   ResourceLinks(Resource*);

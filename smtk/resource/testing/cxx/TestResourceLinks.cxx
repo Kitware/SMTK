@@ -292,6 +292,23 @@ int TestResourceLinks(int /*unused*/, char** const /*unused*/)
   TestLink<ComponentA, ResourceB>(componentA, resourceB);
   TestLink<ComponentA, ComponentB>(componentA, componentB);
 
+  // Test the ability to remove all links between resources
+  {
+    smtk::resource::Links::RoleType role1 = 1;
+
+    // Add a link from component A to component B.
+    smtk::resource::Links::Key key = componentA->links().addLinkTo(componentB, role1);
+
+    smtkTest(resourceA->links().removeAllLinksTo(resourceB),
+      "Could not remove all links between resources");
+
+    smtkTest(resourceA != nullptr, "ResourceA instance should be constructable.");
+
+    // Test that the component link is severed.
+    smtkTest(componentA->links().isLinkedTo(componentB, role1) == false,
+      "Component A should no longer be linked to Component B.");
+  }
+
   {
     smtk::resource::Links::RoleType role1 = 1;
 
