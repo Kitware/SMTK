@@ -250,9 +250,11 @@ if(SMTK_ENABLE_TESTING OR SMTK_INSTALL_TESTING_DATA)
   unset(SMTK_DATA_DIR CACHE)
   file(READ "${CMAKE_CURRENT_SOURCE_DIR}/data/smtk-data" data)
   if (NOT data STREQUAL "\n")
-    message(WARNING
-      "Testing data is not available. Use git-lfs in order to obtain the "
-      "testing data.")
+    if (NOT DEFINED ENV{GITLAB_CI})
+      message(WARNING
+        "Testing data is not available. Use git-lfs in order to obtain the "
+        "testing data.")
+    endif()
     set(SMTK_DATA_DIR)
   else ()
     set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
