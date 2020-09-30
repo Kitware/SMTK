@@ -77,6 +77,7 @@ int main(int argc, char** argv)
     std::cerr << "Testing " << inputFileName << std::endl;
 
     // 1. Read the .sbi file into a new attribute resource
+    std::cerr << "\t Reading Original SBI" << std::endl;
 
     smtk::attribute::ResourcePtr resource;
     {
@@ -98,6 +99,7 @@ int main(int argc, char** argv)
 
     // 2. Write the resource out to a new .sbi file (to ensure it is of the
     //    latest format)
+    std::cerr << "\t Writing Original SBI" << std::endl;
 
     std::string sbi1FileName;
     {
@@ -121,6 +123,7 @@ int main(int argc, char** argv)
     }
 
     // 3. Write the resource out to a .smtk file
+    std::cerr << "\t Writing Original SMTK" << std::endl;
 
     std::string smtkFileName;
     {
@@ -144,6 +147,7 @@ int main(int argc, char** argv)
     }
 
     // 4. Read the .smtk file into a new resource
+    std::cerr << "\t Reading Original SMTK" << std::endl;
 
     smtk::attribute::Resource::Ptr copiedResource;
     {
@@ -171,6 +175,7 @@ int main(int argc, char** argv)
     }
 
     // 5. Write the new resource to a .sbi file
+    std::cerr << "\t Writing SBI from SMTK" << std::endl;
 
     std::string sbi2FileName;
     {

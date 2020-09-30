@@ -108,6 +108,10 @@ class TestValueItemRotate(smtk.testing.TestCase):
 
     def get_values(self, value_item):
         """Retrieves values from value item"""
+        if value_item.isExpression():
+            # values undefined if item is set to expression
+            return None
+
         num_vals = value_item.numberOfValues()
         vals = [None] * num_vals
         for i in range(num_vals):
@@ -115,8 +119,6 @@ class TestValueItemRotate(smtk.testing.TestCase):
                 vals[i] = 'unset'
             elif value_item.isDiscrete():
                 vals[i] = value_item.discreteIndex(i)
-            elif value_item.isExpression(i):
-                vals[i] = 'exp'
             else:
                 vals[i] = value_item.value(i)
         return vals
@@ -130,6 +132,10 @@ class TestValueItemRotate(smtk.testing.TestCase):
 
         diff = sum([1 for i in range(len(actual_values))
                     if actual_values[i] != expected_values[i]])
+        if diff > 0:
+            msg = 'check_vals diff {}, actual_values {}, expected_values {}'.format(
+                diff, actual_values, expected_values)
+            print(msg)
         self.assertEqual(diff, 0)
 
     def check_double_vals(self, expected_values, value_item, tolerance=1e-6, _print=DEFAULT_PRINT):
@@ -178,15 +184,13 @@ class TestValueItemRotate(smtk.testing.TestCase):
         int_item.setValue(8, 11)
         self.check_vals([77, 0, 33, 44, 'unset', 22, 66, 88, 11], int_item)
 
-        # Set expressions at 0, 4
-        int_item.setExpression(0, self.exp_att)
-        int_item.setExpression(5, self.exp_att)
-        self.check_vals(['exp', 0, 33, 44, 'unset',
-                         'exp', 66, 88, 11], int_item)
+        # Set expression, which disbles rotate
+        self.assertTrue(int_item.setExpression(self.exp_att))
+        self.assertFalse(int_item.rotate(1, 3))
 
-        int_item.rotate(7, 0)
-        self.check_vals(
-            [88, 'exp', 0, 33, 44, 'unset', 'exp', 66, 11], int_item)
+        # Unset expression and check values again
+        self.assertTrue(int_item.setExpression(None))
+        self.check_vals([77, 0, 33, 44, 'unset', 22, 66, 88, 11], int_item)
 
     def test_int_discretes(self):
         """Test discrete item indices"""

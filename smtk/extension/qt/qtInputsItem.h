@@ -21,6 +21,7 @@
 
 class qtInputsItemInternals;
 class QBoxLayout;
+class QFrame;
 class QLayout;
 class QLineEdit;
 
@@ -79,7 +80,9 @@ protected:
     int elementIdx, smtk::attribute::ValueItemPtr vitem, QWidget* pWidget, QString& tooltip);
   virtual QWidget* createInputWidget(int elementIdx, QLayout* childLayout);
   virtual QWidget* createEditBox(int elementIdx, QWidget* pWidget);
-  virtual QWidget* createExpressionRefWidget(int elementIdx);
+  virtual QFrame* createExpressionRefFrame();
+  virtual QFrame* createLabelFrame(
+    const smtk::attribute::ValueItem* vitem, const smtk::attribute::ValueItemDefinition* vitemDef);
   // Methods for updating widgets based on changes made to the underlying attribute item
   void updateDoubleItemData(QWidget* iwidget, const smtk::attribute::DoubleItemPtr& ditem);
   void updateIntItemData(QWidget* iwidget, const smtk::attribute::IntItemPtr& iitem);
@@ -87,7 +90,6 @@ protected:
 
 private:
   qtInputsItemInternals* m_internals;
-
 }; // class
 
 //A sublcass of QDoubleValidator to fixup input outside of range

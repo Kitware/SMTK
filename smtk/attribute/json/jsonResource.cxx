@@ -699,7 +699,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     att = res->findAttribute(itemExpressionInfo[i].expName);
     if (att)
     {
-      itemExpressionInfo[i].item->setExpression(itemExpressionInfo[i].pos, att);
+      itemExpressionInfo[i].item->setExpression(att);
     }
     else
     {

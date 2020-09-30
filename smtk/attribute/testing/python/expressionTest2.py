@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
   Manual port of SMTK/smtk/attribute/Testing/expressionTest.cxx
   For verifying python wrappers
@@ -93,8 +93,8 @@ if __name__ == '__main__':
             item.name(), smtk.attribute.Item.type2String(item.type())))
         vitem = smtk.attribute.ValueItem.CastTo(item)
         if vitem is not None:
-            if vitem.isExpression(0):
-                print(" using Expression: %s" % vitem.expression(0).name())
+            if vitem.isExpression():
+                print(" using Expression: %s" % vitem.expression().name())
             else:
                 print(" Value = %s" % vitem.valueAsString())
 

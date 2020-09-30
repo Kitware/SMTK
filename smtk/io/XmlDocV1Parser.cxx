@@ -302,6 +302,27 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Resourc
   attribute::AttributePtr expAtt;
   bool allowsExpressions = item->allowsExpressions();
   ItemExpressionInfo info;
+
+  // Is this an expression?
+  xatt = node.attribute("Expression");
+  if (allowsExpressions && xatt)
+  {
+    expName = node.text().get();
+    expAtt = resource->findAttribute(expName);
+    if (!expAtt)
+    {
+      info.item = item;
+      info.pos = 0;
+      info.expName = expName;
+      itemExpressionInfo.push_back(info);
+    }
+    else
+    {
+      item->setExpression(expAtt);
+    }
+    return;
+  }
+
   if (item->isExtensible())
   {
     // The node should have an attribute indicating how many values are
@@ -349,19 +370,9 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Resourc
       }
       else if (allowsExpressions && (nodeName == "Expression"))
       {
-        expName = val.text().get();
-        expAtt = resource->findAttribute(expName);
-        if (!expAtt)
-        {
-          info.item = item;
-          info.pos = static_cast<int>(i);
-          info.expName = expName;
-          itemExpressionInfo.push_back(info);
-        }
-        else
-        {
-          item->setExpression(static_cast<int>(i), expAtt);
-        }
+        smtkErrorMacro(logger, "Encountered old expression per value syntax for Item: "
+            << item->name() << " of Attribute: " << item->attribute()->name()
+            << " - this is no longer supported and will be ignored!");
       }
       else
       {
@@ -373,30 +384,9 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Resourc
   {
     // Lets see if there is an unset val element
     noVal = node.child("UnsetVal");
-    if (!noVal)
+    if (!(noVal || node.text().empty()))
     {
-      // Is this an expression?
-      xatt = node.attribute("Expression");
-      if (allowsExpressions && xatt)
-      {
-        expName = node.text().get();
-        expAtt = resource->findAttribute(expName);
-        if (!expAtt)
-        {
-          info.item = item;
-          info.pos = 0;
-          info.expName = expName;
-          itemExpressionInfo.push_back(info);
-        }
-        else
-        {
-          item->setExpression(expAtt);
-        }
-      }
-      else
-      {
-        item->setValue(getValueFromXMLElement(node, BasicType()));
-      }
+      item->setValue(getValueFromXMLElement(node, BasicType()));
     }
   }
   else
@@ -675,7 +665,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
     att = m_resource->findAttribute(m_itemExpressionInfo[i].expName);
     if (att)
     {
-      m_itemExpressionInfo[i].item->setExpression(m_itemExpressionInfo[i].pos, att);
+      m_itemExpressionInfo[i].item->setExpression(att);
     }
     else
     {
