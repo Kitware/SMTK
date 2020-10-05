@@ -22,7 +22,6 @@ PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::Valu
 {
   PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_int_");
   instance
-    .def("appendExpression", &smtk::attribute::ValueItemTemplate<int>::appendExpression, py::arg("exp"))
     .def("appendValue", &smtk::attribute::ValueItemTemplate<int>::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ValueItemTemplate<int>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<int>::begin)
@@ -50,7 +49,6 @@ PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::Va
 {
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_double_");
   instance
-    .def("appendExpression", &smtk::attribute::ValueItemTemplate<double>::appendExpression, py::arg("exp"))
     .def("appendValue", &smtk::attribute::ValueItemTemplate<double>::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ValueItemTemplate<double>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<double>::begin)
@@ -78,7 +76,6 @@ PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribut
 {
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_string_");
   instance
-    .def("appendExpression", &smtk::attribute::ValueItemTemplate<std::string>::appendExpression, py::arg("exp"))
     .def("appendValue", &smtk::attribute::ValueItemTemplate<std::string>::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ValueItemTemplate<std::string>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<std::string>::begin)

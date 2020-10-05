@@ -67,7 +67,7 @@ public:
   smtk::attribute::DefinitionPtr expressionDefinition(
     const smtk::attribute::ResourcePtr& attResource) const;
   // Should only be called internally by the ValueItem
-  void buildExpressionItem(ValueItem* vitem, int position) const;
+  void buildExpressionItem(ValueItem* vitem) const;
   void buildChildrenItems(ValueItem* vitem) const;
 
   bool hasDefault() const { return m_hasDefault; }

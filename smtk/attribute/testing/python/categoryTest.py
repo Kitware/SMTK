@@ -113,8 +113,8 @@ if __name__ == '__main__':
               (item.name(), smtk.attribute.Item.type2String(item.type())))
         vitem = smtk.attribute.ValueItem.CastTo(item)
         if vitem is not None:
-            if vitem.isExpression(0):
-                print("\t\tusing Expression: %s" % vitem.expression(0).name())
+            if vitem.isExpression():
+                print("\t\tusing Expression: %s" % vitem.expression().name())
             else:
                 print("\t\tValue = %s" % vitem.valueAsString())
 #    writer = smtk.attribute.XmlV1StringWriter(resource)

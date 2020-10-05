@@ -134,7 +134,7 @@ public:
   }
   /// Position is the item's location w/r to the owning item if not null
   /// or the owning attribute. Currently the only items that can own other items are
-  /// GroupItem and ValueItem (for expressions)
+  /// GroupItem and ValueItem (for children)
   int position() const { return m_position; }
 
   int subGroupPosition() const { return m_subGroupPosition; }

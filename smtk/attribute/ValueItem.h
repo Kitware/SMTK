@@ -35,6 +35,9 @@ public:
   friend class ValueItemDefinition;
 
   ~ValueItem() override;
+  //TODO - Currently expressions should only be set on non-extensible items
+  // once evaluation is possible, this constraint can be relaxed and this
+  // method should be expanded to take this into consideration
   virtual std::size_t numberOfValues() const { return m_isSet.size(); }
 
   std::size_t numberOfRequiredValues() const;
@@ -45,14 +48,10 @@ public:
   bool isExtensible() const;
 
   bool allowsExpressions() const;
-  bool isExpression(std::size_t elementIndex = 0) const
-  {
-    return (!!this->expression(elementIndex));
-  }
-  smtk::attribute::AttributePtr expression(std::size_t elementIndex = 0) const;
-  bool setExpression(smtk::attribute::AttributePtr exp) { return this->setExpression(0, exp); }
-  bool setExpression(std::size_t elementIndex, smtk::attribute::AttributePtr exp);
-  virtual bool appendExpression(smtk::attribute::AttributePtr exp);
+  bool isExpression() const;
+
+  smtk::attribute::AttributePtr expression() const;
+  bool setExpression(smtk::attribute::AttributePtr exp);
   virtual bool setNumberOfValues(std::size_t newSize) = 0;
   /**
    * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
@@ -98,16 +97,9 @@ public:
 
   virtual std::string valueAsString(std::size_t elementIndex) const = 0;
   virtual bool setValueFromString(std::size_t elementIndex, const std::string& stringVal) = 0;
-  virtual bool isSet(std::size_t elementIndex = 0) const
-  {
-    return m_isSet.size() > elementIndex ? m_isSet[elementIndex] : false;
-  }
+  virtual bool isSet(std::size_t elementIndex = 0) const;
   virtual void unset(std::size_t elementIndex = 0);
-  smtk::attribute::ComponentItemPtr expressionReference(std::size_t elementIndex = 0) const
-  {
-    assert(m_expressions.size() > elementIndex);
-    return m_expressions[elementIndex];
-  }
+  smtk::attribute::ComponentItemPtr expressionReference() const { return m_expression; }
 
   // Interface for getting discrete-value based children items
   std::size_t numberOfChildrenItems() const { return m_childrenItems.size(); }
@@ -155,7 +147,7 @@ protected:
   bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
   std::vector<int> m_discreteIndices;
   std::vector<bool> m_isSet;
-  std::vector<smtk::attribute::ComponentItemPtr> m_expressions;
+  smtk::attribute::ComponentItemPtr m_expression;
   std::map<std::string, smtk::attribute::ItemPtr> m_childrenItems;
   std::vector<smtk::attribute::ItemPtr> m_activeChildrenItems;
 

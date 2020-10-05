@@ -70,6 +70,23 @@ caches remain populated after detachment to support the
 ReferenceItems' API once its parent attribute is removed from its
 Resource.
 
+### Expression Support Changes
+In previous releases of SMTK, if a ValueItem supported expressions, you could set either a value or expression for each "element" based on the Item's number of values.  This made it difficult to assign an expression to the entire Item which was determined to be the more important of the two UseCases.  The new API allows an expression to be set over the entire Item and not on an element by element basis.
+
+#### Changes to ValueItem
+* **Deleted Methods**
+  * bool appendExpression(smtk::attribute::AttributePtr exp)
+  * bool setExpression(std::size_t elementIndex, smtk::attribute::AttributePtr exp)
+* **Modified Methods**
+  * smtk::attribute::ComponentItemPtr expressionReference() const - no longer takes in an element index
+  * bool isExpression() const  - no longer takes in an element index
+  *  smtk::attribute::AttributePtr expression() const  - no longer takes in an element index
+
+#### Changes to ValueItemDefinition
+* **Modified Methods**
+  * void buildExpressionItem(ValueItem* vitem) const  - no longer takes in an element index
+
+
 ### Other Changes
 #### Attribute::isValid and Item::isValid Methods
 * Passing an empty set of categories to Attribute::isValid or Item::isValid no longer means don't filter on categories.  Instead the methods will always return false.  If you don't want category filtering call the isValid methods that don't take in the set.

@@ -30,7 +30,7 @@ PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDef
     .def("addConditionalItem", &smtk::attribute::ValueItemDefinition::addConditionalItem, py::arg("enumValue"), py::arg("itemName"))
     .def("allowsExpressions", &smtk::attribute::ValueItemDefinition::allowsExpressions)
     .def("buildChildrenItems", &smtk::attribute::ValueItemDefinition::buildChildrenItems, py::arg("vitem"))
-    .def("buildExpressionItem", &smtk::attribute::ValueItemDefinition::buildExpressionItem, py::arg("vitem"), py::arg("position"))
+    .def("buildExpressionItem", &smtk::attribute::ValueItemDefinition::buildExpressionItem, py::arg("vitem"))
     .def("childrenItemDefinitions", &smtk::attribute::ValueItemDefinition::childrenItemDefinitions)
     .def("conditionalItems", &smtk::attribute::ValueItemDefinition::conditionalItems, py::arg("enumValue"))
     .def("defaultDiscreteIndex", &smtk::attribute::ValueItemDefinition::defaultDiscreteIndex)

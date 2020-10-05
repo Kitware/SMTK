@@ -149,13 +149,12 @@ smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition(
   return attResource->findDefinition(m_expressionType);
 }
 
-void ValueItemDefinition::buildExpressionItem(ValueItem* vitem, int position) const
+void ValueItemDefinition::buildExpressionItem(ValueItem* vitem) const
 {
   auto expItem = smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
-    m_expressionDefinition->buildItem(vitem, position, -1));
+    m_expressionDefinition->buildItem(vitem, 0, -1));
   expItem->setDefinition(m_expressionDefinition);
-  assert(vitem->m_expressions.size() > static_cast<size_t>(position));
-  vitem->m_expressions[static_cast<size_t>(position)] = expItem;
+  vitem->m_expression = expItem;
 }
 
 void ValueItemDefinition::buildChildrenItems(ValueItem* vitem) const

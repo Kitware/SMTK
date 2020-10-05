@@ -17,6 +17,8 @@
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
 
+#include "smtk/io/Logger.h"
+
 #include "nlohmann/json.hpp"
 
 #include <exception>
@@ -77,16 +79,8 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
     json value;
     if (itemPtr->isSet(i))
     {
-      if (itemPtr->isExpression(i))
-      {
-        value["Expression"]["Ith"] = i;
-        value["Expression"]["Name"] = itemPtr->expression(i)->name();
-      }
-      else
-      {
-        value["Val"]["Ith"] = i;
-        value["Val"]["Name"] = itemPtr->value(i);
-      }
+      value["Val"]["Ith"] = i;
+      value["Val"]["Name"] = itemPtr->value(i);
     }
     else
     {
@@ -115,6 +109,48 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
   attribute::AttributePtr expAtt;
   bool allowsExpressions = itemPtr->allowsExpressions();
   ItemExpressionInfo info;
+
+  // Is the item using an expression?
+  if (allowsExpressions)
+  {
+    json expression;
+    {
+      auto query = j.find("Expression");
+      if (query != j.end())
+      {
+        expression = *query;
+      }
+    }
+
+    if (!expression.is_null())
+    {
+      auto expNameQuery = j.find("ExpressionName");
+      if (expNameQuery != j.end())
+      {
+        expName = expNameQuery->get<std::string>();
+        expAtt = resPtr->findAttribute(expName);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Missing ExpressionName for Item: "
+            << itemPtr->name() << " in Attribute: " << itemPtr->attribute()->name());
+      }
+
+      if (!expAtt)
+      {
+        info.item = itemPtr;
+        info.pos = 0;
+        info.expName = expName;
+        itemExpressionInfo.push_back(info);
+      }
+      else
+      {
+        itemPtr->setExpression(expAtt);
+      }
+      return;
+    }
+  }
+
   if (itemPtr->isExtensible())
   {
     // The node should have an attribute indicating how many values are
@@ -176,23 +212,10 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
           auto query = iter->find("Expression");
           if (query != iter->end())
           {
-            auto queryName = query->find("Name");
-            if (queryName != query->end())
-            {
-              expName = queryName->get<std::string>();
-              expAtt = resPtr->findAttribute(expName);
-              if (!expAtt)
-              {
-                info.item = itemPtr;
-                info.pos = static_cast<int>(i);
-                info.expName = expName;
-                itemExpressionInfo.push_back(info);
-              }
-              else
-              {
-                itemPtr->setExpression(static_cast<int>(i), expAtt);
-              }
-            }
+            smtkErrorMacro(smtk::io::Logger::instance(),
+              "Encountered old style expression per element format for Item: "
+                << itemPtr->name() << " from Attribute: " << itemPtr->attribute()->name()
+                << " ignoring expression setting!");
           }
         }
       }
@@ -211,44 +234,11 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
 
     if (noVal.is_null())
     {
-      json expression;
+      auto query = j.find("Val");
+      if (query != j.end())
       {
-        auto query = j.find("Expression");
-        if (query != j.end())
-        {
-          expression = *query;
-        }
-      }
-
-      if (allowsExpressions && !expression.is_null())
-      {
-        auto expNameQuery = j.find("ExpressionName");
-        if (expNameQuery != j.end())
-        {
-          expName = expNameQuery->get<std::string>();
-          expAtt = resPtr->findAttribute(expName);
-        }
-
-        if (!expAtt)
-        {
-          info.item = itemPtr;
-          info.pos = 0;
-          info.expName = expName;
-          itemExpressionInfo.push_back(info);
-        }
-        else
-        {
-          itemPtr->setExpression(expAtt);
-        }
-      }
-
-      {
-        auto query = j.find("Val");
-        if (query != j.end())
-        {
-          BasicType currentValue = *query;
-          itemPtr->setValue(currentValue);
-        }
+        BasicType currentValue = *query;
+        itemPtr->setValue(currentValue);
       }
     }
   }

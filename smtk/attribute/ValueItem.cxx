@@ -65,12 +65,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
     }
     if (def->allowsExpressions())
     {
-      int i;
-      m_expressions.resize(n);
-      for (i = 0; i < static_cast<int>(n); i++)
-      {
-        def->buildExpressionItem(this, i);
-      }
+      def->buildExpressionItem(this);
     }
   }
 
@@ -79,11 +74,10 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 
 ValueItem::~ValueItem()
 {
-  // we need to detach all items that are owned by this. i.e. the expression items
-  std::size_t i, n = m_expressions.size();
-  for (i = 0; i < n; i++)
+  // we need to detach all items that are owned by this. i.e. the expression item
+  if (m_expression)
   {
-    m_expressions[i]->detachOwningItem();
+    m_expression->detachOwningItem();
   }
 }
 
@@ -93,6 +87,27 @@ void ValueItem::unset(std::size_t elementIndex)
   m_isSet[elementIndex] = false;
   // Clear the current list of active children items
   m_activeChildrenItems.clear();
+}
+
+bool ValueItem::isSet(std::size_t elementIndex) const
+{
+  // Are we using an expression?
+  if (this->allowsExpressions() && (m_expression->value() != nullptr))
+  {
+    return true;
+  }
+
+  return m_isSet.size() > elementIndex ? m_isSet[elementIndex] : false;
+}
+
+smtk::attribute::AttributePtr ValueItem::expression() const
+{
+  return (m_expression ? dynamic_pointer_cast<smtk::attribute::Attribute>(m_expression->value())
+                       : smtk::attribute::AttributePtr());
+}
+bool ValueItem::isExpression() const
+{
+  return !((m_expression == nullptr) || (m_expression->value() == nullptr));
 }
 
 bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>& categories) const
@@ -112,30 +127,22 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
   {
     return true;
   }
-  assert(!this->allowsExpressions() || m_expressions.size() >= m_isSet.size());
+
+  // Are we using an expression?  Note that if we have an expression we
+  // are not discrete and don't have children
+  if (this->allowsExpressions() && (m_expression->value() != nullptr))
+  {
+    // TODO - once the expression evaluation code is in place we should verify
+    // that the expression is valid.
+    return (useCategories && m_expression->isValid(categories)) ||
+      ((!useCategories) && m_expression->isValid());
+  }
+
   for (std::size_t i = 0; i < m_isSet.size(); ++i)
   {
     if (!m_isSet[i])
     {
       return false;
-    }
-    // Is this using an expression?
-    if (this->allowsExpressions() && (m_expressions[i]->value() != nullptr))
-    {
-      if (useCategories)
-      {
-        if (!m_expressions[i]->isValid(categories))
-        {
-          return false;
-        }
-      }
-      else
-      {
-        if (!m_expressions[i]->isValid())
-        {
-          return false;
-        }
-      }
     }
   }
   // Now we need to check the active items
@@ -229,76 +236,23 @@ bool ValueItem::allowsExpressions() const
   return def->allowsExpressions();
 }
 
-smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
-{
-  assert(m_isSet.size() > element);
-  if (m_isSet[element])
-  {
-    const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
-    if (def->allowsExpressions())
-    {
-      assert(m_expressions.size() > element);
-      return dynamic_pointer_cast<smtk::attribute::Attribute>(m_expressions[element]->value());
-    }
-  }
-  return smtk::attribute::AttributePtr();
-}
-
-bool ValueItem::setExpression(std::size_t element, smtk::attribute::AttributePtr exp)
+bool ValueItem::setExpression(smtk::attribute::AttributePtr exp)
 {
   const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
   if (def->allowsExpressions())
   {
     if (!exp)
     {
-      assert(m_expressions.size() > element);
-      if (m_expressions[element]->value())
-      {
-        assert(m_isSet.size() > element);
-        m_isSet[element] = false;
-        m_expressions[element]->unset();
-      }
+      m_expression->unset();
       return true;
     }
     if (def->isValidExpression(exp))
     {
-      assert(m_isSet.size() > element);
-      m_isSet[element] = true;
-      assert(m_expressions.size() > element);
-      m_expressions[element]->setValue(exp);
+      m_expression->setValue(exp);
       return true;
     }
   }
   return false;
-}
-
-bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
-{
-  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
-  size_t n = m_expressions.size(), maxN = def->maxNumberOfValues();
-
-  if (!def->allowsExpressions())
-  {
-    return false;
-  }
-  if (!def->isExtensible())
-  {
-    return false; // The number of values is fixed
-  }
-  if (maxN && (n >= maxN))
-  {
-    return false; // max number reached
-  }
-
-  if (!def->isValidExpression(exp))
-  {
-    return false; // Attribute is of the proper type
-  }
-  m_expressions.resize(n + 1);
-  def->buildExpressionItem(this, static_cast<int>(n));
-  m_expressions[n]->setValue(exp);
-  m_isSet.push_back(true);
-  return true;
 }
 
 void ValueItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
@@ -343,20 +297,25 @@ void ValueItem::reset()
 
 bool ValueItem::rotate(std::size_t fromPosition, std::size_t toPosition)
 {
+  // We can't rotate an expression
+  if (this->isExpression())
+  {
+    return false;
+  }
   const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
   if (!def)
   {
     return false;
   }
 
-  this->rotateVector(m_isSet, fromPosition, toPosition);
+  if (!this->rotateVector(m_isSet, fromPosition, toPosition))
+  {
+    // There is a problem with the rotation fromPosition/toPosition info
+    return false;
+  }
   if (def->isDiscrete())
   {
     this->rotateVector(m_discreteIndices, fromPosition, toPosition);
-  }
-  if (def->allowsExpressions())
-  {
-    this->rotateVector(m_expressions, fromPosition, toPosition);
   }
 
   return true;
@@ -382,8 +341,7 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
     m_discreteIndices[element] = index;
     if (def->allowsExpressions())
     {
-      assert(m_expressions.size() > element);
-      m_expressions[element]->unset();
+      m_expression->unset();
     }
     m_isSet[element] = true;
     this->updateDiscreteValue(element);
@@ -436,49 +394,54 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     return false; //Source is not a value item!
   }
 
-  this->setNumberOfValues(sourceValueItem->numberOfValues());
-
   // Get reference to attribute resource
   ResourcePtr resource = this->attribute()->attributeResource();
 
-  // Update values
-  for (std::size_t i = 0; i < sourceValueItem->numberOfValues(); ++i)
+  this->setNumberOfValues(sourceValueItem->numberOfValues());
+
+  // Are we dealing with Expressions?
+  if (sourceValueItem->isExpression())
   {
-    if (!sourceValueItem->isSet(i))
+    if (options & Item::IGNORE_EXPRESSIONS)
     {
-      this->unset(i);
+      // OK we are not to copy the expression so instead
+      // we need to clear all of the values
+      this->reset();
     }
-    else if (sourceValueItem->isExpression(i))
+    else
     {
-      // Are we copying expressions?
-      if (options & Item::IGNORE_EXPRESSIONS)
+      std::string nameStr = sourceValueItem->expression()->name();
+      AttributePtr att = resource->findAttribute(nameStr);
+      if (!att)
+      {
+        att = resource->copyAttribute(
+          sourceValueItem->expression(), (options & Item::COPY_MODEL_ASSOCIATIONS) != 0, options);
+        if (att == nullptr)
+        {
+          std::cerr << "ERROR: Could not copy Attribute:" << sourceValueItem->expression()->name()
+                    << " used as an expression by item: " << sourceItem->name() << "\n";
+          return false; // Something went wrong!
+        }
+      }
+      this->setExpression(att);
+    }
+  }
+  else
+  {
+    // Update values for discrete values - note that the derived classes
+    // will take care of the non-discrete values.
+    for (std::size_t i = 0; i < sourceValueItem->numberOfValues(); ++i)
+    {
+      if (!sourceValueItem->isSet(i))
       {
         this->unset(i);
       }
-      else
+      else if (sourceValueItem->isDiscrete())
       {
-        std::string nameStr = sourceValueItem->expression(i)->name();
-        AttributePtr att = resource->findAttribute(nameStr);
-        if (!att)
-        {
-          att = resource->copyAttribute(sourceValueItem->expression(i),
-            (options & Item::COPY_MODEL_ASSOCIATIONS) != 0, options);
-          if (att == nullptr)
-          {
-            std::cerr << "ERROR: Could not copy Attribute:"
-                      << sourceValueItem->expression(i)->name()
-                      << " used as an expression by item: " << sourceItem->name() << "\n";
-            return false; // Something went wrong!
-          }
-        }
-        this->setExpression(i, att);
+        this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
       }
-    }
-    else if (sourceValueItem->isDiscrete())
-    {
-      this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
-    }
-  } // for
+    } // for
+  }
 
   // Update children items
   std::map<std::string, smtk::attribute::ItemPtr>::const_iterator sourceIter =

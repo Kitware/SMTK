@@ -159,6 +159,12 @@ public:
   QPointer<QToolButton> AddItemButton;
   QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
   QPointer<QCheckBox> OptionalCheck;
+  QPointer<QFrame> m_valuesFrame;
+  QPointer<QFrame> m_dataFrame;
+  QPointer<QFrame> m_expressionFrame;
+  QPointer<QToolButton> m_expressionButton;
+  QPointer<QComboBox> m_expressionCombo;
+  QString m_lastExpression;
   int m_editPrecision;
 };
 
@@ -592,6 +598,116 @@ void qtInputsItem::loadInputValues()
   }
 }
 
+QFrame* qtInputsItem::createLabelFrame(
+  const smtk::attribute::ValueItem* vitem, const smtk::attribute::ValueItemDefinition* vitemDef)
+{
+  auto iview = m_itemInfo.baseView();
+  // Lets create the label and proper decorations
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  auto labelFrame = new QFrame();
+  labelFrame->setObjectName("labelFrame");
+  QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
+  labelLayout->setObjectName("labelFrame");
+  labelLayout->setMargin(0);
+  labelLayout->setSpacing(0);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  int padding = 0;
+
+  // Note that the definition could be optional but the item maybe forced
+  // to be required.  We need to still create the check box in case
+  // the item's force required state is changed
+  if (vitemDef->isOptional() && (m_internals->OptionalCheck == nullptr))
+  {
+    m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    m_internals->OptionalCheck->setObjectName("optionBox");
+    m_internals->OptionalCheck->setChecked(vitem->localEnabledState());
+    m_internals->OptionalCheck->setText(" ");
+    m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
+    padding = m_internals->OptionalCheck->iconSize().width() + 3; // 6 is for layout spacing
+    QObject::connect(
+      m_internals->OptionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
+    labelLayout->addWidget(m_internals->OptionalCheck);
+    if (!vitem->isOptional())
+    {
+      m_internals->OptionalCheck->setVisible(false);
+      this->setOutputOptional(1);
+    }
+  }
+
+  QString labelText;
+  if (!vitem->label().empty())
+  {
+    labelText = vitem->label().c_str();
+  }
+  else
+  {
+    labelText = vitem->name().c_str();
+  }
+  QLabel* label = new QLabel(labelText, m_widget);
+  label->setObjectName("labelText");
+  label->setSizePolicy(sizeFixedPolicy);
+  if (iview)
+  {
+    int requiredLen = m_itemInfo.uiManager()->getWidthOfText(
+      vitem->label(), m_itemInfo.uiManager()->advancedFont());
+    int labLen = iview->fixedLabelWidth();
+    if ((requiredLen / 2) > labLen)
+    {
+      labLen = requiredLen;
+    }
+    label->setFixedWidth(labLen - padding);
+  }
+  label->setWordWrap(true);
+  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+  //  qtOverlayFilter *filter = new qtOverlayFilter(this);
+  //  label->installEventFilter(filter);
+
+  // add in BriefDescription as tooltip if available
+  const std::string& strBriefDescription = vitemDef->briefDescription();
+  if (!strBriefDescription.empty())
+  {
+    label->setToolTip(strBriefDescription.c_str());
+  }
+
+  if (!vitemDef->units().empty())
+  {
+    // Are we using a spin box?  If so we don't need to add units
+    std::string option = "LineEdit"; // defualt behavior
+    m_itemInfo.component().attribute("Option", option);
+
+    if (option == "LineEdit")
+    {
+      QString unitText = label->text();
+      unitText.append(" (").append(vitemDef->units().c_str()).append(")");
+      label->setText(unitText);
+    }
+  }
+  if (vitemDef->advanceLevel() && m_itemInfo.baseView())
+  {
+    label->setFont(m_itemInfo.uiManager()->advancedFont());
+  }
+  labelLayout->addWidget(label);
+  m_internals->theLabel = label;
+  if (vitem->allowsExpressions())
+  {
+    m_internals->m_expressionButton = new QToolButton(m_widget);
+    m_internals->m_expressionButton->setObjectName("expressionButton");
+    m_internals->m_expressionButton->setCheckable(true);
+    QString resourceName(":/icons/attribute/function.png");
+    m_internals->m_expressionButton->setIconSize(QSize(13, 13));
+    m_internals->m_expressionButton->setIcon(QIcon(resourceName));
+    m_internals->m_expressionButton->setSizePolicy(sizeFixedPolicy);
+    m_internals->m_expressionButton->setToolTip(
+      "Switch between a constant value or function instance");
+    QObject::connect(m_internals->m_expressionButton, SIGNAL(toggled(bool)), this,
+      SLOT(displayExpressionWidget(bool)));
+    labelLayout->addWidget(m_internals->m_expressionButton);
+  }
+
+  return labelFrame;
+}
+
 void qtInputsItem::updateUI()
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
@@ -608,105 +724,53 @@ void qtInputsItem::updateUI()
   {
     m_widget->setEnabled(false);
   }
-  m_internals->EntryLayout = new QGridLayout(m_widget);
+  auto mainlayout = new QHBoxLayout(m_widget);
+  mainlayout->setMargin(0);
+  mainlayout->setSpacing(0);
+  mainlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+  // Add Label Information
+  mainlayout->addWidget(this->createLabelFrame(dataObj.get(), itemDef.get()));
+
+  // Add Data Section
+  m_internals->m_dataFrame = new QFrame(m_widget);
+  m_internals->m_dataFrame->setObjectName("dataFrame");
+  auto dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
+  dataLayout->setObjectName("dataLayout");
+  dataLayout->setMargin(0);
+  dataLayout->setSpacing(0);
+  dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  // This section will either display values or the expression (if this item supports them)
+  m_internals->m_valuesFrame = new QFrame(m_internals->m_dataFrame);
+  m_internals->m_valuesFrame->setObjectName("valuesFrame");
+
+  m_internals->EntryLayout = new QGridLayout(m_internals->m_valuesFrame);
   m_internals->EntryLayout->setMargin(0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-  QHBoxLayout* labelLayout = new QHBoxLayout();
-  labelLayout->setMargin(0);
-  labelLayout->setSpacing(0);
-  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  int padding = 0;
-
-  // Note that the definition could be optional but the item maybe forced
-  // to be required.  We need to still create the check box in case
-  // the item's force required state is changed
-  if (itemDef->isOptional())
-  {
-    m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    m_internals->OptionalCheck->setChecked(dataObj->localEnabledState());
-    m_internals->OptionalCheck->setText(" ");
-    m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
-    padding = m_internals->OptionalCheck->iconSize().width() + 3; // 6 is for layout spacing
-    QObject::connect(
-      m_internals->OptionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
-    labelLayout->addWidget(m_internals->OptionalCheck);
-    if (!dataObj->isOptional())
-    {
-      m_internals->OptionalCheck->setVisible(false);
-      this->setOutputOptional(1);
-    }
-  }
-
-  QString labelText;
-  if (!dataObj->label().empty())
-  {
-    labelText = dataObj->label().c_str();
-  }
-  else
-  {
-    labelText = dataObj->name().c_str();
-  }
-  QLabel* label = new QLabel(labelText, m_widget);
-  label->setSizePolicy(sizeFixedPolicy);
-  if (iview)
-  {
-    int requiredLen = m_itemInfo.uiManager()->getWidthOfText(
-      dataObj->label(), m_itemInfo.uiManager()->advancedFont());
-    int labLen = iview->fixedLabelWidth();
-    if ((requiredLen / 2) > labLen)
-    {
-      labLen = requiredLen;
-    }
-    label->setFixedWidth(labLen - padding);
-  }
-  label->setWordWrap(true);
-  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-  //  qtOverlayFilter *filter = new qtOverlayFilter(this);
-  //  label->installEventFilter(filter);
-
-  // add in BriefDescription as tooltip if available
-  const std::string strBriefDescription = itemDef->briefDescription();
-  if (!strBriefDescription.empty())
-  {
-    label->setToolTip(strBriefDescription.c_str());
-  }
-
-  if (!itemDef->units().empty())
-  {
-    // Are we using a spin box?  If so we don't need to add units
-    std::string option = "LineEdit"; // defualt behavior
-    m_itemInfo.component().attribute("Option", option);
-
-    if (option == "LineEdit")
-    {
-      QString unitText = label->text();
-      unitText.append(" (").append(itemDef->units().c_str()).append(")");
-      label->setText(unitText);
-    }
-  }
-  if (itemDef->advanceLevel() && m_itemInfo.baseView())
-  {
-    label->setFont(m_itemInfo.uiManager()->advancedFont());
-  }
-  labelLayout->addWidget(label);
-  m_internals->theLabel = label;
+  m_internals->EntryLayout->setObjectName("valuesLayout");
 
   this->loadInputValues();
+  dataLayout->addWidget(m_internals->m_valuesFrame);
 
-  // we need this layout so that for items with conditionan children,
-  // the label will line up at Top-left against the chilren's widgets.
-  //  QVBoxLayout* vTLlayout = new QVBoxLayout;
-  //  vTLlayout->setMargin(0);
-  //  vTLlayout->setSpacing(0);
-  //  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  //  vTLlayout->addLayout(labelLayout);
-  m_internals->EntryLayout->addLayout(labelLayout, 0, 0);
-  //  layout->addWidget(m_internals->EntryFrame, 0, 1);
+  // Does this item allow expressions?
+  if (dataObj->allowsExpressions())
+  {
+    m_internals->m_expressionFrame = this->createExpressionRefFrame();
+    dataLayout->addWidget(m_internals->m_expressionFrame);
+  }
+
+  mainlayout->addWidget(m_internals->m_dataFrame);
+
+  // Lets see if this item is always suppose to be an expression
+  if (m_internals->m_expressionButton)
+  {
+    bool expressionOnly = m_itemInfo.component().attributeAsBool("ExpressionOnly");
+    m_internals->m_expressionButton->setChecked(dataObj->isExpression() || expressionOnly);
+    this->displayExpressionWidget(dataObj->isExpression() || expressionOnly);
+    m_internals->m_expressionButton->setEnabled(!expressionOnly);
+  }
+
   if (this->parentWidget() && this->parentWidget()->layout())
   {
     this->parentWidget()->layout()->addWidget(m_widget);
@@ -725,29 +789,12 @@ void qtInputsItem::setOutputOptional(int state)
     return;
   }
   bool enable = state != 0;
-  if (item->isExtensible())
+  // This controls the visibility of the data frame and the expression button (if one exists)
+  m_internals->m_dataFrame->setVisible(enable);
+  if (m_internals->m_expressionButton)
   {
-    if (m_internals->AddItemButton)
-    {
-      m_internals->AddItemButton->setVisible(enable);
-    }
-    foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
-    {
-      tButton->setVisible(enable);
-    }
+    m_internals->m_expressionButton->setVisible(enable);
   }
-
-  foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
-  {
-    QLayout* childLayout = m_internals->ChildrenMap.value(cwidget);
-    if (childLayout)
-    {
-      for (int i = 0; i < childLayout->count(); ++i)
-        childLayout->itemAt(i)->widget()->setVisible(enable);
-    }
-    cwidget->setVisible(enable);
-  }
-
   //  m_internals->EntryFrame->setEnabled(enable);
   if (!(item->forceRequired() || (enable == item->localEnabledState())))
   {
@@ -895,11 +942,6 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     return nullptr;
   }
 
-  if (item->allowsExpressions())
-  {
-    return this->createExpressionRefWidget(elementIdx);
-  }
-
   if (item->isDiscrete())
   {
     auto editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
@@ -911,102 +953,54 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   return this->createEditBox(elementIdx, m_widget);
 }
 
-QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
+QFrame* qtInputsItem::createExpressionRefFrame()
 {
-  smtk::attribute::ValueItemPtr inputitem = m_itemInfo.itemAs<ValueItem>();
-  if (!inputitem)
-  {
-    return nullptr;
-  }
 
-  QFrame* checkFrame = new QFrame(m_widget);
-  checkFrame->setObjectName("expressionFrame");
-  QHBoxLayout* mainlayout = new QHBoxLayout(checkFrame);
-
-  QToolButton* funCheck = new QToolButton(checkFrame);
-  funCheck->setCheckable(true);
-  QString resourceName(":/icons/attribute/function.png");
-  funCheck->setIconSize(QSize(13, 13));
-  funCheck->setIcon(QIcon(resourceName));
-  funCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  funCheck->setToolTip("Switch between a constant value or function instance");
-  QVariant vdata(elementIdx);
-  funCheck->setProperty("ElementIndex", vdata);
+  auto frame = new QFrame();
+  frame->setObjectName("expressionFrame");
+  QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
+  expressionLayout->setObjectName("expressionLayout");
+  expressionLayout->setMargin(0);
+  expressionLayout->setSpacing(0);
+  expressionLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // create combobox for expression reference
-  QComboBox* combo = new QComboBox(checkFrame);
-  combo->setProperty("ElementIndex", vdata);
-  QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this,
+  m_internals->m_expressionCombo = new QComboBox(frame);
+  m_internals->m_expressionCombo->setObjectName("expressionCombo");
+  QObject::connect(m_internals->m_expressionCombo, SIGNAL(currentIndexChanged(int)), this,
     SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
-
-  // Find expression attributes of the appropriate type
-  auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-  ResourcePtr lAttResource = inputitem->attribute()->attributeResource();
-  smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
-  std::vector<smtk::attribute::AttributePtr> result;
-  if (attDef)
-  {
-    lAttResource->findAttributes(attDef, result);
-  }
-  funCheck->setEnabled(true);
-
-  // create line edit for expression which is a const value
-  QWidget* valeditor = this->createEditBox(elementIdx, checkFrame);
-
-  mainlayout->addWidget(funCheck);
-  mainlayout->addWidget(valeditor);
-  combo->setVisible(false);
-  mainlayout->addWidget(combo);
-  mainlayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
-  mainlayout->setContentsMargins(0, 0, 0, 0);
-  QVariant vcombo;
-  vcombo.setValue(static_cast<void*>(combo));
-  funCheck->setProperty("FuncCombo", vcombo);
-  QVariant veditor;
-  veditor.setValue(static_cast<void*>(valeditor));
-  funCheck->setProperty("FuncEditor", veditor);
-
-  QObject::connect(funCheck, SIGNAL(toggled(bool)), this, SLOT(displayExpressionWidget(bool)));
-  // Lets see if the ItemView requested that the item can only be an expression
-  // If it does then make sure to disable the unction box to prevent the user from
-  // switching back to "value" mode.
-  bool expressionOnly = m_itemInfo.component().attributeAsBool("ExpressionOnly");
-  funCheck->setChecked(inputitem->isExpression(elementIdx) || expressionOnly);
-  funCheck->setEnabled(!expressionOnly);
-  return checkFrame;
+  m_internals->m_expressionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  expressionLayout->addWidget(m_internals->m_expressionCombo);
+  expressionLayout->setContentsMargins(0, 0, 0, 0);
+  return frame;
 }
 
 void qtInputsItem::displayExpressionWidget(bool checkstate)
 {
-  QToolButton* const funCheck = qobject_cast<QToolButton*>(QObject::sender());
-  if (!funCheck)
+  if (m_internals->m_expressionButton == nullptr)
   {
     return;
   }
 
-  int elementIdx = funCheck->property("ElementIndex").toInt();
   auto inputitem = m_itemInfo.itemAs<ValueItem>();
   ResourcePtr lAttResource = inputitem->attribute()->attributeResource();
-  if (!inputitem)
-  {
-    return;
-  }
-  QComboBox* combo = static_cast<QComboBox*>(funCheck->property("FuncCombo").value<void*>());
-  combo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  QWidget* funcEditor = static_cast<QWidget*>(funCheck->property("FuncEditor").value<void*>());
 
-  if (!combo || !funcEditor)
+  if (!inputitem)
   {
     return;
   }
 
   if (checkstate)
   {
-    combo->blockSignals(true);
-    combo->clear();
+    m_internals->m_expressionCombo->blockSignals(true);
+    m_internals->m_expressionCombo->clear();
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
     QStringList attNames;
+
+    int setIndex = 0;
+
+    //Lets build the list of possible expressions
     if (attDef)
     {
       std::vector<smtk::attribute::AttributePtr> result;
@@ -1020,88 +1014,78 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       // Now add Please Select and Create Options
       attNames.insert(0, "Please Select");
       attNames.insert(1, "Create...");
-      combo->addItems(attNames);
+      m_internals->m_expressionCombo->addItems(attNames);
     }
 
-    int setIndex = 0;
-    if (inputitem->isExpression(elementIdx))
+    // Can we find the item's current expression?
+    if (inputitem->isExpression())
     {
-      smtk::attribute::AttributePtr att = inputitem->expression(elementIdx);
+      smtk::attribute::AttributePtr att = inputitem->expression();
       if (att != nullptr)
       {
         setIndex = attNames.indexOf(att->name().c_str());
       }
-      else
-      {
-        // Not pointing to valid item - reset it
-        this->unsetValue(elementIdx);
-        setIndex = 0;
-      }
     }
-    else
+    // If we have not found a valid expression and we have the name of the
+    // expression that was used previously lets try that
+    if ((setIndex == 0) && (m_internals->m_lastExpression != ""))
     {
-      // Did the user have a previously set expression?
-      QVariant prevExpression;
-      prevExpression = combo->property("PreviousValue");
-      if (prevExpression.isValid())
+      AttributePtr attPtr =
+        lAttResource->findAttribute(m_internals->m_lastExpression.toStdString());
+      if (attPtr)
       {
-        QString expName = prevExpression.toString();
-        AttributePtr attPtr = lAttResource->findAttribute(expName.toStdString());
-        if (attPtr)
-        {
-          setIndex = attNames.indexOf(expName);
-          inputitem->setExpression(elementIdx, attPtr);
-          emit this->modified();
-        }
-        else
-        {
-          this->unsetValue(elementIdx);
-          setIndex = 0;
-        }
-      }
-      else if (inputitem->isSet(elementIdx))
-      {
-        this->unsetValue(elementIdx);
-        setIndex = 0;
+        setIndex = attNames.indexOf(m_internals->m_lastExpression);
+        inputitem->setExpression(attPtr);
+        emit this->modified();
       }
     }
-    combo->setCurrentIndex(setIndex);
-    combo->blockSignals(false);
+
+    // If item is set but we could not find the expression - lets clear it and send a modified
+    if (inputitem->isExpression() && (setIndex == 0))
+    {
+      inputitem->setExpression(nullptr);
+      emit this->modified();
+    }
+    m_internals->m_expressionCombo->setCurrentIndex(setIndex);
+    m_internals->m_expressionCombo->blockSignals(false);
   }
   else
   {
     // OK - so now we need to deal with going from an expression to
-    // to a constant - First , was the item an expression?  If so
-    // we want to save the value in case they change their minds later
-    if (inputitem->isExpression(elementIdx))
+    // to a constant - Simply clear the expression which will force the item
+    // to revert back to using values
+    if (inputitem->isExpression())
     {
-      smtk::attribute::ComponentItemPtr item = inputitem->expressionReference(elementIdx);
-      QVariant prevExpression(item->valueAsString(elementIdx).c_str());
-      combo->setProperty("PreviousValue", prevExpression);
+      // Lets save the current name of the expression attribute in case
+      // the user simply wants to switch back
+      m_internals->m_lastExpression = inputitem->expression()->name().c_str();
+      inputitem->setExpression(nullptr);
+      // Since the item had an expression set (which influences the isSet method)
+      // we should force a reload of the item's non-expression values to make sure
+      // they are correct.
+      this->clearChildWidgets();
+      this->loadInputValues();
+      emit this->modified();
     }
-    // Next - tell the edit box to update the item
-    this->onInputValueChanged(funcEditor);
   }
 
-  funcEditor->setVisible(!checkstate);
-  combo->setVisible(checkstate);
+  m_internals->m_valuesFrame->setVisible(!checkstate);
+  m_internals->m_expressionFrame->setVisible(checkstate);
 }
 
 void qtInputsItem::onExpressionReferenceChanged()
 {
-  QComboBox* const comboBox = qobject_cast<QComboBox*>(QObject::sender());
-  if (!comboBox)
+  if (!m_internals->m_expressionCombo)
   {
     return;
   }
-  int curIdx = comboBox->currentIndex();
-  int elementIdx = comboBox->property("ElementIndex").toInt();
+  int curIdx = m_internals->m_expressionCombo->currentIndex();
   auto inputitem = m_itemInfo.itemAs<ValueItem>();
   if (!inputitem)
   {
     return;
   }
-  smtk::attribute::ComponentItemPtr item = inputitem->expressionReference(elementIdx);
+  smtk::attribute::ComponentItemPtr item = inputitem->expressionReference();
   if (!item)
   {
     return;
@@ -1109,8 +1093,7 @@ void qtInputsItem::onExpressionReferenceChanged()
 
   if (curIdx == 0)
   {
-    item->unset(elementIdx);
-    inputitem->unset(elementIdx);
+    item->unset();
   }
   else if (curIdx == 1)
   {
@@ -1128,51 +1111,58 @@ void qtInputsItem::onExpressionReferenceChanged()
     }
     else
     {
-      inputitem->setExpression(elementIdx, newAtt);
+      // The user has created a new expression so add it
+      // to the list of expression names and set the item to use it
+      inputitem->setExpression(newAtt);
       itemsInComboBox.append(newAtt->name().c_str());
     }
-    for (int index = 2; index < comboBox->count(); index++)
+    for (int index = 2; index < m_internals->m_expressionCombo->count(); index++)
     {
-      itemsInComboBox << comboBox->itemText(index);
+      itemsInComboBox << m_internals->m_expressionCombo->itemText(index);
     }
     itemsInComboBox.sort();
     // Now add Please Select and Create Options
     itemsInComboBox.insert(0, "Please Select");
     itemsInComboBox.insert(1, "Create...");
-    comboBox->blockSignals(true);
-    comboBox->clear();
-    comboBox->addItems(itemsInComboBox);
+    m_internals->m_expressionCombo->blockSignals(true);
+    m_internals->m_expressionCombo->clear();
+    m_internals->m_expressionCombo->addItems(itemsInComboBox);
     auto expressionAtt = inputitem->expression();
     if (expressionAtt == nullptr)
     {
-      comboBox->setCurrentIndex(0);
+      m_internals->m_expressionCombo->setCurrentIndex(0);
     }
     else
     {
       auto index = itemsInComboBox.indexOf(expressionAtt->name().c_str());
-      comboBox->setCurrentIndex(index);
+      m_internals->m_expressionCombo->setCurrentIndex(index);
     }
-    comboBox->blockSignals(false);
+    m_internals->m_expressionCombo->blockSignals(false);
   }
   else
   {
     smtk::attribute::ResourcePtr lAttResource = item->attribute()->attributeResource();
-    AttributePtr attPtr = lAttResource->findAttribute(comboBox->currentText().toStdString());
-    if (elementIdx >= 0 && inputitem->isSet(elementIdx) &&
-      attPtr == inputitem->expression(elementIdx))
+    AttributePtr attPtr =
+      lAttResource->findAttribute(m_internals->m_expressionCombo->currentText().toStdString());
+    if (inputitem->isSet() && attPtr == inputitem->expression())
     {
       return; // nothing to do
     }
 
     if (attPtr)
     {
-      inputitem->setExpression(elementIdx, attPtr);
+      inputitem->setExpression(attPtr);
     }
-    else
-    {
-      item->unset(elementIdx);
-      inputitem->unset(elementIdx);
-    }
+  }
+
+  auto currentExpression = inputitem->expression();
+  if (currentExpression == nullptr)
+  {
+    m_internals->m_lastExpression = "";
+  }
+  else
+  {
+    m_internals->m_lastExpression = currentExpression->name().c_str();
   }
 
   auto iview = m_itemInfo.baseView();
@@ -1580,7 +1570,7 @@ void qtInputsItem::doubleValueChanged(double newVal)
   bool isInvalid = false;
 
   double val = ditem->value(elementIdx);
-  if ((ditem->isExpression(elementIdx) || !ditem->isSet(elementIdx)) || val != newVal)
+  if ((ditem->isExpression() || !ditem->isSet(elementIdx)) || val != newVal)
   {
     ditem->setValue(elementIdx, newVal);
     valChanged = true;
@@ -1622,7 +1612,7 @@ void qtInputsItem::intValueChanged(int newVal)
   bool isInvalid = false;
 
   int val = iitem->value(elementIdx);
-  if ((iitem->isExpression(elementIdx) || !iitem->isSet(elementIdx)) || val != newVal)
+  if ((iitem->isExpression() || !iitem->isSet(elementIdx)) || val != newVal)
   {
     iitem->setValue(elementIdx, newVal);
     valChanged = true;
@@ -1682,7 +1672,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
       double val = ditem->value(elementIdx);
-      if ((rawitem->isExpression(elementIdx) || !rawitem->isSet(elementIdx)) ||
+      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         val != editBox->text().toDouble())
       {
         ditem->setValue(elementIdx, editBox->text().toDouble());
@@ -1693,7 +1683,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
       auto iitem = dynamic_pointer_cast<IntItem>(rawitem);
       int val = iitem->value(elementIdx);
-      if ((rawitem->isExpression(elementIdx) || !rawitem->isSet(elementIdx)) ||
+      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         val != editBox->text().toInt())
       {
         iitem->setValue(elementIdx, editBox->text().toInt());
@@ -1704,7 +1694,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
       auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
       std::string val = sitem->value(elementIdx);
-      if ((rawitem->isExpression(elementIdx) || !rawitem->isSet(elementIdx)) ||
+      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         val != editBox->text().toStdString())
       {
         sitem->setValue(elementIdx, editBox->text().toStdString());
@@ -1722,7 +1712,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   {
     auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
     std::string val = sitem->value(elementIdx);
-    if ((rawitem->isExpression(elementIdx) || !rawitem->isSet(elementIdx)) ||
+    if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
       val != textBox->toPlainText().toStdString())
     {
       sitem->setValue(elementIdx, textBox->toPlainText().toStdString());

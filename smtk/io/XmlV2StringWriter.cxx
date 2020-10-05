@@ -194,6 +194,14 @@ void processDerivedValue(pugi::xml_node& node, ItemType item)
   {
     return; // nothing left to do
   }
+
+  if (item->isExpression())
+  {
+    node.append_attribute("Expression").set_value(true);
+    node.text().set(item->expression()->name().c_str());
+    return;
+  }
+
   size_t i, n = item->numberOfValues();
   if (!n)
   {
@@ -203,15 +211,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item)
   {
     if (item->isSet())
     {
-      if (item->isExpression())
-      {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
-      }
-      else
-      {
-        node.text().set(getValueForXMLElement(item->value()));
-      }
+      node.text().set(getValueForXMLElement(item->value()));
     }
     else //This is an unset value
     {
@@ -224,18 +224,9 @@ void processDerivedValue(pugi::xml_node& node, ItemType item)
   {
     if (item->isSet(i))
     {
-      if (item->isExpression(i))
-      {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->expression(i)->name().c_str());
-      }
-      else
-      {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(getValueForXMLElement(item->value(i)));
-      }
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+      val.text().set(getValueForXMLElement(item->value(i)));
     }
     else
     {

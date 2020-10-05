@@ -68,7 +68,6 @@ public:
     return ok;
   }
   bool appendValue(const DataT& val);
-  bool appendExpression(smtk::attribute::AttributePtr exp) override;
   bool removeValue(std::size_t element);
   void reset() override;
   bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
@@ -190,8 +189,7 @@ bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
       m_values[element] = val;
       if (def->allowsExpressions())
       {
-        assert(m_expressions.size() > element);
-        m_expressions[element]->unset();
+        m_expression->unset();
       }
       assert(m_isSet.size() > element);
       m_isSet[element] = true;
@@ -214,8 +212,7 @@ bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
     m_isSet[element] = true;
     if (def->allowsExpressions())
     {
-      assert(m_expressions.size() > element);
-      m_expressions[element]->unset();
+      m_expression->unset();
     }
     return true;
   }
@@ -235,7 +232,7 @@ std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
   assert(m_isSet.size() > element);
   if (m_isSet[element])
   {
-    if (this->isExpression(element))
+    if (this->isExpression())
     {
       return "VALUE_IS_EXPRESSION";
     }
@@ -275,12 +272,6 @@ bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
       m_values.push_back(val);
       m_discreteIndices.push_back(index);
       m_isSet.push_back(true);
-      if (def->allowsExpressions())
-      {
-        std::size_t nextPos = m_expressions.size();
-        m_expressions.resize(nextPos + 1);
-        def->buildExpressionItem(this, static_cast<int>(nextPos));
-      }
       return true;
     }
     return false;
@@ -289,9 +280,7 @@ bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
   {
     if (def->allowsExpressions())
     {
-      std::size_t nextPos = m_expressions.size();
-      m_expressions.resize(nextPos + 1);
-      def->buildExpressionItem(this, static_cast<int>(nextPos));
+      m_expression->unset();
     }
     m_values.push_back(val);
     m_isSet.push_back(true);
@@ -332,16 +321,6 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
   // Are we increasing or decreasing?
   if (newSize < n)
   {
-    if (def->allowsExpressions())
-    {
-      std::size_t i;
-      assert(m_expressions.size() >= n);
-      for (i = newSize; i < n; i++)
-      {
-        m_expressions[i]->detachOwningItem();
-      }
-      m_expressions.resize(newSize);
-    }
     m_values.resize(newSize);
     m_isSet.resize(newSize);
     if (def->isDiscrete())
@@ -371,15 +350,6 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
   {
     m_discreteIndices.resize(newSize, def->defaultDiscreteIndex());
   }
-  if (def->allowsExpressions())
-  {
-    std::size_t i;
-    m_expressions.resize(newSize);
-    for (i = n; i < newSize; i++)
-    {
-      def->buildExpressionItem(this, static_cast<int>(i));
-    }
-  }
   return true;
 }
 
@@ -397,12 +367,6 @@ bool ValueItemTemplate<DataT>::removeValue(std::size_t i)
   if (i >= this->numberOfValues())
   {
     return false; // i can't be greater than the number of values
-  }
-  if (def->allowsExpressions())
-  {
-    assert(m_expressions.size() > i);
-    m_expressions[i]->detachOwningItem();
-    m_expressions.erase(m_expressions.begin() + i);
   }
   m_values.erase(m_values.begin() + i);
   m_isSet.erase(m_isSet.begin() + i);
@@ -501,6 +465,12 @@ template <typename DataT>
 void ValueItemTemplate<DataT>::reset()
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
+  // If we can have an expression then clear it
+  if (def->allowsExpressions())
+  {
+    m_expression->unset();
+  }
+
   // Was the initial size 0?
   std::size_t i, n = this->numberOfRequiredValues();
   if (this->numberOfValues() != n)
@@ -512,28 +482,10 @@ void ValueItemTemplate<DataT>::reset()
     m_values.clear();
     m_isSet.clear();
     m_discreteIndices.clear();
-    if (def->allowsExpressions())
-    {
-      std::size_t j, m = m_expressions.size();
-      for (j = 0; j < m; j++)
-      {
-        m_expressions[j]->detachOwningItem();
-      }
-      m_expressions.clear();
-    }
     ValueItem::reset();
     return;
   }
 
-  // If we can have expressions then clear them
-  if (def->allowsExpressions())
-  {
-    assert(m_expressions.size() >= n);
-    for (i = 0; i < n; i++)
-    {
-      m_expressions[i]->unset();
-    }
-  }
   if (!def->hasDefault()) // Do we have default values
   {
     for (i = 0; i < n; i++)
@@ -568,31 +520,15 @@ void ValueItemTemplate<DataT>::reset()
 template <typename DataT>
 bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPosition)
 {
-  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
-  if (!def)
+  // Let's first verify that ValueItem was OK with the rotation.
+  if (!ValueItem::rotate(fromPosition, toPosition))
   {
     return false;
   }
 
-  if (!this->rotateVector(m_values, fromPosition, toPosition))
-  {
-    return false;
-  }
-
-  return ValueItem::rotate(fromPosition, toPosition);
-}
-
-template <typename DataT>
-bool ValueItemTemplate<DataT>::appendExpression(smtk::attribute::AttributePtr exp)
-{
-  // See if the parent class appended the expression
-  if (ValueItem::appendExpression(exp))
-  {
-    // Resize the values array to match
-    m_values.resize(m_expressions.size());
-    return true;
-  }
-  return false;
+  // No need to check to see if the rotation is valid since ValueItem already checked it
+  this->rotateVector(m_values, fromPosition, toPosition);
+  return true;
 }
 
 template <typename DataT>
@@ -611,16 +547,19 @@ bool ValueItemTemplate<DataT>::assign(
   {
     return false; // Source is not the right type of item
   }
-  // Update values
-  this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
-  for (std::size_t i = 0; i < sourceValueItemTemplate->numberOfValues(); ++i)
+  // If the item is discrete or an expression there is nothing to be done
+  if (!(sourceValueItemTemplate->isExpression() || sourceValueItemTemplate->isDiscrete()))
   {
-    if (sourceValueItemTemplate->isSet(i) && !sourceValueItemTemplate->isExpression(i) &&
-      !sourceValueItemTemplate->isDiscrete())
+    // Update values
+    this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
+    for (std::size_t i = 0; i < sourceValueItemTemplate->numberOfValues(); ++i)
     {
-      this->setValue(i, sourceValueItemTemplate->value(i));
+      if (sourceValueItemTemplate->isSet(i))
+      {
+        this->setValue(i, sourceValueItemTemplate->value(i));
+      }
     }
-  } // for
+  }
   return true;
 }
 } // namespace attribute
