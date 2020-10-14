@@ -630,7 +630,6 @@ QFrame* qtInputsItem::createLabelFrame(
     if (!vitem->isOptional())
     {
       m_internals->OptionalCheck->setVisible(false);
-      this->setOutputOptional(1);
     }
   }
 
