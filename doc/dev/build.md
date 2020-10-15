@@ -22,22 +22,22 @@ In order to build SMTK you must have
  + Xcode 7.1 or newer
  + Visual Studio 2013 64 bit or newer
 + [CMake](http://cmake.org) 3.5 or newer
-+ [Boost](http://boost.org) 1.60.0 or newer
-+ [MOAB](https://bitbucket.org/fathomteam/moab),
-  (optionally built with
-  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
-  for importing and exporting mesh files).
 
 
 We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 
-You may optionally provide
+These components are provided by the CMB superbuild, and are mostly optional:
 
++ [Boost](http://boost.org) 1.60.0 or newer (required)
++ [MOAB](https://bitbucket.org/fathomteam/moab),
+  (optionally built with
+  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
+  for importing and exporting mesh files).
 + [OpenCascade](http://opencascade.org/) 7.4.0 or newer for importing CAD models;
 + [Python](http://python.org) version 2.7.3 or newer and
   [Pybind11](http://github.com/pybind/pybind11), for Python wrappings of
   SMTK's C++ classes;
-+ [Qt](http://qt-project.org) version 4.8 or newer,
++ [Qt](http://qt-project.org) version 5.12 or newer,
   for widgets to interact with attributes and models;
 + [Remus](https://github.com/robertmaynard/Remus) from the master branch,
   for running SMTK modelers in remote processes;
@@ -68,6 +68,13 @@ in your `PATH` environment variable, you can run:
   * `git lfs fetch`
   * `git lfs checkout`
 
+Rather than try to compile all the dependencies separately, we recommend using
+the [CMB superbuild](https://gitlab.kitware.com/cmb/cmb-superbuild). It can
+also be used to compile SMTK itself, and ModelBuilder, the canonical application
+that uses SMTK. Most developers of SMTK turn on "developer-mode" for SMTK in
+the superbuild, which prepares a cmake initialization file for an external
+SMTK build.
+
 Once you have prepared all of the dependencies, it is time to
 create a build directory (again, *outside* the SMTK source directory
 containing this ReadMe file) and run CMake.
@@ -83,12 +90,14 @@ To begin:
     cmake /source/SMTK
     # or, if you have Ninja and the SMTK test data:
     cmake -G Ninja -DSMTK_DATA_DIR:PATH=/data/SMTK /source/SMTK
+    # or, if you used the superbuild:
+    cmake -G Ninja -C /build/cmb-superbuild/smtk-developer-config.cmake -DSMTK_ENABLE_TESTING:BOOL=ON ../src
 
-At this point, CMake will likely complain that you are missing Boost.
-It will also default to not build python wrappings, Qt, VTK, ParaView,
-or OpenCASCADE functionality since those require optional dependencies.
-To change these defaults and specify where Boost is located, you may
-do any of the following:
+At this point, without the superbuild, CMake will likely complain that you are
+missing Boost. It will also default to not build python wrappings, Qt, VTK,
+ParaView, or OpenCASCADE functionality since those require optional
+dependencies. To change these defaults and specify where Boost is located, you
+may do any of the following:
 
 + manually edit the newly-created `/build/SMTK/CMakeCache.txt` file,
 + run the Qt `cmake-gui` command (assuming it is present in your build of CMake), or

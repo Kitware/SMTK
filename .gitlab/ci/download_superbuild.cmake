@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(data_host "https://data.kitware.com")
 
-# Determine the tarball to download.
+# Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2019")
   # 20200925
   set(file_item "5f73425b50a41e3d19b6e3b9")
