@@ -53,19 +53,17 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
   {
     return;
   }
+  if (itemPtr->isExpression())
+  {
+    j["Expression"] = true;
+    j["ExpressionName"] = itemPtr->expression()->name();
+    return;
+  }
   if ((itemPtr->numberOfRequiredValues() == 1) && !itemPtr->isExtensible())
   {
     if (itemPtr->isSet())
     {
-      if (itemPtr->isExpression())
-      {
-        j["Expression"] = true;
-        j["ExpressionName"] = itemPtr->expression()->name();
-      }
-      else
-      {
-        j["Val"] = itemPtr->value();
-      }
+      j["Val"] = itemPtr->value();
     }
     else
     {
