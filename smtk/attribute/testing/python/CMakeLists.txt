@@ -37,6 +37,7 @@ set(smtkAttributePythonNewDataTests
   groupItemRotateTest
   referenceItemIOTest
   valueItemRotateTest
+  vectorExpressionTest
 )
 
 if (SMTK_DATA_DIR)
