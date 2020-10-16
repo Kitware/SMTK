@@ -60,7 +60,7 @@ std::string SubphraseGenerator::getType(const smtk::view::ConfigurationPtr& view
   {
     typeName = "default";
   }
-  else if ((model.numberOfChildren() != 1) || (model.child(0).name() != "SubphraseGenerator"))
+  else if (model.child(0).name() != "SubphraseGenerator")
   {
     return typeName;
   }
