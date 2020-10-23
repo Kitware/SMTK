@@ -280,6 +280,21 @@ int unitComponentPhraseModel(int argc, char* argv[])
       smtkTest(phraseModel->root()->subphrases()[6]->title() == "epic",
         "Did not move renamed group to middle.");
     }
+    {
+      // First sort all phrases alphabetically
+      phraseModel->setSortFunction(DescriptivePhrase::compareByTitle);
+      smtkTest(phraseModel->root()->subphrases()[0]->title() == "aaa",
+        "Did not sort phrases alphabetically.");
+      smtkTest(phraseModel->root()->subphrases()[4]->title() == "epic",
+        "Did not sort phrases alphabetically.");
+
+      // then sort by type and then title
+      phraseModel->setSortFunction(DescriptivePhrase::compareByTypeThenTitle);
+      smtkTest(phraseModel->root()->subphrases()[0]->title() == "background",
+        "Did not sort phrases alphabetically.");
+      smtkTest(phraseModel->root()->subphrases()[6]->title() == "epic",
+        "Did not sort phrases alphabetically.");
+    }
 
     // Don't leak
     free(dataArgs[1]);

@@ -169,6 +169,12 @@ void ComponentPhraseModel::populateRoot()
     children.push_back(
       smtk::view::ComponentPhraseContent::createPhrase(comp, m_mutableAspects, m_root));
   }
-  std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
+  std::sort(children.begin(), children.end(), m_comparator);
   this->updateChildren(m_root, children, std::vector<int>());
+}
+
+void ComponentPhraseModel::setSortFunction(const SortingCompFunc& comparator)
+{
+  m_comparator = comparator;
+  this->populateRoot();
 }
