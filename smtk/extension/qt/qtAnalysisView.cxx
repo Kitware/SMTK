@@ -81,6 +81,7 @@ void qtAnalysisView::createWidget()
 
   // Lets see if we need to create the analysis
   // attribute or its definition?
+  bool attChanged = false;
   auto attDef = attRes->findDefinition(defName);
   if (!attDef)
   {
@@ -90,6 +91,7 @@ void qtAnalysisView::createWidget()
   if (!m_analysisAttribute)
   {
     m_analysisAttribute = attRes->createAttribute(attName, attDef);
+    attChanged = true;
   }
 
   // OK Now lets create a qtAttribute for the Analysis Attribute
@@ -101,12 +103,18 @@ void qtAnalysisView::createWidget()
   m_qtAnalysisAttribute = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
   m_qtAnalysisAttribute->createBasicLayout(true);
   layout->addWidget(m_qtAnalysisAttribute->widget());
-  QObject::connect(m_qtAnalysisAttribute, SIGNAL(modified()), this, SLOT(analysisChanged()));
+  QObject::connect(
+    m_qtAnalysisAttribute, &qtAttribute::modified, this, &qtAnalysisView::analysisAttributeChanged);
   // OK - lets apply the initial state.
-  this->analysisChanged();
+  this->analysisChanged(attChanged);
 }
 
-void qtAnalysisView::analysisChanged()
+void qtAnalysisView::analysisAttributeChanged()
+{
+  this->analysisChanged(true);
+}
+
+void qtAnalysisView::analysisChanged(bool attChanged)
 {
   // Lets iterate over the items in the analysis attribute and set
   // the categories accordingly
@@ -118,8 +126,12 @@ void qtAnalysisView::analysisChanged()
   }
   attRes->analyses().getAnalysisAttributeCategories(m_analysisAttribute, cats);
   this->uiManager()->setTopLevelCategories(cats);
-  // let the outside world know the analysis attribute has changed
-  this->attributeChanged(m_analysisAttribute);
+
+  if (attChanged)
+  {
+    // let the outside world know the analysis attribute has changed
+    this->attributeChanged(m_analysisAttribute);
+  }
   // We shouldn't need to modified since this should have caused all the Qt views to
   // update
 }

@@ -64,8 +64,8 @@ public:
   virtual bool isValid() const override;
 
 public slots:
-  /// \brief Slot used to update the category filtering based on the state of the Analysis Attribute
-  void analysisChanged();
+  /// \brief Slot used to update the UI when Analysis Attribute changes
+  void analysisAttributeChanged();
 
 protected:
   void createWidget() override;
@@ -76,6 +76,9 @@ protected:
   /// Since the items of the Analysis Attribute have no categories, this view turns off this
   // check by always returning true.
   bool categoryTest(const smtk::attribute::ConstItemDefinitionPtr&) const override;
+
+  /// \brief Method to update the category filtering based on the state of the Analysis Attribute
+  void analysisChanged(bool attributeChanged);
 
 private:
   smtk::attribute::AttributePtr m_analysisAttribute; ///< Analysis Attribute used by the View
