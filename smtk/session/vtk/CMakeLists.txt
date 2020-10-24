@@ -70,6 +70,7 @@ target_link_libraries(smtkVTKSession
     smtkCore
     smtkIOVTK
     vtkSMTKSourceExt
+    vtkSMTKModelExt
     VTK::CommonDataModel
   LINK_PRIVATE
     ${import_vtk_depends}
