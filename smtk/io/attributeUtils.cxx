@@ -48,7 +48,8 @@ bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename
   std::size_t numValues = 0, numItemsPerGroup = def->numberOfItemDefinitions();
   for (std::size_t i = 0; i < numItemsPerGroup; i++)
   {
-    auto vdef = std::dynamic_pointer_cast<ValueItemDefinition>(def->itemDefinition(i));
+    auto vdef =
+      std::dynamic_pointer_cast<ValueItemDefinition>(def->itemDefinition(static_cast<int>(i)));
     if ((vdef == nullptr) || vdef->isOptional() || vdef->isExtensible())
     {
       smtkErrorMacro(logger,
@@ -143,7 +144,8 @@ bool importFromDoubleFile(smtk::attribute::GroupItem& item, const std::string& f
   std::size_t numValues = 0, numItemsPerGroup = def->numberOfItemDefinitions();
   for (std::size_t i = 0; i < numItemsPerGroup; i++)
   {
-    auto ddef = std::dynamic_pointer_cast<DoubleItemDefinition>(def->itemDefinition(i));
+    auto ddef =
+      std::dynamic_pointer_cast<DoubleItemDefinition>(def->itemDefinition(static_cast<int>(i)));
     if ((ddef == nullptr) || ddef->isOptional() || ddef->isExtensible())
     {
       smtkErrorMacro(logger, "GroupItem: "
