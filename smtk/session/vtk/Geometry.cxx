@@ -12,6 +12,8 @@
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/Session.h"
 
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
+
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Entity.h"
@@ -66,15 +68,35 @@ void Geometry::queryGeometry(
   }
   auto session = resource->session();
   auto& entMap = session->reverseIdMap();
+  vtkSmartPointer<vtkDataObject> data;
   auto it = entMap.find(smtk::model::EntityRef(resource, obj->id()));
   if (it == entMap.end())
   {
-    entry.m_generation = Invalid;
-    return;
+    // Auxiliary geometry is handled outside of the map used for other
+    // entity types. For instance, it may be procedural or parametric.
+    if (ent->isAuxiliaryGeometry())
+    {
+      smtk::model::AuxiliaryGeometry aux(ent);
+      std::vector<double> bbox;
+      auto ext = vtkAuxiliaryGeometryExtension::create();
+      if (ext->canHandleAuxiliaryGeometry(aux, bbox))
+      {
+        data = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
+      }
+    }
+    if (!data)
+    {
+      entry.m_generation = Invalid;
+      return;
+    }
   }
-  if (it->second.m_object)
+  else
   {
-    switch (it->second.m_object->GetDataObjectType())
+    data = it->second.m_object;
+  }
+  if (data)
+  {
+    switch (data->GetDataObjectType())
     {
       case VTK_COMPOSITE_DATA_SET:
       case VTK_MULTIGROUP_DATA_SET:
@@ -90,7 +112,7 @@ void Geometry::queryGeometry(
       {
         vtkNew<vtkGeometryFilter> bdy;
         bdy->MergingOff();
-        bdy->SetInputDataObject(it->second.m_object);
+        bdy->SetInputDataObject(data);
         bdy->Update();
         entry.m_geometry = bdy->GetOutput();
         ++entry.m_generation;
@@ -100,7 +122,7 @@ void Geometry::queryGeometry(
       case VTK_POLY_DATA:
       case VTK_IMAGE_DATA:
       default:
-        entry.m_geometry = it->second.m_object;
+        entry.m_geometry = data;
         ++entry.m_generation;
         break;
     }

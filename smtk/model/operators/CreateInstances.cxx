@@ -24,6 +24,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/model/CreateInstances_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -129,6 +131,7 @@ CreateInstances::Result CreateInstances::operateInternal()
       createdItem->appendValue(prototype.component());
       modifiedItem->appendValue(instance.component());
       result->findComponent("tess_changed")->appendValue(instance.component());
+      smtk::operation::MarkGeometry().markModified(instance.component());
       if (rule == "tabular")
       {
         this->addTabularRule(instance, prototype);

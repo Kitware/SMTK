@@ -25,6 +25,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/model/AddAuxiliaryGeometry_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -103,6 +105,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   }
   auxGeom.assignDefaultName();
   auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
+  smtk::operation::MarkGeometry(resource).markModified(auxGeom.component());
   // Add transform properties if they are not default values:
   for (int ii = 0; ii < 3; ++ii)
   {
