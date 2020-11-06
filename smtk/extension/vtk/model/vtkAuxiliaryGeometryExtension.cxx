@@ -374,17 +374,17 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
     component->properties().contains<std::vector<double> >("scale"))
   {
     vtkNew<vtkTransform> transform;
-    if (component->properties().contains<std::vector<double> >("scale"))
-    {
-      const std::vector<double>& scale =
-        component->properties().get<std::vector<double> >()["scale"];
-      transform->Scale(scale[0], scale[1], scale[2]);
-    }
     if (component->properties().contains<std::vector<double> >("translate"))
     {
       const std::vector<double>& translate =
         component->properties().get<std::vector<double> >()["translate"];
       transform->Translate(translate[0], translate[1], translate[2]);
+    }
+    if (component->properties().contains<std::vector<double> >("scale"))
+    {
+      const std::vector<double>& scale =
+        component->properties().get<std::vector<double> >()["scale"];
+      transform->Scale(scale[0], scale[1], scale[2]);
     }
     if (component->properties().contains<std::vector<double> >("rotate"))
     {
