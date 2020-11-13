@@ -259,28 +259,65 @@ void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
 
 void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
 {
+  smtk::attribute::Categories::Set::CombinationMode catMode;
   //need to process Categories and Tags added in V3
   this->XmlDocV2Parser::processDefinition(defNode, def);
-
+  //This is the old style of category information
   xml_attribute ccm = defNode.attribute("CategoryCheckMode");
-  if (ccm)
+  if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
   {
-    std::string val = ccm.value();
-    if (val == "All")
-    {
-      def->localCategories().setMode(smtk::attribute::Categories::Set::CombinationMode::All);
-    }
-    else if (val == "Any")
-    {
-      def->localCategories().setMode(smtk::attribute::Categories::Set::CombinationMode::Any);
-    }
+    def->localCategories().setCombinationMode(catMode);
   }
   xml_node catNodes = defNode.child("Categories");
-  if (catNodes)
+  xml_node catInfoNode = defNode.child("CategoryInfo");
+  xml_node child;
+  //Current Category Structure
+  if (catInfoNode)
+  {
+    // Lets get the overall combination mode
+    ccm = catInfoNode.attribute("Combination");
+    auto& localCats = def->localCategories();
+    if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
+    {
+      localCats.setCombinationMode(catMode);
+    }
+    // Get the Include set (if one exists)
+    xml_node catGroup;
+    catGroup = catInfoNode.child("Include");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      ccm = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
+      {
+        localCats.setInclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        localCats.insertInclusion(child.text().get());
+      }
+    }
+    catGroup = catInfoNode.child("Exclude");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      ccm = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
+      {
+        localCats.setExclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        localCats.insertExclusion(child.text().get());
+      }
+    }
+  }
+  //Old Style
+  else if (catNodes)
   {
     for (xml_node child = catNodes.first_child(); child; child = child.next_sibling())
     {
-      def->localCategories().insert(child.text().get());
+      def->localCategories().insertInclusion(child.text().get());
     }
   }
 

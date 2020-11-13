@@ -19,6 +19,7 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/model/EntityTypeBits.h"
@@ -29,6 +30,7 @@
 
 namespace pugi
 {
+class xml_attribute;
 class xml_document;
 class xml_node;
 }
@@ -74,6 +76,8 @@ public:
   static void getCategories(
     pugi::xml_node& rootNode, std::set<std::string>& categories, std::string& defaultCategory);
   void setIncludeFileIndex(std::size_t index) { m_includeIndex = index; }
+  static bool getCategoryComboMode(
+    pugi::xml_attribute& xmlAtt, smtk::attribute::Categories::Set::CombinationMode& val);
 
 protected:
   void processAttributeInformation(pugi::xml_node& root);

@@ -87,6 +87,7 @@ set(unit_tests
   unitCustomItem
   unitDateTimeItem.cxx
   unitDefinitionTags
+  unitExclusionCategories
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitOptionalItems

@@ -44,17 +44,17 @@ int main()
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem1");
-    iitemdef->localCategories().insert("Flow");
+    iitemdef->localCategories().insertInclusion("Flow");
     iitemdef = base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
     iitemdef->setDefaultValue(10);
-    iitemdef->localCategories().insert("Heat");
+    iitemdef->localCategories().insertInclusion("Heat");
 
     smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
     // Allow this one to hold an expression
-    ditemdef->localCategories().insert("Veg");
+    ditemdef->localCategories().insertInclusion("Veg");
     ditemdef->setExpressionDefinition(expDef);
     // Check to make sure we can use expressions
     if (!ditemdef->allowsExpressions())
@@ -64,16 +64,16 @@ int main()
     }
     ditemdef = def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem2");
     ditemdef->setDefaultValue(-35.2);
-    ditemdef->localCategories().insert("Constituent");
+    ditemdef->localCategories().insertInclusion("Constituent");
 
     smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
-    sitemdef->localCategories().insert("Flow");
+    sitemdef->localCategories().insertInclusion("Flow");
     sitemdef = def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
     sitemdef->setDefaultValue("Default");
-    sitemdef->localCategories().insert("General");
+    sitemdef->localCategories().insertInclusion("General");
 
     // Process Categories
     resource.finalizeDefinitions();
@@ -86,7 +86,7 @@ int main()
       for (const auto& catSet : categories.sets())
       {
         std::cout << "Category Set: " << i++ << " = ";
-        for (const auto& catName : catSet.categoryNames())
+        for (const auto& catName : catSet.includedCategoryNames())
         {
           std::cout << "\"" << catName << "\" ";
         }
@@ -105,7 +105,7 @@ int main()
       for (const auto& catSet : categories.sets())
       {
         std::cout << "Category Set: " << i++ << " = ";
-        for (const auto& catName : catSet.categoryNames())
+        for (const auto& catName : catSet.includedCategoryNames())
         {
           std::cout << "\"" << catName << "\" ";
         }

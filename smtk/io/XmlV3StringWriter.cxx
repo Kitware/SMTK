@@ -223,20 +223,32 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
     }
   }
 
-  if (!def->localCategories().empty())
+  auto& localCats = def->localCategories();
+  // Lets write out the category stuff
+  xml_node catGroupNode, catInfoNode = definition.append_child("CategoryInfo");
+  catInfoNode.append_attribute("Combination")
+    .set_value(Categories::Set::combinationModeAsString(localCats.combinationMode()).c_str());
+
+  // Inclusion Categories
+  if (!localCats.includedCategoryNames().empty())
   {
-    xml_node cnode, catNodes = definition.append_child("Categories");
-    if (def->localCategories().mode() == Categories::Set::CombinationMode::All)
+    catGroupNode = catInfoNode.append_child("Include");
+    catGroupNode.append_attribute("Combination")
+      .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
+    for (auto& str : localCats.includedCategoryNames())
     {
-      catNodes.append_attribute("CategoryCheckMode").set_value("All");
+      catGroupNode.append_child("Cat").text().set(str.c_str());
     }
-    else
+  }
+  // Exclusion Categories
+  if (!localCats.excludedCategoryNames().empty())
+  {
+    catGroupNode = catInfoNode.append_child("Exclude");
+    catGroupNode.append_attribute("Combination")
+      .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
+    for (auto& str : localCats.excludedCategoryNames())
     {
-      catNodes.append_attribute("CategoryCheckMode").set_value("Any");
-    }
-    for (auto& str : def->localCategories().categoryNames())
-    {
-      catNodes.append_child("Cat").text().set(str.c_str());
+      catGroupNode.append_child("Cat").text().set(str.c_str());
     }
   }
 

@@ -405,7 +405,7 @@ void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const st
   {
     return; // enum not defined
   }
-  m_valueToCategoryAssociations[enumValue].insert(cat);
+  m_valueToCategoryAssociations[enumValue].insertInclusion(cat);
 }
 
 const smtk::attribute::Categories::Set& ValueItemDefinition::enumCategories(
