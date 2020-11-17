@@ -34,6 +34,7 @@
 #include "smtk/operation/groups/DeleterGroup.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -43,6 +44,7 @@
 #include <QItemSelection>
 #include <QItemSelectionModel>
 #include <QKeyEvent>
+#include <QMessageBox>
 #include <QPointer>
 #include <QTreeView>
 
@@ -448,8 +450,29 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
             // No operation was found for anything selected and unprocessed.
             break;
           }
+          if (!op->ableToOperate() && op->parameters()->findVoid("delete dependents"))
+          {
+            QMessageBox msgBox;
+            msgBox.setText(
+              QString("Unable to delete %1 selected object(s).").arg(candidates.size()));
+            msgBox.setInformativeText("Delete all dependent entities as well?");
+            auto buttons = QMessageBox::Yes | QMessageBox::No;
+            msgBox.setStandardButtons(buttons);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            // QCheckBox* cb = new QCheckBox("Set default and don't show again.");
+            // msgBox.setCheckBox(cb);
+
+            int ret = msgBox.exec();
+            // auto cbChecked = cb->isChecked();
+            if (ret == QMessageBox::No)
+            {
+              return true;
+            }
+            op->parameters()->findVoid("delete dependents")->setIsEnabled(true);
+          }
           operationManager->launchers()(op);
         }
+        return true;
       }
     }
   }
