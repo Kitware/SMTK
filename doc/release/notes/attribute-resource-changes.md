@@ -14,8 +14,75 @@ See smtk/data/attribute/attribute_collection/SimpleAnalysisTest.sbt for a comple
 
 **Note** that an Analysis's parent has Exclusive Children then the Analysis' required property is ignored.
 
-### Replacing updateCategories method
+### Replacing attribute::Resource::updateCategories method
 The new method is now called finalizeDefinitions since it now does more including updating advance level information.
+
+### Changes to Category Modeling
+#### Adding the concept of exclusion
+Previously, you could provide a list of category names to an Attribute or Item Definition as well as Value Item Enums to indicate which categories should be "present" in order for the information to be considered relevant.  In addition, a combination mode indicating if any or all of the categories should be present.  This information is represented in attribute::Categories::Set.  Recently this has been expanded to include an additional set of category names that represent excluded categories.  As in the inclusion set of names, a combination mode indicating if any or all of the categories should not be present.  Finally, a top level combination mode indicating how to combine the results of the inclusion and exclusion sets.
+
+See unitExclusionCategories test for an example of using this new functionality.
+
+#### Turning off Category Filtering
+With these new changes we can now model information that is relevant regardless of which categories are active.  For example Analysis Configuration Attributes which are used to indicate which categories should be active, should themselves not be filtered.  To do this, simple set the Item or Attribute's local categories to have a **combinationMode** set to **ANY**.  Since the inclusion and exclusion sets are initially empty which means they evaluate to false and true respectively, the passes method will always return true.
+
+#### attribute::Categories::Set API Changes
+* New API
+  * combinationMode()/setCombinationMode(..) - Get/Set the how the sets of included and excluded categories are combined
+  * inclusionMode()/setInclusionMode(..) - Get/Set the CombinationMode associated with the included categories.
+  * exclusionMode()/setExclusionMode(..) - Get/Set the CombinationMode associated with the excluded categories.
+  * includedCategoryNames() - Return the set of category names associated with the inclusion set.
+  * excludedCategoryNames() - Return the set of category names associated with the exclusion set.
+  * setInclusions(..) - Set the mode and category names of the inclusion set.
+  * setExclusions(..) - Set the mode and category names of the exclusion set.
+  * insertInclusion(..)/eraseInclusion(..) - add/remove category name to/from the inclusion set.
+  * insertExclusion(..)/eraseExclusion(..) - add/remove category name to/from the exclusion set.
+  * inclusionSize() - Returns the number of category names in the inclusion set.
+  * exclusionSize() - Returns the number of category names in the exclusion set.
+* Deprecated API
+  * mode() -> inclusionMode()
+  * setMode(..) -> setInclusionMode(..)
+  * categoryNames() -> includedCategoryNames()
+  * set(..) -> setInclusions(..)
+  * insert(..) ->insertInclusion(..)
+  * erase(..) -> eraseInclusion(..)
+  * size() -> inclusionSize()
+
+#### Changes to XML/JSON Formats
+In the past the category names where added to their own XML element or JSON structure inside of the Attribute/Item Definition Block or inside of the ValueItem Enum Structure, but other aspects were stored else where.  Though this format is still supported for reading, the new format groups all of the Category Information together.  Here is an example of an Item Definition:
+
+```xml
+        <String Name="s0" Label="s0">
+          <CategoryInfo Inherit="true" Combination="All">
+            <Include Combination="All">
+              <Cat>a</Cat>
+              <Cat>b</Cat>
+            </Include>
+            <Exclude Combination="All">
+              <Cat>c</Cat>
+              <Cat>d</Cat>
+            </Exclude>
+          </CategoryInfo>
+        </String>
+```
+This format is the same for Attribute Definitions and Enums with the exception of the Inherit attribute.  The following is the JSON equivalent:
+
+```json
+          "CategoryInfo": {
+            "Combination": "All",
+            "ExcludeCategories": [
+              "c",
+              "d"
+            ],
+            "ExclusionCombination": "All",
+            "IncludeCategories": [
+              "a",
+              "b"
+            ],
+            "InclusionCombination": "All",
+            "Inherit": true
+          },
+```
 
 ### Adding Advance Level and Category Support for DiscreteItem Enums
 A Discrete Item's enums can now have a set of categories associated with it as well as advance level information.  This information is used by the GUI system to filter out enums based on category and advance level settings.

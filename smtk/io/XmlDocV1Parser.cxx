@@ -134,6 +134,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
 {
   xml_node dnode, child, rnode;
   xml_attribute xatt;
+  attribute::Categories::Set::CombinationMode catMode;
   // Is the item discrete?
   dnode = node.child("DiscreteInfo");
   if (dnode)
@@ -198,27 +199,63 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
         }
       }
       // Does the enum have explicit categories
-      items = child.child("Categories");
-      if (items)
+      // This is the old format for categories
+      xml_node catNodes = child.child("Categories");
+      // This is the current format
+      xml_node catInfoNode = child.child("CategoryInfo");
+      if (catInfoNode)
       {
         Categories::Set cats;
-        xatt = items.attribute("CategoryCheckMode");
-        if (xatt)
+        // Lets get the overall combination mode
+        xatt = catInfoNode.attribute("Combination");
+        if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
         {
-          std::string ccm = xatt.value();
-          if (ccm == "All")
+          cats.setCombinationMode(catMode);
+        }
+        // Get the Include set (if one exists)
+        xml_node catGroup;
+        catGroup = catInfoNode.child("Include");
+        if (catGroup)
+        {
+          // Lets get the include combination mode
+          xatt = catGroup.attribute("Combination");
+          if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
           {
-            cats.setMode(Categories::Set::CombinationMode::All);
+            cats.setInclusionMode(catMode);
           }
-          else if (ccm == "Any")
+          for (inode = catGroup.first_child(); inode; inode = inode.next_sibling())
           {
-            cats.setMode(Categories::Set::CombinationMode::Any);
+            cats.insertInclusion(inode.text().get());
           }
         }
-        for (inode = items.child("Cat"); inode; inode = inode.next_sibling("Cat"))
+        catGroup = catInfoNode.child("Exclude");
+        if (catGroup)
+        {
+          // Lets get the include combination mode
+          xatt = catGroup.attribute("Combination");
+          if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+          {
+            cats.setExclusionMode(catMode);
+          }
+          for (inode = catGroup.first_child(); inode; inode = inode.next_sibling())
+          {
+            cats.insertExclusion(inode.text().get());
+          }
+        }
+        idef->setEnumCategories(v, cats);
+      }
+      else if (catNodes)
+      {
+        Categories::Set cats;
+        xatt = catNodes.attribute("CategoryCheckMode");
+        if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+        {
+          cats.setInclusionMode(catMode);
+        }
+        for (inode = catNodes.child("Cat"); inode; inode = inode.next_sibling("Cat"))
         {
           std::string iname = inode.text().get();
-          cats.insert(iname);
+          cats.insertInclusion(iname);
         }
         idef->setEnumCategories(v, cats);
       }
@@ -941,6 +978,7 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
 {
   xml_attribute xatt;
   xml_node catNodes, child;
+  attribute::Categories::Set::CombinationMode catMode;
   xatt = node.attribute("Label");
   if (xatt)
   {
@@ -957,23 +995,17 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
     idef->setIsOptional(xatt.as_bool());
     idef->setIsEnabledByDefault(node.attribute("IsEnabledByDefault").as_bool());
   }
+  // This is the old format for categories
   xatt = node.attribute("OkToInheritCategories");
   if (xatt)
   {
     idef->setIsOkToInherit(xatt.as_bool());
   }
+  // This is the old format for categories
   xatt = node.attribute("CategoryCheckMode");
-  if (xatt)
+  if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    std::string val = xatt.value();
-    if (val == "All")
-    {
-      idef->localCategories().setMode(Categories::Set::CombinationMode::All);
-    }
-    else if (val == "Any")
-    {
-      idef->localCategories().setMode(Categories::Set::CombinationMode::Any);
-    }
+    idef->localCategories().setInclusionMode(catMode);
   }
   // If using AdvanceLevel then we are setting
   // both read and write
@@ -1009,18 +1041,68 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
     idef->setDetailedDescription(child.text().get());
   }
 
+  // This is the old format for categories
   catNodes = node.child("Categories");
-  if (catNodes)
+  // This is the new format
+  xml_node catInfoNode = node.child("CategoryInfo");
+  if (catInfoNode)
+  {
+    auto& localCats = idef->localCategories();
+    // Are we inheriting categories?
+    xatt = catInfoNode.attribute("Inherit");
+    if (xatt)
+    {
+      idef->setIsOkToInherit(xatt.as_bool());
+    }
+
+    // Lets get the overall combination mode
+    xatt = catInfoNode.attribute("Combination");
+    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    {
+      localCats.setCombinationMode(catMode);
+    }
+    // Get the Include set (if one exists)
+    xml_node catGroup;
+    catGroup = catInfoNode.child("Include");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      xatt = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+      {
+        localCats.setInclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        localCats.insertInclusion(child.text().get());
+      }
+    }
+    catGroup = catInfoNode.child("Exclude");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      xatt = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+      {
+        localCats.setExclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        localCats.insertExclusion(child.text().get());
+      }
+    }
+  }
+  else if (catNodes) // Deprecated Format
   {
     for (child = catNodes.first_child(); child; child = child.next_sibling())
     {
-      idef->localCategories().insert(child.text().get());
+      idef->localCategories().insertInclusion(child.text().get());
     }
   }
   else if (!m_defaultCategory.empty() &&
     !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
   { // group item definitions don't get categories
-    idef->localCategories().insert(m_defaultCategory);
+    idef->localCategories().insertInclusion(m_defaultCategory);
   }
 }
 
@@ -2773,4 +2855,18 @@ smtk::model::BitFlags XmlDocV1Parser::decodeModelEntityMask(const std::string& s
       m_logger, "Decoding Model Entity Mask - Option \"" << s << "\" is not supported");
   }
   return flags;
+}
+
+bool XmlDocV1Parser::getCategoryComboMode(
+  pugi::xml_attribute& xmlAtt, smtk::attribute::Categories::Set::CombinationMode& mode)
+{
+  if (xmlAtt)
+  {
+    std::string val = xmlAtt.value();
+    if (smtk::attribute::Categories::Set::combinationModeFromString(val, mode))
+    {
+      return true;
+    }
+  }
+  return false;
 }

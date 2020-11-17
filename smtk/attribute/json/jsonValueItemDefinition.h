@@ -56,7 +56,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
       conditionalItems = defPtr->conditionalItems(enumName);
       const smtk::attribute::Categories::Set& categoryValues = defPtr->enumCategories(enumName);
       json valueJson, structureJson, resultJson;
-      if (conditionalItems.size() || categoryValues.size())
+      if (conditionalItems.size() || !categoryValues.empty())
       {
         // Structure enums
         // TODO: Simplifiy the logic here
@@ -67,17 +67,32 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
         {
           structureJson["Items"] = conditionalItems;
         }
-        if (categoryValues.size())
+        if (!categoryValues.empty())
         {
-          if (categoryValues.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
+          // Process Category Info
+          structureJson["CategoryInfo"]["Combination"] =
+            smtk::attribute::Categories::Set::combinationModeAsString(
+              categoryValues.combinationMode());
+
+          // Inclusion Info
+          if (!categoryValues.includedCategoryNames().empty())
           {
-            structureJson["categoryCheckMode"] = "All";
+            structureJson["CategoryInfo"]["InclusionCombination"] =
+              smtk::attribute::Categories::Set::combinationModeAsString(
+                categoryValues.inclusionMode());
+            structureJson["CategoryInfo"]["IncludeCategories"] =
+              categoryValues.includedCategoryNames();
           }
-          else
+
+          // Exclusion Info
+          if (!categoryValues.excludedCategoryNames().empty())
           {
-            structureJson["categoryCheckMode"] = "Any";
+            structureJson["CategoryInfo"]["ExclusionCombination"] =
+              smtk::attribute::Categories::Set::combinationModeAsString(
+                categoryValues.exclusionMode());
+            structureJson["CategoryInfo"]["ExcludeCategories"] =
+              categoryValues.excludedCategoryNames();
           }
-          structureJson["Categories"] = categoryValues.categoryNames();
         }
         if (defPtr->hasEnumAdvanceLevel(enumName))
         {
@@ -170,7 +185,8 @@ static void processDerivedValueDefFromJson(
           continue;
         }
         auto itemsValue = structure->find("Items");     // list of conditional Items
-        auto catsValue = structure->find("Categories"); // list of categories for enum
+        auto catInfo = structure->find("CategoryInfo"); // Current Form
+        auto catsValue = structure->find("Categories"); // list of categories for enum - Deprecated
         // Should just iterate once
         for (auto currentEnum = enumValue->begin(); currentEnum != enumValue->end(); currentEnum++)
         {
@@ -185,7 +201,74 @@ static void processDerivedValueDefFromJson(
               defPtr->addConditionalItem(discreteEnum, currentItem);
             }
           }
-          if (catsValue != structure->end())
+          if (catInfo != structure->end())
+          {
+            attribute::Categories::Set localCats;
+            auto combineMode = catInfo->find("Combination");
+            smtk::attribute::Categories::Set::CombinationMode cmode;
+            // If Combination is not specified - assume the default value;
+            if (combineMode != catInfo->end())
+            {
+              if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+              {
+                localCats.setCombinationMode(cmode);
+              }
+              else
+              {
+                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                    << discreteEnum
+                    << " has an invalid top level combination mode = " << *combineMode);
+              }
+            }
+            // Lets process included categories
+            combineMode = catInfo->find("InclusionCombination");
+            if (combineMode != catInfo->end())
+            {
+              if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+              {
+                localCats.setInclusionMode(cmode);
+              }
+              else
+              {
+                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                    << discreteEnum
+                    << " has an invalid inclusion combination mode = " << *combineMode);
+              }
+            }
+            auto catsGroup = catInfo->find("IncludeCategories");
+            if (catsGroup != catInfo->end())
+            {
+              for (const auto& category : *catsGroup)
+              {
+                localCats.insertInclusion(category);
+              }
+            }
+            // Lets process excluded categories
+            combineMode = catInfo->find("ExclusionCombination");
+            if (combineMode != catInfo->end())
+            {
+              if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+              {
+                localCats.setExclusionMode(cmode);
+              }
+              else
+              {
+                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                    << discreteEnum
+                    << " has an invalid exclusion combination mode = " << *combineMode);
+              }
+            }
+            catsGroup = catInfo->find("ExcludeCategories");
+            if (catsGroup != catInfo->end())
+            {
+              for (const auto& category : *catsGroup)
+              {
+                localCats.insertExclusion(category);
+              }
+            }
+            defPtr->setEnumCategories(discreteEnum, localCats);
+          }
+          else if (catsValue != structure->end()) // Old Deprecated Format
           {
             smtk::attribute::Categories::Set localCats;
             auto ccm = structure->find("categoryCheckMode");
@@ -208,7 +291,7 @@ static void processDerivedValueDefFromJson(
                     << discreteEnum << " has an invalid categoryCheckMode = " << *ccm);
               }
             }
-            localCats.set(*catsValue, mode);
+            localCats.setInclusions(*catsValue, mode);
             defPtr->setEnumCategories(discreteEnum, localCats);
           }
           if (advanceLevel != structure->end())

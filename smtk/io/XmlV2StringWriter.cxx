@@ -98,7 +98,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
       nItems = citems.size();
       // Lets see if there are any categories
       const Categories::Set& cats = idef->enumCategories(ename);
-      nCats = cats.categoryNames().size();
+      nCats = cats.includedCategoryNames().size() + cats.excludedCategoryNames().size();
       // Use the Structure Form if the enum has either
       // children item or explicit categories associated with it
       if (nItems || nCats)
@@ -120,20 +120,35 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
             inodes.append_child("Item").text().set(citems[j].c_str());
           }
         }
+        // Lets write out the enum's category info
         if (nCats)
         {
-          inodes = snode.append_child("Categories");
-          if (cats.mode() == Categories::Set::CombinationMode::All)
+          xml_node catInfoNode = snode.append_child("CategoryInfo");
+          xml_node catGroupNode;
+          catInfoNode.append_attribute("Combination")
+            .set_value(Categories::Set::combinationModeAsString(cats.combinationMode()).c_str());
+
+          // Inclusion Categories
+          if (!cats.includedCategoryNames().empty())
           {
-            inodes.append_attribute("CategoryCheckMode").set_value("All");
+            catGroupNode = catInfoNode.append_child("Include");
+            catGroupNode.append_attribute("Combination")
+              .set_value(Categories::Set::combinationModeAsString(cats.inclusionMode()).c_str());
+            for (auto& str : cats.includedCategoryNames())
+            {
+              catGroupNode.append_child("Cat").text().set(str.c_str());
+            }
           }
-          else
+          // Exclusion Categories
+          if (!cats.excludedCategoryNames().empty())
           {
-            inodes.append_attribute("CategoryCheckMode").set_value("Any");
-          }
-          for (const auto& cat : cats.categoryNames())
-          {
-            inodes.append_child("Cat").text().set(cat.c_str());
+            catGroupNode = catInfoNode.append_child("Exclude");
+            catGroupNode.append_attribute("Combination")
+              .set_value(Categories::Set::combinationModeAsString(cats.exclusionMode()).c_str());
+            for (auto& str : cats.excludedCategoryNames())
+            {
+              catGroupNode.append_child("Cat").text().set(str.c_str());
+            }
           }
         }
       }
@@ -656,27 +671,48 @@ void XmlV2StringWriter::processItemDefinition(xml_node& node, ItemDefinitionPtr 
 
 void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefinitionPtr idef)
 {
-  xml_node child;
+  xml_node child, catInfoNode, catGroupNode;
   node.append_attribute("Name").set_value(idef->name().c_str());
   if (!idef->label().empty())
   {
     node.append_attribute("Label").set_value(idef->label().c_str());
   }
   node.append_attribute("Version") = idef->version();
-  node.append_attribute("OkToInheritCategories") = idef->isOkToInherit();
   if (idef->isOptional())
   {
     node.append_attribute("Optional").set_value("true");
     node.append_attribute("IsEnabledByDefault") = idef->isEnabledByDefault();
   }
-  if (idef->localCategories().mode() == Categories::Set::CombinationMode::All)
+  // Lets write out the category stuff
+  auto& localCats = idef->localCategories();
+  catInfoNode = node.append_child("CategoryInfo");
+  catInfoNode.append_attribute("Inherit") = idef->isOkToInherit();
+  catInfoNode.append_attribute("Combination")
+    .set_value(Categories::Set::combinationModeAsString(localCats.combinationMode()).c_str());
+
+  // Inclusion Categories
+  if (!localCats.includedCategoryNames().empty())
   {
-    node.append_attribute("CategoryCheckMode").set_value("All");
+    catGroupNode = catInfoNode.append_child("Include");
+    catGroupNode.append_attribute("Combination")
+      .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
+    for (auto& str : localCats.includedCategoryNames())
+    {
+      catGroupNode.append_child("Cat").text().set(str.c_str());
+    }
   }
-  else
+  // Exclusion Categories
+  if (!localCats.excludedCategoryNames().empty())
   {
-    node.append_attribute("CategoryCheckMode").set_value("Any");
+    catGroupNode = catInfoNode.append_child("Exclude");
+    catGroupNode.append_attribute("Combination")
+      .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
+    for (auto& str : localCats.excludedCategoryNames())
+    {
+      catGroupNode.append_child("Cat").text().set(str.c_str());
+    }
   }
+
   if (idef->hasLocalAdvanceLevelInfo(0))
   {
     node.append_attribute("AdvanceReadLevel") = idef->localAdvanceLevel(0);
@@ -684,14 +720,6 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   if (idef->hasLocalAdvanceLevelInfo(1))
   {
     node.append_attribute("AdvanceWriteLevel") = idef->localAdvanceLevel(1);
-  }
-  if (!idef->localCategories().empty())
-  {
-    xml_node cnode, catNodes = node.append_child("Categories");
-    for (auto& str : idef->localCategories().categoryNames())
-    {
-      catNodes.append_child("Cat").text().set(str.c_str());
-    }
   }
   if (!idef->briefDescription().empty())
   {

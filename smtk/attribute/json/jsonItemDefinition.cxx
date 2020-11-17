@@ -49,20 +49,29 @@ SMTKCORE_EXPORT void to_json(
   {
     j["AdvanceWriteLevel"] = itemDefPtr->localAdvanceLevel(1);
   }
-  if (!itemDefPtr->localCategories().empty())
+  // Process Category Info
+  auto& cats = itemDefPtr->localCategories();
+  j["CategoryInfo"]["Combination"] =
+    smtk::attribute::Categories::Set::combinationModeAsString(cats.combinationMode());
+
+  j["CategoryInfo"]["Inherit"] = itemDefPtr->isOkToInherit();
+
+  // Inclusion Info
+  if (!cats.includedCategoryNames().empty())
   {
-    smtk::attribute::Categories::Set& localCats = itemDefPtr->localCategories();
-    if (localCats.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
-    {
-      j["categoryCheckMode"] = "All";
-    }
-    else
-    {
-      j["categoryCheckMode"] = "Any";
-    }
-    j["Categories"] = localCats.categoryNames();
+    j["CategoryInfo"]["InclusionCombination"] =
+      smtk::attribute::Categories::Set::combinationModeAsString(cats.inclusionMode());
+    j["CategoryInfo"]["IncludeCategories"] = cats.includedCategoryNames();
   }
-  j["OkToInheritCategories"] = itemDefPtr->isOkToInherit();
+
+  // Exclusion Info
+  if (!cats.excludedCategoryNames().empty())
+  {
+    j["CategoryInfo"]["ExclusionCombination"] =
+      smtk::attribute::Categories::Set::combinationModeAsString(cats.exclusionMode());
+    j["CategoryInfo"]["ExcludeCategories"] = cats.excludedCategoryNames();
+  }
+
   if (!itemDefPtr->briefDescription().empty())
   {
     j["BriefDescription"] = itemDefPtr->briefDescription();
@@ -144,38 +153,112 @@ SMTKCORE_EXPORT void from_json(
   {
     itemDefPtr->setDetailedDescription(*result);
   }
-  auto categories = j.find("Categories");
-  if (categories != j.end())
+
+  // Process Category Info
+  auto catInfo = j.find("CategoryInfo");  // Current Form
+  auto categories = j.find("Categories"); // Old Deprecated Form
+
+  if (catInfo != j.end())
+  {
+    smtk::attribute::Categories::Set::CombinationMode cmode;
+    auto okToInherit = catInfo->find("Inherit");
+    if (okToInherit != catInfo->end())
+    {
+      itemDefPtr->setIsOkToInherit(*okToInherit);
+    }
+    attribute::Categories::Set& localCats = itemDefPtr->localCategories();
+    auto combineMode = catInfo->find("Combination");
+    // If Combination is not specified - assume the default value;
+    if (combineMode != catInfo->end())
+    {
+      if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+      {
+        localCats.setCombinationMode(cmode);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+            << itemDefPtr->label()
+            << " has an invalid top level combination mode = " << *combineMode);
+      }
+    }
+    // Lets process included categories
+    combineMode = catInfo->find("InclusionCombination");
+    if (combineMode != catInfo->end())
+    {
+      if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+      {
+        localCats.setInclusionMode(cmode);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+            << itemDefPtr->label()
+            << " has an invalid inclusion combination mode = " << *combineMode);
+      }
+    }
+    auto catsGroup = catInfo->find("IncludeCategories");
+    if (catsGroup != catInfo->end())
+    {
+      for (const auto& category : *catsGroup)
+      {
+        localCats.insertInclusion(category);
+      }
+    }
+    // Lets process excluded categories
+    combineMode = catInfo->find("ExclusionCombination");
+    if (combineMode != catInfo->end())
+    {
+      if (smtk::attribute::Categories::Set::combinationModeFromString(*combineMode, cmode))
+      {
+        localCats.setExclusionMode(cmode);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+            << itemDefPtr->label()
+            << " has an invalid exclusion combination mode = " << *combineMode);
+      }
+    }
+    catsGroup = catInfo->find("ExcludeCategories");
+    if (catsGroup != catInfo->end())
+    {
+      for (const auto& category : *catsGroup)
+      {
+        localCats.insertExclusion(category);
+      }
+    }
+  }
+  else if (categories != j.end()) // Deprecated Format
   {
     smtk::attribute::Categories::Set& localCats = itemDefPtr->localCategories();
+    smtk::attribute::Categories::Set::CombinationMode cmode;
     result = j.find("categoryCheckMode");
     // If categoryCheckMode is not specified - assume the default value;
     if (result != j.end())
     {
-      if (*result == "All")
+      if (smtk::attribute::Categories::Set::combinationModeFromString(*result, cmode))
       {
-        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::All);
-      }
-      else if (*result == "Any")
-      {
-        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::Any);
+        localCats.setInclusionMode(cmode);
       }
       else
       {
         smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, itemDefinition "
-            << itemDefPtr->name() << " has an invalid categoryCheckMode = " << *result);
+            << itemDefPtr->name() << " has an invalid InclusionMode = " << *result);
       }
     }
     for (const auto& category : *categories)
     {
-      localCats.insert(category);
+      localCats.insertInclusion(category);
     }
   }
+  // Also part of the old format
   auto okToInherit = j.find("OkToInheritCategories");
   if (okToInherit != j.end())
   {
     itemDefPtr->setIsOkToInherit(*okToInherit);
   }
+
   result = j.find("Tags");
   if (result != j.end())
   {
