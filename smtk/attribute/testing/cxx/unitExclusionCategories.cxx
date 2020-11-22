@@ -45,7 +45,7 @@ bool testCategories(const attribute::ResourcePtr& attRes, const std::string& pre
     std::cerr << "\t Testing Configuration: " << count;
     for (i = 0; i < n; i++)
     {
-      auto idef = def->itemDefinition(i);
+      auto idef = def->itemDefinition(static_cast<int>(i));
       if (idef->localCategories().passes(test.first) != test.second[i])
       {
         std::cerr << " " << i++;

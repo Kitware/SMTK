@@ -1019,7 +1019,7 @@ void qtFileItem::onRemoveValue()
   int bindex = m_internals->MinusButtonIndices.indexOf(
     minusButton); //minusButton->property("SubgroupIndex").toInt();
   auto item = m_itemInfo.itemAs<FileSystemItem>();
-  int eindex = bindex + item->numberOfRequiredValues();
+  int eindex = bindex + static_cast<int>(item->numberOfRequiredValues());
   if (!item || eindex < 0 || eindex >= static_cast<int>(item->numberOfValues()))
   {
     return;

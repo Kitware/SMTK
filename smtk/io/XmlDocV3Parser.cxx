@@ -18,8 +18,11 @@
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/common/DateTimeZonePair.h"
 #include "smtk/common/StringUtil.h"
@@ -37,6 +40,174 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
+namespace
+{
+// Helper functions to set part of a configuration - returns false if it encounters a problem
+bool setExclusiveAnalysisConfiguration(
+  smtk::attribute::StringItemPtr& item, xml_node& analysisNode, Logger& logger);
+
+template <typename ContainerPtrType>
+bool setAnalysisConfigurationHelper(
+  ContainerPtrType& container, xml_node& analysisNode, Logger& logger)
+{
+  // First get the type of Analysis this node represents
+  auto xatt = analysisNode.attribute("Type");
+  if (!xatt)
+  {
+    smtkErrorMacro(logger, "Analysis node is missing Type xml attribute: " << container->name());
+    return false;
+  }
+  // Lets find the item that this analysis corresponds to
+  smtk::attribute::ItemPtr item = container->find(xatt.value(), smtk::attribute::IMMEDIATE);
+  if (!item)
+  {
+    smtkErrorMacro(
+      logger, "Can not find analysis: " << xatt.value() << " under: " << container->name());
+    return false;
+  }
+  // Set this to be enabled
+  item->setIsEnabled(true);
+  // Lets see what kind of item we have
+  auto voidItem = std::dynamic_pointer_cast<smtk::attribute::VoidItem>(item);
+  // Simple analysis with no children
+  if (voidItem)
+  {
+    // in this case we should not have any children
+    if (analysisNode.child("Analysis"))
+    {
+      smtkWarningMacro(logger, "Analysis: "
+          << xatt.value() << " under: " << container->name()
+          << " does not have children analyses but children where specified in the configuration."
+          << " These will be ignored!");
+    }
+    return true;
+  }
+
+  // Exclusive Analyses are represented as a String Item with Discrete Values
+  // One value for each of its child Analysis
+  auto stringItem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(item);
+  if (stringItem)
+  {
+    // This node should have children
+    if (!analysisNode.child("Analysis"))
+    {
+      smtkErrorMacro(logger, "Configuration for Exclusive Analysis: "
+          << xatt.value() << " under: " << container->name() << " does not specify children."
+          << " Can not build configuration.");
+      return false;
+    }
+    for (auto child = analysisNode.child("Analysis"); child; child = child.next_sibling("Analysis"))
+    {
+      if (!setExclusiveAnalysisConfiguration(stringItem, child, logger))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+  // Non Exclusive Analyses are represented as a Group Item
+  auto groupItem = std::dynamic_pointer_cast<smtk::attribute::GroupItem>(item);
+  if (!groupItem)
+  {
+    // OK we found something unexpected
+    smtkErrorMacro(logger, "Invalid item found for Analysis: "
+        << xatt.value() << " under: " << container->name() << " Can not build configuration.");
+    return false;
+  }
+  // Process the children - note that in the case of a non-exclusive analysis, you don't
+  // have to have children specified in the configuration
+  for (auto child = analysisNode.child("Analysis"); child; child = child.next_sibling("Analysis"))
+  {
+    if (!setAnalysisConfigurationHelper<smtk::attribute::GroupItemPtr>(groupItem, child, logger))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool setExclusiveAnalysisConfiguration(
+  smtk::attribute::StringItemPtr& item, xml_node& analysisNode, Logger& logger)
+{
+  // First get the type of Analysis this node represents
+  auto xatt = analysisNode.attribute("Type");
+  if (!xatt)
+  {
+    smtkErrorMacro(logger, "Analysis node is missing Type xml attribute: " << item->name());
+    return false;
+  }
+  // Lets find the discrete index that corresponds to this value
+  if (!item->setValue(xatt.value()))
+  {
+    smtkErrorMacro(logger, "Can not find analysis: " << xatt.value() << " under: " << item->name());
+    return false;
+  }
+
+  if (item->numberOfActiveChildrenItems())
+  {
+    // Are this analysis' children exclusive or not:
+    auto stringItem =
+      std::dynamic_pointer_cast<smtk::attribute::StringItem>(item->activeChildItem(0));
+
+    // Does this node have children?
+    if (analysisNode.child("Analysis"))
+    {
+      if (stringItem)
+      {
+        for (auto child = analysisNode.child("Analysis"); child;
+             child = child.next_sibling("Analysis"))
+        {
+          if (!setExclusiveAnalysisConfiguration(stringItem, child, logger))
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      auto groupItem =
+        std::dynamic_pointer_cast<smtk::attribute::GroupItem>(item->activeChildItem(0));
+      if (groupItem == nullptr)
+      {
+        smtkErrorMacro(logger, "Analysis: "
+            << xatt.value() << " under: " << item->name()
+            << " does not have proper children analyses structure!  Can not build configuration: "
+            << item->attribute()->name());
+        return false;
+      }
+      for (auto child = analysisNode.child("Analysis"); child;
+           child = child.next_sibling("Analysis"))
+      {
+        if (!setAnalysisConfigurationHelper<smtk::attribute::GroupItemPtr>(
+              groupItem, child, logger))
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+    // Do we have an exclusive child analysis?
+    else if (stringItem)
+    {
+      smtkErrorMacro(logger, "Analysis: " << xatt.value() << " under: " << item->name()
+                                          << " has exclusive children analyses but no children "
+                                             "where specified in the configuration."
+                                          << " Can not build configuration.");
+      return false;
+    }
+    return true;
+  }
+  else if (analysisNode.child("Analysis"))
+  {
+    smtkWarningMacro(logger, "Analysis: "
+        << xatt.value() << " under: " << item->name()
+        << " does not have children analyses but children where specified in the configuration."
+        << " These will be ignored!");
+  }
+  return true;
+}
+}
+
 XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV2Parser(myResource, logger)
 {
@@ -47,6 +218,12 @@ XmlDocV3Parser::~XmlDocV3Parser() = default;
 void XmlDocV3Parser::process(pugi::xml_node& rootNode)
 {
   XmlDocV2Parser::process(rootNode);
+
+  auto configurationsNode = rootNode.child("Configurations");
+  if (configurationsNode)
+  {
+    this->processConfigurations(configurationsNode);
+  }
 
   this->getUniqueRoles(rootNode);
 
@@ -754,4 +931,101 @@ void XmlDocV3Parser::processComponentDef(
     idef->setRole(xatt.as_int());
   }
   this->processReferenceDef(node, idef, "ComponentLabels");
+}
+
+void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
+{
+  // First we need to build the analysis definition
+  smtk::attribute::DefinitionPtr analysisDef;
+  xml_attribute xatt = configurationsNode.attribute("AnalysisAttributeType");
+  if (xatt)
+  {
+    // See if the resource has this definition already else build a new one
+    analysisDef = m_resource->findDefinition(xatt.value());
+    if (!analysisDef)
+    {
+      analysisDef = m_resource->analyses().buildAnalysesDefinition(m_resource, xatt.value());
+    }
+  }
+  else
+  {
+    smtkErrorMacro(m_logger,
+      "Configurations missing AnalysisAttributeType xml attribute - can not build configurations!");
+    return;
+  }
+
+  // Sanity check - lets make sure this attribute definition has items in it
+  if (analysisDef->numberOfItemDefinitions() == 0)
+  {
+    smtkErrorMacro(m_logger, "Configurations' Attribute Definition is empty!");
+    return;
+  }
+
+  for (auto configNode = configurationsNode.child("Config"); configNode;
+       configNode = configNode.next_sibling("Config"))
+  {
+    //Get the name of the configuration
+    xatt = configNode.attribute("Name");
+    if (!xatt)
+    {
+      smtkErrorMacro(
+        m_logger, "Configuration missing Name xml attribute - skipping configuration!");
+      return;
+    }
+    smtk::attribute::AttributePtr configAtt =
+      m_resource->createAttribute(xatt.value(), analysisDef);
+    //Lets see if there are advance read/write levels associated with it
+    xatt = configNode.attribute("AdvanceReadLevel");
+    if (xatt)
+    {
+      configAtt->setLocalAdvanceLevel(0, xatt.as_uint());
+    }
+    xatt = configNode.attribute("AdvanceWriteLevel");
+    if (xatt)
+    {
+      configAtt->setLocalAdvanceLevel(1, xatt.as_uint());
+    }
+    smtk::attribute::StringItemPtr sitem;
+    // If we are dealing with exclusive top level analyses then the attribute should only have a single
+    // item that is a string
+    if (m_resource->analyses().areTopLevelExclusive())
+    {
+      sitem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(configAtt->item(0));
+      if (!sitem)
+      {
+        smtkErrorMacro(
+          m_logger, "Encountered invalid Attribute Representation for Top Level Exclusive Analyses "
+            << " can not build any configurations!");
+        m_resource->removeAttribute(configAtt);
+        return;
+      }
+    }
+
+    for (auto analysisNode = configNode.child("Analysis"); analysisNode;
+         analysisNode = analysisNode.next_sibling("Analysis"))
+    {
+      if (m_resource->analyses().areTopLevelExclusive())
+      {
+        // Case where we are dealing with top level exclusive analyses
+        if (sitem)
+        {
+          if (!setExclusiveAnalysisConfiguration(sitem, analysisNode, m_logger))
+          {
+            smtkErrorMacro(m_logger, "Encountered problem constructing configuration: "
+                << configAtt->name() << " - configuration not built");
+            m_resource->removeAttribute(configAtt);
+            break;
+          }
+        }
+        else if (!setAnalysisConfigurationHelper<smtk::attribute::AttributePtr>(
+                   configAtt, analysisNode, m_logger))
+        {
+          smtkErrorMacro(m_logger, "Encountered problem constructing configuration: "
+              << configAtt->name() << " - configuration not built");
+          m_resource->removeAttribute(configAtt);
+          break;
+        }
+      }
+    }
+  }
 }
