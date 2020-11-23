@@ -95,7 +95,9 @@ set(unit_tests
   unitPathGrammar.cxx
 )
 
-set(unit_tests_which_require_data)
+set(unit_tests_which_require_data
+  unitAnalysisConfigurations
+  )
 
 set(extra_libs ${Boost_LIBRARIES})
 

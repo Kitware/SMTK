@@ -34,7 +34,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
     vitem->setLabel(analysis->displayedName());
     return;
   }
-  // Exlcusive Analyses are represented as a String Item with Discrete Values
+  // Exclusive Analyses are represented as a String Item with Discrete Values
   // One value for each of its child Analysis
   if (analysis->isExclusive())
   {
@@ -164,7 +164,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
 
   auto gitem = pitem->addItemDefinition<GroupItemDefinition>(m_name);
   gitem->setLabel(this->displayedName());
-  pitem->addConditionalItem(m_name, m_name);
+  pitem->addConditionalItem(this->displayedName(), m_name);
   for (auto child : m_children)
   {
     child->buildAnalysisItem(gitem);
@@ -237,31 +237,31 @@ bool Analyses::setAnalysisParent(const std::string& analysis, const std::string&
 /// If the top level exclusive property is false then each top level Analysis's buildAnalysisItem method
 /// will be called using the newly created Definition.  Else a new StringItemDefinition will be created
 /// using \p label as its name and each top level Analysis's buildAnalysisItem method will be called using
-/// it as its input arguement.
+/// it as its input argument.
 ///
 /// The resulting definition will have the following structure:
-/// * Either one item (in the case of Exclusive Toplevel Definitions) with a discrete value
-/// per toplevel Analysis, or one item per toplevel Analysis
-/// * Every Analysis with children will generate either a string or group item depnding the its Exclusive
+/// * Either one item (in the case of Exclusive Top-level Definitions) with a discrete value
+/// per top-level Analysis, or one item per top-level Analysis
+/// * Every Analysis with children will generate either a string or group item depending the its Exclusive
 /// Property
 /// * Childless Analysis Instances will only generate an item if its parent has Exclusive = false or its
-/// a toplevel Anaysis and Analyses has TopLevelExclusive = false.
+/// a top-level Analysis and Analyses has TopLevelExclusive = false.
 /// When Exclusive is true (in ether the Analysis or Analyses case) the resulting String Item will have
-/// a set of discrete values (one for either child or toplevel Analysis) and optionally an item representing
-/// an Anlysis' children associated with that discrete value.
+/// a set of discrete values (one for either child or top-level Analysis) and optionally an item representing
+/// an Analysis' children associated with that discrete value.
 DefinitionPtr Analyses::buildAnalysesDefinition(
   ResourcePtr resource, const std::string& type, const std::string& label) const
 {
-  // First see if the defintion already exists
+  // First see if the definition already exists
   auto def = resource->findDefinition(type);
   if (def)
   {
     return smtk::attribute::DefinitionPtr();
   }
 
-  // Ok lets build a definition with the following rules:
-  // 1. Each item respresents an Analysis except in the case when
-  //    m_topLevelExclusive is true.  In that situtation the string item
+  // OK lets build a definition with the following rules:
+  // 1. Each item represents an Analysis except in the case when
+  //    m_topLevelExclusive is true.  In that situation the string item
   //    itself does not represent an analysis but it's value does
   // 2. An Analysis with non-exclusive children is a group item
   // 3. An Analysis with exclusive children is a string item whose value
