@@ -5,7 +5,7 @@
 ### Fedora
 
 .fedora31:
-    image: "kitware/cmb:ci-smtk-fedora31-20200810"
+    image: "kitware/cmb:ci-smtk-fedora31-20201125"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
