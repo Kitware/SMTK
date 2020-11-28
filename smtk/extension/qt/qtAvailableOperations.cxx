@@ -28,6 +28,7 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   m_operationList = new QListWidget(this);
   m_layout = new QVBoxLayout(this);
   this->setLayout(m_layout);
+  m_operationList->setObjectName("OperationListWidget");
   m_layout->addWidget(m_operationList);
 }
 
