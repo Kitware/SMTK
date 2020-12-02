@@ -282,15 +282,16 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;
   // smtk::extension::vtk::geometry::Backend source(&geometry);
   smtk::extension::vtk::geometry::Backend backend;
-  geometry.visit([&geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
+  geometry.visit([this, &geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
     smtk::geometry::Geometry::GenerationNumber gen) {
-    (void)gen;
     if (obj)
     {
       int dim = geometry.dimension(obj);
       auto& data = geometry.data(obj);
       if (data)
       {
+        // Add Data to the Cache Map
+        this->SetCachedData(obj->id(), data, static_cast<SequenceType>(gen));
         // only add image data to dim 3 list
         if (dim == 3 && !vtkImageData::SafeDownCast(data))
         {
