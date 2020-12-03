@@ -1441,10 +1441,10 @@
         </Documentation>
       </StringVectorProperty>
       <DoubleVectorProperty command="SetOpacity"
-                            default_values="1.0"
+                            default_values="0.999"
                             name="Opacity"
                             number_of_elements="1">
-        <DoubleRangeDomain max="1"
+        <DoubleRangeDomain max="0.999"
                            min="0"
                            name="range" />
       </DoubleVectorProperty>
