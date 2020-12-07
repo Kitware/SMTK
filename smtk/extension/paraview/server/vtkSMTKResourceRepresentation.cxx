@@ -212,6 +212,11 @@ void vtkSMTKResourceRepresentation::SetupDefaults()
   this->SelectedGlyphMapper->SetBlockAttributes(selGlyphAtt);
   this->SelectedGlyphMapper->SetScaleModeToNoDataScaling(); // We use a per point scale array
 
+  // Display selection on top - offset towards the camera in depth.
+  vtkMapper::SetResolveCoincidentTopologyToPolygonOffset();
+  this->SelectedEntityMapper->SetRelativeCoincidentTopologyPolygonOffsetParameters(-1, -0.5);
+  this->SelectedGlyphMapper->SetRelativeCoincidentTopologyPolygonOffsetParameters(-1, -0.5);
+
   this->Entities->SetMapper(this->EntityMapper);
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
   this->GlyphEntities->SetMapper(this->GlyphMapper);
