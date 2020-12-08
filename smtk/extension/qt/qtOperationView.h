@@ -85,6 +85,7 @@ public slots:
 
 signals:
   void operationRequested(const smtk::operation::OperationPtr& brOp);
+  void doneEditing();
 
   // Currently, the operation view is responsible for executing the operation.
   // Since some processes need to distinguish between results from the operation
