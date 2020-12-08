@@ -151,12 +151,6 @@ void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer* /*un
   if (m_attrUIMgr)
   {
     this->cancelEditing();
-    delete m_attrUIMgr;
-    while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
-    {
-      delete w;
-    }
-    m_attrUIMgr = nullptr;
   }
   m_wrapper = wrapper;
 
@@ -180,12 +174,6 @@ void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer* /*
   if (m_attrUIMgr)
   {
     this->cancelEditing();
-    delete m_attrUIMgr;
-    while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
-    {
-      delete w;
-    }
-    m_attrUIMgr = nullptr;
   }
 
   if (wrapper)
@@ -222,6 +210,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
     return didDisplay;
   }
 
+  m_p->OperationEditor->show();
   // Don't re-display what is already displayed.
   if (m_attrUIMgr && m_attrUIMgr->operation() == op)
   {
@@ -276,6 +265,8 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   if (smtk::extension::qtOperationView* operationView =
         dynamic_cast<smtk::extension::qtOperationView*>(baseView))
   {
+    QObject::connect(operationView, &smtk::extension::qtOperationView::doneEditing, this,
+      &pqSMTKOperationPanel::cancelEditing);
     QObject::connect(operationView, &smtk::extension::qtOperationView::operationExecuted,
       [&](const smtk::operation::Operation::Result& result) {
 
@@ -354,8 +345,13 @@ void pqSMTKOperationPanel::runOperation(smtk::operation::OperationPtr operation)
 
 void pqSMTKOperationPanel::cancelEditing()
 {
-  // TODO
   m_p->OperationEditor->hide();
+  delete m_attrUIMgr;
+  while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+  {
+    delete w;
+  }
+  m_attrUIMgr = nullptr;
 }
 
 void pqSMTKOperationPanel::toggleFilterBySelection(bool showFiltered)

@@ -47,6 +47,7 @@ public:
   smtk::view::ConfigurationPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
   QPointer<QPushButton> m_infoButton;
+  QPointer<QPushButton> m_doneButton;
   qtOperationLauncher* m_launcher;
   std::atomic<std::size_t> m_activeOperations;
 };
@@ -171,6 +172,16 @@ void qtOperationView::createWidget()
   layout->addWidget(this->Internals->m_infoButton);
   //layout->addWidget( bbox);
   this->Internals->m_applyButton->setEnabled((!m_applied) && iview->isValid());
+
+  this->Internals->m_doneButton = new QPushButton("Done", this->Widget);
+  this->Internals->m_doneButton->setObjectName("OpViewDoneButton");
+  this->Internals->m_doneButton->setToolTip("Click to stop editing this operation's parameters. "
+                                            "This has no effect on already-running operations.");
+  this->Internals->m_doneButton->setMinimumHeight(32);
+  this->Internals->m_doneButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QObject::connect(
+    this->Internals->m_doneButton, &QAbstractButton::clicked, this, &qtOperationView::doneEditing);
+  layout->addWidget(this->Internals->m_doneButton);
 }
 
 void qtOperationView::onModifiedParameters()
