@@ -34,6 +34,8 @@
 
 #include "smtk/project/Write_xml.h"
 
+#include <iostream>
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
@@ -47,10 +49,13 @@ void updateFileReferencesInString(
 {
   auto findAndReplace =
     [](std::string& file_contents, const std::string& from, const std::string& to) {
+      std::cout << "updateFileReferencesInString() from \"" << from << "\" to \"" << to
+                << std::endl;
       auto pos = file_contents.find(from);
       while (pos != std::string::npos)
       {
         file_contents.replace(pos, from.length(), to);
+        pos += to.length();
         pos = file_contents.find(from, pos);
       }
     };
@@ -180,7 +185,10 @@ Write::Result Write::operateInternal()
         // Insert the ancillary files into the archive.
         for (const auto& path : fileDictionary)
         {
-          archive.insert(path.first, path.second);
+          // This fixes error writing .exo file, but not sure it addresses the
+          // underlying problem (john).
+          std::string tempPath = (temp / path.first).string();
+          archive.insert(tempPath, path.second);
         }
 
         // Update the resource's json file to use the archive file locations
