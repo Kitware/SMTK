@@ -27,6 +27,10 @@ class SMTKCORE_EXPORT XmlDocV4Parser : public XmlDocV3Parser
 public:
   XmlDocV4Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   virtual ~XmlDocV4Parser();
+
+  void process(pugi::xml_document& doc) override;
+  void process(pugi::xml_node& rootNode) override;
+
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
@@ -37,6 +41,7 @@ protected:
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
   void processViews(pugi::xml_node& root) override;
   void processAssociationRules(pugi::xml_node& root) override;
+  void processEvaluators(pugi::xml_node& evaluatorsNode);
 };
 }
 }

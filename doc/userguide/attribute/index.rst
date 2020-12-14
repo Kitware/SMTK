@@ -22,3 +22,4 @@ and solver parameters.
 
    concepts.rst
    file-syntax.rst
+   evaluators.rst

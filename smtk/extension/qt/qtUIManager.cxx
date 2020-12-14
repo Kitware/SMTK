@@ -21,6 +21,7 @@
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
+#include "smtk/extension/qt/qtInfixExpressionEditor.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtIntItem.h"
 #include "smtk/extension/qt/qtItem.h"
@@ -183,6 +184,8 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtResourceItem", qtResourceItem::createItemWidget);
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
+
+  this->registerItemConstructor("InfixExpression", qtInfixExpressionEditor::createItemWidget);
 
   // register constructors coming from plugins.
   qtSMTKUtilities::updateItemConstructors(this);

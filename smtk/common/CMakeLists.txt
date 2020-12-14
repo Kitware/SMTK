@@ -7,6 +7,7 @@ set(commonSrcs
   Environment.cxx
   Extension.cxx
   FileLocation.cxx
+  InfixExpressionGrammar.cxx
   json/jsonLinks.cxx
   json/jsonUUID.cxx
   Managers.cxx
@@ -31,6 +32,10 @@ set(commonHeaders
   FileLocation.h
   Generator.h
   GeometryUtilities.h
+  InfixExpressionError.h
+  InfixExpressionEvaluation.h
+  InfixExpressionGrammar.h
+  InfixExpressionGrammarImpl.h
   json/jsonLinks.h
   json/jsonTypeMap.h
   json/jsonUUID.h

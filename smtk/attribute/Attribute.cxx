@@ -276,6 +276,13 @@ bool Attribute::isValid(bool useActiveCategories) const
       return false;
     }
   }
+
+  // The the Attribute can be evaluated, it should evaluate successfully.
+  if (canEvaluate() && !doesEvalaute())
+  {
+    return false;
+  }
+
   // also check associations
   return !(m_associatedObjects && !m_associatedObjects->isValid(false));
 }
@@ -296,6 +303,13 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
       return false;
     }
   }
+
+  // The the Attribute can be evaluated, it should evaluate successfully.
+  if (canEvaluate() && !doesEvalaute())
+  {
+    return false;
+  }
+
   // also check associations
   return !(m_associatedObjects && !m_associatedObjects->isValid());
 }
@@ -318,6 +332,51 @@ ResourcePtr Attribute::attributeResource() const
 const smtk::resource::ResourcePtr Attribute::resource() const
 {
   return this->attributeResource();
+}
+
+bool Attribute::canEvaluate() const
+{
+  smtk::attribute::ResourcePtr attRes = attributeResource();
+  if (attRes)
+  {
+    smtk::attribute::ConstAttributePtr myself = shared_from_this();
+    if (myself)
+    {
+      return attRes->canEvaluate(myself);
+    }
+  }
+
+  return false;
+}
+
+bool Attribute::doesEvalaute() const
+{
+  smtk::attribute::ResourcePtr attRes = attributeResource();
+  if (attRes)
+  {
+    smtk::attribute::ConstAttributePtr myself = shared_from_this();
+    if (myself)
+    {
+      std::unique_ptr<Evaluator> evaluator = attRes->createEvaluator(myself);
+      return evaluator ? evaluator->doesEvaluate() : false;
+    }
+  }
+  return false;
+}
+
+std::unique_ptr<Evaluator> Attribute::createEvaluator() const
+{
+  smtk::attribute::ResourcePtr attRes = attributeResource();
+  if (attRes)
+  {
+    smtk::attribute::ConstAttributePtr myself = shared_from_this();
+    if (myself)
+    {
+      return attRes->createEvaluator(myself);
+    }
+  }
+
+  return std::unique_ptr<smtk::attribute::Evaluator>();
 }
 
 void Attribute::detachItemsFromOwningResource()

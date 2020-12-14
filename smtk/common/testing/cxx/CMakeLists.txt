@@ -37,6 +37,8 @@ set(unit_tests
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
   UnitTestFactory
+  UnitTestInfixExpressionGrammar.cxx
+  UnitTestInfixExpressionGrammarImpl.cxx
   UnitTestLinks
   UnitTestObservers
   UnitTestThreadPool
@@ -52,5 +54,5 @@ smtk_unit_tests(
   Label "Common"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads
+  LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads MOAB
 )

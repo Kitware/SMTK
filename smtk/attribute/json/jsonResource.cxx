@@ -298,6 +298,19 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   }
   j["Views"] = viewsObj;
 
+  // Process evaluators.
+  json evaluatorsArray = json::array();
+  const std::map<std::string, std::vector<std::string> > aliasesToDefinitionsTable =
+    res->evaluatorFactory().aliasesToDefinitions();
+  for (const auto& p : aliasesToDefinitionsTable)
+  {
+    json currentEvaluatorObj = json::object();
+    currentEvaluatorObj["Name"] = p.first;
+    currentEvaluatorObj["Definitions"] = p.second;
+    evaluatorsArray.push_back(currentEvaluatorObj);
+  }
+  j["Evaluators"] = evaluatorsArray;
+
   // Process model info
 }
 
@@ -463,7 +476,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
   }
 
-  // Process Definiiton info
+  // Process Definition info
   std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
   auto definitions = j.find("Definitions");
   if (definitions != j.end())
@@ -635,6 +648,49 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       (*dissociationRule) << dissociationRuleObj;
       res->associationRules().dissociationRuleContainer().emplace(std::make_pair(
         dissociationRuleObj["Name"].get<std::string>(), std::move(dissociationRule)));
+    }
+  }
+
+  // Process Evaluators.
+  auto evaluators = j.find("Evaluators");
+  if (evaluators != j.end())
+  {
+    for (auto& eval : *evaluators)
+    {
+      auto evaluatorName = eval.find("Name");
+      if (evaluatorName == eval.end() || !evaluatorName->is_string())
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Missing Evaluator Name");
+        continue;
+      }
+
+      auto evaluatorDefinitions = eval.find("Definitions");
+      if (evaluatorDefinitions == eval.end() || !evaluatorDefinitions->is_array())
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Missing Evaluator Definitions");
+        continue;
+      }
+
+      for (auto& def : *evaluatorDefinitions)
+      {
+        if (!def.is_string())
+        {
+          continue;
+        }
+
+        if (!res->findDefinition(def))
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "Missing Definitions \""
+              << def << "\" while parsing Evaluators");
+        }
+
+        bool defWasSet = res->evaluatorFactory().addDefinitionForEvaluator(*evaluatorName, def);
+        if (!defWasSet)
+        {
+          smtkWarningMacro(smtk::io::Logger::instance(), "Evaluator with alias \""
+              << *evaluatorName << "\" was not found.");
+        }
+      }
     }
   }
 

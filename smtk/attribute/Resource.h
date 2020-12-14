@@ -27,8 +27,12 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
+#include "smtk/attribute/Evaluator.h"
+#include "smtk/attribute/EvaluatorFactory.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/SymbolDependencyStorage.h"
+
 #include "smtk/view/Configuration.h"
 
 #include <map>
@@ -275,6 +279,26 @@ public:
   //Get a list of all attributes in the Resource
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
+  smtk::attribute::EvaluatorFactory& evaluatorFactory() { return m_evaluatorFactory; }
+
+  const smtk::attribute::EvaluatorFactory& evaluatorFactory() const { return m_evaluatorFactory; }
+
+  bool canEvaluate(smtk::attribute::ConstAttributePtr att)
+  {
+    return !!m_evaluatorFactory.createEvaluator(att);
+  }
+
+  std::unique_ptr<smtk::attribute::Evaluator> createEvaluator(
+    smtk::attribute::ConstAttributePtr att)
+  {
+    return m_evaluatorFactory.createEvaluator(att);
+  }
+
+  smtk::attribute::SymbolDependencyStorage& symbolDependencyStorage()
+  {
+    return queries().cache<smtk::attribute::SymbolDependencyStorage>();
+  }
+
   // Set/Get the directory structure of the resource on disk
   void setDirectoryInfo(const DirectoryInfo& dinfo) { m_directoryInfo = dinfo; }
   const DirectoryInfo& directoryInfo() const { return m_directoryInfo; }
@@ -360,6 +384,8 @@ protected:
   CustomItemDefinitionFactory m_customItemDefinitionFactory;
 
   AssociationRules m_associationRules;
+
+  EvaluatorFactory m_evaluatorFactory;
 
 private:
   mutable std::mutex m_mutex;

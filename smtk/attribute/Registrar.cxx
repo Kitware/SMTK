@@ -12,6 +12,7 @@
 #include "smtk/attribute/Registrar.h"
 
 #include "smtk/attribute/AssociationRuleManager.h"
+#include "smtk/attribute/InfixExpressionEvaluator.h"
 #include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Resource.h"
 
@@ -48,6 +49,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   managers->insert(smtk::attribute::ItemDefinitionManager::create());
   managers->insert(smtk::attribute::AssociationRuleManager::create());
+  managers->insert(smtk::attribute::EvaluatorManager::create());
 
   if (managers->contains<smtk::resource::Manager::Ptr>())
   {
@@ -56,6 +58,9 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
     managers->get<smtk::attribute::AssociationRuleManager::Ptr>()->registerResourceManager(
       managers->get<smtk::resource::Manager::Ptr>());
+
+    managers->get<smtk::attribute::EvaluatorManager::Ptr>()->registerResourceManager(
+      managers->get<smtk::resource::Manager::Ptr>());
   }
 
   smtk::plugin::Manager::instance()->registerPluginsTo(
@@ -63,6 +68,9 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
   smtk::plugin::Manager::instance()->registerPluginsTo(
     managers->get<smtk::attribute::AssociationRuleManager::Ptr>());
+
+  smtk::plugin::Manager::instance()->registerPluginsTo(
+    managers->get<smtk::attribute::EvaluatorManager::Ptr>());
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
@@ -134,6 +142,16 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->unregisterResource<smtk::attribute::Resource>();
+}
+
+void Registrar::registerTo(const smtk::attribute::EvaluatorManager::Ptr& manager)
+{
+  manager->registerEvaluator<smtk::attribute::InfixExpressionEvaluator>("InfixExpressionEvaluator");
+}
+
+void Registrar::unregisterFrom(const smtk::attribute::EvaluatorManager::Ptr& manager)
+{
+  manager->unregisterEvaluator<smtk::attribute::InfixExpressionEvaluator>();
 }
 }
 }

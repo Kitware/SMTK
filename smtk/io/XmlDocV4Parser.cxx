@@ -24,6 +24,32 @@ XmlDocV4Parser::XmlDocV4Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 {
 }
 
+void XmlDocV4Parser::process(xml_document& doc)
+{
+  // Get the attribute resource node
+  xml_node amnode = doc.child("SMTK_AttributeResource");
+
+  // Check that there is content
+  if (amnode.empty())
+  {
+    smtkWarningMacro(m_logger, "Missing SMTK_AttributeResource element");
+    return;
+  }
+
+  this->process(amnode);
+}
+
+void XmlDocV4Parser::process(xml_node& rootNode)
+{
+  XmlDocV3Parser::process(rootNode);
+
+  xml_node evaluatorsNode = rootNode.child("Evaluators");
+  if (evaluatorsNode)
+  {
+    this->processEvaluators(evaluatorsNode);
+  }
+}
+
 XmlDocV4Parser::~XmlDocV4Parser() = default;
 
 bool XmlDocV4Parser::canParse(pugi::xml_document& doc)
@@ -260,6 +286,53 @@ void XmlDocV4Parser::processAssociationRules(pugi::xml_node& root)
       (*dissociationRule) << child;
       m_resource->associationRules().dissociationRuleContainer().emplace(
         std::make_pair(child.attribute("Name").as_string(), std::move(dissociationRule)));
+    }
+  }
+}
+
+void XmlDocV4Parser::processEvaluators(xml_node& evaluatorsNode)
+{
+  for (const xml_node& evaluatorNode : evaluatorsNode.children("Evaluator"))
+  {
+    const xml_attribute evaluatorNameAttribute = evaluatorNode.attribute("Name");
+    if (!evaluatorNameAttribute)
+    {
+      smtkWarningMacro(m_logger, "Missing Name xml attribute in Evaluator xml node.");
+      continue;
+    }
+    const std::string evaluatorAlias = evaluatorNameAttribute.value();
+
+    if (!evaluatorNode.child("Definition"))
+    {
+      smtkWarningMacro(m_logger, "Evaluator does not specify any Definitions.");
+      continue;
+    }
+
+    for (const xml_node& definitionNode : evaluatorNode.children("Definition"))
+    {
+      const xml_attribute definitionTypeAttribute = definitionNode.attribute("Type");
+      if (!definitionTypeAttribute)
+      {
+        smtkWarningMacro(m_logger, "Missing Type xml attribute in Definition xml node for Evaluator"
+                                   "specification.");
+        continue;
+      }
+
+      const std::string evaluatorDefinition = definitionTypeAttribute.value();
+      if (!m_resource->findDefinition(evaluatorDefinition))
+      {
+        smtkWarningMacro(m_logger, "Missing definition of type \"" << evaluatorDefinition
+                                                                   << "\" in Attribute Resource.");
+      }
+
+      const bool defWasSet = m_resource->evaluatorFactory().addDefinitionForEvaluator(
+        evaluatorAlias, evaluatorDefinition);
+      if (!defWasSet)
+      {
+        smtkWarningMacro(m_logger, "Evaluator with alias \""
+            << evaluatorAlias << "\" was not found while setting definition "
+            << evaluatorDefinition);
+      }
     }
   }
 }

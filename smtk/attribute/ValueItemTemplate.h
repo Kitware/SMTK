@@ -15,8 +15,10 @@
 #define __smtk_attribute_ValueItemTemplate_h
 
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/Evaluator.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
+#include "smtk/io/Logger.h"
 #include <cassert>
 #include <limits>
 #include <sstream>
@@ -41,7 +43,11 @@ public:
   typename std::vector<DataT>::const_iterator begin() const { return m_values.begin(); }
   typename std::vector<DataT>::const_iterator end() const { return m_values.end(); }
   bool setNumberOfValues(std::size_t newSize) override;
-  DataT value(std::size_t element = 0) const { return m_values[element]; }
+
+  DataT value(std::size_t element = 0) const;
+  DataT value(smtk::io::Logger& log) const { return this->value(0, log); }
+  DataT value(std::size_t element, smtk::io::Logger& log) const;
+
   std::string valueAsString() const override { return this->valueAsString(0); }
   std::string valueAsString(std::size_t element) const override;
   bool setValue(const DataT& val) { return this->setValue(0, val); }
@@ -94,7 +100,9 @@ protected:
   void updateDiscreteValue(std::size_t element) override;
   std::vector<DataT> m_values;
   const std::vector<DataT> m_dummy; //(1, DataT());
+
 private:
+  std::string streamValue(const DataT& val) const;
 };
 
 template <typename DataT>
@@ -110,6 +118,67 @@ ValueItemTemplate<DataT>::ValueItemTemplate(
   : ValueItem(inOwningItem, itemPosition, mySubGroupPosition)
   , m_dummy(1, DataT())
 {
+}
+
+template <typename DataT>
+DataT ValueItemTemplate<DataT>::value(std::size_t element) const
+{
+  return this->value(element, smtk::io::Logger::instance());
+}
+
+// When DataT does not have a default constructor, as in the case of double or
+// int. DataT() results in a zero-initialized value:
+// https://en.cppreference.com/w/cpp/language/value_initialization
+template <typename DataT>
+DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log) const
+{
+  if (!this->isSet(element))
+  {
+    log.addRecord(smtk::io::Logger::ERROR, std::to_string(element) + " is not set.");
+    return DataT();
+  }
+
+  if (isExpression())
+  {
+    smtk::attribute::AttributePtr expAtt = expression();
+    if (!expAtt)
+    {
+      log.addRecord(smtk::io::Logger::ERROR, "Could not find referenced expression.");
+      return DataT();
+    }
+
+    std::unique_ptr<smtk::attribute::Evaluator> evaluator = expAtt->createEvaluator();
+    if (!evaluator)
+    {
+      log.addRecord(smtk::io::Logger::ERROR, "Expression is not evaluatable.");
+      return DataT();
+    }
+
+    smtk::attribute::Evaluator::ValueType result;
+    // |evaluator| will report errors in |log| for the caller.
+    if (!evaluator->evaluate(
+          result, log, element, Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS))
+    {
+      return DataT();
+    }
+
+    DataT resultAsDataT;
+    try
+    {
+      resultAsDataT = boost::get<DataT>(result);
+    }
+    catch (const boost::bad_get&)
+    {
+      log.addRecord(smtk::io::Logger::ERROR, "Evaluation result was not compatible.");
+      return DataT();
+    }
+
+    return resultAsDataT;
+  }
+  else
+  {
+    return m_values[element];
+  }
 }
 
 template <typename DataT>
@@ -229,23 +298,30 @@ void ValueItemTemplate<DataT>::updateDiscreteValue(std::size_t element)
 template <typename DataT>
 std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
 {
-  assert(m_isSet.size() > element);
-  if (m_isSet[element])
+  if (this->isExpression())
   {
-    if (this->isExpression())
+    // Can the expression be evaluated by value()? |log| will have errors when
+    // evaluation is not possible or failed.
+    smtk::io::Logger log;
+    DataT val = value(element, log);
+    if (log.hasErrors())
     {
-      return "VALUE_IS_EXPRESSION";
+      return "CANNOT_EVALUATE";
     }
-    else
-    {
-      std::stringstream buffer;
-      buffer.precision(std::numeric_limits<DataT>::max_digits10);
-      assert(m_values.size() > element);
-      buffer << m_values[element];
-      return buffer.str();
-    }
+
+    return streamValue(val);
   }
-  return "VALUE_IS_NOT_SET";
+  else
+  {
+    assert(m_isSet.size() > element);
+    if (m_isSet[element])
+    {
+      assert(m_values.size() > element);
+      return streamValue(m_values[element]);
+    }
+
+    return "VALUE_IS_NOT_SET";
+  }
 }
 
 template <typename DataT>
@@ -562,6 +638,16 @@ bool ValueItemTemplate<DataT>::assign(
   }
   return true;
 }
+
+template <typename DataT>
+std::string ValueItemTemplate<DataT>::streamValue(const DataT& val) const
+{
+  std::stringstream buffer;
+  buffer.precision(std::numeric_limits<DataT>::max_digits10);
+  buffer << val;
+  return buffer.str();
+}
+
 } // namespace attribute
 } // namespace smtk
 

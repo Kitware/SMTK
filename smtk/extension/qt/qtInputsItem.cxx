@@ -27,6 +27,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPointer>
 #include <QSizePolicy>
 #include <QSpinBox>
@@ -61,6 +62,50 @@ double nextafter(double x, double y)
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
+
+namespace
+{
+
+// Returns the value in position |element| from ValueItem |item|, with errors
+// reporting in |log|. Used by qtInputsItem's expression widgets. The returned
+// QVariant will return true for QVariant::isNull if no value can be obtainted.
+// If |floatingPointPrecision| is greater than 0, that number of decimal places
+// will be used for values from DoubleItems.
+QVariant valueFromValueItemAsQVariant(const smtk::attribute::ValueItemPtr& item, int element,
+  smtk::io::Logger& log, int floatingPointPrecision)
+{
+  QVariant result;
+
+  if (item->type() == smtk::attribute::Item::IntType)
+  {
+    smtk::attribute::IntItemPtr intItem = std::dynamic_pointer_cast<smtk::attribute::IntItem>(item);
+    result = intItem->value(element, log);
+  }
+  else if (item->type() == smtk::attribute::Item::DoubleType)
+  {
+    smtk::attribute::DoubleItemPtr doubleItem =
+      std::dynamic_pointer_cast<smtk::attribute::DoubleItem>(item);
+    // Limits the precision of a returned double.
+    if (floatingPointPrecision > 0)
+    {
+      result = QString::number(doubleItem->value(element, log), 'g', 6);
+    }
+    else
+    {
+      result = std::to_string(doubleItem->value(element, log)).c_str();
+    }
+  }
+  else if (item->type() == smtk::attribute::Item::StringType)
+  {
+    smtk::attribute::StringItemPtr stringItem =
+      std::dynamic_pointer_cast<smtk::attribute::StringItem>(item);
+    result = stringItem->value(element, log).c_str();
+  }
+
+  return result;
+}
+
+} // anonymous namespace
 
 qtDoubleValidator::qtDoubleValidator(
   qtInputsItem* item, int elementIndex, QLineEdit* lineEdit, QObject* inParent)
@@ -164,6 +209,8 @@ public:
   QPointer<QFrame> m_expressionFrame;
   QPointer<QToolButton> m_expressionButton;
   QPointer<QComboBox> m_expressionCombo;
+  QPointer<QLabel> m_expressionEqualsLabel;
+  QPointer<QLineEdit> m_expressionResultLineEdit;
   QString m_lastExpression;
   int m_editPrecision;
 };
@@ -474,6 +521,128 @@ void qtInputsItem::updateStringItemData(
                        : uimanager->setWidgetColorToInvalid(iwidget));
 }
 
+void qtInputsItem::updateExpressionRefWidgetForEvaluation(
+  ValueItemPtr inputItem, bool showMessageBox)
+{
+  QString warningText;
+  if (inputItem->isExpression())
+  {
+    std::unique_ptr<smtk::attribute::Evaluator> evaluator =
+      inputItem->expression()->createEvaluator();
+    if (evaluator)
+    {
+      size_t evaluatableElements = evaluator->numberOfEvaluatableElements();
+      size_t inputItemValues = inputItem->numberOfValues();
+      if (evaluatableElements > inputItemValues)
+        warningText = "Warning: " + QString::number(evaluatableElements) +
+          " elements given for evaluation, but this item only requires " +
+          QString::number(inputItemValues) + ".";
+    }
+  }
+
+  std::vector<smtk::io::Logger> logs;
+  QStringList valueStrings;
+  for (int i = 0; i < inputItem->numberOfValues(); ++i)
+  {
+    smtk::io::Logger currentLog;
+    QVariant val =
+      valueFromValueItemAsQVariant(inputItem, i, currentLog, m_internals->m_editPrecision);
+    if (val.isNull())
+    {
+      // This is a diagnostic Record. The user ideally shouldn't see this.
+      currentLog.addRecord(smtk::io::Logger::ERROR, "Couldn't get value.");
+    }
+
+    logs.push_back(currentLog);
+    valueStrings << val.toString();
+  }
+
+  // Collects logs with errors along with their item indices.
+  std::vector<std::pair<int, smtk::io::Logger> > logsWithErrors;
+  for (int i = 0; i < logs.size(); ++i)
+  {
+    if (logs[i].hasErrors())
+      logsWithErrors.emplace_back(std::make_pair(i, std::move(logs[i])));
+  }
+
+  if (!logsWithErrors.empty())
+  {
+    QString toolTipText;
+    for (int i = 0; i < logsWithErrors.size(); ++i)
+    {
+      const smtk::io::Logger& currentLog = logsWithErrors[i].second;
+      if (!currentLog.hasErrors())
+        continue;
+
+      QString currentMessage = "For value " + QString::number(logsWithErrors[i].first + 1) + ":\n";
+
+      const std::vector<smtk::io::Logger::Record> recs = currentLog.records();
+      for (auto recIt = recs.begin(); recIt != recs.end(); ++recIt)
+      {
+        currentMessage += recIt->message.c_str();
+        if (recIt != --recs.end())
+          currentMessage += "\n";
+      }
+
+      toolTipText += currentMessage;
+
+      if (i < logsWithErrors.size() - 1)
+        toolTipText += "\n\n";
+    }
+
+    if (!warningText.isEmpty())
+    {
+      toolTipText += "\n\n";
+      toolTipText += warningText;
+    }
+
+    this->showExpressionResultWidgets(false, QString("Evaluation failed"), toolTipText);
+
+    if (showMessageBox)
+    {
+      QMessageBox::critical(
+        m_internals->m_expressionResultLineEdit, "Evaluation Error", toolTipText);
+    }
+  }
+  else
+  {
+    this->showExpressionResultWidgets(true, valueStrings.join(", "), warningText);
+  }
+}
+
+void qtInputsItem::hideExpressionResultWidgets()
+{
+  m_internals->m_expressionEqualsLabel->setVisible(false);
+  m_internals->m_expressionResultLineEdit->setVisible(false);
+}
+
+void qtInputsItem::showExpressionResultWidgets(
+  bool success, const QString& text, const QString& tooltip)
+{
+  if (success)
+  {
+    if (tooltip.isEmpty())
+    {
+      uiManager()->setWidgetColorToNormal(m_internals->m_expressionResultLineEdit);
+    }
+    else
+    {
+      QPalette pal = m_internals->m_expressionResultLineEdit->palette();
+      pal.setColor(QPalette::Base, qtUIManager::contrastWithText(QColor(100, 149, 237)));
+      m_internals->m_expressionResultLineEdit->setPalette(pal);
+    }
+  }
+  else
+  {
+    uiManager()->setWidgetColorToInvalid(m_internals->m_expressionResultLineEdit);
+  }
+  m_internals->m_expressionResultLineEdit->setToolTip(tooltip);
+  m_internals->m_expressionResultLineEdit->setText(text);
+
+  m_internals->m_expressionResultLineEdit->setVisible(true);
+  m_internals->m_expressionEqualsLabel->setVisible(true);
+}
+
 void qtInputsItem::addInputEditor(int i)
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
@@ -601,13 +770,13 @@ void qtInputsItem::loadInputValues()
 QFrame* qtInputsItem::createLabelFrame(
   const smtk::attribute::ValueItem* vitem, const smtk::attribute::ValueItemDefinition* vitemDef)
 {
+  smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
+  auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
   auto iview = m_itemInfo.baseView();
   // Lets create the label and proper decorations
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   auto labelFrame = new QFrame();
-  labelFrame->setObjectName("labelFrame");
   QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
-  labelLayout->setObjectName("labelFrame");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -619,7 +788,6 @@ QFrame* qtInputsItem::createLabelFrame(
   if (vitemDef->isOptional() && (m_internals->OptionalCheck == nullptr))
   {
     m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    m_internals->OptionalCheck->setObjectName("optionBox");
     m_internals->OptionalCheck->setChecked(vitem->localEnabledState());
     m_internals->OptionalCheck->setText(" ");
     m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -630,6 +798,7 @@ QFrame* qtInputsItem::createLabelFrame(
     if (!vitem->isOptional())
     {
       m_internals->OptionalCheck->setVisible(false);
+      this->setOutputOptional(1);
     }
   }
 
@@ -643,7 +812,6 @@ QFrame* qtInputsItem::createLabelFrame(
     labelText = vitem->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
-  label->setObjectName("labelText");
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
@@ -691,7 +859,6 @@ QFrame* qtInputsItem::createLabelFrame(
   if (vitem->allowsExpressions())
   {
     m_internals->m_expressionButton = new QToolButton(m_widget);
-    m_internals->m_expressionButton->setObjectName("expressionButton");
     m_internals->m_expressionButton->setCheckable(true);
     QString resourceName(":/icons/attribute/function.png");
     m_internals->m_expressionButton->setIconSize(QSize(13, 13));
@@ -733,21 +900,17 @@ void qtInputsItem::updateUI()
 
   // Add Data Section
   m_internals->m_dataFrame = new QFrame(m_widget);
-  m_internals->m_dataFrame->setObjectName("dataFrame");
   auto dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
-  dataLayout->setObjectName("dataLayout");
   dataLayout->setMargin(0);
   dataLayout->setSpacing(0);
   dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   // This section will either display values or the expression (if this item supports them)
   m_internals->m_valuesFrame = new QFrame(m_internals->m_dataFrame);
-  m_internals->m_valuesFrame->setObjectName("valuesFrame");
 
   m_internals->EntryLayout = new QGridLayout(m_internals->m_valuesFrame);
   m_internals->EntryLayout->setMargin(0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  m_internals->EntryLayout->setObjectName("valuesLayout");
 
   this->loadInputValues();
   dataLayout->addWidget(m_internals->m_valuesFrame);
@@ -958,18 +1121,28 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   auto frame = new QFrame();
   frame->setObjectName("expressionFrame");
   QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
-  expressionLayout->setObjectName("expressionLayout");
   expressionLayout->setMargin(0);
   expressionLayout->setSpacing(0);
   expressionLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // create combobox for expression reference
   m_internals->m_expressionCombo = new QComboBox(frame);
-  m_internals->m_expressionCombo->setObjectName("expressionCombo");
-  QObject::connect(m_internals->m_expressionCombo, SIGNAL(currentIndexChanged(int)), this,
-    SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
+  QObject::connect(m_internals->m_expressionCombo,
+    QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+    &qtInputsItem::onExpressionReferenceChanged, Qt::QueuedConnection);
   m_internals->m_expressionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+
+  m_internals->m_expressionEqualsLabel = new QLabel("=", frame);
+  m_internals->m_expressionEqualsLabel->setVisible(false);
+
+  m_internals->m_expressionResultLineEdit = new QLineEdit(frame);
+  m_internals->m_expressionResultLineEdit->setVisible(false);
+  m_internals->m_expressionResultLineEdit->setReadOnly(true);
+
   expressionLayout->addWidget(m_internals->m_expressionCombo);
+  expressionLayout->addWidget(m_internals->m_expressionEqualsLabel);
+  expressionLayout->addWidget(m_internals->m_expressionResultLineEdit);
+
   expressionLayout->setContentsMargins(0, 0, 0, 0);
   return frame;
 }
@@ -1023,6 +1196,15 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       if (att != nullptr)
       {
         setIndex = attNames.indexOf(att->name().c_str());
+
+        if (att->canEvaluate())
+        {
+          updateExpressionRefWidgetForEvaluation(inputitem, false);
+        }
+        else
+        {
+          hideExpressionResultWidgets();
+        }
       }
     }
     // If we have not found a valid expression and we have the name of the
@@ -1035,6 +1217,16 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       {
         setIndex = attNames.indexOf(m_internals->m_lastExpression);
         inputitem->setExpression(attPtr);
+
+        if (attPtr->canEvaluate())
+        {
+          updateExpressionRefWidgetForEvaluation(inputitem, false);
+        }
+        else
+        {
+          hideExpressionResultWidgets();
+        }
+
         emit this->modified();
       }
     }
@@ -1059,6 +1251,9 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       // the user simply wants to switch back
       m_internals->m_lastExpression = inputitem->expression()->name().c_str();
       inputitem->setExpression(nullptr);
+
+      hideExpressionResultWidgets();
+
       // Since the item had an expression set (which influences the isSet method)
       // we should force a reload of the item's non-expression values to make sure
       // they are correct.
@@ -1093,6 +1288,8 @@ void qtInputsItem::onExpressionReferenceChanged()
   if (curIdx == 0)
   {
     item->unset();
+
+    hideExpressionResultWidgets();
   }
   else if (curIdx == 1)
   {
@@ -1137,6 +1334,8 @@ void qtInputsItem::onExpressionReferenceChanged()
       m_internals->m_expressionCombo->setCurrentIndex(index);
     }
     m_internals->m_expressionCombo->blockSignals(false);
+
+    hideExpressionResultWidgets();
   }
   else
   {
@@ -1145,12 +1344,22 @@ void qtInputsItem::onExpressionReferenceChanged()
       lAttResource->findAttribute(m_internals->m_expressionCombo->currentText().toStdString());
     if (inputitem->isSet() && attPtr == inputitem->expression())
     {
+      hideExpressionResultWidgets();
       return; // nothing to do
     }
 
     if (attPtr)
     {
       inputitem->setExpression(attPtr);
+
+      if (attPtr->canEvaluate())
+      {
+        updateExpressionRefWidgetForEvaluation(inputitem, false);
+      }
+      else
+      {
+        hideExpressionResultWidgets();
+      }
     }
   }
 

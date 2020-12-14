@@ -54,6 +54,9 @@ public:
   // If val is false then Attribute Associations will not be saved
   void includeAttributeAssociations(bool val) { m_includeAttributeAssociations = val; }
 
+  // If val is false then Evaluators will not be saved.
+  void includeEvaluators(bool val) { m_includeEvaluators = val; }
+
   // If val is false then definitions will not be saved
   void includeDefinitions(bool val) { m_includeDefinitions = val; }
 
@@ -110,6 +113,7 @@ private:
   bool m_includeAnalyses;
   bool m_includeAttributeAssociations;
   bool m_includeDefinitions;
+  bool m_includeEvaluators;
   bool m_includeInstances;
   bool m_includeResourceAssociations;
   bool m_includeResourceID;

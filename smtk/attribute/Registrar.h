@@ -13,6 +13,7 @@
 #include "smtk/CoreExports.h"
 
 #include "smtk/attribute/AssociationRuleManager.h"
+#include "smtk/attribute/EvaluatorManager.h"
 #include "smtk/common/Managers.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -35,6 +36,9 @@ public:
 
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
+
+  static void registerTo(const smtk::attribute::EvaluatorManager::Ptr&);
+  static void unregisterFrom(const smtk::attribute::EvaluatorManager::Ptr&);
 };
 }
 }

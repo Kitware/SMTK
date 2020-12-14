@@ -488,6 +488,11 @@ void XmlV2StringWriter::generateXml()
     this->processStyles();
     this->processViews();
   }
+
+  if (m_includeEvaluators)
+  {
+    this->processEvaluators();
+  }
 }
 
 void XmlV2StringWriter::processAttributeInformation()
@@ -1454,6 +1459,31 @@ void XmlV2StringWriter::processViews()
     if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
       this->processView(iter->second);
+    }
+  }
+}
+
+void XmlV2StringWriter::processEvaluators()
+{
+  const std::map<std::string, std::vector<std::string> > aliaesToDefNames =
+    m_resource->evaluatorFactory().aliasesToDefinitions();
+
+  if (!aliaesToDefNames.empty())
+  {
+    pugi::xml_node root = topRootNode();
+
+    pugi::xml_node evaluators = root.append_child("Evaluators");
+    for (const auto& p : aliaesToDefNames)
+    {
+      pugi::xml_node currentEvaluator = evaluators.append_child("Evaluator");
+      currentEvaluator.append_attribute("Name").set_value(p.first.c_str());
+
+      for (const std::string& defName : p.second)
+      {
+        currentEvaluator.append_child("Definition")
+          .append_attribute("Type")
+          .set_value(defName.c_str());
+      }
     }
   }
 }

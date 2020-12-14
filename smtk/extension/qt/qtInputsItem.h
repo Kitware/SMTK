@@ -88,6 +88,18 @@ protected:
   void updateIntItemData(QWidget* iwidget, const smtk::attribute::IntItemPtr& iitem);
   void updateStringItemData(QWidget* iwidget, const smtk::attribute::StringItemPtr& sitem);
 
+  // Updates the item's expression reference widget. Takes the |elementIdx|th
+  // value of |inputItem|. If |showMessageBox| == true, errors are presented
+  // in a modal QMessageBox.
+  void updateExpressionRefWidgetForEvaluation(
+    smtk::attribute::ValueItemPtr inputItem, bool showMessageBox);
+  void hideExpressionResultWidgets();
+  // Shows widgets for displaying results of expression evaluation. |text| is
+  // shown in a QLineEdit whose tooltip is set to |tooltip|. If |success| is
+  // true but |tooltip| is nonempty, the line edit will have a dark yellow
+  // background.
+  void showExpressionResultWidgets(bool success, const QString& text, const QString& tooltip);
+
 private:
   qtInputsItemInternals* m_internals;
 }; // class

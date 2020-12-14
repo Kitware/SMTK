@@ -14,6 +14,7 @@
 
 #include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/EvaluatorManager.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ItemDefinitionManager.h"
@@ -106,6 +107,14 @@ Read::Result Read::operateInternal()
         // resource.
         auto associationRuleManager = mgrs->get<smtk::attribute::AssociationRuleManager::Ptr>();
         associationRuleManager->registerRulesTo(resource);
+      }
+
+      // ...and that container has an Evaluator...
+      if (mgrs->contains<smtk::attribute::EvaluatorManager::Ptr>())
+      {
+        // ...add evaluators to the newly created attribute resource.
+        auto evaluatorManager = mgrs->get<smtk::attribute::EvaluatorManager::Ptr>();
+        evaluatorManager->registerEvaluatorsTo(resource);
       }
     }
   }

@@ -93,6 +93,9 @@ protected:
   /// Adds properties associated with respects to a top level view
   void makeTopLevel() override;
 
+  /// Returns true if |att| is valid.
+  bool checkStatus(const smtk::attribute::Attribute* att) const;
+
   /// \brief Test for category filtering.
   /// Returns true if the item's categories pass
   virtual bool categoryTest(const smtk::attribute::ItemPtr&) const;

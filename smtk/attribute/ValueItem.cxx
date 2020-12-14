@@ -12,6 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/Evaluator.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -132,10 +133,26 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
   // are not discrete and don't have children
   if (this->allowsExpressions() && (m_expression->value() != nullptr))
   {
-    // TODO - once the expression evaluation code is in place we should verify
-    // that the expression is valid.
-    return (useCategories && m_expression->isValid(categories)) ||
-      ((!useCategories) && m_expression->isValid());
+    if ((!useCategories || !m_expression->isValid(categories)) &&
+      (useCategories && !m_expression->isValid()))
+    {
+      return false;
+    }
+
+    if (this->expression()->canEvaluate())
+    {
+      std::unique_ptr<smtk::attribute::Evaluator> evaluator = this->expression()->createEvaluator();
+      if (evaluator)
+      {
+        return evaluator->doesEvaluate();
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   for (std::size_t i = 0; i < m_isSet.size(); ++i)
