@@ -1794,6 +1794,26 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         }
         this->processComponentDef(child, smtk::dynamic_pointer_cast<ComponentItemDefinition>(idef));
         break;
+      case Item::ReferenceType:
+        idef = def->addItemDefinition<ReferenceItemDefinition>(itemName);
+        if (!idef)
+        {
+          smtkErrorMacro(m_logger, "Failed to create Component Item definition Type: "
+              << child.name() << " needed to create Group Definition: " << def->name());
+          continue;
+        }
+        this->processReferenceDef(child, smtk::dynamic_pointer_cast<ReferenceItemDefinition>(idef));
+        break;
+      case Item::ResourceType:
+        idef = def->addItemDefinition<ResourceItemDefinition>(itemName);
+        if (!idef)
+        {
+          smtkErrorMacro(m_logger, "Failed to create Component Item definition Type: "
+              << child.name() << " needed to create Group Definition: " << def->name());
+          continue;
+        }
+        this->processResourceDef(child, smtk::dynamic_pointer_cast<ResourceItemDefinition>(idef));
+        break;
       default:
         auto typeName = child.attribute("TypeName");
         if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
