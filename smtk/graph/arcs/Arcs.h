@@ -13,10 +13,12 @@
 
 #include <functional>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 #include "smtk/common/CompilerInformation.h"
 
+#include "smtk/graph/ResourceBase.h"
 #include "smtk/graph/TypeTraits.h"
 
 namespace smtk
