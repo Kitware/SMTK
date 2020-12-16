@@ -74,6 +74,7 @@ public:
   bool m_useFileDirectory{ true };
   bool m_hasDefaultDirectory{ false };
   std::string m_defaultDirectory;
+  std::string m_nameFilter;
   QFileDialog* FileBrowser{ nullptr };
 
   QPointer<QVBoxLayout> EntryLayout;
@@ -655,6 +656,7 @@ bool qtFileItem::onLaunchFileBrowser()
   }
 
   QStringList files = m_internals->FileBrowser->selectedFiles();
+  m_internals->m_nameFilter = m_internals->FileBrowser->selectedNameFilter().toStdString();
   this->setInputValue(valueIndex, files[0]);
   return true;
 }
@@ -708,12 +710,15 @@ void qtFileItem::setInputValue(int i, const QString& val)
     {
       QFileInfo fi(val);
 
-      std::string filters = fItemDef->getFileFilters();
+      // grab the file-filter the user selected, if there is one.
+      std::string filters =
+        !m_internals->m_nameFilter.empty() ? m_internals->m_nameFilter : fItemDef->getFileFilters();
       std::size_t begin = filters.find_first_of('*', filters.find_first_of('(')) + 1;
-      std::size_t end = filters.find_first_of(" \n\r\t", begin);
+      std::size_t end = filters.find_first_of(") \n\r\t", begin);
       QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
+      fi.setFile(QDir(fi.absolutePath()), fi.baseName() + acceptableSuffix);
 
-      value = fi.absolutePath() + fi.baseName() + acceptableSuffix;
+      value = fi.filePath();
     }
   }
 

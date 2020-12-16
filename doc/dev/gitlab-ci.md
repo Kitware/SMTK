@@ -80,8 +80,9 @@ Start in a local checkout of [aeva-session](https://gitlab.kitware.com/aeva/sess
 cd .gitlab/ci/docker/fedora32
 date="$( date "+%Y%m%d" )"
 ci_image_tag=fedora32
-image_tag_date="ci-aevasession-$ci_image_tag-$date"
-image_tag_latest="ci-aevasession-$ci_image_tag-latest"
+proj="aevasession"
+image_tag_date="ci-$proj-$ci_image_tag-$date"
+image_tag_latest="ci-$proj-$ci_image_tag-latest"
 docker build -t "kitware/cmb:$image_tag_date" . |& tee build.log
 docker tag "kitware/cmb:$image_tag_date" "kitware/cmb:$image_tag_latest"
 # push to docker hub if the nightly build isn't working
