@@ -49,8 +49,6 @@ void updateFileReferencesInString(
 {
   auto findAndReplace =
     [](std::string& file_contents, const std::string& from, const std::string& to) {
-      std::cout << "updateFileReferencesInString() from \"" << from << "\" to \"" << to
-                << std::endl;
       auto pos = file_contents.find(from);
       while (pos != std::string::npos)
       {

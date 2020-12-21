@@ -120,6 +120,7 @@ Read::Result Read::operateInternal()
         continue;
       }
       resource->setLocation("");
+      resource->setClean(true);
       project->resources().add(resource, detail::role(resource));
     }
   }
