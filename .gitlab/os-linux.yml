@@ -65,21 +65,21 @@
 
 .fedora31_vtk:
     extends: .fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-vtk-20200810"
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-20201125"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk
 
 .fedora31_paraview:
     extends: .fedora31_vtk
-    image: "kitware/cmb:ci-smtk-fedora31-paraview-20200810"
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20201125"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
 
 .fedora31_vtk_python2:
     extends: .fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20200810"
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20201130"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk_python2
