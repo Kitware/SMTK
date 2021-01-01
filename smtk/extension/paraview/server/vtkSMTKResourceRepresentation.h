@@ -34,7 +34,6 @@ class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
 class vtkGlyph3DMapper;
-class vtkImageSliceRepresentation;
 class vtkMapper;
 class vtkMultiBlockDataSet;
 class vtkScalarsToColors;
@@ -116,7 +115,6 @@ public:
   /**
    * \sa vtkPVDataRepresentation
    */
-  unsigned int Initialize(unsigned int minId, unsigned int maxId) override;
   int ProcessViewRequest(vtkInformationRequestKey* request_type, vtkInformation* inInfo,
     vtkInformation* outInfo) override;
   int RequestData(
@@ -325,10 +323,6 @@ public:
   /// Return the prop ID assigned to the actor that renders selected glyph components.
   int GetSelectedGlyphEntitiesActorPickId() const { return this->SelectedGlyphEntitiesActorPickId; }
 
-  void SetSliceXY(vtkImageSliceRepresentation* rep);
-  void SetSliceYZ(vtkImageSliceRepresentation* rep);
-  void SetSliceXZ(vtkImageSliceRepresentation* rep);
-
   /// Accessor for clients to use with vtkSMTKRepresentationStyleSupplier.
   vtkCompositeDataDisplayAttributes* GetEntityMapperDisplayAttributes();
   vtkCompositeDataDisplayAttributes* GetSelectedEntityMapperDisplayAttributes();
@@ -426,7 +420,6 @@ protected:
   int ColorBy = FIELD;
   bool UpdateColorBy = false;
   bool UseInternalAttributes = false;
-  bool UseSliceReps = false;
 
   vtkNew<vtkMultiBlockDataSet> CurrentData;
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
@@ -439,10 +432,6 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
-
-  vtkImageSliceRepresentation* SliceXY;
-  vtkImageSliceRepresentation* SliceYZ;
-  vtkImageSliceRepresentation* SliceXZ;
 
   // IDs assigned by vtkPVRenderView for hardware picking:
   int EntitiesActorPickId;

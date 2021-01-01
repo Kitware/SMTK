@@ -1248,49 +1248,6 @@
           <Documentation>SMTK Resource input.</Documentation>
       </InputProperty>
 
-      <SubProxy command="SetSliceXY">
-        <Proxy name="XYSliceRepresentation"
-          proxygroup="representations"
-          proxyname="ImageSliceRepresentation">
-        </Proxy>
-        <ExposedProperties>
-          <PropertyGroup label="Slicing">
-            <Property name="SliceMode" exposed_name="XYSliceMode" panel_visibility="never" default_values="5"/>
-            <Property name="Slice" exposed_name="XYSlice" panel_visibility="advanced"/>
-          </PropertyGroup>
-        </ExposedProperties>
-        <LinkProperties>
-          <Property name="Input" with_property="Input" />
-        </LinkProperties>
-      </SubProxy>
-      <SubProxy command="SetSliceYZ">
-        <Proxy name="YZSliceRepresentation"
-          proxygroup="representations"
-          proxyname="ImageSliceRepresentation" />
-        <ExposedProperties>
-          <PropertyGroup label="Slicing">
-            <Property name="SliceMode" exposed_name="YZSliceMode" panel_visibility="never" default_values="6"/>
-            <Property name="Slice" exposed_name="YZSlice" panel_visibility="advanced"/>
-          </PropertyGroup>
-        </ExposedProperties>
-        <LinkProperties>
-          <Property name="Input" with_property="Input" />
-        </LinkProperties>
-      </SubProxy>
-      <SubProxy command="SetSliceXZ">
-        <Proxy name="XZSliceRepresentation"
-          proxygroup="representations"
-          proxyname="ImageSliceRepresentation" />
-        <ExposedProperties>
-          <PropertyGroup label="Slicing">
-            <Property name="SliceMode" exposed_name="XZSliceMode" panel_visibility="never" default_values="7"/>
-            <Property name="Slice" exposed_name="XZSlice" panel_visibility="advanced"/>
-          </PropertyGroup>
-        </ExposedProperties>
-        <LinkProperties>
-          <Property name="Input" with_property="Input" />
-        </LinkProperties>
-      </SubProxy>
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
                          name="Visibility"
@@ -1952,16 +1909,6 @@
                       panel_visibility="never" />
             <Property name="DefaultEdgeColor"
                       panel_visibility="never" />
-          </PropertyGroup>
-          <PropertyGroup label="Slicing">
-            <Property label="XY slice" name="XYSlice" panel_visibility="advanced"/>
-            <Property name="XYSliceMode" panel_visibility="never"/>
-
-            <Property label="YZ slice" name="YZSlice" panel_visibility="advanced"/>
-            <Property name="YZSliceMode" panel_visibility="never"/>
-
-            <Property label="XZ slice" name="XZSlice" panel_visibility="advanced"/>
-            <Property name="XZSliceMode" panel_visibility="never"/>
           </PropertyGroup>
         </ExposedProperties>
       </SubProxy>
