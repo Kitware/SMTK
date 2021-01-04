@@ -81,19 +81,12 @@ void ComponentPhraseModel::handleResourceEvent(
   }
 }
 
-void ComponentPhraseModel::handleCreated(
-  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
+void ComponentPhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& createdObjects)
 {
-  (void)op;
-  if (!res || !data)
-  {
-    return;
-  }
-
   // TODO: Instead of looking for new resources (which perhaps we should leave to the
   //       handleResourceEvent()), we should optimize by adding new components to the
   //       root phrase if they pass m_componentFilters.
-  for (auto it = data->begin(); it != data->end(); ++it)
+  for (auto it = createdObjects.begin(); it != createdObjects.end(); ++it)
   {
     auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
     if (comp == nullptr)
@@ -110,7 +103,7 @@ void ComponentPhraseModel::handleCreated(
   this->populateRoot();
 
   // Finally, call our subclass method to deal with children of the root element
-  this->PhraseModel::handleCreated(op, res, data);
+  this->PhraseModel::handleCreated(createdObjects);
 }
 
 void ComponentPhraseModel::processResource(const smtk::resource::ResourcePtr& rsrc, bool adding)

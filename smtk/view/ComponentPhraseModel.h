@@ -76,8 +76,7 @@ protected:
   virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   */
   void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
-  void handleCreated(
-    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data) override;
+  void handleCreated(const smtk::resource::PersistentObjectSet& createdObjects) override;
 
   virtual void processResource(const Resource::Ptr& rsrc, bool adding);
   virtual void populateRoot();

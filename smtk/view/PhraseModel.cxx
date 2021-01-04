@@ -435,9 +435,51 @@ int PhraseModel::handleOperationEvent(
   }
 
   // Find out which resource components were created, modified, or expunged.
-  this->handleExpunged(op, res, res->findComponent("expunged"));
-  this->handleModified(op, res, res->findComponent("modified"));
-  this->handleCreated(op, res, res->findComponent("created"));
+  // Only inserting elements that are "set" so the callee, handle*(), is not
+  // passed any nulllptrs.
+
+  ComponentItemPtr expungedItem = res->findComponent("expunged");
+  if (expungedItem)
+  {
+    smtk::resource::PersistentObjectSet expungedObjects;
+    for (auto expungedIt = expungedItem->begin(); expungedIt != expungedItem->end(); expungedIt++)
+    {
+      if (expungedIt.isSet())
+      {
+        expungedObjects.insert(*expungedIt);
+      }
+    }
+    this->handleExpunged(expungedObjects);
+  }
+
+  ComponentItemPtr modifiedItem = res->findComponent("modified");
+  if (modifiedItem)
+  {
+    smtk::resource::PersistentObjectSet modifiedObjects;
+    for (auto modifiedIt = modifiedItem->begin(); modifiedIt != modifiedItem->end(); modifiedIt++)
+    {
+      if (modifiedIt.isSet())
+      {
+        modifiedObjects.insert(*modifiedIt);
+      }
+    }
+    this->handleModified(modifiedObjects);
+  }
+
+  ComponentItemPtr createdItem = res->findComponent("created");
+  if (createdItem)
+  {
+    smtk::resource::PersistentObjectSet createdObjects;
+    for (auto createdIt = createdItem->begin(); createdIt != createdItem->end(); createdIt++)
+    {
+      if (createdIt.isSet())
+      {
+        createdObjects.insert(*createdIt);
+      }
+    }
+    this->handleCreated(createdObjects);
+  }
+
   return 0;
 }
 
@@ -451,25 +493,12 @@ void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRan
   this->trigger(phr, PhraseModelEvent::REMOVE_FINISHED, parentIdx, parentIdx, removeRange);
 }
 
-void PhraseModel::handleExpunged(
-  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
+void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expungedObjects)
 {
-  (void)op;
-  (void)res;
-
-  if (!data)
-  {
-    return;
-  }
-
   // By default, search all existing phrases for matching components and remove them.
   std::set<smtk::common::UUID> uuids;
-  for (auto it = data->begin(); it != data->end(); ++it)
+  for (auto it = expungedObjects.begin(); it != expungedObjects.end(); ++it)
   {
-    if (!it.isSet())
-    {
-      continue;
-    }
     uuids.insert((*it)->id());
   }
 
@@ -501,24 +530,14 @@ void PhraseModel::handleExpunged(
   }
 }
 
-void PhraseModel::handleModified(
-  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
+void PhraseModel::handleModified(const smtk::resource::PersistentObjectSet& modifiedObjects)
 {
-  (void)op;
-  (void)res;
-
-  if (!data)
-  {
-    return;
-  }
-
-  std::set<smtk::resource::PersistentObjectPtr> modified(data->begin(), data->end());
   auto rootPhrase = this->root();
   if (rootPhrase)
   {
     rootPhrase->visitChildren(
-      [this, &modified](DescriptivePhrasePtr phr, const std::vector<int>& idx) -> int {
-        if (modified.find(phr->relatedComponent()) != modified.end())
+      [this, &modifiedObjects](DescriptivePhrasePtr phr, const std::vector<int>& idx) -> int {
+        if (modifiedObjects.find(phr->relatedComponent()) != modifiedObjects.end())
         {
           this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
           // Now check whether the modification requires a reorder
@@ -533,17 +552,8 @@ void PhraseModel::handleModified(
   }
 }
 
-void PhraseModel::handleCreated(
-  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
+void PhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& createdObjects)
 {
-  (void)op;  // Ignore this in the general case but allow subclasses to special-case it.
-  (void)res; // TODO: Different behavior when result is failure vs success?
-
-  if (!data)
-  {
-    return;
-  }
-
   auto rootPhrase = this->root();
   auto delegate = rootPhrase ? rootPhrase->findDelegate() : nullptr;
   if (!delegate)
@@ -551,14 +561,7 @@ void PhraseModel::handleCreated(
     return;
   }
 
-  smtk::resource::PersistentObjectArray objects;
-  for (auto cre = data->begin(); cre != data->end(); ++cre)
-  {
-    if (cre.isSet())
-    {
-      objects.push_back(*cre);
-    }
-  }
+  smtk::resource::PersistentObjectArray objects(createdObjects.begin(), createdObjects.end());
 
   SubphraseGenerator::PhrasesByPath phrasesToInsert;
   delegate->subphrasesForCreatedObjects(objects, rootPhrase, phrasesToInsert);

@@ -51,8 +51,7 @@ public:
 protected:
   ///\brief Populate the root based on a set of appropriate resource components.
   void populateRoot() override;
-  void handleModified(const Operation& op, const Operation::Result& res,
-    const smtk::attribute::ComponentItemPtr& data) override;
+  void handleModified(const smtk::resource::PersistentObjectSet& modifiedObjects) override;
   smtk::attribute::ReferenceItemPtr m_refItem;
   bool m_useAttributeAssociatons;
 };
