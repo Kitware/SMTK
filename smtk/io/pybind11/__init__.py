@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,12 +8,15 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
+import functools
+import smtk
+from inspect import currentframe, getframeinfo
 from ._smtkPybindIO import *
 
 _tmp = [x for x in dir() if not x.startswith('_')]
-if "@SMTK_ENABLE_VTK_SUPPORT@" is "ON":
+if "@SMTK_ENABLE_VTK_SUPPORT@" == "ON":
     _tmp.append('vtk')
 
 __all__ = (_tmp)
@@ -28,8 +31,6 @@ are placed at smtk.* scope to parallel the C++ macro's lack of scope, but are
 defined in the IO module because they use smtk.Logger.
 """
 
-from inspect import currentframe, getframeinfo
-
 
 def _message(severity, logger, message):
     frameinfo = getframeinfo(currentframe().f_back)
@@ -39,8 +40,6 @@ def _message(severity, logger, message):
 def _infoMessage(logger, message):
     logger.addRecord(Logger.INFO, message)
 
-import functools
-import smtk
 
 smtk.ErrorMessage = functools.partial(_message, Logger.ERROR)
 smtk.WarningMessage = functools.partial(_message, Logger.WARNING)
@@ -61,6 +60,7 @@ def _addWarning(logger, message):
 
 def _addDebug(logger, message):
     smtk.DebugMessage(logger, message)
+
 
 Logger.addError = _addError
 Logger.addWarning = _addWarning
