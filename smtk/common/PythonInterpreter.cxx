@@ -279,20 +279,26 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
 bool PythonInterpreter::addPathToPackagedModule(
   const std::string& packageDir, const std::string& module)
 {
-// If <module> is run out of a package, we expect that the directory that
-// contains its libraries is at the same level as "Python/<module>", so we
-// attempt to add this directory to the PYTHONPATH.
+// If <module> is run out of a package, we add its directory to the PYTHONPATH.
+// The path to the module is specific to each platform.
+
+#ifdef __APPLE__
+  boost::filesystem::path inputPath = boost::filesystem::path(packageDir);
+  boost::filesystem::path absPath = boost::filesystem::canonical(inputPath);
+  boost::filesystem::path pythonPath = absPath / "Python";
+#endif
 
 #ifdef __linux__
-  // Linux packages are different.
   boost::filesystem::path inputPath = boost::filesystem::path(packageDir);
   boost::filesystem::path absPath = boost::filesystem::canonical(inputPath);
   boost::filesystem::path pythonPath = absPath.parent_path().parent_path() / python_moduledir;
-#else
+#endif
+
+#ifdef _WIN32
   boost::filesystem::path pythonPath = boost::filesystem::path(packageDir) / python_moduledir;
 #endif
-  boost::filesystem::path bundledPyInit = pythonPath / module / "__init__.py";
 
+  boost::filesystem::path bundledPyInit = pythonPath / module / "__init__.py";
   if (boost::filesystem::is_regular_file(bundledPyInit))
   {
     this->addToPythonPath(pythonPath.string());
