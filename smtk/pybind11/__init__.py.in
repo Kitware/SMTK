@@ -1,0 +1,50 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
+
+# For Windows builds, we must initialize our python interpreter with
+# "Py_NoSiteFlag" enabled. We therefore import it here instead. Since this
+# module is usually imported at python's initialization, this should have no
+# effect when another python implementation imports smtk.
+import site
+import sys
+
+__all__ = ('common', 'attribute', 'extension', 'model',
+           'mesh', 'io', 'project', 'session', 'simulation')
+
+
+def _windows_dll_path():
+    import os
+    _smtk_python_path = '@SMTK_PYTHON_MODULEDIR@/smtk'
+    _smtk_dll_path = '@CMAKE_INSTALL_BINDIR@'
+    # Compute the DLL path based on the location of the file and traversing up
+    # the installation prefix to append the DLL path.
+    _smtk_dll_directory = os.path.dirname(os.path.abspath(__file__))
+    # Loop while we have components to remove.
+    while _smtk_python_path:
+        # Strip a directory away.
+        _smtk_python_path = os.path.dirname(_smtk_python_path)
+        _smtk_dll_directory = os.path.dirname(_smtk_dll_directory)
+    _smtk_dll_directory = os.path.join(_smtk_dll_directory, _smtk_dll_path)
+    # We never remove this path; it is required for SMTK to work and there's no
+    # scope where we can easily remove the directory again.
+    _ = os.add_dll_directory(_smtk_dll_directory)
+
+
+# CPython 3.8 added behaviors which modified the DLL search path on Windows to
+# only search "blessed" paths. When importing SMTK, ensure that SMTK's DLLs are
+# in this set of "blessed" paths.
+if sys.version_info >= (3, 8) and sys.platform == 'win32':
+    _windows_dll_path()
+
+
+def wrappingProtocol():
+    return 'pybind11'
