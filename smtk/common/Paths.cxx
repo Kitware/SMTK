@@ -167,6 +167,12 @@ std::string Paths::replaceExtension(const std::string& path, const std::string& 
   return boost::filesystem::path(path).replace_extension(newExtension).string();
 }
 
+/// Return the path with filename replaced
+std::string Paths::replaceFilename(const std::string& path, const std::string& newFilename)
+{
+  return boost::filesystem::path(path).parent_path().append(newFilename).string();
+}
+
 std::string Paths::tempDirectory()
 {
   return boost::filesystem::temp_directory_path().string();
