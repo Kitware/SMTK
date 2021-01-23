@@ -56,6 +56,7 @@ public:
   static std::string stem(const std::string& path);
   static std::string extension(const std::string& path);
   static std::string replaceExtension(const std::string& path, const std::string& newExtension);
+  static std::string replaceFilename(const std::string& path, const std::string& newFilename);
   static std::string tempDirectory();
   static std::string uniquePath();
 
