@@ -101,7 +101,12 @@ private:
   smtk::resource::Observers::Key m_resourceObserverKey;
   smtk::attribute::WeakDefinitionPtr m_creationDef;
   bool m_okToCreate;
+  // Should the source of possible values be restricted to those associated
+  // to the Item's Attribute
   bool m_useAssociations;
+  // Should the source of possible values (in this case Attributes) should
+  // also conform with the current set of active categories
+  bool m_useCategories;
   std::map<int, smtk::resource::WeakPersistentObjectPtr> m_mappedObjects;
 }; // class
 }; // namespace attribute

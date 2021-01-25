@@ -81,6 +81,7 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   : qtItem(info)
   , m_okToCreate(false)
   , m_useAssociations(false)
+  , m_useCategories(false)
 {
   this->Internals = new qtReferenceItemComboBoxInternals;
   m_useAssociations = m_itemInfo.component().attributeAsBool("UseAssociations");
@@ -89,6 +90,7 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
     QObject::connect(m_itemInfo.baseView(), SIGNAL(modified(smtk::attribute::ItemPtr)), this,
       SLOT(itemChanged(smtk::attribute::ItemPtr)));
   }
+  m_useCategories = m_itemInfo.component().attributeAsBool("UseCategories");
   std::ostringstream receiverSource;
   receiverSource << "qtReferenceItemComboBox_" << this;
   m_selectionSourceName = receiverSource.str();
@@ -284,14 +286,41 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   auto objSet = smtk::attribute::utility::associatableObjects(
     item, resManager, m_useAssociations, ignoreResource);
 
-  // In the case of the uniqueness condition, the componentItem's value itself may not be in the set
+  // Do we have to apply categories to this result?
+  if (m_useCategories && m_itemInfo.uiManager())
+  {
+    auto uiManager = m_itemInfo.uiManager();
+    std::set<smtk::resource::PersistentObjectPtr> toBeRemoved;
+    for (auto& obj : objSet)
+    {
+      auto att = std::dynamic_pointer_cast<attribute::Attribute>(obj);
+      if (att && !uiManager->passAttributeCategoryCheck(att->definition()))
+      {
+        toBeRemoved.insert(att);
+      }
+    }
+    // OK - lets remove all attributes that failed the category check
+    for (auto& obj : toBeRemoved)
+    {
+      objSet.erase(obj);
+    }
+  }
+  // THere are cases when the item's current color value may not be currently legal due to uniqueness
+  // and/or category constraints.  In the case of the uniqueness condition,
+  // the componentItem's value itself may not be in the set
   // returned (since adding that component would not be legal or perhaps an operation has assigned a
-  // component that would bypass the potential souurces of components.  For example, the component
+  // component that would bypass the potential sources of components.  For example, the component
   // may have been assigned from a resource that was not directly associated to the attribute resource.
   // Just to be safe lets add the item's current value (if set)
+  bool currentValueNotLegal = false;
   if (item->isSet() && item->value())
   {
-    objSet.insert(item->value());
+    auto it = objSet.find(item->value());
+    if (it == objSet.end())
+    {
+      objSet.insert(item->value());
+      currentValueNotLegal = true;
+    }
   }
 
   std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
@@ -322,11 +351,11 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     {
       selectedIndex = this->Internals->comboBox->count();
     }
-    // TODO: right now the desciptive phrase stuff displays New Resource for
-    // unamed resources so we will do the same.  However, the code should be
-    // refactored so that the logic for calculating names resides in one place
+    // TODO: right now the descriptive phrase stuff displays New Resource for
+    // unnamed resources so we will do the same.  However, the code should be
+    // re-factored so that the logic for calculating names resides in one place
     // Also - the current approach doesn't work when there are more than 1
-    // unamed resources.
+    // unnamed resources.
     if (obj->name().empty())
     {
       this->Internals->comboBox->addItem("New Resource", vdata);
@@ -335,10 +364,14 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     {
       this->Internals->comboBox->addItem(obj->name().c_str(), vdata);
     }
+    if (currentValueNotLegal)
+    {
+      this->Internals->comboBox->setItemData(selectedIndex, QBrush(Qt::red), Qt::ForegroundRole);
+    }
     this->m_mappedObjects[count++] = obj;
   }
   this->Internals->comboBox->setCurrentIndex(selectedIndex);
-  if (selectedIndex == 0)
+  if ((selectedIndex == 0) || currentValueNotLegal)
   {
     QPalette comboboxPalette = this->Internals->comboBox->palette();
     // On Macs to change the button text color you need to set QPalette::Text
@@ -446,6 +479,22 @@ void qtReferenceItemComboBox::highlightItem(int index)
 
 void qtReferenceItemComboBox::selectItem(int index)
 {
+  // Check to see if the new value is red or not - if it is
+  // then the combo box button should be red.
+  if (this->Internals->comboBox->itemData(index, Qt::ForegroundRole) == QBrush(Qt::red))
+  {
+    QPalette comboboxPalette = this->Internals->comboBox->palette();
+    // On Macs to change the button text color you need to set QPalette::Text
+    // For Linux you need to set QPalette::ButtonText
+    comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
+    comboboxPalette.setColor(QPalette::Text, Qt::red);
+    this->Internals->comboBox->setPalette(comboboxPalette);
+  }
+  else
+  {
+    this->Internals->comboBox->setPalette(this->Internals->comboBox->parentWidget()->palette());
+  }
+
   // Lets get the selection manager if possible since
   // we want to clear anything being highlighted
 
@@ -466,7 +515,7 @@ void qtReferenceItemComboBox::selectItem(int index)
     }
     return;
   }
-  // Is the "Please Select" option choosen?  If so then unset the item if needed
+  // Is the "Please Select" option chosen?  If so then unset the item if needed
   if (index <= 0)
   {
     if (item->isSet())
