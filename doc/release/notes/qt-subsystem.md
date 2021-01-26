@@ -229,7 +229,7 @@ See fileItemExample.sbt and fileItemExample.smtk as examples.  Note that to demo
 DefaultDirectoryProperty using these files you will need to create a string property called
 testDir and set it to something valid.
 
-Here is an snippet of fileItemExample.sbt showing the item view section:
+Here is a snippet of fileItemExample.sbt showing the item view section:
 
 ```xml
   <Views>
@@ -250,6 +250,23 @@ Here is an snippet of fileItemExample.sbt showing the item view section:
 
 ```
 
+### qtReferenceItemComboBox Changes
+
+#### UseCategories Option
+In the case of Reference Items that refer to Attributes, you can now restrict the qtReferenceComboBox to only contain attributes that pass the current list of active categories. Here is a snippet of fileItemExample.sbt showing the item view section:
+
+```xml
+    <View Type="Attribute" Name="Bodies">
+      <AttributeTypes>
+        <Att Type="body">
+          <ItemViews>
+            <View Item="material" UseCategories="true"/>
+          </ItemViews>
+        </Att>
+      </AttributeTypes>
+    </View>
+```
+See refitem-categories.sbt in smtk/data/attribute/attribute_collection for a complete example.
 ### Overriding ItemViews
 You can now specify ItemViews with an Item's Configuration.  If there was already an ItemView for a specific Item, it will be overridden.  Below is an example."
 
