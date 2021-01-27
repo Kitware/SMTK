@@ -40,8 +40,12 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
     - [ ] `Do: merge`
 
   - Integrate changes to `release` branch
+    - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups
     - [ ] `git push origin update-to-vVERSION:release vVERSION`
     - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
+    - [ ] Run [this script][cdash-update-groups] to update the CDash groups (must be done after a nightly run to ensure all builds are in the `release` group.
+
+[cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
 
 # Post-release
 
