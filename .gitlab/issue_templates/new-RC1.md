@@ -55,6 +55,5 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
 
 /cc @ben.boeckel
 /cc @bob.obara
-/cc @tjcorona
 /cc @dcthomp
 /label ~"priority:required"
