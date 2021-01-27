@@ -1,0 +1,59 @@
+{
+    "latest-master": [
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_asan"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_coverage"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_nodata"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_paraview"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_plain"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_tidy"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_ubsan"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_vtk_python2"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "fedora31_vtk_python3"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "macos_plain"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "windows_vs2019_ninja"
+        }
+    ]
+}
