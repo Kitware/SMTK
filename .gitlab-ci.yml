@@ -52,24 +52,24 @@ test:fedora31:
     needs:
         - build:fedora31
 
-build:fedora31-vtk:
+build:fedora31-vtk-python3:
     extends:
-        - .fedora31_vtk
+        - .fedora31_vtk_python3
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-vtk:
+test:fedora31-vtk-python3:
     extends:
-        - .fedora31_vtk
+        - .fedora31_vtk_python3
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-vtk
+        - build:fedora31-vtk-python3
     needs:
-        - build:fedora31-vtk
+        - build:fedora31-vtk-python3
 
 build:fedora31-paraview:
     extends:
