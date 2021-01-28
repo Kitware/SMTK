@@ -117,13 +117,10 @@ int unitComponentPhraseModel(int argc, char* argv[])
     // rsrcs.push_back(rsrcMgr->read<smtk::session::polygon::Resource>(argv[1]));
   }
   smtk::resource::ResourcePtr rsrc = nullptr;
-  std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
-    [&rsrc](const smtk::resource::ResourcePtr& rr) {
-      if (rr && !rsrc)
-      {
-        rsrc = rr;
-      }
-    });
+  rsrcMgr->visit([&rsrc](smtk::resource::Resource& rr) {
+    rsrc = rr.shared_from_this();
+    return smtk::common::Processing::STOP;
+  });
   smtkTest(!!rsrc, "Unable to discern that a resource was loaded.");
   auto firstSize = phraseModel->root()->subphrases().size();
 

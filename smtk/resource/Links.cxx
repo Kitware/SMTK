@@ -297,11 +297,13 @@ PersistentObjectSet Links::linkedFrom(
     return objectSet;
   }
 
-  for (auto& lhs1 : manager->resources())
-  {
-    PersistentObjectSet objectSetForResource = this->linkedFrom(lhs1, rhs1, rhs2, role);
+  manager->visit([this, &rhs1, &rhs2, &role, &objectSet](Resource& lhs1) {
+    PersistentObjectSet objectSetForResource =
+      this->linkedFrom(lhs1.shared_from_this(), rhs1, rhs2, role);
     objectSet.insert(objectSetForResource.begin(), objectSetForResource.end());
-  }
+    return common::Processing::CONTINUE;
+  });
+
   return objectSet;
 }
 

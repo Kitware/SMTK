@@ -178,6 +178,42 @@ protected:
   WeakManagerPtr m_manager;
 
 private:
+  /// Instances of this internal class are passed to resource::Manager to
+  /// modify a resource's UUID in-place while preserving the manager's indexing.
+  ///
+  /// This class should only be used by Resource::setId().
+  struct SetId
+  {
+    SetId(const smtk::common::UUID& uid)
+      : m_id(uid)
+    {
+    }
+
+    void operator()(ResourcePtr& resource) const { resource->m_id = m_id; }
+
+    smtk::common::UUID id() const { return m_id; }
+
+    const smtk::common::UUID& m_id;
+  };
+
+  /// Instances of this internal class are passed to resource::Manager to modify
+  /// a resource's location in-place while preserving the manager's indexing.
+  ///
+  /// This class should only be used by Resource::setLocation().
+  struct SetLocation
+  {
+    SetLocation(const std::string& url)
+      : m_url(url)
+    {
+    }
+
+    void operator()(ResourcePtr& resource) const { resource->m_location = m_url; }
+
+    std::string location() const { return m_url; }
+
+    const std::string& m_url;
+  };
+
   smtk::common::UUID m_id;
   std::string m_location;
   std::string m_name;

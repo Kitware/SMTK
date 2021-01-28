@@ -29,10 +29,10 @@ void InitializeObserver(Manager* mgr, Observer fn)
     return;
   }
 
-  for (const auto& rsrc : mgr->resources())
-  {
-    fn(*rsrc, smtk::resource::EventType::ADDED);
-  }
+  mgr->visit([&fn](const Resource& resource) {
+    fn(resource, smtk::resource::EventType::ADDED);
+    return common::Processing::CONTINUE;
+  });
 }
 }
 
@@ -89,6 +89,7 @@ bool Manager::registered(const Resource::Index& index) const
 
 void Manager::clear()
 {
+  ScopedLockGuard guard(m_lock, LockType::Write);
   for (auto resourceIt = m_resources.begin(); resourceIt != m_resources.end();)
   {
     Resource::Ptr resource = *resourceIt;
@@ -117,10 +118,13 @@ smtk::resource::ResourcePtr Manager::create(const Resource::Index& index)
 
   // Though the chances are super small, we ensure here that the UUID associated
   // to our new resource is unique to the manager's set of resources.
-  do
   {
-    uuid = smtk::common::UUIDGenerator::instance().random();
-  } while (m_resources.find(uuid) != m_resources.end());
+    ScopedLockGuard guard(m_lock, LockType::Read);
+    do
+    {
+      uuid = smtk::common::UUIDGenerator::instance().random();
+    } while (m_resources.find(uuid) != m_resources.end());
+  }
 
   return this->create(index, uuid);
 }
@@ -177,6 +181,7 @@ bool Manager::registerResource(Metadata&& metadata)
 
 smtk::resource::ResourcePtr Manager::get(const smtk::common::UUID& id)
 {
+  ScopedLockGuard guard(m_lock, LockType::Read);
   // No type casting is required, so we simply find and return the resource by
   // key.
   typedef Container::index<IdTag>::type ResourcesById;
@@ -192,6 +197,7 @@ smtk::resource::ResourcePtr Manager::get(const smtk::common::UUID& id)
 
 smtk::resource::ConstResourcePtr Manager::get(const smtk::common::UUID& id) const
 {
+  ScopedLockGuard guard(m_lock, LockType::Read);
   // No type casting is required, so we simply find and return the resource by
   // key.
   typedef Container::index<IdTag>::type ResourcesById;
@@ -207,6 +213,7 @@ smtk::resource::ConstResourcePtr Manager::get(const smtk::common::UUID& id) cons
 
 smtk::resource::ResourcePtr Manager::get(const std::string& url)
 {
+  ScopedLockGuard guard(m_lock, LockType::Read);
   // No type casting is required, so we simply find and return the resource by
   // key.
   typedef Container::index<LocationTag>::type ResourcesByLocation;
@@ -222,6 +229,7 @@ smtk::resource::ResourcePtr Manager::get(const std::string& url)
 
 smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
 {
+  ScopedLockGuard guard(m_lock, LockType::Read);
   // No type casting is required, so we simply find and return the resource by
   // key.
   typedef Container::index<LocationTag>::type ResourcesByLocation;
@@ -237,6 +245,7 @@ smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
 
 std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
 {
+  ScopedLockGuard guard(m_lock, LockType::Read);
   std::set<smtk::resource::ResourcePtr> values;
 
   // If the typename matches the abstract smtk::resource::Resource, a search
@@ -279,25 +288,35 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
   return values;
 }
 
-std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index)
+std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index, bool strict)
 {
   std::set<Resource::Index> validIndices;
-  for (auto& metadatum : m_metadata)
+  if (strict)
   {
-    if (metadatum.isOfType(index))
+    validIndices.insert(index);
+  }
+  else
+  {
+    for (auto& metadatum : m_metadata)
     {
-      validIndices.insert(metadatum.index());
+      if (metadatum.isOfType(index))
+      {
+        validIndices.insert(metadatum.index());
+      }
     }
   }
 
   std::set<smtk::resource::ResourcePtr> values;
 
-  typedef Container::index<IndexTag>::type ResourcesByIndex;
-  ResourcesByIndex& resources = m_resources.get<IndexTag>();
-  for (auto& idx : validIndices)
   {
-    auto resourceItRange = resources.equal_range(idx);
-    values.insert(resourceItRange.first, resourceItRange.second);
+    ScopedLockGuard guard(m_lock, LockType::Read);
+    typedef Container::index<IndexTag>::type ResourcesByIndex;
+    ResourcesByIndex& resources = m_resources.get<IndexTag>();
+    for (auto& idx : validIndices)
+    {
+      auto resourceItRange = resources.equal_range(idx);
+      values.insert(resourceItRange.first, resourceItRange.second);
+    }
   }
 
   return values;
@@ -428,26 +447,29 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
     return false;
   }
 
-  // If the manager already contains this resource, we are done
-  typedef Container::index<IdTag>::type ResourcesById;
-  ResourcesById& resources = m_resources.get<IdTag>();
-  auto resourceIt = resources.find(resource->id());
-  if (resourceIt != resources.end())
   {
-    return true;
-  }
+    ScopedLockGuard guard(m_lock, LockType::Write);
+    // If the manager already contains this resource, we are done
+    typedef Container::index<IdTag>::type ResourcesById;
+    ResourcesById& resources = m_resources.get<IdTag>();
+    auto resourceIt = resources.find(resource->id());
+    if (resourceIt != resources.end())
+    {
+      return true;
+    }
 
-  // Assign the resource's manager and insert it into the manager's set of
-  // resources
-  resource->m_manager = this->shared_from_this();
-  m_resources.insert(resource);
+    // Assign the resource's manager and insert it into the manager's set of
+    // resources
+    resource->m_manager = this->shared_from_this();
+    m_resources.insert(resource);
 
-  // Resolve resource surrogate links between the new resource and currently
-  // managed resources.
-  for (auto& rsrc : m_resources)
-  {
-    resource->links().resolve(rsrc);
-    rsrc->links().resolve(resource);
+    // Resolve resource surrogate links between the new resource and currently
+    // managed resources.
+    for (auto& rsrc : m_resources)
+    {
+      resource->links().resolve(rsrc);
+      rsrc->links().resolve(resource);
+    }
   }
 
   // Tell observers we just added a resource:
@@ -458,6 +480,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
 
 bool Manager::remove(const smtk::resource::ResourcePtr& resource)
 {
+  ScopedLockGuard guard(m_lock, LockType::Write);
   // Find the resource
   typedef Container::index<IdTag>::type ResourcesById;
   ResourcesById& resources = m_resources.get<IdTag>();
@@ -491,6 +514,52 @@ bool Manager::addLegacyReader(
 
   m_legacyReaders[alias] = read;
   return true;
+}
+
+void Manager::reviseId(const Resource::SetId& source, const Resource::SetId& destination)
+{
+  ScopedLockGuard guard(m_lock, LockType::Write);
+
+  typedef Container::index<IdTag>::type ResourcesById;
+  ResourcesById& resources = m_resources.get<IdTag>();
+  ResourcesById::iterator resourceIt = resources.find(source.id());
+
+  // try to modify the id, restore it in case of collisions
+  resources.modify(resourceIt, destination, source);
+}
+
+void Manager::reviseLocation(const smtk::common::UUID& uid, const Resource::SetLocation& source,
+  const Resource::SetLocation& destination)
+{
+  ScopedLockGuard guard(m_lock, LockType::Write);
+
+  typedef Container::index<LocationTag>::type ResourcesByLocation;
+  ResourcesByLocation& resources = m_resources.get<LocationTag>();
+  // Multiple resources can have the same location (especially an empty "" location).
+  // Find the resource with the given ID and modify it:
+  auto resourceItRange = resources.equal_range(source.location());
+  for (auto entry = resourceItRange.first; entry != resourceItRange.second; ++entry)
+  {
+    if (entry->get()->id() == uid)
+    {
+      resources.modify(entry, destination, source);
+      break;
+    }
+  }
+}
+
+smtk::common::Termination Manager::visit(const ResourceVisitor& visitor) const
+{
+  ScopedLockGuard guard(m_lock, LockType::Read);
+  const auto& resourcesById = m_resources.get<IdTag>();
+  for (const auto& resource : resourcesById)
+  {
+    if (visitor(*resource) == smtk::common::Processing::STOP)
+    {
+      return smtk::common::Termination::EARLY;
+    }
+  }
+  return smtk::common::Termination::NORMAL;
 }
 }
 }

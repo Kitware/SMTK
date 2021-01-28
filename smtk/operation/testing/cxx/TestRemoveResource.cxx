@@ -82,7 +82,7 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
 
   // Create a new MyResource type
   auto myResource = resourceManager->create<MyResource>();
-  smtkTest(resourceManager->resources().size() == 1, "Resource not added to manager.");
+  smtkTest(resourceManager->size() == 1, "Resource not added to manager.");
 
   // Create a "Remove Resource" operation
   auto removeResource = operationManager->create<smtk::operation::RemoveResource>();
@@ -99,7 +99,7 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
     "Remove resource operation failed.");
 
   // Test that the resource has been removed from the resource manager
-  smtkTest(resourceManager->resources().empty() == true, "Resource not removed from manager.");
+  smtkTest(resourceManager->empty() == true, "Resource not removed from manager.");
 
   return 0;
 }
