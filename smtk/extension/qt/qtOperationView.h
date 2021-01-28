@@ -73,6 +73,11 @@ public:
   smtk::operation::OperationPtr operation() const;
   void showInfoButton(bool visible = true);
 
+  // Replaces default buttons, for embedding operation view in other widgets.
+  // Can use nullptr for any argument to ignore that button completely.
+  void setButtons(QPointer<QPushButton> applyButton, QPointer<QPushButton> infoButton,
+    QPointer<QPushButton> doneButton);
+
 public slots:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;

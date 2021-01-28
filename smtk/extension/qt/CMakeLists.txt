@@ -24,13 +24,14 @@ set(QAttrLibSrcs
   qtAttributeView.cxx
   qtInstancedView.cxx
   qtModelEntityAttributeView.cxx
+  qtOperationDialog.cxx
+  qtOperationLauncher.cxx
+  qtOperationView.cxx
   qtReferenceItem.cxx
   qtResourceItem.cxx
   qtReferenceItemComboBox.cxx
   qtResourceBrowser.cxx
   qtResourceBrowserP.cxx
-  qtOperationLauncher.cxx
-  qtOperationView.cxx
   qtSelectorView.cxx
   qtSimpleExpressionView.cxx
   qtViewInfoDialog.cxx
@@ -96,14 +97,15 @@ set(QAttrLibMocHeaders
   qtInstancedView.h
   qtModelEntityAttributeView.h
   qtNotEditableDelegate.h
+  qtOperationDialog.h
+  qtOperationLauncher.h
+  qtOperationView.h
   qtReferenceItem.h
   qtReferenceItemComboBox.h
   qtReferenceItemData.h
   qtRegexDelegate.h
   qtResourceItem.h
   qtResourceBrowser.h
-  qtOperationLauncher.h
-  qtOperationView.h
   qtSelectorView.h
   qtSimpleExpressionView.h
   qtViewInfoDialog.h

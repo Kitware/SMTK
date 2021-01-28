@@ -128,6 +128,39 @@ void qtOperationView::showInfoButton(bool visible)
   }
 }
 
+void qtOperationView::setButtons(QPointer<QPushButton> applyButton,
+  QPointer<QPushButton> infoButton, QPointer<QPushButton> doneButton)
+{
+  // Disconnect and hide current buttons
+  this->Internals->m_applyButton->disconnect();
+  this->Internals->m_infoButton->disconnect();
+  this->Internals->m_doneButton->disconnect();
+  this->Internals->m_applyButton->hide();
+  this->Internals->m_infoButton->hide();
+  this->Internals->m_doneButton->hide();
+
+  // Assign new buttons
+  this->Internals->m_applyButton = applyButton.data();
+  this->Internals->m_infoButton = infoButton.data();
+  this->Internals->m_doneButton = doneButton.data();
+
+  if (applyButton.data() != nullptr)
+  {
+    QObject::connect(
+      this->Internals->m_applyButton, &QPushButton::clicked, this, &qtOperationView::onOperate);
+  }
+  if (infoButton.data() != nullptr)
+  {
+    QObject::connect(
+      this->Internals->m_infoButton, &QPushButton::clicked, this, &qtOperationView::onInfo);
+  }
+  if (doneButton.data() != nullptr)
+  {
+    QObject::connect(this->Internals->m_doneButton, &QAbstractButton::clicked, this,
+      &qtOperationView::doneEditing);
+  }
+}
+
 void qtOperationView::createWidget()
 {
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*>(this->parentWidget()->layout());
