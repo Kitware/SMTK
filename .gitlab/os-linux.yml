@@ -71,7 +71,7 @@
         CMAKE_CONFIGURATION: fedora31_vtk_python3
 
 .fedora31_paraview:
-    extends: .fedora31_vtk
+    extends: .fedora31_vtk_python3
     image: "kitware/cmb:ci-smtk-fedora31-paraview-20201125"
 
     variables:
