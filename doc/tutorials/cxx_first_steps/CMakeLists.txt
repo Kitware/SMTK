@@ -1,5 +1,5 @@
 # ++ 1 ++
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 project(smtk_version)
 
 find_package(smtk)
