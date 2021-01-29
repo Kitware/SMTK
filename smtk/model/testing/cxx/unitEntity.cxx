@@ -458,13 +458,10 @@ int TestEntityQueryFunctor()
   rdr->parameters()->findFile("filename")->setValue(readFilePath);
   rdr->operate();
   smtk::resource::ResourcePtr rsrc = nullptr;
-  std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
-    [&rsrc](const smtk::resource::ResourcePtr& rr) {
-      if (rr && !rsrc)
-      {
-        rsrc = rr;
-      }
-    });
+  rsrcMgr->visit([&rsrc](smtk::resource::Resource& rr) {
+    rsrc = rr.shared_from_this();
+    return smtk::common::Processing::STOP;
+  });
   smtkTest(!!rsrc, "Unable to load resource \"" + readFilePath + "\"");
 
   // II. Try various filters with and without limiting clauses.

@@ -38,6 +38,7 @@ set(commonHeaders
   Managers.h
   Observers.h
   Paths.h
+  Processing.h
   RangeDetector.h
   Singleton.h
   StringUtil.h

@@ -15,6 +15,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include <thread>
+
 namespace
 {
 class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>
@@ -84,7 +86,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
 
   smtkTest(resourceManager->metadata().empty(), "New resource manager should have no types.");
-  smtkTest(resourceManager->resources().empty(), "New resource manager should have no resources.");
+  smtkTest(resourceManager->empty(), "New resource manager should have no resources.");
 
   // Register ResourceA
   resourceManager->registerResource<ResourceA>();
@@ -94,7 +96,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   // Create a new ResourceA type
   auto resourceA1 = resourceManager->create<ResourceA>();
   smtkTest(!!resourceA1, "Failed to create instance A1 of resource A");
-  smtkTest(resourceManager->resources().size() == 1, "Resource A1 not added to manager.");
+  smtkTest(resourceManager->size() == 1, "Resource A1 not added to manager.");
 
   // Observe resources being added
   int numResources = 0;
@@ -114,7 +116,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Create another ResourceA type
   auto resourceA2 = resourceManager->create<ResourceA>();
-  smtkTest(resourceManager->resources().size() == 2, "Resource A2 not added to manager.");
+  smtkTest(resourceManager->size() == 2, "Resource A2 not added to manager.");
   smtkTest(numResources == 2, "Did not observe resource A2 being added.");
 
   // Unregister the observer
@@ -172,8 +174,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Create a ResourceB instance
   auto resourceB1 = resourceManager->create<ResourceB>();
-  smtkTest(resourceManager->resources().size() == 3,
-    "Resource manager should be managing three resources.");
+  smtkTest(resourceManager->size() == 3, "Resource manager should be managing three resources.");
 
   auto resourceBSet = resourceManager->find<ResourceB>();
   smtkTest(resourceBSet.size() == 1,
@@ -186,10 +187,31 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   // Test fetching resources by exact index; this will only
   // return instances that are of the given class not including subclasses.
   auto indexA = ResourceA::type_index;
-  auto resourcesByIndex =
-    resourceManager->resources().get<smtk::resource::IndexTag>().equal_range(indexA);
-  auto count = std::distance(resourcesByIndex.first, resourcesByIndex.second);
+  auto resourcesByIndex = resourceManager->find(indexA, true);
+  auto count = resourcesByIndex.size();
   smtkTest(count == 2, "Fetched " << count << " instead of 2 resources by type-index failed.");
+
+  std::vector<std::thread> ts;
+  for (int i = 1; i < 100; ++i)
+  {
+    ts.emplace_back(std::thread([&resourceManager, i]() {
+      if (i % 2 == 0)
+      {
+        auto rsrc = resourceManager->create<ResourceB>();
+        resourceManager->remove(rsrc);
+      }
+      else
+      {
+        auto rsrc = resourceManager->create<ResourceA>();
+        resourceManager->remove(rsrc);
+      }
+
+    }));
+  }
+  for (auto& t : ts)
+  {
+    t.join();
+  }
 
   return 0;
 }

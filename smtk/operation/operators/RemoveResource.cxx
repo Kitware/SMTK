@@ -76,10 +76,10 @@ RemoveResource::Result RemoveResource::operateInternal()
       // ...and add it to the result.
       // TODO: the "expunged" item in the result should accept resources.
 
-      for (auto& rsrc : resourceManager->resources())
-      {
-        rsrc->links().removeAllLinksTo(resource);
-      }
+      resourceManager->visit([&resource](smtk::resource::Resource& rsrc) {
+        rsrc.links().removeAllLinksTo(resource);
+        return smtk::common::Processing::CONTINUE;
+      });
     }
     else
     {

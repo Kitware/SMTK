@@ -131,7 +131,7 @@ int TestProjectCopy(int /*unused*/, char** const /*unused*/)
   }
 
   // Sanity check
-  smtkTest(resManager->resources().empty(), "resource manager not empty");
+  smtkTest(resManager->empty(), "resource manager not empty");
 
   // Delete original project and reload copy
   boost::filesystem::path origPath(ORIG_ROOT);

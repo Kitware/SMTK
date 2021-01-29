@@ -392,8 +392,7 @@ int TestResourceCopy(int /*unused*/, char** const /*unused*/)
   }
 
   // Make sure that resource manager is empty
-  auto resourceSet = resManager->resources();
-  smtkTest(resourceSet.empty(), "Original resources still held by resource manager");
+  smtkTest(resManager->empty(), "Original resources still held by resource manager");
 
   {
     ResourceChecker checker;

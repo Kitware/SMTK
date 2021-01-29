@@ -534,8 +534,10 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
   auto rsrcMgr = this->attributeResource()->manager();
   if (rsrcMgr)
   {
-    std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
-      [&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
+    rsrcMgr->visit([&rsrcs](resource::Resource& rsrc) {
+      rsrcs.insert(rsrc.shared_from_this());
+      return common::Processing::CONTINUE;
+    });
   }
 
   // Look for anything with the given UUID:
@@ -593,8 +595,10 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   auto rsrcMgr = this->attributeResource()->manager();
   if (rsrcMgr)
   {
-    std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
-      [&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
+    rsrcMgr->visit([&rsrcs](resource::Resource& rsrc) {
+      rsrcs.insert(rsrc.shared_from_this());
+      return common::Processing::CONTINUE;
+    });
   }
 
   // Look for anything with the given UUID:

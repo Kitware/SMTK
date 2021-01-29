@@ -16,10 +16,12 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
+#include "smtk/common/Processing.h"
 #include "smtk/common/TypeName.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Container.h"
+#include "smtk/resource/Lock.h"
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/MetadataContainer.h"
 #include "smtk/resource/Observer.h"
@@ -45,6 +47,9 @@ using GarbageCollectorPtr = std::shared_ptr<GarbageCollector>;
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
+  /// The signature for visitor functions used to traverse managed resources.
+  using ResourceVisitor = std::function<smtk::common::Processing(Resource&)>;
+
   smtkTypedefs(smtk::resource::Manager);
   smtkCreateMacro(Manager);
 
@@ -116,23 +121,27 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const smtk::common::UUID&) const;
 
-  /// Returns the resource that relates to the given url.  If no association exists
+  /// Returns the resource that relates to the given \a url.  If no association exists
   /// this will return a null pointer
-  ResourcePtr get(const std::string&);
-  ConstResourcePtr get(const std::string&) const;
+  ResourcePtr get(const std::string& url);
+  ConstResourcePtr get(const std::string& url) const;
 
-  /// Returns the resource that relates to the given url.  If no association
+  /// Returns the resource that relates to the given \a url.  If no association
   /// exists of this type, this will return a null pointer.
   template <typename ResourceType>
-  smtk::shared_ptr<ResourceType> get(const std::string&);
+  smtk::shared_ptr<ResourceType> get(const std::string& url);
   template <typename ResourceType>
-  smtk::shared_ptr<const ResourceType> get(const std::string&) const;
+  smtk::shared_ptr<const ResourceType> get(const std::string& url) const;
 
   /// Returns a set of resources that have a given type name.
-  std::set<ResourcePtr> find(const std::string&);
+  std::set<ResourcePtr> find(const std::string& typeName);
 
   /// Returns a set of resources that have a given type index..
-  std::set<ResourcePtr> find(const Resource::Index&);
+  ///
+  /// If \a strict is true, only resource with the exact \a typeIndex
+  /// (instead of resources that also inherit \a typeIndex) will be
+  /// returned.
+  std::set<ResourcePtr> find(const Resource::Index& typeIndex, bool strict = false);
 
   /// Returns a set of resources that are of the type \a ResourceType.
   template <typename ResourceType>
@@ -180,17 +189,56 @@ public:
   /// only refer to a single resource type.
   bool addLegacyReader(const std::string&, const std::function<ResourcePtr(const std::string&)>&);
 
-  // We expose the underlying containers for both resources and metadata; this
-  // means of access should not be necessary for most use cases.
+  /// Change the ID of a managed resource.
+  ///
+  /// This method cannot be called directly (only Resource can create its arguments).
+  /// Instead, call Resource::setId(), which will invoke this method if the
+  /// resource has a manager set.
+  void reviseId(const Resource::SetId& source, const Resource::SetId& destination);
 
-  /// Return the set of resources.
-  Container& resources() { return m_resources; }
-  const Container& resources() const { return m_resources; }
+  /// Change the location of a managed resource.
+  ///
+  /// This method cannot be called directly (only Resource can create its arguments).
+  /// Instead, call Resource::setLocation(), which will invoke this method if the
+  /// resource has a manager set.
+  void reviseLocation(const smtk::common::UUID& uid, const Resource::SetLocation& source,
+    const Resource::SetLocation& destination);
+
+  /// Visit resources held by this manager.
+  ///
+  /// This method read-locks the resource manager container.
+  /// This means that visitors may query the resource manager but they may
+  /// not alter the state of the container. If that must happen, changes should
+  /// be queued on a captured variable and performed after this function returns.
+  ///
+  /// This method returns Termination::NORMAL when all resources were traversed
+  /// and Termination::EARLY when a visitor halted iteration.
+  smtk::common::Termination visit(const ResourceVisitor& visitor) const;
+
+  /// Does the manager hold any resources?
+  bool empty() const
+  {
+    ScopedLockGuard guard(m_lock, LockType::Read);
+    return m_resources.empty();
+  }
+
+  /// Return the number of resources held by the manager.
+  ///
+  /// Note that because this number may be changed by other threads even before this
+  /// method returns, it is only intended as a convenience for single-threaded tests.
+  std::size_t size() const
+  {
+    ScopedLockGuard guard(m_lock, LockType::Read);
+    return m_resources.size();
+  }
 
   /// Return the map of metadata.
   MetadataContainer& metadata() { return m_metadata; }
 
   /// Return the observers associated with this manager.
+  ///
+  /// Note that observers may query but not modify the resource manager
+  /// since it will be read-locked by the method that triggers the observers.
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
 
@@ -222,6 +270,9 @@ private:
 
   /// A set of operations to delete ephemeral objects.
   GarbageCollectorPtr m_garbageCollector;
+
+  /// A read/write-lock for controlling access to m_resources.
+  mutable Lock m_lock;
 };
 
 template <typename ResourceType>
@@ -289,14 +340,17 @@ std::set<smtk::shared_ptr<ResourceType> > Manager::find()
 
   std::set<smtk::shared_ptr<ResourceType> > values;
 
-  typedef Container::index<IndexTag>::type ResourcesByIndex;
-  ResourcesByIndex& resources = m_resources.get<IndexTag>();
-  for (auto& idx : validIndices)
   {
-    auto resourceItRange = resources.equal_range(idx);
-    for (auto& it = resourceItRange.first; it != resourceItRange.second; ++it)
+    ScopedLockGuard guard(m_lock, LockType::Read);
+    typedef Container::index<IndexTag>::type ResourcesByIndex;
+    ResourcesByIndex& resources = m_resources.get<IndexTag>();
+    for (auto& idx : validIndices)
     {
-      values.insert(smtk::static_pointer_cast<ResourceType>(*it));
+      auto resourceItRange = resources.equal_range(idx);
+      for (auto& it = resourceItRange.first; it != resourceItRange.second; ++it)
+      {
+        values.insert(smtk::static_pointer_cast<ResourceType>(*it));
+      }
     }
   }
 

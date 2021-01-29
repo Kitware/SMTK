@@ -117,10 +117,10 @@ public:
   {
     if (auto manager = m_manager.lock())
     {
-      for (auto resource : manager->resources())
-      {
-        resource->queries().template unregisterQuery<QueryType>();
-      }
+      manager->visit([&](Resource& resource) -> smtk::common::Processing {
+        resource.queries().template unregisterQuery<QueryType>();
+        return smtk::common::Processing::CONTINUE;
+      });
 
       m_observers.erase(typeid(QueryType).hash_code());
 
@@ -173,10 +173,10 @@ public:
   {
     if (auto manager = m_manager.lock())
     {
-      for (auto resource : manager->resources())
-      {
-        resource->queries().template unregisterQueries<QueryTypes>();
-      }
+      manager->visit([&](Resource& resource) -> smtk::common::Processing {
+        resource.queries().template unregisterQueries<QueryTypes>();
+        return smtk::common::Processing::CONTINUE;
+      });
 
       m_observers.erase(typeid(QueryTypes).hash_code());
 
