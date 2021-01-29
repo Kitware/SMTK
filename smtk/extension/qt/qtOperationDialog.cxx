@@ -30,21 +30,16 @@ using namespace smtk::extension;
 class qtOperationDialogInternals
 {
 public:
-  QPushButton* m_applyButton;
-  QPushButton* m_cancelButton;
-  QTabWidget* m_tabWidget;
+  QPushButton* m_applyButton = nullptr;
+  QPushButton* m_cancelButton = nullptr;
+  QTabWidget* m_tabWidget = nullptr;
 
   QSharedPointer<smtk::extension::qtUIManager> m_uiManager;
-  smtk::extension::qtOperationView* m_smtkView;
+  smtk::extension::qtOperationView* m_smtkView = nullptr;
   smtk::operation::OperationPtr m_operation;
 
-  qtOperationDialogInternals()
-    : m_applyButton(nullptr)
-    , m_cancelButton(nullptr)
-    , m_tabWidget(nullptr)
-    , m_smtkView(nullptr)
-  {
-  }
+  qtOperationDialogInternals() = default;
+  ~qtOperationDialogInternals() = default;
 };
 
 qtOperationDialog::qtOperationDialog(
@@ -56,6 +51,7 @@ qtOperationDialog::qtOperationDialog(
 
   QVBoxLayout* dialogLayout = new QVBoxLayout(this);
   m_internals->m_tabWidget = new QTabWidget(this);
+  m_internals->m_tabWidget->setStyleSheet("QTabBar::tab { min-width: 100px; }");
 
   // 1. Create the editor tab
   QWidget* editorWidget = new QWidget(this);

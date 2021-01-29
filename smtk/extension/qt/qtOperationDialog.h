@@ -22,6 +22,16 @@ class QShowEvent;
 class QWidget;
 class qtOperationDialogInternals;
 
+/**\brief Provides a model dialog for launching SMTK operations.
+ *
+ * The intended use is for modelbuilder plugins that use menu or similar actions to invoke
+ * SMTK operations. (For example, export operations are typically run from a modal dialog.)
+ * The dialog is created as a QTabWidget with 2 tabs. The first tab embeds a qtOperationView
+ * for the operation, and the second tab displays the operation's "info" content. The
+ * dialog replaces and hides the "Apply", "Info" and "Cancel" buttons and consumes their Qt
+ * connections.
+*/
+
 namespace smtk
 {
 namespace extension

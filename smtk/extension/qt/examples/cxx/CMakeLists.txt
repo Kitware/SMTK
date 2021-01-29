@@ -35,6 +35,23 @@ target_link_libraries(qtAttributePreview
 )
 
 ##
+## Create an application to open operation dialog
+add_executable(qtOperationPreview MACOSX_BUNDLE qtOperationPreview.cxx)
+
+# If VTK session enabled, add settings to load model files
+set(vtk_session_lib)
+if (SMTK_ENABLE_VTK_SUPPORT)
+  target_compile_definitions(qtOperationPreview PRIVATE VTK_SESSION)
+  set(vtk_session_lib "smtkVTKSession")
+endif()
+
+target_link_libraries(qtOperationPreview
+  smtkCore
+  smtkQtExt
+  ${vtk_session_lib}
+)
+
+##
 ## Test model browsing (for crashes only, not behavior)
 
 if (NOT WIN32 AND SMTK_DATA_DIR)
