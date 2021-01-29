@@ -1,5 +1,5 @@
 project(ex_add_a_session)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 # Make sure we can include the resulting file:
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
