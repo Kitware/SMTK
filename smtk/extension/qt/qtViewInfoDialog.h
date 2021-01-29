@@ -15,7 +15,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
-#include <QtWidgets/QDialog>
+#include <QDialog>
+#include <QString>
 
 namespace Ui
 {
@@ -39,6 +40,8 @@ public:
 
   void displayInfo(smtk::attribute::AttributePtr att);
   void displayInfo(smtk::view::ConfigurationPtr view);
+
+  static void formatInfoHtml(smtk::attribute::AttributePtr att, QString& html);
 
 private:
   Ui::qtViewInfoDialog* m_dialog;

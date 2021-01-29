@@ -21,6 +21,8 @@
 
 #include "smtk/view/Configuration.h"
 
+#include <QTextStream>
+
 using namespace smtk::extension;
 
 qtViewInfoDialog::qtViewInfoDialog(QWidget* Parent)
@@ -71,27 +73,45 @@ void qtViewInfoDialog::displayInfo(smtk::attribute::AttributePtr att)
 {
   m_attribute = att;
   m_dialog->textBrowser->clear();
-  // Process the information of the operator's attribute
-  if (!m_attribute)
+
+  QString title = att->definition()->label().c_str() + QString(" Information");
+  this->setWindowTitle(title);
+
+  QString html;
+  qtViewInfoDialog::formatInfoHtml(att, html);
+  m_dialog->textBrowser->insertHtml(html);
+  m_dialog->textBrowser->moveCursor(QTextCursor::Start);
+}
+
+void qtViewInfoDialog::formatInfoHtml(smtk::attribute::AttributePtr att, QString& html)
+{
+  if (!att)
   {
-    m_dialog->textBrowser->insertHtml("<b>Missing Specification</b>\nNo Information Available.");
+    html = "<b>Missing Specification</b>\nNo Information Available.";
     return;
   }
-  smtk::attribute::DefinitionPtr def = m_attribute->definition();
-  std::string s("<!DOCTYPE html><html><head><title>");
-  s.append(def->label()).append("</title></head><body>");
-  m_dialog->textBrowser->insertHtml(s.c_str());
+  smtk::attribute::DefinitionPtr def = att->definition();
 
-  s = "<h2>";
-  s.append(def->label()).append("  Information</h2>");
-  m_dialog->textBrowser->insertHtml(s.c_str());
-  m_dialog->textBrowser->insertHtml("<hr size=\"1\" /><br>");
-  m_dialog->textBrowser->insertHtml(def->detailedDescription().c_str());
-  s = def->label();
-  s.append(" Information");
-  this->setWindowTitle(s.c_str());
-  s = "<table border=\"1\" cellpadding=\"10\"><tr><th>Parameter           </th><th>Description     "
-      "              </th></tr>";
+  html = "";
+  QTextStream qs(&html);
+  qs << "<!DOCTYPE html><html><head>\n"
+     << "<title>" << att->definition()->label().c_str() << "</title>\n"
+     << "</head>\n"
+     << "<body>\n"
+     << "<h2>" << def->label().c_str() << "  Information</h2>\n"
+
+     << "<hr size=\"1\" /><br>\n";
+
+  std::string desc = def->detailedDescription();
+  if (desc.empty())
+  {
+    desc = def->briefDescription();
+  }
+  if (!desc.empty())
+  {
+    qs << desc.c_str() << "\n";
+  }
+
   std::size_t i, n = def->numberOfItemDefinitions(),
                  numItemsDisplayed = static_cast<std::size_t>(0);
   for (i = static_cast<std::size_t>(0); i < n; i++)
@@ -109,25 +129,26 @@ void qtViewInfoDialog::displayInfo(smtk::attribute::AttributePtr att)
     {
       continue;
     }
-    else if (item->advanceLevel() == 1)
+
+    if (numItemsDisplayed == 0)
     {
-      s.append("<tr bgcolor=\"pink\"><td><strong>");
-    }
-    else
-    {
-      s.append("<tr><td><strong>");
+      // Begin table
+      qs << "<br><h2>Parameter Descriptions</h2>\n"
+         << "<table border=\"1\" cellpadding=\"10\">\n"
+         << "<tr><th>Parameter</th><th>Description</th></tr>\n";
     }
     numItemsDisplayed++;
-    s.append(item->label()).append("</strong></td><td>");
-    s.append(info).append("</td></tr>");
-    //m_dialog->textBrowser->insertHtml(item->detailedDescription().c_str());
-    //m_dialog->textBrowser->insertHtml("</td></tr>");
+
+    QString style = item->advanceLevel() == 1 ? " bgcolor=\"pink\"" : "";
+    qs << "<tr" << style << ">\n"
+       << "<td><strong>" << item->label().c_str() << "</strong></td>\n"
+       << "<td>" << info.c_str() << "</td>\n</tr>\n";
   }
-  // Did we have any items displayed?
+
   if (numItemsDisplayed)
   {
-    s.append("</table></body></html>");
-    m_dialog->textBrowser->insertHtml("<br><h2>Parameter Descriptions</h2>");
-    m_dialog->textBrowser->insertHtml(s.c_str());
+    qs << "</table>\n";
   }
+
+  qs << "</body></html>\n";
 }
