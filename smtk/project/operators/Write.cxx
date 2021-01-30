@@ -132,6 +132,10 @@ Write::Result Write::operateInternal()
     file << fileContents;
     file.close();
   }
+
+  // Reset the project's clean flag
+  project->setClean(true);
+
   // Construct a result object.
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -142,6 +146,7 @@ Write::Result Write::operateInternal()
     {
       std::cout << "Unassigned resource type" << resource->typeName() << std::endl;
       resource->setLocation("");
+      resource->setClean(true);
     }
   }
 

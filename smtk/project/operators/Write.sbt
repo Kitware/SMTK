@@ -13,7 +13,7 @@
         selected project and saves it and its contents to disk.
       </DetailedDescription>
 
-      <AssociationsDef Name="project" NumberOfRequiredValues="1"
+      <AssociationsDef Name="project" LockType="Read" NumberOfRequiredValues="1"
                        Extensible="false" OnlyResources="true">
         <Accepts><Resource Name="smtk::project::Project"/></Accepts>
       </AssociationsDef>
