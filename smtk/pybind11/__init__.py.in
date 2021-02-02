@@ -38,6 +38,17 @@ def _windows_dll_path():
     # scope where we can easily remove the directory again.
     _ = os.add_dll_directory(_smtk_dll_directory)
 
+    # Build tree support.
+    try:
+        from . import _build_paths
+
+        # Add any paths needed for the build tree.
+        for path in _build_paths.paths:
+            _ = os.add_dll_directory(path)
+    except ImportError:
+        # Relocatable install tree (or non-Windows).
+        pass
+
 
 # CPython 3.8 added behaviors which modified the DLL search path on Windows to
 # only search "blessed" paths. When importing SMTK, ensure that SMTK's DLLs are
