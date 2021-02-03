@@ -123,7 +123,7 @@ public:
   /// resources as modified. Saving a resource using its metadata's write
   /// method will mark the resource as clean. Loading a resource using
   /// its metadata's read method should return a clean resource.
-  bool clean() const { return m_clean; }
+  virtual bool clean() const { return m_clean; }
   void setClean(bool state = true);
 
   /// Resources that are managed have a non-null pointer to their manager.

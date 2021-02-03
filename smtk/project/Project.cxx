@@ -22,5 +22,26 @@ Project::Project(const std::string& typeName)
   , m_manager(nullptr)
 {
 }
+
+bool Project::clean() const
+{
+  // Check my flag first
+  if (!smtk::resource::Resource::clean())
+  {
+    return false;
+  }
+
+  // Check member resources
+  for (auto iter = m_resources.begin(); iter != m_resources.end(); ++iter)
+  {
+    auto resource = *iter;
+    if (!resource->clean())
+    {
+      return false;
+    }
+  }
+
+  return true; // everything in clean state
+}
 } // namespace project
 } // namespace smtk

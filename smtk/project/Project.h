@@ -93,6 +93,8 @@ public:
 
   const smtk::project::Manager* manager() const { return m_manager; }
 
+  bool clean() const override;
+
 protected:
   Project(const std::string& typeName = "");
 
