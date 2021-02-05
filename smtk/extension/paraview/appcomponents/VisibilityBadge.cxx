@@ -182,7 +182,7 @@ VisibilityBadge::VisibilityBadge(
   pqActiveObjects& act(pqActiveObjects::instance());
   QObject::connect(&act, SIGNAL(viewChanged(pqView*)), this, SLOT(activeViewChanged(pqView*)));
   // Now call immediately, since in at least some circumstances, a view may already be active.
-  if (this->phraseModel() && this->phraseModel()->root())
+  if (this->phraseModel())
   {
     this->activeViewChanged(act.activeView());
   }
@@ -374,6 +374,10 @@ void VisibilityBadge::activeViewChanged(pqView* view)
       SLOT(representationAddedToActiveView(pqRepresentation*)));
     QObject::connect(view, SIGNAL(representationRemoved(pqRepresentation*)), this,
       SLOT(representationRemovedFromActiveView(pqRepresentation*)));
+  }
+  if (!this->phraseModel()->root())
+  {
+    return;
   }
   auto rsrcPhrases = this->phraseModel()->root()->subphrases();
   auto behavior = pqSMTKBehavior::instance();
