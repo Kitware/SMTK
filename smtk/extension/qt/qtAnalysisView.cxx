@@ -125,7 +125,13 @@ void qtAnalysisView::analysisChanged(bool attChanged)
     return; // There is nothing we can do
   }
   attRes->analyses().getAnalysisAttributeCategories(m_analysisAttribute, cats);
-  this->uiManager()->setTopLevelCategories(cats);
+  attRes->setActiveCategories(cats);
+  attRes->setActiveCategoriesEnabled(true);
+  // If we have a top level View - tell it to refresh
+  if (this->uiManager()->topView())
+  {
+    this->uiManager()->topView()->onShowCategory();
+  }
 
   if (attChanged)
   {
@@ -136,7 +142,7 @@ void qtAnalysisView::analysisChanged(bool attChanged)
   // update
 }
 
-bool qtAnalysisView::categoryTest(const smtk::attribute::ConstItemDefinitionPtr& /*unused*/) const
+bool qtAnalysisView::categoryTest(const smtk::attribute::ItemPtr& /*unused*/) const
 {
   // Analysis View contents ignores category filtering
   return true;

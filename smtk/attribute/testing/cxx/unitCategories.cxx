@@ -164,6 +164,31 @@ bool testCategories(const DefinitionPtr& def, const std::string& prefix,
   return status;
 }
 
+bool testAttriubute(
+  const attribute::ResourcePtr& attRes, const std::string& attName, bool relevance, bool validity)
+{
+  attribute::AttributePtr att = attRes->findAttribute(attName);
+  if (!att)
+  {
+    std::cerr << "\t Attribute: " << attName << " could not be found!\n";
+    return false;
+  }
+  if (att->isRelevant() != relevance)
+  {
+    std::cerr << "\t Attribute: " << attName << " had incorrect relevance! Should have been "
+              << relevance << std::endl;
+    return false;
+  }
+  if (att->isValid() != validity)
+  {
+    std::cerr << "\t Attribute: " << attName << " had incorrect validity! Should have been "
+              << validity << std::endl;
+    return false;
+  }
+  std::cerr << "\t Attribute: " << attName << " Passed!\n";
+  return true;
+}
+
 bool testCategories(const attribute::ResourcePtr& attRes, const std::string& prefix,
   const std::map<std::string, std::set<std::string> >& answers)
 {
@@ -183,6 +208,27 @@ bool testCategories(const attribute::ResourcePtr& attRes, const std::string& pre
   {
     status = false;
   }
+
+  std::cerr << prefix << " Testing Resource's Attributes:\n";
+  status = status && testAttriubute(attRes, "a", true, false);
+  status = status && testAttriubute(attRes, "b", true, false);
+  status = status && testAttriubute(attRes, "c", true, false);
+  status = status && testAttriubute(attRes, "d", true, false);
+  status = status && testAttriubute(attRes, "e", false, true);
+  status = status && testAttriubute(attRes, "f", false, true);
+
+  attRes->setActiveCategoriesEnabled(false);
+
+  std::cerr << prefix << " Testing Resource's Attributes with Active Categories Disabled:\n";
+  status = status && testAttriubute(attRes, "a", true, false);
+  status = status && testAttriubute(attRes, "b", true, false);
+  status = status && testAttriubute(attRes, "c", true, false);
+  status = status && testAttriubute(attRes, "d", true, false);
+  status = status && testAttriubute(attRes, "e", true, true);
+  status = status && testAttriubute(attRes, "f", true, true);
+
+  attRes->setActiveCategoriesEnabled(true);
+
   return status;
 }
 
@@ -227,11 +273,27 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   DefinitionPtr F = attRes->createDefinition("F");
   vItemDef = F->addItemDefinition<VoidItemDefinition>("v4");
   attRes->finalizeDefinitions();
+
+  attRes->createAttribute("a", "A");
+  attRes->createAttribute("b", "B");
+  attRes->createAttribute("c", "C");
+  attRes->createAttribute("d", "D");
+  attRes->createAttribute("e", "E");
+  attRes->createAttribute("f", "F");
+
+  std::set<std::string> cats;
+  // Let set the resource's active categories to A which means
+  // attributes a, b, c, d are relevant (and invalid) while
+  // e and f are not relevant but valid.
+  cats.insert("A");
+  attRes->setActiveCategories(cats);
+  attRes->setActiveCategoriesEnabled(true);
 }
 }
 
 int unitCategories(int /*unused*/, char* /*unused*/ [])
 {
+  std::cerr << std::boolalpha; // To print out booleans
   //
   // I. Let's create an attribute resource and some definitions
   attribute::ResourcePtr attRes = attribute::Resource::create();

@@ -115,6 +115,21 @@ Consuming applications can now register icon sets for Resources and Components, 
     * correctedDefaultColor()
     * correctedNormalColor()
 * Added the ability to access attribute style information.  Currently this simply calls the Style API of the attribute resource.
+* The following methods have been removed due to the support of Active Categories
+    * passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef)
+        * Replaced by Attribute::isRelevant() or attribute::Resource::passActiveCategoryCheck()
+    * passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef)
+        * Replaced by Item::isRelevant() or attribute::Resource::passActiveCategoryCheck()
+    *  passCategoryCheck(const smtk::attribute::Categories::Set& categories)
+        * Replaced by attribute::Resource::passActiveCategoryCheck()
+    * disableCategoryChecks
+        * Replaced by attribute::Resource::setActiveCategoriesEnabled(false)
+    * enableCategoryChecks
+        * Replaced by attribute::Resource::setActiveCategoriesEnabled(true)
+    * setTopLevelCategories(const std::set<std::string>& categories)
+        * No longer needed
+    * checkAttributeValidity(const smtk::attribute::Attribute* att)
+        * Replaced by Attribute::isValid()
 
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
@@ -250,23 +265,6 @@ Here is a snippet of fileItemExample.sbt showing the item view section:
 
 ```
 
-### qtReferenceItemComboBox Changes
-
-#### UseCategories Option
-In the case of Reference Items that refer to Attributes, you can now restrict the qtReferenceComboBox to only contain attributes that pass the current list of active categories. Here is a snippet of fileItemExample.sbt showing the item view section:
-
-```xml
-    <View Type="Attribute" Name="Bodies">
-      <AttributeTypes>
-        <Att Type="body">
-          <ItemViews>
-            <View Item="material" UseCategories="true"/>
-          </ItemViews>
-        </Att>
-      </AttributeTypes>
-    </View>
-```
-See refitem-categories.sbt in smtk/data/attribute/attribute_collection for a complete example.
 ### Overriding ItemViews
 You can now specify ItemViews with an Item's Configuration.  If there was already an ItemView for a specific Item, it will be overridden.  Below is an example."
 

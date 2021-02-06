@@ -110,7 +110,7 @@ bool ReferenceItemDefinition::isValueValid(resource::ConstPersistentObjectPtr en
   }
   else if ((comp = dynamic_cast<const smtk::resource::Component*>(entity.get())))
   {
-    ok = this->checkComponent(*comp);
+    ok = this->checkComponent(comp);
   }
   return ok;
 }
@@ -282,10 +282,31 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
   return false;
 }
 
-bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component& comp) const
+bool ReferenceItemDefinition::checkCategories(const smtk::resource::Component* comp) const
+{
+  if (!m_enforcesCategories)
+  {
+    return true;
+  }
+
+  const auto att = dynamic_cast<const smtk::attribute::Attribute*>(comp);
+  if (!att)
+  {
+    return true;
+  }
+  auto attRes = att->attributeResource();
+  if (attRes && attRes->activeCategoriesEnabled())
+  {
+    return att->categories().passes(attRes->activeCategories());
+  }
+
+  return true;
+}
+
+bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* comp) const
 {
   // All components are required to have resources in order to be valid.
-  auto rsrc = comp.resource();
+  auto rsrc = comp->resource();
   if (!rsrc)
   {
     return false;
@@ -298,16 +319,16 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component& co
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
     if (m_onlyResources ||
-      (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(comp)))
+      (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(*comp)))
     {
-      return false;
+      return this->checkCategories(comp);
     }
   }
 
   // If there are no filter values, then we accept all components.
   if (m_acceptable.empty())
   {
-    return true;
+    return this->checkCategories(comp);
   }
 
   // For every element in the accepted filter map...
@@ -317,9 +338,9 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component& co
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
     if (!m_onlyResources && rsrc->isOfType(acceptable.first) &&
-      rsrc->queryOperation(acceptable.second)(comp))
+      rsrc->queryOperation(acceptable.second)(*comp))
     {
-      return true;
+      return this->checkCategories(comp);
     }
   }
 

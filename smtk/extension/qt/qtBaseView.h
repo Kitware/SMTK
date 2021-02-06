@@ -103,7 +103,6 @@ public:
   virtual void setInitialCategory() { ; }
 
   bool isTopLevel() const { return m_isTopLevel; }
-  virtual void setTopLevelCategories(const std::set<std::string>&) { ; }
 
   /// Return true if the view does not contain any information to display.
   /// Subclasses should override this method and return false by default

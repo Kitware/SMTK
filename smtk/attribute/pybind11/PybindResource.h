@@ -29,6 +29,8 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
 {
   PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource> instance(m, "Resource");
   instance
+    .def("activeCategories", &smtk::attribute::Resource::activeCategories)
+    .def("activeCategoriesEnabled", &smtk::attribute::Resource::activeCategoriesEnabled)
     .def("addAdvanceLevel", &smtk::attribute::Resource::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)
     .def("addUniqueRole", &smtk::attribute::Resource::addUniqueRoles, py::arg("role"))
     .def("addUniqueRoles", &smtk::attribute::Resource::addUniqueRoles, py::arg("roles"))
@@ -77,8 +79,12 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
     .def("isRoleUnique", &smtk::attribute::Resource::isRoleUnique)
     .def("numberOfAdvanceLevels", &smtk::attribute::Resource::numberOfAdvanceLevels)
     .def("numberOfCategories", &smtk::attribute::Resource::numberOfCategories)
+    .def("passActiveCategoryCheck", (bool (smtk::attribute::Resource::*) (const smtk::attribute::Categories::Set& cats) const) &smtk::attribute::Resource::passActiveCategoryCheck, py::arg("categorySet"))
+    .def("passActiveCategoryCheck", (bool (smtk::attribute::Resource::*) (const smtk::attribute::Categories& cats) const) &smtk::attribute::Resource::passActiveCategoryCheck, py::arg("categories"))
     .def("removeAttribute", &smtk::attribute::Resource::removeAttribute, py::arg("att"))
     .def("rename", &smtk::attribute::Resource::rename, py::arg("att"), py::arg("newName"))
+    .def("setActiveCategories", &smtk::attribute::Resource::setActiveCategories, py::arg("categories"))
+    .def("setActiveCategoriesEnabled", &smtk::attribute::Resource::setActiveCategoriesEnabled, py::arg("mode"))
     .def("setAdvanceLevelColor", &smtk::attribute::Resource::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
     .def("uniqueRoles", &smtk::attribute::Resource::uniqueRoles)
     .def("finalizeDefinitions", &smtk::attribute::Resource::finalizeDefinitions)

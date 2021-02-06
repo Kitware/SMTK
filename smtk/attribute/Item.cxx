@@ -12,6 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include <iostream>
 using namespace smtk::attribute;
@@ -57,10 +58,38 @@ AttributePtr Item::attribute() const
   return AttributePtr();
 }
 
-bool Item::isValid() const
+bool Item::isValid(bool useActiveCategories) const
 {
+  // If the resource has active categories enabled, use them
+  if (useActiveCategories)
+  {
+    auto myAttribute = this->attribute();
+    if (myAttribute)
+    {
+      auto aResource = myAttribute->attributeResource();
+      if (aResource && aResource->activeCategoriesEnabled())
+      {
+        return this->isValidInternal(true, aResource->activeCategories());
+      }
+    }
+  }
+
   std::set<std::string> cats;
   return this->isValidInternal(false, cats);
+}
+
+bool Item::isRelevant() const
+{
+  auto myAttribute = this->attribute();
+  if (myAttribute)
+  {
+    auto aResource = myAttribute->attributeResource();
+    if (aResource && aResource->activeCategoriesEnabled())
+    {
+      return this->categories().passes(aResource->activeCategories());
+    }
+  }
+  return true;
 }
 
 std::string Item::name() const

@@ -201,15 +201,6 @@ public:
   static QColor contrastWithText(const QColor&);
 
   bool passAdvancedCheck(int level);
-  bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
-  bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
-  bool passCategoryCheck(const smtk::attribute::Categories& categories);
-  bool passCategoryCheck(const smtk::attribute::Categories::Set& categories);
-  void disableCategoryChecks();
-  void enableCategoryChecks();
-  void setTopLevelCategories(const std::set<std::string>& categories);
-
-  bool checkAttributeValidity(const smtk::attribute::Attribute* att);
 
   const QFont& advancedFont() { return this->advFont; }
   int advanceLevel() const { return m_currentAdvLevel; }
@@ -258,9 +249,6 @@ public:
 
   int hoverBit() const { return m_hoverBit; }
   void setHoverBit(int val) { m_hoverBit = val; }
-
-  /// See if we are dealing with a subset of categories
-  bool topLevelCategoriesSet() const { return m_topLevelCategoriesSet; }
 
   ///methods for saving/retrieving the active tab in a group view
   void setActiveTabInfo(const std::string& groupViewName, const std::string& activeTabName);
@@ -360,10 +348,6 @@ private:
   bool m_highlightOnHover;
   int m_hoverBit;
 
-  // indicates if the UI Manager should be filtering on categories at all
-  bool m_categoryChecks;
-  bool m_topLevelCategoriesSet;
-  std::set<std::string> m_topLevelCategories;
   std::map<std::string, std::string> m_activeTabInfo;
   QPixmap m_alertPixmap;
 

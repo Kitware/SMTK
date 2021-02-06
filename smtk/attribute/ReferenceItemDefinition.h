@@ -67,6 +67,9 @@ public:
 
   void clearRejectedEntries() { m_rejected.clear(); }
 
+  void setEnforcesCategories(bool mode) { m_enforcesCategories = mode; }
+  bool enforcesCategories() const { return m_enforcesCategories; }
+
   virtual bool isValueValid(resource::ConstPersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.
@@ -140,7 +143,12 @@ protected:
   /// Return whether a resource is accepted by this definition. Used internally by isValueValid().
   bool checkResource(const smtk::resource::Resource& rsrc) const;
   /// Return whether a component is accepted by this definition. Used internally by isValueValid().
-  bool checkComponent(const smtk::resource::Component& comp) const;
+  /// The pointer is being based so dynamic casting can be used
+  bool checkComponent(const smtk::resource::Component* comp) const;
+  /// Return whether a component passes the category requirements.  This is used for comps
+  /// that are Attributes
+  /// The pointer is being based so dynamic casting can be used
+  bool checkCategories(const smtk::resource::Component* comp) const;
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
@@ -152,6 +160,7 @@ protected:
   smtk::resource::LockType m_lockType;
   smtk::resource::Links::RoleType m_role;
   bool m_holdReference;
+  bool m_enforcesCategories = false;
 
 private:
   bool m_onlyResources;

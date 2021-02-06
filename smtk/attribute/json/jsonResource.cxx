@@ -37,6 +37,13 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
   // Set the version to 4.0
   j["version"] = "4.0";
+  // Write out the active category information
+  if (!res->activeCategories().empty())
+  {
+    j["ActiveCategories"] = res->activeCategories();
+  }
+  j["ActiveCategoriesEnabled"] = res->activeCategoriesEnabled();
+
   // Write out the category and analysis information
   if (res->numberOfCategories())
   {
@@ -767,6 +774,21 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
   // Update definition information
   res->finalizeDefinitions();
+
+  // Process Active Category Information
+  bool enabled = false;
+  result = j.find("ActiveCategoriesEnabled");
+  if (result != j.end())
+  {
+    enabled = *result;
+  }
+
+  result = j.find("ActiveCategories");
+  if (result != j.end())
+  {
+    res->setActiveCategories(*result);
+  }
+  res->setActiveCategoriesEnabled(enabled);
 }
 }
 }

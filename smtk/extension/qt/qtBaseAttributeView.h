@@ -55,8 +55,6 @@ public:
   bool categoryEnabled() const override;
   std::string currentCategory() const override;
 
-  void setTopLevelCategories(const std::set<std::string>& categories) override;
-
   //Returns true if the view does not contain any information to display - the default
   // behavior is to return false
   bool isEmpty() const override;
@@ -97,7 +95,7 @@ protected:
 
   /// \brief Test for category filtering.
   /// Returns true if the item's categories pass
-  virtual bool categoryTest(const smtk::attribute::ConstItemDefinitionPtr&) const;
+  virtual bool categoryTest(const smtk::attribute::ItemPtr&) const;
 
   /// \brief Test for advance level filtering.
   /// Returns true if the item's advance level pass

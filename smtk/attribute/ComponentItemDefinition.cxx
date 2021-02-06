@@ -46,7 +46,7 @@ bool ComponentItemDefinition::isValueValid(smtk::resource::ConstPersistentObject
   {
     return false;
   }
-  return this->checkComponent(*comp);
+  return this->checkComponent(comp);
 }
 
 smtk::attribute::ItemPtr ComponentItemDefinition::buildItem(

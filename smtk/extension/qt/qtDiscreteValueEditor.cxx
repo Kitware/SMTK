@@ -85,6 +85,12 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
 void qtDiscreteValueEditor::createWidget()
 {
   auto uiManager = this->Internals->m_inputItem->uiManager();
+  smtk::attribute::ResourcePtr attResource;
+  if (uiManager)
+  {
+    attResource = uiManager->attResource();
+  }
+
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item)
   {
@@ -125,7 +131,7 @@ void qtDiscreteValueEditor::createWidget()
     std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
     // Check its categories and advance level if appropriate
     const auto& cats = itemDef->enumCategories(enumText);
-    if (!cats.empty() && (uiManager != nullptr) && !uiManager->passCategoryCheck(cats))
+    if (!cats.empty() && attResource && !attResource->passActiveCategoryCheck(cats))
     {
       // enum failed category check
       continue;
@@ -310,6 +316,8 @@ void qtDiscreteValueEditor::updateContents()
   if (uiManager == nullptr)
     return;
 
+  smtk::attribute::ResourcePtr attResource = uiManager->attResource();
+
   this->Internals->clearChildItems();
 
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
@@ -348,8 +356,8 @@ void qtDiscreteValueEditor::updateContents()
         item->activeChildItem(static_cast<int>(i))->definition();
       std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
         itemDef->childrenItemDefinitions().find(itDef->name());
-      if ((it != itemDef->childrenItemDefinitions().end()) &&
-        uiManager->passCategoryCheck(itemDef->categories()))
+      if ((it != itemDef->childrenItemDefinitions().end()) && attResource &&
+        attResource->passActiveCategoryCheck(itemDef->categories()))
       {
         activeChildDefs.push_back(it->second);
       }

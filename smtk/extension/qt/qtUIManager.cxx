@@ -154,8 +154,6 @@ void qtUIManager::commonConstructor()
   m_topView = nullptr;
   m_maxValueLabelLength = 200;
   m_minValueLabelLength = 50;
-  m_topLevelCategoriesSet = false;
-  m_categoryChecks = true;
   m_highlightOnHover = true;
   m_alertPixmap = QPixmap(":/icons/attribute/errorAlert.png");
 
@@ -487,89 +485,6 @@ bool qtUIManager::categoryEnabled()
 bool qtUIManager::passAdvancedCheck(int level)
 {
   return (level <= this->advanceLevel());
-}
-
-bool qtUIManager::passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef)
-{
-  return this->passCategoryCheck(AttDef->categories());
-}
-
-bool qtUIManager::passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef)
-{
-  return this->passCategoryCheck(ItemDef->categories());
-}
-
-bool qtUIManager::passCategoryCheck(const smtk::attribute::Categories& categories)
-{
-  if (!m_categoryChecks)
-  {
-    // Been told not to filter on categories
-    return true;
-  }
-  else if (this->categoryEnabled())
-  {
-    // Ok see if the current category is in the set
-    return (categories.passes(this->currentCategory()));
-  }
-  else if (!m_topLevelCategoriesSet)
-  {
-    // The top level view is not filtering on category and no one has
-    // explicilty specified a list categories that restricts what can be
-    // displayed
-    return true;
-  }
-
-  // In this case we have been given an explicit set of categories that restrict
-  // what can be displayed even if the top level is displaying its category widget
-  return (categories.passes(m_topLevelCategories));
-}
-
-bool qtUIManager::passCategoryCheck(const smtk::attribute::Categories::Set& categories)
-{
-  if (!m_categoryChecks)
-  {
-    // Been told not to filter on categories
-    return true;
-  }
-  else if (this->categoryEnabled())
-  {
-    // Ok see if the current category is in the set
-    return (categories.passes(this->currentCategory()));
-  }
-  else if (!m_topLevelCategoriesSet)
-  {
-    // The top level view is not filtering on category and no one has
-    // explicilty specified a list categories that restricts what can be
-    // displayed
-    return true;
-  }
-
-  // In this case we have been given an explicit set of categories that restrict
-  // what can be displayed even if the top level is displaying its category widget
-  return (categories.passes(m_topLevelCategories));
-}
-
-bool qtUIManager::checkAttributeValidity(const smtk::attribute::Attribute* att)
-{
-  if (!m_categoryChecks)
-  {
-    // Been told not to filter on categories
-    return att->isValid();
-  }
-  else if (this->categoryEnabled())
-  {
-    std::set<std::string> temp;
-    temp.insert(this->currentCategory());
-    return att->isValid(temp);
-  }
-  else if (!m_topLevelCategoriesSet)
-  {
-    // The top level view is not filtering on category and no one has
-    // explicilty specified a list categories that restricts what can be
-    // displayed
-    return att->isValid();
-  }
-  return att->isValid(m_topLevelCategories);
 }
 
 QString qtUIManager::clipBoardText()
@@ -1182,29 +1097,6 @@ qtItem* qtUIManager::defaultItemConstructor(const qtAttributeItemInfo& info)
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
   }
   return aItem;
-}
-
-void qtUIManager::disableCategoryChecks()
-{
-  m_categoryChecks = false;
-}
-void qtUIManager::enableCategoryChecks()
-{
-  m_categoryChecks = true;
-}
-void qtUIManager::setTopLevelCategories(const std::set<std::string>& categories)
-{
-  // Check to see if we need to update anything
-  if (m_topLevelCategoriesSet && (m_topLevelCategories == categories))
-  {
-    return; // Nothing to do
-  }
-  m_topLevelCategories = categories;
-  m_topLevelCategoriesSet = true;
-  if (m_topView)
-  {
-    m_topView->setTopLevelCategories(categories);
-  }
 }
 
 void qtUIManager::setActiveTabInfo(

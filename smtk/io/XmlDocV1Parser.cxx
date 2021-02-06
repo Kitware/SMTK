@@ -650,8 +650,29 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
   this->processViews(amnode);
 
   // Let's finalize the definition information so local categories,
-  // local advance levels, etc. get properly propigated.
+  // local advance levels, etc. get properly propagated.
   m_resource->finalizeDefinitions();
+
+  // Lets see if there are active category information
+  node = amnode.child("ActiveCategories");
+  if (node)
+  {
+    bool enabled = false;
+    std::set<std::string> cats;
+    xml_attribute xatt = node.attribute("Enabled");
+    if (xatt)
+    {
+      enabled = xatt.as_bool();
+    }
+
+    xml_node cnode;
+    for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
+    {
+      cats.insert(cnode.text().get());
+    }
+    m_resource->setActiveCategories(cats);
+    m_resource->setActiveCategoriesEnabled(enabled);
+  }
 
   // Now we need to check to see if there are any categories in the resource
   // that were not explicitly listed in the categories section

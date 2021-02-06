@@ -385,6 +385,14 @@ void XmlV2StringWriter::generateXml()
       }
     }
   }
+  // Lets write out the active category information
+  auto activeCatNode = root.append_child("ActiveCategories");
+  activeCatNode.append_attribute("Enabled").set_value(m_resource->activeCategoriesEnabled());
+  for (const auto& cat : m_resource->activeCategories())
+  {
+    activeCatNode.append_child("Cat").text().set(cat.c_str());
+  }
+
   if (m_includeAnalyses && analyses.size())
   {
     auto aNodes = root.append_child("Analyses");

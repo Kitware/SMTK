@@ -182,8 +182,29 @@ public:
   std::string createUniqueName(const std::string& type) const;
 
   void finalizeDefinitions();
+
+  ///@{
+  ///\brief API for accessing Category information.
+  ///
+  /// These categories are specified when defining Definitions and are gathered
+  /// as a result of calling finalizeDefinitions.
   std::size_t numberOfCategories() const { return m_categories.size(); }
   const std::set<std::string>& categories() const { return m_categories; }
+  ///@}
+
+  ///@{
+  ///\brief API for setting and accessing Active Category information.
+  ///
+  /// Active Categories are used to determine attribute/item validity as well as item values.
+  /// If m_ActiveCategoriesEnabled is true then active categories will be taken into consideration.
+  void setActiveCategoriesEnabled(bool mode);
+  bool activeCategoriesEnabled() const { return m_activeCategoriesEnabled; }
+  void setActiveCategories(const std::set<std::string>& cats);
+  const std::set<std::string>& activeCategories() const { return m_activeCategories; }
+  ///@}
+
+  bool passActiveCategoryCheck(const smtk::attribute::Categories::Set& cats) const;
+  bool passActiveCategoryCheck(const smtk::attribute::Categories& cats) const;
 
   void addView(smtk::view::ConfigurationPtr);
   smtk::view::ConfigurationPtr findView(const std::string& name) const;
@@ -323,6 +344,8 @@ protected:
     std::set<smtk::attribute::WeakDefinitionPtr, Definition::WeakDefinitionPtrCompare> >
     m_derivedDefInfo;
   std::set<std::string> m_categories;
+  std::set<std::string> m_activeCategories;
+  bool m_activeCategoriesEnabled = false;
   smtk::attribute::Analyses m_analyses;
   std::map<std::string, smtk::view::ConfigurationPtr> m_views;
   std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> > m_styles;
