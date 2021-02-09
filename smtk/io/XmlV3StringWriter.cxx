@@ -532,6 +532,7 @@ void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::Co
 void XmlV3StringWriter::processReferenceDefCommon(
   pugi::xml_node& node, ReferenceItemDefinitionPtr idef, const std::string& labelName)
 {
+  node.append_attribute("EnforceCategories") = idef->enforcesCategories();
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
 

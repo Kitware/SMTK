@@ -116,7 +116,7 @@ bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item) const
     return false;
   }
   auto idef = item->definition();
-  return this->advanceLevelTest(item) && this->categoryTest(idef);
+  return this->advanceLevelTest(item) && this->categoryTest(item);
 }
 
 bool qtBaseAttributeView::displayItemDefinition(
@@ -126,12 +126,17 @@ bool qtBaseAttributeView::displayItemDefinition(
   {
     return false;
   }
-  return this->uiManager()->passAdvancedCheck(idef->advanceLevel(0)) && this->categoryTest(idef);
+  if (!this->uiManager()->passAdvancedCheck(idef->advanceLevel(0)))
+  {
+    return false;
+  }
+  auto attResoure = this->uiManager()->attResource();
+  return attResoure->passActiveCategoryCheck(idef->categories());
 }
 
-bool qtBaseAttributeView::categoryTest(const smtk::attribute::ConstItemDefinitionPtr& idef) const
+bool qtBaseAttributeView::categoryTest(const smtk::attribute::ItemPtr& item) const
 {
-  return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(idef);
+  return item->isRelevant();
 }
 
 bool qtBaseAttributeView::isItemWriteable(const smtk::attribute::ItemPtr& item) const
@@ -704,33 +709,6 @@ bool qtBaseAttributeView::isEmpty() const
   return false;
 }
 
-void qtBaseAttributeView::setTopLevelCategories(const std::set<std::string>& categories)
-{
-  if ((!m_isTopLevel) || (this->Internals->ShowCategoryCombo == nullptr))
-  {
-    this->onShowCategory();
-    return;
-  }
-  auto current = this->Internals->ShowCategoryCombo->currentText();
-  this->Internals->ShowCategoryCombo->blockSignals(true);
-  this->Internals->ShowCategoryCombo->clear();
-  for (const auto& cat : categories)
-  {
-    this->Internals->ShowCategoryCombo->addItem(cat.c_str());
-  }
-  this->Internals->ShowCategoryCombo->blockSignals(false);
-  int pos = this->Internals->ShowCategoryCombo->findText(current);
-  if (pos > -1)
-  {
-    this->Internals->ShowCategoryCombo->setCurrentIndex(pos);
-  }
-  else
-  {
-    this->Internals->ShowCategoryCombo->setCurrentIndex(0);
-  }
-  this->onShowCategory();
-}
-
 void qtBaseAttributeView::onConfigurationChanged(int index)
 {
   std::set<std::string> cats;
@@ -745,8 +723,8 @@ void qtBaseAttributeView::onConfigurationChanged(int index)
 
   if (index == -1)
   {
-    // Nothing is selected so clear it
-    this->uiManager()->setTopLevelCategories(cats);
+    // Nothing is selected so lets disable category filtering
+    attRes->setActiveCategoriesEnabled(false);
     return;
   }
 
@@ -763,12 +741,13 @@ void qtBaseAttributeView::onConfigurationChanged(int index)
       return;
     }
     att = attRes->createAttribute(def);
-    // Tell the uiManager we don't want to filter on categories
-    this->uiManager()->disableCategoryChecks();
+    // Tell the Resource we don't want to filter on active categories
+    bool origEnableActiveCategories = attRes->activeCategoriesEnabled();
+    attRes->setActiveCategoriesEnabled(false);
     auto editor =
       new smtk::extension::qtAttributeEditorDialog(att, this->uiManager(), this->widget());
     auto status = editor->exec();
-    this->uiManager()->enableCategoryChecks();
+    attRes->setActiveCategoriesEnabled(origEnableActiveCategories);
     if (status == QDialog::Rejected)
     {
       attRes->removeAttribute(att);
@@ -850,6 +829,7 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
   int index;
   index = this->Internals->m_configurationCombo->findText(currentConfig.c_str());
   this->Internals->m_configurationCombo->setCurrentIndex(index);
-  this->uiManager()->setTopLevelCategories(cats);
+  attRes->setActiveCategories(cats);
+  attRes->setActiveCategoriesEnabled(true);
   this->Internals->m_configurationCombo->blockSignals(false);
 }

@@ -56,6 +56,9 @@ pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module& m)
       py::arg("typeName"), py::arg("queryString"), py::arg("accept"))
     .def("setCommonValueLabel", &smtk::attribute::ReferenceItemDefinition::setCommonValueLabel,
       py::arg("elabel"))
+    .def("enforcesCategories", &smtk::attribute::ReferenceItemDefinition::enforcesCategories)
+    .def("setEnforcesCategories", &smtk::attribute::ReferenceItemDefinition::setEnforcesCategories,
+      py::arg("enforcesCategoriesMode"))
     .def("setIsExtensible", &smtk::attribute::ReferenceItemDefinition::setIsExtensible,
       py::arg("extensible"))
     .def("setLockType", &smtk::attribute::ReferenceItemDefinition::setLockType, py::arg("val"))

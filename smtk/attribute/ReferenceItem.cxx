@@ -275,6 +275,17 @@ bool ReferenceItem::isValidInternal(
     return false;
   }
 
+  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  if (def && def->enforcesCategories())
+  {
+    for (size_t i = 0; i < this->numberOfValues(); i++)
+    {
+      if (!def->isValueValid(this->value(i)))
+      {
+        return false;
+      }
+    }
+  }
   return true;
 }
 

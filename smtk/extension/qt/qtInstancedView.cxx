@@ -266,7 +266,7 @@ bool qtInstancedView::isValid() const
 {
   foreach (qtAttribute* att, this->Internals->AttInstances)
   {
-    if (!this->uiManager()->checkAttributeValidity(att->attribute().get()))
+    if (!att->attribute()->isValid())
     {
       return false;
     }

@@ -117,23 +117,26 @@ public:
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
     smtk::extension::qtUIManager* uiManager) const
   {
-    if (uiManager->categoryEnabled())
+    auto attResource = uiManager->attResource();
+    if (!(attResource && attResource->activeCategoriesEnabled()))
     {
-      auto currentCat = uiManager->currentCategory();
-      if (this->AttDefMap.keys().contains(currentCat.c_str()))
-      {
-        return this->AttDefMap[currentCat.c_str()];
-      }
+      // There are no active categories - return everything
       return this->AllDefs;
     }
-    else if (!uiManager->topLevelCategoriesSet())
+
+    if (attResource->activeCategories().size() == 1)
     {
+      std::string theCategory = *(attResource->activeCategories().begin());
+      if (this->AttDefMap.keys().contains(theCategory.c_str()))
+      {
+        return this->AttDefMap[theCategory.c_str()];
+      }
       return this->AllDefs;
     }
     QList<smtk::attribute::DefinitionPtr> defs;
     foreach (DefinitionPtr attDef, this->AllDefs)
     {
-      if (uiManager->passAttributeCategoryCheck(attDef))
+      if (attResource->passActiveCategoryCheck(attDef->categories()))
       {
         defs.push_back(attDef);
       }

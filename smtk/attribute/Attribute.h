@@ -310,8 +310,14 @@ public:
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
   const smtk::attribute::Categories& categories() const;
 
-  bool isValid() const;
+  bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const;
+
+  ///\brief Returns true if the attribute is relevant based on the resource's
+  /// active categories.  If the Resource does not have active categories enabled or
+  /// if the attribute passes its category check, this method will return true; else
+  /// it will return false
+  bool isRelevant() const;
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;

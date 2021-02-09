@@ -1104,3 +1104,30 @@ smtk::attribute::Resource::GuardedLinks Resource::guardedLinks()
 {
   return GuardedLinks(this->mutex(), this->links());
 }
+
+void Resource::setActiveCategoriesEnabled(bool mode)
+{
+  m_activeCategoriesEnabled = mode;
+}
+void Resource::setActiveCategories(const std::set<std::string>& cats)
+{
+  m_activeCategories = cats;
+}
+
+bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories::Set& cats) const
+{
+  if (!m_activeCategoriesEnabled)
+  {
+    return true;
+  }
+  return cats.passes(m_activeCategories);
+}
+
+bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories& cats) const
+{
+  if (!m_activeCategoriesEnabled)
+  {
+    return true;
+  }
+  return cats.passes(m_activeCategories);
+}

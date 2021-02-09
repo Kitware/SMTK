@@ -253,18 +253,31 @@ const smtk::attribute::Categories& Attribute::categories() const
   * attribute is set and considered a valid value by its definition.
   * This can be used to ensure that an attribute is in a good state
   * before using it to perform some operation.
+  *
+  * If useActiveCategories is true and if the resource has active
+  * categories enabled, then the resource's active categories will be
+  * taken into consideration
   */
-bool Attribute::isValid() const
+bool Attribute::isValid(bool useActiveCategories) const
 {
+  if (useActiveCategories)
+  {
+    auto aResource = this->attributeResource();
+    if (aResource && aResource->activeCategoriesEnabled())
+    {
+      return this->isValid(aResource->activeCategories());
+    }
+  }
+
   for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
-    if (!(*it)->isValid())
+    if (!(*it)->isValid(false))
     {
       return false;
     }
   }
   // also check associations
-  return !(m_associatedObjects && !m_associatedObjects->isValid());
+  return !(m_associatedObjects && !m_associatedObjects->isValid(false));
 }
 
 bool Attribute::isValid(const std::set<std::string>& cats) const
@@ -285,6 +298,16 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
   }
   // also check associations
   return !(m_associatedObjects && !m_associatedObjects->isValid());
+}
+
+bool Attribute::isRelevant() const
+{
+  auto aResource = this->attributeResource();
+  if (aResource && aResource->activeCategoriesEnabled())
+  {
+    return this->categories().passes(aResource->activeCategories());
+  }
+  return true;
 }
 
 ResourcePtr Attribute::attributeResource() const

@@ -42,23 +42,26 @@ public:
   QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
     smtk::extension::qtUIManager* uiManager) const
   {
-    if (uiManager->categoryEnabled())
+    auto attResource = uiManager->attResource();
+    if (!(attResource && attResource->activeCategoriesEnabled()))
     {
-      auto currentCat = uiManager->currentCategory();
-      if (this->AttDefMap.keys().contains(currentCat.c_str()))
-      {
-        return this->AttDefMap[currentCat.c_str()];
-      }
+      // There is no filtering - return everything
       return this->AllDefs;
     }
-    else if (!uiManager->topLevelCategoriesSet())
+
+    if (attResource->activeCategories().size() == 1)
     {
+      std::string theCategory = *(attResource->activeCategories().begin());
+      if (this->AttDefMap.keys().contains(theCategory.c_str()))
+      {
+        return this->AttDefMap[theCategory.c_str()];
+      }
       return this->AllDefs;
     }
     QList<smtk::attribute::DefinitionPtr> defs;
     foreach (DefinitionPtr attDef, this->AllDefs)
     {
-      if (uiManager->passAttributeCategoryCheck(attDef))
+      if (attDef->categories().passes(attResource->activeCategories()))
       {
         defs.push_back(attDef);
       }
@@ -68,25 +71,29 @@ public:
 
   bool currentDefsIsEmpty(smtk::extension::qtUIManager* uiManager) const
   {
-    if (uiManager->categoryEnabled())
+    auto attResource = uiManager->attResource();
+    if (attResource && attResource->activeCategoriesEnabled())
     {
-      auto currentCat = uiManager->currentCategory();
-      if (this->AttDefMap.keys().contains(currentCat.c_str()))
+      if (attResource->activeCategories().empty())
       {
-        return (this->AttDefMap[currentCat.c_str()].empty());
+        return (this->AllDefs.empty());
       }
-      return (this->AllDefs.empty());
-    }
-    else if (!uiManager->topLevelCategoriesSet())
-    {
-      return (this->AllDefs.empty());
-    }
-    QList<smtk::attribute::DefinitionPtr> defs;
-    foreach (DefinitionPtr attDef, this->AllDefs)
-    {
-      if (uiManager->passAttributeCategoryCheck(attDef))
+      if (attResource->activeCategories().size() == 1)
       {
-        return false;
+        std::string theCategory = *(attResource->activeCategories().begin());
+        if (this->AttDefMap.keys().contains(theCategory.c_str()))
+        {
+          return (this->AttDefMap[theCategory.c_str()].empty());
+        }
+        return (this->AllDefs.empty());
+      }
+      QList<smtk::attribute::DefinitionPtr> defs;
+      foreach (DefinitionPtr attDef, this->AllDefs)
+      {
+        if (attResource->passActiveCategoryCheck(attDef->categories()))
+        {
+          return false;
+        }
       }
     }
     return true;

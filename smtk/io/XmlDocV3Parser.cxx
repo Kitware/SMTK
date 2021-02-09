@@ -818,6 +818,12 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
     }
   }
 
+  xatt = node.attribute("EnforceCategories");
+  if (xatt)
+  {
+    idef->setEnforcesCategories(xatt.as_bool());
+  }
+
   xatt = node.attribute("LockType");
   if (xatt)
   {

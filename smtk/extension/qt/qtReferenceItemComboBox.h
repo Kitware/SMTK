@@ -104,10 +104,9 @@ private:
   // Should the source of possible values be restricted to those associated
   // to the Item's Attribute
   bool m_useAssociations;
-  // Should the source of possible values (in this case Attributes) should
-  // also conform with the current set of active categories
-  bool m_useCategories;
   std::map<int, smtk::resource::WeakPersistentObjectPtr> m_mappedObjects;
+  // This is used to indicate that the current value is not considered valid
+  bool m_currentValueIsInvalid = false;
 }; // class
 }; // namespace attribute
 }; // namespace smtk

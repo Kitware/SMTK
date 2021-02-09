@@ -37,6 +37,7 @@ SMTKCORE_EXPORT void to_json(
     accept.push_back(acceptable.first);
     accept.push_back(acceptable.second);
   }
+  j["EnforceCategories"] = defPtr->enforcesCategories();
   j["Accepts"] = accept;
   nlohmann::json reject;
   for (auto& rejected : defPtr->rejectedEntries())
@@ -87,6 +88,11 @@ SMTKCORE_EXPORT void from_json(
   }
   auto basicItem = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
   smtk::attribute::from_json(j, basicItem);
+  auto enforceCats = j.find("EnforceCategories");
+  if (enforceCats != j.end())
+  {
+    defPtr->setEnforcesCategories(*enforceCats);
+  }
   auto accept = j.find("Accepts");
   if (accept == j.end())
   {

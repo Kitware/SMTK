@@ -75,7 +75,7 @@ protected:
   ///
   /// Since the items of the Analysis Attribute have no categories, this view turns off this
   // check by always returning true.
-  bool categoryTest(const smtk::attribute::ConstItemDefinitionPtr&) const override;
+  bool categoryTest(const smtk::attribute::ItemPtr&) const override;
 
   /// \brief Method to update the category filtering based on the state of the Analysis Attribute
   void analysisChanged(bool attributeChanged);

@@ -80,17 +80,28 @@ public:
   /// @{
   /// \brief tests the validity of an item
   ///
-  /// Returns true if the item is considered valid.  If a set of categories is
+  /// Returns true if the item is considered valid.
+  /// If a set of categories is
   /// passed into the method then they are used to
   /// "filter" the item.  This means the item will check to see if it passes
   /// its passCategoryCheck method and if it fails (indicating the item is to
   /// be passed over) isValid will return true regardless of the item's contents.
-  bool isValid() const;
+  ///
+  /// In the form that takes in boolean.  If useActiveCategories is true, and
+  /// the attributes resource has active categories enabled, then the resource's
+  /// active categories are used to before the filtering
+  bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const
   {
     return this->isValidInternal(true, categories);
   }
   /// @}
+
+  ///\brief Returns true if the item is relevant based on the resource's
+  /// active categories.  If the Resource does not have active categories enabled or
+  /// if the item passes its category check, this method will return true; else
+  /// it will return false
+  bool isRelevant() const;
 
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle
