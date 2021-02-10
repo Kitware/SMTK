@@ -22,18 +22,6 @@ namespace smtk
 namespace view
 {
 
-std::string VTKSelectionResponderGroup::resourceForOperation(const Operation::Index& index) const
-{
-  auto vals = values(index);
-  return !vals.empty() ? *vals.begin() : "";
-}
-
-std::string VTKSelectionResponderGroup::resourceForOperation(const std::string& operationName) const
-{
-  auto vals = values(operationName);
-  return !vals.empty() ? *vals.begin() : "";
-}
-
 std::set<smtk::operation::Operation::Index> VTKSelectionResponderGroup::operationsForResource(
   const smtk::resource::ResourcePtr& selectedResource) const
 {
@@ -49,10 +37,13 @@ std::set<smtk::operation::Operation::Index> VTKSelectionResponderGroup::operatio
 
   for (auto& index : allOperations)
   {
-    std::string resourceTypeName = this->resourceForOperation(index);
-    if (selectedResource->isOfType(resourceTypeName))
+    for (const auto& resourceTypeName : this->values(index))
     {
-      operations.insert(index);
+      if (selectedResource->isOfType(resourceTypeName))
+      {
+        operations.insert(index);
+        break;
+      }
     }
   }
   return operations;
@@ -72,7 +63,10 @@ std::set<std::string> VTKSelectionResponderGroup::supportedResources() const
 
   for (auto& index : allOperations)
   {
-    resources.insert(resourceForOperation(index));
+    for (const auto& resourceTypeName : this->values(index))
+    {
+      resources.insert(resourceTypeName);
+    }
   }
   return resources;
 }
