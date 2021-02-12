@@ -12,6 +12,7 @@
 #define pybind_smtk_attribute_Definition_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/attribute/Definition.h"
 
@@ -44,6 +45,7 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     // doesn't support const references - oly non-const method of localCategories supported
     .def("categories", &smtk::attribute::Definition::categories)
     .def("localCategories", (smtk::attribute::Categories::Set& (smtk::attribute::Definition::*)()) &smtk::attribute::Definition::localCategories)
+    .def("setLocalCategories", &smtk::attribute::Definition::setLocalCategories, py::arg("catSet"))
     .def("advanceLevel", &smtk::attribute::Definition::advanceLevel, py::arg("mode") = 0)
     .def("setLocalAdvanceLevel", (void (smtk::attribute::Definition::*)(int, unsigned int)) &smtk::attribute::Definition::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))
     .def("setLocalAdvanceLevel", (void (smtk::attribute::Definition::*)(unsigned int)) &smtk::attribute::Definition::setLocalAdvanceLevel, py::arg("level"))
