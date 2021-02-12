@@ -131,6 +131,16 @@ public:
   ///\brief Returns the categories explicitly assigned to the Definition
   smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
   const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
+
+  ///\brief Sets the local categories.
+  ///
+  /// This method is intended for use by Python applications, because Python code cannot
+  /// manipulate the reference returned by the localCategories() method.
+  void setLocalCategories(const smtk::attribute::Categories::Set& catSet)
+  {
+    m_localCategories = catSet;
+  }
+
   /**
    * @brief Given a container, filter item definitions in the definition by a lambda function
    * @param values a container which holds definitions

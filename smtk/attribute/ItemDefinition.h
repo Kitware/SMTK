@@ -94,6 +94,16 @@ public:
   ///\brief Returns the categories::Set explicitly assigned to the Items Definition
   smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
   const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
+
+  ///\brief Sets the local categories.
+  ///
+  /// This method is intended for use by Python applications, because Python code cannot
+  /// manipulate the reference returned by the localCategories() method.
+  void setLocalCategories(const smtk::attribute::Categories::Set& catSet)
+  {
+    m_localCategories = catSet;
+  }
+
   ///\brief Indicates if the Definition can inherit categories based on it's
   /// parent Definition or its owning Attribute Definition.  The default is true.
   bool isOkToInherit() const { return m_isOkToInherit; }

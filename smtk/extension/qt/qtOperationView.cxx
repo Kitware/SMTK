@@ -249,6 +249,7 @@ void qtOperationView::updateUI()
 void qtOperationView::onShowCategory()
 {
   this->Internals->m_instancedView->onShowCategory();
+  this->onModifiedParameters(); // updates Apply button state
 }
 
 void qtOperationView::showAdvanceLevelOverlay(bool show)

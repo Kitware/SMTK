@@ -12,6 +12,7 @@
 #define pybind_smtk_attribute_ItemDefinition_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/attribute/ItemDefinition.h"
 
@@ -33,6 +34,7 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     // doesn't support const references - oly non-const method of localCategories supported
     .def("categories", &smtk::attribute::ItemDefinition::categories)
     .def("localCategories", (smtk::attribute::Categories::Set& (smtk::attribute::ItemDefinition::*)()) &smtk::attribute::ItemDefinition::localCategories, py::return_value_policy::reference)
+    .def("setLocalCategories", &smtk::attribute::ItemDefinition::setLocalCategories, py::arg("catSet"))
     .def("createCopy", &smtk::attribute::ItemDefinition::createCopy, py::arg("info"))
     .def("detailedDescription", &smtk::attribute::ItemDefinition::detailedDescription)
     .def("isEnabledByDefault", &smtk::attribute::ItemDefinition::isEnabledByDefault)
