@@ -48,11 +48,13 @@ void TestPriority()
     ++i;
   };
 
-  observed.observers().insert(third, -3, false);
-  observed.observers().insert(second, -2, false);
-  observed.observers().insert(first, -1, false);
+  auto thirdKey = observed.observers().insert(third, -3, false);
+  auto secondKey = observed.observers().insert(second, -2, false);
+  auto firstKey = observed.observers().insert(first, -1, false);
 
   observed();
+
+  smtkTest(i == 3, "All observers were not called");
 
   return;
 }
