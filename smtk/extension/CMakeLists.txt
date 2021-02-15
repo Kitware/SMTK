@@ -27,12 +27,6 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(paraview)
 endif()
 
-# XXX: Disabled because it needs ported from cJSON to nlohmann_json
-# Add the cumulus UI if Qt support and cumulus enabled
-#if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
-#  add_subdirectory(cumulus)
-#endif()
-
 if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   option(SMTK_ENABLE_MATPLOTLIB "Enable matplotlib" OFF)

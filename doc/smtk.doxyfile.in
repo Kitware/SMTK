@@ -721,11 +721,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/widgets" \
   "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
   "@smtk_SOURCE_DIR@/smtk/extension/matplotlib/plugin" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/ui" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser/ui" \
-  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser/icons" \
   "@smtk_SOURCE_DIR@/smtk/attribute" \
   "@smtk_SOURCE_DIR@/smtk/attribute/operators" \
   "@smtk_SOURCE_DIR@/smtk/attribute/plugin" \
@@ -821,11 +816,6 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/widgets" \
   "@smtk_BINARY_DIR@/smtk/extension/matplotlib" \
   "@smtk_BINARY_DIR@/smtk/extension/matplotlib/plugin" \
-  "@smtk_BINARY_DIR@/smtk/extension/cumulus" \
-  "@smtk_BINARY_DIR@/smtk/extension/cumulus/ui" \
-  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser" \
-  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser/ui" \
-  "@smtk_BINARY_DIR@/smtk/extension/cumulus/girderfilebrowser/icons" \
   "@smtk_BINARY_DIR@/smtk/attribute" \
   "@smtk_BINARY_DIR@/smtk/attribute/operators" \
   "@smtk_BINARY_DIR@/smtk/attribute/plugin" \

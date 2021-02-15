@@ -201,12 +201,6 @@ namespace polygon
 namespace extension
 {
 
-/**\brief Access the cloud using cumulus.
-  *
-  */
-namespace cumulus
-{
-}
 /**\brief A simple mesh generator.
   *
   */

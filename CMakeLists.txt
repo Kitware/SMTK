@@ -183,13 +183,6 @@ if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   find_package(Sphinx)
 endif()
 
-cmake_dependent_option(
-  SMTK_ENABLE_CUMULUS_SUPPORT
-  "Build cumulus interface and GUI (requires Qt w/OpenSSL support"
-  OFF
-  SMTK_ENABLE_QT_SUPPORT
-  OFF)
-
 ################################################################################
 # Testing Related Settings
 ################################################################################
