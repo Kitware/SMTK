@@ -19,6 +19,8 @@
 #include "vtkInformationVector.h"
 #include "vtkNew.h"
 
+#include <cmath>
+
 vtkStandardNewMacro(vtkImageSpacingFlip);
 
 vtkImageSpacingFlip::vtkImageSpacingFlip() = default;
@@ -70,7 +72,7 @@ int vtkImageSpacingFlip::RequestData(vtkInformation* /*request*/,
     flipper->SetInputData(input);
     flipper->Update();
     output->DeepCopy(flipper->GetOutput());
-    output->SetSpacing(fabs(spacing[0]), fabs(spacing[1]), fabs(spacing[2]));
+    output->SetSpacing(std::fabs(spacing[0]), std::fabs(spacing[1]), std::fabs(spacing[2]));
     output->SetOrigin(origin);
   }
 
