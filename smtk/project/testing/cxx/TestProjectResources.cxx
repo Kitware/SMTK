@@ -56,7 +56,7 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
 
   smtkTest(resourceManager->metadata().empty(), "New resource manager should have no types.");
-  smtkTest(resourceManager->resources().empty(), "New resource manager should have no resources.");
+  smtkTest(resourceManager->empty(), "New resource manager should have no resources.");
 
   // Register MyResource
   resourceManager->registerResource<MyResource>();
@@ -86,7 +86,7 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
 
     // Create a resource
     auto myResource = resourceManager->create<MyResource>();
-    smtkTest(resourceManager->resources().size() == 1, "Resource not added to manaager");
+    smtkTest(resourceManager->size() == 1, "Resource not added to manaager");
 
     project->resources().registerResource<MyResource>();
 
@@ -103,15 +103,11 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
     projectManager->remove(project);
 
     // Test that the resource is still managed...
-    smtkTest(
-      resourceManager->resources().size() == 1,
-      "project should be gone, resource should have remained");
+    smtkTest(resourceManager->size() == 1, "project should be gone, resource should have remained");
   }
 
   // ...irrespective of scope
-  smtkTest(
-    resourceManager->resources().size() == 1,
-    "project should be gone, resource should have remained");
+  smtkTest(resourceManager->size() == 1, "project should be gone, resource should have remained");
 
   // Copy the resource's address for testing purposes
   void* resource_address = resource.get();
@@ -122,7 +118,7 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
   // Test that the underlying resource is still the same as before...
   smtkTest(resource.get() == resource_address, "resource address should have remained the same");
   // ...but it is no longer managed by the resource manager.
-  smtkTest(resourceManager->resources().empty(), "Destructed project should have removed resource");
+  smtkTest(resourceManager->empty(), "Destructed project should have removed resource");
 
   return 0;
 }
