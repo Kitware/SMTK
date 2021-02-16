@@ -748,10 +748,6 @@ We have added support for building and testing smtk's python bindings
 for use with python 2 and 3. Python tests and examples included within
 SMTK's source should hereafter be both Python 2 and Python 3-compliant.
 
-### Conda support
-
-SMTK 3.0 adds a recipe for building a "lite" version of SMTK as a conda package.
-
 ## Build system and documentation
 
 ### Documentation options
