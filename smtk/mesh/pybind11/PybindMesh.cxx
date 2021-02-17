@@ -60,6 +60,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindRead.h"
 #include "PybindWrite.h"
 
+#include "PybindRegistrar.h"
+
 #include "smtk/mesh/interpolation/PointCloudFromCSV.h"
 
 #include "smtk/operation/XMLOperation.h"
@@ -182,6 +184,8 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   py::class_< smtk::mesh::StructuredGrid > smtk_mesh_StructuredGrid = pybind11_init_smtk_mesh_StructuredGrid(mesh);
   py::class_< smtk::mesh::PointCloudGenerator > smtk_mesh_PointCloudGenerator = pybind11_init_smtk_mesh_PointCloudGenerator(mesh);
   py::class_< smtk::mesh::StructuredGridGenerator > smtk_mesh_StructuredGridGenerator = pybind11_init_smtk_mesh_StructuredGridGenerator(mesh);
+
+  py::class_< smtk::mesh::Registrar > smtk_mesh_Registrar = pybind11_init_smtk_mesh_Registrar(mesh);
 
   bool pcRegistered = smtk::mesh::PointCloudFromCSV::registerClass();
   (void)pcRegistered;
