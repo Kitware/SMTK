@@ -46,20 +46,25 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void cleanup(const std::string& file_path)
+void cleanup(const std::string& location)
 {
   //first verify the file exists
-  ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
+  ::boost::filesystem::path path(location);
+  if (::boost::filesystem::exists(path))
   {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
+    ::boost::filesystem::remove_all(path);
   }
 }
 } // namespace
 
 int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 {
+  // Set the file path
+  std::string projectDirectory = write_root + "/TestProjectReadWrite2";
+  cleanup(projectDirectory);
+  std::string projectFileLocation = projectDirectory + "/foo.smtk";
+
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
@@ -92,8 +97,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   projectManager->registerProject("foo");
 
   // Create a project and write it to disk.
-  std::string projectLocation;
-  int numberOfResources;
+  int numberOfResources = 0;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
@@ -162,12 +166,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
         return 1;
       }
 
-      // Set the file path
-      projectLocation = write_root + "/" + smtk::common::UUID::random().toString() + ".smtk";
-
       writeOp->parameters()->associate(project);
       writeOp->parameters()->findFile("filename")->setIsEnabled(true);
-      writeOp->parameters()->findFile("filename")->setValue(projectLocation);
+      writeOp->parameters()->findFile("filename")->setValue(projectFileLocation);
 
       if (!writeOp->ableToOperate())
       {
@@ -191,7 +192,6 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     projectManager->remove(project);
   }
 
-#if 1
   // Read the project
   smtk::project::Project::Ptr project;
   {
@@ -205,7 +205,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
       return 1;
     }
 
-    readOp->parameters()->findFile("filename")->setValue(projectLocation);
+    readOp->parameters()->findFile("filename")->setValue(projectFileLocation);
 
     if (!readOp->ableToOperate())
     {
@@ -250,7 +250,27 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     return 1;
   }
 
-// cleanup(projectLocation);
+  {
+    boost::filesystem::path myAttsPath(myAtts->location());
+    if (myAttsPath.parent_path().compare(projectDirectory) != 0)
+    {
+      std::cerr << "Wrong attribute resource location: " << myAtts->location() << "\n";
+      return 1;
+    }
+  }
+
+  {
+    std::vector<smtk::attribute::DefinitionPtr> defList;
+    myAtts->definitions(defList);
+    if (defList.size() != 2)
+    {
+      std::cerr << "Attribute resource missing definitions\n";
+      return 1;
+    }
+  }
+
+#ifdef NDEBUG
+  cleanup(projectDirectory);
 #endif
 
   return 0;

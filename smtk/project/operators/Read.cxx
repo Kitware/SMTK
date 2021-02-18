@@ -21,9 +21,6 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "smtk/common/Archive.h"
-#include "smtk/common/Paths.h"
-
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/operators/ReadResource.h"
@@ -48,22 +45,7 @@ Read::Result Read::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
 
-  std::ifstream file;
-
-  smtk::common::Archive archive(filename);
-  bool fromArchive = false;
-  if (!archive.contents().empty())
-  {
-    fromArchive = true;
-    std::string smtkFilename = "index.json";
-
-    archive.get(smtkFilename, file);
-  }
-  else
-  {
-    file.open(filename);
-  }
-
+  std::ifstream file(filename);
   if (!file.good())
   {
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
@@ -98,31 +80,24 @@ Read::Result Read::operateInternal()
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  // If the project is read from an archive...
-  if (fromArchive)
+  // For now, load all project resources
+  j = j["resources"];
+  for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
   {
-    //... then we can expect the json transcription to be incomplete, since it
-    //    stores resource file names as stored in the archive. We therefore
-    //    duplicate its logic here, looking in the archive for the right files.
-    j = j["resources"];
-    for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
+    smtk::resource::ResourcePtr resource = project->resources().manager()->read(
+      it->at("type").get<std::string>(), it->at("location").get<std::string>());
+    if (!resource)
     {
-      smtk::resource::ResourcePtr resource = project->resources().manager()->read(
-        it->at("type").get<std::string>(), archive.location(it->at("location").get<std::string>()));
-      if (!resource)
-      {
-        smtkErrorMacro(
-          log(),
-          "Cannot read resource type \"" << it->at("type").get<std::string>() << "\" at location \""
-                                         << it->at("location").get<std::string>() << "\".");
+      smtkErrorMacro(
+        log(),
+        "Cannot read resource type \"" << it->at("type").get<std::string>() << "\" at location \""
+                                       << it->at("location").get<std::string>() << "\".");
 
-        result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
-        continue;
-      }
-      resource->setLocation("");
-      resource->setClean(true);
-      project->resources().add(resource, detail::role(resource));
+      result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      continue;
     }
+    resource->setClean(true);
+    project->resources().add(resource, detail::role(resource));
   }
 
   {
