@@ -25,13 +25,6 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_EXTENSIONS FALSE)
 endif()
 
-# Check if we are in conda environment
-if (DEFINED ENV{CONDA_PREFIX})
-  message("CONDA_PREFIX $ENV{CONDA_PREFIX}")
-  include("CMake/Conda.cmake")
-  include("CMake/CondaToolchain.cmake")
-endif()
-
 ################################################################################
 # SMTK version number
 include(CMake/smtkVersion.cmake)
@@ -183,13 +176,6 @@ if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   find_package(Sphinx)
 endif()
 
-cmake_dependent_option(
-  SMTK_ENABLE_CUMULUS_SUPPORT
-  "Build cumulus interface and GUI (requires Qt w/OpenSSL support"
-  OFF
-  SMTK_ENABLE_QT_SUPPORT
-  OFF)
-
 ################################################################################
 # Testing Related Settings
 ################################################################################
@@ -340,7 +326,7 @@ endif()
 # build machine without any issues. If this not desired, simply specify
 # CMAKE_INSTALL_RPATH_USE_LINK_PATH when configuring and "make install" will
 # strip all rpaths, which is default behavior.
-if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH AND NOT DEFINED conda_prefix)
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
@@ -465,13 +451,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     endif()
   endif()
 
-  if (DEFINED conda_prefix)
-    # pybind11 version 2.3 not currently available from conda-forge
-    find_package(pybind11 REQUIRED)
-  else()
-    find_package(pybind11 2.3 REQUIRED)
-    set(pybind11_VERSION "2.3")
-  endif()
+  find_package(pybind11 2.3 REQUIRED)
+  set(pybind11_VERSION "2.3")
 
   set(SMTK_PYBIND11_FLAGS " ")
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
