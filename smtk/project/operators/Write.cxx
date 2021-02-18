@@ -53,7 +53,8 @@ Write::Result Write::operateInternal()
   // Access the file name to write.
   std::string outputFile = project->location();
   boost::filesystem::path outputFilePath(outputFile);
-  boost::filesystem::path resourceFolderPath = outputFilePath.parent_path();
+  boost::filesystem::path projectFolderPath = outputFilePath.parent_path();
+  boost::filesystem::path resourcesFolderPath = projectFolderPath / "resources";
 
   // Construct a WriteResource operation to write all of the project's resources.
   smtk::operation::WriteResource::Ptr write =
@@ -64,20 +65,21 @@ Write::Result Write::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // Create project folder if needed
-  if (!boost::filesystem::exists(resourceFolderPath))
+  // Create project and project/resources folders if needed
+  if (!boost::filesystem::exists(resourcesFolderPath))
   {
-    if (!boost::filesystem::create_directories(resourceFolderPath))
+    if (!boost::filesystem::create_directories(resourcesFolderPath))
     {
       smtkErrorMacro(
-        this->log(), "Failed to create project directory: " << resourceFolderPath.string() << ".");
+        this->log(),
+        "Failed to create project resources directory: " << resourcesFolderPath.string() << ".");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
-  else if (!boost::filesystem::is_directory(resourceFolderPath))
+  else if (!boost::filesystem::is_directory(resourcesFolderPath))
   {
     smtkErrorMacro(
-      this->log(), "Resource path is not a folder: " << resourceFolderPath.string() << ".");
+      this->log(), "Resource path is not a folder: " << resourcesFolderPath.string() << ".");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -98,7 +100,7 @@ Write::Result Write::operateInternal()
       {
         unassignedResources.insert(resource.get());
         std::string filename = role + ".smtk";
-        boost::filesystem::path location = resourceFolderPath / filename;
+        boost::filesystem::path location = resourcesFolderPath / filename;
         resource->setLocation(location.string());
       }
 

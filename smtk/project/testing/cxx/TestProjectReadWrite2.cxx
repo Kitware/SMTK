@@ -252,7 +252,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
   {
     boost::filesystem::path myAttsPath(myAtts->location());
-    if (myAttsPath.parent_path().compare(projectDirectory) != 0)
+    boost::filesystem::path projectPath(projectDirectory);
+    boost::filesystem::path resourcesPath = projectPath / "resources";
+    if (myAttsPath.parent_path().compare(resourcesPath) != 0)
     {
       std::cerr << "Wrong attribute resource location: " << myAtts->location() << "\n";
       return 1;
