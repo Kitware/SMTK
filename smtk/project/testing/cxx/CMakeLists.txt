@@ -10,6 +10,10 @@ set(unit_tests_which_require_data
   TestProjectReadWrite2
 )
 set(extra_libs)
+if (SMTK_ENABLE_VTK_SUPPORT)
+  add_compile_definitions(VTK_SUPPORT)
+  list(APPEND extra_libs smtkVTKSession)
+endif()
 
 smtk_unit_tests(
   LABEL "Project"

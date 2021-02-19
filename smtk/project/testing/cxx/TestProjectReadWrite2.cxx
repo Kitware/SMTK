@@ -32,6 +32,10 @@
 #include "smtk/project/Registrar.h"
 #include "smtk/project/operators/Define.h"
 
+#ifdef VTK_SUPPORT
+#include "smtk/session/vtk/Registrar.h"
+#endif
+
 #include "smtk/common/testing/cxx/helpers.h"
 
 //force to use filesystem version 3
@@ -70,6 +74,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
   {
     smtk::attribute::Registrar::registerTo(resourceManager);
+#ifdef VTK_SUPPORT
+    smtk::session::vtk::Registrar::registerTo(resourceManager);
+#endif
     smtk::project::Registrar::registerTo(resourceManager);
   }
 
@@ -78,6 +85,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
   {
     smtk::attribute::Registrar::registerTo(operationManager);
+#ifdef VTK_SUPPORT
+    smtk::session::vtk::Registrar::registerTo(operationManager);
+#endif
     smtk::operation::Registrar::registerTo(operationManager);
   }
 
@@ -116,34 +126,41 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
         return 1;
       }
 
-      // Set the file path
-      std::string importFilePath(data_root);
-      importFilePath += "/attribute/attribute_collection/DoubleItemExample.sbt";
-      importOp->parameters()->findFile("filename")->setValue(importFilePath);
-
-      // Execute the operation
-      smtk::operation::Operation::Result importOpResult = importOp->operate();
-
-      // Test for success
-      if (
-        importOpResult->findInt("outcome")->value() !=
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+      // Input data files
+      std::map<std::string, std::string> importPaths = {
+        { "my attributes", "/attribute/attribute_collection/DoubleItemExample.sbt" }
+      };
+#ifdef VTK_SUPPORT
+      importPaths["my model"] = "/model/3d/genesis/casting-mesh1.gen";
+#endif
+      for (auto& keyval : importPaths)
       {
-        std::cerr << "Import operation failed\n";
-        return 1;
-      }
+        auto role = keyval.first;
+        auto path = keyval.second;
 
-      // Add the resource to the project
-      smtk::attribute::ResourceItemPtr resourceItem =
-        std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-          importOpResult->findResource("resource"));
+        std::string importFilePath(data_root);
+        importFilePath += path;
+        importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
-      project->resources().add(
-        std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value()),
-        "my attributes");
+        // Execute the operation
+        smtk::operation::Operation::Result importOpResult = importOp->operate();
+
+        // Test for success
+        if (
+          importOpResult->findInt("outcome")->value() !=
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          std::cerr << "Import operation failed\n";
+          return 1;
+        }
+
+        auto resourceItem = importOpResult->findResource("resource");
+        project->resources().add(resourceItem->value(), role);
+        ++numberOfResources;
+      } // for (path)
     }
 
-    if (project->resources().size() != 1)
+    if (project->resources().size() != numberOfResources)
     {
       std::cerr << "Failed to add a resource to the project\n";
       return 1;
