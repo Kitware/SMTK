@@ -70,12 +70,6 @@ public:
   /// registered as supporting resources of that type.
   std::set<Operation::Index> operationsForResource(const smtk::resource::ResourcePtr&) const;
 
-  /// Given an operation name, return the resource associated with the operation.
-  std::string resourceForOperation(const std::string&) const;
-
-  /// Given an operation index, return the resource associated with the operation.
-  std::string resourceForOperation(const Operation::Index&) const;
-
   std::set<std::string> supportedResources() const;
 
 protected:
