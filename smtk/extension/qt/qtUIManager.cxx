@@ -257,11 +257,14 @@ void qtUIManager::initializeUI(
   this->internalInitialize();
 
   m_topView = this->createView(viewInfo);
-  if (m_topView && m_currentAdvLevel) // only build advanced level when needed
+  if (m_topView)
   {
-    m_topView->showAdvanceLevel(m_currentAdvLevel);
+    if (m_currentAdvLevel) // only build advanced level when needed
+    {
+      m_topView->showAdvanceLevel(m_currentAdvLevel);
+    }
+    m_topView->setInitialCategory();
   }
-  m_topView->setInitialCategory();
 }
 
 bool qtUIManager::hasViewConstructor(const std::string& vtype) const
