@@ -64,12 +64,25 @@ class SMTKCORE_EXPORT BadgeActionToggle : public BadgeAction
   * + providing a tooltip string indicating its purpose to a user;
   * + providing a string of SVG to render (if it applies); and
   * + performing an action when clicked (which may do nothing).
+  *
+  * A badge may be marked as being a "default."
+  * This indicates that user gestures that are not specific to
+  * any badge may still apply an badge action; the first
+  * _applicable_ badge marked as default should have it action
+  * invoked in response to these gestures.
+  * An example is how qtReferenceItem uses MembershipBadge:
+  * when users click on the title of a phrase (not any badge),
+  * it is still desirable for the membership of the phrase to
+  * be changed, so the MembershipBadge is marked as default.
   */
 class SMTKCORE_EXPORT Badge : smtkEnableSharedPtr(Badge)
 {
 public:
   smtkTypeMacroBase(Badge);
-  Badge() {}
+  Badge()
+    : m_isDefault(false)
+  {
+  }
   Badge(const Badge&) = delete;
   void operator=(const Badge&) = delete;
   virtual ~Badge() {}
@@ -105,6 +118,18 @@ public:
   /// Return true if the action is supported (and was taken) by the badge for the given phrase;
   /// otherwise return false.
   virtual bool action(const DescriptivePhrase*, const BadgeAction&) { return false; }
+
+  /// Return whether this badge be invoked by non-specific user gestures.
+  ///
+  /// This should only be called when appliesToPhrase() returns true.
+  bool isDefault() const { return m_isDefault; }
+
+  /// Set this badge as a default.
+  void setIsDefault(bool isDefault) { m_isDefault = isDefault; }
+
+protected:
+  /// Should this badge be invoked by non-specific user gestures when it is applicable?
+  bool m_isDefault;
 };
 }
 }
