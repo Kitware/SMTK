@@ -50,8 +50,13 @@ Write::Result Write::operateInternal()
   smtk::attribute::ReferenceItem::Ptr projectItem = this->parameters()->associations();
   smtk::project::ProjectPtr project = projectItem->valueAs<smtk::project::Project>();
 
-  // Access the file name to write.
+  // Get the project file (path) and setup folders
   std::string outputFile = project->location();
+  if (outputFile.empty())
+  {
+    smtkErrorMacro(this->log(), "Error Cannot write project because location not specified.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
   boost::filesystem::path outputFilePath(outputFile);
   boost::filesystem::path projectFolderPath = outputFilePath.parent_path();
   boost::filesystem::path resourcesFolderPath = projectFolderPath / "resources";

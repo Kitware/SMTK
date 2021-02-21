@@ -3,6 +3,7 @@
 set(unit_tests
   TestDefineOp
   TestProject
+  TestProjectLifeCycle
   TestProjectResources
 )
 set(unit_tests_which_require_data
