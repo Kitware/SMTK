@@ -10,12 +10,12 @@ set(data_host "https://data.kitware.com")
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2019")
   # 20201124
-  set(file_item "5fc1236650a41e3d1975ab64")
-  set(file_hash "1ddcce3d6e8840f573379294fb16fafde8e4f05c1090c35e66687563d94acbf3c1156108d88764b58465267bed01576e87c1581fd3b42df42154eba7eca7c396")
+  set(file_item "6033ca892fa25629b99c67d8")
+  set(file_hash "55354ae4fbdfb74b1cb09e1535cb855d4bdda8370941ec7f20a6d1f2476fc145bb134d3c6d2eb6dea26168e981051237d880d4fb290a53372405fa5c4e0004f7")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos")
   # 20201124
-  set(file_item "5fc123aa50a41e3d1975ab9e")
-  set(file_hash "88c23a4ff26860a445e706023c9fed836c45f76b0d295bded7f824172c374d21a627804776f8b68f21195760082f91238069cc55c435063b0b24186735df9471")
+  set(file_item "6033cb0a2fa25629b99c68b7")
+  set(file_hash "9f3c39e30ca6dce10d61697d73320c08a3c999cbf28449f6b9472ad9e0fa6e4973863917cae9e1a2b201d74d92df05830607efb760455d41160f0c35cca5857a")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")

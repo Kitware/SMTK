@@ -35,6 +35,7 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPVServerExtPlugin>", True)
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPQComponentsPlugin>", True)
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPolygonSessionPlugin>", True)
+        pvsimple.LoadPlugin("$<TARGET_FILE:smtkMeshSessionPlugin>", True)
 
     def testOpenSMTKFile(self):
         reader = pvsimple.OpenDataFile(os.path.join(smtk.testing.DATA_DIR,

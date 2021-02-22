@@ -66,8 +66,9 @@ nlohmann::json defaultConfiguration = { { "Name", "RefItem" },
                 { "Children",
                   { { { "Name", "Badge" },
                     { "Attributes",
-                      { { "Type",
-                        "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
+                      { { "Default", true },
+                        { "Type",
+                          "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
 }
 
 qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)

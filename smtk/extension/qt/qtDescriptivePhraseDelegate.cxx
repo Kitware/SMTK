@@ -398,6 +398,11 @@ int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
       badgeIndex = i;
       break;
     }
+    if (badge->isDefault() && badgeIndex < 0)
+    {
+      // Don't stop if we find a default badge, but remember if it is the first one.
+      badgeIndex = i;
+    }
     ++i;
     iconRect.setLeft(iconRect.right());
   }

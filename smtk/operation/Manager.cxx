@@ -17,6 +17,10 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/io/Logger.h"
+
+#include <sstream>
+
 namespace smtk
 {
 namespace operation
@@ -98,6 +102,17 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     // operation. Since only managed operations are observed, we can avoid this
     // issue by accessing the parameters as they are created by the manager.
     auto parameters = op->parameters();
+  }
+  else
+  {
+    std::ostringstream message;
+    message << "Could not find \"" << typeName << "\" operation; considered:\n";
+    const auto& byName = m_metadata.get<NameTag>();
+    for (auto it = byName.begin(); it != byName.end(); ++it)
+    {
+      message << "  \"" << it->typeName() << "\"\n";
+    }
+    smtkInfoMacro(smtk::io::Logger::instance(), message.str());
   }
 
   return op;

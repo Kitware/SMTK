@@ -240,7 +240,7 @@ void smtkAssignColorsView::prepPaletteChooser()
 {
   // Set up a preset dialog; display only categorical (indexed) colormaps.
   this->Internals->PaletteChooser =
-    new pqPresetDialog(nullptr, pqPresetDialog::SHOW_INDEXED_COLORS_ONLY);
+    new pqPresetDialog(this->parentWidget(), pqPresetDialog::SHOW_INDEXED_COLORS_ONLY);
   this->Internals->PaletteChooser->setCustomizableLoadColors(false);
   this->Internals->PaletteChooser->setCustomizableLoadOpacities(false);
   this->Internals->PaletteChooser->setCustomizableUsePresetRange(false);
