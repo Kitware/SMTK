@@ -480,27 +480,34 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
 
 bool Manager::remove(const smtk::resource::ResourcePtr& resource)
 {
-  ScopedLockGuard guard(m_lock, LockType::Write);
-  // Find the resource
-  typedef Container::index<IdTag>::type ResourcesById;
-  ResourcesById& resources = m_resources.get<IdTag>();
-  auto resourceIt = resources.find(resource->id());
-  if (resourceIt != resources.end())
+  bool didRemove = false;
   {
-    Resource::Ptr rsrc = *resourceIt;
+    ScopedLockGuard guard(m_lock, LockType::Write);
+    // Find the resource
+    typedef Container::index<IdTag>::type ResourcesById;
+    ResourcesById& resources = m_resources.get<IdTag>();
+    auto resourceIt = resources.find(resource->id());
+    if (resourceIt != resources.end())
+    {
+      Resource::Ptr rsrc = *resourceIt;
 
-    // Remove it from the manager's set of resources
-    m_resources.erase(resourceIt);
+      // Remove it from the manager's set of resources
+      m_resources.erase(resourceIt);
 
-    // Clear the resource's manager
-    rsrc->m_manager = Ptr();
+      // Clear the resource's manager
+      rsrc->m_manager = Ptr();
 
-    // Tell observers we have removed it
-    m_observers(*rsrc, smtk::resource::EventType::REMOVED);
-    return true;
+      didRemove = true;
+    }
   }
 
-  return false;
+  if (didRemove)
+  {
+    // Tell observers we have removed it *after* unlocking the manager.
+    m_observers(*resource, smtk::resource::EventType::REMOVED);
+  }
+
+  return didRemove;
 }
 
 bool Manager::addLegacyReader(
