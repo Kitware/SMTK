@@ -201,11 +201,12 @@ smtk::attribute::ItemDefinitionPtr ReferenceItemDefinition::createCopy(
 {
   (void)info;
   auto copy = ReferenceItemDefinition::New(this->name());
-  this->copyTo(copy);
+  this->copyTo(copy, info);
   return copy;
 }
 
-void ReferenceItemDefinition::copyTo(Ptr dest) const
+void ReferenceItemDefinition::copyTo(
+  Ptr dest, smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   if (!dest)
   {
@@ -237,6 +238,22 @@ void ReferenceItemDefinition::copyTo(Ptr dest) const
       dest->setValueLabel(ii, m_valueLabels[ii]);
     }
   }
+
+  // Add children item definitions
+  if (!m_itemDefs.empty())
+  {
+    for (auto itemDefMapIter = m_itemDefs.begin(); itemDefMapIter != m_itemDefs.end();
+         itemDefMapIter++)
+    {
+      smtk::attribute::ItemDefinitionPtr itemDef = itemDefMapIter->second->createCopy(info);
+      dest->addChildItemDefinition(itemDef);
+    }
+  }
+
+  // Add conditional items
+  dest->m_resourceQueries = m_resourceQueries;
+  dest->m_componentQueries = m_componentQueries;
+  dest->m_conditionalItemNames = m_conditionalItemNames;
 }
 
 bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc) const
@@ -345,6 +362,144 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
   }
 
   return false;
+}
+
+std::size_t ReferenceItemDefinition::addConditional(const std::string& resourceQuery,
+  const std::string& componentQuery, const std::vector<std::string>& itemNames)
+{
+  // Both query strings can not both be empty
+  if (resourceQuery.empty() && componentQuery.empty())
+  {
+    return s_invalidIndex;
+  }
+
+  // Lets make sure all of the item names exist
+  for (const auto& itemName : itemNames)
+  {
+    if (!this->hasChildItemDefinition(itemName))
+    {
+      return s_invalidIndex;
+    }
+  }
+  m_resourceQueries.push_back(resourceQuery);
+  m_componentQueries.push_back(componentQuery);
+  m_conditionalItemNames.push_back(itemNames);
+  return m_conditionalItemNames.size() - 1;
+}
+
+const std::vector<std::string>& ReferenceItemDefinition::conditionalItems(std::size_t ith) const
+{
+  // Is this a valid index
+  static std::vector<std::string> dummy;
+  if (ith < m_conditionalItemNames.size())
+  {
+    return m_conditionalItemNames[ith];
+  }
+  return dummy;
+}
+
+void ReferenceItemDefinition::applyCategories(
+  const smtk::attribute::Categories& inheritedFromParent,
+  smtk::attribute::Categories& inheritedToParent)
+{
+  // Lets first determine the set of categories this item definition could inherit
+  m_categories.reset();
+  m_categories.insert(m_localCategories);
+  if (m_isOkToInherit)
+  {
+    m_categories.insert(inheritedFromParent);
+  }
+
+  smtk::attribute::Categories myChildrenCats;
+
+  // Now process the children item defs - this will also assembly the categories
+  // this item def will inherit from its children based on their local categories
+  for (auto& i : m_itemDefs)
+  {
+    i.second->applyCategories(m_categories, myChildrenCats);
+  }
+
+  // Add the children categories to this one
+  m_categories.insert(myChildrenCats);
+  // update the set of categories being inherited by the owning item/attribute
+  // definition
+  inheritedToParent.insert(m_localCategories);
+  inheritedToParent.insert(myChildrenCats);
+}
+
+bool ReferenceItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
+{
+  return this->addChildItemDefinition(cdef);
+}
+
+bool ReferenceItemDefinition::addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
+{
+  // First see if there is a item by the same name
+  if (this->hasChildItemDefinition(cdef->name()))
+  {
+    return false;
+  }
+  m_itemDefs[cdef->name()] = cdef;
+  return true;
+}
+
+void ReferenceItemDefinition::buildChildrenItems(ReferenceItem* ritem) const
+{
+  std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it;
+  smtk::attribute::ItemPtr child;
+  for (it = m_itemDefs.begin(); it != m_itemDefs.end(); it++)
+  {
+    child = it->second->buildItem(ritem, 0, -1);
+    child->setDefinition(it->second);
+    ritem->m_childrenItems[it->first] = child;
+  }
+}
+
+std::size_t ReferenceItemDefinition::testConditionals(PersistentObjectPtr& object) const
+{
+  if (object == nullptr)
+  {
+    return s_invalidIndex; // No match is there is no object
+  }
+
+  // Are we dealing with a Resource?
+  const smtk::resource::Resource* rsrc =
+    dynamic_cast<const smtk::resource::Resource*>(object.get());
+  std::size_t i, n = m_conditionalItemNames.size();
+  if (rsrc)
+  {
+    for (i = 0; i < n; i++)
+    {
+      if (rsrc->isOfType(m_resourceQueries[i]))
+      {
+        return i; // return the index of the matched conditional
+      }
+    }
+    return s_invalidIndex; // No match
+  }
+
+  // We dealing with a Component?
+  const smtk::resource::Component* comp =
+    dynamic_cast<const smtk::resource::Component*>(object.get());
+  rsrc = comp->resource().get();
+
+  if (comp == nullptr)
+  {
+    return s_invalidIndex; // Object is neither a resource or component
+  }
+  for (i = 0; i < n; i++)
+  {
+    if (!((m_resourceQueries[i].empty()) || rsrc->isOfType(m_resourceQueries[i])))
+    {
+      continue; // failed to match the resource condition
+    }
+    auto queryOp = rsrc->queryOperation(m_componentQueries[i]);
+    if ((queryOp != nullptr) && queryOp(*comp))
+    {
+      return i;
+    }
+  }
+  return s_invalidIndex;
 }
 }
 }

@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtReferenceItem.h"
-#include "smtk/extension/qt/qtReferenceItemComboBox.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
@@ -30,11 +30,11 @@ qtItem* qtComponentItem::createItemWidget(const qtAttributeItemInfo& info)
     return nullptr;
   }
   // If we are dealing with a non-extensible item with only 1 required value lets
-  // use a simple combobox UI else we will use the more advance UI.
+  // use a simple combobox UI that can also deal with optional children.
   auto itemDef = item->definitionAs<smtk::attribute::ReferenceItemDefinition>();
   if ((itemDef->numberOfRequiredValues() == 1) && !itemDef->isExtensible())
   {
-    return new qtReferenceItemComboBox(info);
+    return new qtReferenceItemEditor(info);
   }
   auto qi = new qtComponentItem(info);
   // Unlike other classes, qtComponentItem does not call createWidget()

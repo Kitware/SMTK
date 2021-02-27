@@ -76,7 +76,7 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   json riDefToJson = riDef;
   std::cout << "\nReferenceItem to_json result:\n" << riDefToJson.dump(2) << "\n\n";
   smtk::attribute::ReferenceItemDefinitionPtr riDef2 = ReferenceItemDefinition::New("ri-def");
-  smtk::attribute::from_json(riDefToJson, riDef2);
+  smtk::attribute::from_json(riDefToJson, riDef2, resptr);
   json riDefFromJson = riDef2;
   std::cout << "\nReferenceItem from_json result:\n" << riDefFromJson.dump(2) << "\n\n";
 
@@ -92,7 +92,7 @@ int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
   json compDefToJson = compDef;
   //std::cout << " to_json result:\n" <<compDefToJson.dump(2) <<std::endl;
   smtk::attribute::ComponentItemDefinitionPtr compDef2 = ComponentItemDefinition::New("comp-def");
-  smtk::attribute::from_json(compDefToJson, compDef2);
+  smtk::attribute::from_json(compDefToJson, compDef2, resptr);
   json compDefFromJson = compDef2;
   //std::cout << " from_json result:\n" <<compDefFromJson.dump(2) <<std::endl;
 

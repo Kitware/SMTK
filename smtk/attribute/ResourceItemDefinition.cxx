@@ -61,6 +61,6 @@ smtk::attribute::ItemDefinitionPtr ResourceItemDefinition::createCopy(
 {
   (void)info;
   auto copy = ResourceItemDefinition::New(this->name());
-  this->copyTo(copy);
+  this->copyTo(copy, info);
   return copy;
 }

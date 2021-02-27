@@ -30,8 +30,8 @@ SMTKCORE_EXPORT void to_json(
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr));
 }
 
-SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::ResourceItemDefinitionPtr& defPtr)
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
+  smtk::attribute::ResourceItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -39,7 +39,7 @@ SMTKCORE_EXPORT void from_json(
     return;
   }
   auto refDef = smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, refDef);
+  smtk::attribute::from_json(j, refDef, resPtr);
 }
 }
 }

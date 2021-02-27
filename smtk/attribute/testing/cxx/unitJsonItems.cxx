@@ -184,7 +184,9 @@ int unitJsonItems(int argc, char* argv[])
     refItm->setValue(i, allFaces[i].component());
   }
   json jsonRefItm2 = refItm;
-  smtk::attribute::from_json(jsonRefItm2, refItm);
+  std::vector<ItemExpressionInfo> itemExpressionInfo;
+  std::vector<AttRefInfo> attRefInfo;
+  smtk::attribute::from_json(jsonRefItm2, refItm, itemExpressionInfo, attRefInfo);
   json jsonRefItm3 = refItm;
   std::cout << "\n\nBefore\n"
             << jsonRefItm1.dump(2) << "\n\nAfter\n"

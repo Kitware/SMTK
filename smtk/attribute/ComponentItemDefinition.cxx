@@ -66,6 +66,6 @@ smtk::attribute::ItemDefinitionPtr ComponentItemDefinition::createCopy(
 {
   (void)info;
   auto copy = ComponentItemDefinition::New(this->name());
-  this->copyTo(copy);
+  this->copyTo(copy, info);
   return copy;
 }

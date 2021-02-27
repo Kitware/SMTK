@@ -197,6 +197,50 @@ Added a class for utility methods.  The current ones include:
 * checkUniquenessCondition - a method that removes resource::Components from a set based on the uniqueness constraint associated with a ComponentItem
 
 ### Changes to ReferenceItem
+#### Support for Active Children
+Similar to Value Items, Reference Items can now have a set of active children items based on the
+persistent object has been assigned to it.  Unlike, value items, where active children are based
+on the enum value assigned, the active children for a reference item are based on a vector of
+conditionals.  A conditional is composed of a resource query, component query and list of
+item names.  A persistent object matches a conditional if it satisfies the conditional's
+queries.  If the object is a Resource, only the resource query is tested.  If the object
+is a Component, then it must satisfy both.
+
+ In the case of a Component, the resource query can be an empty string, meaning the
+ Component automatically satisfies the Resource part of the query.  Note that this should
+ only be used if the Item can only be assigned Components that come from the same "type"
+ of Resources.
+
+ For examples see:
+
+ * data/attribute/attribute_collection/refitem-categories.sbt
+ * smtk/attribute/testing/cxx/unitReferenceItemChildrenTest.cxx
+
+##### New API
+ * ReferenceItemDefinition
+   * std::size_t numberOfChildrenItemDefinitions()
+   * const std::map\<std::string, smtk::attribute::ItemDefinitionPtr>& childrenItemDefinitions()
+   * bool hasChildItemDefinition(const std::string& itemName)
+   * bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
+   * template <typename T> typename smtk::internal::shared_ptr_type\<T>::SharedPointerType addItemDefinition(const std::string& idName)
+   * std::size_t addConditional(const std::string& resourceQuery, const std::string& componentQuery, const std::vector\<std::string>& itemNames)
+   * std::size_t numberOfConditionals() const
+   * const std::vector\<std::vector\<std::string> >& conditionalInformation() const
+   * const std::vector\<std::string>& conditionalItems(std::size_t ith) const
+   * const std::vector\<std::string>& resourceQueries() const
+   * const std::vector\<std::string>& componentQueries() const
+   * void buildChildrenItems(ReferenceItem* ritem)
+   * std::size_t testConditionals(PersistentObjectPtr& objet) const
+ * ReferenceItem
+   * bool setObjectKey(std::size_t i, const Key& key, std::size_t conditional)
+   * std::size_t numberOfChildrenItems() const
+   * const std::map\<std::string, smtk::attribute::ItemPtr>& childrenItems()
+   * std::size_t numberOfActiveChildrenItems() const
+   * smtk::attribute::ItemPtr activeChildItem(std::size_t i) const
+   * std::size_t currentConditional() const
+
+
+#### Other Changes
 * Deprecated the following methods - note that the old methods are still available but will produce compiler warnings if used (C++14 feature)
   * objectValue replaced by value
   * setObjectValue replaced by setValue

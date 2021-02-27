@@ -38,7 +38,7 @@ Added a new aspect called **enforcesCategories**.  In the case where a Reference
 * All Category related methods have been removed from the UI Manager and now use the active category  mechanism
 * qtBaseAttribute Category tests have been changed to take in a shared pointer to an Item instead of a reference to an ItemDefinition. - This was needed since ItemDefinitions do not have a way of getting access to the Resource.
 
-#### qtReferenceItemComboBox Changes
-* qtReferenceItemCombobox no longer uses "UseCategories" option in its ItemView.
+#### qtReferenceItemEditor Changes
+* qtReferenceItemEditor no longer uses "UseCategories" option in its ItemView.
 * Now enforces the new **enforcesCategories** property
 * When the item's value becomes invalid due to active category changes, this will now properly update the UI.

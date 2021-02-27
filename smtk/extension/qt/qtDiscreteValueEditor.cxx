@@ -278,12 +278,12 @@ void qtDiscreteValueEditor::onInputValueChanged()
 
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
 
-  // If the current selection matches the current value of the item then we can just return
   if (item == nullptr)
   {
     return;
   }
 
+  // If the current selection matches the current value of the item then we can just return
   if (item->isSet(this->Internals->m_elementIndex) &&
     (curIdx == item->discreteIndex(this->Internals->m_elementIndex)))
   {

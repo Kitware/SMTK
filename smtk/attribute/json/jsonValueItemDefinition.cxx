@@ -65,7 +65,7 @@ SMTKCORE_EXPORT void to_json(
   {
     j["Units"] = defPtr->units();
   }
-  // Now let's prodcess its children Items
+  // Now let's process its children Items
   if (!defPtr->numberOfChildrenItemDefinitions())
   {
     return;

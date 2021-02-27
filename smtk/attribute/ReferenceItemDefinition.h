@@ -17,6 +17,7 @@
 
 #include "smtk/resource/Resource.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <typeindex>
@@ -120,9 +121,103 @@ public:
   /// Set/Get a flag to determine whether the ReferenceItem should only hold
   /// references. Currently, there is no convention for assigning a filter that
   /// only accepts references. This feature is required when associations (which
-  /// cannot be subclassed to ResourceItems) must be restricted as such.
+  /// cannot be sub-classed to ResourceItems) must be restricted as such.
   virtual void setOnlyResources(bool choice) { m_onlyResources = choice; }
   bool onlyResources() const { return m_onlyResources; }
+
+  // The following are methods for dealing with conditional items
+  // For conditional children items based on the item's current  value
+
+  /// Return the number of children item definitions
+  std::size_t numberOfChildrenItemDefinitions() const { return m_itemDefs.size(); }
+
+  /// Return the map of children item definitions.  Note that the key is the name
+  /// of the item definition
+  const std::map<std::string, smtk::attribute::ItemDefinitionPtr>& childrenItemDefinitions() const
+  {
+    return m_itemDefs;
+  }
+
+  /// returns true if this item has a child item definition of itemName
+  bool hasChildItemDefinition(const std::string& itemName) const
+  {
+    return (m_itemDefs.find(itemName) != m_itemDefs.end());
+  }
+
+  /// Adds a children item definition to this item definition.
+  /// Returns false if there is already a child item definition with
+  /// the same name.
+  bool addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
+
+  /// This method is identical to addChildItemDefinition and exists
+  /// for JSON serialization.
+  bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
+
+  // Create an item definition based on a given idName. If an item
+  // with that name already exists then return a shared_pointer
+  // that points to NULL.
+  template <typename T>
+  typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
+    const std::string& idName)
+  {
+    typedef smtk::internal::shared_ptr_type<T> SharedTypes;
+    typename SharedTypes::SharedPointerType item;
+
+    // First see if there is a item by the same name
+    if (this->hasChildItemDefinition(idName))
+    {
+      // Already has an item of this name - do nothing
+      return item;
+    }
+    item = SharedTypes::RawPointerType::New(idName);
+    m_itemDefs[item->name()] = item;
+    return item;
+  }
+
+  /// Constant used to indicate an invalid conditional index
+  static constexpr std::size_t s_invalidIndex = SIZE_MAX;
+
+  ///\brief Add a new conditional to the definition.
+  ///
+  /// A conditional is represented by 3 things:
+  /// 1. A Resource Query (which maybe "")
+  /// 2. A Component Query (which maybe "")
+  /// 3. A list of item names that corresponds the ordered list
+  ///    of active children if this conditional is met (maybe empty)
+  /// If the conditional is valid, then the method will return index
+  /// corresponding to its place in the vector of conditionals.
+  /// If either both query strings are empty or if the itemNames
+  /// contain a name that doesn't exist, then the conditional is
+  /// not added and s_invalidIndex is returned
+  ///
+  /// Note when assigning resources, only the resource query will be used,
+  /// hence the component query can be empty
+  /// In the case of components, the resource query can be empty iff the
+  /// reference item can only be assigned to components of the same "type"
+  /// of resources.
+  std::size_t addConditional(const std::string& resourceQuery, const std::string& componentQuery,
+    const std::vector<std::string>& itemNames);
+
+  /// returns true if ith conditional has a child item definition of itemName
+  bool hasChildItemDefinition(std::size_t ith, const std::string& itemName);
+
+  /// Return the number of conditionals
+  std::size_t numberOfConditionals() const { return m_conditionalItemNames.size(); }
+
+  /// Return the conditional item name information
+  const std::vector<std::vector<std::string> >& conditionalInformation() const
+  {
+    return m_conditionalItemNames;
+  }
+
+  /// Return the vector of item names that correspond to the i th conditional
+  const std::vector<std::string>& conditionalItems(std::size_t ith) const;
+
+  /// Return the vector of resource queries of all conditionals
+  const std::vector<std::string>& resourceQueries() const { return m_resourceQueries; }
+
+  /// Return the vector of component queries of all conditionals
+  const std::vector<std::string>& componentQueries() const { return m_componentQueries; }
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owner, int itemPos, int subGroupPosition) const override;
@@ -134,11 +229,17 @@ public:
   // for the Definition's association rule
   friend class Definition;
 
+  // Should only be called internally by the ReferenceItem
+  void buildChildrenItems(ReferenceItem* ritem) const;
+
+  // Returns the conditional that matches object
+  std::size_t testConditionals(PersistentObjectPtr& objet) const;
+
 protected:
   ReferenceItemDefinition(const std::string& myName);
 
   /// Overwrite \a dst with a copy of this instance.
-  void copyTo(Ptr dst) const;
+  void copyTo(Ptr dst, smtk::attribute::ItemDefinition::CopyInfo& info) const;
 
   /// Return whether a resource is accepted by this definition. Used internally by isValueValid().
   bool checkResource(const smtk::resource::Resource& rsrc) const;
@@ -149,6 +250,9 @@ protected:
   /// that are Attributes
   /// The pointer is being based so dynamic casting can be used
   bool checkCategories(const smtk::resource::Component* comp) const;
+
+  void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+    smtk::attribute::Categories& inheritedToParent) override;
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
@@ -161,6 +265,15 @@ protected:
   smtk::resource::Links::RoleType m_role;
   bool m_holdReference;
   bool m_enforcesCategories = false;
+  // data members for dealing with conditional children
+  // definitions of all conditional children items
+  std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
+  // resource query part of the conditional
+  std::vector<std::string> m_resourceQueries;
+  // component query part of the conditional
+  std::vector<std::string> m_componentQueries;
+  // represents the conditional items that are associated with the conditional
+  std::vector<std::vector<std::string> > m_conditionalItemNames;
 
 private:
   bool m_onlyResources;
@@ -168,5 +281,19 @@ private:
 
 } // namespace attribute
 } // namespace smtk
+
+// returns true if valueName has a child item definition of itemName
+inline bool smtk::attribute::ReferenceItemDefinition::hasChildItemDefinition(
+  std::size_t ith, const std::string& itemName)
+{
+  // First we need to check to see if we have this child item or if ith is
+  // out of range
+  if (!(this->hasChildItemDefinition(itemName) && (ith < m_conditionalItemNames.size())))
+  {
+    return false;
+  }
+  return (std::find(m_conditionalItemNames[ith].begin(), m_conditionalItemNames[ith].end(),
+            itemName) != m_conditionalItemNames[ith].end());
+}
 
 #endif

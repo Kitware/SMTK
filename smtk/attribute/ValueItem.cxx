@@ -157,7 +157,7 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
     }
     else
     {
-      if (!(*it)->isValid())
+      if (!(*it)->isValid(false))
       {
         return false;
       }

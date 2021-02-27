@@ -178,9 +178,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   {
     return;
   }
-  smtk::attribute::ResourcePtr colPtr =
+  smtk::attribute::ResourcePtr attResource =
     std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
-  if (colPtr == nullptr)
+  if (attResource == nullptr)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
         << defPtr->label() << " has an invalid resourcePtr");
@@ -380,20 +380,18 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     }
 
     auto assocRule = smtk::attribute::ReferenceItemDefinition::New(aname);
-    smtk::attribute::from_json(*result, assocRule);
+    smtk::attribute::from_json(*result, assocRule, attResource);
     defPtr->setLocalAssociationRule(assocRule);
   }
 
   result = j.find("ItemDefinitions");
   if (result != j.end())
   {
-    smtk::attribute::ResourcePtr resource =
-      std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
     // Reference: Check XmlDocV1Parser 789
     for (auto& idef : *result)
     {
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-        idef, defPtr, resource, convertedAttDefs);
+        idef, defPtr, attResource, convertedAttDefs);
     }
   }
 
@@ -417,14 +415,14 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   result = j.find("AssociationRule");
   if (result != j.end())
   {
-    defPtr->resource()->associationRules().associationRulesForDefinitions().emplace(
+    attResource->associationRules().associationRulesForDefinitions().emplace(
       std::make_pair(defPtr->type(), result->get<std::string>()));
   }
 
   result = j.find("DissociationRule");
   if (result != j.end())
   {
-    defPtr->resource()->associationRules().dissociationRulesForDefinitions().emplace(
+    attResource->associationRules().dissociationRulesForDefinitions().emplace(
       std::make_pair(defPtr->type(), result->get<std::string>()));
   }
 }

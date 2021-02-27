@@ -36,7 +36,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ComponentItemPtr& i
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr));
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr& itemPtr)
+SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -44,7 +45,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr&
     return;
   }
   auto refItem = smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr);
-  smtk::attribute::from_json(j, refItem);
+  smtk::attribute::from_json(j, refItem, itemExpressionInfo, attRefInfo);
 }
 
 SMTKCORE_EXPORT void processFromRefItemSpec(

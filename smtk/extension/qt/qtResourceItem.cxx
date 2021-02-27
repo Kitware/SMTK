@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/qtResourceItem.h"
-#include "smtk/extension/qt/qtReferenceItemComboBox.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
 
 #include "smtk/common/Paths.h"
 
@@ -61,11 +61,11 @@ qtItem* qtResourceItem::createItemWidget(const qtAttributeItemInfo& info)
     return nullptr;
   }
   // If we are dealing with a non-extensible item with only 1 required value lets
-  // use a simple combobox UI else we will use the more advance UI.
+  // use a simple combobox UI that can also deal with optional children.
   auto itemDef = item->definitionAs<smtk::attribute::ReferenceItemDefinition>();
   if ((itemDef->numberOfRequiredValues() == 1) && !itemDef->isExtensible())
   {
-    return new qtReferenceItemComboBox(info);
+    return new qtReferenceItemEditor(info);
   }
   auto qi = new qtResourceItem(info);
   // Unlike other classes, qtResourceItem does not call createWidget()

@@ -77,10 +77,12 @@ set(unit_tests
   unitAdvanceLevelTest
   unitAssociationRulesTest
   unitAssociationTest
-  unitAttributeBasics
+  unitAttributeAnalysis
   unitAttributeAssociation
   unitAttributeAssociationConstraints
-  unitAttributeAnalysis
+  unitAttributeBasics
+  unitAttributeExclusiveAnalysis
+  unitReferenceItemChildrenTest
   unitCategories
   unitComponentItem.cxx
   unitComponentItemConstraints
@@ -88,7 +90,6 @@ set(unit_tests
   unitDateTimeItem.cxx
   unitDefinitionTags
   unitExclusionCategories
-  unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitOptionalItems
   unitPassCategories

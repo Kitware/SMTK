@@ -31,14 +31,13 @@ namespace attribute
 {
 class ItemDefinition;
 class GroupItem;
-class GroupItemDefinition;
-class ValueItemDefinition;
 class Attribute;
 
 class SMTKCORE_EXPORT Item : public smtk::enable_shared_from_this<Item>
 {
   friend class Definition;
   friend class GroupItemDefinition;
+  friend class ReferenceItemDefinition;
   friend class ValueItemDefinition;
 
 public:

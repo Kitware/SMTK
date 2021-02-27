@@ -202,9 +202,16 @@ public:
     return result;
   }
 
-  /// Set/get object key (used for serialization).
+  /**\ Set/get object key (used for serialization).
+    *
+    * If the item has children associated with it, you
+    * need to call the method that explicitly sets the
+    * proper conditional since we may not be able to
+    * access the corresponding persistent object
+    */
   Key objectKey(std::size_t i = 0) const;
   bool setObjectKey(std::size_t i, const Key& key);
+  bool setObjectKey(std::size_t i, const Key& key, std::size_t conditional);
 
   /// Return the \a i-th object stored in this item.
   PersistentObjectPtr value(std::size_t i = 0) const;
@@ -370,6 +377,49 @@ public:
   // locks.
   smtk::resource::LockType lockType() const;
 
+  /**
+   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
+   * is true, each active) child item. If a subclass presents childern items(ValueItem,
+   * Group, ComponentItem, ...) then this function should be overriden.
+   * @param visitor a lambda function which would be applied on children items
+   * @param activeChildren a flag indicating whether it should be applied to active children only or not
+   */
+  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+    bool activeChildren = true) override;
+
+  /**\brief  Return the number of all children items associated with the item.
+    */
+  std::size_t numberOfChildrenItems() const { return m_childrenItems.size(); }
+
+  /**\brief  Return the map of all children items.  The map's key is the
+    * name of the item.
+    */
+  const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems() const
+  {
+    return m_childrenItems;
+  }
+
+  /**\brief  Return the number of active children items associated with the item.
+    */
+  std::size_t numberOfActiveChildrenItems() const { return m_activeChildrenItems.size(); }
+  /**\brief  Return the i th  active child item associated with the item.
+    */
+  smtk::attribute::ItemPtr activeChildItem(std::size_t i) const
+  {
+    if ((i < 0) || (static_cast<std::size_t>(i) >= m_activeChildrenItems.size()))
+    {
+      smtk::attribute::ItemPtr item;
+      return item;
+    }
+    return m_activeChildrenItems[static_cast<std::size_t>(i)];
+  }
+
+  /**\brief  Return the index of the current active conditional.
+    *
+    * This is primarily used when serializing/deserializing the item
+    */
+  std::size_t currentConditional() const { return m_currentConditional; }
+
 protected:
   friend class ReferenceItemDefinition;
   friend class ValueItemDefinition;
@@ -402,6 +452,14 @@ protected:
   /// being deleted.
   smtk::attribute::WeakAttributePtr m_referencedAttribute;
 
+  /// \brief Internal implementation of the find method
+  smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
+  smtk::attribute::ConstItemPtr findInternal(
+    const std::string& name, SearchStyle style) const override;
+
+  /// \brief Update the vector of active children based on the item's current value
+  void updateActiveChildrenItems();
+
 private:
   /// To make it easier to catch errors associated with dereferencing unset
   /// reference item entries, ReferenceItem's const_iterator throws when it is
@@ -417,6 +475,12 @@ private:
 
   struct Cache;
   mutable std::unique_ptr<Cache> m_cache;
+  /// Map of of all children items associated with the item
+  std::map<std::string, smtk::attribute::ItemPtr> m_childrenItems;
+  /// Vector of currently active children items
+  std::vector<smtk::attribute::ItemPtr> m_activeChildrenItems;
+  /// Index of the current active conditional
+  std::size_t m_currentConditional;
 };
 
 template <>

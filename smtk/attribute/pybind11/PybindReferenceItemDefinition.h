@@ -27,6 +27,9 @@ pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module& m)
   instance.def(py::init< ::smtk::attribute::ReferenceItemDefinition const&>())
     .def_static("New", &smtk::attribute::ReferenceItemDefinition::New, py::arg("name"))
     .def("acceptableEntries", &smtk::attribute::ReferenceItemDefinition::acceptableEntries)
+    .def("addChildItemDefinition", &smtk::attribute::ReferenceItemDefinition::addChildItemDefinition, py::arg("cdef"))
+    .def("addConditional", &smtk::attribute::ReferenceItemDefinition::addConditional, py::arg("resourceQuery"), py::arg("conditionalQuery"), py::arg("itemNames"))
+    .def("buildChildrenItems", &smtk::attribute::ReferenceItemDefinition::buildChildrenItems, py::arg("ritem"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ReferenceItemDefinition::*)(
                         ::smtk::attribute::Attribute*, int) const) &
         smtk::attribute::ReferenceItemDefinition::buildItem,
@@ -35,10 +38,16 @@ pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module& m)
                         ::smtk::attribute::Item*, int, int) const) &
         smtk::attribute::ReferenceItemDefinition::buildItem,
       py::arg("owner"), py::arg("itemPos"), py::arg("subGroupPosition"))
+    .def("childrenItemDefinitions", &smtk::attribute::ReferenceItemDefinition::childrenItemDefinitions)
     .def(
       "clearAcceptableEntries", &smtk::attribute::ReferenceItemDefinition::clearAcceptableEntries)
     .def("clearRejectedEntries", &smtk::attribute::ReferenceItemDefinition::clearRejectedEntries)
+    .def("componentQueries", &smtk::attribute::ReferenceItemDefinition::componentQueries)
+    .def("conditionalInformation", &smtk::attribute::ReferenceItemDefinition::conditionalInformation)
+    .def("conditionalItems", &smtk::attribute::ReferenceItemDefinition::conditionalItems, py::arg("index"))
     .def("createCopy", &smtk::attribute::ReferenceItemDefinition::createCopy, py::arg("info"))
+    .def("hasChildItemDefinition", (bool (smtk::attribute::ReferenceItemDefinition::*)(::std::string const &) const) &smtk::attribute::ReferenceItemDefinition::hasChildItemDefinition, py::arg("itemName"))
+    .def("hasChildItemDefinition", (bool (smtk::attribute::ReferenceItemDefinition::*)(::std::size_t, ::std::string const &)) &smtk::attribute::ReferenceItemDefinition::hasChildItemDefinition, py::arg("conditionalIndex"), py::arg("itemName"))
     .def("hasValueLabels", &smtk::attribute::ReferenceItemDefinition::hasValueLabels)
     .def("holdReference", (bool (smtk::attribute::ReferenceItemDefinition::*)() const) &
         smtk::attribute::ReferenceItemDefinition::holdReference)
@@ -48,9 +57,12 @@ pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module& m)
     .def("isValueValid", &smtk::attribute::ReferenceItemDefinition::isValueValid, py::arg("entity"))
     .def("lockType", &smtk::attribute::ReferenceItemDefinition::lockType)
     .def("maxNumberOfValues", &smtk::attribute::ReferenceItemDefinition::maxNumberOfValues)
+    .def("numberOfChildrenItemDefinitions", &smtk::attribute::ReferenceItemDefinition::numberOfChildrenItemDefinitions)
+    .def("numberOfConditionals", &smtk::attribute::ReferenceItemDefinition::numberOfConditionals)
     .def(
       "numberOfRequiredValues", &smtk::attribute::ReferenceItemDefinition::numberOfRequiredValues)
     .def("rejectedEntries", &smtk::attribute::ReferenceItemDefinition::rejectedEntries)
+    .def("resourceQueries", &smtk::attribute::ReferenceItemDefinition::resourceQueries)
     .def("role", &smtk::attribute::ReferenceItemDefinition::role)
     .def("setAcceptsEntries", &smtk::attribute::ReferenceItemDefinition::setAcceptsEntries,
       py::arg("typeName"), py::arg("queryString"), py::arg("accept"))
@@ -70,6 +82,7 @@ pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module& m)
       py::arg("typeName"), py::arg("queryString"), py::arg("add"))
     .def("setValueLabel", &smtk::attribute::ReferenceItemDefinition::setValueLabel,
       py::arg("element"), py::arg("elabel"))
+    .def("testConditionals", &smtk::attribute::ReferenceItemDefinition::testConditionals, py::arg("object"))
     .def("type", &smtk::attribute::ReferenceItemDefinition::type)
     .def("typeName", &smtk::attribute::ReferenceItemDefinition::typeName)
     .def("usingCommonLabel", &smtk::attribute::ReferenceItemDefinition::usingCommonLabel)

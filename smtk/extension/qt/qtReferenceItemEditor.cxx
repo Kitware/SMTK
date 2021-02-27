@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtReferenceItemComboBox.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
@@ -56,58 +56,84 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-class qtReferenceItemComboBoxInternals
+class qtReferenceItemEditorInternals
 {
 public:
-  QPointer<QComboBox> comboBox;
-  QPointer<QGridLayout> EntryLayout;
-  QPointer<QLabel> theLabel;
-  smtk::resource::WeakManagerPtr resourceManager;
-  smtk::operation::WeakManagerPtr operationManager;
+  QPointer<QComboBox> m_comboBox;
+  QPointer<QLabel> m_theLabel;
+  QPointer<QVBoxLayout> m_mainLayout;
+
+  // For managing active children
+  QPointer<QFrame> m_childrenFrame;
+  QList<smtk::extension::qtItem*> m_childItems;
+  int m_hintChildWidth;
+  int m_hintChildHeight;
+  std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
+
+  smtk::resource::WeakManagerPtr m_resourceManager;
+  smtk::operation::WeakManagerPtr m_operationManager;
+
+  ~qtReferenceItemEditorInternals() { this->clearChildItems(); }
+
+  // Removes all of the qItems representing active children
+  void clearChildItems()
+  {
+    for (int i = 0; i < m_childItems.count(); i++)
+    {
+      delete m_childItems.value(i);
+    }
+    m_childItems.clear();
+  }
 };
 
-qtItem* qtReferenceItemComboBox::createItemWidget(const qtAttributeItemInfo& info)
+qtItem* qtReferenceItemEditor::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
   {
     return nullptr;
   }
-  auto qi = new qtReferenceItemComboBox(info);
+  auto qi = new qtReferenceItemEditor(info);
   return qi;
 }
 
-qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info)
+qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
   : qtItem(info)
   , m_okToCreate(false)
   , m_useAssociations(false)
 {
-  this->Internals = new qtReferenceItemComboBoxInternals;
+  m_internals = new qtReferenceItemEditorInternals;
+  // Set up the item view map for the active children
+  m_itemInfo.createNewDictionary(m_internals->m_itemViewMap);
+
+  // See if we are suppose to limit selection only to this associated
+  // with this item's attribute
   m_useAssociations = m_itemInfo.component().attributeAsBool("UseAssociations");
   if (m_useAssociations)
   {
-    QObject::connect(m_itemInfo.baseView(), SIGNAL(modified(smtk::attribute::ItemPtr)), this,
-      SLOT(itemChanged(smtk::attribute::ItemPtr)));
+    QObject::connect(m_itemInfo.baseView(), &qtBaseAttributeView::modified, this,
+      &qtReferenceItemEditor::itemChanged);
   }
+
   std::ostringstream receiverSource;
-  receiverSource << "qtReferenceItemComboBox_" << this;
+  receiverSource << "qtReferenceItemEditor_" << this;
   m_selectionSourceName = receiverSource.str();
   auto uiManager = this->uiManager();
   if (uiManager == nullptr)
   {
 #if !defined(NDEBUG)
-    std::cerr << "qtReferenceItemComboBox: Could not find UI Manager!\n";
+    std::cerr << "qtReferenceItemEditor: Could not find UI Manager!\n";
 #endif
     return;
   }
 
-  QObject::connect(
-    uiManager, SIGNAL(highlightOnHoverChanged(bool)), this, SLOT(highlightOnHoverChanged(bool)));
+  QObject::connect(uiManager, &qtUIManager::highlightOnHoverChanged, this,
+    &qtReferenceItemEditor::highlightOnHoverChanged);
 
   auto opManager = uiManager->operationManager();
   if (opManager != nullptr)
   {
-    QPointer<qtReferenceItemComboBox> guardedObject(this);
+    QPointer<qtReferenceItemEditor> guardedObject(this);
     m_operationObserverKey = opManager->observers().insert(
       [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
@@ -117,13 +143,13 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
         }
         return 0;
       },
-      "qtReferenceItemCombo: Update if an operation adds or removes entries.");
-    this->Internals->operationManager = opManager;
+      "qtReferenceItemEditor: Update if an operation adds or removes entries.");
+    m_internals->m_operationManager = opManager;
   }
   else
   {
 #if !defined(NDEBUG) && DEBUG_REFERENCEITEM
-    std::cerr << "qtReferenceItemComboBox: Could not find Operation Manager!\n";
+    std::cerr << "qtReferenceItemEditor: Could not find Operation Manager!\n";
 #endif
   }
   auto resManager = uiManager->resourceManager();
@@ -133,64 +159,74 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
         this->handleResourceEvent(resource, event);
       },
-      "qtReferenceItemCombo: Update if a resource is added or removed.");
-    this->Internals->resourceManager = resManager;
+      "qtReferenceItemEditor: Update if a resource is added or removed.");
+    m_internals->m_resourceManager = resManager;
   }
   else
   {
 #if !defined(NDEBUG) && DEBUG_REFERENCEITEM
-    std::cerr << "qtReferenceItemComboBox: Could not find Resource Manager!\n";
+    std::cerr << "qtReferenceItemEditor: Could not find Resource Manager!\n";
 #endif
   }
   this->createWidget();
   this->highlightOnHoverChanged(uiManager->highlightOnHover());
 }
 
-qtReferenceItemComboBox::~qtReferenceItemComboBox()
+qtReferenceItemEditor::~qtReferenceItemEditor()
 {
   this->removeObservers();
-  delete this->Internals;
+  delete m_internals;
 }
 
-void qtReferenceItemComboBox::markForDeletion()
+void qtReferenceItemEditor::markForDeletion()
 {
   this->removeObservers();
   qtItem::markForDeletion();
 }
 
-void qtReferenceItemComboBox::createWidget()
+void qtReferenceItemEditor::createWidget()
 {
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
   if (item == nullptr)
   {
     return;
   }
+
+  // Lets setup the main widget and layout
   m_widget = new QFrame(m_itemInfo.parentWidget());
   m_widget->setObjectName(item->name().c_str());
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
   }
-  this->Internals->EntryLayout = new QGridLayout(m_widget);
-  this->Internals->EntryLayout->setMargin(0);
-  this->Internals->EntryLayout->setSpacing(0);
-  this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  m_internals->m_mainLayout = new QVBoxLayout(m_widget);
+  m_internals->m_mainLayout->setMargin(0);
+  m_internals->m_mainLayout->setSpacing(0);
+  m_internals->m_mainLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+  QFrame* comboFrame = new QFrame(m_widget);
+  comboFrame->setObjectName("Combo Frame");
+  QHBoxLayout* entryLayout = new QHBoxLayout(comboFrame);
+  entryLayout->setMargin(0);
+  entryLayout->setSpacing(0);
+  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
-  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   int padding = 0;
   if (item->isOptional())
   {
-    QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    QCheckBox* optionalCheck = new QCheckBox(comboFrame);
     optionalCheck->setChecked(item->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
-    QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
+    QObject::connect(
+      optionalCheck, &QCheckBox::stateChanged, this, &qtReferenceItemEditor::setOutputOptional);
     labelLayout->addWidget(optionalCheck);
   }
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
@@ -204,7 +240,7 @@ void qtReferenceItemComboBox::createWidget()
   {
     labelText = item->name().c_str();
   }
-  QLabel* label = new QLabel(labelText, m_widget);
+  QLabel* label = new QLabel(labelText, comboFrame);
   label->setSizePolicy(sizeFixedPolicy);
   auto iview = m_itemInfo.baseView();
   if (iview)
@@ -212,7 +248,7 @@ void qtReferenceItemComboBox::createWidget()
     label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
-  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
   //  qtOverlayFilter *filter = new qtOverlayFilter(this);
   //  label->installEventFilter(filter);
@@ -229,16 +265,19 @@ void qtReferenceItemComboBox::createWidget()
     label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
-  this->Internals->theLabel = label;
-  this->Internals->comboBox = new QComboBox(m_widget);
-  this->Internals->comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  this->Internals->comboBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  m_internals->m_theLabel = label;
+  m_internals->m_comboBox = new QComboBox(comboFrame);
+  m_internals->m_comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  m_internals->m_comboBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  m_internals->m_comboBox->setObjectName("Ref ComboBox");
   this->updateItemData();
   // signals/slots
   QObject::connect(
-    this->Internals->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectItem(int)));
-  this->Internals->EntryLayout->addLayout(labelLayout, 0, 0);
-  this->Internals->EntryLayout->addWidget(this->Internals->comboBox, 0, 1);
+    m_internals->m_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectItem(int)));
+
+  entryLayout->addLayout(labelLayout);
+  entryLayout->addWidget(m_internals->m_comboBox);
+  m_internals->m_mainLayout->addWidget(comboFrame);
   if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
     m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
@@ -247,29 +286,37 @@ void qtReferenceItemComboBox::createWidget()
   {
     this->setOutputOptional(item->localEnabledState() ? 1 : 0);
   }
+  this->updateContents();
 }
 
-void qtReferenceItemComboBox::updateItemData()
+void qtReferenceItemEditor::updateItemData()
 {
   this->updateChoices();
+  // Make sure the children have been updated
+  int n = m_internals->m_childItems.size();
+  for (int i = 0; i < n; i++)
+  {
+    m_internals->m_childItems.at(i)->updateItemData();
+  }
 }
 
-void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreResource)
+void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResource)
 {
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
   // If there is no combox being displayed there is nothing to be done/
   // This can occur if the parent widget has been deleted (which means this
   // instance will be deleted shortly)
-  if (this->Internals->comboBox == nullptr)
+  if (m_internals->m_comboBox == nullptr)
   {
     return;
   }
-  this->Internals->comboBox->blockSignals(true);
+
+  m_internals->m_comboBox->blockSignals(true);
   this->m_mappedObjects.clear();
-  this->Internals->comboBox->clear();
+  m_internals->m_comboBox->clear();
   if (!item)
   {
-    this->Internals->comboBox->blockSignals(false);
+    m_internals->m_comboBox->blockSignals(false);
     return;
   }
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
@@ -303,7 +350,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
       objSet.erase(obj);
     }
   }
-  // THere are cases when the item's current color value may not be currently legal due to uniqueness
+  // There are cases when the item's current color value may not be currently legal due to uniqueness
   // and/or category constraints.  In the case of the uniqueness condition,
   // the componentItem's value itself may not be in the set
   // returned (since adding that component would not be legal or perhaps an operation has assigned a
@@ -331,12 +378,12 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
 
   // Lets set the comboBox
   // First add the please select option
-  this->Internals->comboBox->addItem("Please Select");
-  this->Internals->comboBox->setItemData(0, QBrush(Qt::red), Qt::ForegroundRole);
+  m_internals->m_comboBox->addItem("Please Select");
+  m_internals->m_comboBox->setItemData(0, QBrush(Qt::red), Qt::ForegroundRole);
   // Are we allowed to create an object?
   if (m_okToCreate)
   {
-    this->Internals->comboBox->addItem("Create New");
+    m_internals->m_comboBox->addItem("Create New");
   }
 
   int count = 0;
@@ -347,7 +394,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     vdata.setValue(count);
     if (obj == selectObj)
     {
-      selectedIndex = this->Internals->comboBox->count();
+      selectedIndex = m_internals->m_comboBox->count();
     }
     // TODO: right now the descriptive phrase stuff displays New Resource for
     // unnamed resources so we will do the same.  However, the code should be
@@ -356,36 +403,36 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     // unnamed resources.
     if (obj->name().empty())
     {
-      this->Internals->comboBox->addItem("New Resource", vdata);
+      m_internals->m_comboBox->addItem("New Resource", vdata);
     }
     else
     {
-      this->Internals->comboBox->addItem(obj->name().c_str(), vdata);
+      m_internals->m_comboBox->addItem(obj->name().c_str(), vdata);
     }
     if (m_currentValueIsInvalid)
     {
-      this->Internals->comboBox->setItemData(selectedIndex, QBrush(Qt::red), Qt::ForegroundRole);
+      m_internals->m_comboBox->setItemData(selectedIndex, QBrush(Qt::red), Qt::ForegroundRole);
     }
     this->m_mappedObjects[count++] = obj;
   }
-  this->Internals->comboBox->setCurrentIndex(selectedIndex);
+  m_internals->m_comboBox->setCurrentIndex(selectedIndex);
   if ((selectedIndex == 0) || m_currentValueIsInvalid)
   {
-    QPalette comboboxPalette = this->Internals->comboBox->palette();
+    QPalette comboboxPalette = m_internals->m_comboBox->palette();
     // On Macs to change the button text color you need to set QPalette::Text
     // For Linux you need to set QPalette::ButtonText
     comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
-    this->Internals->comboBox->setPalette(comboboxPalette);
+    m_internals->m_comboBox->setPalette(comboboxPalette);
   }
   else
   {
-    this->Internals->comboBox->setPalette(this->Internals->comboBox->parentWidget()->palette());
+    m_internals->m_comboBox->setPalette(m_internals->m_comboBox->parentWidget()->palette());
   }
-  this->Internals->comboBox->blockSignals(false);
+  m_internals->m_comboBox->blockSignals(false);
 }
 
-smtk::resource::PersistentObjectPtr qtReferenceItemComboBox::object(int index)
+smtk::resource::PersistentObjectPtr qtReferenceItemEditor::object(int index)
 {
   // Lets get the right index
   // Are we dealing with the create new option
@@ -394,12 +441,12 @@ smtk::resource::PersistentObjectPtr qtReferenceItemComboBox::object(int index)
     return nullptr; // These are entries without items associated with them
   }
   bool ok;
-  int val = this->Internals->comboBox->itemData(index).toInt(&ok);
+  int val = m_internals->m_comboBox->itemData(index).toInt(&ok);
   if (!ok)
   {
 // There is a problem in that the item doesn't have a mapped value for us to look up
 #if !defined(NDEBUG)
-    std::cerr << "qtReferenceItemComboBox::object - can't get mapped id for index = " << index
+    std::cerr << "qtReferenceItemEditor::object - can't get mapped id for index = " << index
               << "\n";
 #endif
     return nullptr;
@@ -409,7 +456,7 @@ smtk::resource::PersistentObjectPtr qtReferenceItemComboBox::object(int index)
   {
 // There is a problem in that the mapped value can't be found
 #if !defined(NDEBUG)
-    std::cerr << "qtReferenceItemComboBox::object - can't find mapped id\n";
+    std::cerr << "qtReferenceItemEditor::object - can't find mapped id\n";
 #endif
     return nullptr;
   }
@@ -418,14 +465,14 @@ smtk::resource::PersistentObjectPtr qtReferenceItemComboBox::object(int index)
   {
 // There is a problem in that we can't get a persistent object from the weak pointer
 #if !defined(NDEBUG)
-    std::cerr << "qtReferenceItemComboBox::object - can't get PersistentObject\n";
+    std::cerr << "qtReferenceItemEditor::object - can't get PersistentObject\n";
 #endif
     return nullptr;
   }
   return selectedObj;
 }
 
-void qtReferenceItemComboBox::highlightItem(int index)
+void qtReferenceItemEditor::highlightItem(int index)
 {
   // Are we dealing with the create new option
   if ((index == 0) || (m_okToCreate && (index == 1)))
@@ -459,7 +506,7 @@ void qtReferenceItemComboBox::highlightItem(int index)
     // There is a problem in that we can't get a persistent object from the index
     selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
 #if !defined(NDEBUG)
-    std::cerr << "qtReferenceItemComboBox::highlightItem - can't get PersistentObject for index: "
+    std::cerr << "qtReferenceItemEditor::highlightItem - can't get PersistentObject for index: "
               << index << std::endl;
 #endif
     return;
@@ -475,22 +522,22 @@ void qtReferenceItemComboBox::highlightItem(int index)
     objs, m_selectionSourceName, sv, smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
 }
 
-void qtReferenceItemComboBox::selectItem(int index)
+void qtReferenceItemEditor::selectItem(int index)
 {
   // Check to see if the new value is red or not - if it is
   // then the combo box button should be red.
-  if (this->Internals->comboBox->itemData(index, Qt::ForegroundRole) == QBrush(Qt::red))
+  if (m_internals->m_comboBox->itemData(index, Qt::ForegroundRole) == QBrush(Qt::red))
   {
-    QPalette comboboxPalette = this->Internals->comboBox->palette();
+    QPalette comboboxPalette = m_internals->m_comboBox->palette();
     // On Macs to change the button text color you need to set QPalette::Text
     // For Linux you need to set QPalette::ButtonText
     comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
-    this->Internals->comboBox->setPalette(comboboxPalette);
+    m_internals->m_comboBox->setPalette(comboboxPalette);
   }
   else
   {
-    this->Internals->comboBox->setPalette(this->Internals->comboBox->parentWidget()->palette());
+    m_internals->m_comboBox->setPalette(m_internals->m_comboBox->parentWidget()->palette());
   }
 
   // Lets get the selection manager if possible since
@@ -519,6 +566,7 @@ void qtReferenceItemComboBox::selectItem(int index)
     if (item->isSet())
     {
       item->unset();
+      this->updateContents();
       emit this->modified();
     }
   }
@@ -533,6 +581,7 @@ void qtReferenceItemComboBox::selectItem(int index)
     if (selectedObject && !(item->isSet() && (item->value() == selectedObject)))
     {
       item->setValue(selectedObject);
+      this->updateContents();
       emit this->modified();
     }
   }
@@ -551,11 +600,11 @@ void qtReferenceItemComboBox::selectItem(int index)
   }
 }
 
-void qtReferenceItemComboBox::removeObservers()
+void qtReferenceItemEditor::removeObservers()
 {
   if (m_operationObserverKey.assigned())
   {
-    auto opManager = this->Internals->operationManager.lock();
+    auto opManager = m_internals->m_operationManager.lock();
     if (opManager != nullptr)
     {
       opManager->observers().erase(m_operationObserverKey);
@@ -563,7 +612,7 @@ void qtReferenceItemComboBox::removeObservers()
   }
   if (m_resourceObserverKey.assigned())
   {
-    auto resManager = this->Internals->resourceManager.lock();
+    auto resManager = m_internals->m_resourceManager.lock();
     if (resManager != nullptr)
     {
       resManager->observers().erase(m_resourceObserverKey);
@@ -571,7 +620,7 @@ void qtReferenceItemComboBox::removeObservers()
   }
 }
 
-int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
+int qtReferenceItemEditor::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
@@ -591,7 +640,7 @@ int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operati
   return 0;
 }
 
-void qtReferenceItemComboBox::handleResourceEvent(
+void qtReferenceItemEditor::handleResourceEvent(
   const smtk::resource::Resource& resource, smtk::resource::EventType event)
 {
 
@@ -610,7 +659,7 @@ void qtReferenceItemComboBox::handleResourceEvent(
   }
 }
 
-void qtReferenceItemComboBox::resetHover()
+void qtReferenceItemEditor::resetHover()
 {
   auto uiManager = this->uiManager();
   if (uiManager == nullptr)
@@ -626,7 +675,7 @@ void qtReferenceItemComboBox::resetHover()
   selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
 }
 
-void qtReferenceItemComboBox::setOutputOptional(int state)
+void qtReferenceItemEditor::setOutputOptional(int state)
 {
   auto item = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
   if (!item)
@@ -634,7 +683,7 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
     return;
   }
   bool enable = state != 0;
-  this->Internals->comboBox->setVisible(enable);
+  m_internals->m_comboBox->setVisible(enable);
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
@@ -647,22 +696,22 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   }
 }
 
-void qtReferenceItemComboBox::highlightOnHoverChanged(bool shouldHighlight)
+void qtReferenceItemEditor::highlightOnHoverChanged(bool shouldHighlight)
 {
   if (shouldHighlight)
   {
     QObject::connect(
-      this->Internals->comboBox, SIGNAL(highlighted(int)), this, SLOT(highlightItem(int)));
+      m_internals->m_comboBox, SIGNAL(highlighted(int)), this, SLOT(highlightItem(int)));
   }
   else
   {
     QObject::disconnect(
-      this->Internals->comboBox, SIGNAL(highlighted(int)), this, SLOT(highlightItem(int)));
+      m_internals->m_comboBox, SIGNAL(highlighted(int)), this, SLOT(highlightItem(int)));
     this->resetHover();
   }
 }
 
-void qtReferenceItemComboBox::itemChanged(smtk::attribute::ItemPtr modifiedItem)
+void qtReferenceItemEditor::itemChanged(smtk::attribute::ItemPtr modifiedItem)
 {
   smtk::attribute::ItemPtr item = m_itemInfo.item();
   if ((!item) || (item == modifiedItem))
@@ -675,4 +724,116 @@ void qtReferenceItemComboBox::itemChanged(smtk::attribute::ItemPtr modifiedItem)
     return;
   }
   this->updateChoices();
+}
+
+void qtReferenceItemEditor::updateContents()
+{
+  auto uiManager = this->uiManager();
+  if (uiManager == nullptr)
+    return;
+
+  smtk::attribute::ResourcePtr attResource = uiManager->attResource();
+
+  // First clear all of the current children items being displayed
+  m_internals->clearChildItems();
+  if (m_internals->m_childrenFrame)
+  {
+    m_internals->m_mainLayout->removeWidget(m_internals->m_childrenFrame);
+    delete m_internals->m_childrenFrame;
+  }
+
+  auto item = this->itemAs<attribute::ReferenceItem>();
+  auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
+
+  if (item->numberOfActiveChildrenItems() == 0)
+  {
+    // Nothing else to do but tell the outside world our size may have changed
+    m_itemInfo.baseView()->childrenResized();
+    emit this->widgetSizeChanged();
+  }
+
+  m_internals->m_hintChildWidth = 0;
+  m_internals->m_hintChildHeight = 0;
+
+  // Prepare the frame to hold all of the children
+  m_internals->m_childrenFrame = new QFrame(m_widget);
+  m_internals->m_childrenFrame->setObjectName("ChildItemsFrame");
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  QVBoxLayout* clayout = new QVBoxLayout(m_internals->m_childrenFrame);
+  clayout->setMargin(3);
+  m_internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
+  m_internals->m_childrenFrame->setFrameShape(QFrame::Box);
+
+  // Determine the active children definitions that pass category checks
+  // We do this to get an idea as to the max label length
+  QList<smtk::attribute::ItemDefinitionPtr> activeChildDefs;
+  std::size_t i, m = item->numberOfActiveChildrenItems();
+  for (i = 0; i < m; i++)
+  {
+    smtk::attribute::ConstItemDefinitionPtr itDef = item->activeChildItem(i)->definition();
+    std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
+      itemDef->childrenItemDefinitions().find(itDef->name());
+    if ((it != itemDef->childrenItemDefinitions().end()) && attResource &&
+      attResource->passActiveCategoryCheck(itemDef->categories()))
+    {
+      activeChildDefs.push_back(it->second);
+    }
+  }
+
+  auto iiview = m_itemInfo.baseView();
+  int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
+
+  int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
+  if (iiview)
+  {
+    iiview->setFixedLabelWidth(tmpLen);
+  }
+
+  // Now process the active children items themselves
+  bool hasVisibleChildren = false;
+  for (i = 0; i < m; i++)
+  {
+    auto citem = item->activeChildItem(static_cast<int>(i));
+    if (iiview && !iiview->displayItem(citem))
+    {
+      continue; // This child does not pass display checks so skip it
+    }
+    auto it = m_internals->m_itemViewMap.find(citem->name());
+    qtItem* childItem;
+    // Do we have custom view info for the child?
+    if (it != m_internals->m_itemViewMap.end())
+    {
+      auto info = it->second;
+      info.setParentWidget(m_internals->m_childrenFrame.data());
+      info.setItem(citem);
+      childItem = uiManager->createItem(info);
+    }
+    else
+    {
+      smtk::view::Configuration::Component comp; // create a default view style
+      qtAttributeItemInfo info(
+        citem, comp, m_internals->m_childrenFrame.data(), m_itemInfo.baseView());
+      childItem = uiManager->createItem(info);
+    }
+    if (childItem)
+    {
+      clayout->addWidget(childItem->widget());
+      m_internals->m_childItems.push_back(childItem);
+      connect(childItem, SIGNAL(modified()), this, SIGNAL(modified()));
+      connect(childItem, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
+      hasVisibleChildren = true;
+    }
+  }
+
+  if (iiview)
+  {
+    iiview->setFixedLabelWidth(currentLen);
+  }
+  m_internals->m_hintChildWidth = m_internals->m_childrenFrame->width();
+  m_internals->m_hintChildHeight = m_internals->m_childrenFrame->height();
+  m_internals->m_childrenFrame->setVisible(hasVisibleChildren);
+  m_internals->m_mainLayout->addWidget(m_internals->m_childrenFrame);
+
+  m_itemInfo.baseView()->childrenResized();
+  emit this->widgetSizeChanged();
 }
