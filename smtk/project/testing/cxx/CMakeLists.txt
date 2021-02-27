@@ -3,6 +3,7 @@
 set(unit_tests
   TestDefineOp
   TestProject
+  TestProjectAssociation
   TestProjectLifeCycle
   TestProjectResources
 )
