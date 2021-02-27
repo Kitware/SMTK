@@ -42,11 +42,27 @@ public:
   ~qtOperationDialogInternals() = default;
 };
 
-qtOperationDialog::qtOperationDialog(
-  smtk::operation::OperationPtr op, smtk::view::ManagerPtr viewManager, QWidget* parentWidget)
+qtOperationDialog::qtOperationDialog(smtk::operation::OperationPtr op,
+  QSharedPointer<smtk::extension::qtUIManager> uiManager, QWidget* parentWidget)
   : QDialog(parentWidget)
 {
+  this->buildUI(op, uiManager);
+}
+
+qtOperationDialog::qtOperationDialog(smtk::operation::OperationPtr op,
+  smtk::resource::ManagerPtr resManager, smtk::view::ManagerPtr viewManager, QWidget* parentWidget)
+  : QDialog(parentWidget)
+{
+  auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
+    new smtk::extension::qtUIManager(op, resManager, viewManager));
+  this->buildUI(op, uiManager);
+}
+
+void qtOperationDialog::buildUI(
+  smtk::operation::OperationPtr op, QSharedPointer<smtk::extension::qtUIManager> uiManager)
+{
   m_internals = new qtOperationDialogInternals();
+  m_internals->m_uiManager = uiManager;
   m_internals->m_operation = op;
 
   QVBoxLayout* dialogLayout = new QVBoxLayout(this);
@@ -56,11 +72,6 @@ qtOperationDialog::qtOperationDialog(
   // 1. Create the editor tab
   QWidget* editorWidget = new QWidget(this);
   QVBoxLayout* editorLayout = new QVBoxLayout(editorWidget);
-
-  // Create the ui manager
-  auto specResource = op->specification();
-  m_internals->m_uiManager = QSharedPointer<smtk::extension::qtUIManager>(
-    new smtk::extension::qtUIManager(op, specResource->manager(), viewManager));
 
   // Create the SMTK view
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
@@ -102,7 +113,6 @@ qtOperationDialog::qtOperationDialog(
 
   // 4. And the window title
   std::string title = viewConfig->label();
-  title.append(" Information");
   this->setWindowTitle(title.c_str());
 }
 
