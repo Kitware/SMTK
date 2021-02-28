@@ -30,7 +30,7 @@ const char* templateString =
   "      <AssociationsDef Name=\"project\" NumberOfRequiredValues=\"1\"\n"
   "       Extensible=\"false\" OnlyResources=\"true\">\n"
   "        <Accepts>\n"
-  "          <Resource Name=\"foo_project\" />\n"
+  "          <Resource Name=\"smtk::project::Project\" />\n"
   "        </Accepts>\n"
   "      </AssociationsDef>\n"
   "    </AttDef>\n"

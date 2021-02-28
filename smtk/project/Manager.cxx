@@ -139,9 +139,9 @@ bool Manager::registerProject(Metadata&& metadata)
       if (auto resourceManager = m_resourceManager.lock())
       {
         smtk::resource::Resource::Index resourceIndex =
-          std::hash<std::string>{}("smtk::resource::Resource");
+          std::type_index(typeid(smtk::resource::Resource)).hash_code();
         smtk::resource::Resource::Index projectIndex =
-          std::hash<std::string>{}("smtk::project::Project");
+          std::type_index(typeid(smtk::project::Project)).hash_code();
         resourceManager->registerResource(smtk::resource::Metadata(
           inserted.first->typeName(),
           inserted.first->index(),
