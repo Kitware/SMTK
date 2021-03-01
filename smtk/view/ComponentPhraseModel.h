@@ -11,6 +11,7 @@
 #define smtk_view_ComponentPhraseModel_h
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseModel.h"
 
 #include <functional>
@@ -34,6 +35,10 @@ class SMTKCORE_EXPORT ComponentPhraseModel : public PhraseModel
 public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
   using Operation = smtk::operation::Operation;
+
+  typedef std::function<bool(
+    const smtk::view::DescriptivePhrasePtr& a, const smtk::view::DescriptivePhrasePtr& b)>
+    SortingCompFunc;
 
   smtkTypeMacro(smtk::view::ComponentPhraseModel);
   smtkSuperclassMacro(smtk::view::PhraseModel);
@@ -66,6 +71,14 @@ public:
     */
   void visitComponentFilters(std::function<int(const std::string&, const std::string&)> fn) const;
 
+  /**\brief sets a custom comparison function to sort descriptive phrases. This function is used
+    * to sort nodes at all levels recursively.
+    * Developers can use comparison functions defined in DescriptivePhrase to set this.
+    * If this function is not called, the default value is DescriptivePhrase::compareByTypeThenTitle.
+    * This function calls populateRoot() so sorting would be triggered immediately.
+    */
+  void setSortFunction(const SortingCompFunc& comparator);
+
 protected:
   /*
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
@@ -86,6 +99,10 @@ protected:
     std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
     m_resources;
   std::multimap<std::string, std::string> m_componentFilters;
+
+private:
+  SortingCompFunc m_comparator = smtk::view::DescriptivePhrase::compareByTypeThenTitle;
+  ;
 };
 }
 }
