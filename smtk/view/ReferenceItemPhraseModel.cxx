@@ -103,8 +103,8 @@ void ReferenceItemPhraseModel::populateRoot()
 }
 
 void ReferenceItemPhraseModel::handleModified(
-  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
+  const smtk::resource::PersistentObjectSet& modifiedObjects)
 {
-  this->Superclass::handleModified(op, res, data);
+  this->Superclass::handleModified(modifiedObjects);
   this->populateRoot();
 }

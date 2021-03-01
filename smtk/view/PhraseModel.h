@@ -185,14 +185,11 @@ protected:
   void removeChildren(const std::vector<int>& parentIdx, int childRange[2]);
 
   /// Called to deal with resources/components being removed as a result of an operation.
-  virtual void handleExpunged(
-    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data);
+  virtual void handleExpunged(const smtk::resource::PersistentObjectSet& expungedObjects);
   /// Called to deal with resources/components marked as modified by the operation.
-  virtual void handleModified(
-    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data);
+  virtual void handleModified(const smtk::resource::PersistentObjectSet& modifiedObjects);
   /// Called to deal with resources/components being created as a result of an operation.
-  virtual void handleCreated(
-    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data);
+  virtual void handleCreated(const smtk::resource::PersistentObjectSet& createdObjects);
 
   /**\brief Un-decorate and re-decorate every phrase in the current hierarchy.
     *
