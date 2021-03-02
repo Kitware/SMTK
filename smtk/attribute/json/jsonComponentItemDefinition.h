@@ -29,8 +29,8 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ComponentItemDefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr);
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
+  smtk::attribute::ComponentItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr);
 
 SMTKCORE_EXPORT void processFromRefItemDef(
   const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr);

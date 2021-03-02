@@ -34,14 +34,12 @@ namespace smtk
 {
 namespace attribute
 {
-class Attribute;
-class Item;
-class GroupItemDefinition;
 class SMTKCORE_EXPORT ItemDefinition
 {
-  friend class smtk::attribute::Definition;
-  friend class smtk::attribute::GroupItemDefinition;
-  friend class smtk::attribute::ValueItemDefinition;
+  friend class Definition;
+  friend class GroupItemDefinition;
+  friend class ReferenceItemDefinition;
+  friend class ValueItemDefinition;
 
 public:
   smtkTypeMacroBase(smtk::attribute::ItemDefinition);

@@ -309,3 +309,7 @@ Here is an example of customizing the AssociationWidget for an AttributeView:
       AssociationTitle="Boundary condition association information">
 ```
 * qtAssociation2ColumnWidget will now remove all invalid values from the attribute's association information.
+
+### qtReferenceItemComboBox has been renamed to qtReferenceItemEditor
+The main reason for the change is that this class now supports the ability of ReferenceItems
+having optional activeChildren

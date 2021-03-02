@@ -359,6 +359,7 @@ void qtAttributeView::createWidget()
     m_internals->DefsCombo = new QComboBox(m_internals->ButtonsFrame);
     m_internals->DefsCombo->setVisible(false);
     buttonLayout->addWidget(m_internals->DefsCombo);
+    m_internals->DefsCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     m_internals->DefLabel = nullptr;
   }
   else

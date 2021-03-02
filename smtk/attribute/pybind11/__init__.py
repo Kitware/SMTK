@@ -23,6 +23,7 @@ func_list = \
      (Attribute, Attribute._itemAtPath, "itemAtPath"),
      (Item, Item._find, "find"),
      (GroupItem, GroupItem._find, "find"),
+     (ReferenceItem, ReferenceItem._activeChildItem, "activeChildItem"),
      (ValueItem, ValueItem._activeChildItem, "activeChildItem"),
      (ValueItem, ValueItem._findChild, "findChild")]
 

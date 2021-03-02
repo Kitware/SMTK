@@ -185,7 +185,7 @@ void processItemDef(const nlohmann::json& itemDef, itemDefPtr& idef,
       {
         smtk::attribute::ComponentItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::ReferenceType:
@@ -194,7 +194,7 @@ void processItemDef(const nlohmann::json& itemDef, itemDefPtr& idef,
       {
         smtk::attribute::ComponentItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::ResourceType:
@@ -203,7 +203,7 @@ void processItemDef(const nlohmann::json& itemDef, itemDefPtr& idef,
       {
         smtk::attribute::ResourceItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::ResourceItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     default:
@@ -350,6 +350,14 @@ void JsonHelperFunction::processItemDefinitionTypeFromJson(
 {
   std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
   processItemDef<smtk::attribute::ValueItemDefinitionPtr>(jItemDef, idef, resPtr, convertedAttDefs);
+}
+
+void JsonHelperFunction::processItemDefinitionTypeFromJson(
+  const nlohmann::json& jItemDef, ReferenceItemDefinitionPtr& idef, const ResourcePtr& resPtr)
+{
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
+  processItemDef<smtk::attribute::ReferenceItemDefinitionPtr>(
+    jItemDef, idef, resPtr, convertedAttDefs);
 }
 
 void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr& item)
@@ -505,14 +513,14 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
     {
       smtk::attribute::ComponentItemPtr temp =
         smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(itemPtr);
-      smtk::attribute::from_json(j, temp);
+      smtk::attribute::from_json(j, temp, itemExpressionInfo, attRefInfo);
     }
     break;
     case smtk::attribute::Item::ResourceType:
     {
       smtk::attribute::ResourceItemPtr temp =
         smtk::dynamic_pointer_cast<smtk::attribute::ResourceItem>(itemPtr);
-      smtk::attribute::from_json(j, temp);
+      smtk::attribute::from_json(j, temp, itemExpressionInfo, attRefInfo);
     }
     break;
     case smtk::attribute::Item::ComponentType:
@@ -534,7 +542,7 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
         }
         else
         {
-          smtk::attribute::from_json(j, temp);
+          smtk::attribute::from_json(j, temp, itemExpressionInfo, attRefInfo);
         }
       }
     }

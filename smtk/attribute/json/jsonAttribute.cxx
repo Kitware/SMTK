@@ -159,7 +159,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
   if (result != j.end())
   {
     auto assocItem = att->associations();
-    smtk::attribute::from_json(*result, assocItem);
+    smtk::attribute::from_json(*result, assocItem, itemExpressionInfo, attRefInfo);
   }
 }
 }

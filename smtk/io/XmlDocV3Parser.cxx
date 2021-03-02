@@ -15,14 +15,31 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/CustomItem.h"
+#include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/DirectoryItemDefinition.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/common/DateTimeZonePair.h"
 #include "smtk/common/StringUtil.h"
@@ -38,13 +55,13 @@
 
 using namespace pugi;
 using namespace smtk::io;
+using namespace smtk::attribute;
 using namespace smtk;
 
 namespace
 {
 // Helper functions to set part of a configuration - returns false if it encounters a problem
-bool setExclusiveAnalysisConfiguration(
-  smtk::attribute::StringItemPtr& item, xml_node& analysisNode, Logger& logger);
+bool setExclusiveAnalysisConfiguration(StringItemPtr& item, xml_node& analysisNode, Logger& logger);
 
 template <typename ContainerPtrType>
 bool setAnalysisConfigurationHelper(
@@ -58,7 +75,7 @@ bool setAnalysisConfigurationHelper(
     return false;
   }
   // Lets find the item that this analysis corresponds to
-  smtk::attribute::ItemPtr item = container->find(xatt.value(), smtk::attribute::IMMEDIATE);
+  ItemPtr item = container->find(xatt.value(), smtk::attribute::IMMEDIATE);
   if (!item)
   {
     smtkErrorMacro(
@@ -68,7 +85,7 @@ bool setAnalysisConfigurationHelper(
   // Set this to be enabled
   item->setIsEnabled(true);
   // Lets see what kind of item we have
-  auto voidItem = std::dynamic_pointer_cast<smtk::attribute::VoidItem>(item);
+  auto voidItem = std::dynamic_pointer_cast<VoidItem>(item);
   // Simple analysis with no children
   if (voidItem)
   {
@@ -85,7 +102,7 @@ bool setAnalysisConfigurationHelper(
 
   // Exclusive Analyses are represented as a String Item with Discrete Values
   // One value for each of its child Analysis
-  auto stringItem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(item);
+  auto stringItem = std::dynamic_pointer_cast<StringItem>(item);
   if (stringItem)
   {
     // This node should have children
@@ -106,7 +123,7 @@ bool setAnalysisConfigurationHelper(
     return true;
   }
   // Non Exclusive Analyses are represented as a Group Item
-  auto groupItem = std::dynamic_pointer_cast<smtk::attribute::GroupItem>(item);
+  auto groupItem = std::dynamic_pointer_cast<GroupItem>(item);
   if (!groupItem)
   {
     // OK we found something unexpected
@@ -118,7 +135,7 @@ bool setAnalysisConfigurationHelper(
   // have to have children specified in the configuration
   for (auto child = analysisNode.child("Analysis"); child; child = child.next_sibling("Analysis"))
   {
-    if (!setAnalysisConfigurationHelper<smtk::attribute::GroupItemPtr>(groupItem, child, logger))
+    if (!setAnalysisConfigurationHelper<GroupItemPtr>(groupItem, child, logger))
     {
       return false;
     }
@@ -126,8 +143,7 @@ bool setAnalysisConfigurationHelper(
   return true;
 }
 
-bool setExclusiveAnalysisConfiguration(
-  smtk::attribute::StringItemPtr& item, xml_node& analysisNode, Logger& logger)
+bool setExclusiveAnalysisConfiguration(StringItemPtr& item, xml_node& analysisNode, Logger& logger)
 {
   // First get the type of Analysis this node represents
   auto xatt = analysisNode.attribute("Type");
@@ -146,8 +162,7 @@ bool setExclusiveAnalysisConfiguration(
   if (item->numberOfActiveChildrenItems())
   {
     // Are this analysis' children exclusive or not:
-    auto stringItem =
-      std::dynamic_pointer_cast<smtk::attribute::StringItem>(item->activeChildItem(0));
+    auto stringItem = std::dynamic_pointer_cast<StringItem>(item->activeChildItem(0));
 
     // Does this node have children?
     if (analysisNode.child("Analysis"))
@@ -165,8 +180,7 @@ bool setExclusiveAnalysisConfiguration(
         return true;
       }
 
-      auto groupItem =
-        std::dynamic_pointer_cast<smtk::attribute::GroupItem>(item->activeChildItem(0));
+      auto groupItem = std::dynamic_pointer_cast<GroupItem>(item->activeChildItem(0));
       if (groupItem == nullptr)
       {
         smtkErrorMacro(logger, "Analysis: "
@@ -178,8 +192,7 @@ bool setExclusiveAnalysisConfiguration(
       for (auto child = analysisNode.child("Analysis"); child;
            child = child.next_sibling("Analysis"))
       {
-        if (!setAnalysisConfigurationHelper<smtk::attribute::GroupItemPtr>(
-              groupItem, child, logger))
+        if (!setAnalysisConfigurationHelper<GroupItemPtr>(groupItem, child, logger))
         {
           return false;
         }
@@ -208,7 +221,7 @@ bool setExclusiveAnalysisConfiguration(
 }
 }
 
-XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+XmlDocV3Parser::XmlDocV3Parser(ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV2Parser(myResource, logger)
 {
 }
@@ -240,8 +253,7 @@ void XmlDocV3Parser::process(pugi::xml_node& rootNode)
     smtk::common::UUID id(child.attribute("Id").value());
     std::string location = child.attribute("Location").value();
     m_resource->links().data().insert(smtk::resource::Surrogate(index, typeName, id, location),
-      smtk::common::UUID::random(), m_resource->id(), id,
-      smtk::attribute::Resource::AssociationRole);
+      smtk::common::UUID::random(), m_resource->id(), id, Resource::AssociationRole);
   }
 }
 
@@ -338,7 +350,7 @@ void XmlDocV3Parser::processExclusion(xml_node& excludeNode)
   // that exclude each other
   xml_node child;
   // First lets convert the strings to definitions
-  std::vector<smtk::attribute::DefinitionPtr> defs;
+  std::vector<DefinitionPtr> defs;
   for (child = excludeNode.first_child(); child; child = child.next_sibling())
   {
     auto tname = child.text().get();
@@ -385,7 +397,7 @@ void XmlDocV3Parser::processPrerequisite(xml_node& prereqNode)
   }
   xml_node child;
   // First lets convert the strings to definitions
-  std::vector<smtk::attribute::DefinitionPtr> defs;
+  std::vector<DefinitionPtr> defs;
   for (child = prereqNode.first_child(); child; child = child.next_sibling())
   {
     auto tname = child.text().get();
@@ -434,9 +446,9 @@ void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
   }
 }
 
-void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
+void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
 {
-  smtk::attribute::Categories::Set::CombinationMode catMode;
+  Categories::Set::CombinationMode catMode;
   //need to process Categories and Tags added in V3
   this->XmlDocV2Parser::processDefinition(defNode, def);
   //This is the old style of category information
@@ -529,16 +541,15 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   }
 }
 
-void XmlDocV3Parser::processAssociationDef(xml_node& node, smtk::attribute::DefinitionPtr def)
+void XmlDocV3Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
 {
   std::string assocName = node.attribute("Name").value();
   if (assocName.empty())
   {
     assocName = def->type() + "Associations";
   }
-  smtk::attribute::ReferenceItemDefinitionPtr assocDef =
-    smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
-      smtk::attribute::ReferenceItemDefinition::New(assocName));
+  ReferenceItemDefinitionPtr assocDef =
+    smtk::dynamic_pointer_cast<ReferenceItemDefinition>(ReferenceItemDefinition::New(assocName));
   this->processReferenceDef(node, assocDef);
   // We don't want reference items to handle "MembershipMask" but we do need
   // to support AssociationsDef entries with a MembershipMask. So add that here:
@@ -663,8 +674,7 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   }       // else
 }
 
-void XmlDocV3Parser::processReferenceItem(
-  pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
+void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -692,6 +702,55 @@ void XmlDocV3Parser::processReferenceItem(
     return;
   }
 
+  // Process the children items of this Item
+  xml_node values, childNode, childrenNodes, inode;
+  childrenNodes = node.child("ChildrenItems");
+  if (childrenNodes)
+  {
+    // Process all of the children items in the item w/r to the XML
+    // NOTE That the writer processes the items in order - lets assume
+    // that for speed and if that fails we can try to search for the correct
+    // xml node
+    std::map<std::string, attribute::ItemPtr>::const_iterator iter;
+    const std::map<std::string, attribute::ItemPtr>& childrenItems = item->childrenItems();
+    for (childNode = childrenNodes.first_child(), iter = childrenItems.begin();
+         (iter != childrenItems.end()) && childNode; iter++, childNode = childNode.next_sibling())
+    {
+      // See if the name of the item matches the name of node
+      xatt = childNode.attribute("Name");
+      if (!xatt)
+      {
+        smtkErrorMacro(
+          m_logger, "Bad Child Item for Item : " << item->name() << "- missing XML Attribute Name");
+        inode = childrenNodes.find_child_by_attribute("Name", iter->second->name().c_str());
+      }
+      else
+      {
+        // Is the ith xml node the same as the ith item of the attribute?
+        if (iter->second->name() == xatt.value())
+        {
+          inode = childNode;
+        }
+        else
+        {
+          inode = childrenNodes.find_child_by_attribute("Name", iter->second->name().c_str());
+        }
+      }
+      if (!inode)
+      {
+        smtkErrorMacro(m_logger, "Can not locate XML Child Item node :"
+            << iter->second->name() << " for Item : " << item->name());
+        continue;
+      }
+      this->processItem(inode, iter->second);
+    }
+    if (childNode || (iter != childrenItems.end()))
+    {
+      smtkErrorMacro(
+        m_logger, "Number of Children Items does not match XML for Item : " << item->name());
+    }
+  }
+
   valsNode = node.child("Values");
   if (valsNode)
   {
@@ -714,7 +773,7 @@ void XmlDocV3Parser::processReferenceItem(
       auto& links = item->attribute()->resource()->links().data();
 
       xml_node keyNode = val.child("Key");
-      smtk::attribute::ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+      ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
         smtk::common::UUID(keyNode.child("_2_").text().get()));
       item->setObjectKey(static_cast<int>(i), key);
 
@@ -743,15 +802,19 @@ void XmlDocV3Parser::processReferenceItem(
   }
   else if (numRequiredVals == 1)
   {
+    xatt = node.attribute("Conditional");
+    std::size_t conditional =
+      (xatt) ? xatt.as_uint() : attribute::ReferenceItemDefinition::s_invalidIndex;
+
     val = node.child("Val");
     if (val)
     {
       auto& links = item->attribute()->resource()->links().data();
 
       xml_node keyNode = val.child("Key");
-      smtk::attribute::ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+      ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
         smtk::common::UUID(keyNode.child("_2_").text().get()));
-      item->setObjectKey(0, key);
+      item->setObjectKey(0, key, conditional);
 
       xml_node rhsNode = val.child("RHS");
       smtk::common::UUID rhs1(rhsNode.child("_1_").text().get());
@@ -782,8 +845,8 @@ void XmlDocV3Parser::processReferenceItem(
   }
 }
 
-void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
-  smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelsElement)
+void XmlDocV3Parser::processReferenceDef(
+  pugi::xml_node& node, ReferenceItemDefinitionPtr idef, const std::string& labelsElement)
 {
   xml_node accepts, rejects, labels, child;
   xml_attribute xatt;
@@ -893,22 +956,208 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
       }
     }
   }
+  // Now lets process its children items
+  xml_node cinode, citemsNode = node.child("ChildrenDefinitions");
+  std::string citemName;
+  attribute::Item::Type citype;
+  attribute::ItemDefinitionPtr cidef;
+  for (cinode = citemsNode.first_child(); cinode; cinode = cinode.next_sibling())
+  {
+    citype = attribute::Item::string2Type(cinode.name());
+    citemName = cinode.attribute("Name").value();
+    switch (citype)
+    {
+      case attribute::Item::AttributeRefType:
+        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
+        {
+          this->processRefDef(cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::DoubleType:
+        if ((cidef = idef->addItemDefinition<DoubleItemDefinition>(citemName)))
+        {
+          this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<DoubleItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::DirectoryType:
+        if ((cidef = idef->addItemDefinition<DirectoryItemDefinition>(citemName)))
+        {
+          this->processDirectoryDef(
+            cinode, smtk::dynamic_pointer_cast<DirectoryItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::FileType:
+        if ((cidef = idef->addItemDefinition<FileItemDefinition>(citemName)))
+        {
+          this->processFileDef(cinode, smtk::dynamic_pointer_cast<FileItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::GroupType:
+        if ((cidef = idef->addItemDefinition<GroupItemDefinition>(citemName)))
+        {
+          this->processGroupDef(cinode, smtk::dynamic_pointer_cast<GroupItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::IntType:
+        if ((cidef = idef->addItemDefinition<IntItemDefinition>(citemName)))
+        {
+          this->processIntDef(cinode, smtk::dynamic_pointer_cast<IntItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::StringType:
+        if ((cidef = idef->addItemDefinition<StringItemDefinition>(citemName)))
+        {
+          this->processStringDef(cinode, smtk::dynamic_pointer_cast<StringItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::ModelEntityType:
+        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
+        {
+          this->processModelEntityDef(
+            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::VoidType:
+        if ((cidef = idef->addItemDefinition<VoidItemDefinition>(citemName)))
+        {
+          this->processItemDef(cinode, cidef);
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::MeshEntityType:
+        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
+        {
+          this->processMeshEntityDef(
+            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::DateTimeType:
+        if ((cidef = idef->addItemDefinition<DateTimeItemDefinition>(citemName)))
+        {
+          this->processDateTimeDef(
+            cinode, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case attribute::Item::ComponentType:
+        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
+        {
+          this->processComponentDef(
+            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      default:
+        auto typeName = cinode.attribute("TypeName");
+        if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
+        {
+          cidef = std::shared_ptr<ItemDefinition>(
+            m_resource->customItemDefinitionFactory().createFromName(
+              typeName.value(), std::string(cinode.attribute("Name").value())));
+          (*static_cast<CustomItemBaseDefinition*>(cidef.get())) << cinode;
+          idef->addItemDefinition(cidef);
+          this->processItemDef(node, idef);
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
+              << node.name() << " needed to create Definition: " << citype);
+        }
+    }
+  }
+  // Now process the conditional information
+  citemsNode = node.child("ConditionalInfo");
+  for (cinode = citemsNode.first_child(); cinode; cinode = cinode.next_sibling())
+  {
+    std::string rquery, cquery;
+    // Lets get the query strings
+    xatt = cinode.attribute("Resource");
+    if (xatt)
+    {
+      rquery = xatt.value();
+    }
+    xatt = cinode.attribute("Component");
+    if (xatt)
+    {
+      cquery = xatt.value();
+    }
+    // if both strings are null we have an invalid conditional!
+    if (rquery.empty() && cquery.empty())
+    {
+      smtkErrorMacro(m_logger, "Missing or Empty Query for: " << node.name());
+      continue;
+    }
+
+    xml_node itemNode, itemsNode = cinode.child("Items");
+    std::vector<std::string> conditionals;
+    if (itemsNode)
+    {
+      for (itemNode = itemsNode.first_child(); itemNode; itemNode = itemNode.next_sibling())
+      {
+        conditionals.emplace_back(itemNode.text().get());
+      }
+    }
+
+    idef->addConditional(rquery, cquery, conditionals);
+  }
 }
 
-void XmlDocV3Parser::processResourceItem(
-  pugi::xml_node& node, smtk::attribute::ResourceItemPtr item)
+void XmlDocV3Parser::processResourceItem(pugi::xml_node& node, ResourceItemPtr item)
 {
   this->processReferenceItem(node, item);
 }
 
-void XmlDocV3Parser::processResourceDef(
-  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+void XmlDocV3Parser::processResourceDef(pugi::xml_node& node, ResourceItemDefinitionPtr idef)
 {
   this->processReferenceDef(node, idef, "ResourceLabels");
 }
 
-void XmlDocV3Parser::processComponentItem(
-  pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
+void XmlDocV3Parser::processComponentItem(pugi::xml_node& node, ComponentItemPtr item)
 {
   // Is the node using the older AttRefItem format?
   std::string attRefNodeName("AttributeRef");
@@ -920,8 +1169,7 @@ void XmlDocV3Parser::processComponentItem(
   this->processReferenceItem(node, item);
 }
 
-void XmlDocV3Parser::processComponentDef(
-  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+void XmlDocV3Parser::processComponentDef(pugi::xml_node& node, ComponentItemDefinitionPtr idef)
 {
   // Is the node using the older AttRefItem format?
   std::string attRefNodeName("AttributeRef");
@@ -942,7 +1190,7 @@ void XmlDocV3Parser::processComponentDef(
 void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
 {
   // First we need to build the analysis definition
-  smtk::attribute::DefinitionPtr analysisDef;
+  DefinitionPtr analysisDef;
   xml_attribute xatt = configurationsNode.attribute("AnalysisAttributeType");
   if (xatt)
   {
@@ -978,8 +1226,7 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
         m_logger, "Configuration missing Name xml attribute - skipping configuration!");
       return;
     }
-    smtk::attribute::AttributePtr configAtt =
-      m_resource->createAttribute(xatt.value(), analysisDef);
+    AttributePtr configAtt = m_resource->createAttribute(xatt.value(), analysisDef);
     //Lets see if there are advance read/write levels associated with it
     xatt = configNode.attribute("AdvanceReadLevel");
     if (xatt)
@@ -991,12 +1238,12 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
     {
       configAtt->setLocalAdvanceLevel(1, xatt.as_uint());
     }
-    smtk::attribute::StringItemPtr sitem;
+    StringItemPtr sitem;
     // If we are dealing with exclusive top level analyses then the attribute should only have a single
     // item that is a string
     if (m_resource->analyses().areTopLevelExclusive())
     {
-      sitem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(configAtt->item(0));
+      sitem = std::dynamic_pointer_cast<StringItem>(configAtt->item(0));
       if (!sitem)
       {
         smtkErrorMacro(
@@ -1023,8 +1270,7 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
             break;
           }
         }
-        else if (!setAnalysisConfigurationHelper<smtk::attribute::AttributePtr>(
-                   configAtt, analysisNode, m_logger))
+        else if (!setAnalysisConfigurationHelper<AttributePtr>(configAtt, analysisNode, m_logger))
         {
           smtkErrorMacro(m_logger, "Encountered problem constructing configuration: "
               << configAtt->name() << " - configuration not built");

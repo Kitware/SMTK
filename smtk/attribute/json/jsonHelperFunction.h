@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -43,6 +44,9 @@ public:
    */
   static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
     ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
+
+  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
+    ReferenceItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
 
   static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef, DefinitionPtr& idef,
     const smtk::attribute::ResourcePtr& resPtr,

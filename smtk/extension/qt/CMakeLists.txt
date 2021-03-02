@@ -28,8 +28,8 @@ set(QAttrLibSrcs
   qtOperationLauncher.cxx
   qtOperationView.cxx
   qtReferenceItem.cxx
+  qtReferenceItemEditor.cxx
   qtResourceItem.cxx
-  qtReferenceItemComboBox.cxx
   qtResourceBrowser.cxx
   qtResourceBrowserP.cxx
   qtSelectorView.cxx
@@ -101,7 +101,7 @@ set(QAttrLibMocHeaders
   qtOperationLauncher.h
   qtOperationView.h
   qtReferenceItem.h
-  qtReferenceItemComboBox.h
+  qtReferenceItemEditor.h
   qtReferenceItemData.h
   qtRegexDelegate.h
   qtResourceItem.h

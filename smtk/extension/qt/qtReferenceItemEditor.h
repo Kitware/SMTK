@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtReferenceItemComboBox_h
-#define __smtk_extension_qtReferenceItemComboBox_h
+#ifndef __smtk_extension_qtReferenceItemEditor_h
+#define __smtk_extension_qtReferenceItemEditor_h
 
 #include "smtk/extension/qt/qtItem.h"
 
@@ -23,7 +23,7 @@
 
 #include <set>
 
-class qtReferenceItemComboBoxInternals;
+class qtReferenceItemEditorInternals;
 class QListWidgetItem;
 class QListWidget;
 
@@ -32,7 +32,7 @@ namespace smtk
 namespace extension
 {
 
-/// \brief qtReferenceItemComboBox is a custom UI interface for
+/// \brief qtReferenceItemEditor is a custom UI interface for
 /// a smtk::attribute::ReferenceItem that uses a Combo Box.
 ///
 /// This qtItem is used by smtk::extension::qtComponentItem and
@@ -46,15 +46,15 @@ namespace extension
 /// 2. The ability to create a new object (this is still under development)
 ///
 
-class SMTKQTEXT_EXPORT qtReferenceItemComboBox : public qtItem
+class SMTKQTEXT_EXPORT qtReferenceItemEditor : public qtItem
 {
   Q_OBJECT
 
 public:
-  qtReferenceItemComboBox(const qtAttributeItemInfo& info);
+  qtReferenceItemEditor(const qtAttributeItemInfo& info);
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
-  virtual ~qtReferenceItemComboBox();
+  virtual ~qtReferenceItemEditor();
   void markForDeletion() override;
 
   virtual std::string selectionSourceName() { return m_selectionSourceName; }
@@ -72,6 +72,8 @@ public slots:
   // The main use case would be updating the widget because a resource is about to be removed from the
   // system.  Since it is still in memory we needed a way to ignore it
   virtual void updateChoices(const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
+  // Refreshes the active children (if any)
+  virtual void updateContents();
 
 protected slots:
   virtual void removeObservers();
@@ -95,7 +97,7 @@ protected:
     const smtk::resource::Resource& resource, smtk::resource::EventType event);
 
 private:
-  qtReferenceItemComboBoxInternals* Internals;
+  qtReferenceItemEditorInternals* m_internals;
   std::string m_selectionSourceName;
   smtk::operation::Observers::Key m_operationObserverKey;
   smtk::resource::Observers::Key m_resourceObserverKey;

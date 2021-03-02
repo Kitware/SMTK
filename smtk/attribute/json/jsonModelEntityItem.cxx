@@ -35,13 +35,15 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ModelEntityItemPtr&
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPtr& itemPtr)
 {
+  std::vector<ItemExpressionInfo> itemExpressionInfo;
+  std::vector<AttRefInfo> attRefInfo;
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
   {
     return;
   }
   auto compItem = smtk::dynamic_pointer_cast<ComponentItem>(itemPtr);
-  smtk::attribute::from_json(j, compItem);
+  smtk::attribute::from_json(j, compItem, itemExpressionInfo, attRefInfo);
 }
 }
 }

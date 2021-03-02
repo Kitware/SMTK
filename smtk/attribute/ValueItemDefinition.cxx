@@ -196,7 +196,7 @@ bool ValueItemDefinition::addConditionalItem(
   {
     return false;
   }
-  // Next do we have such an iten definition?
+  // Next do we have such an item definition?
   if (!this->hasChildItemDefinition(itemName))
   {
     return false;

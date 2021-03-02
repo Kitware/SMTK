@@ -16,11 +16,35 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/CustomItem.h"
+#include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/DirectoryItemDefinition.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
+#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/io/Logger.h"
 
 using namespace pugi;
@@ -412,6 +436,26 @@ void XmlV3StringWriter::processReferenceItem(pugi::xml_node& node, attribute::Re
 
   if ((numRequiredVals == 1) && (!item->isExtensible()))
   {
+    // Added children information if needed
+    if (item->numberOfChildrenItems())
+    {
+      xml_node childNode, childNodes = node.append_child("ChildrenItems");
+      std::map<std::string, ItemPtr>::const_iterator iter;
+      const std::map<std::string, ItemPtr>& childrenItems = item->childrenItems();
+      for (iter = childrenItems.begin(); iter != childrenItems.end(); iter++)
+      {
+        childNode = childNodes.append_child();
+        childNode.set_name(Item::type2String(iter->second->type()).c_str());
+        this->processItem(childNode, iter->second);
+      }
+      // Save the conditional that is currently being used if it is valid
+      std::size_t conditional = item->currentConditional();
+      if (conditional != ReferenceItemDefinition::s_invalidIndex)
+      {
+        node.append_attribute("Conditional").set_value(static_cast<unsigned int>(conditional));
+      }
+    }
+
     if (item->isSet())
     {
       val = node.append_child("Val");
@@ -605,6 +649,53 @@ void XmlV3StringWriter::processReferenceDefCommon(
         ln = lnode.append_child();
         ln.set_name("Label");
         ln.set_value(idef->valueLabel(i).c_str());
+      }
+    }
+  }
+
+  // Lets process its children items
+  if (!idef->numberOfChildrenItemDefinitions())
+  {
+    return;
+  }
+  xml_node itemDefNode, itemDefNodes = node.append_child("ChildrenDefinitions");
+  std::map<std::string, ItemDefinitionPtr>::const_iterator iter;
+  for (const auto& childDefInfo : idef->childrenItemDefinitions())
+  {
+    itemDefNode = itemDefNodes.append_child();
+    itemDefNode.set_name(Item::type2String(childDefInfo.second->type()).c_str());
+    this->processItemDefinition(itemDefNode, childDefInfo.second);
+  }
+  //Now process the conditionals
+  if (!idef->numberOfConditionals())
+  {
+    return;
+  }
+  const std::vector<std::vector<std::string> >& conditionals = idef->conditionalInformation();
+  const std::vector<std::string>& rqueries = idef->resourceQueries();
+  const std::vector<std::string>& cqueries = idef->componentQueries();
+  std::size_t n = conditionals.size();
+  xml_node conditionNode, conditionalNodes = node.append_child("ConditionalInfo");
+  for (std::size_t i = 0; i < n; i++)
+  {
+    conditionNode = conditionalNodes.append_child("Condition");
+    if (!rqueries[i].empty())
+    {
+      conditionNode.append_attribute("Resource") = rqueries[i].c_str();
+    }
+    if (!cqueries[i].empty())
+    {
+      conditionNode.append_attribute("Component") = cqueries[i].c_str();
+    }
+
+    if (!conditionals[i].empty())
+    {
+      xml_node itemNameNode, itemNameNodes = conditionNode.append_child("Items");
+      std::size_t numItems = conditionals[i].size();
+      for (std::size_t j = 0; j < numItems; j++)
+      {
+        itemNameNode = itemNameNodes.append_child("Item");
+        itemNameNode.text().set(conditionals[i][j].c_str());
       }
     }
   }

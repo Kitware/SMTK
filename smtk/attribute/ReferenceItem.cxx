@@ -205,6 +205,8 @@ ReferenceItem::ReferenceItem(Attribute* owningAttribute, int itemPosition)
   : Item(owningAttribute, itemPosition)
   , m_referencedAttribute(owningAttribute->shared_from_this())
   , m_cache(new Cache())
+  , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
+
 {
 }
 
@@ -212,6 +214,7 @@ ReferenceItem::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGrou
   : Item(inOwningItem, itemPosition, mySubGroupPosition)
   , m_referencedAttribute(inOwningItem->attribute())
   , m_cache(new Cache())
+  , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
 {
 }
 
@@ -219,6 +222,7 @@ ReferenceItem::ReferenceItem(const ReferenceItem& referenceItem)
   : Item(referenceItem)
   , m_referencedAttribute(referenceItem.m_referencedAttribute)
   , m_cache(new Cache(*referenceItem.m_cache))
+  , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
 {
 }
 
@@ -281,6 +285,25 @@ bool ReferenceItem::isValidInternal(
     for (size_t i = 0; i < this->numberOfValues(); i++)
     {
       if (!def->isValueValid(this->value(i)))
+      {
+        return false;
+      }
+    }
+  }
+
+  // Now we need to check the active children
+  for (const auto& child : m_activeChildrenItems)
+  {
+    if (useCategories)
+    {
+      if (!child->isValid(categories))
+      {
+        return false;
+      }
+    }
+    else
+    {
+      if (!child->isValid(false))
       {
         return false;
       }
@@ -394,6 +417,35 @@ bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::Reference
   {
     myAtt->guardedLinks()->removeLink(m_keys[i]);
     m_keys[i] = key;
+    return true;
+  }
+  return false;
+}
+
+bool ReferenceItem::setObjectKey(
+  std::size_t i, const smtk::attribute::ReferenceItem::Key& key, std::size_t conditional)
+{
+  if (this->setObjectKey(i, key))
+  {
+    m_activeChildrenItems.clear();
+
+    const ReferenceItemDefinition* def =
+      static_cast<const ReferenceItemDefinition*>(m_definition.get());
+    if ((conditional == ReferenceItemDefinition::s_invalidIndex) ||
+      (conditional >= def->numberOfConditionals()))
+    {
+      // current object does not have any conditional items
+      m_currentConditional = ReferenceItemDefinition::s_invalidIndex;
+      return true;
+    }
+    // Get the children that should be active for the current value
+    const std::vector<std::string>& citems = def->conditionalItems(conditional);
+    std::size_t i, n = citems.size();
+    for (i = 0; i < n; i++)
+    {
+      m_activeChildrenItems.push_back(m_childrenItems[citems[i]]);
+    }
+    m_currentConditional = conditional;
     return true;
   }
   return false;
@@ -525,6 +577,11 @@ bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
   }
 
   assignToCache(i, val);
+  // Update the active children if this is a single value item
+  if ((!def->isExtensible()) && (def->numberOfRequiredValues() == 1))
+  {
+    this->updateActiveChildrenItems();
+  }
   return true;
 }
 
@@ -679,6 +736,8 @@ bool ReferenceItem::isSet(std::size_t i) const
 void ReferenceItem::unset(std::size_t i)
 {
   this->setValue(i, PersistentObjectPtr());
+  // Clear the current list of active children items
+  m_activeChildrenItems.clear();
 }
 
 bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
@@ -693,6 +752,26 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   if (options & Item::IGNORE_RESOURCE_COMPONENTS)
   {
     return Item::assign(sourceItem, options);
+  }
+
+  // Update children items
+  for (auto sourceIter = sourceReferenceItem->m_childrenItems.begin();
+       sourceIter != sourceReferenceItem->m_childrenItems.end(); sourceIter++)
+  {
+    ConstItemPtr sourceChild = smtk::const_pointer_cast<const Item>(sourceIter->second);
+    auto newIter = m_childrenItems.find(sourceIter->first);
+    if (newIter == m_childrenItems.end())
+    {
+      std::cerr << "ERROR:Could not find child item \"" << sourceIter->first << "\" -- cannot copy"
+                << std::endl;
+      continue;
+    }
+    ItemPtr newChild = newIter->second;
+    if (!newChild->assign(sourceChild, options))
+    {
+      std::cerr << "ERROR:Could not properly assign child item: " << newChild->name() << "\n";
+      return false;
+    }
   }
 
   // Update values
@@ -787,6 +866,9 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     m_keys.resize(n);
     m_cache->resize(n);
   }
+  // Build the item's children
+  def->buildChildrenItems(this);
+
   return true;
 }
 
@@ -919,6 +1001,168 @@ bool ReferenceItem::removeInvalidValues()
     }
   }
   return valuesRemoved;
+}
+
+void ReferenceItem::updateActiveChildrenItems()
+{
+  if (m_childrenItems.empty())
+  {
+    return; // There are no conditionals associated with this item
+  }
+
+  // Clear the current list of active children items
+  m_activeChildrenItems.clear();
+
+  const ReferenceItemDefinition* def =
+    static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  auto obj = this->value();
+  if (obj == nullptr)
+  {
+    m_currentConditional = ReferenceItemDefinition::s_invalidIndex;
+    return; //  either it is not set or the object can't be found
+  }
+  // Lets find the conditional that corresponds to this object
+  m_currentConditional = def->testConditionals(obj);
+  if (m_currentConditional == ReferenceItemDefinition::s_invalidIndex)
+  {
+    // current object does not have any conditional items
+    return;
+  }
+  // Get the children that should be active for the current value
+  const std::vector<std::string>& citems = def->conditionalItems(m_currentConditional);
+  std::size_t i, n = citems.size();
+  for (i = 0; i < n; i++)
+  {
+    m_activeChildrenItems.push_back(m_childrenItems[citems[i]]);
+  }
+}
+
+smtk::attribute::ItemPtr ReferenceItem::findInternal(
+  const std::string& childName, SearchStyle style)
+{
+  // Do we have it among our children?
+
+  // Are we only caring about active children?
+  if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
+  {
+    for (auto& item : m_activeChildrenItems)
+    {
+      if (item->name() == childName)
+      {
+        return item;
+      }
+    }
+    if (style == RECURSIVE_ACTIVE)
+    {
+      // Ok - we didn't find it so lets recursively check its active chiildren
+      for (auto& item : m_activeChildrenItems)
+      {
+        ItemPtr result = item->find(childName, style);
+        if (result)
+        {
+          return result;
+        }
+      }
+    }
+    // Couldn't find anything
+    return nullptr;
+  }
+
+  // Ok lets see if we can find the name in the item's children
+  auto it = m_childrenItems.find(childName);
+  if (it != m_childrenItems.end())
+  {
+    return it->second;
+  }
+
+  if (style == IMMEDIATE)
+  {
+    // We are not suppose to recursively look for a match
+    return nullptr;
+  }
+
+  for (auto& child : m_childrenItems)
+  {
+    ItemPtr result = child.second->find(childName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
+}
+
+smtk::attribute::ConstItemPtr ReferenceItem::findInternal(
+  const std::string& childName, SearchStyle style) const
+{
+  // Do we have it among our children?
+
+  // Are we only caring about active children?
+  if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
+  {
+    for (auto& item : m_activeChildrenItems)
+    {
+      if (item->name() == childName)
+      {
+        return item;
+      }
+    }
+    if (style == RECURSIVE_ACTIVE)
+    {
+      // Ok - we didn't find it so lets recursively check its active chiildren
+      for (auto& item : m_activeChildrenItems)
+      {
+        ConstItemPtr result = item->find(childName, style);
+        if (result)
+        {
+          return result;
+        }
+      }
+    }
+    // Couldn't find anything
+    return nullptr;
+  }
+
+  // Ok lets see if we can find the name in the item's children
+  auto it = m_childrenItems.find(childName);
+  if (it != m_childrenItems.end())
+  {
+    return it->second;
+  }
+
+  if (style == IMMEDIATE)
+  {
+    // We are not suppose to recursively look for a match
+    return nullptr;
+  }
+
+  for (auto& child : m_childrenItems)
+  {
+    ConstItemPtr result = child.second->find(childName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
+}
+
+void ReferenceItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
+{
+  if (activeChildren)
+  {
+    for (auto& item : m_activeChildrenItems)
+    {
+      visitor(item, activeChildren);
+    }
+  }
+  else
+  {
+    for (auto& itemInfo : m_childrenItems)
+    {
+      visitor(itemInfo.second, activeChildren);
+    }
+  }
 }
 
 template <>
