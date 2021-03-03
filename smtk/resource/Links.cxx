@@ -228,7 +228,11 @@ PersistentObjectSet Links::linkedTo(
       }
       else
       {
-        objectSet.insert(rhs1->find(link->right));
+        ComponentPtr comp = rhs1->find(link->right);
+        if (comp)
+        {
+          objectSet.insert(comp);
+        }
       }
     }
   }
@@ -277,7 +281,11 @@ PersistentObjectSet Links::linkedFrom(const ResourcePtr& lhs1, const Resource* r
     }
     else
     {
-      objectSet.insert(lhs1->find(link->left));
+      ComponentPtr comp = lhs1->find(link->left);
+      if (comp)
+      {
+        objectSet.insert(comp);
+      }
     }
   }
 
