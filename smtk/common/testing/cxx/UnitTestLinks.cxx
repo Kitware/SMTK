@@ -125,6 +125,67 @@ void UnitTest()
   smtkTest(links.at(10).value == "base_class_value", "Should be able to access base class");
 }
 
+void UnitTestLinksEraseAll()
+{
+  typedef smtk::common::Links<int, std::size_t, short, int, MyBase> MyLinks;
+
+  // Verify erase_all() on empty Links should return false.
+  {
+    MyLinks links;
+
+    smtkTest(links.erase_all<MyLinks::Right>(0) == false, "");
+  }
+
+  // When Links has one element, erase_all() for a key present in Links should
+  // return true.
+  {
+    MyLinks links;
+    links.insert(MyBase("myBase1"), 0, 0, 0);
+    smtkTest(links.erase_all<MyLinks::Right>(0) == true, "");
+    smtkTest(links.empty(), "");
+  }
+
+  // When Links has one element, erase_all() for a key not present in Links
+  // should return false.
+  {
+    MyLinks links;
+    links.insert(MyBase("myBase1"), 1, 1, 1);
+    smtkTest(links.erase_all<MyLinks::Right>(0) == false, "");
+    smtkTest(links.size() == 1, "");
+  }
+
+  // When Links has more than one element, erase_all() for a key not present in
+  // Links should return false.
+  {
+    MyLinks links;
+    links.insert(MyBase("myBase1"), 0, 0, 0);
+    links.insert(MyBase("myBase2"), 1, 1, 1);
+    smtkTest(links.erase_all<MyLinks::Right>(2) == false, "");
+    smtkTest(links.size() == 2, "");
+  }
+
+  // When Links has more than one element, erase_all() for a key present in
+  // Links should return true.
+  {
+    MyLinks links;
+    links.insert(MyBase("myBase1"), 0, 0, 0);
+    links.insert(MyBase("myBase2"), 1, 1, 1);
+    smtkTest(links.erase_all<MyLinks::Right>(1) == true, "");
+    smtkTest(links.size() == 1, "");
+  }
+
+  // When Links has more than one element, erase_all() for a key with multiple
+  // entries present in Links should return true.
+  {
+    MyLinks links;
+    links.insert(MyBase("myBase1"), 0, 0, 0);
+    links.insert(MyBase("myBase2"), 1, 1, 1);
+    links.insert(MyBase("myBase2"), 1, 1, 1);
+    smtkTest(links.erase_all<MyLinks::Right>(1) == true, "");
+    smtkTest(links.size() == 1, "");
+  }
+}
+
 struct MyMoveOnlyBase
 {
   MyMoveOnlyBase() = default;
@@ -337,6 +398,7 @@ void MoveOnlyRecursionTest()
 int UnitTestLinks(int /*unused*/, char** const /*unused*/)
 {
   UnitTest();
+  UnitTestLinksEraseAll();
   MoveOnlyTest();
   JsonTest();
   MoveOnlyJsonTest();
