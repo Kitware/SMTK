@@ -137,6 +137,9 @@ git submodule update --init --recursive
 ./.gitlab/ci/cmake.sh
 
 # or as an alternative, mount a current checkout in the image:
-docker run -v $PWD:/build/gitlab-kitware-sciviz-ci:Z -it kitware/cmb:ci-aevasession-fedora32-20200913 bash
+docker run -v $PWD:/builds/gitlab-kitware-sciviz-ci:Z -it kitware/cmb:ci-aevasession-fedora32-20200913 bash
 ```
 * Note: In the base image, the superbuild is installed to `/root/misc/root/smtk-deps/`
+* to run GUI tests, you need to forward X11 (when running from Linux):
+  * on local machine: `xhost +local:docker`
+  * add: `docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix ...`
