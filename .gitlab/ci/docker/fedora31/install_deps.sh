@@ -3,7 +3,7 @@
 # Install build requirements.
 dnf install -y \
     zlib-devel libcurl-devel python-devel \
-    freeglut-devel glew-devel graphviz-devel libpng-devel \
+    freeglut-devel glew-devel graphviz-devel libpng-devel mesa-dri-drivers \
     libxcb libxcb-devel libXt-devel xcb-util xcb-util-devel mesa-libGL-devel \
     libxkbcommon-devel diffutils hostname file
 
