@@ -136,7 +136,7 @@ bool qtBaseAttributeView::displayItemDefinition(
 
 bool qtBaseAttributeView::categoryTest(const smtk::attribute::ItemPtr& item) const
 {
-  return item->isRelevant();
+  return m_ignoreCategories || item->isRelevant();
 }
 
 bool qtBaseAttributeView::isItemWriteable(const smtk::attribute::ItemPtr& item) const
@@ -832,4 +832,5 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
   attRes->setActiveCategories(cats);
   attRes->setActiveCategoriesEnabled(true);
   this->Internals->m_configurationCombo->blockSignals(false);
+  this->updateUI();
 }
