@@ -169,6 +169,10 @@ add_library(smtkQtExt
   ${rpJsonHeader}
 )
 
+if (NOT SMTK_ENABLE_OPERATION_THREADS)
+  target_compile_definitions((smtkQtExt PRIVATE SINGLE_THREAD))
+endif()
+
 #we need to add the location of the moc files to the include dir for qtsmtk
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
