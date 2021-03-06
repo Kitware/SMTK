@@ -455,7 +455,7 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
   xml_attribute ccm = defNode.attribute("CategoryCheckMode");
   if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
   {
-    def->localCategories().setCombinationMode(catMode);
+    def->localCategories().setInclusionMode(catMode);
   }
   xml_node catNodes = defNode.child("Categories");
   xml_node catInfoNode = defNode.child("CategoryInfo");
