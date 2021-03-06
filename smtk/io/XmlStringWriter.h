@@ -39,6 +39,7 @@ public:
     , m_includeAdvanceLevels(true)
     , m_includeAttributeAssociations(true)
     , m_includeDefinitions(true)
+    , m_includeEvaluators(true)
     , m_includeInstances(true)
     , m_includeResourceAssociations(true)
     , m_includeUniqueRoles(true)
@@ -77,6 +78,9 @@ public:
   // If val is false then definitions will not be saved (default is true)
   void includeDefinitions(bool val) { m_includeDefinitions = val; }
 
+  // If val is false then Evaluators will not be saved (default is true).
+  void includeEvaluators(bool val) { m_includeEvaluators = val; }
+
   // If val is false then Attribute instances will not be saved (default is true)
   void includeInstances(bool val) { m_includeInstances = val; }
 
@@ -109,6 +113,7 @@ protected:
   bool m_includeAdvanceLevels;
   bool m_includeAttributeAssociations;
   bool m_includeDefinitions;
+  bool m_includeEvaluators;
   bool m_includeInstances;
   bool m_includeResourceAssociations;
   bool m_includeResourceID;

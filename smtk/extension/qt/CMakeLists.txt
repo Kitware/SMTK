@@ -45,6 +45,8 @@ set(QAttrLibSrcs
   qtItem.cxx
   qtDiscreteValueEditor.cxx
   qtInputsItem.cxx
+  qtInfixExpressionEditor.cxx
+  qtInfixExpressionEditorRow.cxx
   qtGroupItem.cxx
   qtVoidItem.cxx
   qtNewAttributeWidget.cxx
@@ -118,6 +120,8 @@ set(QAttrLibMocHeaders
   qtItem.h
   qtDiscreteValueEditor.h
   qtInputsItem.h
+  qtInfixExpressionEditor.h
+  qtInfixExpressionEditorRow.h
   qtGroupItem.h
   qtVoidItem.h
   qtNewAttributeWidget.h

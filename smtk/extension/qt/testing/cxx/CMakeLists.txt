@@ -78,4 +78,5 @@ smtk_unit_tests(LABEL "qt"
   ${additional_libraries}
   ${Boost_LIBRARIES}
   Threads::Threads
+  MOAB
   )

@@ -35,6 +35,7 @@ class Model;
 
 namespace attribute
 {
+class Evaluator;
 class Item;
 class Resource;
 
@@ -345,6 +346,19 @@ public:
   void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
 
   std::size_t includeIndex() const { return m_includeIndex; }
+
+  // Returns true if an Evaluator can be created for this Attribute. Does not
+  // indicate that evaluation would be successful if attempted. Use
+  // doesEvaluate() for that information.
+  bool canEvaluate() const;
+
+  // If an Evaluator can be created for this Attribute, returns the result of
+  // Evaluator::doesEvaluate(). Returns false if no Evaluator can be created.
+  bool doesEvalaute() const;
+
+  // Returns an Evaluator for this Attribute if this Attribute's Definition is
+  // registered with an Evaluator, else returns nullptr.
+  std::unique_ptr<smtk::attribute::Evaluator> createEvaluator() const;
 
   class GuardedLinks
   {

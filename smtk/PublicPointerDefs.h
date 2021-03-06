@@ -439,6 +439,8 @@ typedef smtk::shared_ptr<smtk::attribute::Attribute> AttributePtr;
 typedef smtk::shared_ptr<const smtk::attribute::Attribute> ConstAttributePtr;
 /// @see smtk::attribute::Attribute
 typedef smtk::weak_ptr<smtk::attribute::Attribute> WeakAttributePtr;
+/// @see smtk::attribute::Attribute
+typedef smtk::weak_ptr<const smtk::attribute::Attribute> ConstWeakAttributePtr;
 /// @see smtk::attribute::AttributePtr
 typedef std::vector<smtk::attribute::AttributePtr> Attributes;
 

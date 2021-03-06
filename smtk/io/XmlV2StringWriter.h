@@ -62,6 +62,7 @@ protected:
   void processStyles();
   void processAssociationRules(std::size_t index);
   void processModelInfo();
+  void processEvaluators();
 
   void processDefinition(smtk::attribute::DefinitionPtr def);
   virtual void processDefinitionInternal(

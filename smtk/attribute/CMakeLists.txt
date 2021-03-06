@@ -103,12 +103,16 @@ set(attributeHeaders
   DirectoryItemDefinition.h
   DoubleItem.h
   DoubleItemDefinition.h
+  Evaluator.h
+  EvaluatorFactory.h
+  EvaluatorManager.h
   FileItem.h
   FileItemDefinition.h
   FileSystemItem.h
   FileSystemItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
+  InfixExpressionEvaluator.h
   IntItem.h
   IntItemDefinition.h
   Item.h
@@ -126,6 +130,7 @@ set(attributeHeaders
   SearchStyle.h
   StringItem.h
   StringItemDefinition.h
+  SymbolDependencyStorage.h
   Tag.h
   UnsetValueError.h
   ValueItem.h
@@ -154,12 +159,16 @@ set(attributeSrcs
   DirectoryItemDefinition.cxx
   DoubleItem.cxx
   DoubleItemDefinition.cxx
+  Evaluator.cxx
+  EvaluatorFactory.cxx
+  EvaluatorManager.cxx
   FileItem.cxx
   FileItemDefinition.cxx
   FileSystemItem.cxx
   FileSystemItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
+  InfixExpressionEvaluator.cxx
   IntItem.cxx
   IntItemDefinition.cxx
   Item.cxx
@@ -175,6 +184,7 @@ set(attributeSrcs
   ResourceItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
+  SymbolDependencyStorage.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx

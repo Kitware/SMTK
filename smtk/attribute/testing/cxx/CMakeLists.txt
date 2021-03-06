@@ -89,11 +89,17 @@ set(unit_tests
   unitCustomItem
   unitDateTimeItem.cxx
   unitDefinitionTags
+  unitDoubleItem.cxx
+  unitEvaluatorFactory.cxx
+  unitEvaluatorManager.cxx
   unitExclusionCategories
+  unitInfixExpressionEvaluator.cxx
   unitJsonItemDefinitions.cxx
   unitOptionalItems
   unitPassCategories
   unitPathGrammar.cxx
+  unitRegistrar.cxx
+  unitSymbolDependencyStorage.cxx
 )
 
 set(unit_tests_which_require_data
@@ -121,4 +127,5 @@ smtk_unit_tests(
   LIBRARIES
     smtkCore
     ${extra_libs}
+    MOAB
 )
