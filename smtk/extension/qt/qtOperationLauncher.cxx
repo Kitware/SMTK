@@ -10,8 +10,6 @@
 
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
-// #define SINGLE_THREAD
-
 namespace smtk
 {
 namespace extension
@@ -22,6 +20,7 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
   // Create Result Handler
   std::shared_ptr<ResultHandler> handler = std::make_shared<ResultHandler>();
 
+// To enable SINGLE_THREAD, set CMake variable SMTK_ENABLE_OPERATION_THREADS to OFF.
 #ifdef SINGLE_THREAD
 
   // Construct a promise to pass to the subthread. Its associated future is the
