@@ -20,6 +20,7 @@
 
   set(unit_tests
     UnitTestEmittingStringBuffer.cxx
+    UnitTestForceRequiredItem.cxx
   )
 
   set(unit_tests_which_require_data
