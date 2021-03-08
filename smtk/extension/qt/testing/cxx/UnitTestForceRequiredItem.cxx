@@ -60,7 +60,7 @@ int UnitTestForceRequiredItem(int argc, char** const argv)
   // Create "test" attribute
   const std::string attName = "test";
   const std::string attType = "test";
-  auto defn = attResource->findDefinition("test");
+  auto defn = attResource->findDefinition(attType);
   smtk::attribute::AttributePtr att = attResource->createAttribute(attName, attType);
 
   // Set forceRequired on double item
@@ -81,7 +81,7 @@ int UnitTestForceRequiredItem(int argc, char** const argv)
 
   // Create instanced view
   auto instancedView = attResource->findTopLevelView();
-  uiManager->setSMTKView(instancedView, widget, true);
+  uiManager->setSMTKView(instancedView, widget);
 
   return 0;
 }
