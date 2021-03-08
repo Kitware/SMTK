@@ -895,11 +895,12 @@ void qtInputsItem::updateUI()
   mainlayout->setSpacing(0);
   mainlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
+  m_internals->m_dataFrame = new QFrame(m_widget);
+
   // Add Label Information
   mainlayout->addWidget(this->createLabelFrame(dataObj.get(), itemDef.get()));
 
   // Add Data Section
-  m_internals->m_dataFrame = new QFrame(m_widget);
   auto dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
   dataLayout->setMargin(0);
   dataLayout->setSpacing(0);
