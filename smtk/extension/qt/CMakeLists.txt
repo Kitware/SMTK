@@ -174,7 +174,7 @@ add_library(smtkQtExt
 )
 
 if (NOT SMTK_ENABLE_OPERATION_THREADS)
-  target_compile_definitions((smtkQtExt PRIVATE SINGLE_THREAD))
+  target_compile_definitions(smtkQtExt PRIVATE SINGLE_THREAD)
 endif()
 
 #we need to add the location of the moc files to the include dir for qtsmtk
