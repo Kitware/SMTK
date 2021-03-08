@@ -88,7 +88,6 @@ Write::Result Write::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  std::set<smtk::resource::Resource*> unassignedResources;
   std::map<std::string, std::string> resourceDictionary;
 
   // Write the modified resources.
@@ -103,7 +102,6 @@ Write::Result Write::operateInternal()
 
       if (resource->location().empty())
       {
-        unassignedResources.insert(resource.get());
         std::string filename = role + ".smtk";
         boost::filesystem::path location = resourcesFolderPath / filename;
         resource->setLocation(location.string());
@@ -143,18 +141,6 @@ Write::Result Write::operateInternal()
 
   // Construct a result object.
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-
-  // Unassign any temporary locations we assigned.
-  if (!unassignedResources.empty())
-  {
-    for (auto resource : unassignedResources)
-    {
-      std::cout << "Unassigned resource type" << resource->typeName() << std::endl;
-      resource->setLocation("");
-      resource->setClean(true);
-    }
-  }
-
   return result;
 }
 
