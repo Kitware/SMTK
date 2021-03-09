@@ -17,6 +17,7 @@
 #include "smtk/operation/Operation.h"
 
 #include <QDialog>
+#include <QSharedPointer>
 
 class QShowEvent;
 class QWidget;
@@ -37,14 +38,19 @@ namespace smtk
 namespace extension
 {
 
+class qtUIManager;
+
 // Modal dialog for smtk operation view.
 class SMTKQTEXT_EXPORT qtOperationDialog : public QDialog
 {
   Q_OBJECT
 
 public:
-  qtOperationDialog(smtk::operation::OperationPtr operation, smtk::view::ManagerPtr viewManager,
-    QWidget* parentWidget);
+  qtOperationDialog(smtk::operation::OperationPtr operation,
+    QSharedPointer<smtk::extension::qtUIManager> uiManager, QWidget* parentWidget = nullptr);
+  qtOperationDialog(smtk::operation::OperationPtr operation,
+    smtk::resource::ManagerPtr resourceManager, smtk::view::ManagerPtr viewManager,
+    QWidget* parentWidget = nullptr);
   virtual ~qtOperationDialog();
 
 signals:
@@ -56,6 +62,9 @@ protected slots:
   void onOperationExecuted(const smtk::operation::Operation::Result& result);
 
 protected:
+  void buildUI(
+    smtk::operation::OperationPtr op, QSharedPointer<smtk::extension::qtUIManager> uiMManager);
+
   // Override showEvent() in order to fix Qt sizing issue
   void showEvent(QShowEvent* event) override;
 
