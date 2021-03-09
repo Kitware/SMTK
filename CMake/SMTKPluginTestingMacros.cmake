@@ -65,6 +65,12 @@ function(smtk_test_plugin test_plugin_file_url)
   # dashboards.
   set_tests_properties(${test_name} PROPERTIES RUN_SERIAL TRUE)
 
+  if (_smtk_superbuild_prefix)
+    set_property(TEST ${test_name} APPEND
+      PROPERTY
+        ENVIRONMENT "CMAKE_PREFIX_PATH=${_smtk_superbuild_prefix}")
+  endif ()
+
   # If on Windows, pass the environment PATH to the test.
   if (WIN32)
     # We need to add this smtk's binary directory to the path so the plugin

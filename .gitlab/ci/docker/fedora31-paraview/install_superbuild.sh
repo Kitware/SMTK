@@ -33,6 +33,7 @@ cmake -GNinja \
     -DENABLE_python3:BOOL=ON \
     -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
     -Dqt5_SKIP_PCH:BOOL=ON \
+    -Dqt5_ENABLE_OPENSSL:BOOL=ON \
     $sccache_settings \
     "-D__BUILDBOT_INSTALL_LOCATION:PATH=$SUPERBUILD_PREFIX" \
     "$workdir"
