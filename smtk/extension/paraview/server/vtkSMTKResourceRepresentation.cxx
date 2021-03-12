@@ -1110,6 +1110,40 @@ void vtkSMTKResourceRepresentation::SetVertexVisibility(int val)
   this->Property->SetVertexVisibility(val);
 }
 
+void vtkSMTKResourceRepresentation::SetDefaultEdgeColor(double r, double g, double b)
+{
+  std::array<double, 3> rgb{ r, g, b };
+  this->SetDefaultEdgeColor(rgb.data());
+}
+
+void vtkSMTKResourceRepresentation::SetDefaultEdgeColor(const double* rgb)
+{
+  // Update internal properties based on settings that could have changed our MTime:
+  this->Property->SetEdgeColor(rgb);
+}
+
+double* vtkSMTKResourceRepresentation::GetDefaultEdgeColor()
+{
+  return this->Property->GetEdgeColor();
+}
+
+void vtkSMTKResourceRepresentation::SetDefaultFaceColor(double r, double g, double b)
+{
+  std::array<double, 3> rgb{ r, g, b };
+  this->SetDefaultFaceColor(rgb.data());
+}
+
+void vtkSMTKResourceRepresentation::SetDefaultFaceColor(const double* rgb)
+{
+  // Update internal properties based on settings that could have changed our MTime:
+  this->Property->SetAmbientColor(rgb);
+}
+
+double* vtkSMTKResourceRepresentation::GetDefaultFaceColor()
+{
+  return this->Property->GetAmbientColor();
+}
+
 void vtkSMTKResourceRepresentation::SetPosition(double x, double y, double z)
 {
   this->Entities->SetPosition(x, y, z);
