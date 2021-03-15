@@ -142,10 +142,14 @@ public:
   /**
    * Selection properties. Forwarded to the relevant vtkProperty instances.
    */
-  vtkSetVector3Macro(DefaultEdgeColor, double);
-  vtkGetVector3Macro(DefaultEdgeColor, double);
-  vtkSetVector3Macro(DefaultFaceColor, double);
-  vtkGetVector3Macro(DefaultFaceColor, double);
+  virtual void SetDefaultEdgeColor(double r, double g, double b);
+  virtual void SetDefaultEdgeColor(const double* rgb);
+  virtual double* GetDefaultEdgeColor();
+
+  virtual void SetDefaultFaceColor(double r, double g, double b);
+  virtual void SetDefaultFaceColor(const double* rgb);
+  virtual double* GetDefaultFaceColor();
+
   vtkSetVector3Macro(SelectionColor, double);
   vtkGetVector3Macro(SelectionColor, double);
   vtkSetVector3Macro(HoverColor, double);
