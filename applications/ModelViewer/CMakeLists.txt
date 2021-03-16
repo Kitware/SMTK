@@ -257,7 +257,10 @@ install(CODE
    # dependency found.
    set(conflicting_deps)
    foreach (conflicting_dep IN LISTS conflicting_deps_FILENAMES)
-     string(REGEX MATCH \${post_include_regex} match \${conflicting_dep})
+     if (NOT post_include_regex)
+       continue ()
+     endif ()
+     string(REGEX MATCH \"\${post_include_regex}\" match \"\${conflicting_dep}\")
      if (match)
        set(add_to_list ON)
          if (ignore_items)
