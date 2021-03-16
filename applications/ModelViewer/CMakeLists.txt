@@ -315,7 +315,7 @@ install(CODE
        ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"\${rpath}\"
        \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer)
    elseif(UNIX)
-     set(rpath \"\$ORIGIN/../lib/\")
+     set(rpath \"\$ORIGIN/../lib\")
         execute_process(COMMAND
           chrpath --replace \"\${rpath}\" \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer)
    endif()
