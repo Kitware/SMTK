@@ -73,7 +73,7 @@ Import::Result Import::operateInternal()
   smtk::attribute::StringItem::Ptr filetypeItem = this->parameters()->findString("filetype");
 
   std::string filename = filenameItem->value();
-  std::string filetype = filetypeItem->numberOfValues() > 0 ? filetypeItem->value() : std::string();
+  std::string filetype = filetypeItem->isEnabled() ? filetypeItem->value() : std::string();
 
   if (filetype.empty())
   { // Infer file type from name
