@@ -298,7 +298,8 @@ install(CODE
    if(UNIX AND NOT APPLE)
      foreach (plugin IN LISTS qt_plugins)
        execute_process(COMMAND
-         chrpath --replace \"\$ORIGIN:\$ORIGIN/../lib\" \"\${plugin}\")
+         chrpath --replace \"\$ORIGIN:\$ORIGIN/../lib\" \"\${plugin}\"
+         RESULT_VARIABLE ignore)
      endforeach()
    endif()
 
