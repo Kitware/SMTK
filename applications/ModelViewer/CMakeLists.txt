@@ -257,7 +257,10 @@ install(CODE
    # dependency found.
    set(conflicting_deps)
    foreach (conflicting_dep IN LISTS conflicting_deps_FILENAMES)
-     string(REGEX MATCH \${post_include_regex} match \${conflicting_dep})
+     if (NOT post_include_regex)
+       continue ()
+     endif ()
+     string(REGEX MATCH \"\${post_include_regex}\" match \"\${conflicting_dep}\")
      if (match)
        set(add_to_list ON)
          if (ignore_items)
@@ -298,7 +301,8 @@ install(CODE
    if(UNIX AND NOT APPLE)
      foreach (plugin IN LISTS qt_plugins)
        execute_process(COMMAND
-         chrpath --replace \"\$ORIGIN:\$ORIGIN/../lib\" \"\${plugin}\")
+         chrpath --replace \"\$ORIGIN:\$ORIGIN/../lib\" \"\${plugin}\"
+         RESULT_VARIABLE ignore)
      endforeach()
    endif()
 
@@ -314,7 +318,7 @@ install(CODE
        ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"\${rpath}\"
        \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer)
    elseif(UNIX)
-     set(rpath \"\$ORIGIN/../lib/\")
+     set(rpath \"\$ORIGIN/../lib\")
         execute_process(COMMAND
           chrpath --replace \"\${rpath}\" \${CMAKE_INSTALL_PREFIX}/\${exe_dest_dir}/ModelViewer)
    endif()
