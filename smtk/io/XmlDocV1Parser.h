@@ -59,6 +59,9 @@ struct ItemExpressionInfo
 
 class SMTKCORE_EXPORT XmlDocV1Parser
 {
+
+  friend class ItemDefinitionsHelper;
+
 public:
   XmlDocV1Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   virtual ~XmlDocV1Parser();
@@ -145,6 +148,14 @@ protected:
 
   virtual smtk::common::UUID getAttributeID(pugi::xml_node& attNode);
 
+  // For processing item definition blocks
+  void processItemDefinitionBlocks(pugi::xml_node& rootNode);
+
+  // For processing the child item definition block for attribute
+  // definitions
+  void processItemDefinitions(pugi::xml_node& itemDefs, smtk::attribute::DefinitionPtr& def,
+    std::set<std::string>& activeBlockNames);
+
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
   bool m_reportAsError;
@@ -154,6 +165,7 @@ protected:
   std::string m_defaultCategory;
   smtk::io::Logger& m_logger;
   std::size_t m_includeIndex;
+  std::map<std::string, pugi::xml_node> m_itemDefintionBlocks;
 
 private:
 };

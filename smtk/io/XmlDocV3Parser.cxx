@@ -12,6 +12,8 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
+#include "smtk/io/ItemDefinitionsHelper.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
@@ -958,158 +960,13 @@ void XmlDocV3Parser::processReferenceDef(
   }
   // Now lets process its children items
   xml_node cinode, citemsNode = node.child("ChildrenDefinitions");
-  std::string citemName;
-  attribute::Item::Type citype;
-  attribute::ItemDefinitionPtr cidef;
-  for (cinode = citemsNode.first_child(); cinode; cinode = cinode.next_sibling())
-  {
-    citype = attribute::Item::string2Type(cinode.name());
-    citemName = cinode.attribute("Name").value();
-    switch (citype)
-    {
-      case attribute::Item::AttributeRefType:
-        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
-        {
-          this->processRefDef(cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::DoubleType:
-        if ((cidef = idef->addItemDefinition<DoubleItemDefinition>(citemName)))
-        {
-          this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<DoubleItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::DirectoryType:
-        if ((cidef = idef->addItemDefinition<DirectoryItemDefinition>(citemName)))
-        {
-          this->processDirectoryDef(
-            cinode, smtk::dynamic_pointer_cast<DirectoryItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::FileType:
-        if ((cidef = idef->addItemDefinition<FileItemDefinition>(citemName)))
-        {
-          this->processFileDef(cinode, smtk::dynamic_pointer_cast<FileItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::GroupType:
-        if ((cidef = idef->addItemDefinition<GroupItemDefinition>(citemName)))
-        {
-          this->processGroupDef(cinode, smtk::dynamic_pointer_cast<GroupItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::IntType:
-        if ((cidef = idef->addItemDefinition<IntItemDefinition>(citemName)))
-        {
-          this->processIntDef(cinode, smtk::dynamic_pointer_cast<IntItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::StringType:
-        if ((cidef = idef->addItemDefinition<StringItemDefinition>(citemName)))
-        {
-          this->processStringDef(cinode, smtk::dynamic_pointer_cast<StringItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::ModelEntityType:
-        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
-        {
-          this->processModelEntityDef(
-            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::VoidType:
-        if ((cidef = idef->addItemDefinition<VoidItemDefinition>(citemName)))
-        {
-          this->processItemDef(cinode, cidef);
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::MeshEntityType:
-        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
-        {
-          this->processMeshEntityDef(
-            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::DateTimeType:
-        if ((cidef = idef->addItemDefinition<DateTimeItemDefinition>(citemName)))
-        {
-          this->processDateTimeDef(
-            cinode, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      case attribute::Item::ComponentType:
-        if ((cidef = idef->addItemDefinition<ComponentItemDefinition>(citemName)))
-        {
-          this->processComponentDef(
-            cinode, smtk::dynamic_pointer_cast<ComponentItemDefinition>(cidef));
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
-      default:
-        auto typeName = cinode.attribute("TypeName");
-        if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
-        {
-          cidef = std::shared_ptr<ItemDefinition>(
-            m_resource->customItemDefinitionFactory().createFromName(
-              typeName.value(), std::string(cinode.attribute("Name").value())));
-          (*static_cast<CustomItemBaseDefinition*>(cidef.get())) << cinode;
-          idef->addItemDefinition(cidef);
-          this->processItemDef(node, idef);
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
-              << node.name() << " needed to create Definition: " << citype);
-        }
-    }
-  }
+
+  ItemDefinitionsHelper helper;
+  std::set<std::string> currentActiveBlocks;
+
+  helper.processItemDefinitions<ReferenceItemDefinitionPtr>(
+    this, citemsNode, idef, currentActiveBlocks, idef->name(), "ReferenceItemDefinition");
+
   // Now process the conditional information
   citemsNode = node.child("ConditionalInfo");
   for (cinode = citemsNode.first_child(); cinode; cinode = cinode.next_sibling())

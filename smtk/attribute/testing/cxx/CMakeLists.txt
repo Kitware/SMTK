@@ -98,6 +98,7 @@ set(unit_tests
 
 set(unit_tests_which_require_data
   unitAnalysisConfigurations
+  unitItemBlocks
   )
 
 set(extra_libs ${Boost_LIBRARIES})
