@@ -41,6 +41,33 @@
 #include "vtkCompositeRepresentation.h"
 #include "vtkSMProxy.h"
 
+namespace
+{
+
+pqSMTKResourceRepresentation* representationInView(
+  const std::shared_ptr<smtk::resource::Resource>& rsrc, pqView* view = nullptr)
+{
+  auto smtkBehavior = pqSMTKBehavior::instance();
+
+  // Find the ParaView pipeline for the resource
+  auto pvrc = smtkBehavior->getPVResource(rsrc);
+  if (!pvrc)
+  {
+    return nullptr;
+  }
+
+  // Find the mapper in the active view for the related resource.
+  if (!view)
+  {
+    view = pqActiveObjects::instance().activeView();
+  }
+  auto mapr = pvrc->getRepresentation(view);
+  auto smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+  return smap;
+}
+
+} // anonymous namespace
+
 namespace smtk
 {
 namespace extension
@@ -136,7 +163,19 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
           auto itemComp = dynamic_cast<smtk::resource::Component*>(item);
           if (itemComp)
           {
-            int vv = smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
+            int vv = 0;
+            if (itemComp->resource() == resource)
+            {
+              vv = smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
+            }
+            else
+            {
+              auto rep = representationInView(itemComp->resource());
+              if (rep)
+              {
+                vv = rep->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
+              }
+            }
             rval |= vv;
             if (vv)
             {
