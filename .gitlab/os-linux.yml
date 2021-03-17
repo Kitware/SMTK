@@ -4,85 +4,85 @@
 
 ### Fedora
 
-.fedora31:
+.fedora33:
     image: "kitware/cmb:ci-smtk-fedora33-20210420"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
-        CMAKE_CONFIGURATION: fedora31_plain
+        CMAKE_CONFIGURATION: fedora33_plain
         GIT_CLONE_PATH: $CI_BUILDS_DIR/gitlab-kitware-sciviz-ci
 
 ### Lint builds
 
-.fedora31_tidy:
-    extends: .fedora31_paraview
+.fedora33_tidy:
+    extends: .fedora33_paraview
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_tidy
+        CMAKE_CONFIGURATION: fedora33_tidy
         CTEST_NO_WARNINGS_ALLOWED: 1
 
-.fedora31_memcheck:
-    extends: .fedora31_paraview
+.fedora33_memcheck:
+    extends: .fedora33_paraview
 
     variables:
         CMAKE_BUILD_TYPE: RelWithDebInfo
 
-.fedora31_asan:
-    extends: .fedora31_memcheck
+.fedora33_asan:
+    extends: .fedora33_memcheck
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_asan
+        CMAKE_CONFIGURATION: fedora33_asan
         CTEST_MEMORYCHECK_TYPE: AddressSanitizer
         # Disable LeakSanitizer for now. It's catching all kinds of errors that
         # need investigated or suppressed.
         CTEST_MEMORYCHECK_SANITIZER_OPTIONS: detect_leaks=0
 
-.fedora31_ubsan:
-    extends: .fedora31_memcheck
+.fedora33_ubsan:
+    extends: .fedora33_memcheck
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_ubsan
+        CMAKE_CONFIGURATION: fedora33_ubsan
         CTEST_MEMORYCHECK_TYPE: UndefinedBehaviorSanitizer
 
-.fedora31_coverage:
-    extends: .fedora31_paraview
+.fedora33_coverage:
+    extends: .fedora33_paraview
 
     variables:
         CMAKE_BUILD_TYPE: Debug
-        CMAKE_CONFIGURATION: fedora31_coverage
+        CMAKE_CONFIGURATION: fedora33_coverage
         CTEST_COVERAGE: 1
         CMAKE_GENERATOR: Unix Makefiles
 
-.fedora31_nodata:
-    extends: .fedora31_paraview
+.fedora33_nodata:
+    extends: .fedora33_paraview
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_nodata
+        CMAKE_CONFIGURATION: fedora33_nodata
         GIT_STRATEGY: clone
         GIT_LFS_SKIP_SMUDGE: 1
 
 ### Build and test
 
-.fedora31_vtk_python3:
-    extends: .fedora31
+.fedora33_vtk_python3:
+    extends: .fedora33
     image: "kitware/cmb:ci-smtk-fedora33-vtk-20210420"
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_vtk_python3
+        CMAKE_CONFIGURATION: fedora33_vtk_python3
 
-.fedora31_paraview:
-    extends: .fedora31_vtk_python3
+.fedora33_paraview:
+    extends: .fedora33_vtk_python3
     image: "kitware/cmb:ci-smtk-fedora33-paraview-20210420"
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_paraview
+        CMAKE_CONFIGURATION: fedora33_paraview
 
-.fedora31_vtk_python2:
-    extends: .fedora31
+.fedora33_vtk_python2:
+    extends: .fedora33
     image: "kitware/cmb:ci-smtk-fedora33-vtk-python2-20210420"
 
     variables:
-        CMAKE_CONFIGURATION: fedora31_vtk_python2
+        CMAKE_CONFIGURATION: fedora33_vtk_python2
 
 ## Tags
 
