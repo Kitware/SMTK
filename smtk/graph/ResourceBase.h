@@ -14,10 +14,7 @@
 #include "smtk/geometry/Manager.h"
 #include "smtk/geometry/Resource.h"
 
-#include "smtk/PublicPointerDefs.h"
-
-#include "smtk/common/CompilerInformation.h"
-#include "smtk/common/TypeMap.h"
+#include "smtk/graph/ArcMap.h"
 
 #include <memory>
 #include <string>
@@ -49,8 +46,7 @@ public:
   smtkTypeMacro(smtk::graph::ResourceBase);
   smtkSuperclassMacro(smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>);
 
-  typedef std::set<std::shared_ptr<smtk::resource::Component>, Compare> NodeSet;
-  typedef smtk::common::TypeMap<smtk::common::UUID> ArcSet;
+  using NodeSet = std::set<std::shared_ptr<smtk::resource::Component>, Compare>;
 
   std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID&) const override;
 
@@ -58,8 +54,8 @@ public:
 
   const NodeSet& nodes() const { return m_nodes; }
 
-  virtual const ArcSet& arcs() const = 0;
-  virtual ArcSet& arcs() = 0;
+  virtual const ArcMap& arcs() const = 0;
+  virtual ArcMap& arcs() = 0;
 
 protected:
   ResourceBase(smtk::resource::ManagerPtr manager = nullptr)
