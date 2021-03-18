@@ -14,6 +14,8 @@
 #include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 
+#include "smtk/extension/vtk/model/vtkSMTKModelExtModule.h"
+
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
