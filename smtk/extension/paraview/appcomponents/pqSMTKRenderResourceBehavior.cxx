@@ -63,10 +63,23 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
     // source associated with a resource removed from the manager.
     m_p->key = wrapper->smtkResourceManager()->observers().insert(
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) {
-        if (eventType == smtk::resource::EventType::REMOVED)
+        switch (eventType)
         {
-          auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
-          destroyPipelineSource(rsrc);
+          case smtk::resource::EventType::REMOVED:
+          {
+            auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
+            this->destroyPipelineSource(rsrc);
+            break;
+          }
+          case smtk::resource::EventType::ADDED:
+            QTimer::singleShot(0, this, [this, &resource]() {
+              auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
+              this->createPipelineSource(rsrc);
+            });
+            break;
+          default:
+            // Do nothing.
+            break;
         }
       },
       "pqSMTKRenderResourceBehavior: Destroy pipeline sources when resource is removed.");
@@ -115,6 +128,11 @@ pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
   if (server == nullptr)
   {
     return nullptr;
+  }
+
+  if (auto preExisting = pqSMTKBehavior::instance()->getPVResource(resource))
+  {
+    return preExisting;
   }
 
   pqObjectBuilder* builder = pqCore->getObjectBuilder();

@@ -131,7 +131,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
         {
           // Make the reader owning the first selected resource the active PV pipeline source:
           auto* behavior = pqSMTKBehavior::instance();
-          auto* rsrcSrc = behavior->getPVResource(selectedResource);
+          auto rsrcSrc = behavior->getPVResource(selectedResource);
           if (rsrcSrc)
           {
             pqActiveObjects::instance().setActiveSource(rsrcSrc);

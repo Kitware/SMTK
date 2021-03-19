@@ -46,6 +46,11 @@ class pqSMTKBehavior::Internal
 {
 public:
   std::map<pqServer*, std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*>> Remotes;
+  std::map<
+    std::weak_ptr<smtk::resource::Resource>,
+    QPointer<pqSMTKResource>,
+    std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
+    ResourceMap;
 };
 
 static pqSMTKBehavior* g_instance = nullptr;
@@ -174,20 +179,15 @@ pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr m
   return result;
 }
 
-pqSMTKResource* pqSMTKBehavior::getPVResource(const smtk::resource::ResourcePtr& resource) const
+QPointer<pqSMTKResource> pqSMTKBehavior::getPVResource(
+  const smtk::resource::ResourcePtr& resource) const
 {
-  pqSMTKResource* result = nullptr;
-  this->visitResourceManagersOnServers(
-    [&result, &resource](pqSMTKWrapper* mos, pqServer* /*unused*/) {
-      pqSMTKResource* pvr;
-      if (mos && (pvr = mos->getPVResource(resource)))
-      {
-        result = pvr;
-        return true;
-      }
-      return false;
-    });
-
+  QPointer<pqSMTKResource> result = nullptr;
+  auto it = m_p->ResourceMap.find(resource);
+  if (it != m_p->ResourceMap.end())
+  {
+    result = it->second;
+  }
   return result;
 }
 
@@ -267,10 +267,18 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 
 void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
 {
-  auto* rsrc = dynamic_cast<pqSMTKResource*>(pxy);
-  if (rsrc)
+  auto* rsrcPxy = dynamic_cast<pqSMTKResource*>(pxy);
+  if (rsrcPxy)
   {
-    auto it = m_p->Remotes.find(rsrc->getServer());
+    auto rsrc = rsrcPxy->getResource();
+    if (rsrc)
+    {
+      m_p->ResourceMap[rsrc] = rsrcPxy;
+    }
+    // Monitor rsrcPxy so that if its assigned SMTK resource changes, we update it.
+    QObject::connect(
+      rsrcPxy, &pqSMTKResource::resourceModified, this, &pqSMTKBehavior::updateResourceProxyMap);
+    auto it = m_p->Remotes.find(rsrcPxy->getServer());
     if (it == m_p->Remotes.end())
     {
       smtkErrorMacro(
@@ -278,23 +286,33 @@ void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
     }
     if (it != m_p->Remotes.end() && it->second.second)
     {
-      it->second.second->addResource(rsrc);
+      it->second.second->addResource(rsrcPxy);
     }
-    return;
   }
 }
 
 void pqSMTKBehavior::handleOldSMTKProxies(pqPipelineSource* pxy)
 {
-  auto* rsrc = dynamic_cast<pqSMTKResource*>(pxy);
-  if (rsrc)
+  auto* rsrcPxy = dynamic_cast<pqSMTKResource*>(pxy);
+  if (rsrcPxy)
   {
-    auto it = m_p->Remotes.find(rsrc->getServer());
+    m_p->ResourceMap.erase(rsrcPxy->getResource());
+    auto it = m_p->Remotes.find(rsrcPxy->getServer());
     if (it != m_p->Remotes.end())
     {
-      it->second.second->removeResource(rsrc);
+      it->second.second->removeResource(rsrcPxy);
     }
     return;
+  }
+}
+
+void pqSMTKBehavior::updateResourceProxyMap(
+  const std::shared_ptr<smtk::resource::Resource>& resource)
+{
+  auto* rsrcPxy = dynamic_cast<pqSMTKResource*>(this->sender());
+  if (rsrcPxy && resource)
+  {
+    m_p->ResourceMap[resource] = rsrcPxy;
   }
 }
 
