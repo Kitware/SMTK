@@ -35,6 +35,7 @@ set(smtkAttributePythonNewDataTests
   attributeQuery
   extensibleGroupTest
   groupItemRotateTest
+  referenceItemChildrenTest
   referenceItemIOTest
   valueItemRotateTest
   vectorExpressionTest
