@@ -18,9 +18,12 @@ set(projectSrcs
   )
 
 set(projectHeaders
+  Container.h
   Manager.h
   Metadata.h
   MetadataContainer.h
+  MetadataObserver.h
+  Observer.h
   Operation.h
   OperationFactory.h
   Project.h
