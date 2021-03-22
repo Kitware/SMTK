@@ -126,3 +126,49 @@ The following would create 5 valid configurations and prevent the 2 invalid ones
 ```
 
 The file  data/attribute/attribute_collection/analysisConfigTest.sbt models the above example and unitAnalysisConfiguration.cxx is the unit test for verifying the result.
+
+### Added Support for Item Definition Blocks (XML Format Only)
+Item Definition Blocks allows the reuse of a group of Item Definitions in different Attribute Definitions.  Providing a "hasA" relationship as opposed to the currently supported "isA". These blocks can then be referenced in the "ItemDefinitions" nodes of Attribute or Group Item Definitions or in the "ChildrenDefinitions" nodes for Reference or Value Item Definitions.  Blocks themselves can reference other blocks.  But care must be taken not to form a recursive relationship.  In the parser detects such a pattern it will report an error.
+
+When referencing a Block, the items will be inserted relative to where the Block is being referenced.
+
+Note that category constraints are inherited as usual and that Blocks can call other blocks.  Here is an example of an Item Block:
+
+```xml
+  <ItemBlocks>
+    <Block Name="B1">
+      <ItemDefinitions>
+        <String Name="s1">
+          <Categories>
+            <Cat>Solid Mechanics</Cat>
+          </Categories>
+        </String>
+        <Int Name="i1"/>
+      </ItemDefinitions>
+    </Block>
+  </ItemBlocks>
+
+  <Definitions>
+    <AttDef Type="Type1">
+      <Categories>
+        <Cat>Fluid Flow</Cat>
+      </Categories>
+      <ItemDefinitions>
+        <Double Name="foo"/>
+        <Block Name="B1"/>
+        <String Name="bar"/>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="Type2">
+      <Categories>
+        <Cat>Heat Transfer</Cat>
+      </Categories>
+      <ItemDefinitions>
+        <Block Name="B1"/>
+        <String Name="str2"/>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+
+```
+See data/attribute/attribute_collection/ItemBlockTest.sbt and smtk/attribute/testing/cxx/unitItemBlocks.cxx for examples.
