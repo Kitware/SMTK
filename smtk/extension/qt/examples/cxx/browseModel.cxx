@@ -129,8 +129,8 @@ int main(int argc, char* argv[])
   resourceManager->add(model);
   std::cout << "Read a " << model->typeName() << "\n";
 
-  auto qmodel = new smtk::extension::qtDescriptivePhraseModel;
-  auto qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
+  auto* qmodel = new smtk::extension::qtDescriptivePhraseModel;
+  auto* qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);

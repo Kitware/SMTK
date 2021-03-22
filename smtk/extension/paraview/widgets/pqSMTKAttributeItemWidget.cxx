@@ -232,7 +232,7 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
 
 pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
 {
-  auto ui = this->uiManager();
+  auto* ui = this->uiManager();
   auto operationManager = ui ? ui->operationManager() : nullptr;
   if (operationManager && m_p->m_opObserver.assigned())
   {
@@ -355,7 +355,7 @@ void pqSMTKAttributeItemWidget::update3DWidgetVisibility(bool visible)
 void pqSMTKAttributeItemWidget::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -375,7 +375,7 @@ void pqSMTKAttributeItemWidget::clearChildWidgets() {}
 void pqSMTKAttributeItemWidget::updateUI()
 {
   auto dataObj = this->item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -431,7 +431,7 @@ void pqSMTKAttributeItemWidget::updateUI()
   }
 
   // auto valueItem = smtk::dynamic_pointer_cast<ValueItem>(dataObj);
-  auto valueItemDef = dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
+  const auto* valueItemDef = dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
   if (valueItemDef && !valueItemDef->units().empty())
   {
     QString unitText = label->text();

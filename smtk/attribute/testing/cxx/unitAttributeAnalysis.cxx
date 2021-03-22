@@ -32,9 +32,9 @@ namespace
 void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::string& prefix)
 {
   attribute::Analyses& analyses = attRes->analyses();
-  auto a = analyses.find("a");
-  auto a1 = analyses.find("a1");
-  auto b = analyses.find("b");
+  auto* a = analyses.find("a");
+  auto* a1 = analyses.find("a1");
+  auto* b = analyses.find("b");
   smtkTest((a != nullptr), prefix << "Could not find a!");
   smtkTest((a->isRequired()), prefix << "a is not Required!");
   smtkTest((a1 != nullptr), prefix << "Could not find a1!");
@@ -62,7 +62,7 @@ int unitAttributeAnalysis(int /*unused*/, char* /*unused*/[])
   attribute::Analyses& analyses = attRes->analyses();
   std::set<std::string> cats;
   cats.insert("foo");
-  auto analysis = analyses.create("a");
+  auto* analysis = analyses.create("a");
   // Set a to be required
   analysis->setRequired(true);
   analysis->setLocalCategories(cats);

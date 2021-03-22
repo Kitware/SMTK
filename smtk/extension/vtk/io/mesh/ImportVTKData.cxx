@@ -268,11 +268,11 @@ bool ImportVTKData::operator()(
 {
   ImportAsVTKData importAsVTKData;
   auto data = importAsVTKData(filename);
-  if (auto ugrid = vtkUnstructuredGrid::SafeDownCast(data.GetPointer()))
+  if (auto* ugrid = vtkUnstructuredGrid::SafeDownCast(data.GetPointer()))
   {
     return this->operator()(ugrid, resource, materialPropertyName);
   }
-  else if (auto poly = vtkPolyData::SafeDownCast(data.GetPointer()))
+  else if (auto* poly = vtkPolyData::SafeDownCast(data.GetPointer()))
   {
     // vtkPolyData can hold polylines, triangle strips, polygons and other
     // hard-to-digest cells. These cells can be deconstructed into SMTK-friendly

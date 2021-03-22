@@ -117,8 +117,8 @@ void pqNewResourceReaction::newResource()
 
   if (!typeName.empty())
   {
-    auto pqCore = pqApplicationCore::instance();
-    auto builder = pqCore->getObjectBuilder();
+    auto* pqCore = pqApplicationCore::instance();
+    auto* builder = pqCore->getObjectBuilder();
 
     pqSMTKResource* src =
       static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResourceCreator", server));
@@ -160,7 +160,7 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
   QTimer::singleShot(0, this, [this]() {
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       QMenu* fileMenu = this->fileMenu();
@@ -267,7 +267,7 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
       auto resourceNames = creatorGroup.supportedResources();
       visible = !resourceNames.empty();
 
-      for (auto& resourceName : resourceNames)
+      for (const auto& resourceName : resourceNames)
       {
         // To acquire a human-readable resource name, we split on the c++
         // double-colon separator and select the penultimate token as the
@@ -308,7 +308,7 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
           m_newMenu->addMenu(resourceMenu);
           resourceMenu->setObjectName(label);
 
-          for (auto& index : operationIndices)
+          for (const auto& index : operationIndices)
           {
             std::string operationName = creatorGroup.operationName(index);
             label = QString::fromStdString(creatorGroup.operationLabel(index));

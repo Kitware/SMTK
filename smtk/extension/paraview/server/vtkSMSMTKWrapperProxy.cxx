@@ -57,8 +57,8 @@ smtk::resource::ManagerPtr vtkSMSMTKWrapperProxy::GetResourceManager() const
   // TODO: This should just "return this->Manager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetResourceManager() : nullptr;
 }
 
@@ -67,8 +67,8 @@ smtk::view::SelectionPtr vtkSMSMTKWrapperProxy::GetSelection() const
   // TODO: This should just "return this->Selection;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetSelection() : nullptr;
 }
 
@@ -77,8 +77,8 @@ smtk::operation::ManagerPtr vtkSMSMTKWrapperProxy::GetOperationManager() const
   // TODO: This should just "return this->OperationManager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetOperationManager() : nullptr;
 }
 
@@ -87,8 +87,8 @@ smtk::project::ManagerPtr vtkSMSMTKWrapperProxy::GetProjectManager() const
   // TODO: This should just "return this->ProjectManager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetProjectManager() : nullptr;
 }
 
@@ -97,8 +97,8 @@ smtk::view::ManagerPtr vtkSMSMTKWrapperProxy::GetViewManager() const
   // TODO: This should just "return this->ViewManager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetViewManager() : nullptr;
 }
 
@@ -108,8 +108,8 @@ smtk::common::TypeContainer& vtkSMSMTKWrapperProxy::GetManagers() const
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
   static smtk::common::TypeContainer nullContainer;
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetManagers() : nullContainer;
 }
 
@@ -220,8 +220,8 @@ void vtkSMSMTKWrapperProxy::JSONRPCNotification(const std::string& note)
 
 void vtkSMSMTKWrapperProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
 {
-  auto smtkProxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(pxy);
-  auto repProxy = smtkProxy->GetResourceRepresentationSubProxy();
+  auto* smtkProxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(pxy);
+  auto* repProxy = smtkProxy->GetResourceRepresentationSubProxy();
 
   vtkSMPropertyHelper(this, "Representation").Set(vtkSMProxy::SafeDownCast(repProxy));
   this->UpdateVTKObjects();

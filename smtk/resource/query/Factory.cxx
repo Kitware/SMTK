@@ -52,7 +52,7 @@ std::size_t Factory::indexFor(const std::size_t& typeIndex) const
   // is the most suitable.
   int priority = -1;
   const Metadata* metadata = nullptr;
-  for (auto& metadatum : m_metadata)
+  for (const auto& metadatum : m_metadata)
   {
     int n = metadatum.priority(typeIndex);
     if (n > priority)

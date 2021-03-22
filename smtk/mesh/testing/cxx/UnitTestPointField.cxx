@@ -86,7 +86,7 @@ void verify_partial_pointfields()
 
   {
     std::set<smtk::mesh::PointField> pointfields = mesh.pointFields();
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << " "
                 << pointfield.size() << std::endl;
@@ -102,7 +102,7 @@ void verify_partial_pointfields()
   std::vector<std::string> pointfieldnames;
   {
     std::set<smtk::mesh::PointField> pointfields = one.pointFields();
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << std::endl;
       pointfieldnames.push_back(pointfield.name());
@@ -131,7 +131,7 @@ void verify_partial_pointfields()
   {
     std::set<smtk::mesh::PointField> pointfields = two.pointFields();
     test(pointfields.size() == 2);
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << " "
                 << pointfield.size() << std::endl;
@@ -171,7 +171,7 @@ void verify_duplicate_pointfields()
   // Verify that the field values have been updated to the new values.
   {
     std::set<smtk::mesh::PointField> pointfields = mesh.pointFields();
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << " "
                 << pointfield.size() << std::endl;

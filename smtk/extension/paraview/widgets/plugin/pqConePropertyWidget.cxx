@@ -47,7 +47,7 @@ pqConePropertyWidget::pqConePropertyWidget(
   Ui::ConePropertyWidget& ui = m_p->Ui;
   ui.setupUi(this);
 
-  auto topRad = smgroup->GetProperty("TopRadius");
+  auto* topRad = smgroup->GetProperty("TopRadius");
   if (!topRad)
   {
     // Only show a single radius when both must be identical.
@@ -56,7 +56,7 @@ pqConePropertyWidget::pqConePropertyWidget(
     ui.labelRadius1->setText("Radius");
     ui.show3DWidget->setText("Show cylinder");
     ui.cylindrical->hide(); // We are forced into cylinder model
-    auto cyl = smgroup->GetProperty("Cylindrical");
+    auto* cyl = smgroup->GetProperty("Cylindrical");
     if (cyl)
     {
       int on = 1;

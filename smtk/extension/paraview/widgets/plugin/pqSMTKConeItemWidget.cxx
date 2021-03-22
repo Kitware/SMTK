@@ -55,7 +55,7 @@ qtItem* pqSMTKConeItemWidget::createConeItemWidget(const qtAttributeItemInfo& in
 
 qtItem* pqSMTKConeItemWidget::createCylinderItemWidget(const qtAttributeItemInfo& info)
 {
-  auto item = new pqSMTKConeItemWidget(info);
+  auto* item = new pqSMTKConeItemWidget(info);
   item->setForceCylindrical(true);
   return item;
 }
@@ -83,14 +83,14 @@ bool pqSMTKConeItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  auto coneWidget = new pqConePropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  auto* coneWidget = new pqConePropertyWidget(proxy, proxy->GetPropertyGroup(0));
   coneWidget->setForceCylindrical(m_forceCylinder);
   widget = coneWidget;
 
   // II. Initialize the properties.
   m_p->m_pvwidget = widget;
   this->updateWidgetFromItem();
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   widgetProxy->UpdateVTKObjects();
   // vtkSMPropertyHelper(widgetProxy, "RotationEnabled").Set(false);
 
@@ -229,7 +229,7 @@ bool pqSMTKConeItemWidget::setForceCylindrical(bool isCylinder)
   m_forceCylinder = isCylinder;
   if (m_p->m_pvwidget)
   {
-    auto widget = reinterpret_cast<pqConePropertyWidget*>(m_p->m_pvwidget);
+    auto* widget = reinterpret_cast<pqConePropertyWidget*>(m_p->m_pvwidget);
     widget->setForceCylindrical(m_forceCylinder);
   }
   return true;

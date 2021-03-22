@@ -74,7 +74,7 @@ bool ResourcePhraseModel::setResourceFilters(
 {
   auto filter = [resourceFilters](const smtk::resource::Resource& resource) -> bool {
     bool acceptable = false;
-    for (auto& filter : resourceFilters)
+    for (const auto& filter : resourceFilters)
     {
       if (resource.isOfType(filter.first))
       {

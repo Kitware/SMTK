@@ -53,7 +53,7 @@ int main(int argc, char** const argv)
 
   // Access its type name from its registered metadata
   std::string typeName;
-  for (auto& metadatum : resourceManager->metadata())
+  for (const auto& metadatum : resourceManager->metadata())
     typeName = metadatum.typeName();
 
   // Construct an instance of the resource

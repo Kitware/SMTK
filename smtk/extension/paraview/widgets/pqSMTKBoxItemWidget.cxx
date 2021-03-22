@@ -103,7 +103,7 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
   bool haveShowControls = m_itemInfo.component().attributeAsBool("ShowControls", showControls);
   showControls |= !haveShowControls; // when ShowControls not present, showControls should be true
 
-  auto visibility = widget->findChild<QCheckBox*>("show3DWidget");
+  auto* visibility = widget->findChild<QCheckBox*>("show3DWidget");
   if (showControls)
   {
     visibility->show();
@@ -122,7 +122,7 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
   // II. Initialize the properties.
   m_p->m_pvwidget = widget;
   this->updateWidgetFromItem();
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   widgetProxy->UpdateVTKObjects();
   // vtkSMPropertyHelper(widgetProxy, "RotationEnabled").Set(false);
 
@@ -147,7 +147,7 @@ void pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
 
   if (control)
   {
-    auto visibility = this->propertyWidget()->findChild<QCheckBox*>("show3DWidget");
+    auto* visibility = this->propertyWidget()->findChild<QCheckBox*>("show3DWidget");
     std::string oldValue = control->value();
     switch (visibility->checkState())
     {
@@ -334,8 +334,8 @@ void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
 
   if (control)
   {
-    auto pw = this->propertyWidget();
-    auto visibility = pw ? pw->findChild<QCheckBox*>("show3DWidget") : nullptr;
+    auto* pw = this->propertyWidget();
+    auto* visibility = pw ? pw->findChild<QCheckBox*>("show3DWidget") : nullptr;
     if (visibility)
     {
       this->setControlState(control->value(), visibility);

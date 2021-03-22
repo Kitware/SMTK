@@ -109,7 +109,7 @@ Read::Specification Read::createSpecification()
   bool firstFormat = true;
   for (auto& ioType : smtk::io::ReadMesh::SupportedIOTypes())
   {
-    for (auto& format : ioType->FileFormats())
+    for (const auto& format : ioType->FileFormats())
     {
       if (format.CanImport())
       {
@@ -124,7 +124,7 @@ Read::Specification Read::createSpecification()
 
         fileFilters << format.Name << "(";
         bool first = true;
-        for (auto& ext : format.Extensions)
+        for (const auto& ext : format.Extensions)
         {
           if (first)
           {

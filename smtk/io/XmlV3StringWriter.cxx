@@ -237,7 +237,7 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
     tagsNode.set_name("Tags");
 
     std::string sep; // TODO: The writer could accept a user-provided separator.
-    for (auto& tag : def->tags())
+    for (const auto& tag : def->tags())
     {
       xml_node tagNode = tagsNode.append_child();
       tagNode.set_name("Tag");
@@ -261,7 +261,7 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
     catGroupNode = catInfoNode.append_child("Include");
     catGroupNode.append_attribute("Combination")
       .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
-    for (auto& str : localCats.includedCategoryNames())
+    for (const auto& str : localCats.includedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
     }
@@ -272,7 +272,7 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
     catGroupNode = catInfoNode.append_child("Exclude");
     catGroupNode.append_attribute("Combination")
       .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
-    for (auto& str : localCats.excludedCategoryNames())
+    for (const auto& str : localCats.excludedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
     }

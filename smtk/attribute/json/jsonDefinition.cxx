@@ -401,7 +401,7 @@ SMTKCORE_EXPORT void from_json(
   if (result != j.end())
   {
     // Reference: Check XmlDocV1Parser 789
-    for (auto& idef : *result)
+    for (const auto& idef : *result)
     {
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
         idef, defPtr, attResource, convertedAttDefs);

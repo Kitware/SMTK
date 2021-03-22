@@ -34,7 +34,7 @@ SMTKCORE_EXPORT void to_json(
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
   nlohmann::json accept;
-  for (auto& acceptable : defPtr->acceptableEntries())
+  for (const auto& acceptable : defPtr->acceptableEntries())
   {
     accept.push_back(acceptable.first);
     accept.push_back(acceptable.second);
@@ -42,7 +42,7 @@ SMTKCORE_EXPORT void to_json(
   j["EnforceCategories"] = defPtr->enforcesCategories();
   j["Accepts"] = accept;
   nlohmann::json reject;
-  for (auto& rejected : defPtr->rejectedEntries())
+  for (const auto& rejected : defPtr->rejectedEntries())
   {
     reject.push_back(rejected.first);
     reject.push_back(rejected.second);
@@ -207,7 +207,7 @@ SMTKCORE_EXPORT void from_json(
     return; // no children info
   }
 
-  for (auto& jIdef : *result)
+  for (const auto& jIdef : *result)
   {
     smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(jIdef, defPtr, resPtr);
   }

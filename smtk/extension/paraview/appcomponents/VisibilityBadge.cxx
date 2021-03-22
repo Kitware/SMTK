@@ -48,10 +48,10 @@ pqSMTKResourceRepresentation* representationInView(
   const std::shared_ptr<smtk::resource::Resource>& rsrc,
   pqView* view = nullptr)
 {
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
 
   // Find the ParaView pipeline for the resource
-  auto pvrc = smtkBehavior->getPVResource(rsrc);
+  auto* pvrc = smtkBehavior->getPVResource(rsrc);
   if (!pvrc)
   {
     return nullptr;
@@ -62,8 +62,8 @@ pqSMTKResourceRepresentation* representationInView(
   {
     view = pqActiveObjects::instance().activeView();
   }
-  auto mapr = pvrc->getRepresentation(view);
-  auto smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+  auto* mapr = pvrc->getRepresentation(view);
+  auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
   return smap;
 }
 
@@ -162,10 +162,10 @@ int UpdateVisibilityForFootprint(
         // Even if the footprint does not include the component itself, we need to include it
         // here so that the descriptive phrase shows a response to user input.
         visibleThings[comp->id()] = visible;
-        for (auto& item : footprint)
+        for (const auto& item : footprint)
         {
           visibleThings[item->id()] = visible;
-          auto itemComp = dynamic_cast<smtk::resource::Component*>(item);
+          auto* itemComp = dynamic_cast<smtk::resource::Component*>(item);
           if (itemComp)
           {
             int vv = 0;
@@ -175,7 +175,7 @@ int UpdateVisibilityForFootprint(
             }
             else
             {
-              auto rep = representationInView(itemComp->resource());
+              auto* rep = representationInView(itemComp->resource());
               if (rep)
               {
                 vv = rep->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
@@ -278,11 +278,11 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
 
   smtk::geometry::ResourcePtr geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
 
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
 
   // If we are trying to get the value of a resource that has no pipeline
   // source, we create one.
-  auto pvrc = smtkBehavior->getPVResource(rsrc);
+  auto* pvrc = smtkBehavior->getPVResource(rsrc);
   if (pvrc == nullptr && rsrc)
   {
     pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
@@ -299,8 +299,8 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
   }
   else if (modelRsrc || meshRsrc || (geomRsrc && !comp))
   {
-    auto view = pqActiveObjects::instance().activeView();
-    auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+    auto* view = pqActiveObjects::instance().activeView();
+    auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
     return mapr ? mapr->isVisible() : false;
   }
   else if (geomRsrc)
@@ -331,11 +331,11 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
 
   smtk::geometry::ResourcePtr geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
 
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
 
   // If we are trying to get the value of a resource that has no pipeline
   // source, we create one.
-  auto pvrc = smtkBehavior->getPVResource(rsrc);
+  auto* pvrc = smtkBehavior->getPVResource(rsrc);
   if (pvrc == nullptr && rsrc)
   {
     pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
@@ -343,9 +343,9 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
 
   if (ent || msh || (comp && geomRsrc))
   { // Find the mapper in the active view for the related resource, then set the visibility.
-    auto view = pqActiveObjects::instance().activeView();
-    auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
-    auto smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+    auto* view = pqActiveObjects::instance().activeView();
+    auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+    auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
     if (smap)
     {
       UpdateVisibilityForFootprint(smap, comp, val, m_visibleThings, phrase);
@@ -353,8 +353,8 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
   }
   else if (geomRsrc)
   { // A resource, not a component, is being modified. Change the pipeline object's visibility.
-    auto view = pqActiveObjects::instance().activeView();
-    auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+    auto* view = pqActiveObjects::instance().activeView();
+    auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
     if (mapr)
     {
       mapr->setVisible(!mapr->isVisible());
@@ -432,7 +432,7 @@ void VisibilityBadge::activeViewChanged(pqView* view)
     return;
   }
   auto rsrcPhrases = this->phraseModel()->root()->subphrases();
-  auto behavior = pqSMTKBehavior::instance();
+  auto* behavior = pqSMTKBehavior::instance();
   for (const auto& rsrcPhrase : rsrcPhrases)
   {
     auto rsrc = rsrcPhrase->relatedResource();
@@ -440,17 +440,17 @@ void VisibilityBadge::activeViewChanged(pqView* view)
     {
       continue;
     }
-    auto pvr = behavior->getPVResource(rsrc);
-    auto rep = pvr ? pvr->getRepresentation(view) : nullptr;
+    auto* pvr = behavior->getPVResource(rsrc);
+    auto* rep = pvr ? pvr->getRepresentation(view) : nullptr;
     // TODO: At a minimum, we can update the representation's visibility now
     //       since if rep is null it is invisible and if not null, we can ask
     //       for its visibility.
     if (rep)
     {
       m_visibleThings[rsrc->id()] = rep->isVisible() ? 1 : 0;
-      auto thingy = rep->getProxy()->GetClientSideObject();
-      auto thingy2 = vtkCompositeRepresentation::SafeDownCast(thingy);
-      auto srvrep = vtkSMTKResourceRepresentation::SafeDownCast(
+      auto* thingy = rep->getProxy()->GetClientSideObject();
+      auto* thingy2 = vtkCompositeRepresentation::SafeDownCast(thingy);
+      auto* srvrep = vtkSMTKResourceRepresentation::SafeDownCast(
         thingy2 ? thingy2->GetActiveRepresentation() : nullptr);
       if (srvrep)
       {
@@ -473,7 +473,7 @@ void VisibilityBadge::activeViewChanged(pqView* view)
 
 void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
 {
-  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  auto* modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
     QObject::connect(
@@ -486,7 +486,7 @@ void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
 
 void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
 {
-  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  auto* modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
     QObject::disconnect(
@@ -499,7 +499,7 @@ void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
     // the resource being closed that we "forget" the visibility
     // state of its components — otherwise, reloading the resource
     // will result in inconsistent state.
-    auto view = pqActiveObjects::instance().activeView();
+    auto* view = pqActiveObjects::instance().activeView();
     this->activeViewChanged(view);
   }
 }

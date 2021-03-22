@@ -281,7 +281,7 @@ bool ReferenceItem::isValidInternal(bool useCategories, const std::set<std::stri
     return false;
   }
 
-  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (def && def->enforcesCategories())
   {
     for (size_t i = 0; i < this->numberOfValues(); i++)
@@ -328,7 +328,7 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
   }
 
   // Next - are we allowed to change the number of values?
-  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def->isExtensible())
     return false; // You may not resize.
 
@@ -361,7 +361,7 @@ std::shared_ptr<const ReferenceItemDefinition> ReferenceItem::definition() const
 
 std::size_t ReferenceItem::numberOfRequiredValues() const
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def)
   {
     return 0;
@@ -371,7 +371,7 @@ std::size_t ReferenceItem::numberOfRequiredValues() const
 
 std::size_t ReferenceItem::maxNumberOfValues() const
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def)
   {
     return 0;
@@ -482,7 +482,7 @@ bool ReferenceItem::setValue(const PersistentObjectPtr& val)
 
 ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   AttributePtr myAtt = this->m_referencedAttribute.lock();
 
   if (myAtt == nullptr)
@@ -564,7 +564,7 @@ bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
   {
     return false;
   }
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if ((i >= m_cache->size()) || (val != nullptr && !def->isValueValid(val)))
   {
     return false;
@@ -593,7 +593,7 @@ bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
 bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
 {
   // First - is this value valid?
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def->isValueValid(val))
   {
     return false;
@@ -636,7 +636,7 @@ bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
 
 bool ReferenceItem::removeValue(std::size_t i)
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if (myAtt == nullptr)
   {
@@ -847,7 +847,7 @@ std::ptrdiff_t ReferenceItem::find(const PersistentObjectPtr& comp) const
 
 smtk::resource::LockType ReferenceItem::lockType() const
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def)
   {
     return smtk::resource::LockType::DoNotLock;
@@ -859,7 +859,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  auto def = dynamic_cast<const ReferenceItemDefinition*>(adef.get());
+  const auto* def = dynamic_cast<const ReferenceItemDefinition*>(adef.get());
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -921,7 +921,7 @@ bool ReferenceItem::resolve() const
   // are not, then something unexpected has occured.
   assert(m_keys.size() == m_cache->size());
 
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
 
   // Iterate over the objects' keys and values.
   auto key = m_keys.begin();
@@ -969,7 +969,7 @@ bool ReferenceItem::resolve() const
 
 void ReferenceItem::assignToCache(std::size_t i, const PersistentObjectPtr& obj) const
 {
-  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
 
   if (def->holdReference())
   {
@@ -1110,7 +1110,7 @@ smtk::attribute::ConstItemPtr ReferenceItem::findInternal(
   // Are we only caring about active children?
   if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
   {
-    for (auto& item : m_activeChildrenItems)
+    for (const auto& item : m_activeChildrenItems)
     {
       if (item->name() == childName)
       {
@@ -1120,7 +1120,7 @@ smtk::attribute::ConstItemPtr ReferenceItem::findInternal(
     if (style == RECURSIVE_ACTIVE)
     {
       // Ok - we didn't find it so lets recursively check its active chiildren
-      for (auto& item : m_activeChildrenItems)
+      for (const auto& item : m_activeChildrenItems)
       {
         ConstItemPtr result = item->find(childName, style);
         if (result)
@@ -1146,7 +1146,7 @@ smtk::attribute::ConstItemPtr ReferenceItem::findInternal(
     return nullptr;
   }
 
-  for (auto& child : m_childrenItems)
+  for (const auto& child : m_childrenItems)
   {
     ConstItemPtr result = child.second->find(childName, style);
     if (result)

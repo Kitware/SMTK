@@ -370,7 +370,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
-      for (auto& association : m_resource->associations())
+      for (const auto& association : m_resource->associations())
       {
         if (auto entity = association->find(uid))
         {
@@ -386,7 +386,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
     if (val)
     {
       uid = smtk::common::UUID(val.text().get());
-      for (auto& association : m_resource->associations())
+      for (const auto& association : m_resource->associations())
       {
         if (auto entity = association->find(uid))
         {

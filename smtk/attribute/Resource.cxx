@@ -553,7 +553,7 @@ smtk::resource::ResourceSet Resource::associations() const
 {
   auto associatedObjects = this->links().linkedTo(AssociationRole);
   smtk::resource::ResourceSet resources;
-  for (auto& object : associatedObjects)
+  for (const auto& object : associatedObjects)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
     if (resource != nullptr)
@@ -1014,7 +1014,7 @@ std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
       if (defn)
       {
         return [defn](const smtk::resource::Component& comp) {
-          auto attr = dynamic_cast<const Attribute*>(&comp);
+          const auto* attr = dynamic_cast<const Attribute*>(&comp);
           return (attr && attr->isA(defn));
         };
       }

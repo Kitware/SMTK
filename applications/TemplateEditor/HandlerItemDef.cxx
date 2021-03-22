@@ -68,7 +68,7 @@ bool HandlerItemDef::initialize(ItemDefPtr itemDef, QWidget* parentWidget)
     const QString title =
       QString::fromStdString(SMTKItem::type2String(itemDef->type())) + " Properties";
 
-    auto groupBox = qobject_cast<QGroupBox*>(parentWidget);
+    auto* groupBox = qobject_cast<QGroupBox*>(parentWidget);
     groupBox->setTitle(title);
   }
 

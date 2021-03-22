@@ -1215,7 +1215,7 @@ namespace
 /// Given an entity and a mask, determine if the entity is accepted by the mask.
 bool IsValueValid(const smtk::resource::Component& comp, smtk::model::BitFlags mask)
 {
-  auto modelEnt = dynamic_cast<const smtk::model::Entity*>(&comp);
+  const auto* modelEnt = dynamic_cast<const smtk::model::Entity*>(&comp);
   if (modelEnt)
   {
     smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();

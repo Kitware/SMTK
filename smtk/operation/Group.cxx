@@ -214,7 +214,7 @@ std::set<Operation::Index> Group::operations() const
     return operationIndices;
   }
 
-  for (auto& md : manager->metadata())
+  for (const auto& md : manager->metadata())
   {
     std::set<std::string> operatorGroups = md.groups();
     if (operatorGroups.find(name()) != operatorGroups.end())
@@ -238,7 +238,7 @@ std::set<std::string> Group::operationNames() const
     return operationNames;
   }
 
-  for (auto& md : manager->metadata())
+  for (const auto& md : manager->metadata())
   {
     std::set<std::string> operatorGroups = md.groups();
     if (operatorGroups.find(name()) != operatorGroups.end())
@@ -318,7 +318,7 @@ std::size_t Group::operationObjectDistance(
   // If the parameter is a resource, ensure that the operation's association
   // rule requires a resource. If the parameter is not a resource, ensure that
   // the operation's association rule does not require a resource.
-  auto resource = dynamic_cast<const smtk::resource::Resource*>(&obj);
+  const auto* resource = dynamic_cast<const smtk::resource::Resource*>(&obj);
   bool ruleRequiresResources = assocRule->onlyResources();
   if ((ruleRequiresResources ^ static_cast<bool>(resource)))
   {
@@ -327,7 +327,7 @@ std::size_t Group::operationObjectDistance(
 
   if (!resource)
   {
-    auto component = dynamic_cast<const smtk::resource::Component*>(&obj);
+    const auto* component = dynamic_cast<const smtk::resource::Component*>(&obj);
     if (component)
     {
       resource = component->resource().get();

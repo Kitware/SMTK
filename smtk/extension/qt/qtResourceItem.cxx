@@ -70,7 +70,7 @@ qtItem* qtResourceItem::createItemWidget(const qtAttributeItemInfo& info)
   {
     return new qtReferenceItemEditor(info);
   }
-  auto qi = new qtResourceItem(info);
+  auto* qi = new qtResourceItem(info);
   // Unlike other classes, qtResourceItem does not call createWidget()
   // in its constructor since the base class, qtReferenceItem, is
   // concrete and cannot call virtual methods of subclases. So, for

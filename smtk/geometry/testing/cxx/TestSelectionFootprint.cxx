@@ -147,7 +147,7 @@ public:
     auto rsrc = std::dynamic_pointer_cast<smtk::model::Resource>(std::get<0>(in));
     if (rsrc)
     {
-      auto provider = new Geometry(rsrc);
+      auto* provider = new Geometry(rsrc);
       return std::unique_ptr<smtk::geometry::Geometry>(provider);
     }
     throw std::invalid_argument("Not a model resource.");

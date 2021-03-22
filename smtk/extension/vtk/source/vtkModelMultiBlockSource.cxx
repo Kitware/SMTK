@@ -613,7 +613,7 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(
   vtkMultiBlockDataSet* protoBlocks,
   std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
-  auto iter = mbds->NewTreeIterator();
+  auto* iter = mbds->NewTreeIterator();
   iter->VisitOnlyLeavesOff();
   protoBlocks->SetNumberOfBlocks(static_cast<int>(instancePrototypes.size()));
   vtkIdType nextProtoIndex = 0;
@@ -709,7 +709,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(
     instanceMask->Allocate(numPoints);
 
     // WARNING: Pointdata-array indices are used blindly in AddInstancePoints. Do not reorder:
-    auto pd = instancePoly->GetPointData();
+    auto* pd = instancePoly->GetPointData();
     pd->AddArray(instanceOrient.GetPointer());
     pd->AddArray(instanceScale.GetPointer());
     pd->AddArray(instancePrototype.GetPointer());
@@ -751,12 +751,12 @@ void vtkModelMultiBlockSource::AddInstancePoints(
     return;
   }
   vtkPoints* pts = instancePoly->GetPoints();
-  auto pd = instancePoly->GetPointData();
+  auto* pd = instancePoly->GetPointData();
   // WARNING: Array indices are hardcoded here for speed. See PrepareInstanceOutput above.
-  auto orientArray = vtkDoubleArray::SafeDownCast(pd->GetArray(0));
-  auto scaleArray = vtkDoubleArray::SafeDownCast(pd->GetArray(1));
-  auto prototypeArray = vtkIdTypeArray::SafeDownCast(pd->GetArray(2));
-  auto maskArray = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(3));
+  auto* orientArray = vtkDoubleArray::SafeDownCast(pd->GetArray(0));
+  auto* scaleArray = vtkDoubleArray::SafeDownCast(pd->GetArray(1));
+  auto* prototypeArray = vtkIdTypeArray::SafeDownCast(pd->GetArray(2));
+  auto* maskArray = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(3));
 
   std::vector<double>::const_iterator pit = tess->coords().begin();
   size_t nptsThisInst = static_cast<size_t>(tess->coords().size() / 3);
@@ -987,7 +987,7 @@ int vtkModelMultiBlockSource::RequestData(
 {
   auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();
-  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  auto* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {
     vtkErrorMacro("No output dataset");

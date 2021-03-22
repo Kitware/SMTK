@@ -468,7 +468,7 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
   }
   else if ((tree = dynamic_cast<vtkCompositeDataSet*>(dataobj.GetPointer())))
   {
-    auto it = tree->NewIterator();
+    auto* it = tree->NewIterator();
     it->SkipEmptyNodesOn();
     vtkBoundingBox bbox;
     bboxOut.resize(6);

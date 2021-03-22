@@ -92,7 +92,7 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
   }
   if (auto manager = this->Internals->m_operator->manager())
   {
-    auto launcher = manager->launchers()[qtOperationLauncher::type_name].target<qt::Launcher>();
+    auto* launcher = manager->launchers()[qtOperationLauncher::type_name].target<qt::Launcher>();
     if (launcher == nullptr)
     {
       manager->launchers()[qtOperationLauncher::type_name] = qt::Launcher();

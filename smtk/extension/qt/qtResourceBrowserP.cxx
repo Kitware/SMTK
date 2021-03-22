@@ -94,7 +94,7 @@ void qtResourceBrowser::Internal::setup(
   // Keep or create a QAbstractItemModel subclass (which had better be
   // related somehow to a qtDescriptivePhraseModel).
   m_model = qmodel ? qmodel : new qtDescriptivePhraseModel;
-  auto dpmodel = this->descriptivePhraseModel();
+  auto* dpmodel = this->descriptivePhraseModel();
   if (dpmodel)
   {
     dpmodel->setPhraseModel(m_phraseModel);
@@ -127,10 +127,10 @@ void qtResourceBrowser::Internal::setup(
 /// @relates smtk::extension::qtResourceBrowser::Internal
 qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() const
 {
-  auto dpmodel = dynamic_cast<qtDescriptivePhraseModel*>(m_model.data());
+  auto* dpmodel = dynamic_cast<qtDescriptivePhraseModel*>(m_model.data());
   if (!dpmodel)
   {
-    auto sfmodel = dynamic_cast<QAbstractProxyModel*>(m_model.data());
+    auto* sfmodel = dynamic_cast<QAbstractProxyModel*>(m_model.data());
     if (sfmodel)
     {
       dpmodel = dynamic_cast<qtDescriptivePhraseModel*>(sfmodel->sourceModel());

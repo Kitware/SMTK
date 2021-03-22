@@ -256,7 +256,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
   // looking for all resources, there's no need to perform a lookup.
   if (typeName == smtk::common::typeName<smtk::resource::Resource>())
   {
-    for (auto& resource : m_resources)
+    for (const auto& resource : m_resources)
     {
       values.insert(resource);
     }
@@ -271,7 +271,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
     return values;
   }
 
-  for (auto& metadatum : m_metadata)
+  for (const auto& metadatum : m_metadata)
   {
     if (metadatum.isOfType(metadata->index()))
     {
@@ -281,7 +281,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
 
   typedef Container::index<IndexTag>::type ResourcesByIndex;
   ResourcesByIndex& resources = m_resources.get<IndexTag>();
-  for (auto& idx : validIndices)
+  for (const auto& idx : validIndices)
   {
     auto resourceItRange = resources.equal_range(idx);
     values.insert(resourceItRange.first, resourceItRange.second);
@@ -299,7 +299,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   }
   else
   {
-    for (auto& metadatum : m_metadata)
+    for (const auto& metadatum : m_metadata)
     {
       if (metadatum.isOfType(index))
       {
@@ -314,7 +314,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
     ScopedLockGuard guard(m_lock, LockType::Read);
     typedef Container::index<IndexTag>::type ResourcesByIndex;
     ResourcesByIndex& resources = m_resources.get<IndexTag>();
-    for (auto& idx : validIndices)
+    for (const auto& idx : validIndices)
     {
       auto resourceItRange = resources.equal_range(idx);
       values.insert(resourceItRange.first, resourceItRange.second);
@@ -468,7 +468,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
 
     // Resolve resource surrogate links between the new resource and currently
     // managed resources.
-    for (auto& rsrc : m_resources)
+    for (const auto& rsrc : m_resources)
     {
       resource->links().resolve(rsrc);
       rsrc->links().resolve(resource);

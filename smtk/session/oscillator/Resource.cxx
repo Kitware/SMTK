@@ -46,7 +46,7 @@ bool Resource::resetDomainTessellation(smtk::model::Volume& domain)
   }
 
   // Use the operation info to create or replace the tessellation.
-  auto tess = domain.resetTessellation();
+  auto* tess = domain.resetTessellation();
   double corner[3] = { 0, 0, 0 };
   for (int ii = 0; ii < (1 << dimension); ++ii)
   {

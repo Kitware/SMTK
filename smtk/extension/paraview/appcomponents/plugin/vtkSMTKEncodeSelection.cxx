@@ -77,8 +77,8 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
   int modifier,
   bool selectBlocks)
 {
-  auto behavior = pqSMTKBehavior::instance();
-  auto wrapper = behavior->builtinOrActiveWrapper();
+  auto* behavior = pqSMTKBehavior::instance();
+  auto* wrapper = behavior->builtinOrActiveWrapper();
   bool didModifySelection = false;
 
 #ifdef SMTK_DEBUG_SELECTION
@@ -143,7 +143,7 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
 
     if (properties->Has(vtkSelectionNode::SOURCE()))
     {
-      auto rr =
+      auto* rr =
         vtkSMTKResourceRepresentation::SafeDownCast(properties->Get(vtkSelectionNode::SOURCE()));
       if (rr)
       {
@@ -198,7 +198,7 @@ bool vtkSMTKEncodeSelection::ProcessResource(
   (void)modifier;
   (void)selectBlocks;
 
-  auto mbds = vtkMultiBlockDataSet::SafeDownCast(resourceRep->GetRenderedDataObject(0));
+  auto* mbds = vtkMultiBlockDataSet::SafeDownCast(resourceRep->GetRenderedDataObject(0));
 #ifdef SMTK_DEBUG_SELECTION
   std::cout << "Select on resource " << resource->name() << " mbds " << mbds << "\n";
 #endif

@@ -47,8 +47,8 @@ void Manager::registerResourceManager(const smtk::resource::Manager::Ptr& manage
         {
           return;
         }
-        auto mutableResource = const_cast<resource::Resource*>(&resource);
-        auto geomResource = dynamic_cast<smtk::geometry::Resource*>(mutableResource);
+        auto* mutableResource = const_cast<resource::Resource*>(&resource);
+        auto* geomResource = dynamic_cast<smtk::geometry::Resource*>(mutableResource);
         if (geomResource)
         {
           // If there are geometry backends registered,

@@ -63,7 +63,7 @@ void qtVoidItem::setLabelVisible(bool visible)
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -106,7 +106,7 @@ void qtVoidItem::createWidget()
   }
   else
   {
-    auto l = new QLabel(m_widget);
+    auto* l = new QLabel(m_widget);
     l->setSizePolicy(sizeFixedPolicy);
     if (dataObj->advanceLevel() > 0)
     {
@@ -140,7 +140,7 @@ void qtVoidItem::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);

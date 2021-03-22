@@ -41,7 +41,7 @@ Item::Type ComponentItemDefinition::type() const
 
 bool ComponentItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto comp = dynamic_cast<const smtk::resource::Component*>(obj.get());
+  const auto* comp = dynamic_cast<const smtk::resource::Component*>(obj.get());
   if (comp == nullptr)
   {
     return false;

@@ -61,7 +61,7 @@ std::string SVGIconConstructor::operator()(
 
   if (object.properties().contains<std::vector<double>>(colorProperty))
   {
-    auto& vec = object.properties().at<std::vector<double>>(colorProperty);
+    const auto& vec = object.properties().at<std::vector<double>>(colorProperty);
     if (vec.size() >= 3)
     {
       fill = smtk::common::Color::floatRGBToString(vec.data());
@@ -102,7 +102,7 @@ std::string AttributeIconConstructor::svg(const smtk::resource::PersistentObject
 
 std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
-  if (auto resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
+  if (const auto* resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
   {
     return meshResource_svg;
   }
@@ -114,11 +114,11 @@ std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& obj
 
 std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
-  if (auto resource = dynamic_cast<const smtk::model::Resource*>(&object))
+  if (const auto* resource = dynamic_cast<const smtk::model::Resource*>(&object))
   {
     return modelResource_svg;
   }
-  else if (auto entity = dynamic_cast<const smtk::model::Entity*>(&object))
+  else if (const auto* entity = dynamic_cast<const smtk::model::Entity*>(&object))
   {
     smtk::model::BitFlags flags = entity->entityFlags();
 

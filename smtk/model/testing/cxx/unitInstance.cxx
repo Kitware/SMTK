@@ -26,7 +26,7 @@ Instance testInstanceCreation(const EntityRef& box)
   result.setFloatProperty("voi", { -10, 10, -10, 10, -10, 10 });
   result.setIntegerProperty("sample size", 50);
   result.setName("box placements");
-  auto tess = result.generateTessellation();
+  auto* tess = result.generateTessellation();
   (void)tess;
 
   return result;
@@ -71,7 +71,7 @@ std::set<Instance> testInstanceDivide(const Instance& instance, bool merge)
   // Test that no returned instance is "empty" (in the sense of having no placements)
   for (auto entry : result)
   {
-    auto tess = entry.generateTessellation();
+    auto* tess = entry.generateTessellation();
     std::ostringstream msg;
     msg << "Unexpected empty output \"" << entry.name() << "\".";
     smtkTest(tess && !tess->coords().empty(), msg.str());

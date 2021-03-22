@@ -92,7 +92,7 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  auto splineWidget = new pqSplinePropertyWidget(proxy, proxy->GetPropertyGroup(0), mode);
+  auto* splineWidget = new pqSplinePropertyWidget(proxy, proxy->GetPropertyGroup(0), mode);
   widget = splineWidget;
   std::string colorStr;
   if (m_itemInfo.component().attribute("Color", colorStr))
@@ -111,7 +111,7 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   // II. Initialize the properties.
   // For now, since we want to map this to a vector of 6 doubles,
   // we do not allow rotation:
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   auto numberOfValues = static_cast<unsigned int>(pointsItem->numberOfValues());
   vtkSMPropertyHelper(widgetProxy, "HandlePositions").Set(&(*pointsItem->begin()), numberOfValues);
   vtkSMPropertyHelper(widgetProxy, "Closed").Set(closedItem->isEnabled());

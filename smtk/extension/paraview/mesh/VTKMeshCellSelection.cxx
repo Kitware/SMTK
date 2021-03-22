@@ -80,7 +80,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
   }
 
   auto selnMgr = this->smtkSelection();
-  auto selnBlock = this->vtkSelection();
+  auto* selnBlock = this->vtkSelection();
   unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
   /*
     std::cout
@@ -92,7 +92,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
    */
   for (unsigned ii = 0; ii < nn; ++ii)
   {
-    auto selnNode = selnBlock->GetNode(ii);
+    auto* selnNode = selnBlock->GetNode(ii);
     if (selnNode->GetContentType() == vtkSelectionNode::INDICES)
     {
       vtkInformation* selProperties = selnNode->GetProperties();

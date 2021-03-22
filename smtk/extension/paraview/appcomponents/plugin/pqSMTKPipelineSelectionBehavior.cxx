@@ -55,7 +55,7 @@ pqSMTKPipelineSelectionBehavior::pqSMTKPipelineSelectionBehavior(QObject* parent
     SLOT(onActiveSourceChanged(pqPipelineSource*)));
 
   // Track server connects/disconnects
-  auto rsrcBehavior = pqSMTKBehavior::instance();
+  auto* rsrcBehavior = pqSMTKBehavior::instance();
   QObject::connect(
     rsrcBehavior,
     SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
@@ -130,8 +130,8 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
         if (selectedResource)
         {
           // Make the reader owning the first selected resource the active PV pipeline source:
-          auto behavior = pqSMTKBehavior::instance();
-          auto rsrcSrc = behavior->getPVResource(selectedResource);
+          auto* behavior = pqSMTKBehavior::instance();
+          auto* rsrcSrc = behavior->getPVResource(selectedResource);
           if (rsrcSrc)
           {
             pqActiveObjects::instance().setActiveSource(rsrcSrc);
@@ -168,7 +168,7 @@ void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
 
 void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* source)
 {
-  auto rsrc = dynamic_cast<pqSMTKResource*>(source);
+  auto* rsrc = dynamic_cast<pqSMTKResource*>(source);
   if (rsrc && !m_changingSource)
   {
     // We need to update the SMTK selection to be the active pipeline source.
@@ -176,7 +176,7 @@ void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* so
     activeResources.insert(rsrc->getResource());
 
     m_changingSource = true;
-    auto behavior = pqSMTKBehavior::instance();
+    auto* behavior = pqSMTKBehavior::instance();
     behavior->visitResourceManagersOnServers(
       [this, &activeResources](pqSMTKWrapper* wrapper, pqServer* server) -> bool {
         // skip bad servers

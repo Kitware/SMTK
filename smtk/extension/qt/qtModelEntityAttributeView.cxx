@@ -64,7 +64,7 @@ QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
   const QStyleOptionViewItem& /*option*/,
   const QModelIndex& /*index*/) const
 {
-  auto cbox = new QComboBox(parent);
+  auto* cbox = new QComboBox(parent);
   cbox->addItems(m_values);
   connect(cbox, SIGNAL(currentIndexChanged(int)), this, SIGNAL(choiceMade()));
   return cbox;
@@ -74,7 +74,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& index) const
 {
-  auto cb = qobject_cast<QComboBox*>(editor);
+  auto* cb = qobject_cast<QComboBox*>(editor);
   if (cb != nullptr)
   {
     // Lets find the proper index of the current value w/r the combobox
@@ -96,7 +96,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
   QAbstractItemModel* model,
   const QModelIndex& index) const
 {
-  auto cb = qobject_cast<QComboBox*>(editor);
+  auto* cb = qobject_cast<QComboBox*>(editor);
   if (cb != nullptr)
   {
     if (cb->currentIndex() > -1)
@@ -459,7 +459,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   // Add Special entry for the case of no attribite assigned
   slist.append(this->Internals->m_unSetVal.c_str());
 
-  auto col2Delegate =
+  auto* col2Delegate =
     new qModelEntityAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
   connect(col2Delegate, SIGNAL(choiceMade()), this, SLOT(selectionMade()));
   this->Internals->ListTable->blockSignals(true);
@@ -472,7 +472,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   for (const auto& entity : entities)
   {
     std::string name = entity->name();
-    auto item = new QTableWidgetItem(QString::fromStdString(name));
+    auto* item = new QTableWidgetItem(QString::fromStdString(name));
     //save the resource/entity as a uuid strings
     auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(entity);
     QVariant vdata = qtSMTKUtilities::UUIDToQVariant(comp->resource()->id());

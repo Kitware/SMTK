@@ -210,7 +210,7 @@ pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* pare
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
   QTimer::singleShot(0, this, [this]() {
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);

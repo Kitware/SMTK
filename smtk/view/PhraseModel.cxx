@@ -263,16 +263,16 @@ bool PhraseModel::addSource(
 
 bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
 {
-  auto& rsrcMgr =
+  const auto& rsrcMgr =
     (managers.contains<smtk::resource::ManagerPtr>() ? managers.get<smtk::resource::ManagerPtr>()
                                                      : smtk::resource::ManagerPtr());
-  auto& operMgr =
+  const auto& operMgr =
     (managers.contains<smtk::operation::ManagerPtr>() ? managers.get<smtk::operation::ManagerPtr>()
                                                       : smtk::operation::ManagerPtr());
-  auto& viewMgr =
+  const auto& viewMgr =
     (managers.contains<smtk::view::ManagerPtr>() ? managers.get<smtk::view::ManagerPtr>()
                                                  : smtk::view::ManagerPtr());
-  auto& seln =
+  const auto& seln =
     (managers.contains<smtk::view::SelectionPtr>() ? managers.get<smtk::view::SelectionPtr>()
                                                    : smtk::view::SelectionPtr());
 
@@ -350,16 +350,16 @@ bool PhraseModel::removeSource(
 
 bool PhraseModel::removeSource(const smtk::common::TypeContainer& managers)
 {
-  auto& rsrcMgr =
+  const auto& rsrcMgr =
     (managers.contains<smtk::resource::ManagerPtr>() ? managers.get<smtk::resource::ManagerPtr>()
                                                      : smtk::resource::ManagerPtr());
-  auto& operMgr =
+  const auto& operMgr =
     (managers.contains<smtk::operation::ManagerPtr>() ? managers.get<smtk::operation::ManagerPtr>()
                                                       : smtk::operation::ManagerPtr());
-  auto& viewMgr =
+  const auto& viewMgr =
     (managers.contains<smtk::view::ManagerPtr>() ? managers.get<smtk::view::ManagerPtr>()
                                                  : smtk::view::ManagerPtr());
-  auto& seln =
+  const auto& seln =
     (managers.contains<smtk::view::SelectionPtr>() ? managers.get<smtk::view::SelectionPtr>()
                                                    : smtk::view::SelectionPtr());
 

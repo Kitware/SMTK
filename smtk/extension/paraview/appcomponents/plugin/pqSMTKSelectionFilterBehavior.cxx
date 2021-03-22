@@ -148,7 +148,7 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
     SLOT(startBlockSelectionInActiveView()));
 
   // Track server connects/disconnects
-  auto rsrcBehavior = pqSMTKBehavior::instance();
+  auto* rsrcBehavior = pqSMTKBehavior::instance();
   QObject::connect(
     rsrcBehavior,
     SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),

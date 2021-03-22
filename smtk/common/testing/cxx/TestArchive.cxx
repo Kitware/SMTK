@@ -85,7 +85,7 @@ int TestArchive(int /*unused*/, char** const /*unused*/)
 
     smtkTest(archive.extract(), "Archive failed to extract");
 
-    for (auto& name : contents)
+    for (const auto& name : contents)
     {
 #if defined(SMTK_CLANG) || (defined(SMTK_GCC) && __GNUC__ > 4) || defined(SMTK_MSVC)
       std::ifstream readFile(archive.get(name));

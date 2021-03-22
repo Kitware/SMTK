@@ -37,7 +37,7 @@ PointSet::PointSet(
   const std::vector<smtk::mesh::Handle>& points)
   : m_parent(parent)
 {
-  for (auto& point : points)
+  for (const auto& point : points)
   {
     m_points.insert(point);
   }
@@ -48,7 +48,7 @@ PointSet::PointSet(
   const std::set<smtk::mesh::Handle>& points)
   : m_parent(parent)
 {
-  for (auto& point : points)
+  for (const auto& point : points)
   {
     m_points.insert(point);
   }

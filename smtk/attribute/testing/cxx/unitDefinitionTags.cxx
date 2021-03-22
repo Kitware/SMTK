@@ -67,7 +67,7 @@ bool testTags(const smtk::attribute::ResourcePtr& resource, const std::string& p
       std::cerr << prefix << "Incorrect number of tags: expected 2, got " << def->tags().size()
                 << std::endl;
       std::cerr << "\tTags found: ";
-      for (auto& dtag : def->tags())
+      for (const auto& dtag : def->tags())
       {
         std::cerr << dtag.name() << " ";
       }
@@ -136,7 +136,7 @@ bool testTags(const smtk::attribute::ResourcePtr& resource, const std::string& p
       std::cerr << prefix << "Incorrect number of tags on ItemDef: expected 2, got "
                 << idef->tags().size() << std::endl;
       std::cerr << "\tTags found: ";
-      for (auto& dtag : idef->tags())
+      for (const auto& dtag : idef->tags())
       {
         std::cerr << dtag.name() << " ";
       }

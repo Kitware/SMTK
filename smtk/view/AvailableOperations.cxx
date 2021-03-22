@@ -219,7 +219,7 @@ void AvailableOperations::workingSet(
       }
     }
 
-    for (auto& md : operationsIn->metadata())
+    for (const auto& md : operationsIn->metadata())
     {
       auto primaryAssociation = md.primaryAssociation();
       std::size_t numRequired =
@@ -298,7 +298,7 @@ void AvailableOperations::workingSet(
   }
   else
   {
-    for (auto& md : operationsIn->metadata())
+    for (const auto& md : operationsIn->metadata())
     {
       // Do not present operations marked as internal
       if (!internalOperations.contains(md.index()))

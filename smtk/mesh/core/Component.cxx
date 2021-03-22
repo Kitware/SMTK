@@ -109,7 +109,7 @@ std::shared_ptr<Component> Component::create(const smtk::mesh::MeshSet& meshset)
   {
     // Attempt to find a preexisting component associated with the incident
     // meshset
-    auto& resource = meshset.resource();
+    const auto& resource = meshset.resource();
     auto idAndComponent = resource->m_componentMap.find(meshset.id());
     if (idAndComponent != resource->m_componentMap.end())
     {

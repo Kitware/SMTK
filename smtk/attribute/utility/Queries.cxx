@@ -48,7 +48,7 @@ std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
   }
 
   std::set<smtk::resource::PersistentObjectPtr> result;
-  for (auto& obj : objSet)
+  for (const auto& obj : objSet)
   {
     auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
     if ((comp != nullptr) && compItem->isValueValid(comp))

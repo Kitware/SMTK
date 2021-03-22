@@ -146,7 +146,7 @@ void registerSMTKImporter(
   const std::string& resource,
   const std::string& fileFilters)
 {
-  auto app = pqApplicationCore::instance();
+  auto* app = pqApplicationCore::instance();
   if (app)
   {
     std::vector<std::pair<std::string, std::string>> extensionsAndDescriptions;
@@ -230,7 +230,7 @@ void pqSMTKRegisterImportersBehavior::constructImporters(pqSMTKWrapper* wrapper,
   }
 
   auto importerGroup = smtk::operation::ImporterGroup(wrapper->smtkOperationManager());
-  for (auto& resourceName : importerGroup.supportedResources())
+  for (const auto& resourceName : importerGroup.supportedResources())
   {
     for (auto index : importerGroup.operationsForResource(resourceName))
     {

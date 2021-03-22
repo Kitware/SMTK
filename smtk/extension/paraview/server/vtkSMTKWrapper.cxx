@@ -162,7 +162,7 @@ void vtkSMTKWrapper::ProcessJSON()
   {
     auto uid = j["params"]["resource"].get<smtk::common::UUID>();
     auto rsrc = this->GetResourceManager()->get(uid);
-    auto repr = vtkSMTKResourceRepresentation::SafeDownCast(this->Representation);
+    auto* repr = vtkSMTKResourceRepresentation::SafeDownCast(this->Representation);
     if (repr)
     {
       repr->SetResource(rsrc);
@@ -191,23 +191,23 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
   // in between each "actual" algorithm on the client and what we get passed as
   // the port on the server side.
   std::set<smtk::resource::ComponentPtr> seln;
-  auto smtkThing = this->SelectedPort->GetProducer();
-  auto mbdsThing =
+  auto* smtkThing = this->SelectedPort->GetProducer();
+  auto* mbdsThing =
     smtkThing ? dynamic_cast<vtkMultiBlockDataSet*>(smtkThing->GetOutputDataObject(0)) : nullptr;
-  auto selnThing = this->SelectionObj->GetProducer();
+  auto* selnThing = this->SelectionObj->GetProducer();
   if (selnThing)
   {
     selnThing->Update();
   }
-  auto selnBlock =
+  auto* selnBlock =
     selnThing ? dynamic_cast<vtkSelection*>(selnThing->GetOutputDataObject(0)) : nullptr;
   unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
   for (unsigned ii = 0; ii < nn; ++ii)
   {
-    auto selnNode = selnBlock->GetNode(ii);
+    auto* selnNode = selnBlock->GetNode(ii);
     if (selnNode->GetContentType() == vtkSelectionNode::BLOCKS)
     {
-      auto selnList = dynamic_cast<vtkUnsignedIntArray*>(selnNode->GetSelectionList());
+      auto* selnList = dynamic_cast<vtkUnsignedIntArray*>(selnNode->GetSelectionList());
       unsigned mm = selnList->GetNumberOfValues();
       std::set<unsigned> blockIds;
       for (unsigned jj = 0; jj < mm; ++jj)
@@ -226,7 +226,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
         smtk::resource::ResourcePtr resource = alg
           ? dynamic_cast<vtkSMTKResourceSource*>(alg)->GetVTKResource()->GetResource()
           : nullptr;
-        auto mit = mbdsThing->NewIterator();
+        auto* mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
         {
           if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
@@ -253,9 +253,9 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
 void vtkSMTKWrapper::AddResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
-  auto rsrcThing = this->ActiveResource->GetProducer();
+  auto* rsrcThing = this->ActiveResource->GetProducer();
 
-  auto vtkresource = this->GetVTKResource(rsrcThing);
+  auto* vtkresource = this->GetVTKResource(rsrcThing);
 
   if (vtkresource)
   {
@@ -274,9 +274,9 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
 void vtkSMTKWrapper::RemoveResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
-  auto rsrcThing = this->ActiveResource->GetProducer();
+  auto* rsrcThing = this->ActiveResource->GetProducer();
 
-  auto vtkresource = this->GetVTKResource(rsrcThing);
+  auto* vtkresource = this->GetVTKResource(rsrcThing);
 
   if (vtkresource)
   {

@@ -549,7 +549,7 @@ smtk::attribute::ConstItemPtr ValueItem::findInternal(
   // Are we only caring about active children?
   if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
   {
-    for (auto& item : m_activeChildrenItems)
+    for (const auto& item : m_activeChildrenItems)
     {
       if (item->name() == childName)
       {
@@ -559,7 +559,7 @@ smtk::attribute::ConstItemPtr ValueItem::findInternal(
     if (style == RECURSIVE_ACTIVE)
     {
       // Ok - we didn't find it so lets recursively check its active chiildren
-      for (auto& item : m_activeChildrenItems)
+      for (const auto& item : m_activeChildrenItems)
       {
         ConstItemPtr result = item->find(childName, style);
         if (result)
@@ -585,7 +585,7 @@ smtk::attribute::ConstItemPtr ValueItem::findInternal(
     return nullptr;
   }
 
-  for (auto& child : m_childrenItems)
+  for (const auto& child : m_childrenItems)
   {
     ConstItemPtr result = child.second->find(childName, style);
     if (result)

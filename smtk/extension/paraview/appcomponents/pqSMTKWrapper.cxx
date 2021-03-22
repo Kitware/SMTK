@@ -143,7 +143,7 @@ void pqSMTKWrapper::visitResources(std::function<bool(pqSMTKResource*)> visitor)
 void pqSMTKWrapper::addResource(pqSMTKResource* rsrc)
 {
   m_resources.insert(rsrc);
-  auto pxy = this->smtkProxy();
+  auto* pxy = this->smtkProxy();
   if (pxy)
   {
     pxy->AddResourceProxy(rsrc->getSourceProxy());
@@ -153,7 +153,7 @@ void pqSMTKWrapper::addResource(pqSMTKResource* rsrc)
 void pqSMTKWrapper::removeResource(pqSMTKResource* rsrc)
 {
   m_resources.erase(rsrc);
-  auto pxy = this->smtkProxy();
+  auto* pxy = this->smtkProxy();
   if (pxy)
   {
     pxy->RemoveResourceProxy(rsrc->getSourceProxy());

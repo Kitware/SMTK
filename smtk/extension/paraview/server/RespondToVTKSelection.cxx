@@ -234,9 +234,9 @@ bool RespondToVTKSelection::transcribeBlockSelection()
   }
 
   auto selnMgr = this->smtkSelection();
-  auto selnBlock = this->vtkSelection();
+  auto* selnBlock = this->vtkSelection();
   unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
-  auto mbdsThing = this->vtkData();
+  auto* mbdsThing = this->vtkData();
   auto assoc = this->parameters()->associations();
   smtk::resource::ResourcePtr resource = assoc->valueAs<smtk::resource::Resource>();
   if (!resource)
@@ -259,14 +259,14 @@ bool RespondToVTKSelection::transcribeBlockSelection()
   vtkSMTKResourceRepresentation* source = nullptr;
   for (unsigned ii = 0; ii < nn; ++ii)
   {
-    auto selnNode = selnBlock->GetNode(ii);
+    auto* selnNode = selnBlock->GetNode(ii);
     if (!selnNode)
     {
       continue;
     }
     vtkIdType propId = -1;
     vtkIdType compositeIndex = -1;
-    auto sp = selnNode->GetProperties();
+    auto* sp = selnNode->GetProperties();
     if (sp->Has(vtkSelectionNode::PROP_ID()))
     {
       propId = sp->Get(vtkSelectionNode::PROP_ID());
@@ -314,7 +314,7 @@ bool RespondToVTKSelection::transcribeBlockSelection()
   // Were any blocks selected?
   if (!tessBlocks.empty())
   {
-    auto mit = mbdsThing->NewIterator();
+    auto* mit = mbdsThing->NewIterator();
     for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
     {
       if (tessBlocks.find(mit->GetCurrentFlatIndex()) != tessBlocks.end())
@@ -332,11 +332,11 @@ bool RespondToVTKSelection::transcribeBlockSelection()
   }
   if (!glyphBlocks.empty())
   {
-    auto instances = vtkMultiBlockDataSet::SafeDownCast(
+    auto* instances = vtkMultiBlockDataSet::SafeDownCast(
       mbdsThing->GetBlock(vtkResourceMultiBlockSource::BlockId::Value::Instances));
     if (instances)
     {
-      auto mit = instances->NewIterator();
+      auto* mit = instances->NewIterator();
       for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
       {
         if (glyphBlocks.find(mit->GetCurrentFlatIndex()) != glyphBlocks.end())

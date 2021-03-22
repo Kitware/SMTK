@@ -54,7 +54,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
     // Blech: pqApplicationCore doesn't have the selection manager yet,
     // so wait until we hear that the server is ready to make the connection.
     // We can't have a selection before the first connection, anyway.
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       // The first functor listens to the object builder's "destroying" signal
@@ -183,7 +183,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
                     if (state == pqSaveResourceReaction::State::Aborted)
                     {
                       // explain to the user what's happening if the pref is set.
-                      auto settings = vtkSMTKSettings::GetInstance();
+                      auto* settings = vtkSMTKSettings::GetInstance();
                       int showSave = settings->GetShowSaveResourceOnClose();
                       if (showSave == vtkSMTKSettings::DontShowAndSave)
                       {
@@ -243,7 +243,7 @@ int pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(
   bool showCancel)
 {
   int ret = QMessageBox::Discard;
-  auto settings = vtkSMTKSettings::GetInstance();
+  auto* settings = vtkSMTKSettings::GetInstance();
   int showSave = settings->GetShowSaveResourceOnClose();
   bool cbChecked = false;
   if (showSave == vtkSMTKSettings::AskUser)

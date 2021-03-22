@@ -100,7 +100,7 @@ Write::Result Write::operateInternal()
 
   std::vector<smtk::common::UUID> preservedUUIDs;
   smtk::common::UUIDs modelIds = rsrc->entitiesMatchingFlags(smtk::model::MODEL_ENTITY);
-  for (auto& id : modelIds)
+  for (const auto& id : modelIds)
   {
     smtk::model::Model dataset = smtk::model::Model(rsrc, id);
     EntityHandle handle = rsrc->session()->toEntity(dataset);
@@ -120,7 +120,7 @@ Write::Result Write::operateInternal()
 
   std::vector<std::string> modelFiles;
 
-  for (auto& id : modelIds)
+  for (const auto& id : modelIds)
   {
     smtk::model::Model dataset = smtk::model::Model(rsrc, id);
 

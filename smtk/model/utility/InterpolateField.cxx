@@ -114,11 +114,11 @@ std::vector<double> inverseDistanceWeighting(
   std::size_t pointIndex = 0;
 
   // For each point...
-  for (auto& weightsForPoint : weightsForPoints)
+  for (const auto& weightsForPoint : weightsForPoints)
   {
     double w = 0., num = 0., denom = 0.;
     // ...for each weight...
-    for (auto& weight : weightsForPoint)
+    for (const auto& weight : weightsForPoint)
     {
       if (weight.second == nullptr)
       {

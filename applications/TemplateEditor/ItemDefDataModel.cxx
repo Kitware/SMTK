@@ -92,7 +92,7 @@ void ItemDefDataModel::insert(const Container& props)
   // Attribute resource insert. Inserts into either the parent
   // GroupItemDefinition or the Definition.
   const auto itemDef = props.ItemDefinition;
-  const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
+  auto* const parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
   const auto& parentItemDef = parentElement->getReferencedDataConst();
   if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GroupType)
   {
@@ -132,9 +132,9 @@ void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::Def
   // Attribute resource remove. Removes from either the parent
   // GroupItemDefinition or the Definition.
   const QModelIndex parentIndex = itemIndex.parent();
-  const auto parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
+  auto* const parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
   const auto& parentItemDef = parentElem->getReferencedDataConst();
-  const auto item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
+  auto* const item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
   const auto& itemDef = item->getReferencedDataConst();
   if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GroupType)
   {

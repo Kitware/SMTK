@@ -75,7 +75,7 @@ bool pqSMTKSphereItemWidget::createProxyAndWidget(
   // II. Initialize the properties.
   // For now, since we want to map this to a vector of 6 doubles,
   // we do not allow rotation:
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   vtkSMPropertyHelper(widgetProxy, "Center").Set(&(*centerItem->begin()), 3);
   vtkSMPropertyHelper(widgetProxy, "Radius").Set(&(*radiusItem->begin()), 1);
 

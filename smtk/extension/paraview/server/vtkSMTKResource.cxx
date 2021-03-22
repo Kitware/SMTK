@@ -97,7 +97,7 @@ vtkAlgorithm* vtkSMTKResource::GetConverter()
 
     if (!this->Converter)
     {
-      auto source = vtkResourceMultiBlockSource::New();
+      auto* source = vtkResourceMultiBlockSource::New();
       source->SetResource(this->GetResource());
       this->Converter = source;
     }
@@ -111,7 +111,7 @@ int vtkSMTKResource::RequestData(
   vtkInformationVector* outInfo)
 {
   // Access the converter, constructing and initializing it if necessary.
-  auto converter = this->GetConverter();
+  auto* converter = this->GetConverter();
 
   // We must have a resource generator to operate
   if (this->GetConverter() == nullptr)

@@ -74,7 +74,7 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  auto ww = new pqPointPropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  auto* ww = new pqPointPropertyWidget(proxy, proxy->GetPropertyGroup(0));
   bool showControls = m_itemInfo.component().attributeAsBool("ShowControls");
   ww->setControlVisibility(showControls);
   if (binding == ItemBindings::PointCoordsAndControl)
@@ -88,7 +88,7 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
   // II. Initialize the properties.
   // For now, since we want to map this to a vector of 6 doubles,
   // we do not allow rotation:
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   vtkSMPropertyHelper(widgetProxy, "WorldPosition").Set(&(*pointItem->begin()), 3);
 
   // FIXME! Determine bounds properly from scene if requested by m_itemInfo.
@@ -121,7 +121,7 @@ void pqSMTKPointItemWidget::updateItemFromWidgetInternal()
   }
   if (binding == ItemBindings::PointCoordsAndControl)
   {
-    auto ww = dynamic_cast<pqPointPropertyWidget*>(this->propertyWidget());
+    auto* ww = dynamic_cast<pqPointPropertyWidget*>(this->propertyWidget());
     if (ww)
     {
       int oldIndex = controlItem->discreteIndex();
@@ -150,7 +150,7 @@ void pqSMTKPointItemWidget::updateWidgetFromItemInternal()
   }
 
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
-  auto pw = dynamic_cast<pqPointPropertyWidget*>(m_p->m_pvwidget);
+  auto* pw = dynamic_cast<pqPointPropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper pointHelper(widget, "WorldPosition");
   pointHelper.Set(&(*pointItem->begin()), 3);
   if (binding == ItemBindings::PointCoordsAndControl && pw)

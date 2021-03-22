@@ -103,7 +103,7 @@ void AttDefDataModel::insert(const AttDefContainer& props)
   const auto parentIndex =
     props.BaseType.empty() ? QModelIndex() : this->findElementByData(this->RootItem, dataMatch);
 
-  const auto parentItem = this->getItem(parentIndex);
+  auto* const parentItem = this->getItem(parentIndex);
   const int rowIndex = parentItem->childCount();
 
   // QAbstractItemModel insert.
@@ -122,7 +122,7 @@ void AttDefDataModel::remove(const QModelIndex& attDefIndex)
 {
   // Attribute resource remove.
   const QModelIndex parentIndex = attDefIndex.parent();
-  const auto child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
+  auto* const child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
   if (!this->Resource->removeDefinition(child->getReferencedDataConst()))
   {
     return;
@@ -141,7 +141,7 @@ QModelIndex AttDefDataModel::findElementByData(
   const int count = parent->childCount();
   for (int i = 0; i < count; i++)
   {
-    const auto childItem = static_cast<AttDefElement*>(parent->child(i));
+    auto* const childItem = static_cast<AttDefElement*>(parent->child(i));
     const smtk::attribute::DefinitionPtr& data = childItem->getReferencedDataConst();
     if (data == dataMatch)
     {

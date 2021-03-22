@@ -108,7 +108,7 @@ std::set<Operation::Index> ResourceIOGroup::operationsForResource(
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     if (resourceForOperation(index) == resourceName)
     {
@@ -130,7 +130,7 @@ std::set<std::string> ResourceIOGroup::supportedResources() const
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     resources.insert(resourceForOperation(index));
   }

@@ -81,7 +81,7 @@ void qtOperationDialog::buildUI(
 
   // Create the SMTK view
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
-  auto qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
+  auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
   m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
 
   editorWidget->setLayout(editorLayout);
@@ -101,7 +101,7 @@ void qtOperationDialog::buildUI(
   dialogLayout->addWidget(m_internals->m_tabWidget);
 
   // 3. Add dialog buttons and replace operation view buttons
-  auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
+  auto* buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
   dialogLayout->addWidget(buttonBox);
   this->setLayout(dialogLayout);
 

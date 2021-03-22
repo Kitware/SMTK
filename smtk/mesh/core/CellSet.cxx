@@ -35,7 +35,7 @@ CellSet::CellSet(
   const std::vector<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
 {
-  for (auto& cellId : cellIds)
+  for (const auto& cellId : cellIds)
   {
     m_range.insert(cellId);
   }
@@ -44,7 +44,7 @@ CellSet::CellSet(
 CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
 {
-  for (auto& cellId : cellIds)
+  for (const auto& cellId : cellIds)
   {
     m_range.insert(cellId);
   }

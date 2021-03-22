@@ -444,7 +444,7 @@ GroupItem::find(std::size_t element, const std::string& inName, SearchStyle styl
   }
 
   // Lets see if we can find it in the group's items
-  for (auto& item : m_items[element])
+  for (const auto& item : m_items[element])
   {
     if (item->name() == inName)
     {
@@ -458,7 +458,7 @@ GroupItem::find(std::size_t element, const std::string& inName, SearchStyle styl
   }
 
   // Lets check the children
-  for (auto& item : m_items[element])
+  for (const auto& item : m_items[element])
   {
     ConstItemPtr result = item->find(inName, style);
     if (result)

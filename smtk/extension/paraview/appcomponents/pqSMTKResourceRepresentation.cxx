@@ -37,8 +37,8 @@ pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
   QObject* parent)
   : Superclass(group, name, repr, server, parent)
 {
-  auto smtk = pqSMTKBehavior::instance();
-  auto rsrcMgrPxy = smtk->resourceManagerForServer(server);
+  auto* smtk = pqSMTKBehavior::instance();
+  auto* rsrcMgrPxy = smtk->resourceManagerForServer(server);
   if (rsrcMgrPxy)
   {
     auto seln = rsrcMgrPxy->smtkSelection();
@@ -51,7 +51,7 @@ pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
   }
 
   // Subscribe to settings updates...
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
   pqCoreUtilities::connect(smtkSettings, vtkCommand::ModifiedEvent, this, SLOT(updateSettings()));
   // ... and initialize from current settings:
   this->updateSettings();
@@ -80,13 +80,13 @@ void pqSMTKResourceRepresentation::onInputChanged()
 {
   pqPipelineRepresentation::onInputChanged();
 
-  auto smtk = pqSMTKBehavior::instance();
-  auto rsrcMgrPxy = smtk->resourceManagerForServer(this->getServer());
+  auto* smtk = pqSMTKBehavior::instance();
+  auto* rsrcMgrPxy = smtk->resourceManagerForServer(this->getServer());
   if (rsrcMgrPxy)
   {
     // The representation needs some entity information (for color-by-volume for
     // instance), so here we set the manager resource.
-    auto input = qobject_cast<pqSMTKResource*>(this->getInput());
+    auto* input = qobject_cast<pqSMTKResource*>(this->getInput());
     if (input)
     {
       rsrcMgrPxy->smtkProxy()->SetResourceForRepresentation(
@@ -98,10 +98,10 @@ void pqSMTKResourceRepresentation::onInputChanged()
 
 bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr comp, bool visible)
 {
-  auto pxy = this->getProxy();
-  auto mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
-  auto cmp = vtkCompositeRepresentation::SafeDownCast(mpr);
-  auto spx =
+  auto* pxy = this->getProxy();
+  auto* mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
+  auto* cmp = vtkCompositeRepresentation::SafeDownCast(mpr);
+  auto* spx =
     cmp ? vtkSMTKResourceRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
   if (spx)
   {
@@ -116,7 +116,7 @@ bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr co
 
 void pqSMTKResourceRepresentation::updateSettings()
 {
-  auto settings = vtkSMTKSettings::GetInstance();
+  auto* settings = vtkSMTKSettings::GetInstance();
   int selectionStyle = settings->GetSelectionRenderStyle();
   vtkSMPropertyHelper(this->getProxy(), "SelectionRenderStyle").Set(selectionStyle);
   this->getProxy()->UpdateVTKObjects();

@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   cats.insert("Flow");
   cats.insert("General");
   cats.insert("Time");
-  auto analysis = analyses.create("CFD Flow");
+  auto* analysis = analyses.create("CFD Flow");
   analysis->setLocalCategories(cats);
   cats.clear();
 
