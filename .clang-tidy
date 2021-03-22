@@ -51,6 +51,7 @@ openmp-*,\
 performance-*,\
 -performance-inefficient-string-concatenation,\
 -performance-move-const-arg,\
+-performance-trivially-destructible,\
 -performance-type-promotion-in-math-fn,\
 -performance-unnecessary-value-param,\
 portability-*,\
