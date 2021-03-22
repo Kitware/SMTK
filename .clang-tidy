@@ -33,6 +33,7 @@ clang-analyzer-*,\
 -google-readability-casting,\
 -hicpp-*,\
 misc-*,\
+-misc-no-recursion,\
 -misc-non-private-member-variables-in-classes,\
 -misc-redundant-expression,\
 -misc-throw-by-value-catch-by-reference,\
