@@ -26,6 +26,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include <algorithm>
 #include <iostream>
 #include <numeric>
 #include <queue>
@@ -1063,15 +1064,10 @@ bool Resource::hasAttributes(const smtk::resource::ConstPersistentObjectPtr& obj
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (const auto& obj : objs)
-  {
-    auto entry = std::dynamic_pointer_cast<Attribute>(obj);
-    if (entry)
-    { //If we find even one attribute report yes
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(objs.begin(), objs.end(), [](const smtk::resource::PersistentObjectPtr& obj) {
+    // If we find even one attribute report yes
+    return dynamic_pointer_cast<Attribute>(obj) != nullptr;
+  });
 }
 
 void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectPtr& object)

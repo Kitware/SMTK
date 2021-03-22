@@ -94,14 +94,10 @@ std::vector<smtk::resource::ResourcePtr> Project::resources() const
 bool Project::clean() const
 {
   auto resourceList = this->resources();
-  for (const auto& resource : resourceList)
-  {
-    if (not resource->clean())
-    {
-      return false;
-    }
-  }
-  return true;
+  return std::all_of(
+    resourceList.begin(), resourceList.end(), [](const smtk::resource::ResourcePtr& resource) {
+      return resource->clean();
+    });
 }
 
 std::string Project::importLocation(smtk::resource::ResourcePtr res) const

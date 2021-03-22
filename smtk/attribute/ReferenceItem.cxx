@@ -19,6 +19,7 @@
 
 #include <boost/variant.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <sstream>
 
@@ -294,24 +295,13 @@ bool ReferenceItem::isValidInternal(bool useCategories, const std::set<std::stri
   }
 
   // Now we need to check the active children
-  for (const auto& child : m_activeChildrenItems)
-  {
-    if (useCategories)
-    {
-      if (!child->isValid(categories))
-      {
-        return false;
-      }
-    }
-    else
-    {
-      if (!child->isValid(false))
-      {
-        return false;
-      }
-    }
-  }
-  return true;
+  return std::all_of(
+    m_activeChildrenItems.begin(),
+    m_activeChildrenItems.end(),
+    [&useCategories, &categories](const smtk::attribute::ItemPtr& child) {
+      return (useCategories && child->isValid(categories)) ||
+        (!useCategories && child->isValid(false));
+    });
 }
 
 std::size_t ReferenceItem::numberOfValues() const

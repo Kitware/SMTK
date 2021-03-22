@@ -15,6 +15,8 @@
 
 #include "smtk/attribute/Definition.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace operation
@@ -36,14 +38,13 @@ Metadata::Metadata(
   ComponentDefinitionVector componentDefinitions = extractComponentDefinitions(specification);
 
   m_acceptsComponent = [=](const smtk::resource::ComponentPtr& component) {
-    for (auto& componentDefinition : componentDefinitions)
-    {
-      if (componentDefinition->isValueValid(component))
-      {
-        return true;
-      }
-    }
-    return false;
+    using ValueType = ComponentDefinitionVector::value_type;
+    return std::any_of(
+      componentDefinitions.begin(),
+      componentDefinitions.end(),
+      [&component](const ValueType& componentDefinition) {
+        return componentDefinition->isValueValid(component);
+      });
   };
 
   Operation::Definition opDef = extractParameterDefinition(specification, typeName);

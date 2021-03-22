@@ -1387,18 +1387,12 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           regex re(clause.m_propName);
           std::set<std::string> keys = stringProperties.keys();
-          for (auto& key : keys)
-          {
-            if (regex_search(key, re))
-            {
-              if (CheckPropStringValues(stringProperties.at(key), clause))
-              {
-                return true;
-              }
-            }
-          }
-          // No matching property name had matching values
-          return false;
+          return std::any_of(
+            keys.begin(), keys.end(), [&re, &stringProperties, &clause](const std::string& key) {
+              // A matching property name with matching values
+              return regex_search(key, re) &&
+                CheckPropStringValues(stringProperties.at(key), clause);
+            });
         }
       }
       break;

@@ -20,6 +20,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 
+#include <algorithm>
 #include <cassert>
 
 namespace smtk
@@ -289,19 +290,18 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
     return true;
   }
 
-  // For every element in the accepted filter map...
-  for (auto& acceptable : m_acceptable)
-  {
+  // Finally, for every element in the accepted filter map...
+  using ValueType = std::multimap<std::string, std::string>::value_type;
+  return std::any_of(
+    m_acceptable.begin(),
+    m_acceptable.end(),
     // ...we check if the resource in question is of that type. Acceptable
     // entries for resources do not have a filter string, so we check that
     // the filter string is empty.
-    if ((acceptable.second.empty() || m_onlyResources) && rsrc.isOfType(acceptable.first))
-    {
-      return true;
-    }
-  }
-
-  return false;
+    [this, &rsrc](const ValueType& acceptable) {
+      return (acceptable.second.empty() || this->m_onlyResources) &&
+        rsrc.isOfType(acceptable.first);
+    });
 }
 
 bool ReferenceItemDefinition::checkCategories(const smtk::resource::Component* comp) const

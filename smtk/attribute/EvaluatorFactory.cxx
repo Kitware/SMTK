@@ -13,6 +13,8 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace attribute
@@ -101,15 +103,13 @@ std::unique_ptr<smtk::attribute::Evaluator> EvaluatorFactory::createEvaluator(
 
 bool EvaluatorFactory::isDefinitionRegistered(const std::string& definitionName) const
 {
-  for (const auto& p : m_aliasesToFactoryInfo)
-  {
-    if (p.second.m_definitionNames.count(definitionName))
-    {
-      return true;
-    }
-  }
-
-  return false;
+  using ValueType = std::unordered_map<std::string, FactoryInfo>::value_type;
+  return std::any_of(
+    m_aliasesToFactoryInfo.begin(),
+    m_aliasesToFactoryInfo.end(),
+    [&definitionName](const ValueType& p) {
+      return p.second.m_definitionNames.count(definitionName) > 0;
+    });
 }
 
 std::map<std::string, std::vector<std::string>> EvaluatorFactory::aliasesToDefinitions() const
