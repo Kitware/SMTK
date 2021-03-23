@@ -34,6 +34,8 @@ PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > pybind
     .def("currentConditional", &smtk::attribute::ReferenceItem::currentConditional)
     .def("definition", &smtk::attribute::ReferenceItem::definition)
     .def("end", &smtk::attribute::ReferenceItem::end)
+    .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
+    .def("_find", (smtk::attribute::ConstItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
     .def("find", (ptrdiff_t (smtk::attribute::ReferenceItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ReferenceItem::find, py::arg("compId"))
     .def("find", (ptrdiff_t (smtk::attribute::ReferenceItem::*)(const ::smtk::resource::PersistentObjectPtr&) const) &smtk::attribute::ReferenceItem::find, py::arg("component"))
     .def("isExtensible", &smtk::attribute::ReferenceItem::isExtensible)

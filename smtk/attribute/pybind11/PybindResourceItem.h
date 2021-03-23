@@ -33,6 +33,8 @@ PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::ReferenceItem 
     .def("begin", &smtk::attribute::ResourceItem::begin)
     .def("definition", &smtk::attribute::ResourceItem::definition)
     .def("end", &smtk::attribute::ResourceItem::end)
+    .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
+    .def("_find", (smtk::attribute::ConstItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
     .def("find", (ptrdiff_t (smtk::attribute::ResourceItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ResourceItem::find, py::arg("rsrcId"))
     .def("find", (ptrdiff_t (smtk::attribute::ResourceItem::*)(const ::smtk::resource::PersistentObjectPtr&) const) &smtk::attribute::ResourceItem::find, py::arg("resource"))
     .def("contains", (bool (smtk::attribute::ResourceItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ResourceItem::contains, py::arg("rsrcId"))

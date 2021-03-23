@@ -21,9 +21,12 @@ func_list = \
     [(Attribute, Attribute._find, "find"),
      (Attribute, Attribute._item, "item"),
      (Attribute, Attribute._itemAtPath, "itemAtPath"),
+     (ComponentItem, ComponentItem._find, "find"),
      (Item, Item._find, "find"),
      (GroupItem, GroupItem._find, "find"),
      (ReferenceItem, ReferenceItem._activeChildItem, "activeChildItem"),
+     (ReferenceItem, ReferenceItem._find, "find"),
+     (ResourceItem, ResourceItem._find, "find"),
      (ValueItem, ValueItem._activeChildItem, "activeChildItem"),
      (ValueItem, ValueItem._findChild, "findChild")]
 
