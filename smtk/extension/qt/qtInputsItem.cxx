@@ -776,7 +776,9 @@ QFrame* qtInputsItem::createLabelFrame(
   // Lets create the label and proper decorations
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   auto labelFrame = new QFrame();
+  labelFrame->setObjectName("labelFrame");
   QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
+  labelLayout->setObjectName("labelFrame");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -788,6 +790,7 @@ QFrame* qtInputsItem::createLabelFrame(
   if (vitemDef->isOptional() && (m_internals->OptionalCheck == nullptr))
   {
     m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    m_internals->OptionalCheck->setObjectName("optionBox");
     m_internals->OptionalCheck->setChecked(vitem->localEnabledState());
     m_internals->OptionalCheck->setText(" ");
     m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -812,6 +815,7 @@ QFrame* qtInputsItem::createLabelFrame(
     labelText = vitem->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
+  label->setObjectName("labelText");
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
@@ -859,6 +863,7 @@ QFrame* qtInputsItem::createLabelFrame(
   if (vitem->allowsExpressions())
   {
     m_internals->m_expressionButton = new QToolButton(m_widget);
+    m_internals->m_expressionButton->setObjectName("expressionButton");
     m_internals->m_expressionButton->setCheckable(true);
     QString resourceName(":/icons/attribute/function.png");
     m_internals->m_expressionButton->setIconSize(QSize(13, 13));
@@ -896,22 +901,26 @@ void qtInputsItem::updateUI()
   mainlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   m_internals->m_dataFrame = new QFrame(m_widget);
+  m_internals->m_dataFrame->setObjectName("dataFrame");
 
   // Add Label Information
   mainlayout->addWidget(this->createLabelFrame(dataObj.get(), itemDef.get()));
 
   // Add Data Section
   auto dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
+  dataLayout->setObjectName("dataLayout");
   dataLayout->setMargin(0);
   dataLayout->setSpacing(0);
   dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   // This section will either display values or the expression (if this item supports them)
   m_internals->m_valuesFrame = new QFrame(m_internals->m_dataFrame);
+  m_internals->m_valuesFrame->setObjectName("valuesFrame");
 
   m_internals->EntryLayout = new QGridLayout(m_internals->m_valuesFrame);
   m_internals->EntryLayout->setMargin(0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  m_internals->EntryLayout->setObjectName("valuesLayout");
 
   this->loadInputValues();
   dataLayout->addWidget(m_internals->m_valuesFrame);
@@ -1122,12 +1131,14 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   auto frame = new QFrame();
   frame->setObjectName("expressionFrame");
   QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
+  expressionLayout->setObjectName("expressionLayout");
   expressionLayout->setMargin(0);
   expressionLayout->setSpacing(0);
   expressionLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // create combobox for expression reference
   m_internals->m_expressionCombo = new QComboBox(frame);
+  m_internals->m_expressionCombo->setObjectName("expressionCombo");
   QObject::connect(m_internals->m_expressionCombo,
     QOverload<int>::of(&QComboBox::currentIndexChanged), this,
     &qtInputsItem::onExpressionReferenceChanged, Qt::QueuedConnection);
