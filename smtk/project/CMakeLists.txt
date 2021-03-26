@@ -77,7 +77,11 @@ set(projectDependencies ${_projectDependencies} PARENT_SCOPE)
 # Install the headers
 smtk_public_headers(smtkCore ${projectHeaders})
 
-if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+cmake_dependent_option(
+  SMTK_ENABLE_PROJECT_UI "Build plugin with smtk::project UI elements" OFF SMTK_ENABLE_PARAVIEW_SUPPORT OFF)
+mark_as_advanced(SMTK_ENABLE_PROJECT_UI)
+
+if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_PROJECT_UI)
   set_property(GLOBAL APPEND
     PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
