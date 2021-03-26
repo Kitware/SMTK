@@ -34,6 +34,7 @@ set(QAttrLibSrcs
   qtResourceBrowserP.cxx
   qtSelectorView.cxx
   qtSimpleExpressionView.cxx
+  qtSMTKCallObserversOnMainThreadBehavior.cxx
   qtViewInfoDialog.cxx
   qtFileItem.cxx
   qtTableWidget.cxx
@@ -110,6 +111,7 @@ set(QAttrLibMocHeaders
   qtResourceBrowser.h
   qtSelectorView.h
   qtSimpleExpressionView.h
+  qtSMTKCallObserversOnMainThreadBehavior.h
   qtViewInfoDialog.h
   qtFileItem.h
   qtTableWidget.h
