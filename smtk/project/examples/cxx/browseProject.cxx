@@ -38,14 +38,12 @@
 #include <QTimer>
 #include <QTreeView>
 
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 
-#include <stdlib.h>
-
 using namespace std;
-using smtk::model::testing::hexconst;
 
 namespace
 {
@@ -204,7 +202,7 @@ int main(int argc, char* argv[])
   qview->tree()->setSortingEnabled(true);
   qview->show();
 
-  int status = app.exec();
+  int status = QApplication::exec();
 
   delete qview;
   delete qmodel;

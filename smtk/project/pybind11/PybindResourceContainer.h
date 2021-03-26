@@ -20,6 +20,9 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/resource/Resource.h"
 
+// Explicitly include definition for mpl_::na for windows builds
+#include <boost/mpl/aux_/na_fwd.hpp>
+
 namespace py = pybind11;
 
 py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project_ResourceContainer(py::module &m)
