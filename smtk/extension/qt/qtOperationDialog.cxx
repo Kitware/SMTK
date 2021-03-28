@@ -100,8 +100,10 @@ void qtOperationDialog::buildUI(
   this->setLayout(dialogLayout);
 
   m_internals->m_applyButton = buttonBox->button(QDialogButtonBox::Apply);
-  m_internals->m_applyButton->setDefault(true);
   m_internals->m_cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
+  // don't set a default button, so "Enter" won't dismiss the dialog. But
+  // make Apply come first it tab order, so tabbing to Apply then "Enter" works.
+  QWidget::setTabOrder(m_internals->m_applyButton, m_internals->m_cancelButton);
 
   QObject::connect(m_internals->m_smtkView, &smtk::extension::qtOperationView::operationExecuted,
     this, &qtOperationDialog::onOperationExecuted);
