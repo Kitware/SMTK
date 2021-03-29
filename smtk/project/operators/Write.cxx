@@ -88,8 +88,6 @@ Write::Result Write::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  std::map<std::string, std::string> resourceDictionary;
-
   // Write the modified resources.
   for (auto& resource : project->resources())
   {
@@ -117,8 +115,6 @@ Write::Result Write::operateInternal()
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }
-
-    resourceDictionary[resource->location()] = role + ".smtk";
   }
 
   // We now write the project's smtk file.

@@ -1,31 +1,44 @@
-set(classes
-  AutoStart
-  pqSMTKProjectBrowser
-  pqSMTKProjectMenu
-  pqSMTKProjectPanel
-  Registrar
-)
-
-set(uiFiles)
-
-smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ProjectPanelConfiguration.json"
-  TYPE "_json"
-  HEADER_OUTPUT rpJsonHeader)
-
-set(CMAKE_AUTOMOC 1)
-set(CMAKE_AUTOUIC 1)
-
-paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKProjectPanel
-  DOCK_AREA Left
-  INTERFACES dock_interfaces
-  SOURCES dock_sources)
-
-paraview_plugin_add_auto_start(
-  CLASS_NAME AutoStart
-  INTERFACES auto_start_interfaces
-  SOURCES auto_start_sources
+if (SMTK_ENABLE_PROJECT_UI)
+  set(ui_classes
+    AutoStart
+    pqSMTKProjectBrowser
+    pqSMTKProjectMenu
+    pqSMTKProjectPanel
   )
+
+  set(uiFiles)
+
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ProjectPanelConfiguration.json"
+    TYPE "_json"
+    HEADER_OUTPUT rpJsonHeader)
+
+  set(CMAKE_AUTOMOC 1)
+  set(CMAKE_AUTOUIC 1)
+
+  paraview_plugin_add_dock_window(
+    CLASS_NAME pqSMTKProjectPanel
+    DOCK_AREA Left
+    INTERFACES dock_interfaces
+    SOURCES dock_sources)
+
+  paraview_plugin_add_auto_start(
+    CLASS_NAME AutoStart
+    INTERFACES auto_start_interfaces
+    SOURCES auto_start_sources
+    )
+
+  set(plugin_ui_srcs
+    ${uiFiles}
+    ${rpJsonHeader}
+    ${dock_sources}
+    ${auto_start_sources}
+  )
+
+  set(plugin_ui_interfaces
+      ${auto_start_interfaces}
+      ${dock_interfaces}
+    )
+endif ()
 
 smtk_add_plugin(smtkProjectPlugin
   REGISTRAR smtk::project::plugin::Registrar
@@ -39,14 +52,11 @@ smtk_add_plugin(smtkProjectPlugin
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0
     SOURCES
-      ${classes}
-      ${uiFiles}
-      ${rpJsonHeader}
-      ${dock_sources}
-      ${auto_start_sources}
+      Registrar
+      ${ui_classes}
+      ${plugin_ui_srcs}
     UI_INTERFACES
-      ${auto_start_interfaces}
-      ${dock_interfaces}
+      ${plugin_ui_interfaces}
 )
 
 if (SMTK_ENABLE_PROJECT_UI)

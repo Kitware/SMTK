@@ -31,12 +31,16 @@ void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
+#ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().registerType<pqSMTKProjectBrowser>();
+#endif
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
+#ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().unregisterType<pqSMTKProjectBrowser>();
+#endif
 }
 } // namespace plugin
 } // namespace project
