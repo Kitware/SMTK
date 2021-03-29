@@ -60,6 +60,7 @@ AutoStart::~AutoStart() = default;
 
 void AutoStart::startup()
 {
+#ifdef ENABLE_PROJECT_UI
   auto projectMenuMgr = pqSMTKProjectMenu::instance(this);
 
   auto pqCore = pqApplicationCore::instance();
@@ -71,6 +72,7 @@ void AutoStart::startup()
   // Since the loading order of smtk plugins is indeterminate, a spinning
   // function call is used here to set up the custom view.
   QTimer::singleShot(10, []() { setView(); });
+#endif
 }
 
 void AutoStart::shutdown()

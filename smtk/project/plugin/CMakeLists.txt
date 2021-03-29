@@ -49,6 +49,10 @@ smtk_add_plugin(smtkProjectPlugin
       ${dock_interfaces}
 )
 
+if (SMTK_ENABLE_PROJECT_UI)
+  target_compile_definitions(smtkProjectPlugin PRIVATE ENABLE_PROJECT_UI)
+endif ()
+
 target_link_libraries(smtkProjectPlugin
   PRIVATE
     ParaView::pqApplicationComponents

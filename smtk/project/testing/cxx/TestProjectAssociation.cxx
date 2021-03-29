@@ -20,7 +20,6 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-#include <cassert>
 #include <iostream>
 
 const char* templateString =
@@ -50,22 +49,22 @@ int TestProjectAssociation(int /*unused*/, char** const /*unused*/)
   // Register and create test project
   // The process of registering our foo project also registers a resource with the same name.
   prjManager->registerProject("foo_project");
-  assert(resManager->registered("foo_project"));
+  test(resManager->registered("foo_project"));
   auto project = prjManager->create("foo_project");
-  assert(project != nullptr);
+  test(project != nullptr);
 
   // Create attribute resource
   auto attResource = resManager->create<smtk::attribute::Resource>();
-  assert(attResource != nullptr);
+  test(attResource != nullptr);
   smtk::io::AttributeReader reader;
   smtk::io::Logger logger;
   bool err = reader.readContents(attResource, templateString, logger);
-  assert(!err);
+  test(!err);
 
   // Create attribute
   auto att = attResource->createAttribute("test-assoc");
-  assert(att != nullptr);
+  test(att != nullptr);
 
-  assert(att->associate(project));
+  test(att->associate(project));
   return 0;
 }
