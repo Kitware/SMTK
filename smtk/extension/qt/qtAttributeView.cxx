@@ -793,7 +793,6 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
   ResourcePtr attResource = attDef->resource();
 
   smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
-  this->attributeCreated(newAtt);
   QStandardItem* item = this->addAttributeListItem(newAtt);
   if (item)
   {
@@ -808,6 +807,7 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
       m_internals->ListTable->edit(mappedIndex);
     }
   }
+  this->attributeCreated(newAtt);
   emit this->numOfAttributesChanged();
   emit qtBaseView::modified();
 }
@@ -848,12 +848,12 @@ void qtAttributeView::onDeleteSelected()
     {
       std::string keyName = selObject->name();
       m_internals->AttSelections.remove(keyName);
-      this->attributeRemoved(selObject);
 
       QStandardItem* selItem = this->getSelectedItem();
       if (selItem != nullptr)
       {
         m_internals->ListTableModel->removeRow(selItem->row());
+        this->attributeRemoved(selObject);
         emit this->numOfAttributesChanged();
         emit qtBaseView::modified();
       }
