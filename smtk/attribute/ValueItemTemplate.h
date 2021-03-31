@@ -134,7 +134,9 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
 {
   if (!this->isSet(element))
   {
-    log.addRecord(smtk::io::Logger::ERROR, std::to_string(element) + " is not set.");
+    smtkErrorMacro(log, "Item \"" << this->name() << "\" element " << element
+                                  << " is not set (attribute \"" << this->attribute()->name()
+                                  << "\").");
     return DataT();
   }
 
@@ -143,14 +145,18 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     smtk::attribute::AttributePtr expAtt = expression();
     if (!expAtt)
     {
-      log.addRecord(smtk::io::Logger::ERROR, "Could not find referenced expression.");
+      smtkErrorMacro(log, "Item \"" << this->name()
+                                    << "\" has no referemce expression (attribute \""
+                                    << this->attribute()->name() << "\").");
       return DataT();
     }
 
     std::unique_ptr<smtk::attribute::Evaluator> evaluator = expAtt->createEvaluator();
     if (!evaluator)
     {
-      log.addRecord(smtk::io::Logger::ERROR, "Expression is not evaluatable.");
+      smtkErrorMacro(log, "Item \"" << this->name()
+                                    << "\" expression is not evaluatable (attribute \""
+                                    << this->attribute()->name() << "\").");
       return DataT();
     }
 
@@ -169,7 +175,9 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     }
     catch (const boost::bad_get&)
     {
-      log.addRecord(smtk::io::Logger::ERROR, "Evaluation result was not compatible.");
+      smtkErrorMacro(log, "Item \"" << this->name()
+                                    << "\" evaluation result was not compatible (attribute \""
+                                    << this->attribute()->name() << "\").");
       return DataT();
     }
 
