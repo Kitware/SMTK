@@ -337,6 +337,7 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
 
       if (n != -1)
       {
+        this->Internals->m_configurationCombo->blockSignals(true);
         int currentIndex = this->Internals->m_configurationCombo->currentIndex();
         // If the attribute being removed the selected one?  If it is then select the
         // select another configuration first
@@ -363,9 +364,16 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
           // This is the case where the attribute is not currently selected.
           this->Internals->m_configurationCombo->removeItem(n);
         }
+        this->Internals->m_configurationCombo->blockSignals(false);
       }
     }
   }
+  // A deleted attribute can effect categories (if it is an active
+  // Analysis Configuration) or  other attributes' validity (as in
+  // the case of an attribute being referenced by a Reference Item
+  // - See SMTK Issue 415)
+  // so we need to update the UI.
+  this->updateUI();
   //Let observers know the attribute was removed
   signalAttribute(this->uiManager(), attr, "expunged");
 }
