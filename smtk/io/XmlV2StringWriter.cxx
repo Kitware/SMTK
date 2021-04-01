@@ -1017,6 +1017,14 @@ void XmlV2StringWriter::processGroupDef(
     }
   }
 
+  // Write out the condition information if needed
+  if (idef->isConditional())
+  {
+    node.append_attribute("IsConditional").set_value("true");
+    node.append_attribute("MinNumberOfChoices").set_value(idef->minNumberOfChoices());
+    node.append_attribute("MaxNumberOfChoices").set_value(idef->maxNumberOfChoices());
+  }
+
   xml_node itemDefNode, itemDefNodes;
   if (idef->hasSubGroupLabels())
   {
@@ -1377,13 +1385,19 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node& node, attribute::GroupI
     return;
   }
 
+  // Write out the conditional information if needed
+  if (item->isConditional())
+  {
+    node.append_attribute("MinNumberOfChoices").set_value(item->minNumberOfChoices());
+    node.append_attribute("MaxNumberOfChoices").set_value(item->maxNumberOfChoices());
+  }
+
   // If the group can have variable number of subgroups then store how many
   //  it has
   if (item->isExtensible())
   {
     node.append_attribute("NumberOfGroups").set_value(static_cast<unsigned int>(n));
   }
-
   // Optimize for number of required groups = 1
   else if (numRequiredGroups == 1)
   {

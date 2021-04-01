@@ -131,6 +131,9 @@ Consuming applications can now register icon sets for Resources and Components, 
     * checkAttributeValidity(const smtk::attribute::Attribute* att)
         * Replaced by Attribute::isValid()
 
+### qtItem Changes
+* Added a m_markForDeletion property that gets set if markForDeletion() is called.  This is to help debug as well as deciding if the qtItem's UI should be updated or not.
+
 ### qtInputItem Changes
 * If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
 * Added Item View Option ExpressionOnly to indicate that the item must be assigned to an expression and not to a constant value
@@ -224,6 +227,8 @@ Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the defaul
   </Views>
 </SMTK_AttributeResource>
 ```
+#### Replaced the use of QGroupBox
+The QGroupBox had several issues that was impacting the UI (see [here](https://discourse.kitware.com/t/changing-qtgroupitem/623) for more information.  And has now been replaced by a collection for QFrames.  In addition, an alert Icon has been added to indicate if the underlying GroupItem has failed to meet it's conditional requirement.
 ### FileItemChanges
 Added ItemView Options to control aspects of the GUI:
 

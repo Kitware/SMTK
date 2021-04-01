@@ -23,6 +23,9 @@ GroupItemDefinition::GroupItemDefinition(const std::string& myName)
   , m_maxNumberOfGroups(0)
   , m_isExtensible(false)
   , m_useCommonLabel(false)
+  , m_isConditional(false)
+  , m_maxNumberOfChoices(0)
+  , m_minNumberOfChoices(0)
 {
 }
 
@@ -55,6 +58,11 @@ bool GroupItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
   std::size_t n = m_itemDefs.size();
   m_itemDefs.push_back(cdef);
   m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  // If we represent a set of conditionals then each item should be considered optional.
+  if (m_isConditional)
+  {
+    cdef->setIsOptional(true);
+  }
   return true;
 }
 

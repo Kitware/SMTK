@@ -814,7 +814,8 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
       // Set this as the new current configuration
       att->properties().get<long>()["_selectedConfiguration"] = 1;
       attRes->analyses().getAnalysisAttributeCategories(att, cats);
-      this->attributeChanged(att);
+      //Let observers know the attribute was modified
+      signalAttribute(this->uiManager(), att, "modified", std::vector<std::string>());
     }
   }
 

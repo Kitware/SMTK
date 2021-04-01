@@ -260,9 +260,42 @@ an item's ForceRequired is set then even if it's definition indicates it should 
         * void Item::setForceRequired(bool)
         * bool Item::forceRequired()
 
-### Changes to GroupItem
-* New Methods
-    * bool insertGroups(std::size_t ith, std::size_t num) - inserts num groups before ith element.  If inserting num groups would violate the item's maximum number of groups or if ith is greater than the original number of groups, then the item is left unchanged and false is returned. Append and Prepend methods have been modified to call this new method with num= 1 and ith = numberOfGroups or 0 respectively.
+### Changes to GroupItem and GroupItemDefinition
+#### Conditional Groups
+This allows a group (and it's subgroups) to be treated a set of options with the additional requirement that there should be at least minNumberOfChoices but no more than maxNumberOfChoices of relevant items enabled.  This condition will effect the item's validity calculation. See [here](https://discourse.kitware.com/t/expanding-groupitem-functionality/622) for more information.
+##### New API to GroupItemDefinition
+* setIsConditional(bool) - sets the isConditional property of the definition.  If true then the definition is treated as a collection of conditions.  All of its items will be considered optional and an added validity constraint will be imposed on the number of relevant enabled items. (false by default)
+* bool isConditional() - returns the current value of the isConditional property.
+* setMinNumberOfChoices(unsigned int) - indicates the min number of relevant items that should be enabled.  (0 by default)
+* unsigned int minNumberOfChoices() - returns the min number of relevant items that should be enabled.
+* setMaxNumberOfChoices(unsigned int) - indicates the max number of relevant items that should be enabled.  If set to 0, there is no max number. (0 by default)
+* unsigned int maxNumberOfChoices() - returns the max number of relevant items that should be enabled.
+
+The following is a SBT file showing an example.
+
+```xml
+        <Group Name="opt1" Label="Pick At Least 2"
+          IsConditional="true" MinNumberOfChoices="2" MaxNumberOfChoices="0">
+          <ItemDefinitions>
+            <String Name="opt1"/>
+            <Int Name="opt2"/>
+            <Double Name="opt3"/>
+          </ItemDefinitions>
+        </Group>
+
+```
+See data/attribute/attribute_collection/choiceGroupExample.sbt and smtk/attribute/testing/unitConditionalGroup.cxx for a more complete example.
+##### New API to GroupItem
+* bool isConditionalsSatisfied() - indicates if the group item satisfies it's conditional constraint.  If the item's definition has it's isConditional property set to false, this method will always return true.
+* bool isConditional() - returns the current value of the isConditional property.
+* setMinNumberOfChoices(unsigned int) - indicates the min number of relevant items that should be enabled.  (initially set to the definition's value)
+* unsigned int minNumberOfChoices() - returns the min number of relevant items that should be enabled.
+* setMaxNumberOfChoices(unsigned int) - indicates the max number of relevant items that should be enabled.  If set to 0, there is no max number. (initially set to the definition's value)
+* unsigned int maxNumberOfChoices() - returns the max number of relevant items that should be enabled.
+
+#### Other New Methods
+
+* bool insertGroups(std::size_t ith, std::size_t num) - inserts num groups before ith element.  If inserting num groups would violate the item's maximum number of groups or if ith is greater than the original number of groups, then the item is left unchanged and false is returned. Append and Prepend methods have been modified to call this new method with num= 1 and ith = numberOfGroups or 0 respectively.
 
 ### Changes to ValueItem
 * New Methods

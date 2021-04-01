@@ -39,6 +39,7 @@ qtItem::qtItem(const qtAttributeItemInfo& info)
   this->m_isLeafItem = false;
   m_useSelectionManager = false;
   m_readOnly = m_itemInfo.component().attributeAsBool("ReadOnly");
+  m_markedForDeletion = false;
 }
 
 qtItem::~qtItem()
@@ -53,6 +54,10 @@ qtItem::~qtItem()
 
 void qtItem::markForDeletion()
 {
+  // Disconnect this object's signals
+  disconnect(this, nullptr, nullptr, nullptr);
+  // Indicate that this object will be deleted
+  m_markedForDeletion = true;
   this->deleteLater();
 }
 

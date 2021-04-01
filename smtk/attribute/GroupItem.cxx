@@ -16,11 +16,15 @@ using namespace smtk::attribute;
 
 GroupItem::GroupItem(Attribute* owningAttribute, int itemPosition)
   : Item(owningAttribute, itemPosition)
+  , m_maxNumberOfChoices(0)
+  , m_minNumberOfChoices(0)
 {
 }
 
 GroupItem::GroupItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
   : Item(inOwningItem, itemPosition, mySubGroupPosition)
+  , m_maxNumberOfChoices(0)
+  , m_minNumberOfChoices(0)
 {
 }
 
@@ -52,9 +56,41 @@ Item::Type GroupItem::type() const
   return GroupType;
 }
 
+bool GroupItem::isConditional() const
+{
+  const GroupItemDefinition* def = static_cast<const GroupItemDefinition*>(m_definition.get());
+  return def->isConditional();
+}
+
+bool GroupItem::conditionalsSatisfied() const
+{
+  if (!this->isConditional())
+  {
+    return true; // We have no conditional requirements
+  }
+
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
+  {
+    unsigned int numChoices = 0;
+    for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
+    {
+      if (*it1 && (*it1)->isRelevant() && (*it1)->isEnabled())
+      {
+        numChoices++;
+      }
+    }
+    if ((numChoices < m_minNumberOfChoices) ||
+      ((m_maxNumberOfChoices != 0) && (numChoices > m_maxNumberOfChoices)))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>& categories) const
 {
-  // Firdt lets see if the group itself would be filtered out based on the categories
+  // First lets see if the group itself would be filtered out based on the categories
   if (useCategories && !this->categories().passes(categories))
   {
     return true;
@@ -65,6 +101,7 @@ bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>&
   {
     return true;
   }
+  unsigned int numChoices = 0;
   for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
@@ -75,6 +112,10 @@ bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>&
         {
           return false;
         }
+        else if (*it1 && (*it1)->isEnabled())
+        {
+          numChoices++;
+        }
       }
       else
       {
@@ -82,10 +123,14 @@ bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>&
         {
           return false;
         }
+        else if (*it1 && (*it1)->isEnabled())
+        {
+          numChoices++;
+        }
       }
     }
   }
-  return true;
+  return this->conditionalsSatisfied();
 }
 
 bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
@@ -100,6 +145,12 @@ bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
     return false;
   }
   m_definition = gdef;
+  if (def->isConditional())
+  {
+    m_minNumberOfChoices = def->minNumberOfChoices();
+    m_maxNumberOfChoices = def->maxNumberOfChoices();
+  }
+
   std::size_t i, n = def->numberOfRequiredGroups();
   if (n)
   {

@@ -1471,6 +1471,26 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
       def->setMaxNumberOfGroups(xatt.as_uint());
     }
   }
+
+  xatt = node.attribute("IsConditional");
+  if (xatt)
+  {
+    bool isConditional = xatt.as_bool();
+    def->setIsConditional(isConditional);
+    if (isConditional)
+    {
+      xatt = node.attribute("MinNumberOfChoices");
+      if (xatt)
+      {
+        def->setMinNumberOfChoices(xatt.as_uint());
+      }
+      xatt = node.attribute("MaxNumberOfChoices");
+      if (xatt)
+      {
+        def->setMaxNumberOfChoices(xatt.as_uint());
+      }
+    }
+  }
   // Lets see if there are labels
   if (node.child("Labels"))
   {
@@ -2179,6 +2199,21 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
   std::size_t numRequiredGroups = item->numberOfRequiredGroups();
   xml_node itemNode;
   xml_attribute xatt;
+
+  if (item->isConditional())
+  {
+    xatt = node.attribute("MinNumberOfChoices");
+    if (xatt)
+    {
+      item->setMinNumberOfChoices(xatt.as_uint());
+    }
+    xatt = node.attribute("MaxNumberOfChoices");
+    if (xatt)
+    {
+      item->setMaxNumberOfChoices(xatt.as_uint());
+    }
+  }
+
   n = item->numberOfGroups();
   m = item->numberOfItemsPerGroup();
   if (item->isExtensible())
@@ -2214,7 +2249,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
     return;
   }
   // There are 2 formats - one is for any number of sub groups and the other
-  // is a custon case is for 1 subGroup
+  // is a custom case is for 1 subGroup
   xml_node cluster, clusters = node.child("GroupClusters");
   if (clusters)
   {
