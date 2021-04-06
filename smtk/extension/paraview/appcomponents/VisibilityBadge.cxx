@@ -477,6 +477,13 @@ void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
     QObject::disconnect(modelRep,
       SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
       SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+    // Now, call activeViewChanged() to reset m_visibleThings;
+    // this ensures that when a representation is removed due to
+    // the resource being closed that we "forget" the visibility
+    // state of its components — otherwise, reloading the resource
+    // will result in inconsistent state.
+    auto view = pqActiveObjects::instance().activeView();
+    this->activeViewChanged(view);
   }
 }
 
