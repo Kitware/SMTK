@@ -1891,9 +1891,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     if (rawitem->type() == smtk::attribute::Item::DoubleType)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
-      double val = ditem->value(elementIdx);
       if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
-        val != editBox->text().toDouble())
+        ditem->value(elementIdx) != editBox->text().toDouble())
       {
         ditem->setValue(elementIdx, editBox->text().toDouble());
         valChanged = true;
@@ -1902,9 +1901,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     else if (rawitem->type() == smtk::attribute::Item::IntType)
     {
       auto iitem = dynamic_pointer_cast<IntItem>(rawitem);
-      int val = iitem->value(elementIdx);
       if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
-        val != editBox->text().toInt())
+        iitem->value(elementIdx) != editBox->text().toInt())
       {
         iitem->setValue(elementIdx, editBox->text().toInt());
         valChanged = true;
@@ -1913,9 +1911,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     else if (rawitem->type() == smtk::attribute::Item::StringType)
     {
       auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
-      std::string val = sitem->value(elementIdx);
       if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
-        val != editBox->text().toStdString())
+        sitem->value(elementIdx) != editBox->text().toStdString())
       {
         sitem->setValue(elementIdx, editBox->text().toStdString());
         valChanged = true;
@@ -1931,9 +1928,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     rawitem->type() == smtk::attribute::Item::StringType)
   {
     auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
-    std::string val = sitem->value(elementIdx);
     if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
-      val != textBox->toPlainText().toStdString())
+      sitem->value(elementIdx) != textBox->toPlainText().toStdString())
     {
       sitem->setValue(elementIdx, textBox->toPlainText().toStdString());
       valChanged = true;
