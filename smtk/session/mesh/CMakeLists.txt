@@ -63,6 +63,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     VTK::CommonCore
     VTK::CommonDataModel
     vtkSMTKSourceExt
+    vtkSMTKModelExt
     )
 endif ()
 

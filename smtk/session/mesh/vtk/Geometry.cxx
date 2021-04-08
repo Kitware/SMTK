@@ -12,6 +12,7 @@
 #include "smtk/session/mesh/Resource.h"
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 
 #include "smtk/geometry/Generator.h"
 
@@ -71,6 +72,36 @@ void Geometry::queryGeometry(
   auto elementIt = topology->m_elements.find(obj->id());
   if (elementIt == topology->m_elements.end())
   {
+    // Auxiliary geometry is handled outside of the map used for other
+    // entity types. For instance, it may be procedural or parametric.
+    if (ent->isAuxiliaryGeometry())
+    {
+      vtkSmartPointer<vtkDataObject> cgeom;
+      smtk::model::AuxiliaryGeometry aux(ent);
+      smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>(
+        [&cgeom, &aux](const std::string& /*unused*/,
+          vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
+          std::vector<double> bbox;
+          if (ext->canHandleAuxiliaryGeometry(aux, bbox))
+          {
+            cgeom = ext->fetchCachedGeometry(aux);
+            return std::make_pair(true, true);
+          }
+          return std::make_pair(false, false);
+        });
+      if (cgeom)
+      {
+        entry.m_geometry = cgeom;
+        ++entry.m_generation;
+        // If the object has color properties, apply them
+        if (obj->properties().contains<std::vector<double> >("color"))
+        {
+          Geometry::addColorArray(
+            entry.m_geometry, obj->properties().at<std::vector<double> >("color"));
+        }
+        return;
+      }
+    }
     entry.m_generation = Invalid;
     return;
   }
@@ -99,7 +130,8 @@ int Geometry::dimension(const smtk::resource::PersistentObject::Ptr& obj) const
   {
     // While the geometry may represent a 3-dimensional volume, the geometric
     // representation is always a vtkPolyData, which has highest dimension 2.
-    return (ent->dimension() <= 2 ? ent->dimension() : 2);
+    // Unknown (-1) (like auxiliary geometry) also gets dimension 2.
+    return (ent->dimension() >= 0 && ent->dimension() <= 2 ? ent->dimension() : 2);
   }
   return 0;
 }
