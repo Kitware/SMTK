@@ -38,6 +38,20 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinition
       j["MaxNumberOfGroups"] = defPtr->maxNumberOfGroups();
     }
   }
+
+  if (defPtr->isConditional())
+  {
+    j["IsConditional"] = true;
+    if (defPtr->minNumberOfChoices())
+    {
+      j["MinNumberOfChoices"] = defPtr->minNumberOfChoices();
+    }
+    if (defPtr->maxNumberOfChoices())
+    {
+      j["MaxNumberOfChoices"] = defPtr->maxNumberOfChoices();
+    }
+  }
+
   if (defPtr->hasSubGroupLabels())
   {
     json valueLabel;
@@ -93,6 +107,24 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
   if (result != j.end())
   {
     defPtr->setIsExtensible(*result);
+  }
+
+  result = j.find("IsConditional");
+  if (result != j.end())
+  {
+    defPtr->setIsConditional(*result);
+  }
+
+  result = j.find("MinNumberOfChoices");
+  if (result != j.end())
+  {
+    defPtr->setMinNumberOfChoices(*result);
+  }
+
+  result = j.find("MaxNumberOfChoices");
+  if (result != j.end())
+  {
+    defPtr->setMaxNumberOfChoices(*result);
   }
 
   result = j.find("MaxNumberOfGroups");

@@ -597,20 +597,23 @@ void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr
 
 void qtAttributeView::onListBoxSelectionChanged()
 {
+  // Has the selected attribute been changed?
+  smtk::attribute::AttributePtr dataItem = this->getSelectedAttribute();
+  if (dataItem == m_internals->selectedAttribute.lock())
+  {
+    return; // The selection has not changed
+  }
+
   m_internals->ValuesTable->blockSignals(true);
   m_internals->ValuesTable->clear();
   m_internals->ValuesTable->setRowCount(0);
   m_internals->ValuesTable->setColumnCount(0);
-  smtk::attribute::AttributePtr dataItem = this->getSelectedAttribute();
 
   if (dataItem)
   {
     this->updateAssociationEnableState(dataItem);
-    if (dataItem)
-    {
-      this->updateTableWithAttribute(dataItem);
-      emit attributeSelected(dataItem);
-    }
+    this->updateTableWithAttribute(dataItem);
+    emit attributeSelected(dataItem);
   }
   else
   {

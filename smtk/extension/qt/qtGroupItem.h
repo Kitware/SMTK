@@ -38,7 +38,7 @@ public slots:
   void updateItemData() override;
 
 protected slots:
-  virtual void setEnabledState(bool checked);
+  virtual void setEnabledState(int checked);
   virtual void onAddSubGroup();
   virtual void onRemoveSubGroup();
   void onChildWidgetSizeChanged() override;
@@ -52,6 +52,7 @@ protected:
   virtual void addItemsToTable(int i);
   // Calculate the height of the table of sub groups
   void calculateTableHeight();
+  void updateValidityStatus();
 
   bool m_prependMode;
 

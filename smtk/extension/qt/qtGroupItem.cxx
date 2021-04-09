@@ -23,9 +23,9 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/attributeUtils.h"
 
+#include <QCheckBox>
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QGroupBox>
 #include <QHeaderView>
 #include <QLabel>
 #include <QMap>
@@ -47,7 +47,12 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
-  QPointer<QGroupBox> GroupBox;
+  QPointer<QFrame> m_mainFrame;
+  QPointer<QFrame> m_contentsFrame;
+  QPointer<QFrame> m_titleFrame;
+  QPointer<QCheckBox> m_titleCheckbox;
+  QPointer<QLabel> m_titleLabel;
+  QPointer<QLabel> m_alertLabel;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
@@ -69,7 +74,6 @@ qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
   m_isLeafItem = true;
   std::string insertMode;
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
-
   // We support prepending subgroups iff the group is extensible and
   // the insertion mode is set to prepend
   m_prependMode =
@@ -97,7 +101,7 @@ void qtGroupItem::setLabelVisible(bool visible)
     return;
   }
 
-  m_internals->GroupBox->setTitle(visible ? item->label().c_str() : "");
+  m_internals->m_titleFrame->setVisible(visible);
 }
 
 void qtGroupItem::createWidget()
@@ -112,32 +116,78 @@ void qtGroupItem::createWidget()
   {
     return;
   }
+  // The structure of a qtGroupItem
+  // - Main widget is m_mainFrame using a VBox Layout
+  //   which contains two sub-frames
+  //   - m_titleFrame: for optional check-box, group label, invalidity icon
+  //   - m_contentsFrame: contains the following
+  //     - m_buttonsFrame: for extensible group items
+  //     - m_childrensFrame: for group's children
+  m_internals->m_mainFrame = new QFrame(m_itemInfo.parentWidget());
+  m_internals->m_mainFrame->setObjectName("qtGroupItem");
+  m_widget = m_internals->m_mainFrame;
+  auto mainLayout = new QVBoxLayout(m_widget);
+  mainLayout->setMargin(0);
+  mainLayout->setSpacing(0);
+  mainLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+  m_internals->m_mainFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
+  m_internals->m_titleFrame = new QFrame(m_internals->m_mainFrame);
+  mainLayout->addWidget(m_internals->m_titleFrame);
+  m_internals->m_mainFrame->setObjectName("TitleFrame");
+  auto titleLayout = new QHBoxLayout(m_internals->m_titleFrame);
+  titleLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+  titleLayout->setMargin(0);
+
+  // We create both a checkbox and plain label for the group item since
+  // its optional property could change while it is being displayed via
+  // forceRequired - we let the groupItem's current optional state determine
+  // when the checkbox is displayed
   QString title = item->label().c_str();
-  m_internals->GroupBox = new QGroupBox(title, m_itemInfo.parentWidget());
-  m_widget = m_internals->GroupBox;
+
+  m_internals->m_titleCheckbox = new QCheckBox(m_internals->m_titleFrame);
+  m_internals->m_titleCheckbox->setObjectName("TitleCB");
+  titleLayout->addWidget(m_internals->m_titleCheckbox);
+  connect(
+    m_internals->m_titleCheckbox, &QCheckBox::stateChanged, this, &qtGroupItem::setEnabledState);
+
+  m_internals->m_titleLabel = new QLabel(title, m_internals->m_titleFrame);
+  m_internals->m_titleLabel->setObjectName("Title");
+  titleLayout->addWidget(m_internals->m_titleLabel);
+
+  m_internals->m_alertLabel = new QLabel(m_internals->m_titleFrame);
+  m_internals->m_alertLabel->setObjectName("Alert");
+  titleLayout->addWidget(m_internals->m_alertLabel);
+  int height = m_itemInfo.uiManager()->alertPixmap().height();
+  QPixmap alert = m_itemInfo.uiManager()->alertPixmap().scaledToHeight(height * 0.5);
+  m_internals->m_alertLabel->setPixmap(alert);
+
+  m_internals->m_contentsFrame = new QFrame(m_internals->m_mainFrame);
+  m_internals->m_contentsFrame->setObjectName("Contents");
+  mainLayout->addWidget(m_internals->m_contentsFrame);
+  auto contentsLayout = new QVBoxLayout(m_internals->m_contentsFrame);
+  contentsLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+  // Lets indent the contents a bit to the right.
+  contentsLayout->setContentsMargins(10, 0, 0, 0);
+  m_internals->m_contentsFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+  m_internals->m_contentsFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+  m_internals->ButtonsFrame = new QFrame(m_internals->m_contentsFrame);
+  m_internals->ButtonsFrame->setObjectName("ButtonFrame");
+  new QHBoxLayout(m_internals->ButtonsFrame);
+  contentsLayout->addWidget(m_internals->ButtonsFrame);
+  m_internals->ButtonsFrame->layout()->setMargin(0);
+
+  m_internals->ChildrensFrame = new QFrame(m_internals->m_contentsFrame);
+  m_internals->ChildrensFrame->setObjectName("ChildrensFrame");
+  new QVBoxLayout(m_internals->ChildrensFrame);
+  contentsLayout->addWidget(m_internals->ChildrensFrame);
+  m_internals->ChildrensFrame->layout()->setMargin(0);
 
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
   }
-  // Instantiate a layout for the widget, but do *not* assign it to a variable.
-  // because that would cause a compiler warning, since the layout is not
-  // explicitly referenced anywhere in this scope. (There is no memory
-  // leak because the layout instance is parented by the widget.)
-  new QVBoxLayout(m_widget);
-  m_widget->layout()->setMargin(0);
-  m_internals->ButtonsFrame = new QFrame(m_internals->GroupBox);
-  m_internals->ButtonsFrame->setObjectName("groupitemButtonFrame");
-  new QHBoxLayout(m_internals->ButtonsFrame);
-  m_internals->GroupBox->layout()->addWidget(m_internals->ButtonsFrame);
-  m_internals->ButtonsFrame->layout()->setMargin(0);
-
-  m_internals->ChildrensFrame = new QFrame(m_internals->GroupBox);
-  m_internals->ChildrensFrame->setObjectName("groupitemFrame");
-  new QVBoxLayout(m_internals->ChildrensFrame);
-
-  m_widget->layout()->addWidget(m_internals->ChildrensFrame);
 
   if (m_itemInfo.parentWidget())
   {
@@ -149,29 +199,29 @@ void qtGroupItem::createWidget()
   // If the group is optional, we need a check box
   if (item->isOptional())
   {
-    m_internals->GroupBox->setCheckable(true);
-    m_internals->GroupBox->setChecked(item->localEnabledState());
-    //Hides empty frame when not enabled.
-    m_internals->GroupBox->setStyleSheet("QGroupBox::unchecked {border: none;}");
-    m_internals->ButtonsFrame->setVisible(item->isEnabled());
-    m_internals->ChildrensFrame->setVisible(item->isEnabled());
-    connect(m_internals->GroupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
+    m_internals->m_titleCheckbox->setVisible(true);
+    m_internals->m_titleCheckbox->setChecked(item->localEnabledState());
+    m_internals->m_contentsFrame->setVisible(item->localEnabledState());
+  }
+  else
+  {
+    m_internals->m_titleCheckbox->setVisible(false);
   }
 }
 
-void qtGroupItem::setEnabledState(bool checked)
+void qtGroupItem::setEnabledState(int state)
 {
-  m_internals->ButtonsFrame->setVisible(checked);
-  m_internals->ChildrensFrame->setVisible(checked);
+  bool enabled = (state == Qt::Checked);
+  m_internals->m_contentsFrame->setVisible(enabled);
   auto item = m_itemInfo.item();
   if (item == nullptr)
   {
     return;
   }
 
-  if (checked != item->localEnabledState())
+  if (enabled != item->localEnabledState())
   {
-    item->setIsEnabled(checked);
+    item->setIsEnabled(enabled);
     emit this->modified();
     auto iview = m_itemInfo.baseView();
     if (iview)
@@ -188,17 +238,17 @@ void qtGroupItem::updateItemData()
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (item->isOptional())
   {
-    m_internals->GroupBox->blockSignals(true);
-    m_internals->GroupBox->setCheckable(true);
-    m_internals->GroupBox->setChecked(item->localEnabledState());
-    m_internals->GroupBox->blockSignals(false);
+    m_internals->m_titleCheckbox->blockSignals(true);
+    m_internals->m_titleCheckbox->setVisible(true);
+    m_internals->m_titleCheckbox->setChecked(item->localEnabledState());
+    m_internals->m_titleCheckbox->blockSignals(false);
   }
   else
   {
-    m_internals->GroupBox->setCheckable(false);
+    m_internals->m_titleCheckbox->setVisible(false);
   }
   this->clearChildItems();
-  auto myChildren = m_internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame");
+  auto myChildren = m_internals->ChildrensFrame->findChildren<QWidget*>("groupitemFrame");
   for (auto myChild : myChildren)
   {
     myChild->deleteLater();
@@ -238,14 +288,7 @@ void qtGroupItem::updateItemData()
       m_internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       connect(m_internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
       m_internals->ButtonsFrame->layout()->addWidget(m_internals->AddItemButton);
-      // There is a bug in qtGroupBox that causes a strange rendering bug where the button
-      // frame is not below the qtGroupBox text when it is optional.  As a result pushing the
-      // add button to the left results in it being on top of the check-box - the workaround is
-      // is to only move the button if the group item is not optional.
-      if (!item->isOptional())
-      {
-        qobject_cast<QHBoxLayout*>(m_internals->ButtonsFrame->layout())->addStretch();
-      }
+      qobject_cast<QHBoxLayout*>(m_internals->ButtonsFrame->layout())->addStretch();
 
       // Do we show a load File option?
       if (item->isExtensible() && m_itemInfo.component().attributeAsBool("ImportFromFile"))
@@ -275,6 +318,7 @@ void qtGroupItem::updateItemData()
     }
   }
   this->qtItem::updateItemData();
+  this->updateValidityStatus();
 }
 
 void qtGroupItem::onAddSubGroup()
@@ -606,7 +650,26 @@ void qtGroupItem::onChildWidgetSizeChanged()
 /* Slot for properly emitting signals when an attribute's item is modified */
 void qtGroupItem::onChildItemModified()
 {
+  this->updateValidityStatus();
   emit this->modified();
+}
+
+void qtGroupItem::updateValidityStatus()
+{
+  // If this item has been marked for deletion
+  // we don't need to do anything
+  if (m_markedForDeletion)
+  {
+    return;
+  }
+
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  if ((!item->isConditional()) || item->conditionalsSatisfied())
+  {
+    m_internals->m_alertLabel->setVisible(false);
+    return;
+  }
+  m_internals->m_alertLabel->setVisible(true);
 }
 
 void qtGroupItem::calculateTableHeight()

@@ -117,6 +117,7 @@ protected:
   bool m_isLeafItem;
   bool m_useSelectionManager;
   bool m_readOnly;
+  bool m_markedForDeletion;
   qtAttributeItemInfo m_itemInfo;
   QList<smtk::extension::qtItem*> m_childItems;
 
