@@ -323,7 +323,12 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
       vtkResourceMultiBlockSource::SetDataObjectUUID(entries->GetMetaData(bb),
         vtkResourceMultiBlockSource::GetDataObjectUUID((*iit)->GetInformation()));
     }
-    if (dit->first < 3)
+    if (dit->first == -1)
+    {
+      // put unknown here
+      compPerDim->SetBlock(2, entries);
+    }
+    else if (dit->first < 3)
     {
       compPerDim->SetBlock(dit->first, entries);
     }
