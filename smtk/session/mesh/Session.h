@@ -52,7 +52,9 @@ protected:
   Session();
 
   SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
+    const smtk::model::EntityRef& entity,
+    SessionInfoBits requestedInfo,
+    int depth = -1) override;
 
   std::vector<Topology> m_topologies;
   Facade m_facade;

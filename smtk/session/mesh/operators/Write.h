@@ -40,8 +40,8 @@ protected:
 };
 
 SMTKMESHSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

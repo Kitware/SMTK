@@ -36,7 +36,9 @@ namespace mesh
   */
 struct SMTKMESHSESSION_EXPORT Topology
 {
-  Topology(const smtk::common::UUID& modelId, const smtk::mesh::MeshSet& meshset,
+  Topology(
+    const smtk::common::UUID& modelId,
+    const smtk::mesh::MeshSet& meshset,
     bool constructHierarchy = true);
 
   struct Element
@@ -59,8 +61,8 @@ struct SMTKMESHSESSION_EXPORT Topology
   smtk::common::UUID m_modelId;
   std::map<smtk::common::UUID, Element> m_elements;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

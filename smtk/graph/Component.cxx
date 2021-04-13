@@ -26,7 +26,8 @@ Component::Component(const std::shared_ptr<smtk::graph::ResourceBase>& resource)
 }
 
 Component::Component(
-  const std::shared_ptr<smtk::graph::ResourceBase>& resource, const smtk::common::UUID& uid)
+  const std::shared_ptr<smtk::graph::ResourceBase>& resource,
+  const smtk::common::UUID& uid)
   : m_resource(resource)
   , m_id(uid)
 {
@@ -61,5 +62,5 @@ const smtk::resource::ResourcePtr Component::resource() const
   auto rsrc = m_resource.lock();
   return rsrc;
 }
-}
-}
+} // namespace graph
+} // namespace smtk

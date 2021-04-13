@@ -46,8 +46,8 @@ protected:
 };
 
 SMTKMESHSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

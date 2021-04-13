@@ -26,7 +26,7 @@ smtk::mesh::DimensionTypes make_dim_types(const smtk::mesh::CellTypes& ctypes)
   dtype[Dims3] = ctypes[Tetrahedron] || ctypes[Pyramid] || ctypes[Wedge] || ctypes[Hexahedron];
   return dtype;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -51,7 +51,8 @@ bool TypeSet::operator==(const TypeSet& other) const
 {
   //m_dimTypes are derived from m_cellTypes so we only need to compare
   //m_cellTypes and m_hasMesh, Cell, Point
-  return (m_cellTypes == other.m_cellTypes && m_hasMesh == other.m_hasMesh &&
+  return (
+    m_cellTypes == other.m_cellTypes && m_hasMesh == other.m_hasMesh &&
     m_hasCell == other.m_hasCell);
 }
 
@@ -93,5 +94,5 @@ TypeSet& TypeSet::operator+=(const TypeSet& other)
 
   return *this;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

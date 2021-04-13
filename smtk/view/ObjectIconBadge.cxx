@@ -68,7 +68,8 @@ std::string ObjectIconBadge::tooltip(const DescriptivePhrase* phrase) const
 }
 
 std::string ObjectIconBadge::icon(
-  const DescriptivePhrase* phrase, const std::array<float, 4>& background) const
+  const DescriptivePhrase* phrase,
+  const std::array<float, 4>& background) const
 {
   std::string icon;
   if (!m_parent || !phrase)
@@ -90,5 +91,5 @@ std::string ObjectIconBadge::icon(
   icon = manager->objectIcons().createIcon(*obj, lightness < 0.5 ? "#ffffff" : "#000000");
   return icon;
 }
-}
-}
+} // namespace view
+} // namespace smtk

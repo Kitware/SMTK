@@ -57,7 +57,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -194,6 +194,6 @@ const char* Revolve::xmlDescription() const
 {
   return Revolve_xml;
 }
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk

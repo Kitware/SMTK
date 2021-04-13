@@ -43,7 +43,9 @@ private:
   //- given a kdtree, set tag on vertices in leaf nodes with vertices
   //- to which they should be merged
   ::moab::ErrorCode find_merged_to(
-    ::moab::EntityHandle& tree_root, ::moab::AdaptiveKDTree& tree, ::moab::Tag merged_to);
+    ::moab::EntityHandle& tree_root,
+    ::moab::AdaptiveKDTree& tree,
+    ::moab::Tag merged_to);
 
   //- fill mappingFromDeadToAlive
   ::moab::ErrorCode map_dead_to_alive(::moab::Tag merged_to);
@@ -74,7 +76,7 @@ private:
   ::moab::Range mergedToVertices;
 
   // mapping from deadEnts to vertices that we are keeping
-  std::map< ::moab::EntityHandle, ::moab::EntityHandle> mappingFromDeadToAlive;
+  std::map<::moab::EntityHandle, ::moab::EntityHandle> mappingFromDeadToAlive;
 
   double mergeTol, mergeTolSq;
 };

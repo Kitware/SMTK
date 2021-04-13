@@ -57,14 +57,16 @@ protected:
   void createWidget() override;
   // This View needs to handle changes made to resources as a result of an operation.
   // This method is used by the observation mechanism to address these changes
-  virtual int handleOperationEvent(const smtk::operation::Operation& op,
-    smtk::operation::EventType event, smtk::operation::Operation::Result result);
+  virtual int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
+    smtk::operation::Operation::Result result);
 
 private:
   qtInstancedViewInternals* Internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

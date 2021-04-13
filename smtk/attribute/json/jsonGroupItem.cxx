@@ -94,8 +94,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
   j["GroupClusters"] = groupClusters;
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::GroupItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -119,7 +122,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
     }
     else
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing NumberOfGroups "
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "JSON missing NumberOfGroups "
           << " for extensible group item: " << itemPtr->name());
       return;
     }
@@ -139,7 +144,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
       auto cluster = groupClusters->find(clusterName);
       if (cluster == groupClusters->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "JSON missing: " << clusterName << " for group item: " << itemPtr->name());
         continue;
       }
@@ -149,7 +155,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
         auto itemJson = cluster->find(itemName);
         if (itemJson == cluster->end())
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "JSON missing index: " << itemName << " for cluster: " << clusterName
                                    << " for group item: " << itemPtr->name());
           continue;
@@ -157,7 +164,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
         auto itemValue = itemJson->find("ItemValue");
         if (itemValue == itemJson->end())
         {
-          smtkErrorMacro(smtk::io::Logger::instance(),
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
             "JSON missing ItemValue for index: " << itemName << " for cluster: " << clusterName
                                                  << " for group item: " << itemPtr->name());
           continue;
@@ -169,5 +177,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

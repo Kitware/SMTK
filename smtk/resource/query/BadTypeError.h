@@ -39,8 +39,8 @@ public:
   {
   }
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

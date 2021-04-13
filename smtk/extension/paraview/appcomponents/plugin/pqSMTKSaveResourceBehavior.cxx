@@ -64,7 +64,7 @@ void pqSaveResourceReaction::updateEnableState()
   // TODO: also if there's a pending accept.
   bool enable_state =
     (activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
+     dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
   this->parentAction()->setEnabled(enable_state);
 }
 
@@ -151,7 +151,7 @@ void pqSaveResourceAsReaction::updateEnableState()
   // TODO: also is there's a pending accept.
   bool enable_state =
     (activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
+     dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
   this->parentAction()->setEnabled(enable_state);
 }
 
@@ -175,10 +175,12 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(pqSMTKRes
   title += resource->name().c_str();
 
   pqFileDialog fileDialog(
-    server, pqCoreUtilities::mainWidget(), title,
+    server,
+    pqCoreUtilities::mainWidget(),
+    title,
     (resource->location().empty()
-        ? QString()
-        : QFileInfo(QString::fromStdString(resource->location())).absoluteDir().absolutePath()),
+       ? QString()
+       : QFileInfo(QString::fromStdString(resource->location())).absoluteDir().absolutePath()),
     filters);
   fileDialog.setObjectName("FileSaveDialog");
   fileDialog.setFileMode(pqFileDialog::AnyFile);
@@ -267,7 +269,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKSaveResourceBehavior* g_instance = nullptr;
 

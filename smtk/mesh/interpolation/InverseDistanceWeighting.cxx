@@ -31,7 +31,9 @@ class InverseDistanceWeightingForPointCloud
 {
 public:
   InverseDistanceWeightingForPointCloud(
-    const smtk::mesh::PointCloud& pointcloud, double power, std::function<bool(double)> prefilter)
+    const smtk::mesh::PointCloud& pointcloud,
+    double power,
+    std::function<bool(double)> prefilter)
     : m_pointcloud(pointcloud)
     , m_power(power)
     , m_prefilter(prefilter)
@@ -71,8 +73,10 @@ private:
 class InverseDistanceWeightingForStructuredGrid
 {
 public:
-  InverseDistanceWeightingForStructuredGrid(const smtk::mesh::StructuredGrid& structuredgrid,
-    double power, std::function<bool(double)> prefilter)
+  InverseDistanceWeightingForStructuredGrid(
+    const smtk::mesh::StructuredGrid& structuredgrid,
+    double power,
+    std::function<bool(double)> prefilter)
     : m_structuredgrid(structuredgrid)
     , m_power(power)
     , m_prefilter(prefilter)
@@ -91,9 +95,9 @@ public:
         {
           std::array<double, 3> pij = {
             { (m_structuredgrid.m_origin[0] +
-                (i - m_structuredgrid.m_extent[0]) * m_structuredgrid.m_spacing[0]),
+               (i - m_structuredgrid.m_extent[0]) * m_structuredgrid.m_spacing[0]),
               (m_structuredgrid.m_origin[1] +
-                (j - m_structuredgrid.m_extent[2]) * m_structuredgrid.m_spacing[1]),
+               (j - m_structuredgrid.m_extent[2]) * m_structuredgrid.m_spacing[1]),
               0. }
           };
 
@@ -123,7 +127,7 @@ private:
   double m_power;
   std::function<bool(double)> m_prefilter;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -131,15 +135,19 @@ namespace mesh
 {
 
 InverseDistanceWeighting::InverseDistanceWeighting(
-  const PointCloud& pointcloud, double power, std::function<bool(double)> prefilter)
+  const PointCloud& pointcloud,
+  double power,
+  std::function<bool(double)> prefilter)
   : m_function(InverseDistanceWeightingForPointCloud(pointcloud, power, prefilter))
 {
 }
 
 InverseDistanceWeighting::InverseDistanceWeighting(
-  const StructuredGrid& structuredgrid, double power, std::function<bool(double)> prefilter)
+  const StructuredGrid& structuredgrid,
+  double power,
+  std::function<bool(double)> prefilter)
   : m_function(InverseDistanceWeightingForStructuredGrid(structuredgrid, power, prefilter))
 {
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

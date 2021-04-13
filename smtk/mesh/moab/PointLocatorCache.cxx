@@ -21,7 +21,8 @@ namespace moab
 {
 
 void PointLocatorCache::synchronize(
-  const smtk::operation::Operation&, const smtk::operation::Operation::Result& result)
+  const smtk::operation::Operation&,
+  const smtk::operation::Operation::Result& result)
 {
   for (auto& component : { result->findComponent("expunged"), result->findComponent("modified") })
   {
@@ -31,6 +32,6 @@ void PointLocatorCache::synchronize(
     }
   }
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

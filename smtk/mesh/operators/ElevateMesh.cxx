@@ -51,9 +51,11 @@
 
 namespace
 {
-template <typename InputType>
-std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& input,
-  double radius, const std::function<bool(double)>& prefilter,
+template<typename InputType>
+std::function<double(std::array<double, 3>)> radialAverageFrom(
+  const InputType& input,
+  double radius,
+  const std::function<bool(double)>& prefilter,
   const smtk::mesh::InterfacePtr& interface)
 {
   std::function<double(std::array<double, 3>)> radialAverage;
@@ -83,9 +85,11 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& 
   return radialAverage;
 }
 
-template <typename InputType>
+template<typename InputType>
 std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
-  const InputType& input, double power, const std::function<bool(double)>& prefilter)
+  const InputType& input,
+  double power,
+  const std::function<bool(double)>& prefilter)
 {
   std::function<double(std::array<double, 3>)> idw;
   {
@@ -112,7 +116,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
 
   return idw;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -164,7 +168,8 @@ ElevateMesh::Result ElevateMesh::operateInternal()
       smtk::attribute::DoubleItem::Ptr maxThresholdItem =
         inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
 
-      if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+      if (
+        minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
         maxThresholdItem->isEnabled())
       {
         double minThreshold = minThresholdItem->value();
@@ -304,7 +309,8 @@ ElevateMesh::Result ElevateMesh::operateInternal()
       smtk::attribute::DoubleItem::Ptr maxElevationItem =
         outputFilterItem->findAs<smtk::attribute::DoubleItem>("max elevation");
 
-      if (minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
+      if (
+        minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
         maxElevationItem->isEnabled())
       {
         double minElevation = minElevationItem->value();
@@ -328,14 +334,16 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   }
 
   // Add a conditional function for dealing with points that were rejected by the interpolator.
-  std::function<double(std::array<double, 3>)> externalDataPoint = [](
-    std::array<double, 3> xyz) { return xyz[2]; };
+  std::function<double(std::array<double, 3>)> externalDataPoint = [](std::array<double, 3> xyz) {
+    return xyz[2];
+  };
   if (interpolationSchemeItem->value() == "radial average")
   {
     if (externalPointItem->value() == "set to NaN")
     {
-      externalDataPoint = [](
-        std::array<double, 3> /*unused*/) { return std::numeric_limits<double>::quiet_NaN(); };
+      externalDataPoint = [](std::array<double, 3> /*unused*/) {
+        return std::numeric_limits<double>::quiet_NaN();
+      };
     }
     else if (externalPointItem->value() == "set to value")
     {
@@ -392,5 +400,5 @@ const char* ElevateMesh::xmlDescription() const
 {
   return ElevateMesh_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

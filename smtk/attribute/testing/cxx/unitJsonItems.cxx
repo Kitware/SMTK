@@ -74,12 +74,15 @@ int unitJsonItems(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto attRegistry = smtk::plugin::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto opRegistry = smtk::plugin::Registry<smtk::operation::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto polyRegistry = smtk::plugin::Registry<smtk::session::polygon::Registrar,
-    smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto attRegistry = smtk::plugin::
+    Registry<smtk::attribute::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
+  auto opRegistry = smtk::plugin::
+    Registry<smtk::operation::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
+  auto polyRegistry = smtk::plugin::
+    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
 
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
@@ -147,10 +150,14 @@ int unitJsonItems(int argc, char* argv[])
   // After deserialization, json should match the orignal state and differ with the changed state
   std::cout << "\nExpression String to_json result:\n" << jsonExpSToJ.dump(2) << "\n\n";
   std::cout << "\nExpression String from_json result:\n" << jsonExpSFromJ.dump(2) << "\n\n";
-  test(jsonExpSFromJ == jsonExpSToJ, "Failed to serialize and deserialize "
-                                     "item");
-  test(jsonExpSFromJ != jsonExpSToJFalse, "Failed to serialize and deserialize "
-                                          "item");
+  test(
+    jsonExpSFromJ == jsonExpSToJ,
+    "Failed to serialize and deserialize "
+    "item");
+  test(
+    jsonExpSFromJ != jsonExpSToJFalse,
+    "Failed to serialize and deserialize "
+    "item");
 
   // TODO: Add unit test for other items
   /**********************       directoryItem          ********************/
@@ -162,10 +169,14 @@ int unitJsonItems(int argc, char* argv[])
   smtk::attribute::from_json(DirFromJ, dir);
   json DirToJModified = dir;
   // After deserialization, json should match the orignal state and differ with the changed state
-  test(DirFromJ == DirToJModified, "Failed to serialize and deserialize "
-                                   "DirectoryItem");
-  test(DirToJ != DirToJModified, "Failed to serialize and deserialize "
-                                 "DirectoryItem");
+  test(
+    DirFromJ == DirToJModified,
+    "Failed to serialize and deserialize "
+    "DirectoryItem");
+  test(
+    DirToJ != DirToJModified,
+    "Failed to serialize and deserialize "
+    "DirectoryItem");
 
   /**********************       referenceItem          ********************/
   auto refItm = smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(expAtt1->find("Faces"));
@@ -192,9 +203,11 @@ int unitJsonItems(int argc, char* argv[])
             << jsonRefItm1.dump(2) << "\n\nAfter\n"
             << jsonRefItm2.dump(2) << "\n\n";
   // After deserialization, json should match the orignal state and differ with the changed state
-  test(jsonRefItm3 == jsonRefItm2,
+  test(
+    jsonRefItm3 == jsonRefItm2,
     "Failed to serialize and deserialize ReferenceItem - They don't match");
-  test(jsonRefItm1 != jsonRefItm2,
+  test(
+    jsonRefItm1 != jsonRefItm2,
     "Failed to serialize and deserialize ReferenceItem - They do match");
 
   while (!dataArgs.empty())

@@ -177,8 +177,9 @@ int unitQtComponentItem(int argc, char* argv[])
   // those resources registered with rsrcMgr:
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::plugin::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto registry = smtk::plugin::
+    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      rsrcMgr, operMgr);
   smtk::view::Registrar::registerTo(viewMgr);
 
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
@@ -228,9 +229,9 @@ int unitQtComponentItem(int argc, char* argv[])
     if (numRequired < 2 && maxAllowed < 2)
     {
       auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(m_visibleThings.begin()->first);
-      label << (numSel == 1
-          ? (ment ? ment->referenceAs<smtk::model::EntityRef>().name() : "item name")
-          : (numSel > 0 ? "too many" : "(none)"));
+      label
+        << (numSel == 1 ? (ment ? ment->referenceAs<smtk::model::EntityRef>().name() : "item name")
+                        : (numSel > 0 ? "too many" : "(none)"));
       ok = numSel >= numRequired && numSel <= maxAllowed;
     }
     else
@@ -302,7 +303,8 @@ int unitQtComponentItem(int argc, char* argv[])
 
   oper->parameters()->findFile("filename")->setValue(argv[1]);
   auto result = oper->operate();
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cout << "Read operator failed\n";
@@ -383,7 +385,8 @@ int unitQtComponentItem(int argc, char* argv[])
       [&phraseModel, &m_visibleThings](
         smtk::view::DescriptivePhrasePtr cphr, std::vector<int> & /*unused*/) -> int {
         std::map<smtk::resource::ComponentPtr, int>::iterator it;
-        if (cphr->relatedComponent() &&
+        if (
+          cphr->relatedComponent() &&
           (it = m_visibleThings.find(cphr->relatedComponent())) != m_visibleThings.end())
         {
           m_visibleThings.erase(it);

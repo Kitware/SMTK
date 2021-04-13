@@ -91,35 +91,50 @@ protected:
   virtual const smtk::common::UUID& leftHandSideComponentId() const;
 
 private:
-  bool isLinkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2,
-    const smtk::common::UUID& rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const;
+  bool isLinkedTo(
+    const Resource* lhs1,
+    const smtk::common::UUID& lhs2,
+    const smtk::common::UUID& rhs1,
+    const smtk::common::UUID& rhs2,
+    const RoleType& role) const;
 
-  Key addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, const ResourcePtr& rhs1,
-    const smtk::common::UUID& rhs2, const RoleType& role);
+  Key addLinkTo(
+    Resource* lhs1,
+    const smtk::common::UUID& lhs2,
+    const ResourcePtr& rhs1,
+    const smtk::common::UUID& rhs2,
+    const RoleType& role);
 
-  PersistentObjectSet linkedTo(
-    const Resource* lhs1, const smtk::common::UUID& lhs2, const RoleType& role) const;
-
-  PersistentObjectSet linkedFrom(const ResourcePtr& lhs1, const Resource* rhs1,
-    const smtk::common::UUID& rhs2, const RoleType& role) const;
+  PersistentObjectSet
+  linkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2, const RoleType& role) const;
 
   PersistentObjectSet linkedFrom(
-    const Resource* rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const;
+    const ResourcePtr& lhs1,
+    const Resource* rhs1,
+    const smtk::common::UUID& rhs2,
+    const RoleType& role) const;
+
+  PersistentObjectSet
+  linkedFrom(const Resource* rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const;
 
   bool removeLink(Resource* lhs1, const Key& key);
 
-  bool removeLinksTo(Resource* lhs1, const smtk::common::UUID& lhs2, const smtk::common::UUID& rhs1,
-    const smtk::common::UUID& rhs2, const RoleType& role);
+  bool removeLinksTo(
+    Resource* lhs1,
+    const smtk::common::UUID& lhs2,
+    const smtk::common::UUID& rhs1,
+    const smtk::common::UUID& rhs2,
+    const RoleType& role);
 
-  std::pair<PersistentObjectPtr, Links::RoleType> linkedObjectAndRole(
-    const Resource*, const Key&) const;
+  std::pair<PersistentObjectPtr, Links::RoleType> linkedObjectAndRole(const Resource*, const Key&)
+    const;
 
-  std::pair<smtk::common::UUID, Links::RoleType> linkedObjectIdAndRole(
-    const Resource*, const Key&) const;
+  std::pair<smtk::common::UUID, Links::RoleType> linkedObjectIdAndRole(const Resource*, const Key&)
+    const;
 
   LinkInformation linkedObjectInformation(const Resource*, const Key&) const;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Links_h

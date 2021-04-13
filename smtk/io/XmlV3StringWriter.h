@@ -44,10 +44,10 @@ protected:
   std::string rootNodeName() const override;
   unsigned int fileVersion() const override;
 
-  void processDefinitionInternal(
-    pugi::xml_node& definition, smtk::attribute::DefinitionPtr def) override;
-  void processItemDefinitionType(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+  void processDefinitionInternal(pugi::xml_node& definition, smtk::attribute::DefinitionPtr def)
+    override;
+  void processItemDefinitionType(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+    override;
   void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
 
   // New methods
@@ -63,12 +63,14 @@ protected:
   void processComponentDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
 
-  void processReferenceDefCommon(pugi::xml_node& node,
-    smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelName);
+  void processReferenceDefCommon(
+    pugi::xml_node& node,
+    smtk::attribute::ReferenceItemDefinitionPtr idef,
+    const std::string& labelName);
 
 private:
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif // __smtk_io_XmlV3StringWriter_h

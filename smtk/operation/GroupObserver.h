@@ -25,7 +25,7 @@ class Group;
 typedef std::function<void(const Operation::Index&, const std::string&, bool)> GroupObserver;
 
 typedef smtk::common::Observers<GroupObserver> GroupObservers;
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_operation_GroupObserver_h

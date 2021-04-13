@@ -144,7 +144,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
   const auto& tags = defPtr->tags();
   if (!tags.empty())
   {
-    std::map<std::string, std::set<std::string> > tagInfo;
+    std::map<std::string, std::set<std::string>> tagInfo;
     for (const auto& tag : tags)
     {
       tagInfo[tag.name()] = tag.values();
@@ -155,7 +155,8 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
   auto associationRuleForDef =
     defPtr->resource()->associationRules().associationRulesForDefinitions().find(defPtr->type());
-  if (associationRuleForDef !=
+  if (
+    associationRuleForDef !=
     defPtr->resource()->associationRules().associationRulesForDefinitions().end())
   {
     j["AssociationRule"] = associationRuleForDef->second;
@@ -163,14 +164,17 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
   auto dissociationRuleForDef =
     defPtr->resource()->associationRules().dissociationRulesForDefinitions().find(defPtr->type());
-  if (dissociationRuleForDef !=
+  if (
+    dissociationRuleForDef !=
     defPtr->resource()->associationRules().dissociationRulesForDefinitions().end())
   {
     j["DissociationRule"] = dissociationRuleForDef->second;
   }
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::DefinitionPtr& defPtr,
   std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
@@ -182,8 +186,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
   if (attResource == nullptr)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
-        << defPtr->label() << " has an invalid resourcePtr");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "When converting json, definition " << defPtr->label() << " has an invalid resourcePtr");
     return;
   }
   // Same logic in XmlDocV1Parser::processDefinition
@@ -247,7 +252,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << defPtr->label() << " has an invalid top level combination mode = " << *combineMode);
       }
     }
@@ -261,7 +268,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << defPtr->label() << " has an invalid inclusion combination mode = " << *combineMode);
       }
     }
@@ -283,7 +292,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << defPtr->label() << " has an invalid exclusion combination mode = " << *combineMode);
       }
     }
@@ -310,7 +321,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       }
       else
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
             << defPtr->label() << " has an invalid InclusionMode = " << *categoryCheckMode);
       }
     }
@@ -404,7 +417,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   result = j.find("Tags");
   if (result != j.end())
   {
-    std::map<std::string, std::set<std::string> > tagInfo = *result;
+    std::map<std::string, std::set<std::string>> tagInfo = *result;
     for (const auto& t : tagInfo)
     {
       smtk::attribute::Tag tag(t.first, t.second);
@@ -426,5 +439,5 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       std::make_pair(defPtr->type(), result->get<std::string>()));
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

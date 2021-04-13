@@ -89,5 +89,5 @@ bool write(const smtk::resource::ResourcePtr& resource)
   Write::Result result = write->operate();
   return (result->findInt("outcome")->value() == static_cast<int>(Write::Outcome::SUCCEEDED));
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

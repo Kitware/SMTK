@@ -36,7 +36,7 @@ typedef std::vector<SweepEvent> SweepEventArray;
 typedef std::vector<EdgeFragment> FragmentArray;
 typedef int RegionId;
 typedef smtk::common::UnionFind<RegionId> RegionIdSet;
-typedef std::map<RegionId, smtk::shared_ptr<Region> > RegionDefinitions;
+typedef std::map<RegionId, smtk::shared_ptr<Region>> RegionDefinitions;
 
 /// Structure to hold information about a portion of an edge-segment forming part of an output loop.
 struct EdgeFragment
@@ -154,8 +154,8 @@ struct SweeplinePosition
   bool operator!=(const internal::Point& other) { return m_position != other; }
 };
 
-} // namespace smtk
-} // namespace session
 } // namespace polygon
+} // namespace session
+} // namespace smtk
 
 #endif // __smtk_session_polygon_Fragment_h

@@ -9,7 +9,6 @@
 //=========================================================================
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/function.hpp>
 #include <boost/functional.hpp>
 #include <boost/mpl/placeholders.hpp>
 

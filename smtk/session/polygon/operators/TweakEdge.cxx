@@ -69,9 +69,11 @@ TweakEdge::Result TweakEdge::operateInternal()
   std::size_t npts = pointsItem->numberOfValues() / numCoordsPerPt; // == #pts / #coordsPerPt
   if (npts < 2)
   {
-    smtkErrorMacro(this->log(), "Not enough points to form an edge ("
-        << pointsItem->numberOfValues() << " coordinates at " << numCoordsPerPt << " per point => "
-        << npts << " points)");
+    smtkErrorMacro(
+      this->log(),
+      "Not enough points to form an edge (" << pointsItem->numberOfValues() << " coordinates at "
+                                            << numCoordsPerPt << " per point => " << npts
+                                            << " points)");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 

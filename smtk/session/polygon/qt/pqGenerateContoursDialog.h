@@ -35,7 +35,10 @@ class SMTKPOLYGONQTEXT_EXPORT pqGenerateContoursDialog : public QDialog
 {
   Q_OBJECT
 public:
-  pqGenerateContoursDialog(pqPipelineSource*, const bool& mapScalars2Colors, QWidget* parent = NULL,
+  pqGenerateContoursDialog(
+    pqPipelineSource*,
+    const bool& mapScalars2Colors,
+    QWidget* parent = NULL,
     Qt::WindowFlags flags = {});
   ~pqGenerateContoursDialog() override;
 

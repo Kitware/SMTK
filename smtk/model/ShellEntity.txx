@@ -21,7 +21,7 @@ namespace model
 
 /**\brief Return the cells of all the uses composing this shell.
   */
-template <typename T>
+template<typename T>
 T ShellEntity::cellsOfUses() const
 {
   T result;

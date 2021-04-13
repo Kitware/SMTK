@@ -28,13 +28,17 @@ namespace filter
 /// resources can redefine this grammar, adding or removing syntax elements and
 /// augmenting the list of parsable property types as needed.
 struct SMTKCORE_EXPORT Grammar
-  : bracketed<sor<Property<long>::Grammar, Property<double>::Grammar,
-      Property<std::string>::Grammar, Property<std::vector<long> >::Grammar,
-      Property<std::vector<double> >::Grammar, Property<std::vector<std::string> >::Grammar> >
+  : bracketed<sor<
+      Property<long>::Grammar,
+      Property<double>::Grammar,
+      Property<std::string>::Grammar,
+      Property<std::vector<long>>::Grammar,
+      Property<std::vector<double>>::Grammar,
+      Property<std::vector<std::string>>::Grammar>>
 {
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

@@ -33,8 +33,11 @@ namespace extension
 class SMTKQTEXT_EXPORT OperationViewInfo : public ViewInfo
 {
 public:
-  OperationViewInfo(smtk::view::ConfigurationPtr view,
-    smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman)
+  OperationViewInfo(
+    smtk::view::ConfigurationPtr view,
+    smtk::operation::OperationPtr targetOperation,
+    QWidget* parent,
+    qtUIManager* uiman)
     : ViewInfo(view, parent, uiman)
     , m_operator(targetOperation)
   {
@@ -75,7 +78,9 @@ public:
 
   // Replaces default buttons, for embedding operation view in other widgets.
   // Can use nullptr for any argument to ignore that button completely.
-  void setButtons(QPointer<QPushButton> applyButton, QPointer<QPushButton> infoButton,
+  void setButtons(
+    QPointer<QPushButton> applyButton,
+    QPointer<QPushButton> infoButton,
     QPointer<QPushButton> doneButton);
 
 public slots:
@@ -107,7 +112,7 @@ private:
   qtOperationViewInternals* Internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

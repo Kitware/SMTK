@@ -58,7 +58,8 @@ QTreeView* ModelBrowser::tree() const
   return m_p->modelTree;
 }
 
-void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
+void ModelBrowser::setup(
+  smtk::resource::ManagerPtr manager,
   smtk::extension::qtDescriptivePhraseModel* qmodel,
   smtk::extension::qtDescriptivePhraseDelegate* qdelegate)
 {
@@ -67,8 +68,10 @@ void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
   m_p->qmodel = qmodel;
   m_p->modelTree->setModel(m_p->qmodel);
   m_p->qdelegate = qdelegate;
-  QObject::connect(m_p->modelTree->selectionModel(),
-    SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)), this,
+  QObject::connect(
+    m_p->modelTree->selectionModel(),
+    SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+    this,
     SLOT(updateButtonStates(const QModelIndex&, const QModelIndex&)));
 }
 

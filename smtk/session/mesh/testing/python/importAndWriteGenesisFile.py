@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import os
 import sys
 import unittest
@@ -92,6 +92,7 @@ class ImportAndWriteGenesisFile(smtk.testing.TestCase):
 
         if os.path.isfile(additionalFilename):
             os.remove(additionalFilename)
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

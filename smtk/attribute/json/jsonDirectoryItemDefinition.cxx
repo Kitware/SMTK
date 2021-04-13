@@ -23,13 +23,15 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::DirectoryItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::DirectoryItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr));
 }
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::DirectoryItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::DirectoryItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -40,5 +42,5 @@ SMTKCORE_EXPORT void from_json(
   smtk::attribute::from_json(j, fsysDef);
   //QUESTION: xml parser does not serialize default value and extensibility
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

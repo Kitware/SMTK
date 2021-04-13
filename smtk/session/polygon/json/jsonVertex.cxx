@@ -146,9 +146,10 @@ void from_json(const json& j, smtk::session::polygon::internal::vertex::Ptr& ver
     catch (std::exception&)
     {
     }
-    vertex->dangerousAppendEdge((haveEdge && haveFace
-        ? smtk::session::polygon::internal::vertex::incident_edge_data(edgeId, edgeOut, faceId)
-        : (haveEdge
+    vertex->dangerousAppendEdge(
+      (haveEdge && haveFace
+         ? smtk::session::polygon::internal::vertex::incident_edge_data(edgeId, edgeOut, faceId)
+         : (haveEdge
               ? smtk::session::polygon::internal::vertex::incident_edge_data(edgeId, edgeOut)
               : (haveFace ? smtk::session::polygon::internal::vertex::incident_edge_data(faceId)
                           : (smtk::session::polygon::internal::vertex::incident_edge_data())))));

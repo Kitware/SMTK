@@ -29,7 +29,7 @@ namespace smtk
 {
 namespace attribute
 {
-template <typename DataT>
+template<typename DataT>
 class ValueItemTemplate : public ValueItem
 {
   //template<DataT> friend class ValueItemDefinitionTemplate;
@@ -53,7 +53,7 @@ public:
   bool setValue(const DataT& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const DataT& val);
   bool setValueFromString(std::size_t element, const std::string& val) override;
-  template <typename I>
+  template<typename I>
   bool setValues(I vbegin, I vend)
   {
     bool ok = false;
@@ -105,22 +105,24 @@ private:
   std::string streamValue(const DataT& val) const;
 };
 
-template <typename DataT>
+template<typename DataT>
 ValueItemTemplate<DataT>::ValueItemTemplate(Attribute* owningAttribute, int itemPosition)
   : ValueItem(owningAttribute, itemPosition)
   , m_dummy(1, DataT())
 {
 }
 
-template <typename DataT>
+template<typename DataT>
 ValueItemTemplate<DataT>::ValueItemTemplate(
-  Item* inOwningItem, int itemPosition, int mySubGroupPosition)
+  Item* inOwningItem,
+  int itemPosition,
+  int mySubGroupPosition)
   : ValueItem(inOwningItem, itemPosition, mySubGroupPosition)
   , m_dummy(1, DataT())
 {
 }
 
-template <typename DataT>
+template<typename DataT>
 DataT ValueItemTemplate<DataT>::value(std::size_t element) const
 {
   return this->value(element, smtk::io::Logger::instance());
@@ -129,14 +131,15 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element) const
 // When DataT does not have a default constructor, as in the case of double or
 // int. DataT() results in a zero-initialized value:
 // https://en.cppreference.com/w/cpp/language/value_initialization
-template <typename DataT>
+template<typename DataT>
 DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log) const
 {
   if (!this->isSet(element))
   {
-    smtkErrorMacro(log, "Item \"" << this->name() << "\" element " << element
-                                  << " is not set (attribute \"" << this->attribute()->name()
-                                  << "\").");
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" element " << element << " is not set (attribute \""
+                << this->attribute()->name() << "\").");
     return DataT();
   }
 
@@ -145,18 +148,20 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     smtk::attribute::AttributePtr expAtt = expression();
     if (!expAtt)
     {
-      smtkErrorMacro(log, "Item \"" << this->name()
-                                    << "\" has no referemce expression (attribute \""
-                                    << this->attribute()->name() << "\").");
+      smtkErrorMacro(
+        log,
+        "Item \"" << this->name() << "\" has no referemce expression (attribute \""
+                  << this->attribute()->name() << "\").");
       return DataT();
     }
 
     std::unique_ptr<smtk::attribute::Evaluator> evaluator = expAtt->createEvaluator();
     if (!evaluator)
     {
-      smtkErrorMacro(log, "Item \"" << this->name()
-                                    << "\" expression is not evaluatable (attribute \""
-                                    << this->attribute()->name() << "\").");
+      smtkErrorMacro(
+        log,
+        "Item \"" << this->name() << "\" expression is not evaluatable (attribute \""
+                  << this->attribute()->name() << "\").");
       return DataT();
     }
 
@@ -175,9 +180,10 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     }
     catch (const boost::bad_get&)
     {
-      smtkErrorMacro(log, "Item \"" << this->name()
-                                    << "\" evaluation result was not compatible (attribute \""
-                                    << this->attribute()->name() << "\").");
+      smtkErrorMacro(
+        log,
+        "Item \"" << this->name() << "\" evaluation result was not compatible (attribute \""
+                  << this->attribute()->name() << "\").");
       return DataT();
     }
 
@@ -189,7 +195,7 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
   }
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitionPtr tdef)
 {
   // Note that we do a dynamic cast here since we don't
@@ -225,7 +231,7 @@ bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitio
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::setValueFromString(std::size_t element, const std::string& sval)
 {
   // If the string is empty then unset the value.
@@ -245,7 +251,7 @@ bool ValueItemTemplate<DataT>::setValueFromString(std::size_t element, const std
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -296,14 +302,14 @@ bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
   return false;
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemTemplate<DataT>::updateDiscreteValue(std::size_t element)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
   m_values[element] = def->discreteValue(static_cast<size_t>(m_discreteIndices[element]));
 }
 
-template <typename DataT>
+template<typename DataT>
 std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
 {
   if (this->isExpression())
@@ -332,7 +338,7 @@ std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
   }
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
 {
   //First - are we allowed to change the number of values?
@@ -373,7 +379,7 @@ bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
   return false;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
@@ -437,7 +443,7 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::removeValue(std::size_t i)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -461,7 +467,7 @@ bool ValueItemTemplate<DataT>::removeValue(std::size_t i)
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::setToDefault(std::size_t element)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -477,13 +483,14 @@ bool ValueItemTemplate<DataT>::setToDefault(std::size_t element)
   else
   {
     assert(def->defaultValues().size() > element);
-    this->setValue(element,
+    this->setValue(
+      element,
       def->defaultValues().size() > 1 ? def->defaultValues()[element] : def->defaultValue());
   }
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::isUsingDefault() const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -508,7 +515,7 @@ bool ValueItemTemplate<DataT>::isUsingDefault() const
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -525,7 +532,7 @@ bool ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
   return (vectorDefault ? m_values[element] == dvals[element] : m_values[element] == dval);
 }
 
-template <typename DataT>
+template<typename DataT>
 DataT ValueItemTemplate<DataT>::defaultValue() const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -535,7 +542,7 @@ DataT ValueItemTemplate<DataT>::defaultValue() const
   return def->defaultValue();
 }
 
-template <typename DataT>
+template<typename DataT>
 const std::vector<DataT>& ValueItemTemplate<DataT>::defaultValues() const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -545,7 +552,7 @@ const std::vector<DataT>& ValueItemTemplate<DataT>::defaultValues() const
   return def->defaultValues();
 }
 
-template <typename DataT>
+template<typename DataT>
 void ValueItemTemplate<DataT>::reset()
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
@@ -601,7 +608,7 @@ void ValueItemTemplate<DataT>::reset()
   ValueItem::reset();
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPosition)
 {
   // Let's first verify that ValueItem was OK with the rotation.
@@ -615,9 +622,10 @@ bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPo
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 bool ValueItemTemplate<DataT>::assign(
-  smtk::attribute::ConstItemPtr& sourceItem, unsigned int options)
+  smtk::attribute::ConstItemPtr& sourceItem,
+  unsigned int options)
 {
   if (!ValueItem::assign(sourceItem, options))
   {
@@ -647,7 +655,7 @@ bool ValueItemTemplate<DataT>::assign(
   return true;
 }
 
-template <typename DataT>
+template<typename DataT>
 std::string ValueItemTemplate<DataT>::streamValue(const DataT& val) const
 {
   std::stringstream buffer;

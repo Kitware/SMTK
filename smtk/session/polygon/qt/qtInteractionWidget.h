@@ -75,11 +75,13 @@ protected slots:
 
 protected:
   qtInteractionWidget(
-    const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& proxy, QWidget* parent = nullptr);
+    const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& proxy,
+    QWidget* parent = nullptr);
 
   /// Convenience method to create a new proxy for the given type.
   static vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> createWidget(
-    const char* smgroup, const char* smname);
+    const char* smgroup,
+    const char* smname);
 
 private:
   Q_DISABLE_COPY(qtInteractionWidget);

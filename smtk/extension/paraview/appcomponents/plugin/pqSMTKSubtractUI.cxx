@@ -149,7 +149,9 @@ pqSMTKSubtractUI::~pqSMTKSubtractUI()
 }
 
 void pqSMTKSubtractUI::toggleMenuItem(
-  const std::string& itemPath, const std::string& itemSep, bool remove)
+  const std::string& itemPath,
+  const std::string& itemSep,
+  bool remove)
 {
   // NB: Submenus are QMenu items but all menu items are QActions.
   // See https://stackoverflow.com/questions/9399840/how-to-iterate-through-a-menus-actions-in-qt
@@ -257,8 +259,9 @@ void pqSMTKSubtractUI::toggleMenuItem(
       }
     }
   }
-  smtkErrorMacro(smtk::io::Logger::instance(), "  Could not toggle menu item \""
-      << itemPath << "\" " << (remove ? "off" : "on"));
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "  Could not toggle menu item \"" << itemPath << "\" " << (remove ? "off" : "on"));
 }
 
 void pqSMTKSubtractUI::toggleMenuItemByObjectName(const std::string& itemObjectName, bool remove)
@@ -289,8 +292,9 @@ void pqSMTKSubtractUI::toggleMenuItemByObjectName(const std::string& itemObjectN
       }
     }
   }
-  smtkErrorMacro(smtk::io::Logger::instance(), "  Could not toggle menu item \""
-      << itemObjectName << "\" " << (remove ? "off" : "on"));
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "  Could not toggle menu item \"" << itemObjectName << "\" " << (remove ? "off" : "on"));
 }
 
 void pqSMTKSubtractUI::toggleToolbar(const std::string& toolbar, bool remove)
@@ -300,7 +304,8 @@ void pqSMTKSubtractUI::toggleToolbar(const std::string& toolbar, bool remove)
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
     auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
-    if (mainWindow &&
+    if (
+      mainWindow &&
       ((remove && hideToolBar(mainWindow, tbName)) || (!remove && showToolBar(mainWindow, tbName))))
     {
       break;
@@ -309,7 +314,9 @@ void pqSMTKSubtractUI::toggleToolbar(const std::string& toolbar, bool remove)
 }
 
 void pqSMTKSubtractUI::toggleToolbarButton(
-  const std::string& toolbar, const std::string& button, bool remove)
+  const std::string& toolbar,
+  const std::string& button,
+  bool remove)
 {
   QString tbName = QString::fromStdString(toolbar);
   auto topLevelWidgets = QApplication::topLevelWidgets();
@@ -329,10 +336,12 @@ void pqSMTKSubtractUI::toggleToolbarButton(
       }
     }
   }
-  smtkErrorMacro(smtk::io::Logger::instance(), "  Could not toggle toolbar \""
-      << toolbar << "\""
-                    " button \""
-      << button << "\" " << (remove ? "off" : "on"));
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "  Could not toggle toolbar \"" << toolbar
+                                    << "\""
+                                       " button \""
+                                    << button << "\" " << (remove ? "off" : "on"));
 }
 
 void pqSMTKSubtractUI::toggleActionByObjectName(const std::string& action, bool remove)
@@ -349,8 +358,9 @@ void pqSMTKSubtractUI::toggleActionByObjectName(const std::string& action, bool 
       act->setVisible(!remove);
     }
   }
-  smtkErrorMacro(smtk::io::Logger::instance(), "  Could not toggle action \""
-      << action << "\" " << (remove ? "off" : "on"));
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "  Could not toggle action \"" << action << "\" " << (remove ? "off" : "on"));
 }
 
 void pqSMTKSubtractUI::togglePanel(const std::string& panel, bool remove)
@@ -404,6 +414,7 @@ void pqSMTKSubtractUI::togglePanel(const std::string& panel, bool remove)
     }
   }
 
-  smtkErrorMacro(smtk::io::Logger::instance(), "  Could not toggle panel \""
-      << panel << "\" " << (remove ? "off" : "on"));
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "  Could not toggle panel \"" << panel << "\" " << (remove ? "off" : "on"));
 }

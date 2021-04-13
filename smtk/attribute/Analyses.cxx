@@ -23,7 +23,7 @@ using namespace smtk::attribute;
 namespace
 {
 // Helper function to build an Attribute Definition Item to represent an Analysis
-template <typename DefinitionPtrType>
+template<typename DefinitionPtrType>
 void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrType& def)
 {
   // Childless Analyses are represented as a Void Item
@@ -56,7 +56,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
     child->buildAnalysisItem(gitem);
   }
 };
-}
+} // namespace
 
 /// \brief Method to set an Analysis' parent Analysis.
 ///
@@ -250,7 +250,9 @@ bool Analyses::setAnalysisParent(const std::string& analysis, const std::string&
 /// a set of discrete values (one for either child or top-level Analysis) and optionally an item representing
 /// an Analysis' children associated with that discrete value.
 DefinitionPtr Analyses::buildAnalysesDefinition(
-  ResourcePtr resource, const std::string& type, const std::string& label) const
+  ResourcePtr resource,
+  const std::string& type,
+  const std::string& label) const
 {
   // First see if the definition already exists
   auto def = resource->findDefinition(type);
@@ -292,7 +294,9 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
 }
 
 void Analyses::getAnalysisItemCategories(
-  ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis)
+  ConstItemPtr item,
+  std::set<std::string>& cats,
+  bool itemNotAnalysis)
 {
   // If the item is not active there is nothing to do
   if (!item->isEnabled())
@@ -360,7 +364,8 @@ void Analyses::getAnalysisItemCategories(
 }
 
 void Analyses::getAnalysisAttributeCategories(
-  ConstAttributePtr attribute, std::set<std::string>& cats)
+  ConstAttributePtr attribute,
+  std::set<std::string>& cats)
 {
   int i, n = static_cast<int>(attribute->numberOfItems());
   for (i = 0; i < n; i++)

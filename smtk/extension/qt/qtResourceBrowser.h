@@ -80,7 +80,8 @@ public:
 
 public slots:
   virtual void sendPanelSelectionToSMTK(
-    const QItemSelection& selected, const QItemSelection& deselected);
+    const QItemSelection& selected,
+    const QItemSelection& deselected);
   virtual void sendSMTKSelectionToPanel(const std::string& src, smtk::view::SelectionPtr seln);
 
   virtual void addSource(smtk::common::TypeContainer& managers);
@@ -105,6 +106,6 @@ protected:
   Internal* m_p;
   static std::string s_configurationJSON;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif // smtk_extension_qtResourceBrowser_h

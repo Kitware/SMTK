@@ -204,7 +204,7 @@ la_int64_t copy_data(struct archive* ar, struct archive* aw)
     }
   }
 }
-}
+} // namespace
 
 bool Archive::extract()
 {
@@ -401,5 +401,5 @@ std::string Archive::location(const std::string& archivedFilePath)
   // we were unable to find an associated file; return an empty string
   return std::string();
 }
-}
-}
+} // namespace common
+} // namespace smtk

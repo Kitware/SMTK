@@ -23,8 +23,8 @@ class Metadata;
 typedef std::function<void(const Metadata&, bool)> MetadataObserver;
 
 typedef smtk::common::Observers<MetadataObserver> MetadataObservers;
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #ifndef smtkCore_EXPORTS
 extern

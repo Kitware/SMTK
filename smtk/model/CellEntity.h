@@ -36,18 +36,18 @@ public:
   CellEntities boundingCells() const;
   UseEntities boundingCellUses(Orientation orientation) const;
 
-  template <typename T>
+  template<typename T>
   T boundingCellsAs() const;
-  template <typename T>
+  template<typename T>
   T inclusions() const;
-  template <typename T>
+  template<typename T>
   T uses() const;
 
   ShellEntity findShellEntityContainingUse(const UseEntity& bdyUse);
   ShellEntities findShellEntitiesContainingCell(const CellEntity& cell);
 };
 
-template <typename T>
+template<typename T>
 T CellEntity::boundingCellsAs() const
 {
   CellEntities tmp = this->boundingCells();
@@ -55,7 +55,7 @@ T CellEntity::boundingCellsAs() const
   return result;
 }
 
-template <typename T>
+template<typename T>
 T CellEntity::inclusions() const
 {
   T result;
@@ -63,7 +63,7 @@ T CellEntity::inclusions() const
   return result;
 }
 
-template <typename T>
+template<typename T>
 T CellEntity::uses() const
 {
   T result;

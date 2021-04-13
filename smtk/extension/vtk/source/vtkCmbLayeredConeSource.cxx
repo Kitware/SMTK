@@ -277,10 +277,14 @@ protected:
     point[1] = (r[1] + shift) * multY[i];
   }
 };
-};
+}; // namespace
 
-void vtkCmbLayeredConeSource::TriangulateEnd(const int innerRes, const int outerRes,
-  bool forceDelaunay, vtkCellArray* cells, vtkPoints* fullPoints)
+void vtkCmbLayeredConeSource::TriangulateEnd(
+  const int innerRes,
+  const int outerRes,
+  bool forceDelaunay,
+  vtkCellArray* cells,
+  vtkPoints* fullPoints)
 {
   vtkIdType pts[32];
   const int offset = outerRes + innerRes;
@@ -379,8 +383,14 @@ void vtkCmbLayeredConeSource::TriangulateEnd(const int innerRes, const int outer
   }
 }
 
-vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(double h, double* innerBottomR,
-  double* outerBottomR, double* innerTopR, double* outerTopR, int innerRes, int outerRes,
+vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(
+  double h,
+  double* innerBottomR,
+  double* outerBottomR,
+  double* innerTopR,
+  double* outerTopR,
+  int innerRes,
+  int outerRes,
   bool lines)
 {
   if (outerTopR == nullptr || outerBottomR == nullptr)

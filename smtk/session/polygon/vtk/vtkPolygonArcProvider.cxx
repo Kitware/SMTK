@@ -38,8 +38,10 @@ int vtkPolygonArcProvider::FillInputPortInformation(int /*port*/, vtkInformation
   return 1;
 }
 
-int vtkPolygonArcProvider::RequestData(vtkInformation* /*request*/,
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkPolygonArcProvider::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
   vtkPolyData* output = vtkPolyData::GetData(outputVector, 0);

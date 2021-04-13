@@ -30,7 +30,7 @@
 namespace
 {
 
-template <typename TReader>
+template<typename TReader>
 vtkDataSet* readXMLFile(const std::string& fileName)
 {
   vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
@@ -70,16 +70,16 @@ public:
     }
   }
 
-  void forCell(
-    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
     for (int i = 0; i < numPts; ++i)
     {
-      const double r =
-        sqrt((coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
-          (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
+      const double r = sqrt(
+        (coords[(i * 3)] - this->origin[0]) * (coords[(i * 3)] - this->origin[0]) +
+        (coords[(i * 3) + 2] - this->origin[2]) * (coords[(i * 3) + 2] - this->origin[2]));
       const double currValue[2] = { coords[(i * 3) + 1], r };
       //add in a small tolerance
 
@@ -89,7 +89,8 @@ public:
       //     ((!this->lessThan) && currValue[1]>=this->rvalue)))
       if (currValue[0] >= (this->yvalue - 0.002) && currValue[0] <= (this->yvalue + 0.002))
       {
-        if ((this->lessThan && (currValue[1] < this->rvalue)) ||
+        if (
+          (this->lessThan && (currValue[1] < this->rvalue)) ||
           ((!this->lessThan) && (currValue[1] >= this->rvalue)))
         {
           this->validPoints.insert(ptIds[i]);
@@ -114,8 +115,8 @@ public:
     }
   }
 
-  void forCell(
-    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -200,7 +201,9 @@ public:
 int nextDirId = 0;
 
 bool labelIntersection(
-  const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell, Filter& filter)
+  const smtk::mesh::ResourcePtr& c,
+  const smtk::mesh::MeshSet& shell,
+  Filter& filter)
 {
   //need to removing the verts cells from the query for now
   //todo: filter needs to support vert cells
@@ -272,7 +275,7 @@ void breakMaterialsByCellType(const smtk::mesh::ResourcePtr& c)
   }
 }
 
-template <typename vtkDataSetType>
+template<typename vtkDataSetType>
 smtk::mesh::ResourcePtr convert(vtkDataSetType* input, std::string material)
 {
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
@@ -290,7 +293,11 @@ smtk::mesh::ResourcePtr convert(vtkDataSetType* input, std::string material)
 }
 
 void extractMaterials(
-  smtk::mesh::ResourcePtr c, double radius, double* origin, std::string outputFile, double* bounds)
+  smtk::mesh::ResourcePtr c,
+  double radius,
+  double* origin,
+  std::string outputFile,
+  double* bounds)
 {
   //extract the exterior-shell for all meshes.
   smtk::mesh::MeshSet shell = c->meshes().extractShell();
@@ -330,7 +337,7 @@ void extractMaterials(
 
   smtk::io::writeMesh(outputFile, c);
 }
-}
+} // namespace
 
 int main(int argc, char* argv[])
 {

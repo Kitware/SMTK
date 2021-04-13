@@ -31,10 +31,10 @@ class SMTKCORE_EXPORT InternalGroup : protected Group
 {
 public:
   using Group::contains;
-  using Group::operations;
-  using Group::operationNames;
-  using Group::operationName;
   using Group::operationLabel;
+  using Group::operationName;
+  using Group::operationNames;
+  using Group::operations;
   using Group::unregisterOperation;
 
   static constexpr const char* const type_name = "internal";
@@ -49,16 +49,16 @@ public:
   // operation.
   bool registerOperation(const std::string&);
   bool registerOperation(const Operation::Index&);
-  template <typename OperationType>
+  template<typename OperationType>
   bool registerOperation();
 };
 
-template <typename OperationType>
+template<typename OperationType>
 bool InternalGroup::registerOperation()
 {
   return Group::registerOperation(std::type_index(typeid(OperationType)).hash_code());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_InternalGroup_h

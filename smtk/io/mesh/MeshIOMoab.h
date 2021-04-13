@@ -37,14 +37,16 @@ public:
   //Returns an invalid resource if the file can't be loaded. The third
   //parameter is a label with which the domain can be parsed, but it is not
   //currently implemented for the moab interface
-  smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
-    const smtk::mesh::InterfacePtr& interface, const std::string&) const override;
+  smtk::mesh::ResourcePtr importMesh(
+    const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface,
+    const std::string&) const override;
 
   //Merge a moab data file into an existing valid resource. The third
   //parameter is a label with which the domain can be parsed, but it is not
   //currently implemented for the moab interface
-  bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
-    const std::string&) const override;
+  bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource, const std::string&)
+    const override;
 
   //Exports the resource to file. Overwrites any existing content in the file
   bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource) const override;
@@ -57,22 +59,24 @@ public:
 
   //Load an entire moab data file as a new resource with the given interface.
   //Returns an invalid resource if the file can't be loaded
-  smtk::mesh::ResourcePtr read(const std::string& filePath,
-    const smtk::mesh::InterfacePtr& interface, Subset s) const override;
+  smtk::mesh::ResourcePtr read(
+    const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface,
+    Subset s) const override;
 
   //Merge a moab data file into an existing valid resource.
   bool read(const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset s) const override;
 
   //Writes the resource to file. Overwrites any existing content in the file
-  bool write(
-    const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset s) const override;
+  bool write(const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset s)
+    const override;
 
   //Writes the resource to the file specified by the resources data member
   //writeLocation(). Overwrites any existing content in the file
   bool write(smtk::mesh::ResourcePtr resource, Subset s) const override;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk
 
 #endif

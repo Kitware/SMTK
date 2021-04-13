@@ -34,7 +34,7 @@ namespace model
   * The boolean value stored with each edge indicates the orientation of
   * each model edge relative to the loop.
   */
-template <typename T>
+template<typename T>
 bool Resource::insertModelFaceWithOrientedOuterLoop(
   const smtk::common::UUID& faceId,    // to be created
   const smtk::common::UUID& faceUseId, // to be created
@@ -49,7 +49,8 @@ bool Resource::insertModelFaceWithOrientedOuterLoop(
   // Now loop over the container's entries (which must behave like std::pair<smtk::model::Edge, bool>)
   // adding edge uses for each edge to the loop.
   for (typename T::const_iterator oeit = orderedEdgesWithOrientation.begin();
-       oeit != orderedEdgesWithOrientation.end(); ++oeit)
+       oeit != orderedEdgesWithOrientation.end();
+       ++oeit)
   {
     smtk::model::Edge mutableEdge(oeit->first);
     EdgeUse eu = mutableEdge.findOrAddEdgeUse(oeit->second ? POSITIVE : NEGATIVE, 0);
@@ -68,9 +69,11 @@ bool Resource::insertModelFaceWithOrientedOuterLoop(
   * The boolean value stored with each edge indicates the orientation of
   * each model edge relative to the loop.
   */
-template <typename T>
-bool Resource::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId,
-  const smtk::common::UUID& preExistingLoopId, const T& orderedEdgesWithOrientation)
+template<typename T>
+bool Resource::insertModelFaceOrientedInnerLoop(
+  const smtk::common::UUID& loopId,
+  const smtk::common::UUID& preExistingLoopId,
+  const T& orderedEdgesWithOrientation)
 {
   Loop outer(shared_from_this(), preExistingLoopId);
   if (!outer.isValid())
@@ -84,7 +87,8 @@ bool Resource::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId
   // Now loop over the container's entries (which must behave like std::pair<smtk::model::Edge, bool>)
   // adding edge uses for each edge to the loop.
   for (typename T::const_iterator oeit = orderedEdgesWithOrientation.begin();
-       oeit != orderedEdgesWithOrientation.end(); ++oeit)
+       oeit != orderedEdgesWithOrientation.end();
+       ++oeit)
   {
     smtk::model::Edge mutableEdge(oeit->first);
     EdgeUse eu = mutableEdge.findOrAddEdgeUse(oeit->second ? POSITIVE : NEGATIVE, 0);
@@ -104,7 +108,7 @@ bool Resource::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId
   * (and the absence of vertex-uses and chains) that are particular to
   * the polygon session. Caveat emptor.
   */
-template <typename T, typename U, typename V>
+template<typename T, typename U, typename V>
 bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugLog)
 {
   typename T::iterator eit;
@@ -152,7 +156,8 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
             bit->as<smtk::model::UseEntity>().shellEntities<smtk::model::EntityRefs>();
           // Add child shells (inner loops):
           for (smtk::model::EntityRefs::iterator sit = lowerShells.begin();
-               sit != lowerShells.end(); ++sit)
+               sit != lowerShells.end();
+               ++sit)
           {
             smtk::model::EntityRefs childShells =
               sit->as<smtk::model::ShellEntity>().containedShellEntities<smtk::model::EntityRefs>();
@@ -160,26 +165,31 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
           }
           if (debugLog)
           {
-            smtkDebugMacro(this->log(), "  Processing bdy " << bit->name() << " with "
-                                                            << lowerShells.size() << " shells");
+            smtkDebugMacro(
+              this->log(),
+              "  Processing bdy " << bit->name() << " with " << lowerShells.size() << " shells");
           }
           for (smtk::model::EntityRefs::iterator sit = lowerShells.begin();
-               sit != lowerShells.end(); ++sit)
+               sit != lowerShells.end();
+               ++sit)
           {
             smtk::model::Cells bdyCells =
               sit->as<smtk::model::ShellEntity>().cellsOfUses<smtk::model::Cells>();
             if (debugLog)
             {
-              smtkDebugMacro(this->log(), "    Processing shell "
-                  << sit->name() << " with " << bdyCells.size() << " bdyCells");
+              smtkDebugMacro(
+                this->log(),
+                "    Processing shell " << sit->name() << " with " << bdyCells.size()
+                                        << " bdyCells");
             }
             for (smtk::model::Cells::iterator cit = bdyCells.begin(); cit != bdyCells.end(); ++cit)
             {
               if (debugLog)
               {
-                smtkDebugMacro(this->log(), "        Considering "
-                    << cit->name()
-                    << " as free cell: " << cit->uses<smtk::model::UseEntities>().size());
+                smtkDebugMacro(
+                  this->log(),
+                  "        Considering " << cit->name() << " as free cell: "
+                                         << cit->uses<smtk::model::UseEntities>().size());
               }
               if (cit->uses<smtk::model::UseEntities>().size() <= 1)
               {
@@ -220,7 +230,9 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
           { // If the boundary entity is a direct cell relationship, see if the boundary should be promoted.
             if (debugLog)
             {
-              smtkDebugMacro(this->log(), "        Considering "
+              smtkDebugMacro(
+                this->log(),
+                "        Considering "
                   << bit->name() << " as free cell: "
                   << bit->as<smtk::model::CellEntity>().uses<smtk::model::UseEntities>().size());
             }
@@ -274,7 +286,7 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
   return true;
 }
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif // __smtk_model_Resource_txx

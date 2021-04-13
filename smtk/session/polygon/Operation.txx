@@ -23,9 +23,14 @@ namespace session
 namespace polygon
 {
 
-template <typename T, typename U, typename V>
+template<typename T, typename U, typename V>
 void Operation::pointsForLoop(
-  T& polypts, int numPtsToUse, U& curCoord, U finish, int numCoordsPerPoint, V pmodel)
+  T& polypts,
+  int numPtsToUse,
+  U& curCoord,
+  U finish,
+  int numCoordsPerPoint,
+  V pmodel)
 {
   // Map user point coordinates into model points.
   polypts.reserve(polypts.size() + numPtsToUse);
@@ -41,9 +46,15 @@ void Operation::pointsForLoop(
   }
 }
 
-template <typename T, typename U, typename V, typename W>
-void Operation::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish,
-  V& curEdgeDir, V edgeDirFinish, W& outerLoopEdges)
+template<typename T, typename U, typename V, typename W>
+void Operation::pointsForLoop(
+  T& polypts,
+  int numEdgesToUse,
+  U& curEdge,
+  U edgesFinish,
+  V& curEdgeDir,
+  V edgeDirFinish,
+  W& outerLoopEdges)
 {
   auto ceent = std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge);
   auto resource = std::static_pointer_cast<smtk::session::polygon::Resource>(ceent->resource());
@@ -74,9 +85,9 @@ void Operation::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edges
         smtk::io::Logger::instance(), "Skipping missing edge record " << edgeRef.name());
       continue;
     }
-    outerLoopEdges.push_back(
-      std::make_pair(smtk::model::Edge(std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge)),
-        *curEdgeDir != 0));
+    outerLoopEdges.push_back(std::make_pair(
+      smtk::model::Edge(std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge)),
+      *curEdgeDir != 0));
     if (*curEdgeDir < 0)
     {
       polypts.insert(polypts.end(), edgeRec->pointsRBegin(), edgeRec->pointsREnd());
@@ -88,9 +99,12 @@ void Operation::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edges
   }
 }
 
-template <typename T, typename U>
+template<typename T, typename U>
 void Operation::pointsInLoopOrderFromOrientedEdges(
-  T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel)
+  T& polypts,
+  U begin,
+  U end,
+  smtk::shared_ptr<internal::pmodel> pmodel)
 {
   auto resource = std::static_pointer_cast<smtk::session::polygon::Resource>(
     begin->first.component()->resource());

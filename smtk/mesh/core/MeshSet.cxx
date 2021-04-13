@@ -47,7 +47,9 @@ MeshSet::MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle 
   m_range = iface->getMeshsets(handle);
 }
 
-MeshSet::MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle,
+MeshSet::MeshSet(
+  const smtk::mesh::ResourcePtr& parent,
+  smtk::mesh::Handle handle,
   const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_handle(handle)
@@ -55,7 +57,9 @@ MeshSet::MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handl
 {
 }
 
-MeshSet::MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle handle,
+MeshSet::MeshSet(
+  const smtk::mesh::ConstResourcePtr& parent,
+  smtk::mesh::Handle handle,
   const smtk::mesh::HandleRange& range)
   : m_parent(std::const_pointer_cast<smtk::mesh::Resource>(parent))
   , m_handle(handle)
@@ -489,7 +493,10 @@ bool MeshSet::mergeCoincidentContactPoints(double tolerance)
 }
 
 smtk::mesh::CellField MeshSet::createCellField(
-  const std::string& name, int dimension, const smtk::mesh::FieldType& type, const void* const data)
+  const std::string& name,
+  int dimension,
+  const smtk::mesh::FieldType& type,
+  const void* const data)
 {
   if (name.empty() || dimension <= 0)
   {
@@ -551,7 +558,10 @@ bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
 }
 
 smtk::mesh::PointField MeshSet::createPointField(
-  const std::string& name, int dimension, const smtk::mesh::FieldType& type, const void* const data)
+  const std::string& name,
+  int dimension,
+  const smtk::mesh::FieldType& type,
+  const void* const data)
 {
   if (name.empty() || dimension <= 0)
   {
@@ -655,5 +665,5 @@ SMTKCORE_EXPORT void for_each(const MeshSet& a, MeshForEach& filter)
   filter.m_resource = a.m_parent;
   iface->meshForEach(a.m_range, filter);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

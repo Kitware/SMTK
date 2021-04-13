@@ -44,7 +44,7 @@ namespace polygon
 namespace internal
 {
 
-typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
+typedef std::vector<std::pair<size_t, Segment>> SegmentSplitsT;
 
 pmodel::pmodel()
   : m_session(nullptr)
@@ -71,8 +71,12 @@ pmodel::~pmodel()
   m_session = nullptr;
 }
 
-bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,
-  std::vector<double>& y_axis, double featureSize, smtk::io::Logger& log)
+bool pmodel::computeModelScaleAndNormal(
+  std::vector<double>& origin,
+  std::vector<double>& x_axis,
+  std::vector<double>& y_axis,
+  double featureSize,
+  smtk::io::Logger& log)
 {
   if (featureSize <= 0.)
   {
@@ -83,7 +87,9 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
 
   if (origin.size() != 3 || x_axis.size() != 3 || y_axis.size() != 3)
   {
-    smtkErrorMacro(log, "Vector of length 3 expected for"
+    smtkErrorMacro(
+      log,
+      "Vector of length 3 expected for"
         << " origin (" << origin.size() << "),"
         << " x axis (" << x_axis.size() << "), and"
         << " y axis (" << y_axis.size() << ").");
@@ -103,7 +109,9 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
-    smtkErrorMacro(log, "Vectors of non-zero L2 norm required for "
+    smtkErrorMacro(
+      log,
+      "Vectors of non-zero L2 norm required for "
         << " x (" << xl2 << "),"
         << " y (" << yl2 << "), and"
         << " z (" << zl2 << ") axes.");
@@ -126,8 +134,12 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
   return true;
 }
 
-bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<double>& x_axis,
-  std::vector<double>& z_axis, double featureSize, smtk::io::Logger& log)
+bool pmodel::computeModelScaleAndYAxis(
+  std::vector<double>& origin,
+  std::vector<double>& x_axis,
+  std::vector<double>& z_axis,
+  double featureSize,
+  smtk::io::Logger& log)
 {
   if (featureSize <= 0.)
   {
@@ -138,7 +150,9 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
 
   if (origin.size() != 3 || x_axis.size() != 3 || z_axis.size() != 3)
   {
-    smtkErrorMacro(log, "Vector of length 3 expected for"
+    smtkErrorMacro(
+      log,
+      "Vector of length 3 expected for"
         << " origin (" << origin.size() << "),"
         << " x axis (" << x_axis.size() << "), and"
         << " z axis (" << z_axis.size() << ").");
@@ -158,7 +172,9 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
-    smtkErrorMacro(log, "Vectors of non-zero L2 norm required for "
+    smtkErrorMacro(
+      log,
+      "Vectors of non-zero L2 norm required for "
         << " x (" << xl2 << "),"
         << " y (" << yl2 << "), and"
         << " z (" << zl2 << ") axes.");
@@ -181,12 +197,18 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
   return true;
 }
 
-bool pmodel::computeFeatureSizeAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,
-  std::vector<double>& y_axis, long long modelScale, smtk::io::Logger& log)
+bool pmodel::computeFeatureSizeAndNormal(
+  std::vector<double>& origin,
+  std::vector<double>& x_axis,
+  std::vector<double>& y_axis,
+  long long modelScale,
+  smtk::io::Logger& log)
 {
   if (origin.size() != 3 || x_axis.size() != 3 || y_axis.size() != 3)
   {
-    smtkErrorMacro(log, "Vector of length 3 expected for"
+    smtkErrorMacro(
+      log,
+      "Vector of length 3 expected for"
         << " origin (" << origin.size() << "),"
         << " x axis (" << x_axis.size() << "), and"
         << " y axis (" << y_axis.size() << ").");
@@ -206,7 +228,9 @@ bool pmodel::computeFeatureSizeAndNormal(std::vector<double>& origin, std::vecto
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
-    smtkErrorMacro(log, "Vectors of non-zero L2 norm required for "
+    smtkErrorMacro(
+      log,
+      "Vectors of non-zero L2 norm required for "
         << " x (" << xl2 << "),"
         << " y (" << yl2 << "), and"
         << " z (" << zl2 << ") axes.");
@@ -228,11 +252,18 @@ bool pmodel::computeFeatureSizeAndNormal(std::vector<double>& origin, std::vecto
   return true;
 }
 
-bool pmodel::restoreModel(std::vector<double>& origin, std::vector<double>& x_axis,
-  std::vector<double>& y_axis, std::vector<double>& z_axis, std::vector<double>& i_axis,
-  std::vector<double>& j_axis, double featureSize, long long modelScale)
+bool pmodel::restoreModel(
+  std::vector<double>& origin,
+  std::vector<double>& x_axis,
+  std::vector<double>& y_axis,
+  std::vector<double>& z_axis,
+  std::vector<double>& i_axis,
+  std::vector<double>& j_axis,
+  double featureSize,
+  long long modelScale)
 {
-  if (origin.size() != 3 || x_axis.size() != 3 || y_axis.size() != 3 || z_axis.size() != 3 ||
+  if (
+    origin.size() != 3 || x_axis.size() != 3 || y_axis.size() != 3 || z_axis.size() != 3 ||
     i_axis.size() != 3 || j_axis.size() != 3)
   {
     std::cerr << "Vector of length 3 expected for"
@@ -271,7 +302,9 @@ bool pmodel::restoreModel(std::vector<double>& origin, std::vector<double>& x_ax
 }
 
 smtk::model::Vertices pmodel::findOrAddModelVertices(
-  smtk::model::ResourcePtr resource, const std::vector<double>& points, int numCoordsPerPt)
+  smtk::model::ResourcePtr resource,
+  const std::vector<double>& points,
+  int numCoordsPerPt)
 {
   smtk::model::Vertices vertices;
   std::vector<double>::const_iterator it = points.begin();
@@ -294,8 +327,8 @@ smtk::model::Vertices pmodel::findOrAddModelVertices(
   * (such as an edge, face, or volume) unless \a addToModel is true,
   * in which case the vertex is added as a free cell to the SMTK model.
   */
-smtk::model::Vertex pmodel::findOrAddModelVertex(
-  smtk::model::ResourcePtr resource, const Point& pt, bool addToModel)
+smtk::model::Vertex
+pmodel::findOrAddModelVertex(smtk::model::ResourcePtr resource, const Point& pt, bool addToModel)
 {
   PointToVertexId::const_iterator pit = m_vertices.find(pt);
   if (pit != m_vertices.end())
@@ -304,8 +337,8 @@ smtk::model::Vertex pmodel::findOrAddModelVertex(
   return this->addModelVertex(resource, pt, addToModel);
 }
 
-smtk::model::Vertex pmodel::addModelVertex(
-  smtk::model::ResourcePtr resource, const Point& pt, bool addToModel)
+smtk::model::Vertex
+pmodel::addModelVertex(smtk::model::ResourcePtr resource, const Point& pt, bool addToModel)
 {
   // Add a model vertex to the resource
   smtk::model::Vertex v = resource->addVertex();
@@ -333,7 +366,7 @@ smtk::model::Vertex pmodel::addModelVertex(
 }
 
 /// Add segments to \a segs for the given \a edge with either forward (\a reverse false) or backward (\a reverse true) orientation.
-template <typename T>
+template<typename T>
 void addSegmentsForEdge(T& segs, edge::Ptr edge, bool reverse)
 {
   size_t n = segs.size();
@@ -397,9 +430,13 @@ void edgeUseAndLoopRewrite(smtk::model::Edge& modelEdge, const smtk::model::Edge
   * Returns true when the vertex is deleted and false otherwise (because
   * exactly 1 or more than 2 edge-incidences were present).
   */
-bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::VertexPtr vert,
-  smtk::model::EntityRefs& created, smtk::model::EntityRefs& modified,
-  smtk::model::EntityRefs& expunged, int debugLevel)
+bool pmodel::demoteModelVertex(
+  smtk::model::ResourcePtr resource,
+  internal::VertexPtr vert,
+  smtk::model::EntityRefs& created,
+  smtk::model::EntityRefs& modified,
+  smtk::model::EntityRefs& expunged,
+  int debugLevel)
 {
   if (!vert)
   {
@@ -408,8 +445,10 @@ bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::Vert
   vertex::incident_edges::size_type nie = vert->numberOfEdgeIncidences();
   if (nie != 0 && nie != 2)
   {
-    smtkErrorMacro(this->session()->log(), "Expected 0 or 2 edge incidences to "
-        << smtk::model::Vertex(resource, vert->id()).name() << " but got " << nie);
+    smtkErrorMacro(
+      this->session()->log(),
+      "Expected 0 or 2 edge incidences to " << smtk::model::Vertex(resource, vert->id()).name()
+                                            << " but got " << nie);
     return false;
   }
 
@@ -464,7 +503,9 @@ bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::Vert
       adjacentFaces2 = this->removeModelEdgeFromEndpoints(resource, ie2);
       if (debugLevel > -5)
       {
-        smtkDebugMacro(m_session->log(), "Demote adjacencies\n"
+        smtkDebugMacro(
+          m_session->log(),
+          "Demote adjacencies\n"
             << "  " << adjacentFaces1.first.toString() << " / " << adjacentFaces1.second.toString()
             << "  " << (e1OutgoingFromDemotedVert ? "o" : "i") << "\n"
             << "  " << adjacentFaces2.first.toString() << " / " << adjacentFaces2.second.toString()
@@ -475,7 +516,8 @@ bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::Vert
       // Accumulate points from both edges as segments.
       size_t npts =
         ie1->pointsSize() + ie2->pointsSize() - 1; // -1 => don't duplicate model vertex location.
-      segs.reserve(npts -
+      segs.reserve(
+        npts -
         1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
 
       // Create a new edge with the same orientation as edge 1.
@@ -514,7 +556,8 @@ bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::Vert
 
       // Update loops of face(s) attached to edge 1 and 2.
       edgeUseAndLoopRewrite(e1, eout); // Replace uses of e1 with uses of eout
-      edgeUseAndLoopRewrite(e2,
+      edgeUseAndLoopRewrite(
+        e2,
         smtk::model::Edge()); // Invalid edge as last arg => replace uses of e2 with an empty set
 
       // Handle property assignments to output edges:
@@ -556,8 +599,12 @@ bool pmodel::demoteModelVertex(smtk::model::ResourcePtr resource, internal::Vert
   *
   * FIXME: Return new edge Ids and new vertex Id.
   */
-bool pmodel::splitModelEdgeAtPoint(smtk::model::ResourcePtr resource, const Id& edgeId,
-  const std::vector<double>& coords, smtk::model::EntityRefArray& created, int debugLevel)
+bool pmodel::splitModelEdgeAtPoint(
+  smtk::model::ResourcePtr resource,
+  const Id& edgeId,
+  const std::vector<double>& coords,
+  smtk::model::EntityRefArray& created,
+  int debugLevel)
 {
   Point pt = this->projectPoint(coords.begin(), coords.end());
   if (this->pointId(pt))
@@ -579,8 +626,12 @@ bool pmodel::splitModelEdgeAtPoint(smtk::model::ResourcePtr resource, const Id& 
   *
   * New edge Ids and new vertex Id are added to the \a created array.
   */
-bool pmodel::splitModelEdgeAtIndex(smtk::model::ResourcePtr resource, const Id& edgeId,
-  int pointIndex, smtk::model::EntityRefArray& created, int debugLevel)
+bool pmodel::splitModelEdgeAtIndex(
+  smtk::model::ResourcePtr resource,
+  const Id& edgeId,
+  int pointIndex,
+  smtk::model::EntityRefArray& created,
+  int debugLevel)
 {
   edge::Ptr storage = m_session->findStorage<internal::edge>(edgeId);
   if (!storage)
@@ -590,8 +641,10 @@ bool pmodel::splitModelEdgeAtIndex(smtk::model::ResourcePtr resource, const Id& 
   }
   if (pointIndex < 0 || pointIndex >= static_cast<int>(storage->pointsSize()))
   {
-    smtkErrorMacro(this->session()->log(), "Point index "
-        << pointIndex << " is invalid (must be in [0, " << storage->pointsSize() << "[.");
+    smtkErrorMacro(
+      this->session()->log(),
+      "Point index " << pointIndex << " is invalid (must be in [0, " << storage->pointsSize()
+                     << "[.");
     return false;
   }
   auto pit = storage->pointsBegin();
@@ -620,8 +673,12 @@ bool pmodel::splitModelEdgeAtIndex(smtk::model::ResourcePtr resource, const Id& 
   * this method should not be exposed as a public operator but may be used internally
   * when performing other operations.
   */
-bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, const Id& edgeId,
-  const Id& vertexId, smtk::model::EntityRefArray& created, int debugLevel)
+bool pmodel::splitModelEdgeAtModelVertex(
+  smtk::model::ResourcePtr resource,
+  const Id& edgeId,
+  const Id& vertexId,
+  smtk::model::EntityRefArray& created,
+  int debugLevel)
 {
   // Look up edge
   edge::Ptr edg = this->session()->findStorage<edge>(edgeId);
@@ -633,7 +690,8 @@ bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, cons
   Coord maxDelta = static_cast<Coord>(m_featureSize * m_scale);
   for (split = edg->pointsBegin(); split != edg->pointsEnd(); ++split)
   {
-    if (std::abs(vrt->point().x() - split->x()) < maxDelta &&
+    if (
+      std::abs(vrt->point().x() - split->x()) < maxDelta &&
       std::abs(vrt->point().y() - split->y()) < maxDelta)
     { // Split the edge at this location by creating 2 new edges and deleting this edge.
       if (split == edg->pointsBegin() && *split == *edg->pointsRBegin())
@@ -658,8 +716,12 @@ bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, cons
   * It takes an iterator into the original model edge's sequence of points and creates
   * new edges.
   */
-bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, edge::Ptr edgeToSplit,
-  vertex::Ptr splitPoint, PointSeq::const_iterator location, smtk::model::EntityRefArray& created,
+bool pmodel::splitModelEdgeAtModelVertex(
+  smtk::model::ResourcePtr resource,
+  edge::Ptr edgeToSplit,
+  vertex::Ptr splitPoint,
+  PointSeq::const_iterator location,
+  smtk::model::EntityRefArray& created,
   int debugLevel)
 {
   std::vector<vertex::Ptr> splitPoints;
@@ -670,13 +732,17 @@ bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, edge
     resource, edgeToSplit, splitPoints, locations, created, debugLevel);
 }
 
-bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, edge::Ptr edgeToSplit,
+bool pmodel::splitModelEdgeAtModelVertices(
+  smtk::model::ResourcePtr resource,
+  edge::Ptr edgeToSplit,
   std::vector<vertex::Ptr>& splitPointsInEdgeOrder,
-  std::vector<PointSeq::const_iterator>& locationsInEdgeOrder, smtk::model::EntityRefArray& created,
+  std::vector<PointSeq::const_iterator>& locationsInEdgeOrder,
+  smtk::model::EntityRefArray& created,
   int debugLevel)
 {
   size_t npts;
-  if (!edgeToSplit || (npts = edgeToSplit->pointsSize()) < 2 || locationsInEdgeOrder.empty() ||
+  if (
+    !edgeToSplit || (npts = edgeToSplit->pointsSize()) < 2 || locationsInEdgeOrder.empty() ||
     splitPointsInEdgeOrder.size() != locationsInEdgeOrder.size())
     return false;
 
@@ -696,7 +762,8 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
     // Or is one of the split locations the start/end point
     // of the edge's sequence? If the former, then we reorder
     // edge points so a split occurs at the beginning/end:
-    if (**locationsInEdgeOrder.begin() != *edgeToSplit->pointsBegin() &&
+    if (
+      **locationsInEdgeOrder.begin() != *edgeToSplit->pointsBegin() &&
       **locationsInEdgeOrder.rbegin() != *edgeToSplit->pointsRBegin())
     {
       // Note that this is kinda futzy becase periodic edges repeat one point
@@ -752,7 +819,8 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
       splitPointsInEdgeOrder.erase(splitPointsInEdgeOrder.begin());
     }
 
-    if (!locationsInEdgeOrder.empty() &&
+    if (
+      !locationsInEdgeOrder.empty() &&
       **locationsInEdgeOrder.rbegin() == *(edgeToSplit->pointsRBegin()))
     { // Last point is already a model vert... discard the last split
       locationsInEdgeOrder.erase((++locationsInEdgeOrder.rbegin()).base());
@@ -767,7 +835,8 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
   }
   else
   { // We don't have model vertices, but we aren't periodic? This is an error.
-    smtkErrorMacro(this->session()->log(),
+    smtkErrorMacro(
+      this->session()->log(),
       "Asked to split a non-periodic edge with no model vertices. Not possible.");
     return false;
   }
@@ -775,7 +844,8 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
   std::vector<SegmentSplitsT::iterator> segSplits;
   std::vector<vertex::Ptr>::iterator mvertit = splitPointsInEdgeOrder.begin();
   PointSeq::const_iterator prev = edgeToSplit->pointsBegin();
-  segs.reserve(npts -
+  segs.reserve(
+    npts -
     1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
   PointSeq::const_iterator it = prev;
   std::vector<PointSeq::const_iterator>::const_iterator lit = locationsInEdgeOrder.begin();
@@ -808,9 +878,10 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
   bool isFreeCell = (!adjacentFaces.first && !adjacentFaces.second);
   if (debugLevel > 0)
   {
-    smtkDebugMacro(m_session->log(), "Split " << modelEdge.name() << "  faces "
-                                              << adjacentFaces.first.toString() << " / "
-                                              << adjacentFaces.second.toString());
+    smtkDebugMacro(
+      m_session->log(),
+      "Split " << modelEdge.name() << "  faces " << adjacentFaces.first.toString() << " / "
+               << adjacentFaces.second.toString());
   }
 
   // Now we can create the new model edges.
@@ -905,11 +976,12 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
     }
     if (debugLevel > 0)
     {
-      smtkDebugMacro(m_session->log(), "Replace "
-          << oeus->name() << " (edge " << oeus->edge().name() << " "
-          << " sense " << origSense << " ornt "
-          << (origOrientation == smtk::model::POSITIVE ? "+" : "-") << ") with "
-          << replacements.size() << " uses.");
+      smtkDebugMacro(
+        m_session->log(),
+        "Replace " << oeus->name() << " (edge " << oeus->edge().name() << " "
+                   << " sense " << origSense << " ornt "
+                   << (origOrientation == smtk::model::POSITIVE ? "+" : "-") << ") with "
+                   << replacements.size() << " uses.");
     }
     modelLoop.replaceEdgeUseWithUses(*oeus, replacements);
   }
@@ -943,12 +1015,16 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
   * returned or the model will become inconsistent.
   */
 model::Edge pmodel::createModelEdgeFromVertices(
-  model::ResourcePtr resource, internal::VertexPtr v0, internal::VertexPtr v1)
+  model::ResourcePtr resource,
+  internal::VertexPtr v0,
+  internal::VertexPtr v1)
 {
   if (!resource || !v0 || !v1)
   {
-    smtkErrorMacro(m_session->log(), "Detected either invalid Model Resource or at "
-                                     "least one of the vertices was NULL");
+    smtkErrorMacro(
+      m_session->log(),
+      "Detected either invalid Model Resource or at "
+      "least one of the vertices was NULL");
     return smtk::model::Edge();
   }
 
@@ -963,7 +1039,9 @@ model::Edge pmodel::createModelEdgeFromVertices(
   // Ensure edge can be inserted without splitting a face.
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
   {
-    smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+    smtkErrorMacro(
+      m_session->log(),
+      "Edge would overlap face in neighborhood of first vertex ("
         << smtk::model::Vertex(resource, v0->id()).name() << ")A.");
     return smtk::model::Edge();
   }
@@ -971,7 +1049,9 @@ model::Edge pmodel::createModelEdgeFromVertices(
   // Ensure edge can be inserted without splitting a face.
   if (!v1->canInsertEdge(v0->point(), &whereEnd))
   {
-    smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+    smtkErrorMacro(
+      m_session->log(),
+      "Edge would overlap face in neighborhood of last vertex ("
         << smtk::model::Vertex(resource, v1->id()).name() << ")B.");
     return smtk::model::Edge();
   }
@@ -1018,7 +1098,8 @@ model::Edge pmodel::createModelEdgeFromVertices(
 //       it will fail when trying to insert a coincident edge at the
 //       existing edge endpoints.
 std::pair<Id, Id> pmodel::removeModelEdgeFromEndpoints(
-  smtk::model::ResourcePtr resource, EdgePtr edg)
+  smtk::model::ResourcePtr resource,
+  EdgePtr edg)
 {
   std::pair<Id, Id> result;
   if (!edg || !resource)
@@ -1045,8 +1126,9 @@ std::pair<Id, Id> pmodel::removeModelEdgeFromEndpoints(
         {
           vertex::incident_edges::iterator tmp = where;
           ++tmp;
-          result.first = (tmp == endpt->edgesEnd() ? endpt->edgesBegin()->clockwiseFaceId()
-                                                   : tmp->clockwiseFaceId());
+          result.first =
+            (tmp == endpt->edgesEnd() ? endpt->edgesBegin()->clockwiseFaceId()
+                                      : tmp->clockwiseFaceId());
           result.second = where->clockwiseFaceId();
         }
         next = where;
@@ -1138,9 +1220,12 @@ void pmodel::pointsInLoopOrder(std::vector<Point>& pts, const smtk::model::Loop&
   }
 }
 
-template <typename T>
+template<typename T>
 void preparePointsForBoost(
-  T& ppts, internal::Coord& denx, internal::Coord& deny, bool useExistingDenominators)
+  T& ppts,
+  internal::Coord& denx,
+  internal::Coord& deny,
+  bool useExistingDenominators)
 {
   // If we aren't given denx + deny, loop through ppts to find them:
   if (!useExistingDenominators)
@@ -1220,7 +1305,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   {
     smtk::model::Loops innerLoops = lit->containedLoops();
     int npp = 1 + static_cast<int>(innerLoops.size());
-    std::vector<std::vector<internal::Point> > pp2(npp);
+    std::vector<std::vector<internal::Point>> pp2(npp);
     int ll = 0;
     //std::cout << "  Loop " << lit->name() << "\n";
     this->pointsInLoopOrder(pp2[ll], *lit);
@@ -1242,9 +1327,9 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
     }
 
     // Add the component to the face tessellation:
-    std::vector<poly::polygon_data<internal::Coord> > tess;
+    std::vector<poly::polygon_data<internal::Coord>> tess;
     polys.get_trapezoids(tess);
-    std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
+    std::vector<poly::polygon_data<internal::Coord>>::const_iterator pit;
     double smtkPt[3];
     internal::Point ipt;
     for (pit = tess.begin(); pit != tess.end(); ++pit)
@@ -1356,7 +1441,9 @@ Id pmodel::pointId(const Point& p) const
   * Faces attached to the edge are retessellated.
   */
 bool pmodel::tweakEdge(
-  smtk::model::Edge edge, internal::PointSeq& replacement, smtk::model::EntityRefArray& modified)
+  smtk::model::Edge edge,
+  internal::PointSeq& replacement,
+  smtk::model::EntityRefArray& modified)
 {
   edge::Ptr storage = m_session->findStorage<internal::edge>(edge.entity());
   if (!storage)
@@ -1424,7 +1511,9 @@ bool pmodel::tweakEdge(
   * verify that the tweak results in a valid model.
   * No checks are performed here.
   */
-bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
+bool pmodel::tweakVertex(
+  smtk::model::Vertex vertRec,
+  const Point& vertPosn,
   smtk::model::EntityRefs& modifiedEdgesAndFaces)
 {
   bool didChange = false;

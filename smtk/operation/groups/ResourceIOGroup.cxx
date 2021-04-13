@@ -136,5 +136,5 @@ std::set<std::string> ResourceIOGroup::supportedResources() const
   }
   return resources;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

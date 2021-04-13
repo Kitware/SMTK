@@ -27,28 +27,31 @@ namespace resource
 {
 class Resource;
 }
-}
+} // namespace smtk
 
 #ifndef smtkPVServerExt_EXPORTS
 extern
 #endif
-  template class SMTKPVSERVEREXT_EXPORT smtk::common::Generator<smtk::resource::ResourcePtr,
+  template class SMTKPVSERVEREXT_EXPORT smtk::common::Generator<
+    smtk::resource::ResourcePtr,
     vtkSMTKResourceRepresentation::StyleFromSelectionFunction>;
 
 /// Declare the class used to _generate_ a style function.
 ///
 /// The vtkSMTKResourceRepresentation class uses this class to create instances of
 /// a function to style the selection.
-using vtkSMTKRepresentationStyleGenerator = smtk::common::Generator<smtk::resource::ResourcePtr,
-  vtkSMTKResourceRepresentation::StyleFromSelectionFunction>;
+using vtkSMTKRepresentationStyleGenerator = smtk::common::
+  Generator<smtk::resource::ResourcePtr, vtkSMTKResourceRepresentation::StyleFromSelectionFunction>;
 
 /// Declare the class used to _register_ a style function.
 ///
 /// Plugins create objects of this type to register a new style function.
-template <typename T>
+template<typename T>
 class vtkSMTKRepresentationStyleSupplier
-  : public smtk::common::GeneratorType<smtk::resource::ResourcePtr,
-      vtkSMTKResourceRepresentation::StyleFromSelectionFunction, T>
+  : public smtk::common::GeneratorType<
+      smtk::resource::ResourcePtr,
+      vtkSMTKResourceRepresentation::StyleFromSelectionFunction,
+      T>
 {
 public:
   using StyleFromSelectionFunction = vtkSMTKResourceRepresentation::StyleFromSelectionFunction;

@@ -27,7 +27,7 @@ namespace mesh
 
 namespace
 {
-typedef std::vector<std::pair<smtk::mesh::MeshSet, Topology::Element*> > ElementShells;
+typedef std::vector<std::pair<smtk::mesh::MeshSet, Topology::Element*>> ElementShells;
 
 class AddFreeElements : public smtk::mesh::MeshForEach
 {
@@ -96,8 +96,8 @@ public:
           // If the intersection is nonzero and the mesh subset is entirely
           // contained by the shell, we add the subset as a child entity and we
           // remove its contents from the list of shell cells.
-          if (!intersect.is_empty() &&
-            intersect.size() == cellsOfDimension.subset(i).cells().size())
+          if (
+            !intersect.is_empty() && intersect.size() == cellsOfDimension.subset(i).cells().size())
           {
             m_shells->push_back(std::make_pair(cellsOfDimension.subset(i), element));
             shellCells = smtk::mesh::set_difference(shellCells, intersect);
@@ -222,10 +222,12 @@ struct AddBoundElements
   ElementShells* m_shells;
   int m_dimension;
 };
-}
+} // namespace
 
 Topology::Topology(
-  const smtk::common::UUID& modelId, const smtk::mesh::MeshSet& meshset, bool constructHierarchy)
+  const smtk::common::UUID& modelId,
+  const smtk::mesh::MeshSet& meshset,
+  bool constructHierarchy)
   : m_resource(meshset.resource())
   , m_modelId(modelId)
 {
@@ -306,6 +308,6 @@ Topology::Topology(
     }
   }
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

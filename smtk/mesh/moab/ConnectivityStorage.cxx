@@ -31,7 +31,8 @@ namespace moab
 {
 
 ConnectivityStorage::ConnectivityStorage(
-  ::moab::Interface* iface, const smtk::mesh::HandleRange& cells)
+  ::moab::Interface* iface,
+  const smtk::mesh::HandleRange& cells)
   : NumberOfCells(0)
   , NumberOfVerts(0)
 {
@@ -136,8 +137,11 @@ void ConnectivityStorage::initTraversal(smtk::mesh::ConnectivityStorage::Iterati
   state.ptrOffsetInVector = 0;
 }
 
-bool ConnectivityStorage::fetchNextCell(smtk::mesh::ConnectivityStorage::IterationState& state,
-  smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points)
+bool ConnectivityStorage::fetchNextCell(
+  smtk::mesh::ConnectivityStorage::IterationState& state,
+  smtk::mesh::CellType& cellType,
+  int& numPts,
+  const smtk::mesh::Handle*& points)
 {
   if (state.whichConnectivityVector >= this->ConnectivityVertsPerCell.size())
   { //we have iterated passed the end of connectivity pointers
@@ -227,6 +231,6 @@ bool ConnectivityStorage::equal(smtk::mesh::ConnectivityStorage* base_other) con
   //if we are at the end that means the resources match
   return this_ptr == this_end;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

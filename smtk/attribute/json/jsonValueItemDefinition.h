@@ -31,15 +31,18 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::ValueItemDefinitionPtr& defPtr);
+  nlohmann::json& j,
+  const smtk::attribute::ValueItemDefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr);
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::ValueItemDefinitionPtr& defPtr,
+  const smtk::attribute::ResourcePtr& resPtr);
 
 /**\ A helper function to process Derived type of valueItemDefinition and
    * covert it to json
    */
-template <typename ItemDefType>
+template<typename ItemDefType>
 static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
 {
   if (defPtr->isDiscrete())
@@ -147,9 +150,11 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
 /**\ A helper function to process json and
    * covert it to derived type of valueItemDefinition
    */
-template <typename ItemDefType, typename BasicType>
+template<typename ItemDefType, typename BasicType>
 static void processDerivedValueDefFromJson(
-  const json& j, ItemDefType defPtr, const smtk::attribute::ResourcePtr& /*resPtr*/)
+  const json& j,
+  ItemDefType defPtr,
+  const smtk::attribute::ResourcePtr& /*resPtr*/)
 
 {
   auto discreteInfo = j.find("DiscreteInfo");
@@ -215,7 +220,9 @@ static void processDerivedValueDefFromJson(
               }
               else
               {
-                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  "When converting json, Enum "
                     << discreteEnum
                     << " has an invalid top level combination mode = " << *combineMode);
               }
@@ -230,7 +237,9 @@ static void processDerivedValueDefFromJson(
               }
               else
               {
-                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  "When converting json, Enum "
                     << discreteEnum
                     << " has an invalid inclusion combination mode = " << *combineMode);
               }
@@ -253,7 +262,9 @@ static void processDerivedValueDefFromJson(
               }
               else
               {
-                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  "When converting json, Enum "
                     << discreteEnum
                     << " has an invalid exclusion combination mode = " << *combineMode);
               }
@@ -287,8 +298,10 @@ static void processDerivedValueDefFromJson(
               }
               else
               {
-                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
-                    << discreteEnum << " has an invalid categoryCheckMode = " << *ccm);
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  "When converting json, Enum " << discreteEnum
+                                                << " has an invalid categoryCheckMode = " << *ccm);
               }
             }
             localCats.setInclusions(*catsValue, mode);
@@ -376,7 +389,7 @@ static void processDerivedValueDefFromJson(
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

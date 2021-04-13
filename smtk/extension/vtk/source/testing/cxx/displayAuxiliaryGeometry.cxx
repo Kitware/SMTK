@@ -162,7 +162,8 @@ int main(int argc, char* argv[])
   smtk::operation::Operation::Result createBackgroundDomainOpResult =
     createBackgroundDomainOp->operate();
 
-  if (createBackgroundDomainOpResult->findInt("outcome")->value() !=
+  if (
+    createBackgroundDomainOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"create uniform grid\" operator failed\n";
@@ -198,7 +199,8 @@ int main(int argc, char* argv[])
     smtk::operation::Operation::Result addAuxiliaryGeometryOpResult =
       addAuxiliaryGeometryOp->operate();
 
-    if (addAuxiliaryGeometryOpResult->findInt("outcome")->value() !=
+    if (
+      addAuxiliaryGeometryOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"add auxiliary geometry\" operator failed\n";

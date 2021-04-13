@@ -74,7 +74,7 @@ public:
   }
 };
 
-template <int S>
+template<int S>
 class SMTKCORE_EXPORT OpaqueTag
 {
 public:
@@ -191,7 +191,7 @@ enum ContainmentType
   PartiallyContained = 1,
   FullyContained = 2
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

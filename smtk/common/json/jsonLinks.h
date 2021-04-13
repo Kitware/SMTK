@@ -23,7 +23,11 @@ namespace common
 {
 using json = nlohmann::json;
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 void to_json(json& j, const Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
@@ -40,7 +44,11 @@ void to_json(json& j, const Links<id_type, left_type, right_type, role_type, bas
   }
 }
 
-template <typename id_type, typename left_type, typename right_type, typename role_type,
+template<
+  typename id_type,
+  typename left_type,
+  typename right_type,
+  typename role_type,
   typename base_type>
 void from_json(const json& j, Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
@@ -59,8 +67,8 @@ namespace detail
 {
 SMTKCORE_EXPORT void to_json(json&, const NullLinkBase&);
 SMTKCORE_EXPORT void from_json(const json&, NullLinkBase&);
-}
-}
-}
+} // namespace detail
+} // namespace common
+} // namespace smtk
 
 #endif

@@ -51,7 +51,7 @@ public:
 
   // Provides lookup to minus button's associated UI elements when an item is
   // removed.
-  QHash<QToolButton*, QPair<QHBoxLayout*, qtInfixExpressionEditorRow*> > m_removeButtonToRow;
+  QHash<QToolButton*, QPair<QHBoxLayout*, qtInfixExpressionEditorRow*>> m_removeButtonToRow;
   QList<QToolButton*> m_minusButtonIndices;
 };
 
@@ -213,7 +213,10 @@ void qtInfixExpressionEditor::loadInputValues()
       mp_internals->mp_addItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       mp_internals->mp_addItemButton->setIcon(QIcon(iconName));
       mp_internals->mp_addItemButton->setSizePolicy(sizeFixedPolicy);
-      connect(mp_internals->mp_addItemButton, &QToolButton::clicked, this,
+      connect(
+        mp_internals->mp_addItemButton,
+        &QToolButton::clicked,
+        this,
         &qtInfixExpressionEditor::onAddNewValue);
       mp_internals->mp_entryLayout->addWidget(mp_internals->mp_addItemButton, 0, 1);
     }
@@ -268,8 +271,12 @@ void qtInfixExpressionEditor::addInputEditor(int i)
   // This connection must NOT be a QueuedConnection so that |rowEditor|'s
   // evaluator can use the updated StringItem's value as processed by
   // onInputValueChanged.
-  connect(rowEditor, &qtInfixExpressionEditorRow::editBoxChanged, this,
-    &qtInfixExpressionEditor::onInputValueChanged, Qt::DirectConnection);
+  connect(
+    rowEditor,
+    &qtInfixExpressionEditorRow::editBoxChanged,
+    this,
+    &qtInfixExpressionEditor::onInputValueChanged,
+    Qt::DirectConnection);
 
   ConstStringItemDefinitionPtr itemDef = theItem->definitionAs<StringItemDefinition>();
   QHBoxLayout* editorLayout = new QHBoxLayout(this->widget());

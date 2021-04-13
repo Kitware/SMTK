@@ -32,15 +32,16 @@ namespace io
 namespace
 {
 
-template <typename Point, typename PointContainer>
+template<typename Point, typename PointContainer>
 std::size_t IndexOf(Point& point, const PointContainer& points)
 {
   return std::distance(points.begin(), std::find(points.begin(), points.end(), point));
 }
-}
+} // namespace
 
 smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
-  const Delaunay::Mesh::Mesh& mesh, smtk::mesh::ResourcePtr meshresource) const
+  const Delaunay::Mesh::Mesh& mesh,
+  smtk::mesh::ResourcePtr meshresource) const
 {
   smtk::mesh::InterfacePtr iface = meshresource->interface();
   smtk::mesh::AllocatorPtr alloc = iface->allocator();
@@ -64,8 +65,12 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   smtk::mesh::HandleRange createdCellIds;
   smtk::mesh::Handle* connectivity;
 
-  if (!alloc->allocateCells(smtk::mesh::Triangle, mesh.GetTriangles().size(),
-        smtk::mesh::verticesPerCell(smtk::mesh::Triangle), createdCellIds, connectivity))
+  if (!alloc->allocateCells(
+        smtk::mesh::Triangle,
+        mesh.GetTriangles().size(),
+        smtk::mesh::verticesPerCell(smtk::mesh::Triangle),
+        createdCellIds,
+        connectivity))
   {
     return meshresource->createMesh(smtk::mesh::CellSet(meshresource, smtk::mesh::HandleRange()));
   }
@@ -84,8 +89,8 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   return meshresource->createMesh(smtk::mesh::CellSet(meshresource, createdCellIds));
 }
 
-bool ImportDelaunayMesh::operator()(
-  const Delaunay::Mesh::Mesh& mesh, smtk::model::EntityRef& eRef) const
+bool ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh, smtk::model::EntityRef& eRef)
+  const
 {
   if (!eRef.isValid() || !eRef.isFace())
   {
@@ -108,7 +113,8 @@ bool ImportDelaunayMesh::operator()(
 
   for (auto& t : mesh.GetTriangles())
   {
-    tess->addTriangle(static_cast<int>(IndexOf(t.AB().A(), mesh.GetVertices())),
+    tess->addTriangle(
+      static_cast<int>(IndexOf(t.AB().A(), mesh.GetVertices())),
       static_cast<int>(IndexOf(t.AB().B(), mesh.GetVertices())),
       static_cast<int>(IndexOf(t.AC().B(), mesh.GetVertices())));
   }
@@ -119,7 +125,7 @@ bool ImportDelaunayMesh::operator()(
 
   return true;
 }
-}
-}
-}
-}
+} // namespace io
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk

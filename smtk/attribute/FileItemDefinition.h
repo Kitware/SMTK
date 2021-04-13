@@ -42,8 +42,8 @@ public:
   int filterId(const std::string& val) const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
 
   //@{
   /// A string describing file filters in the Qt format. For example:
@@ -67,7 +67,7 @@ protected:
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_FileItemDefinition_h */

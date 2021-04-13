@@ -41,7 +41,8 @@ namespace qt
 TypeAndColorBadge::TypeAndColorBadge() = default;
 
 TypeAndColorBadge::TypeAndColorBadge(
-  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& comp)
+  smtk::view::BadgeSet& parent,
+  const smtk::view::Configuration::Component& comp)
   : Superclass(parent, comp)
 {
 }
@@ -50,7 +51,8 @@ TypeAndColorBadge::~TypeAndColorBadge() = default;
 
 smtk::resource::FloatList colorValue(smtk::resource::ComponentPtr component)
 {
-  if (component && component->properties().get<resource::FloatList>().contains("color") &&
+  if (
+    component && component->properties().get<resource::FloatList>().contains("color") &&
     component->properties().get<resource::FloatList>().at("color").size() == 4)
   {
     return component->properties().get<resource::FloatList>().at("color");
@@ -124,7 +126,9 @@ QColor getPhraseColor(const smtk::view::DescriptivePhrase* item)
   return color;
 }
 
-bool editColorValue(smtk::view::PhraseModelPtr model, smtk::resource::ComponentPtr component,
+bool editColorValue(
+  smtk::view::PhraseModelPtr model,
+  smtk::resource::ComponentPtr component,
   const resource::FloatList& val)
 {
   if (!component)
@@ -149,7 +153,8 @@ bool editColorValue(smtk::view::PhraseModelPtr model, smtk::resource::ComponentP
     op->parameters()->findString("name")->setValue("color");
     op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
     auto res = op->operate();
-    if (res->findInt("outcome")->value() ==
+    if (
+      res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       return true;
@@ -181,13 +186,18 @@ bool TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase, cons
     currentColor.setAlpha(255);
   }
 
-  QColor nextColor = QColorDialog::getColor(currentColor, nullptr, dialogInstructions.c_str(),
+  QColor nextColor = QColorDialog::getColor(
+    currentColor,
+    nullptr,
+    dialogInstructions.c_str(),
     QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
   bool canceled = !nextColor.isValid();
   if (!canceled)
   {
-    smtk::model::FloatList rgba{ nextColor.red() / 255.0, nextColor.green() / 255.0,
-      nextColor.blue() / 255.0, nextColor.alpha() / 255.0 };
+    smtk::model::FloatList rgba{ nextColor.red() / 255.0,
+                                 nextColor.green() / 255.0,
+                                 nextColor.blue() / 255.0,
+                                 nextColor.alpha() / 255.0 };
     bool didVisit = false;
     auto model = phrase->phraseModel();
     act.visitRelatedPhrases([&didVisit, &rgba, &model](const DescriptivePhrase* related) -> bool {
@@ -202,6 +212,6 @@ bool TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase, cons
   }
   return true;
 }
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk

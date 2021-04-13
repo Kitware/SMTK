@@ -60,11 +60,16 @@ public:
   bool operator<(const SweepEvent& other) const;
 
   static SweepEvent SegmentStart(
-    const internal::Point& p0, const internal::Point& p1, const smtk::model::Edge& edge, int segId);
+    const internal::Point& p0,
+    const internal::Point& p1,
+    const smtk::model::Edge& edge,
+    int segId);
 
   static SweepEvent SegmentEnd(const internal::Point& posn, RegionIdSet::value_type fragId);
 
-  static SweepEvent SegmentCross(const internal::Point& crossPos, RegionIdSet::value_type fragId0,
+  static SweepEvent SegmentCross(
+    const internal::Point& crossPos,
+    RegionIdSet::value_type fragId0,
     RegionIdSet::value_type fragId1);
 
   static bool RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, FragmentId fragId1);

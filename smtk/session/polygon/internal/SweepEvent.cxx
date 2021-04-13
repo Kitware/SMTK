@@ -21,21 +21,24 @@ bool SweepEvent::operator<(const SweepEvent& other) const
   return (
     m_posn.x() < other.point().x() ||
     (m_posn.x() == other.point().x() &&
-      (m_posn.y() < other.point().y() ||
-        (m_posn.y() == other.point().y() &&
-          (m_type < other.type() ||
-            (m_type == other.type() &&
-              ( // Types match, perform type-specific comparisons:
-                (m_type == SEGMENT_START &&
-                  (m_edge < other.m_edge || (m_edge == other.m_edge && m_indx < other.m_indx))) ||
-                (m_type == SEGMENT_END && (m_frag[0] < other.m_frag[0])) ||
-                (m_type == SEGMENT_CROSS &&
-                  (m_frag[0] < other.m_frag[0] ||
-                    (m_frag[0] == other.m_frag[0] && (m_frag[1] < other.m_frag[1])))))))))));
+     (m_posn.y() < other.point().y() ||
+      (m_posn.y() == other.point().y() &&
+       (m_type < other.type() ||
+        (m_type == other.type() &&
+         ( // Types match, perform type-specific comparisons:
+           (m_type == SEGMENT_START &&
+            (m_edge < other.m_edge || (m_edge == other.m_edge && m_indx < other.m_indx))) ||
+           (m_type == SEGMENT_END && (m_frag[0] < other.m_frag[0])) ||
+           (m_type == SEGMENT_CROSS &&
+            (m_frag[0] < other.m_frag[0] ||
+             (m_frag[0] == other.m_frag[0] && (m_frag[1] < other.m_frag[1])))))))))));
 }
 
 SweepEvent SweepEvent::SegmentStart(
-  const internal::Point& p0, const internal::Point& p1, const smtk::model::Edge& edge, int segId)
+  const internal::Point& p0,
+  const internal::Point& p1,
+  const smtk::model::Edge& edge,
+  int segId)
 {
   SweepEvent event;
   event.m_type = SEGMENT_START;
@@ -64,7 +67,9 @@ SweepEvent SweepEvent::SegmentEnd(const internal::Point& posn, RegionIdSet::valu
 }
 
 SweepEvent SweepEvent::SegmentCross(
-  const internal::Point& crossPos, RegionIdSet::value_type fragId0, RegionIdSet::value_type fragId1)
+  const internal::Point& crossPos,
+  RegionIdSet::value_type fragId0,
+  RegionIdSet::value_type fragId1)
 {
   SweepEvent event;
   event.m_type = SEGMENT_CROSS;
@@ -83,7 +88,8 @@ bool SweepEvent::RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, Fragme
       case SEGMENT_START:
         break;
       case SEGMENT_CROSS:
-        if (static_cast<const FragmentId>(it->m_frag[0]) == fragId0 &&
+        if (
+          static_cast<const FragmentId>(it->m_frag[0]) == fragId0 &&
           static_cast<const FragmentId>(it->m_frag[1]) == fragId1)
         {
           queue.erase(it);
@@ -91,7 +97,8 @@ bool SweepEvent::RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, Fragme
         }
         break;
       case SEGMENT_END:
-        if (static_cast<const FragmentId>(it->m_frag[0]) == fragId0 ||
+        if (
+          static_cast<const FragmentId>(it->m_frag[0]) == fragId0 ||
           static_cast<const FragmentId>(it->m_frag[0]) == fragId1)
         { // Terminate early... crossing event must come before either edge ends.
           return false;

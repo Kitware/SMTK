@@ -17,5 +17,5 @@ namespace model
 AuxiliaryGeometryExtension::AuxiliaryGeometryExtension() = default;
 
 AuxiliaryGeometryExtension::~AuxiliaryGeometryExtension() = default;
-}
-}
+} // namespace model
+} // namespace smtk

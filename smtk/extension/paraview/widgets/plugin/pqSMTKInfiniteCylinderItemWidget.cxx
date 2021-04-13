@@ -38,7 +38,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKInfiniteCylinderItemWidget::pqSMTKInfiniteCylinderItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -52,7 +53,8 @@ qtItem* pqSMTKInfiniteCylinderItemWidget::createCylinderItemWidget(const qtAttri
 }
 
 bool pqSMTKInfiniteCylinderItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   ItemBindings binding;
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -92,7 +94,8 @@ void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
   ItemBindings binding;
   if (!this->fetchCylinderItems(binding, items))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -151,7 +154,8 @@ void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
   ItemBindings binding;
   if (!this->fetchCylinderItems(binding, items))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -182,7 +186,8 @@ void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
 }
 
 bool pqSMTKInfiniteCylinderItemWidget::fetchCylinderItems(
-  ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items)
+  ItemBindings& binding,
+  std::vector<smtk::attribute::DoubleItemPtr>& items)
 {
   items.clear();
 
@@ -216,7 +221,8 @@ bool pqSMTKInfiniteCylinderItemWidget::fetchCylinderItems(
   auto axsItem = groupItem->findAs<smtk::attribute::DoubleItem>(axsItemName);
   auto radItem = groupItem->findAs<smtk::attribute::DoubleItem>(radItemName);
 
-  if (ctrItem && ctrItem->numberOfValues() == 3 && axsItem && axsItem->numberOfValues() == 3 &&
+  if (
+    ctrItem && ctrItem->numberOfValues() == 3 && axsItem && axsItem->numberOfValues() == 3 &&
     radItem && radItem->numberOfValues() == 1)
   {
     items.push_back(ctrItem);

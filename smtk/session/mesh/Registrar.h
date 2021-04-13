@@ -42,8 +42,8 @@ public:
   static void registerTo(const smtk::geometry::Manager::Ptr&);
   static void unregisterFrom(const smtk::geometry::Manager::Ptr&);
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

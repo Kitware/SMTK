@@ -71,13 +71,11 @@ SelectCells::Result SelectCells::operateInternal()
   return result;
 }
 
-void SelectCells::generateSummary(Operation::Result& /*unused*/)
-{
-}
+void SelectCells::generateSummary(Operation::Result& /*unused*/) {}
 
 const char* SelectCells::xmlDescription() const
 {
   return SelectCells_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

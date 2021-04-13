@@ -200,8 +200,8 @@ public:
     * matches \a child but whose relatedComponent() is null (meaning that the phrase is
     * describing the resource rather than a component of the resource).
     */
-  virtual int argFindChild(
-    const smtk::resource::ResourcePtr& child, bool onlyResource = true) const;
+  virtual int argFindChild(const smtk::resource::ResourcePtr& child, bool onlyResource = true)
+    const;
   /// Return the index of the given Component pointer in this instance's subphrases (or -1).
   virtual int argFindChild(const smtk::resource::ComponentPtr& child) const;
 
@@ -210,8 +210,8 @@ public:
     * This assumes that the property name exactly matches the title of the phrase.
     * When there is no match, -1 is returned.
     */
-  virtual int argFindChild(
-    const std::string& propName, smtk::resource::PropertyType propType) const;
+  virtual int argFindChild(const std::string& propName, smtk::resource::PropertyType propType)
+    const;
 
   /// Return the location of this phrase in its parent's array of children or -1 (if no parent).
   int indexInParent() const;
@@ -366,7 +366,7 @@ protected:
 private:
   static unsigned int s_nextPhraseId;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

@@ -89,7 +89,7 @@ const char* MyOperation::xmlDescription() const
 {
   return myOperationXML;
 }
-}
+} // namespace
 
 int TestOperationLauncher(int /*unused*/, char** const /*unused*/)
 {

@@ -35,8 +35,8 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk
 
 #endif

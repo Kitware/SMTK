@@ -52,8 +52,8 @@ protected:
   Resource(const smtk::common::UUID&, smtk::resource::Manager::Ptr manager = nullptr);
   Resource(smtk::resource::Manager::Ptr manager = nullptr);
 };
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk
 
 #endif

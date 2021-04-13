@@ -33,18 +33,24 @@ public:
   virtual ~ModelEntityPointLocator();
 
   /// Overwrites \a closestPoints with points on \a entity closest to \a sourcePoints.
-  bool closestPointOn(const smtk::model::EntityRef& entity, std::vector<double>& closestPoints,
-    const std::vector<double>& sourcePoints, bool snapToPoint) override;
+  bool closestPointOn(
+    const smtk::model::EntityRef& entity,
+    std::vector<double>& closestPoints,
+    const std::vector<double>& sourcePoints,
+    bool snapToPoint) override;
 
-  bool randomPoint(const smtk::model::EntityRef& entity, const std::size_t nPoints,
-    std::vector<double>& points, const std::size_t seed) override;
+  bool randomPoint(
+    const smtk::model::EntityRef& entity,
+    const std::size_t nPoints,
+    std::vector<double>& points,
+    const std::size_t seed) override;
 
 protected:
   ModelEntityPointLocator();
 };
-}
-}
-}
-}
+} // namespace source
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

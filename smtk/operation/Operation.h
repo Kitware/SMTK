@@ -24,7 +24,7 @@ namespace attribute
 {
 class Attribute;
 class Resource;
-}
+} // namespace attribute
 namespace io
 {
 class Logger;
@@ -198,9 +198,9 @@ private:
   Specification m_specification;
   Parameters m_parameters;
   Definition m_resultDefinition;
-  std::vector<std::weak_ptr<smtk::attribute::Attribute> > m_results;
+  std::vector<std::weak_ptr<smtk::attribute::Attribute>> m_results;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_operation_Operation_h

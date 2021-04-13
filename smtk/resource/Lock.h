@@ -67,7 +67,7 @@ private:
   Lock& m_lock;
   LockType m_lockType;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Lock_h

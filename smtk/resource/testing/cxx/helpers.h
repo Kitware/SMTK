@@ -21,10 +21,10 @@ namespace resource
 namespace testing
 {
 
-ResourceArray SMTKCORERESOURCETESTING_EXPORT loadTestResources(
-  ManagerPtr resourceManager, int argc, char* argv[]);
+ResourceArray SMTKCORERESOURCETESTING_EXPORT
+loadTestResources(ManagerPtr resourceManager, int argc, char* argv[]);
 }
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif

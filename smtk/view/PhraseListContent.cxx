@@ -28,8 +28,11 @@ PhraseListContent::PhraseListContent()
   // only color is mutable
 }
 
-PhraseListContent::Ptr PhraseListContent::setup(DescriptivePhrase::Ptr parent,
-  smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability)
+PhraseListContent::Ptr PhraseListContent::setup(
+  DescriptivePhrase::Ptr parent,
+  smtk::model::BitFlags commonFlags,
+  smtk::model::BitFlags unionFlags,
+  int mutability)
 {
   this->setLocation(parent);
   this->setModelFlags(commonFlags, unionFlags);
@@ -37,8 +40,11 @@ PhraseListContent::Ptr PhraseListContent::setup(DescriptivePhrase::Ptr parent,
   return shared_from_this();
 }
 
-DescriptivePhrasePtr PhraseListContent::createPhrase(DescriptivePhrasePtr parent,
-  smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability,
+DescriptivePhrasePtr PhraseListContent::createPhrase(
+  DescriptivePhrasePtr parent,
+  smtk::model::BitFlags commonFlags,
+  smtk::model::BitFlags unionFlags,
+  int mutability,
   const DescriptivePhrases& children)
 {
   (void)children;
@@ -155,7 +161,8 @@ smtk::resource::ComponentArray PhraseListContent::relatedComponents() const
   * description of the entities.
   */
 void PhraseListContent::setModelFlags(
-  smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags)
+  smtk::model::BitFlags commonFlags,
+  smtk::model::BitFlags unionFlags)
 {
   m_commonFlags = commonFlags;
   m_unionFlags = unionFlags;
@@ -174,7 +181,8 @@ bool PhraseListContent::operator==(const PhraseContent& other) const
 }
 
 std::string PhraseListContent::generateTitle(
-  smtk::model::BitFlags& fCommon, smtk::model::BitFlags& fUnion) const
+  smtk::model::BitFlags& fCommon,
+  smtk::model::BitFlags& fUnion) const
 {
   auto phrase = this->location();
   if (!phrase)
@@ -253,5 +261,5 @@ std::string PhraseListContent::generateTitle(
   return message.str();
 }
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk

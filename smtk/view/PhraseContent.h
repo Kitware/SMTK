@@ -133,7 +133,7 @@ protected:
 
   WeakDescriptivePhrasePtr m_location;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

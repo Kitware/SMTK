@@ -150,12 +150,15 @@ public:
   bool setAnalysisParent(const std::string& analysis, const std::string& parent);
 
   /// \brief Create an Attribute Definition to represent the Analysis Instances maintained by the Analyses.
-  DefinitionPtr buildAnalysesDefinition(smtk::attribute::ResourcePtr resource,
-    const std::string& type, const std::string& label = "Analysis") const;
+  DefinitionPtr buildAnalysesDefinition(
+    smtk::attribute::ResourcePtr resource,
+    const std::string& type,
+    const std::string& label = "Analysis") const;
 
   /// \brief Calculate the set of categories associated with an Analysis Attribute's settings.
   void getAnalysisAttributeCategories(
-    smtk::attribute::ConstAttributePtr attribute, std::set<std::string>& cats);
+    smtk::attribute::ConstAttributePtr attribute,
+    std::set<std::string>& cats);
   std::set<std::string> getAnalysisAttributeCategories(
     smtk::attribute::ConstAttributePtr attribute);
 
@@ -168,13 +171,13 @@ protected:
   /// itemNotAnalysis indicates if the item does not represent an analysis itself.
   /// This occurs only when processing the top level item and m_topLevelExclusive
   /// is true.
-  void getAnalysisItemCategories(
-    ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis);
+  void
+  getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis);
 
   bool m_topLevelExclusive; ///< Indicates if the top level Analysis Instances are exclusive
   std::vector<Analysis*> m_analyses; ///< Analysis Instances managed by the Analyses Instance
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_Analyses_h */

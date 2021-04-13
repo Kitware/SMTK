@@ -27,7 +27,7 @@ namespace
 {
 using ViewWidgetList = std::tuple<pqSMTKResourceBrowser>;
 using BadgeList = std::tuple<VisibilityBadge>;
-}
+} // namespace
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
@@ -40,7 +40,7 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
   viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
   viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
-}
-}
-}
-}
+} // namespace appcomponents
+} // namespace paraview
+} // namespace extension
+} // namespace smtk

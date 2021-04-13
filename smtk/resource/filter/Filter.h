@@ -33,7 +33,7 @@ namespace filter
 ///
 /// Given a PEGTL grammar, smtk::resource::filter::Filter is a copyable functor
 /// that converts a filter string into a set of filter rules.
-template <typename GrammarType = Grammar>
+template<typename GrammarType = Grammar>
 class Filter
 {
 public:
@@ -94,7 +94,8 @@ private:
     catch (tao::pegtl::parse_error& err)
     {
       const auto p = err.positions.front();
-      smtkErrorMacro(smtk::io::Logger::instance(),
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
         "smtk::resource::filter::Filter: " << err.what() << "\n"
                                            << in.line_as_string(p) << "\n"
                                            << std::string(p.byte_in_line, ' ') << "^\n");
@@ -106,8 +107,8 @@ private:
   std::string m_filterString;
   smtk::resource::filter::Rules m_rules;
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

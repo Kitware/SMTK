@@ -38,7 +38,9 @@ public:
   MeshIOXMS();
 
   smtk::mesh::ResourcePtr importMesh(
-    const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const override;
+    const std::string&,
+    const smtk::mesh::InterfacePtr&,
+    const std::string&) const override;
 
   bool importMesh(const std::string&, smtk::mesh::ResourcePtr, const std::string&) const override;
 
@@ -46,27 +48,40 @@ public:
   //Occurrences that can cause write to fail:
   // Mesh resource is empty
   // Mesh resource has no Triangles or Quads
-  bool exportMesh(std::ostream& stream, smtk::mesh::ResourcePtr meshResource,
+  bool exportMesh(
+    std::ostream& stream,
+    smtk::mesh::ResourcePtr meshResource,
     smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
+  bool exportMesh(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr meshResource,
     smtk::mesh::DimensionType dim) const;
 
   bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const override;
 
-  bool exportMesh(std::ostream& stream, smtk::mesh::ResourcePtr meshResource,
-    smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
+  bool exportMesh(
+    std::ostream& stream,
+    smtk::mesh::ResourcePtr meshResource,
+    smtk::model::ResourcePtr resource,
+    const std::string& modelPropertyName,
     smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-    smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
+  bool exportMesh(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr meshResource,
+    smtk::model::ResourcePtr resource,
+    const std::string& modelPropertyName,
     smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-    smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const override;
+  bool exportMesh(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr meshResource,
+    smtk::model::ResourcePtr resource,
+    const std::string& modelPropertyName) const override;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk
 
 #endif

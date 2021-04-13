@@ -27,7 +27,10 @@ HandlerValue::~HandlerValue() = default;
 bool HandlerValue::initialize_impl(QWidget* parent)
 {
   this->Ui->setupUi(parent);
-  QObject::connect(this->Ui->cbCommonLabel, SIGNAL(toggled(bool)), this->Ui->leCommonLabel,
+  QObject::connect(
+    this->Ui->cbCommonLabel,
+    SIGNAL(toggled(bool)),
+    this->Ui->leCommonLabel,
     SLOT(setEnabled(bool)));
 
   if (this->ItemDef)

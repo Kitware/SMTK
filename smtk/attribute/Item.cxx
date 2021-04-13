@@ -127,7 +127,8 @@ smtk::attribute::ItemPtr Item::findInternal(const std::string& /*unused*/, Searc
 }
 
 smtk::attribute::ConstItemPtr Item::findInternal(
-  const std::string& /*unused*/, SearchStyle /*unused*/) const
+  const std::string& /*unused*/,
+  SearchStyle /*unused*/) const
 {
   // By default there are no children to search
   return nullptr;

@@ -41,5 +41,5 @@ void qtBadgeActionToggle::visitRelatedPhrases(PhraseVisitor visitor) const
     }
   }
 }
-}
-}
+} // namespace extension
+} // namespace smtk

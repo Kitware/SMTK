@@ -70,7 +70,7 @@ private:
 
   mutable WeakResourcePtr m_resource;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Surrogate_h

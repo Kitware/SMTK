@@ -37,7 +37,7 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
+typedef std::vector<std::pair<size_t, internal::Segment>> SegmentSplitsT;
 
 /*
 template<typename T>
@@ -86,16 +86,19 @@ CreateEdge::Result CreateEdge::operateInternal()
     parentModel = ment.owningModel();
     if (!parentModel.isValid() || (method == 1 && modelItem->numberOfValues() < 2))
     {
-      smtkErrorMacro(this->log(),
+      smtkErrorMacro(
+        this->log(),
         "A model (or vertices with a valid parent model) must be associated with the operator.");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   if (method == 1 && (!ment.isVertex() || modelItem->numberOfValues() < 2))
   {
-    smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
-                                " all associated model entities must be vertices"
-                                " and there must be at least 2 vertices");
+    smtkErrorMacro(
+      this->log(),
+      "When constructing an edge from vertices,"
+      " all associated model entities must be vertices"
+      " and there must be at least 2 vertices");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(parentModel.entity());
@@ -107,15 +110,18 @@ CreateEdge::Result CreateEdge::operateInternal()
   int numCoordsPerPt = coordinatesItem->value(0);
   if ((method == 0 || method == 2) && numCoordsPerPt == 0)
   {
-    smtkErrorMacro(this->log(), "When constructing an edge from points or interactive widget,"
-                                "the number of coordinates per point must be specified!");
+    smtkErrorMacro(
+      this->log(),
+      "When constructing an edge from points or interactive widget,"
+      "the number of coordinates per point must be specified!");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // numPts is the number of points total (across all edges)
-  long long numPts = ((method == 0 || method == 2) ? pointsItem->numberOfValues() / numCoordsPerPt
-                                                   : // == #pts / #coordsPerPt
-      modelItem->numberOfValues());
+  long long numPts =
+    ((method == 0 || method == 2) ? pointsItem->numberOfValues() / numCoordsPerPt
+                                  : // == #pts / #coordsPerPt
+       modelItem->numberOfValues());
   int ei;
   smtk::model::Edges created;
   // Process each edge individually:
@@ -126,9 +132,10 @@ CreateEdge::Result CreateEdge::operateInternal()
     long long numSegments = edgeEnd - edgeOffset - 1;
     if (numSegments < 1 || edgeEnd > numPts)
     {
-      smtkWarningMacro(this->log(), "Ignoring input "
-          << ei << " (offset " << edgeOffset << " to " << edgeEnd << ")"
-          << " with not enough points or offset past end of points.");
+      smtkWarningMacro(
+        this->log(),
+        "Ignoring input " << ei << " (offset " << edgeOffset << " to " << edgeEnd << ")"
+                          << " with not enough points or offset past end of points.");
       continue; // skip "edges" with only 0 or 1 vertices for their entire path.
     }
 
@@ -270,16 +277,16 @@ CreateEdge::Result CreateEdge::operateInternal()
         std::size_t numSegsPerSrc = 0; // Number of result segs per input edge in edgeSegs
         // Determine whether segments are reversed from the input edge:
         //printSegment(storage, "Seg ", sit->second);
-        internal::HighPrecisionPoint deltaSrc =
-          internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                         edgeIt->high().x() - edgeIt->low().x()),
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                         edgeIt->high().y() - edgeIt->low().y()));
-        internal::HighPrecisionPoint deltaDst =
-          internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                         sit->second.high().x() - sit->second.low().x()),
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                         sit->second.high().y() - sit->second.low().y()));
+        internal::HighPrecisionPoint deltaSrc = internal::HighPrecisionPoint(
+          static_cast<internal::HighPrecisionPoint::coordinate_type>(
+            edgeIt->high().x() - edgeIt->low().x()),
+          static_cast<internal::HighPrecisionPoint::coordinate_type>(
+            edgeIt->high().y() - edgeIt->low().y()));
+        internal::HighPrecisionPoint deltaDst = internal::HighPrecisionPoint(
+          static_cast<internal::HighPrecisionPoint::coordinate_type>(
+            sit->second.high().x() - sit->second.low().x()),
+          static_cast<internal::HighPrecisionPoint::coordinate_type>(
+            sit->second.high().y() - sit->second.low().y()));
         // Whether the segments are reversed or not, determine which
         // output segments correspond to a single input segment:
         if (deltaDst.x() * deltaSrc.x() < 0 || deltaDst.y() * deltaSrc.y() < 0)

@@ -66,13 +66,14 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 {
   void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
   {
-    smtk::model::EntityRefArray children = (root.isModel()
-        ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
-        : (root.isCellEntity()
+    smtk::model::EntityRefArray children =
+      (root.isModel()
+         ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+         : (root.isCellEntity()
               ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
               : (root.isGroup()
-                    ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
-                    : smtk::model::EntityRefArray())));
+                   ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
+                   : smtk::model::EntityRefArray())));
 
     for (smtk::model::EntityRefArray::const_iterator it = children.begin(); it != children.end();
          ++it)
@@ -137,10 +138,10 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 
     iac->Start();
 #else
-    (void)model;
+  (void)model;
 #endif
   }
-}
+} // namespace
 
 int TestMergeOp(int argc, char* argv[])
 {
@@ -187,7 +188,8 @@ int TestMergeOp(int argc, char* argv[])
   smtk::operation::Operation::Result createBackgroundDomainOpResult =
     createBackgroundDomainOp->operate();
 
-  if (createBackgroundDomainOpResult->findInt("outcome")->value() !=
+  if (
+    createBackgroundDomainOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"create uniform grid\" operation failed\n";
@@ -203,7 +205,7 @@ int TestMergeOp(int argc, char* argv[])
 
   smtk::operation::Operation::Ptr mergeOp = operationManager->create<smtk::session::mesh::Merge>();
 
-  auto faces = model->referenceAs<smtk::model::Model>().cellsAs<std::vector<smtk::model::Face> >();
+  auto faces = model->referenceAs<smtk::model::Model>().cellsAs<std::vector<smtk::model::Face>>();
 
   std::cout << "there are " << faces.size() << " faces before merge" << std::endl;
   for (auto& face : faces)
@@ -219,14 +221,16 @@ int TestMergeOp(int argc, char* argv[])
 
   smtk::operation::Operation::Result mergeOpResult = mergeOp->operate();
 
-  if (mergeOpResult->findInt("outcome")->value() !=
+  if (
+    mergeOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"merge\" operation failed\n";
     return 1;
   }
 
-  test(mergeOpResult->findComponent("created")->numberOfValues() == 1,
+  test(
+    mergeOpResult->findComponent("created")->numberOfValues() == 1,
     "Merge operation should have created a component.");
 
   {
@@ -237,7 +241,8 @@ int TestMergeOp(int argc, char* argv[])
 
     smtk::operation::Operation::Result printOpResult = printOp->operate();
 
-    if (printOpResult->findInt("outcome")->value() !=
+    if (
+      printOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"print\" operation failed\n";
@@ -250,7 +255,7 @@ int TestMergeOp(int argc, char* argv[])
     std::cout << std::endl;
   }
 
-  faces = model->referenceAs<smtk::model::Model>().cellsAs<std::vector<smtk::model::Face> >();
+  faces = model->referenceAs<smtk::model::Model>().cellsAs<std::vector<smtk::model::Face>>();
   std::cout << "There are " << faces.size() << " faces after merge" << std::endl;
   for (auto& face : faces)
     std::cout << " " << face.name() << std::endl;

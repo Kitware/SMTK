@@ -33,7 +33,7 @@ public:
 
   SessionPtr session() const;
 
-  template <typename T>
+  template<typename T>
   T models() const;
   SessionRef& addModel(const Model& mod);
 
@@ -46,7 +46,7 @@ public:
   void close();
 };
 
-template <typename T>
+template<typename T>
 T SessionRef::models() const
 {
   return this->relationsAs<T>();

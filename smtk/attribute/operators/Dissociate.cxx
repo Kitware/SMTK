@@ -82,5 +82,5 @@ const char* Dissociate::xmlDescription() const
 {
   return Dissociate_xml;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

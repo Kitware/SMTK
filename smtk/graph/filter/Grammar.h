@@ -28,8 +28,8 @@ struct SMTKCORE_EXPORT Grammar
   : seq<smtk::graph::filter::TypeName::Grammar, smtk::resource::filter::Grammar>
 {
 };
-}
-}
-}
+} // namespace filter
+} // namespace graph
+} // namespace smtk
 
 #endif

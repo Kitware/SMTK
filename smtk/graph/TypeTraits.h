@@ -19,30 +19,30 @@ namespace smtk
 namespace graph
 {
 
-template <class...>
+template<class...>
 struct conjunction : std::true_type
 {
 };
-template <class B1>
+template<class B1>
 struct conjunction<B1> : B1
 {
 };
-template <class B1, class... Bn>
+template<class B1, class... Bn>
 struct conjunction<B1, Bn...> : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type
 {
 };
 
-template <typename T, typename... Ts>
+template<typename T, typename... Ts>
 using CompatibleTypes =
   typename std::enable_if<conjunction<std::is_convertible<Ts, T>...>::value>::type;
 
-template <typename Iterable>
+template<typename Iterable>
 class is_iterable
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testIterable(
     decltype(std::distance(std::declval<X>(), std::declval<X>()))*);
-  template <typename X>
+  template<typename X>
   static std::false_type testIterable(...);
 
 public:
@@ -50,13 +50,13 @@ public:
   static constexpr bool value = type::value;
 };
 
-template <typename Container>
+template<typename Container>
 class is_container
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testContainer(
     decltype(std::distance(std::declval<X>().begin(), std::declval<X>().end()))*);
-  template <typename X>
+  template<typename X>
   static std::false_type testContainer(...);
 
 public:
@@ -64,13 +64,13 @@ public:
   static constexpr bool value = type::value;
 };
 
-template <typename API, typename Functor, typename Input>
+template<typename API, typename Functor, typename Input>
 class has_custom_visit
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testVisitable(
     decltype(std::declval<X>().visit(std::declval<Input>(), std::declval<const Functor&>()))*);
-  template <typename X>
+  template<typename X>
   static std::false_type testVisitable(...);
 
 public:
@@ -78,19 +78,19 @@ public:
   static constexpr bool value = type::value;
 };
 
-template <typename Functor, typename Input>
+template<typename Functor, typename Input>
 class accepts
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testAccepts(decltype(std::declval<X>()(std::declval<Input>()))*);
-  template <typename X>
+  template<typename X>
   static std::false_type testAccepts(...);
 
 public:
   using type = decltype(testAccepts<Functor>(nullptr));
   static constexpr bool value = type::value;
 };
-}
-}
+} // namespace graph
+} // namespace smtk
 
 #endif

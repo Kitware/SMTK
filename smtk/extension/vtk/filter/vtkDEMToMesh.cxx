@@ -48,7 +48,9 @@ int vtkDEMToMesh::FillInputPortInformation(int /*port*/, vtkInformation* info)
   return 1;
 }
 
-int vtkDEMToMesh::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
+int vtkDEMToMesh::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
@@ -95,7 +97,7 @@ int vtkDEMToMesh::RequestData(vtkInformation* /*request*/, vtkInformationVector*
   int sizex = (extent[1] - extent[0] + 1) / SubSampleStepSize + 2;
   int sizey = (extent[3] - extent[2] + 1) / SubSampleStepSize + 2;
 
-  std::vector<std::vector<int> > ptsGrid(sizex, std::vector<int>(sizey, -1));
+  std::vector<std::vector<int>> ptsGrid(sizex, std::vector<int>(sizey, -1));
 
   int xyz[3];
   xyz[2] = 0;

@@ -128,8 +128,10 @@ void qtOperationView::showInfoButton(bool visible)
   }
 }
 
-void qtOperationView::setButtons(QPointer<QPushButton> applyButton,
-  QPointer<QPushButton> infoButton, QPointer<QPushButton> doneButton)
+void qtOperationView::setButtons(
+  QPointer<QPushButton> applyButton,
+  QPointer<QPushButton> infoButton,
+  QPointer<QPushButton> doneButton)
 {
   // Disconnect and hide current buttons
   this->Internals->m_applyButton->disconnect();
@@ -156,7 +158,10 @@ void qtOperationView::setButtons(QPointer<QPushButton> applyButton,
   }
   if (doneButton.data() != nullptr)
   {
-    QObject::connect(this->Internals->m_doneButton, &QAbstractButton::clicked, this,
+    QObject::connect(
+      this->Internals->m_doneButton,
+      &QAbstractButton::clicked,
+      this,
       &qtOperationView::doneEditing);
   }
 }
@@ -275,7 +280,10 @@ void qtOperationView::onOperate()
     shared_ptr<smtk::extension::ResultHandler> handler =
       (*this->Internals->m_launcher)(this->Internals->m_operator);
 
-    connect(handler.get(), &smtk::extension::ResultHandler::resultReady, this,
+    connect(
+      handler.get(),
+      &smtk::extension::ResultHandler::resultReady,
+      this,
       &qtOperationView::operationExecuted);
 
     emit this->operationRequested(this->Internals->m_operator);

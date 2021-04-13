@@ -84,27 +84,34 @@ protected:
   //returns the Item it has added to the widget
   //ownership of the item is handled by the widget so no need to delete
   //for now we append model name to currentList
-  virtual QListWidgetItem* addObjectAssociationListItem(QListWidget* theList,
-    const smtk::resource::PersistentObjectPtr& object, bool sort = true,
+  virtual QListWidgetItem* addObjectAssociationListItem(
+    QListWidget* theList,
+    const smtk::resource::PersistentObjectPtr& object,
+    bool sort = true,
     bool appendModelName = false);
 
   //returns the Item it has added to the widget
   //ownership of the item is handled by the widget so no need to delete
   virtual QListWidgetItem* addAttributeAssociationItem(
-    QListWidget* theList, smtk::attribute::AttributePtr att, bool sort = true);
+    QListWidget* theList,
+    smtk::attribute::AttributePtr att,
+    bool sort = true);
 
   // helper function to update available/current list after selection
   void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);
 
   // This widget needs to handle changes made to resources as a result of an operation.
   // This method is used by the observation mechanism to address these changes
-  int handleOperationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
+  int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
     smtk::operation::Operation::Result result);
 
   // This widget needs to handle changes made to resources as a result of resources being removed.
   // This method is used by the observation mechanism to address this via the resource manager
   int handleResourceEvent(
-    const smtk::resource::Resource& resource, smtk::resource::EventType event);
+    const smtk::resource::Resource& resource,
+    smtk::resource::EventType event);
   // Used to determine if an alert icon should be displayed and why
   void updateAssociationStatus(const smtk::attribute::Attribute* att);
 
@@ -121,7 +128,7 @@ private:
   QString m_allAssociatedWarning;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

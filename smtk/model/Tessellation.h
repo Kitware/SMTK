@@ -162,7 +162,7 @@ protected:
 typedef std::map<smtk::common::UUID, Tessellation> UUIDsToTessellations;
 typedef std::map<smtk::common::UUID, Tessellation>::iterator UUIDWithTessellation;
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif // __smtk_model_Tessellation_h

@@ -44,5 +44,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::common::UUID& opt)
     opt = j.get<std::string>();
   }
 }
-}
-}
+} // namespace common
+} // namespace smtk

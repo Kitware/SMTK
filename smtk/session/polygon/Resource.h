@@ -45,14 +45,15 @@ public:
   ConstSessionPtr polygonSession() const;
 
   void addStorage(
-    const smtk::common::UUID& uid, smtk::session::polygon::internal::entity::Ptr storage);
+    const smtk::common::UUID& uid,
+    smtk::session::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);
-  template <typename T>
+  template<typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
   {
     return this->polygonSession()->findStorage<T>(uid);
   }
-  template <typename T>
+  template<typename T>
   T findOrAddStorage(const smtk::common::UUID& uid)
   {
     return this->polygonSession()->findOrAddStorage<T>(uid);

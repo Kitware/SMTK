@@ -147,8 +147,8 @@ public:
   bool hasErrors() const { return m_hasErrors; }
   void clearErrors() { m_hasErrors = false; }
 
-  void addRecord(
-    Severity s, const std::string& m, const std::string& fname = "", unsigned int line = 0);
+  void
+  addRecord(Severity s, const std::string& m, const std::string& fname = "", unsigned int line = 0);
 
   ///\brief Return a copy of all the records contained within the Logger
   ///
@@ -195,13 +195,15 @@ private:
   mutable std::mutex m_mutex;
 };
 
-template <typename J>
+template<typename J>
 void to_json(J& json, const Logger::Record& rec)
 {
-  json = { { "severity", rec.severity }, { "message", rec.message }, { "file", rec.fileName },
-    { "line", rec.lineNumber } };
+  json = { { "severity", rec.severity },
+           { "message", rec.message },
+           { "file", rec.fileName },
+           { "line", rec.lineNumber } };
 }
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_Logger_h */

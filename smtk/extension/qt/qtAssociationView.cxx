@@ -102,7 +102,7 @@ public:
   QPointer<qtAssociationWidget> AssociationsWidget;
 
   // <category, AttDefinitions>
-  QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
+  QMap<QString, QList<smtk::attribute::DefinitionPtr>> AttDefMap;
 
   // All definitions list
   QList<smtk::attribute::DefinitionPtr> AllDefs;
@@ -130,14 +130,15 @@ qtAssociationView::~qtAssociationView()
   delete this->Internals;
 }
 
-const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& qtAssociationView::attDefinitionMap()
+const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& qtAssociationView::attDefinitionMap()
   const
 {
   return this->Internals->AttDefMap;
 }
 
 smtk::extension::qtAssociationWidget* qtAssociationView::createAssociationWidget(
-  QWidget* parent, qtBaseView* view)
+  QWidget* parent,
+  qtBaseView* view)
 {
   return new qtAssociation2ColumnWidget(parent, view);
 }
@@ -170,10 +171,16 @@ void qtAssociationView::createWidget()
     this->createAssociationWidget(this->Internals->associations, this);
   this->Internals->mainLayout->addWidget(this->Internals->AssociationsWidget);
   // signals/slots
-  QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
+  QObject::connect(
+    this->Internals->AssociationsWidget,
+    SIGNAL(attAssociationChanged()),
+    this,
     SLOT(associationsChanged()));
 
-  QObject::connect(this->Internals->attributes, SIGNAL(currentIndexChanged(int)), this,
+  QObject::connect(
+    this->Internals->attributes,
+    SIGNAL(currentIndexChanged(int)),
+    this,
     SLOT(onAttributeChanged(int)));
 
   this->updateModelAssociation();
@@ -257,7 +264,8 @@ void qtAssociationView::getAllDefinitions()
   smtk::attribute::DefinitionPtr attDef;
 
   // The view should have a single internal component called InstancedAttributes
-  if ((view->details().numberOfChildren() != 1) ||
+  if (
+    (view->details().numberOfChildren() != 1) ||
     (view->details().child(0).name() != "AttributeTypes"))
   {
     // Should present error message
@@ -300,7 +308,9 @@ void qtAssociationView::getAllDefinitions()
   }
 
   // sort the list
-  std::sort(std::begin(this->Internals->AllDefs), std::end(this->Internals->AllDefs),
+  std::sort(
+    std::begin(this->Internals->AllDefs),
+    std::end(this->Internals->AllDefs),
     [](smtk::attribute::DefinitionPtr a, smtk::attribute::DefinitionPtr b) {
       return a->displayedTypeName() < b->displayedTypeName();
     });
@@ -309,7 +319,8 @@ void qtAssociationView::getAllDefinitions()
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
     {
-      if (adef->categories().passes(category.toStdString()) &&
+      if (
+        adef->categories().passes(category.toStdString()) &&
         !this->Internals->AttDefMap[category].contains(adef))
       {
         this->Internals->AttDefMap[category].push_back(adef);

@@ -177,8 +177,9 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
     ok = !modGroups.empty();
   }
 
-  Result result = this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                        : smtk::operation::Operation::Outcome::FAILED);
+  Result result = this->createResult(
+    ok ? smtk::operation::Operation::Outcome::SUCCEEDED
+       : smtk::operation::Operation::Outcome::FAILED);
   if (ok)
   {
     //create and modify

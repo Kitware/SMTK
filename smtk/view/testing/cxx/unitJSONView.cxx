@@ -32,7 +32,10 @@ int unitJSONView(int argc, char* argv[])
   std::string xmlFile("/attribute/attribute_collection/viewproto3.xml");
 
   auto rsrc = smtk::attribute::Resource::create();
-  rdr.read(rsrc, argc > 2 ? argv[2] : (readFilePath + xmlFile).c_str(), false,
+  rdr.read(
+    rsrc,
+    argc > 2 ? argv[2] : (readFilePath + xmlFile).c_str(),
+    false,
     smtk::io::Logger::instance());
 
   std::cout << (readFilePath + jsonFile) << "\n";
@@ -49,8 +52,9 @@ int unitJSONView(int argc, char* argv[])
     if (xit == rsrc->views().end())
     {
       std::cerr << jtmp.dump(2) << "\n";
-      smtkErrorMacro(smtk::io::Logger::instance(), "Error: View "
-          << test->name() << " (" << test->type() << ") unmatched.");
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Error: View " << test->name() << " (" << test->type() << ") unmatched.");
       ok = false;
     }
     else
@@ -70,9 +74,11 @@ int unitJSONView(int argc, char* argv[])
     ++numJSONViews;
   }
 
-  smtkInfoMacro(smtk::io::Logger::instance(), "Tested " << numJSONViews << " JSON views against "
-                                                        << rsrc->views().size() << " XML views.");
-  test(numJSONViews == static_cast<int>(rsrc->views().size()),
+  smtkInfoMacro(
+    smtk::io::Logger::instance(),
+    "Tested " << numJSONViews << " JSON views against " << rsrc->views().size() << " XML views.");
+  test(
+    numJSONViews == static_cast<int>(rsrc->views().size()),
     "XML and JSON had different numbers of views.");
 
   return ok ? 0 : 1;

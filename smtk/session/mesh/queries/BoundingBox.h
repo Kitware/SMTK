@@ -61,8 +61,8 @@ struct SMTKMESHSESSION_EXPORT BoundingBox
     return smtk::geometry::BoundingBox::operator()(object);
   }
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

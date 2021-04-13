@@ -21,7 +21,9 @@ namespace operation
 {
 
 bool ReaderGroup::registerOperation(
-  const std::string& operatorName, const std::string& resourceName, const std::string& fileItemName)
+  const std::string& operatorName,
+  const std::string& resourceName,
+  const std::string& fileItemName)
 {
   Operation::Specification spec = specification(operatorName);
   if (!spec)
@@ -36,7 +38,8 @@ bool ReaderGroup::registerOperation(
     return false;
   }
 
-  return (parameters->findFile(fileItemName) != nullptr &&
+  return (
+    parameters->findFile(fileItemName) != nullptr &&
     Group::registerOperation(operatorName, { resourceName }) &&
     m_fileItemName.registerOperation(operatorName, { fileItemName }));
 }
@@ -70,5 +73,5 @@ std::set<std::string> ReaderGroup::readsResources(const Operation::Index& index)
 {
   return values(index);
 }
-}
-}
+} // namespace operation
+} // namespace smtk

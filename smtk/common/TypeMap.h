@@ -44,14 +44,14 @@ public:
   virtual void from_json(const nlohmann::json&) {}
 };
 
-template <typename KeyType>
+template<typename KeyType>
 class TypeMap;
 
 /// A specialization of the TypeMapBase for a single type.
 /// TypeMapEntry provides a non-templated API for accessing
 /// information, as well as serialization logic if the underlying type is
 /// serializable.
-template <typename KeyType, typename Type>
+template<typename KeyType, typename Type>
 class SMTK_ALWAYS_EXPORT TypeMapEntry : public TypeMapEntryBase
 {
   friend class TypeMap<KeyType>;
@@ -107,27 +107,27 @@ public:
   void from_json(const nlohmann::json& j) override { return from_json<Type>(j); }
 
 private:
-  template <typename T>
+  template<typename T>
   typename std::enable_if<nlohmann::detail::is_compatible_type<nlohmann::json, T>::value>::type
   to_json(nlohmann::json& j) const
   {
     j = m_data;
   }
 
-  template <typename T>
+  template<typename T>
   typename std::enable_if<!nlohmann::detail::is_compatible_type<nlohmann::json, T>::value>::type
   to_json(nlohmann::json&) const
   {
   }
 
-  template <typename T>
+  template<typename T>
   typename std::enable_if<nlohmann::detail::is_compatible_type<nlohmann::json, T>::value>::type
   from_json(const nlohmann::json& j)
   {
     m_data = j.get<decltype(m_data)>();
   }
 
-  template <typename T>
+  template<typename T>
   typename std::enable_if<!nlohmann::detail::is_compatible_type<nlohmann::json, T>::value>::type
   from_json(const nlohmann::json&) const
   {
@@ -141,7 +141,7 @@ private:
 /// can derive from TypeMapEntry<>. TypeMapBase does not contain any
 /// methods to insert types (this functionality is delegated to the downstream
 /// TypeMap class).
-template <typename KeyType>
+template<typename KeyType>
 class SMTK_ALWAYS_EXPORT TypeMapBase
 {
 public:
@@ -150,7 +150,7 @@ public:
   /// Check whether a value of type \a Type associated with \a key is present.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with at() for conditional queries.
-  template <typename Type>
+  template<typename Type>
   bool contains(const KeyType& key) const
   {
     auto it = m_data.find(smtk::common::typeName<Type>());
@@ -163,21 +163,21 @@ public:
   }
 
   /// Insert (\a Type, \a key, \a value ) into the map.
-  template <typename Type>
+  template<typename Type>
   bool insert(const KeyType& key, const Type& value)
   {
     return get<Type>().insert(key, value);
   }
 
   /// Emplace (\a Type, \a key, \a value ) into the map.
-  template <typename Type>
+  template<typename Type>
   bool emplace(const KeyType& key, Type&& value)
   {
     return get<Type>().emplace(key, std::move(value));
   }
 
   /// Erase value of type \a Type indexed by \a key from the map.
-  template <typename Type>
+  template<typename Type>
   void erase(const KeyType& key)
   {
     auto& property = get<Type>();
@@ -187,7 +187,7 @@ public:
   /// Access value of type \a Type indexed by \a key.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with contains() for conditional queries.
-  template <typename Type>
+  template<typename Type>
   Type& at(const KeyType& key)
   {
     return get<Type>().at(key);
@@ -196,14 +196,14 @@ public:
   /// Access value of type \a Type indexed by \a key.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with contains() for conditional queries.
-  template <typename Type>
+  template<typename Type>
   const Type& at(const KeyType& key) const
   {
     return get<Type>().at(key);
   }
 
   /// Access values of type \a Type.
-  template <typename Type>
+  template<typename Type>
   TypeMapEntry<KeyType, Type>& get()
   {
     std::string name = smtk::common::typeName<Type>();
@@ -217,7 +217,7 @@ public:
   }
 
   /// Access values of type \a Type.
-  template <typename Type>
+  template<typename Type>
   const TypeMapEntry<KeyType, Type>& get() const
   {
     auto it = m_data.find(smtk::common::typeName<Type>());
@@ -230,7 +230,7 @@ public:
   }
 
   /// Check whether type \a Type is supported.
-  template <typename Type>
+  template<typename Type>
   bool containsType() const
   {
     return (m_data.find(smtk::common::typeName<Type>()) != m_data.end());
@@ -244,7 +244,7 @@ private:
   std::unordered_map<std::string, TypeMapEntryBase*> m_data;
 };
 
-template <typename KeyType>
+template<typename KeyType>
 inline TypeMapBase<KeyType>::~TypeMapBase()
 {
   for (auto& pair : m_data)
@@ -260,7 +260,7 @@ inline TypeMapBase<KeyType>::~TypeMapBase()
 /// TypeMapBase with the ability to declare supported types; this
 /// functionality is only exposed at construction to enforce RAII (otherwise,
 /// serialization routines would have to bind type names to types).
-template <typename KeyType = std::string>
+template<typename KeyType = std::string>
 class SMTK_ALWAYS_EXPORT TypeMap : public TypeMapBase<KeyType>
 {
 public:
@@ -268,13 +268,13 @@ public:
 
   TypeMap() {}
 
-  template <typename List>
+  template<typename List>
   TypeMap()
   {
     insertTypes<List>();
   }
 
-  template <typename List>
+  template<typename List>
   TypeMap(identity<List>)
   {
     insertTypes<List>();
@@ -283,7 +283,7 @@ public:
   ~TypeMap() {}
 
 protected:
-  template <typename Type>
+  template<typename Type>
   void insertType()
   {
     std::string key = smtk::common::typeName<Type>();
@@ -296,26 +296,26 @@ protected:
     }
   }
 
-  template <typename Tuple>
+  template<typename Tuple>
   void insertTypes()
   {
     TypeMap::insertTypes<0, Tuple>();
   }
 
 private:
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertTypes()
   {
     this->insertType<typename std::tuple_element<I, Tuple>::type>();
     TypeMap::insertTypes<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertTypes()
   {
   }
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

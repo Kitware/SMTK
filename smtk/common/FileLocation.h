@@ -68,7 +68,7 @@ protected:
   std::string m_filePath;
   std::string m_referencePath;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif /* __smtk_common_FileLocation_h */

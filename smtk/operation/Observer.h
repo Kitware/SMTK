@@ -43,7 +43,7 @@ typedef std::function<int(const Operation&, EventType, Operation::Result)> Obser
 
 /// Operation observers are a specialization of the common SMTK observer pattern.
 typedef smtk::common::Observers<Observer> Observers;
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_operation_Observer_h

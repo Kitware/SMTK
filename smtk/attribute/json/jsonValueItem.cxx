@@ -92,8 +92,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ValueItemPtr& itemP
   j["DiscreteValues"] = discreteValues;
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::ValueItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -137,15 +140,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
       auto itemJson = childrenItemsJson->find(childItemName);
       if (itemJson == childrenItemsJson->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Can not find Child Item: " << childItemName << " for Value Item: " << itemPtr->name());
         continue;
       }
       auto itemValue = itemJson->find("ItemValue");
       if (itemValue == itemJson->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Can not find Child Item: "
-            << childItemName << "'s ItemValue' for Value Item: " << itemPtr->name());
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Can not find Child Item: " << childItemName
+                                      << "'s ItemValue' for Value Item: " << itemPtr->name());
         continue;
       }
       smtk::attribute::ItemPtr subItemPtr = itemIter->second;
@@ -184,5 +190,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

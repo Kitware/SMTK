@@ -23,7 +23,8 @@ namespace mesh
 namespace utility
 {
 
-std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr resource,
+std::array<smtk::mesh::MeshSet, 7> createUniformGrid(
+  smtk::mesh::ResourcePtr resource,
   const std::array<std::size_t, 3>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform)
 {
@@ -65,13 +66,14 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr res
   // Map to convert hexahedral indices to quad indices for identifying the
   // faces of a hexahedron as x-min, y-min, z-min, x-max, y-max, z-max.
   static const std::size_t hexToQuad[6][4] = { { 0, 3, 2, 1 }, { 0, 1, 5, 4 }, { 0, 4, 7, 3 },
-    { 4, 5, 6, 7 }, { 3, 7, 6, 2 }, { 1, 2, 6, 5 } };
+                                               { 4, 5, 6, 7 }, { 3, 7, 6, 2 }, { 1, 2, 6, 5 } };
   std::size_t coordinateCounter = 0;
   std::size_t cellCounter = 0;
   std::array<double, 3> xyz;
   std::array<double, 3> transformed;
-  std::array<double, 3> step = { { 1. / discretization[0], 1. / discretization[1],
-    1. / discretization[2] } };
+  std::array<double, 3> step = {
+    { 1. / discretization[0], 1. / discretization[1], 1. / discretization[2] }
+  };
   for (std::size_t i = 0; i <= discretization[0]; i++)
   {
     xyz[0] = i * step[0];
@@ -156,8 +158,10 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr res
   {
     // We have filled in the connectivity array, so we must now notify the
     // allocator that we have modified the connectivity array.
-    allocator->connectivityModified(createdCellIdsForFaces[i],
-      smtk::mesh::CellTraits<smtk::mesh::CellQuad>::NUM_VERTICES, connectivityForFaces[i]);
+    allocator->connectivityModified(
+      createdCellIdsForFaces[i],
+      smtk::mesh::CellTraits<smtk::mesh::CellQuad>::NUM_VERTICES,
+      connectivityForFaces[i]);
 
     // Construct a cell set corresponding to the quadrilateral cells identified
     // by the connectivity array we just created.
@@ -170,7 +174,8 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr res
   return constructedMeshSets;
 }
 
-std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::ResourcePtr resource,
+std::array<smtk::mesh::MeshSet, 5> createUniformGrid(
+  smtk::mesh::ResourcePtr resource,
   const std::array<std::size_t, 2>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform)
 {
@@ -287,8 +292,10 @@ std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::ResourcePtr res
   {
     // We have filled in the connectivity array, so we must now notify the
     // allocator that we have modified the connectivity array.
-    allocator->connectivityModified(createdCellIdsForEdges[i],
-      smtk::mesh::CellTraits<smtk::mesh::CellLine>::NUM_VERTICES, connectivityForEdges[i]);
+    allocator->connectivityModified(
+      createdCellIdsForEdges[i],
+      smtk::mesh::CellTraits<smtk::mesh::CellLine>::NUM_VERTICES,
+      connectivityForEdges[i]);
 
     // Construct a cell set corresponding to the line cells identified by the
     // connectivity array we just created.
@@ -300,6 +307,6 @@ std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::ResourcePtr res
 
   return constructedMeshSets;
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

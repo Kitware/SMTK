@@ -52,7 +52,8 @@ public:
    * validated when defining a new ItemDefinition.
    */
   void setValidationInstances(
-    smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr attDef);
+    smtk::attribute::ItemDefinitionPtr itemDef,
+    smtk::attribute::DefinitionPtr attDef);
 
   /**
    * Apply changes and return the edited or newly created ItemDef.

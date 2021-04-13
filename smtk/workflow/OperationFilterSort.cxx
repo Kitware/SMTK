@@ -29,10 +29,13 @@ void OperationFilterSort::apply(const WorkingSet& workingSet, Output& operations
 
     operationsToDisplay.push_back(entry);
   }
-  std::sort(operationsToDisplay.begin(), operationsToDisplay.end(), [this](const Index& a,
-                                                                      const Index& b) -> bool {
-    const auto& da = m_filterList[a];
-    const auto& db = m_filterList[b];
-    return da.precedence < db.precedence || (da.precedence == db.precedence && (da.name < db.name));
-  });
+  std::sort(
+    operationsToDisplay.begin(),
+    operationsToDisplay.end(),
+    [this](const Index& a, const Index& b) -> bool {
+      const auto& da = m_filterList[a];
+      const auto& db = m_filterList[b];
+      return da.precedence < db.precedence ||
+        (da.precedence == db.precedence && (da.name < db.name));
+    });
 }

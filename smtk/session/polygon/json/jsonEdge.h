@@ -29,10 +29,12 @@ namespace internal
 using json = nlohmann::json;
 // Define how polygon resources are serialized.
 SMTKPOLYGONSESSION_EXPORT void to_json(
-  json& j, const smtk::session::polygon::internal::edge::Ptr& edge);
+  json& j,
+  const smtk::session::polygon::internal::edge::Ptr& edge);
 
 SMTKPOLYGONSESSION_EXPORT void from_json(
-  const json& j, smtk::session::polygon::internal::edge::Ptr& edge);
+  const json& j,
+  smtk::session::polygon::internal::edge::Ptr& edge);
 
 } // namespace internal
 } // namespace polygon

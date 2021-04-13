@@ -101,7 +101,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
       //
       // TODO: handle meshsets from multiple processes (accessed using
       //       selProperties->Has(vtkSelectionNode::PROCESS_ID())
-      std::map<unsigned, std::vector<unsigned> > selectedVTKCellsByMeshset;
+      std::map<unsigned, std::vector<unsigned>> selectedVTKCellsByMeshset;
 
       // Extract selected vtk composite index and cell ids
       vtkIdTypeArray* idList = vtkIdTypeArray::SafeDownCast(selnNode->GetSelectionList());
@@ -191,8 +191,13 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
 
       created->reset();
 
-      didModify |= selnMgr->modifySelection(selection, m_smtkSelectionSource, m_smtkSelectionValue,
-        SelectionAction::FILTERED_ADD, /* bitwise */ true, /* notify */ false);
+      didModify |= selnMgr->modifySelection(
+        selection,
+        m_smtkSelectionSource,
+        m_smtkSelectionValue,
+        SelectionAction::FILTERED_ADD,
+        /* bitwise */ true,
+        /* notify */ false);
 
       // Clean up the block iterator, since we created it for the above
       // traversal.

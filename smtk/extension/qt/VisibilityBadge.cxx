@@ -18,6 +18,6 @@ namespace qt
 
 VisibilityBadge::VisibilityBadge() = default;
 VisibilityBadge::~VisibilityBadge() = default;
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk

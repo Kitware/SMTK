@@ -118,17 +118,21 @@ struct expression_grammar :
 // Our action base class inherits from |nothing| because every action must have
 // apply() or apply0(). |nothing| tells PEGTL we're OK with this action doing
 // nothing.
-template <typename Rule>
+template<typename Rule>
 struct ExpressionAction : nothing<Rule>
 {
 };
 
-template <>
+template<>
 struct ExpressionAction<number>
 {
-  template <typename ActionInput>
-  static void apply(const ActionInput& in, const InfixOperators& /* unused */, EvaluationStacks& s,
-    const InfixFunctions& /* unused */, const SubsymbolVisitor& /* unused */,
+  template<typename ActionInput>
+  static void apply(
+    const ActionInput& in,
+    const InfixOperators& /* unused */,
+    EvaluationStacks& s,
+    const InfixFunctions& /* unused */,
+    const SubsymbolVisitor& /* unused */,
     InfixExpressionError& /* unused: if we matched a number, this cannot be an invalid token */)
   {
     std::stringstream ss(in.string());
@@ -138,12 +142,16 @@ struct ExpressionAction<number>
   }
 };
 
-template <>
+template<>
 struct ExpressionAction<infix_operator>
 {
-  template <typename ActionInput>
-  static void apply(const ActionInput& in, const InfixOperators& b, EvaluationStacks& s,
-    const InfixFunctions& /* unused */, const SubsymbolVisitor& /* unused */,
+  template<typename ActionInput>
+  static void apply(
+    const ActionInput& in,
+    const InfixOperators& b,
+    EvaluationStacks& s,
+    const InfixFunctions& /* unused */,
+    const SubsymbolVisitor& /* unused */,
     InfixExpressionError& err)
   {
     std::string str = in.string();
@@ -162,12 +170,17 @@ struct ExpressionAction<infix_operator>
   }
 };
 
-template <>
+template<>
 struct ExpressionAction<function_name>
 {
-  template <typename ActionInput>
-  static void apply(const ActionInput& in, const InfixOperators& /* unused */, EvaluationStacks& s,
-    const InfixFunctions& funcs, const SubsymbolVisitor& /* unused */, InfixExpressionError& err)
+  template<typename ActionInput>
+  static void apply(
+    const ActionInput& in,
+    const InfixOperators& /* unused */,
+    EvaluationStacks& s,
+    const InfixFunctions& funcs,
+    const SubsymbolVisitor& /* unused */,
+    InfixExpressionError& err)
   {
     std::string str = in.string();
     std::size_t openingParenIdx = str.find_first_of('(');
@@ -187,12 +200,17 @@ struct ExpressionAction<function_name>
   }
 };
 
-template <>
+template<>
 struct ExpressionAction<subsymbol_reference>
 {
-  template <typename ActionInput>
-  static void apply(const ActionInput& in, const InfixOperators& /* unused */, EvaluationStacks& s,
-    const InfixFunctions& /* unused */, const SubsymbolVisitor& subFunc, InfixExpressionError& err)
+  template<typename ActionInput>
+  static void apply(
+    const ActionInput& in,
+    const InfixOperators& /* unused */,
+    EvaluationStacks& s,
+    const InfixFunctions& /* unused */,
+    const SubsymbolVisitor& subFunc,
+    InfixExpressionError& err)
   {
     std::string str = in.string();
 
@@ -214,22 +232,28 @@ struct ExpressionAction<subsymbol_reference>
   }
 };
 
-template <>
-struct ExpressionAction<one<'('> >
+template<>
+struct ExpressionAction<one<'('>>
 {
-  static void apply0(const InfixOperators& /* unused */, EvaluationStacks& s,
-    const InfixFunctions& /* unused */, const SubsymbolVisitor& /* unused */,
+  static void apply0(
+    const InfixOperators& /* unused */,
+    EvaluationStacks& s,
+    const InfixFunctions& /* unused */,
+    const SubsymbolVisitor& /* unused */,
     InfixExpressionError& /* unused */)
   {
     s.open();
   }
 };
 
-template <>
-struct ExpressionAction<one<')'> >
+template<>
+struct ExpressionAction<one<')'>>
 {
-  static void apply0(const InfixOperators& /* unused */, EvaluationStacks& s,
-    const InfixFunctions& /* unused */, const SubsymbolVisitor& /* unused */,
+  static void apply0(
+    const InfixOperators& /* unused */,
+    EvaluationStacks& s,
+    const InfixFunctions& /* unused */,
+    const SubsymbolVisitor& /* unused */,
     InfixExpressionError& /* unused */)
   {
     s.close();

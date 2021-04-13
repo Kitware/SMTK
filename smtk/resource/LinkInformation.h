@@ -51,7 +51,7 @@ struct SMTKCORE_EXPORT LinkInformation
   /// The role of the link
   Links::RoleType role;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_LinkInformation_h

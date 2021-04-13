@@ -42,8 +42,12 @@
 
 #define DEBUG_WRAPPER 0
 
-pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
-  pqServer* server, QObject* parent)
+pqSMTKWrapper::pqSMTKWrapper(
+  const QString& regGroup,
+  const QString& regName,
+  vtkSMProxy* proxy,
+  pqServer* server,
+  QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
 #if !defined(NDEBUG) && DEBUG_WRAPPER

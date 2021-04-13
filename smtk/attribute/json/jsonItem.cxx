@@ -76,5 +76,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
     itemPtr->setLocalAdvanceLevel(1, *result);
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

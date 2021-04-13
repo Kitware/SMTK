@@ -26,7 +26,7 @@ namespace mesh
 {
 class MeshSet;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -49,13 +49,17 @@ public:
   //Import a VTK dataset unstructured grid file (legacy or xml) as a
   //resource. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::ResourcePtr operator()(const std::string& filename,
-    const smtk::mesh::InterfacePtr& interface, std::string domainPropertyName) const;
+  smtk::mesh::ResourcePtr operator()(
+    const std::string& filename,
+    const smtk::mesh::InterfacePtr& interface,
+    std::string domainPropertyName) const;
 
   //Import a VTK dataset or unstructured grid file (legacy or xml) into an
   //existing resource. Optionally specify the cell property name to be used to
   //split the mesh into muliple domains.
-  bool operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
+  bool operator()(
+    const std::string& filename,
+    smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName) const;
 
   //Import a VTK dataset into an existing resource. Returns a meshset
@@ -65,12 +69,16 @@ public:
   //Import a VTK dataset into an existing resource and specify the
   //cell property name to be used to split the mesh into muliple domains.
   bool operator()(
-    vtkDataSet* dataset, smtk::mesh::ResourcePtr resource, std::string domainPropertyName) const;
+    vtkDataSet* dataset,
+    smtk::mesh::ResourcePtr resource,
+    std::string domainPropertyName) const;
 
   //Import a VTK dataset as a resource.
   //Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::ResourcePtr operator()(vtkDataSet* dataset, const smtk::mesh::InterfacePtr& interface,
+  smtk::mesh::ResourcePtr operator()(
+    vtkDataSet* dataset,
+    const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
 
 private:
@@ -78,10 +86,10 @@ private:
   ImportVTKData(const ImportVTKData& other);
   ImportVTKData& operator=(const ImportVTKData& other);
 };
-}
-}
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif //__smtk_extension_vtk_io_mesh_ImportVTKData_h

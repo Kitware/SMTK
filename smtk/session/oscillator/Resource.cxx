@@ -58,19 +58,19 @@ bool Resource::resetDomainTessellation(smtk::model::Volume& domain)
   }
   constexpr int edgeEndpoints[12][2] = { { 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 },
 
-    { 4, 5 }, { 5, 7 }, { 7, 6 }, { 6, 4 },
+                                         { 4, 5 }, { 5, 7 }, { 7, 6 }, { 6, 4 },
 
-    { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } };
+                                         { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } };
   int numEdges = (dimension == 2 ? 4 : 12);
   for (int ee = 0; ee < numEdges; ++ee)
   {
     tess->addLine(edgeEndpoints[ee][0], edgeEndpoints[ee][1]);
   }
-  double bbox[6] = { origin[0], origin[0] + size[0], origin[1], origin[1] + size[1], origin[2],
-    origin[2] + size[2] };
+  double bbox[6] = { origin[0],           origin[0] + size[0], origin[1],
+                     origin[1] + size[1], origin[2],           origin[2] + size[2] };
   domain.setBoundingBox(bbox);
   return true;
 }
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk

@@ -45,7 +45,9 @@ void ItemDefDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
   {
     ItemDefElement* item = new ItemDefElement(this->RootItem);
     item->setData(0, Qt::DisplayRole, QString::fromStdString(itemDef->name()));
-    item->setData(1, Qt::DisplayRole,
+    item->setData(
+      1,
+      Qt::DisplayRole,
       QString::fromStdString(smtk::attribute::Item::type2String(itemDef->type())));
     item->setData(2, Qt::DisplayRole, attDefType);
     item->setReferencedData(itemDef);
@@ -58,8 +60,10 @@ void ItemDefDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
 }
 
 // ------------------------------------------------------------------------
-void ItemDefDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
-  QTreeWidgetItem* parentItem, const QString& attDefType)
+void ItemDefDataModel::appendRecursively(
+  smtk::attribute::ItemDefinitionPtr parentItemDef,
+  QTreeWidgetItem* parentItem,
+  const QString& attDefType)
 {
   const GroupDef* group = static_cast<const GroupDef*>(parentItemDef.get());
   const size_t numItems = group->numberOfItemDefinitions();
@@ -68,7 +72,9 @@ void ItemDefDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr pare
     ItemDefPtr itemDef = group->itemDefinition(static_cast<int>(i));
     ItemDefElement* item = new ItemDefElement(parentItem);
     item->setData(0, Qt::DisplayRole, QString::fromStdString(itemDef->name()));
-    item->setData(1, Qt::DisplayRole,
+    item->setData(
+      1,
+      Qt::DisplayRole,
       QString::fromStdString(smtk::attribute::Item::type2String(itemDef->type())));
     item->setData(2, Qt::DisplayRole, attDefType);
     item->setReferencedData(itemDef);
@@ -109,7 +115,9 @@ void ItemDefDataModel::insert(const Container& props)
 
   ItemDefElement* elem = new ItemDefElement();
   elem->setData(0, Qt::DisplayRole, QString::fromStdString(itemDef->name()));
-  elem->setData(1, Qt::DisplayRole,
+  elem->setData(
+    1,
+    Qt::DisplayRole,
     QString::fromStdString(smtk::attribute::Item::type2String(itemDef->type())));
   elem->setData(2, Qt::DisplayRole, QString::fromStdString(props.Definition->type()));
   elem->setReferencedData(itemDef);

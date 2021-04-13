@@ -85,7 +85,9 @@ int vtkSMTKResourceSource::FillOutputPortInformation(int port, vtkInformation* i
 }
 
 int vtkSMTKResourceSource::RequestData(
-  vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+  vtkInformation* request,
+  vtkInformationVector** inInfo,
+  vtkInformationVector* outInfo)
 {
   // We must have a resource to operate
   if (this->VTKResource == nullptr)

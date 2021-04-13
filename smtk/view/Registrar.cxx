@@ -39,12 +39,15 @@ namespace view
 {
 namespace
 {
-using PhraseModelList = std::tuple<ResourcePhraseModel, ComponentPhraseModel,
-  ReferenceItemPhraseModel, SelectionPhraseModel>;
-using SubphraseGeneratorList = std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator,
-  EmptySubphraseGenerator, QueryFilterSubphraseGenerator>;
+using PhraseModelList = std::
+  tuple<ResourcePhraseModel, ComponentPhraseModel, ReferenceItemPhraseModel, SelectionPhraseModel>;
+using SubphraseGeneratorList = std::tuple<
+  SubphraseGenerator,
+  TwoLevelSubphraseGenerator,
+  EmptySubphraseGenerator,
+  QueryFilterSubphraseGenerator>;
 using BadgeList = std::tuple<AssociationBadge, ObjectIconBadge>;
-}
+} // namespace
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
@@ -90,5 +93,5 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 
   viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
-}
-}
+} // namespace view
+} // namespace smtk

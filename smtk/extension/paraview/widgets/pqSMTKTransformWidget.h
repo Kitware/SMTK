@@ -22,7 +22,8 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKTransformWidget : public pqSMTKAttributeItem
   Q_OBJECT
 public:
   pqSMTKTransformWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKTransformWidget();
 
   static qtItem* createTransformWidget(const qtAttributeItemInfo& info);
@@ -37,7 +38,8 @@ protected slots:
 
 protected:
   bool fetchTransformItems(
-    std::vector<smtk::attribute::DoubleItemPtr>& items, smtk::attribute::StringItemPtr& control);
+    std::vector<smtk::attribute::DoubleItemPtr>& items,
+    smtk::attribute::StringItemPtr& control);
 
   void setControlState(const std::string& controlState, QCheckBox* controlWidget);
 

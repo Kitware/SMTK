@@ -34,15 +34,15 @@
   defined(SMTK_MSVC)
 #include <regex>
 using std::regex;
-using std::sregex_token_iterator;
 using std::regex_search;
+using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <algorithm>
@@ -65,20 +65,24 @@ namespace smtk
 namespace model
 {
 
-static const char* cellNamesByDimensionSingular[] = { "vertex", "edge", "face", "volume",
-  "spacetime", "cell" };
+static const char* cellNamesByDimensionSingular[] = { "vertex", "edge",      "face",
+                                                      "volume", "spacetime", "cell" };
 
-static const char* cellNamesByDimensionPlural[] = { "vertices", "edges", "faces", "volumes",
-  "spacetimes", "cells" };
+static const char* cellNamesByDimensionPlural[] = { "vertices", "edges",      "faces",
+                                                    "volumes",  "spacetimes", "cells" };
 
-static const char* auxGeomNamesByDimensionSingular[] = { "auxiliary point", "auxiliary curve",
-  "auxiliary surface", "auxiliary volume", "auxiliary spacetime", "auxiliary geometry" };
+static const char* auxGeomNamesByDimensionSingular[] = {
+  "auxiliary point",  "auxiliary curve",     "auxiliary surface",
+  "auxiliary volume", "auxiliary spacetime", "auxiliary geometry"
+};
 
-static const char* auxGeomNamesByDimensionPlural[] = { "auxiliary points", "auxiliary curves",
-  "auxiliary surfaces", "auxiliary volumes", "auxiliary spacetimes", "auxiliary geometries" };
+static const char* auxGeomNamesByDimensionPlural[] = {
+  "auxiliary points",  "auxiliary curves",     "auxiliary surfaces",
+  "auxiliary volumes", "auxiliary spacetimes", "auxiliary geometries"
+};
 
-static const char* entityTypeNames[] = { "cell", "use", "shell", "group", "model", "instance",
-  "session", "aux_geom", "concept" };
+static const char* entityTypeNames[] = { "cell",     "use",     "shell",    "group",  "model",
+                                         "instance", "session", "aux_geom", "concept" };
 
 /**\class smtk::model::Entity
   *
@@ -793,7 +797,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
   return name.str();
 }
 
-template <EntityTypeBits B>
+template<EntityTypeBits B>
 bool hasBit(BitFlags val)
 {
   return ((val & B) == B);
@@ -1006,68 +1010,98 @@ static struct
   std::string name;
   BitFlags value;
 } orderedValues[] = {
-  { "*", smtk::model::ANY_ENTITY }, { "0", smtk::model::DIMENSION_0 },
-  { "1", smtk::model::DIMENSION_1 }, { "2", smtk::model::DIMENSION_2 },
-  { "3", smtk::model::DIMENSION_3 }, { "4", smtk::model::DIMENSION_4 },
-  { "any", smtk::model::ANY_ENTITY }, { "anydim", smtk::model::ANY_DIMENSION },
-  { "aux_geom", smtk::model::AUX_GEOM_ENTITY }, { "b", smtk::model::SESSION },
-  { "bdy", smtk::model::MODEL_BOUNDARY }, { "cell", smtk::model::CELL_ENTITY },
-  { "chain", smtk::model::CHAIN }, { "closed", smtk::model::CLOSED },
-  { "cover", smtk::model::COVER }, { "domain", smtk::model::MODEL_DOMAIN },
+  { "*", smtk::model::ANY_ENTITY },
+  { "0", smtk::model::DIMENSION_0 },
+  { "1", smtk::model::DIMENSION_1 },
+  { "2", smtk::model::DIMENSION_2 },
+  { "3", smtk::model::DIMENSION_3 },
+  { "4", smtk::model::DIMENSION_4 },
+  { "any", smtk::model::ANY_ENTITY },
+  { "anydim", smtk::model::ANY_DIMENSION },
+  { "aux_geom", smtk::model::AUX_GEOM_ENTITY },
+  { "b", smtk::model::SESSION },
+  { "bdy", smtk::model::MODEL_BOUNDARY },
+  { "cell", smtk::model::CELL_ENTITY },
+  { "chain", smtk::model::CHAIN },
+  { "closed", smtk::model::CLOSED },
+  { "cover", smtk::model::COVER },
+  { "domain", smtk::model::MODEL_DOMAIN },
   { "e", smtk::model::EDGE }, // Backwards-compatibility
-  { "edge", smtk::model::EDGE }, { "edge_use", smtk::model::EDGE_USE },
+  { "edge", smtk::model::EDGE },
+  { "edge_use", smtk::model::EDGE_USE },
   { "ef", smtk::model::EDGE | smtk::model::FACE },                        // Backwards-compatibility
   { "efr", smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
-  { "ev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 |
+  { "ev",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 |
       smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "f", smtk::model::FACE },     // Backwards-compatibility
   { "face", smtk::model::FACE },
   { "face_use", smtk::model::FACE_USE },
-  { "fe", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
+  { "fe",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
       smtk::model::DIMENSION_1 }, // Backwards compatibility
-  { "fev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 |
+  { "fev",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 |
       smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "flat", smtk::model::NO_SUBGROUPS },
   { "fr", smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
-  { "fv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
+  { "fv",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 |
       smtk::model::DIMENSION_0 },     // Backwards compatibility
   { "g", smtk::model::GROUP_ENTITY }, // Backwards compatibility
-  { "gmrfev", smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
+  { "gmrfev",
+    smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
       smtk::model::ANY_DIMENSION }, // Backwards compatibility
   { "group", smtk::model::GROUP_ENTITY },
-  { "homg", smtk::model::HOMOGENOUS_GROUP }, { "instance", smtk::model::INSTANCE_ENTITY },
-  { "invalid", smtk::model::INVALID }, { "loop", smtk::model::LOOP },
+  { "homg", smtk::model::HOMOGENOUS_GROUP },
+  { "instance", smtk::model::INSTANCE_ENTITY },
+  { "invalid", smtk::model::INVALID },
+  { "loop", smtk::model::LOOP },
   { "m", smtk::model::MODEL_ENTITY }, // Backwards compatibility
   { "model", smtk::model::MODEL_ENTITY },
-  { "mrfev", smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
+  { "mrfev",
+    smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY |
       smtk::model::ANY_DIMENSION }, // Backwards compatibility
   { "nodim", 0 },
-  { "none", 0 }, { "open", smtk::model::OPEN }, { "partition", smtk::model::PARTITION },
+  { "none", 0 },
+  { "open", smtk::model::OPEN },
+  { "partition", smtk::model::PARTITION },
   { "r", smtk::model::VOLUME }, // Backwards compatibility
-  { "re", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+  { "re",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
       smtk::model::DIMENSION_1 }, // Backwards compatibility
   { "region", smtk::model::VOLUME },
-  { "rev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 |
+  { "rev",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 |
       smtk::model::DIMENSION_0 }, // Backwards compatibility
-  { "rf", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+  { "rf",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
       smtk::model::DIMENSION_2 }, // Backwards compatibility
-  { "rfe", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+  { "rfe",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
       smtk::model::DIMENSION_1 }, // Backwards compatibility
-  { "rfev", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+  { "rfev",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
       smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
-  { "rfv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
+  { "rfv",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 |
       smtk::model::DIMENSION_0 }, // Backwards compatibility
-  { "rv", smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
+  { "rv",
+    smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 |
       smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "session", smtk::model::SESSION },
-  { "shell", smtk::model::SHELL_ENTITY }, { "shell2", smtk::model::SHELL },
-  { "use", smtk::model::USE_ENTITY }, { "v", smtk::model::VERTEX },       // Backwards-compatibility
+  { "shell", smtk::model::SHELL_ENTITY },
+  { "shell2", smtk::model::SHELL },
+  { "use", smtk::model::USE_ENTITY },
+  { "v", smtk::model::VERTEX },                                           // Backwards-compatibility
   { "ve", smtk::model::VERTEX | smtk::model::EDGE },                      // Backwards-compatibility
   { "vef", smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
-  { "vefr", smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE |
+  { "vefr",
+    smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE |
       smtk::model::VOLUME }, // Backwards-compatibility
   { "vertex", smtk::model::VERTEX },
-  { "vertex_use", smtk::model::VERTEX_USE }, { "volume", smtk::model::VOLUME },
+  { "vertex_use", smtk::model::VERTEX_USE },
+  { "volume", smtk::model::VOLUME },
   { "volume_use", smtk::model::VOLUME_USE },
 };
 
@@ -1200,13 +1234,15 @@ bool IsValueValid(const smtk::resource::Component& comp, smtk::model::BitFlags m
     // item is a group) group constraint flags separately;
     // In other words, we require the entity type, the dimension, and the
     // group constraints to be acceptable independently.
-    if (((mask & smtk::model::ENTITY_MASK) && !(itemType & mask & smtk::model::ENTITY_MASK) &&
-          (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
+    if (
+      ((mask & smtk::model::ENTITY_MASK) && !(itemType & mask & smtk::model::ENTITY_MASK) &&
+       (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
       ((mask & smtk::model::ANY_DIMENSION) && !(itemType & mask & smtk::model::ANY_DIMENSION)) ||
       ((itemType & smtk::model::GROUP_ENTITY) && (mask & smtk::model::GROUP_CONSTRAINT_MASK) &&
-          !(itemType & mask & smtk::model::GROUP_CONSTRAINT_MASK)))
+       !(itemType & mask & smtk::model::GROUP_CONSTRAINT_MASK)))
       return false;
-    if (itemType != mask && itemType & smtk::model::GROUP_ENTITY &&
+    if (
+      itemType != mask && itemType & smtk::model::GROUP_ENTITY &&
       // if the mask is only defined as "group", don't have to check further for members
       mask != smtk::model::GROUP_ENTITY)
     {
@@ -1278,10 +1314,11 @@ bool CheckPropStringValues(const StringList& propValues, const LimitingClause& c
   }
   return true;
 }
-}
+} // namespace
 
 Entity::QueryFunctor limitedQueryFunctor(
-  smtk::model::BitFlags bitFlags, LimitingClause& limitClause)
+  smtk::model::BitFlags bitFlags,
+  LimitingClause& limitClause)
 {
   LimitingClause clause(limitClause);
   return [bitFlags, clause](const smtk::resource::Component& comp) -> bool {
@@ -1300,8 +1337,8 @@ Entity::QueryFunctor limitedQueryFunctor(
     {
       case smtk::resource::PropertyType::FLOAT_PROPERTY:
       {
-        const smtk::resource::ConstPropertiesOfType<std::vector<double> > floatProperties =
-          comp.properties().get<std::vector<double> >();
+        const smtk::resource::ConstPropertiesOfType<std::vector<double>> floatProperties =
+          comp.properties().get<std::vector<double>>();
         if (floatProperties.empty())
         {
           return false;
@@ -1327,8 +1364,8 @@ Entity::QueryFunctor limitedQueryFunctor(
 
       case smtk::resource::PropertyType::STRING_PROPERTY:
       {
-        const smtk::resource::ConstPropertiesOfType<std::vector<std::string> > stringProperties =
-          comp.properties().get<std::vector<std::string> >();
+        const smtk::resource::ConstPropertiesOfType<std::vector<std::string>> stringProperties =
+          comp.properties().get<std::vector<std::string>>();
         if (stringProperties.empty())
         {
           return false;
@@ -1368,8 +1405,8 @@ Entity::QueryFunctor limitedQueryFunctor(
 
       case smtk::resource::PropertyType::INTEGER_PROPERTY:
       {
-        const smtk::resource::ConstPropertiesOfType<std::vector<long> > intProperties =
-          comp.properties().get<std::vector<long> >();
+        const smtk::resource::ConstPropertiesOfType<std::vector<long>> intProperties =
+          comp.properties().get<std::vector<long>>();
         if (intProperties.empty())
         {
           return false;
@@ -1427,7 +1464,8 @@ Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filte
   catch (tao::pegtl::parse_error& err)
   {
     const auto p = err.positions.front();
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Entity::filterStringToQueryFunctor: " << err.what() << "\n"
                                              << in.line_as_string(p) << "\n"
                                              << std::string(p.byte_in_line, ' ') << "^\n");
@@ -1435,7 +1473,8 @@ Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filte
   }
   if (limitClause.m_propType == smtk::resource::PropertyType::INVALID_PROPERTY)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Entity::filterStringToQueryFunctor: could not parse limit clause. Skipping.");
     return std::bind(IsValueValid, std::placeholders::_1, bitflags);
   }
@@ -1515,8 +1554,9 @@ int Entity::unarrange(ArrangementKind kind, int index, bool removeIfLast)
     bool canIncrement = false;
     for (ArrangementReferences::iterator dit = duals.begin(); dit != duals.end(); ++dit)
     {
-      if (this->modelResource()->unarrangeEntity(
-            dit->entityId, dit->kind, dit->index, removeIfLast) == 2)
+      if (
+        this->modelResource()->unarrangeEntity(
+          dit->entityId, dit->kind, dit->index, removeIfLast) == 2)
       {
         // Only increment result when dualEntity is removed, not the dual arrangement.
         canIncrement = true;
@@ -1607,8 +1647,8 @@ Arrangement* Entity::findArrangement(ArrangementKind kind, int index)
   return &kit->second[index];
 }
 
-int Entity::findArrangementInvolvingEntity(
-  ArrangementKind kind, const smtk::common::UUID& involved) const
+int Entity::findArrangementInvolvingEntity(ArrangementKind kind, const smtk::common::UUID& involved)
+  const
 {
   const Arrangements* arr = this->hasArrangementsOfKind(kind);
   if (!arr)
@@ -1634,8 +1674,8 @@ int Entity::findArrangementInvolvingEntity(
   return -1;
 }
 
-bool Entity::findDualArrangements(
-  ArrangementKind kind, int index, ArrangementReferences& duals) const
+bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementReferences& duals)
+  const
 {
   const Arrangements* arr = this->hasArrangementsOfKind(kind);
   if (!arr || index < 0 || index >= static_cast<int>(arr->size()))
@@ -1664,8 +1704,9 @@ bool Entity::findDualArrangements(
               return false;
             dualEntityId = m_relations[relationIdx];
             dualKind = HAS_CELL;
-            if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-                   dualEntityId, dualKind, this->id())) >= 0)
+            if (
+              (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+                 dualEntityId, dualKind, this->id())) >= 0)
             {
               duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
               return true;
@@ -1679,8 +1720,9 @@ bool Entity::findDualArrangements(
             for (; relStart != relEnd; ++relStart)
             {
               dualEntityId = m_relations[relStart];
-              if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-                     dualEntityId, dualKind, this->id())) >= 0)
+              if (
+                (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+                   dualEntityId, dualKind, this->id())) >= 0)
                 duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
             }
             if (!duals.empty())
@@ -1715,8 +1757,9 @@ bool Entity::findDualArrangements(
           return false;
         dualEntityId = m_relations[relationIdx];
         dualKind = kind == INCLUDES ? EMBEDDED_IN : INCLUDES;
-        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-               dualEntityId, dualKind, this->id())) >= 0)
+        if (
+          (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+             dualEntityId, dualKind, this->id())) >= 0)
         {
           duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
           return true;
@@ -1733,8 +1776,9 @@ bool Entity::findDualArrangements(
         }
         dualEntityId = m_relations[relationIdx];
         dualKind = (kind == SUPERSET_OF ? SUBSET_OF : SUPERSET_OF);
-        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-               dualEntityId, dualKind, this->id())) >= 0)
+        if (
+          (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+             dualEntityId, dualKind, this->id())) >= 0)
         {
           duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
           return true;
@@ -1751,8 +1795,9 @@ bool Entity::findDualArrangements(
         }
         dualEntityId = m_relations[relationIdx];
         dualKind = (kind == INSTANCED_BY ? INSTANCE_OF : INSTANCED_BY);
-        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-               dualEntityId, dualKind, this->id())) >= 0)
+        if (
+          (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+             dualEntityId, dualKind, this->id())) >= 0)
         {
           duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
           return true;
@@ -1774,8 +1819,9 @@ bool Entity::findDualArrangements(
           }
           dualEntityId = m_relations[relationIdx];
           dualKind = HAS_USE;
-          if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
-                 dualEntityId, dualKind, this->id())) >= 0)
+          if (
+            (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+               dualEntityId, dualKind, this->id())) >= 0)
           {
             duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
             return true;
@@ -1784,7 +1830,8 @@ bool Entity::findDualArrangements(
       }
       break;
     default:
-      smtkErrorMacro(this->modelResource()->log(),
+      smtkErrorMacro(
+        this->modelResource()->log(),
         "Asked to find dual of unknown kind of arrangement: " << kind << ".");
       break;
   }

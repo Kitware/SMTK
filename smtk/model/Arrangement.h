@@ -47,13 +47,13 @@ public:
   std::vector<int> const& details() const { return m_details; }
   ///@}
 
-  static Arrangement Construct(
-    EntityTypeBits t, ArrangementKind k, int relationIdx, int sense, Orientation o);
+  static Arrangement
+  Construct(EntityTypeBits t, ArrangementKind k, int relationIdx, int sense, Orientation o);
   //static Arrangement ConstructParent(EntityTypeBits t, ArrangementKind k, int childIdx, int sense, Orientation o);
   //static Arrangement ConstructChild(EntityTypeBits t, ArrangementKind k, int parentIdx, int sense, Orientation o);
 
-  static Arrangement CellHasUseWithIndexSenseAndOrientation(
-    int relationIdx, int sense, Orientation o);
+  static Arrangement
+  CellHasUseWithIndexSenseAndOrientation(int relationIdx, int sense, Orientation o);
   static Arrangement CellEmbeddedInEntityWithIndex(int relationIdx);
   static Arrangement CellIncludesEntityWithIndex(int relationIdx);
   static Arrangement CellHasShellWithIndex(int relationIdx);
@@ -68,8 +68,8 @@ public:
   static Arrangement EntitySupersetOfWithIndex(int relationIdx);
   static Arrangement EntitySubsetOfWithIndex(int relationIdx);
 
-  bool IndexSenseAndOrientationFromCellHasUse(
-    int& relationIdx, int& sense, Orientation& orient) const;
+  bool IndexSenseAndOrientationFromCellHasUse(int& relationIdx, int& sense, Orientation& orient)
+    const;
   bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
   bool IndexFromCellIncludesEntity(int& relationIdx) const;
   bool IndexFromCellHasShell(int& relationIdx) const;
@@ -93,19 +93,19 @@ public:
   bool relationIndices(std::vector<int>& relsOut, const EntityPtr ent, ArrangementKind k) const;
 
   /// A helper to extract the relationship from an arrangement that stores only an index.
-  template <bool (Arrangement::*M)(int&) const>
+  template<bool (Arrangement::*M)(int&) const>
   struct IndexHelper;
 
   /// A helper to extract the relationship from an arrangement that stores an index and sense.
-  template <bool (Arrangement::*M)(int&, int&) const>
+  template<bool (Arrangement::*M)(int&, int&) const>
   struct IndexAndSenseHelper;
 
   /// A helper to extract relationships from an arrangement that stores an index range.
-  template <bool (Arrangement::*M)(int&, int&) const>
+  template<bool (Arrangement::*M)(int&, int&) const>
   struct IndexRangeHelper;
 
   /// A helper to extract the relationship from an arrangement that stores an index, sense, and orientation.
-  template <bool (Arrangement::*M)(int&, int&, Orientation&) const>
+  template<bool (Arrangement::*M)(int&, int&, Orientation&) const>
   struct IndexSenseAndOrientationHelper;
 
   typedef IndexSenseAndOrientationHelper<&Arrangement::IndexSenseAndOrientationFromCellHasUse>
@@ -182,7 +182,7 @@ typedef std::map<ArrangementKind, Arrangements>::iterator ArrangementKindWithArr
 /// An array of ArrangementReference objects used, for instance, to enumerate inverse relations.
 typedef std::vector<ArrangementReference> ArrangementReferences;
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif

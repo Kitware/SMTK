@@ -25,14 +25,16 @@ PointSet::PointSet(const smtk::mesh::ResourcePtr& parent, const smtk::mesh::Hand
 }
 
 PointSet::PointSet(
-  const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::HandleRange& points)
+  const smtk::mesh::ConstResourcePtr& parent,
+  const smtk::mesh::HandleRange& points)
   : m_parent(std::const_pointer_cast<smtk::mesh::Resource>(parent))
   , m_points(points)
 {
 }
 
 PointSet::PointSet(
-  const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& points)
+  const smtk::mesh::ResourcePtr& parent,
+  const std::vector<smtk::mesh::Handle>& points)
   : m_parent(parent)
 {
   for (auto& point : points)
@@ -42,7 +44,8 @@ PointSet::PointSet(
 }
 
 PointSet::PointSet(
-  const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& points)
+  const smtk::mesh::ResourcePtr& parent,
+  const std::set<smtk::mesh::Handle>& points)
   : m_parent(parent)
 {
   for (auto& point : points)
@@ -210,5 +213,5 @@ void for_each(const PointSet& a, PointForEach& filter)
   filter.m_resource = a.m_parent;
   iface->pointForEach(a.m_points, filter);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

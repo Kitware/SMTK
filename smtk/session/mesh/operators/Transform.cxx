@@ -128,6 +128,6 @@ const char* Transform::xmlDescription() const
 {
   return Transform_xml;
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

@@ -25,9 +25,12 @@ namespace mesh
 
 MeshIOMoab::MeshIOMoab()
 {
-  this->Formats.emplace_back("MOAB File", std::vector<std::string>({ ".h5m", ".mhdf" }),
+  this->Formats.emplace_back(
+    "MOAB File",
+    std::vector<std::string>({ ".h5m", ".mhdf" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
-  this->Formats.emplace_back("Exodus File via MOAB",
+  this->Formats.emplace_back(
+    "Exodus File via MOAB",
     std::vector<std::string>({ ".ex2", ".exo", ".exoII", ".exo2", ".e", ".g", ".gen" }),
     Format::Import | Format::Export | Format::Read | Format::Write);
   this->Formats.emplace_back(
@@ -42,20 +45,26 @@ MeshIOMoab::MeshIOMoab()
   // An update to MOAB's lastest master caused the stl importer to fail. Until
   // this is fixed, we temporarily disable MOAB's stl reader (we still have
   // VTK's stl reader, if VTK is enabled).
-  this->Formats.push_back(Format("Stereolithography File", std::vector<std::string>({ ".stl" }),
+  this->Formats.push_back(Format(
+    "Stereolithography File",
+    std::vector<std::string>({ ".stl" }),
     Format::Import | Format::Export));
 #endif
   this->Formats.emplace_back(
     "Wavefront OBJ File", std::vector<std::string>({ ".obj" }), Format::Import | Format::Export);
 }
 
-smtk::mesh::ResourcePtr MeshIOMoab::importMesh(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, const std::string& /*unused*/) const
+smtk::mesh::ResourcePtr MeshIOMoab::importMesh(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  const std::string& /*unused*/) const
 {
   return this->read(filePath, interface, Subset::EntireResource);
 }
 
-bool MeshIOMoab::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+bool MeshIOMoab::importMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   const std::string& /*unused*/) const
 {
   return this->read(filePath, resource, Subset::EntireResource);
@@ -76,7 +85,9 @@ bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr
 // }
 
 smtk::mesh::ResourcePtr MeshIOMoab::read(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& /*unused*/, Subset subset) const
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& /*unused*/,
+  Subset subset) const
 {
   smtk::mesh::ResourcePtr resource;
 
@@ -100,8 +111,8 @@ smtk::mesh::ResourcePtr MeshIOMoab::read(
   return resource;
 }
 
-bool MeshIOMoab::read(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset) const
+bool MeshIOMoab::read(const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset)
+  const
 {
   bool result;
 
@@ -125,8 +136,8 @@ bool MeshIOMoab::read(
   return result;
 }
 
-bool MeshIOMoab::write(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset) const
+bool MeshIOMoab::write(const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset)
+  const
 {
   switch (subset)
   {
@@ -152,6 +163,6 @@ bool MeshIOMoab::write(smtk::mesh::ResourcePtr resource, Subset subset) const
 
   return this->write(resource->writeLocation().absolutePath(), resource, subset);
 }
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk

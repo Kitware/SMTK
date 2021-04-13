@@ -43,7 +43,9 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
 ReferenceItemDefinition::~ReferenceItemDefinition() = default;
 
 bool ReferenceItemDefinition::setAcceptsEntries(
-  const std::string& typeName, const std::string& filter, bool accept)
+  const std::string& typeName,
+  const std::string& filter,
+  bool accept)
 {
   if (accept)
   {
@@ -69,7 +71,9 @@ bool ReferenceItemDefinition::setAcceptsEntries(
 }
 
 bool ReferenceItemDefinition::setRejectsEntries(
-  const std::string& typeName, const std::string& filter, bool add)
+  const std::string& typeName,
+  const std::string& filter,
+  bool add)
 {
   if (add)
   {
@@ -185,13 +189,14 @@ bool ReferenceItemDefinition::usingCommonLabel() const
 }
 
 smtk::attribute::ItemPtr ReferenceItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new ReferenceItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr ReferenceItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+ReferenceItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new ReferenceItem(owningItem, itemPosition, subGroupPosition));
 }
@@ -205,8 +210,8 @@ smtk::attribute::ItemDefinitionPtr ReferenceItemDefinition::createCopy(
   return copy;
 }
 
-void ReferenceItemDefinition::copyTo(
-  Ptr dest, smtk::attribute::ItemDefinition::CopyInfo& info) const
+void ReferenceItemDefinition::copyTo(Ptr dest, smtk::attribute::ItemDefinition::CopyInfo& info)
+  const
 {
   if (!dest)
   {
@@ -335,7 +340,8 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
-    if (m_onlyResources ||
+    if (
+      m_onlyResources ||
       (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(*comp)))
     {
       return this->checkCategories(comp);
@@ -354,7 +360,8 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
-    if (!m_onlyResources && rsrc->isOfType(acceptable.first) &&
+    if (
+      !m_onlyResources && rsrc->isOfType(acceptable.first) &&
       rsrc->queryOperation(acceptable.second)(*comp))
     {
       return this->checkCategories(comp);
@@ -364,8 +371,10 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
   return false;
 }
 
-std::size_t ReferenceItemDefinition::addConditional(const std::string& resourceQuery,
-  const std::string& componentQuery, const std::vector<std::string>& itemNames)
+std::size_t ReferenceItemDefinition::addConditional(
+  const std::string& resourceQuery,
+  const std::string& componentQuery,
+  const std::vector<std::string>& itemNames)
 {
   // Both query strings can not both be empty
   if (resourceQuery.empty() && componentQuery.empty())
@@ -501,6 +510,6 @@ std::size_t ReferenceItemDefinition::testConditionals(PersistentObjectPtr& objec
   }
   return s_invalidIndex;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 #endif

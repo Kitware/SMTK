@@ -40,11 +40,13 @@ namespace view
   * Configuration::Component.
   */
 class SMTKCORE_EXPORT BadgeFactory
-  : public smtk::common::Factory<Badge, void,
-      smtk::common::factory::Inputs<BadgeSet&, const Configuration::Component&> >
+  : public smtk::common::Factory<
+      Badge,
+      void,
+      smtk::common::factory::Inputs<BadgeSet&, const Configuration::Component&>>
 {
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

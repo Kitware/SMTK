@@ -90,8 +90,11 @@ int FindPhraseLocation(DescriptivePhrase::Ptr& phr, const DescriptivePhrases& si
   return locn;
 }
 
-bool TwoLevelSubphraseGenerator::findSortedLocation(Path& pathInOut, smtk::model::EntityPtr entity,
-  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+bool TwoLevelSubphraseGenerator::findSortedLocation(
+  Path& pathInOut,
+  smtk::model::EntityPtr entity,
+  DescriptivePhrase::Ptr& phr,
+  const DescriptivePhrase::Ptr& parent) const
 {
   if (!entity || !parent || !parent->areSubphrasesBuilt())
   {
@@ -130,7 +133,9 @@ bool TwoLevelSubphraseGenerator::findSortedLocation(Path& pathInOut, smtk::model
 }
 
 void TwoLevelSubphraseGenerator::childrenOfResource(
-  DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  smtk::resource::ResourcePtr rsrc,
+  DescriptivePhrases& result)
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
@@ -232,5 +237,5 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
     std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTypeThenTitle);
   }
 }
-}
-}
+} // namespace view
+} // namespace smtk

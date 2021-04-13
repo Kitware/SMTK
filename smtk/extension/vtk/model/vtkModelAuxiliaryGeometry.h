@@ -51,18 +51,22 @@ public:
   void Dirty();
 
   /// A helper method to read data using a templated VTK reader and output data-object class.
-  template <typename T, typename U>
+  template<typename T, typename U>
   static vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom);
 
 protected:
   vtkModelAuxiliaryGeometry();
   ~vtkModelAuxiliaryGeometry() override;
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+  int RequestInformation(
+    vtkInformation* request,
+    vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) override;
 
   int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+    vtkInformation* request,
+    vtkInformationVector** inInfo,
+    vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 

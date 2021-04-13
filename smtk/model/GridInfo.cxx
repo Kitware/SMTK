@@ -16,5 +16,5 @@ namespace model
 GridInfo::GridInfo() = default;
 
 GridInfo::~GridInfo() = default;
-}
-}
+} // namespace model
+} // namespace smtk

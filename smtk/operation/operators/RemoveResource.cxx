@@ -96,5 +96,5 @@ const char* RemoveResource::xmlDescription() const
 {
   return RemoveResource_xml;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

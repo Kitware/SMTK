@@ -45,13 +45,14 @@ bool ResourceItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectP
 }
 
 smtk::attribute::ItemPtr ResourceItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new ResourceItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr ResourceItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+ResourceItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new ResourceItem(owningItem, itemPosition, subGroupPosition));
 }

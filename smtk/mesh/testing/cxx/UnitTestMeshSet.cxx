@@ -145,7 +145,8 @@ void verify_mesh_by_name(const smtk::mesh::ResourcePtr& mr)
     numMeshesWithNames += ms.size();
   }
 
-  test(collec_numMeshes >= numMeshesWithNames,
+  test(
+    collec_numMeshes >= numMeshesWithNames,
     "Number of meshes with names should be less than total number of meshes");
 }
 
@@ -228,9 +229,11 @@ void verify_meshset_subset_dim(const smtk::mesh::ResourcePtr& mr)
   test(allMeshes.subset(smtk::mesh::Dims0) == mr->meshes(smtk::mesh::Dims0));
 }
 
-template <typename T>
+template<typename T>
 void verify_subset_tag(
-  const smtk::mesh::ResourcePtr& mr, smtk::mesh::MeshSet allMeshes, std::vector<T> tag_values)
+  const smtk::mesh::ResourcePtr& mr,
+  smtk::mesh::MeshSet allMeshes,
+  std::vector<T> tag_values)
 {
   for (std::size_t i = 0; i < tag_values.size(); ++i)
   {
@@ -410,11 +413,11 @@ void verify_meshset_for_each(const smtk::mesh::ResourcePtr& mr)
 void verify_meshset_visit(const smtk::mesh::ResourcePtr& mr)
 {
   std::size_t numMeshesIteratedOver = 0;
-  smtk::resource::Component::Visitor countMeshesAndCells = [&](
-    const smtk::resource::ComponentPtr& component) {
-    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-    numMeshesIteratedOver++;
-  };
+  smtk::resource::Component::Visitor countMeshesAndCells =
+    [&](const smtk::resource::ComponentPtr& component) {
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      numMeshesIteratedOver++;
+    };
 
   mr->visit(countMeshesAndCells);
 
@@ -424,26 +427,26 @@ void verify_meshset_visit(const smtk::mesh::ResourcePtr& mr)
 void verify_meshset_set_names(const smtk::mesh::ResourcePtr& mr)
 {
   std::size_t numMeshesIteratedOver = 0;
-  smtk::resource::Component::Visitor setMeshNames = [&](
-    const smtk::resource::ComponentPtr& component) {
-    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-    std::stringstream s;
-    s << "meshset " << numMeshesIteratedOver;
-    meshComponent->mesh().setName(s.str());
-    numMeshesIteratedOver++;
-  };
+  smtk::resource::Component::Visitor setMeshNames =
+    [&](const smtk::resource::ComponentPtr& component) {
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      std::stringstream s;
+      s << "meshset " << numMeshesIteratedOver;
+      meshComponent->mesh().setName(s.str());
+      numMeshesIteratedOver++;
+    };
 
   mr->visit(setMeshNames);
 
   numMeshesIteratedOver = 0;
-  smtk::resource::Component::Visitor checkMeshNames = [&](
-    const smtk::resource::ComponentPtr& component) {
-    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-    std::stringstream s;
-    s << "meshset " << numMeshesIteratedOver;
-    test(meshComponent->name() == s.str());
-    numMeshesIteratedOver++;
-  };
+  smtk::resource::Component::Visitor checkMeshNames =
+    [&](const smtk::resource::ComponentPtr& component) {
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      std::stringstream s;
+      s << "meshset " << numMeshesIteratedOver;
+      test(meshComponent->name() == s.str());
+      numMeshesIteratedOver++;
+    };
 
   mr->visit(checkMeshNames);
 }
@@ -451,35 +454,36 @@ void verify_meshset_set_names(const smtk::mesh::ResourcePtr& mr)
 void verify_meshset_set_name_op(const smtk::mesh::ResourcePtr& mr)
 {
   std::size_t numMeshesIteratedOver = 0;
-  smtk::resource::Component::Visitor setMeshNames = [&](
-    const smtk::resource::ComponentPtr& component) {
-    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-    std::stringstream s;
-    s << "my_meshset " << numMeshesIteratedOver;
-    smtk::mesh::SetMeshName::Ptr setMeshNameOp = smtk::mesh::SetMeshName::create();
-    setMeshNameOp->parameters()->associate(meshComponent);
-    setMeshNameOp->parameters()->findString("name")->setValue(s.str());
-    auto result = setMeshNameOp->operate();
-    test(result->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
-    numMeshesIteratedOver++;
-  };
+  smtk::resource::Component::Visitor setMeshNames =
+    [&](const smtk::resource::ComponentPtr& component) {
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      std::stringstream s;
+      s << "my_meshset " << numMeshesIteratedOver;
+      smtk::mesh::SetMeshName::Ptr setMeshNameOp = smtk::mesh::SetMeshName::create();
+      setMeshNameOp->parameters()->associate(meshComponent);
+      setMeshNameOp->parameters()->findString("name")->setValue(s.str());
+      auto result = setMeshNameOp->operate();
+      test(
+        result->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+      numMeshesIteratedOver++;
+    };
 
   mr->visit(setMeshNames);
 
   numMeshesIteratedOver = 0;
-  smtk::resource::Component::Visitor checkMeshNames = [&](
-    const smtk::resource::ComponentPtr& component) {
-    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-    std::stringstream s;
-    s << "my_meshset " << numMeshesIteratedOver;
-    test(meshComponent->name() == s.str());
-    numMeshesIteratedOver++;
-  };
+  smtk::resource::Component::Visitor checkMeshNames =
+    [&](const smtk::resource::ComponentPtr& component) {
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      std::stringstream s;
+      s << "my_meshset " << numMeshesIteratedOver;
+      test(meshComponent->name() == s.str());
+      numMeshesIteratedOver++;
+    };
 
   mr->visit(checkMeshNames);
 }
-}
+} // namespace
 
 int UnitTestMeshSet(int /*unused*/, char** const /*unused*/)
 {

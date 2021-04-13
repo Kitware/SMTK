@@ -56,8 +56,9 @@ SetInstancePrototype::Result SetInstancePrototype::operateInternal()
   EntityRef oldProto = instance.prototype();
   bool ok = instance.setPrototype(prototype);
 
-  Result result = this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                        : smtk::operation::Operation::Outcome::FAILED);
+  Result result = this->createResult(
+    ok ? smtk::operation::Operation::Outcome::SUCCEEDED
+       : smtk::operation::Operation::Outcome::FAILED);
 
   // Mark entities as modified. Note that the original and
   // the new prototype should be included so descriptive

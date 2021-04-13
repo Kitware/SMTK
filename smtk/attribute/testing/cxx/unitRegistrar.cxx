@@ -34,8 +34,9 @@ void testDefaultEvaluatorRegistration()
   auto attRes = resourceManager->create<smtk::attribute::Resource>();
   auto infixDefinition = attRes->createDefinition("infixExpression");
 
-  smtkTest(attRes->evaluatorFactory().addDefinitionForEvaluator(
-             "InfixExpressionEvaluator", infixDefinition->type()) == true,
+  smtkTest(
+    attRes->evaluatorFactory().addDefinitionForEvaluator(
+      "InfixExpressionEvaluator", infixDefinition->type()) == true,
     "Expected to be able to add definition for InfixExpressionEvaluator because "
     "Registrar already registered InfixExpressionEvaluator.")
 
@@ -43,8 +44,9 @@ void testDefaultEvaluatorRegistration()
 
   auto fooDefinition = attRes->createDefinition("fooExpression");
 
-  smtkTest(attRes->evaluatorFactory().addDefinitionForEvaluator(
-             "InfixExpressionEvaluator", fooDefinition->type()) == false,
+  smtkTest(
+    attRes->evaluatorFactory().addDefinitionForEvaluator(
+      "InfixExpressionEvaluator", fooDefinition->type()) == false,
     "Expected failure to add definition to InfixExpressionEvaluator because "
     "Registrar unregistered InfixExpressionEvaluator.")
 }

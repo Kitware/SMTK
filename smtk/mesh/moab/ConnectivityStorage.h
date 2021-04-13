@@ -32,8 +32,11 @@ public:
 
   void initTraversal(smtk::mesh::ConnectivityStorage::IterationState& state) override;
 
-  bool fetchNextCell(smtk::mesh::ConnectivityStorage::IterationState& state,
-    smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points) override;
+  bool fetchNextCell(
+    smtk::mesh::ConnectivityStorage::IterationState& state,
+    smtk::mesh::CellType& cellType,
+    int& numPts,
+    const smtk::mesh::Handle*& points) override;
 
   bool equal(smtk::mesh::ConnectivityStorage* other) const override;
 
@@ -57,8 +60,8 @@ private:
   //moab vertices don't have connectivity so we create our own
   std::vector<smtk::mesh::Handle> VertConnectivityStorage;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

@@ -25,10 +25,10 @@ using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <fstream>
@@ -86,5 +86,5 @@ smtk::mesh::PointCloud PointCloudFromCSV::operator()(const std::string& fileName
 
   return smtk::mesh::PointCloud(std::move(coordinates), std::move(values));
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

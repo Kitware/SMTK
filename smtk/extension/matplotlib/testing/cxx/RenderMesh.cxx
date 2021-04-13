@@ -55,7 +55,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 // Demonstrate/test the ability to call python SMTK operators within the C++
 // environment.
@@ -109,7 +109,8 @@ int RenderMesh(int argc, char* argv[])
   smtk::operation::Operation::Result result = op->operate();
 
   // Confirm that the operator succeeded
-  if (result->findInt("outcome")->value() !=
+  if (
+    result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "render mesh operator failed\n";
@@ -132,7 +133,8 @@ int RenderMesh(int argc, char* argv[])
   renderWindow->AddRenderer(renderer);
 
   // Compare the resulting image with the baseline
-  if (smtkRegressionTestImage(renderWindow, 10., "matplotlib_rendered_mesh.png") !=
+  if (
+    smtkRegressionTestImage(renderWindow, 10., "matplotlib_rendered_mesh.png") !=
     vtkTesting::PASSED)
   {
     return 1;

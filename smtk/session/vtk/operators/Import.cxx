@@ -150,9 +150,15 @@ Import::Result Import::operateInternal()
   return this->importExodus(resource);
 }
 
-static void AddPreservedUUID(vtkDataObject* data, int& curId, vtkDataObject* parentData,
-  int idxInParent, int modelNumber, const std::vector<smtk::common::UUID>& uuids,
-  const SessionPtr& session, const ResourcePtr& resource)
+static void AddPreservedUUID(
+  vtkDataObject* data,
+  int& curId,
+  vtkDataObject* parentData,
+  int idxInParent,
+  int modelNumber,
+  const std::vector<smtk::common::UUID>& uuids,
+  const SessionPtr& session,
+  const ResourcePtr& resource)
 {
   if (!data || curId < 0 || static_cast<std::size_t>(curId) >= uuids.size())
     return;
@@ -168,9 +174,15 @@ static void AddPreservedUUID(vtkDataObject* data, int& curId, vtkDataObject* par
   ++curId;
 }
 
-static void AddPreservedUUIDsRecursive(vtkDataObject* data, int& curId, vtkDataObject* parentData,
-  int idxInParent, int modelNumber, const std::vector<smtk::common::UUID>& uuids,
-  const SessionPtr& session, const ResourcePtr& resource)
+static void AddPreservedUUIDsRecursive(
+  vtkDataObject* data,
+  int& curId,
+  vtkDataObject* parentData,
+  int idxInParent,
+  int modelNumber,
+  const std::vector<smtk::common::UUID>& uuids,
+  const SessionPtr& session,
+  const ResourcePtr& resource)
 {
   AddPreservedUUID(data, curId, parentData, idxInParent, modelNumber, uuids, session, resource);
 
@@ -186,8 +198,10 @@ static void AddPreservedUUIDsRecursive(vtkDataObject* data, int& curId, vtkDataO
   }
 }
 
-static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelOut,
-  const std::vector<smtk::common::UUID>& uuids, const SessionPtr& session,
+static smtk::model::Model addModel(
+  vtkSmartPointer<vtkMultiBlockDataSet>& modelOut,
+  const std::vector<smtk::common::UUID>& uuids,
+  const SessionPtr& session,
   const ResourcePtr& resource)
 {
   // If we are reading a vtk session resource (as opposed to a new import), we
@@ -259,8 +273,8 @@ static void AddBlockChildrenAsModelChildren(vtkMultiBlockDataSet* data)
     data->GetInformation(), &children[0], 0, 0, static_cast<int>(children.size()));
 }
 
-static void MarkMeshInfo(
-  vtkDataObject* data, int dim, const char* name, EntityType etype, int pedigree)
+static void
+MarkMeshInfo(vtkDataObject* data, int dim, const char* name, EntityType etype, int pedigree)
 {
   if (!data)
     return; // Skip empty leaf nodes
@@ -286,8 +300,13 @@ static void MarkMeshInfo(
   info->Set(Session::SMTK_PEDIGREE(), pedigree);
 }
 
-static void MarkSLACMeshInfo(vtkDataObject* data, int dim, const char* name, vtkInformation* meta,
-  EntityType etype, int pedigree)
+static void MarkSLACMeshInfo(
+  vtkDataObject* data,
+  int dim,
+  const char* name,
+  vtkInformation* meta,
+  EntityType etype,
+  int pedigree)
 {
   const char* name2 = meta->Get(vtkCompositeDataSet::NAME());
   if (name2 && name2[0])
@@ -303,7 +322,8 @@ static void MarkSLACMeshInfo(vtkDataObject* data, int dim, const char* name, vtk
 }
 
 static vtkSmartPointer<vtkMultiBlockDataSet> FlattenBlocks(
-  vtkMultiBlockDataSet** blocks, std::size_t nblk)
+  vtkMultiBlockDataSet** blocks,
+  std::size_t nblk)
 {
   auto modelOut = vtkSmartPointer<vtkMultiBlockDataSet>::New();
   if (!blocks)
@@ -324,8 +344,12 @@ static vtkSmartPointer<vtkMultiBlockDataSet> FlattenBlocks(
   return modelOut;
 }
 
-static void FillAndMarkBlocksFromSrc(vtkMultiBlockDataSet* modelOut, vtkIdType& ii,
-  vtkMultiBlockDataSet* src, const char* srcName, EntityType srcType,
+static void FillAndMarkBlocksFromSrc(
+  vtkMultiBlockDataSet* modelOut,
+  vtkIdType& ii,
+  vtkMultiBlockDataSet* src,
+  const char* srcName,
+  EntityType srcType,
   std::function<int(vtkIdType)> pedigreeFn = [](vtkIdType zz) { return static_cast<int>(zz); })
 {
   vtkIdType nbi = src->GetNumberOfBlocks();
@@ -361,7 +385,8 @@ vtkSmartPointer<vtkMultiBlockDataSet> importExodusInternal(const std::string fil
   rdr->UpdateInformation();
   // Turn on all side and node sets.
   vtkExodusIIReader::ObjectType set_types[] = { vtkExodusIIReader::SIDE_SET,
-    vtkExodusIIReader::NODE_SET, vtkExodusIIReader::ELEM_BLOCK };
+                                                vtkExodusIIReader::NODE_SET,
+                                                vtkExodusIIReader::ELEM_BLOCK };
   const int num_set_types = sizeof(set_types) / sizeof(set_types[0]);
   for (int j = 0; j < num_set_types; ++j)
     for (int i = 0; i < rdr->GetNumberOfObjects(set_types[j]); ++i)
@@ -378,24 +403,28 @@ vtkSmartPointer<vtkMultiBlockDataSet> importExodusInternal(const std::string fil
   }
 
   vtkMultiBlockDataSet* blocks[] = { vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)),
-    vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(4)),
-    vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(7)) };
+                                     vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(4)),
+                                     vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(7)) };
   vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
     FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
   vtkIdType ii = 0;
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], "element block", EXO_BLOCK,
-    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, pp); });
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], "side set", EXO_SIDE_SET,
-    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, pp); });
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[2], "node set", EXO_NODE_SET,
-    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::NODE_SET, pp); });
+  FillAndMarkBlocksFromSrc(
+    modelOut, ii, blocks[0], "element block", EXO_BLOCK, [&rdr](vtkIdType pp) {
+      return rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, pp);
+    });
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], "side set", EXO_SIDE_SET, [&rdr](vtkIdType pp) {
+    return rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, pp);
+  });
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[2], "node set", EXO_NODE_SET, [&rdr](vtkIdType pp) {
+    return rdr->GetObjectId(vtkExodusIIReader::NODE_SET, pp);
+  });
 
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   AddBlockChildrenAsModelChildren(modelOut);
 
   return modelOut;
 }
-}
+} // namespace
 
 Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& resource)
 {
@@ -409,11 +438,11 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > modelsOut(filenameItem->numberOfValues());
+  std::vector<vtkSmartPointer<vtkMultiBlockDataSet>> modelsOut(filenameItem->numberOfValues());
   if (filenameItem->numberOfValues() > 1)
   {
-    smtk::common::ThreadPool<vtkSmartPointer<vtkMultiBlockDataSet> > threadPool;
-    std::vector<std::future<vtkSmartPointer<vtkMultiBlockDataSet> > > futures;
+    smtk::common::ThreadPool<vtkSmartPointer<vtkMultiBlockDataSet>> threadPool;
+    std::vector<std::future<vtkSmartPointer<vtkMultiBlockDataSet>>> futures;
 
     for (std::size_t i = 0; i < modelsOut.size(); ++i)
     {
@@ -491,9 +520,10 @@ Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resou
   // Read in the data (so we can obtain tessellation info)
   rdr->Update();
 
-  vtkMultiBlockDataSet* blocks[] = { vtkMultiBlockDataSet::SafeDownCast(
-                                       rdr->GetOutputDataObject(0)),
-    vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(1)) };
+  vtkMultiBlockDataSet* blocks[] = {
+    vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0)),
+    vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(1))
+  };
   vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
     FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
   vtkIdType ii = 0;
@@ -615,8 +645,10 @@ Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& r
   if (!labelItem->isEnabled())
   { // you need a label map to indicate which segment each cell belongs to
 
-    smtkErrorMacro(this->log(), "Label map is needed to indicate which "
-                                "segment each cell belongs to.");
+    smtkErrorMacro(
+      this->log(),
+      "Label map is needed to indicate which "
+      "segment each cell belongs to.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   else
@@ -669,8 +701,12 @@ Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& r
   modelOut->SetNumberOfBlocks(1);
   modelOut->SetBlock(0, img.GetPointer());
 
-  MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(),
-    EXO_MODEL, -1);
+  MarkMeshInfo(
+    modelOut.GetPointer(),
+    imgDim,
+    path(filename).stem().string<std::string>().c_str(),
+    EXO_MODEL,
+    -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
   for (int j = 0; j < numLabels; ++j)
   {

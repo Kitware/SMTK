@@ -115,12 +115,17 @@ protected slots:
 
 protected:
   void createWidget() override;
-  QWidget* createFileBrowseWidget(int elementIdx, const smtk::attribute::FileSystemItem& item,
+  QWidget* createFileBrowseWidget(
+    int elementIdx,
+    const smtk::attribute::FileSystemItem& item,
     const smtk::attribute::FileSystemItemDefinition& itemDef);
-  virtual void loadInputValues(const smtk::attribute::FileSystemItem& item,
+  virtual void loadInputValues(
+    const smtk::attribute::FileSystemItem& item,
     const smtk::attribute::FileSystemItemDefinition& itemDef);
   virtual void updateUI();
-  virtual void addInputEditor(int i, const smtk::attribute::FileSystemItem& item,
+  virtual void addInputEditor(
+    int i,
+    const smtk::attribute::FileSystemItem& item,
     const smtk::attribute::FileSystemItemDefinition& itemDef);
   virtual void clearChildWidgets();
   bool updateRecentValues(const std::string& val);
@@ -131,7 +136,7 @@ private:
   qtFileItemInternals* m_internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

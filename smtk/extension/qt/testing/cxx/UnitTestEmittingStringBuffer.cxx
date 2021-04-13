@@ -31,7 +31,7 @@ void flushEventQueue()
     QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
   }
 }
-}
+} // namespace
 
 void TestEmittingStringBuffer::run()
 {
@@ -71,8 +71,9 @@ int UnitTestEmittingStringBuffer(int argc, char** const argv)
   TestEmittingStringBuffer* testEmittingStringBuffer = new TestEmittingStringBuffer(&application);
 
   // Exit when the task signals finished
-  QObject::connect(testEmittingStringBuffer, &TestEmittingStringBuffer::finished,
-    [&application]() { QTimer::singleShot(0, &application, &QCoreApplication::quit); });
+  QObject::connect(testEmittingStringBuffer, &TestEmittingStringBuffer::finished, [&application]() {
+    QTimer::singleShot(0, &application, &QCoreApplication::quit);
+  });
 
   // Run the task from the application event loop
   QTimer::singleShot(0, testEmittingStringBuffer, SLOT(run()));

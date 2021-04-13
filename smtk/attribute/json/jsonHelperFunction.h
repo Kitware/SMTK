@@ -36,24 +36,33 @@ public:
    * @param idef shared pointer to ItemDefinition
    */
   static void processItemDefinitionTypeToJson(
-    nlohmann::json& j, const smtk::attribute::ItemDefinitionPtr& idef);
+    nlohmann::json& j,
+    const smtk::attribute::ItemDefinitionPtr& idef);
 
   /**
    * @brief A helper function to add an item definition into the itemDefinitionPtr
    * given a json iterator
    */
-  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
-    ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
+  static void processItemDefinitionTypeFromJson(
+    const nlohmann::json& jItemDef,
+    ValueItemDefinitionPtr& idef,
+    const smtk::attribute::ResourcePtr& resPtr);
 
-  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
-    ReferenceItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
+  static void processItemDefinitionTypeFromJson(
+    const nlohmann::json& jItemDef,
+    ReferenceItemDefinitionPtr& idef,
+    const smtk::attribute::ResourcePtr& resPtr);
 
-  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef, DefinitionPtr& idef,
+  static void processItemDefinitionTypeFromJson(
+    const nlohmann::json& jItemDef,
+    DefinitionPtr& idef,
     const smtk::attribute::ResourcePtr& resPtr,
     std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 
-  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
-    GroupItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
+  static void processItemDefinitionTypeFromJson(
+    const nlohmann::json& jItemDef,
+    GroupItemDefinitionPtr& idef,
+    const smtk::attribute::ResourcePtr& resPtr);
 
   /**
    * @brief A helper function to dispatch itemPtr process based on its type
@@ -63,11 +72,14 @@ public:
   /**
    * @brief A helper function to fill an itemPtr given json
    */
-  static void processItemTypeFromJson(const nlohmann::json& j, ItemPtr& itemPtr,
-    std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo,
+  static void processItemTypeFromJson(
+    const nlohmann::json& j,
+    ItemPtr& itemPtr,
+    std::vector<ItemExpressionInfo>& itemExpressionInfo,
+    std::vector<AttRefInfo>& attRefInfo,
     const std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

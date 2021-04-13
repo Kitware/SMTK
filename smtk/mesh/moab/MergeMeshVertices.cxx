@@ -35,18 +35,19 @@ MergeMeshVertices::~MergeMeshVertices()
 }
 
 ::moab::ErrorCode MergeMeshVertices::merge_entities(
-  const ::moab::Range& meshsets, const double merge_tol)
+  const ::moab::Range& meshsets,
+  const double merge_tol)
 {
   using ::moab::AdaptiveKDTree;
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
+  using ::moab::MB_SUCCESS;
   using ::moab::MB_TAG_DENSE;
   using ::moab::MB_TAG_EXCL;
   using ::moab::MB_TYPE_HANDLE;
-  using ::moab::Range;
   using ::moab::MBENTITYSET;
   using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
+  using ::moab::Range;
 
   ErrorCode rval;
 
@@ -133,22 +134,24 @@ MergeMeshVertices::~MergeMeshVertices()
 }
 
 ::moab::ErrorCode MergeMeshVertices::find_merged_to(
-  ::moab::EntityHandle& tree_root, ::moab::AdaptiveKDTree& tree, ::moab::Tag merged_to)
+  ::moab::EntityHandle& tree_root,
+  ::moab::AdaptiveKDTree& tree,
+  ::moab::Tag merged_to)
 {
 
   using ::moab::AdaptiveKDTree;
+  using ::moab::AdaptiveKDTreeIter;
+  using ::moab::CartVect;
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
+  using ::moab::MB_ENTITY_NOT_FOUND;
+  using ::moab::MB_SUCCESS;
   using ::moab::MB_TAG_DENSE;
   using ::moab::MB_TAG_EXCL;
   using ::moab::MB_TYPE_HANDLE;
-  using ::moab::Range;
   using ::moab::MBENTITYSET;
   using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
-  using ::moab::AdaptiveKDTreeIter;
-  using ::moab::MB_ENTITY_NOT_FOUND;
-  using ::moab::CartVect;
+  using ::moab::Range;
 
   AdaptiveKDTreeIter iter;
 
@@ -274,10 +277,10 @@ MergeMeshVertices::~MergeMeshVertices()
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
-  using ::moab::Range;
-  using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MBVERTEX;
+  using ::moab::Range;
 
   // we start with an empty range of vertices that are "merged to"
   // they are used (eventually) for higher dim entities
@@ -319,10 +322,10 @@ MergeMeshVertices::~MergeMeshVertices()
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
-  using ::moab::Range;
-  using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MBVERTEX;
+  using ::moab::Range;
 
   for (Range::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
   {
@@ -354,10 +357,10 @@ MergeMeshVertices::~MergeMeshVertices()
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
-  using ::moab::Range;
-  using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MBVERTEX;
+  using ::moab::Range;
 
   ErrorCode result;
 
@@ -391,7 +394,7 @@ MergeMeshVertices::~MergeMeshVertices()
       {
         for (int j = 0; j < verts_per_ent; ++j, ++index)
         {
-          typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle> MapType;
+          typedef std::map<::moab::EntityHandle, ::moab::EntityHandle> MapType;
           MapType::const_iterator pos = mappingFromDeadToAlive.find(connectivity[index]);
           if (pos != mappingFromDeadToAlive.end())
           {
@@ -415,10 +418,10 @@ MergeMeshVertices::~MergeMeshVertices()
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
-  using ::moab::Range;
-  using ::moab::MBVERTEX;
-  using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MBVERTEX;
+  using ::moab::Range;
 
   // apply a different strategy
   // look at the vertices that were merged to, earlier, and find all entities adjacent to them

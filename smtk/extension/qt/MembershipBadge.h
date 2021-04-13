@@ -31,7 +31,9 @@ namespace qt
 /**\brief A badge that lets the user choose from a set of objects.
   *
   */
-class SMTKQTEXT_EXPORT MembershipBadge : public QObject, public smtk::view::Badge
+class SMTKQTEXT_EXPORT MembershipBadge
+  : public QObject
+  , public smtk::view::Badge
 {
   Q_OBJECT
 public:
@@ -51,8 +53,10 @@ public:
 
   bool action(const smtk::view::DescriptivePhrase*, const smtk::view::BadgeAction&) override;
 
-  using MemberMap = std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
-    std::owner_less<std::weak_ptr<smtk::resource::PersistentObject> > >;
+  using MemberMap = std::map<
+    std::weak_ptr<smtk::resource::PersistentObject>,
+    int,
+    std::owner_less<std::weak_ptr<smtk::resource::PersistentObject>>>;
 
   /// Provide external access to which items are selected.
   MemberMap& getMemberMap() { return m_members; };
@@ -70,8 +74,8 @@ protected:
   std::string m_iconOff; //!< SVG for icon showing non-membership.
   const smtk::view::BadgeSet* m_parent;
 };
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk
 
 #endif

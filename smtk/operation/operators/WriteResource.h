@@ -36,7 +36,7 @@ protected:
   void markModifiedResources(Result&) override;
   void generateSummary(Result&) override;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

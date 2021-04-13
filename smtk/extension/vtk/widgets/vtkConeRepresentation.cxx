@@ -360,9 +360,10 @@ void vtkConeRepresentation::SetRepresentationState(int state)
   }
 
   // Clamp the state
-  state = (state < vtkConeRepresentation::Outside
-      ? vtkConeRepresentation::Outside
-      : (state > vtkConeRepresentation::Scaling ? vtkConeRepresentation::Scaling : state));
+  state =
+    (state < vtkConeRepresentation::Outside
+       ? vtkConeRepresentation::Outside
+       : (state > vtkConeRepresentation::Scaling ? vtkConeRepresentation::Scaling : state));
 
   this->RepresentationState = state;
   this->Modified();
@@ -1251,7 +1252,8 @@ void vtkConeRepresentation::BuildRepresentation()
     this->Elements[ii].Actor->SetPropertyKeys(info);
   }
 
-  if (this->GetMTime() > this->BuildTime || this->Cone->GetMTime() > this->BuildTime ||
+  if (
+    this->GetMTime() > this->BuildTime || this->Cone->GetMTime() > this->BuildTime ||
     this->Renderer->GetRenderWindow()->GetMTime() > this->BuildTime)
   {
     vtkVector3d p0(this->Cone->GetBottomPoint());

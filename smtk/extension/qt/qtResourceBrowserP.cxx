@@ -50,9 +50,12 @@ qtResourceBrowser::Internal::~Internal()
 }
 
 /// @relates smtk::extension::qtResourceBrowser::Internal
-void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
-  const smtk::view::PhraseModelPtr& phraseModel, const std::string& viewName,
-  QAbstractItemModel* qmodel, QWidget* parent)
+void qtResourceBrowser::Internal::setup(
+  qtResourceBrowser* self,
+  const smtk::view::PhraseModelPtr& phraseModel,
+  const std::string& viewName,
+  QAbstractItemModel* qmodel,
+  QWidget* parent)
 {
   m_self = self;
   if (m_container)
@@ -99,7 +102,8 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   else
   {
     smtkErrorMacro(
-      smtk::io::Logger::instance(), "qtResourceBrowser was passed an invalid QAbstractItemModel"
+      smtk::io::Logger::instance(),
+      "qtResourceBrowser was passed an invalid QAbstractItemModel"
         << " of type \"" << m_model->metaObject()->className() << "\"");
   }
 
@@ -113,8 +117,10 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   m_view->setItemDelegate(m_delegate);
   m_view->setMouseTracking(true); // Needed to receive hover events.
   // Connect signals
-  QObject::connect(m_view->selectionModel(),
-    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
+  QObject::connect(
+    m_view->selectionModel(),
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    m_self,
     SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
 }
 
@@ -138,7 +144,9 @@ void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* 
 {
   m_model = qmodel;
   m_view->setModel(m_model);
-  QObject::connect(m_view->selectionModel(),
-    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
+  QObject::connect(
+    m_view->selectionModel(),
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    m_self,
     SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
 }

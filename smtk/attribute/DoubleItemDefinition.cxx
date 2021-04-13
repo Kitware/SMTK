@@ -25,13 +25,14 @@ Item::Type DoubleItemDefinition::type() const
 }
 
 smtk::attribute::ItemPtr DoubleItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new DoubleItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr DoubleItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+DoubleItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new DoubleItem(owningItem, itemPosition, subGroupPosition));
 }

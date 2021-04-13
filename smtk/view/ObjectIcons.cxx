@@ -22,14 +22,15 @@ namespace
 {
 // Key corresponding to the default icon constructor
 const std::string defaultName = "_default";
-}
+} // namespace
 
 namespace smtk
 {
 namespace view
 {
 bool ObjectIcons::registerIconConstructor(
-  const std::string& typeName, IconConstructor&& iconConstructor)
+  const std::string& typeName,
+  IconConstructor&& iconConstructor)
 {
   return m_iconConstructors.insert({ typeName, std::forward<IconConstructor>(iconConstructor) })
     .second;
@@ -46,7 +47,8 @@ bool ObjectIcons::unregisterIconConstructor(const std::string& typeName)
 }
 
 std::string ObjectIcons::createIcon(
-  const smtk::resource::PersistentObject& object, const std::string& secondaryColor) const
+  const smtk::resource::PersistentObject& object,
+  const std::string& secondaryColor) const
 {
   // If there is an IconConstructor registered directly to this
   // PersistentObject, use it.
@@ -59,8 +61,9 @@ std::string ObjectIcons::createIcon(
   // If there is no IconConstructor directly registered to this
   // PersistentObject, check if <object> is a Resource or Component.
   const smtk::resource::Resource* resource;
-  if (const smtk::resource::Component* component =
-        dynamic_cast<const smtk::resource::Component*>(&object))
+  if (
+    const smtk::resource::Component* component =
+      dynamic_cast<const smtk::resource::Component*>(&object))
   {
     resource = component->resource().get();
 
@@ -82,7 +85,9 @@ std::string ObjectIcons::createIcon(
   if (resource != nullptr)
   {
     std::string typeName;
-    int nGenerations = std::accumulate(m_iconConstructors.begin(), m_iconConstructors.end(),
+    int nGenerations = std::accumulate(
+      m_iconConstructors.begin(),
+      m_iconConstructors.end(),
       std::numeric_limits<int>::max(),
       [&typeName, resource](int i, const std::pair<std::string, IconConstructor>& constructor) {
         int numberOfGenerations = resource->numberOfGenerationsFromBase(constructor.first);
@@ -110,5 +115,5 @@ std::string ObjectIcons::createIcon(
   // If we don't have a default IconConstructor, there's not much we can do.
   return std::string();
 }
-}
-}
+} // namespace view
+} // namespace smtk

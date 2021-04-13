@@ -40,7 +40,7 @@ namespace
 // maximum number of entities to merge before switching to the naming convention
 // of "# entities".
 constexpr const std::size_t DescriptionAppendLimit = 5;
-}
+} // namespace
 
 namespace smtk
 {
@@ -75,8 +75,8 @@ bool Merge::ableToOperate()
   for (auto it = associations->begin(); it != associations->end(); ++it)
   {
     // All model entities must come from the same resource
-    if (resource->id() !=
-      std::static_pointer_cast<smtk::resource::Component>(*it)->resource()->id())
+    if (
+      resource->id() != std::static_pointer_cast<smtk::resource::Component>(*it)->resource()->id())
     {
       return false;
     }
@@ -140,8 +140,12 @@ Merge::Result Merge::operateInternal()
       // Otherwise, assign parent elements as the intersection of the current
       // parent list and the parents of the current topology element.
       std::set<smtk::common::UUID> intersection;
-      std::set_intersection(parents.begin(), parents.end(), element.m_parents.begin(),
-        element.m_parents.end(), std::inserter(intersection, intersection.begin()));
+      std::set_intersection(
+        parents.begin(),
+        parents.end(),
+        element.m_parents.begin(),
+        element.m_parents.end(),
+        std::inserter(intersection, intersection.begin()));
       parents = std::move(intersection);
     }
 

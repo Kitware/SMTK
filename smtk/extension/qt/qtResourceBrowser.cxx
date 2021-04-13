@@ -182,7 +182,8 @@ void qtResourceBrowser::setHighlightOnHover(bool highlight)
 }
 
 void qtResourceBrowser::sendPanelSelectionToSMTK(
-  const QItemSelection& /*unused*/, const QItemSelection& /*unused*/)
+  const QItemSelection& /*unused*/,
+  const QItemSelection& /*unused*/)
 {
   if (!m_p->m_seln)
   {
@@ -220,7 +221,8 @@ void qtResourceBrowser::sendPanelSelectionToSMTK(
 
 // FIXME: Doesn't most of this belong in PhraseModel and/or qtDescriptivePhraseModel?
 void qtResourceBrowser::sendSMTKSelectionToPanel(
-  const std::string& src, smtk::view::SelectionPtr seln)
+  const std::string& src,
+  smtk::view::SelectionPtr seln)
 {
   if (src == m_p->m_selnSource)
   {
@@ -339,7 +341,8 @@ void qtResourceBrowser::resetHover()
 }
 
 void qtResourceBrowser::resetHover(
-  smtk::resource::ComponentSet& csetAdd, smtk::resource::ComponentSet& csetDel)
+  smtk::resource::ComponentSet& csetAdd,
+  smtk::resource::ComponentSet& csetDel)
 {
   // Erase the current hover state.
   if (!m_p->m_seln)
@@ -378,7 +381,8 @@ void qtResourceBrowser::resetHover(
 bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
 {
   QKeyEvent* evt;
-  if (obj == m_p->m_view && evnt->type() == QEvent::KeyPress &&
+  if (
+    obj == m_p->m_view && evnt->type() == QEvent::KeyPress &&
     (evt = dynamic_cast<QKeyEvent*>(evnt)))
   {
     if (evt->key() == Qt::Key_Space)

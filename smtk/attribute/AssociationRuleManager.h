@@ -36,20 +36,20 @@ namespace attribute
 class SMTKCORE_EXPORT AssociationRuleManager
   : public std::enable_shared_from_this<AssociationRuleManager>
 {
-  template <typename BaseRuleType, bool = true>
+  template<typename BaseRuleType, bool = true>
   struct Trait;
 
-  template <typename BaseRuleType, bool>
+  template<typename BaseRuleType, bool>
   friend struct Trait;
 
-  template <bool dummy>
+  template<bool dummy>
   struct Trait<AssociationRule, dummy>
   {
     static AssociationRuleFactory& factory(smtk::attribute::Resource& resource)
     {
       return resource.associationRules().associationRuleFactory();
     }
-    static std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >&
+    static std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>&
     registerFunctions(AssociationRuleManager& ruleManager)
     {
       return ruleManager.m_associationRegisterFunctions;
@@ -61,14 +61,14 @@ class SMTKCORE_EXPORT AssociationRuleManager
     }
   };
 
-  template <bool dummy>
+  template<bool dummy>
   struct Trait<DissociationRule, dummy>
   {
     static DissociationRuleFactory& factory(smtk::attribute::Resource& resource)
     {
       return resource.associationRules().dissociationRuleFactory();
     }
-    static std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >&
+    static std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>&
     registerFunctions(AssociationRuleManager& ruleManager)
     {
       return ruleManager.m_dissociationRegisterFunctions;
@@ -124,28 +124,28 @@ public:
   }
 
   /// Register a custom association rule type with a given alias.
-  template <typename CustomRuleType>
+  template<typename CustomRuleType>
   bool registerAssociationRule(const std::string& alias)
   {
     return registerRule<AssociationRule, CustomRuleType>(alias);
   }
 
   /// Register a custom dissociation rule type with a given alias.
-  template <typename CustomRuleType>
+  template<typename CustomRuleType>
   bool registerDissociationRule(const std::string& alias)
   {
     return registerRule<DissociationRule, CustomRuleType>(alias);
   }
 
   /// Unregister a custom association rule type.
-  template <typename CustomRuleType>
+  template<typename CustomRuleType>
   bool unregisterAssociationRule()
   {
     return unregisterRule<AssociationRule, CustomRuleType>();
   }
 
   /// Unregister a custom dissociation rule type.
-  template <typename CustomRuleType>
+  template<typename CustomRuleType>
   bool unregisterDissociationRule()
   {
     return unregisterRule<DissociationRule, CustomRuleType>();
@@ -156,7 +156,7 @@ protected:
   AssociationRuleManager(const std::shared_ptr<smtk::resource::Manager>&);
 
   /// Register <CustomRuleType> to all attribute resources.
-  template <typename BaseRuleType, typename CustomRuleType>
+  template<typename BaseRuleType, typename CustomRuleType>
   bool registerRule(const std::string& alias)
   {
     // Construct a functor for adding the new rule type to an attribute
@@ -175,12 +175,13 @@ protected:
     {
       // ...add an observer that adds the new rule to all current and
       // future attribute resources associated with this manager.
-      auto registerCustomRuleTypeObserver = [=](
-        const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+      auto registerCustomRuleTypeObserver =
+        [=](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
         if (eventType == smtk::resource::EventType::ADDED)
         {
-          if (const smtk::attribute::Resource* attributeResource =
-                dynamic_cast<const smtk::attribute::Resource*>(&resource))
+          if (
+            const smtk::attribute::Resource* attributeResource =
+              dynamic_cast<const smtk::attribute::Resource*>(&resource))
           {
             registerCustomRuleType(const_cast<smtk::attribute::Resource&>(*attributeResource));
           }
@@ -189,17 +190,18 @@ protected:
 
       // Associate the observer key with the rule type, so we can remove it
       // later if requested.
-      Trait<BaseRuleType>::observers(*this).insert(
-        std::make_pair(typeid(CustomRuleType).hash_code(),
-          manager->observers().insert(registerCustomRuleTypeObserver,
-            "Register custom attribute rule <" + smtk::common::typeName<CustomRuleType>() + ">.")));
+      Trait<BaseRuleType>::observers(*this).insert(std::make_pair(
+        typeid(CustomRuleType).hash_code(),
+        manager->observers().insert(
+          registerCustomRuleTypeObserver,
+          "Register custom attribute rule <" + smtk::common::typeName<CustomRuleType>() + ">.")));
     }
 
     return true;
   }
 
   /// Unregister <CustomRuleType> from all attribute resources.
-  template <typename BaseRuleType, typename CustomRuleType>
+  template<typename BaseRuleType, typename CustomRuleType>
   bool unregisterRule()
   {
     // Remove the rule from the container of register functions.
@@ -223,15 +225,15 @@ protected:
 
   std::weak_ptr<smtk::resource::Manager> m_manager;
 
-  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >
+  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>
     m_associationRegisterFunctions;
-  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >
+  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>
     m_dissociationRegisterFunctions;
 
   std::unordered_map<std::size_t, smtk::resource::Observers::Key> m_associationObservers;
   std::unordered_map<std::size_t, smtk::resource::Observers::Key> m_dissociationObservers;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

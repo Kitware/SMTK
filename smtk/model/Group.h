@@ -30,11 +30,11 @@ public:
   SMTK_ENTITYREF_CLASS(Group, EntityRef, isGroup);
 
   EntityRef parent() const;
-  template <typename T>
+  template<typename T>
   T members() const;
 
   Group& addEntity(const EntityRef& entity);
-  template <typename T>
+  template<typename T>
   Group& addEntities(const T& container);
 
   bool removeEntity(const EntityRef& entity);
@@ -44,13 +44,15 @@ public:
   virtual bool meetsMembershipConstraints(const EntityRef& prospectiveMember);
 
   bool meetsMembershipConstraints(
-    const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous);
+    const EntityRef& prospectiveMember,
+    BitFlags& typeMask,
+    bool mustBeHomogenous);
 
   virtual void setMembershipMask(BitFlags mask);
   BitFlags membershipMask() const;
 };
 
-template <typename T>
+template<typename T>
 T Group::members() const
 {
   T container;
@@ -59,7 +61,7 @@ T Group::members() const
 }
 
 /// Add all the entities in \a container (an STL set, vector, or list) to this group.
-template <typename T>
+template<typename T>
 Group& Group::addEntities(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)

@@ -23,8 +23,11 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace
 {
-smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPoints,
-  const std::function<std::array<double, 3>(std::size_t)>& coordinates, ::moab::Range& points)
+smtk::mesh::Handle create_point_mesh(
+  ::moab::Interface* iface,
+  std::size_t numPoints,
+  const std::function<std::array<double, 3>(std::size_t)>& coordinates,
+  ::moab::Range& points)
 {
   ::moab::ReadUtilIface* alloc;
   iface->query_interface(alloc);
@@ -32,10 +35,12 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPo
   //allocate enough space for out points
   smtk::mesh::Handle firstId;
   std::vector<double*> coords;
-  alloc->get_node_coords(3, //x,y,z
+  alloc->get_node_coords(
+    3, //x,y,z
     static_cast<int>(numPoints),
     0, //preferred_start_id
-    firstId, coords);
+    firstId,
+    coords);
 
   //copy the points into the resource
   for (std::size_t i = 0; i < numPoints; ++i)
@@ -58,7 +63,7 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPo
   }
   return meshHandle;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -75,7 +80,9 @@ PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, const ::moab::R
 {
 }
 
-PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, std::size_t numPoints,
+PointLocatorImpl::PointLocatorImpl(
+  ::moab::Interface* interface,
+  std::size_t numPoints,
   const std::function<std::array<double, 3>(std::size_t)>& coordinates)
   : m_interface(interface)
   , m_meshOwningPoints()
@@ -111,32 +118,39 @@ smtk::mesh::HandleRange PointLocatorImpl::range() const
 namespace
 {
 
-template <bool>
+template<bool>
 void reserve_space(std::vector<double>& container, std::size_t size)
 {
   container.reserve(size);
 }
 
-template <>
+template<>
 void reserve_space<false>(std::vector<double>& /*unused*/, std::size_t /*unused*/)
 {
 }
 
-template <bool>
+template<bool>
 void add_to(std::vector<double>& container, double value)
 {
   container.push_back(value);
 }
 
-template <>
+template<>
 void add_to<false>(std::vector<double>& /*unused*/, double /*unused*/)
 {
 }
 
-template <bool SaveSqDistances, bool SaveCoords>
-void find_valid_points(const double x, const double y, const double z, const double sqRadius,
-  const ::moab::Range& points, const std::vector<double>& x_locs, const std::vector<double>& y_locs,
-  const std::vector<double>& z_locs, std::size_t pointIdOffset,
+template<bool SaveSqDistances, bool SaveCoords>
+void find_valid_points(
+  const double x,
+  const double y,
+  const double z,
+  const double sqRadius,
+  const ::moab::Range& points,
+  const std::vector<double>& x_locs,
+  const std::vector<double>& y_locs,
+  const std::vector<double>& z_locs,
+  std::size_t pointIdOffset,
   smtk::mesh::PointLocatorImpl::Results& results)
 {
 
@@ -173,12 +187,16 @@ void find_valid_points(const double x, const double y, const double z, const dou
     }
   }
 }
-}
+} // namespace
 
 void PointLocatorImpl::locatePointsWithinRadius(
-  double x, double y, double z, double radius, Results& results)
+  double x,
+  double y,
+  double z,
+  double radius,
+  Results& results)
 {
-  std::vector< ::moab::EntityHandle> leaves;
+  std::vector<::moab::EntityHandle> leaves;
   double xyz[3] = { x, y, z };
   m_tree.distance_search(xyz, radius, leaves);
 
@@ -232,6 +250,6 @@ void PointLocatorImpl::locatePointsWithinRadius(
       x, y, z, sqRadius, points, x_locs, y_locs, z_locs, firstCell, results);
   }
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

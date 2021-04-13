@@ -128,7 +128,8 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 }
 
 bool pqPolygonArc::editEdge(
-  vtkSMNewWidgetRepresentationProxy* widgetProxy, const smtk::common::UUID& edgeId)
+  vtkSMNewWidgetRepresentationProxy* widgetProxy,
+  const smtk::common::UUID& edgeId)
 {
   (void)edgeId;
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
@@ -156,7 +157,8 @@ bool pqPolygonArc::editEdge(
 }
 
 bool pqPolygonArc::updateArc(
-  vtkSMNewWidgetRepresentationProxy* widget, vtkIdTypeArray* newlyCreatedArcIds)
+  vtkSMNewWidgetRepresentationProxy* widget,
+  vtkIdTypeArray* newlyCreatedArcIds)
 {
   (void)widget;
   (void)newlyCreatedArcIds;
@@ -262,7 +264,8 @@ void pqPolygonArc::resetOperationSource()
     {
       model = entref.as<smtk::model::Edge>().owningModel();
     }
-    if (model.isValid() && m_currentModelId == model.entity() && this->Source &&
+    if (
+      model.isValid() && m_currentModelId == model.entity() && this->Source &&
       this->Source == pqActiveObjects::instance().activeSource())
     {
       // nothing to do

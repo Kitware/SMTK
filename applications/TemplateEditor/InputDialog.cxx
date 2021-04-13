@@ -21,7 +21,10 @@ InputDialog::InputDialog(QWidget* parent)
   this->Ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 
   connect(this->Ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  connect(this->Ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
+  connect(
+    this->Ui->buttonBox,
+    SIGNAL(clicked(QAbstractButton*)),
+    this,
     SLOT(acceptOnApply(QAbstractButton*)));
 }
 

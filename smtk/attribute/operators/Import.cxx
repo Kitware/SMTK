@@ -123,5 +123,5 @@ const char* Import::xmlDescription() const
 {
   return Import_xml;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

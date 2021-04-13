@@ -21,7 +21,7 @@ namespace plugin
 namespace detail
 {
 
-template <typename Manager_t>
+template<typename Manager_t>
 void Manager::setRegistryStatus(const std::shared_ptr<Manager_t>& manager, bool status)
 {
   for (auto clientIt = m_clients.begin(); clientIt != m_clients.end();)
@@ -77,8 +77,8 @@ void Manager::setRegistryStatus(const std::shared_ptr<Manager_t>& manager, bool 
     m_registerToExistingManagers.insert(registerToFuturePlugins);
   }
 }
-}
-}
-}
+} // namespace detail
+} // namespace plugin
+} // namespace smtk
 
 #endif

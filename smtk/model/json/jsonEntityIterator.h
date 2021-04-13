@@ -34,7 +34,7 @@ using json = nlohmann::json;
 using EntityIterator = smtk::model::EntityIterator;
 
 SMTKCORE_EXPORT void to_json(json& j, const EntityIterator& iter);
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

@@ -63,8 +63,10 @@ void verify_typeset_constructors()
 void verify_typeset_cellTypes()
 {
   //now verify a typeset with a couple things set
-  smtk::mesh::TypeSet t_set(smtk::mesh::CellTypes(std::string("11100")), //triangle,quad,polygon
-    false, true);                                                        //has cells only
+  smtk::mesh::TypeSet t_set(
+    smtk::mesh::CellTypes(std::string("11100")), //triangle,quad,polygon
+    false,
+    true); //has cells only
 
   const smtk::mesh::CellTypes correct_types(std::string("11100"));
 
@@ -74,8 +76,10 @@ void verify_typeset_cellTypes()
 void verify_typeset_with_cells_and_dims()
 {
   //now verify a typeset with a couple things set
-  smtk::mesh::TypeSet t_set(smtk::mesh::CellTypes(std::string("11100")), //triangle,quad,polygon
-    false, true);                                                        //has cells only
+  smtk::mesh::TypeSet t_set(
+    smtk::mesh::CellTypes(std::string("11100")), //triangle,quad,polygon
+    false,
+    true); //has cells only
 
   test(!t_set.hasMeshes());
   test(t_set.hasCells());
@@ -100,7 +104,7 @@ void verify_typeset_with_cells_and_dims()
   test(t_set.hasDimension(smtk::mesh::Dims2));
   test(!t_set.hasDimension(smtk::mesh::Dims3));
 }
-}
+} // namespace
 
 int UnitTestTypeSet(int /*unused*/, char** const /*unused*/)
 {

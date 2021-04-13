@@ -27,7 +27,7 @@ namespace attribute
 class SMTKCORE_EXPORT AssociationRuleFactory : public smtk::common::Factory<Rule, void>
 {
 public:
-  template <typename Type>
+  template<typename Type>
   void addAlias(const std::string& alias)
   {
     addAlias(smtk::common::typeName<Type>(), alias);
@@ -47,7 +47,7 @@ public:
   }
 
   /// Create an instance of a Type using its type name.
-  template <typename... Args>
+  template<typename... Args>
   std::unique_ptr<Rule> createFromAlias(const std::string& alias, Args&&... args) const
   {
     auto found = m_aliases.find(alias);
@@ -67,7 +67,7 @@ private:
 };
 
 typedef AssociationRuleFactory DissociationRuleFactory;
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

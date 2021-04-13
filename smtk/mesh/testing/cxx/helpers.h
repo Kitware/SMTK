@@ -27,7 +27,7 @@ namespace testing
 
 struct Testing
 {
-  template <class FunctionType>
+  template<class FunctionType>
   struct InternalPrintOnInvoke
   {
     InternalPrintOnInvoke(FunctionType function, std::string toprint)
@@ -35,7 +35,7 @@ struct Testing
       , ToPrint(toprint)
     {
     }
-    template <typename T>
+    template<typename T>
     void operator()(T t)
     {
       std::cout << this->ToPrint << std::endl;
@@ -49,7 +49,7 @@ struct Testing
 
   struct CellCheckAll
   {
-    template <class Tag, class Functor>
+    template<class Tag, class Functor>
     void operator()(Tag t, Functor function) const
     {
       function(t);
@@ -58,19 +58,19 @@ struct Testing
 
   struct CellCheckFixedTypes
   {
-    template <class Tag, class Functor>
+    template<class Tag, class Functor>
     void operator()(Tag t, Functor function) const
     {
       this->Do(typename smtk::mesh::CellTraits<Tag>::PointNumberTag(), t, function);
     }
 
   private:
-    template <class Tag, typename T, class Functor>
+    template<class Tag, typename T, class Functor>
     void Do(Tag, T, const Functor&) const
     {
     }
 
-    template <class Tag, class Functor>
+    template<class Tag, class Functor>
     void Do(smtk::mesh::CellFixedPointNumberTag, Tag t, Functor function) const
     {
       function(t);
@@ -84,35 +84,52 @@ struct Testing
 /// check can be set to restrict the types used. This Testing class contains
 /// several helpful check functors.
 ///
-template <class FunctionType, class CheckType>
+template<class FunctionType, class CheckType>
 static void TryAllCells(FunctionType function, CheckType check)
 {
-  check(smtk::mesh::CellHexahedron(), Testing::InternalPrintOnInvoke<FunctionType>(function,
-                                        "*** smtk::mesh::CellHexahedron ******************"));
+  check(
+    smtk::mesh::CellHexahedron(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellHexahedron ******************"));
 
-  check(smtk::mesh::CellLine(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                  function, "*** smtk::mesh::CellLine *****************"));
+  check(
+    smtk::mesh::CellLine(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellLine *****************"));
 
-  check(smtk::mesh::CellPolygon(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                     function, "*** smtk::mesh::CellPolygon *******************"));
+  check(
+    smtk::mesh::CellPolygon(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellPolygon *******************"));
 
-  check(smtk::mesh::CellPyramid(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                     function, "*** smtk::mesh::CellPyramid ***************"));
+  check(
+    smtk::mesh::CellPyramid(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellPyramid ***************"));
 
-  check(smtk::mesh::CellQuad(),
+  check(
+    smtk::mesh::CellQuad(),
     Testing::InternalPrintOnInvoke<FunctionType>(function, "*** smtk::mesh::CellQuad **********"));
 
-  check(smtk::mesh::CellTetrahedron(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                         function, "*** smtk::mesh::CellTetrahedron **********"));
+  check(
+    smtk::mesh::CellTetrahedron(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellTetrahedron **********"));
 
-  check(smtk::mesh::CellTriangle(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                      function, "*** smtk::mesh::CellTriangle *************"));
+  check(
+    smtk::mesh::CellTriangle(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellTriangle *************"));
 
-  check(smtk::mesh::CellVertex(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                    function, "*** smtk::mesh::CellVertex ************"));
+  check(
+    smtk::mesh::CellVertex(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellVertex ************"));
 
-  check(smtk::mesh::CellWedge(), Testing::InternalPrintOnInvoke<FunctionType>(
-                                   function, "*** smtk::mesh::CellWedge ******************"));
+  check(
+    smtk::mesh::CellWedge(),
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellWedge ******************"));
 }
 
 /// Runs templated \p function on all the cell tags defined in smtk::mesh. This is
@@ -121,56 +138,73 @@ static void TryAllCells(FunctionType function, CheckType check)
 /// check can be set to restrict the types used. This Testing class contains
 /// several helpful check functors.
 ///
-template <class FunctionType, class CheckType>
+template<class FunctionType, class CheckType>
 static void TryAllCellEnums(FunctionType function, CheckType check)
 {
-  check(smtk::mesh::Hexahedron, Testing::InternalPrintOnInvoke<FunctionType>(
-                                  function, "*** smtk::mesh::CellHexahedron ******************"));
+  check(
+    smtk::mesh::Hexahedron,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellHexahedron ******************"));
 
-  check(smtk::mesh::Line, Testing::InternalPrintOnInvoke<FunctionType>(
-                            function, "*** smtk::mesh::CellLine *****************"));
+  check(
+    smtk::mesh::Line,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellLine *****************"));
 
-  check(smtk::mesh::Polygon, Testing::InternalPrintOnInvoke<FunctionType>(
-                               function, "*** smtk::mesh::CellPolygon *******************"));
+  check(
+    smtk::mesh::Polygon,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellPolygon *******************"));
 
-  check(smtk::mesh::Pyramid, Testing::InternalPrintOnInvoke<FunctionType>(
-                               function, "*** smtk::mesh::CellPyramid ***************"));
+  check(
+    smtk::mesh::Pyramid,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellPyramid ***************"));
 
-  check(smtk::mesh::Quad,
+  check(
+    smtk::mesh::Quad,
     Testing::InternalPrintOnInvoke<FunctionType>(function, "*** smtk::mesh::CellQuad **********"));
 
-  check(smtk::mesh::Tetrahedron, Testing::InternalPrintOnInvoke<FunctionType>(
-                                   function, "*** smtk::mesh::CellTetrahedron **********"));
+  check(
+    smtk::mesh::Tetrahedron,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellTetrahedron **********"));
 
-  check(smtk::mesh::Triangle, Testing::InternalPrintOnInvoke<FunctionType>(
-                                function, "*** smtk::mesh::CellTriangle *************"));
+  check(
+    smtk::mesh::Triangle,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellTriangle *************"));
 
-  check(smtk::mesh::Vertex, Testing::InternalPrintOnInvoke<FunctionType>(
-                              function, "*** smtk::mesh::CellVertex ************"));
+  check(
+    smtk::mesh::Vertex,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellVertex ************"));
 
-  check(smtk::mesh::Wedge, Testing::InternalPrintOnInvoke<FunctionType>(
-                             function, "*** smtk::mesh::CellWedge ******************"));
+  check(
+    smtk::mesh::Wedge,
+    Testing::InternalPrintOnInvoke<FunctionType>(
+      function, "*** smtk::mesh::CellWedge ******************"));
 }
 
-template <class FunctionType>
+template<class FunctionType>
 static void TryAllCells(FunctionType function)
 {
   TryAllCells(function, Testing::CellCheckAll());
 }
 
-template <class FunctionType>
+template<class FunctionType>
 static void TryAllCellEnums(FunctionType function)
 {
   TryAllCellEnums(function, Testing::CellCheckAll());
 }
 
-template <class FunctionType>
+template<class FunctionType>
 static void TryFIXEDCells(FunctionType function)
 {
   TryAllCells(function, Testing::CellCheckFixedTypes());
 }
-}
-}
-} //namespace smtk::mesh::testing
+} // namespace testing
+} // namespace mesh
+} // namespace smtk
 
 #endif //__smtk_mesh_testing_cxx_helpers_h

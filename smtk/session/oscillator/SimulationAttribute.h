@@ -42,6 +42,7 @@ public:
   smtk::session::oscillator::Resource::Ptr geometry() const { return m_geometry; }
   smtk::model::EntityPtr domain() const { return m_domain; }
   const smtk::attribute::Attributes& sourceTerms() const { return m_sources; }
+
 protected:
   smtk::session::oscillator::Resource::Ptr m_geometry;
   smtk::model::EntityPtr m_domain;

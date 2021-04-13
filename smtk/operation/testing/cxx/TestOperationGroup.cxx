@@ -66,7 +66,7 @@ public:
   smtkCreateMacro(OperationB);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 };
-}
+} // namespace
 
 int TestOperationGroup(int /*unused*/, char** const /*unused*/)
 {
@@ -77,7 +77,8 @@ int TestOperationGroup(int /*unused*/, char** const /*unused*/)
   operationManager->registerOperation<OperationA>("OperationA");
 
   // Check that the operation manager has no available groups
-  smtkTest(operationManager->availableGroups().empty(),
+  smtkTest(
+    operationManager->availableGroups().empty(),
     "Operation manager should have no available groups.");
 
   // Create a group
@@ -92,7 +93,8 @@ int TestOperationGroup(int /*unused*/, char** const /*unused*/)
   smtkTest(availableGroups.size() == 1, "Operation manager should have one available group.");
 
   // Check that the available group is "my group"
-  smtkTest(availableGroups.find(group.name()) != availableGroups.end(),
+  smtkTest(
+    availableGroups.find(group.name()) != availableGroups.end(),
     "Operation manager should have my group.");
 
   // Check if my group has an operation

@@ -85,12 +85,15 @@ public:
     m_hist.resize(nBins, 0);
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, counter += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, counter += 3)
     {
       std::size_t bin =
         static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());
@@ -105,7 +108,7 @@ protected:
   double m_min;
   double m_max;
 };
-}
+} // namespace
 
 // Load in a model, convert it to a mesh, and construct a dataset for that mesh
 // using interpolation points. Then, histogram the values of the mesh cells
@@ -172,8 +175,9 @@ int main(int argc, char* argv[])
 
   // Set the operator's input points
   std::size_t numberOfPoints = 4;
-  double pointData[4][4] = { { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. },
-    { 10., 6., 0., 40. } };
+  double pointData[4][4] = {
+    { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. }, { 10., 6., 0., 40. }
+  };
 
   bool fromCSV = false;
   if (argc > 2)
@@ -239,7 +243,8 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (elevateMeshOpResult->findInt("outcome")->value() !=
+  if (
+    elevateMeshOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"elevate mesh\" operator failed\n";

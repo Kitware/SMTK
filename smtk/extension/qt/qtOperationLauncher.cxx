@@ -64,7 +64,10 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
   // associated with this object. Each connection we make is a one-shot
   // associated to the input operation, so we delete the connection upon firing.
   QMetaObject::Connection* connection = new QMetaObject::Connection;
-  *connection = QObject::connect(this, &qtOperationLauncher::operationHasResult, this,
+  *connection = QObject::connect(
+    this,
+    &qtOperationLauncher::operationHasResult,
+    this,
     [&, connection, operation, handler](QString parametersName, QString resultName) {
       if (parametersName.toStdString() == operation->parameters()->name())
       {
@@ -93,8 +96,10 @@ smtk::operation::Operation::Result qtOperationLauncher::run(
 
   // Privately emit the name of the output result so the contents of this class
   // that reside on the original thread can access it.
-  emit operationHasResult(QString::fromStdString(operation->parameters()->name()),
-    QString::fromStdString(result->name()), QPrivateSignal());
+  emit operationHasResult(
+    QString::fromStdString(operation->parameters()->name()),
+    QString::fromStdString(result->name()),
+    QPrivateSignal());
 
   return result;
 }
@@ -108,5 +113,5 @@ smtk::operation::Operation::Result ResultHandler::waitForResult()
 {
   return m_future.get();
 }
-}
-}
+} // namespace extension
+} // namespace smtk

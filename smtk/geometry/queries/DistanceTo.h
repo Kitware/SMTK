@@ -34,17 +34,19 @@ namespace geometry
 struct SMTKCORE_EXPORT DistanceTo
   : public smtk::resource::query::DerivedFrom<DistanceTo, smtk::resource::query::Query>
 {
-  virtual std::pair<double, std::array<double, 3> > operator()(
-    const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const = 0;
+  virtual std::pair<double, std::array<double, 3>> operator()(
+    const smtk::resource::Component::Ptr&,
+    const std::array<double, 3>&) const = 0;
 };
 
-inline std::pair<double, std::array<double, 3> > DistanceTo::operator()(
-  const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const
+inline std::pair<double, std::array<double, 3>> DistanceTo::operator()(
+  const smtk::resource::Component::Ptr&,
+  const std::array<double, 3>&) const
 {
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
   return std::make_pair(nan, std::array<double, 3>({ nan, nan, nan }));
 }
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

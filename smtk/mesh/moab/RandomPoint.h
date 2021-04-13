@@ -47,8 +47,8 @@ struct SMTKCORE_EXPORT RandomPoint
 private:
   std::size_t m_seed;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

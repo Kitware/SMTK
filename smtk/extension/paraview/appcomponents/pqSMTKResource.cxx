@@ -31,7 +31,11 @@
 #endif
 
 pqSMTKResource::pqSMTKResource(
-  const QString& grp, const QString& name, vtkSMProxy* proxy, pqServer* server, QObject* parent)
+  const QString& grp,
+  const QString& name,
+  vtkSMProxy* proxy,
+  pqServer* server,
+  QObject* parent)
   : pqPipelineSource(name, proxy, server, parent)
 {
   (void)grp;
@@ -55,7 +59,9 @@ pqSMTKResource::pqSMTKResource(
   // therefore use this observer to emit a signal that is connected to a lambda
   // that has this class instance as its context.
   m_key = rsrcMgr->smtkOperationManager()->observers().insert(
-    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [&](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
       smtk::operation::Operation::Result result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {

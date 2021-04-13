@@ -69,8 +69,15 @@ protected:
   vtkCmbLayeredConeSource();
   ~vtkCmbLayeredConeSource();
 
-  vtkSmartPointer<vtkPolyData> CreateLayer(double h, double* innerBottomR, double* outerBottomR,
-    double* innerTopR, double* outerTopR, int innerRes, int outerRes, bool lines = false);
+  vtkSmartPointer<vtkPolyData> CreateLayer(
+    double h,
+    double* innerBottomR,
+    double* outerBottomR,
+    double* innerTopR,
+    double* outerTopR,
+    int innerRes,
+    int outerRes,
+    bool lines = false);
 
   double Height;
   struct radii
@@ -80,7 +87,7 @@ protected:
     double TopRadii[2];
   };
   std::vector<radii> LayerRadii;
-  std::vector<std::vector<double> > InnerPoints;
+  std::vector<std::vector<double>> InnerPoints;
   double BaseCenter[3];
   double Direction[3];
   int Resolution;
@@ -91,8 +98,12 @@ private:
   vtkCmbLayeredConeSource(const vtkCmbLayeredConeSource&);
   void operator=(const vtkCmbLayeredConeSource&);
 
-  void TriangulateEnd(const int innerRes, const int outerRes, bool forceDelaunay,
-    vtkCellArray* cells, vtkPoints* fullPoints);
+  void TriangulateEnd(
+    const int innerRes,
+    const int outerRes,
+    bool forceDelaunay,
+    vtkCellArray* cells,
+    vtkPoints* fullPoints);
 };
 
 #endif

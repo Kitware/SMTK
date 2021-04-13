@@ -27,7 +27,7 @@ namespace
 {
 // must be a power of two
 const std::size_t StartingAllocation = 64; // (1<<6)
-}
+} // namespace
 
 namespace smtk
 {
@@ -127,6 +127,6 @@ bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
 
   return m_validState;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

@@ -20,7 +20,7 @@ void task3(int i)
 {
   std::cout << "Hello from task 3, worker thread " << i << std::endl;
 }
-}
+} // namespace
 
 int UnitTestThreadPool(int /*unused*/, char** const /*unused*/)
 {

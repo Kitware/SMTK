@@ -54,7 +54,8 @@ PathsHelperWindows::PathsHelperWindows()
     Paths::s_executableDir = Paths::s_toplevelDir;
 
   // Search for workers in the binary directory
-  if (Paths::s_executableDir != Paths::s_toplevelDirCfg &&
+  if (
+    Paths::s_executableDir != Paths::s_toplevelDirCfg &&
     Paths::s_executableDir != Paths::currentDirectory())
     workerSearch.insert(Paths::s_executableDir);
 

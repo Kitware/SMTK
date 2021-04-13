@@ -26,7 +26,8 @@ ItemDefinition::ItemDefinition(const std::string& myName)
 
 ItemDefinition::~ItemDefinition() = default;
 
-void ItemDefinition::applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+void ItemDefinition::applyCategories(
+  const smtk::attribute::Categories& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
   // The item's definition's categories are it's local categories and (if its ok to inherit
@@ -67,7 +68,8 @@ void ItemDefinition::unsetLocalAdvanceLevel(int mode)
 }
 
 void ItemDefinition::applyAdvanceLevels(
-  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+  const unsigned int& readLevelFromParent,
+  const unsigned int& writeLevelFromParent)
 {
   if (!m_hasLocalAdvanceLevelInfo[0])
   {

@@ -33,7 +33,9 @@ public:
     * When returning true, \a bRelativeToA is set to the relative path of \a dirB.
     */
   static bool isDirectoryASubdirectory(
-    const std::string& dirA, const std::string& dirB, std::string& bRelativeToA);
+    const std::string& dirA,
+    const std::string& dirB,
+    std::string& bRelativeToA);
 
   /**\brief Returns true if \a pathToFile is an SMTK file (ends in .smtk).
     *
@@ -49,8 +51,11 @@ public:
     *
     * All names will be taken relative to the \a base directory.
     */
-  static std::string uniqueFilename(const std::string& start, std::set<std::string>& preExisting,
-    const std::string& defaultStem, const std::string& defaultExtension = "",
+  static std::string uniqueFilename(
+    const std::string& start,
+    std::set<std::string>& preExisting,
+    const std::string& defaultStem,
+    const std::string& defaultExtension = "",
     const std::string& base = ".");
 };
 

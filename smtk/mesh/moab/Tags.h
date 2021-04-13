@@ -53,7 +53,11 @@ public:
     , m_tagData()
   {
     //populate our tag
-    m_iface->tag_get_handle(NAME_TAG_NAME, NAME_TAG_SIZE, ::moab::MB_TYPE_OPAQUE, m_tag,
+    m_iface->tag_get_handle(
+      NAME_TAG_NAME,
+      NAME_TAG_SIZE,
+      ::moab::MB_TYPE_OPAQUE,
+      m_tag,
       ::moab::MB_TAG_SPARSE | ::moab::MB_TAG_CREAT);
   }
 //reset our warnings to the original level
@@ -158,7 +162,7 @@ public:
 };
 
 /// A base class for queries on tags that store opaque data values.
-template <int Sz>
+template<int Sz>
 class QueryOpaqueTag
 {
   ::moab::Interface* m_iface;
@@ -176,7 +180,11 @@ public:
 
     //populate our tag
     ::moab::Tag moab_tag;
-    m_iface->tag_get_handle(m_tag_name.c_str(), Sz, ::moab::MB_TYPE_OPAQUE, moab_tag,
+    m_iface->tag_get_handle(
+      m_tag_name.c_str(),
+      Sz,
+      ::moab::MB_TYPE_OPAQUE,
+      moab_tag,
       ::moab::MB_TAG_BYTES | ::moab::MB_TAG_CREAT | ::moab::MB_TAG_SPARSE);
 
     m_tag = moab_tag;
@@ -206,7 +214,8 @@ public:
   }
   smtk::common::UUID uuid() const
   {
-    return smtk::common::UUID(reinterpret_cast<const unsigned char*>(this->value()),
+    return smtk::common::UUID(
+      reinterpret_cast<const unsigned char*>(this->value()),
       reinterpret_cast<const unsigned char*>(this->value()) + smtk::common::UUID::SIZE);
   }
 };
@@ -216,7 +225,9 @@ class QueryEntRefTag : public QueryOpaqueTag<smtk::common::UUID::SIZE>
 public:
   QueryEntRefTag(::moab::Interface* iface)
     : QueryOpaqueTag(
-        "ENT_REF", reinterpret_cast<const char*>(smtk::common::UUID::null().begin()), iface)
+        "ENT_REF",
+        reinterpret_cast<const char*>(smtk::common::UUID::null().begin()),
+        iface)
   {
   }
   QueryEntRefTag(const smtk::common::UUID& v, ::moab::Interface* iface)
@@ -225,7 +236,8 @@ public:
   }
   smtk::common::UUID uuid() const
   {
-    return smtk::common::UUID(reinterpret_cast<const unsigned char*>(this->value()),
+    return smtk::common::UUID(
+      reinterpret_cast<const unsigned char*>(this->value()),
       reinterpret_cast<const unsigned char*>(this->value()) + smtk::common::UUID::SIZE);
   }
 };
@@ -235,7 +247,9 @@ class QueryRootModelEntTag : public QueryOpaqueTag<smtk::common::UUID::SIZE>
 public:
   QueryRootModelEntTag(::moab::Interface* iface)
     : QueryOpaqueTag(
-        "ROOT_MODEL_ENT", reinterpret_cast<const char*>(smtk::common::UUID::null().begin()), iface)
+        "ROOT_MODEL_ENT",
+        reinterpret_cast<const char*>(smtk::common::UUID::null().begin()),
+        iface)
   {
   }
   QueryRootModelEntTag(const smtk::common::UUID& v, ::moab::Interface* iface)
@@ -244,7 +258,8 @@ public:
   }
   smtk::common::UUID uuid() const
   {
-    return smtk::common::UUID(reinterpret_cast<const unsigned char*>(this->value()),
+    return smtk::common::UUID(
+      reinterpret_cast<const unsigned char*>(this->value()),
       reinterpret_cast<const unsigned char*>(this->value()) + smtk::common::UUID::SIZE);
   }
 };
@@ -263,7 +278,11 @@ public:
 
     //populate our tag
     ::moab::Tag moab_tag;
-    m_iface->tag_get_handle(m_tag_name.c_str(), 1, ::moab::MB_TYPE_BIT, moab_tag,
+    m_iface->tag_get_handle(
+      m_tag_name.c_str(),
+      1,
+      ::moab::MB_TYPE_BIT,
+      moab_tag,
       ::moab::MB_TAG_BYTES | ::moab::MB_TAG_CREAT | ::moab::MB_TAG_SPARSE);
 
     m_tag = moab_tag;

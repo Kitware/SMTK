@@ -37,6 +37,6 @@ using UUIDsToEntities = smtk::model::UUIDsToEntities;
 SMTKCORE_EXPORT void to_json(json& j, const UUIDsToEntities& emap);
 
 SMTKCORE_EXPORT void from_json(const json& j, UUIDsToEntities& emap);
-}
-}
+} // namespace model
+} // namespace smtk
 #endif

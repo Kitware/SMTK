@@ -77,9 +77,9 @@ public:
   // Iterator-style access to values:
   const_iterator begin() const;
   const_iterator end() const;
-  template <typename I>
+  template<typename I>
   bool setValues(I vbegin, I vend, std::size_t offset = 0);
-  template <typename I>
+  template<typename I>
   bool appendValues(I vbegin, I vend);
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
@@ -97,7 +97,7 @@ protected:
 private:
 };
 
-template <typename I>
+template<typename I>
 bool FileSystemItem::setValues(I vbegin, I vend, std::size_t offset)
 {
   bool ok = false;
@@ -121,7 +121,7 @@ bool FileSystemItem::setValues(I vbegin, I vend, std::size_t offset)
   return ok;
 }
 
-template <typename I>
+template<typename I>
 bool FileSystemItem::appendValues(I vbegin, I vend)
 {
   return this->setValues(vbegin, vend, this->numberOfValues());

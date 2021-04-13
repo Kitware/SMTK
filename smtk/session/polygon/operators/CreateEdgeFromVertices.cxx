@@ -34,7 +34,7 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
+typedef std::vector<std::pair<size_t, internal::Segment>> SegmentSplitsT;
 
 CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
 {
@@ -50,17 +50,20 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
 
   if (!(parentModel.isValid() && (modelItem->numberOfValues() == 2)))
   {
-    smtkErrorMacro(this->log(),
+    smtkErrorMacro(
+      this->log(),
       "A model (or vertices with a valid parent model) must be associated with the operator.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   smtk::model::EntityPtr evert[2] = { modelItem->valueAs<smtk::model::Entity>(0),
-    modelItem->valueAs<smtk::model::Entity>(1) };
+                                      modelItem->valueAs<smtk::model::Entity>(1) };
   if (!(evert[0]->isVertex() && evert[1]->isVertex()))
   {
-    smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
-                                " all associated model entities must be vertices"
-                                " and there must be 2 vertices");
+    smtkErrorMacro(
+      this->log(),
+      "When constructing an edge from vertices,"
+      " all associated model entities must be vertices"
+      " and there must be 2 vertices");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -74,8 +77,9 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
     verts[i] = resource->findStorage<internal::vertex>(modelItem->value(i)->id());
     if (!verts[i])
     {
-      smtkErrorMacro(this->log(), "When constructing an edge from vertices, Vertex "
-          << i << " does not apprear to be valid");
+      smtkErrorMacro(
+        this->log(),
+        "When constructing an edge from vertices, Vertex " << i << " does not apprear to be valid");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }

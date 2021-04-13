@@ -62,7 +62,8 @@ public:
   smtkTypeMacroBase(smtk::attribute::Definition);
   struct SMTKCORE_EXPORT WeakDefinitionPtrCompare
   {
-    bool operator()(const smtk::attribute::WeakDefinitionPtr& lhs,
+    bool operator()(
+      const smtk::attribute::WeakDefinitionPtr& lhs,
       const smtk::attribute::WeakDefinitionPtr& rhs) const
     {
       auto left = lhs.lock();
@@ -150,7 +151,7 @@ public:
    * Example filter modelEntity item definitions
    *  [](ModelEntity::Ptr item) { return true; }
    */
-  template <typename T>
+  template<typename T>
   void filterItemDefinitions(T& values, std::function<bool(typename T::value_type)> test);
 
   /// \brief Get the Definition 's advance level
@@ -268,8 +269,10 @@ public:
   // NOTE - testing is completed once a problem has been detected.  There maybe be
   // other issues preventing association so this method may need be called multiple
   // times
-  AssociationResultType canBeAssociated(smtk::resource::ConstPersistentObjectPtr object,
-    AttributePtr& conflictAtt, DefinitionPtr& prerequisiteDef) const;
+  AssociationResultType canBeAssociated(
+    smtk::resource::ConstPersistentObjectPtr object,
+    AttributePtr& conflictAtt,
+    DefinitionPtr& prerequisiteDef) const;
   // Check the association rules of the definition (and the definiion it derived from)
   // to see if the object can be associated
   bool checkAssociationRules(smtk::resource::ConstPersistentObjectPtr object) const;
@@ -299,7 +302,7 @@ public:
   // in the attribute. For example, an IntItemDefinition would store
   // an integer value.
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
-  template <typename T>
+  template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
     const std::string& name)
   {
@@ -400,7 +403,9 @@ public:
 protected:
   friend class smtk::attribute::Resource;
   // AttributeDefinitions can only be created by an attribute resource
-  Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
+  Definition(
+    const std::string& myType,
+    smtk::attribute::DefinitionPtr myBaseDef,
     smtk::attribute::ResourcePtr myResource);
 
   void clearResource() { m_resource.reset(); }
@@ -418,7 +423,8 @@ protected:
   /// from the Definition's Base Definition.  The Definition's advance level member are set
   /// to these values if the Definition does not have local versions set.
   virtual void applyAdvanceLevels(
-    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent);
+    const unsigned int& readLevelFromParent,
+    const unsigned int& writeLevelFromParent);
   smtk::attribute::WeakResourcePtr m_resource;
   int m_version;
   bool m_isAbstract;
@@ -515,9 +521,10 @@ inline void Definition::setDefaultColor(double r, double g, double b, double a)
   m_defaultColor[3] = a;
 }
 
-template <typename T>
+template<typename T>
 void Definition::filterItemDefinitions(
-  T& filtered, std::function<bool(typename T::value_type)> test)
+  T& filtered,
+  std::function<bool(typename T::value_type)> test)
 {
 
   auto conditionalAdd = [&](smtk::attribute::ItemDefinitionPtr item) {
@@ -532,6 +539,6 @@ void Definition::filterItemDefinitions(
 
   std::for_each(m_itemDefs.begin(), m_itemDefs.end(), conditionalAdd);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 #endif /* __smtk_attribute_Definition_h */

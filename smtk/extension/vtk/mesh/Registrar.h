@@ -34,10 +34,10 @@ public:
   static void registerTo(const smtk::geometry::Manager::Ptr&);
   static void unregisterFrom(const smtk::geometry::Manager::Ptr&);
 };
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif // smtk_extension_vtk_mesh_Registrar_h

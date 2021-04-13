@@ -52,30 +52,30 @@ namespace common
 namespace detail
 {
 /// A compile-time test to check whether or not a class has a type_name defined.
-template <typename T>
+template<typename T>
 class is_named
 {
-  template <typename X>
+  template<typename X>
   static std::true_type testNamed(decltype(X::type_name)*);
-  template <typename X>
+  template<typename X>
   static std::false_type testNamed(...);
 
 public:
   using type = decltype(testNamed<T>(nullptr));
 };
 
-template <typename Type>
+template<typename Type>
 struct name
 {
   // If there's a user-defined type_name field, use it.
-  template <typename T>
+  template<typename T>
   static typename std::enable_if<is_named<T>::type::value, std::string>::type value_()
   {
     return T::type_name;
   }
 
   /// By default, we return the prettified type name for the type.
-  template <typename T>
+  template<typename T>
   static typename std::enable_if<!is_named<T>::type::value, std::string>::type value_()
   {
 #ifdef SMTK_MSVC
@@ -97,23 +97,23 @@ struct name
 };
 
 // Specialization for std::string.
-template <>
+template<>
 struct name<std::string>
 {
   static std::string value() { return "string"; }
 };
 
 // Specialization for std::tuple.
-template <typename... Types>
-struct name<std::tuple<Types...> >
+template<typename... Types>
+struct name<std::tuple<Types...>>
 {
   static std::string value()
   {
-    std::string subtypes = subType<0, std::tuple<Types...> >();
+    std::string subtypes = subType<0, std::tuple<Types...>>();
     return std::string("tuple<" + subtypes + ">");
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline static typename std::enable_if<I != std::tuple_size<Tuple>::value, std::string>::type
   subType()
   {
@@ -123,7 +123,7 @@ struct name<std::tuple<Types...> >
     return (I != 0 ? std::string(", ") : std::string()) + subtype + subType<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline static typename std::enable_if<I == std::tuple_size<Tuple>::value, std::string>::type
   subType()
   {
@@ -132,8 +132,8 @@ struct name<std::tuple<Types...> >
 };
 
 // Specialization for std::array.
-template <typename Type, size_t N>
-struct name<std::array<Type, N> >
+template<typename Type, size_t N>
+struct name<std::array<Type, N>>
 {
   static std::string value()
   {
@@ -143,8 +143,8 @@ struct name<std::array<Type, N> >
 };
 
 // Specialization for std::priority_queue.
-template <typename Type>
-struct name<std::priority_queue<Type, std::vector<Type>, std::less<Type> > >
+template<typename Type>
+struct name<std::priority_queue<Type, std::vector<Type>, std::less<Type>>>
 {
   static std::string value()
   {
@@ -156,8 +156,8 @@ struct name<std::priority_queue<Type, std::vector<Type>, std::less<Type> > >
 
 // Specialization for smart pointers.
 #define name_single_argument_stl_pointer(POINTER)                                                  \
-  template <typename Type>                                                                         \
-  struct name<std::POINTER<Type> >                                                                 \
+  template<typename Type>                                                                          \
+  struct name<std::POINTER<Type>>                                                                  \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -174,8 +174,8 @@ name_single_argument_stl_pointer(unique_ptr);
 #undef name_single_argument_stl_container
 
 #define name_single_argument_stl_container(CONTAINER)                                              \
-  template <typename Type>                                                                         \
-  struct name<std::CONTAINER<Type, std::allocator<Type> > >                                        \
+  template<typename Type>                                                                          \
+  struct name<std::CONTAINER<Type, std::allocator<Type>>>                                          \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -193,8 +193,8 @@ name_single_argument_stl_container(list);
 
 // Specialization for containers with allocators and comparators.
 #define name_single_argument_sorted_stl_container(CONTAINER)                                       \
-  template <typename Type>                                                                         \
-  struct name<std::CONTAINER<Type, std::less<Type>, std::allocator<Type> > >                       \
+  template<typename Type>                                                                          \
+  struct name<std::CONTAINER<Type, std::less<Type>, std::allocator<Type>>>                         \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -212,8 +212,8 @@ name_single_argument_sorted_stl_container(unordered_multiset);
 
 // Specialization for containers that accept a type and container type.
 #define name_double_argument_stl_container(CONTAINER)                                              \
-  template <typename Type>                                                                         \
-  struct name<std::CONTAINER<Type, std::deque<Type> > >                                            \
+  template<typename Type>                                                                          \
+  struct name<std::CONTAINER<Type, std::deque<Type>>>                                              \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -229,9 +229,12 @@ name_double_argument_stl_container(stack);
 
 // Specialization for containers that accept a key, value, comparator and allocator.
 #define name_double_argument_sorted_stl_container(CONTAINER)                                       \
-  template <typename KeyType, typename ValueType>                                                  \
-  struct name<std::CONTAINER<KeyType, ValueType, std::less<KeyType>,                               \
-    std::allocator<std::pair<const KeyType, ValueType> > > >                                       \
+  template<typename KeyType, typename ValueType>                                                   \
+  struct name<std::CONTAINER<                                                                      \
+    KeyType,                                                                                       \
+    ValueType,                                                                                     \
+    std::less<KeyType>,                                                                            \
+    std::allocator<std::pair<const KeyType, ValueType>>>>                                          \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -246,9 +249,13 @@ name_double_argument_sorted_stl_container(multimap);
 
 // Specialization for containers that accept a key, value, comparator and allocator.
 #define name_double_argument_hashed_stl_container(CONTAINER)                                       \
-  template <typename KeyType, typename ValueType>                                                  \
-  struct name<std::CONTAINER<KeyType, ValueType, std::hash<KeyType>, std::equal_to<KeyType>,       \
-    std::allocator<std::pair<const KeyType, ValueType> > > >                                       \
+  template<typename KeyType, typename ValueType>                                                   \
+  struct name<std::CONTAINER<                                                                      \
+    KeyType,                                                                                       \
+    ValueType,                                                                                     \
+    std::hash<KeyType>,                                                                            \
+    std::equal_to<KeyType>,                                                                        \
+    std::allocator<std::pair<const KeyType, ValueType>>>>                                          \
   {                                                                                                \
     static std::string value()                                                                     \
     {                                                                                              \
@@ -262,15 +269,15 @@ name_double_argument_hashed_stl_container(unordered_map);
 name_double_argument_hashed_stl_container(unordered_multimap);
 
 #undef name_double_argument_hashed_stl_container
-}
+} // namespace detail
 
 /// Return the name of a class.
-template <typename Type>
+template<typename Type>
 std::string typeName()
 {
   return detail::name<Type>::value();
 }
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif // smtk_common_TypeName_h

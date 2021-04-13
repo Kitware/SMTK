@@ -44,8 +44,8 @@ public:
   /// Construct an item from the definition given its owning attribute and position.
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   /// Construct an item from the definition given its owning item and position.
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;

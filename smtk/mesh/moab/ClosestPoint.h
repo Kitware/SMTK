@@ -36,12 +36,13 @@ struct SMTKCORE_EXPORT ClosestPoint
   : public smtk::resource::query::DerivedFrom<ClosestPoint, smtk::geometry::ClosestPoint>
 {
   std::array<double, 3> operator()(
-    const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const override;
+    const smtk::resource::Component::Ptr&,
+    const std::array<double, 3>&) const override;
 
   std::array<double, 3> operator()(const smtk::mesh::MeshSet&, const std::array<double, 3>&) const;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

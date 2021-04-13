@@ -57,7 +57,8 @@ class pqSMTKPointItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKPointItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKPointItemWidget();
 
   static qtItem* createPointItemWidget(const qtAttributeItemInfo& info);
@@ -89,7 +90,9 @@ protected:
     * "inactive" (i.e., the point is neither displayed nor accepting
     * shortcuts to set its value).
     */
-  bool fetchPointItems(ItemBindings& binding, smtk::attribute::DoubleItemPtr& coordItem,
+  bool fetchPointItems(
+    ItemBindings& binding,
+    smtk::attribute::DoubleItemPtr& coordItem,
     smtk::attribute::StringItemPtr& controlItem);
 };
 

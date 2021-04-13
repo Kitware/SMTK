@@ -50,9 +50,14 @@ public:
   /// defName is used for error reporting if a problem should
   /// be encountered and is the name of the def being processed
   /// and attType is its type
-  template <typename DefType>
-  void processItemDefinitions(XmlDocV1Parser* parser, pugi::xml_node& itemsNode, DefType& def,
-    std::set<std::string>& activeBlockNames, const std::string& defName, const std::string& attType)
+  template<typename DefType>
+  void processItemDefinitions(
+    XmlDocV1Parser* parser,
+    pugi::xml_node& itemsNode,
+    DefType& def,
+    std::set<std::string>& activeBlockNames,
+    const std::string& defName,
+    const std::string& attType)
   {
     std::string itemName, nodeName;
     attribute::Item::Type itype;
@@ -64,8 +69,9 @@ public:
 
       if (!xatt)
       {
-        smtkErrorMacro(parser->m_logger, "Item Definition of " << attType << ": " << defName
-                                                               << " is missing Name attribute");
+        smtkErrorMacro(
+          parser->m_logger,
+          "Item Definition of " << attType << ": " << defName << " is missing Name attribute");
         continue;
       }
 
@@ -77,15 +83,19 @@ public:
         auto it = parser->m_itemDefintionBlocks.find(itemName);
         if (it == parser->m_itemDefintionBlocks.end())
         {
-          smtkErrorMacro(parser->m_logger, "Can not find Item Block: "
-              << itemName << " referenced in " << attType << ": " << defName);
+          smtkErrorMacro(
+            parser->m_logger,
+            "Can not find Item Block: " << itemName << " referenced in " << attType << ": "
+                                        << defName);
           continue;
         }
         // Make sure we are not already parsing a block of the same name
         else if (activeBlockNames.find(itemName) != activeBlockNames.end())
         {
-          smtkErrorMacro(parser->m_logger, "Encountered Recursive Loop : "
-              << itemName << " referenced in " << attType << ": " << defName);
+          smtkErrorMacro(
+            parser->m_logger,
+            "Encountered Recursive Loop : " << itemName << " referenced in " << attType << ": "
+                                            << defName);
           continue;
         }
         activeBlockNames.emplace(itemName);
@@ -104,8 +114,10 @@ public:
             def->template addItemDefinition<attribute::ComponentItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Ref Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Ref Item definition Type: " << node.name() << " needed to create "
+                                                            << attType << ": " << defName);
             continue;
           }
           parser->processRefDef(node, itemdef);
@@ -117,7 +129,9 @@ public:
             def->template addItemDefinition<attribute::ComponentItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Component Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Component Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -130,7 +144,9 @@ public:
             def->template addItemDefinition<attribute::DateTimeItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create DateTime Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create DateTime Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -143,7 +159,9 @@ public:
             def->template addItemDefinition<attribute::DirectoryItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Directory Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Directory Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -155,7 +173,9 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::DoubleItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Double Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Double Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -167,8 +187,10 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::FileItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create File Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create File Item definition Type: " << node.name() << " needed to create "
+                                                             << attType << ": " << defName);
             continue;
           }
           parser->processFileDef(node, itemdef);
@@ -179,8 +201,10 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::GroupItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Group Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Group Item definition Type: " << node.name() << " needed to create "
+                                                              << attType << ": " << defName);
             continue;
           }
           parser->processGroupDef(node, itemdef);
@@ -191,8 +215,10 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::IntItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Int Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Int Item definition Type: " << node.name() << " needed to create "
+                                                            << attType << ": " << defName);
             continue;
           }
           parser->processIntDef(node, itemdef);
@@ -204,7 +230,9 @@ public:
             def->template addItemDefinition<attribute::ComponentItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create MeshEntity Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create MeshEntity Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -217,7 +245,9 @@ public:
             def->template addItemDefinition<attribute::ComponentItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create ModelEntity Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create ModelEntity Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -230,7 +260,9 @@ public:
             def->template addItemDefinition<attribute::ReferenceItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Reference Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Reference Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -243,7 +275,9 @@ public:
             def->template addItemDefinition<attribute::ResourceItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Resource Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Resource Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -255,7 +289,9 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::StringItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create String Item definition Type: "
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create String Item definition Type: "
                 << node.name() << " needed to create " << attType << ": " << defName);
             continue;
           }
@@ -267,8 +303,10 @@ public:
           auto itemdef = def->template addItemDefinition<attribute::VoidItemDefinition>(itemName);
           if (!itemdef)
           {
-            smtkErrorMacro(parser->m_logger, "Failed to create Void Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Failed to create Void Item definition Type: " << node.name() << " needed to create "
+                                                             << attType << ": " << defName);
             continue;
           }
           parser->processItemDef(node, itemdef);
@@ -277,7 +315,8 @@ public:
 
         default:
           auto typeName = node.attribute("TypeName");
-          if (typeName &&
+          if (
+            typeName &&
             parser->m_resource->customItemDefinitionFactory().contains(typeName.value()))
           {
             idef = parser->m_resource->customItemDefinitionFactory().createFromName(
@@ -288,14 +327,16 @@ public:
           }
           else
           {
-            smtkErrorMacro(parser->m_logger, "Unsupported Item definition Type: "
-                << node.name() << " needed to create " << attType << ": " << defName);
+            smtkErrorMacro(
+              parser->m_logger,
+              "Unsupported Item definition Type: " << node.name() << " needed to create " << attType
+                                                   << ": " << defName);
           }
       }
     }
   }
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_ItemDefinitionsHelper_h */

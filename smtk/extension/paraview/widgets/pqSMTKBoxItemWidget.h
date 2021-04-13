@@ -37,7 +37,8 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKBoxItemWidget : public pqSMTKAttributeItemWi
   Q_OBJECT
 public:
   pqSMTKBoxItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKBoxItemWidget();
 
   static qtItem* createBoxItemWidget(const qtAttributeItemInfo& info);
@@ -90,7 +91,9 @@ protected:
     * checkbox of paraview's Qt widget. Its discrete values must be
     * "active" and "inactive".
     */
-  bool fetchBoxItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items,
+  bool fetchBoxItems(
+    ItemBindings& binding,
+    std::vector<smtk::attribute::DoubleItemPtr>& items,
     smtk::attribute::StringItemPtr& control);
 
   void setControlState(const std::string& controlState, QCheckBox* controlWidget);

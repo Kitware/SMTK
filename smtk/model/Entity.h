@@ -56,10 +56,15 @@ public:
   smtkSharedPtrCreateMacro(smtk::resource::Component);
   virtual ~Entity();
 
-  static EntityPtr create(const UUID& uid, BitFlags entityFlags = EntityTypeBits::INVALID,
+  static EntityPtr create(
+    const UUID& uid,
+    BitFlags entityFlags = EntityTypeBits::INVALID,
     ResourcePtr resource = nullptr);
   static EntityPtr create(BitFlags entityFlags, int dimension, ResourcePtr resource = nullptr);
-  EntityPtr setup(BitFlags entityFlags, int dimension, ResourcePtr resource = nullptr,
+  EntityPtr setup(
+    BitFlags entityFlags,
+    int dimension,
+    ResourcePtr resource = nullptr,
     bool resetRelations = true);
 
   const smtk::resource::ResourcePtr resource() const override;
@@ -69,7 +74,7 @@ public:
   EntityPtr owningModel() const;
 
   /// Return the templated object (usually EntityRef or a subclass) that points to this component.
-  template <typename T>
+  template<typename T>
   T referenceAs() const
   {
     return T(this->modelResource(), this->id());
@@ -110,8 +115,8 @@ public:
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
   static std::string flagDescription(BitFlags entityFlags, int form = 0);
   static int countForType(BitFlags flags, IntegerList& counters, bool incr = false);
-  static std::string defaultNameFromCounters(
-    BitFlags entityFlags, IntegerList& counters, bool incr = true);
+  static std::string
+  defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters, bool incr = true);
   static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
   static BitFlags specifierStringToFlag(const std::string& spec);
   static BitFlags dimensionToDimensionBits(int dim);

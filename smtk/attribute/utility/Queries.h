@@ -28,7 +28,8 @@ namespace utility
 /// Filter out Resource Components that fail a ComponentItem's Uniqueness Criteria
 SMTKCORE_EXPORT
 std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
-  const ComponentItemPtr& compItem, const std::set<smtk::resource::PersistentObjectPtr>& objSet);
+  const ComponentItemPtr& compItem,
+  const std::set<smtk::resource::PersistentObjectPtr>& objSet);
 
 ///\brief Get a set of objects that could be assigned to a reference item.
 ///
@@ -42,8 +43,10 @@ std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
 /// then only those Resources will be considered.
 /// Else the Resources within the Resource Manager are considered.
 SMTKCORE_EXPORT
-std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
-  smtk::resource::ManagerPtr& resourceManager, bool useAttributeAssociations = false,
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
+  const ReferenceItemPtr& refItem,
+  smtk::resource::ManagerPtr& resourceManager,
+  bool useAttributeAssociations = false,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
 ///\brief Get a set of objects that could be assigned based on a reference item definition.
 ///
@@ -56,7 +59,8 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const Referenc
 /// Else the Resources within the Resource Manager are considered.
 SMTKCORE_EXPORT
 std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
-  const ConstReferenceItemDefinitionPtr& refItemDef, smtk::attribute::ResourcePtr& attResource,
+  const ConstReferenceItemDefinitionPtr& refItemDef,
+  smtk::attribute::ResourcePtr& attResource,
   smtk::resource::ManagerPtr& resManager,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
 } // namespace utility

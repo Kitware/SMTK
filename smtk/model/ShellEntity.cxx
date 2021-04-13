@@ -65,7 +65,7 @@ UseEntity ShellEntity::boundingUseEntity() const
 bool ShellEntity::contains(const UseEntity& bdyUse) const
 {
   // TODO: This takes a lot of storage and will not terminate early.
-  std::set<UseEntity> useRecs = this->uses<std::set<UseEntity> >();
+  std::set<UseEntity> useRecs = this->uses<std::set<UseEntity>>();
   return useRecs.find(bdyUse) != useRecs.end();
 }
 

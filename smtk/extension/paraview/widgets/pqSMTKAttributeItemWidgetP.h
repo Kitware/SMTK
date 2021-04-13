@@ -43,7 +43,10 @@ public:
     Interacting            //!< Widget is being manipulated by user; do not update item yet.
   };
 
-  Internal(smtk::attribute::ItemPtr itm, QWidget* p, smtk::extension::qtBaseView* bview,
+  Internal(
+    smtk::attribute::ItemPtr itm,
+    QWidget* p,
+    smtk::extension::qtBaseView* bview,
     Qt::Orientation orient)
     : m_orientation(orient)
     , m_overrideWhen(OverrideWhen::Unset)
@@ -69,7 +72,7 @@ public:
   FallbackStrategy m_fallbackStrategy;
 
   // state of children
-  QMap<QWidget*, QPair<QLayout*, QWidget*> > m_children;
+  QMap<QWidget*, QPair<QLayout*, QWidget*>> m_children;
 
   smtk::operation::Observers::Key m_opObserver;
   State m_state;

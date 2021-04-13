@@ -86,6 +86,6 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
   operationManager->unregisterOperation(
     "smtk.session.multiscale.import_from_deform.import_from_deform");
 }
-}
-}
-}
+} // namespace multiscale
+} // namespace session
+} // namespace smtk

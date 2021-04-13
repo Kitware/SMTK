@@ -41,13 +41,16 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     std::size_t offset = 0;
     std::array<double, 3> x, f_x;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, offset += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, offset += 3)
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
       f_x = m_mapping(x);
@@ -64,19 +67,23 @@ class StoreAndWarpPoints : public smtk::mesh::PointForEach
 
 public:
   StoreAndWarpPoints(
-    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping, std::size_t nPoints)
+    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping,
+    std::size_t nPoints)
     : m_mapping(mapping)
     , m_data(3 * nPoints)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     std::size_t offset = 0;
     std::array<double, 3> x, f_x;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, offset += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, offset += 3)
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
 
@@ -98,7 +105,9 @@ class UndoWarpPoints : public smtk::mesh::PointForEach
 public:
   UndoWarpPoints() = default;
 
-  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& /*pointIds*/,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     xyz = m_data;
@@ -107,10 +116,12 @@ public:
 
   std::vector<double>& data() { return m_data; }
 };
-}
+} // namespace
 
-bool applyWarp(const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
-  smtk::mesh::MeshSet& ms, bool storePriorCoordinates)
+bool applyWarp(
+  const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
+  smtk::mesh::MeshSet& ms,
+  bool storePriorCoordinates)
 {
   if (storePriorCoordinates)
   {
@@ -159,7 +170,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     // The internal <m_counter> provides access to the the point field in
@@ -168,7 +181,8 @@ public:
     // the memory space of the points (we currently use it for iteration).
     std::size_t xyzCounter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, xyzCounter += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, xyzCounter += 3)
     {
       m_data[m_counter++] = m_mapping(
         std::array<double, 3>({ { xyz[xyzCounter], xyz[xyzCounter + 1], xyz[xyzCounter + 2] } }));
@@ -177,10 +191,12 @@ public:
 
   const std::vector<double>& data() const { return m_data; }
 };
-}
+} // namespace
 
-bool applyScalarPointField(const std::function<double(std::array<double, 3>)>& f,
-  const std::string& name, smtk::mesh::MeshSet& ms)
+bool applyScalarPointField(
+  const std::function<double(std::array<double, 3>)>& f,
+  const std::string& name,
+  smtk::mesh::MeshSet& ms)
 {
   ScalarPointField scalarPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), scalarPointField);
@@ -206,8 +222,8 @@ public:
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts) override
+  void forCell(const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts)
+    override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < 3 * nPts; i += 3)
@@ -225,10 +241,12 @@ public:
 
   const std::vector<double>& data() const { return m_data; }
 };
-}
+} // namespace
 
-bool applyScalarCellField(const std::function<double(std::array<double, 3>)>& f,
-  const std::string& name, smtk::mesh::MeshSet& ms)
+bool applyScalarCellField(
+  const std::function<double(std::array<double, 3>)>& f,
+  const std::string& name,
+  smtk::mesh::MeshSet& ms)
 {
   ScalarCellField scalarCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), scalarCellField);
@@ -247,14 +265,17 @@ private:
 
 public:
   VectorPointField(
-    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping, std::size_t nPoints)
+    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping,
+    std::size_t nPoints)
     : m_mapping(mapping)
     , m_data(3 * nPoints)
     , m_counter(0)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     // The internal <m_counter> provides access to the the point field in
@@ -264,7 +285,8 @@ public:
     std::size_t xyzCounter = 0;
     std::array<double, 3> x, f_x;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, xyzCounter += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, xyzCounter += 3)
     {
       std::copy(&xyz[xyzCounter], &xyz[xyzCounter] + 3, &x[0]);
       f_x = m_mapping(x);
@@ -275,10 +297,12 @@ public:
 
   const std::vector<double>& data() const { return m_data; }
 };
-}
+} // namespace
 
-bool applyVectorPointField(const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
-  const std::string& name, smtk::mesh::MeshSet& ms)
+bool applyVectorPointField(
+  const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
+  const std::string& name,
+  smtk::mesh::MeshSet& ms)
 {
   VectorPointField vectorPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), vectorPointField);
@@ -297,7 +321,8 @@ private:
 
 public:
   VectorCellField(
-    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping, std::size_t nCells)
+    const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping,
+    std::size_t nCells)
     : smtk::mesh::CellForEach(true)
     , m_mapping(mapping)
     , m_data(3 * nCells)
@@ -305,8 +330,8 @@ public:
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts) override
+  void forCell(const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts)
+    override
   {
     std::array<double, 3> x = { { 0., 0., 0. } }, f_x;
     for (int i = 0; i < 3 * nPts; i += 3)
@@ -326,16 +351,18 @@ public:
 
   const std::vector<double>& data() const { return m_data; }
 };
-}
+} // namespace
 
-bool applyVectorCellField(const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
-  const std::string& name, smtk::mesh::MeshSet& ms)
+bool applyVectorCellField(
+  const std::function<std::array<double, 3>(std::array<double, 3>)>& f,
+  const std::string& name,
+  smtk::mesh::MeshSet& ms)
 {
   VectorCellField vectorCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), vectorCellField);
   return ms.createCellField(name, 3, smtk::mesh::FieldType::Double, &vectorCellField.data()[0])
     .isValid();
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

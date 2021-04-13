@@ -44,7 +44,7 @@ class Key
   Key() {}
 };
 
-template <typename Self, typename Parent>
+template<typename Self, typename Parent>
 class DerivedFrom;
 
 class Manager;
@@ -62,7 +62,7 @@ public:
 
   friend class Manager;
 
-  template <typename Child, typename Parent>
+  template<typename Child, typename Parent>
   friend class DerivedFrom;
 
   static const Resource::Index type_index;
@@ -78,7 +78,7 @@ public:
 
   /// given a resource type, return whether or not this resource is or is
   /// derived from the resource described by the index.
-  template <class ResourceType>
+  template<class ResourceType>
   bool isOfType() const
   {
     return this->isOfType(std::type_index(typeid(ResourceType)).hash_code());
@@ -147,7 +147,7 @@ public:
   /// given a a std::string describing a query and a type of container, return a
   /// set of components that satisfy both.  Note that since this uses a dynamic
   /// pointer cast this can be slower than other find methods.
-  template <typename Collection>
+  template<typename Collection>
   Collection findAs(const std::string& queryString) const;
 
   Links& links() override { return m_links; }
@@ -226,7 +226,7 @@ private:
   mutable Lock m_lock;
 };
 
-template <typename Collection>
+template<typename Collection>
 Collection Resource::findAs(const std::string& queryString) const
 {
   // Construct a query operation from the query string
@@ -259,7 +259,7 @@ Collection Resource::findAs(const std::string& queryString) const
 /// (in which case it asks the resource to construct the query)
 /// or a component (in which case it asks the component's
 /// owning resource to construct the query).
-template <typename QueryType>
+template<typename QueryType>
 SMTKCORE_NO_EXPORT QueryType& queryForObject(const PersistentObject& object)
 {
   auto resource = dynamic_cast<const Resource*>(&object);
@@ -277,7 +277,7 @@ SMTKCORE_NO_EXPORT QueryType& queryForObject(const PersistentObject& object)
   }
   throw query::BadTypeError(smtk::common::typeName<QueryType>());
 }
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Resource_h

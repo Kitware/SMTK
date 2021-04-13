@@ -1,5 +1,5 @@
 import sys
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -9,7 +9,7 @@ import sys
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.model
 import smtk.session.polygon
@@ -176,7 +176,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.assertEqual(
             int(mod.floatProperty('model scale')[0]), int(
                 model_scale / feature_size),
-                         'Bad model scale {:1}'.format(*mod.floatProperty('model scale')))
+            'Bad model scale {:1}'.format(*mod.floatProperty('model scale')))
 
         # print(smtk.io.SaveJSON.fromModelResource(self.resource,
         # smtk.io.JSON_DEFAULT))
@@ -214,7 +214,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             '2d points' if numCoordsPerPoint == 2 else '3d points')
         pgr.setNumberOfGroups(numPts)
         for ix in range(numPts):
-#            xx = smtk.attribute.to_concrete(pgr.item(ix, 0))
+            #            xx = smtk.attribute.to_concrete(pgr.item(ix, 0))
             xx = pgr.item(ix, 0)
             v = testVerts[ix][0:numCoordsPerPoint] + [0, ] * \
                 (numCoordsPerPoint - len(testVerts[ix]))

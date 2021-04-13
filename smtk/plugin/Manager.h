@@ -37,7 +37,7 @@ public:
   virtual ~Manager();
 
   /// Register all current and future plugins to this manager.
-  template <typename Manager_t>
+  template<typename Manager_t>
   void registerPluginsTo(const std::shared_ptr<Manager_t>& manager)
   {
     setRegistryStatus(manager, true);
@@ -45,7 +45,7 @@ public:
 
   /// Unregister all current plugins from this manager, and do not register
   /// future plugins to it either.
-  template <typename Manager_t>
+  template<typename Manager_t>
   void unregisterPluginsFrom(const std::shared_ptr<Manager_t>& manager)
   {
     setRegistryStatus(manager, false);
@@ -55,10 +55,10 @@ public:
   void addClient(const std::weak_ptr<ClientBase>& pluginClient);
 
 private:
-  template <typename Manager_t>
+  template<typename Manager_t>
   void setRegistryStatus(const std::shared_ptr<Manager_t>&, bool);
 
-  std::vector<std::weak_ptr<ClientBase> > m_clients;
+  std::vector<std::weak_ptr<ClientBase>> m_clients;
 
   /// The register function accepts a plugin client and registers it to the
   /// manager associated with the function (a weak_ptr is captured by value
@@ -76,7 +76,7 @@ private:
 
   std::set<RegisterFunction, fn_compare> m_registerToExistingManagers;
 };
-}
+} // namespace detail
 
 /// The Manager is a singleton interface for registering available plugins
 /// to manager instances. When a plugin is loaded, it creates a Client
@@ -89,8 +89,8 @@ private:
 /// is created that facilitates the registration of future plugins to the
 /// manager.
 typedef smtk::common::Singleton<detail::Manager> Manager;
-}
-}
+} // namespace plugin
+} // namespace smtk
 
 #ifndef smtkCore_EXPORTS
 extern

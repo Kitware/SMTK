@@ -26,7 +26,7 @@ namespace view
 {
 class Selection;
 }
-}
+} // namespace smtk
 
 /**\brief Intercept ParaView selections.
   *
@@ -43,9 +43,14 @@ public:
   static vtkSMTKEncodeSelection* New();
   vtkTypeMacro(vtkSMTKEncodeSelection, vtkPVEncodeSelectionForServer);
 
-  bool ProcessSelection(vtkSelection* rawSelection, vtkSMRenderViewProxy* viewProxy,
-    bool multipleSelectionsAllowed, vtkCollection* selectedRepresentations,
-    vtkCollection* selectionSources, int modifier, bool selectBlocks) override;
+  bool ProcessSelection(
+    vtkSelection* rawSelection,
+    vtkSMRenderViewProxy* viewProxy,
+    bool multipleSelectionsAllowed,
+    vtkCollection* selectedRepresentations,
+    vtkCollection* selectionSources,
+    int modifier,
+    bool selectBlocks) override;
 
 protected:
   vtkSMTKEncodeSelection();
@@ -53,13 +58,20 @@ protected:
 
   /// Method called by ProcessSelection to perform SMTK-related selection.
   void ProcessRawSelection(
-    vtkSelection* rawSelection, vtkSMRenderViewProxy* viewProxy, int modifier, bool selectBlocks);
+    vtkSelection* rawSelection,
+    vtkSMRenderViewProxy* viewProxy,
+    int modifier,
+    bool selectBlocks);
 
-  bool ProcessResource(pqSMTKWrapper* wrapper,
+  bool ProcessResource(
+    pqSMTKWrapper* wrapper,
     const std::shared_ptr<smtk::resource::Resource>& resource,
     const std::shared_ptr<smtk::view::Selection>& smtkSelection,
-    vtkSMTKResourceRepresentation* resourceRep, vtkSelection* rawSelection,
-    vtkSMRenderViewProxy* vtkNotUsed(viewProxy), int modifier, bool selectBlocks);
+    vtkSMTKResourceRepresentation* resourceRep,
+    vtkSelection* rawSelection,
+    vtkSMRenderViewProxy* vtkNotUsed(viewProxy),
+    int modifier,
+    bool selectBlocks);
 
 private:
   vtkSMTKEncodeSelection(const vtkSMTKEncodeSelection&) = delete;

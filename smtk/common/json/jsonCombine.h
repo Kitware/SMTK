@@ -39,4 +39,4 @@ json combine(const json& ja, const json& jb)
   }
   return result;
 }
-}
+} // namespace nlohmann

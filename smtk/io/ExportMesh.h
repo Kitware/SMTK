@@ -39,16 +39,22 @@ public:
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 
   bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const;
-  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-    smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const;
+  bool operator()(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr meshResource,
+    smtk::model::ResourcePtr resource,
+    const std::string& modelPropertyName) const;
 };
 
 SMTKCORE_EXPORT
 bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource);
 SMTKCORE_EXPORT
-bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName);
-}
-}
+bool exportMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName);
+} // namespace io
+} // namespace smtk
 
 #endif

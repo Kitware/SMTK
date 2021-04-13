@@ -78,8 +78,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuratio
 
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::ConfigurationPtr& config)
 {
-  j = { { "Type", config->type() }, { "Name", config->name() },
-    { "Component", config->details() } };
+  j = { { "Type", config->type() },
+        { "Name", config->name() },
+        { "Component", config->details() } };
   if (!config->iconName().empty())
   {
     j["Icon"] = config->iconName();
@@ -100,5 +101,5 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuratio
     config->details() = *it;
   }
 }
-}
-}
+} // namespace view
+} // namespace smtk

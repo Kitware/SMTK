@@ -95,7 +95,8 @@ UUID vtkResourceMultiBlockSource::GetResourceId(vtkMultiBlockDataSet* dataset)
 
 //----------------------------------------------------------------------------
 smtk::resource::ComponentPtr vtkResourceMultiBlockSource::GetComponent(
-  const smtk::resource::ResourcePtr& resource, vtkInformation* info)
+  const smtk::resource::ResourcePtr& resource,
+  vtkInformation* info)
 {
   if (resource == nullptr)
   {
@@ -144,7 +145,9 @@ vtkMTimeType vtkResourceMultiBlockSource::GetMTime()
 }
 
 void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
-  vtkMultiBlockDataSet* dataset, int& counter, int indent)
+  vtkMultiBlockDataSet* dataset,
+  int& counter,
+  int indent)
 {
   if (!dataset)
   {
@@ -179,7 +182,9 @@ void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
 }
 
 bool vtkResourceMultiBlockSource::SetCachedData(
-  const UUID& uid, vtkDataObject* data, int sequenceNumber)
+  const UUID& uid,
+  vtkDataObject* data,
+  int sequenceNumber)
 {
   if (!data)
   {
@@ -261,8 +266,10 @@ void vtkResourceMultiBlockSource::ClearCache()
   this->Cache.clear();
 }
 
-int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request,
-  vtkInformationVector* outInfo, const smtk::extension::vtk::geometry::Geometry& geometry)
+int vtkResourceMultiBlockSource::RequestDataFromGeometry(
+  vtkInformation* request,
+  vtkInformationVector* outInfo,
+  const smtk::extension::vtk::geometry::Geometry& geometry)
 {
   (void)request;
   auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
@@ -279,11 +286,12 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
     this->LastModified = lastModified;
   }
 
-  std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;
+  std::map<int, std::vector<vtkSmartPointer<vtkDataObject>>> blocks;
   // smtk::extension::vtk::geometry::Backend source(&geometry);
   smtk::extension::vtk::geometry::Backend backend;
-  geometry.visit([this, &geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
-    smtk::geometry::Geometry::GenerationNumber gen) {
+  geometry.visit([this, &geometry, &blocks](
+                   const smtk::resource::PersistentObject::Ptr& obj,
+                   smtk::geometry::Geometry::GenerationNumber gen) {
     if (obj)
     {
       int dim = geometry.dimension(obj);
@@ -320,7 +328,8 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
     for (auto iit = dit->second.begin(); iit != dit->second.end(); ++iit, ++bb)
     {
       entries->SetBlock(bb, *iit);
-      vtkResourceMultiBlockSource::SetDataObjectUUID(entries->GetMetaData(bb),
+      vtkResourceMultiBlockSource::SetDataObjectUUID(
+        entries->GetMetaData(bb),
         vtkResourceMultiBlockSource::GetDataObjectUUID((*iit)->GetInformation()));
     }
     if (dit->first == -1)
@@ -342,7 +351,9 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
 }
 
 int vtkResourceMultiBlockSource::RequestData(
-  vtkInformation* request, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+  vtkInformation* request,
+  vtkInformationVector** /*inInfo*/,
+  vtkInformationVector* outInfo)
 {
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)

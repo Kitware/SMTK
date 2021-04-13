@@ -20,9 +20,11 @@ namespace project
 {
 void to_json(json& j, const ResourceDescriptor& rd)
 {
-  j = { { "filename", rd.m_filename }, { "identifier", rd.m_identifier },
-    { "importLocation", rd.m_importLocation }, { "typeName", rd.m_typeName },
-    { "uuid", rd.m_uuid.toString() } };
+  j = { { "filename", rd.m_filename },
+        { "identifier", rd.m_identifier },
+        { "importLocation", rd.m_importLocation },
+        { "typeName", rd.m_typeName },
+        { "uuid", rd.m_uuid.toString() } };
 } // to_json()
 
 void from_json(const json& j, ResourceDescriptor& rd)

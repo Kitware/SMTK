@@ -82,5 +82,5 @@ const char* Associate::xmlDescription() const
 {
   return Associate_xml;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

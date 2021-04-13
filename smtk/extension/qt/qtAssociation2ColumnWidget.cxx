@@ -57,7 +57,7 @@ namespace
 // This constant temporarily turns this capability off.
 
 const bool ALLOW_LIST_HIGHLIGHTING = false;
-}
+} // namespace
 namespace Ui
 {
 class qtAttributeAssociation;
@@ -123,7 +123,9 @@ qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* 
   if (opManager != nullptr)
   {
     m_operationObserverKey = opManager->observers().insert(
-      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](
+        const smtk::operation::Operation& oper,
+        smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         if (guardedObject == nullptr)
         {
@@ -155,13 +157,19 @@ qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* 
     std::cerr << "qtAssociation2ColumnWidget: Could not find Resource Manager!\n";
   }
   QObject::connect(m_view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
-  QObject::connect(m_internals->CurrentList,
-    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
+  QObject::connect(
+    m_internals->CurrentList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    this,
+    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    Qt::QueuedConnection);
 
-  QObject::connect(m_internals->AvailableList,
-    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
+  QObject::connect(
+    m_internals->AvailableList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    this,
+    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    Qt::QueuedConnection);
 
   m_internals->lastHighlightedItem = nullptr;
   m_internals->AvailableLabel->setWordWrap(true);
@@ -186,7 +194,11 @@ void qtAssociation2ColumnWidget::initWidget()
   this->setIsValid(true);
 
   // signals/slots
-  QObject::connect(m_internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()),
+  QObject::connect(
+    m_internals->MoveToRight,
+    SIGNAL(clicked()),
+    this,
+    SLOT(onRemoveAssigned()),
     Qt::QueuedConnection);
   QObject::connect(
     m_internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()), Qt::QueuedConnection);
@@ -449,8 +461,11 @@ void qtAssociation2ColumnWidget::removeItem(QListWidget* theList, QListWidgetIte
   }
 }
 
-QListWidgetItem* qtAssociation2ColumnWidget::addObjectAssociationListItem(QListWidget* theList,
-  const smtk::resource::PersistentObjectPtr& object, bool sort, bool appendResourceName)
+QListWidgetItem* qtAssociation2ColumnWidget::addObjectAssociationListItem(
+  QListWidget* theList,
+  const smtk::resource::PersistentObjectPtr& object,
+  bool sort,
+  bool appendResourceName)
 {
   std::string name;
   auto res = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
@@ -479,7 +494,9 @@ QListWidgetItem* qtAssociation2ColumnWidget::addObjectAssociationListItem(QListW
 }
 
 QListWidgetItem* qtAssociation2ColumnWidget::addAttributeAssociationItem(
-  QListWidget* theList, smtk::attribute::AttributePtr att, bool sort)
+  QListWidget* theList,
+  smtk::attribute::AttributePtr att,
+  bool sort)
 {
   QString txtLabel(att->name().c_str());
 
@@ -611,7 +628,8 @@ void qtAssociation2ColumnWidget::removeObservers()
 }
 
 void qtAssociation2ColumnWidget::updateListItemSelectionAfterChange(
-  QList<QListWidgetItem*> selItems, QListWidget* list)
+  QList<QListWidgetItem*> selItems,
+  QListWidget* list)
 {
   list->blockSignals(true);
   foreach (QListWidgetItem* item, selItems)
@@ -625,8 +643,10 @@ void qtAssociation2ColumnWidget::updateListItemSelectionAfterChange(
   list->blockSignals(false);
 }
 
-int qtAssociation2ColumnWidget::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
-  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+int qtAssociation2ColumnWidget::handleOperationEvent(
+  const smtk::operation::Operation& /*unused*/,
+  smtk::operation::EventType event,
+  smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
   {
@@ -647,7 +667,8 @@ int qtAssociation2ColumnWidget::handleOperationEvent(const smtk::operation::Oper
 }
 
 int qtAssociation2ColumnWidget::handleResourceEvent(
-  const smtk::resource::Resource& resource, smtk::resource::EventType event)
+  const smtk::resource::Resource& resource,
+  smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::REMOVED)
   {
@@ -765,23 +786,38 @@ void qtAssociation2ColumnWidget::highlightOnHoverChanged(bool shouldHighlight)
 {
   if (shouldHighlight)
   {
-    QObject::connect(m_internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
-    QObject::connect(m_internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
+    QObject::connect(
+      m_internals->CurrentList,
+      SIGNAL(entered(const QModelIndex&)),
+      this,
+      SLOT(hoverRow(const QModelIndex&)),
+      Qt::QueuedConnection);
+    QObject::connect(
+      m_internals->AvailableList,
+      SIGNAL(entered(const QModelIndex&)),
+      this,
+      SLOT(hoverRow(const QModelIndex&)),
+      Qt::QueuedConnection);
   }
   else
   {
-    QObject::disconnect(m_internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::disconnect(
+      m_internals->CurrentList,
+      SIGNAL(entered(const QModelIndex&)),
+      this,
       SLOT(hoverRow(const QModelIndex&)));
-    QObject::disconnect(m_internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::disconnect(
+      m_internals->AvailableList,
+      SIGNAL(entered(const QModelIndex&)),
+      this,
       SLOT(hoverRow(const QModelIndex&)));
     this->resetHover();
   }
 }
 
 void qtAssociation2ColumnWidget::onCurrentItemChanged(
-  QListWidgetItem* item, QListWidgetItem* prevItem)
+  QListWidgetItem* item,
+  QListWidgetItem* prevItem)
 {
   // When something is selected we need to make sure that the
   // previous selected item is no longer using the hover background color

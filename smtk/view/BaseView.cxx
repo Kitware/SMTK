@@ -16,4 +16,4 @@ namespace view
 {
 BaseView::~BaseView() = default;
 }
-}
+} // namespace smtk

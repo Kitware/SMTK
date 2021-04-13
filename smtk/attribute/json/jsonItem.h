@@ -43,7 +43,7 @@ struct ItemExpressionInfo
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ItemPtr& itemPtr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr);
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

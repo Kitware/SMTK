@@ -42,7 +42,8 @@ public:
   // |dependentSymbol| and each symbol in the storage not in |newSymbols|.
   // I.e. each symbol erased means it is no longer needed by |dependentSymbol|.
   void pruneOldSymbols(
-    const std::unordered_set<std::string>& newSymbols, const std::string& dependentSymbol);
+    const std::unordered_set<std::string>& newSymbols,
+    const std::string& dependentSymbol);
 
   // Returns whether start is dependent on end by checking for a path between start
   // and end using breadth-first search.

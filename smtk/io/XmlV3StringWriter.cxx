@@ -21,7 +21,6 @@
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -57,7 +56,8 @@ namespace io
 {
 
 XmlV3StringWriter::XmlV3StringWriter(
-  const attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+  const attribute::ResourcePtr myResource,
+  smtk::io::Logger& logger)
   : XmlV2StringWriter(myResource, logger)
 {
 }
@@ -104,9 +104,10 @@ void XmlV3StringWriter::generateXml()
     // Process Resource Association Info
     auto associations = m_resource->associations();
     // Find the XML to place this info
-    auto node = (this->topDefinitionsNode()
-        ? this->topDefinitionsNode()
-        : ((this->topAttributesNode() ? this->topAttributesNode() : this->topViewsNode())));
+    auto node =
+      (this->topDefinitionsNode()
+         ? this->topDefinitionsNode()
+         : ((this->topAttributesNode() ? this->topAttributesNode() : this->topViewsNode())));
     xml_node associationsNode;
     if (node)
     {
@@ -158,8 +159,9 @@ void XmlV3StringWriter::generateXml()
           }
           else
           {
-            node = preNode ? preNode : ((this->topAttributesNode()) ? this->topAttributesNode()
-                                                                    : this->topViewsNode());
+            node = preNode
+              ? preNode
+              : ((this->topAttributesNode()) ? this->topAttributesNode() : this->topViewsNode());
             if (node)
             {
               exNode = root.insert_child_before("Exclusions", node);
@@ -574,7 +576,9 @@ void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::Co
 }
 
 void XmlV3StringWriter::processReferenceDefCommon(
-  pugi::xml_node& node, ReferenceItemDefinitionPtr idef, const std::string& labelName)
+  pugi::xml_node& node,
+  ReferenceItemDefinitionPtr idef,
+  const std::string& labelName)
 {
   node.append_attribute("EnforceCategories") = idef->enforcesCategories();
   auto acceptableEntries = idef->acceptableEntries();
@@ -671,7 +675,7 @@ void XmlV3StringWriter::processReferenceDefCommon(
   {
     return;
   }
-  const std::vector<std::vector<std::string> >& conditionals = idef->conditionalInformation();
+  const std::vector<std::vector<std::string>>& conditionals = idef->conditionalInformation();
   const std::vector<std::string>& rqueries = idef->resourceQueries();
   const std::vector<std::string>& cqueries = idef->componentQueries();
   std::size_t n = conditionals.size();

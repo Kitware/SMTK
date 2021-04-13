@@ -79,10 +79,13 @@ public:
   Point& point() { return m_coords; }
 
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
+  incident_edges::iterator
+  insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
   incident_edges::iterator insertEdgeAt(
-    incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
-  incident_edges::iterator insertEdgeAt(
-    incident_edges::iterator where, const Id& edgeId, bool edgeOutwards, const Id& faceId);
+    incident_edges::iterator where,
+    const Id& edgeId,
+    bool edgeOutwards,
+    const Id& faceId);
   void removeEdgeAt(incident_edges::iterator where);
 
   incident_edges::size_type numberOfEdgeIncidences() const { return m_edges.size(); }
@@ -105,7 +108,10 @@ public:
   incident_edges::reverse_iterator edgesREnd() { return m_edges.rend(); }
 
   bool setFaceAdjacency(
-    const Id& incidentEdge, const Id& adjacentFace, bool isCCW = true, int edgeDir = 0);
+    const Id& incidentEdge,
+    const Id& adjacentFace,
+    bool isCCW = true,
+    int edgeDir = 0);
   int removeFaceAdjacencies(const Id& face);
 
   int removeIncidentEdge(const Id& edge);

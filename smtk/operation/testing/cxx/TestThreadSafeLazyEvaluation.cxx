@@ -88,7 +88,7 @@ const char* MyOperation::xmlDescription() const
 {
   return myOperationXML;
 }
-}
+} // namespace
 
 // Parameters are constructed lazily, allowing for RAII while having derived
 // classes construct parameters that are tailored to their use. This can
@@ -119,18 +119,21 @@ int TestThreadSafeLazyEvaluation(int /*unused*/, char** const /*unused*/)
     // thread.
     smtk::operation::Operation::Parameters parametersFromObserver = nullptr;
     operationManager->observers()
-      .insert([&](const smtk::operation::Operation& op, smtk::operation::EventType eventType,
-                smtk::operation::Operation::Result /*unused*/) -> int {
-        if (eventType == smtk::operation::EventType::WILL_OPERATE)
-        {
-          std::thread t([&]() {
-            std::this_thread::sleep_for(std::chrono::microseconds(i));
-            parametersFromObserver = op.parameters();
-          });
-          t.detach();
-        }
-        return 0;
-      })
+      .insert(
+        [&](
+          const smtk::operation::Operation& op,
+          smtk::operation::EventType eventType,
+          smtk::operation::Operation::Result /*unused*/) -> int {
+          if (eventType == smtk::operation::EventType::WILL_OPERATE)
+          {
+            std::thread t([&]() {
+              std::this_thread::sleep_for(std::chrono::microseconds(i));
+              parametersFromObserver = op.parameters();
+            });
+            t.detach();
+          }
+          return 0;
+        })
       .release();
 
     // Register MyOperation

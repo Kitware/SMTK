@@ -27,9 +27,7 @@ namespace smtk
 namespace operation
 {
 
-CreateResource::CreateResource()
-{
-}
+CreateResource::CreateResource() {}
 
 smtk::operation::Operation::Result CreateResource::operateInternal()
 {
@@ -83,5 +81,5 @@ void CreateResource::generateSummary(CreateResource::Result& res)
     smtkErrorMacro(this->log(), label << ": failed to create \"" << sitem->value(0) << "\"");
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

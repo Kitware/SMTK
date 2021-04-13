@@ -74,8 +74,9 @@ public:
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override
   {
-    auto it = std::find_if(m_components.begin(), m_components.end(),
-      [&](const Component::Ptr& c) { return c->id() == id; });
+    auto it = std::find_if(m_components.begin(), m_components.end(), [&](const Component::Ptr& c) {
+      return c->id() == id;
+    });
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
@@ -99,7 +100,7 @@ protected:
 private:
   std::unordered_set<Component::Ptr> m_components;
 };
-}
+} // namespace
 
 int TestResourceProperties(int /*unused*/, char** const /*unused*/)
 {
@@ -132,10 +133,12 @@ int TestResourceProperties(int /*unused*/, char** const /*unused*/)
 
     component->properties().emplace<double>("foo", 2.3);
     test(component->properties().contains<double>("foo"), "Value incorrectly assigned");
-    test(fabs(component->properties().at<double>("foo") - 2.3) < double_epsilon,
+    test(
+      fabs(component->properties().at<double>("foo") - 2.3) < double_epsilon,
       "Value incorrectly emplaced");
 
-    test(resource->properties().get<std::vector<std::string> >()["bar"].empty(),
+    test(
+      resource->properties().get<std::vector<std::string>>()["bar"].empty(),
       "Array-style access should implicitly create property type");
 
     resource->properties().erase<double>("bar"); // Try to erase a value not present.

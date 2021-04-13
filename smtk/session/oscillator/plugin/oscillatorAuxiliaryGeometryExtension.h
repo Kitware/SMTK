@@ -46,7 +46,8 @@ public:
     * create the auxiliary geometry dataset.
     */
   bool canHandleAuxiliaryGeometry(
-    smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut) override;
+    smtk::model::AuxiliaryGeometry& entity,
+    std::vector<double>& bboxOut) override;
 
 protected:
   oscillatorAuxiliaryGeometryExtension();

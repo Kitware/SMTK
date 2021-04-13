@@ -28,7 +28,7 @@ public:
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

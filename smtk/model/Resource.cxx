@@ -109,9 +109,13 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
 }
 
 /// Create a model resource using the given storage instances.
-Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
-  shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
-  const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
+Resource::Resource(
+  shared_ptr<UUIDsToEntities> inTopology,
+  shared_ptr<UUIDsToTessellations> tess,
+  shared_ptr<UUIDsToTessellations> analysismesh,
+  shared_ptr<UUIDsToAttributeAssignments> attribs,
+  const smtk::common::UUID& uid,
+  smtk::resource::ManagerPtr mgr)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(uid, mgr)
   , m_topology(inTopology)
   , m_tessellations(tess)
@@ -197,7 +201,8 @@ bool Resource::setMeshTessellations(const smtk::mesh::ResourcePtr& meshResource)
 smtk::mesh::ResourcePtr Resource::meshTessellations() const
 {
   auto tessellationObjects = this->links().linkedTo(TessellationRole);
-  return (!tessellationObjects.empty()
+  return (
+    !tessellationObjects.empty()
       ? std::dynamic_pointer_cast<smtk::mesh::Resource>(*tessellationObjects.begin())
       : smtk::mesh::ResourcePtr());
 }
@@ -309,9 +314,9 @@ SessionInfoBits Resource::erase(const UUID& uid, SessionInfoBits flags)
     this->elideEntityReferences(ent);
   }
 
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
 
   // TODO: Notify observers of property removal?
   if (actual & SESSION_USER_DEFINED_PROPERTIES)
@@ -419,24 +424,24 @@ SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags
   {
     if (actual & SESSION_FLOAT_PROPERTIES)
     {
-      this->properties().data().eraseIdForType<std::vector<double> >(uid);
-      if (this->properties().data().containsType<std::vector<double> >())
+      this->properties().data().eraseIdForType<std::vector<double>>(uid);
+      if (this->properties().data().containsType<std::vector<double>>())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
     if (actual & SESSION_STRING_PROPERTIES)
     {
-      this->properties().data().eraseIdForType<std::vector<std::string> >(uid);
-      if (this->properties().data().containsType<std::vector<std::string> >())
+      this->properties().data().eraseIdForType<std::vector<std::string>>(uid);
+      if (this->properties().data().containsType<std::vector<std::string>>())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
     if (actual & SESSION_INTEGER_PROPERTIES)
     {
-      this->properties().data().eraseIdForType<std::vector<long> >(uid);
-      if (this->properties().data().containsType<std::vector<long> >())
+      this->properties().data().eraseIdForType<std::vector<long>>(uid);
+      if (this->properties().data().containsType<std::vector<long>>())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
@@ -550,8 +555,8 @@ Resource::iter_type Resource::insertEntity(EntityPtr c)
   * For face cells (CELL_2D) entites, two HAS_USE Arrangements are created to
   * reference FaceUse instances.
   */
-Resource::iter_type Resource::setEntityOfTypeAndDimension(
-  const UUID& uid, BitFlags entityFlags, int dim)
+Resource::iter_type
+Resource::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dim)
 {
   UUIDWithEntityPtr it;
   if (uid.isNull())
@@ -560,7 +565,8 @@ Resource::iter_type Resource::setEntityOfTypeAndDimension(
     msg << "Nil UUID";
     throw msg.str();
   }
-  if (((it = m_topology->find(uid)) != m_topology->end()) && (entityFlags & GROUP_ENTITY) != 0 &&
+  if (
+    ((it = m_topology->find(uid)) != m_topology->end()) && (entityFlags & GROUP_ENTITY) != 0 &&
     dim >= 0 && it->second->dimension() != dim)
   {
     std::ostringstream msg;
@@ -727,20 +733,22 @@ UUIDs Resource::bordantEntities(const UUID& ofEntity, int ofDimension) const
   }
   UUIDWithConstEntityPtr other;
   for (UUIDArray::const_iterator ai = it->second->relations().begin();
-       ai != it->second->relations().end(); ++ai)
+       ai != it->second->relations().end();
+       ++ai)
   {
     other = m_topology->find(*ai);
     if (other == m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
-    if ((ofDimension >= 0 && other->second->dimension() == ofDimension) ||
+    if (
+      (ofDimension >= 0 && other->second->dimension() == ofDimension) ||
       (ofDimension == -2 && other->second->dimension() >= it->second->dimension()))
     { // The dimension is higher, so dumbly push it into the result:
       result.insert(*ai);
     }
-    else if ((it->second->entityFlags() & CELL_ENTITY) &&
-      (other->second->entityFlags() & USE_ENTITY))
+    else if (
+      (it->second->entityFlags() & CELL_ENTITY) && (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use upwards.
       ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Resource>(shared_from_this()), *ai)
                                 .boundingShellEntities<ShellEntities>();
@@ -792,21 +800,23 @@ UUIDs Resource::boundaryEntities(const UUID& ofEntity, int ofDimension) const
   }
   UUIDWithEntityPtr other;
   for (UUIDArray::const_iterator ai = it->second->relations().begin();
-       ai != it->second->relations().end(); ++ai)
+       ai != it->second->relations().end();
+       ++ai)
   {
     other = m_topology->find(*ai);
     if (other == m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
-    if ((ofDimension >= 0 && other->second->dimension() == ofDimension) ||
+    if (
+      (ofDimension >= 0 && other->second->dimension() == ofDimension) ||
       (ofDimension == -2 && other->second->dimension() <= it->second->dimension() &&
-          !other->second->isModel()))
+       !other->second->isModel()))
     {
       result.insert(*ai);
     }
-    else if ((it->second->entityFlags() & CELL_ENTITY) &&
-      (other->second->entityFlags() & USE_ENTITY))
+    else if (
+      (it->second->entityFlags() & CELL_ENTITY) && (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use downwards.
       ShellEntities shells = UseEntity(smtk::const_pointer_cast<Resource>(shared_from_this()), *ai)
                                .shellEntities<ShellEntities>();
@@ -962,7 +972,8 @@ UUIDs Resource::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
     //     exact matches for MODEL_ENTITY and GROUP_ENTITY. Hence the final
     //     condition that (unmasked & ENTITY_MASK) == (mask & ENTITY_MASK)
     //     rather than just unmasked == mask.
-    if ((masked && (mask == ANY_ENTITY)) || (!exactMatch && masked) ||
+    if (
+      (masked && (mask == ANY_ENTITY)) || (!exactMatch && masked) ||
       (exactMatch && masked == mask && ((unmasked & ENTITY_MASK) == (mask & ENTITY_MASK))))
     {
       result.insert(it->first);
@@ -1039,12 +1050,12 @@ std::function<bool(const Component&)> Resource::queryOperation(const std::string
 // visit all components in the resource.
 void Resource::visit(smtk::resource::Component::Visitor& visitor) const
 {
-  auto convertedVisitor = [&](
-    const std::pair<const smtk::common::UUID, const smtk::model::EntityPtr>& entityPair) {
-    const smtk::resource::ComponentPtr resource =
-      std::static_pointer_cast<smtk::resource::Component>(entityPair.second);
-    visitor(resource);
-  };
+  auto convertedVisitor =
+    [&](const std::pair<const smtk::common::UUID, const smtk::model::EntityPtr>& entityPair) {
+      const smtk::resource::ComponentPtr resource =
+        std::static_pointer_cast<smtk::resource::Component>(entityPair.second);
+      visitor(resource);
+    };
   std::for_each(m_topology->begin(), m_topology->end(), convertedVisitor);
 }
 
@@ -1149,9 +1160,11 @@ void Resource::addToGroup(const UUID& groupId, const UUIDs& uids)
   */
 ///@{
 void Resource::setFloatProperty(
-  const UUID& entity, const std::string& propName, smtk::model::Float propValue)
+  const UUID& entity,
+  const std::string& propName,
+  smtk::model::Float propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull())
   {
     this->properties().data().get<FloatProperty>()[propName][entity] = { propValue };
@@ -1159,9 +1172,11 @@ void Resource::setFloatProperty(
 }
 
 void Resource::setFloatProperty(
-  const UUID& entity, const std::string& propName, const smtk::model::FloatList& propValue)
+  const UUID& entity,
+  const std::string& propName,
+  const smtk::model::FloatList& propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull())
   {
     this->properties().data().get<FloatProperty>()[propName][entity] = propValue;
@@ -1169,9 +1184,10 @@ void Resource::setFloatProperty(
 }
 
 smtk::model::FloatList const& Resource::floatProperty(
-  const UUID& entity, const std::string& propName) const
+  const UUID& entity,
+  const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull() && this->hasFloatProperty(entity, propName))
   {
     return this->properties().data().at<FloatProperty>(propName).at(entity);
@@ -1182,7 +1198,7 @@ smtk::model::FloatList const& Resource::floatProperty(
 
 smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull() && this->hasFloatProperty(entity, propName))
   {
     return this->properties().data().at<FloatProperty>(propName).at(entity);
@@ -1193,7 +1209,7 @@ smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::s
 
 bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull() && this->properties().data().contains<FloatProperty>(propName))
   {
     auto it = this->properties().data().at<FloatProperty>(propName).find(entity);
@@ -1205,7 +1221,7 @@ bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName)
 
 bool Resource::removeFloatProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
   if (!entity.isNull())
   {
     auto& map = this->properties().data().at<FloatProperty>(propName);
@@ -1220,9 +1236,11 @@ bool Resource::removeFloatProperty(const UUID& entity, const std::string& propNa
 }
 
 void Resource::setStringProperty(
-  const UUID& entity, const std::string& propName, const smtk::model::String& propValue)
+  const UUID& entity,
+  const std::string& propName,
+  const smtk::model::String& propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull())
   {
     this->properties().data().get<StringProperty>()[propName][entity] = { propValue };
@@ -1230,9 +1248,11 @@ void Resource::setStringProperty(
 }
 
 void Resource::setStringProperty(
-  const UUID& entity, const std::string& propName, const smtk::model::StringList& propValue)
+  const UUID& entity,
+  const std::string& propName,
+  const smtk::model::StringList& propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull())
   {
     this->properties().data().get<StringProperty>()[propName][entity] = propValue;
@@ -1240,9 +1260,10 @@ void Resource::setStringProperty(
 }
 
 smtk::model::StringList const& Resource::stringProperty(
-  const UUID& entity, const std::string& propName) const
+  const UUID& entity,
+  const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull() && this->hasStringProperty(entity, propName))
   {
     return this->properties().data().at<StringProperty>(propName).at(entity);
@@ -1253,7 +1274,7 @@ smtk::model::StringList const& Resource::stringProperty(
 
 smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull() && this->hasStringProperty(entity, propName))
   {
     return this->properties().data().at<StringProperty>(propName).at(entity);
@@ -1264,7 +1285,7 @@ smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std:
 
 bool Resource::hasStringProperty(const UUID& entity, const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull() && this->properties().data().contains<StringProperty>(propName))
   {
     auto it = this->properties().data().at<StringProperty>(propName).find(entity);
@@ -1276,7 +1297,7 @@ bool Resource::hasStringProperty(const UUID& entity, const std::string& propName
 
 bool Resource::removeStringProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
   if (!entity.isNull())
   {
     auto& map = this->properties().data().at<StringProperty>(propName);
@@ -1291,9 +1312,11 @@ bool Resource::removeStringProperty(const UUID& entity, const std::string& propN
 }
 
 void Resource::setIntegerProperty(
-  const UUID& entity, const std::string& propName, smtk::model::Integer propValue)
+  const UUID& entity,
+  const std::string& propName,
+  smtk::model::Integer propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull())
   {
     // this->properties().data().get<IntProperty>()[propName]
@@ -1305,9 +1328,11 @@ void Resource::setIntegerProperty(
 }
 
 void Resource::setIntegerProperty(
-  const UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue)
+  const UUID& entity,
+  const std::string& propName,
+  const smtk::model::IntegerList& propValue)
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull())
   {
     this->properties().data().get<IntProperty>()[propName][entity] = propValue;
@@ -1315,9 +1340,10 @@ void Resource::setIntegerProperty(
 }
 
 smtk::model::IntegerList const& Resource::integerProperty(
-  const UUID& entity, const std::string& propName) const
+  const UUID& entity,
+  const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull() && this->hasIntegerProperty(entity, propName))
   {
     return this->properties().data().at<IntProperty>(propName).at(entity);
@@ -1328,7 +1354,7 @@ smtk::model::IntegerList const& Resource::integerProperty(
 
 smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull() && this->hasIntegerProperty(entity, propName))
   {
     return this->properties().data().at<IntProperty>(propName).at(entity);
@@ -1339,7 +1365,7 @@ smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const st
 
 bool Resource::hasIntegerProperty(const UUID& entity, const std::string& propName) const
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull() && this->properties().data().contains<IntProperty>(propName))
   {
     auto it = this->properties().data().at<IntProperty>(propName).find(entity);
@@ -1350,7 +1376,7 @@ bool Resource::hasIntegerProperty(const UUID& entity, const std::string& propNam
 
 bool Resource::removeIntegerProperty(const UUID& entity, const std::string& propName)
 {
-  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
   if (!entity.isNull())
   {
     auto& map = this->properties().data().at<IntProperty>(propName);
@@ -1461,7 +1487,9 @@ void Resource::assignDefaultNamesToModelChildren(const smtk::common::UUID& model
   }
   if (oops)
   {
-    smtkWarningMacro(this->log(), "Tried to assign default names to a non-model entity: "
+    smtkWarningMacro(
+      this->log(),
+      "Tried to assign default names to a non-model entity: "
         << EntityRef(shared_from_this(), modelId).name() << ".");
   }
 }
@@ -1503,8 +1531,12 @@ std::string Resource::assignDefaultNameIfMissing(const UUID& uid)
   return std::string();
 }
 
-void Resource::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const UUID& owner,
-  const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids)
+void Resource::assignDefaultNamesWithOwner(
+  const UUIDWithEntityPtr& irec,
+  const UUID& owner,
+  const std::string& ownersName,
+  std::set<smtk::common::UUID>& remaining,
+  bool nokids)
 {
   remaining.erase(irec->first);
   // Assign the item a name if required:
@@ -1538,7 +1570,8 @@ void Resource::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const 
       continue;
     BitFlags cflg = child->second->entityFlags();
     bool yesButNoKids = (cflg & GROUP_ENTITY) && (iflg & MODEL_ENTITY);
-    if (((cflg & ANY_DIMENSION) < idim && !(iflg & SHELL_ENTITY)) ||
+    if (
+      ((cflg & ANY_DIMENSION) < idim && !(iflg & SHELL_ENTITY)) ||
       ((cflg & SHELL_ENTITY) && (iflg & USE_ENTITY)) ||
       ((cflg & USE_ENTITY) && (iflg & CELL_ENTITY)) || yesButNoKids)
     {
@@ -1670,9 +1703,9 @@ bool Resource::unregisterSession(SessionPtr session, bool expungeSession)
   }
   else
   {
-    typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
-    typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
-    typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+    typedef resource::Properties::Indexed<std::vector<double>> FloatProperty;
+    typedef resource::Properties::Indexed<std::vector<std::string>> StringProperty;
+    typedef resource::Properties::Indexed<std::vector<long>> IntProperty;
 
     // Remove the session's entity record, properties, and such, but not
     // records, properties, etc. for entities the session owns.
@@ -1864,7 +1897,10 @@ EntityRefArray Resource::findEntitiesOfType(BitFlags flags, bool exactMatch)
   * the address provided.
   */
 Resource::tess_iter_type Resource::setTessellation(
-  const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
+  const UUID& cellId,
+  const Tessellation& geom,
+  int analysis,
+  int* generation)
 {
   if (cellId.isNull())
     throw std::string("Nil cell ID");
@@ -1918,7 +1954,10 @@ Resource::tess_iter_type Resource::setTessellation(
   * the address provided.
   */
 Resource::tess_iter_type Resource::setTessellationAndBoundingBox(
-  const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
+  const UUID& cellId,
+  const Tessellation& geom,
+  int analysis,
+  int* generation)
 {
   if (cellId.isNull())
     throw std::string("Nil cell ID");
@@ -1966,7 +2005,9 @@ Resource::tess_iter_type Resource::setTessellationAndBoundingBox(
   * Returns true when a real bBox is set and false otherwise.
   */
 bool Resource::setBoundingBox(
-  const UUID& cellId, const std::vector<double>& coords, int providedbBox)
+  const UUID& cellId,
+  const std::vector<double>& coords,
+  int providedbBox)
 {
   smtk::model::FloatList bBox;
   if (providedbBox)
@@ -2032,7 +2073,10 @@ bool Resource::removeTessellation(const smtk::common::UUID& entityId, bool remov
   * The actual \a index location used is returned.
   */
 int Resource::arrangeEntity(
-  const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
+  const UUID& entityId,
+  ArrangementKind kind,
+  const Arrangement& arr,
+  int index)
 {
   UUIDsToEntities::iterator eit = m_topology->find(entityId);
   if (eit == m_topology->end())
@@ -2119,7 +2163,8 @@ Arrangements* Resource::hasArrangementsOfKindForEntity(const UUID& entity, Arran
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
 const Arrangements* Resource::hasArrangementsOfKindForEntity(
-  const UUID& entity, ArrangementKind kind) const
+  const UUID& entity,
+  ArrangementKind kind) const
 {
   auto eit = m_topology->find(entity);
   if (eit == m_topology->end())
@@ -2146,8 +2191,8 @@ Arrangements& Resource::arrangementsOfKindForEntity(const UUID& entity, Arrangem
   *
   * This version does not allow the arrangement to be altered.
   */
-const Arrangement* Resource::findArrangement(
-  const UUID& entityId, ArrangementKind kind, int index) const
+const Arrangement* Resource::findArrangement(const UUID& entityId, ArrangementKind kind, int index)
+  const
 {
   if (!entityId || index < 0)
   {
@@ -2188,7 +2233,9 @@ Arrangement* Resource::findArrangement(const UUID& entityId, ArrangementKind kin
   * This method returns the index upon success and a negative number upon failure.
   */
 int Resource::findArrangementInvolvingEntity(
-  const UUID& entityId, ArrangementKind kind, const UUID& involvedEntity) const
+  const UUID& entityId,
+  ArrangementKind kind,
+  const UUID& involvedEntity) const
 {
   const EntityPtr src = this->findEntity(entityId);
   if (!src)
@@ -2222,7 +2269,10 @@ int Resource::findArrangementInvolvingEntity(
   * specific circumstances where the context is known.)
   */
 bool Resource::findDualArrangements(
-  const UUID& entityId, ArrangementKind kind, int index, ArrangementReferences& duals) const
+  const UUID& entityId,
+  ArrangementKind kind,
+  int index,
+  ArrangementReferences& duals) const
 {
   if (index < 0)
     return false;
@@ -2237,8 +2287,12 @@ bool Resource::findDualArrangements(
 /**\brief A method to add bidirectional arrangements between a parent and child.
   *
   */
-bool Resource::addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
-  ArrangementKind kind, int sense, Orientation orientation)
+bool Resource::addDualArrangement(
+  const smtk::common::UUID& parent,
+  const smtk::common::UUID& child,
+  ArrangementKind kind,
+  int sense,
+  Orientation orientation)
 {
   EntityPtr prec;
   EntityPtr crec;
@@ -2305,7 +2359,8 @@ int Resource::findCellHasUseWithSense(const UUID& cellId, const UUID& use, int s
     {
       int itIdx, itSense;
       Orientation itOrient;
-      if (it->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient) && itIdx >= 0 &&
+      if (
+        it->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient) && itIdx >= 0 &&
         erec->relations()[itIdx] == use && itSense == sense)
       {
         return i;
@@ -2330,8 +2385,8 @@ std::set<int> Resource::findCellHasUsesWithOrientation(const UUID& cellId, Orien
     {
       int itIdx, itSense;
       Orientation itOrient;
-      if (it->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient) &&
-        itOrient == orient)
+      if (
+        it->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient) && itOrient == orient)
       {
         result.insert(i);
       }
@@ -2343,8 +2398,8 @@ std::set<int> Resource::findCellHasUsesWithOrientation(const UUID& cellId, Orien
 /**\brief Return the UUID of a use record for the
   * given \a cell and \a sense, or NULL if it does not exist.
   */
-UUID Resource::cellHasUseOfSenseAndOrientation(
-  const UUID& cell, int sense, Orientation orient) const
+UUID Resource::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orientation orient)
+  const
 {
   const smtk::model::Arrangements* arr;
   if ((arr = this->hasArrangementsOfKindForEntity(cell, HAS_USE)) && !arr->empty())
@@ -2369,7 +2424,10 @@ UUID Resource::cellHasUseOfSenseAndOrientation(
   *
   */
 UUID Resource::findCreateOrReplaceCellUseOfSenseAndOrientation(
-  const UUID& cell, int sense, Orientation orient, const UUID& replacement)
+  const UUID& cell,
+  int sense,
+  Orientation orient,
+  const UUID& replacement)
 {
   EntityPtr entity = this->findEntity(cell);
   if (!entity)
@@ -2446,19 +2504,28 @@ UUID Resource::findCreateOrReplaceCellUseOfSenseAndOrientation(
 
   if (arrIdx >= 0)
   { // We found an existing use and need to replace it.
-    this->arrangeEntity(cell, HAS_USE,
-      Arrangement::CellHasUseWithIndexSenseAndOrientation(relIdx, sense, orient), arrIdx);
+    this->arrangeEntity(
+      cell,
+      HAS_USE,
+      Arrangement::CellHasUseWithIndexSenseAndOrientation(relIdx, sense, orient),
+      arrIdx);
     // Does the use already have a reference back to the cell?
-    this->arrangeEntity(use, HAS_CELL, Arrangement::UseHasCellWithIndexAndSense(
-                                         this->findEntity(use)->findOrAppendRelation(cell), sense));
+    this->arrangeEntity(
+      use,
+      HAS_CELL,
+      Arrangement::UseHasCellWithIndexAndSense(
+        this->findEntity(use)->findOrAppendRelation(cell), sense));
   }
   else
   {
     // We did not find an arrangement of the specified
     // sense and orientation... append it, adding
     // the use to the cell and the cell to the use:
-    this->arrangeEntity(cell, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(
-                                         entity->appendRelation(use), sense, orient),
+    this->arrangeEntity(
+      cell,
+      HAS_USE,
+      Arrangement::CellHasUseWithIndexSenseAndOrientation(
+        entity->appendRelation(use), sense, orient),
       arrIdx);
     EntityPtr useEnt = this->findEntity(use);
     this->arrangeEntity(
@@ -2529,8 +2596,10 @@ UUID Resource::createIncludedShell(const UUID& useOrShell)
   // We must re-find the entity record since insertEntityOfTypeAndDimension:
   this->findEntity(useOrShell)->appendRelation(shell->first);
   this->arrangeEntity(
-    shell->first, EMBEDDED_IN, Arrangement::ShellEmbeddedInUseOrShellWithIndex(
-                                 static_cast<int>(shell->second->relations().size())));
+    shell->first,
+    EMBEDDED_IN,
+    Arrangement::ShellEmbeddedInUseOrShellWithIndex(
+      static_cast<int>(shell->second->relations().size())));
   shell->second->appendRelation(useOrShell);
 
   return shell->first;
@@ -2556,9 +2625,13 @@ bool Resource::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& 
     return false;
 
   // Didn't find it. Add both forward and inverse relations.
-  this->arrangeEntity(parentUseOrShell, INCLUDES,
+  this->arrangeEntity(
+    parentUseOrShell,
+    INCLUDES,
     Arrangement::UseOrShellIncludesShellWithIndex(parEnt->appendRelation(shellToInclude)));
-  this->arrangeEntity(shellToInclude, EMBEDDED_IN,
+  this->arrangeEntity(
+    shellToInclude,
+    EMBEDDED_IN,
     Arrangement::ShellEmbeddedInUseOrShellWithIndex(shlEnt->appendRelation(parentUseOrShell)));
 
   return true;
@@ -2807,7 +2880,9 @@ bool Resource::hasAttribute(const UUID& attribId, const UUID& toEntity)
   * and false otherwise.
   */
 bool Resource::associateAttribute(
-  smtk::attribute::ResourcePtr attResource, const UUID& attribId, const UUID& toEntity)
+  smtk::attribute::ResourcePtr attResource,
+  const UUID& attribId,
+  const UUID& toEntity)
 {
   bool allowed = true;
   if (attResource)
@@ -2827,8 +2902,11 @@ bool Resource::associateAttribute(
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Resource::disassociateAttribute(smtk::attribute::ResourcePtr attResource, const UUID& attribId,
-  const UUID& fromEntity, bool reverse)
+bool Resource::disassociateAttribute(
+  smtk::attribute::ResourcePtr attResource,
+  const UUID& attribId,
+  const UUID& fromEntity,
+  bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = m_attributeAssignments->find(fromEntity);
@@ -2870,7 +2948,8 @@ bool Resource::disassociateAttribute(smtk::attribute::ResourcePtr attResource, c
   * This way, a return value of true ensures that the set contains at least one entry.
   */
 bool Resource::insertEntityAssociations(
-  const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations)
+  const EntityRef& modelEntity,
+  std::set<smtk::attribute::AttributePtr>& associations)
 {
   bool didFind = false;
   auto eait = m_attributeAssignments->find(modelEntity.entity());
@@ -3043,7 +3122,8 @@ VertexUse Resource::addVertexUse(const Vertex& src, int sense)
 {
   if (src.isValid() && src.resource().get() == this)
   {
-    return VertexUse(src.resource(),
+    return VertexUse(
+      src.resource(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE));
   }
   return VertexUse(); // invalid vertex use if source vertex was invalid or from a different resource.
@@ -3060,7 +3140,8 @@ EdgeUse Resource::addEdgeUse(const Edge& src, int sense, Orientation orient)
 {
   if (src.isValid() && src.resource().get() == this)
   {
-    return EdgeUse(src.resource(),
+    return EdgeUse(
+      src.resource(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
   }
   return EdgeUse(); // invalid edge use if source edge was invalid or from a different resource.
@@ -3077,7 +3158,8 @@ FaceUse Resource::addFaceUse(const Face& src, int sense, Orientation orient)
 {
   if (src.isValid() && src.resource().get() == this)
   {
-    return FaceUse(src.resource(),
+    return FaceUse(
+      src.resource(),
       src.resource()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
   }
   return FaceUse(); // invalid face use if source face was invalid or from a different resource.
@@ -3094,7 +3176,8 @@ VolumeUse Resource::addVolumeUse(const Volume& src)
 {
   if (src.isValid() && src.resource().get() == this)
   {
-    return VolumeUse(src.resource(),
+    return VolumeUse(
+      src.resource(),
       src.resource()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
   }
   return VolumeUse(); // invalid volume use if source volume was invalid or from a different resource.
@@ -3103,7 +3186,8 @@ VolumeUse Resource::addVolumeUse(const Volume& src)
 /// Insert a Chain at the specified \a uid.
 Chain Resource::insertChain(const UUID& uid)
 {
-  return Chain(shared_from_this(),
+  return Chain(
+    shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1)->first);
 }
 
@@ -3126,7 +3210,8 @@ Chain Resource::setChain(const UUID& uid, const Chain& parent)
 /// Insert a Loop at the specified \a uid.
 Loop Resource::insertLoop(const UUID& uid)
 {
-  return Loop(shared_from_this(),
+  return Loop(
+    shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1)->first);
 }
 
@@ -3149,7 +3234,8 @@ Loop Resource::setLoop(const UUID& uid, const Loop& parent)
 /// Insert a Shell at the specified \a uid.
 Shell Resource::insertShell(const UUID& uid)
 {
-  return Shell(shared_from_this(),
+  return Shell(
+    shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1)->first);
 }
 
@@ -3172,7 +3258,8 @@ Shell Resource::setShell(const UUID& uid, const Shell& parent)
 /// Add a 0/1-d shell (a vertex chain) to the resource (without any relationships)
 Chain Resource::addChain()
 {
-  return Chain(shared_from_this(),
+  return Chain(
+    shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1));
 }
 
@@ -3199,7 +3286,8 @@ Chain Resource::addChain(const Chain& c)
 /// Add a 1/2-d shell (an edge loop) to the resource (without any relationships)
 Loop Resource::addLoop()
 {
-  return Loop(shared_from_this(),
+  return Loop(
+    shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1));
 }
 
@@ -3226,7 +3314,8 @@ Loop Resource::addLoop(const Loop& lp)
 /// Add a 2/3-d shell (a face-shell) to the resource (without any relationships)
 Shell Resource::addShell()
 {
-  return Shell(shared_from_this(),
+  return Shell(
+    shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1));
 }
 
@@ -3338,7 +3427,10 @@ AuxiliaryGeometry Resource::addAuxiliaryGeometry(const AuxiliaryGeometry& parent
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
 Model Resource::insertModel(
-  const UUID& uid, int parametricDim, int embeddingDim, const std::string& modelName)
+  const UUID& uid,
+  int parametricDim,
+  int embeddingDim,
+  const std::string& modelName)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
   if (result == m_topology->end())
@@ -3430,10 +3522,11 @@ bool Resource::closeSession(const SessionRef& sref)
   }
   else
   {
-    smtkErrorMacro(this->log(), "Asked to close session ("
-        << sref.name() << ") "
-        << "owned by a different model resource (" << sref.resource().get() << " vs " << this
-        << ")!");
+    smtkErrorMacro(
+      this->log(),
+      "Asked to close session (" << sref.name() << ") "
+                                 << "owned by a different model resource (" << sref.resource().get()
+                                 << " vs " << this << ")!");
   }
   return false;
 }
@@ -3592,7 +3685,9 @@ void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& sr
 
 /// Called by this Resource instance or EntityRef instances referencing it when \a event occurs.
 void Resource::trigger(
-  ResourceEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
+  ResourceEventType event,
+  const smtk::model::EntityRef& src,
+  const smtk::model::EntityRef& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin = m_oneToOneTriggers.lower_bound(
     OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(nullptr))));
@@ -3604,7 +3699,9 @@ void Resource::trigger(
 }
 
 /// Called by this Resource instance or EntityRef instances referencing it when \a event occurs.
-void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& src,
+void Resource::trigger(
+  ResourceEventType event,
+  const smtk::model::EntityRef& src,
   const smtk::model::EntityRefArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin = m_oneToManyTriggers.lower_bound(
@@ -3616,7 +3713,7 @@ void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& sr
     (*it->second.first)(it->first, src, related, it->second.second);
 }
 
-template <typename T>
+template<typename T>
 std::string uniqueResourceName(EntityRef ent, const T& preexisting, int& counter)
 {
   std::string prefix = ent.isModel() ? "model" : "auxgeo";
@@ -3690,7 +3787,8 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
         // Assume the first relationship that is a group or model is our owner.
         // Keep going up parent groups until we hit the top.
         for (UUIDArray::const_iterator sit = it->second->relations().begin();
-             sit != it->second->relations().end(); ++sit)
+             sit != it->second->relations().end();
+             ++sit)
         {
           UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() && subentity->first != uid)
@@ -3710,7 +3808,8 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
       case INSTANCE_ENTITY:
         // Look for any relationship. We assume the first one is our prototype.
         for (UUIDArray::const_iterator sit = it->second->relations().begin();
-             sit != it->second->relations().end(); ++sit)
+             sit != it->second->relations().end();
+             ++sit)
         {
           UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() && subentity->first != uid)
@@ -3729,10 +3828,12 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
       case SHELL_ENTITY:
         // Loop for a relationship to a use.
         for (UUIDArray::const_iterator sit = it->second->relations().begin();
-             sit != it->second->relations().end(); ++sit)
+             sit != it->second->relations().end();
+             ++sit)
         {
           UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() &&
+          if (
+            subentity != this->topology().end() &&
             smtk::model::isUseEntity(subentity->second->entityFlags()))
           {
             it = subentity;
@@ -3743,10 +3844,12 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
       case USE_ENTITY:
         // Look for a relationship to a cell
         for (UUIDArray::const_iterator sit = it->second->relations().begin();
-             sit != it->second->relations().end(); ++sit)
+             sit != it->second->relations().end();
+             ++sit)
         {
           UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() &&
+          if (
+            subentity != this->topology().end() &&
             smtk::model::isCellEntity(subentity->second->entityFlags()))
           {
             it = subentity;
@@ -3785,7 +3888,8 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
         if (!bordEnt)
           continue;
         for (UUIDArray::const_iterator rit = bordEnt->relations().begin();
-             rit != bordEnt->relations().end(); ++rit)
+             rit != bordEnt->relations().end();
+             ++rit)
         {
           EntityPtr relEnt = this->findEntity(*rit);
           if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
@@ -3845,7 +3949,8 @@ UUID Resource::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& vis
     // Keep going up parents until we hit the top.
     UUIDWithConstEntityPtr it = m_topology->find(uid);
     for (UUIDArray::const_iterator sit = it->second->relations().begin();
-         sit != it->second->relations().end(); ++sit)
+         sit != it->second->relations().end();
+         ++sit)
     {
       UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
       if (subentity != this->topology().end() && subentity->first != uid)

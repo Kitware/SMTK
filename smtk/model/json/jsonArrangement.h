@@ -23,7 +23,7 @@ using json = nlohmann::json;
 SMTKCORE_EXPORT void to_json(json& j, const smtk::model::Arrangement& arr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::model::Arrangement& arr);
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

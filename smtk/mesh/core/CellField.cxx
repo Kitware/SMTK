@@ -98,8 +98,9 @@ smtk::mesh::FieldType CellField::type() const
   }
 
   smtk::mesh::CellFieldTag dsTag(m_name);
-  return (iface->hasCellField(m_meshset.range(), dsTag) ? iface->getCellFieldType(dsTag)
-                                                        : smtk::mesh::FieldType::MaxFieldType);
+  return (
+    iface->hasCellField(m_meshset.range(), dsTag) ? iface->getCellFieldType(dsTag)
+                                                  : smtk::mesh::FieldType::MaxFieldType);
 }
 
 smtk::mesh::CellSet CellField::cells() const
@@ -160,5 +161,5 @@ bool CellField::set(const void* const values)
 
   return iface->setCellField(m_meshset.range(), smtk::mesh::CellFieldTag(m_name), values);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

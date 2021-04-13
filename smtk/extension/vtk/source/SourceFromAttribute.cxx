@@ -52,7 +52,7 @@ vtkSmartPointer<vtkAlgorithm> SourceFromAttribute::operator()(
 
   return source;
 }
-}
-}
-}
-}
+} // namespace source
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

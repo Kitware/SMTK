@@ -40,10 +40,15 @@ protected:
   vtkExtractLine();
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void TryAppend(vtkPolyData* linePD, vtkCellArray* polyLines, vtkIdType currentCell,
-    vtkIdType npts, vtkIdType* ptIds, char* appended);
-  void AppendToLine(
-    vtkPolyData* linePD, vtkIdList* appendedLine, vtkIdType cellToAdd, char* appended);
+  void TryAppend(
+    vtkPolyData* linePD,
+    vtkCellArray* polyLines,
+    vtkIdType currentCell,
+    vtkIdType npts,
+    vtkIdType* ptIds,
+    char* appended);
+  void
+  AppendToLine(vtkPolyData* linePD, vtkIdList* appendedLine, vtkIdType cellToAdd, char* appended);
 
 private:
   vtkExtractLine(const vtkExtractLine&); // Not implemented.

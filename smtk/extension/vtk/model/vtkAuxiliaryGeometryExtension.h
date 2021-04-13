@@ -52,12 +52,16 @@ public:
     * create the auxiliary geometry dataset.
     */
   bool canHandleAuxiliaryGeometry(
-    smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut) override;
+    smtk::model::AuxiliaryGeometry& entity,
+    std::vector<double>& bboxOut) override;
 
   /// This can be used by other smtk::model::AuxiliaryGeometryExtension
   /// subclasses to provide VTK representations to the vtkModelMultiBlockSource.
-  static void addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,
-    const smtk::model::AuxiliaryGeometry& entity, std::time_t& mtime, bool trimCache);
+  static void addCacheGeometry(
+    const vtkSmartPointer<vtkDataObject> dataset,
+    const smtk::model::AuxiliaryGeometry& entity,
+    std::time_t& mtime,
+    bool trimCache);
 
   /**\brief Return VTK data created by a previous call to canHandleAuxiliaryGeometry.
     *
@@ -68,7 +72,8 @@ public:
   static vtkSmartPointer<vtkDataObject> fetchCachedGeometry(
     const smtk::model::AuxiliaryGeometry& entity);
   static vtkSmartPointer<vtkDataObject> fetchCachedGeometry(
-    const smtk::model::AuxiliaryGeometry& entity, std::time_t& cachedTime);
+    const smtk::model::AuxiliaryGeometry& entity,
+    std::time_t& cachedTime);
 
   /// Return the size (in kiB) of the current geometry cache.
   static double currentCacheSize();
@@ -85,8 +90,8 @@ public:
   static std::string inferFileTypeFromFileName(const std::string& fname);
 
   /// Read a data object of a given type from a URL.
-  static vtkSmartPointer<vtkDataObject> readFromFile(
-    const std::string& url, const std::string& fileType, bool genNormals = false);
+  static vtkSmartPointer<vtkDataObject>
+  readFromFile(const std::string& url, const std::string& fileType, bool genNormals = false);
 
 protected:
   vtkAuxiliaryGeometryExtension();
@@ -99,18 +104,24 @@ protected:
 
   /// Internal method called by canHandleAuxiliaryGeometry.
   static vtkSmartPointer<vtkDataObject> generateRepresentation(
-    const smtk::model::AuxiliaryGeometry& src, bool genNormals);
+    const smtk::model::AuxiliaryGeometry& src,
+    bool genNormals);
 
   /// Internal method called by generateRepresentation when \a src has a URL.
   static vtkSmartPointer<vtkDataObject> readFromFile(
-    const smtk::model::AuxiliaryGeometry& src, bool genNormals);
+    const smtk::model::AuxiliaryGeometry& src,
+    bool genNormals);
 
   /// Internal method called by generateRepresentation when \a src has children.
-  static vtkSmartPointer<vtkDataObject> createHierarchy(const smtk::model::AuxiliaryGeometry& src,
-    const smtk::model::AuxiliaryGeometries& children, bool genNormals);
+  static vtkSmartPointer<vtkDataObject> createHierarchy(
+    const smtk::model::AuxiliaryGeometry& src,
+    const smtk::model::AuxiliaryGeometries& children,
+    bool genNormals);
 
-  static bool updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
-    std::vector<double>& bboxOut, vtkSmartPointer<vtkDataObject> dataobj);
+  static bool updateBoundsFromDataSet(
+    smtk::model::AuxiliaryGeometry& aux,
+    std::vector<double>& bboxOut,
+    vtkSmartPointer<vtkDataObject> dataobj);
 
   class ClassInternal;
   static ClassInternal* s_p;

@@ -65,7 +65,9 @@ double vtkConeFrustum::GetAngle() const
   return vtkMath::DegreesFromRadians(atan2(fabs(this->TopRadius - this->BottomRadius), height));
 }
 
-int vtkConeFrustum::RequestData(vtkInformation* /*request*/, vtkInformationVector** /*inputVector*/,
+int vtkConeFrustum::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/,
   vtkInformationVector* outputVector)
 {
   // vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -104,10 +106,12 @@ int vtkConeFrustum::RequestData(vtkInformation* /*request*/, vtkInformationVecto
   bool degenerate = (p0Apex && p1Apex) || (length <= 0.0);
   if (degenerate)
   {
-    vtkErrorMacro("Cone frustum requested is degenerate. Either the length ("
-      << length << ") "
-                   "is not positive or both "
-                   "radii ("
+    vtkErrorMacro(
+      "Cone frustum requested is degenerate. Either the length ("
+      << length
+      << ") "
+         "is not positive or both "
+         "radii ("
       << this->BottomRadius << ", " << this->TopRadius << ") are zero.");
     return 0;
   }

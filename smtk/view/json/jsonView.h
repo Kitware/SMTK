@@ -29,7 +29,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuratio
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::ConfigurationPtr& view);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ConfigurationPtr& view);
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

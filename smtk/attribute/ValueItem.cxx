@@ -103,8 +103,9 @@ bool ValueItem::isSet(std::size_t elementIndex) const
 
 smtk::attribute::AttributePtr ValueItem::expression() const
 {
-  return (m_expression ? dynamic_pointer_cast<smtk::attribute::Attribute>(m_expression->value())
-                       : smtk::attribute::AttributePtr());
+  return (
+    m_expression ? dynamic_pointer_cast<smtk::attribute::Attribute>(m_expression->value())
+                 : smtk::attribute::AttributePtr());
 }
 bool ValueItem::isExpression() const
 {
@@ -133,7 +134,8 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
   // are not discrete and don't have children
   if (this->allowsExpressions() && (m_expression->value() != nullptr))
   {
-    if ((!useCategories || !m_expression->isValid(categories)) &&
+    if (
+      (!useCategories || !m_expression->isValid(categories)) &&
       (useCategories && !m_expression->isValid()))
     {
       return false;
@@ -539,7 +541,8 @@ smtk::attribute::ItemPtr ValueItem::findInternal(const std::string& childName, S
 }
 
 smtk::attribute::ConstItemPtr ValueItem::findInternal(
-  const std::string& childName, SearchStyle style) const
+  const std::string& childName,
+  SearchStyle style) const
 {
   // Do we have it among our children?
 
@@ -604,8 +607,8 @@ smtk::attribute::ItemPtr ValueItem::findChild(const std::string& cname, SearchSt
   return this->findInternal(cname, style);
 }
 
-smtk::attribute::ConstItemPtr ValueItem::findChild(
-  const std::string& cname, SearchStyle style) const
+smtk::attribute::ConstItemPtr ValueItem::findChild(const std::string& cname, SearchStyle style)
+  const
 {
   return this->findInternal(cname, style);
 }

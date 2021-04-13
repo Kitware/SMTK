@@ -68,7 +68,7 @@ private:
   qtGroupViewInternals* m_internals;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

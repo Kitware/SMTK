@@ -34,7 +34,7 @@ protected:
 };
 
 SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

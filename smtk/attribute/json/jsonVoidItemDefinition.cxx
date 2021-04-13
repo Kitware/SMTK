@@ -25,13 +25,15 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::VoidItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::VoidItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
 }
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::VoidItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::VoidItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -41,5 +43,5 @@ SMTKCORE_EXPORT void from_json(
   auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
   smtk::attribute::from_json(j, itemDef);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -95,10 +95,13 @@ bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Res
   {
     // Filter out current entries that do not pass the filter
     DescriptivePhrases children(m_root->subphrases());
-    children.erase(std::remove_if(children.begin(), children.end(),
-                     [this](const DescriptivePhrase::Ptr& phr) -> bool {
-                       return m_filter(*(phr->relatedResource()));
-                     }),
+    children.erase(
+      std::remove_if(
+        children.begin(),
+        children.end(),
+        [this](const DescriptivePhrase::Ptr& phr) -> bool {
+          return m_filter(*(phr->relatedResource()));
+        }),
       children.end());
     this->updateChildren(m_root, children, std::vector<int>());
   }
@@ -106,8 +109,10 @@ bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Res
   return true;
 }
 
-int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, const smtk::operation::Operation::Result& res)
+int ResourcePhraseModel::handleOperationEvent(
+  const smtk::operation::Operation& op,
+  smtk::operation::EventType event,
+  const smtk::operation::Operation::Result& res)
 {
   auto resourcesAndLockTypes = smtk::operation::extractResourcesAndLockTypes(op.parameters());
 
@@ -126,7 +131,8 @@ int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation& 
 }
 
 void ResourcePhraseModel::handleResourceEvent(
-  const Resource& resource, smtk::resource::EventType event)
+  const Resource& resource,
+  smtk::resource::EventType event)
 {
   // The PhraseModle system has been designed to handle shared pointers to
   // non-const resources and components. We const-cast here to accommodate
@@ -175,10 +181,13 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
   {
     DescriptivePhrases children(m_root->subphrases());
     std::weak_ptr<smtk::resource::Resource> weakResourcePtr = resource;
-    children.erase(std::remove_if(children.begin(), children.end(),
-                     [weakResourcePtr](const DescriptivePhrase::Ptr& phr) -> bool {
-                       return phr->relatedResource() == weakResourcePtr.lock();
-                     }),
+    children.erase(
+      std::remove_if(
+        children.begin(),
+        children.end(),
+        [weakResourcePtr](const DescriptivePhrase::Ptr& phr) -> bool {
+          return phr->relatedResource() == weakResourcePtr.lock();
+        }),
       children.end());
     this->updateChildren(m_root, children, std::vector<int>());
   }

@@ -55,7 +55,9 @@ smtk::attribute::ResourcePtr vtkAttributeMultiBlockSource::GetAttributeResource(
 
 /// Do nothing.
 int vtkAttributeMultiBlockSource::RequestData(
-  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+  vtkInformation* /*request*/,
+  vtkInformationVector** /*inInfo*/,
+  vtkInformationVector* outInfo)
 {
   auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)

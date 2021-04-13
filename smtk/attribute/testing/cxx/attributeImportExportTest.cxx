@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
     importer->parameters()->findVoid("UseDirectoryInfo")->setIsEnabled(useDirectoryInfo);
 
     auto result = importer->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -73,7 +74,8 @@ int main(int argc, char* argv[])
     exporter->parameters()->findFile("filename")->setValue(outfile);
 
     result = exporter->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Export operator failed\n";

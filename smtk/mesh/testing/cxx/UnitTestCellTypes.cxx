@@ -25,7 +25,7 @@ namespace
 
 struct verify_cell_attributes
 {
-  template <class CellType>
+  template<class CellType>
   void operator()(CellType type)
   {
     (void)type;
@@ -50,13 +50,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 8, "CellHexahedron Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellHexahedron Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 3, "CellHexahedron Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellHexahedron> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellHexahedron::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellHexahedron::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellLine> traits)
@@ -64,13 +66,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 2, "CellLine Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellLine Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 1, "CellLine Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellLine> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellLine::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellLine::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellPolygon> traits)
@@ -78,13 +82,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == -1, "CellPolygon Trait reports wrong number of points");
-    test(traits.fixedPointSize() != smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() != smtk::mesh::CellFixedPointNumberTag::Type,
       "CellPolygon Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 2, "CellPolygon Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellPolygon> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellPolygon::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellPolygon::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellPyramid> traits)
@@ -92,13 +98,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 5, "CellPyramid Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellPyramid Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 3, "CellPyramid Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellPyramid> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellPyramid::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellPyramid::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellQuad> traits)
@@ -106,13 +114,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 4, "CellQuad Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellQuad Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 2, "CellQuad Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellQuad> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellQuad::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellQuad::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellTetrahedron> traits)
@@ -120,13 +130,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 4, "CellTetrahedron Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellTetrahedron Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 3, "CellTetrahedron Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellTetrahedron> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellTetrahedron::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellTetrahedron::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellTriangle> traits)
@@ -134,13 +146,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 3, "CellTriangle Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellTriangle Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 2, "CellTriangle Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellTriangle> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellTriangle::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellTriangle::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellVertex> traits)
@@ -148,13 +162,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 1, "CellVertex Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellVertex Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 0, "CellVertex Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellVertex> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellVertex::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellVertex::CellEnum,
       "CellEnum from the traits isn't correct");
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellWedge> traits)
@@ -162,13 +178,15 @@ struct verify_cell_attributes
     // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
     // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 6, "CellWedge Trait reports wrong number of points");
-    test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
+    test(
+      traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellWedge Traits reports fixedPointSize() incorrectly");
     test(traits.dimension() == 3, "CellWedge Trait reports wrong dimension");
 
     //now verify the enum logic is correct
     typedef smtk::mesh::CellTraits<smtk::mesh::CellWedge> TraitsType;
-    test(TraitsType::CellType::CellEnum == smtk::mesh::CellWedge::CellEnum,
+    test(
+      TraitsType::CellType::CellEnum == smtk::mesh::CellWedge::CellEnum,
       "CellEnum from the traits isn't correct");
   }
 };
@@ -176,7 +194,7 @@ struct verify_cell_attributes
 #ifndef _MSC_VER
 #pragma GCC diagnostic pop
 #endif
-}
+} // namespace
 
 int UnitTestCellTypes(int /*unused*/, char** const /*unused*/)
 {

@@ -79,7 +79,8 @@ void verify_model_association()
 
   //we need to verify that the mesh resource is now has an associated model
   test(meshResource->hasAssociations(), "mesh resource should have associations");
-  test((meshResource->associatedModel() != smtk::common::UUID()),
+  test(
+    (meshResource->associatedModel() != smtk::common::UUID()),
     "mesh resource should be associated to a real model");
   test((meshResource->isAssociatedToModel()), "mesh resource should be associated to a real model");
 
@@ -88,7 +89,8 @@ void verify_model_association()
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   if (!currentModels.empty())
   { //presuming only a single model in the model resource
-    test((meshResource->associatedModel() == currentModels.begin()->entity()),
+    test(
+      (meshResource->associatedModel() == currentModels.begin()->entity()),
       "mesh resource associated model should match model resource");
   }
 }
@@ -135,7 +137,7 @@ void verify_vertex_conversion()
   smtk::mesh::CellSet vert_cells = meshResource->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 7);
 }
-}
+} // namespace
 
 int UnitTestModelToMesh2D(int /*unused*/, char** const /*unused*/)
 {

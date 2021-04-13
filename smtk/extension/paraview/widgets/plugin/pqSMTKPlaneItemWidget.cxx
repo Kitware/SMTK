@@ -19,7 +19,6 @@
 #include "pqApplicationCore.h"
 #include "pqDataRepresentation.h"
 #include "pqImplicitPlanePropertyWidget.h"
-#include "pqImplicitPlanePropertyWidget.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
 #include "pqServer.h"
@@ -35,7 +34,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKPlaneItemWidget::pqSMTKPlaneItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -49,7 +49,8 @@ qtItem* pqSMTKPlaneItemWidget::createPlaneItemWidget(const qtAttributeItemInfo& 
 }
 
 bool pqSMTKPlaneItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   //I. Reject items we can't map to a plane:
   smtk::attribute::DoubleItemPtr originItem;
@@ -115,7 +116,8 @@ void pqSMTKPlaneItemWidget::updateItemFromWidgetInternal()
 }
 
 bool pqSMTKPlaneItemWidget::fetchOriginAndNormalItems(
-  smtk::attribute::DoubleItemPtr& originItem, smtk::attribute::DoubleItemPtr& normalItem)
+  smtk::attribute::DoubleItemPtr& originItem,
+  smtk::attribute::DoubleItemPtr& normalItem)
 {
   auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
   if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 2)
@@ -137,7 +139,9 @@ bool pqSMTKPlaneItemWidget::fetchOriginAndNormalItems(
   normalItem = groupItem->findAs<smtk::attribute::DoubleItem>(normalItemName);
   if (!originItem || !normalItem)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not find"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not find"
         << " a DoubleItem for the origin named \"" << originItemName << "\","
         << " a DoubleItem for the normal named \"" << normalItemName << "\","
         << " or both.");
@@ -145,10 +149,11 @@ bool pqSMTKPlaneItemWidget::fetchOriginAndNormalItems(
   }
   if (originItem->numberOfValues() != 3 || normalItem->numberOfValues() != 3)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "The origin ("
-        << originItem->numberOfValues() << ")"
-        << " and normal (" << normalItem->numberOfValues() << ")"
-        << " must both have exactly 3 values.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "The origin (" << originItem->numberOfValues() << ")"
+                     << " and normal (" << normalItem->numberOfValues() << ")"
+                     << " must both have exactly 3 values.");
     return false;
   }
   return true;

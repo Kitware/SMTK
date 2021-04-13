@@ -68,8 +68,9 @@ void to_json(json& j, const ResourcePtr& mresource)
       if (ent.isValid(&eptr))
       {
         json jent = { { "d", eptr->dimension() },
-          { "e", eptr->entityFlags() }, // Entity::flagToSpecifierString(eptr->entityFlags())
-          { "r", eptr->relations() } };
+                      { "e",
+                        eptr->entityFlags() }, // Entity::flagToSpecifierString(eptr->entityFlags())
+                      { "r", eptr->relations() } };
         // Add arrangement information:
         const KindsToArrangements& amap(eptr->arrangementMap());
         if (!amap.empty())
@@ -183,7 +184,7 @@ void from_json(const json& j, ResourcePtr& mresource)
           auto& stringProperties =
             mresource->properties()
               .data()
-              .get<std::unordered_map<smtk::common::UUID, std::vector<std::string> > >();
+              .get<std::unordered_map<smtk::common::UUID, std::vector<std::string>>>();
           stringProperties[sdIt.key()][eid] = sdIt.value().get<StringList>();
         }
       }
@@ -200,7 +201,7 @@ void from_json(const json& j, ResourcePtr& mresource)
           auto& floatProperties =
             mresource->properties()
               .data()
-              .get<std::unordered_map<smtk::common::UUID, std::vector<double> > >();
+              .get<std::unordered_map<smtk::common::UUID, std::vector<double>>>();
           floatProperties[sdIt.key()][eid] = sdIt.value().get<FloatList>();
         }
       }
@@ -214,10 +215,9 @@ void from_json(const json& j, ResourcePtr& mresource)
         // to do it manually
         for (auto sdIt = intDataJ.begin(); sdIt != intDataJ.end(); sdIt++)
         {
-          auto& intProperties =
-            mresource->properties()
-              .data()
-              .get<std::unordered_map<smtk::common::UUID, std::vector<long> > >();
+          auto& intProperties = mresource->properties()
+                                  .data()
+                                  .get<std::unordered_map<smtk::common::UUID, std::vector<long>>>();
           intProperties[sdIt.key()][eid] = sdIt.value().get<IntegerList>();
         }
       }
@@ -227,5 +227,5 @@ void from_json(const json& j, ResourcePtr& mresource)
     }
   }
 }
-}
-}
+} // namespace model
+} // namespace smtk

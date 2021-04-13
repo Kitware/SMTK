@@ -62,7 +62,7 @@ protected:
   QPointer<qtBaseView> m_view;
 
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

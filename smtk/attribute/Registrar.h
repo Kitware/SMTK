@@ -40,7 +40,7 @@ public:
   static void registerTo(const smtk::attribute::EvaluatorManager::Ptr&);
   static void unregisterFrom(const smtk::attribute::EvaluatorManager::Ptr&);
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

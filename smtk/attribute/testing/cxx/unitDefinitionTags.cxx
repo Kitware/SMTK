@@ -223,7 +223,8 @@ int unitDefinitionTags(int /*unused*/, char** const /*unused*/)
   writeOp->parameters()->associate(resource);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -231,7 +232,8 @@ int unitDefinitionTags(int /*unused*/, char** const /*unused*/)
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -243,15 +245,17 @@ int unitDefinitionTags(int /*unused*/, char** const /*unused*/)
 
   //Test XML File I/O
   writer.write(resource, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   resource = smtk::attribute::Resource::create();
   reader.read(resource, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(testTags(resource, "XML Pass - "), "Failed testing Tags in XML Pass");
   std::cout << "XML Pass - Testing Tags Passed\n";

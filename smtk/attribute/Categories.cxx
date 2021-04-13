@@ -61,8 +61,10 @@ bool Categories::Set::passes(const std::set<std::string>& categories) const
   return result;
 }
 
-bool Categories::Set::passesCheck(const std::set<std::string>& categories,
-  const std::set<std::string>& testSet, Set::CombinationMode comboMode)
+bool Categories::Set::passesCheck(
+  const std::set<std::string>& categories,
+  const std::set<std::string>& testSet,
+  Set::CombinationMode comboMode)
 {
   // If there are no values which means there are no categories
   // associated then fail

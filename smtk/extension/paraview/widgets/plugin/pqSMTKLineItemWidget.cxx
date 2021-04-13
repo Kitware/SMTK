@@ -33,7 +33,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKLineItemWidget::pqSMTKLineItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -47,7 +48,8 @@ qtItem* pqSMTKLineItemWidget::createLineItemWidget(const qtAttributeItemInfo& in
 }
 
 bool pqSMTKLineItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   //I. Reject items we can't map to a plane:
   smtk::attribute::DoubleItemPtr point1Item;
@@ -113,7 +115,8 @@ void pqSMTKLineItemWidget::updateItemFromWidgetInternal()
 }
 
 bool pqSMTKLineItemWidget::fetchEndpointItems(
-  smtk::attribute::DoubleItemPtr& point1Item, smtk::attribute::DoubleItemPtr& point2Item)
+  smtk::attribute::DoubleItemPtr& point1Item,
+  smtk::attribute::DoubleItemPtr& point2Item)
 {
   auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
   if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 2)
@@ -135,7 +138,9 @@ bool pqSMTKLineItemWidget::fetchEndpointItems(
   point2Item = groupItem->findAs<smtk::attribute::DoubleItem>(point2ItemName);
   if (!point1Item || !point2Item)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not find"
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not find"
         << " a DoubleItem for Point1 named \"" << point1ItemName << "\","
         << " a DoubleItem for Point2 named \"" << point2ItemName << "\","
         << " or both.");
@@ -143,10 +148,11 @@ bool pqSMTKLineItemWidget::fetchEndpointItems(
   }
   if (point1Item->numberOfValues() != 3 || point2Item->numberOfValues() != 3)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "The point1 ("
-        << point1Item->numberOfValues() << ")"
-        << " and point2 (" << point2Item->numberOfValues() << ")"
-        << " items must both have exactly 3 values.");
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "The point1 (" << point1Item->numberOfValues() << ")"
+                     << " and point2 (" << point2Item->numberOfValues() << ")"
+                     << " items must both have exactly 3 values.");
     return false;
   }
   return true;

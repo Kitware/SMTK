@@ -72,7 +72,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 namespace
 {
@@ -234,9 +234,9 @@ bool MyItem::setValue(const std::complex<double>& v)
 }
 
 typedef std::tuple<MyItemDefinition> CustomItemDefinitionsList;
-}
+} // namespace
 
-int unitCustomItem(int /*unused*/, char* /*unused*/ [])
+int unitCustomItem(int /*unused*/, char* /*unused*/[])
 {
   auto managers = smtk::common::Managers::create();
 
@@ -297,7 +297,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     exporter->parameters()->findFile("filename")->setValue(sbi1FileName);
 
     auto result = exporter->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Export operator failed\n";
@@ -313,7 +314,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     importer->parameters()->findFile("filename")->setValue(sbi1FileName);
 
     auto result = importer->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -339,7 +341,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     writeOp->parameters()->associate(resource);
     auto result = writeOp->operate();
 
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Write operation failed\n";
@@ -356,7 +359,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     readOp->parameters()->findFile("filename")->setValue(smtkFileName);
     auto result = readOp->operate();
 
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Read operation failed\n";
@@ -428,7 +432,9 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
 
     f1.seekg(0, std::ifstream::beg);
     f2.seekg(0, std::ifstream::beg);
-    if (!std::equal(std::istreambuf_iterator<char>(f1.rdbuf()), std::istreambuf_iterator<char>(),
+    if (!std::equal(
+          std::istreambuf_iterator<char>(f1.rdbuf()),
+          std::istreambuf_iterator<char>(),
           std::istreambuf_iterator<char>(f2.rdbuf())))
     {
       std::cerr << "Original and generated files are different\n\n";

@@ -38,8 +38,9 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
 
   virtual std::array<double, 3> operator()(const smtk::resource::Component::Ptr& component) const
   {
-    if (auto resource =
-          std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
+    if (
+      auto resource =
+        std::dynamic_pointer_cast<smtk::session::mesh::Resource>(component->resource()))
     {
       smtk::session::mesh::Topology* topology = resource->session()->topology(resource);
       auto elementIt = topology->m_elements.find(component->id());
@@ -60,8 +61,8 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
 private:
   std::size_t m_seed;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk
 
 #endif

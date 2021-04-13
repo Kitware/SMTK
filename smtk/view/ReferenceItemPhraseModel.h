@@ -55,6 +55,6 @@ protected:
   smtk::attribute::ReferenceItemPtr m_refItem;
   bool m_useAttributeAssociatons;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 #endif

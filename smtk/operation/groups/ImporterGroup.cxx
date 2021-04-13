@@ -32,7 +32,8 @@ std::set<Operation::Index> ImporterGroup::operationsForFileName(const std::strin
 }
 
 std::set<Operation::Index> ImporterGroup::operationsForResourceAndFileName(
-  const std::string& resourceName, const std::string& fileName) const
+  const std::string& resourceName,
+  const std::string& fileName) const
 {
   std::set<Operation::Index> ops = operationsForResource(resourceName);
   filterOperationsThatRejectFileName(ops, fileName);
@@ -40,7 +41,8 @@ std::set<Operation::Index> ImporterGroup::operationsForResourceAndFileName(
 }
 
 void ImporterGroup::filterOperationsThatRejectFileName(
-  std::set<Operation::Index>& ops, const std::string& fileName) const
+  std::set<Operation::Index>& ops,
+  const std::string& fileName) const
 {
   for (auto index = ops.begin(); index != ops.end();)
   {
@@ -54,5 +56,5 @@ void ImporterGroup::filterOperationsThatRejectFileName(
     }
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

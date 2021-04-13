@@ -40,7 +40,8 @@ class SMTKCORE_EXPORT ResourceBase
 protected:
   struct SMTKCORE_EXPORT Compare
   {
-    bool operator()(const std::shared_ptr<smtk::resource::Component>& lhs,
+    bool operator()(
+      const std::shared_ptr<smtk::resource::Component>& lhs,
       const std::shared_ptr<smtk::resource::Component>& rhs) const;
   };
 

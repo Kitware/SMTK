@@ -40,8 +40,12 @@ class Logger;
 /// into the appropriate data type or is invalid based on the corresponding item's definition will
 /// be ignored and logged.
 /// See groupItemCVSTest.cxx for an example of using the function.
-SMTKCORE_EXPORT bool importFromCSV(smtk::attribute::GroupItem& item, const std::string& filename,
-  Logger& logger, bool appendToGroup = false, const std::string& sep = ",",
+SMTKCORE_EXPORT bool importFromCSV(
+  smtk::attribute::GroupItem& item,
+  const std::string& filename,
+  Logger& logger,
+  bool appendToGroup = false,
+  const std::string& sep = ",",
   const std::string& comment = "");
 
 ///\brief Populates a GroupItem from a file of Doubles.
@@ -57,9 +61,13 @@ SMTKCORE_EXPORT bool importFromCSV(smtk::attribute::GroupItem& item, const std::
 /// The function will either overwrite or append groups to the item depending on the appendToGroup
 /// parameter.
 /// See groupItemDoubleFileTest.cxx for an example of using the function.
-SMTKCORE_EXPORT bool importFromDoubleFile(smtk::attribute::GroupItem& item,
-  const std::string& filename, Logger& logger, bool appendToGroup = false,
-  const std::string& optionalSep = ",", const std::string& comment = "");
-}
-}
+SMTKCORE_EXPORT bool importFromDoubleFile(
+  smtk::attribute::GroupItem& item,
+  const std::string& filename,
+  Logger& logger,
+  bool appendToGroup = false,
+  const std::string& optionalSep = ",",
+  const std::string& comment = "");
+} // namespace io
+} // namespace smtk
 #endif

@@ -92,7 +92,8 @@ public:
   }
 
   static smtk::shared_ptr<Resource> create(
-    const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
+    const smtk::common::UUID& resourceID,
+    smtk::mesh::InterfacePtr interface)
   {
     smtk::shared_ptr<smtk::resource::Resource> shared(new Resource(resourceID, interface));
     return smtk::static_pointer_cast<Resource>(shared);
@@ -188,32 +189,41 @@ public:
   smtk::mesh::TypeSet findAssociatedTypes(const smtk::model::EntityRef& eref) const;
   smtk::mesh::MeshSet findAssociatedMeshes(const smtk::model::EntityRef& eref) const;
   smtk::mesh::MeshSet findAssociatedMeshes(
-    const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const;
+    const smtk::model::EntityRef& eref,
+    smtk::mesh::DimensionType dim) const;
   smtk::mesh::CellSet findAssociatedCells(const smtk::model::EntityRef& eref) const;
   smtk::mesh::CellSet findAssociatedCells(
-    const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType) const;
+    const smtk::model::EntityRef& eref,
+    smtk::mesh::CellType cellType) const;
   smtk::mesh::CellSet findAssociatedCells(
-    const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const;
+    const smtk::model::EntityRef& eref,
+    smtk::mesh::DimensionType dim) const;
 
   smtk::mesh::TypeSet findAssociatedTypes(const smtk::common::UUID& id) const;
   smtk::mesh::MeshSet findAssociatedMeshes(const smtk::common::UUID& id) const;
   smtk::mesh::MeshSet findAssociatedMeshes(
-    const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const;
+    const smtk::common::UUID& id,
+    smtk::mesh::DimensionType dim) const;
   smtk::mesh::CellSet findAssociatedCells(const smtk::common::UUID& id) const;
   smtk::mesh::CellSet findAssociatedCells(
-    const smtk::common::UUID& id, smtk::mesh::CellType cellType) const;
+    const smtk::common::UUID& id,
+    smtk::mesh::CellType cellType) const;
   smtk::mesh::CellSet findAssociatedCells(
-    const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const;
+    const smtk::common::UUID& id,
+    smtk::mesh::DimensionType dim) const;
 
   smtk::mesh::TypeSet findAssociatedTypes(smtk::model::EntityIterator& refIt) const;
   smtk::mesh::MeshSet findAssociatedMeshes(smtk::model::EntityIterator& refIt) const;
   smtk::mesh::MeshSet findAssociatedMeshes(
-    smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const;
+    smtk::model::EntityIterator& refIt,
+    smtk::mesh::DimensionType dim) const;
   smtk::mesh::CellSet findAssociatedCells(smtk::model::EntityIterator& refIt) const;
   smtk::mesh::CellSet findAssociatedCells(
-    smtk::model::EntityIterator& refIt, smtk::mesh::CellType cellType) const;
+    smtk::model::EntityIterator& refIt,
+    smtk::mesh::CellType cellType) const;
   smtk::mesh::CellSet findAssociatedCells(
-    smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const;
+    smtk::model::EntityIterator& refIt,
+    smtk::mesh::DimensionType dim) const;
 
   bool setAssociation(const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset);
 
@@ -241,7 +251,8 @@ public:
   //Asking to create a MeshSet from a CellSet that is empty will fail, and
   //we will return an empty MeshSet.
   smtk::mesh::MeshSet createMesh(
-    const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid = smtk::common::UUID::null());
+    const smtk::mesh::CellSet& cells,
+    const smtk::common::UUID& uuid = smtk::common::UUID::null());
 
   // Deletion of Items
   //given a resource of meshes this will delete all meshes and any cell or vert
@@ -320,7 +331,8 @@ private:
   int m_nameCounter;
 
   friend std::shared_ptr<Component> Component::create(
-    const ResourcePtr&, const smtk::common::UUID&);
+    const ResourcePtr&,
+    const smtk::common::UUID&);
   friend std::shared_ptr<Component> Component::create(const MeshSet&);
   std::map<smtk::common::UUID, Component::Ptr> m_componentMap;
 

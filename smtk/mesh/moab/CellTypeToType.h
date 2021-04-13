@@ -28,8 +28,8 @@ namespace moab
 smtk::mesh::CellType moabToSMTKCell(int t);
 
 int smtkToMOABCell(smtk::mesh::CellType t);
-}
-}
-} //namespace smtk::mesh::moab
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif // __smtk_mesh_moab_CellTypeToType_h

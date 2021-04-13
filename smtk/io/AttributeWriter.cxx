@@ -67,7 +67,9 @@ unsigned int AttributeWriter::fileVersion() const
 }
 
 bool AttributeWriter::write(
-  const smtk::attribute::ResourcePtr resource, const std::string& filename, Logger& logger)
+  const smtk::attribute::ResourcePtr resource,
+  const std::string& filename,
+  Logger& logger)
 {
   // Lets first clear the logger's error state
   logger.clearErrors();
@@ -104,7 +106,8 @@ bool AttributeWriter::write(
       }
       else if (i != 0)
       {
-        smtkErrorMacro(logger,
+        smtkErrorMacro(
+          logger,
           "Error - Will not over-write include file using absolute path: " << fpath.string());
         continue;
       }
@@ -139,8 +142,11 @@ bool AttributeWriter::write(
   return logger.hasErrors();
 }
 
-bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
-  std::string& filecontents, Logger& logger, bool no_declaration)
+bool AttributeWriter::writeContents(
+  const smtk::attribute::ResourcePtr resource,
+  std::string& filecontents,
+  Logger& logger,
+  bool no_declaration)
 {
   logger.clearErrors();
   XmlStringWriter* theWriter = this->newXmlStringWriter(resource, logger);
@@ -161,7 +167,8 @@ bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
 }
 
 XmlStringWriter* AttributeWriter::newXmlStringWriter(
-  const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger) const
+  const smtk::attribute::ResourcePtr resource,
+  smtk::io::Logger& logger) const
 {
   XmlStringWriter* writer = nullptr;
   switch (m_fileVersion)

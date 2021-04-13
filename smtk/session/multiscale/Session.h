@@ -22,7 +22,7 @@ namespace model
 
 class ArrangementHelper;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {

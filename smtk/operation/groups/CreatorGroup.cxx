@@ -71,5 +71,5 @@ std::set<std::string> CreatorGroup::supportedResources() const
   }
   return resources;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

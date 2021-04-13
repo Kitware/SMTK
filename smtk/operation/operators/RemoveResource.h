@@ -37,7 +37,7 @@ protected:
 
   virtual const char* xmlDescription() const override;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

@@ -32,8 +32,11 @@ class SMTKCORE_EXPORT MeshInfo
 public:
   MeshInfo();
 
-  MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
-    const smtk::mesh::HandleRange& cells, const smtk::mesh::HandleRange& points,
+  MeshInfo(
+    smtk::mesh::Handle meshId,
+    const smtk::common::UUID& uuid,
+    const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::HandleRange& points,
     smtk::mesh::TypeSet types);
 
   smtk::mesh::Handle mesh() const { return m_mesh; }
@@ -76,8 +79,8 @@ private:
   std::vector<smtk::mesh::Neumann> m_neumanns;
   smtk::common::UUIDArray m_uuids;
 };
-}
-}
-}
+} // namespace json
+} // namespace mesh
+} // namespace smtk
 
 #endif

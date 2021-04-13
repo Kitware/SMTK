@@ -26,7 +26,7 @@ namespace extension
 {
 class qtUIManager;
 }
-}
+} // namespace smtk
 
 namespace Ui
 {

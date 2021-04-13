@@ -140,7 +140,8 @@ public:
   /// @{
   ///\brief Set/Get the set of categories associated with a value Enum
   void setEnumCategories(
-    const std::string& enumValue, const smtk::attribute::Categories::Set& cats);
+    const std::string& enumValue,
+    const smtk::attribute::Categories::Set& cats);
   void addEnumCategory(const std::string& enumValue, const std::string& cat);
   const smtk::attribute::Categories::Set& enumCategories(const std::string& enumValue) const;
   /// @}
@@ -162,7 +163,7 @@ public:
   // with that name already exists then return a shared_pointer
   // that points to NULL.
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
-  template <typename T>
+  template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
     const std::string& idName)
   {
@@ -185,10 +186,12 @@ public:
 
 protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
-  void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  void applyCategories(
+    const smtk::attribute::Categories& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(
-    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent) override;
+    const unsigned int& readLevelFromParent,
+    const unsigned int& writeLevelFromParent) override;
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;
@@ -203,26 +206,28 @@ protected:
   std::string m_expressionType;
   smtk::attribute::ComponentItemDefinitionPtr m_expressionDefinition;
   std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
-  std::map<std::string, std::set<std::string> > m_itemToValueAssociations;
-  std::map<std::string, std::vector<std::string> > m_valueToItemAssociations;
+  std::map<std::string, std::set<std::string>> m_itemToValueAssociations;
+  std::map<std::string, std::vector<std::string>> m_valueToItemAssociations;
   std::map<std::string, smtk::attribute::Categories::Set> m_valueToCategoryAssociations;
   std::map<std::string, unsigned int> m_valueToAdvanceLevelAssociations;
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 // returns true if valueName has a child item definition of itemName
 inline bool smtk::attribute::ValueItemDefinition::hasChildItemDefinition(
-  const std::string& valueName, const std::string& itemName)
+  const std::string& valueName,
+  const std::string& itemName)
 {
   // First we need to check to see if we have this child item
   if (!this->hasChildItemDefinition(itemName))
   {
     return false;
   }
-  return (m_itemToValueAssociations[itemName].find(valueName) !=
+  return (
+    m_itemToValueAssociations[itemName].find(valueName) !=
     m_itemToValueAssociations[itemName].end());
 }
 

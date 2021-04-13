@@ -50,13 +50,14 @@ bool ComponentItemDefinition::isValueValid(smtk::resource::ConstPersistentObject
 }
 
 smtk::attribute::ItemPtr ComponentItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new ComponentItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr ComponentItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+ComponentItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new ComponentItem(owningItem, itemPosition, subGroupPosition));
 }

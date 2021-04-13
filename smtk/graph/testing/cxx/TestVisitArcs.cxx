@@ -21,7 +21,7 @@ namespace test_visit_arcs
 class Node : public smtk::graph::Component
 {
 public:
-  template <typename... Args>
+  template<typename... Args>
   Node(Args&&... args)
     : smtk::graph::Component::Component(std::forward<Args>(args)...)
   {
@@ -32,7 +32,7 @@ public:
 class ArcWithoutVisit : public smtk::graph::Arc<Node, Node>
 {
 public:
-  template <typename... Args>
+  template<typename... Args>
   ArcWithoutVisit(Args&&... args)
     : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
   {
@@ -42,7 +42,7 @@ public:
 class ArcWithVisit : public smtk::graph::Arc<Node, Node>
 {
 public:
-  template <typename... Args>
+  template<typename... Args>
   ArcWithVisit(Args&&... args)
     : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
     , visited(false)
@@ -50,7 +50,7 @@ public:
   {
   }
 
-  template <typename SelfType>
+  template<typename SelfType>
   class API : public smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>
   {
   public:
@@ -80,9 +80,9 @@ struct BasicTraits
   typedef std::tuple<test_visit_arcs::Node> NodeTypes;
   typedef std::tuple<test_visit_arcs::ArcWithoutVisit, test_visit_arcs::ArcWithVisit> ArcTypes;
 };
-}
+} // namespace test_visit_arcs
 
-int TestVisitArcs(int, char* [])
+int TestVisitArcs(int, char*[])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.
@@ -99,7 +99,8 @@ int TestVisitArcs(int, char* [])
   // test const get
   {
     const test_visit_arcs::Node& n = *node1;
-    test(node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+    test(
+      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
       "Cannot access connected node via get() const");
   }
 
@@ -107,7 +108,8 @@ int TestVisitArcs(int, char* [])
   {
     test_visit_arcs::Node& n = *node1;
     n.get<test_visit_arcs::ArcWithoutVisit>().setId(smtk::common::UUID::random());
-    test(node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+    test(
+      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
       "Cannot access connected node via get()");
   }
 

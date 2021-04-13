@@ -22,7 +22,7 @@ namespace Shape
 {
 class Point;
 }
-}
+} // namespace Delaunay
 
 namespace smtk
 {
@@ -30,7 +30,7 @@ namespace model
 {
 class Loop;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {
@@ -56,12 +56,12 @@ public:
 
   //Export a model loop with a mesh representation stored in the given
   // resource into a vector of Delaunay points.
-  std::vector<Delaunay::Shape::Point> operator()(
-    const smtk::model::Loop&, smtk::mesh::ResourcePtr&) const;
+  std::vector<Delaunay::Shape::Point> operator()(const smtk::model::Loop&, smtk::mesh::ResourcePtr&)
+    const;
 };
-}
-}
-}
-}
+} // namespace io
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk
 
 #endif

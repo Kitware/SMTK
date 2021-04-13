@@ -42,7 +42,7 @@ signals:
   //emitted to allow selection to happen
   void triggered(bool);
 };
-}
+} // namespace pqSplitEdgeWidgetInternals
 
 class SMTKPOLYGONQTEXT_EXPORT pqSplitEdgeWidget : public QWidget
 {

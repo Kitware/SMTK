@@ -89,7 +89,7 @@ private:
   struct Internals;
   std::unique_ptr<Internals> m_internals;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

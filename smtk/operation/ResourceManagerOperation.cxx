@@ -33,5 +33,5 @@ smtk::resource::ManagerPtr ResourceManagerOperation::resourceManager()
 
   return smtk::resource::ManagerPtr();
 }
-}
-}
+} // namespace operation
+} // namespace smtk

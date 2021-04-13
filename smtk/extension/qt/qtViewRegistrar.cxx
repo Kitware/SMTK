@@ -33,13 +33,22 @@ namespace extension
 {
 namespace
 {
-typedef std::tuple<qtAnalysisView, qtAssociationView, qtAttributeView, qtCategorySelectorView,
-  qtGroupView, qtInstancedView, qtModelEntityAttributeView, qtOperationView, qtResourceBrowser,
-  qtSelectorView, qtSimpleExpressionView>
+typedef std::tuple<
+  qtAnalysisView,
+  qtAssociationView,
+  qtAttributeView,
+  qtCategorySelectorView,
+  qtGroupView,
+  qtInstancedView,
+  qtModelEntityAttributeView,
+  qtOperationView,
+  qtResourceBrowser,
+  qtSelectorView,
+  qtSimpleExpressionView>
   ViewWidgetList;
 using BadgeList =
   std::tuple<smtk::extension::qt::MembershipBadge, smtk::extension::qt::TypeAndColorBadge>;
-}
+} // namespace
 
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
 {
@@ -66,5 +75,5 @@ void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)
 
   manager->badgeFactory().unregisterTypes<BadgeList>();
 }
-}
-}
+} // namespace extension
+} // namespace smtk

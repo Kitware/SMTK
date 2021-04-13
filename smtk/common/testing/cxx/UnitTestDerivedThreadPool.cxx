@@ -73,12 +73,12 @@ private:
 
   bool m_stopped{ false };
 };
-}
+} // namespace
 
 int UnitTestDerivedThreadPool(int /*unused*/, char** const /*unused*/)
 {
   StoppableThreadPool threadPool(2);
-  std::vector<std::future<bool> > futures;
+  std::vector<std::future<bool>> futures;
   int n_threads = 2;
   std::this_thread::sleep_for(std::chrono::seconds(1));
   for (int i = 0; i < n_threads; ++i)

@@ -33,7 +33,7 @@ enum SearchStyle
   ACTIVE_CHILDREN = 3   ///< Recursively search for an active item (Depricated!)
 };
 
-} // attribute namespace
-} // smtk namespace
+} // namespace attribute
+} // namespace smtk
 
 #endif // __smtk_attribute_SearchStyle_h

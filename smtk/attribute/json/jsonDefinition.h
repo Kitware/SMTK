@@ -31,9 +31,11 @@ namespace attribute
 
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::DefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::DefinitionPtr& defPtr,
   std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

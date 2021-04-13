@@ -56,15 +56,15 @@ public:
 
   const std::multimap<std::string, std::string>& acceptableEntries() const { return m_acceptable; }
 
-  virtual bool setAcceptsEntries(
-    const std::string& typeName, const std::string& queryString, bool accept);
+  virtual bool
+  setAcceptsEntries(const std::string& typeName, const std::string& queryString, bool accept);
 
   void clearAcceptableEntries() { m_acceptable.clear(); }
 
   const std::multimap<std::string, std::string>& rejectedEntries() const { return m_rejected; }
 
-  virtual bool setRejectsEntries(
-    const std::string& typeName, const std::string& queryString, bool accept);
+  virtual bool
+  setRejectsEntries(const std::string& typeName, const std::string& queryString, bool accept);
 
   void clearRejectedEntries() { m_rejected.clear(); }
 
@@ -156,7 +156,7 @@ public:
   // Create an item definition based on a given idName. If an item
   // with that name already exists then return a shared_pointer
   // that points to NULL.
-  template <typename T>
+  template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
     const std::string& idName)
   {
@@ -195,7 +195,9 @@ public:
   /// In the case of components, the resource query can be empty iff the
   /// reference item can only be assigned to components of the same "type"
   /// of resources.
-  std::size_t addConditional(const std::string& resourceQuery, const std::string& componentQuery,
+  std::size_t addConditional(
+    const std::string& resourceQuery,
+    const std::string& componentQuery,
     const std::vector<std::string>& itemNames);
 
   /// returns true if ith conditional has a child item definition of itemName
@@ -205,7 +207,7 @@ public:
   std::size_t numberOfConditionals() const { return m_conditionalItemNames.size(); }
 
   /// Return the conditional item name information
-  const std::vector<std::vector<std::string> >& conditionalInformation() const
+  const std::vector<std::vector<std::string>>& conditionalInformation() const
   {
     return m_conditionalItemNames;
   }
@@ -251,7 +253,8 @@ protected:
   /// The pointer is being based so dynamic casting can be used
   bool checkCategories(const smtk::resource::Component* comp) const;
 
-  void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  void applyCategories(
+    const smtk::attribute::Categories& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
 
   bool m_useCommonLabel;
@@ -273,7 +276,7 @@ protected:
   // component query part of the conditional
   std::vector<std::string> m_componentQueries;
   // represents the conditional items that are associated with the conditional
-  std::vector<std::vector<std::string> > m_conditionalItemNames;
+  std::vector<std::vector<std::string>> m_conditionalItemNames;
 
 private:
   bool m_onlyResources;
@@ -284,7 +287,8 @@ private:
 
 // returns true if valueName has a child item definition of itemName
 inline bool smtk::attribute::ReferenceItemDefinition::hasChildItemDefinition(
-  std::size_t ith, const std::string& itemName)
+  std::size_t ith,
+  const std::string& itemName)
 {
   // First we need to check to see if we have this child item or if ith is
   // out of range
@@ -292,8 +296,9 @@ inline bool smtk::attribute::ReferenceItemDefinition::hasChildItemDefinition(
   {
     return false;
   }
-  return (std::find(m_conditionalItemNames[ith].begin(), m_conditionalItemNames[ith].end(),
-            itemName) != m_conditionalItemNames[ith].end());
+  return (
+    std::find(m_conditionalItemNames[ith].begin(), m_conditionalItemNames[ith].end(), itemName) !=
+    m_conditionalItemNames[ith].end());
 }
 
 #endif

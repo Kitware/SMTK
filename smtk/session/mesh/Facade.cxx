@@ -46,6 +46,6 @@ std::string& Facade::operator[](const std::string& key)
   auto loc = m_internal->m_data.find(key);
   return loc == m_internal->m_data.end() ? dummy : loc->second;
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

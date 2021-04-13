@@ -60,7 +60,7 @@ inline const std::string& location(const ResourcePtr& r)
 {
   return r->location();
 }
-}
+} // namespace detail
 
 using namespace boost::multi_index;
 
@@ -68,15 +68,19 @@ using namespace boost::multi_index;
 /// intended to be used in the implementation of smtk::resource::Manager only.
 typedef boost::multi_index_container<
   ResourcePtr,
-  indexed_by<ordered_unique<tag<IdTag>,
-               global_fun<const ResourcePtr&, const smtk::common::UUID&, &detail::id> >,
-    ordered_non_unique<tag<IndexTag>,
-               global_fun<const ResourcePtr&, smtk::resource::Resource::Index, &detail::index> >,
-    ordered_non_unique<tag<NameTag>, global_fun<const ResourcePtr&, std::string, &detail::name> >,
-    ordered_non_unique<tag<LocationTag>,
-               global_fun<const ResourcePtr&, const std::string&, &detail::location> > > >
+  indexed_by<
+    ordered_unique<
+      tag<IdTag>,
+      global_fun<const ResourcePtr&, const smtk::common::UUID&, &detail::id>>,
+    ordered_non_unique<
+      tag<IndexTag>,
+      global_fun<const ResourcePtr&, smtk::resource::Resource::Index, &detail::index>>,
+    ordered_non_unique<tag<NameTag>, global_fun<const ResourcePtr&, std::string, &detail::name>>,
+    ordered_non_unique<
+      tag<LocationTag>,
+      global_fun<const ResourcePtr&, const std::string&, &detail::location>>>>
   Container;
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Resources_h

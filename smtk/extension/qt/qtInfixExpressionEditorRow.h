@@ -38,8 +38,11 @@ class SMTKQTEXT_EXPORT qtInfixExpressionEditorRow : public QWidget
 public:
   // |elementIdx| is the index in the underlying StringItem.
   // |mp_editBox| will be initialized displaying |text|.
-  qtInfixExpressionEditorRow(const QString& text, int elementIdx,
-    std::unique_ptr<smtk::attribute::Evaluator> evaluator, QWidget* parent);
+  qtInfixExpressionEditorRow(
+    const QString& text,
+    int elementIdx,
+    std::unique_ptr<smtk::attribute::Evaluator> evaluator,
+    QWidget* parent);
 
   // Adds context menu action for onShowExpressionHelp() if |ev| is a
   // ContextMenu event, else passes |ev| to QWidget::eventFilter().

@@ -82,11 +82,13 @@ void testOperation(Model model)
   input->setObjectValue(model.component());
 
   test(!!op, "Could not create operator.");
-  test(op->operate()->findInt("count")->value() == 1,
+  test(
+    op->operate()->findInt("count")->value() == 1,
     "Did not return the proper number of top-level cells.");
 
   op->parameters()->findInt("count groups")->setValue(1);
-  test(op->operate()->findInt("count")->value() == 0,
+  test(
+    op->operate()->findInt("count")->value() == 0,
     "Did not return the proper number of top-level group.");
 }
 

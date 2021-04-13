@@ -21,7 +21,7 @@
 #include "vtkSmartPointer.h"
 
 template class VTKSMTKSOURCEEXT_EXPORT
-  smtk::common::Generator<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm> >;
+  smtk::common::Generator<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm>>;
 
 namespace smtk
 {
@@ -32,10 +32,10 @@ namespace vtk
 namespace source
 {
 using Generator =
-  smtk::common::Generator<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm> >;
+  smtk::common::Generator<smtk::resource::ResourcePtr, vtkSmartPointer<vtkAlgorithm>>;
 }
-}
-}
-}
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

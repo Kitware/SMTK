@@ -16,12 +16,12 @@
 
 namespace nlohmann
 {
-template <>
+template<>
 struct adl_serializer<smtk::resource::detail::ResourceLinkBase>
 {
   static smtk::resource::detail::ResourceLinkBase from_json(const json&);
   static void to_json(json&, const smtk::resource::detail::ResourceLinkBase&);
 };
-}
+} // namespace nlohmann
 
 #endif

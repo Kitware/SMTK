@@ -25,11 +25,13 @@ bool EvaluatorManager::registerResourceManager(smtk::resource::Manager::Ptr& man
     // ...add an observer that adds the registers the Evaluator for all current
     // and future attribute resources associated with this manager.
     auto registerEvaluatorObserver = [registerFunction](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+                                       const smtk::resource::Resource& resource,
+                                       smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
+        if (
+          const smtk::attribute::Resource* attributeResource =
+            dynamic_cast<const smtk::attribute::Resource*>(&resource))
         {
           registerFunction.second(const_cast<smtk::attribute::Resource&>(*attributeResource));
         }
@@ -38,7 +40,8 @@ bool EvaluatorManager::registerResourceManager(smtk::resource::Manager::Ptr& man
 
     // Associated the observer key with the definition type, so we can remove it
     // later if requested.
-    m_observers.insert(std::make_pair(registerFunction.first,
+    m_observers.insert(std::make_pair(
+      registerFunction.first,
       manager->observers().insert(registerEvaluatorObserver, "Register Evaluator type.")));
   }
 

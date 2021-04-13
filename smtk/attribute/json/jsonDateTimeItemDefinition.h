@@ -25,11 +25,13 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::DateTimeItemDefinitionPtr& defPtr);
+  nlohmann::json& j,
+  const smtk::attribute::DateTimeItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(
-  const nlohmann::json& j, smtk::attribute::DateTimeItemDefinitionPtr& defPtr);
-}
-}
+  const nlohmann::json& j,
+  smtk::attribute::DateTimeItemDefinitionPtr& defPtr);
+} // namespace attribute
+} // namespace smtk
 
 #endif

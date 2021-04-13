@@ -38,7 +38,8 @@ namespace model
 {
 
 std::vector<Weights> computeWeights(
-  const std::vector<double>& samplePoints, const smtk::attribute::DefinitionPtr& definition)
+  const std::vector<double>& samplePoints,
+  const smtk::attribute::DefinitionPtr& definition)
 {
   // Access the attribute resource containing the annotations
   smtk::attribute::ResourcePtr attributeResource =
@@ -90,8 +91,9 @@ std::vector<Weights> computeWeights(
       std::size_t counter = 0;
       for (std::size_t j = 0; j < samplePoints.size(); j += 3)
       {
-        std::array<double, 3> input{ { samplePoints[j], samplePoints[j + 1],
-          samplePoints[j + 2] } };
+        std::array<double, 3> input{
+          { samplePoints[j], samplePoints[j + 1], samplePoints[j + 2] }
+        };
         double distance = (*distanceTo)(entity, input).first;
         pointProfiles[counter++].push_back(std::make_pair(distance, attribute.get()));
       }
@@ -102,7 +104,9 @@ std::vector<Weights> computeWeights(
 }
 
 std::vector<double> inverseDistanceWeighting(
-  const std::vector<Weights>& weightsForPoints, const std::string& itemName, const double& power)
+  const std::vector<Weights>& weightsForPoints,
+  const std::string& itemName,
+  const double& power)
 {
   // Initialize the output vector
   std::vector<double> values(weightsForPoints.size());
@@ -145,5 +149,5 @@ std::vector<double> inverseDistanceWeighting(
   }
   return values;
 }
-}
-}
+} // namespace model
+} // namespace smtk

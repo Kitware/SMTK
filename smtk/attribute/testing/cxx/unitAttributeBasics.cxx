@@ -18,7 +18,7 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-int unitAttributeBasics(int /*unused*/, char* /*unused*/ [])
+int unitAttributeBasics(int /*unused*/, char* /*unused*/[])
 {
   int status = 0;
   smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
@@ -49,33 +49,40 @@ int unitAttributeBasics(int /*unused*/, char* /*unused*/ [])
   resource.definitions(defs);
   resource.attributes(atts);
 
-  smtkTest(defs.size() == 1, "Incorrect number of definitions reported - definitions returned: "
+  smtkTest(
+    defs.size() == 1,
+    "Incorrect number of definitions reported - definitions returned: "
       << defs.size() << " but should have returned 1.");
   // Is testDef in the list?
   smtkTest(defs[0] == def, "testDef is not in the list!");
 
-  smtkTest(atts.size() == 1, "Incorrect number of attributes reported - attributes returned: "
+  smtkTest(
+    atts.size() == 1,
+    "Incorrect number of attributes reported - attributes returned: "
       << atts.size() << " but should have returned 1.");
   // Is testAtt in the list?
   smtkTest(atts[0] == att, "testAtt is not in the list!");
 
   smtkTest(!att->isColorSet(), "Color should not be set.");
   double const* tcol = att->color();
-  smtkTest(tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
+  smtkTest(
+    tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
     "wrong default color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' '
                                    << tcol[3]);
 
   double color[] = { 3, 24, 12, 6 };
   att->setColor(color);
   tcol = att->color();
-  smtkTest(tcol[0] == color[0] && tcol[1] == color[1] && tcol[2] == color[2] && tcol[3] == color[3],
+  smtkTest(
+    tcol[0] == color[0] && tcol[1] == color[1] && tcol[2] == color[2] && tcol[3] == color[3],
     "Wrong set color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3]);
 
   smtkTest(att->isColorSet(), "Color should be set.");
   att->unsetColor();
   smtkTest(!att->isColorSet(), "Color should not be set.");
   tcol = att->color();
-  smtkTest(tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
+  smtkTest(
+    tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
     "Wrong default color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' '
                                    << tcol[3]);
 
@@ -110,13 +117,15 @@ int unitAttributeBasics(int /*unused*/, char* /*unused*/ [])
   smtkTest(data != nullptr, "Should have found user data dataInt");
   dataI = std::dynamic_pointer_cast<smtk::simulation::UserDataInt>(data);
   smtkTest(dataI != nullptr, "Should have found user data dataInt as Integer Data");
-  smtkTest(dataI->value() == 10,
+  smtkTest(
+    dataI->value() == 10,
     "DataInt should have value 10 but instead has value : " << dataI->value());
   data = att->userData("dataString");
   smtkTest(data != nullptr, "Should have found user data dataString");
   dataS = std::dynamic_pointer_cast<smtk::simulation::UserDataString>(data);
   smtkTest(dataS != nullptr, "Should have found user data dataString as String Data");
-  smtkTest(dataS->value() == "foo",
+  smtkTest(
+    dataS->value() == "foo",
     "DataString should have value foo but instead has value : " << dataS->value());
   att->clearUserData("dataInt");
   data = att->userData("dataInt");

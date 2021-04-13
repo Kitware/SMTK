@@ -23,8 +23,8 @@
   */
 namespace nlohmann
 {
-template <>
-struct adl_serializer<std::map<smtk::resource::ComponentPtr, int> >
+template<>
+struct adl_serializer<std::map<smtk::resource::ComponentPtr, int>>
 {
   /// Convert a SelectionManager's currentSelection() to JSON.
   static void to_json(json& j, const std::map<smtk::resource::ComponentPtr, int>& seln)
@@ -36,7 +36,7 @@ struct adl_serializer<std::map<smtk::resource::ComponentPtr, int> >
     else
     {
       // Group components by resource IDs:
-      std::map<smtk::common::UUID, std::map<smtk::common::UUID, int> > rcset;
+      std::map<smtk::common::UUID, std::map<smtk::common::UUID, int>> rcset;
       for (auto entry : seln)
       {
         auto rset = rcset.find(entry.first->resource()->id());
@@ -64,11 +64,11 @@ struct adl_serializer<std::map<smtk::resource::ComponentPtr, int> >
   }
 
   /// Conversion from JSON requires a resource manager to look up pointers from UUIDs.
-  static void from_json(
-    const json&, std::map<smtk::resource::ComponentPtr, int>&, smtk::resource::ManagerPtr)
+  static void
+  from_json(const json&, std::map<smtk::resource::ComponentPtr, int>&, smtk::resource::ManagerPtr)
   {
   }
 };
-}
+} // namespace nlohmann
 
 #endif

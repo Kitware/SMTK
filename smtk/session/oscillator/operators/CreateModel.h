@@ -22,7 +22,7 @@ namespace model
 {
 class Group;
 }
-}
+} // namespace smtk
 
 namespace smtk
 {

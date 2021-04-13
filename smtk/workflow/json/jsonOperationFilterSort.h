@@ -26,11 +26,11 @@ namespace workflow
 
 using json = nlohmann::json;
 
-SMTKCORE_EXPORT void to_json(
-  json& j, const OperationFilterSortPtr& ofs, smtk::operation::ManagerPtr opMgr);
-SMTKCORE_EXPORT void from_json(
-  const json& j, OperationFilterSortPtr& ofs, smtk::operation::ManagerPtr opMgr);
-}
-}
+SMTKCORE_EXPORT void
+to_json(json& j, const OperationFilterSortPtr& ofs, smtk::operation::ManagerPtr opMgr);
+SMTKCORE_EXPORT void
+from_json(const json& j, OperationFilterSortPtr& ofs, smtk::operation::ManagerPtr opMgr);
+} // namespace workflow
+} // namespace smtk
 
 #endif

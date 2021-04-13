@@ -39,7 +39,8 @@ void Region::merge(const Region* other)
     m_seedFragment = other->m_seedFragment;
     m_seedSense = other->m_seedSense;
     for (std::set<int>::const_iterator it = other->m_innerLoops.begin();
-         it != other->m_innerLoops.end(); ++it)
+         it != other->m_innerLoops.end();
+         ++it)
     {
       m_innerLoops.insert(*it);
     }

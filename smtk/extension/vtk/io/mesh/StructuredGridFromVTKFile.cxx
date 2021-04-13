@@ -59,13 +59,17 @@ smtk::mesh::StructuredGrid StructuredGridFromVTKFile::operator()(const std::stri
 
   if (vtkImageData* imageInput = vtkImageData::SafeDownCast(externalData))
   {
-    structuredgrid = smtk::mesh::StructuredGrid(imageInput->GetExtent(), imageInput->GetOrigin(),
+    structuredgrid = smtk::mesh::StructuredGrid(
+      imageInput->GetExtent(),
+      imageInput->GetOrigin(),
       imageInput->GetSpacing(),
       [=](int i, int j) { return imageInput->GetScalarComponentAsDouble(i, j, 0, 0); });
   }
   else if (vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(externalData))
   {
-    structuredgrid = smtk::mesh::StructuredGrid(gridInput->GetExtent(), gridInput->GetOrigin(),
+    structuredgrid = smtk::mesh::StructuredGrid(
+      gridInput->GetExtent(),
+      gridInput->GetOrigin(),
       gridInput->GetSpacing(),
       [=](int i, int j) { return gridInput->GetScalarComponentAsDouble(i, j, 0, 0); },
       [=](int i, int j) {
@@ -81,7 +85,7 @@ smtk::mesh::StructuredGrid StructuredGridFromVTKFile::operator()(const std::stri
 
   return structuredgrid;
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

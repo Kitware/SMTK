@@ -38,7 +38,7 @@ public:
   virtual std::string name() const = 0;
 };
 
-} // namespace resource
+} // namespace geometry
 } // namespace smtk
 
 #endif // smtk_geometry_Backend_h

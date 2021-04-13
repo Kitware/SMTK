@@ -71,13 +71,22 @@ void TemplateEditorMain::initialize()
   }
 
   connect(this->AttDefInfo, SIGNAL(resourceChanged(bool)), this, SLOT(updateTitle(bool)));
-  connect(this->AttDefInfo, SIGNAL(resourceChanged(bool)), this->AttDefBrowser,
+  connect(
+    this->AttDefInfo,
+    SIGNAL(resourceChanged(bool)),
+    this->AttDefBrowser,
     SLOT(emitAttDefChanged()));
   connect(this->AttDefBrowser, SIGNAL(resourceChanged(bool)), this, SLOT(updateTitle(bool)));
-  connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
-    this->AttDefInfo, SLOT(onAttDefChanged(const QModelIndex&, const QModelIndex&)));
-  connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
-    this->AttPreviewPanel, SLOT(updateCurrentView(const QModelIndex&, const QModelIndex&)));
+  connect(
+    this->AttDefBrowser,
+    SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
+    this->AttDefInfo,
+    SLOT(onAttDefChanged(const QModelIndex&, const QModelIndex&)));
+  connect(
+    this->AttDefBrowser,
+    SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
+    this->AttPreviewPanel,
+    SLOT(updateCurrentView(const QModelIndex&, const QModelIndex&)));
 
   this->AttDefBrowser->populate(this->AttributeResource);
 

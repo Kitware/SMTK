@@ -212,6 +212,6 @@ const char* CreateUniformGrid::xmlDescription() const
 {
   return CreateUniformGrid_xml;
 }
-}
-}
-}
+} // namespace mesh
+} // namespace session
+} // namespace smtk

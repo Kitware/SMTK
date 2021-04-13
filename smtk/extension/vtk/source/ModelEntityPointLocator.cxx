@@ -37,8 +37,11 @@ ModelEntityPointLocator::ModelEntityPointLocator() = default;
 
 ModelEntityPointLocator::~ModelEntityPointLocator() = default;
 
-bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
-  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
+bool ModelEntityPointLocator::closestPointOn(
+  const smtk::model::EntityRef& entity,
+  std::vector<double>& closestPoints,
+  const std::vector<double>& sourcePoints,
+  bool snapToPoint)
 {
   smtk::extension::vtk::geometry::Backend vtk;
   const auto& geometry = entity.resource()->geometry(vtk);
@@ -112,8 +115,13 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
     closestPoints.resize(npts * 3);
     for (int ii = 0; ii < npts; ++ii)
     {
-      cellLocator->FindClosestPoint(const_cast<double*>(&sourcePoints[3 * ii]),
-        &closestPoints[3 * ii], cell, cellId, subId, dist2);
+      cellLocator->FindClosestPoint(
+        const_cast<double*>(&sourcePoints[3 * ii]),
+        &closestPoints[3 * ii],
+        cell,
+        cellId,
+        subId,
+        dist2);
     }
     return true;
   }
@@ -121,8 +129,11 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
   return false;
 }
 
-bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
-  const std::size_t nPoints, std::vector<double>& points, const std::size_t seed)
+bool ModelEntityPointLocator::randomPoint(
+  const smtk::model::EntityRef& entity,
+  const std::size_t nPoints,
+  std::vector<double>& points,
+  const std::size_t seed)
 {
   // TODO: fill me in!
   (void)entity;
@@ -131,12 +142,14 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
   (void)seed;
   return false;
 }
-}
-}
-}
-}
+} // namespace source
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
-smtkDeclareExtension(VTKSMTKSOURCEEXT_EXPORT, vtk_model_entity_point_locator,
+smtkDeclareExtension(
+  VTKSMTKSOURCEEXT_EXPORT,
+  vtk_model_entity_point_locator,
   smtk::extension::vtk::source::ModelEntityPointLocator);
 
 smtkComponentInitMacro(smtk_vtk_model_entity_point_locator_extension);

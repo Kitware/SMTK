@@ -108,7 +108,7 @@ void verify_read_write_valid_resource()
     test(mr->points().size() == 662, "resource should have 662 points");
   }
 }
-}
+} // namespace
 
 int UnitTestExportMesh2DM(int /*unused*/, char** const /*unused*/)
 {

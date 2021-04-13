@@ -27,7 +27,14 @@ DateTime::DateTime()
 }
 
 bool DateTime::setComponents(
-  int yr, int month, int day, int hr, int min, int sec, int msec, TimeZone* timeZone)
+  int yr,
+  int month,
+  int day,
+  int hr,
+  int min,
+  int sec,
+  int msec,
+  TimeZone* timeZone)
 {
   // Construct date & time_duration components
   boost::gregorian::date ptimeDate(yr, month, day);
@@ -40,7 +47,10 @@ bool DateTime::setComponents(
   if (timeZone)
   {
     // If time zone specified, convert to UTC
-    boost::local_time::local_date_time local(ptimeDate, ptimeTime, timeZone->boostPointer(),
+    boost::local_time::local_date_time local(
+      ptimeDate,
+      ptimeTime,
+      timeZone->boostPointer(),
       boost::local_time::local_date_time::NOT_DATE_TIME_ON_ERROR);
     m_ptime = local.utc_time();
   }
@@ -54,7 +64,14 @@ bool DateTime::setComponents(
 }
 
 bool DateTime::components(
-  int& yr, int& month, int& day, int& hr, int& min, int& sec, int& msec, TimeZone* timeZone) const
+  int& yr,
+  int& month,
+  int& day,
+  int& hr,
+  int& min,
+  int& sec,
+  int& msec,
+  TimeZone* timeZone) const
 {
   if (!this->isSet())
   {

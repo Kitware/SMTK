@@ -607,7 +607,7 @@ void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)
   test(!typeSet.hasDimension(smtk::mesh::Dims2));
   test(typeSet.hasDimension(smtk::mesh::Dims3));
 }
-}
+} // namespace
 
 int UnitTestCellSet(int /*unused*/, char** const /*unused*/)
 {

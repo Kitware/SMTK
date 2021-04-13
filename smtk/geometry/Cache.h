@@ -34,7 +34,7 @@ namespace geometry
   *       from cached geometry
   *
   */
-template <typename BaseClass>
+template<typename BaseClass>
 class Cache : public BaseClass
 {
 public:

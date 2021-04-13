@@ -51,10 +51,15 @@ protected:
   Import();
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
-  int taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource::Ptr& resource,
-    vtkIdTypeArray* tagInfo, vtkPolyData* mesh, smtk::model::Model& model);
+  int taggedPolyData2PolygonModelEntities(
+    smtk::session::polygon::Resource::Ptr& resource,
+    vtkIdTypeArray* tagInfo,
+    vtkPolyData* mesh,
+    smtk::model::Model& model);
   int basicPolyData2PolygonModelEntities(
-    smtk::session::polygon::Resource::Ptr& resource, vtkPolyData* mesh, smtk::model::Model& model);
+    smtk::session::polygon::Resource::Ptr& resource,
+    vtkPolyData* mesh,
+    smtk::model::Model& model);
 };
 
 } // namespace polygon

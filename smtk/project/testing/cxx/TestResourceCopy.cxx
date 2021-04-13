@@ -115,8 +115,8 @@ class ResourceBuilder
 public:
   void importResources();
   void buildAttributes() const;
-  void writeResources(
-    smtk::operation::ManagerPtr, const std::string& folder, bool setFileItem = false);
+  void
+  writeResources(smtk::operation::ManagerPtr, const std::string& folder, bool setFileItem = false);
   void copyResources(const std::string& folder);
 
 protected:
@@ -161,11 +161,13 @@ void ResourceBuilder::importResources()
   }
 
   // Sanity check shared pointer use counts
-  smtkTest(m_attResource.use_count() == 1, "m_attResource use_count is "
-      << m_attResource.use_count()) smtkTest(m_modelResource.use_count() == 1,
-    "m_modelResource use_count is " << m_modelResource.use_count())
+  smtkTest(
+    m_attResource.use_count() == 1, "m_attResource use_count is " << m_attResource.use_count())
+    smtkTest(
+      m_modelResource.use_count() == 1,
+      "m_modelResource use_count is " << m_modelResource.use_count())
 
-    origAttUUID = m_attResource->id();
+      origAttUUID = m_attResource->id();
   origModelUUID = m_modelResource->id();
 } // ResourceBuilder::importResources()
 
@@ -229,7 +231,9 @@ void ResourceBuilder::copyResources(const std::string& folder)
 } // ResourceBuilder::copyResources()
 
 void ResourceBuilder::writeResources(
-  smtk::operation::ManagerPtr opManager, const std::string& folder, bool setFileItem)
+  smtk::operation::ManagerPtr opManager,
+  const std::string& folder,
+  bool setFileItem)
 {
   // Write attribute resource
   std::string attPath = std::string(folder) + "/attributes.smtk";
@@ -258,13 +262,16 @@ void ResourceBuilder::writeResources(
   smtkTest(modelWriteSuccess, "write model failed: " << modelPath);
 
   // Sanity check shared pointer use counts
-  smtkTest(m_attResource.use_count() == 1, "m_attResource use_count is "
-      << m_attResource.use_count()) smtkTest(m_modelResource.use_count() == 1,
-    "m_modelResource use_count is " << m_modelResource.use_count())
+  smtkTest(
+    m_attResource.use_count() == 1, "m_attResource use_count is " << m_attResource.use_count())
+    smtkTest(
+      m_modelResource.use_count() == 1,
+      "m_modelResource use_count is " << m_modelResource.use_count())
 } // ResourceBuilder::writeResources()
 
 void ResourceChecker::readResources(
-  smtk::operation::ManagerPtr opManager, const std::string& folder)
+  smtk::operation::ManagerPtr opManager,
+  const std::string& folder)
 {
   std::string attPath = std::string(folder) + "/attributes.smtk";
   auto attReadOp = opManager->create<smtk::operation::ReadResource>();
@@ -339,7 +346,8 @@ void ResourceChecker::checkResources()
   auto faceComp1 = faceCompItem->value();
   auto face1 = modelFaces.at(faceIndex);
   smtkTest(faceComp1 == face1.component(), "missing component item face 1: " << face1.name());
-  smtkTest(std::dynamic_pointer_cast<smtk::model::Entity>(faceComp1) == face1.entityRecord(),
+  smtkTest(
+    std::dynamic_pointer_cast<smtk::model::Entity>(faceComp1) == face1.entityRecord(),
     "missing component item face 1:" << face1.name());
   faceIndex++;
 

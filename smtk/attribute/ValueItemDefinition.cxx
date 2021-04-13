@@ -188,10 +188,12 @@ bool ValueItemDefinition::addChildItemDefinition(smtk::attribute::ItemDefinition
 }
 
 bool ValueItemDefinition::addConditionalItem(
-  const std::string& valueName, const std::string& itemName)
+  const std::string& valueName,
+  const std::string& itemName)
 {
   // Do we have this valueName?
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
     m_discreteValueEnums.end())
   {
     return false;
@@ -217,13 +219,14 @@ bool ValueItemDefinition::addConditionalItem(
 std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string& valueName) const
 {
   // Do we have this valueName?
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
     m_discreteValueEnums.end())
   {
     std::vector<std::string> temp;
     return temp;
   }
-  std::map<std::string, std::vector<std::string> >::const_iterator citer =
+  std::map<std::string, std::vector<std::string>>::const_iterator citer =
     m_valueToItemAssociations.find(valueName);
   // Does the value have conditional items associated with it?
   if (citer == m_valueToItemAssociations.end())
@@ -234,7 +237,8 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
   return citer->second;
 }
 
-void ValueItemDefinition::applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+void ValueItemDefinition::applyCategories(
+  const smtk::attribute::Categories& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
   // Lets first determine the set of categories this item definition could inherit
@@ -269,7 +273,8 @@ void ValueItemDefinition::applyCategories(const smtk::attribute::Categories& inh
 }
 
 void ValueItemDefinition::applyAdvanceLevels(
-  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+  const unsigned int& readLevelFromParent,
+  const unsigned int& writeLevelFromParent)
 {
   ItemDefinition::applyAdvanceLevels(readLevelFromParent, writeLevelFromParent);
   for (auto& item : m_itemDefs)
@@ -296,7 +301,8 @@ void ValueItemDefinition::setIsExtensible(bool mode)
 }
 
 void ValueItemDefinition::copyTo(
-  ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const
+  ValueItemDefinitionPtr def,
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 
@@ -357,7 +363,7 @@ void ValueItemDefinition::copyTo(
   // Add condition items
   if (!m_valueToItemAssociations.empty())
   {
-    std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
+    std::map<std::string, std::vector<std::string>>::const_iterator mapIter =
       m_valueToItemAssociations.begin();
     std::string value;
     std::vector<std::string>::const_iterator itemIter;
@@ -388,9 +394,11 @@ bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& 
 }
 
 void ValueItemDefinition::setEnumCategories(
-  const std::string& enumValue, const smtk::attribute::Categories::Set& cats)
+  const std::string& enumValue,
+  const smtk::attribute::Categories::Set& cats)
 {
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
     m_discreteValueEnums.end())
   {
     return; // enum not defined
@@ -400,7 +408,8 @@ void ValueItemDefinition::setEnumCategories(
 
 void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const std::string& cat)
 {
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
     m_discreteValueEnums.end())
   {
     return; // enum not defined
@@ -422,7 +431,8 @@ const smtk::attribute::Categories::Set& ValueItemDefinition::enumCategories(
 
 void ValueItemDefinition::setEnumAdvanceLevel(const std::string& enumValue, unsigned int level)
 {
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
     m_discreteValueEnums.end())
   {
     return; // enum not defined
@@ -432,7 +442,8 @@ void ValueItemDefinition::setEnumAdvanceLevel(const std::string& enumValue, unsi
 
 void ValueItemDefinition::unsetEnumAdvanceLevel(const std::string& enumValue)
 {
-  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+  if (
+    std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
     m_discreteValueEnums.end())
   {
     return; // enum not defined

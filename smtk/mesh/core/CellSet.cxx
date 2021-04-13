@@ -31,7 +31,8 @@ CellSet::CellSet(const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::H
 }
 
 CellSet::CellSet(
-  const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& cellIds)
+  const smtk::mesh::ResourcePtr& parent,
+  const std::vector<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
 {
   for (auto& cellId : cellIds)
@@ -215,5 +216,5 @@ SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter)
   filter.resource(a.m_parent);
   iface->cellForEach(a.m_range, pc, filter);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

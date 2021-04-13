@@ -38,10 +38,15 @@ public:
   unsigned int fileVersion() const;
 
   // Returns true if there was a problem with writing the file
-  bool write(const smtk::attribute::ResourcePtr resource, const std::string& filename,
+  bool write(
+    const smtk::attribute::ResourcePtr resource,
+    const std::string& filename,
     smtk::io::Logger& logger);
-  bool writeContents(const smtk::attribute::ResourcePtr resource, std::string& filecontents,
-    smtk::io::Logger& logger, bool no_declaration = false);
+  bool writeContents(
+    const smtk::attribute::ResourcePtr resource,
+    std::string& filecontents,
+    smtk::io::Logger& logger,
+    bool no_declaration = false);
   //Control which sections of the attribute resource should be written out
   // By Default all sections are processed.  These are advance options!!
 
@@ -105,7 +110,8 @@ protected:
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
   XmlStringWriter* newXmlStringWriter(
-    const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger) const;
+    const smtk::attribute::ResourcePtr resource,
+    smtk::io::Logger& logger) const;
 
 private:
   unsigned int m_fileVersion;
@@ -122,7 +128,7 @@ private:
   bool m_useDirectoryInfo;
   std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_AttributeWriter_h */

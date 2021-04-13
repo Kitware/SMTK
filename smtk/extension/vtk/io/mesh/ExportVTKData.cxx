@@ -65,7 +65,9 @@ namespace mesh
 
 ExportVTKData::ExportVTKData() = default;
 
-bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
+bool ExportVTKData::operator()(
+  const std::string& filename,
+  smtk::mesh::ResourcePtr resource,
   std::string domainPropertyName) const
 {
   // fail if the resource is empty
@@ -77,7 +79,9 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   return (*this)(filename, resource->meshes(), domainPropertyName);
 }
 
-bool ExportVTKData::operator()(const std::string& filename, const smtk::mesh::MeshSet& meshset,
+bool ExportVTKData::operator()(
+  const std::string& filename,
+  const smtk::mesh::MeshSet& meshset,
   std::string domainPropertyName) const
 {
   // fail if the meshset is empty
@@ -128,26 +132,26 @@ namespace
 
 // functions to shunt past data transfer if input and output types match
 void constructNewArrayIfNecessary(
-  vtkIdType*& /*unused*/, vtkIdType*& /*unused*/, std::int64_t /*unused*/)
+  vtkIdType*& /*unused*/,
+  vtkIdType*& /*unused*/,
+  std::int64_t /*unused*/)
 {
 }
 void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t /*unused*/)
 {
   out = in;
 }
-void deleteOldArrayIfNecessary(vtkIdType*& /*unused*/, vtkIdType*& /*unused*/)
-{
-}
+void deleteOldArrayIfNecessary(vtkIdType*& /*unused*/, vtkIdType*& /*unused*/) {}
 
 // functions for allocation, transfer and deallocation when there is a type
 // mismatch
-template <typename T>
+template<typename T>
 void constructNewArrayIfNecessary(T*& /*unused*/, vtkIdType*& out, std::int64_t len)
 {
   out = new vtkIdType[len];
 }
 
-template <typename T>
+template<typename T>
 void transferDataIfNecessary(T*& in, vtkIdType*& out, std::int64_t len)
 {
   for (std::int64_t i = 0; i < len; i++)
@@ -156,15 +160,17 @@ void transferDataIfNecessary(T*& in, vtkIdType*& out, std::int64_t len)
   }
 }
 
-template <typename T>
+template<typename T>
 void deleteOldArrayIfNecessary(T*& in, vtkIdType*& /*unused*/)
 {
   delete[] in;
 }
-}
+} // namespace
 
 void ExportVTKData::operator()(
-  const smtk::mesh::MeshSet& meshset, vtkPolyData* pd, std::string domainPropertyName) const
+  const smtk::mesh::MeshSet& meshset,
+  vtkPolyData* pd,
+  std::string domainPropertyName) const
 {
   // Determine the highest dimension
   int dimension = smtk::mesh::utility::highestDimension(meshset);
@@ -356,7 +362,10 @@ void ExportVTKData::operator()(
 
         vtkNew<vtkDoubleArray> cellDataArray;
         cellDataArray->SetName(cellfield.name().c_str());
-        cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+        cellDataArray->SetArray(
+          cellData,
+          cellfield.size() * cellfield.dimension(),
+          false,
           vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
         cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
         pd->GetCellData()->AddArray(cellDataArray.GetPointer());
@@ -368,7 +377,10 @@ void ExportVTKData::operator()(
 
         vtkNew<vtkIntArray> cellDataArray;
         cellDataArray->SetName(cellfield.name().c_str());
-        cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+        cellDataArray->SetArray(
+          cellData,
+          cellfield.size() * cellfield.dimension(),
+          false,
           vtkIntArray::VTK_DATA_ARRAY_DELETE);
         cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
         pd->GetCellData()->AddArray(cellDataArray.GetPointer());
@@ -386,7 +398,10 @@ void ExportVTKData::operator()(
 
         vtkNew<vtkDoubleArray> pointDataArray;
         pointDataArray->SetName(pointfield.name().c_str());
-        pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+        pointDataArray->SetArray(
+          pointData,
+          pointfield.size() * pointfield.dimension(),
+          false,
           vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
         pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
         pd->GetPointData()->AddArray(pointDataArray.GetPointer());
@@ -398,7 +413,10 @@ void ExportVTKData::operator()(
 
         vtkNew<vtkIntArray> pointDataArray;
         pointDataArray->SetName(pointfield.name().c_str());
-        pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+        pointDataArray->SetArray(
+          pointData,
+          pointfield.size() * pointfield.dimension(),
+          false,
           vtkIntArray::VTK_DATA_ARRAY_DELETE);
         pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
         pd->GetPointData()->AddArray(pointDataArray.GetPointer());
@@ -413,7 +431,9 @@ void ExportVTKData::operator()(
 }
 
 void ExportVTKData::operator()(
-  const smtk::mesh::MeshSet& meshset, vtkUnstructuredGrid* ug, std::string domainPropertyName) const
+  const smtk::mesh::MeshSet& meshset,
+  vtkUnstructuredGrid* ug,
+  std::string domainPropertyName) const
 {
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -524,7 +544,10 @@ void ExportVTKData::operator()(
 
       vtkNew<vtkDoubleArray> cellDataArray;
       cellDataArray->SetName(cellfield.name().c_str());
-      cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+      cellDataArray->SetArray(
+        cellData,
+        cellfield.size() * cellfield.dimension(),
+        false,
         vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
       cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
       ug->GetCellData()->AddArray(cellDataArray.GetPointer());
@@ -538,15 +561,18 @@ void ExportVTKData::operator()(
 
       vtkNew<vtkDoubleArray> pointDataArray;
       pointDataArray->SetName(pointfield.name().c_str());
-      pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+      pointDataArray->SetArray(
+        pointData,
+        pointfield.size() * pointfield.dimension(),
+        false,
         vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
       pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
       ug->GetPointData()->AddArray(pointDataArray.GetPointer());
     }
   }
 }
-}
-}
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

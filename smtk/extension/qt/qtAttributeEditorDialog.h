@@ -47,8 +47,10 @@ class SMTKQTEXT_EXPORT qtAttributeEditorDialog : public QDialog
   Q_OBJECT
 
 public:
-  qtAttributeEditorDialog(const smtk::attribute::AttributePtr& attribute,
-    smtk::extension::qtUIManager* uiManager, QWidget* Parent);
+  qtAttributeEditorDialog(
+    const smtk::attribute::AttributePtr& attribute,
+    smtk::extension::qtUIManager* uiManager,
+    QWidget* Parent);
   ~qtAttributeEditorDialog() override;
   qtAttributeEditorDialog(const qtAttributeEditorDialog&) = delete;
   qtAttributeEditorDialog& operator=(const qtAttributeEditorDialog&) = delete;
@@ -67,6 +69,6 @@ private:
   std::unique_ptr<qtInstancedView> m_instancedView;
   smtk::view::ConfigurationPtr m_instancedViewDef;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif // _qtAttributeEditorDialog_h

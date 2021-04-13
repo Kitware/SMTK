@@ -10,7 +10,9 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
 
 int vtkSMTKResourceGenerator::RequestData(
-  vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+  vtkInformation* request,
+  vtkInformationVector** inInfo,
+  vtkInformationVector* outInfo)
 {
   this->SetResource(this->GenerateResource());
 

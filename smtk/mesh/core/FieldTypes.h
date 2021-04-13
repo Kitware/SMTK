@@ -23,24 +23,24 @@ enum class FieldType
   MaxFieldType
 };
 
-template <typename T>
+template<typename T>
 struct FieldTypeFor
 {
   static constexpr FieldType type = FieldType::MaxFieldType;
 };
 
-template <>
+template<>
 struct FieldTypeFor<double>
 {
   static constexpr FieldType type = FieldType::Double;
 };
 
-template <>
+template<>
 struct FieldTypeFor<int>
 {
   static constexpr FieldType type = FieldType::Integer;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

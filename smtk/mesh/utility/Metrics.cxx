@@ -33,7 +33,9 @@ std::array<double, 6> extent(const smtk::mesh::MeshSet& ms)
       m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
     }
 
-    void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    void forPoints(
+      const smtk::mesh::HandleRange& /*pointIds*/,
+      std::vector<double>& xyz,
       bool& /*coordinatesModified*/) override
     {
       for (std::size_t i = 0; i < xyz.size(); i += 3)
@@ -64,7 +66,7 @@ smtk::mesh::DimensionType highestDimension(const smtk::mesh::MeshSet& ms)
 {
   int highestDimension = smtk::mesh::Dims3;
   while (ms.cells(static_cast<smtk::mesh::DimensionType>(highestDimension)).is_empty() &&
-    highestDimension >= 0)
+         highestDimension >= 0)
   {
     --highestDimension;
   }
@@ -101,6 +103,6 @@ int eulerCharacteristic(const smtk::mesh::MeshSet& ms)
 
   return static_cast<int>(xi);
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

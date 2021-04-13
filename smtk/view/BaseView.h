@@ -33,12 +33,12 @@ public:
   virtual std::size_t index() const { return std::type_index(typeid(*this)).hash_code(); }
 };
 
-template <typename ViewWidgetType>
+template<typename ViewWidgetType>
 std::size_t typeIndex()
 {
   return std::type_index(typeid(ViewWidgetType)).hash_code();
 }
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

@@ -29,5 +29,5 @@ Surrogate from_json(const json& j)
 {
   return Surrogate(j["index"], j["type"], j["id"], j["location"]);
 }
-}
-}
+} // namespace resource
+} // namespace smtk

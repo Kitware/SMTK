@@ -29,7 +29,7 @@ std::string readFilePath(SMTK_DATA_DIR);
 std::string filename("/model/2d/map/simple.vtp");
 const int numEdgesExpected = 5;
 const int numVerticesExpected = 5;
-}
+} // namespace
 
 int UnitTestPolygonImport(int argc, char* argv[])
 {
@@ -69,7 +69,8 @@ int UnitTestPolygonImport(int argc, char* argv[])
   std::cout << "Importing " << readFilePath << std::endl;
 
   smtk::operation::Operation::Result importOpResult = importOp->operate();
-  test(importOpResult->findInt("outcome")->value() ==
+  test(
+    importOpResult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Import operator failed");
   // Retrieve the resulting model

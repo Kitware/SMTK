@@ -23,7 +23,7 @@ using json = nlohmann::json;
 void to_json(json&, const Surrogate&);
 
 Surrogate from_json(const json&);
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif

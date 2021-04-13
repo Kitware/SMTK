@@ -32,7 +32,7 @@ public:
   static void registerTo(const smtk::operation::Manager::Ptr&);
   static void unregisterFrom(const smtk::operation::Manager::Ptr&);
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

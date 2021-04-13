@@ -53,7 +53,7 @@ protected:
   int m_componentMutability;
   int m_resourceMutability;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

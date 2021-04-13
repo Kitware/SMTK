@@ -29,8 +29,8 @@ using json = nlohmann::json;
 SMTKVTKSESSION_EXPORT void to_json(json& j, const smtk::session::vtk::Resource::Ptr& resource);
 
 SMTKVTKSESSION_EXPORT void from_json(const json& j, smtk::session::vtk::Resource::Ptr& resource);
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk
 
 #endif

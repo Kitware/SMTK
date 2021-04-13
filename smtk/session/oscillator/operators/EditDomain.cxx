@@ -225,6 +225,6 @@ const char* EditDomain::xmlDescription() const
 {
   return EditDomain_xml;
 }
-}
-}
-}
+} // namespace oscillator
+} // namespace session
+} // namespace smtk

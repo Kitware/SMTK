@@ -42,12 +42,12 @@ std::string data_root = SMTK_DATA_DIR;
 
 // A numerical tolerance
 const double epsilon = 1.e-8;
-}
+} // namespace
 
 // Import a tetrahedralized cube, extract its shell, select a cell on the shell
 // to run ExtractByDihedralAngle, subtract the result from the shell, check that
 // the subtraction was successful.
-int TestSubtract(int, char* [])
+int TestSubtract(int, char*[])
 {
   // Import a tetrahedralized cube
   smtk::mesh::Resource::Ptr resource;
@@ -63,7 +63,8 @@ int TestSubtract(int, char* [])
     }
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
-    test(importOpResult->findInt("outcome")->value() ==
+    test(
+      importOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Import operator failed");
 
@@ -83,7 +84,8 @@ int TestSubtract(int, char* [])
     smtk::operation::Operation::Ptr extractSkin = smtk::mesh::ExtractSkin::create();
     extractSkin->parameters()->associate(smtk::mesh::Component::create(tetrahedra));
     smtk::operation::Operation::Result result = extractSkin->operate();
-    test(result->findInt("outcome")->value() ==
+    test(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Extract skin failed");
 
@@ -111,7 +113,8 @@ int TestSubtract(int, char* [])
     extractByDihedralAngle->parameters()->associate(selection);
 
     smtk::operation::Operation::Result result = extractByDihedralAngle->operate();
-    test(result->findInt("outcome")->value() ==
+    test(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Extract by dihedral angle failed");
 
@@ -127,7 +130,8 @@ int TestSubtract(int, char* [])
     subtract->parameters()->findComponent("subtrahend")->setValue(extracted);
 
     smtk::operation::Operation::Result result = subtract->operate();
-    test(result->findInt("outcome")->value() ==
+    test(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "subtract failed");
 

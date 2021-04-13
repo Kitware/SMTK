@@ -41,7 +41,9 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+  int RequestData(
+    vtkInformation* request,
+    vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) override;
   int FillInputPortInformation(int port, vtkInformation* info) override;
 

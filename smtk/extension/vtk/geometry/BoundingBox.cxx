@@ -35,8 +35,9 @@ std::array<double, 6> BoundingBox::operator()(
     std::dynamic_pointer_cast<smtk::geometry::Resource>(object);
   if (!resource)
   {
-    if (smtk::resource::Component::Ptr component =
-          std::dynamic_pointer_cast<smtk::resource::Component>(object))
+    if (
+      smtk::resource::Component::Ptr component =
+        std::dynamic_pointer_cast<smtk::resource::Component>(object))
     {
       resource = std::dynamic_pointer_cast<smtk::geometry::Resource>(component->resource());
     }
@@ -72,7 +73,7 @@ std::array<double, 6> BoundingBox::operator()(
 
   return returnValue;
 }
-};
-}
-}
-}
+}; // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

@@ -114,35 +114,40 @@ int unitBadge(int argc, char* argv[])
 {
   smtk::io::Logger::instance().setFlushToStdout(true);
   auto viewManager = smtk::view::Manager::create();
-  viewManager->badgeFactory().registerTypes<std::tuple<BadgeA, BadgeB> >();
-  json j = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
+  viewManager->badgeFactory().registerTypes<std::tuple<BadgeA, BadgeB>>();
+  json j = {
+    { "Name", "Test" },
+    { "Type", "smtk::view::ResourcePhraseModel" },
     { "Component",
-      { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },
+      { { "Name", "Details" },
+        { "Type", "smtk::view::ResourcePhraseModel" },
         { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
         { "Children",
           { { { "Name", "PhraseModel" },
-            { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
-            { "Children",
-              { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "default" } } } },
-                { { "Name", "Badges" },
-                  { "Children",
-                    {
-                      { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeA" } } } },
-                      { { "Name", "Comment" }, { "Text", "Test that comments are allowed." } },
-                      { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeB" } } } },
-                      { { "Name", "Badge" },
-                        { "Attributes", { { "Type", "smtk::view::AssociationBadge" } } },
-                        { "Children",
-                          { {
-                              { "Name", "AppliesTo" },
-                              { "Attributes", { { "Resource", "smtk::model::Resource" },
-                                                { "Component", "edge" } } },
-                            },
-                            {
-                              { "Name", "Requires" },
-                              { "Attributes", { { "Definition", "BoundaryCondition" } } },
-                            } } } },
-                    } } } } } } } } } } };
+              { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+              { "Children",
+                { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "default" } } } },
+                  { { "Name", "Badges" },
+                    { "Children",
+                      {
+                        { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeA" } } } },
+                        { { "Name", "Comment" }, { "Text", "Test that comments are allowed." } },
+                        { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeB" } } } },
+                        { { "Name", "Badge" },
+                          { "Attributes", { { "Type", "smtk::view::AssociationBadge" } } },
+                          { "Children",
+                            { {
+                                { "Name", "AppliesTo" },
+                                { "Attributes",
+                                  { { "Resource", "smtk::model::Resource" },
+                                    { "Component", "edge" } } },
+                              },
+                              {
+                                { "Name", "Requires" },
+                                { "Attributes", { { "Definition", "BoundaryCondition" } } },
+                              } } } },
+                      } } } } } } } } } }
+  };
   smtk::view::ConfigurationPtr viewConfig = j;
   auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
   // BadgeSet& badgeSet(const_cast<BadgeSet&>(phraseModel->badges()));

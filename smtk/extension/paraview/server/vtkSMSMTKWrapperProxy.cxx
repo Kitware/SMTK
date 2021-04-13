@@ -128,7 +128,8 @@ void vtkSMSMTKWrapperProxy::SetSelectionObjProxy(vtkSMSourceProxy* pxy)
 void vtkSMSMTKWrapperProxy::FetchHardwareSelection()
 {
   json request = {
-    { "method", "fetch hw selection" }, { "id", 1 },
+    { "method", "fetch hw selection" },
+    { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
   // std::cout << response.dump(2) << "\n";
@@ -140,7 +141,8 @@ void vtkSMSMTKWrapperProxy::AddResourceProxy(vtkSMSourceProxy* rsrc)
   this->UpdateVTKObjects();
 
   json request = {
-    { "method", "add resource filter" }, { "id", 1 },
+    { "method", "add resource filter" },
+    { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
   // std::cout << response.dump(2) << "\n";
@@ -152,7 +154,8 @@ void vtkSMSMTKWrapperProxy::RemoveResourceProxy(vtkSMSourceProxy* rsrc)
   this->UpdateVTKObjects();
 
   json request = {
-    { "method", "remove resource filter" }, { "id", 1 },
+    { "method", "remove resource filter" },
+    { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
   // std::cout << response.dump(2) << "\n";
@@ -164,7 +167,9 @@ void vtkSMSMTKWrapperProxy::Send(const json& selnInfo)
 }
 
 void vtkSMSMTKWrapperProxy::Recv(
-  vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, json& selnInfo)
+  vtkSMSourceProxy* dataSource,
+  vtkSMSourceProxy* selnSource,
+  json& selnInfo)
 {
   (void)dataSource;
   (void)selnSource;
@@ -223,13 +228,18 @@ void vtkSMSMTKWrapperProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
 }
 
 void vtkSMSMTKWrapperProxy::SetResourceForRepresentation(
-  smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy)
+  smtk::resource::ResourcePtr clientSideResource,
+  vtkSMRepresentationProxy* pxy)
 {
   this->SetRepresentation(pxy);
-  json request = { { "method", "setup representation" }, { "id", 1 },
+  json request = {
+    { "method", "setup representation" },
+    { "id", 1 },
     { "params",
-      { { "resource", (clientSideResource ? clientSideResource->id() : smtk::common::UUID::null())
-                        .toString() } } } };
+      { { "resource",
+          (clientSideResource ? clientSideResource->id() : smtk::common::UUID::null())
+            .toString() } } }
+  };
 
   json response = this->JSONRPCRequest(request);
   // std::cout << response.dump(2) << "\n"; // for debugging

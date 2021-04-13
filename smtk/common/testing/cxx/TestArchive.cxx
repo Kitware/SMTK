@@ -38,14 +38,14 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int TestArchive(int /*unused*/, char** const /*unused*/)
 {
   std::size_t numberOfFiles = 10;
   std::size_t contentLength = 20;
 
-  std::map<std::string, std::pair<std::string, std::string> > filesAndContents;
+  std::map<std::string, std::pair<std::string, std::string>> filesAndContents;
   {
     for (std::size_t i = 0; i < numberOfFiles; ++i)
     {
@@ -97,8 +97,10 @@ int TestArchive(int /*unused*/, char** const /*unused*/)
       std::ifstream testFile(filesAndContents[name].first);
 
       smtkTest(
-        std::equal(std::istreambuf_iterator<char>(testFile.rdbuf()),
-          std::istreambuf_iterator<char>(), std::istreambuf_iterator<char>(readFile.rdbuf())),
+        std::equal(
+          std::istreambuf_iterator<char>(testFile.rdbuf()),
+          std::istreambuf_iterator<char>(),
+          std::istreambuf_iterator<char>(readFile.rdbuf())),
         "Archived file content differs from original file.");
     }
   }

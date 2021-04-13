@@ -27,8 +27,8 @@ protected:
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
 
-  int RequestData(
-    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  int RequestData(vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+    override;
 
   int UseScalerForZ;
   int SubSampleStepSize;

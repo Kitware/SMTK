@@ -51,7 +51,8 @@ bool ReadMesh::ExtensionIsSupported(const std::string& ext)
   {
     for (auto& format : reader->FileFormats())
     {
-      if (format.CanRead() &&
+      if (
+        format.CanRead() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -64,7 +65,9 @@ bool ReadMesh::ExtensionIsSupported(const std::string& ext)
 }
 
 smtk::mesh::ResourcePtr ReadMesh::operator()(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, mesh::Subset subset) const
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  mesh::Subset subset) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -77,7 +80,8 @@ smtk::mesh::ResourcePtr ReadMesh::operator()(
   {
     for (auto&& format : reader->FileFormats())
     {
-      if (format.CanRead() &&
+      if (
+        format.CanRead() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -104,7 +108,9 @@ smtk::mesh::ResourcePtr ReadMesh::operator()(
 }
 
 bool ReadMesh::operator()(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource, mesh::Subset subset) const
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
+  mesh::Subset subset) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -115,7 +121,8 @@ bool ReadMesh::operator()(
   {
     for (auto&& format : reader->FileFormats())
     {
-      if (format.CanRead() &&
+      if (
+        format.CanRead() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -128,28 +135,34 @@ bool ReadMesh::operator()(
 }
 
 smtk::mesh::ResourcePtr readMesh(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, mesh::Subset subset)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  mesh::Subset subset)
 {
   ReadMesh read;
   return read(filePath, interface, subset);
 }
 smtk::mesh::ResourcePtr readEntireResource(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface)
 {
   return smtk::io::readMesh(filePath, interface, mesh::Subset::EntireResource);
 }
 smtk::mesh::ResourcePtr readDomain(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface)
 {
   return smtk::io::readMesh(filePath, interface, mesh::Subset::OnlyDomain);
 }
 smtk::mesh::ResourcePtr readDirichlet(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface)
 {
   return smtk::io::readMesh(filePath, interface, mesh::Subset::OnlyDirichlet);
 }
 smtk::mesh::ResourcePtr readNeumann(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface)
 {
   return smtk::io::readMesh(filePath, interface, mesh::Subset::OnlyNeumann);
 }
@@ -175,5 +188,5 @@ bool readNeumann(const std::string& filePath, smtk::mesh::ResourcePtr resource)
 {
   return smtk::io::readMesh(filePath, resource, mesh::Subset::OnlyNeumann);
 }
-}
-}
+} // namespace io
+} // namespace smtk

@@ -26,7 +26,9 @@ vtkImageDual::vtkImageDual() = default;
 
 vtkImageDual::~vtkImageDual() = default;
 
-int vtkImageDual::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
+int vtkImageDual::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);

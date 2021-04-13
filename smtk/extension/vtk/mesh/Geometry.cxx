@@ -41,8 +41,8 @@ smtk::geometry::Resource::Ptr Geometry::resource() const
   return std::dynamic_pointer_cast<smtk::geometry::Resource>(m_parent.lock());
 }
 
-void Geometry::queryGeometry(
-  const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const
+void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+  const
 {
   // Access the mesh component
   auto component = std::dynamic_pointer_cast<smtk::mesh::Component>(obj);
@@ -61,10 +61,10 @@ void Geometry::queryGeometry(
   ++entry.m_generation;
 
   // If the object has color properties, apply them
-  if (component->properties().contains<std::vector<double> >("color"))
+  if (component->properties().contains<std::vector<double>>("color"))
   {
     Geometry::addColorArray(
-      entry.m_geometry, component->properties().at<std::vector<double> >("color"));
+      entry.m_geometry, component->properties().at<std::vector<double>>("color"));
   }
 }
 
@@ -111,7 +111,7 @@ void Geometry::geometricBounds(const DataType& geom, BoundingBox& bbox) const
   bbox[0] = bbox[2] = bbox[4] = 0.0;
   bbox[1] = bbox[3] = bbox[5] = -1.0;
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

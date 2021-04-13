@@ -38,7 +38,7 @@ public:
 
   QItemSelection& m_phrases;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

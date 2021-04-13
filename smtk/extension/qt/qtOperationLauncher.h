@@ -134,8 +134,8 @@ public:
 private:
   qtOperationLauncher* m_launcher;
 };
-}
-}
-}
+} // namespace qt
+} // namespace extension
+} // namespace smtk
 
 #endif

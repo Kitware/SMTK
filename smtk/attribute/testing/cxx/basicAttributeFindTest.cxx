@@ -101,7 +101,8 @@ int main()
   item = att->find("a-a");
   smtkTest((item != nullptr), "Could not find a-a using RECURSIVE_ACTIVE after setting a-a");
   smtkTest((item->name() == "a-a"), "Founded \"a-a\" item not named a-a after setting a-a");
-  smtkTest((att->findAs<StringItem>("a-a") != nullptr),
+  smtkTest(
+    (att->findAs<StringItem>("a-a") != nullptr),
     "a-a was not a StringItem using RECURSIVE_ACTIVE after setting a-a");
 
   item = att->find("a-a-b-a");
@@ -110,15 +111,18 @@ int main()
   item = att->find("a-a-b-a", RECURSIVE);
   smtkTest((item != nullptr), "Could not find a-a-b-a using RECURSIVE after setting a-a");
   smtkTest((item->name() == "a-a-b-a"), "Founded \"a-a-b-a\" item not named a-a after setting a-a");
-  smtkTest((att->findAs<StringItem>("a-a-b-a", RECURSIVE) != nullptr),
+  smtkTest(
+    (att->findAs<StringItem>("a-a-b-a", RECURSIVE) != nullptr),
     "a-a-b-a was not a StringItem using RECURSIVE after setting a-a");
 
   att->findAs<StringItem>("a-a")->setValue("a-a-b");
   item = att->find("a-a-b-a");
   smtkTest((item != nullptr), "Could not find a-a-b-a using after setting a-a and a-a-b");
-  smtkTest((item->name() == "a-a-b-a"),
+  smtkTest(
+    (item->name() == "a-a-b-a"),
     "Founded \"a-a-b-a\" item not named a-a-b-a after setting a-a and a-a-b");
-  smtkTest((att->findAs<StringItem>("a-a-b-a") != nullptr),
+  smtkTest(
+    (att->findAs<StringItem>("a-a-b-a") != nullptr),
     "a-a-b-a was not a StringItem using after setting a-a and a-a-b");
 
   item = att->find("a-a", IMMEDIATE);
@@ -131,7 +135,8 @@ int main()
   item = att->find("a-b");
   smtkTest((item != nullptr), "Could not find a-b using RECURSIVE_ACTIVE after setting a-b");
   smtkTest((item->name() == "a-b"), "Founded \"a-b\" item not named a-a after setting a-b");
-  smtkTest((att->findAs<GroupItem>("a-b") != nullptr),
+  smtkTest(
+    (att->findAs<GroupItem>("a-b") != nullptr),
     "a-b was not a GroupItem using RECURSIVE_ACTIVE after setting a-a");
 
   item = att->find("a-a-a", RECURSIVE);

@@ -67,9 +67,9 @@ class analyzer:
         for ii in range(len(traces)):
             traces[ii] = (
                 traces[ii][0], traces[ii][1],
-                    traces[ii + 1][0] - traces[ii][0] - 3
-                        if ii < len(traces) - 1
-                        else len(tl) - traces[ii][0] - 3)
+                traces[ii + 1][0] - traces[ii][0] - 3
+                if ii < len(traces) - 1
+                else len(tl) - traces[ii][0] - 3)
         print('Read %d lines, %d traces' % (len(tl), len(traces)))
 
     def trace_lcd(self, fa, fb):

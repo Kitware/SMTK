@@ -59,9 +59,11 @@ public:
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
   /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
-  using SourceVisitor =
-    std::function<bool(const smtk::resource::ManagerPtr&, const smtk::operation::ManagerPtr&,
-      const smtk::view::ManagerPtr&, const smtk::view::SelectionPtr&)>;
+  using SourceVisitor = std::function<bool(
+    const smtk::resource::ManagerPtr&,
+    const smtk::operation::ManagerPtr&,
+    const smtk::view::ManagerPtr&,
+    const smtk::view::SelectionPtr&)>;
 
   using Operation = smtk::operation::Operation;
   using OperationPtr = smtk::operation::Operation::Ptr;
@@ -82,7 +84,8 @@ public:
 
   /// A method subclasses may call to obtain filter strings.
   static std::multimap<std::string, std::string> configureFilterStrings(
-    const Configuration* config, Manager* manager);
+    const Configuration* config,
+    Manager* manager);
 
   /** \brief Manage sources of information to display as phrases.
     *
@@ -96,13 +99,19 @@ public:
   ///@{
   /// Indicate a resource and operation manager that should be monitored for changes.
   [[deprecated("PhraseModel::addSource now accepts const smtk::common::TypeContainer&")]] bool
-  addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
+  addSource(
+    smtk::resource::ManagerPtr rsrcMgr,
+    smtk::operation::ManagerPtr operMgr,
+    smtk::view::ManagerPtr viewMgr,
+    smtk::view::SelectionPtr seln);
   virtual bool addSource(const smtk::common::TypeContainer& managers);
   /// Indicate a resource and operation manager that should no longer be monitored for changes.
   [[deprecated("PhraseModel::removeSource now accepts const smtk::common::TypeContainer&")]] bool
-  removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
+  removeSource(
+    smtk::resource::ManagerPtr rsrcMgr,
+    smtk::operation::ManagerPtr operMgr,
+    smtk::view::ManagerPtr viewMgr,
+    smtk::view::SelectionPtr seln);
   virtual bool removeSource(const smtk::common::TypeContainer& managers);
   /// Stop listening for changes from all sources.
   virtual bool resetSources();
@@ -116,7 +125,9 @@ public:
   /**\brief Infer changes between sets of subphrases; affect these changes; and notify observers.
     */
   virtual void updateChildren(
-    smtk::view::DescriptivePhrasePtr plist, DescriptivePhrases& next, const std::vector<int>& idx);
+    smtk::view::DescriptivePhrasePtr plist,
+    DescriptivePhrases& next,
+    const std::vector<int>& idx);
 
   /// Manually specify that all rows should be updated (but to keep the expanded/collapsed state).
   virtual void triggerDataChanged();
@@ -174,8 +185,8 @@ protected:
     * The only case where overriding this method is required (as opposed to those listed above)
     * is when you wish to respond to events other than Operation::DID_OPERATE.
     */
-  virtual int handleOperationEvent(
-    const Operation& op, operation::EventType e, const Operation::Result& res);
+  virtual int
+  handleOperationEvent(const Operation& op, operation::EventType e, const Operation::Result& res);
 
   /**\brief Given the index of parent phrase and a range of its children, delete them.
     *
@@ -215,8 +226,12 @@ protected:
   ///@}
 
   /// "Emit" an event (by calling all observers with the given parameters)
-  virtual void trigger(DescriptivePhrasePtr phr, PhraseModelEvent e, const std::vector<int>& src,
-    const std::vector<int>& dst, const std::vector<int>& refs);
+  virtual void trigger(
+    DescriptivePhrasePtr phr,
+    PhraseModelEvent e,
+    const std::vector<int>& src,
+    const std::vector<int>& dst,
+    const std::vector<int>& refs);
 
   struct Source
   {
@@ -224,13 +239,10 @@ protected:
     smtk::resource::Observers::Key m_rsrcHandle;
     smtk::operation::Observers::Key m_operHandle;
     smtk::view::SelectionObservers::Key m_selnHandle;
-    Source(){}
+    Source() {}
 
-      [[deprecated("PhraseModel::Source::Source now accepts managers held in a const "
-                   "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm,
-        smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn,
-        smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh,
-        smtk::view::SelectionObservers::Key&& sh)
+    [[deprecated("PhraseModel::Source::Source now accepts managers held in a const "
+                 "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)
       : m_rsrcHandle(std::move(rh))
       , m_operHandle(std::move(oh))
       , m_selnHandle(std::move(sh))
@@ -241,8 +253,11 @@ protected:
       m_managers.insert(sn);
     }
 
-    Source(const smtk::common::TypeContainer& managers, smtk::resource::Observers::Key&& rh,
-      smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)
+    Source(
+      const smtk::common::TypeContainer& managers,
+      smtk::resource::Observers::Key&& rh,
+      smtk::operation::Observers::Key&& oh,
+      smtk::view::SelectionObservers::Key&& sh)
       : m_managers(managers)
       , m_rsrcHandle(std::move(rh))
       , m_operHandle(std::move(oh))
@@ -262,7 +277,7 @@ protected:
 
   WeakManagerPtr m_manager;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

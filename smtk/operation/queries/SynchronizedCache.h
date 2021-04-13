@@ -34,7 +34,7 @@ struct SMTKCORE_EXPORT SynchronizedCache : public smtk::resource::query::Cache
 {
   virtual void synchronize(const Operation&, const Operation::Result&) = 0;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif

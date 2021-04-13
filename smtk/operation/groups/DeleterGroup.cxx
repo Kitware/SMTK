@@ -43,5 +43,5 @@ Operation::Index DeleterGroup::matchingOperation(const smtk::resource::Persisten
   }
   return index;
 }
-}
-}
+} // namespace operation
+} // namespace smtk

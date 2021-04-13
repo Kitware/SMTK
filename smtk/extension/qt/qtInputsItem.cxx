@@ -71,8 +71,11 @@ namespace
 // QVariant will return true for QVariant::isNull if no value can be obtainted.
 // If |floatingPointPrecision| is greater than 0, that number of decimal places
 // will be used for values from DoubleItems.
-QVariant valueFromValueItemAsQVariant(const smtk::attribute::ValueItemPtr& item, int element,
-  smtk::io::Logger& log, int floatingPointPrecision)
+QVariant valueFromValueItemAsQVariant(
+  const smtk::attribute::ValueItemPtr& item,
+  int element,
+  smtk::io::Logger& log,
+  int floatingPointPrecision)
 {
   QVariant result;
 
@@ -108,7 +111,10 @@ QVariant valueFromValueItemAsQVariant(const smtk::attribute::ValueItemPtr& item,
 } // anonymous namespace
 
 qtDoubleValidator::qtDoubleValidator(
-  qtInputsItem* item, int elementIndex, QLineEdit* lineEdit, QObject* inParent)
+  qtInputsItem* item,
+  int elementIndex,
+  QLineEdit* lineEdit,
+  QObject* inParent)
   : QDoubleValidator(inParent)
   , m_item(item)
   , m_elementIndex(elementIndex)
@@ -148,7 +154,10 @@ void qtDoubleValidator::fixup(QString& input) const
 }
 
 qtIntValidator::qtIntValidator(
-  qtInputsItem* item, int elementIndex, QLineEdit* lineEdit, QObject* inParent)
+  qtInputsItem* item,
+  int elementIndex,
+  QLineEdit* lineEdit,
+  QObject* inParent)
   : QIntValidator(inParent)
   , m_item(item)
   , m_elementIndex(elementIndex)
@@ -196,13 +205,13 @@ public:
 
   // for discrete items that with potential child widget
   // <Enum-Combo, child-layout >
-  QMap<QWidget*, QPointer<QLayout> > ChildrenMap;
+  QMap<QWidget*, QPointer<QLayout>> ChildrenMap;
 
   // for extensible items
-  QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
+  QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget>>> ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
-  QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
+  QList<QPointer<qtDiscreteValueEditor>> DiscreteEditors;
   QPointer<QCheckBox> OptionalCheck;
   QPointer<QFrame> m_valuesFrame;
   QPointer<QFrame> m_dataFrame;
@@ -379,7 +388,8 @@ void qtInputsItem::updateItemData()
 }
 
 void qtInputsItem::updateDoubleItemData(
-  QWidget* iwidget, const smtk::attribute::DoubleItemPtr& ditem)
+  QWidget* iwidget,
+  const smtk::attribute::DoubleItemPtr& ditem)
 {
   int elementIdx = iwidget->property("ElementIndex").toInt();
   QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
@@ -474,7 +484,8 @@ void qtInputsItem::updateIntItemData(QWidget* iwidget, const smtk::attribute::In
 }
 
 void qtInputsItem::updateStringItemData(
-  QWidget* iwidget, const smtk::attribute::StringItemPtr& sitem)
+  QWidget* iwidget,
+  const smtk::attribute::StringItemPtr& sitem)
 {
   int elementIdx = iwidget->property("ElementIndex").toInt();
   QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
@@ -522,7 +533,8 @@ void qtInputsItem::updateStringItemData(
 }
 
 void qtInputsItem::updateExpressionRefWidgetForEvaluation(
-  ValueItemPtr inputItem, bool showMessageBox)
+  ValueItemPtr inputItem,
+  bool showMessageBox)
 {
   QString warningText;
   if (inputItem->isExpression())
@@ -558,7 +570,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
   }
 
   // Collects logs with errors along with their item indices.
-  std::vector<std::pair<int, smtk::io::Logger> > logsWithErrors;
+  std::vector<std::pair<int, smtk::io::Logger>> logsWithErrors;
   for (int i = 0; i < logs.size(); ++i)
   {
     if (logs[i].hasErrors())
@@ -617,7 +629,9 @@ void qtInputsItem::hideExpressionResultWidgets()
 }
 
 void qtInputsItem::showExpressionResultWidgets(
-  bool success, const QString& text, const QString& tooltip)
+  bool success,
+  const QString& text,
+  const QString& tooltip)
 {
   if (success)
   {
@@ -684,7 +698,7 @@ void qtInputsItem::addInputEditor(int i)
     minusButton->setToolTip("Remove value");
     editorLayout->addWidget(minusButton);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveValue()));
-    QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
+    QPair<QPointer<QLayout>, QPointer<QWidget>> pair;
     pair.first = editorLayout;
     pair.second = editBox;
     m_internals->ExtensibleMap[minusButton] = pair;
@@ -768,7 +782,8 @@ void qtInputsItem::loadInputValues()
 }
 
 QFrame* qtInputsItem::createLabelFrame(
-  const smtk::attribute::ValueItem* vitem, const smtk::attribute::ValueItemDefinition* vitemDef)
+  const smtk::attribute::ValueItem* vitem,
+  const smtk::attribute::ValueItemDefinition* vitemDef)
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
   auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
@@ -871,7 +886,10 @@ QFrame* qtInputsItem::createLabelFrame(
     m_internals->m_expressionButton->setSizePolicy(sizeFixedPolicy);
     m_internals->m_expressionButton->setToolTip(
       "Switch between a constant value or function instance");
-    QObject::connect(m_internals->m_expressionButton, SIGNAL(toggled(bool)), this,
+    QObject::connect(
+      m_internals->m_expressionButton,
+      SIGNAL(toggled(bool)),
+      this,
       SLOT(displayExpressionWidget(bool)));
     labelLayout->addWidget(m_internals->m_expressionButton);
   }
@@ -1139,9 +1157,12 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   // create combobox for expression reference
   m_internals->m_expressionCombo = new QComboBox(frame);
   m_internals->m_expressionCombo->setObjectName("expressionCombo");
-  QObject::connect(m_internals->m_expressionCombo,
-    QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-    &qtInputsItem::onExpressionReferenceChanged, Qt::QueuedConnection);
+  QObject::connect(
+    m_internals->m_expressionCombo,
+    QOverload<int>::of(&QComboBox::currentIndexChanged),
+    this,
+    &qtInputsItem::onExpressionReferenceChanged,
+    Qt::QueuedConnection);
   m_internals->m_expressionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
   m_internals->m_expressionEqualsLabel = new QLabel("=", frame);
@@ -1394,7 +1415,10 @@ void qtInputsItem::onExpressionReferenceChanged()
 }
 
 QWidget* qtInputsItem::createDoubleWidget(
-  int elementIdx, ValueItemPtr vitem, QWidget* pWidget, QString& tooltip)
+  int elementIdx,
+  ValueItemPtr vitem,
+  QWidget* pWidget,
+  QString& tooltip)
 {
   auto dDef = vitem->definitionAs<DoubleItemDefinition>();
   auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
@@ -1532,7 +1556,10 @@ QWidget* qtInputsItem::createDoubleWidget(
 }
 
 QWidget* qtInputsItem::createIntWidget(
-  int elementIdx, ValueItemPtr vitem, QWidget* pWidget, QString& tooltip)
+  int elementIdx,
+  ValueItemPtr vitem,
+  QWidget* pWidget,
+  QString& tooltip)
 {
   auto iDef = vitem->definitionAs<IntItemDefinition>();
   int minVal, maxVal, defVal;
@@ -1735,7 +1762,11 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   }
   if (QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
   {
-    QObject::connect(editBox, SIGNAL(textChanged(const QString&)), this, SLOT(onLineEditChanged()),
+    QObject::connect(
+      editBox,
+      SIGNAL(textChanged(const QString&)),
+      this,
+      SLOT(onLineEditChanged()),
       Qt::QueuedConnection);
     QObject::connect(
       editBox, SIGNAL(editingFinished()), this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
@@ -1891,7 +1922,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     if (rawitem->type() == smtk::attribute::Item::DoubleType)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
-      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
+      if (
+        (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         ditem->value(elementIdx) != editBox->text().toDouble())
       {
         ditem->setValue(elementIdx, editBox->text().toDouble());
@@ -1901,7 +1933,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     else if (rawitem->type() == smtk::attribute::Item::IntType)
     {
       auto iitem = dynamic_pointer_cast<IntItem>(rawitem);
-      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
+      if (
+        (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         iitem->value(elementIdx) != editBox->text().toInt())
       {
         iitem->setValue(elementIdx, editBox->text().toInt());
@@ -1911,7 +1944,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     else if (rawitem->type() == smtk::attribute::Item::StringType)
     {
       auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
-      if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
+      if (
+        (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         sitem->value(elementIdx) != editBox->text().toStdString())
       {
         sitem->setValue(elementIdx, editBox->text().toStdString());
@@ -1924,11 +1958,13 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
       valChanged = true;
     }
   }
-  else if (textBox && !textBox->toPlainText().isEmpty() &&
+  else if (
+    textBox && !textBox->toPlainText().isEmpty() &&
     rawitem->type() == smtk::attribute::Item::StringType)
   {
     auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
-    if ((rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
+    if (
+      (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
       sitem->value(elementIdx) != textBox->toPlainText().toStdString())
     {
       sitem->setValue(elementIdx, textBox->toPlainText().toStdString());

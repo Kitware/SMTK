@@ -60,8 +60,8 @@ std::unique_ptr<Geometry>& Resource::geometry(const Backend& backend)
       // actually generating geometry...  so mark every component
       // plus the resource itself as modified.
       provider->markModified(shared_from_this());
-      smtk::resource::Component::Visitor visitor = [&provider](
-        const resource::ComponentPtr& component) { provider->markModified(component); };
+      smtk::resource::Component::Visitor visitor =
+        [&provider](const resource::ComponentPtr& component) { provider->markModified(component); };
       this->visit(visitor);
       // Move ownership of the geometry provider to the resource.
       m_geometry[backend.index()] = std::move(provider);
@@ -96,5 +96,5 @@ void Resource::visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> vis
   }
 }
 
-} // namespace resource
+} // namespace geometry
 } // namespace smtk

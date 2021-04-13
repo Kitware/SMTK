@@ -50,8 +50,9 @@ Read::Result Read::operateInternal()
   rsrc->setLocation(filename);
 
   operation::MarkGeometry markGeometry(rsrc);
-  smtk::resource::Component::Visitor visitor = [&markGeometry](
-    const resource::ComponentPtr& comp) { markGeometry.markModified(comp); };
+  smtk::resource::Component::Visitor visitor = [&markGeometry](const resource::ComponentPtr& comp) {
+    markGeometry.markModified(comp);
+  };
   rsrc->visit(visitor);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

@@ -32,7 +32,7 @@ bool checkenv(const char* vname)
   return valid;
 #endif
 }
-}
+} // namespace
 
 namespace smtk
 {

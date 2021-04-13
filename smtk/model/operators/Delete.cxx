@@ -56,9 +56,14 @@ namespace model
   * when both \a deleteBoundingCells is false **and** any cell
   * in \a entities had a bounding cell.
   */
-template <typename U, typename V, typename W, typename X>
-bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool deleteBoundingCells,
-  U& verts, V& edges, W& faces, X& other)
+template<typename U, typename V, typename W, typename X>
+bool Delete::checkAndAddBoundingCells(
+  const smtk::model::EntityRef& ent,
+  bool deleteBoundingCells,
+  U& verts,
+  V& edges,
+  W& faces,
+  X& other)
 {
   bool ok = true;
   if (ent.isVertex())
@@ -242,9 +247,13 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
  * For each given entity, if its lower-dimensional entity is not associated by
  * any remaining entities, then this lower-dimensional entity would be deleted
  */
-template <typename U, typename V, typename W, typename X>
+template<typename U, typename V, typename W, typename X>
 void Delete::addBoundaryCells(
-  const smtk::model::EntityRef& ent, U& verts, V& edges, W& faces, X& /*other*/)
+  const smtk::model::EntityRef& ent,
+  U& verts,
+  V& edges,
+  W& faces,
+  X& /*other*/)
 {
   if (ent.isFace())
   {
@@ -442,17 +451,18 @@ Delete::Result Delete::operateInternal()
   {
     if (m_numWarnings > MAX_WARNINGS)
     {
-      smtkErrorMacro(this->log(), "... and " << (m_numWarnings - MAX_WARNINGS)
-                                             << " more entities with dependents.");
+      smtkErrorMacro(
+        this->log(),
+        "... and " << (m_numWarnings - MAX_WARNINGS) << " more entities with dependents.");
     }
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  smtkOpDebug("Given " << entities.size() << ", found " << faces.size() << " faces, "
-                       << edges.size() << " edges, " << verts.size() << " verts, and "
-                       << other.size() << " others "
-                       << (deleteBoundingCells ? " (including bounding cells) " : " ")
-                       << (deleteBoundaryCells ? " (including boundary cells)." : "."));
+  smtkOpDebug(
+    "Given " << entities.size() << ", found " << faces.size() << " faces, " << edges.size()
+             << " edges, " << verts.size() << " verts, and " << other.size() << " others "
+             << (deleteBoundingCells ? " (including bounding cells) " : " ")
+             << (deleteBoundaryCells ? " (including boundary cells)." : "."));
 
   // TODO: Handle associations properly?
   resource->deleteEntities(faces, m_modified, m_expunged, m_debugLevel > 0);
@@ -474,8 +484,9 @@ Delete::Result Delete::operateInternal()
     modified->appendValue(m->component());
   }
 
-  smtkInfoMacro(this->log(), "Deleted " << m_expunged.size() << " of " << entities.size()
-                                        << " requested entities");
+  smtkInfoMacro(
+    this->log(),
+    "Deleted " << m_expunged.size() << " of " << entities.size() << " requested entities");
 
   return result;
 }

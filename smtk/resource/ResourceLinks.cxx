@@ -57,6 +57,6 @@ bool ResourceLinks::removeAllLinksTo(const ResourcePtr& resource)
 {
   return this->data().erase_all<ResourceLinkData::Right>(resource->id());
 }
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk

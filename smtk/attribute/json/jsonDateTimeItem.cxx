@@ -119,5 +119,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DateTimeItemPtr& 
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

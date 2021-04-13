@@ -57,7 +57,7 @@ public:
 
 /// Custom item definitions inherit from from a specialization of this template
 /// class, using the corresponding custom item type as the template parameter.
-template <typename ItemType>
+template<typename ItemType>
 class CustomItemDefinition : public CustomItemBaseDefinition
 {
 public:
@@ -80,7 +80,7 @@ public:
     return ItemPtr(new ItemType(owningItem, position, subGroupPosition));
   }
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

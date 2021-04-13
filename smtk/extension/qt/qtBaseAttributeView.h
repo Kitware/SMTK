@@ -44,7 +44,8 @@ public:
   /// Determines if an item can be modified
   virtual bool isItemWriteable(const smtk::attribute::ItemPtr&) const;
   virtual void getDefinitions(
-    smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs);
+    smtk::attribute::DefinitionPtr attDef,
+    QList<smtk::attribute::DefinitionPtr>& defs);
   int fixedLabelWidth() { return m_fixedLabelWidth; }
 
   bool setFixedLabelWidth(int w);
@@ -73,7 +74,8 @@ public slots:
   /// Invoke the Signal dummy operation to indicate an attribute has been created.
   virtual void attributeCreated(const smtk::attribute::AttributePtr&);
   /// Invoke the Signal dummy operation to indicate an attribute has been changed (renamed).
-  virtual void attributeChanged(const smtk::attribute::AttributePtr&,
+  virtual void attributeChanged(
+    const smtk::attribute::AttributePtr&,
     std::vector<std::string> items = std::vector<std::string>());
   /// Invoke the Signal dummy operation to indicate an attribute has been removed.
   virtual void attributeRemoved(const smtk::attribute::AttributePtr&);
@@ -105,9 +107,11 @@ protected:
   virtual bool advanceLevelTest(const smtk::attribute::ItemPtr&) const;
 
   void topLevelPrepCategories(
-    const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource);
+    const smtk::view::ConfigurationPtr& view,
+    const smtk::attribute::ResourcePtr& attResource);
   void topLevelPrepConfigurations(
-    const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource);
+    const smtk::view::ConfigurationPtr& view,
+    const smtk::attribute::ResourcePtr& attResource);
   void topLevelPrepAdvanceLevels(const smtk::view::ConfigurationPtr& view);
   void prepConfigurationComboBox(const std::string& newConfigurationName);
   void checkConfigurations(smtk::attribute::ItemPtr& item);
@@ -123,7 +127,7 @@ private:
 
 }; // class
 
-} // namespace attribute
+} // namespace extension
 } // namespace smtk
 
 #endif

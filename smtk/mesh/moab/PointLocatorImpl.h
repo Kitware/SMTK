@@ -34,7 +34,9 @@ class SMTKCORE_EXPORT PointLocatorImpl : public smtk::mesh::PointLocatorImpl
 public:
   PointLocatorImpl(::moab::Interface* interface, const ::moab::Range& points);
 
-  PointLocatorImpl(::moab::Interface* interface, std::size_t numPoints,
+  PointLocatorImpl(
+    ::moab::Interface* interface,
+    std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates);
 
   ~PointLocatorImpl();
@@ -42,8 +44,8 @@ public:
   smtk::mesh::HandleRange range() const override;
 
   //returns the set of points that are within the radius of a single point
-  void locatePointsWithinRadius(
-    double x, double y, double z, double radius, Results& results) override;
+  void locatePointsWithinRadius(double x, double y, double z, double radius, Results& results)
+    override;
 
 private:
   ::moab::Interface* m_interface;
@@ -51,8 +53,8 @@ private:
   bool m_deletePoints;
   ::moab::AdaptiveKDTree m_tree;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

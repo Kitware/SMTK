@@ -43,7 +43,7 @@ class ShellEntity;
 class Model;
 class Session;
 class SessionRef;
-typedef std::map<smtk::common::UUID, smtk::shared_ptr<Session> > UUIDsToSessions;
+typedef std::map<smtk::common::UUID, smtk::shared_ptr<Session>> UUIDsToSessions;
 typedef std::map<smtk::model::EntityRef, SessionInfoBits> DanglingEntities;
 
 /**\brief Bit flags describing types of information sessiond to Resource.
@@ -128,7 +128,10 @@ public:
   smtk::common::UUID sessionId() const;
 
   int transcribe(
-    const EntityRef& entity, SessionInfoBits flags, bool onlyDangling = true, int depth = -1);
+    const EntityRef& entity,
+    SessionInfoBits flags,
+    bool onlyDangling = true,
+    int depth = -1);
 
   virtual SessionInfoBits allSupportedInformation() const;
 
@@ -169,8 +172,8 @@ protected:
 
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
-    const EntityRef& entity, SessionInfoBits flags, int depth = -1);
+  virtual SessionInfoBits
+  transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setResource(Resource* resource);
@@ -178,37 +181,57 @@ protected:
   virtual EntityPtr addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();
   int findOrAddRelatedEntities(
-    const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
+    const EntityRef& entRef,
+    SessionInfoBits flags,
+    ArrangementHelper* helper);
   virtual int findOrAddCellAdjacencies(
-    const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddCellUses(
-    const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddOwningCell(
-    const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const CellEntity& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
+  virtual int
+  findOrAddCellUses(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int
+  findOrAddOwningCell(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
   virtual int findOrAddShellAdjacencies(
-    const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const UseEntity& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
   virtual int findOrAddUseAdjacencies(
-    const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddGroupOwner(
-    const Group& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddFreeCells(
-    const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const ShellEntity& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
+  virtual int
+  findOrAddGroupOwner(const Group& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int
+  findOrAddFreeCells(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int
+  findOrAddRelatedModels(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int
+  findOrAddPrototype(const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper);
   virtual int findOrAddRelatedModels(
-    const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddPrototype(
-    const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper);
-  virtual int findOrAddRelatedModels(
-    const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const SessionRef& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
   virtual int findOrAddRelatedGroups(
-    const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const EntityRef& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
   virtual int findOrAddRelatedInstances(
-    const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+    const EntityRef& entRef,
+    SessionInfoBits request,
+    ArrangementHelper* helper);
   virtual SessionInfoBits findOrAddArrangements(
-    const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper);
+    const EntityRef& entRef,
+    EntityPtr entRec,
+    SessionInfoBits flags,
+    ArrangementHelper* helper);
   virtual SessionInfoBits updateProperties(
-    const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper);
-  virtual SessionInfoBits updateTessellation(
-    const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
+    const EntityRef& entRef,
+    EntityPtr entRec,
+    SessionInfoBits flags,
+    ArrangementHelper* helper);
+  virtual SessionInfoBits
+  updateTessellation(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
   virtual SessionIOPtr createIODelegate(const std::string& format);
 

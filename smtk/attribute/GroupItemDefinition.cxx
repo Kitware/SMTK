@@ -37,13 +37,14 @@ Item::Type GroupItemDefinition::type() const
 }
 
 smtk::attribute::ItemPtr GroupItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new GroupItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr GroupItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+GroupItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new GroupItem(owningItem, itemPosition, subGroupPosition));
 }
@@ -79,7 +80,8 @@ void GroupItemDefinition::buildGroup(GroupItem* groupItem, int subGroupPosition)
   }
 }
 
-void GroupItemDefinition::applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+void GroupItemDefinition::applyCategories(
+  const smtk::attribute::Categories& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
   m_categories.reset();
@@ -101,7 +103,8 @@ void GroupItemDefinition::applyCategories(const smtk::attribute::Categories& inh
 }
 
 void GroupItemDefinition::applyAdvanceLevels(
-  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+  const unsigned int& readLevelFromParent,
+  const unsigned int& writeLevelFromParent)
 {
   ItemDefinition::applyAdvanceLevels(readLevelFromParent, writeLevelFromParent);
   for (auto& item : m_itemDefs)

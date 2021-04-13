@@ -45,7 +45,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int UnitTestImportExport(int argc, char* argv[])
 {
@@ -102,7 +102,8 @@ int UnitTestImportExport(int argc, char* argv[])
     model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
     // Test for success
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -132,7 +133,8 @@ int UnitTestImportExport(int argc, char* argv[])
     smtk::operation::Operation::Result exportOpResult = exportOp->operate();
 
     // Test for success
-    if (exportOpResult->findInt("outcome")->value() !=
+    if (
+      exportOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Export operator failed\n";

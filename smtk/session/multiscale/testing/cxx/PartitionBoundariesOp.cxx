@@ -57,7 +57,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 int PartitionBoundariesOp(int argc, char* argv[])
 {
@@ -105,7 +105,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   smtk::operation::Operation::Result importOpResult = importOp->operate();
 
-  if (importOpResult->findInt("outcome")->value() !=
+  if (
+    importOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
@@ -140,7 +141,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
   revolveOp->parameters()->findDouble("axis-position")->setValue(2, 0.);
 
   smtk::operation::Operation::Result revolveOpResult = revolveOp->operate();
-  if (revolveOpResult->findInt("outcome")->value() !=
+  if (
+    revolveOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Revolve operator failed\n";
@@ -170,7 +172,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   smtk::operation::Operation::Result partitionBoundariesOpResult = partitionBoundariesOp->operate();
 
-  if (partitionBoundariesOpResult->findInt("outcome")->value() !=
+  if (
+    partitionBoundariesOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "partition boundaries operator failed\n";

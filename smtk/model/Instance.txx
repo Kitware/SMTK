@@ -24,7 +24,7 @@ namespace smtk
 namespace model
 {
 
-template <typename I>
+template<typename I>
 Instance Instance::clonePlacements(I begin, I end, bool relate)
 {
   auto rsrc = this->resource();
@@ -117,11 +117,11 @@ Instance Instance::clonePlacements(I begin, I end, bool relate)
   return tmp;
 }
 
-template <typename Container>
+template<typename Container>
 Container Instance::divide(bool merge, Container* clonesIncluded)
 {
   Container result;
-  std::vector<std::vector<int> > output;
+  std::vector<std::vector<int>> output;
   // I. Iterate over child clones and uniquely assign each placement to an output.
   {
     std::set<int> taken;
@@ -156,7 +156,7 @@ Container Instance::divide(bool merge, Container* clonesIncluded)
   return result;
 }
 
-template <typename Container>
+template<typename Container>
 Instance Instance::merge(const Container& instances)
 {
   Instance result;
@@ -176,7 +176,8 @@ Instance Instance::merge(const Container& instances)
   Tessellation* tess = archetype.generateTessellation();
   if (!tess)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Cannot merge instances because first entry has no tessellation.");
     return result;
   }
@@ -224,9 +225,13 @@ Instance Instance::merge(const Container& instances)
   return result;
 }
 
-template <typename Container>
-void Instance::divideMapInternal(Instance& clone, std::set<int>& taken, bool merge,
-  std::vector<std::vector<int> >& output, Container* clonesIncluded)
+template<typename Container>
+void Instance::divideMapInternal(
+  Instance& clone,
+  std::set<int>& taken,
+  bool merge,
+  std::vector<std::vector<int>>& output,
+  Container* clonesIncluded)
 {
   InstanceEntities children;
   EntityRefArrangementOps::appendAllRelations(clone, SUPERSET_OF, children);

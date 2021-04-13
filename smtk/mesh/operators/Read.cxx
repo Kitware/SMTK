@@ -56,7 +56,7 @@ public:
 private:
   smtk::mesh::Read::Result& m_result;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -98,8 +98,9 @@ Read::Specification Read::createSpecification()
   auto importDef = spec->findDefinition("read");
 
   std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
-  auto fileItemDefinitionFilter = [](
-    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  auto fileItemDefinitionFilter = [](smtk::attribute::FileItemDefinition::Ptr ptr) {
+    return ptr->name() == "filename";
+  };
   importDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
 
   assert(fileItemDefinitions.size() == 1);
@@ -159,5 +160,5 @@ const char* Read::xmlDescription() const
 {
   return Read_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

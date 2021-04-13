@@ -94,9 +94,11 @@ public:
   ~Resource() override;
 
   smtk::attribute::DefinitionPtr createDefinition(
-    const std::string& typeName, const std::string& baseTypeName = "");
+    const std::string& typeName,
+    const std::string& baseTypeName = "");
   smtk::attribute::DefinitionPtr createDefinition(
-    const std::string& name, attribute::DefinitionPtr baseDefiniiton);
+    const std::string& name,
+    attribute::DefinitionPtr baseDefiniiton);
   // Description:
   // For simplicity, only Definitions without any children can be currently
   // removed (external nodes).
@@ -106,12 +108,14 @@ public:
   smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
   smtk::attribute::AttributePtr createAttribute(const std::string& type);
   smtk::attribute::AttributePtr createAttribute(
-    const std::string& name, attribute::DefinitionPtr def);
+    const std::string& name,
+    attribute::DefinitionPtr def);
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
   smtk::attribute::AttributePtr findAttribute(
-    const smtk::resource::ComponentPtr& comp, const smtk::resource::Links::RoleType& role) const;
+    const smtk::resource::ComponentPtr& comp,
+    const smtk::resource::Links::RoleType& role) const;
 
   void addUniqueRoles(const std::set<smtk::resource::Links::RoleType>& roles);
   void addUniqueRole(const smtk::resource::Links::RoleType& role);
@@ -142,26 +146,31 @@ public:
   // visit all components in the resource.
   void visit(smtk::resource::Component::Visitor&) const override;
 
-  void findAttributes(
-    const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const;
+  void findAttributes(const std::string& type, std::vector<smtk::attribute::AttributePtr>& result)
+    const;
   std::vector<smtk::attribute::AttributePtr> findAttributes(const std::string& type) const;
   void findAttributes(
-    smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const;
+    smtk::attribute::DefinitionPtr def,
+    std::vector<smtk::attribute::AttributePtr>& result) const;
   smtk::attribute::DefinitionPtr findDefinition(const std::string& type) const;
 
   // Return a list of definitions that are not derived from another definition
   void findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& result) const;
 
   void derivedDefinitions(
-    smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::DefinitionPtr>& result) const;
+    smtk::attribute::DefinitionPtr def,
+    std::vector<smtk::attribute::DefinitionPtr>& result) const;
 
-  void findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool concreteOnly,
+  void findAllDerivedDefinitions(
+    smtk::attribute::DefinitionPtr def,
+    bool concreteOnly,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
 
   void findDefinitionAttributes(
-    const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const;
-  void findDefinitions(
-    unsigned long mask, std::vector<smtk::attribute::DefinitionPtr>& result) const;
+    const std::string& type,
+    std::vector<smtk::attribute::AttributePtr>& result) const;
+  void findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr>& result)
+    const;
 
   smtk::attribute::ConstDefinitionPtr findIsUniqueBaseClass(
     smtk::attribute::ConstDefinitionPtr attDef) const;
@@ -179,10 +188,12 @@ public:
   void setAdvanceLevelColor(int level, const double* l_color);
 
   // For Reader classes
+  smtk::attribute::AttributePtr
+  createAttribute(const std::string& name, const std::string& type, const smtk::common::UUID& id);
   smtk::attribute::AttributePtr createAttribute(
-    const std::string& name, const std::string& type, const smtk::common::UUID& id);
-  smtk::attribute::AttributePtr createAttribute(
-    const std::string& name, attribute::DefinitionPtr def, const smtk::common::UUID& id);
+    const std::string& name,
+    attribute::DefinitionPtr def,
+    const smtk::common::UUID& id);
   std::string createUniqueName(const std::string& type) const;
 
   void finalizeDefinitions();
@@ -223,13 +234,15 @@ public:
   /// A style is represented as a smtk::view::Configuration::Component and represents
   /// customizations for displaying the attribute in a GUI.
   void addStyle(
-    const std::string& definitionType, const smtk::view::Configuration::Component style);
+    const std::string& definitionType,
+    const smtk::view::Configuration::Component style);
   const smtk::view::Configuration::Component& findStyle(
-    const smtk::attribute::DefinitionPtr& def, const std::string& styleName = "") const;
+    const smtk::attribute::DefinitionPtr& def,
+    const std::string& styleName = "") const;
   const std::map<std::string, smtk::view::Configuration::Component>& findStyles(
     const smtk::attribute::DefinitionPtr& def) const;
-  const std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> >&
-  styles() const
+  const std::map<std::string, std::map<std::string, smtk::view::Configuration::Component>>& styles()
+    const
   {
     return m_styles;
   }
@@ -265,17 +278,20 @@ public:
 
   // Copies definition from another Resource
   smtk::attribute::DefinitionPtr copyDefinition(
-    const smtk::attribute::DefinitionPtr def, unsigned int options = 0);
+    const smtk::attribute::DefinitionPtr def,
+    unsigned int options = 0);
   // Copies attribute from another Resource
   // Note: that if the attribute is unique (meaning only 1 attribute of this type can be asociated
   // to a model entity, the copyModelAssociations flag is ignored since it would violate this constraint.
   // In terms of options - these are item assignment options - see Item.h for documentation.
-  smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att,
-    const bool& copyModelAssociations = false, const unsigned int& options = 0);
+  smtk::attribute::AttributePtr copyAttribute(
+    const smtk::attribute::AttributePtr att,
+    const bool& copyModelAssociations = false,
+    const unsigned int& options = 0);
 
   //Get a list of all definitions in the Resource
-  void definitions(
-    std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList = false) const;
+  void definitions(std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList = false)
+    const;
   //Get a list of all attributes in the Resource
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
@@ -351,33 +367,38 @@ public:
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
   Resource(smtk::resource::ManagerPtr manager = nullptr);
-  void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
+  void internalFindAllDerivedDefinitions(
+    smtk::attribute::DefinitionPtr def,
+    bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(
-    attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const;
-  bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
+    attribute::DefinitionPtr def,
+    std::vector<smtk::attribute::AttributePtr>& result) const;
+  bool copyDefinitionImpl(
+    const smtk::attribute::DefinitionPtr sourceDef,
     smtk::attribute::ItemDefinition::CopyInfo& info);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
-  std::map<std::string, std::set<smtk::attribute::AttributePtr, Attribute::CompareByName> >
+  std::map<std::string, std::set<smtk::attribute::AttributePtr, Attribute::CompareByName>>
     m_attributeClusters;
   std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
   std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;
 
-  std::map<smtk::attribute::DefinitionPtr,
-    std::set<smtk::attribute::WeakDefinitionPtr, Definition::WeakDefinitionPtrCompare> >
+  std::map<
+    smtk::attribute::DefinitionPtr,
+    std::set<smtk::attribute::WeakDefinitionPtr, Definition::WeakDefinitionPtrCompare>>
     m_derivedDefInfo;
   std::set<std::string> m_categories;
   std::set<std::string> m_activeCategories;
   bool m_activeCategoriesEnabled = false;
   smtk::attribute::Analyses m_analyses;
   std::map<std::string, smtk::view::ConfigurationPtr> m_views;
-  std::map<std::string, std::map<std::string, smtk::view::Configuration::Component> > m_styles;
+  std::map<std::string, std::map<std::string, smtk::view::Configuration::Component>> m_styles;
 
   // Advance levels, <int-level, <string-label, color[4]>
   // higher level means more advanced.
   std::map<int, std::string> m_advLevels;
-  std::map<int, std::vector<double> > m_advLevelColors;
+  std::map<int, std::vector<double>> m_advLevelColors;
   DirectoryInfo m_directoryInfo;
   std::set<smtk::resource::Links::RoleType> m_roles;
 
@@ -420,7 +441,8 @@ inline smtk::attribute::DefinitionPtr Resource::findDefinition(const std::string
 }
 
 inline void Resource::findDefinitionAttributes(
-  const std::string& typeName, std::vector<smtk::attribute::AttributePtr>& result) const
+  const std::string& typeName,
+  std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
   auto it = m_attributeClusters.find(typeName);
@@ -431,7 +453,8 @@ inline void Resource::findDefinitionAttributes(
 }
 
 inline void Resource::findAttributes(
-  const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const
+  const std::string& type,
+  std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
   smtk::attribute::DefinitionPtr def = this->findDefinition(type);
@@ -449,7 +472,7 @@ inline std::vector<smtk::attribute::AttributePtr> Resource::findAttributes(
   return result;
 }
 
-} // end attribute namepsace
-} // end smtk namespace
+} // namespace attribute
+} // namespace smtk
 
 #endif /* smtk_attribute_Resource_h */

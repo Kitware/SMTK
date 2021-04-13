@@ -30,6 +30,6 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 {
   operationManager->unregisterOperation("smtk.extension.matplotlib.render_mesh.render_mesh");
 }
-}
-}
-}
+} // namespace matplotlib
+} // namespace extension
+} // namespace smtk

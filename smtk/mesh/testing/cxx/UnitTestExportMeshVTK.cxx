@@ -114,7 +114,7 @@ void verify_read_write_valid_resource()
     test(mr->points().size() == npoints, "resource has incorrect # of points");
   }
 }
-}
+} // namespace
 
 int UnitTestExportMeshVTK(int /*unused*/, char** const /*unused*/)
 {

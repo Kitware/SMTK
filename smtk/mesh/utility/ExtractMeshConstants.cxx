@@ -35,7 +35,9 @@ namespace utility
 {
 
 void PreAllocatedMeshConstants::determineAllocationLengths(
-  const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells, std::int64_t& numberOfPoints)
+  const smtk::mesh::MeshSet& ms,
+  std::int64_t& numberOfCells,
+  std::int64_t& numberOfPoints)
 {
   std::int64_t connectivityLength;
   PreAllocatedTessellation::determineAllocationLengths(
@@ -43,13 +45,14 @@ void PreAllocatedMeshConstants::determineAllocationLengths(
 }
 
 PreAllocatedMeshConstants::PreAllocatedMeshConstants(
-  std::int64_t* cellMeshConstants, std::int64_t* pointMeshConstants)
+  std::int64_t* cellMeshConstants,
+  std::int64_t* pointMeshConstants)
   : m_cellMeshConstants(cellMeshConstants)
   , m_pointMeshConstants(pointMeshConstants)
 {
 }
 
-template <typename QueryTag>
+template<typename QueryTag>
 void MeshConstants::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   //determine the lengths
@@ -69,11 +72,14 @@ void MeshConstants::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::Poi
 }
 
 template void MeshConstants::extract<smtk::mesh::Dirichlet>(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps);
 template void MeshConstants::extract<smtk::mesh::Neumann>(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps);
 template void MeshConstants::extract<smtk::mesh::Domain>(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps);
 
 void MeshConstants::extractDirichlet(const smtk::mesh::MeshSet& ms)
 {
@@ -122,7 +128,7 @@ void QueryTags(const smtk::mesh::MeshSet& ms, std::vector<smtk::mesh::Domain>& t
   tags = ms.domains();
 }
 
-template <typename QueryTag>
+template<typename QueryTag>
 struct TaggedRangeForQuery
 {
   TaggedRangeForQuery(QueryTag tag, std::pair<std::size_t, std::size_t> range)
@@ -139,11 +145,13 @@ struct TaggedRangeForQuery
   QueryTag m_tag;
   std::pair<std::size_t, std::size_t> m_range;
 };
-}
+} // namespace
 
-template <typename QueryTag>
+template<typename QueryTag>
 void extractMeshConstants(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps,
+  PreAllocatedMeshConstants& field)
 {
   // We need to preserve the internal ordering of the cells and points in
   // MeshSet <ms>. So, we first separate <ms> into discrete submeshes for each
@@ -161,7 +169,7 @@ void extractMeshConstants(
   std::vector<TaggedRange> pointRanges;
 
   // <meshes> holds the tag and discrete submesh for each unique tag.
-  std::vector<std::pair<QueryTag, smtk::mesh::MeshSet> > meshes;
+  std::vector<std::pair<QueryTag, smtk::mesh::MeshSet>> meshes;
 
   // <tags> holds the unique tags
   std::vector<QueryTag> tags;
@@ -230,16 +238,18 @@ void extractMeshConstants(
     smtk::mesh::PointSet subpoints = set_intersect(remainingPoints, subset.second.points());
     for (auto range = subcells.range().begin(); range != subcells.range().end(); ++range)
     {
-      cellRanges.push_back(
-        TaggedRange(subset.first, std::make_pair(rangeIndex(cells.range(), range->lower()),
-                                    rangeIndex(cells.range(), range->upper()))));
+      cellRanges.push_back(TaggedRange(
+        subset.first,
+        std::make_pair(
+          rangeIndex(cells.range(), range->lower()), rangeIndex(cells.range(), range->upper()))));
     }
 
     for (auto range = subpoints.range().begin(); range != subpoints.range().end(); ++range)
     {
-      pointRanges.push_back(
-        TaggedRange(subset.first, std::make_pair(rangeIndex(points.range(), range->lower()),
-                                    rangeIndex(points.range(), range->upper()))));
+      pointRanges.push_back(TaggedRange(
+        subset.first,
+        std::make_pair(
+          rangeIndex(points.range(), range->lower()), rangeIndex(points.range(), range->upper()))));
     }
 
     remainingCells = set_difference(remainingCells, subcells);
@@ -258,8 +268,10 @@ void extractMeshConstants(
   for (auto&& range : cellRanges)
   {
     std::size_t span = range.m_range.second - range.m_range.first + 1;
-    std::fill(&field.m_cellMeshConstants[cellRangeStart],
-      &field.m_cellMeshConstants[cellRangeStart] + span, range.m_tag.value());
+    std::fill(
+      &field.m_cellMeshConstants[cellRangeStart],
+      &field.m_cellMeshConstants[cellRangeStart] + span,
+      range.m_tag.value());
     cellRangeStart += span;
   }
 
@@ -267,18 +279,26 @@ void extractMeshConstants(
   for (auto&& range : pointRanges)
   {
     std::size_t span = range.m_range.second - range.m_range.first + 1;
-    std::fill(&field.m_pointMeshConstants[pointRangeStart],
-      &field.m_pointMeshConstants[pointRangeStart] + span, range.m_tag.value());
+    std::fill(
+      &field.m_pointMeshConstants[pointRangeStart],
+      &field.m_pointMeshConstants[pointRangeStart] + span,
+      range.m_tag.value());
     pointRangeStart += span;
   }
 }
 
 template void extractMeshConstants<smtk::mesh::Dirichlet>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 template void extractMeshConstants<smtk::mesh::Neumann>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 template void extractMeshConstants<smtk::mesh::Domain>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+  const smtk::mesh::MeshSet&,
+  const smtk::mesh::PointSet&,
+  PreAllocatedMeshConstants&);
 
 void extractDirichletMeshConstants(const smtk::mesh::MeshSet& ms, PreAllocatedMeshConstants& field)
 {
@@ -296,22 +316,28 @@ void extractDomainMeshConstants(const smtk::mesh::MeshSet& ms, PreAllocatedMeshC
 }
 
 void extractDirichletMeshConstants(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps,
+  PreAllocatedMeshConstants& field)
 {
   extractMeshConstants<smtk::mesh::Dirichlet>(ms, ps, field);
 }
 
 void extractNeumannMeshConstants(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps,
+  PreAllocatedMeshConstants& field)
 {
   extractMeshConstants<smtk::mesh::Neumann>(ms, ps, field);
 }
 
 void extractDomainMeshConstants(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
+  const smtk::mesh::MeshSet& ms,
+  const smtk::mesh::PointSet& ps,
+  PreAllocatedMeshConstants& field)
 {
   extractMeshConstants<smtk::mesh::Domain>(ms, ps, field);
 }
-}
-}
-}
+} // namespace utility
+} // namespace mesh
+} // namespace smtk

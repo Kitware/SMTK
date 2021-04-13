@@ -28,7 +28,7 @@ namespace smtk
 namespace graph
 {
 
-template <typename GraphTraits>
+template<typename GraphTraits>
 class Resource;
 
 /// Graph Component represents a node in the graph resource. Internally, all of
@@ -41,7 +41,7 @@ class SMTKCORE_EXPORT Component : public smtk::resource::Component
 {
   // Only graph resources can construct graph components, ensuring that the
   // component's API can be satisfied.
-  template <typename GraphTraits>
+  template<typename GraphTraits>
   friend class Resource;
 
 public:
@@ -58,7 +58,7 @@ public:
   bool setId(const smtk::common::UUID& uid) override;
 
   /// Check if this node has any arcs of type ArcType.
-  template <typename ArcType>
+  template<typename ArcType>
   bool contains() const
   {
     typedef const typename ArcType::template API<ArcType> API;
@@ -72,7 +72,7 @@ public:
   /// NOTE: This method cannot be guarded by compile-time checks, so it is
   ///       instead allowed to fail at runtime. For compile-time checking, prefer
   ///       smtk::graph::Resource's API for creating ArcTypes.
-  template <typename ArcType, typename... Args>
+  template<typename ArcType, typename... Args>
   bool set(Args&&... args)
   {
     // Since this method exists in the base Component class, we must check RTTI
@@ -88,7 +88,8 @@ public:
     if (arcs.containsType<ArcType>())
     {
       arcs.erase<ArcType>(this->id());
-      arcs.emplace<ArcType>(this->id(),
+      arcs.emplace<ArcType>(
+        this->id(),
         ArcType(static_cast<typename ArcType::FromType&>(*this), std::forward<Args>(args)...));
       return true;
     }
@@ -99,16 +100,16 @@ public:
   /// the input arc type. The return type of this method is determined by the API
   /// of ArcType.
   // This overload handles const access to nodes
-  template <typename ArcType>
-  auto get() const -> decltype(std::declval<const typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType>
+  auto get() const -> decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
     std::declval<const typename ArcType::FromType&>()))
   {
     typedef const typename ArcType::template API<ArcType> API;
     return API().get(*static_cast<const typename ArcType::FromType*>(this));
   }
   // This overload handles non-const access to nodes
-  template <typename ArcType>
-  auto get() -> decltype(std::declval<typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType>
+  auto get() -> decltype(std::declval<typename ArcType::template API<ArcType>>().get(
     std::declval<const typename ArcType::FromType&>()))
   {
     typedef typename ArcType::template API<ArcType> API;
@@ -121,10 +122,13 @@ public:
   /// boolean value; when they return true, visitation is terminated early.
   // This overload handles const access to arcs that have no explicit
   // API::visit defined and return a container from get().
-  template <typename ArcType, typename Visitor>
-  typename std::enable_if<!has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                            const typename ArcType::ToType&>::value &&
-      is_container<decltype(std::declval<const typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType, typename Visitor>
+  typename std::enable_if<
+    !has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      const typename ArcType::ToType&>::value &&
+      is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
       accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
@@ -142,10 +146,11 @@ public:
   }
   // This overload handles non-const access to arcs that have no explicit
   // API::visit defined and return a container from get().
-  template <typename ArcType, typename Visitor>
-  typename std::enable_if<!has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                            typename ArcType::ToType&>::value &&
-      is_container<decltype(std::declval<typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType, typename Visitor>
+  typename std::enable_if<
+    !has_custom_visit<typename ArcType::template API<ArcType>, Visitor, typename ArcType::ToType&>::
+        value &&
+      is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
       accepts<Visitor, typename ArcType::ToType&>::value,
     bool>::type
@@ -163,10 +168,13 @@ public:
   }
   // This overload handles const access to arcs that have no explicit
   // API::visit defined and return a single node from get().
-  template <typename ArcType, typename Visitor>
-  typename std::enable_if<!has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                            const typename ArcType::ToType&>::value &&
-      !is_container<decltype(std::declval<const typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType, typename Visitor>
+  typename std::enable_if<
+    !has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      const typename ArcType::ToType&>::value &&
+      !is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
       accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
@@ -177,10 +185,11 @@ public:
   }
   // This overload handles non-const access to arcs that have no explicit
   // API::visit defined and return a single node from get().
-  template <typename ArcType, typename Visitor>
-  typename std::enable_if<!has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                            typename ArcType::ToType&>::value &&
-      !is_container<decltype(std::declval<typename ArcType::template API<ArcType> >().get(
+  template<typename ArcType, typename Visitor>
+  typename std::enable_if<
+    !has_custom_visit<typename ArcType::template API<ArcType>, Visitor, typename ArcType::ToType&>::
+        value &&
+      !is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
       accepts<Visitor, typename std::remove_const<typename ArcType::ToType&>::type>::value,
     bool>::type
@@ -191,26 +200,30 @@ public:
   }
   // This overload handles const access to arcs that have an explicit
   // API::visit defined.
-  template <typename ArcType, typename Visitor>
-  auto visit(const Visitor& visitor) const ->
-    typename std::enable_if<has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                              const typename ArcType::ToType&>::value &&
-        accepts<Visitor, const typename ArcType::ToType&>::value,
-      decltype(std::declval<const typename ArcType::template API<ArcType> >().visit(
-        std::declval<const typename ArcType::FromType&>(), visitor))>::type
+  template<typename ArcType, typename Visitor>
+  auto visit(const Visitor& visitor) const -> typename std::enable_if<
+    has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      const typename ArcType::ToType&>::value &&
+      accepts<Visitor, const typename ArcType::ToType&>::value,
+    decltype(std::declval<const typename ArcType::template API<ArcType>>()
+               .visit(std::declval<const typename ArcType::FromType&>(), visitor))>::type
   {
     typedef const typename ArcType::template API<ArcType> API;
     return API().visit(*static_cast<const typename ArcType::FromType*>(this), visitor);
   }
   // This overload handles non-const access to arcs that have an explicit
   // API::visit defined.
-  template <typename ArcType, typename Visitor>
-  auto visit(const Visitor& visitor) ->
-    typename std::enable_if<has_custom_visit<typename ArcType::template API<ArcType>, Visitor,
-                              const typename ArcType::ToType&>::value &&
-        accepts<Visitor, typename ArcType::ToType&>::value,
-      decltype(std::declval<typename ArcType::template API<ArcType> >().visit(
-        std::declval<typename ArcType::FromType&>(), visitor))>::type
+  template<typename ArcType, typename Visitor>
+  auto visit(const Visitor& visitor) -> typename std::enable_if<
+    has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      const typename ArcType::ToType&>::value &&
+      accepts<Visitor, typename ArcType::ToType&>::value,
+    decltype(std::declval<typename ArcType::template API<ArcType>>()
+               .visit(std::declval<typename ArcType::FromType&>(), visitor))>::type
   {
     typedef typename ArcType::template API<ArcType> API;
     return API().visit(*static_cast<const typename ArcType::FromType*>(this), visitor);
@@ -224,7 +237,7 @@ protected:
   std::weak_ptr<smtk::graph::ResourceBase> m_resource;
   smtk::common::UUID m_id;
 };
-}
-}
+} // namespace graph
+} // namespace smtk
 
 #endif

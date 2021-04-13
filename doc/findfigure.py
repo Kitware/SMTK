@@ -196,13 +196,13 @@ def setup(app):
     defaultpath = os.path.abspath('.')
     app.add_config_value('findfigure_paths',
                          {
-                         '*': (defaultpath,)
+                             '*': (defaultpath,)
                          }, 'env')
     app.add_config_value('findfigure_types',
                          {
-                         'html': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
-                         'epub': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
-                         'latex': ('.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif')
+                             'html': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
+                             'epub': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
+                             'latex': ('.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif')
                          }, 'env')
     app.add_directive('findimage', FindImageDirective)
     app.add_directive('findfigure', FindFigureDirective)

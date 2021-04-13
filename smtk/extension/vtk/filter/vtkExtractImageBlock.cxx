@@ -64,8 +64,10 @@ void vtkExtractImageBlock::SetExtent(int x1, int x2, int y1, int y2, int z1, int
 }
 
 // Fill in the WholeExtent and spacing information from the image block
-int vtkExtractImageBlock::RequestInformation(vtkInformation* /*request*/,
-  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
+int vtkExtractImageBlock::RequestInformation(
+  vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/,
+  vtkInformationVector* outputVector)
 {
   double bounds[6];
   for (int i = 0; i < 6; i++)
@@ -82,8 +84,10 @@ int vtkExtractImageBlock::RequestInformation(vtkInformation* /*request*/,
   return 1;
 }
 
-int vtkExtractImageBlock::RequestData(vtkInformation* /*request*/,
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkExtractImageBlock::RequestData(
+  vtkInformation* /*request*/,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -95,7 +99,8 @@ int vtkExtractImageBlock::RequestData(vtkInformation* /*request*/,
     return 0;
   }
 
-  if (this->BlockIndex < 0 ||
+  if (
+    this->BlockIndex < 0 ||
     static_cast<unsigned int>(this->BlockIndex) >= input->GetNumberOfBlocks())
   {
     vtkErrorMacro("Must specify a valid block index to extract!");

@@ -60,7 +60,7 @@ private:
   qtTimeZoneSelectWidgetInternal* Internal;
 };
 
-} // namespace model
+} // namespace extension
 } // namespace smtk
 
 #endif // __smtk_extension_qtTimeZoneSelectWidget_h

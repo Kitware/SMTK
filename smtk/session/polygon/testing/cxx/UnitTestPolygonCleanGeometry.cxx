@@ -30,7 +30,9 @@
 
 #include "smtk/operation/Manager.h"
 
-void findEdgesAndVertices(const smtk::model::Model& model, std::set<smtk::model::Edge>& edges,
+void findEdgesAndVertices(
+  const smtk::model::Model& model,
+  std::set<smtk::model::Edge>& edges,
   std::set<smtk::model::Vertex>& vertices)
 {
   edges.clear();
@@ -128,14 +130,16 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
       test(point != nullptr, "Could not find point");
       for (int k = 0; k < numCoordsPerPoint; ++k)
       {
-        test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
-               k, points[(i * numPointsPerEdge + j) * numCoordsPerPoint + k]),
+        test(
+          smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
+            k, points[(i * numPointsPerEdge + j) * numCoordsPerPoint + k]),
           "Setting points failed");
       }
     }
     // Apply the operation
     smtk::operation::Operation::Result res = createEdgeFromPointsOp->operate();
-    test(res->findInt("outcome")->value() ==
+    test(
+      res->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Create edge from points operator failed");
   }
@@ -147,7 +151,8 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
   std::cout << "Before clean geometry operation, number of edges: " << edges.size()
             << ", number of vertices: " << vertices.size() << std::endl;
   test(static_cast<int>(edges.size()) == numEdges, "Incorrect number of edges");
-  test(static_cast<int>(vertices.size()) == numEdges * numPointsPerEdge,
+  test(
+    static_cast<int>(vertices.size()) == numEdges * numPointsPerEdge,
     "Incorrect number of vertices");
 
   // Clean geometry
@@ -160,7 +165,8 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
   }
 
   smtk::operation::Operation::Result res = cleanGeometryOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Clean geometry operator failed");
 
@@ -169,7 +175,8 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
   std::cout << "After clean geometry operation, number of edges: " << edges.size()
             << ", number of vertices: " << vertices.size() << std::endl;
   test(static_cast<int>(edges.size()) == numEdges * 2, "Incorrect number of edges");
-  test(static_cast<int>(vertices.size()) == numEdges * numPointsPerEdge + 1,
+  test(
+    static_cast<int>(vertices.size()) == numEdges * numPointsPerEdge + 1,
     "Incorrect number of vertices");
 
   return 0;

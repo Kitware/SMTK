@@ -39,12 +39,14 @@ public:
 
   /// Register an IO operation identified by the unique names of the resource
   /// and operation and the file item name.
-  bool registerOperation(const std::string&, const std::string&,
+  bool registerOperation(
+    const std::string&,
+    const std::string&,
     const std::string& fileItemName = m_defaultFileItemName);
 
   /// Obtain the resource names associated with the operation identified by its
   /// class type.
-  template <typename OperationType>
+  template<typename OperationType>
   std::set<std::string> readsResources() const;
 
   // Obtain the operation associated with the resource name.
@@ -56,12 +58,12 @@ private:
   std::set<std::string> readsResources(const Operation::Index&) const;
 };
 
-template <typename OperationType>
+template<typename OperationType>
 std::set<std::string> ReaderGroup::readsResources() const
 {
   return readsResources(std::type_index(typeid(OperationType)).hash_code());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_ReaderGroup_h

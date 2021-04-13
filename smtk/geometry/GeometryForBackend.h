@@ -35,7 +35,7 @@ namespace geometry
   * Additionally, it is preferable (but not required) for the
   * template parameter type to be move-constructible.
   */
-template <typename Format>
+template<typename Format>
 class GeometryForBackend : public Geometry
 {
 public:
@@ -54,7 +54,7 @@ public:
   virtual Format& data(const resource::PersistentObject::Ptr&) const = 0;
 };
 
-} // namespace resource
+} // namespace geometry
 } // namespace smtk
 
 #endif // smtk_resource_GeometryForBackend_h

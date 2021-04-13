@@ -187,7 +187,8 @@ void verifyPosixTimeZone()
   sc::TimeZone tzIn1 = dtzIn1.timeZone();
   test(!!tzIn1.isSet(), "Failed to show posix timezone as set()");
   std::cout << "posix string: " << tzIn1.posixString() << std::endl;
-  test(tzIn1.posixString() == "PST-08", // note it's -08 NOT -8
+  test(
+    tzIn1.posixString() == "PST-08", // note it's -08 NOT -8
     "Failed to return correct posix time zone");
 }
 

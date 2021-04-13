@@ -38,7 +38,7 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
 }
-}
-}
-}
-}
+} // namespace widgets
+} // namespace paraview
+} // namespace extension
+} // namespace smtk

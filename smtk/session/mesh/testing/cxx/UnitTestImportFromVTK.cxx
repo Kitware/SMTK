@@ -101,7 +101,8 @@ int UnitTestImportFromVTK(int argc, char* argv[])
       model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
       // Test for success
-      if (importOpResult->findInt("outcome")->value() !=
+      if (
+        importOpResult->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Import operator failed\n";

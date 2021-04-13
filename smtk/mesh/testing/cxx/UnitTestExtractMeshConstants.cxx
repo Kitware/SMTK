@@ -57,8 +57,10 @@ private:
 class ValidateCells : public smtk::mesh::CellForEach
 {
 public:
-  ValidateCells(const std::vector<smtk::mesh::CellSet>& cellsByDomain,
-    const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
+  ValidateCells(
+    const std::vector<smtk::mesh::CellSet>& cellsByDomain,
+    const std::vector<smtk::mesh::Domain>& domains,
+    const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange cellRange)
     : m_cellsByDomain(cellsByDomain)
     , m_domains(domains)
@@ -68,7 +70,9 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+  void forCell(
+    const smtk::mesh::Handle& cellId,
+    smtk::mesh::CellType /*cellType*/,
     int /*numPointIds*/) override
   {
     // default to the value for unlabeled domains
@@ -96,8 +100,10 @@ public:
 class ValidatePoints : public smtk::mesh::PointForEach
 {
 public:
-  ValidatePoints(const std::vector<smtk::mesh::PointSet>& pointsByDomain,
-    const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
+  ValidatePoints(
+    const std::vector<smtk::mesh::PointSet>& pointsByDomain,
+    const std::vector<smtk::mesh::Domain>& domains,
+    const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange pointRange)
     : m_pointsByDomain(pointsByDomain)
     , m_domains(domains)
@@ -107,7 +113,9 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& /*xyz*/,
     bool& /*coordinatesModified*/) override
   {
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
@@ -181,7 +189,7 @@ void verify_extract_domain()
   delete[] cells;
   delete[] points;
 }
-}
+} // namespace
 
 int UnitTestExtractMeshConstants(int /*unused*/, char** const /*unused*/)
 {

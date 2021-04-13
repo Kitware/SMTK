@@ -41,7 +41,7 @@ public:
   entity* parent() const { return m_parent; }
   void setParent(entity* p) { m_parent = p; }
 
-  template <typename T>
+  template<typename T>
   T* parentAs() const
   {
     return dynamic_cast<T*>(m_parent);

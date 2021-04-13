@@ -48,15 +48,26 @@ public:
   // original filename
   std::string getDirectory(const std::string& fname, const std::vector<std::string>& spaths);
 
-  bool scanIncludes(pugi::xml_node& root, smtk::attribute::FileInfo& finfo,
-    std::vector<std::string>& includeStack, const std::set<std::string>& activeIncludes,
-    const std::vector<std::string>& spaths, Logger& logger);
-
-  void parseXml(smtk::attribute::ResourcePtr resource, pugi::xml_node& root, bool reportAsError,
+  bool scanIncludes(
+    pugi::xml_node& root,
+    smtk::attribute::FileInfo& finfo,
+    std::vector<std::string>& includeStack,
+    const std::set<std::string>& activeIncludes,
+    const std::vector<std::string>& spaths,
     Logger& logger);
 
-  void readAttributes(smtk::attribute::ResourcePtr resource, const std::string& initialFileName,
-    pugi::xml_node& root, const std::vector<std::string>& spaths, bool reportAsError,
+  void parseXml(
+    smtk::attribute::ResourcePtr resource,
+    pugi::xml_node& root,
+    bool reportAsError,
+    Logger& logger);
+
+  void readAttributes(
+    smtk::attribute::ResourcePtr resource,
+    const std::string& initialFileName,
+    pugi::xml_node& root,
+    const std::vector<std::string>& spaths,
+    bool reportAsError,
     Logger& logger);
 
   void print();
@@ -64,8 +75,8 @@ public:
   smtk::attribute::DirectoryInfo m_dirInfo;
   std::size_t m_currentFileIndex;
 };
-};
-};
+}; // namespace io
+}; // namespace smtk
 
 void AttributeReaderInternals::print()
 {
@@ -131,7 +142,8 @@ pugi::xml_node AttributeReaderInternals::getRootNode(pugi::xml_document& doc)
 // Returns the complete path to the file.  If the file does not exist it will
 // return the original filename
 std::string AttributeReaderInternals::getDirectory(
-  const std::string& fname, const std::vector<std::string>& spaths)
+  const std::string& fname,
+  const std::vector<std::string>& spaths)
 {
   // Are we dealing with an absoulte path
   path p(fname);
@@ -153,9 +165,13 @@ std::string AttributeReaderInternals::getDirectory(
   return fname;
 }
 
-bool AttributeReaderInternals::scanIncludes(pugi::xml_node& root, smtk::attribute::FileInfo& finfo,
-  std::vector<std::string>& includeStack, const std::set<std::string>& activeIncludes,
-  const std::vector<std::string>& spaths, Logger& logger)
+bool AttributeReaderInternals::scanIncludes(
+  pugi::xml_node& root,
+  smtk::attribute::FileInfo& finfo,
+  std::vector<std::string>& includeStack,
+  const std::set<std::string>& activeIncludes,
+  const std::vector<std::string>& spaths,
+  Logger& logger)
 {
   if (!root)
   {
@@ -195,8 +211,10 @@ bool AttributeReaderInternals::scanIncludes(pugi::xml_node& root, smtk::attribut
     pugi::xml_parse_result presult = doc1.load_file(fname.c_str());
     if (presult.status != pugi::status_ok)
     {
-      smtkErrorMacro(logger, "Problem loading in " << fname << " Error Description:\n"
-                                                   << presult.description());
+      smtkErrorMacro(
+        logger,
+        "Problem loading in " << fname << " Error Description:\n"
+                              << presult.description());
       return true;
     }
     std::set<std::string> newSet = activeIncludes;
@@ -236,7 +254,10 @@ bool AttributeReaderInternals::scanIncludes(pugi::xml_node& root, smtk::attribut
 }
 
 void AttributeReaderInternals::parseXml(
-  smtk::attribute::ResourcePtr resource, pugi::xml_node& root, bool reportAsError, Logger& logger)
+  smtk::attribute::ResourcePtr resource,
+  pugi::xml_node& root,
+  bool reportAsError,
+  Logger& logger)
 {
   if (!root)
   {
@@ -279,9 +300,13 @@ void AttributeReaderInternals::parseXml(
   }
 }
 
-void AttributeReaderInternals::readAttributes(smtk::attribute::ResourcePtr resource,
-  const std::string& initialFileName, pugi::xml_node& root, const std::vector<std::string>& spaths,
-  bool reportAsError, Logger& logger)
+void AttributeReaderInternals::readAttributes(
+  smtk::attribute::ResourcePtr resource,
+  const std::string& initialFileName,
+  pugi::xml_node& root,
+  const std::vector<std::string>& spaths,
+  bool reportAsError,
+  Logger& logger)
 {
   if (!root)
   {
@@ -365,8 +390,11 @@ AttributeReader::~AttributeReader()
   delete m_internals;
 }
 
-bool AttributeReader::read(smtk::attribute::ResourcePtr resource, const std::string& filename,
-  bool includePath, Logger& logger)
+bool AttributeReader::read(
+  smtk::attribute::ResourcePtr resource,
+  const std::string& filename,
+  bool includePath,
+  Logger& logger)
 {
   logger.reset();
   m_internals->m_dirInfo.clear();
@@ -403,13 +431,18 @@ bool AttributeReader::read(smtk::attribute::ResourcePtr resource, const std::str
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::ResourcePtr resource, const std::string& filecontents, Logger& logger)
+  smtk::attribute::ResourcePtr resource,
+  const std::string& filecontents,
+  Logger& logger)
 {
   return this->readContents(resource, filecontents.c_str(), filecontents.size(), logger);
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::ResourcePtr resource, const char* content, std::size_t length, Logger& logger)
+  smtk::attribute::ResourcePtr resource,
+  const char* content,
+  std::size_t length,
+  Logger& logger)
 {
   logger.reset();
   // First load in the xml document
@@ -427,7 +460,9 @@ bool AttributeReader::readContents(
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::ResourcePtr resource, pugi::xml_node& root, Logger& logger)
+  smtk::attribute::ResourcePtr resource,
+  pugi::xml_node& root,
+  Logger& logger)
 {
   logger.reset();
   m_internals->m_dirInfo.clear();

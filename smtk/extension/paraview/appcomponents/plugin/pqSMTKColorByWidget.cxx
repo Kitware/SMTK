@@ -30,11 +30,24 @@ class pqSMTKColorByWidget::PropertyLinksConnection : public pqPropertyLinksConne
   typedef pqPropertyLinksConnection Superclass;
 
 public:
-  PropertyLinksConnection(QObject* qobject, const char* qproperty, const char* qsignal,
-    vtkSMProxy* smproxy, vtkSMProperty* smproperty, int smindex, bool use_unchecked_modified_event,
+  PropertyLinksConnection(
+    QObject* qobject,
+    const char* qproperty,
+    const char* qsignal,
+    vtkSMProxy* smproxy,
+    vtkSMProperty* smproperty,
+    int smindex,
+    bool use_unchecked_modified_event,
     QObject* parentObject = nullptr)
-    : Superclass(qobject, qproperty, qsignal, smproxy, smproperty, smindex,
-        use_unchecked_modified_event, parentObject)
+    : Superclass(
+        qobject,
+        qproperty,
+        qsignal,
+        smproxy,
+        smproperty,
+        smindex,
+        use_unchecked_modified_event,
+        parentObject)
   {
   }
   ~PropertyLinksConnection() override = default;
@@ -90,7 +103,9 @@ pqSMTKColorByWidget::pqSMTKColorByWidget(QWidget* _p)
   this->Internal = new pqSMTKColorByWidget::pqInternals();
   this->Internal->setupUi(this);
   this->setToolTip("Choose colors used to draw SMTK components.");
-  this->connect(this->Internal->comboBox, SIGNAL(currentIndexChanged(const QString&)),
+  this->connect(
+    this->Internal->comboBox,
+    SIGNAL(currentIndexChanged(const QString&)),
     SLOT(comboBoxChanged(const QString&)));
 }
 

@@ -34,35 +34,43 @@ namespace operation
 /// an API around Specification, giving it functions that are unique to its role
 /// as an operation specification.
 
-typedef std::map<std::weak_ptr<smtk::resource::Resource>, smtk::resource::LockType,
-  std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+typedef std::map<
+  std::weak_ptr<smtk::resource::Resource>,
+  smtk::resource::LockType,
+  std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
   ResourceAccessMap;
 typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefinitionVector;
 
 /// Return a new set of parameters for an operation.
 SMTKCORE_EXPORT
-Operation::Parameters createParameters(Operation::Specification specification,
-  const std::string& operatorName, const std::string& parametersName);
+Operation::Parameters createParameters(
+  Operation::Specification specification,
+  const std::string& operatorName,
+  const std::string& parametersName);
 
 /// Return parameters for an operation if they already exist or a new parameters object otherwise.
 SMTKCORE_EXPORT
 Operation::Parameters extractParameters(
-  Operation::Specification specification, const std::string& operatorName);
+  Operation::Specification specification,
+  const std::string& operatorName);
 
 /// Return the definition for the operation.
 SMTKCORE_EXPORT
 Operation::Definition extractParameterDefinition(
-  Operation::Specification specification, const std::string& operatorName);
+  Operation::Specification specification,
+  const std::string& operatorName);
 
 /// Return the definition for the operation result.
 SMTKCORE_EXPORT
 Operation::Definition extractResultDefinition(
-  Operation::Specification specification, const std::string& operatorName);
+  Operation::Specification specification,
+  const std::string& operatorName);
 
 /// Construct a set of all of the resources referenced in the result.
 SMTKCORE_EXPORT
-std::set<std::weak_ptr<smtk::resource::Resource>,
-  std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+std::set<
+  std::weak_ptr<smtk::resource::Resource>,
+  std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
 extractResources(Operation::Result result);
 
 /// Construct a map of all of the resources referenced in the parameters and not
@@ -88,7 +96,9 @@ SMTKCORE_EXPORT std::set<std::string> extractTagNames(Operation::Specification s
 SMTKCORE_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName);
 
 /// Add a tag to the specification.
-SMTKCORE_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName,
+SMTKCORE_EXPORT bool addTag(
+  Operation::Specification specification,
+  const std::string& tagName,
   const std::set<std::string>& tagValues);
 
 /// Remove a tag from the specification.
@@ -96,8 +106,9 @@ SMTKCORE_EXPORT bool removeTag(Operation::Specification specification, const std
 
 /// Retrieve a tag's values.
 SMTKCORE_EXPORT std::set<std::string> tagValues(
-  Operation::Specification specification, const std::string& tagName);
-}
-}
+  Operation::Specification specification,
+  const std::string& tagName);
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_SpecificationOps_h

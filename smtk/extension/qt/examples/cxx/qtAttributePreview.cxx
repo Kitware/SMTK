@@ -120,7 +120,8 @@ int main(int argc, char* argv[])
     readOp->parameters()->findFile("filename")->setValue(inputPath.toStdString());
     auto result = readOp->operate();
 
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       qCritical() << "Error loading attribute file -- exiting"

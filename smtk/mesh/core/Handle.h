@@ -28,14 +28,14 @@ namespace mesh
 {
 typedef std::ptrdiff_t EntityId;
 typedef std::size_t Handle;
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 // TODO: use extern template declaration to prevent consuming libraries from
 // generating these template specializations.
 template class SMTKCORE_EXPORT boost::icl::closed_interval<smtk::mesh::Handle>;
-template class SMTKCORE_EXPORT boost::icl::interval_set<smtk::mesh::Handle, std::less,
-  boost::icl::closed_interval<smtk::mesh::Handle> >;
+template class SMTKCORE_EXPORT boost::icl::
+  interval_set<smtk::mesh::Handle, std::less, boost::icl::closed_interval<smtk::mesh::Handle>>;
 
 namespace smtk
 {
@@ -74,8 +74,8 @@ SMTKCORE_EXPORT std::size_t rangeIntervalCount(const HandleRange&);
 
 /// Determine whether two ranges are equal
 SMTKCORE_EXPORT bool rangesEqual(const HandleRange&, const HandleRange&);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 SMTKCORE_EXPORT std::ostream& operator<<(std::ostream&, const smtk::mesh::HandleRange&);
 

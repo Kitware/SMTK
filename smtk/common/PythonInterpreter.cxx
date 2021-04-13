@@ -29,10 +29,10 @@ using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <boost/dll.hpp>
@@ -61,7 +61,7 @@ namespace
 
 //PYTHON_MODULEDIR is defined by cmake
 std::string python_moduledir = PYTHON_MODULEDIR;
-}
+} // namespace
 
 namespace smtk
 {
@@ -277,10 +277,11 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
 }
 
 bool PythonInterpreter::addPathToPackagedModule(
-  const std::string& packageDir, const std::string& module)
+  const std::string& packageDir,
+  const std::string& module)
 {
-// If <module> is run out of a package, we add its directory to the PYTHONPATH.
-// The path to the module is specific to each platform.
+  // If <module> is run out of a package, we add its directory to the PYTHONPATH.
+  // The path to the module is specific to each platform.
 
 #ifdef __APPLE__
   boost::filesystem::path inputPath = boost::filesystem::path(packageDir);
@@ -308,7 +309,8 @@ bool PythonInterpreter::addPathToPackagedModule(
 }
 
 bool PythonInterpreter::addPathToInstalledModule(
-  const std::string& installDir, const std::string& module)
+  const std::string& installDir,
+  const std::string& module)
 {
   // If <module> is run out of the install tree, we expect that the directory
   // that contains its libraries also contains a directory called
@@ -327,7 +329,8 @@ bool PythonInterpreter::addPathToInstalledModule(
 }
 
 bool PythonInterpreter::addPathToBuildTree(
-  const std::string& buildTreePath, const std::string& module)
+  const std::string& buildTreePath,
+  const std::string& module)
 {
   // If <module> is run out of the build tree, we expect the directory that
   // contains its libraries to reside one level below the build directory,
@@ -376,7 +379,8 @@ bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
 }
 
 bool PythonInterpreter::loadPythonSourceFile(
-  const std::string& fName, const std::string& moduleName)
+  const std::string& fName,
+  const std::string& moduleName)
 {
   // Convert to boost's generic format to avoid complications with Windows slashes
   std::string fileName = boost::filesystem::path(fName).generic_string();
@@ -418,5 +422,5 @@ bool PythonInterpreter::loadPythonSourceFile(
 
   return loaded;
 }
-}
-}
+} // namespace common
+} // namespace smtk

@@ -77,7 +77,8 @@ int main()
   else
   {
     // This should only contain A and G
-    if (((iDefs[0]->type() != "A") && (iDefs[1]->type() != "A")) ||
+    if (
+      ((iDefs[0]->type() != "A") && (iDefs[1]->type() != "A")) ||
       ((iDefs[0]->type() != "G") && (iDefs[1]->type() != "G")))
     {
       std::cerr << "Incorrect included Definitions returned : { " << iDefs[0]->type() << ", "

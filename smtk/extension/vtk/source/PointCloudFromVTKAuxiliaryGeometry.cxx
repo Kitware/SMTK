@@ -98,7 +98,7 @@ smtk::mesh::PointCloud PointCloudFromVTKAuxiliaryGeometry::operator()(
 
   return smtk::mesh::PointCloud(externalData->GetNumberOfPoints(), coordinates, data);
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

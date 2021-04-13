@@ -63,7 +63,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
       // does not offer us the ability to cancel the destruction of the pipeline
       // source, so we do not offer the option to cancel in our modal dialog.
       pqObjectBuilder* builder = pqCore->getObjectBuilder();
-      QObject::connect(builder,
+      QObject::connect(
+        builder,
         (void (pqObjectBuilder::*)(pqPipelineSource*)) & pqObjectBuilder::destroying,
         [](pqPipelineSource* source) {
           pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(source);
@@ -126,7 +127,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
         return false;
       };
 
-      QObject::connect(pqSMTKBehavior::instance(),
+      QObject::connect(
+        pqSMTKBehavior::instance(),
         (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) &
           pqSMTKBehavior::removingManagerFromServer,
         onRemovingManagerFromServer);
@@ -134,8 +136,10 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
       // The final functor is connected to the main window's "close" signal, and
       // it prompts the user to save all unsaved resources on all servers. It
       // also provides the user with the ability to cancel the close.
-      QObject::connect(pqApplicationCore::instance()->getMainWindowEventManager(),
-        &pqMainWindowEventManager::close, [](QCloseEvent* closeEvent) {
+      QObject::connect(
+        pqApplicationCore::instance()->getMainWindowEventManager(),
+        &pqMainWindowEventManager::close,
+        [](QCloseEvent* closeEvent) {
           std::size_t numberOfUnsavedResources = 0;
           pqSMTKBehavior::instance()->visitResourceManagersOnServers(
             [&numberOfUnsavedResources](pqSMTKWrapper* wrapper, pqServer* /*unused*/) {
@@ -183,7 +187,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
                       int showSave = settings->GetShowSaveResourceOnClose();
                       if (showSave == vtkSMTKSettings::DontShowAndSave)
                       {
-                        smtkInfoMacro(smtk::io::Logger::instance(),
+                        smtkInfoMacro(
+                          smtk::io::Logger::instance(),
                           "Your preference is set to save modified resources when they are closed. "
                           "Please choose \"File .. Close Resource\" and cancel the save if you "
                           "wish to discard changes before exiting.");
@@ -204,7 +209,9 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
 }
 
 int pqSMTKSaveOnCloseResourceBehavior::showDialog(
-  bool& cbChecked, std::size_t numberOfUnsavedResources, bool showCancel)
+  bool& cbChecked,
+  std::size_t numberOfUnsavedResources,
+  bool showCancel)
 {
   QMessageBox msgBox;
   QCheckBox* cb = new QCheckBox("Set default and don't show again.");
@@ -232,7 +239,8 @@ int pqSMTKSaveOnCloseResourceBehavior::showDialog(
 }
 
 int pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(
-  std::size_t numberOfUnsavedResources, bool showCancel)
+  std::size_t numberOfUnsavedResources,
+  bool showCancel)
 {
   int ret = QMessageBox::Discard;
   auto settings = vtkSMTKSettings::GetInstance();

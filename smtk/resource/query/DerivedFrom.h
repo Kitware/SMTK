@@ -30,10 +30,11 @@ namespace query
 /// be assigned at registration time. CRTP is used to ensure that Query classes
 /// all have an associated type_index and to facilitate type walking for the
 /// default priority algorithm.
-template <typename SelfType, typename ParentType>
+template<typename SelfType, typename ParentType>
 class SMTK_ALWAYS_EXPORT DerivedFrom : public ParentType
 {
-  static_assert(std::is_base_of<Query, ParentType>::value,
+  static_assert(
+    std::is_base_of<Query, ParentType>::value,
     "Queries must inherit from smtk::resource::query::Query or its children");
 
   friend class Metadata;
@@ -49,12 +50,14 @@ protected:
   /// unrelated.
   static int numberOfGenerationsFromType(const std::size_t index)
   {
-    return (DerivedFrom<SelfType, Parent>::typeIndex() == index ? 0 : 1 +
-          Parent::numberOfGenerationsFromType(index));
+    return (
+      DerivedFrom<SelfType, Parent>::typeIndex() == index
+        ? 0
+        : 1 + Parent::numberOfGenerationsFromType(index));
   }
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

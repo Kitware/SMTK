@@ -65,11 +65,11 @@ public:
 
   // for discrete items that with potential child widget
   // <Enum-Combo, child-layout >
-  QMap<QWidget*, QPointer<QLayout> > ChildrenMap;
+  QMap<QWidget*, QPointer<QLayout>> ChildrenMap;
   QMap<QWidget*, int> ElementIndexMap;
 
   // for extensible items
-  QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
+  QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget>>> ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
 };
@@ -105,13 +105,17 @@ qtDateTimeItem::qtDateTimeItem(const qtAttributeItemInfo& info)
     this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
 
     dialogLayout->addWidget(this->Internals->TimeZoneWidget);
-    QDialogButtonBox* buttonBox =
-      new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal,
-        this->Internals->TimeZoneDialog);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(
+      QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+      Qt::Horizontal,
+      this->Internals->TimeZoneDialog);
     this->Internals->TimeZoneDialogAcceptButton = buttonBox->button(QDialogButtonBox::Ok);
     this->Internals->TimeZoneDialogAcceptButton->setEnabled(false);
 
-    QObject::connect(this->Internals->TimeZoneWidget, SIGNAL(regionSelected(QString)), this,
+    QObject::connect(
+      this->Internals->TimeZoneWidget,
+      SIGNAL(regionSelected(QString)),
+      this,
       SLOT(onRegionSelected()));
 
     QObject::connect(
@@ -193,7 +197,10 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     dtEdit->setDisplayFormat(QString::fromStdString(format));
   }
   dtEdit->setCalendarPopup(def->useCalendarPopup());
-  QObject::connect(dtEdit, SIGNAL(dateTimeChanged(const QDateTime&)), this,
+  QObject::connect(
+    dtEdit,
+    SIGNAL(dateTimeChanged(const QDateTime&)),
+    this,
     SLOT(onDateTimeChanged(const QDateTime&)));
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -268,9 +275,7 @@ void qtDateTimeItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-void qtDateTimeItem::onChildWidgetSizeChanged()
-{
-}
+void qtDateTimeItem::onChildWidgetSizeChanged() {}
 
 void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
 {

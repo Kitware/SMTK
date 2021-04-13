@@ -201,10 +201,15 @@ void qtSimpleExpressionView::createWidget()
 
   frame->addWidget(leftFrame);
   frame->addWidget(rightFrame);
-  QObject::connect(this->Internals->FuncList,
-    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    this,
     SLOT(onFuncSelectionChanged(QListWidgetItem*, QListWidgetItem*)));
-  QObject::connect(this->Internals->FuncList, SIGNAL(itemChanged(QListWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncList,
+    SIGNAL(itemChanged(QListWidgetItem*)),
+    this,
     SLOT(onFuncNameChanged(QListWidgetItem*)));
 
   QObject::connect(this->Internals->AddButton, SIGNAL(clicked()), this, SLOT(onCreateNew()));
@@ -216,9 +221,15 @@ void qtSimpleExpressionView::createWidget()
     this->Internals->RemoveValueButton, SIGNAL(clicked()), this, SLOT(onRemoveSelectedValues()));
   QObject::connect(this->Internals->LoadCSVButton, SIGNAL(clicked()), this, SLOT(onCSVLoad()));
 
-  QObject::connect(this->Internals->FuncTable, SIGNAL(itemChanged(QTableWidgetItem*)), this,
+  QObject::connect(
+    this->Internals->FuncTable,
+    SIGNAL(itemChanged(QTableWidgetItem*)),
+    this,
     SLOT(onFuncValueChanged(QTableWidgetItem*)));
-  QObject::connect(this->Internals->FuncTable, SIGNAL(keyPressed(QKeyEvent*)), this,
+  QObject::connect(
+    this->Internals->FuncTable,
+    SIGNAL(keyPressed(QKeyEvent*)),
+    this,
     SLOT(onFuncTableKeyPress(QKeyEvent*)));
   this->Internals->FuncTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->FuncList->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -282,7 +293,8 @@ smtk::attribute::ValueItemPtr qtSimpleExpressionView::getFunctionStringData(
 }
 
 void qtSimpleExpressionView::onFuncSelectionChanged(
-  QListWidgetItem* current, QListWidgetItem* /*previous*/)
+  QListWidgetItem* current,
+  QListWidgetItem* /*previous*/)
 {
   smtk::attribute::GroupItemPtr dataItem = this->getArrayDataFromItem(current);
   this->Internals->FuncTable->blockSignals(true);
@@ -307,7 +319,8 @@ void qtSimpleExpressionView::onFuncSelectionChanged(
 }
 
 void qtSimpleExpressionView::updateFunctionEditorUI(
-  smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem)
+  smtk::attribute::ValueItemPtr expressionItem,
+  smtk::attribute::GroupItemPtr arrayItem)
 {
   this->Internals->ExpressionInput->setText("");
   this->Internals->NumberBox->setValue(10);
@@ -438,9 +451,7 @@ void qtSimpleExpressionView::displayExpressionError(std::string& errorMsg, int e
   this->Internals->ExpressionInput->setCursorPosition(errorPos);
 }
 
-void qtSimpleExpressionView::createFunctionWithExpression()
-{
-}
+void qtSimpleExpressionView::createFunctionWithExpression() {}
 
 void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr attDef)
 {
@@ -462,7 +473,9 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
 }
 
 void qtSimpleExpressionView::buildSimpleExpression(
-  QString& funcExpr, QString& funcVals, int numberOfComponents)
+  QString& funcExpr,
+  QString& funcVals,
+  int numberOfComponents)
 {
   if (!this->Internals->m_attDefinition)
   {
@@ -688,7 +701,9 @@ void qtSimpleExpressionView::pasteFunctionValues(QString& str, bool clearExp)
   QTableWidget* table = this->Internals->FuncTable;
   if (table->columnCount() != numColumns)
   {
-    QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),
+    QMessageBox::warning(
+      this->parentWidget(),
+      tr("SimBuilder Functions"),
       tr("The information cannot be pasted because the copy "
          "and paste columns aren't the same size."));
     return;

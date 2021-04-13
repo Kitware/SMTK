@@ -32,7 +32,10 @@ namespace
 {
 
 bool testCategories(
-  const AttributePtr& att, const ItemPtr s[], const std::set<std::string>& cats, bool result[])
+  const AttributePtr& att,
+  const ItemPtr s[],
+  const std::set<std::string>& cats,
+  bool result[])
 {
   bool status = true;
   if (att->categories().passes(cats) == result[0])
@@ -68,7 +71,10 @@ bool testCategories(
 }
 
 bool testValidity(
-  const AttributePtr& att, const ItemPtr s[], const std::set<std::string>& cats, bool result[])
+  const AttributePtr& att,
+  const ItemPtr s[],
+  const std::set<std::string>& cats,
+  bool result[])
 {
   bool status = true;
   if (att->isValid(cats) == result[0])
@@ -307,9 +313,9 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   attRes->finalizeDefinitions();
   attRes->createAttribute("TestAtt", "A");
 }
-}
+} // namespace
 
-int unitPassCategories(int /*unused*/, char* /*unused*/ [])
+int unitPassCategories(int /*unused*/, char* /*unused*/[])
 {
   //
   // I. Let's create an attribute resource and some definitions
@@ -330,7 +336,8 @@ int unitPassCategories(int /*unused*/, char* /*unused*/ [])
   writeOp->parameters()->associate(attRes);
   auto opresult = writeOp->operate();
 
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Write operation failed\n"
       << writeOp->log().convertToString());
@@ -338,7 +345,8 @@ int unitPassCategories(int /*unused*/, char* /*unused*/ [])
   smtk::attribute::Read::Ptr readOp = smtk::attribute::Read::create();
   readOp->parameters()->findFile("filename")->setValue(rname);
   opresult = readOp->operate();
-  smtkTest(opresult->findInt("outcome")->value() ==
+  smtkTest(
+    opresult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
@@ -349,15 +357,17 @@ int unitPassCategories(int /*unused*/, char* /*unused*/ [])
 
   //Test XML File I/O
   writer.write(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML writing file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML writing file (" << fname << "):\n"
+                                              << logger.convertToString());
 
   attRes = attribute::Resource::create();
   reader.read(attRes, fname, logger);
-  smtkTest(!logger.hasErrors(), "Error Generated when XML reading file ("
-      << fname << "):\n"
-      << logger.convertToString());
+  smtkTest(
+    !logger.hasErrors(),
+    "Error Generated when XML reading file (" << fname << "):\n"
+                                              << logger.convertToString());
   //Test the resource created using XML
   smtkTest(testResource(attRes, "XML Pass - "), "Failed checking Categories in XML Pass");
 

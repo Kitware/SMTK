@@ -48,15 +48,23 @@ pqSMTKPipelineSelectionBehavior::pqSMTKPipelineSelectionBehavior(QObject* parent
 
   auto& activeObjects = pqActiveObjects::instance();
 
-  QObject::connect(&activeObjects, SIGNAL(sourceChanged(pqPipelineSource*)), this,
+  QObject::connect(
+    &activeObjects,
+    SIGNAL(sourceChanged(pqPipelineSource*)),
+    this,
     SLOT(onActiveSourceChanged(pqPipelineSource*)));
 
   // Track server connects/disconnects
   auto rsrcBehavior = pqSMTKBehavior::instance();
-  QObject::connect(rsrcBehavior, SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
-    this, SLOT(observeSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
-  QObject::connect(rsrcBehavior,
-    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)), this,
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
+    SLOT(observeSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
+  QObject::connect(
+    rsrcBehavior,
+    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this,
     SLOT(unobserveSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
 }
 
@@ -87,7 +95,8 @@ void pqSMTKPipelineSelectionBehavior::setSelectionValue(const std::string& selec
 }
 
 void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -135,7 +144,8 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
 }
 
 void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
-  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr,
+  pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -185,7 +195,7 @@ void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* so
         // just because the ParaView pipeline port changed in response!
         bool alreadyHasResourceAtLeastPartiallySelected = false;
         seln->visitSelection([&activeResources, &alreadyHasResourceAtLeastPartiallySelected](
-          smtk::resource::PersistentObjectPtr obj, int val) {
+                               smtk::resource::PersistentObjectPtr obj, int val) {
           if (activeResources.find(obj) != activeResources.end() && val != 0)
           {
             alreadyHasResourceAtLeastPartiallySelected = true;
@@ -205,8 +215,12 @@ void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* so
         }
 
         int value = seln->selectionValueFromLabel(m_selectionValue);
-        seln->modifySelection(activeResources, "pqSMTKPipelineSelectionBehavior", value,
-          smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
+        seln->modifySelection(
+          activeResources,
+          "pqSMTKPipelineSelectionBehavior",
+          value,
+          smtk::view::SelectionAction::UNFILTERED_REPLACE,
+          true);
 
         return false;
       });

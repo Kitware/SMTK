@@ -54,7 +54,7 @@ private:
   bool m_hasMesh;
   bool m_hasCell;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

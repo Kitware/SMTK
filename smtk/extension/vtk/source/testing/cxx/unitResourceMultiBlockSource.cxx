@@ -67,7 +67,8 @@ void TestCache()
 
     ok = src->SetCachedData(u1, d2, 0);
     test(!ok, "Expect out-of-order insertion to fail.");
-    test(d1->GetReferenceCount() == 2,
+    test(
+      d1->GetReferenceCount() == 2,
       "Expect cache to maintain data ownership on insertion failure.");
 
     seq = src->GetCachedDataSequenceNumber(u1);
@@ -75,9 +76,11 @@ void TestCache()
 
     ok = src->SetCachedData(u1, d2, 2);
     test(ok, "Expection in-order replacement to succeed.");
-    test(d1->GetReferenceCount() == 1,
+    test(
+      d1->GetReferenceCount() == 1,
       "Expect cache to drop ownership of existing data on insertion success.");
-    test(d2->GetReferenceCount() == 2,
+    test(
+      d2->GetReferenceCount() == 2,
       "Expect cache to take ownership of new data on insertion success.");
 
     // Test methods that remove cache entries.
@@ -87,9 +90,11 @@ void TestCache()
     test(d2->GetReferenceCount() == 2, "Expect second cache insertion to take ownership of data.");
 
     src->ClearCache();
-    test(d1->GetReferenceCount() == 1,
+    test(
+      d1->GetReferenceCount() == 1,
       "Expect cache to drop ownership of existing data on insertion success.");
-    test(d2->GetReferenceCount() == 1,
+    test(
+      d2->GetReferenceCount() == 1,
       "Expect cache to take ownership of new data on insertion success.");
 
     ok = src->SetCachedData(u1, d1, 0);
@@ -134,7 +139,7 @@ void TestCache()
 
   std::cout << "  ... Done.\n";
 }
-}
+} // namespace
 
 int unitResourceMultiBlockSource(int /*unused*/, char** const /*unused*/)
 {

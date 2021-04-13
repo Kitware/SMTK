@@ -35,10 +35,10 @@ public:
   static void registerTo(const smtk::resource::query::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::query::Manager::Ptr&);
 };
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif // __VTK_WRAP__
 #endif // smtk_extension_vtk_geometry_Registrar_h

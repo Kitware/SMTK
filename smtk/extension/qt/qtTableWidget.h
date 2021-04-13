@@ -48,7 +48,7 @@ signals:
 protected slots:
   void keyPressEvent(QKeyEvent*) override;
 };
-};
-};
+}; // namespace extension
+}; // namespace smtk
 
 #endif // __smtk_extension_qtTableWidget_h

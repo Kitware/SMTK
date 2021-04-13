@@ -155,6 +155,6 @@ const char* TessellateFaces::xmlDescription() const
 {
   return TessellateFaces_xml;
 }
-}
-}
-}
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk

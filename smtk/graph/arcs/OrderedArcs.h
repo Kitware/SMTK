@@ -29,17 +29,17 @@ namespace graph
 /// All arcs must have components with the same origin and destination types.
 /// Furthermore, the arcs are ordered so that they are reported or visited in a
 /// consistent, user-specified order.
-template <typename from_type, typename to_type>
+template<typename from_type, typename to_type>
 class SMTK_ALWAYS_EXPORT OrderedArcs
 {
 public:
   typedef from_type FromType;
   typedef to_type ToType;
-  typedef std::vector<std::reference_wrapper<const ToType> > Container;
+  typedef std::vector<std::reference_wrapper<const ToType>> Container;
 
   /// Construct an OrderedArcs instance from a node of type FromType to multiple
   /// nodes of type ToType.
-  template <typename... ToTypes, typename = CompatibleTypes<ToType, ToTypes...> >
+  template<typename... ToTypes, typename = CompatibleTypes<ToType, ToTypes...>>
   OrderedArcs(const FromType& from, ToTypes const&... to)
     : m_from(from)
     , m_to({ std::ref(to)... })
@@ -48,8 +48,9 @@ public:
 
   /// Construct an OrderedArcs instance from a node of type FromType to multiple
   /// nodes of type ToType, defined using begin and end iterators.
-  template <typename Iterator>
-  OrderedArcs(const FromType& from,
+  template<typename Iterator>
+  OrderedArcs(
+    const FromType& from,
     typename std::enable_if<is_iterable<Iterator>::type, const Iterator&>::type begin,
     const Iterator& end)
     : m_from(from)
@@ -63,8 +64,9 @@ public:
 
   /// Construct an OrderedArcs instance from a node of type FromType to multiple
   /// nodes of type ToType, defined by a container of ToTypes.
-  template <typename Container>
-  OrderedArcs(const FromType& from,
+  template<typename Container>
+  OrderedArcs(
+    const FromType& from,
     typename std::enable_if<is_container<Container>::type, const Container&>::type container)
     : OrderedArcs(from, container.begin(), container.end())
   {
@@ -76,7 +78,7 @@ public:
 
   /// An API for accessing this class's information using
   /// smtk::graph::Component's API.
-  template <typename SelfType>
+  template<typename SelfType>
   class API
   {
   protected:
@@ -113,9 +115,9 @@ public:
 
 private:
   const FromType& m_from;
-  std::vector<std::reference_wrapper<const ToType> > m_to;
+  std::vector<std::reference_wrapper<const ToType>> m_to;
 };
-}
-}
+} // namespace graph
+} // namespace smtk
 
 #endif

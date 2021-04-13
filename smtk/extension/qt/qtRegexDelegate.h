@@ -34,6 +34,7 @@ public:
   }
 
   void setExpression(const std::string& exp) { m_expression.setPattern(exp.c_str()); }
+
 protected:
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
   {

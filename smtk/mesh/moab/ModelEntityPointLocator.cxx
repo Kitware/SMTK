@@ -45,15 +45,19 @@ ModelEntityPointLocator::ModelEntityPointLocator() = default;
 
 ModelEntityPointLocator::~ModelEntityPointLocator() = default;
 
-bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
-  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
+bool ModelEntityPointLocator::closestPointOn(
+  const smtk::model::EntityRef& entity,
+  std::vector<double>& closestPoints,
+  const std::vector<double>& sourcePoints,
+  bool snapToPoint)
 {
   // Attempt to access the entity's mesh tessellation
   smtk::mesh::MeshSet meshTessellation = entity.meshTessellation();
 
   // If the entity has a mesh tessellation, and the mesh backend is moab, and
   // the tessellation has triangles...
-  if (meshTessellation.isValid() && meshTessellation.resource()->interfaceName() == "moab" &&
+  if (
+    meshTessellation.isValid() && meshTessellation.resource()->interfaceName() == "moab" &&
     meshTessellation.types().hasCell(smtk::mesh::Triangle))
   {
     //...then we can use Moab's AdaptiveKDTree to find closest points.
@@ -66,8 +70,11 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
 
     // Construct an AdaptiveKDTree
     ::moab::EntityHandle treeRootSet;
-    ::moab::AdaptiveKDTree tree(interface->moabInterface(),
-      smtkToMOABRange(meshTessellation.cells().range()), &treeRootSet, &treeOptions);
+    ::moab::AdaptiveKDTree tree(
+      interface->moabInterface(),
+      smtkToMOABRange(meshTessellation.cells().range()),
+      &treeRootSet,
+      &treeOptions);
 
     // Prepare the output for its points
     closestPoints.resize(sourcePoints.size());
@@ -113,8 +120,11 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
   return false;
 }
 
-bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
-  const std::size_t nPoints, std::vector<double>& points, const std::size_t seed)
+bool ModelEntityPointLocator::randomPoint(
+  const smtk::model::EntityRef& entity,
+  const std::size_t nPoints,
+  std::vector<double>& points,
+  const std::size_t seed)
 {
   // Select random points on an entity based on the following:
   //
@@ -138,7 +148,8 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
 
   // If the entity has a mesh tessellation, and the mesh backend is moab, and
   // the tessellation has triangles...
-  if (meshTessellation.isValid() && meshTessellation.resource()->interfaceName() == "moab" &&
+  if (
+    meshTessellation.isValid() && meshTessellation.resource()->interfaceName() == "moab" &&
     meshTessellation.types().hasCell(smtk::mesh::Triangle))
   {
     //...then we can use Moab's AdaptiveKDTree to find closest points.
@@ -151,8 +162,11 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
 
     // Construct an AdaptiveKDTree
     ::moab::EntityHandle treeRootSet;
-    ::moab::AdaptiveKDTree tree(interface->moabInterface(),
-      smtkToMOABRange(meshTessellation.cells().range()), &treeRootSet, &treeOptions);
+    ::moab::AdaptiveKDTree tree(
+      interface->moabInterface(),
+      smtkToMOABRange(meshTessellation.cells().range()),
+      &treeRootSet,
+      &treeOptions);
 
     // Prepare the output for its points
     points.resize(3 * nPoints);
@@ -199,9 +213,11 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
       double cosPhiPlusPiOver2 = std::cos(phi + M_PI / 2.);
 
       const std::array<double, 3> tangent1 = { sinThetaPlusPiOver2 * cosPhi,
-        sinThetaPlusPiOver2 * sinPhi, cosThetaPlusPiOver2 };
+                                               sinThetaPlusPiOver2 * sinPhi,
+                                               cosThetaPlusPiOver2 };
       const std::array<double, 3> tangent2 = { sinTheta * cosPhiPlusPiOver2,
-        sinTheta * sinPhiPlusPiOver2, cosTheta };
+                                               sinTheta * sinPhiPlusPiOver2,
+                                               cosTheta };
 
       // Construct a random point on a disk with radius equal to the radius of
       // our bounding sphere
@@ -226,7 +242,7 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
       std::array<double, 3> dir = { -dUnit[0], -dUnit[1], -dUnit[2] };
 
       // Compute the intersection of our ray and the surface
-      std::vector< ::moab::EntityHandle> trianglesOut;
+      std::vector<::moab::EntityHandle> trianglesOut;
       std::vector<double> distanceOut;
       tree.ray_intersect_triangles(
         treeRootSet, tolerance, dir.data(), p.data(), trianglesOut, distanceOut, 0, diameter);
@@ -247,11 +263,13 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
   }
   return false;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 smtkDeclareExtension(
-  SMTKCORE_EXPORT, moab_model_entity_point_locator, smtk::mesh::moab::ModelEntityPointLocator);
+  SMTKCORE_EXPORT,
+  moab_model_entity_point_locator,
+  smtk::mesh::moab::ModelEntityPointLocator);
 
 smtkComponentInitMacro(smtk_moab_model_entity_point_locator_extension);

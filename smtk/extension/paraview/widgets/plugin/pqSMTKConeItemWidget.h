@@ -41,7 +41,8 @@ class pqSMTKConeItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKConeItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKConeItemWidget();
 
   /// Create an instance of the widget that allows users to define a cone.

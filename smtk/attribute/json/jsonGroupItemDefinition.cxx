@@ -86,7 +86,9 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinition
   }
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefinitionPtr& defPtr,
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::GroupItemDefinitionPtr& defPtr,
   const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
@@ -165,5 +167,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

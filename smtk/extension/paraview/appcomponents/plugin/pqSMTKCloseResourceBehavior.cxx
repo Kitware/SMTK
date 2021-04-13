@@ -62,7 +62,7 @@ public:
 private:
   std::string message;
 };
-}
+} // namespace
 
 void initCloseResourceBehaviorResources()
 {
@@ -86,7 +86,7 @@ void pqCloseResourceReaction::updateEnableState()
   // TODO: also is there's a pending accept.
   bool enable_state =
     (activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
+     dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
   this->parentAction()->setEnabled(enable_state);
 }
 
@@ -181,7 +181,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
   }
   return nullptr;
 }
-}
+} // namespace
 
 static pqSMTKCloseResourceBehavior* g_instance = nullptr;
 

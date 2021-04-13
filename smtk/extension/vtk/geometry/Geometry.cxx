@@ -25,7 +25,9 @@ namespace geometry
 {
 
 void Geometry::addColorArray(
-  vtkDataObject* data, const std::vector<double>& rgba, const std::string& arrayName)
+  vtkDataObject* data,
+  const std::vector<double>& rgba,
+  const std::string& arrayName)
 {
   if (rgba.size() != 4 || rgba[3] <= 0.0)
   {

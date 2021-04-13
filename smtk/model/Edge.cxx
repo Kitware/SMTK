@@ -53,7 +53,8 @@ EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
   smtk::model::Resource::Ptr resource(m_resource.lock());
   if (this->isValid())
   {
-    return EdgeUse(resource,
+    return EdgeUse(
+      resource,
       resource->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, sense, orientation));
   }
   return EdgeUse();

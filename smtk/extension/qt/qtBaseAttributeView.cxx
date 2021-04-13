@@ -90,7 +90,8 @@ qtBaseAttributeView::~qtBaseAttributeView()
 }
 
 void qtBaseAttributeView::getDefinitions(
-  smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs)
+  smtk::attribute::DefinitionPtr attDef,
+  QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
   attribute::ResourcePtr attResource = attDef->resource();
@@ -185,8 +186,10 @@ void qtBaseAttributeView::valueChanged(smtk::attribute::ItemPtr item)
 namespace
 {
 
-void signalAttribute(smtk::extension::qtUIManager* uiManager,
-  const smtk::attribute::AttributePtr& attr, const char* itemName,
+void signalAttribute(
+  smtk::extension::qtUIManager* uiManager,
+  const smtk::attribute::AttributePtr& attr,
+  const char* itemName,
   std::vector<std::string> items = std::vector<std::string>())
 {
   if (attr && uiManager && itemName && itemName[0])
@@ -211,7 +214,7 @@ void signalAttribute(smtk::extension::qtUIManager* uiManager,
     }
   }
 }
-}
+} // namespace
 
 void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& attr)
 {
@@ -274,7 +277,8 @@ void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& 
 }
 
 void qtBaseAttributeView::attributeChanged(
-  const smtk::attribute::AttributePtr& attr, std::vector<std::string> items)
+  const smtk::attribute::AttributePtr& attr,
+  std::vector<std::string> items)
 {
   if (attr == nullptr)
   {
@@ -430,7 +434,8 @@ void qtBaseAttributeView::buildUI()
 
 void qtBaseAttributeView::setInitialCategory()
 {
-  if (this->isTopLevel() && (this->Internals->ShowCategoryCombo != nullptr) &&
+  if (
+    this->isTopLevel() && (this->Internals->ShowCategoryCombo != nullptr) &&
     this->Internals->ShowCategoryCombo->isEnabled())
   {
     this->onShowCategory();
@@ -468,7 +473,8 @@ void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::Configurat
 }
 
 void qtBaseAttributeView::topLevelPrepCategories(
-  const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource)
+  const smtk::view::ConfigurationPtr& view,
+  const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is on by default
@@ -504,7 +510,8 @@ void qtBaseAttributeView::topLevelPrepCategories(
 }
 
 void qtBaseAttributeView::topLevelPrepConfigurations(
-  const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource)
+  const smtk::view::ConfigurationPtr& view,
+  const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is off by default
@@ -528,7 +535,8 @@ void qtBaseAttributeView::topLevelPrepConfigurations(
     smtk::attribute::Analyses& analyses = attResource->analyses();
     // Was a definition label specified?
     std::string configDefLabel;
-    if ((!view->details().attribute("ConfigurationTypeLabel", configDefLabel)) ||
+    if (
+      (!view->details().attribute("ConfigurationTypeLabel", configDefLabel)) ||
       configDefLabel.empty())
     {
       configDef = analyses.buildAnalysesDefinition(attResource, configDefType);
@@ -576,7 +584,10 @@ void qtBaseAttributeView::makeTopLevel()
     this->Internals->TopLevelLayout->addWidget(this->Internals->m_configurationLabel);
     this->Internals->TopLevelLayout->addWidget(this->Internals->m_configurationCombo);
 
-    QObject::connect(this->Internals->m_configurationCombo, SIGNAL(currentIndexChanged(int)), this,
+    QObject::connect(
+      this->Internals->m_configurationCombo,
+      SIGNAL(currentIndexChanged(int)),
+      this,
       SLOT(onConfigurationChanged(int)));
   }
   else if (this->Internals->ShowCategoryCombo)
@@ -584,7 +595,10 @@ void qtBaseAttributeView::makeTopLevel()
     if (this->Internals->FilterByCategory)
     {
       this->Internals->TopLevelLayout->addWidget(this->Internals->FilterByCategory);
-      QObject::connect(this->Internals->FilterByCategory, SIGNAL(stateChanged(int)), this,
+      QObject::connect(
+        this->Internals->FilterByCategory,
+        SIGNAL(stateChanged(int)),
+        this,
         SLOT(enableShowBy(int)));
     }
     else
@@ -593,7 +607,10 @@ void qtBaseAttributeView::makeTopLevel()
     }
     this->Internals->TopLevelLayout->addWidget(this->Internals->ShowCategoryCombo);
 
-    QObject::connect(this->Internals->ShowCategoryCombo, SIGNAL(currentIndexChanged(int)), this,
+    QObject::connect(
+      this->Internals->ShowCategoryCombo,
+      SIGNAL(currentIndexChanged(int)),
+      this,
       SLOT(onShowCategory()));
   }
 
@@ -605,7 +622,10 @@ void qtBaseAttributeView::makeTopLevel()
   {
     this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelLabel);
     this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelCombo);
-    QObject::connect(this->Internals->AdvLevelCombo, SIGNAL(currentIndexChanged(int)), this,
+    QObject::connect(
+      this->Internals->AdvLevelCombo,
+      SIGNAL(currentIndexChanged(int)),
+      this,
       SLOT(onAdvanceLevelChanged(int)));
   }
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*>(this->parentWidget()->layout());
@@ -738,7 +758,8 @@ void qtBaseAttributeView::onConfigurationChanged(int index)
 
   // Are we dealing with the ability to create new configurations and did the
   // user pick the create option?
-  if (m_topLevelCanCreateConfigurations &&
+  if (
+    m_topLevelCanCreateConfigurations &&
     (index == (this->Internals->m_configurationCombo->count() - 1)))
   {
     smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
@@ -796,7 +817,8 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
   {
     attNames.push_back(att->name().c_str());
 
-    if ((att->properties().get<long>().contains("_selectedConfiguration")) &&
+    if (
+      (att->properties().get<long>().contains("_selectedConfiguration")) &&
       (att->properties().get<long>()["_selectedConfiguration"] == 1))
     {
       // If the current config name is not set then record this as the

@@ -37,7 +37,7 @@ protected:
   virtual const char* xmlDescription() const override;
   void markModifiedResources(Result&) override;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

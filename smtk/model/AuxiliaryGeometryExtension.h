@@ -34,12 +34,13 @@ public:
 
   /// Returns true (and sets \a bboxOut) if \a entity's tessellation can be created.
   virtual bool canHandleAuxiliaryGeometry(
-    smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut) = 0;
+    smtk::model::AuxiliaryGeometry& entity,
+    std::vector<double>& bboxOut) = 0;
 
 protected:
   AuxiliaryGeometryExtension();
 };
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif

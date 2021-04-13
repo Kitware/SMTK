@@ -51,13 +51,14 @@ bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& /*value*/)
 }
 
 smtk::attribute::ItemPtr DateTimeItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new DateTimeItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr DateTimeItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+DateTimeItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new DateTimeItem(owningItem, itemPosition, subGroupPosition));
 }

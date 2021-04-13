@@ -53,14 +53,16 @@ public:
   //Edit this arc representation with the widget proxy passed in
   //this will update the arc state when it is done
   virtual bool editEdge(
-    vtkSMNewWidgetRepresentationProxy* widget, const smtk::common::UUID& edgeid);
+    vtkSMNewWidgetRepresentationProxy* widget,
+    const smtk::common::UUID& edgeid);
 
   //Description:
   //Update the server side arc with the new widget proxy shape
   //returns true if it could update the arc
   //filles the passed in vtkIdTypeArray with arcs that need to be created
   virtual bool updateArc(
-    vtkSMNewWidgetRepresentationProxy* widget, vtkIdTypeArray* newlyCreatedArcIds);
+    vtkSMNewWidgetRepresentationProxy* widget,
+    vtkIdTypeArray* newlyCreatedArcIds);
 
   //Description:
   //Update the server with a connection between this arc

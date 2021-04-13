@@ -42,7 +42,9 @@ Allocator::~Allocator()
   m_rface = nullptr;
 }
 
-bool Allocator::allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
+bool Allocator::allocatePoints(
+  std::size_t numPointsToAlloc,
+  smtk::mesh::Handle& firstVertexHandle,
   std::vector<double*>& coordinateMemory)
 {
   if (m_rface == nullptr)
@@ -50,15 +52,20 @@ bool Allocator::allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle&
     return false;
   }
   ::moab::ErrorCode err;
-  err = m_rface->get_node_coords(3, //x,y,z
+  err = m_rface->get_node_coords(
+    3, //x,y,z
     static_cast<int>(numPointsToAlloc),
     0, //preferred_start_id
-    firstVertexHandle, coordinateMemory);
+    firstVertexHandle,
+    coordinateMemory);
   return err == ::moab::MB_SUCCESS;
 }
 
-bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCellsToAlloc,
-  int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
+bool Allocator::allocateCells(
+  smtk::mesh::CellType cellType,
+  std::size_t numCellsToAlloc,
+  int numVertsPerCell,
+  smtk::mesh::HandleRange& createdCellIds,
   smtk::mesh::Handle*& connectivityArray)
 {
   if (m_rface == nullptr)
@@ -70,25 +77,36 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCell
 
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
-  err = m_rface->get_element_connect(static_cast<int>(numCellsToAlloc), numVertsPerCell,
-    static_cast< ::moab::EntityType>(moabCellType),
+  err = m_rface->get_element_connect(
+    static_cast<int>(numCellsToAlloc),
+    numVertsPerCell,
+    static_cast<::moab::EntityType>(moabCellType),
     0, //preferred_start_id
-    startHandle, connectivityArray);
+    startHandle,
+    connectivityArray);
 
   createdCellIds = smtk::mesh::HandleRange(
     smtk::mesh::HandleInterval(startHandle, startHandle + numCellsToAlloc - 1));
   return err == ::moab::MB_SUCCESS;
 }
 
-bool Allocator::connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate,
-  int numVertsPerCell, const smtk::mesh::Handle* connectivityArray)
+bool Allocator::connectivityModified(
+  const smtk::mesh::HandleRange& cellsToUpdate,
+  int numVertsPerCell,
+  const smtk::mesh::Handle* connectivityArray)
 {
-  return this->connectivityModified(smtk::mesh::rangeElement(cellsToUpdate, 0),
-    static_cast<int>(cellsToUpdate.size()), numVertsPerCell, connectivityArray);
+  return this->connectivityModified(
+    smtk::mesh::rangeElement(cellsToUpdate, 0),
+    static_cast<int>(cellsToUpdate.size()),
+    numVertsPerCell,
+    connectivityArray);
 }
 
-bool Allocator::connectivityModified(smtk::mesh::Handle firstCellToUpdate,
-  int numberOfCellsToUpdate, int numVertsPerCell, const smtk::mesh::Handle* connectivityArray)
+bool Allocator::connectivityModified(
+  smtk::mesh::Handle firstCellToUpdate,
+  int numberOfCellsToUpdate,
+  int numVertsPerCell,
+  const smtk::mesh::Handle* connectivityArray)
 {
   if (m_rface == nullptr)
   {
@@ -100,6 +118,6 @@ bool Allocator::connectivityModified(smtk::mesh::Handle firstCellToUpdate,
     firstCellToUpdate, numberOfCellsToUpdate, numVertsPerCell, connectivityArray);
   return err == ::moab::MB_SUCCESS;
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

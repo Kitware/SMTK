@@ -56,9 +56,10 @@ void cleanup(const std::string& file_path)
 
 void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
 {
-  smtk::model::EntityRefArray children = (root.isModel()
-      ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
-      : (root.isCellEntity()
+  smtk::model::EntityRefArray children =
+    (root.isModel()
+       ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+       : (root.isCellEntity()
             ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
             : (root.isGroup() ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
                               : smtk::model::EntityRefArray())));
@@ -106,7 +107,7 @@ void ValidateModelTopology(smtk::model::Model model)
   std::cout << count[0] << " vertex groups" << std::endl;
   test(count[0] == 6, "There should be six vertex groups");
 }
-}
+} // namespace
 
 int UnitTestPolygonReadWrite(int argc, char* argv[])
 {
@@ -142,7 +143,8 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   std::cout << "Importing " << readFilePath << std::endl;
 
   smtk::operation::Operation::Result importOpResult = importOp->operate();
-  test(importOpResult->findInt("outcome")->value() ==
+  test(
+    importOpResult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Import operator failed");
 
@@ -179,7 +181,8 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
     writeOp->parameters()->associate(polygonResource);
 
     smtk::operation::Operation::Result writeOpResult = writeOp->operate();
-    test(writeOpResult->findInt("outcome")->value() ==
+    test(
+      writeOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Write operator failed");
 
@@ -191,7 +194,8 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
     readOp->parameters()->findFile("filename")->setValue(writeFilePath);
 
     smtk::operation::Operation::Result readOpResult = readOp->operate();
-    test(readOpResult->findInt("outcome")->value() ==
+    test(
+      readOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Read operator failed");
 

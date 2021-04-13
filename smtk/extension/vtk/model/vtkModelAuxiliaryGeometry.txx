@@ -15,7 +15,7 @@
 #include "vtkTransform.h"
 #include "vtkTransformFilter.h"
 
-template <typename T, typename U>
+template<typename T, typename U>
 vtkSmartPointer<T> vtkModelAuxiliaryGeometry::ReadData(
   const smtk::model::AuxiliaryGeometry& auxGeom)
 {

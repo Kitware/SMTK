@@ -62,14 +62,16 @@ public:
 
   /// Register an operation identified by its unique name and give it values.
   bool registerOperation(
-    const std::string&, std::set<std::string> values = std::set<std::string>());
+    const std::string&,
+    std::set<std::string> values = std::set<std::string>());
 
   /// Register an operation identified by its type index and give it values.
   bool registerOperation(
-    const Operation::Index&, std::set<std::string> values = std::set<std::string>());
+    const Operation::Index&,
+    std::set<std::string> values = std::set<std::string>());
 
   /// Register an operation identified by its class type and give it values.
-  template <typename OperationType>
+  template<typename OperationType>
   bool registerOperation(std::set<std::string> values = std::set<std::string>());
 
   /// Unregister an operation identified by its unique name.
@@ -79,7 +81,7 @@ public:
   bool unregisterOperation(const Operation::Index&);
 
   /// Unregister an operation identified by its class type.
-  template <typename OperationType>
+  template<typename OperationType>
   bool unregisterOperation();
 
   /// Access the specification of an operation identified by its unique name.
@@ -89,7 +91,7 @@ public:
   Operation::Specification specification(const Operation::Index&) const;
 
   /// Access the specification of an operation identified by its class type.
-  template <typename OperationType>
+  template<typename OperationType>
   Operation::Specification specification() const;
 
   /// Check if an operation identified by it's unique name is in the group.
@@ -99,7 +101,7 @@ public:
   bool contains(const Operation::Index&) const;
 
   /// Check if an operation identified by its class type is in the group.
-  template <typename OperationType>
+  template<typename OperationType>
   bool contains() const;
 
   /// Obtain values for an operation identified by it's unique name is in the
@@ -112,7 +114,7 @@ public:
 
   /// Obtain values for an operation identified by its class type is in the
   /// group.
-  template <typename OperationType>
+  template<typename OperationType>
   std::set<std::string> values() const;
 
   /// Return a set of operation indices that belong to this group.
@@ -147,7 +149,8 @@ protected:
   ///
   /// \sa smtk::operation::DeleterGroup
   std::size_t operationObjectDistance(
-    const Operation::Index& index, const smtk::resource::PersistentObject& obj) const;
+    const Operation::Index& index,
+    const smtk::resource::PersistentObject& obj) const;
 
   /// A utility to fetch association rules for a given operation (used in operationObjectDistance).
   smtk::attribute::ConstReferenceItemDefinitionPtr operationAssociationsRule(
@@ -157,36 +160,36 @@ private:
   std::string m_name;
 };
 
-template <typename OperationType>
+template<typename OperationType>
 bool Group::registerOperation(std::set<std::string> values)
 {
   return registerOperation(std::type_index(typeid(OperationType)).hash_code(), values);
 }
 
-template <typename OperationType>
+template<typename OperationType>
 bool Group::unregisterOperation()
 {
   return unregisterOperation(std::type_index(typeid(OperationType)).hash_code());
 }
 
-template <typename OperationType>
+template<typename OperationType>
 Operation::Specification Group::specification() const
 {
   return specification(std::type_index(typeid(OperationType)).hash_code());
 }
 
-template <typename OperationType>
+template<typename OperationType>
 bool Group::contains() const
 {
   return contains(std::type_index(typeid(OperationType)).hash_code());
 }
 
-template <typename OperationType>
+template<typename OperationType>
 std::set<std::string> Group::values() const
 {
   return values(std::type_index(typeid(OperationType)).hash_code());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_Metadata_h

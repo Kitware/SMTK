@@ -39,15 +39,16 @@ namespace attribute
   * indicate the selection.
   */
 struct SMTKCORE_EXPORT SelectionFootprint
-  : public smtk::resource::query::DerivedFrom<SelectionFootprint,
-      smtk::geometry::SelectionFootprint>
+  : public smtk::resource::query::
+      DerivedFrom<SelectionFootprint, smtk::geometry::SelectionFootprint>
 {
   /// Return the "selection footprint" of \a selectedObject.
   ///
   /// This is a set of persistent objects that should be rendered as "selected"
   /// instead of the input \a selectedObject, usually because \a selectedObject
   /// has no visual representation itself.
-  virtual bool operator()(smtk::resource::PersistentObject& selectedObject,
+  virtual bool operator()(
+    smtk::resource::PersistentObject& selectedObject,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const override
   {
@@ -96,7 +97,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
     return hasFootprint;
   }
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif

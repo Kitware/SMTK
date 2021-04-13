@@ -37,7 +37,7 @@ namespace
 {
 // SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-}
+} // namespace
 
 // This test is designed to check that an empty group is not returned when a
 // query is performed that filters for a model component type.
@@ -67,7 +67,8 @@ int TestGroupPropertyQuery(int argc, char* argv[])
     }
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
-    if (importOpResult->findInt("outcome")->value() !=
+    if (
+      importOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
@@ -117,7 +118,8 @@ int TestGroupPropertyQuery(int argc, char* argv[])
 
     auxGeoOp->parameters()->associateEntity(model);
     smtk::operation::Operation::Result auxGeoOpResult = auxGeoOp->operate();
-    if (auxGeoOpResult->findInt("outcome")->value() !=
+    if (
+      auxGeoOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Add auxiliary geometry failed!\n";
@@ -190,7 +192,8 @@ int TestGroupPropertyQuery(int argc, char* argv[])
     std::cout << count << std::endl;
   }
 
-  smtkTest(std::equal(counts.begin(), counts.end(), expected.begin()),
+  smtkTest(
+    std::equal(counts.begin(), counts.end(), expected.begin()),
     "query string returned unexpected result");
 
   return 0;

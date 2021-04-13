@@ -16,4 +16,4 @@ namespace view
 {
 Information::~Information() = default;
 }
-}
+} // namespace smtk

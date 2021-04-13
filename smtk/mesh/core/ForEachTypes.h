@@ -43,8 +43,8 @@ public:
 
   virtual ~CellForEach();
 
-  virtual void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPointIds) = 0;
+  virtual void
+  forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPointIds) = 0;
 
   //returns true if the CellForEach visitor wants its coordinates member
   //variable filled
@@ -93,12 +93,14 @@ public:
   // Note: by default coordinatesModified is set to false
   //
   //
-  virtual void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  virtual void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) = 0;
 
   smtk::mesh::ResourcePtr m_resource;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

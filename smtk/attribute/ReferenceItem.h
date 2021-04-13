@@ -174,10 +174,11 @@ public:
     * objects that inherit smtk::model::Entity; other objects return a
     * nullptr when cast and this method skips values which evaluate to false.
     */
-  template <typename Container>
-  void as(Container& result,
-    std::function<typename Container::value_type(const PersistentObjectPtr&)> converter = [](
-      const PersistentObjectPtr& obj) { return obj; }) const
+  template<typename Container>
+  void as(
+    Container& result,
+    std::function<typename Container::value_type(const PersistentObjectPtr&)> converter =
+      [](const PersistentObjectPtr& obj) { return obj; }) const
   {
     for (auto it = this->begin(); it != this->end(); ++it)
     {
@@ -193,9 +194,10 @@ public:
       }
     }
   }
-  template <typename Container>
-  Container as(std::function<typename Container::value_type(const PersistentObjectPtr&)> converter =
-                 [](const PersistentObjectPtr& obj) { return obj; }) const
+  template<typename Container>
+  Container as(
+    std::function<typename Container::value_type(const PersistentObjectPtr&)> converter =
+      [](const PersistentObjectPtr& obj) { return obj; }) const
   {
     Container result;
     this->as(result, converter);
@@ -215,7 +217,7 @@ public:
 
   /// Return the \a i-th object stored in this item.
   PersistentObjectPtr value(std::size_t i = 0) const;
-  template <typename T>
+  template<typename T>
   typename T::Ptr valueAs(std::size_t i = 0) const
   {
     return std::dynamic_pointer_cast<T>(this->value(i));
@@ -277,12 +279,12 @@ public:
     return this->appendValue(val);
   }
 
-  template <typename I>
+  template<typename I>
   bool setValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
-  template <typename I>
+  template<typename I>
   bool appendValues(I vbegin, I vend);
 
-  template <typename I>
+  template<typename I>
   [[deprecated(
     "ReferenceItem::setObjectValues has been replaced with ReferenceItem::setValues")]] bool
   setObjectValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0)
@@ -290,7 +292,7 @@ public:
     return this->setValues<I>(vbegin, vend, offset);
   }
 
-  template <typename I>
+  template<typename I>
   [[deprecated(
     "ReferenceItem::appendObjectValues has been replaced with ReferenceItem::appendValues")]] bool
   appendObjectValues(I vbegin, I vend)
@@ -298,10 +300,13 @@ public:
     return this->appendValues<I>(vbegin, vend);
   }
 
-  template <typename I, typename T>
-  bool setValuesVia(I vbegin, I vend, const T& converter,
+  template<typename I, typename T>
+  bool setValuesVia(
+    I vbegin,
+    I vend,
+    const T& converter,
     typename std::iterator_traits<I>::difference_type offset = 0);
-  template <typename I, typename T>
+  template<typename I, typename T>
   bool appendValuesVia(I vbegin, I vend, const T& converter);
 
   /**\brief Add \a val if it is allowed and \a val is not already present in the item.
@@ -384,7 +389,8 @@ public:
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
-  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+  void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
     bool activeChildren = true) override;
 
   /**\brief  Return the number of all children items associated with the item.
@@ -454,8 +460,8 @@ protected:
 
   /// \brief Internal implementation of the find method
   smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
-  smtk::attribute::ConstItemPtr findInternal(
-    const std::string& name, SearchStyle style) const override;
+  smtk::attribute::ConstItemPtr findInternal(const std::string& name, SearchStyle style)
+    const override;
 
   /// \brief Update the vector of active children based on the item's current value
   void updateActiveChildrenItems();
@@ -467,7 +473,7 @@ private:
   /// access methods that are templated over the iterator type, we separate the
   /// logic for testing if an iterator is valid into its own template with a
   /// specialization for ReferenceItem::const_iterator.
-  template <typename I>
+  template<typename I>
   bool iteratorIsSet(const I& iterator) const;
 
   void assignToCache(std::size_t i, const PersistentObjectPtr& obj) const;
@@ -483,13 +489,15 @@ private:
   std::size_t m_currentConditional;
 };
 
-template <>
+template<>
 SMTKCORE_EXPORT bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
   const ReferenceItem::const_iterator& iterator) const;
 
-template <typename I>
+template<typename I>
 bool ReferenceItem::setValues(
-  I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset)
+  I vbegin,
+  I vend,
+  typename std::iterator_traits<I>::difference_type offset)
 {
   bool ok = false;
   std::size_t num = std::distance(vbegin, vend) + offset;
@@ -519,15 +527,18 @@ bool ReferenceItem::setValues(
   return ok;
 }
 
-template <typename I>
+template<typename I>
 bool ReferenceItem::appendValues(I vbegin, I vend)
 {
   return this->setValues(vbegin, vend, this->numberOfValues());
 }
 
-template <typename I, typename T>
+template<typename I, typename T>
 bool ReferenceItem::setValuesVia(
-  I vbegin, I vend, const T& converter, typename std::iterator_traits<I>::difference_type offset)
+  I vbegin,
+  I vend,
+  const T& converter,
+  typename std::iterator_traits<I>::difference_type offset)
 {
   bool ok = false;
   std::size_t num = std::distance(vbegin, vend) + offset;
@@ -557,13 +568,13 @@ bool ReferenceItem::setValuesVia(
   return ok;
 }
 
-template <typename I, typename T>
+template<typename I, typename T>
 bool ReferenceItem::appendValuesVia(I vbegin, I vend, const T& converter)
 {
   return this->setValuesVia(vbegin, vend, converter, this->numberOfValues());
 }
 
-template <typename I>
+template<typename I>
 bool ReferenceItem::iteratorIsSet(const I& iterator) const
 {
   return !!(*iterator);

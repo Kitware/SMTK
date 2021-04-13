@@ -36,8 +36,12 @@ public:
   Internal();
   ~Internal();
 
-  void setup(qtResourceBrowser* self, const smtk::view::PhraseModelPtr& phraseModel,
-    const std::string& viewName, QAbstractItemModel* qmodel, QWidget* parent);
+  void setup(
+    qtResourceBrowser* self,
+    const smtk::view::PhraseModelPtr& phraseModel,
+    const std::string& viewName,
+    QAbstractItemModel* qmodel,
+    QWidget* parent);
 
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
   void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
@@ -66,6 +70,6 @@ public:
   // the panel is being updated from SMTK:
   bool m_updatingPanelSelectionFromSMTK;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 #endif // smtk_extension_qt_qtResourceBrowserP_h

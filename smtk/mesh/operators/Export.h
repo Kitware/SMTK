@@ -35,7 +35,7 @@ protected:
   virtual const char* xmlDescription() const override;
 };
 
-} // mesh namespace
-} // smtk namespace
+} // namespace mesh
+} // namespace smtk
 
 #endif // __smtk_mesh_Export_h

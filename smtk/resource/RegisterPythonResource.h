@@ -20,8 +20,9 @@ namespace resource
 {
 
 SMTKCORE_EXPORT bool registerPythonResource(
-  const smtk::resource::Manager::Ptr& resourceManager, const std::string& moduleName);
+  const smtk::resource::Manager::Ptr& resourceManager,
+  const std::string& moduleName);
 }
-}
+} // namespace smtk
 
 #endif

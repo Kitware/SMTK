@@ -58,7 +58,7 @@ void flushEventQueue()
     QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
   }
 }
-}
+} // namespace
 
 // Get the qt Launcher
 smtk::extension::qtOperationLauncher* TestOperationLauncher::GetLauncher()
@@ -78,10 +78,10 @@ smtk::extension::qtOperationLauncher* TestOperationLauncher::GetLauncher()
 }
 
 // Open operation
-std::vector<std::future<smtk::operation::Operation::Result> > TestOperationLauncher::OpenFiles(
+std::vector<std::future<smtk::operation::Operation::Result>> TestOperationLauncher::OpenFiles(
   const std::vector<std::string>& files)
 {
-  std::vector<std::future<smtk::operation::Operation::Result> > futures;
+  std::vector<std::future<smtk::operation::Operation::Result>> futures;
   for (auto& file : files)
   {
     smtk::session::mesh::Import::Ptr importOp =
@@ -96,9 +96,12 @@ std::vector<std::future<smtk::operation::Operation::Result> > TestOperationLaunc
     // Since this connection is made inside the loop, it needs to be a one-shot.
     // Remove the connection once the lambda expression is called.
     QMetaObject::Connection* connection = new QMetaObject::Connection;
-    *connection = QObject::connect(launcher, &smtk::extension::qtOperationLauncher::resultReady,
+    *connection = QObject::connect(
+      launcher,
+      &smtk::extension::qtOperationLauncher::resultReady,
       [this, file, connection](smtk::operation::Operation::Result result) {
-        if (result->findInt("outcome")->value() !=
+        if (
+          result->findInt("outcome")->value() !=
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           std::cerr << "Could not import resource at " << file << "\n";
@@ -120,12 +123,15 @@ std::vector<std::future<smtk::operation::Operation::Result> > TestOperationLaunc
 
 void TestOperationLauncher::run()
 {
-  std::vector<std::string> testFiles = { { dataRoot +
-      "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo",
-    dataRoot + "/model/3d/genesis/gun-1fourth.gen", dataRoot + "/mesh/3d/cube.exo",
-    dataRoot + "/mesh/3d/cube_with_hole.exo", dataRoot + "/model/3d/exodus/sx_bar_hex.exo" } };
+  std::vector<std::string> testFiles = {
+    { dataRoot + "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo",
+      dataRoot + "/model/3d/genesis/gun-1fourth.gen",
+      dataRoot + "/mesh/3d/cube.exo",
+      dataRoot + "/mesh/3d/cube_with_hole.exo",
+      dataRoot + "/model/3d/exodus/sx_bar_hex.exo" }
+  };
 
-  std::vector<std::future<smtk::operation::Operation::Result> > results = OpenFiles(testFiles);
+  std::vector<std::future<smtk::operation::Operation::Result>> results = OpenFiles(testFiles);
 
   // Because we are driving this test programatically, we need to give Qt's
   // event queue time to flush. Qt's queued connections post their actions on
@@ -176,8 +182,9 @@ int UnitTestOperationLauncher(int argc, char* argv[])
     new TestOperationLauncher(resourceManager, operationManager, &application);
 
   // Exit when the task signals finished
-  QObject::connect(testOperationLauncher, &TestOperationLauncher::finished,
-    [&application]() { QTimer::singleShot(0, &application, &QCoreApplication::quit); });
+  QObject::connect(testOperationLauncher, &TestOperationLauncher::finished, [&application]() {
+    QTimer::singleShot(0, &application, &QCoreApplication::quit);
+  });
 
   // Run the task from the application event loop
   QTimer::singleShot(0, testOperationLauncher, SLOT(run()));

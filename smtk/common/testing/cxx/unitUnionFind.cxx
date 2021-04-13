@@ -15,7 +15,7 @@
 
 using namespace smtk::common;
 
-template <typename T>
+template<typename T>
 int testUnionFind()
 {
   UnionFind<T> uf;

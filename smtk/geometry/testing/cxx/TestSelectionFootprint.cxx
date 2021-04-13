@@ -65,7 +65,7 @@ public:
   std::string name() const override { return "Backend"; }
 };
 
-class Geometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format> >
+class Geometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>>
 {
 public:
   smtkTypeMacro(Geometry);
@@ -83,8 +83,8 @@ public:
 
   smtk::geometry::Resource::Ptr resource() const override { return m_parent.lock(); }
 
-  void queryGeometry(
-    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override
+  void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+    const override
   {
     auto comp = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
     if (comp && comp->isCellEntity())
@@ -111,18 +111,18 @@ public:
     if (rsrc)
     {
       // Populate cells with valid geometry; eliminate all others.
-      smtk::resource::Component::Visitor visitor = [this](
-        const smtk::resource::Component::Ptr& comp) {
-        auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
-        if (ent && ent->isCellEntity())
-        {
-          m_cache[ent->id()] = CacheEntry{ Initial, 1 };
-        }
-        else
-        {
-          m_cache.erase(ent->id());
-        }
-      };
+      smtk::resource::Component::Visitor visitor =
+        [this](const smtk::resource::Component::Ptr& comp) {
+          auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+          if (ent && ent->isCellEntity())
+          {
+            m_cache[ent->id()] = CacheEntry{ Initial, 1 };
+          }
+          else
+          {
+            m_cache.erase(ent->id());
+          }
+        };
       rsrc->visit(visitor);
       // Also erase the cache entry for the resource itself (since
       // we know it does not have valid geometry).
@@ -155,7 +155,7 @@ public:
   }
 };
 
-template <typename Footprint>
+template<typename Footprint>
 void dump(const Footprint& footprint, const std::string& msg)
 {
   std::cout << msg << "\n";
@@ -268,7 +268,8 @@ int TestSelectionFootprint(int /*unused*/, char** const /*unused*/)
   std::unordered_set<smtk::resource::PersistentObject*> face0Footprint;
   msf(*face0.component(), face0Footprint, Backend());
   dump(face0Footprint, "footprint(face0)");
-  smtkTest(face0Footprint.size() == 1 && face0Footprint.count(face0.component().get()) == 1,
+  smtkTest(
+    face0Footprint.size() == 1 && face0Footprint.count(face0.component().get()) == 1,
     "Expected |footprint(face0)| == 1.");
 
   std::unordered_set<smtk::resource::PersistentObject*> shellFootprint;
@@ -279,13 +280,15 @@ int TestSelectionFootprint(int /*unused*/, char** const /*unused*/)
   std::unordered_set<smtk::resource::PersistentObject*> att0Footprint;
   asf(*att0, att0Footprint, Backend());
   dump(att0Footprint, "footprint(model-assoc attribute)");
-  smtkTest(att0Footprint == modelFootprint,
+  smtkTest(
+    att0Footprint == modelFootprint,
     "Expected footprint(model-assoc attribute) == footprint(model).");
 
   std::unordered_set<smtk::resource::PersistentObject*> att1Footprint;
   asf(*att1, att1Footprint, Backend());
   dump(att1Footprint, "footprint(group-assoc attribute)");
-  smtkTest(att1Footprint == groupFootprint,
+  smtkTest(
+    att1Footprint == groupFootprint,
     "Expected footprint(group-assoc attribute) == footprint(group).");
 
   std::unordered_set<smtk::resource::PersistentObject*> att2Footprint;

@@ -33,7 +33,11 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResource : public pqPipelineSource
   typedef pqPipelineSource Superclass;
 
 public:
-  pqSMTKResource(const QString& grp, const QString& name, vtkSMProxy* proxy, pqServer* server,
+  pqSMTKResource(
+    const QString& grp,
+    const QString& name,
+    vtkSMProxy* proxy,
+    pqServer* server,
     QObject* parent = nullptr);
   ~pqSMTKResource() override;
 

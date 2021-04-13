@@ -62,9 +62,14 @@ namespace session
 namespace polygon
 {
 
-int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edgeOp,
-  smtk::model::EntityRefArray& createdEds, smtk::attribute::DoubleItem::Ptr pointsItem,
-  const vtkIdType* pts, vtkIdType npts, smtk::io::Logger& logger)
+int polyLines2modelEdges(
+  vtkPolyData* mesh,
+  smtk::operation::Operation::Ptr edgeOp,
+  smtk::model::EntityRefArray& createdEds,
+  smtk::attribute::DoubleItem::Ptr pointsItem,
+  const vtkIdType* pts,
+  vtkIdType npts,
+  smtk::io::Logger& logger)
 {
   double p[3];
   // create edge for current line cell
@@ -78,7 +83,8 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edge
     }
   }
   smtk::operation::Operation::Result edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() !=
+  if (
+    edgeResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
@@ -92,8 +98,11 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edge
   return static_cast<int>(newEdges->numberOfValues());
 }
 
-int Import::taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource::Ptr& resource,
-  vtkIdTypeArray* tagInfo, vtkPolyData* pdata, smtk::model::Model& model)
+int Import::taggedPolyData2PolygonModelEntities(
+  smtk::session::polygon::Resource::Ptr& resource,
+  vtkIdTypeArray* tagInfo,
+  vtkPolyData* pdata,
+  smtk::model::Model& model)
 {
   smtk::session::polygon::SessionPtr sess = resource->polygonSession();
   smtk::model::Resource::Ptr modelResource = sess->resource();
@@ -197,8 +206,10 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource
   return numEnts;
 }
 
-int Import::basicPolyData2PolygonModelEntities(smtk::session::polygon::Resource::Ptr& resource,
-  vtkPolyData* polyLines, smtk::model::Model& model)
+int Import::basicPolyData2PolygonModelEntities(
+  smtk::session::polygon::Resource::Ptr& resource,
+  vtkPolyData* polyLines,
+  smtk::model::Model& model)
 {
   smtk::session::polygon::SessionPtr sess = resource->polygonSession();
   // First lets strip the original polydata into polylines
@@ -244,7 +255,9 @@ int Import::basicPolyData2PolygonModelEntities(smtk::session::polygon::Resource:
 }
 
 int polyLines2modelEdgesAndFaces(
-  vtkPolyData* mesh, smtk::model::Model& model, smtk::io::Logger& logger)
+  vtkPolyData* mesh,
+  smtk::model::Model& model,
+  smtk::io::Logger& logger)
 {
   int numEdges = 0;
   vtkCellArray* lines = mesh->GetLines();
@@ -331,7 +344,8 @@ int polyLines2modelEdgesAndFaces(
         countsArr->setValues(counts.begin(), counts.end());
 
         smtk::operation::Operation::Result faceResult = faceOp->operate();
-        if (faceResult->findInt("outcome")->value() !=
+        if (
+          faceResult->findInt("outcome")->value() !=
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           smtkDebugMacro(
@@ -451,7 +465,8 @@ Import::Result Import::operateInternal()
   }
 
   smtk::operation::Operation::Result modResult = modOp->operate();
-  if (modResult->findInt("outcome")->value() !=
+  if (
+    modResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkInfoMacro(log(), "CreateModel operator failed.");

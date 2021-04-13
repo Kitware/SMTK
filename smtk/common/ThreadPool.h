@@ -33,7 +33,7 @@ namespace common
 /// the number of threads to build at construction, and waits for all tasks to
 /// complete before being destroyed. The \a ReturnType is a default-constructible
 /// type that tasks return via std::future.
-template <typename ReturnType = void>
+template<typename ReturnType = void>
 class SMTK_ALWAYS_EXPORT ThreadPool
 {
   static_assert(
@@ -48,7 +48,7 @@ public:
   /// Add a task to be performed by the thread queue. Once a thread becomes
   /// available, it will pop the task from the queue and execute it. The return
   /// value can be accessed from the returned future.
-  template <typename Function, typename... Types>
+  template<typename Function, typename... Types>
   std::future<ReturnType> operator()(Function&& function, Types&&... args)
   {
     return appendToQueue(std::bind(function, std::forward<Types>(args)...));
@@ -70,13 +70,13 @@ protected:
   std::condition_variable m_condition;
   std::mutex m_queueMutex;
   std::vector<std::thread> m_threads;
-  std::queue<std::packaged_task<ReturnType()> > m_queue;
+  std::queue<std::packaged_task<ReturnType()>> m_queue;
   bool m_initialized;
   std::atomic<bool> m_active;
   unsigned int m_maxThreads;
 };
 
-template <typename ReturnType>
+template<typename ReturnType>
 ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
   : m_initialized(false)
   , m_active(true)
@@ -84,7 +84,7 @@ ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
 {
 }
 
-template <typename ReturnType>
+template<typename ReturnType>
 ThreadPool<ReturnType>::~ThreadPool()
 {
   // Change the state of the thread pool to signify that threads should no
@@ -106,7 +106,7 @@ ThreadPool<ReturnType>::~ThreadPool()
   }
 }
 
-template <typename ReturnType>
+template<typename ReturnType>
 void ThreadPool<ReturnType>::initialize()
 {
   for (unsigned int i = 0; i < m_maxThreads; ++i)
@@ -115,7 +115,7 @@ void ThreadPool<ReturnType>::initialize()
   }
 }
 
-template <typename ReturnType>
+template<typename ReturnType>
 std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<ReturnType()>&& task)
 {
   std::future<ReturnType> future;
@@ -148,7 +148,7 @@ std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<Retu
   return future;
 }
 
-template <typename ReturnType>
+template<typename ReturnType>
 void ThreadPool<ReturnType>::exec()
 {
   // Always check if the containing class has signaled that the thread pool
@@ -169,7 +169,7 @@ void ThreadPool<ReturnType>::exec()
     task();
   }
 }
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif // smtk_common_ThreadPool_h

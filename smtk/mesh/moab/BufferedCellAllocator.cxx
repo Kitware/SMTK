@@ -117,8 +117,12 @@ bool BufferedCellAllocator::flush()
   // need to convert from smtk cell type to moab cell type
   ::moab::EntityHandle* startOfConnectivityArray = nullptr;
 
-  m_validState = this->allocateCells(m_activeCellType, m_localConnectivity.size() / m_nCoords,
-    m_nCoords, cellsCreatedForThisType, startOfConnectivityArray);
+  m_validState = this->allocateCells(
+    m_activeCellType,
+    m_localConnectivity.size() / m_nCoords,
+    m_nCoords,
+    cellsCreatedForThisType,
+    startOfConnectivityArray);
 
   if (m_validState)
   {
@@ -159,6 +163,6 @@ void BufferedCellAllocator::clear()
   m_localConnectivity.clear();
   m_cells.clear();
 }
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk

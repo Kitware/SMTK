@@ -62,9 +62,12 @@ bool ExtractContours::ableToOperate()
   return !url.empty();
 }
 
-int internal_createEdge(smtk::session::polygon::CreateEdge::Ptr edgeOp,
-  smtk::attribute::AttributePtr opParams, smtk::model::EntityRefArray& createdEds,
-  const smtk::model::Model& model, smtk::io::Logger& logger)
+int internal_createEdge(
+  smtk::session::polygon::CreateEdge::Ptr edgeOp,
+  smtk::attribute::AttributePtr opParams,
+  smtk::model::EntityRefArray& createdEds,
+  const smtk::model::Model& model,
+  smtk::io::Logger& logger)
 {
   smtk::attribute::AttributePtr params = edgeOp->parameters();
   params->associateEntity(model);
@@ -82,7 +85,8 @@ int internal_createEdge(smtk::session::polygon::CreateEdge::Ptr edgeOp,
   numCoords->assign(sourceItem); // number of elements in coordinates
 
   smtk::operation::Operation::Result edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() !=
+  if (
+    edgeResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
@@ -154,8 +158,9 @@ ExtractContours::Result ExtractContours::operateInternal()
   int numEdges =
     internal_createEdge(edgeOp, this->parameters(), newEdges, aux.owningModel(), log());
 
-  Result result = this->createResult(numEdges > 0 ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                                  : smtk::operation::Operation::Outcome::FAILED);
+  Result result = this->createResult(
+    numEdges > 0 ? smtk::operation::Operation::Outcome::SUCCEEDED
+                 : smtk::operation::Operation::Outcome::FAILED);
 
   if (numEdges > 0)
   {

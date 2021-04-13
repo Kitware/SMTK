@@ -129,7 +129,8 @@ std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(con
 
     try
     {
-      return std::make_tuple(input.substr(fileStart, fileEnd - fileStart),
+      return std::make_tuple(
+        input.substr(fileStart, fileEnd - fileStart),
         std::stoi(input.substr(lineStart, lineEnd - lineStart)),
         input.substr(messageStart, messageEnd - messageStart));
     }
@@ -143,7 +144,7 @@ std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(con
   // Pass it along with no file/line information.
   return std::make_tuple("", -1, input);
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -184,7 +185,7 @@ void ResetVTKOutput()
 {
   vtkOutputWindow::SetInstance(nullptr);
 }
-}
-}
-}
-}
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

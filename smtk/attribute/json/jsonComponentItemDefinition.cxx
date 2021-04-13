@@ -28,13 +28,16 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::ComponentItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::ComponentItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr));
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ComponentItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::ComponentItemDefinitionPtr& defPtr,
+  const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -45,7 +48,8 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   smtk::attribute::from_json(j, refItemDef, resPtr);
 }
 SMTKCORE_EXPORT void processFromRefItemDef(
-  const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::ComponentItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -94,7 +98,8 @@ SMTKCORE_EXPORT void processFromRefItemDef(
 }
 
 SMTKCORE_EXPORT void processFromMeshItemDef(
-  const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr)
+  const nlohmann::json& j,
+  smtk::attribute::ComponentItemDefinitionPtr& defPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -125,5 +130,5 @@ SMTKCORE_EXPORT void processFromMeshItemDef(
     defPtr->setMaxNumberOfValues(*result);
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

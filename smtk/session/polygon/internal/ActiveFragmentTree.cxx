@@ -27,7 +27,8 @@ void ActiveFragmentTree::insertActiveFragment(FragmentId f)
 }
 
 std::pair<FragmentId, FragmentId> ActiveFragmentTree::boundingFragments(
-  const internal::Point& pt, bool strict) const
+  const internal::Point& pt,
+  bool strict) const
 {
   std::pair<FragmentId, FragmentId> result(-1, -1);
   ActiveFragmentTreeType::const_iterator it;

@@ -25,8 +25,8 @@ class MeshInfo;
 void to_json(nlohmann::json&, const std::vector<MeshInfo>&);
 
 void from_json(const nlohmann::json&, std::vector<MeshInfo>&);
-}
-}
-}
+} // namespace json
+} // namespace mesh
+} // namespace smtk
 
 #endif

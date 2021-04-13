@@ -25,8 +25,8 @@
 
 #include <cstddef> // for size_t
 
-using smtk::attribute::StringItem;
 using smtk::attribute::DoubleItem;
+using smtk::attribute::StringItem;
 using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
@@ -85,8 +85,9 @@ AssignColors::Result AssignColors::operateInternal()
       }
       else
       {
-        smtkWarningMacro(this->log(), "Color " << cc << " (" << colorSpec->value(cc)
-                                               << ") could not be parsed. Skipping.");
+        smtkWarningMacro(
+          this->log(),
+          "Color " << cc << " (" << colorSpec->value(cc) << ") could not be parsed. Skipping.");
       }
     }
   }

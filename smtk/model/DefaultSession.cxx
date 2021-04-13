@@ -23,8 +23,8 @@ namespace model
 DefaultSession::DefaultSession() = default;
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
-SessionInfoBits DefaultSession::transcribeInternal(
-  const EntityRef& entity, SessionInfoBits flags, int depth)
+SessionInfoBits
+DefaultSession::transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth)
 {
   (void)entity;
   (void)flags;
@@ -46,7 +46,8 @@ SessionInfoBits DefaultSession::transcribeInternal(
   * fetch records from the remote session's model resource on demand.
   */
 void DefaultSession::backsRemoteSession(
-  const std::string& remoteSessionName, const smtk::common::UUID& sessId)
+  const std::string& remoteSessionName,
+  const smtk::common::UUID& sessId)
 {
   m_remoteSessionName = remoteSessionName;
   m_sessionId = sessId;

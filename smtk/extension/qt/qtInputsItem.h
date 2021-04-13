@@ -75,14 +75,21 @@ protected:
   virtual void updateExtensibleState();
   virtual void clearChildWidgets();
   QWidget* createDoubleWidget(
-    int elementIdx, smtk::attribute::ValueItemPtr vitem, QWidget* pWidget, QString& tooltip);
+    int elementIdx,
+    smtk::attribute::ValueItemPtr vitem,
+    QWidget* pWidget,
+    QString& tooltip);
   QWidget* createIntWidget(
-    int elementIdx, smtk::attribute::ValueItemPtr vitem, QWidget* pWidget, QString& tooltip);
+    int elementIdx,
+    smtk::attribute::ValueItemPtr vitem,
+    QWidget* pWidget,
+    QString& tooltip);
   virtual QWidget* createInputWidget(int elementIdx, QLayout* childLayout);
   virtual QWidget* createEditBox(int elementIdx, QWidget* pWidget);
   virtual QFrame* createExpressionRefFrame();
   virtual QFrame* createLabelFrame(
-    const smtk::attribute::ValueItem* vitem, const smtk::attribute::ValueItemDefinition* vitemDef);
+    const smtk::attribute::ValueItem* vitem,
+    const smtk::attribute::ValueItemDefinition* vitemDef);
   // Methods for updating widgets based on changes made to the underlying attribute item
   void updateDoubleItemData(QWidget* iwidget, const smtk::attribute::DoubleItemPtr& ditem);
   void updateIntItemData(QWidget* iwidget, const smtk::attribute::IntItemPtr& iitem);
@@ -92,7 +99,8 @@ protected:
   // value of |inputItem|. If |showMessageBox| == true, errors are presented
   // in a modal QMessageBox.
   void updateExpressionRefWidgetForEvaluation(
-    smtk::attribute::ValueItemPtr inputItem, bool showMessageBox);
+    smtk::attribute::ValueItemPtr inputItem,
+    bool showMessageBox);
   void hideExpressionResultWidgets();
   // Shows widgets for displaying results of expression evaluation. |text| is
   // shown in a QLineEdit whose tooltip is set to |tooltip|. If |success| is

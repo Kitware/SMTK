@@ -37,9 +37,11 @@ namespace mesh
 class SMTKCORE_EXPORT PointCloud
 {
 public:
-  PointCloud(std::size_t nPoints,
+  PointCloud(
+    std::size_t nPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates,
-    const std::function<double(std::size_t)>& data, const std::function<bool(std::size_t)>& valid)
+    const std::function<double(std::size_t)>& data,
+    const std::function<bool(std::size_t)>& valid)
     : m_size(nPoints)
     , m_coordinates(coordinates)
     , m_data(data)
@@ -49,7 +51,8 @@ public:
 
   /// Returns an invalid PointCloud.
   PointCloud()
-    : PointCloud(0,
+    : PointCloud(
+        0,
         [](std::size_t) {
           double nan = std::numeric_limits<double>::quiet_NaN();
           return std::array<double, 3>({ { nan, nan, nan } });
@@ -60,7 +63,8 @@ public:
   }
 
   /// Constructs a PointCloud with no blanking (all points are considered valid).
-  PointCloud(std::size_t nPoints,
+  PointCloud(
+    std::size_t nPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates,
     const std::function<double(std::size_t)>& data)
     : m_size(nPoints)
@@ -73,24 +77,28 @@ public:
   /// Constructs a PointCloud from arrays of coordinates and data. The arrays
   /// must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const double* const coordinates, const double* const data)
-    : PointCloud(nPoints,
+    : PointCloud(
+        nPoints,
         [=](std::size_t i) {
           return std::array<double, 3>(
             { { coordinates[3 * i], coordinates[3 * i + 1], coordinates[3 * i + 2] } });
         },
-        [=](std::size_t i) { return data[i]; }, [](std::size_t) { return true; })
+        [=](std::size_t i) { return data[i]; },
+        [](std::size_t) { return true; })
   {
   }
 
   /// Constructs a PointCloud from arrays of coordinates and data. The arrays
   /// must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const float* const coordinates, const float* const data)
-    : PointCloud(nPoints,
+    : PointCloud(
+        nPoints,
         [=](std::size_t i) {
           return std::array<double, 3>(
             { { coordinates[3 * i], coordinates[3 * i + 1], coordinates[3 * i + 2] } });
         },
-        [=](std::size_t i) { return data[i]; }, [](std::size_t) { return true; })
+        [=](std::size_t i) { return data[i]; },
+        [](std::size_t) { return true; })
   {
   }
 
@@ -126,8 +134,9 @@ private:
 public:
   /// Constructs a PointCloud from vectors of coordinates and data.
   PointCloud(std::vector<double>&& coordinates, std::vector<double>&& data)
-    : PointCloud(
-        data.size(), Coordinates(coordinates), Data(data), [](std::size_t) { return true; })
+    : PointCloud(data.size(), Coordinates(coordinates), Data(data), [](std::size_t) {
+      return true;
+    })
   {
   }
 
@@ -151,7 +160,7 @@ protected:
   std::function<double(std::size_t)> m_data;
   std::function<bool(std::size_t)> m_valid;
 };
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif

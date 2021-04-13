@@ -39,7 +39,7 @@ using namespace tao::pegtl;
 
 /// A base class template for processing PEGTL rules. A specialization of this
 /// class template must exist for each PEGTL rule to be processed.
-template <typename Rule>
+template<typename Rule>
 struct Action : nothing<Rule>
 {
 };
@@ -51,10 +51,10 @@ struct Action : nothing<Rule>
 /// together with their respective rules using inheritance (as is PEGTL's wont).
 
 /// Construct a new filter rule specific to a given type.
-template <typename Type>
+template<typename Type>
 struct TypeNameAction
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input&, Rules& rules)
   {
     rules.emplace_back(new RuleFor<Type>());
@@ -63,16 +63,16 @@ struct TypeNameAction
 
 /// Append the filter rule with a means of discriminating property keys to match
 /// the rule input.
-template <typename Type>
+template<typename Type>
 struct NameAction
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::string name = input.string();
-    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys = [name](
-      const PersistentObject& object) -> std::vector<std::string> {
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys =
+      [name](const PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       if (object.properties().contains<Type>(name))
       {
@@ -85,16 +85,16 @@ struct NameAction
 
 /// Append the filter rule with a means of discriminating property keys to match
 /// the rule input.
-template <typename Type>
+template<typename Type>
 struct RegexAction
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::regex regex(input.string());
-    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys = [regex](
-      const PersistentObject& object) -> std::vector<std::string> {
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys =
+      [regex](const PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       for (const auto& key : object.properties().get<Type>().keys())
       {
@@ -110,35 +110,37 @@ struct RegexAction
 
 /// Append the filter rule with a means of discriminating property values to
 /// match the rule input.
-template <typename Type>
+template<typename Type>
 struct ValueAction
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
     Type value = Property<Type>::convert(input.string());
-    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [value](
-      const Type& val) -> bool { return val == value; };
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [value](const Type& val) -> bool {
+      return val == value;
+    };
   }
 };
 
 /// Append the filter rule with a means of discriminating property values to
 /// match the rule input.
-template <typename Type>
+template<typename Type>
 struct ValueRegexAction
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::regex regex(input.string());
-    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [regex](
-      const Type& val) -> bool { return std::regex_match(val, regex); };
+    static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [regex](const Type& val) -> bool {
+      return std::regex_match(val, regex);
+    };
   }
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

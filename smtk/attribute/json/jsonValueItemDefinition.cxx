@@ -29,7 +29,8 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::ValueItemDefinitionPtr& defPtr)
+  nlohmann::json& j,
+  const smtk::attribute::ValueItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
   j["NumberOfRequiredValues"] = defPtr->numberOfRequiredValues();
@@ -73,7 +74,8 @@ SMTKCORE_EXPORT void to_json(
   json childDefs;
   std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator iter;
   for (iter = defPtr->childrenItemDefinitions().begin();
-       iter != defPtr->childrenItemDefinitions().end(); ++iter)
+       iter != defPtr->childrenItemDefinitions().end();
+       ++iter)
   {
     json childDef;
     smtk::attribute::JsonHelperFunction::processItemDefinitionTypeToJson(childDef, iter->second);
@@ -83,8 +85,10 @@ SMTKCORE_EXPORT void to_json(
   j["ChildrenDefinitions"] = childDefs;
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::ValueItemDefinitionPtr& defPtr,
+  const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -155,5 +159,5 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -40,8 +40,8 @@ public:
   /// Returns an SVG string for rendering the badge icon.
   ///
   /// This uses a ObjectIcons to generate the badge.
-  std::string icon(
-    const DescriptivePhrase* phrase, const std::array<float, 4>& background) const override;
+  std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>& background)
+    const override;
 
   // No action is taken when the badge is clicked.
   //
@@ -51,6 +51,6 @@ public:
 protected:
   const BadgeSet* m_parent;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 #endif

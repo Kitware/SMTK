@@ -57,9 +57,11 @@ enum
   POINT_FIELD = 1
 };
 
-template <typename InputType>
-std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& input,
-  double radius, const std::function<bool(double)>& prefilter,
+template<typename InputType>
+std::function<double(std::array<double, 3>)> radialAverageFrom(
+  const InputType& input,
+  double radius,
+  const std::function<bool(double)>& prefilter,
   const smtk::mesh::InterfacePtr& interface)
 {
   std::function<double(std::array<double, 3>)> radialAverage;
@@ -89,9 +91,11 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& 
   return radialAverage;
 }
 
-template <typename InputType>
+template<typename InputType>
 std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
-  const InputType& input, double power, const std::function<bool(double)>& prefilter)
+  const InputType& input,
+  double power,
+  const std::function<bool(double)>& prefilter)
 {
   std::function<double(std::array<double, 3>)> idw;
   {
@@ -118,7 +122,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
 
   return idw;
 }
-}
+} // namespace
 
 namespace smtk
 {
@@ -176,7 +180,8 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
       smtk::attribute::DoubleItem::Ptr maxThresholdItem =
         inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
 
-      if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+      if (
+        minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
         maxThresholdItem->isEnabled())
       {
         double minThreshold = minThresholdItem->value();
@@ -338,14 +343,16 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   }
 
   // Add a conditional function for dealing with points that were rejected by the interpolator.
-  std::function<double(std::array<double, 3>)> externalDataPoint = [](
-    std::array<double, 3> xyz) { return xyz[2]; };
+  std::function<double(std::array<double, 3>)> externalDataPoint = [](std::array<double, 3> xyz) {
+    return xyz[2];
+  };
   if (interpolationSchemeItem->value() == "radial average")
   {
     if (externalPointItem->value() == "set to NaN")
     {
-      externalDataPoint = [](
-        std::array<double, 3> /*unused*/) { return std::numeric_limits<double>::quiet_NaN(); };
+      externalDataPoint = [](std::array<double, 3> /*unused*/) {
+        return std::numeric_limits<double>::quiet_NaN();
+      };
     }
     else if (externalPointItem->value() == "set to value")
     {
@@ -364,7 +371,6 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   smtk::operation::MarkGeometry markGeometry(resource);
 
   std::function<double(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
-
     double f_x = postProcess(interpolation(x));
     if (std::isnan(f_x))
     {
@@ -409,5 +415,5 @@ const char* InterpolateOntoMesh::xmlDescription() const
 {
   return InterpolateOntoMesh_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

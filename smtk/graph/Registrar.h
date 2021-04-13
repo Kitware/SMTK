@@ -28,7 +28,7 @@ public:
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
 };
-}
-}
+} // namespace graph
+} // namespace smtk
 
 #endif // smtk_graph_Registrar_h

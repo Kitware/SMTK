@@ -1,14 +1,13 @@
 ---
-# This configuration requires clang-format 3.8 or higher.
+# This configuration requires clang-format 9.0 or higher.
 BasedOnStyle: Mozilla
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: AlwaysBreak
 AlignOperands: false
 AlwaysBreakAfterReturnType: None
 AlwaysBreakAfterDefinitionReturnType: None
 BreakBeforeBraces: Allman
 ColumnLimit: 100
-Standard: Cpp03
-# This requires clang-format 4.0 (at least).
-#FixNamespaceComments: true
+Standard: Cpp11
+FixNamespaceComments: true
 ReflowComments: false
 ...

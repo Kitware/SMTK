@@ -83,8 +83,8 @@ bool rangesEqual(const HandleRange& lhs, const HandleRange& rhs)
   }
   return true;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 std::ostream& operator<<(std::ostream& os, const smtk::mesh::HandleRange& range)
 {

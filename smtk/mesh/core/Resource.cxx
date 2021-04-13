@@ -235,25 +235,25 @@ smtk::mesh::PointConnectivity Resource::pointConnectivity() const
 
 void Resource::assignDefaultNames()
 {
-  smtk::resource::Component::Visitor nameAssigner = [this](
-    const smtk::resource::Component::Ptr& comp) {
-    auto mset = comp ? comp->as<smtk::mesh::Component>() : nullptr;
-    if (!mset || !mset->name().empty())
-    {
-      return;
-    }
+  smtk::resource::Component::Visitor nameAssigner =
+    [this](const smtk::resource::Component::Ptr& comp) {
+      auto mset = comp ? comp->as<smtk::mesh::Component>() : nullptr;
+      if (!mset || !mset->name().empty())
+      {
+        return;
+      }
 
-    // Keep generating names until we find an unused one.
-    std::string nameToTry;
-    do
-    {
-      m_nameCounter++;
-      std::ostringstream namer;
-      namer << "mesh " << m_nameCounter;
-      nameToTry = namer.str();
-    } while (this->meshes(nameToTry).isValid());
-    mset->mesh().setName(nameToTry);
-  };
+      // Keep generating names until we find an unused one.
+      std::string nameToTry;
+      do
+      {
+        m_nameCounter++;
+        std::ostringstream namer;
+        namer << "mesh " << m_nameCounter;
+        nameToTry = namer.str();
+      } while (this->meshes(nameToTry).isValid());
+      mset->mesh().setName(nameToTry);
+    };
   this->visit(nameAssigner);
 }
 
@@ -340,7 +340,8 @@ bool Resource::classifyTo(const smtk::model::ResourcePtr& resource)
 smtk::model::ResourcePtr Resource::classifiedTo() const
 {
   auto classifiedObjects = this->links().linkedTo(ClassificationRole);
-  return (!classifiedObjects.empty()
+  return (
+    !classifiedObjects.empty()
       ? std::dynamic_pointer_cast<smtk::model::Resource>(*classifiedObjects.begin())
       : smtk::model::ResourcePtr());
 }
@@ -360,7 +361,8 @@ smtk::mesh::MeshSet Resource::findAssociatedMeshes(const smtk::model::EntityRef&
 }
 
 smtk::mesh::MeshSet Resource::findAssociatedMeshes(
-  const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const
+  const smtk::model::EntityRef& eref,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(eref);
   return unfiltered.subset(dim);
@@ -373,14 +375,16 @@ smtk::mesh::CellSet Resource::findAssociatedCells(const smtk::model::EntityRef& 
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType) const
+  const smtk::model::EntityRef& eref,
+  smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref);
   return ms.cells(cellType);
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const
+  const smtk::model::EntityRef& eref,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref, dim);
   return ms.cells();
@@ -400,7 +404,8 @@ smtk::mesh::MeshSet Resource::findAssociatedMeshes(const smtk::common::UUID& id)
 }
 
 smtk::mesh::MeshSet Resource::findAssociatedMeshes(
-  const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const
+  const smtk::common::UUID& id,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(id);
   return unfiltered.subset(dim);
@@ -413,14 +418,16 @@ smtk::mesh::CellSet Resource::findAssociatedCells(const smtk::common::UUID& id) 
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  const smtk::common::UUID& id, smtk::mesh::CellType cellType) const
+  const smtk::common::UUID& id,
+  smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id);
   return ms.cells(cellType);
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const
+  const smtk::common::UUID& id,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id, dim);
   return ms.cells();
@@ -446,7 +453,8 @@ smtk::mesh::MeshSet Resource::findAssociatedMeshes(smtk::model::EntityIterator& 
 }
 
 smtk::mesh::MeshSet Resource::findAssociatedMeshes(
-  smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const
+  smtk::model::EntityIterator& refIt,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(refIt);
   return unfiltered.subset(dim);
@@ -459,21 +467,24 @@ smtk::mesh::CellSet Resource::findAssociatedCells(smtk::model::EntityIterator& r
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  smtk::model::EntityIterator& refIt, smtk::mesh::CellType cellType) const
+  smtk::model::EntityIterator& refIt,
+  smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt);
   return ms.cells(cellType);
 }
 
 smtk::mesh::CellSet Resource::findAssociatedCells(
-  smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const
+  smtk::model::EntityIterator& refIt,
+  smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt, dim);
   return ms.cells();
 }
 
 bool Resource::setAssociation(
-  const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset)
+  const smtk::model::EntityRef& eref,
+  const smtk::mesh::MeshSet& meshset)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   // This causes the eref to become a meshset with the tag MODEL;
@@ -519,7 +530,8 @@ smtk::common::UUID Resource::associatedModel() const
 }
 
 smtk::mesh::MeshSet Resource::createMesh(
-  const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid)
+  const smtk::mesh::CellSet& cells,
+  const smtk::common::UUID& uuid)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
 
@@ -614,7 +626,8 @@ smtk::mesh::MeshSet Resource::dirichletMeshes(const smtk::mesh::Dirichlet& d) co
 }
 
 bool Resource::setDirichletOnMeshes(
-  const smtk::mesh::MeshSet& meshes, const smtk::mesh::Dirichlet& d)
+  const smtk::mesh::MeshSet& meshes,
+  const smtk::mesh::Dirichlet& d)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   if (meshes.m_parent == this->shared_from_this())
@@ -651,5 +664,5 @@ bool Resource::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk:
   }
   return false;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

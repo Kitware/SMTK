@@ -35,7 +35,8 @@ ResourcePhraseContent::ResourcePhraseContent()
 ResourcePhraseContent::~ResourcePhraseContent() = default;
 
 ResourcePhraseContent::Ptr ResourcePhraseContent::setup(
-  const smtk::resource::ResourcePtr& rsrc, int mutability)
+  const smtk::resource::ResourcePtr& rsrc,
+  int mutability)
 {
   m_mutability = mutability;
   m_resource = rsrc;
@@ -43,7 +44,9 @@ ResourcePhraseContent::Ptr ResourcePhraseContent::setup(
 }
 
 DescriptivePhrasePtr ResourcePhraseContent::createPhrase(
-  const smtk::resource::ResourcePtr& rsrc, int mutability, DescriptivePhrase::Ptr parent)
+  const smtk::resource::ResourcePtr& rsrc,
+  int mutability,
+  DescriptivePhrase::Ptr parent)
 {
   auto result = DescriptivePhrase::create()->setup(DescriptivePhraseType::RESOURCE_SUMMARY, parent);
   auto content = ResourcePhraseContent::create()->setup(rsrc, mutability);
@@ -187,5 +190,5 @@ void ResourcePhraseContent::setMutability(int whatsMutable)
   m_mutability = whatsMutable;
 }
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk

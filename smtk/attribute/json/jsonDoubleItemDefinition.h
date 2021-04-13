@@ -26,11 +26,14 @@ namespace smtk
 namespace attribute
 {
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::DoubleItemDefinitionPtr& defPtr);
+  nlohmann::json& j,
+  const smtk::attribute::DoubleItemDefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::DoubleItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr);
-}
-}
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j,
+  smtk::attribute::DoubleItemDefinitionPtr& defPtr,
+  const smtk::attribute::ResourcePtr& resPtr);
+} // namespace attribute
+} // namespace smtk
 
 #endif

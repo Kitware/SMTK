@@ -274,7 +274,7 @@ WriteOperation::Specification WriteOperation::createSpecification()
 
   return spec;
 }
-}
+} // namespace
 
 int readTest(int sleepValue)
 {
@@ -325,7 +325,8 @@ int readTest(int sleepValue)
   smtk::operation::Operation::Outcome outcome2 =
     smtk::operation::Operation::Outcome(result2.get()->findInt("outcome")->value());
 
-  if (outcome1 != smtk::operation::Operation::Outcome::SUCCEEDED ||
+  if (
+    outcome1 != smtk::operation::Operation::Outcome::SUCCEEDED ||
     outcome2 != smtk::operation::Operation::Outcome::SUCCEEDED)
   {
     return 1;

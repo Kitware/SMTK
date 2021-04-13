@@ -37,5 +37,5 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   managers->erase<smtk::geometry::Manager::Ptr>();
 }
-}
-}
+} // namespace geometry
+} // namespace smtk

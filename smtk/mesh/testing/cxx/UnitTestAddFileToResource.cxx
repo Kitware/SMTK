@@ -199,7 +199,7 @@ void verify_append_domain_to_dirichlet()
   std::size_t newNumMeshes = mr->numberOfMeshes();
   test(newNumMeshes == firstNumMesh + secondNumMesh);
 }
-}
+} // namespace
 
 int UnitTestAddFileToResource(int /*unused*/, char** const /*unused*/)
 {

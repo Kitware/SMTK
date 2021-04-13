@@ -82,8 +82,9 @@ public:
   //  Each grid item is a pair of integer values; the first integer is the id
   //  of a cell in the analysis grid, and the second integer is the index
   //  of a particular side of the cell, using the VTK numbering convention.
-  virtual std::vector<std::pair<int, int> > boundaryItemsOf(
-    int modelEntityId, ApiStatus& status) = 0;
+  virtual std::vector<std::pair<int, int>> boundaryItemsOf(
+    int modelEntityId,
+    ApiStatus& status) = 0;
 
   /// Returns "grid items" for the geometry of a model entity that is on
   //  the boundary of a next-higher-dimension model entity.
@@ -96,8 +97,8 @@ public:
   //  entity. The boundedModel argument is used to disambiguate
   //  these cases. A value of -1 can be passed in for that entity, in which
   //  case the bounded model entity will be selected internally.
-  virtual std::vector<std::pair<int, int> > asBoundaryItems(
-    int modelEntityId, int boundedModelId, ApiStatus& status) = 0;
+  virtual std::vector<std::pair<int, int>>
+  asBoundaryItems(int modelEntityId, int boundedModelId, ApiStatus& status) = 0;
 
   /// Returns the type of cell for the specified analysis grid cell id.
   //  The integer value is defined by the VTKCellType enum in vtkCellType.h
@@ -129,13 +130,14 @@ public:
   /// Returns set of grid point id pairs representing the grid edges
   //  for an input bounddary group id.
   //  For interim use exporting 2D grids for AdH output.
-  virtual std::vector<std::pair<int, int> > edgeGridItems(
-    int boundaryGroupId, ApiStatus& status) = 0;
+  virtual std::vector<std::pair<int, int>> edgeGridItems(
+    int boundaryGroupId,
+    ApiStatus& status) = 0;
 
   GridInfo();
   virtual ~GridInfo();
 };
-}
-}
+} // namespace model
+} // namespace smtk
 
 #endif /* __smtk_model_GridInfo_h */

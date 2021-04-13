@@ -31,17 +31,17 @@ namespace filter
 
 using namespace tao::pegtl;
 
-template <typename Type>
-struct Name : plus<not_one<'\''> >
+template<typename Type>
+struct Name : plus<not_one<'\''>>
 {
 };
 
-template <typename Type>
-struct Regex : plus<not_one<'/'> >
+template<typename Type>
+struct Regex : plus<not_one<'/'>>
 {
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

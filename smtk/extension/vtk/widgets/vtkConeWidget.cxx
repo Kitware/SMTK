@@ -33,26 +33,66 @@ vtkConeWidget::vtkConeWidget()
   // Define widget events
   this->CallbackMapper->SetCallbackMethod(
     vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select, this, vtkConeWidget::SelectAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::LeftButtonReleaseEvent,
-    vtkWidgetEvent::EndSelect, this, vtkConeWidget::EndSelectAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::MiddleButtonPressEvent,
-    vtkWidgetEvent::Translate, this, vtkConeWidget::TranslateAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::MiddleButtonReleaseEvent,
-    vtkWidgetEvent::EndTranslate, this, vtkConeWidget::EndSelectAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::LeftButtonReleaseEvent,
+    vtkWidgetEvent::EndSelect,
+    this,
+    vtkConeWidget::EndSelectAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::MiddleButtonPressEvent,
+    vtkWidgetEvent::Translate,
+    this,
+    vtkConeWidget::TranslateAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::MiddleButtonReleaseEvent,
+    vtkWidgetEvent::EndTranslate,
+    this,
+    vtkConeWidget::EndSelectAction);
   this->CallbackMapper->SetCallbackMethod(
     vtkCommand::RightButtonPressEvent, vtkWidgetEvent::Scale, this, vtkConeWidget::ScaleAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::RightButtonReleaseEvent,
-    vtkWidgetEvent::EndScale, this, vtkConeWidget::EndSelectAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::RightButtonReleaseEvent,
+    vtkWidgetEvent::EndScale,
+    this,
+    vtkConeWidget::EndSelectAction);
   this->CallbackMapper->SetCallbackMethod(
     vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move, this, vtkConeWidget::MoveAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::KeyPressEvent, vtkEvent::AnyModifier, 30, 1,
-    "Up", vtkWidgetEvent::Up, this, vtkConeWidget::MoveConeAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::KeyPressEvent, vtkEvent::AnyModifier, 28, 1,
-    "Right", vtkWidgetEvent::Up, this, vtkConeWidget::MoveConeAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::KeyPressEvent, vtkEvent::AnyModifier, 31, 1,
-    "Down", vtkWidgetEvent::Down, this, vtkConeWidget::MoveConeAction);
-  this->CallbackMapper->SetCallbackMethod(vtkCommand::KeyPressEvent, vtkEvent::AnyModifier, 29, 1,
-    "Left", vtkWidgetEvent::Down, this, vtkConeWidget::MoveConeAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::KeyPressEvent,
+    vtkEvent::AnyModifier,
+    30,
+    1,
+    "Up",
+    vtkWidgetEvent::Up,
+    this,
+    vtkConeWidget::MoveConeAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::KeyPressEvent,
+    vtkEvent::AnyModifier,
+    28,
+    1,
+    "Right",
+    vtkWidgetEvent::Up,
+    this,
+    vtkConeWidget::MoveConeAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::KeyPressEvent,
+    vtkEvent::AnyModifier,
+    31,
+    1,
+    "Down",
+    vtkWidgetEvent::Down,
+    this,
+    vtkConeWidget::MoveConeAction);
+  this->CallbackMapper->SetCallbackMethod(
+    vtkCommand::KeyPressEvent,
+    vtkEvent::AnyModifier,
+    29,
+    1,
+    "Left",
+    vtkWidgetEvent::Down,
+    this,
+    vtkConeWidget::MoveConeAction);
 }
 
 //----------------------------------------------------------------------------
@@ -220,7 +260,8 @@ void vtkConeWidget::EndSelectAction(vtkAbstractWidget* w)
 {
   vtkConeWidget* self = reinterpret_cast<vtkConeWidget*>(w);
 
-  if (self->WidgetState != vtkConeWidget::Active ||
+  if (
+    self->WidgetState != vtkConeWidget::Active ||
     self->WidgetRep->GetInteractionState() == vtkConeRepresentation::Outside)
   {
     return;
@@ -265,7 +306,8 @@ void vtkConeWidget::MoveConeAction(vtkAbstractWidget* w)
 
   // Move the cylinder
   double factor = (self->Interactor->GetControlKey() ? 0.5 : 1.0);
-  if (vtkStdString(self->Interactor->GetKeySym()) == vtkStdString("Down") ||
+  if (
+    vtkStdString(self->Interactor->GetKeySym()) == vtkStdString("Down") ||
     vtkStdString(self->Interactor->GetKeySym()) == vtkStdString("Left"))
   {
     self->GetConeRepresentation()->BumpCone(-1, factor);

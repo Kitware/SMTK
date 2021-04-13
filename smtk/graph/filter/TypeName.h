@@ -81,10 +81,10 @@ namespace resource
 namespace filter
 {
 /// Actions related to parsing rules for this type.
-template <>
+template<>
 struct Action<smtk::graph::filter::TypeName::Name>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     rules.emplace_back(new smtk::graph::filter::TypeName::Rule());
@@ -93,10 +93,10 @@ struct Action<smtk::graph::filter::TypeName::Name>
   }
 };
 
-template <>
+template<>
 struct Action<smtk::graph::filter::TypeName::Regex>
 {
-  template <typename Input>
+  template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
     rules.emplace_back(new smtk::graph::filter::TypeName::RegexRule());
@@ -104,8 +104,8 @@ struct Action<smtk::graph::filter::TypeName::Regex>
     static_cast<smtk::graph::filter::TypeName::RegexRule*>(rule.get())->value = input.string();
   }
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

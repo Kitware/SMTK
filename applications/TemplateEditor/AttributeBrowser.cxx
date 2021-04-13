@@ -22,12 +22,18 @@ AttributeBrowser::AttributeBrowser(QWidget* parent)
   this->Ui->setupUi(this);
 
   connect(this->Ui->pbAddDefinition, SIGNAL(clicked()), this, SLOT(onAddDefinition()));
-  connect(this->Ui->viewDefinitions, SIGNAL(showDialog(const QModelIndex&)), this,
+  connect(
+    this->Ui->viewDefinitions,
+    SIGNAL(showDialog(const QModelIndex&)),
+    this,
     SLOT(onAddDefinition()));
 
   connect(this->Ui->pbDelDefinition, SIGNAL(clicked()), this, SLOT(onDeleteDefinition()));
 
-  connect(this->Ui->leSearch, SIGNAL(textChanged(const QString&)), this,
+  connect(
+    this->Ui->leSearch,
+    SIGNAL(textChanged(const QString&)),
+    this,
     SLOT(onSearchAttDef(const QString&)));
 }
 
@@ -44,9 +50,7 @@ void AttributeBrowser::populate(smtk::attribute::ResourcePtr resource)
 }
 
 //------------------------------------------------------------------------------
-void AttributeBrowser::clear()
-{
-}
+void AttributeBrowser::clear() {}
 
 //------------------------------------------------------------------------------
 void AttributeBrowser::populateDefinitions(smtk::attribute::ResourcePtr resource)
@@ -60,7 +64,10 @@ void AttributeBrowser::populateDefinitions(smtk::attribute::ResourcePtr resource
 
   QItemSelectionModel* sm = this->Ui->viewDefinitions->selectionModel();
 
-  connect(sm, SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this,
+  connect(
+    sm,
+    SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+    this,
     SLOT(onAttDefSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
   const QModelIndex defaultIndex = this->AttDefModel->getDefaultIndex();
@@ -69,7 +76,8 @@ void AttributeBrowser::populateDefinitions(smtk::attribute::ResourcePtr resource
 
 //------------------------------------------------------------------------------
 void AttributeBrowser::onAttDefSelectionChanged(
-  const QModelIndex& current, const QModelIndex& previous)
+  const QModelIndex& current,
+  const QModelIndex& previous)
 {
   // Disable deletion if other definitions derive from current
   this->Ui->pbDelDefinition->setEnabled(!this->AttDefModel->hasDerivedTypes(current));

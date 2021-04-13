@@ -224,7 +224,8 @@ void verify_mixed_cell_ugrid()
 
   test(meshResource && meshResource->isValid(), "resource should be valid");
   test(meshResource->numberOfMeshes() == 1, "resource should only have a single mesh");
-  test(meshResource->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
+  test(
+    meshResource->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
     "number of cells in mesh don't match");
 
   //this is a volume only grid
@@ -237,7 +238,7 @@ void verify_mixed_cell_ugrid()
   exprt(meshResource->meshes(), ug2);
   test_same_datasets(ug, ug2);
 }
-}
+} // namespace
 
 int UnitTestImportExportVTKData(int argc, char* argv[])
 {

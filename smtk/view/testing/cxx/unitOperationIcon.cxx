@@ -25,7 +25,7 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-int unitOperationIcon(int, char* [])
+int unitOperationIcon(int, char*[])
 {
   // Setup: create some managers, register operations, register icons:
   smtk::io::Logger::instance().setFlushToStdout(true);
@@ -71,9 +71,11 @@ int unitOperationIcon(int, char* [])
   smtkTest(genericCount == 1, "Did not use default icon for Associate.");
 
   // Test that unregistration compiles and reports itself as working.
-  smtkTest(viewManager->operationIcons().unregisterOperation<smtk::attribute::Signal>(),
+  smtkTest(
+    viewManager->operationIcons().unregisterOperation<smtk::attribute::Signal>(),
     "Could not unregister Signal icon.");
-  smtkTest(!viewManager->operationIcons().unregisterOperation<smtk::attribute::Associate>(),
+  smtkTest(
+    !viewManager->operationIcons().unregisterOperation<smtk::attribute::Associate>(),
     "Could unregister Associate icon.");
 
   // Verify that unregistration did in fact unregister.

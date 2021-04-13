@@ -28,7 +28,8 @@ inline internal::HighPrecisionCoord dot2d(const internal::Coord oa[2], const int
 }
 
 inline internal::HighPrecisionCoord cross2d(
-  const internal::Coord oa[2], const internal::Coord oo[2])
+  const internal::Coord oa[2],
+  const internal::Coord oo[2])
 {
   internal::HighPrecisionCoord result;
   result = static_cast<internal::HighPrecisionCoord>(oa[0]) * oo[1] -
@@ -36,8 +37,11 @@ inline internal::HighPrecisionCoord cross2d(
   return result;
 }
 
-inline internal::HighPrecisionCoord deltacross2d(const internal::Point& a0,
-  const internal::Point& a1, const internal::Point& b0, const internal::Point& b1)
+inline internal::HighPrecisionCoord deltacross2d(
+  const internal::Point& a0,
+  const internal::Point& a1,
+  const internal::Point& b0,
+  const internal::Point& b1)
 {
   internal::Coord a01[2];
   internal::Coord b01[2];

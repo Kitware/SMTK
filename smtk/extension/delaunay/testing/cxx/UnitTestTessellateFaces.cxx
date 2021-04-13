@@ -58,7 +58,7 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
     ents.erase(*i);
   }
 }
-}
+} // namespace
 
 int UnitTestTessellateFaces(int /*unused*/, char** const /*unused*/)
 {
@@ -83,7 +83,8 @@ int UnitTestTessellateFaces(int /*unused*/, char** const /*unused*/)
 
       readOp->parameters()->findFile("filename")->setValue(file_path);
       smtk::session::polygon::LegacyRead::Result result = readOp->operate();
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Could not read smtk model!\n";
@@ -133,7 +134,8 @@ int UnitTestTessellateFaces(int /*unused*/, char** const /*unused*/)
     }
 
     smtk::extension::delaunay::TessellateFaces::Result result = tessellateFacesOp->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Tessellate faces operator failed\n";

@@ -1,6 +1,6 @@
 import sys
 import os
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -10,7 +10,7 @@ import os
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.session.polygon
 import smtk.testing

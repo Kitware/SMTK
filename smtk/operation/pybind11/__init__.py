@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from ._smtkPybindOperation import *
 
@@ -89,6 +89,7 @@ def _params(self):
     params = self._parameters()
     _create_api(params)
     return params
+
 
 setattr(Operation, 'parameters', _params)
 

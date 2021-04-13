@@ -36,8 +36,8 @@ public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
   using Operation = smtk::operation::Operation;
 
-  typedef std::function<bool(
-    const smtk::view::DescriptivePhrasePtr& a, const smtk::view::DescriptivePhrasePtr& b)>
+  typedef std::function<
+    bool(const smtk::view::DescriptivePhrasePtr& a, const smtk::view::DescriptivePhrasePtr& b)>
     SortingCompFunc;
 
   smtkTypeMacro(smtk::view::ComponentPhraseModel);
@@ -95,8 +95,9 @@ protected:
   virtual void populateRoot();
 
   smtk::view::DescriptivePhrasePtr m_root;
-  std::set<std::weak_ptr<smtk::resource::Resource>,
-    std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+  std::set<
+    std::weak_ptr<smtk::resource::Resource>,
+    std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
     m_resources;
   std::multimap<std::string, std::string> m_componentFilters;
 
@@ -104,7 +105,7 @@ private:
   SortingCompFunc m_comparator = smtk::view::DescriptivePhrase::compareByTypeThenTitle;
   ;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

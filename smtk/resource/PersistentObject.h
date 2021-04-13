@@ -53,13 +53,13 @@ public:
   virtual std::string name() const;
 
   /// Attempt to cast this object to a subclass.
-  template <typename T>
+  template<typename T>
   typename T::Ptr as()
   {
     return std::dynamic_pointer_cast<T>(shared_from_this());
   }
   /// Attempt to cast this object to a subclass.
-  template <typename T>
+  template<typename T>
   typename T::ConstPtr as() const
   {
     return std::dynamic_pointer_cast<const T>(shared_from_this());
@@ -74,7 +74,7 @@ public:
 protected:
   PersistentObject();
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_PersistentObject_h

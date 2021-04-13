@@ -73,7 +73,7 @@ const int status_column = 0;
 const int name_column = 1;
 const int type_column = 2;
 const int color_column = 3;
-};
+}; // namespace
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -87,7 +87,8 @@ public:
   // of the UI Manager and whether the View is to ignore
   // categories
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
-    smtk::extension::qtUIManager* uiManager, bool ignoreCategories) const
+    smtk::extension::qtUIManager* uiManager,
+    bool ignoreCategories) const
   {
     if (ignoreCategories)
     {
@@ -142,7 +143,7 @@ public:
   QPointer<qtAssociationWidget> AssociationsWidget;
 
   // <category, AttDefinitions>
-  QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
+  QMap<QString, QList<smtk::attribute::DefinitionPtr>> AttDefMap;
 
   // All definitions list
   QList<smtk::attribute::DefinitionPtr> AllDefs;
@@ -220,14 +221,15 @@ qtAttributeView::~qtAttributeView()
   delete m_internals;
 }
 
-const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& qtAttributeView::attDefinitionMap()
+const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& qtAttributeView::attDefinitionMap()
   const
 {
   return m_internals->AttDefMap;
 }
 
 smtk::extension::qtAssociationWidget* qtAttributeView::createAssociationWidget(
-  QWidget* parent, qtBaseView* view)
+  QWidget* parent,
+  qtBaseView* view)
 {
   return new qtAssociation2ColumnWidget(parent, view);
 }
@@ -409,7 +411,10 @@ void qtAttributeView::createWidget()
   TopLayout->addWidget(m_internals->SearchBox);
   TopLayout->addWidget(m_internals->ListTable);
 
-  connect(searchBar, &QLineEdit::textEdited, m_internals->ListTableProxyModel,
+  connect(
+    searchBar,
+    &QLineEdit::textEdited,
+    m_internals->ListTableProxyModel,
     &QSortFilterProxyModel::setFilterFixedString);
 
   m_internals->ValuesTable->setVisible(false);
@@ -438,24 +443,40 @@ void qtAttributeView::createWidget()
   }
 
   // signals/slots
-  connect(m_internals->AssociationsWidget, &qtAssociationWidget::attAssociationChanged, this,
+  connect(
+    m_internals->AssociationsWidget,
+    &qtAssociationWidget::attAssociationChanged,
+    this,
     &qtAttributeView::associationsChanged);
 
   connect(m_internals->AssociationsWidget, SIGNAL(availableChanged()), this, SIGNAL(modified()));
 
   //TODO: Reconnect these if view's item model is ever replaced
-  connect(m_internals->ListTable, &QAbstractItemView::clicked, this,
-    &qtAttributeView::onListBoxClicked, Qt::QueuedConnection);
-  connect(m_internals->ListTable->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+  connect(
+    m_internals->ListTable,
+    &QAbstractItemView::clicked,
+    this,
+    &qtAttributeView::onListBoxClicked,
+    Qt::QueuedConnection);
+  connect(
+    m_internals->ListTable->selectionModel(),
+    &QItemSelectionModel::selectionChanged,
+    this,
     [this](const QItemSelection&, const QItemSelection&) { this->onListBoxSelectionChanged(); },
     Qt::QueuedConnection);
-  connect(m_internals->ListTableModel, &QStandardItemModel::itemChanged, this,
+  connect(
+    m_internals->ListTableModel,
+    &QStandardItemModel::itemChanged,
+    this,
     &qtAttributeView::onAttributeNameChanged);
 
   // we need this so that the attribute name will also be changed
   // when a recorded test is play back, which is using setText
   // on the underline QLineEdit of the cell.
-  connect(m_internals->ListTableModel, &QStandardItemModel::dataChanged, this,
+  connect(
+    m_internals->ListTableModel,
+    &QStandardItemModel::dataChanged,
+    this,
     [this](const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&) {
       auto item = m_internals->ListTableModel->itemFromIndex(topLeft);
       this->onAttributeItemChanged(item);
@@ -466,7 +487,10 @@ void qtAttributeView::createWidget()
   connect(m_internals->CopyAction, &QAction::triggered, this, &qtAttributeView::onCopySelected);
   connect(m_internals->DeleteAction, &QAction::triggered, this, &qtAttributeView::onDeleteSelected);
 
-  connect(m_internals->ValuesTable, &QTableWidget::itemChanged, this,
+  connect(
+    m_internals->ValuesTable,
+    &QTableWidget::itemChanged,
+    this,
     &qtAttributeView::onAttributeValueChanged);
   m_internals->ValuesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_internals->ValuesTable->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -482,7 +506,9 @@ void qtAttributeView::createWidget()
   if (opManager != nullptr)
   {
     m_internals->m_observerKey = opManager->observers().insert(
-      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](
+        const smtk::operation::Operation& oper,
+        smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         if (guardedObject == nullptr)
         {
@@ -668,7 +694,10 @@ void qtAttributeView::onAttributeItemChanged(QStandardItem* item)
 }
 
 void qtAttributeView::insertTableColumn(
-  QTableWidget* vtWidget, int insertCol, const QString& title, int advancedlevel)
+  QTableWidget* vtWidget,
+  int insertCol,
+  const QString& title,
+  int advancedlevel)
 {
   vtWidget->insertColumn(insertCol);
   vtWidget->setHorizontalHeaderItem(insertCol, new QTableWidgetItem(title));
@@ -691,7 +720,8 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 }
 
 void qtAttributeView::updateChildWidgetsEnableState(
-  smtk::attribute::ItemPtr attItem, QTableWidgetItem* item)
+  smtk::attribute::ItemPtr attItem,
+  QTableWidgetItem* item)
 {
   if (!item || !attItem || !attItem->isOptional())
   {
@@ -719,7 +749,9 @@ void qtAttributeView::updateChildWidgetsEnableState(
 }
 
 void qtAttributeView::updateItemWidgetsEnableState(
-  smtk::attribute::ItemPtr inData, int& startRow, bool enabled)
+  smtk::attribute::ItemPtr inData,
+  int& startRow,
+  bool enabled)
 {
   QTableWidget* tableWidget = m_internals->ValuesTable;
   if (inData->type() == smtk::attribute::Item::AttributeRefType)
@@ -765,7 +797,8 @@ smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 
   QString strDef = m_internals->DefsCombo->currentText();
 
-  foreach (attribute::DefinitionPtr attDef,
+  foreach (
+    attribute::DefinitionPtr attDef,
     m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
   {
     std::string txtDef = attDef->displayedTypeName();
@@ -1079,8 +1112,12 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
     if (m_internals->CurrentAtt->widget())
     {
       m_internals->AttFrame->layout()->addWidget(m_internals->CurrentAtt->widget());
-      connect(m_internals->CurrentAtt, &qtAttribute::itemModified, this,
-        &qtAttributeView::onItemChanged, Qt::QueuedConnection);
+      connect(
+        m_internals->CurrentAtt,
+        &qtAttribute::itemModified,
+        this,
+        &qtAttributeView::onItemChanged,
+        Qt::QueuedConnection);
       if (this->advanceLevelVisible())
       {
         m_internals->CurrentAtt->showAdvanceLevelOverlay(true);
@@ -1156,7 +1193,8 @@ void qtAttributeView::getAllDefinitions()
   bool flag;
 
   // The view should have a single internal component called InstancedAttributes
-  if ((view->details().numberOfChildren() != 1) ||
+  if (
+    (view->details().numberOfChildren() != 1) ||
     (view->details().child(0).name() != "AttributeTypes"))
   {
     // Should present error message
@@ -1214,7 +1252,9 @@ void qtAttributeView::getAllDefinitions()
   }
 
   // sort the list
-  std::sort(std::begin(m_internals->AllDefs), std::end(m_internals->AllDefs),
+  std::sort(
+    std::begin(m_internals->AllDefs),
+    std::end(m_internals->AllDefs),
     [](smtk::attribute::DefinitionPtr a, smtk::attribute::DefinitionPtr b) {
       return a->displayedTypeName() < b->displayedTypeName();
     });
@@ -1223,7 +1263,8 @@ void qtAttributeView::getAllDefinitions()
   {
     foreach (QString category, m_internals->AttDefMap.keys())
     {
-      if (adef->categories().passes(category.toStdString()) &&
+      if (
+        adef->categories().passes(category.toStdString()) &&
         !m_internals->AttDefMap[category].contains(adef))
       {
         m_internals->AttDefMap[category].push_back(adef);
@@ -1367,8 +1408,10 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
   }
 }
 
-int qtAttributeView::handleOperationEvent(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+int qtAttributeView::handleOperationEvent(
+  const smtk::operation::Operation& op,
+  smtk::operation::EventType event,
+  smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
   {
@@ -1503,13 +1546,15 @@ void smtk::extension::qtAttributeView::setTableItemDelegate(QAbstractItemDelegat
 }
 
 void smtk::extension::qtAttributeView::setTableColumnItemDelegate(
-  int column, QAbstractItemDelegate* delegate)
+  int column,
+  QAbstractItemDelegate* delegate)
 {
   m_internals->ListTable->setItemDelegateForColumn(column, delegate);
 }
 
 void smtk::extension::qtAttributeView::setTableRowItemDelegate(
-  int row, QAbstractItemDelegate* delegate)
+  int row,
+  QAbstractItemDelegate* delegate)
 {
   m_internals->ListTable->setItemDelegateForRow(row, delegate);
 }
@@ -1528,7 +1573,8 @@ int smtk::extension::qtAttributeView::numOfAttributes()
 }
 
 const smtk::view::Configuration::Component& smtk::extension::qtAttributeView::findStyle(
-  const smtk::attribute::DefinitionPtr& def, bool isOriginalDef)
+  const smtk::attribute::DefinitionPtr& def,
+  bool isOriginalDef)
 {
   // This is the order of preference in trying to find a style:
   // 1. Is there an explicit style store in the View for this Definition?

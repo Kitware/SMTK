@@ -28,7 +28,8 @@ namespace
 class SelectionContainer
 {
 public:
-  SelectionContainer(const std::shared_ptr<smtk::resource::Component>& component,
+  SelectionContainer(
+    const std::shared_ptr<smtk::resource::Component>& component,
     const std::weak_ptr<smtk::operation::Manager>& weakManager)
     : m_selection(std::static_pointer_cast<smtk::mesh::Selection>(component->shared_from_this()))
     , m_weakManager(weakManager)
@@ -67,7 +68,7 @@ private:
   std::shared_ptr<smtk::mesh::Selection> m_selection;
   std::weak_ptr<smtk::operation::Manager> m_weakManager;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -88,7 +89,8 @@ std::shared_ptr<Selection> Selection::create(const smtk::mesh::CellSet& cellset)
 }
 
 std::shared_ptr<Selection> Selection::create(
-  const smtk::mesh::CellSet& cellset, const std::weak_ptr<smtk::operation::Manager>& weakManager)
+  const smtk::mesh::CellSet& cellset,
+  const std::weak_ptr<smtk::operation::Manager>& weakManager)
 {
   std::shared_ptr<smtk::resource::Component> tmp(new Selection(cellset));
   std::shared_ptr<SelectionContainer> selectionContainer(new SelectionContainer(tmp, weakManager));
@@ -109,8 +111,9 @@ const smtk::mesh::MeshSet Selection::mesh() const
   smtk::mesh::MeshSet meshSet = Component::mesh();
   if (!meshSet.isValid())
   {
-    if (smtk::mesh::Resource::Ptr resource =
-          std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
+    if (
+      smtk::mesh::Resource::Ptr resource =
+        std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
     {
       return resource->createMesh(smtk::mesh::CellSet(resource, m_cells), this->id());
     }
@@ -123,13 +126,14 @@ smtk::mesh::MeshSet Selection::mesh()
   smtk::mesh::MeshSet meshSet = Component::mesh();
   if (!meshSet.isValid())
   {
-    if (smtk::mesh::Resource::Ptr resource =
-          std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
+    if (
+      smtk::mesh::Resource::Ptr resource =
+        std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
     {
       return resource->createMesh(smtk::mesh::CellSet(resource, m_cells), this->id());
     }
   }
   return meshSet;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

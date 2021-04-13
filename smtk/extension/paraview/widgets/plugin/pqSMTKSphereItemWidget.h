@@ -26,7 +26,8 @@ class pqSMTKSphereItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKSphereItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKSphereItemWidget();
 
   static qtItem* createSphereItemWidget(const qtAttributeItemInfo& info);
@@ -43,7 +44,8 @@ protected:
     * If errors are encountered, this method returns false.
     */
   bool fetchCenterAndRadiusItems(
-    smtk::attribute::DoubleItemPtr& centerItem, smtk::attribute::DoubleItemPtr& radiusItem);
+    smtk::attribute::DoubleItemPtr& centerItem,
+    smtk::attribute::DoubleItemPtr& radiusItem);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKSphereItemWidget_h

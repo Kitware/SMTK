@@ -115,10 +115,15 @@ public:
 
   Resource(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Resource(
-    const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
-  Resource(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
-    shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
-    const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+    const smtk::common::UUID& uid,
+    smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+  Resource(
+    shared_ptr<UUIDsToEntities> topology,
+    shared_ptr<UUIDsToTessellations> tess,
+    shared_ptr<UUIDsToTessellations> analysismesh,
+    shared_ptr<UUIDsToAttributeAssignments> attribs,
+    const smtk::common::UUID& uid,
+    smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Resource(Resource&& rhs) = default;
   virtual ~Resource();
 
@@ -153,29 +158,36 @@ public:
   void visit(smtk::resource::Component::Visitor&) const override;
 
   virtual SessionInfoBits erase(
-    const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+    const smtk::common::UUID& uid,
+    SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
   virtual SessionInfoBits erase(
-    const EntityRef& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+    const EntityRef& entityref,
+    SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
   virtual SessionInfoBits erase(
-    const EntityPtr& entityrec, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+    const EntityPtr& entityrec,
+    SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
   virtual SessionInfoBits eraseModel(
-    const Model& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+    const Model& entityref,
+    SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
   SessionInfoBits hardErase(
-    const EntityRef& eref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+    const EntityRef& eref,
+    SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
 
-  smtk::common::UUIDs bordantEntities(
-    const smtk::common::UUID& ofEntity, int ofDimension = -2) const;
-  smtk::common::UUIDs bordantEntities(
-    const smtk::common::UUIDs& ofEntities, int ofDimension = -2) const;
-  smtk::common::UUIDs boundaryEntities(
-    const smtk::common::UUID& ofEntity, int ofDimension = -2) const;
-  smtk::common::UUIDs boundaryEntities(
-    const smtk::common::UUIDs& ofEntities, int ofDimension = -2) const;
+  smtk::common::UUIDs bordantEntities(const smtk::common::UUID& ofEntity, int ofDimension = -2)
+    const;
+  smtk::common::UUIDs bordantEntities(const smtk::common::UUIDs& ofEntities, int ofDimension = -2)
+    const;
+  smtk::common::UUIDs boundaryEntities(const smtk::common::UUID& ofEntity, int ofDimension = -2)
+    const;
+  smtk::common::UUIDs boundaryEntities(const smtk::common::UUIDs& ofEntities, int ofDimension = -2)
+    const;
 
   smtk::common::UUIDs lowerDimensionalBoundaries(
-    const smtk::common::UUID& ofEntity, int lowerDimension);
+    const smtk::common::UUID& ofEntity,
+    int lowerDimension);
   smtk::common::UUIDs higherDimensionalBordants(
-    const smtk::common::UUID& ofEntity, int higherDimension);
+    const smtk::common::UUID& ofEntity,
+    int higherDimension);
   smtk::common::UUIDs adjacentEntities(const smtk::common::UUID& ofEntity, int ofDimension);
 
   smtk::common::UUIDs entitiesMatchingFlags(BitFlags mask, bool exactMatch = true);
@@ -184,14 +196,14 @@ public:
   smtk::common::UUID unusedUUID();
   iter_type insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   iter_type insertEntity(EntityPtr cell);
-  iter_type setEntityOfTypeAndDimension(
-    const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
+  iter_type
+  setEntityOfTypeAndDimension(const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
   iter_type setEntity(EntityPtr cell);
 
   smtk::common::UUID addEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   smtk::common::UUID addEntity(EntityPtr cell);
-  smtk::common::UUID addEntityOfTypeAndDimensionWithUUID(
-    const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
+  smtk::common::UUID
+  addEntityOfTypeAndDimensionWithUUID(const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
   smtk::common::UUID addEntityWithUUID(const smtk::common::UUID& uid, EntityPtr cell);
 
   iter_type insertCellOfDimension(int dim);
@@ -207,35 +219,53 @@ public:
   virtual void addToGroup(const smtk::common::UUID& groupId, const smtk::common::UUIDs& uids);
 
   void setFloatProperty(
-    const smtk::common::UUID& entity, const std::string& propName, smtk::model::Float propValue);
-  void setFloatProperty(const smtk::common::UUID& entity, const std::string& propName,
+    const smtk::common::UUID& entity,
+    const std::string& propName,
+    smtk::model::Float propValue);
+  void setFloatProperty(
+    const smtk::common::UUID& entity,
+    const std::string& propName,
     const smtk::model::FloatList& propValue);
   smtk::model::FloatList const& floatProperty(
-    const smtk::common::UUID& entity, const std::string& propName) const;
+    const smtk::common::UUID& entity,
+    const std::string& propName) const;
   smtk::model::FloatList& floatProperty(
-    const smtk::common::UUID& entity, const std::string& propName);
+    const smtk::common::UUID& entity,
+    const std::string& propName);
   bool hasFloatProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeFloatProperty(const smtk::common::UUID& entity, const std::string& propName);
 
-  void setStringProperty(const smtk::common::UUID& entity, const std::string& propName,
+  void setStringProperty(
+    const smtk::common::UUID& entity,
+    const std::string& propName,
     const smtk::model::String& propValue);
-  void setStringProperty(const smtk::common::UUID& entity, const std::string& propName,
+  void setStringProperty(
+    const smtk::common::UUID& entity,
+    const std::string& propName,
     const smtk::model::StringList& propValue);
   smtk::model::StringList const& stringProperty(
-    const smtk::common::UUID& entity, const std::string& propName) const;
+    const smtk::common::UUID& entity,
+    const std::string& propName) const;
   smtk::model::StringList& stringProperty(
-    const smtk::common::UUID& entity, const std::string& propName);
+    const smtk::common::UUID& entity,
+    const std::string& propName);
   bool hasStringProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeStringProperty(const smtk::common::UUID& entity, const std::string& propName);
 
   void setIntegerProperty(
-    const smtk::common::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
-  void setIntegerProperty(const smtk::common::UUID& entity, const std::string& propName,
+    const smtk::common::UUID& entity,
+    const std::string& propName,
+    smtk::model::Integer propValue);
+  void setIntegerProperty(
+    const smtk::common::UUID& entity,
+    const std::string& propName,
     const smtk::model::IntegerList& propValue);
   smtk::model::IntegerList const& integerProperty(
-    const smtk::common::UUID& entity, const std::string& propName) const;
+    const smtk::common::UUID& entity,
+    const std::string& propName) const;
   smtk::model::IntegerList& integerProperty(
-    const smtk::common::UUID& entity, const std::string& propName);
+    const smtk::common::UUID& entity,
+    const std::string& propName);
   bool hasIntegerProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::common::UUID& entity, const std::string& propName);
 
@@ -263,100 +293,133 @@ public:
   EntityRefArray findEntitiesByProperty(const std::string& pname, const StringList& pval);
   EntityRefArray findEntitiesOfType(BitFlags flags, bool exactMatch = true);
 
-  template <typename Collection, typename Type>
+  template<typename Collection, typename Type>
   Collection findEntitiesByTypeAndPropertyAs(const std::string& pname, const Type& pval);
-  template <typename Collection, typename Type>
+  template<typename Collection, typename Type>
   Collection findEntitiesByTypeAndPropertyAs(
-    const std::string& pname, const std::vector<Type>& pval);
+    const std::string& pname,
+    const std::vector<Type>& pval);
 
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, long pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, long>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, const std::vector<long>& pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, long>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, Float pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, double>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, const std::vector<double>& pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, double>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, std::string>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection findEntitiesByPropertyAs(
-    const std::string& pname, const std::vector<std::string>& pval)
+    const std::string& pname,
+    const std::vector<std::string>& pval)
   {
     return findEntitiesByTypeAndPropertyAs<Collection, std::string>(pname, pval);
   }
-  template <typename Collection>
+  template<typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
   tess_iter_type setTessellation(
-    const smtk::common::UUID& cellId, const Tessellation& geom, int analysis = 0, int* gen = NULL);
+    const smtk::common::UUID& cellId,
+    const Tessellation& geom,
+    int analysis = 0,
+    int* gen = NULL);
 
   tess_iter_type setTessellationAndBoundingBox(
-    const smtk::common::UUID& cellId, const Tessellation& geom, int analysis = 0, int* gen = NULL);
+    const smtk::common::UUID& cellId,
+    const Tessellation& geom,
+    int analysis = 0,
+    int* gen = NULL);
   // if BBox is provided, just replace corrds with BBox else we would loop through coords
   // BBox format: [xmin, xmax, ymin, ymax, zmin, zmax]
   bool setBoundingBox(
-    const smtk::common::UUID& cellId, const std::vector<double>& coords, int providedBBox = 0);
+    const smtk::common::UUID& cellId,
+    const std::vector<double>& coords,
+    int providedBBox = 0);
   bool removeTessellation(const smtk::common::UUID& cellId, bool removeGen = false);
 
   int arrangeEntity(
-    const smtk::common::UUID& entityId, ArrangementKind, const Arrangement& arr, int index = -1);
+    const smtk::common::UUID& entityId,
+    ArrangementKind,
+    const Arrangement& arr,
+    int index = -1);
   int unarrangeEntity(
-    const smtk::common::UUID& entityId, ArrangementKind, int index, bool removeIfLast = false);
+    const smtk::common::UUID& entityId,
+    ArrangementKind,
+    int index,
+    bool removeIfLast = false);
   bool clearArrangements(const smtk::common::UUID& entityId);
 
   const Arrangements* hasArrangementsOfKindForEntity(
-    const smtk::common::UUID& cellId, ArrangementKind) const;
+    const smtk::common::UUID& cellId,
+    ArrangementKind) const;
   Arrangements* hasArrangementsOfKindForEntity(const smtk::common::UUID& cellId, ArrangementKind);
 
   Arrangements& arrangementsOfKindForEntity(const smtk::common::UUID& cellId, ArrangementKind);
 
-  const Arrangement* findArrangement(
-    const smtk::common::UUID& entityId, ArrangementKind kind, int index) const;
+  const Arrangement*
+  findArrangement(const smtk::common::UUID& entityId, ArrangementKind kind, int index) const;
   Arrangement* findArrangement(const smtk::common::UUID& entityId, ArrangementKind kind, int index);
-  int findArrangementInvolvingEntity(const smtk::common::UUID& entityId, ArrangementKind kind,
+  int findArrangementInvolvingEntity(
+    const smtk::common::UUID& entityId,
+    ArrangementKind kind,
     const smtk::common::UUID& involved) const;
-  bool findDualArrangements(const smtk::common::UUID& entityId, ArrangementKind kind, int index,
+  bool findDualArrangements(
+    const smtk::common::UUID& entityId,
+    ArrangementKind kind,
+    int index,
     ArrangementReferences& duals) const;
-  bool addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
-    ArrangementKind kind, int sense, Orientation orientation);
+  bool addDualArrangement(
+    const smtk::common::UUID& parent,
+    const smtk::common::UUID& child,
+    ArrangementKind kind,
+    int sense,
+    Orientation orientation);
 
   int findCellHasUseWithSense(
-    const smtk::common::UUID& cellId, const smtk::common::UUID& use, int sense) const;
-  std::set<int> findCellHasUsesWithOrientation(
-    const smtk::common::UUID& cellId, Orientation orient) const;
+    const smtk::common::UUID& cellId,
+    const smtk::common::UUID& use,
+    int sense) const;
+  std::set<int> findCellHasUsesWithOrientation(const smtk::common::UUID& cellId, Orientation orient)
+    const;
 
-  smtk::common::UUID cellHasUseOfSenseAndOrientation(
-    const smtk::common::UUID& cell, int sense, Orientation o) const;
-  smtk::common::UUID findCreateOrReplaceCellUseOfSenseAndOrientation(const smtk::common::UUID& cell,
-    int sense, Orientation o, const smtk::common::UUID& replacement = smtk::common::UUID::null());
+  smtk::common::UUID
+  cellHasUseOfSenseAndOrientation(const smtk::common::UUID& cell, int sense, Orientation o) const;
+  smtk::common::UUID findCreateOrReplaceCellUseOfSenseAndOrientation(
+    const smtk::common::UUID& cell,
+    int sense,
+    Orientation o,
+    const smtk::common::UUID& replacement = smtk::common::UUID::null());
 
   smtk::common::UUIDs useOrShellIncludesShells(const smtk::common::UUID& cellUseOrShell) const;
   smtk::common::UUID createIncludedShell(const smtk::common::UUID& cellUseOrShell);
   bool findOrAddIncludedShell(
-    const smtk::common::UUID& parentUseOrShell, const smtk::common::UUID& shellToInclude);
+    const smtk::common::UUID& parentUseOrShell,
+    const smtk::common::UUID& shellToInclude);
 
   //bool shellHasUse(const smtk::common::UUID& shell, const smtk::common::UUID& use) const;
   //smtk::common::UUIDs shellHasUses(const smtk::common::UUID& shell) const;
   bool findOrAddUseToShell(const smtk::common::UUID& shell, const smtk::common::UUID& use);
 
   bool findOrAddInclusionToCellOrModel(
-    const smtk::common::UUID& cell, const smtk::common::UUID& inclusion);
+    const smtk::common::UUID& cell,
+    const smtk::common::UUID& inclusion);
 
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
@@ -372,12 +435,18 @@ public:
   bool disassociate(const smtk::resource::ResourcePtr& resource);
 
   bool hasAttribute(const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
-  bool associateAttribute(smtk::attribute::ResourcePtr attResource,
-    const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
-  bool disassociateAttribute(smtk::attribute::ResourcePtr attResource,
-    const smtk::common::UUID& attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool associateAttribute(
+    smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId,
+    const smtk::common::UUID& toEntity);
+  bool disassociateAttribute(
+    smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId,
+    const smtk::common::UUID& fromEntity,
+    bool reverse = true);
   bool insertEntityAssociations(
-    const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations);
+    const EntityRef& modelEntity,
+    std::set<smtk::attribute::AttributePtr>& associations);
   std::set<smtk::attribute::AttributePtr> associations(const EntityRef& modelEntity);
 
   Vertex insertVertex(const smtk::common::UUID& uid);
@@ -429,7 +498,9 @@ public:
   Shell addShell(const VolumeUse& src);
 
   Group insertGroup(
-    const smtk::common::UUID& uid, int extraFlags = 0, const std::string& name = std::string());
+    const smtk::common::UUID& uid,
+    int extraFlags = 0,
+    const std::string& name = std::string());
   Group addGroup(int extraFlags = 0, const std::string& name = std::string());
 
   AuxiliaryGeometry insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim = -1);
@@ -437,26 +508,31 @@ public:
   AuxiliaryGeometry addAuxiliaryGeometry(const Model& parent, int dim = -1);
   AuxiliaryGeometry addAuxiliaryGeometry(const AuxiliaryGeometry& parent, int dim = -1);
 
-  Model insertModel(const smtk::common::UUID& uid, int parametricDim = 3, int embeddingDim = 3,
+  Model insertModel(
+    const smtk::common::UUID& uid,
+    int parametricDim = 3,
+    int embeddingDim = 3,
     const std::string& name = std::string());
-  Model addModel(
-    int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
+  Model
+  addModel(int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 
   Instance addInstance();
   Instance addInstance(const EntityRef& instanceOf);
 
-  template <typename T>
-  bool insertModelFaceWithOrientedOuterLoop(const smtk::common::UUID& faceId, // to be created
-    const smtk::common::UUID& faceUseId,                                      // to be created
-    const smtk::common::UUID& loopId,                                         // to be created
+  template<typename T>
+  bool insertModelFaceWithOrientedOuterLoop(
+    const smtk::common::UUID& faceId,    // to be created
+    const smtk::common::UUID& faceUseId, // to be created
+    const smtk::common::UUID& loopId,    // to be created
     const T& orderedEdgesWithOrientation);
 
-  template <typename T>
-  bool insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId, // to be created
+  template<typename T>
+  bool insertModelFaceOrientedInnerLoop(
+    const smtk::common::UUID& loopId,            // to be created
     const smtk::common::UUID& preExistingLoopId, // the outer loop to contain the inner loop
     const T& orderedEdgesWithOrientation);
 
-  template <typename T, typename U, typename V>
+  template<typename T, typename U, typename V>
   bool deleteEntities(T& entities, U& modified, V& expunged, bool debugLog);
 
   void observe(ResourceEventType event, ConditionCallback functionHandle, void* callData);
@@ -466,9 +542,13 @@ public:
   void unobserve(ResourceEventType event, OneToOneCallback functionHandle, void* callData);
   void unobserve(ResourceEventType event, OneToManyCallback functionHandle, void* callData);
   void trigger(ResourceEventType event, const smtk::model::EntityRef& src);
-  void trigger(ResourceEventType event, const smtk::model::EntityRef& src,
+  void trigger(
+    ResourceEventType event,
+    const smtk::model::EntityRef& src,
     const smtk::model::EntityRef& related);
-  void trigger(ResourceEventType event, const smtk::model::EntityRef& src,
+  void trigger(
+    ResourceEventType event,
+    const smtk::model::EntityRef& src,
     const smtk::model::EntityRefArray& related);
 
   smtk::io::Logger& log() { return smtk::io::Logger::instance(); }
@@ -476,16 +556,22 @@ public:
 protected:
   friend class smtk::attribute::Resource;
 
-  void assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const smtk::common::UUID& owner,
-    const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids);
+  void assignDefaultNamesWithOwner(
+    const UUIDWithEntityPtr& irec,
+    const smtk::common::UUID& owner,
+    const std::string& ownersName,
+    std::set<smtk::common::UUID>& remaining,
+    bool nokids);
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::common::UUID, EntityPtr>& entry);
 
   smtk::common::UUID modelOwningEntityRecursive(
-    const smtk::common::UUID& uid, std::set<smtk::common::UUID>& visited) const;
+    const smtk::common::UUID& uid,
+    std::set<smtk::common::UUID>& visited) const;
   smtk::common::UUID sessionOwningEntityRecursive(
-    const smtk::common::UUID& uid, std::set<smtk::common::UUID>& visited) const;
+    const smtk::common::UUID& uid,
+    std::set<smtk::common::UUID>& visited) const;
 
   // Below are all the different things that can be mapped to a UUID:
   smtk::shared_ptr<UUIDsToEntities> m_topology;
@@ -506,13 +592,12 @@ protected:
   std::set<OneToManyTrigger> m_oneToManyTriggers;
 };
 
-template <typename Collection, typename Type>
+template<typename Collection, typename Type>
 Collection Resource::findEntitiesByTypeAndPropertyAs(const std::string& pname, const Type& pval)
 {
   Collection collection;
   auto& uuidsToValues =
-    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type> > >(
-      pname);
+    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type>>>(pname);
   for (auto it = uuidsToValues.begin(); it != uuidsToValues.end(); ++it)
   {
     if (it->second.size() == 1 && it->second.at(0) == pval)
@@ -527,14 +612,14 @@ Collection Resource::findEntitiesByTypeAndPropertyAs(const std::string& pname, c
   return collection;
 }
 
-template <typename Collection, typename Type>
+template<typename Collection, typename Type>
 Collection Resource::findEntitiesByTypeAndPropertyAs(
-  const std::string& pname, const std::vector<Type>& pval)
+  const std::string& pname,
+  const std::vector<Type>& pval)
 {
   Collection collection;
   auto& uuidsToValues =
-    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type> > >(
-      pname);
+    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type>>>(pname);
   for (auto it = uuidsToValues.begin(); it != uuidsToValues.end(); ++it)
   {
     if (it->second == pval)
@@ -549,7 +634,7 @@ Collection Resource::findEntitiesByTypeAndPropertyAs(
   return collection;
 }
 
-template <typename Collection>
+template<typename Collection>
 Collection Resource::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
 {
   smtk::common::UUIDs matches = this->entitiesMatchingFlags(mask, exactMatch);
@@ -563,7 +648,7 @@ Collection Resource::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
   return collection;
 }
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif // smtk_model_Resource_h

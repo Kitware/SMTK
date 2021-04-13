@@ -26,7 +26,10 @@
 #endif
 
 #define ADD_OBSERVER(key, observers, observer, priority, initialize)                               \
-  key = observers->insert(observer, priority, initialize,                                          \
+  key = observers->insert(                                                                         \
+    observer,                                                                                      \
+    priority,                                                                                      \
+    initialize,                                                                                    \
     std::string(__FILE__) + std::string(": ") + std::to_string(__LINE__))
 
 namespace smtk
@@ -64,7 +67,7 @@ namespace common
 /// goes out of scope, the Observer functor is removed from the Observers
 /// instance) by default. To decouple the Key's lifetime from that of the
 /// Observer functor, use the Key's release() method.
-template <typename Observer>
+template<typename Observer>
 class Observers
 {
   friend class Key;
@@ -210,7 +213,7 @@ public:
 
   /// The call operator calls each of its Observer functors in sequence if there
   /// is no override functor defined. Otherwise, it calls the override functor.
-  template <class... Types>
+  template<class... Types>
   auto operator()(Types&&... args) -> decltype(std::declval<Observer>()(args...))
   {
     return m_override ? m_override.operator()(std::forward<Types>(args)...)
@@ -219,10 +222,10 @@ public:
 
   /// For Observer functors that return an integral value, call all Observer
   /// functors and aggregate their output using a bitwise OR operator.
-  template <class... Types>
-  auto callObserversDirectly(Types&&... args) ->
-    typename std::enable_if<std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
-      decltype(std::declval<Observer>()(args...))>::type
+  template<class... Types>
+  auto callObserversDirectly(Types&&... args) -> typename std::enable_if<
+    std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
+    decltype(std::declval<Observer>()(args...))>::type
   {
     decltype(std::declval<Observer>()(args...)) result = 0;
 
@@ -259,10 +262,10 @@ public:
 
   /// For Observer functors that do not return an integral value, simply call
   /// all Observer functors.
-  template <class... Types>
-  auto callObserversDirectly(Types&&... args) ->
-    typename std::enable_if<!std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
-      decltype(std::declval<Observer>()(args...))>::type
+  template<class... Types>
+  auto callObserversDirectly(Types&&... args) -> typename std::enable_if<
+    !std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
+    decltype(std::declval<Observer>()(args...))>::type
   {
     // Toggle m_observing flag to enable caching of requests to erase observers.
     m_observing = true;
@@ -431,7 +434,7 @@ private:
   std::mutex m_mutex;
   std::map<InternalKey, Key*> m_keys;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif // __smtk_common_Observers_h

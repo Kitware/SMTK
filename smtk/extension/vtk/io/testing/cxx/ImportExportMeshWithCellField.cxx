@@ -77,15 +77,16 @@ private:
 
 public:
   SetCellField(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::CellField& cf)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::CellField& cf)
     : smtk::mesh::CellForEach(true)
     , m_dataGenerator(dataGenerator)
     , m_cellField(cf)
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -114,15 +115,16 @@ private:
 
 public:
   ValidateCellField(
-    const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::CellField& cf)
+    const std::function<double(double, double, double)>& dataGenerator,
+    smtk::mesh::CellField& cf)
     : smtk::mesh::CellForEach(true)
     , m_dataGenerator(dataGenerator)
     , m_cellField(cf)
   {
   }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts)
+    override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -144,7 +146,7 @@ public:
     test(std::abs(expectedValue - value) < EPSILON);
   }
 };
-}
+} // namespace
 
 int ImportExportMeshWithCellField(int argc, char* argv[])
 {
@@ -154,8 +156,8 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".vtp";
 
-  std::function<double(double, double, double)> euclideanDistance = [](
-    double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
+  std::function<double(double, double, double)> euclideanDistance =
+    [](double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
 
   {
     smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();

@@ -63,8 +63,10 @@ void vtkLIDARElevationFilter::SetTransform(double elements[16])
   tmpTransform->Delete();
 }
 
-int vtkLIDARElevationFilter::RequestData(vtkInformation* /*unused*/,
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkLIDARElevationFilter::RequestData(
+  vtkInformation* /*unused*/,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   // Get the input and output data objects.
   vtkDataSet* input = vtkDataSet::GetData(inputVector[0]);
@@ -94,7 +96,8 @@ int vtkLIDARElevationFilter::RequestData(vtkInformation* /*unused*/,
 
   // Set up 1D parametric system and make sure it is valid.
   double diffVector[3] = { this->HighPoint[0] - this->LowPoint[0],
-    this->HighPoint[1] - this->LowPoint[1], this->HighPoint[2] - this->LowPoint[2] };
+                           this->HighPoint[1] - this->LowPoint[1],
+                           this->HighPoint[2] - this->LowPoint[2] };
   double length2 = vtkMath::Dot(diffVector, diffVector);
   if (length2 <= 0)
   {

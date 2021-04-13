@@ -70,8 +70,8 @@ int testAssociationRule(const smtk::attribute::AttributePtr& attribute)
 
     // Construct a uniform grid
     std::array<std::size_t, 3> discretization = { { 2, 2, 2 } };
-    std::function<std::array<double, 3>(std::array<double, 3>)> transform = [](
-      std::array<double, 3> x) { return x; };
+    std::function<std::array<double, 3>(std::array<double, 3>)> transform =
+      [](std::array<double, 3> x) { return x; };
     auto meshes = smtk::mesh::utility::createUniformGrid(meshResource, discretization, transform);
     auto meshComponent = smtk::mesh::Component::create(meshes[0]);
 
@@ -126,7 +126,7 @@ def canBeAssociated(attribute, object):
     <Att Name="att" Type="att1"/>
   </Attributes>
 </SMTK_AttributeResource>)xml";
-}
+} // namespace
 
 int unitAssociationRulesTest(int argc, char* argv[])
 {
@@ -209,7 +209,8 @@ int unitAssociationRulesTest(int argc, char* argv[])
       writeOp->parameters()->associate(resource);
       auto result = writeOp->operate();
 
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Write operation failed\n";

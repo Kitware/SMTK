@@ -292,12 +292,14 @@ bool RespondToVTKSelection::transcribeBlockSelection()
     {
       continue;
     }
-    if (propId == source->GetEntitiesActorPickId() ||
+    if (
+      propId == source->GetEntitiesActorPickId() ||
       propId == source->GetSelectedEntitiesActorPickId())
     {
       tessBlocks.insert(compositeIndex);
     }
-    else if (propId == source->GetGlyphEntitiesActorPickId() ||
+    else if (
+      propId == source->GetGlyphEntitiesActorPickId() ||
       propId == source->GetSelectedGlyphEntitiesActorPickId())
     {
       glyphBlocks.insert(compositeIndex);
@@ -359,8 +361,13 @@ bool RespondToVTKSelection::transcribeBlockSelection()
     // so we can rebuild it in its entirety from the VTK selection via successive operations
     // on each of the resources involved. Also, never notify observers since this is an
     // intermediate result.
-    didModify = selnMgr->modifySelection(seln, m_smtkSelectionSource, m_smtkSelectionValue, action,
-      /* bitwise */ true, /* notify */ false);
+    didModify = selnMgr->modifySelection(
+      seln,
+      m_smtkSelectionSource,
+      m_smtkSelectionValue,
+      action,
+      /* bitwise */ true,
+      /* notify */ false);
   }
 
   return didModify;
@@ -369,8 +376,9 @@ bool RespondToVTKSelection::transcribeBlockSelection()
 RespondToVTKSelection::Result RespondToVTKSelection::operateInternal()
 {
   bool worked = this->transcribeBlockSelection();
-  auto result = this->createResult(worked ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                          : smtk::operation::Operation::Outcome::FAILED);
+  auto result = this->createResult(
+    worked ? smtk::operation::Operation::Outcome::SUCCEEDED
+           : smtk::operation::Operation::Outcome::FAILED);
   return result;
 }
 

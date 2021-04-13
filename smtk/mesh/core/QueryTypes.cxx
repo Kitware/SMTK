@@ -17,4 +17,4 @@ namespace mesh
 
 template class OpaqueTag<16>;
 }
-}
+} // namespace smtk

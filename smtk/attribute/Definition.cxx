@@ -28,7 +28,9 @@ double Definition::s_notApplicableBaseColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 Definition::Definition(
-  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, ResourcePtr myResource)
+  const std::string& myType,
+  smtk::attribute::DefinitionPtr myBaseDef,
+  ResourcePtr myResource)
 {
   m_resource = myResource;
   m_baseDefinition = myBaseDef;
@@ -342,7 +344,8 @@ bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
   * conflicts and/or missing prerequisites
   */
 Definition::AssociationResultType Definition::canBeAssociated(
-  smtk::resource::ConstPersistentObjectPtr object, AttributePtr& conflictAtt,
+  smtk::resource::ConstPersistentObjectPtr object,
+  AttributePtr& conflictAtt,
   DefinitionPtr& prerequisiteDef) const
 {
   if (!this->checkAssociationRules(object))
@@ -804,7 +807,8 @@ unsigned int Definition::advanceLevel(int mode) const
 }
 
 void Definition::applyAdvanceLevels(
-  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+  const unsigned int& readLevelFromParent,
+  const unsigned int& writeLevelFromParent)
 {
   if (!m_hasLocalAdvanceLevelInfo[0])
   {

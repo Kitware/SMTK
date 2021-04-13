@@ -33,8 +33,8 @@ struct SMTKCORE_EXPORT Cache
   virtual ~Cache() = default;
   virtual std::size_t index() const { return std::type_index(typeid(*this)).hash_code(); }
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

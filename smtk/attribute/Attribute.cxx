@@ -45,7 +45,9 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::attribute;
 using namespace smtk::common;
 
-Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
+Attribute::Attribute(
+  const std::string& myName,
+  const smtk::attribute::DefinitionPtr& myDefinition,
   const smtk::common::UUID& myId)
   : m_name(myName)
   , m_definition(myDefinition)
@@ -186,8 +188,8 @@ unsigned int Attribute::advanceLevel(int mode) const
 /**\brief Return an item given a string specifying a path to it.
   *
   */
-smtk::attribute::ConstItemPtr Attribute::itemAtPath(
-  const std::string& path, const std::string& seps, bool activeOnly) const
+smtk::attribute::ConstItemPtr
+Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly) const
 {
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
@@ -214,8 +216,8 @@ smtk::attribute::ConstItemPtr Attribute::itemAtPath(
   return current;
 }
 
-smtk::attribute::ItemPtr Attribute::itemAtPath(
-  const std::string& path, const std::string& seps, bool activeOnly)
+smtk::attribute::ItemPtr
+Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly)
 {
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
@@ -403,7 +405,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
   if (m_definition->isUsedAsAPrerequisite())
   {
     std::vector<smtk::resource::PersistentObjectPtr> objs;
-    objs = this->associatedObjects<std::vector<smtk::resource::PersistentObjectPtr> >();
+    objs = this->associatedObjects<std::vector<smtk::resource::PersistentObjectPtr>>();
     bool result = true;
     // if we are allowed to remove what we can then disassociate where we can
     if (partialRemovalOk)
@@ -451,17 +453,19 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   bool associationChanged = false;
   // update all modelEntityItems
   std::set<smtk::attribute::ModelEntityItemPtr> modelEntityPtrs;
-  std::function<bool(smtk::attribute::ModelEntityItemPtr)> filter = [](
-    smtk::attribute::ModelEntityItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::ModelEntityItemPtr)> filter =
+    [](smtk::attribute::ModelEntityItemPtr /*unused*/) { return true; };
   this->filterItems(modelEntityPtrs, filter, false);
   for (std::set<smtk::attribute::ModelEntityItemPtr>::iterator iterator = modelEntityPtrs.begin();
-       iterator != modelEntityPtrs.end(); iterator++)
+       iterator != modelEntityPtrs.end();
+       iterator++)
   {
     smtk::attribute::ModelEntityItemPtr MEItem = *iterator;
     if (MEItem && MEItem->isValid())
     {
       for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
-           bit != expungedEnts.end(); ++bit)
+           bit != expungedEnts.end();
+           ++bit)
       {
         std::ptrdiff_t idx = MEItem->find(*bit);
         if (idx >= 0)
@@ -475,7 +479,8 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   if (this->associations())
   {
     for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
-         bit != expungedEnts.end(); ++bit)
+         bit != expungedEnts.end();
+         ++bit)
     {
       if (this->isEntityAssociated(*bit))
       {
@@ -706,7 +711,8 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
 }
 
 bool Attribute::canBeDisassociated(
-  const smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const
+  const smtk::resource::PersistentObjectPtr& obj,
+  AttributePtr& probAtt) const
 {
   probAtt = nullptr;
   if (!m_associatedObjects)
@@ -793,7 +799,9 @@ bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool rever
 }
 
 bool Attribute::disassociate(
-  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool /*unused*/)
+  smtk::resource::PersistentObjectPtr obj,
+  AttributePtr& probAtt,
+  bool /*unused*/)
 {
   if (!this->canBeDisassociated(obj, probAtt))
   {

@@ -36,11 +36,11 @@ std::string data_root = SMTK_DATA_DIR;
 
 // A numerical tolerance
 const double epsilon = 1.e-8;
-}
+} // namespace
 
 // Import a tetrahedralized cube, compute its extent, transform the cube and
 // compare the new extent with the original one..
-int TestTransform(int, char* [])
+int TestTransform(int, char*[])
 {
   // Import a tetrahedralized cube
   smtk::mesh::Resource::Ptr resource;
@@ -56,7 +56,8 @@ int TestTransform(int, char* [])
     }
 
     smtk::operation::Operation::Result importOpResult = importOp->operate();
-    test(importOpResult->findInt("outcome")->value() ==
+    test(
+      importOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Import operator failed");
 
@@ -78,7 +79,8 @@ int TestTransform(int, char* [])
     transform->parameters()->findDouble("scale")->setValue(1, 2.);
 
     smtk::operation::Operation::Result result = transform->operate();
-    test(result->findInt("outcome")->value() ==
+    test(
+      result->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "transform failed");
   }

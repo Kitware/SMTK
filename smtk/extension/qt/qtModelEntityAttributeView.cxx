@@ -50,7 +50,8 @@ using namespace smtk::attribute;
 using namespace smtk::extension;
 
 qModelEntityAttributeViewComboBoxItemDelegate::qModelEntityAttributeViewComboBoxItemDelegate(
-  const QStringList& vals, QObject* parent)
+  const QStringList& vals,
+  QObject* parent)
   : QStyledItemDelegate(parent)
   , m_values(vals)
 {
@@ -59,7 +60,9 @@ qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBo
   default;
 
 QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
-  QWidget* parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const
+  QWidget* parent,
+  const QStyleOptionViewItem& /*option*/,
+  const QModelIndex& /*index*/) const
 {
   auto cbox = new QComboBox(parent);
   cbox->addItems(m_values);
@@ -68,7 +71,8 @@ QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
 }
 
 void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
-  QWidget* editor, const QModelIndex& index) const
+  QWidget* editor,
+  const QModelIndex& index) const
 {
   auto cb = qobject_cast<QComboBox*>(editor);
   if (cb != nullptr)
@@ -88,7 +92,9 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
 }
 
 void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
-  QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+  QWidget* editor,
+  QAbstractItemModel* model,
+  const QModelIndex& index) const
 {
   auto cb = qobject_cast<QComboBox*>(editor);
   if (cb != nullptr)
@@ -167,7 +173,7 @@ public:
   QFrame* BottomFrame; // bottom
 
   // <category, AttDefinitions>
-  QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
+  QMap<QString, QList<smtk::attribute::DefinitionPtr>> AttDefMap;
 
   // All definitions list
   QList<smtk::attribute::DefinitionPtr> AllDefs;
@@ -224,8 +230,10 @@ void qtModelEntityAttributeView::buildUI()
   {
     if (!sel->registerSelectionSource(this->Internals->m_selectionSourceName))
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "register selection source "
-          << this->Internals->m_selectionSourceName << "failed. Already existed!");
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "register selection source " << this->Internals->m_selectionSourceName
+                                     << "failed. Already existed!");
     }
     QPointer<qtModelEntityAttributeView> guardedObject(this);
     this->Internals->m_selectionObserverId = sel->observers().insert(
@@ -235,11 +243,13 @@ void qtModelEntityAttributeView::buildUI()
           guardedObject->updateSelectedModelEntity(selectionSource, sp);
         }
       },
-      0, true, "qtModelEntityAttributeView: Change focus on selection.");
+      0,
+      true,
+      "qtModelEntityAttributeView: Change focus on selection.");
   }
 }
 
-const QMap<QString, QList<smtk::attribute::DefinitionPtr> >&
+const QMap<QString, QList<smtk::attribute::DefinitionPtr>>&
 qtModelEntityAttributeView::attDefinitionMap() const
 {
   return this->Internals->AttDefMap;
@@ -591,14 +601,18 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
       selents.push_back(modelEnt);
       auto selBit = this->uiManager()->selectionBit();
 
-      sel->modifySelection(selents, this->Internals->m_selectionSourceName, selBit,
+      sel->modifySelection(
+        selents,
+        this->Internals->m_selectionSourceName,
+        selBit,
         smtk::view::SelectionAction::UNFILTERED_REPLACE);
     }
   }
 }
 
 void qtModelEntityAttributeView::updateSelectedModelEntity(
-  const std::string& /*unused*/, smtk::view::SelectionPtr p)
+  const std::string& /*unused*/,
+  smtk::view::SelectionPtr p)
 {
   this->Internals->ListTable->blockSignals(true);
   auto selBit = this->uiManager()->selectionBit();
@@ -698,7 +712,8 @@ void qtModelEntityAttributeView::getAllDefinitions()
   smtk::attribute::DefinitionPtr attDef;
 
   // The view should have a single internal component called InstancedAttributes
-  if ((view->details().numberOfChildren() != 1) ||
+  if (
+    (view->details().numberOfChildren() != 1) ||
     (view->details().child(0).name() != "AttributeTypes"))
   {
     // Should present error message
@@ -739,7 +754,9 @@ void qtModelEntityAttributeView::getAllDefinitions()
   }
 
   // sort the list
-  std::sort(std::begin(this->Internals->AllDefs), std::end(this->Internals->AllDefs),
+  std::sort(
+    std::begin(this->Internals->AllDefs),
+    std::end(this->Internals->AllDefs),
     [](smtk::attribute::DefinitionPtr a, smtk::attribute::DefinitionPtr b) {
       return a->displayedTypeName() < b->displayedTypeName();
     });
@@ -751,7 +768,8 @@ void qtModelEntityAttributeView::getAllDefinitions()
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
     {
-      if (adef->categories().passes(category.toStdString()) &&
+      if (
+        adef->categories().passes(category.toStdString()) &&
         !this->Internals->AttDefMap[category].contains(adef))
       {
         this->Internals->AttDefMap[category].push_back(adef);
@@ -775,7 +793,8 @@ void qtModelEntityAttributeView::selectionMade()
 {
   if (this->Internals->ListTable)
   {
-    QApplication::postEvent(this->Internals->ListTable,
+    QApplication::postEvent(
+      this->Internals->ListTable,
       new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
   }
 }

@@ -38,7 +38,7 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
+typedef std::vector<std::pair<size_t, internal::Segment>> SegmentSplitsT;
 
 CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
 {
@@ -90,7 +90,9 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
 }
 
 CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
-  std::vector<double>& pnts, int numCoordsPerPoint, smtk::model::Model& parentModel)
+  std::vector<double>& pnts,
+  int numCoordsPerPoint,
+  smtk::model::Model& parentModel)
 {
   smtk::session::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::session::polygon::Resource>(parentModel.component()->resource());
@@ -204,16 +206,16 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
       std::size_t numSegsPerSrc = 0; // Number of result segs per input edge in edgeSegs
       // Determine whether segments are reversed from the input edge:
       //printSegment(storage, "Seg ", sit->second);
-      internal::HighPrecisionPoint deltaSrc =
-        internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                       edgeIt->high().x() - edgeIt->low().x()),
-          static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                       edgeIt->high().y() - edgeIt->low().y()));
-      internal::HighPrecisionPoint deltaDst =
-        internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                       sit->second.high().x() - sit->second.low().x()),
-          static_cast<internal::HighPrecisionPoint::coordinate_type>(
-                                       sit->second.high().y() - sit->second.low().y()));
+      internal::HighPrecisionPoint deltaSrc = internal::HighPrecisionPoint(
+        static_cast<internal::HighPrecisionPoint::coordinate_type>(
+          edgeIt->high().x() - edgeIt->low().x()),
+        static_cast<internal::HighPrecisionPoint::coordinate_type>(
+          edgeIt->high().y() - edgeIt->low().y()));
+      internal::HighPrecisionPoint deltaDst = internal::HighPrecisionPoint(
+        static_cast<internal::HighPrecisionPoint::coordinate_type>(
+          sit->second.high().x() - sit->second.low().x()),
+        static_cast<internal::HighPrecisionPoint::coordinate_type>(
+          sit->second.high().y() - sit->second.low().y()));
       // Whether the segments are reversed or not, determine which
       // output segments correspond to a single input segment:
       if (deltaDst.x() * deltaSrc.x() < 0 || deltaDst.y() * deltaSrc.y() < 0)

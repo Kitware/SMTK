@@ -39,7 +39,7 @@ inline std::array<double, 3> RandomPoint::operator()(const smtk::resource::Compo
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
   return { { nan, nan, nan } };
 }
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

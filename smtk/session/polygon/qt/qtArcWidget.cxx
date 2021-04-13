@@ -29,7 +29,8 @@ public:
 };
 
 qtArcWidget::qtArcWidget(QWidget* parentWdg)
-  : Superclass(qtInteractionWidget::createWidget("representations", "smtkArcWidgetRepresentation"),
+  : Superclass(
+      qtInteractionWidget::createWidget("representations", "smtkArcWidgetRepresentation"),
       parentWdg)
   , Internals(new qtArcWidget::qtInternals())
 {

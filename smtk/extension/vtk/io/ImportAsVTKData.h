@@ -58,19 +58,21 @@ class SMTKIOVTK_EXPORT ImportAsVTKDataBase
 public:
   virtual std::vector<ImportFormat> fileFormats() const = 0;
 };
-}
-}
-}
-}
-}
+} // namespace detail
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 class vtkDataObject;
 
 #ifndef smtkIOVTK_EXPORTS
 extern
 #endif
-  template class SMTKIOVTK_EXPORT smtk::common::Generator<std::pair<std::string, std::string>,
-    vtkSmartPointer<vtkDataObject>, smtk::extension::vtk::io::detail::ImportAsVTKDataBase>;
+  template class SMTKIOVTK_EXPORT smtk::common::Generator<
+    std::pair<std::string, std::string>,
+    vtkSmartPointer<vtkDataObject>,
+    smtk::extension::vtk::io::detail::ImportAsVTKDataBase>;
 
 namespace smtk
 {
@@ -83,15 +85,20 @@ namespace io
 
 /// Each generator type for ImportAsVTKData must populate a set of strings
 /// describing the file extensions it can (attempt to) read.
-template <class Self>
+template<class Self>
 class ImportAsVTKDataType
-  : public smtk::common::GeneratorType<std::pair<std::string, std::string>,
-      vtkSmartPointer<vtkDataObject>, Self, smtk::extension::vtk::io::detail::ImportAsVTKDataBase>
+  : public smtk::common::GeneratorType<
+      std::pair<std::string, std::string>,
+      vtkSmartPointer<vtkDataObject>,
+      Self,
+      smtk::extension::vtk::io::detail::ImportAsVTKDataBase>
 {
 public:
   ImportAsVTKDataType()
-    : smtk::common::GeneratorType<std::pair<std::string, std::string>,
-        vtkSmartPointer<vtkDataObject>, Self,
+    : smtk::common::GeneratorType<
+        std::pair<std::string, std::string>,
+        vtkSmartPointer<vtkDataObject>,
+        Self,
         smtk::extension::vtk::io::detail::ImportAsVTKDataBase>({})
   {
   }
@@ -104,8 +111,9 @@ public:
 
   bool valid(const std::pair<std::string, std::string>& fileInfo) const override
   {
-    return std::find(std::begin(m_format.Extensions), std::end(m_format.Extensions),
-             fileInfo.first) != std::end(m_format.Extensions);
+    return std::find(
+             std::begin(m_format.Extensions), std::end(m_format.Extensions), fileInfo.first) !=
+      std::end(m_format.Extensions);
   }
 
   virtual vtkSmartPointer<vtkDataObject> operator()(
@@ -121,13 +129,19 @@ protected:
 /// via the registration of additional reader types (see
 /// smtk::common::Generator).
 class SMTKIOVTK_EXPORT ImportAsVTKData
-  : public smtk::common::Generator<std::pair<std::string, std::string>,
-      vtkSmartPointer<vtkDataObject>, detail::ImportAsVTKDataBase>
+  : public smtk::common::Generator<
+      std::pair<std::string, std::string>,
+      vtkSmartPointer<vtkDataObject>,
+      detail::ImportAsVTKDataBase>
 {
 public:
-  using smtk::common::Generator<std::pair<std::string, std::string>, vtkSmartPointer<vtkDataObject>,
+  using smtk::common::Generator<
+    std::pair<std::string, std::string>,
+    vtkSmartPointer<vtkDataObject>,
     ImportAsVTKDataBase>::valid;
-  using smtk::common::Generator<std::pair<std::string, std::string>, vtkSmartPointer<vtkDataObject>,
+  using smtk::common::Generator<
+    std::pair<std::string, std::string>,
+    vtkSmartPointer<vtkDataObject>,
     ImportAsVTKDataBase>::operator();
 
   ImportAsVTKData();
@@ -139,9 +153,9 @@ public:
 
   vtkSmartPointer<vtkDataObject> operator()(const std::string& file);
 };
-}
-}
-}
-}
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 #endif

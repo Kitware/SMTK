@@ -70,7 +70,9 @@ std::string Session::defaultFileExtension(const smtk::model::Model& /*model*/) c
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits requestedInfo, int depth)
+  const smtk::model::EntityRef& entity,
+  smtk::model::SessionInfoBits requestedInfo,
+  int depth)
 {
   if (entity.isModel())
   {
@@ -84,7 +86,8 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 }
 
 void Session::addStorage(
-  const smtk::common::UUID& uid, smtk::session::polygon::internal::entity::Ptr s)
+  const smtk::common::UUID& uid,
+  smtk::session::polygon::internal::entity::Ptr s)
 {
   m_storage[uid] = s;
 }
@@ -119,9 +122,10 @@ bool Session::removeFaceReferences(const smtk::model::Face& face)
     // listed at that vertex. That is not OK:
     if (!vrec || vrec->removeFaceAdjacencies(face.entity()) <= 0)
     {
-      smtkErrorMacro(this->log(), "Face " << face.name() << " (" << face.entity() << ") "
-                                          << " not bounded by " << vit->name() << " ("
-                                          << vit->entity() << ")");
+      smtkErrorMacro(
+        this->log(),
+        "Face " << face.name() << " (" << face.entity() << ") "
+                << " not bounded by " << vit->name() << " (" << vit->entity() << ")");
       ok = false;
     }
   }
@@ -161,8 +165,9 @@ bool Session::removeVertReferences(const smtk::model::Vertex& v)
   internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(v.entity());
   if (!vrec || vrec->edgesBegin() != vrec->edgesEnd())
   {
-    smtkWarningMacro(this->log(), "Could not remove vertex "
-        << v.name() << " because it is invalid or has incident edges.");
+    smtkWarningMacro(
+      this->log(),
+      "Could not remove vertex " << v.name() << " because it is invalid or has incident edges.");
     return false;
   }
   internal::pmodel* pmod = vrec->parentAs<internal::pmodel>();

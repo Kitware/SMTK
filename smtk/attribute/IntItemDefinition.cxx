@@ -24,14 +24,14 @@ Item::Type IntItemDefinition::type() const
   return Item::IntType;
 }
 
-smtk::attribute::ItemPtr IntItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+smtk::attribute::ItemPtr IntItemDefinition::buildItem(Attribute* owningAttribute, int itemPosition)
+  const
 {
   return smtk::attribute::ItemPtr(new IntItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr IntItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+IntItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new IntItem(owningItem, itemPosition, subGroupPosition));
 }

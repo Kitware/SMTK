@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from ._smtkPybindMesh import *
 
@@ -24,6 +24,7 @@ def _get(self, handleRange=None):
             return self._get_double(handleRange)
         if self.type() == FieldType.Integer:
             return self._get_int(handleRange)
+
 
 CellField.get = _get
 PointField.get = _get

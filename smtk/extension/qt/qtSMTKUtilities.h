@@ -27,7 +27,7 @@ namespace extension
 {
 using qtModelViewConstructor = std::function<QTreeView*(QWidget*)>;
 }
-}
+} // namespace smtk
 
 typedef std::map<std::string, smtk::extension::qtItemConstructor> SMTKItemConstructorMap;
 typedef std::map<std::string, smtk::extension::qtModelViewConstructor> SMTKModelViewConstructorMap;
@@ -43,11 +43,13 @@ public:
 
   // this will overwrite the existing constructor if viewName exists in the map
   static void registerItemConstructor(
-    const std::string& itemName, smtk::extension::qtItemConstructor itemc);
+    const std::string& itemName,
+    smtk::extension::qtItemConstructor itemc);
 
   // this will overwrite the existing constructor if viewName exists in the map
   static void registerModelViewConstructor(
-    const std::string& viewName, smtk::extension::qtModelViewConstructor viewc);
+    const std::string& viewName,
+    smtk::extension::qtModelViewConstructor viewc);
 
   static void updateItemConstructors(smtk::extension::qtUIManager* uiMan);
 
@@ -56,7 +58,8 @@ public:
   static QVariant entityRefToQVariant(const smtk::model::EntityRef& ent);
   static smtk::common::UUID QVariantToUUID(QVariant variant);
   static smtk::model::EntityRef QVariantToEntityRef(
-    QVariant variant, smtk::model::ResourcePtr mresource);
+    QVariant variant,
+    smtk::model::ResourcePtr mresource);
 
 private:
   static SMTKItemConstructorMap s_itemConstructors;

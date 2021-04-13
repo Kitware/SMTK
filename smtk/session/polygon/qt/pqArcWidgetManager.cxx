@@ -142,8 +142,11 @@ int pqArcWidgetManager::edit()
   if (!this->EditWidget)
   {
     this->EditWidget = new pqArcWidgetPanel();
-    QObject::connect(this->EditWidget, SIGNAL(arcModified(qtArcWidget*, const smtk::common::UUID&)),
-      this, SLOT(updateEdge(qtArcWidget*, const smtk::common::UUID&)));
+    QObject::connect(
+      this->EditWidget,
+      SIGNAL(arcModified(qtArcWidget*, const smtk::common::UUID&)),
+      this,
+      SLOT(updateEdge(qtArcWidget*, const smtk::common::UUID&)));
     QObject::connect(
       this->EditWidget, SIGNAL(arcModificationfinished()), this, SLOT(editingFinished()));
     QObject::connect(this->EditWidget, SIGNAL(startArcEditing()), this, SIGNAL(editingStarted()));
@@ -312,8 +315,12 @@ qtArcWidget* pqArcWidgetManager::createContourWidget(int normal, double position
   return widget;
 }
 
-pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(const int& normal, const double& position,
-  const int& closedLoop, vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices)
+pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
+  const int& normal,
+  const double& position,
+  const int& closedLoop,
+  vtkDoubleArray* nodePositions,
+  vtkIdTypeArray* SelIndices)
 {
   qtArcWidget* contourWidget = this->createContourWidget(normal, position);
   vtkSMNewWidgetRepresentationProxy* widgetProxy = contourWidget->widgetProxy();

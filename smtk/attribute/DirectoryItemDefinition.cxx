@@ -26,13 +26,14 @@ Item::Type DirectoryItemDefinition::type() const
 }
 
 smtk::attribute::ItemPtr DirectoryItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+  Attribute* owningAttribute,
+  int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new DirectoryItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr DirectoryItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+DirectoryItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new DirectoryItem(owningItem, itemPosition, subGroupPosition));
 }

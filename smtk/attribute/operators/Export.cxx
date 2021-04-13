@@ -86,5 +86,5 @@ const char* Export::xmlDescription() const
 {
   return Export_xml;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

@@ -41,6 +41,6 @@ const smtk::common::UUID& ComponentLinks::leftHandSideComponentId() const
 {
   return m_component->id();
 }
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk

@@ -22,17 +22,17 @@
   defined(SMTK_MSVC)
 #include <regex>
 using std::regex;
-using std::sregex_token_iterator;
+using std::regex_match;
 using std::regex_replace;
 using std::regex_search;
-using std::regex_match;
+using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <sstream>
@@ -163,14 +163,14 @@ bool FileItemDefinition::isValueValid(const std::string& val) const
   return this->filterId(val) != -1;
 }
 
-smtk::attribute::ItemPtr FileItemDefinition::buildItem(
-  Attribute* owningAttribute, int itemPosition) const
+smtk::attribute::ItemPtr FileItemDefinition::buildItem(Attribute* owningAttribute, int itemPosition)
+  const
 {
   return smtk::attribute::ItemPtr(new FileItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr FileItemDefinition::buildItem(
-  Item* owningItem, int itemPosition, int subGroupPosition) const
+smtk::attribute::ItemPtr
+FileItemDefinition::buildItem(Item* owningItem, int itemPosition, int subGroupPosition) const
 {
   return smtk::attribute::ItemPtr(new FileItem(owningItem, itemPosition, subGroupPosition));
 }

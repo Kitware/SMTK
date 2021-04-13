@@ -66,10 +66,10 @@ public:
   void setDefaultValue(const std::string& val);
   void unsetDefaultValue() { m_hasDefault = false; }
   bool hasDefault() const { return m_hasDefault; }
-  smtk::attribute::ItemPtr buildItem(
-    Attribute* owningAttribute, int itemPosition) const override = 0;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override = 0;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override =
+    0;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override = 0;
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override = 0;
@@ -88,7 +88,7 @@ protected:
 
 private:
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_FileSystemItemDefinition_h */

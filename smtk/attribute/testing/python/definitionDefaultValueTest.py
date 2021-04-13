@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,11 +8,12 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Verify that vector-valued defaults for value items are written and read
 properly to and from XML files.
 """
+from xml.dom import minidom
 import smtk
 from smtk import attribute
 from smtk import io
@@ -45,7 +46,6 @@ res = wri.write(asys, sys.argv[1], log)
 # print(wri.writeContents(asys, xml, log, False))
 
 # Read in the generated XML
-from xml.dom import minidom
 doc = minidom.parse(sys.argv[1])
 ddef = doc.getElementsByTagName(
     'Double')[0].getElementsByTagName('DefaultValue')[0]

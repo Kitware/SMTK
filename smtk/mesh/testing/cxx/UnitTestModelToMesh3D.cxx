@@ -97,7 +97,8 @@ void verify_model_association()
 
   //we need to verify that the mesh resource is now has an associated model
   test(mr->hasAssociations(), "mesh resource should have associations");
-  test((mr->associatedModel() != smtk::common::UUID()),
+  test(
+    (mr->associatedModel() != smtk::common::UUID()),
     "mesh resource should be associated to a real model");
   test((mr->isAssociatedToModel()), "mesh resource should be associated to a real model");
   test(mr->isModified(), "A mesh created in memory with no file is considered modified");
@@ -107,14 +108,17 @@ void verify_model_association()
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   if (!currentModels.empty())
   { //presuming only a single model in the model resource
-    test((mr->associatedModel() == currentModels.begin()->entity()),
+    test(
+      (mr->associatedModel() == currentModels.begin()->entity()),
       "mesh resource associated model should match model resource");
   }
 }
 
-template <int Dim>
+template<int Dim>
 void testFindAssociations(
-  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr,
+  smtk::model::EntityIterator& it,
+  std::size_t correct)
 {
   std::size_t numNonEmpty = 0;
   numNonEmpty = 0;
@@ -142,9 +146,11 @@ void testFindAssociations(
   test(numNonEmpty == correct, msg.str());
 }
 
-template <>
+template<>
 void testFindAssociations<-1>(
-  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr,
+  smtk::model::EntityIterator& it,
+  std::size_t correct)
 {
   std::size_t numNonEmpty = 0;
   for (it.begin(); !it.isAtEnd(); ++it)
@@ -157,7 +163,8 @@ void testFindAssociations<-1>(
                 << "  " << it->flagSummary(0) << "\n";
     /*
       */
-    test((tess && tess->begin() != tess->end() && entMesh.size()) ||
+    test(
+      (tess && tess->begin() != tess->end() && entMesh.size()) ||
         ((!tess || tess->begin() == tess->end()) && !entMesh.size()),
       "Model and mesh do not agree.");
     if (entMesh.size())
@@ -166,9 +173,11 @@ void testFindAssociations<-1>(
   test(numNonEmpty == correct, "Expected a non-empty meshset per test tetrahedron.");
 }
 
-template <int Dim>
+template<int Dim>
 void testFindAssociationsByRef(
-  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr,
+  smtk::model::EntityIterator& it,
+  std::size_t correct)
 {
   smtk::mesh::MeshSet entMesh =
     mr->findAssociatedMeshes(it, static_cast<smtk::mesh::DimensionType>(Dim));
@@ -183,9 +192,11 @@ void testFindAssociationsByRef(
   test(entMesh.size() == correct, msg.str());
 }
 
-template <>
+template<>
 void testFindAssociationsByRef<-1>(
-  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr,
+  smtk::model::EntityIterator& it,
+  std::size_t correct)
 {
   smtk::mesh::MeshSet entMesh = mr->findAssociatedMeshes(it);
   smtk::mesh::CellSet entCells = mr->findAssociatedCells(it);
@@ -273,8 +284,8 @@ void verify_cell_conversion()
       //as an explicit cell vertex. That is why we only expect to find triangle
       //cells in the following check
       std::cout << "  Cell " << cells[0].name() << "\n";
-      static bool expected[smtk::mesh::CellType_MAX] = { false, false, true, false, false, false,
-        false, false, false };
+      static bool expected[smtk::mesh::CellType_MAX] = { false, false, true,  false, false,
+                                                         false, false, false, false };
       for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
       {
         smtk::mesh::CellType ct = static_cast<smtk::mesh::CellType>(i);
@@ -331,18 +342,22 @@ void verify_cell_have_points()
   CountCells functor;
   smtk::mesh::for_each(triMeshes.cells(), functor);
 
-  test(functor.numberOCellsVisited() == static_cast<int>(triMeshes.cells().size()),
+  test(
+    functor.numberOCellsVisited() == static_cast<int>(triMeshes.cells().size()),
     "Mismatch in number of cells visited.");
-  test(functor.numberOPointsSeen() == static_cast<int>(triMeshes.pointConnectivity().size()),
+  test(
+    functor.numberOPointsSeen() == static_cast<int>(triMeshes.pointConnectivity().size()),
     "Mismatch in number of points seen.");
 
   //currently no two cells are sharing vertices.
-  test(functor.numberOCellsVisited() == static_cast<int>(numTetsInModel * 10),
+  test(
+    functor.numberOCellsVisited() == static_cast<int>(numTetsInModel * 10),
     "Number of cells not proportional to number of tets.");
-  test(functor.numberOPointsSeen() == static_cast<int>(numTetsInModel * 10 * 3),
+  test(
+    functor.numberOPointsSeen() == static_cast<int>(numTetsInModel * 10 * 3),
     "Number of points not proportional to number of tets.");
 }
-}
+} // namespace
 
 int UnitTestModelToMesh3D(int /*unused*/, char** const /*unused*/)
 {

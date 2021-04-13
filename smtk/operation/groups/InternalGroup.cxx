@@ -24,5 +24,5 @@ bool InternalGroup::registerOperation(const Operation::Index& index)
 {
   return Group::registerOperation(index);
 }
-}
-}
+} // namespace operation
+} // namespace smtk

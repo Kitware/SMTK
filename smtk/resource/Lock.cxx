@@ -108,8 +108,9 @@ void Lock::unlock(LockType lockType)
 
 smtk::resource::LockType Lock::state() const
 {
-  return (m_activeWriters > 0 ? LockType::Write
-                              : (m_activeReaders > 0 ? LockType::Read : LockType::Unlocked));
+  return (
+    m_activeWriters > 0 ? LockType::Write
+                        : (m_activeReaders > 0 ? LockType::Read : LockType::Unlocked));
 }
 
 ScopedLockGuard::ScopedLockGuard(Lock& lock, LockType lockType)

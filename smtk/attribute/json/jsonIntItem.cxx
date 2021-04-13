@@ -33,8 +33,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::IntItemPtr& itemPtr
   smtk::attribute::processDerivedValueToJson(j, itemPtr);
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::IntItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::IntItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -46,5 +49,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::IntItemPtr& itemP
   smtk::attribute::processDerivedValueFromJson<smtk::attribute::IntItemPtr, int>(
     j, itemPtr, itemExpressionInfo, attRefInfo);
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

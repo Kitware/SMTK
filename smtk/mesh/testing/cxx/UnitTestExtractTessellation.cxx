@@ -33,8 +33,11 @@ class VerifyCells : public smtk::mesh::CellForEach
   bool m_is_vtk;
 
 public:
-  VerifyCells(const smtk::mesh::CellSet& cells, const std::vector<std::int64_t>& conn,
-    const std::vector<std::int64_t>& locations, const std::vector<unsigned char>& types,
+  VerifyCells(
+    const smtk::mesh::CellSet& cells,
+    const std::vector<std::int64_t>& conn,
+    const std::vector<std::int64_t>& locations,
+    const std::vector<unsigned char>& types,
     bool is_vtk_conn)
     : m_points(cells.points())
     , m_conn(conn)
@@ -82,7 +85,7 @@ public:
   }
 };
 
-template <typename T>
+template<typename T>
 class VerifyPoints : public smtk::mesh::PointForEach
 {
   const std::vector<T>& m_points;
@@ -96,14 +99,17 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
     coordinatesModified = false; //we are not modifying the coords
 
     std::size_t offset = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i)
     {
       //iterate the range of coords / point ids
       test(m_points[m_currentIndex] == static_cast<T>(xyz[offset]));
@@ -461,7 +467,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Reso
   smtk::mesh::for_each(cells, vc);
   test(vc.cells(mr) == cells);
 }
-}
+} // namespace
 
 int UnitTestExtractTessellation(int /*unused*/, char** const /*unused*/)
 {

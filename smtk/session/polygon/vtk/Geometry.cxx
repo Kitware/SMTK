@@ -45,9 +45,12 @@ namespace polygon
 
 namespace
 {
-template <typename T>
+template<typename T>
 void preparePointsForBoost(
-  T& ppts, internal::Coord& denx, internal::Coord& deny, bool useExistingDenominators)
+  T& ppts,
+  internal::Coord& denx,
+  internal::Coord& deny,
+  bool useExistingDenominators)
 {
   // If we aren't given denx + deny, loop through ppts to find them:
   if (!useExistingDenominators)
@@ -127,8 +130,8 @@ smtk::geometry::Resource::Ptr Geometry::resource() const
   return std::dynamic_pointer_cast<smtk::geometry::Resource>(m_parent.lock());
 }
 
-void Geometry::queryGeometry(
-  const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const
+void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)
+  const
 {
   auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
   if (!ent)
@@ -153,10 +156,10 @@ void Geometry::queryGeometry(
       if (vert)
       {
         this->updateVertex(polyModel, vert, entry);
-        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        if (entry.m_geometry && ent->properties().contains<std::vector<double>>("color"))
         {
           Geometry::addColorArray(
-            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+            entry.m_geometry, ent->properties().at<std::vector<double>>("color"));
         }
         return;
       } // else this->eraseCache(ent->id()); ???
@@ -169,10 +172,10 @@ void Geometry::queryGeometry(
       if (edge)
       {
         this->updateEdge(polyModel, edge, entry);
-        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        if (entry.m_geometry && ent->properties().contains<std::vector<double>>("color"))
         {
           Geometry::addColorArray(
-            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+            entry.m_geometry, ent->properties().at<std::vector<double>>("color"));
         }
         return;
       }
@@ -181,10 +184,10 @@ void Geometry::queryGeometry(
     case 2:
     {
       this->updateFace(polyModel, ent, entry);
-      if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+      if (entry.m_geometry && ent->properties().contains<std::vector<double>>("color"))
       {
         Geometry::addColorArray(
-          entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+          entry.m_geometry, ent->properties().at<std::vector<double>>("color"));
       }
       return;
       break;
@@ -238,8 +241,8 @@ void Geometry::geometricBounds(const DataType& geom, BoundingBox& bbox) const
   bbox[1] = bbox[3] = bbox[5] = -1.0;
 }
 
-void Geometry::updateVertex(
-  const PolyModel& polyModel, const VertexPtr& vv, CacheEntry& entry) const
+void Geometry::updateVertex(const PolyModel& polyModel, const VertexPtr& vv, CacheEntry& entry)
+  const
 {
   if (!vv)
   {
@@ -327,7 +330,9 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
 }
 
 void Geometry::updateFace(
-  const PolyModel&, const smtk::model::EntityPtr& modelFace, CacheEntry& entry) const
+  const PolyModel&,
+  const smtk::model::EntityPtr& modelFace,
+  CacheEntry& entry) const
 {
   if (!modelFace)
   {
@@ -369,7 +374,7 @@ void Geometry::updateFace(
   {
     smtk::model::Loops innerLoops = lit->containedLoops();
     int npp = 1 + static_cast<int>(innerLoops.size());
-    std::vector<std::vector<internal::Point> > pp2(npp);
+    std::vector<std::vector<internal::Point>> pp2(npp);
     int ll = 0;
     //std::cout << "  Loop " << lit->name() << "\n";
     polyModel->pointsInLoopOrder(pp2[ll], *lit);
@@ -391,9 +396,9 @@ void Geometry::updateFace(
     }
 
     // Add the component to the face tessellation:
-    std::vector<poly::polygon_data<internal::Coord> > tess;
+    std::vector<poly::polygon_data<internal::Coord>> tess;
     bpolys.get_trapezoids(tess);
-    std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
+    std::vector<poly::polygon_data<internal::Coord>>::const_iterator pit;
     double smtkPt[3];
     internal::Point ipt;
     for (pit = tess.begin(); pit != tess.end(); ++pit)

@@ -61,8 +61,8 @@ Tessellation& Tessellation::addTriangle(const double* a, const double* b, const 
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
-Tessellation& Tessellation::addQuad(
-  const double* a, const double* b, const double* c, const double* d)
+Tessellation&
+Tessellation::addQuad(const double* a, const double* b, const double* c, const double* d)
 {
   return this->addQuad(
     this->addCoords(a), this->addCoords(b), this->addCoords(c), this->addCoords(d));
@@ -189,8 +189,8 @@ Tessellation::size_type Tessellation::cellType(size_type offset) const
   * the cell's type at the same time (since it must be fetched in
   * order to determine the number of vertices.
   */
-Tessellation::size_type Tessellation::numberOfCellVertices(
-  size_type offset, size_type* cellTypeOut) const
+Tessellation::size_type Tessellation::numberOfCellVertices(size_type offset, size_type* cellTypeOut)
+  const
 {
   size_type cell_type = this->cellType(offset);
   if (cellTypeOut)
@@ -227,8 +227,8 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
   * in the connectivity (such as normal-vector IDs, color IDs, material
   * IDs, etc.).
   */
-Tessellation::size_type Tessellation::vertexIdsOfCell(
-  size_type offset, std::vector<int>& cellConn) const
+Tessellation::size_type Tessellation::vertexIdsOfCell(size_type offset, std::vector<int>& cellConn)
+  const
 {
   size_type cell_type;
   size_type num_verts = this->numberOfCellVertices(offset, &cell_type);
@@ -477,5 +477,5 @@ bool Tessellation::getBoundingBox(double bbox[6]) const
   return true;
 }
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk

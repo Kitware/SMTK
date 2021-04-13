@@ -53,5 +53,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileItemPtr& item
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

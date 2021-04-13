@@ -24,12 +24,12 @@ namespace mesh
 SMTKCORE_EXPORT void to_json(nlohmann::json&, const smtk::mesh::HandleRange&);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json&, smtk::mesh::HandleRange&);
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 namespace nlohmann
 {
-template <>
+template<>
 struct adl_serializer<smtk::mesh::HandleRange>
 {
   static void to_json(json& j, const smtk::mesh::HandleRange& opt) { smtk::mesh::to_json(j, opt); }
@@ -39,6 +39,6 @@ struct adl_serializer<smtk::mesh::HandleRange>
     smtk::mesh::from_json(j, opt);
   }
 };
-}
+} // namespace nlohmann
 
 #endif

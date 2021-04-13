@@ -31,7 +31,7 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<smtk::model::Edge, bool> > OrientedEdges;
+typedef std::vector<std::pair<smtk::model::Edge, bool>> OrientedEdges;
 
 /**\brief Represent the neighborhood of a sweepline point, x.
   *
@@ -41,12 +41,16 @@ typedef std::vector<std::pair<smtk::model::Edge, bool> > OrientedEdges;
 class Neighborhood
 {
 public:
-  Neighborhood(SweeplinePosition& x, FragmentArray& fragments, SweepEventSet& eventQueue,
-    ActiveFragmentTree& active, smtk::session::polygon::SessionPtr sess);
+  Neighborhood(
+    SweeplinePosition& x,
+    FragmentArray& fragments,
+    SweepEventSet& eventQueue,
+    ActiveFragmentTree& active,
+    smtk::session::polygon::SessionPtr sess);
 
   int sweep();
 
-  template <typename T>
+  template<typename T>
   void getLoops(T evaluator);
 
   // Internal methods:
@@ -59,15 +63,25 @@ public:
 
   bool isFragmentOutgoing(const EdgeFragment& frag);
 
-  void relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool isOutA, FragmentId fB,
-    EdgeFragment& fragB, bool isOutB, RegionId region);
+  void relateNeighborhoods(
+    FragmentId fA,
+    EdgeFragment& fragA,
+    bool isOutA,
+    FragmentId fB,
+    EdgeFragment& fragB,
+    bool isOutB,
+    RegionId region);
   void mergeRelated();
 
   void assignAndMergeRegions(
-    const std::list<FragmentId>::iterator& ringA, const std::list<FragmentId>::iterator& ringB);
+    const std::list<FragmentId>::iterator& ringA,
+    const std::list<FragmentId>::iterator& ringB);
 
-  bool insertFragmentBetween(const std::list<FragmentId>::iterator& ringA,
-    const std::list<FragmentId>::iterator& ringB, FragmentId fragId, EdgeFragment& frag,
+  bool insertFragmentBetween(
+    const std::list<FragmentId>::iterator& ringA,
+    const std::list<FragmentId>::iterator& ringB,
+    FragmentId fragId,
+    EdgeFragment& frag,
     const internal::Point& other);
   void insertFragment(FragmentId fragId, EdgeFragment& frag, const internal::Point& other);
   void queueActiveEdge(FragmentId fragId, EdgeFragment& frag);
@@ -78,13 +92,16 @@ public:
   void advanceSweeplineTo(const internal::Point& pt);
   void removeDeactivatedEdges();
   void dumpRegions();
-  RegionId traverseLoop(OrientedEdges& result, std::set<RegionId>& neighborRegions,
-    FragmentId fragId, bool orientation);
+  RegionId traverseLoop(
+    OrientedEdges& result,
+    std::set<RegionId>& neighborRegions,
+    FragmentId fragId,
+    bool orientation);
   void dumpLoop(OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions);
   void dumpRegions2();
   void setDebugLevel(int lvl) { m_debugLevel = lvl; }
 
-  template <typename T>
+  template<typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
   {
     return m_session->findStorage<T>(uid);
@@ -100,7 +117,7 @@ public:
   std::vector<FragmentId> m_fragmentsToQueue;
   std::set<FragmentId> m_fragmentsToDeactivate;
   std::list<FragmentId> m_ring; // offsets into m_fragments that order a neighborhood CCW
-  std::set<std::pair<RegionId, RegionId> >
+  std::set<std::pair<RegionId, RegionId>>
     m_related; // regions containing other regions (first = parent, second=child)
   RegionId m_outside;
   smtk::model::Resource::Ptr m_resource;

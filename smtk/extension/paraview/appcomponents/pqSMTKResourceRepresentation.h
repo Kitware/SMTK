@@ -24,8 +24,12 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceRepresentation : public pqPipelin
   typedef pqPipelineRepresentation Superclass;
 
 public:
-  pqSMTKResourceRepresentation(const QString& group, const QString& name, vtkSMProxy* repr,
-    pqServer* server, QObject* parent = nullptr);
+  pqSMTKResourceRepresentation(
+    const QString& group,
+    const QString& name,
+    vtkSMProxy* repr,
+    pqServer* server,
+    QObject* parent = nullptr);
   ~pqSMTKResourceRepresentation() override;
 
   void onInputChanged() override;

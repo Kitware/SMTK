@@ -45,7 +45,8 @@ class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerato
 public:
   static std::string getType(const smtk::view::ConfigurationPtr& viewSpec);
   static SubphraseGeneratorPtr create(
-    const std::string& typeName, const smtk::view::ManagerPtr& manager);
+    const std::string& typeName,
+    const smtk::view::ManagerPtr& manager);
 
   smtkTypeMacroBase(smtk::view::SubphraseGenerator);
   smtkCreateMacro(smtk::view::SubphraseGenerator);
@@ -77,8 +78,10 @@ public:
     * The generator is responsible for decorating each path it adds to \a resultingPhrases
     * if a phrase model is present.
     */
-  virtual void subphrasesForCreatedObjects(const smtk::resource::PersistentObjectArray& objects,
-    const DescriptivePhrasePtr& localRoot, PhrasesByPath& resultingPhrases);
+  virtual void subphrasesForCreatedObjects(
+    const smtk::resource::PersistentObjectArray& objects,
+    const DescriptivePhrasePtr& localRoot,
+    PhrasesByPath& resultingPhrases);
 
   /**\brief The maximum number of subphrases to directly include before turning into a list.
     *
@@ -107,7 +110,9 @@ public:
     *
     * Subclasses should override this method.
     */
-  virtual bool shouldOmitProperty(DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype,
+  virtual bool shouldOmitProperty(
+    DescriptivePhrase::Ptr parent,
+    smtk::resource::PropertyType ptype,
     const std::string& pname) const;
 
   /**\brief Get/Set whether entity properties will be skiped for subphrases.
@@ -133,27 +138,45 @@ public:
   friend Manager;
 
 protected:
-  virtual Path indexOfObjectInParent(const smtk::resource::PersistentObjectPtr& obj,
-    smtk::view::DescriptivePhrasePtr& parent, const Path& parentPath);
+  virtual Path indexOfObjectInParent(
+    const smtk::resource::PersistentObjectPtr& obj,
+    smtk::view::DescriptivePhrasePtr& parent,
+    const Path& parentPath);
 
   virtual int findResourceLocation(
-    smtk::resource::ResourcePtr rsrc, const DescriptivePhrase::Ptr& root) const;
-  virtual bool findSortedLocation(Path& pathOut, smtk::attribute::AttributePtr attr,
-    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
-  virtual bool findSortedLocation(Path& pathOut, smtk::model::EntityPtr entity,
-    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
-  virtual bool findSortedLocation(Path& pathOut, smtk::mesh::ComponentPtr comp,
-    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
+    smtk::resource::ResourcePtr rsrc,
+    const DescriptivePhrase::Ptr& root) const;
+  virtual bool findSortedLocation(
+    Path& pathOut,
+    smtk::attribute::AttributePtr attr,
+    DescriptivePhrase::Ptr& phr,
+    const DescriptivePhrase::Ptr& parent) const;
+  virtual bool findSortedLocation(
+    Path& pathOut,
+    smtk::model::EntityPtr entity,
+    DescriptivePhrase::Ptr& phr,
+    const DescriptivePhrase::Ptr& parent) const;
+  virtual bool findSortedLocation(
+    Path& pathOut,
+    smtk::mesh::ComponentPtr comp,
+    DescriptivePhrase::Ptr& phr,
+    const DescriptivePhrase::Ptr& parent) const;
 
   /// Populate \a result with the top-level components of \a rsrc with \a src as their parent.
   void componentsOfResource(
-    DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    smtk::resource::ResourcePtr rsrc,
+    DescriptivePhrases& result);
   /// Populate \a result with the active, public items of \a att with \a src as their parent.
   void itemsOfAttribute(
-    DescriptivePhrase::Ptr src, smtk::attribute::AttributePtr att, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    smtk::attribute::AttributePtr att,
+    DescriptivePhrases& result);
   /// Populate \a result with the children of \a modelEntity with \a src as their parent.
   void childrenOfModelEntity(
-    DescriptivePhrase::Ptr src, smtk::model::EntityPtr modelEntity, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    smtk::model::EntityPtr modelEntity,
+    DescriptivePhrases& result);
 
   /** \brief Model-entity utility methods.
     *
@@ -163,20 +186,30 @@ protected:
   ///@{
   /// Add submodels of \a mod to \a result with \a src as their parent.
   void freeSubmodelsOfModel(
-    DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Model& mod,
+    DescriptivePhrases& result);
   /// Add groups of \a mod to \a result with \a src as their parent.
   void freeGroupsOfModel(
-    DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Model& mod,
+    DescriptivePhrases& result);
   /// Add free cells of \a mod to \a result with \a src as their parent.
   void freeCellsOfModel(
-    DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Model& mod,
+    DescriptivePhrases& result);
   /// Add auxiliary geometry entities of \a mod to \a result with \a src as their parent.
   void freeAuxiliaryGeometriesOfModel(
-    DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Model& mod,
+    DescriptivePhrases& result);
 
   /// Add instances of \a ent to \a result with \a src as their parent.
   void instancesOfModelEntity(
-    DescriptivePhrase::Ptr src, const smtk::model::EntityRef& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::EntityRef& ent,
+    DescriptivePhrases& result);
   /// Add attributes associated with \a ent to \a result with \a src as their parent.
   /*
   void attributesOfModelEntity(
@@ -184,35 +217,55 @@ protected:
     */
 
   void cellOfModelUse(
-    DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::UseEntity& ent,
+    DescriptivePhrases& result);
   void boundingShellsOfModelUse(
-    DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::UseEntity& ent,
+    DescriptivePhrases& result);
   void toplevelShellsOfModelUse(
-    DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::UseEntity& ent,
+    DescriptivePhrases& result);
 
   void usesOfModelCell(
-    DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::CellEntity& ent,
+    DescriptivePhrases& result);
   void inclusionsOfModelCell(
-    DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::CellEntity& ent,
+    DescriptivePhrases& result);
   void boundingCellsOfModelCell(
-    DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::CellEntity& ent,
+    DescriptivePhrases& result);
 
   void usesOfModelShell(
-    DescriptivePhrase::Ptr src, const smtk::model::ShellEntity& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::ShellEntity& ent,
+    DescriptivePhrases& result);
 
   void membersOfModelGroup(
-    DescriptivePhrase::Ptr src, const smtk::model::Group& grp, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Group& grp,
+    DescriptivePhrases& result);
 
-  void childrenOfModelAuxiliaryGeometry(DescriptivePhrase::Ptr src,
-    const smtk::model::AuxiliaryGeometry& aux, DescriptivePhrases& result);
+  void childrenOfModelAuxiliaryGeometry(
+    DescriptivePhrase::Ptr src,
+    const smtk::model::AuxiliaryGeometry& aux,
+    DescriptivePhrases& result);
 
   void prototypeOfModelInstance(
-    DescriptivePhrase::Ptr src, const smtk::model::Instance& ent, DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src,
+    const smtk::model::Instance& ent,
+    DescriptivePhrases& result);
 
-  template <typename T>
+  template<typename T>
   void PreparePath(T& result, const T& parentPath, int childIndex);
 
-  template <typename T>
+  template<typename T>
   int IndexFromTitle(const std::string& title, const T& phrases);
 
   ///@}
@@ -227,8 +280,10 @@ protected:
     * If a comparator is passed in, then the children of this new phrase will be
     * sorted using the comparator.
     */
-  template <typename T>
-  PhraseListContentPtr addComponentPhrases(const T& components, DescriptivePhrase::Ptr parent,
+  template<typename T>
+  PhraseListContentPtr addComponentPhrases(
+    const T& components,
+    DescriptivePhrase::Ptr parent,
     DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
@@ -240,13 +295,16 @@ protected:
    * update the container to respect this property.
    * Assumption: Type T is std::vector holding smtk::model::EntityRef or its subclass type.
    */
-  template <typename T>
+  template<typename T>
   void filterModelEntityPhraseCandidates(T& ents);
 
   /// A templated helper for the model-related utility methods.
-  template <typename T>
-  PhraseListContentPtr addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent,
-    int limit, DescriptivePhrases& result,
+  template<typename T>
+  PhraseListContentPtr addModelEntityPhrases(
+    const T& ents,
+    DescriptivePhrase::Ptr parent,
+    int limit,
+    DescriptivePhrases& result,
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =

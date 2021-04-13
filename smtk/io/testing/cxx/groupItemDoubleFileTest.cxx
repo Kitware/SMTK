@@ -112,7 +112,7 @@ bool checkGroupItem(GroupItemPtr gitem, int numGroups)
 
   return true;
 }
-}
+} // namespace
 
 int main(int argc, char* argv[])
 {

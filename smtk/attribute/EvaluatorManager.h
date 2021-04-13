@@ -86,7 +86,7 @@ public:
   }
 
   // Registers <EvaluatorType> to all attribute resources.
-  template <typename EvaluatorType>
+  template<typename EvaluatorType>
   bool registerEvaluator(const std::string& alias)
   {
     // Construct a functor for adding the Evaluator type to an attribute
@@ -105,11 +105,13 @@ public:
       // ...add an observer that adds the Evaluator to all current and future
       // attribute resources associated with this manager.
       auto registerEvaluatorObserver = [registerEvaluatorType](
-        const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+                                         const smtk::resource::Resource& resource,
+                                         smtk::resource::EventType eventType) -> void {
         if (eventType == smtk::resource::EventType::ADDED)
         {
-          if (const smtk::attribute::Resource* attributeResource =
-                dynamic_cast<const smtk::attribute::Resource*>(&resource))
+          if (
+            const smtk::attribute::Resource* attributeResource =
+              dynamic_cast<const smtk::attribute::Resource*>(&resource))
           {
             registerEvaluatorType(const_cast<smtk::attribute::Resource&>(*attributeResource));
           }
@@ -118,16 +120,19 @@ public:
 
       // Associated the observer key with the Evaluator type, so we can remove
       // it later if requested.
-      m_observers.insert(std::make_pair(typeid(EvaluatorType).hash_code(),
-        manager->observers().insert(registerEvaluatorObserver, "Register Evaluator type <" +
-            smtk::common::typeName<EvaluatorType>() + "> with alias " + alias + ".")));
+      m_observers.insert(std::make_pair(
+        typeid(EvaluatorType).hash_code(),
+        manager->observers().insert(
+          registerEvaluatorObserver,
+          "Register Evaluator type <" + smtk::common::typeName<EvaluatorType>() + "> with alias " +
+            alias + ".")));
     }
 
     return true;
   }
 
   // Unregister <EvaluatorType> from all attribute resources.
-  template <typename EvaluatorType>
+  template<typename EvaluatorType>
   bool unregisterEvaluator()
   {
     // Remove the Evaluator from the container of register functions.
@@ -153,7 +158,7 @@ protected:
   EvaluatorManager();
   EvaluatorManager(const smtk::resource::ManagerPtr&);
 
-  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)> >
+  std::unordered_map<std::size_t, std::function<void(smtk::attribute::Resource&)>>
     m_registerFunctions;
 
   std::weak_ptr<smtk::resource::Manager> m_manager;

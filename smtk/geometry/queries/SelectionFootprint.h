@@ -53,13 +53,14 @@ struct SMTKCORE_EXPORT SelectionFootprint
   ///
   /// Returns true if at least one persistent object was added to (or was already in)
   /// the \a footprint set — either \a selectedObject itself or some other object.
-  virtual bool operator()(smtk::resource::PersistentObject& selectedObject,
+  virtual bool operator()(
+    smtk::resource::PersistentObject& selectedObject,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const = 0;
 
   /// Returns true iff the given \a object has geometry for \a backend .
-  bool hasGeometry(
-    smtk::resource::PersistentObject& object, const smtk::geometry::Backend& backend) const
+  bool hasGeometry(smtk::resource::PersistentObject& object, const smtk::geometry::Backend& backend)
+    const
   {
     auto resource = dynamic_cast<smtk::geometry::Resource*>(&object);
     if (!resource)
@@ -75,7 +76,8 @@ struct SMTKCORE_EXPORT SelectionFootprint
       return false;
     }
     auto& geom = resource->geometry(backend);
-    if (!geom ||
+    if (
+      !geom ||
       geom->generationNumber(object.shared_from_this()) == smtk::geometry::Geometry::Invalid)
     {
       return false;
@@ -87,7 +89,8 @@ struct SMTKCORE_EXPORT SelectionFootprint
   ///
   /// Return false when \a object is not a Resource or when none of its components
   /// have any geometry for the given backend.
-  bool addAllComponentsIfResource(smtk::resource::PersistentObject& object,
+  bool addAllComponentsIfResource(
+    smtk::resource::PersistentObject& object,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const
   {
@@ -104,8 +107,9 @@ struct SMTKCORE_EXPORT SelectionFootprint
     if (geom->generationNumber(object.shared_from_this()) == smtk::geometry::Geometry::Invalid)
     {
       bool hasFootprint = false;
-      auto visitor = [&hasFootprint, &footprint, &geom](const resource::PersistentObject::Ptr& obj,
-        smtk::geometry::Geometry::GenerationNumber) -> bool {
+      auto visitor = [&hasFootprint, &footprint, &geom](
+                       const resource::PersistentObject::Ptr& obj,
+                       smtk::geometry::Geometry::GenerationNumber) -> bool {
         if (geom->generationNumber(obj) != smtk::geometry::Geometry::Invalid)
         {
           hasFootprint = true;
@@ -119,7 +123,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
     return true; // Resource has geometry.
   }
 };
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #endif

@@ -89,7 +89,7 @@ public:
   std::string m_selectedIconURL;
   std::string m_unselectedIconURL;
 };
-}
-}
+} // namespace extension
+} // namespace smtk
 
 #endif

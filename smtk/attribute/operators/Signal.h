@@ -36,7 +36,7 @@ protected:
   virtual void generateSummary(Operation::Result&) override;
   virtual const char* xmlDescription() const override;
 };
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif // smtk_operation_operators_Signal_h

@@ -78,14 +78,18 @@ public:
     m_hist.resize(nBins, 0);
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+  void forPoints(
+    const smtk::mesh::HandleRange& pointIds,
+    std::vector<double>& xyz,
     bool& /*coordinatesModified*/) override
   {
     int counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
-         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, counter += 3)
+         i != smtk::mesh::rangeElementsEnd(pointIds);
+         ++i, counter += 3)
     {
-      std::size_t bin = xyz[counter + 2] < m_min ? 0 : xyz[counter + 2] > m_max
+      std::size_t bin = xyz[counter + 2] < m_min ? 0
+                                                 : xyz[counter + 2] > m_max
           ? m_hist.size() - 1
           : static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());
       ++m_hist[bin];
@@ -99,7 +103,7 @@ private:
   double m_min;
   double m_max;
 };
-}
+} // namespace
 
 using namespace smtk::model;
 
@@ -123,7 +127,8 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   smtk::operation::Operation::Result importOpResult = importOp->operate();
-  if (importOpResult->findInt("outcome")->value() !=
+  if (
+    importOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
@@ -184,7 +189,8 @@ int TestElevateMesh(int argc, char* argv[])
 
   auxGeoOp->parameters()->associateEntity(model2dm);
   smtk::operation::Operation::Result auxGeoOpResult = auxGeoOp->operate();
-  if (auxGeoOpResult->findInt("outcome")->value() !=
+  if (
+    auxGeoOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Add auxiliary geometry failed!\n";
@@ -231,7 +237,8 @@ int TestElevateMesh(int argc, char* argv[])
     }
 
     smtk::operation::Operation::Result bathyResult = elevateMesh->operate();
-    if (bathyResult->findInt("outcome")->value() !=
+    if (
+      bathyResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Elevate mesh operator failed\n";
@@ -265,7 +272,8 @@ int TestElevateMesh(int argc, char* argv[])
     undoElevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
 
     smtk::operation::Operation::Result result = undoElevateMesh->operate();
-    if (result->findInt("outcome")->value() !=
+    if (
+      result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Undo elevate mesh operator failed\n";

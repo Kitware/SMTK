@@ -105,13 +105,13 @@ public:
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle
   smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
-  smtk::attribute::ConstItemPtr find(
-    const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
+  smtk::attribute::ConstItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE)
+    const;
 
-  template <typename T>
+  template<typename T>
   typename T::Ptr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
 
-  template <typename T>
+  template<typename T>
   typename T::ConstPtr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
   /// @}
 
@@ -123,14 +123,15 @@ public:
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
   virtual void visitChildren(
-    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true)
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+    bool activeChildren = true)
   {
     (void)visitor;
     (void)activeChildren;
   }
   const smtk::attribute::ConstItemDefinitionPtr& definition() const { return m_definition; }
 
-  template <typename DefType>
+  template<typename DefType>
   std::shared_ptr<const DefType> definitionAs() const
   {
     return std::dynamic_pointer_cast<const DefType>(m_definition);
@@ -244,15 +245,15 @@ protected:
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
   /// \brief Internal implementation of the find method
   virtual smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style);
-  virtual smtk::attribute::ConstItemPtr findInternal(
-    const std::string& name, SearchStyle style) const;
+  virtual smtk::attribute::ConstItemPtr findInternal(const std::string& name, SearchStyle style)
+    const;
   // Internal method for rotate()
-  template <typename T>
+  template<typename T>
   bool rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition);
   ///\brief Internal implementation of calculating the validity of the item.  If useCategories
   /// is true then the set of categories will be taken into consideration.
-  virtual bool isValidInternal(
-    bool useCategories, const std::set<std::string>& categories) const = 0;
+  virtual bool isValidInternal(bool useCategories, const std::set<std::string>& categories)
+    const = 0;
   Attribute* m_attribute;
   Item* m_owningItem;
   int m_position;
@@ -273,19 +274,19 @@ inline smtk::simulation::UserDataPtr Item::userData(const std::string& key) cons
   return ((it == m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
 }
 
-template <typename T>
+template<typename T>
 typename T::Ptr Item::findAs(const std::string& iname, SearchStyle style)
 {
   return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
 }
 
-template <typename T>
+template<typename T>
 typename T::ConstPtr Item::findAs(const std::string& iname, SearchStyle style) const
 {
   return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
 }
 
-template <typename T>
+template<typename T>
 bool Item::rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition)
 {
   if (fromPosition == toPosition) // no-op
@@ -317,7 +318,7 @@ bool Item::rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t
   std::rotate(first, middle, last);
   return true;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_Item_h */

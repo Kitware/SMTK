@@ -77,8 +77,8 @@ struct SMTKCORE_EXPORT Format
   std::vector<std::string> Extensions;
   IOFlags Flags;
 };
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk
 
 #endif

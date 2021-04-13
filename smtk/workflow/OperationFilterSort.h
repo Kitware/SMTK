@@ -83,7 +83,7 @@ protected:
   FilterList m_filterList;
   Observers m_observers;
 };
-}
-}
+} // namespace workflow
+} // namespace smtk
 
 #endif

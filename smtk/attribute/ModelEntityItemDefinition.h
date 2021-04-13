@@ -42,15 +42,15 @@ public:
   void setMembershipMask(smtk::model::BitFlags entMask);
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
-  smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
+    const override;
 
 protected:
   ModelEntityItemDefinition(const std::string& myName);
 
 private:
-  bool setAcceptsEntries(
-    const std::string& typeName, const std::string& queryString, bool accept) override;
+  bool setAcceptsEntries(const std::string& typeName, const std::string& queryString, bool accept)
+    override;
 };
 
 } // namespace attribute

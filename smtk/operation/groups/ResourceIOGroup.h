@@ -38,8 +38,8 @@ class SMTKCORE_EXPORT ResourceIOGroup : protected Group
 {
 public:
   using Group::contains;
-  using Group::operations;
   using Group::operationNames;
+  using Group::operations;
   using Group::unregisterOperation;
 
   ResourceIOGroup(const std::string& name, std::shared_ptr<smtk::operation::Manager> manager)
@@ -55,19 +55,21 @@ public:
 
   /// Register an IO operation identified by it's unique name, the type of
   /// resource it handles and the file item name.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registerOperation(
-    const std::string&, const std::string& fileItemName = m_defaultFileItemName);
+    const std::string&,
+    const std::string& fileItemName = m_defaultFileItemName);
 
   /// Register an IO operation identified by its type index, the type of
   /// resource it handles and the file item name.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registerOperation(
-    const Operation::Index&, const std::string& fileItemName = m_defaultFileItemName);
+    const Operation::Index&,
+    const std::string& fileItemName = m_defaultFileItemName);
 
   /// Register an IO operation identified by its class type, the name of the
   /// resource it reads and the file item name.
-  template <typename ResourceType, typename OperationType>
+  template<typename ResourceType, typename OperationType>
   bool registerOperation(const std::string& fileItemName = m_defaultFileItemName);
 
   /// Obtain the file item name associated with an operation identified by its
@@ -96,14 +98,14 @@ public:
 
   /// Given a resource type, return the set of operators that were associated
   /// with the resource during registration.
-  template <typename ResourceType>
+  template<typename ResourceType>
   std::set<Operation::Index> operationsForResource() const;
 
   std::set<std::string> supportedResources() const;
 
   /// Obtain the file item associated with the operation identified by its
   /// class type.
-  template <typename OperationType>
+  template<typename OperationType>
   std::string fileItemNameForOperation() const;
 
 protected:
@@ -122,9 +124,10 @@ protected:
   static const std::string m_defaultFileItemName;
 };
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool ResourceIOGroup::registerOperation(
-  const std::string& typeName, const std::string& fileItemName)
+  const std::string& typeName,
+  const std::string& fileItemName)
 {
   if (this->requiresFileItem())
   {
@@ -143,13 +146,15 @@ bool ResourceIOGroup::registerOperation(
       return false;
     }
   }
-  return (m_fileItemName.registerOperation(typeName, { fileItemName }) &&
+  return (
+    m_fileItemName.registerOperation(typeName, { fileItemName }) &&
     Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() }));
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool ResourceIOGroup::registerOperation(
-  const Operation::Index& index, const std::string& fileItemName)
+  const Operation::Index& index,
+  const std::string& fileItemName)
 {
   if (this->requiresFileItem())
   {
@@ -180,11 +185,12 @@ bool ResourceIOGroup::registerOperation(
       return false;
     }
   }
-  return (m_fileItemName.registerOperation(index, { fileItemName }) &&
+  return (
+    m_fileItemName.registerOperation(index, { fileItemName }) &&
     Group::registerOperation(index, { smtk::common::typeName<ResourceType>() }));
 }
 
-template <typename ResourceType, typename OperationType>
+template<typename ResourceType, typename OperationType>
 bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
 {
   if (this->requiresFileItem())
@@ -217,24 +223,26 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
       return false;
     }
   }
-  return (m_fileItemName.registerOperation(
-            std::type_index(typeid(OperationType)).hash_code(), { fileItemName }) &&
-    Group::registerOperation(std::type_index(typeid(OperationType)).hash_code(),
-            { smtk::common::typeName<ResourceType>() }));
+  return (
+    m_fileItemName.registerOperation(
+      std::type_index(typeid(OperationType)).hash_code(), { fileItemName }) &&
+    Group::registerOperation(
+      std::type_index(typeid(OperationType)).hash_code(),
+      { smtk::common::typeName<ResourceType>() }));
 }
 
-template <typename OperationType>
+template<typename OperationType>
 std::string ResourceIOGroup::fileItemNameForOperation() const
 {
   return fileItemNameForOperation(std::type_index(typeid(OperationType)).hash_code());
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 std::set<Operation::Index> ResourceIOGroup::operationsForResource() const
 {
   return operationsForResource(smtk::common::typeName<ResourceType>());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_ResourceIOGroup_h

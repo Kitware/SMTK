@@ -39,7 +39,7 @@ class SMTKCORE_EXPORT Factory
 public:
   /// Register a Query type using the default priority functor. Queries must be
   /// default constructible.
-  template <typename QueryType>
+  template<typename QueryType>
   bool registerQuery()
   {
     return registerQuery(Metadata(identity<QueryType>()));
@@ -47,7 +47,7 @@ public:
 
   /// Register a Query type using a provided priority functor. Queries must be
   /// default constructible.
-  template <typename QueryType>
+  template<typename QueryType>
   bool registerQuery(std::function<int(const std::size_t&)> priority)
   {
     return registerQuery(Metadata(identity<QueryType>(), priority));
@@ -58,14 +58,14 @@ public:
 
   /// Register a tuple of Query types using the default priority functor.
   /// Queries must be default constructibel.
-  template <typename Tuple>
+  template<typename Tuple>
   bool registerQueries()
   {
     return registerQueries<0, Tuple>();
   }
 
   /// Unregister a Query type.
-  template <typename QueryType>
+  template<typename QueryType>
   bool unregisterQuery()
   {
     return unregisterQuery(QueryType::typeIndex());
@@ -75,7 +75,7 @@ public:
   bool unregisterQuery(const std::size_t typeIndex);
 
   /// Unregister a tuple of Query types.
-  template <typename Tuple>
+  template<typename Tuple>
   bool unregisterQueries()
   {
     return unregisterQueries<0, Tuple>();
@@ -83,7 +83,7 @@ public:
 
   /// Determine whether or not a Query type (or a suitable replacement for it)
   /// is available.
-  template <typename QueryType>
+  template<typename QueryType>
   bool contains() const
   {
     return contains(QueryType::typeIndex());
@@ -95,8 +95,8 @@ public:
 
   /// Create an instance of a concrete Query type (or a suitable replacement for
   /// it), registering the Query type if it is not already registered.
-  template <typename QueryType>
-  typename std::enable_if<!std::is_abstract<QueryType>::value, std::unique_ptr<QueryType> >::type
+  template<typename QueryType>
+  typename std::enable_if<!std::is_abstract<QueryType>::value, std::unique_ptr<QueryType>>::type
   create()
   {
     if (!contains<QueryType>())
@@ -109,8 +109,8 @@ public:
   }
 
   /// Create a a suitable replacement for an abstract Query type.
-  template <typename QueryType>
-  typename std::enable_if<std::is_abstract<QueryType>::value, std::unique_ptr<QueryType> >::type
+  template<typename QueryType>
+  typename std::enable_if<std::is_abstract<QueryType>::value, std::unique_ptr<QueryType>>::type
   create()
   {
     return std::unique_ptr<QueryType>{ static_cast<QueryType*>(
@@ -120,7 +120,7 @@ public:
   /// Create an instance of a Query type (or a suitable replacement for it).
   std::unique_ptr<Query> create(const std::size_t& typeIndex) const;
 
-  template <typename QueryType>
+  template<typename QueryType>
   std::size_t indexFor() const
   {
     return indexFor(QueryType::typeIndex());
@@ -128,7 +128,7 @@ public:
 
   /// Given a concrete input Query type, return the type index of a registered
   /// Query type to perform the query, adding it if necessary.
-  template <typename QueryType>
+  template<typename QueryType>
   typename std::enable_if<!std::is_abstract<QueryType>::value, std::size_t>::type indexFor()
   {
     if (!contains<QueryType>())
@@ -141,7 +141,7 @@ public:
 
   /// Given an abstract input Query type, return the type index of a registered
   /// Query type to perform the query.
-  template <typename QueryType>
+  template<typename QueryType>
   typename std::enable_if<std::is_abstract<QueryType>::value, std::size_t>::type indexFor()
   {
     return indexFor(QueryType::typeIndex());
@@ -152,27 +152,27 @@ public:
   std::size_t indexFor(const std::size_t& typeIndex) const;
 
 private:
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerQueries()
   {
     bool registered = this->registerQuery<typename std::tuple_element<I, Tuple>::type>();
     return registered && registerQueries<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerQueries()
   {
     return true;
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     bool unregistered = this->unregisterQuery<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && unregisterQueries<I + 1, Tuple>();
   }
 
-  template <std::size_t I, typename Tuple>
+  template<std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     return true;
@@ -191,8 +191,8 @@ private:
   };
   std::unordered_set<Metadata, HashByTypeIndex, EquateByTypeIndex> m_metadata;
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

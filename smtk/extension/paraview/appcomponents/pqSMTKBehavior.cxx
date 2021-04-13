@@ -45,7 +45,7 @@
 class pqSMTKBehavior::Internal
 {
 public:
-  std::map<pqServer*, std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*> > Remotes;
+  std::map<pqServer*, std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*>> Remotes;
 };
 
 static pqSMTKBehavior* g_instance = nullptr;
@@ -63,12 +63,21 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
     auto builder = pqCore->getObjectBuilder();
     QObject::connect(
       builder, SIGNAL(proxyCreated(pqProxy*)), this, SLOT(handleNewSMTKProxies(pqProxy*)));
-    QObject::connect(builder, SIGNAL(destroying(pqPipelineSource*)), this,
+    QObject::connect(
+      builder,
+      SIGNAL(destroying(pqPipelineSource*)),
+      this,
       SLOT(handleOldSMTKProxies(pqPipelineSource*)));
 
-    QObject::connect(pqCore->getServerManagerModel(), SIGNAL(serverReady(pqServer*)), this,
+    QObject::connect(
+      pqCore->getServerManagerModel(),
+      SIGNAL(serverReady(pqServer*)),
+      this,
       SLOT(addManagerOnServer(pqServer*)));
-    QObject::connect(pqCore->getServerManagerModel(), SIGNAL(aboutToRemoveServer(pqServer*)), this,
+    QObject::connect(
+      pqCore->getServerManagerModel(),
+      SIGNAL(aboutToRemoveServer(pqServer*)),
+      this,
       SLOT(removeManagerFromServer(pqServer*)));
 
     // TODO: Do we need to call serverReady manually if pqActiveObjects says there's already an active server?

@@ -29,7 +29,7 @@ enum DimensionType
 
 //Need a basic blitter for dims queries
 typedef std::bitset<DimensionType_MAX> DimensionTypes;
-}
-}
+} // namespace mesh
+} // namespace smtk
 
 #endif //__smtk_mesh_core_DimensionTypes_h

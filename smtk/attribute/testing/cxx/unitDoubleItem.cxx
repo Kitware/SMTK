@@ -42,7 +42,10 @@ public:
 
   bool canEvaluate(smtk::io::Logger& /*log*/) override { return true; }
 
-  bool evaluate(ValueType& result, smtk::io::Logger& log, const std::size_t& element,
+  bool evaluate(
+    ValueType& result,
+    smtk::io::Logger& log,
+    const std::size_t& element,
     const DependentEvaluationMode& evaluationMode) override
   {
     // Evaluating dependents does not make sense for this Evaluator.
@@ -126,12 +129,12 @@ void testBasicGettingValue()
 
   DoubleItemPtr item = doubleItemTest.getDoubleItem();
 
-  smtkTest(item->value() == 0.0, "Expected an unset value to be zero-initialized.")
-    smtkTest(smtk::io::Logger::instance().hasErrors() == true,
-      "Expected the global logger to have an error.")
+  smtkTest(item->value() == 0.0, "Expected an unset value to be zero-initialized.") smtkTest(
+    smtk::io::Logger::instance().hasErrors() == true,
+    "Expected the global logger to have an error.")
 
-      smtk::io::Logger::instance()
-        .reset();
+    smtk::io::Logger::instance()
+      .reset();
   item->setValue(5.0);
 
   smtkTest(item->value() == 5.0, "Expected value to be 5.0") smtkTest(
@@ -152,7 +155,8 @@ void testGettingValueWithExpression()
     item->setExpression(expressionAtt) == true, "Expected to set expression on the DoubleItem.")
 
     smtk::io::Logger log;
-  smtkTest(item->value(0, log) == 5.0,
+  smtkTest(
+    item->value(0, log) == 5.0,
     "Expected the string \"5.0\" to evaluate to 5.0 for the set expression.")
     smtkTest(log.hasErrors() == false, "Expected logger to have no new errors.")
 
@@ -202,13 +206,15 @@ void testValueAsString()
         expressionAtt->findString("text")
           ->setValue("abc123");
 
-    smtkTest(item->valueAsString() == "CANNOT_EVALUATE",
+    smtkTest(
+      item->valueAsString() == "CANNOT_EVALUATE",
       "Expected evaluation to fail, so valueAsString() will return"
       " \"CANNOT_EVALUATE\".")
 
       doubleItemTest.mp_attRes->evaluatorFactory()
         .unregisterEvaluator<StringToDoubleEvaluator>();
-    smtkTest(item->valueAsString() == "CANNOT_EVALUATE",
+    smtkTest(
+      item->valueAsString() == "CANNOT_EVALUATE",
       "StringToDoubleEvaluator is no longer registered, so valueAsString()"
       " will return \"CANNOT_EVALUATE\".")
   }

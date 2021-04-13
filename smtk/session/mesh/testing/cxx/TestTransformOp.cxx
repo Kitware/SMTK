@@ -87,7 +87,8 @@ int TestTransformOp(int argc, char* argv[])
   smtk::operation::Operation::Result createBackgroundDomainOpResult =
     createBackgroundDomainOp->operate();
 
-  if (createBackgroundDomainOpResult->findInt("outcome")->value() !=
+  if (
+    createBackgroundDomainOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"create uniform grid\" operation failed\n";
@@ -115,7 +116,8 @@ int TestTransformOp(int argc, char* argv[])
   transformOp->parameters()->findDouble("scale")->setValue(0, scale);
   smtk::operation::Operation::Result transformOpResult = transformOp->operate();
 
-  if (transformOpResult->findInt("outcome")->value() !=
+  if (
+    transformOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"transform\" operation failed\n";

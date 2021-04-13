@@ -109,10 +109,10 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData::operator()(const std::string& fi
 
   return this->operator()(std::make_pair(fileType, file));
 }
-}
-}
-}
-}
+} // namespace io
+} // namespace vtk
+} // namespace extension
+} // namespace smtk
 
 namespace
 {
@@ -315,7 +315,8 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
     // creates a point data named "Categories" and associates to it the
     // appropriate lookup table to convert to RGB space. We key off of the
     // existence of this scalar data to convert our data from indices to RGB.
-    if (outImage->GetPointData() && outImage->GetPointData()->GetScalars() &&
+    if (
+      outImage->GetPointData() && outImage->GetPointData()->GetScalars() &&
       strcmp(outImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
     {
       vtkNew<vtkImageMapToColors> imageMapToColors;
@@ -335,7 +336,8 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
 
 ImportAsVTKData_exo::ImportAsVTKData_exo()
   : ImportAsVTKDataType<ImportAsVTKData_exo>({ smtk::extension::vtk::io::ImportFormat(
-      "Exodus File via VTK", { "ex2", "exo", "exoII", "exo2", "e", "g", "gen" }) })
+      "Exodus File via VTK",
+      { "ex2", "exo", "exoII", "exo2", "e", "g", "gen" }) })
 {
 }
 vtkSmartPointer<vtkDataObject> ImportAsVTKData_exo::operator()(
@@ -404,4 +406,4 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_slac::operator()(
   uGridOutput->ShallowCopy(appendFilter->GetOutput());
   return uGridOutput;
 }
-}
+} // namespace

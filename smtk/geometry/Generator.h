@@ -23,15 +23,15 @@ namespace geometry
 {
 class Backend;
 class Geometry;
-}
-}
+} // namespace geometry
+} // namespace smtk
 
 #ifndef smtkCore_EXPORTS
 extern
 #endif
-  template class SMTKCORE_EXPORT
-    smtk::common::Generator<std::tuple<smtk::geometry::ResourcePtr, const smtk::geometry::Backend&>,
-      std::unique_ptr<smtk::geometry::Geometry> >;
+  template class SMTKCORE_EXPORT smtk::common::Generator<
+    std::tuple<smtk::geometry::ResourcePtr, const smtk::geometry::Backend&>,
+    std::unique_ptr<smtk::geometry::Geometry>>;
 
 namespace smtk
 {
@@ -50,7 +50,7 @@ using Generator = smtk::common::Generator<Specification, GeometryPtr>;
 ///
 /// Plugins create objects of this type to register geometry::Geometry
 /// subclasses so that the Generator above can instantiate them as needed.
-template <typename T>
+template<typename T>
 class Supplier : public smtk::common::GeneratorType<Specification, GeometryPtr, T>
 {
 public:

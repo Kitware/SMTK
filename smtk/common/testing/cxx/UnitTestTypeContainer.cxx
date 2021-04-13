@@ -37,7 +37,7 @@ struct Bar
 
   int value;
 };
-}
+} // namespace
 
 int UnitTestTypeContainer(int /*unused*/, char** const /*unused*/)
 {
@@ -59,7 +59,8 @@ int UnitTestTypeContainer(int /*unused*/, char** const /*unused*/)
 
   typeContainer.insert<float>(2.3f);
 
-  test(fabs(typeContainer.get<float>() - 2.3f) < float_epsilon,
+  test(
+    fabs(typeContainer.get<float>() - 2.3f) < float_epsilon,
     "Assigned value should be retrievable.");
 
   try
@@ -82,9 +83,11 @@ int UnitTestTypeContainer(int /*unused*/, char** const /*unused*/)
   test(typeContainer2.get<Bar>().value == 2, "Copied container should behave like the original.");
 
   smtk::common::TypeContainer typeContainer3(typeContainer2.get<Foo>(), typeContainer2.get<Bar>());
-  test(typeContainer3.get<Foo>().value == 3,
+  test(
+    typeContainer3.get<Foo>().value == 3,
     "Variadic constructed container should behave like the original.");
-  test(typeContainer3.get<Bar>().value == 2,
+  test(
+    typeContainer3.get<Bar>().value == 2,
     "Variadic constructed container should behave like the original.");
 
   return 0;

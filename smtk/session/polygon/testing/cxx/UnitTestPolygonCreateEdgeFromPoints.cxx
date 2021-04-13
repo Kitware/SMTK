@@ -106,15 +106,17 @@ int UnitTestPolygonCreateEdgeFromPoints(int argc, char* argv[])
     test(point != nullptr, "Could not find point");
     for (int j = 0; j < numCoordsPerPoint; ++j)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
-             j, points[i * numCoordsPerPoint + j]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(point)->setValue(
+          j, points[i * numCoordsPerPoint + j]),
         "Setting points failed");
     }
   }
 
   // Apply the operation
   smtk::operation::Operation::Result res = createEdgeFromPointsOp->operate();
-  test(res->findInt("outcome")->value() ==
+  test(
+    res->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create edge from points operator failed");
 

@@ -144,8 +144,9 @@ ReadResource::Result ReadResource::operateInternal()
 
     if (readOperation == nullptr)
     {
-      smtkErrorMacro(this->log(), "Could not find reader for file \""
-          << filename << "\" (type = " << type << ").");
+      smtkErrorMacro(
+        this->log(),
+        "Could not find reader for file \"" << filename << "\" (type = " << type << ").");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
@@ -155,7 +156,8 @@ ReadResource::Result ReadResource::operateInternal()
     readerFileItem->setValue(filename);
 
     smtk::operation::Operation::Result readOperationResult = readOperation->operate();
-    if (readOperationResult->findInt("outcome")->value() !=
+    if (
+      readOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       // An error message should already enter the logger from the local
@@ -209,5 +211,5 @@ void ReadResource::generateSummary(ReadResource::Result& res)
     smtkErrorMacro(this->log(), label << ": failed to read \"" << fitem->value(0) << "\"");
   }
 }
-}
-}
+} // namespace operation
+} // namespace smtk

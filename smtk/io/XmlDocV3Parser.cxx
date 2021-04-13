@@ -65,9 +65,11 @@ namespace
 // Helper functions to set part of a configuration - returns false if it encounters a problem
 bool setExclusiveAnalysisConfiguration(StringItemPtr& item, xml_node& analysisNode, Logger& logger);
 
-template <typename ContainerPtrType>
+template<typename ContainerPtrType>
 bool setAnalysisConfigurationHelper(
-  ContainerPtrType& container, xml_node& analysisNode, Logger& logger)
+  ContainerPtrType& container,
+  xml_node& analysisNode,
+  Logger& logger)
 {
   // First get the type of Analysis this node represents
   auto xatt = analysisNode.attribute("Type");
@@ -94,7 +96,9 @@ bool setAnalysisConfigurationHelper(
     // in this case we should not have any children
     if (analysisNode.child("Analysis"))
     {
-      smtkWarningMacro(logger, "Analysis: "
+      smtkWarningMacro(
+        logger,
+        "Analysis: "
           << xatt.value() << " under: " << container->name()
           << " does not have children analyses but children where specified in the configuration."
           << " These will be ignored!");
@@ -110,9 +114,11 @@ bool setAnalysisConfigurationHelper(
     // This node should have children
     if (!analysisNode.child("Analysis"))
     {
-      smtkErrorMacro(logger, "Configuration for Exclusive Analysis: "
-          << xatt.value() << " under: " << container->name() << " does not specify children."
-          << " Can not build configuration.");
+      smtkErrorMacro(
+        logger,
+        "Configuration for Exclusive Analysis: " << xatt.value() << " under: " << container->name()
+                                                 << " does not specify children."
+                                                 << " Can not build configuration.");
       return false;
     }
     for (auto child = analysisNode.child("Analysis"); child; child = child.next_sibling("Analysis"))
@@ -129,8 +135,10 @@ bool setAnalysisConfigurationHelper(
   if (!groupItem)
   {
     // OK we found something unexpected
-    smtkErrorMacro(logger, "Invalid item found for Analysis: "
-        << xatt.value() << " under: " << container->name() << " Can not build configuration.");
+    smtkErrorMacro(
+      logger,
+      "Invalid item found for Analysis: " << xatt.value() << " under: " << container->name()
+                                          << " Can not build configuration.");
     return false;
   }
   // Process the children - note that in the case of a non-exclusive analysis, you don't
@@ -185,7 +193,9 @@ bool setExclusiveAnalysisConfiguration(StringItemPtr& item, xml_node& analysisNo
       auto groupItem = std::dynamic_pointer_cast<GroupItem>(item->activeChildItem(0));
       if (groupItem == nullptr)
       {
-        smtkErrorMacro(logger, "Analysis: "
+        smtkErrorMacro(
+          logger,
+          "Analysis: "
             << xatt.value() << " under: " << item->name()
             << " does not have proper children analyses structure!  Can not build configuration: "
             << item->attribute()->name());
@@ -204,24 +214,28 @@ bool setExclusiveAnalysisConfiguration(StringItemPtr& item, xml_node& analysisNo
     // Do we have an exclusive child analysis?
     else if (stringItem)
     {
-      smtkErrorMacro(logger, "Analysis: " << xatt.value() << " under: " << item->name()
-                                          << " has exclusive children analyses but no children "
-                                             "where specified in the configuration."
-                                          << " Can not build configuration.");
+      smtkErrorMacro(
+        logger,
+        "Analysis: " << xatt.value() << " under: " << item->name()
+                     << " has exclusive children analyses but no children "
+                        "where specified in the configuration."
+                     << " Can not build configuration.");
       return false;
     }
     return true;
   }
   else if (analysisNode.child("Analysis"))
   {
-    smtkWarningMacro(logger, "Analysis: "
+    smtkWarningMacro(
+      logger,
+      "Analysis: "
         << xatt.value() << " under: " << item->name()
         << " does not have children analyses but children where specified in the configuration."
         << " These will be ignored!");
   }
   return true;
 }
-}
+} // namespace
 
 XmlDocV3Parser::XmlDocV3Parser(ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV2Parser(myResource, logger)
@@ -254,8 +268,12 @@ void XmlDocV3Parser::process(pugi::xml_node& rootNode)
     std::string typeName = child.attribute("TypeName").value();
     smtk::common::UUID id(child.attribute("Id").value());
     std::string location = child.attribute("Location").value();
-    m_resource->links().data().insert(smtk::resource::Surrogate(index, typeName, id, location),
-      smtk::common::UUID::random(), m_resource->id(), id, Resource::AssociationRole);
+    m_resource->links().data().insert(
+      smtk::resource::Surrogate(index, typeName, id, location),
+      smtk::common::UUID::random(),
+      m_resource->id(),
+      id,
+      Resource::AssociationRole);
   }
 }
 
@@ -574,7 +592,8 @@ void XmlDocV3Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
 }
 
 void XmlDocV3Parser::processDateTimeDef(
-  pugi::xml_node& node, attribute::DateTimeItemDefinitionPtr idef)
+  pugi::xml_node& node,
+  attribute::DateTimeItemDefinitionPtr idef)
 {
   // Process the common value item def stuff
   this->processItemDef(node, idef);
@@ -716,7 +735,8 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
     std::map<std::string, attribute::ItemPtr>::const_iterator iter;
     const std::map<std::string, attribute::ItemPtr>& childrenItems = item->childrenItems();
     for (childNode = childrenNodes.first_child(), iter = childrenItems.begin();
-         (iter != childrenItems.end()) && childNode; iter++, childNode = childNode.next_sibling())
+         (iter != childrenItems.end()) && childNode;
+         iter++, childNode = childNode.next_sibling())
     {
       // See if the name of the item matches the name of node
       xatt = childNode.attribute("Name");
@@ -740,8 +760,10 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
       }
       if (!inode)
       {
-        smtkErrorMacro(m_logger, "Can not locate XML Child Item node :"
-            << iter->second->name() << " for Item : " << item->name());
+        smtkErrorMacro(
+          m_logger,
+          "Can not locate XML Child Item node :" << iter->second->name()
+                                                 << " for Item : " << item->name());
         continue;
       }
       this->processItem(inode, iter->second);
@@ -775,7 +797,8 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
       auto& links = item->attribute()->resource()->links().data();
 
       xml_node keyNode = val.child("Key");
-      ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+      ReferenceItem::Key key(
+        smtk::common::UUID(keyNode.child("_1_").text().get()),
         smtk::common::UUID(keyNode.child("_2_").text().get()));
       item->setObjectKey(static_cast<int>(i), key);
 
@@ -794,9 +817,12 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
 
       if (!links.contains(key.first))
       {
-        links.insert(smtk::resource::Surrogate(
-                       surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
-          key.first, item->attribute()->resource()->id(), rhs1);
+        links.insert(
+          smtk::resource::Surrogate(
+            surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
+          key.first,
+          item->attribute()->resource()->id(),
+          rhs1);
       }
 
       links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
@@ -814,7 +840,8 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
       auto& links = item->attribute()->resource()->links().data();
 
       xml_node keyNode = val.child("Key");
-      ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+      ReferenceItem::Key key(
+        smtk::common::UUID(keyNode.child("_1_").text().get()),
         smtk::common::UUID(keyNode.child("_2_").text().get()));
       item->setObjectKey(0, key, conditional);
 
@@ -833,9 +860,12 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
 
       if (!links.contains(key.first))
       {
-        links.insert(smtk::resource::Surrogate(
-                       surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
-          key.first, item->attribute()->resource()->id(), rhs1);
+        links.insert(
+          smtk::resource::Surrogate(
+            surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
+          key.first,
+          item->attribute()->resource()->id(),
+          rhs1);
       }
 
       links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
@@ -848,7 +878,9 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
 }
 
 void XmlDocV3Parser::processReferenceDef(
-  pugi::xml_node& node, ReferenceItemDefinitionPtr idef, const std::string& labelsElement)
+  pugi::xml_node& node,
+  ReferenceItemDefinitionPtr idef,
+  const std::string& labelsElement)
 {
   xml_node accepts, rejects, labels, child;
   xml_attribute xatt;
@@ -1060,7 +1092,8 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
   }
   else
   {
-    smtkErrorMacro(m_logger,
+    smtkErrorMacro(
+      m_logger,
       "Configurations missing AnalysisAttributeType xml attribute - can not build configurations!");
     return;
   }
@@ -1104,7 +1137,8 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
       if (!sitem)
       {
         smtkErrorMacro(
-          m_logger, "Encountered invalid Attribute Representation for Top Level Exclusive Analyses "
+          m_logger,
+          "Encountered invalid Attribute Representation for Top Level Exclusive Analyses "
             << " can not build any configurations!");
         m_resource->removeAttribute(configAtt);
         return;
@@ -1121,16 +1155,20 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
         {
           if (!setExclusiveAnalysisConfiguration(sitem, analysisNode, m_logger))
           {
-            smtkErrorMacro(m_logger, "Encountered problem constructing configuration: "
-                << configAtt->name() << " - configuration not built");
+            smtkErrorMacro(
+              m_logger,
+              "Encountered problem constructing configuration: " << configAtt->name()
+                                                                 << " - configuration not built");
             m_resource->removeAttribute(configAtt);
             break;
           }
         }
         else if (!setAnalysisConfigurationHelper<AttributePtr>(configAtt, analysisNode, m_logger))
         {
-          smtkErrorMacro(m_logger, "Encountered problem constructing configuration: "
-              << configAtt->name() << " - configuration not built");
+          smtkErrorMacro(
+            m_logger,
+            "Encountered problem constructing configuration: " << configAtt->name()
+                                                               << " - configuration not built");
           m_resource->removeAttribute(configAtt);
           break;
         }

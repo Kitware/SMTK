@@ -108,17 +108,19 @@ public:
   /// A map from UUIDs to vtkDataObjects rendered by this representation (across all its actors)
   using RenderableDataMap = std::map<smtk::common::UUID, vtkDataObject*>;
   /// The type of a function used to update display attributes based on selections.
-  using StyleFromSelectionFunction = std::function<bool(
-    smtk::view::SelectionPtr, RenderableDataMap&, vtkSMTKResourceRepresentation*)>;
+  using StyleFromSelectionFunction = std::function<
+    bool(smtk::view::SelectionPtr, RenderableDataMap&, vtkSMTKResourceRepresentation*)>;
 
   //@{
   /**
    * \sa vtkPVDataRepresentation
    */
-  int ProcessViewRequest(vtkInformationRequestKey* request_type, vtkInformation* inInfo,
+  int ProcessViewRequest(
+    vtkInformationRequestKey* request_type,
+    vtkInformation* inInfo,
     vtkInformation* outInfo) override;
-  int RequestData(
-    vtkInformation* info, vtkInformationVector** inVec, vtkInformationVector* outVec) override;
+  int RequestData(vtkInformation* info, vtkInformationVector** inVec, vtkInformationVector* outVec)
+    override;
   bool AddToView(vtkView* view) override;
   bool RemoveFromView(vtkView* view) override;
   void SetVisibility(bool val) override;
@@ -295,19 +297,27 @@ public:
     *
     * The default value of this function is vtkSMTKResourceRepresentation::ApplyDefaultStyle().
     */
-  bool ApplyStyle(smtk::view::SelectionPtr seln, RenderableDataMap& renderables,
+  bool ApplyStyle(
+    smtk::view::SelectionPtr seln,
+    RenderableDataMap& renderables,
     vtkSMTKResourceRepresentation* rep);
   /// The default selection-style function
-  static bool ApplyDefaultStyle(smtk::view::SelectionPtr seln, RenderableDataMap& renderables,
+  static bool ApplyDefaultStyle(
+    smtk::view::SelectionPtr seln,
+    RenderableDataMap& renderables,
     vtkSMTKResourceRepresentation* rep);
 
   /// A helper used by ApplyDefaultStyle to handle a single component.
   bool SelectComponentFootprint(
-    smtk::resource::PersistentObject* item, int selnBits, RenderableDataMap& renderables);
+    smtk::resource::PersistentObject* item,
+    int selnBits,
+    RenderableDataMap& renderables);
 
   /// A helper used by ApplyDefaultStyle to handle model entity components.
   bool SelectComponentFootprint(
-    const smtk::model::EntityRefs& items, int selnBits, RenderableDataMap& renderables);
+    const smtk::model::EntityRefs& items,
+    int selnBits,
+    RenderableDataMap& renderables);
 
   /// Return the map from persistent-object UUID to user-specified state.
   ///
@@ -342,9 +352,12 @@ protected:
 
   void UpdateRenderableData(vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData);
   void UpdateDisplayAttributesFromSelection(
-    vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData);
+    vtkMultiBlockDataSet* modelData,
+    vtkMultiBlockDataSet* instanceData);
   void UpdateSelection(
-    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor);
+    vtkMultiBlockDataSet* data,
+    vtkCompositeDataDisplayAttributes* blockAttr,
+    vtkActor* actor);
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const smtk::common::UUID& uuid);
 
   /**
@@ -397,7 +410,9 @@ protected:
    */
   bool GetModelBounds();
   bool GetEntityBounds(
-    vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
+    vtkDataObject* dataObject,
+    double bounds[6],
+    vtkCompositeDataDisplayAttributes* cdAttributes);
   //@}
 
   /**\brief Provides access to the SMTK selection and to resource components.
@@ -464,7 +479,7 @@ protected:
   vtkTimeStamp BlockAttributeTime;
   std::unordered_map<unsigned int, bool> BlockVisibilities;
   std::unordered_map<unsigned int, double> BlockOpacities;
-  std::unordered_map<unsigned int, std::array<double, 3> > BlockColors;
+  std::unordered_map<unsigned int, std::array<double, 3>> BlockColors;
   //@}
 
   //@{
@@ -474,7 +489,7 @@ protected:
   bool InstanceAttrChanged = false;
   vtkTimeStamp InstanceAttributeTime;
   std::unordered_map<unsigned int, bool> InstanceVisibilities;
-  std::unordered_map<unsigned int, std::array<double, 3> > InstanceColors;
+  std::unordered_map<unsigned int, std::array<double, 3>> InstanceColors;
   //@}
 
   /// Hold a map of renderable objects whose style is altered by an SMTK selection.

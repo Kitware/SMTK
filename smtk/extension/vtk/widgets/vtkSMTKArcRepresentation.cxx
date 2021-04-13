@@ -14,7 +14,6 @@
 #include "vtkBoundingBox.h"
 #include "vtkCamera.h"
 #include "vtkCellArray.h"
-#include "vtkCellArray.h"
 #include "vtkCleanPolyData.h"
 #include "vtkCommand.h"
 #include "vtkCoordinate.h"
@@ -30,7 +29,6 @@
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
-#include "vtkPoints.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
@@ -57,7 +55,7 @@ enum ModifiedPointFlags
   Point_Inserted = 1 << 4,
   Point_Original = 1 << 8
 };
-}
+} // namespace
 class vtkSMTKArcRepresentation::vtkInternalMap : public vtkInternalMapBase
 {
 };
@@ -121,14 +119,16 @@ int vtkSMTKArcRepresentation::SetNthNodeSelected(int n)
 
 int vtkSMTKArcRepresentation::ToggleActiveNodeSelected()
 {
-  if (this->ActiveNode < 0 ||
+  if (
+    this->ActiveNode < 0 ||
     static_cast<unsigned int>(this->ActiveNode) >= this->Internal->Nodes.size())
   {
     //index out of range
     return 0;
   }
 
-  if (this->ActiveNode == 0 ||
+  if (
+    this->ActiveNode == 0 ||
     static_cast<unsigned int>(this->ActiveNode) == (this->Internal->Nodes.size() - 1))
   {
     //can't toggle the first and last node off but we can turn them on
@@ -218,7 +218,8 @@ void vtkSMTKArcRepresentation::BuildRepresentation()
 }
 
 int vtkSMTKArcRepresentation::SetActiveNodeToWorldPosition(
-  double worldPos[3], double worldOrient[9])
+  double worldPos[3],
+  double worldOrient[9])
 {
   int ret = this->Superclass::SetActiveNodeToWorldPosition(worldPos, worldOrient);
   if (ret == 1)
@@ -537,7 +538,8 @@ void vtkSMTKArcRepresentation::Initialize(vtkPolyData* pd)
 
       // Give the point placer a chance to validate the updated node. If its not
       // valid, discard the LineInterpolator's change.
-      if (didNodeChange &&
+      if (
+        didNodeChange &&
         !this->PointPlacer->ValidateWorldPosition(node->WorldPosition, worldOrient))
       {
         node->WorldPosition[0] = worldPos[0];

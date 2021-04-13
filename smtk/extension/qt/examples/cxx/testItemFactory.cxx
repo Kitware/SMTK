@@ -12,7 +12,6 @@
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtUIManager.h"

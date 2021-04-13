@@ -111,7 +111,10 @@ qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
   m_useAssociations = m_itemInfo.component().attributeAsBool("UseAssociations");
   if (m_useAssociations)
   {
-    QObject::connect(m_itemInfo.baseView(), &qtBaseAttributeView::modified, this,
+    QObject::connect(
+      m_itemInfo.baseView(),
+      &qtBaseAttributeView::modified,
+      this,
       &qtReferenceItemEditor::itemChanged);
   }
 
@@ -127,7 +130,10 @@ qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
     return;
   }
 
-  QObject::connect(uiManager, &qtUIManager::highlightOnHoverChanged, this,
+  QObject::connect(
+    uiManager,
+    &qtUIManager::highlightOnHoverChanged,
+    this,
     &qtReferenceItemEditor::highlightOnHoverChanged);
 
   auto opManager = uiManager->operationManager();
@@ -135,7 +141,9 @@ qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
   {
     QPointer<qtReferenceItemEditor> guardedObject(this);
     m_operationObserverKey = opManager->observers().insert(
-      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](
+        const smtk::operation::Operation& oper,
+        smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         if (guardedObject)
         {
@@ -371,7 +379,9 @@ void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResour
   std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
   smtk::resource::PersistentObjectPtr selectObj = item->value();
   // Lets sort the list
-  std::sort(std::begin(objects), std::end(objects),
+  std::sort(
+    std::begin(objects),
+    std::end(objects),
     [](smtk::resource::PersistentObjectPtr a, smtk::resource::PersistentObjectPtr b) {
       return a->name() < b->name();
     });
@@ -620,8 +630,10 @@ void qtReferenceItemEditor::removeObservers()
   }
 }
 
-int qtReferenceItemEditor::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
-  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+int qtReferenceItemEditor::handleOperationEvent(
+  const smtk::operation::Operation& /*unused*/,
+  smtk::operation::EventType event,
+  smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
   {
@@ -641,7 +653,8 @@ int qtReferenceItemEditor::handleOperationEvent(const smtk::operation::Operation
 }
 
 void qtReferenceItemEditor::handleResourceEvent(
-  const smtk::resource::Resource& resource, smtk::resource::EventType event)
+  const smtk::resource::Resource& resource,
+  smtk::resource::EventType event)
 {
 
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
@@ -773,7 +786,8 @@ void qtReferenceItemEditor::updateContents()
     smtk::attribute::ConstItemDefinitionPtr itDef = item->activeChildItem(i)->definition();
     std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
       itemDef->childrenItemDefinitions().find(itDef->name());
-    if ((it != itemDef->childrenItemDefinitions().end()) && attResource &&
+    if (
+      (it != itemDef->childrenItemDefinitions().end()) && attResource &&
       attResource->passActiveCategoryCheck(itemDef->categories()))
     {
       activeChildDefs.push_back(it->second);

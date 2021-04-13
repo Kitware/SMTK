@@ -36,7 +36,8 @@ public:
 
   static std::shared_ptr<Selection> create(const smtk::mesh::CellSet&);
   static std::shared_ptr<Selection> create(
-    const smtk::mesh::CellSet&, const std::weak_ptr<smtk::operation::Manager>&);
+    const smtk::mesh::CellSet&,
+    const std::weak_ptr<smtk::operation::Manager>&);
 
   /// Access the meshset represented by this component.
   const smtk::mesh::MeshSet mesh() const override;

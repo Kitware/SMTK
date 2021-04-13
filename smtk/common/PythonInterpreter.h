@@ -95,7 +95,7 @@ private:
 
   bool m_embedded;
 };
-}
-}
+} // namespace common
+} // namespace smtk
 
 #endif

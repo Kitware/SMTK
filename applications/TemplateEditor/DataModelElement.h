@@ -21,7 +21,7 @@
  * ///TODO Implement the rest of the virtual interface of QTreeWidgetItem
  * to customize how data is set and queried from.
  */
-template <typename T>
+template<typename T>
 class DataModelElement : public QTreeWidgetItem
 {
 public:
@@ -46,17 +46,17 @@ private:
   T m_data;
 };
 
-template <typename T>
+template<typename T>
 DataModelElement<T>::DataModelElement(QTreeWidgetItem* parent)
   : QTreeWidgetItem(parent){};
 
-template <typename T>
+template<typename T>
 void DataModelElement<T>::setReferencedData(const T& data)
 {
   m_data = data;
 };
 
-template <typename T>
+template<typename T>
 const T& DataModelElement<T>::getReferencedDataConst() const
 {
   return m_data;

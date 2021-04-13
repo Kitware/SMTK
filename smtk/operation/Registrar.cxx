@@ -34,9 +34,13 @@ typedef std::tuple<
 #ifdef SMTK_PYTHON_ENABLED
   ImportPythonOperation,
 #endif
-  ImportResource, ReadResource, RemoveResource, SetProperty, WriteResource>
+  ImportResource,
+  ReadResource,
+  RemoveResource,
+  SetProperty,
+  WriteResource>
   OperationList;
-}
+} // namespace
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
@@ -68,5 +72,5 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 {
   operationManager->unregisterOperations<OperationList>();
 }
-}
-}
+} // namespace operation
+} // namespace smtk

@@ -94,9 +94,9 @@ R"***(
 </html>
 )***";
 
-  // clang-format on
+// clang-format on
 
-  using namespace smtk::attribute;
+using namespace smtk::attribute;
 
 namespace smtk
 {
@@ -104,7 +104,10 @@ namespace extension
 {
 
 qtInfixExpressionEditorRow::qtInfixExpressionEditorRow(
-  const QString& text, int elementIdx, std::unique_ptr<Evaluator> evaluator, QWidget* parent)
+  const QString& text,
+  int elementIdx,
+  std::unique_ptr<Evaluator> evaluator,
+  QWidget* parent)
   : QWidget(parent)
   , m_elementIdx(elementIdx)
   , mp_evaluator(std::move(evaluator))
@@ -181,7 +184,10 @@ void qtInfixExpressionEditorRow::onEditBoxChanged(const QString& text)
 
     if (mp_evaluator)
     {
-      mp_evaluator->evaluate(result, log, static_cast<std::size_t>(itemElementIndex()),
+      mp_evaluator->evaluate(
+        result,
+        log,
+        static_cast<std::size_t>(itemElementIndex()),
         Evaluator::DependentEvaluationMode::DO_NOT_EVALUATE_DEPENDENTS);
     }
     else

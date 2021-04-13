@@ -66,7 +66,9 @@ struct PathComp
 };
 
 void notifyRecursive(
-  PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
+  PhraseModel::Observer obs,
+  DescriptivePhrasePtr parent,
+  std::vector<int>& parentIdx)
 {
   if (!parent || !parent->areSubphrasesBuilt())
   {
@@ -92,7 +94,7 @@ void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
   std::vector<int> parentIdx;
   return notifyRecursive(obs, parent, parentIdx);
 }
-}
+} // namespace
 
 class PhraseDeltas : public std::set<std::vector<int>, PathComp>
 {
@@ -130,7 +132,8 @@ PhraseModel::~PhraseModel()
 }
 
 SubphraseGeneratorPtr PhraseModel::configureSubphraseGenerator(
-  const Configuration* config, Manager* manager)
+  const Configuration* config,
+  Manager* manager)
 {
   SubphraseGeneratorPtr result;
   int modelIndex = -1;
@@ -158,7 +161,8 @@ SubphraseGeneratorPtr PhraseModel::configureSubphraseGenerator(
 }
 
 std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
-  const Configuration* config, Manager*)
+  const Configuration* config,
+  Manager*)
 {
   std::multimap<std::string, std::string> result;
   int modelIndex = -1;
@@ -183,7 +187,8 @@ std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
           }
           else
           {
-            smtkWarningMacro(smtk::io::Logger::instance(),
+            smtkWarningMacro(
+              smtk::io::Logger::instance(),
               "A \"Resource\" entry did not have a \"Name\" attribute.");
           }
         }
@@ -193,39 +198,42 @@ std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
   return result;
 }
 
-bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-  smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln)
+bool PhraseModel::addSource(
+  smtk::resource::ManagerPtr rsrcMgr,
+  smtk::operation::ManagerPtr operMgr,
+  smtk::view::ManagerPtr viewMgr,
+  smtk::view::SelectionPtr seln)
 {
   for (const auto& source : m_sources)
   {
-    if (((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
-            source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
+    if (
+      ((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
+       (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
+        source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
       ((!operMgr && !source.m_managers.contains<smtk::operation::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
-            source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
+       (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
+        source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
       ((!viewMgr && !source.m_managers.contains<smtk::view::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::view::ManagerPtr>() &&
-            source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
+       (source.m_managers.contains<smtk::view::ManagerPtr>() &&
+        source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
       ((!seln && !source.m_managers.contains<smtk::view::SelectionPtr>()) ||
-          (source.m_managers.contains<smtk::view::SelectionPtr>() &&
-            source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
+       (source.m_managers.contains<smtk::view::SelectionPtr>() &&
+        source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
     {
       return false; // Do not add what we already have
     }
   }
   std::ostringstream description;
   description << "PhraseModel " << this << ": ";
-  auto rsrcHandle = rsrcMgr
-    ? rsrcMgr->observers().insert(
-        [this](const Resource& rsrc, const resource::EventType& event) {
-          this->handleResourceEvent(rsrc, event);
-          return 0;
-        },
-        0,    // assign a neutral priority
-        true, // observeImmediately
-        description.str() + "Update phrases when resources change.")
-    : smtk::resource::Observers::Key();
+  auto rsrcHandle = rsrcMgr ? rsrcMgr->observers().insert(
+                                [this](const Resource& rsrc, const resource::EventType& event) {
+                                  this->handleResourceEvent(rsrc, event);
+                                  return 0;
+                                },
+                                0,    // assign a neutral priority
+                                true, // observeImmediately
+                                description.str() + "Update phrases when resources change.")
+                            : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
         [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
@@ -234,17 +242,22 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         },
         description.str() + "Update phrases based on operation results.")
     : smtk::operation::Observers::Key();
-  auto selnHandle = seln
-    ? seln->observers().insert(
-        [this](const std::string& src, smtk::view::SelectionPtr seln) {
-          this->handleSelectionEvent(src, seln);
-        },
-        0,    // assign a neutral priority
-        true, // observeImmediately
-        description.str() + "Update phrases when selection changes.")
-    : smtk::view::SelectionObservers::Key();
-  m_sources.emplace_back(rsrcMgr, operMgr, viewMgr, seln, std::move(rsrcHandle),
-    std::move(operHandle), std::move(selnHandle));
+  auto selnHandle = seln ? seln->observers().insert(
+                             [this](const std::string& src, smtk::view::SelectionPtr seln) {
+                               this->handleSelectionEvent(src, seln);
+                             },
+                             0,    // assign a neutral priority
+                             true, // observeImmediately
+                             description.str() + "Update phrases when selection changes.")
+                         : smtk::view::SelectionObservers::Key();
+  m_sources.emplace_back(
+    rsrcMgr,
+    operMgr,
+    viewMgr,
+    seln,
+    std::move(rsrcHandle),
+    std::move(operHandle),
+    std::move(selnHandle));
   return true;
 }
 
@@ -265,34 +278,34 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
 
   for (const auto& source : m_sources)
   {
-    if (((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
-            source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
+    if (
+      ((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
+       (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
+        source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
       ((!operMgr && !source.m_managers.contains<smtk::operation::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
-            source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
+       (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
+        source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
       ((!viewMgr && !source.m_managers.contains<smtk::view::ManagerPtr>()) ||
-          (source.m_managers.contains<smtk::view::ManagerPtr>() &&
-            source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
+       (source.m_managers.contains<smtk::view::ManagerPtr>() &&
+        source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
       ((!seln && !source.m_managers.contains<smtk::view::SelectionPtr>()) ||
-          (source.m_managers.contains<smtk::view::SelectionPtr>() &&
-            source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
+       (source.m_managers.contains<smtk::view::SelectionPtr>() &&
+        source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
     {
       return false; // Do not add what we already have
     }
   }
   std::ostringstream description;
   description << "PhraseModel " << this << ": ";
-  auto rsrcHandle = rsrcMgr
-    ? rsrcMgr->observers().insert(
-        [this](const Resource& rsrc, const resource::EventType& event) {
-          this->handleResourceEvent(rsrc, event);
-          return 0;
-        },
-        0,    // assign a neutral priority
-        true, // observeImmediately
-        description.str() + "Update phrases when resources change.")
-    : smtk::resource::Observers::Key();
+  auto rsrcHandle = rsrcMgr ? rsrcMgr->observers().insert(
+                                [this](const Resource& rsrc, const resource::EventType& event) {
+                                  this->handleResourceEvent(rsrc, event);
+                                  return 0;
+                                },
+                                0,    // assign a neutral priority
+                                true, // observeImmediately
+                                description.str() + "Update phrases when resources change.")
+                            : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
         [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
@@ -301,27 +314,29 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
         },
         description.str() + "Update phrases based on operation results.")
     : smtk::operation::Observers::Key();
-  auto selnHandle = seln
-    ? seln->observers().insert(
-        [this](const std::string& src, smtk::view::SelectionPtr seln) {
-          this->handleSelectionEvent(src, seln);
-        },
-        0,    // assign a neutral priority
-        true, // observeImmediately
-        description.str() + "Update phrases when selection changes.")
-    : smtk::view::SelectionObservers::Key();
+  auto selnHandle = seln ? seln->observers().insert(
+                             [this](const std::string& src, smtk::view::SelectionPtr seln) {
+                               this->handleSelectionEvent(src, seln);
+                             },
+                             0,    // assign a neutral priority
+                             true, // observeImmediately
+                             description.str() + "Update phrases when selection changes.")
+                         : smtk::view::SelectionObservers::Key();
   m_sources.emplace_back(
     managers, std::move(rsrcHandle), std::move(operHandle), std::move(selnHandle));
   return true;
 }
 
-bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
+bool PhraseModel::removeSource(
+  smtk::resource::ManagerPtr rsrcMgr,
+  smtk::operation::ManagerPtr operMgr,
+  smtk::view::ManagerPtr viewMgr,
   smtk::view::SelectionPtr seln)
 {
   for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
   {
-    if (it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+    if (
+      it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
       it->m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
       it->m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
       it->m_managers.get<smtk::view::SelectionPtr>() == seln)
@@ -350,7 +365,8 @@ bool PhraseModel::removeSource(const smtk::common::TypeContainer& managers)
 
   for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
   {
-    if (it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
+    if (
+      it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
       it->m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
       it->m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
       it->m_managers.get<smtk::view::SelectionPtr>() == seln)
@@ -384,18 +400,19 @@ void PhraseModel::visitSources(SourceVisitor visitor)
 {
   for (const auto& src : m_sources)
   {
-    if (!visitor((src.m_managers.contains<smtk::resource::ManagerPtr>()
-                     ? src.m_managers.get<smtk::resource::ManagerPtr>()
-                     : smtk::resource::ManagerPtr()),
+    if (!visitor(
+          (src.m_managers.contains<smtk::resource::ManagerPtr>()
+             ? src.m_managers.get<smtk::resource::ManagerPtr>()
+             : smtk::resource::ManagerPtr()),
           (src.m_managers.contains<smtk::operation::ManagerPtr>()
-                     ? src.m_managers.get<smtk::operation::ManagerPtr>()
-                     : smtk::operation::ManagerPtr()),
+             ? src.m_managers.get<smtk::operation::ManagerPtr>()
+             : smtk::operation::ManagerPtr()),
           (src.m_managers.contains<smtk::view::ManagerPtr>()
-                     ? src.m_managers.get<smtk::view::ManagerPtr>()
-                     : smtk::view::ManagerPtr()),
+             ? src.m_managers.get<smtk::view::ManagerPtr>()
+             : smtk::view::ManagerPtr()),
           (src.m_managers.contains<smtk::view::SelectionPtr>()
-                     ? src.m_managers.get<smtk::view::SelectionPtr>()
-                     : smtk::view::SelectionPtr())))
+             ? src.m_managers.get<smtk::view::SelectionPtr>()
+             : smtk::view::SelectionPtr())))
     {
       break;
     }
@@ -420,10 +437,14 @@ void PhraseModel::handleResourceEvent(const Resource& rsrc, smtk::resource::Even
 }
 
 int PhraseModel::handleOperationEvent(
-  const Operation& op, operation::EventType event, const Operation::Result& res)
+  const Operation& op,
+  operation::EventType event,
+  const Operation::Result& res)
 {
-  smtkDebugMacro(smtk::io::Logger::instance(), "      Phrase handler: op "
-      << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << &op);
+  smtkDebugMacro(
+    smtk::io::Logger::instance(),
+    "      Phrase handler: op " << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre")
+                                << " " << &op);
 
   if (!res)
   {
@@ -590,12 +611,12 @@ void PhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& creat
   }
 }
 
-void PhraseModel::redecorate()
-{
-}
+void PhraseModel::redecorate() {}
 
 void PhraseModel::updateChildren(
-  smtk::view::DescriptivePhrasePtr src, DescriptivePhrases& next, const std::vector<int>& idx)
+  smtk::view::DescriptivePhrasePtr src,
+  DescriptivePhrases& next,
+  const std::vector<int>& idx)
 {
   if (!src)
   {
@@ -634,7 +655,8 @@ void PhraseModel::updateChildren(
       DescriptivePhrase* nval = it->get();
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
-        if ((*nval == **it2) ||
+        if (
+          (*nval == **it2) ||
           (nval && nval->relatedObject() && nval->relatedObject() == it2->get()->relatedObject()))
         {
           *it = *it2;
@@ -673,7 +695,8 @@ void PhraseModel::updateChildren(
   if (insert.size() + orig.size() != next.size())
   {
     smtkErrorMacro(
-      smtk::io::Logger::instance(), "Update to descriptive phrases has correspondence problems"
+      smtk::io::Logger::instance(),
+      "Update to descriptive phrases has correspondence problems"
         << " (" << orig.size() << " + " << insert.size() << " != " << next.size() << ")\n");
   }
 
@@ -827,11 +850,15 @@ int depth(DescriptivePhrasePtr phr)
   }
   return dd;
 }
-}
+} // namespace
 #endif
 
-void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
-  const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& arg)
+void PhraseModel::trigger(
+  DescriptivePhrasePtr phr,
+  PhraseModelEvent event,
+  const std::vector<int>& src,
+  const std::vector<int>& dst,
+  const std::vector<int>& arg)
 {
 #ifdef SMTK_PHRASE_DEBUG
   std::cout << "Phrase model update " << phr << " pdepth " << depth(phr) << " event "
@@ -881,5 +908,5 @@ void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
     }
   }
 }
-}
-}
+} // namespace view
+} // namespace smtk

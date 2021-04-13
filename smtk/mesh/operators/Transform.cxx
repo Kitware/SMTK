@@ -46,8 +46,9 @@ smtk::mesh::Transform::Result Transform::operateInternal()
 
   // Access the rotate parameters
   smtk::attribute::DoubleItem::Ptr rotateItem = this->parameters()->findDouble("rotate");
-  std::array<double, 3> rotate = { rotateItem->value(0), rotateItem->value(1),
-    rotateItem->value(2) };
+  std::array<double, 3> rotate = { rotateItem->value(0),
+                                   rotateItem->value(1),
+                                   rotateItem->value(2) };
   double cosTheta = cos(rotate[0] * M_PI / 180.);
   double sinTheta = sin(rotate[0] * M_PI / 180.);
   double cosPhi = cos(rotate[1] * M_PI / 180.);
@@ -57,8 +58,9 @@ smtk::mesh::Transform::Result Transform::operateInternal()
 
   // Access the translate parameters
   smtk::attribute::DoubleItem::Ptr translateItem = this->parameters()->findDouble("translate");
-  std::array<double, 3> translate = { translateItem->value(0), translateItem->value(1),
-    translateItem->value(2) };
+  std::array<double, 3> translate = { translateItem->value(0),
+                                      translateItem->value(1),
+                                      translateItem->value(2) };
 
   auto transformFn = [=](std::array<double, 3> p) {
     for (std::size_t i = 0; i < 3; i++)
@@ -73,8 +75,9 @@ smtk::mesh::Transform::Result Transform::operateInternal()
 
     std::array<double, 3> tmp = { 0., 0., 0. };
 
-    std::array<std::array<double, 3>, 3> R_x = { { { 1., 0., 0. }, { 0., cosTheta, -sinTheta },
-      { 0., sinTheta, cosTheta } } };
+    std::array<std::array<double, 3>, 3> R_x = {
+      { { 1., 0., 0. }, { 0., cosTheta, -sinTheta }, { 0., sinTheta, cosTheta } }
+    };
     for (std::size_t i = 0; i < 3; i++)
     {
       for (std::size_t j = 0; j < 3; j++)
@@ -85,8 +88,9 @@ smtk::mesh::Transform::Result Transform::operateInternal()
     p = tmp;
     tmp = { 0., 0., 0. };
 
-    std::array<std::array<double, 3>, 3> R_y = { { { cosPhi, 0., sinPhi }, { 0., 1., 0. },
-      { -sinPhi, 0., cosPhi } } };
+    std::array<std::array<double, 3>, 3> R_y = {
+      { { cosPhi, 0., sinPhi }, { 0., 1., 0. }, { -sinPhi, 0., cosPhi } }
+    };
     for (std::size_t i = 0; i < 3; i++)
     {
       for (std::size_t j = 0; j < 3; j++)
@@ -97,8 +101,9 @@ smtk::mesh::Transform::Result Transform::operateInternal()
     p = tmp;
     tmp = { 0., 0., 0. };
 
-    std::array<std::array<double, 3>, 3> R_z = { { { cosPsi, -sinPsi, 0. }, { sinPsi, cosPsi, 0. },
-      { 0., 0., 1. } } };
+    std::array<std::array<double, 3>, 3> R_z = {
+      { { cosPsi, -sinPsi, 0. }, { sinPsi, cosPsi, 0. }, { 0., 0., 1. } }
+    };
     for (std::size_t i = 0; i < 3; i++)
     {
       for (std::size_t j = 0; j < 3; j++)

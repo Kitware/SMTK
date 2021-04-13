@@ -62,7 +62,7 @@ public:
 class Face : public smtk::graph::Component
 {
 public:
-  template <typename... T, typename = smtk::graph::CompatibleTypes<Edge, T...> >
+  template<typename... T, typename = smtk::graph::CompatibleTypes<Edge, T...>>
   Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... edges);
 
   // An example for data access.
@@ -138,13 +138,13 @@ Edge::Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource, Vertex& v
 
 // Similarly, the constructor for our face sets up the relationships between the
 // newly created face and the edges that comprise it.
-template <typename... T, typename>
+template<typename... T, typename>
 Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... edges)
   : Component(resource)
 {
   // Access our resource in its derived form, so we can take advantage of the
   // compile-time grammar checking we have put in place.
-  auto planarResource = std::static_pointer_cast<smtk::graph::Resource<PlanarTraits> >(resource);
+  auto planarResource = std::static_pointer_cast<smtk::graph::Resource<PlanarTraits>>(resource);
 
   // Create a Loop that connects this face to its edges.
   // Alternatively, we could have called the following:
@@ -154,7 +154,7 @@ Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... ed
   planarResource->create<Loop>(*this, std::forward<T>(edges)...);
 
   // Add the created face to the edges' face lists.
-  std::vector<std::reference_wrapper<Edge> > edgeVector{ edges... };
+  std::vector<std::reference_wrapper<Edge>> edgeVector{ edges... };
   for (Edge& edge : edgeVector)
   {
     edge.get<Faces>().insert(*this);
@@ -186,9 +186,9 @@ std::array<double, 2> Face::centroid() const
   }
   return c;
 }
-}
+} // namespace
 
-int TestPlanarResource(int, char* [])
+int TestPlanarResource(int, char*[])
 {
   // Construct our planar-graph resource.
   auto resource = smtk::graph::Resource<PlanarTraits>::create();

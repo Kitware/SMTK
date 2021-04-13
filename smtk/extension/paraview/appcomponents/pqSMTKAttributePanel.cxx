@@ -52,7 +52,10 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   w->setObjectName("attributePanel");
   this->setWidget(w);
   w->setLayout(new QVBoxLayout);
-  QObject::connect(&pqActiveObjects::instance(), SIGNAL(sourceChanged(pqPipelineSource*)), this,
+  QObject::connect(
+    &pqActiveObjects::instance(),
+    SIGNAL(sourceChanged(pqPipelineSource*)),
+    this,
     SLOT(displayPipelineSource(pqPipelineSource*)));
   QObject::connect(
     &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
@@ -175,10 +178,18 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
     vic << ic[0] << ic[1] << ic[2];
     m_attrUIMgr->setInvalidValueColorRgbF(vic);
 
-    m_propertyLinks.addPropertyLink(m_attrUIMgr, "defaultValueColorRgbF",
-      SIGNAL(defaultValueColorChanged()), paletteProxy, defaultValueColorProp);
-    m_propertyLinks.addPropertyLink(m_attrUIMgr, "invalidValueColorRgbF",
-      SIGNAL(invalidValueColorChanged()), paletteProxy, invalidValueColorProp);
+    m_propertyLinks.addPropertyLink(
+      m_attrUIMgr,
+      "defaultValueColorRgbF",
+      SIGNAL(defaultValueColorChanged()),
+      paletteProxy,
+      defaultValueColorProp);
+    m_propertyLinks.addPropertyLink(
+      m_attrUIMgr,
+      "invalidValueColorRgbF",
+      SIGNAL(invalidValueColorChanged()),
+      paletteProxy,
+      invalidValueColorProp);
   }
 
   // Fetch the current user preferences and update the UI manager with them.
@@ -197,7 +208,8 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
       [this, weakResourceManager](
         const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
         auto rsrc = m_rsrc.lock();
-        if (rsrc == nullptr ||
+        if (
+          rsrc == nullptr ||
           (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
         {
           // The application is removing the attribute resource we are viewing.

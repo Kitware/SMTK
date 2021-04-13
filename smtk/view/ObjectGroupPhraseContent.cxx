@@ -41,7 +41,9 @@ ObjectGroupPhraseContent::ObjectGroupPhraseContent()
 ObjectGroupPhraseContent::~ObjectGroupPhraseContent() = default;
 
 ObjectGroupPhraseContent::Ptr ObjectGroupPhraseContent::setup(
-  const std::string& title, const std::string& resourceFilter, const std::string& componentFilter)
+  const std::string& title,
+  const std::string& resourceFilter,
+  const std::string& componentFilter)
 {
   m_title = title;
   m_resourceFilter = resourceFilter;
@@ -49,8 +51,10 @@ ObjectGroupPhraseContent::Ptr ObjectGroupPhraseContent::setup(
   return shared_from_this();
 }
 
-DescriptivePhrasePtr ObjectGroupPhraseContent::createPhrase(const std::string& title,
-  const std::string& resourceFilter, const std::string& componentFilter,
+DescriptivePhrasePtr ObjectGroupPhraseContent::createPhrase(
+  const std::string& title,
+  const std::string& resourceFilter,
+  const std::string& componentFilter,
   DescriptivePhrasePtr parent)
 {
   DescriptivePhrasePtr result =
@@ -73,47 +77,52 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
   // Why model is empty
   if (!model)
   {
-    std::cout << "ObjectGroupPhraseContent::children " << location->title() << " does not have"
-                                                                               "a valid model"
+    std::cout << "ObjectGroupPhraseContent::children " << location->title()
+              << " does not have"
+                 "a valid model"
               << std::endl;
     return;
   }
 
-  model->visitSources([this, &container, &location](const smtk::resource::ManagerPtr& rsrcMgr,
-                        const smtk::operation::ManagerPtr& /*unused*/,
-                        const smtk::view::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
-                        /*unused*/) -> bool {
-    if (!rsrcMgr)
-    {
-      return true;
-    }
-    auto rsrcs = rsrcMgr->find(m_resourceFilter);
-    for (const auto& rsrc : rsrcs)
-    {
-      if (m_componentFilter.empty())
+  model->visitSources(
+    [this, &container, &location](
+      const smtk::resource::ManagerPtr& rsrcMgr,
+      const smtk::operation::ManagerPtr& /*unused*/,
+      const smtk::view::ManagerPtr& /*unused*/,
+      const smtk::view::SelectionPtr &
+      /*unused*/) -> bool {
+      if (!rsrcMgr)
       {
-        auto phr = ResourcePhraseContent::createPhrase(
-          rsrc, PhraseContent::ContentType::EVERYTHING, location);
-        container.push_back(phr);
+        return true;
       }
-      else
+      auto rsrcs = rsrcMgr->find(m_resourceFilter);
+      for (const auto& rsrc : rsrcs)
       {
-        auto comps = rsrc->find(m_componentFilter);
-        std::cout << "ObjectGroupPhraseContent: Find " << comps.size() << " Components"
-                                                                          " with filter="
-                  << m_componentFilter << std::endl;
-        for (const auto& comp : comps)
+        if (m_componentFilter.empty())
         {
-          auto phr = ComponentPhraseContent::createPhrase(
-            comp, PhraseContent::ContentType::EVERYTHING, location);
+          auto phr = ResourcePhraseContent::createPhrase(
+            rsrc, PhraseContent::ContentType::EVERYTHING, location);
           container.push_back(phr);
         }
+        else
+        {
+          auto comps = rsrc->find(m_componentFilter);
+          std::cout << "ObjectGroupPhraseContent: Find " << comps.size()
+                    << " Components"
+                       " with filter="
+                    << m_componentFilter << std::endl;
+          for (const auto& comp : comps)
+          {
+            auto phr = ComponentPhraseContent::createPhrase(
+              comp, PhraseContent::ContentType::EVERYTHING, location);
+            container.push_back(phr);
+          }
+        }
       }
-    }
-    return true;
-  });
+      return true;
+    });
   // TODO: sort phrases
 }
 
-} // view namespace
-} // smtk namespace
+} // namespace view
+} // namespace smtk

@@ -71,5 +71,5 @@ const char* ExtractSkin::xmlDescription() const
 {
   return ExtractSkin_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

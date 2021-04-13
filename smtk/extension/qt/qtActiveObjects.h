@@ -24,7 +24,7 @@ namespace model
 {
 class Model;
 }
-}
+} // namespace smtk
 
 class pqView;
 class vtkSMSessionProxyManager;

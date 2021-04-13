@@ -30,11 +30,11 @@ namespace query
 /// class differs from smtk::common::TypeContainer by the requirement that each
 /// contained element have a common base class; this restriction enables us to
 /// retrieve derived elements using base element indices as keys.
-template <typename T>
+template<typename T>
 class SMTK_ALWAYS_EXPORT Container
 {
 public:
-  template <typename Type>
+  template<typename Type>
   bool contains() const
   {
     return (m_container.find(typeid(Type).hash_code()) != m_container.end());
@@ -45,7 +45,7 @@ public:
     return (m_container.find(index) != m_container.end());
   }
 
-  template <typename Type>
+  template<typename Type>
   const Type& get() const
   {
     return static_cast<Type&>(get(typeid(Type).hash_code()));
@@ -54,7 +54,7 @@ public:
   // If the input type is default constructible, we can always create a new
   // instance of it if it is not found. The method can therefore be marked
   // noexcept.
-  template <typename Type>
+  template<typename Type>
   typename std::enable_if<std::is_default_constructible<Type>::value, Type&>::type get() noexcept
   {
     auto search = m_container.find(typeid(Type).hash_code());
@@ -70,7 +70,7 @@ public:
 
   // If the input type is not default constructible, we throw an error that
   // The type is not in the container.
-  template <typename Type>
+  template<typename Type>
   typename std::enable_if<!std::is_default_constructible<Type>::value, Type&>::type get()
   {
     auto search = m_container.find(typeid(Type).hash_code());
@@ -104,14 +104,14 @@ public:
     return *(search->second);
   }
 
-  const std::unordered_map<std::size_t, std::unique_ptr<T> >& data() const { return m_container; }
-  std::unordered_map<std::size_t, std::unique_ptr<T> >& data() { return m_container; }
+  const std::unordered_map<std::size_t, std::unique_ptr<T>>& data() const { return m_container; }
+  std::unordered_map<std::size_t, std::unique_ptr<T>>& data() { return m_container; }
 
 private:
-  std::unordered_map<std::size_t, std::unique_ptr<T> > m_container;
+  std::unordered_map<std::size_t, std::unique_ptr<T>> m_container;
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

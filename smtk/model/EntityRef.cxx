@@ -562,8 +562,8 @@ std::vector<double> EntityRef::boundingBox() const
       smtk::model::FloatList currentBBox(this->floatProperty(SMTK_BOUNDING_BOX_PROP));
       bBox = this->unionBoundingBox(bBox, currentBBox);
     }
-    else if (geom &&
-      geom->generationNumber(ent) != smtk::geometry::Geometry::Invalid) // vertex/edge/face
+    else if (
+      geom && geom->generationNumber(ent) != smtk::geometry::Geometry::Invalid) // vertex/edge/face
     {
       geom->bounds(ent, bounds);
       bBox = this->unionBoundingBox(bBox, bounds);
@@ -656,7 +656,8 @@ std::vector<double> EntityRef::boundingBox() const
 }
 
 std::vector<double> EntityRef::unionBoundingBox(
-  const std::vector<double>& b1, const std::vector<double>& b2) const
+  const std::vector<double>& b1,
+  const std::vector<double>& b2) const
 {
   std::vector<double> resultBBox;
   resultBBox.push_back(std::min(b1[0], b2[0]));
@@ -669,7 +670,8 @@ std::vector<double> EntityRef::unionBoundingBox(
 }
 
 std::vector<double> EntityRef::unionBoundingBox(
-  const std::vector<double>& b1, const std::array<double, 6>& b2) const
+  const std::vector<double>& b1,
+  const std::array<double, 6>& b2) const
 {
   std::vector<double> resultBBox;
   resultBBox.push_back(std::min(b1[0], b2[0]));
@@ -734,7 +736,8 @@ EntityRefs EntityRef::relations() const
 EntityRef& EntityRef::addRawRelation(const EntityRef& ent)
 {
   ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
+  if (
+    rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     EntityPtr entRec = rsrc->findEntity(m_entity);
@@ -754,11 +757,13 @@ EntityRef& EntityRef::addRawRelation(const EntityRef& ent)
 EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
 {
   ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
+  if (
+    rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     EntityPtr entRec = rsrc->findEntity(m_entity);
-    if (entRec &&
+    if (
+      entRec &&
       std::find(entRec->relations().begin(), entRec->relations().end(), ent.entity()) ==
         entRec->relations().end())
       entRec->appendRelation(ent.entity());
@@ -782,7 +787,8 @@ EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
 EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
 {
   ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
+  if (
+    rsrc && !m_entity.isNull() && rsrc == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     UUIDWithEntityPtr entRec = rsrc->topology().find(m_entity);
@@ -958,8 +964,9 @@ int EntityRef::tessellationGeneration() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    if (!integerProperties.contains(SMTK_TESS_GEN_PROP) ||
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
+    if (
+      !integerProperties.contains(SMTK_TESS_GEN_PROP) ||
       integerProperties.at(SMTK_TESS_GEN_PROP).empty())
     {
       return -1;
@@ -984,14 +991,15 @@ bool EntityRef::setTessellationGeneration(int gen)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    if (integerProperties.contains(SMTK_TESS_GEN_PROP) &&
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
+    if (
+      integerProperties.contains(SMTK_TESS_GEN_PROP) &&
       !integerProperties.at(SMTK_TESS_GEN_PROP).empty() &&
       integerProperties.at(SMTK_TESS_GEN_PROP)[0] >= gen)
     {
       return false;
     }
-    comp->properties().get<std::vector<long> >()[SMTK_TESS_GEN_PROP] = std::vector<long>(1, gen);
+    comp->properties().get<std::vector<long>>()[SMTK_TESS_GEN_PROP] = std::vector<long>(1, gen);
     return true;
   }
 
@@ -1079,7 +1087,8 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 /**\brief Does the entityref have any attributes associated with it? - To be deprecated
   */
 bool EntityRef::associateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
+  smtk::attribute::ResourcePtr attResource,
+  const smtk::common::UUID& attribId)
 {
   auto comp = this->component();
   auto att = attResource->findAttribute(attribId);
@@ -1093,7 +1102,8 @@ bool EntityRef::associateAttribute(
 /**\brief Disassociate an attribute from the entity? - To be deprecated
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
+  smtk::attribute::ResourcePtr attResource,
+  const smtk::common::UUID& attribId)
 {
   auto att = attResource->findAttribute(attribId);
   auto comp = this->component();
@@ -1107,7 +1117,9 @@ bool EntityRef::disassociateAttribute(
 /**\brief Disassociate an attribute from the entity? - To be deprecated!
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool /*unused*/)
+  smtk::attribute::ResourcePtr attResource,
+  const smtk::common::UUID& attribId,
+  bool /*unused*/)
 {
   return this->disassociateAttribute(attResource, attribId);
 }
@@ -1198,17 +1210,18 @@ void EntityRef::setFloatProperty(const std::string& propName, smtk::model::Float
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<double> >()[propName] = { propValue };
+    comp->properties().get<std::vector<double>>()[propName] = { propValue };
   }
 }
 
 void EntityRef::setFloatProperty(
-  const std::string& propName, const smtk::model::FloatList& propValue)
+  const std::string& propName,
+  const smtk::model::FloatList& propValue)
 {
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<double> >()[propName] = propValue;
+    comp->properties().get<std::vector<double>>()[propName] = propValue;
   }
 }
 
@@ -1218,7 +1231,7 @@ smtk::model::FloatList const& EntityRef::floatProperty(const std::string& propNa
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    const auto& floatProperties = comp->properties().get<std::vector<double>>();
     if (floatProperties.contains(propName))
     {
       return floatProperties.at(propName);
@@ -1233,7 +1246,7 @@ smtk::model::FloatList& EntityRef::floatProperty(const std::string& propName)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto floatProperties = comp->properties().get<std::vector<double> >();
+    auto floatProperties = comp->properties().get<std::vector<double>>();
     return floatProperties[propName];
   }
   return dummy;
@@ -1244,7 +1257,7 @@ bool EntityRef::hasFloatProperty(const std::string& propName) const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    const auto& floatProperties = comp->properties().get<std::vector<double>>();
     return floatProperties.contains(propName);
   }
   return false;
@@ -1255,7 +1268,7 @@ bool EntityRef::removeFloatProperty(const std::string& propName)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto floatProperties = comp->properties().get<std::vector<double> >();
+    auto floatProperties = comp->properties().get<std::vector<double>>();
     if (floatProperties.contains(propName))
     {
       floatProperties.erase(propName);
@@ -1275,7 +1288,7 @@ bool EntityRef::hasFloatProperties() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    const auto& floatProperties = comp->properties().get<std::vector<double>>();
     return !floatProperties.empty();
   }
   return false;
@@ -1287,7 +1300,7 @@ std::set<std::string> EntityRef::floatPropertyNames() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    const auto& floatProperties = comp->properties().get<std::vector<double>>();
     return floatProperties.keys();
   }
   return std::set<std::string>();
@@ -1298,17 +1311,18 @@ void EntityRef::setStringProperty(const std::string& propName, const smtk::model
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<std::string> >()[propName] = { propValue };
+    comp->properties().get<std::vector<std::string>>()[propName] = { propValue };
   }
 }
 
 void EntityRef::setStringProperty(
-  const std::string& propName, const smtk::model::StringList& propValue)
+  const std::string& propName,
+  const smtk::model::StringList& propValue)
 {
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<std::string> >()[propName] = propValue;
+    comp->properties().get<std::vector<std::string>>()[propName] = propValue;
   }
 }
 
@@ -1318,7 +1332,7 @@ smtk::model::StringList const& EntityRef::stringProperty(const std::string& prop
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    const auto& stringProperties = comp->properties().get<std::vector<std::string>>();
     if (stringProperties.contains(propName))
     {
       return stringProperties.at(propName);
@@ -1333,7 +1347,7 @@ smtk::model::StringList& EntityRef::stringProperty(const std::string& propName)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto stringProperties = comp->properties().get<std::vector<std::string> >();
+    auto stringProperties = comp->properties().get<std::vector<std::string>>();
     return stringProperties[propName];
   }
   return dummy;
@@ -1344,7 +1358,7 @@ bool EntityRef::hasStringProperty(const std::string& propName) const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    const auto& stringProperties = comp->properties().get<std::vector<std::string>>();
     return stringProperties.contains(propName);
   }
   return false;
@@ -1355,7 +1369,7 @@ bool EntityRef::removeStringProperty(const std::string& propName)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto stringProperties = comp->properties().get<std::vector<std::string> >();
+    auto stringProperties = comp->properties().get<std::vector<std::string>>();
     if (stringProperties.contains(propName))
     {
       stringProperties.erase(propName);
@@ -1375,7 +1389,7 @@ bool EntityRef::hasStringProperties() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    const auto& stringProperties = comp->properties().get<std::vector<std::string>>();
     return !stringProperties.empty();
   }
   return false;
@@ -1387,7 +1401,7 @@ std::set<std::string> EntityRef::stringPropertyNames() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    const auto& stringProperties = comp->properties().get<std::vector<std::string>>();
     return stringProperties.keys();
   }
   return std::set<std::string>();
@@ -1398,17 +1412,18 @@ void EntityRef::setIntegerProperty(const std::string& propName, smtk::model::Int
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<long> >()[propName] = { propValue };
+    comp->properties().get<std::vector<long>>()[propName] = { propValue };
   }
 }
 
 void EntityRef::setIntegerProperty(
-  const std::string& propName, const smtk::model::IntegerList& propValue)
+  const std::string& propName,
+  const smtk::model::IntegerList& propValue)
 {
   auto comp = this->component();
   if (comp != nullptr)
   {
-    comp->properties().get<std::vector<long> >()[propName] = propValue;
+    comp->properties().get<std::vector<long>>()[propName] = propValue;
   }
 }
 
@@ -1418,7 +1433,7 @@ smtk::model::IntegerList const& EntityRef::integerProperty(const std::string& pr
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
     if (integerProperties.contains(propName))
     {
       return integerProperties.at(propName);
@@ -1433,7 +1448,7 @@ smtk::model::IntegerList& EntityRef::integerProperty(const std::string& propName
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto integerProperties = comp->properties().get<std::vector<long> >();
+    auto integerProperties = comp->properties().get<std::vector<long>>();
     return integerProperties[propName];
   }
   return dummy;
@@ -1444,7 +1459,7 @@ bool EntityRef::hasIntegerProperty(const std::string& propName) const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
     return integerProperties.contains(propName);
   }
   return false;
@@ -1455,7 +1470,7 @@ bool EntityRef::removeIntegerProperty(const std::string& propName)
   auto comp = this->component();
   if (comp != nullptr)
   {
-    auto integerProperties = comp->properties().get<std::vector<long> >();
+    auto integerProperties = comp->properties().get<std::vector<long>>();
     if (integerProperties.contains(propName))
     {
       integerProperties.erase(propName);
@@ -1475,7 +1490,7 @@ bool EntityRef::hasIntegerProperties() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
     return !integerProperties.empty();
   }
   return false;
@@ -1487,7 +1502,7 @@ std::set<std::string> EntityRef::integerPropertyNames() const
   auto comp = this->component();
   if (comp != nullptr)
   {
-    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    const auto& integerProperties = comp->properties().get<std::vector<long>>();
     return integerProperties.keys();
   }
   return std::set<std::string>();
@@ -1525,8 +1540,8 @@ bool EntityRef::clearArrangements()
 /**\brief Return the relation specified by the \a offset into the specified arrangement.
   *
   */
-EntityRef EntityRef::relationFromArrangement(
-  ArrangementKind k, int arrangementIndex, int offset) const
+EntityRef EntityRef::relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset)
+  const
 {
   ResourcePtr rsrc = m_resource.lock();
   EntityPtr ent = rsrc->findEntity(m_entity);
@@ -1779,19 +1794,19 @@ std::size_t entityrefHash(const EntityRef& c)
  * This templated version exists for use in functions where the
  * property type is a template parameter.
  */
-template <>
+template<>
 SMTKCORE_EXPORT bool EntityRef::removeProperty<StringData>(const std::string& pname)
 {
   return this->removeStringProperty(pname);
 }
 
-template <>
+template<>
 SMTKCORE_EXPORT bool EntityRef::removeProperty<FloatData>(const std::string& pname)
 {
   return this->removeFloatProperty(pname);
 }
 
-template <>
+template<>
 SMTKCORE_EXPORT bool EntityRef::removeProperty<IntegerData>(const std::string& pname)
 {
   return this->removeIntegerProperty(pname);
@@ -1981,9 +1996,10 @@ void EntityRef::findEntitiesWithTessellation(
   std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
   std::set<smtk::model::EntityRef>& touched) const
 {
-  EntityRefArray children = (this->isModel()
-      ? this->as<Model>().cellsAs<EntityRefArray>()
-      : (this->isCellEntity()
+  EntityRefArray children =
+    (this->isModel()
+       ? this->as<Model>().cellsAs<EntityRefArray>()
+       : (this->isCellEntity()
             ? this->as<CellEntity>().boundingCellsAs<EntityRefArray>()
             : (this->isGroup() ? this->as<Group>().members<EntityRefArray>() : EntityRefArray())));
   if (this->isModel())

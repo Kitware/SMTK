@@ -34,8 +34,9 @@ namespace mesh
 namespace moab
 {
 
-class SMTKCORE_EXPORT IncrementalAllocator : public smtk::mesh::IncrementalAllocator,
-                                             protected smtk::mesh::moab::BufferedCellAllocator
+class SMTKCORE_EXPORT IncrementalAllocator
+  : public smtk::mesh::IncrementalAllocator
+  , protected smtk::mesh::moab::BufferedCellAllocator
 {
 public:
   IncrementalAllocator(::moab::Interface* interface);
@@ -45,13 +46,13 @@ public:
   std::size_t addCoordinate(double* xyz) override;
   bool setCoordinate(std::size_t coord, double* xyz) override;
 
-  bool addCell(
-    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) override
+  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0)
+    override
   {
     return BufferedCellAllocator::addCell(ctype, pointIds, nCoordinates);
   }
-  bool addCell(
-    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) override
+  bool addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0)
+    override
   {
     return BufferedCellAllocator::addCell(ctype, pointIds, nCoordinates);
   }
@@ -78,10 +79,10 @@ private:
     const IncrementalAllocator& other); //blank since we are used by shared_ptr
 
   std::size_t m_index;
-  std::vector<std::vector<double*> > m_coordinateMemories;
+  std::vector<std::vector<double*>> m_coordinateMemories;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

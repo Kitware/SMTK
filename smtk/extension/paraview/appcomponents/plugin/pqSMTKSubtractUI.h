@@ -43,8 +43,8 @@ public:
 public slots:
   /// Remove (or restore) a menu item (via its QAction) by its text name.
   /// This method is often easier but not robust when language translations are enabled.
-  virtual void toggleMenuItem(
-    const std::string& itemPath, const std::string& sep = "->", bool remove = true);
+  virtual void
+  toggleMenuItem(const std::string& itemPath, const std::string& sep = "->", bool remove = true);
   virtual void removeMenuItem(const std::string& itemPath, const std::string& sep = "->")
   {
     this->toggleMenuItem(itemPath, sep, true);
@@ -72,8 +72,8 @@ public slots:
   virtual void restoreToolbar(const std::string& toolbar) { this->toggleToolbar(toolbar, false); }
 
   /// Remove (or restore) a toolbar button (via its QAction).
-  virtual void toggleToolbarButton(
-    const std::string& toolbar, const std::string& button, bool remove = true);
+  virtual void
+  toggleToolbarButton(const std::string& toolbar, const std::string& button, bool remove = true);
   virtual void removeToolbarButton(const std::string& toolbar, const std::string& button)
   {
     this->toggleToolbarButton(toolbar, button, true);

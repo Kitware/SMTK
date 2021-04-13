@@ -74,8 +74,8 @@ int main(int argc, char* argv[])
   vtkNew<vtkConeWidget> widget;
   widget->SetInteractor(iac);
   widget->SetEnabled(true);
-// To test cylinder editing, uncomment this:
-// reinterpret_cast<vtkConeRepresentation*>(widget->GetRepresentation())->CylindricalOn();
+  // To test cylinder editing, uncomment this:
+  // reinterpret_cast<vtkConeRepresentation*>(widget->GetRepresentation())->CylindricalOn();
 
 #if 0
   // Handy for debugging:

@@ -45,7 +45,8 @@ namespace
 {
 
 pqSMTKResourceRepresentation* representationInView(
-  const std::shared_ptr<smtk::resource::Resource>& rsrc, pqView* view = nullptr)
+  const std::shared_ptr<smtk::resource::Resource>& rsrc,
+  pqView* view = nullptr)
 {
   auto smtkBehavior = pqSMTKBehavior::instance();
 
@@ -77,9 +78,13 @@ namespace paraview
 namespace appcomponents
 {
 
-template <typename T, typename U>
-int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& comp, int visible,
-  U& visibleThings, const smtk::view::DescriptivePhrase* /*unused*/)
+template<typename T, typename U>
+int UpdateVisibilityForFootprint(
+  pqSMTKResourceRepresentation* smap,
+  const T& comp,
+  int visible,
+  U& visibleThings,
+  const smtk::view::DescriptivePhrase* /*unused*/)
 {
   bool didUpdate = false;
   int rval(0);
@@ -212,7 +217,8 @@ VisibilityBadge::VisibilityBadge()
 }
 
 VisibilityBadge::VisibilityBadge(
-  smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&)
+  smtk::view::BadgeSet& parent,
+  const smtk::view::Configuration::Component&)
   : m_icon(pqEyeball_svg)
   , m_iconClosed(pqEyeballClosed_svg)
   , m_parent(&parent)
@@ -359,7 +365,8 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
 }
 
 std::string VisibilityBadge::icon(
-  const DescriptivePhrase* phrase, const std::array<float, 4>& /*background*/) const
+  const DescriptivePhrase* phrase,
+  const std::array<float, 4>& /*background*/) const
 {
   if (this->phraseVisibility(phrase))
     return m_icon;
@@ -409,9 +416,15 @@ void VisibilityBadge::activeViewChanged(pqView* view)
     {
       this->representationAddedToActiveView(rep);
     }
-    QObject::connect(view, SIGNAL(representationAdded(pqRepresentation*)), this,
+    QObject::connect(
+      view,
+      SIGNAL(representationAdded(pqRepresentation*)),
+      this,
       SLOT(representationAddedToActiveView(pqRepresentation*)));
-    QObject::connect(view, SIGNAL(representationRemoved(pqRepresentation*)), this,
+    QObject::connect(
+      view,
+      SIGNAL(representationRemoved(pqRepresentation*)),
+      this,
       SLOT(representationRemovedFromActiveView(pqRepresentation*)));
   }
   if (!this->phraseModel()->root())
@@ -463,8 +476,10 @@ void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
   auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
-    QObject::connect(modelRep,
-      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+    QObject::connect(
+      modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)),
+      this,
       SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
   }
 }
@@ -474,8 +489,10 @@ void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
   auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
-    QObject::disconnect(modelRep,
-      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+    QObject::disconnect(
+      modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)),
+      this,
       SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
     // Now, call activeViewChanged() to reset m_visibleThings;
     // this ensures that when a representation is removed due to
@@ -493,7 +510,7 @@ void VisibilityBadge::componentVisibilityChanged(smtk::resource::ComponentPtr co
   m_visibleThings[comp->id()] = visible;
   this->phraseModel()->triggerDataChangedFor(comp);
 }
-}
-}
-}
-}
+} // namespace appcomponents
+} // namespace paraview
+} // namespace extension
+} // namespace smtk

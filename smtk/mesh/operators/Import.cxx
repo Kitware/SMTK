@@ -46,7 +46,7 @@ public:
 private:
   smtk::mesh::Import::Result& m_result;
 };
-}
+} // namespace
 
 namespace smtk
 {
@@ -94,8 +94,9 @@ Import::Specification Import::createSpecification()
   auto importDef = spec->findDefinition("import");
 
   std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
-  auto fileItemDefinitionFilter = [](
-    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  auto fileItemDefinitionFilter = [](smtk::attribute::FileItemDefinition::Ptr ptr) {
+    return ptr->name() == "filename";
+  };
   importDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
 
   assert(fileItemDefinitions.size() == 1);
@@ -143,5 +144,5 @@ const char* Import::xmlDescription() const
 {
   return Import_xml;
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

@@ -38,10 +38,10 @@ class SMTKCORE_EXPORT CreatorGroup : protected Group
 {
 public:
   using Group::contains;
-  using Group::operations;
-  using Group::operationNames;
-  using Group::operationName;
   using Group::operationLabel;
+  using Group::operationName;
+  using Group::operationNames;
+  using Group::operations;
   using Group::unregisterOperation;
 
   static constexpr const char* const type_name = "creator";
@@ -53,17 +53,17 @@ public:
 
   /// Register an IO operation identified by it's unique name and the type of
   /// resource it handles.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registerOperation(const std::string&);
 
   /// Register an IO operation identified by its type index and the type of
   /// resource it handles.
-  template <typename ResourceType>
+  template<typename ResourceType>
   bool registerOperation(const Operation::Index&);
 
   /// Register an IO operation identified by its class type and the name of the
   /// resource it reads.
-  template <typename ResourceType, typename OperationType>
+  template<typename ResourceType, typename OperationType>
   bool registerOperation();
 
   /// Given a resource name, return the set of operators that were associated
@@ -78,37 +78,37 @@ public:
 
   /// Given a resource type, return the set of operators that were associated
   /// with the resource during registration.
-  template <typename ResourceType>
+  template<typename ResourceType>
   std::set<Operation::Index> operationsForResource() const;
 
   std::set<std::string> supportedResources() const;
 };
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool CreatorGroup::registerOperation(const std::string& typeName)
 {
   return Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() });
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 bool CreatorGroup::registerOperation(const Operation::Index& index)
 {
   return Group::registerOperation(index, { smtk::common::typeName<ResourceType>() });
 }
 
-template <typename ResourceType, typename OperationType>
+template<typename ResourceType, typename OperationType>
 bool CreatorGroup::registerOperation()
 {
   return Group::registerOperation(
     std::type_index(typeid(OperationType)).hash_code(), { smtk::common::typeName<ResourceType>() });
 }
 
-template <typename ResourceType>
+template<typename ResourceType>
 std::set<Operation::Index> CreatorGroup::operationsForResource() const
 {
   return operationsForResource(smtk::common::typeName<ResourceType>());
 }
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // smtk_operation_CreatorGroup_h

@@ -23,7 +23,8 @@ void to_json(json& j, const OperationFilterSortPtr& ofs, smtk::operation::Manage
 {
   if (!manager)
   {
-    smtkWarningMacro(smtk::io::Logger::instance(),
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
       "No operation manager available to serialize OperationFilterSort.");
     return;
   }
@@ -34,7 +35,8 @@ void to_json(json& j, const OperationFilterSortPtr& ofs, smtk::operation::Manage
   {
     // Entries must have an index, name, and precedence:
     json jentry = {
-      { "operation", meta.find(entry.first)->typeName() }, { "name", entry.second.name },
+      { "operation", meta.find(entry.first)->typeName() },
+      { "name", entry.second.name },
       { "precedence", entry.second.precedence },
     };
     // The description and iconName fields are optional:
@@ -58,7 +60,8 @@ void from_json(const json& j, OperationFilterSortPtr& ofs, smtk::operation::Mana
   ofs = OperationFilterSort::create();
   if (!manager)
   {
-    smtkWarningMacro(smtk::io::Logger::instance(),
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
       "No operation manager available to deserialize OperationFilterSort.");
     return;
   }
@@ -82,5 +85,5 @@ void from_json(const json& j, OperationFilterSortPtr& ofs, smtk::operation::Mana
     }
   }
 }
-}
-}
+} // namespace workflow
+} // namespace smtk

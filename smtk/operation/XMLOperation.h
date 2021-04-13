@@ -41,7 +41,7 @@ private:
   // Access a block of text representing the XML description of the operation.
   virtual const char* xmlDescription() const = 0;
 };
-}
-}
+} // namespace operation
+} // namespace smtk
 
 #endif // __smtk_operation_XMLOperation_h

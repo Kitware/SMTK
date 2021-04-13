@@ -79,7 +79,8 @@ bool GroupItem::conditionalsSatisfied() const
         numChoices++;
       }
     }
-    if ((numChoices < m_minNumberOfChoices) ||
+    if (
+      (numChoices < m_minNumberOfChoices) ||
       ((m_maxNumberOfChoices != 0) && (numChoices > m_maxNumberOfChoices)))
     {
       return false;
@@ -392,13 +393,14 @@ smtk::attribute::ItemPtr GroupItem::findInternal(const std::string& childName, S
 }
 
 smtk::attribute::ConstItemPtr GroupItem::findInternal(
-  const std::string& childName, SearchStyle style) const
+  const std::string& childName,
+  SearchStyle style) const
 {
   return this->find(0, childName, style);
 }
 
-smtk::attribute::ItemPtr GroupItem::find(
-  std::size_t element, const std::string& inName, SearchStyle style)
+smtk::attribute::ItemPtr
+GroupItem::find(std::size_t element, const std::string& inName, SearchStyle style)
 {
   // Make sure element is valid
   if (m_items.size() <= element)
@@ -432,8 +434,8 @@ smtk::attribute::ItemPtr GroupItem::find(
   return nullptr;
 }
 
-smtk::attribute::ConstItemPtr GroupItem::find(
-  std::size_t element, const std::string& inName, SearchStyle style) const
+smtk::attribute::ConstItemPtr
+GroupItem::find(std::size_t element, const std::string& inName, SearchStyle style) const
 {
   // Make sure element is valid
   if (m_items.size() <= element)

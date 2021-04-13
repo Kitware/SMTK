@@ -31,5 +31,5 @@ smtk::operation::XMLOperation::Specification XMLOperation::createSpecification()
   return spec;
 }
 
-} // operation namespace
-} // smtk namespace
+} // namespace operation
+} // namespace smtk

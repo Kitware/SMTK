@@ -31,7 +31,7 @@ void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr& geometryManag
 {
   geometryManager->unregisterBackend<smtk::extension::vtk::geometry::Backend>();
 }
-}
-}
-}
-}
+} // namespace mesh
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

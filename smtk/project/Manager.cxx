@@ -27,7 +27,8 @@ namespace smtk
 namespace project
 {
 smtk::project::ManagerPtr Manager::create(
-  smtk::resource::ManagerPtr& resourceManager, smtk::operation::ManagerPtr& operationManager)
+  smtk::resource::ManagerPtr& resourceManager,
+  smtk::operation::ManagerPtr& operationManager)
 {
   if (!resourceManager || !operationManager)
   {
@@ -38,7 +39,8 @@ smtk::project::ManagerPtr Manager::create(
 }
 
 Manager::Manager(
-  smtk::resource::ManagerPtr& resourceManager, smtk::operation::ManagerPtr& operationManager)
+  smtk::resource::ManagerPtr& resourceManager,
+  smtk::operation::ManagerPtr& operationManager)
   : m_resourceManager(resourceManager)
   , m_operationManager(operationManager)
 {
@@ -66,8 +68,10 @@ smtk::attribute::AttributePtr Manager::getProjectSpecification()
   return att;
 }
 
-ProjectPtr Manager::createProject(smtk::attribute::AttributePtr specification,
-  bool replaceExistingDirectory, smtk::io::Logger& logger)
+ProjectPtr Manager::createProject(
+  smtk::attribute::AttributePtr specification,
+  bool replaceExistingDirectory,
+  smtk::io::Logger& logger)
 {
   if (m_project)
   {

@@ -124,8 +124,8 @@ void vtkImplicitConeFrustum::UpdateImplicit()
   yy.Normalize();
   vtkVector3d xx = yy.Cross(axis).Normalized();
   // vtkVector3d ss(0., 0., (this->TopRadius - this->BottomRadius) / length);
-  const double tfm[16] = { axis[0], xx[0], yy[0], 0., axis[1], xx[1], yy[1], 0., axis[2], xx[2],
-    yy[2], 0., -apex[0], -apex[1], -apex[2], 1. };
+  const double tfm[16] = { axis[0], xx[0], yy[0], 0., axis[1],  xx[1],    yy[1],    0.,
+                           axis[2], xx[2], yy[2], 0., -apex[0], -apex[1], -apex[2], 1. };
 
   this->InfiniteCone->SetAngle(angle);
   this->ConeTransform->SetMatrix(tfm);

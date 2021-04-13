@@ -47,7 +47,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove(path);
   }
 }
-}
+} // namespace
 
 // This test accepts as input one or more .sbi descriptions of an attribute
 // resource. For each input file, it then performs the following:
@@ -85,7 +85,8 @@ int main(int argc, char** argv)
       importer->parameters()->findFile("filename")->setValue(inputFileName);
 
       auto result = importer->operate();
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Import operator failed\n";
@@ -113,7 +114,8 @@ int main(int argc, char** argv)
       exporter->parameters()->findFile("filename")->setValue(sbi1FileName);
 
       auto result = exporter->operate();
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Export operator failed\n";
@@ -137,7 +139,8 @@ int main(int argc, char** argv)
       writeOp->parameters()->associate(resource);
       auto result = writeOp->operate();
 
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Write operation failed\n";
@@ -155,7 +158,8 @@ int main(int argc, char** argv)
       readOp->parameters()->findFile("filename")->setValue(smtkFileName);
       auto result = readOp->operate();
 
-      if (result->findInt("outcome")->value() !=
+      if (
+        result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Read operation failed\n";
@@ -233,7 +237,9 @@ int main(int argc, char** argv)
 
       f1.seekg(0, std::ifstream::beg);
       f2.seekg(0, std::ifstream::beg);
-      if (!std::equal(std::istreambuf_iterator<char>(f1.rdbuf()), std::istreambuf_iterator<char>(),
+      if (!std::equal(
+            std::istreambuf_iterator<char>(f1.rdbuf()),
+            std::istreambuf_iterator<char>(),
             std::istreambuf_iterator<char>(f2.rdbuf())))
       {
         std::cerr << "Original and generated files are different\n\n";

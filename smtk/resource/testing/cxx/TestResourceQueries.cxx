@@ -72,8 +72,9 @@ public:
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override
   {
-    auto it = std::find_if(m_components.begin(), m_components.end(),
-      [&](const Component::Ptr& c) { return c->id() == id; });
+    auto it = std::find_if(m_components.begin(), m_components.end(), [&](const Component::Ptr& c) {
+      return c->id() == id;
+    });
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
@@ -129,7 +130,7 @@ public:
     return QueryResult::NewValue;
   }
 };
-}
+} // namespace
 
 int TestResourceQueries(int /*unused*/, char** const /*unused*/)
 {
@@ -144,13 +145,16 @@ int TestResourceQueries(int /*unused*/, char** const /*unused*/)
 
     {
       Query query;
-      test(query.performQuery(component) == QueryResult::NewValue,
+      test(
+        query.performQuery(component) == QueryResult::NewValue,
         "First query return unexpected value");
-      test(query.performQuery(component) == QueryResult::CachedValue,
+      test(
+        query.performQuery(component) == QueryResult::CachedValue,
         "Second query return unexpected value");
     }
 
-    test(Query().performQuery(component) == QueryResult::CachedValue,
+    test(
+      Query().performQuery(component) == QueryResult::CachedValue,
       "Third query return unexpected value");
   }
 

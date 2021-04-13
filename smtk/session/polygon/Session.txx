@@ -36,7 +36,7 @@ namespace polygon
   * polygon's internal pmodel class because the container
   * may include cells from multiple models.
   */
-template <typename T, typename U, typename V>
+template<typename T, typename U, typename V>
 void Session::consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug)
 {
   smtk::model::Resource::Ptr resource;
@@ -47,8 +47,10 @@ void Session::consistentInternalDelete(T& container, U& modified, V& expunged, b
     {
       if (!it->isAuxiliaryGeometry())
       {
-        smtkWarningMacro(this->log(), "Trying to delete polygon storage for "
-            << it->name() << " (" << it->flagSummary() << ")");
+        smtkWarningMacro(
+          this->log(),
+          "Trying to delete polygon storage for " << it->name() << " (" << it->flagSummary()
+                                                  << ")");
       }
       if (!resource)
       {

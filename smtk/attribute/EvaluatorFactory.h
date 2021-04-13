@@ -39,7 +39,7 @@ public:
   // any existing alias with the name |alias| and its created Evaluator and
   // Definitions. Does nothing if |alias| is already present with
   // |EvaluatorType|.
-  template <typename EvaluatorType>
+  template<typename EvaluatorType>
   void registerEvaluator(const std::string& alias);
 
   // Registers Definition with name |definitionName| to the Evaluator with
@@ -55,7 +55,7 @@ public:
 
   // Removes |EvaluatorType| and all of its assocaited Definitions from the
   // factory.
-  template <typename EvaluatorType>
+  template<typename EvaluatorType>
   bool unregisterEvaluator();
 
   // Creates an Evaluator for |att|. Returns nullptr if no Definition name
@@ -68,7 +68,7 @@ public:
 
   // Returns all aliases in the factory, mapped to their Definition names,
   // in sorted order to aid in deterministic serialization.
-  std::map<std::string, std::vector<std::string> > aliasesToDefinitions() const;
+  std::map<std::string, std::vector<std::string>> aliasesToDefinitions() const;
 
 private:
   struct FactoryInfo
@@ -91,7 +91,7 @@ private:
   smtk::common::Factory<smtk::attribute::Evaluator, smtk::attribute::ConstAttributePtr> m_internal;
 };
 
-template <typename EvaluatorType>
+template<typename EvaluatorType>
 void EvaluatorFactory::registerEvaluator(const std::string& alias)
 {
   std::size_t typeHash = std::type_index(typeid(EvaluatorType)).hash_code();
@@ -112,7 +112,7 @@ void EvaluatorFactory::registerEvaluator(const std::string& alias)
   m_internal.registerType<EvaluatorType>();
 }
 
-template <typename EvaluatorType>
+template<typename EvaluatorType>
 bool EvaluatorFactory::unregisterEvaluator()
 {
   for (const auto& p : m_aliasesToFactoryInfo)

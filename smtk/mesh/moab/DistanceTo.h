@@ -38,14 +38,16 @@ namespace moab
 struct SMTKCORE_EXPORT DistanceTo
   : public smtk::resource::query::DerivedFrom<DistanceTo, smtk::geometry::DistanceTo>
 {
-  std::pair<double, std::array<double, 3> > operator()(
-    const smtk::resource::Component::Ptr&, const std::array<double, 3>&) const override;
+  std::pair<double, std::array<double, 3>> operator()(
+    const smtk::resource::Component::Ptr&,
+    const std::array<double, 3>&) const override;
 
-  std::pair<double, std::array<double, 3> > operator()(
-    const smtk::mesh::MeshSet&, const std::array<double, 3>&) const;
+  std::pair<double, std::array<double, 3>> operator()(
+    const smtk::mesh::MeshSet&,
+    const std::array<double, 3>&) const;
 };
-}
-}
-}
+} // namespace moab
+} // namespace mesh
+} // namespace smtk
 
 #endif

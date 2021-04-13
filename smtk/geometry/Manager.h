@@ -54,7 +54,7 @@ public:
   virtual ~Manager() = default;
 
   /// Register a geometry backend type with the resource manager.
-  template <typename Backend>
+  template<typename Backend>
   bool registerBackend()
   {
     auto entry = std::make_shared<Backend>();
@@ -71,7 +71,7 @@ public:
   }
 
   /// Unregister a geometry backend type with the resource manager.
-  template <typename Backend>
+  template<typename Backend>
   bool unregisterBackend()
   {
     Backend entry;
@@ -93,7 +93,8 @@ public:
 protected:
   /// For any resources in \a resourceManager, attempt to construct geometry for \a backend.
   void constructGeometry(
-    const std::shared_ptr<smtk::resource::Manager>& resourceManager, Backend& backend);
+    const std::shared_ptr<smtk::resource::Manager>& resourceManager,
+    Backend& backend);
 
 private:
   Manager() = default;
@@ -103,7 +104,7 @@ private:
   /// The observer key used to add geometry as resources are added.
   smtk::resource::Observers::Key m_resourceObserverKey;
   /// A collection of backend flavors that geometry providers may come in.
-  std::map<Backend::index_t, std::shared_ptr<Backend> > m_backends;
+  std::map<Backend::index_t, std::shared_ptr<Backend>> m_backends;
 };
 
 } // namespace geometry

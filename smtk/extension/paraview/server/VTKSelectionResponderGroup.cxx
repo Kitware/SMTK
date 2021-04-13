@@ -70,5 +70,5 @@ std::set<std::string> VTKSelectionResponderGroup::supportedResources() const
   }
   return resources;
 }
-}
-}
+} // namespace view
+} // namespace smtk

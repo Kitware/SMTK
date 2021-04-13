@@ -43,7 +43,7 @@ class qtGroupItemInternals
 public:
   QPointer<QFrame> ButtonsFrame;
   QPointer<QFrame> ChildrensFrame;
-  QMap<QToolButton*, QList<qtItem*> > ExtensibleMap;
+  QMap<QToolButton*, QList<qtItem*>> ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
@@ -78,7 +78,7 @@ qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
   // the insertion mode is set to prepend
   m_prependMode =
     (item->isExtensible() && m_itemInfo.component().attribute("InsertMode", insertMode) &&
-      ((insertMode == "prepend") || (insertMode == "Prepend")));
+     ((insertMode == "prepend") || (insertMode == "Prepend")));
 
   this->createWidget();
 }
@@ -589,7 +589,11 @@ void qtGroupItem::addItemsToTable(int index)
       childItem->setLabelVisible(false);
       m_internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
       itemList.push_back(childItem);
-      connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()),
+      connect(
+        childItem,
+        SIGNAL(widgetSizeChanged()),
+        this,
+        SLOT(onChildWidgetSizeChanged()),
         Qt::QueuedConnection);
       added++;
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));

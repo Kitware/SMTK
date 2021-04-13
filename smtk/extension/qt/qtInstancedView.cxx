@@ -47,7 +47,7 @@ public:
   }
 
   //QScrollArea *ScrollArea;
-  QList<QPointer<qtAttribute> > AttInstances;
+  QList<QPointer<qtAttribute>> AttInstances;
   bool m_isEmpty{ true };
   smtk::operation::Observers::Key m_observerKey;
 };
@@ -108,7 +108,9 @@ void qtInstancedView::createWidget()
   if (opManager != nullptr)
   {
     this->Internals->m_observerKey = opManager->observers().insert(
-      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](
+        const smtk::operation::Operation& oper,
+        smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         if (guardedObject == nullptr)
         {
@@ -279,8 +281,10 @@ bool qtInstancedView::isEmpty() const
   return this->Internals->m_isEmpty;
 }
 
-int qtInstancedView::handleOperationEvent(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+int qtInstancedView::handleOperationEvent(
+  const smtk::operation::Operation& op,
+  smtk::operation::EventType event,
+  smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
   {

@@ -23,6 +23,6 @@ Manager::Manager(const smtk::resource::ManagerPtr& manager)
 }
 
 Manager::~Manager() = default;
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk

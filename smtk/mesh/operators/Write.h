@@ -36,7 +36,7 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-} // mesh namespace
-} // smtk namespace
+} // namespace mesh
+} // namespace smtk
 
 #endif // __smtk_mesh_Write_h

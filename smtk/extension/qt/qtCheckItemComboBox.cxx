@@ -34,7 +34,9 @@ qtCheckableComboItemDelegate::qtCheckableComboItemDelegate(QWidget* owner)
 }
 
 void qtCheckableComboItemDelegate::paint(
-  QPainter* painter_, const QStyleOptionViewItem& option_, const QModelIndex& index_) const
+  QPainter* painter_,
+  const QStyleOptionViewItem& option_,
+  const QModelIndex& index_) const
 {
   QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option_);
   refToNonConstOption.showDecorationSelected = false;

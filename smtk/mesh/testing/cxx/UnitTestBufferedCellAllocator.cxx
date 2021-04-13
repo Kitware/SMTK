@@ -18,7 +18,7 @@
 namespace
 {
 double pts[9][3] = { { 0., 0., 0. }, { 1., 0., 0. }, { 1., 1., 0. }, { 0., 1., 0. }, { 0., 0., 1. },
-  { 1., 0., 1. }, { 1., 1., 1. }, { 0., 1., 1. }, { .5, -.5, 0. } };
+                     { 1., 0., 1. }, { 1., 1., 1. }, { 0., 1., 1. }, { .5, -.5, 0. } };
 
 double* vertex[1] = { pts[0] };
 double* line[2] = { pts[0], pts[1] };
@@ -30,8 +30,8 @@ double* pyramid[5] = { pts[0], pts[1], pts[2], pts[3], pts[4] };
 double* wedge[6] = { pts[0], pts[1], pts[2], pts[4], pts[5], pts[6] };
 double* hexahedron[8] = { pts[0], pts[1], pts[2], pts[3], pts[4], pts[5], pts[6], pts[7] };
 
-double** cellPoints[9] = { vertex, line, triangle, quad, polygon, tetrahedron, pyramid, wedge,
-  hexahedron };
+double** cellPoints[9] = { vertex,      line,    triangle, quad,      polygon,
+                           tetrahedron, pyramid, wedge,    hexahedron };
 
 void verify_moab_buffered_cell_allocator_creation()
 {
@@ -47,7 +47,8 @@ void verify_moab_buffered_cell_allocator_creation()
   test(!!allocator, "moab buffered cell allocator should be valid");
 
   //verify that is modified is true
-  test(resource->isModified(),
+  test(
+    resource->isModified(),
     "resource should be modified once the buffered cell allocator is accessed");
 }
 
@@ -202,9 +203,10 @@ void verify_moab_buffered_cell_allocator_cells()
 
   for (int cellType = smtk::mesh::Vertex; cellType != smtk::mesh::CellType_MAX; ++cellType)
   {
-    std::size_t nVerticesPerCell = (cellType == smtk::mesh::Polygon
-        ? 5
-        : smtk::mesh::verticesPerCell(smtk::mesh::CellType(cellType)));
+    std::size_t nVerticesPerCell =
+      (cellType == smtk::mesh::Polygon
+         ? 5
+         : smtk::mesh::verticesPerCell(smtk::mesh::CellType(cellType)));
 
     nVertices += nVerticesPerCell;
   }
@@ -219,9 +221,10 @@ void verify_moab_buffered_cell_allocator_cells()
 
   for (int cellType = smtk::mesh::Vertex; cellType != smtk::mesh::CellType_MAX; ++cellType)
   {
-    std::size_t nVerticesPerCell = (cellType == smtk::mesh::Polygon
-        ? 5
-        : smtk::mesh::verticesPerCell(smtk::mesh::CellType(cellType)));
+    std::size_t nVerticesPerCell =
+      (cellType == smtk::mesh::Polygon
+         ? 5
+         : smtk::mesh::verticesPerCell(smtk::mesh::CellType(cellType)));
     std::vector<int> connectivity(nVerticesPerCell);
 
     // Fill the vertices for each cell and record its connectivity. To prevent
@@ -250,7 +253,7 @@ void verify_moab_buffered_cell_allocator_cells()
 
   test(mesh.points().size() == nVertices);
 }
-}
+} // namespace
 
 int UnitTestBufferedCellAllocator(int /*unused*/, char** const /*unused*/)
 {

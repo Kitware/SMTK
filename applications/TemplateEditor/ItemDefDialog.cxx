@@ -58,7 +58,8 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
 
 // ------------------------------------------------------------------------
 void ItemDefDialog::setValidationInstances(
-  smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr def)
+  smtk::attribute::ItemDefinitionPtr itemDef,
+  smtk::attribute::DefinitionPtr def)
 {
   if (itemDef && itemDef->type() == smtk::attribute::Item::GroupType)
   {

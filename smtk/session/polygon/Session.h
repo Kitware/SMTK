@@ -30,7 +30,7 @@ namespace internal
 {
 class pmodel;
 class vertex;
-}
+} // namespace internal
 
 /**\brief Methods that handle translation between polygon and SMTK instances.
   *
@@ -58,7 +58,7 @@ public:
 
   SessionInfoBits allSupportedInformation() const override;
 
-  template <typename T, typename U, typename V>
+  template<typename T, typename U, typename V>
   void consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug);
 
   std::string defaultFileExtension(const smtk::model::Model&) const override;
@@ -69,7 +69,8 @@ public:
   internal::EntityIdToPtr::const_iterator endStorage() const;
 
   void addStorage(
-    const smtk::common::UUID& uid, smtk::session::polygon::internal::entity::Ptr storage);
+    const smtk::common::UUID& uid,
+    smtk::session::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);
 
 protected:
@@ -82,13 +83,15 @@ protected:
   Session();
 
   smtk::model::SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
+    const smtk::model::EntityRef& entity,
+    SessionInfoBits requestedInfo,
+    int depth = -1) override;
 
   bool removeFaceReferences(const smtk::model::Face& f);
   bool removeEdgeReferences(const smtk::model::Edge& e);
   bool removeVertReferences(const smtk::model::Vertex& v);
 
-  template <typename T>
+  template<typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
   {
     internal::EntityIdToPtr::iterator it = m_storage.find(uid);
@@ -98,7 +101,7 @@ protected:
     return blank;
   }
 
-  template <typename T>
+  template<typename T>
   T findOrAddStorage(const smtk::common::UUID& uid)
   {
     internal::EntityIdToPtr::iterator it = m_storage.find(uid);

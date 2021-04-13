@@ -57,6 +57,6 @@ const smtk::common::TypeMapBase<std::string>& ComponentProperties::properties() 
 {
   return m_component->resource()->properties().data();
 }
-}
-}
-}
+} // namespace detail
+} // namespace resource
+} // namespace smtk

@@ -50,7 +50,8 @@ bool ImportMesh::ExtensionIsSupported(const std::string& ext)
   {
     for (auto& format : importer->FileFormats())
     {
-      if (format.CanImport() &&
+      if (
+        format.CanImport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -72,7 +73,8 @@ smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
   {
     for (auto& format : importer->FileFormats())
     {
-      if (format.CanImport() &&
+      if (
+        format.CanImport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -84,8 +86,10 @@ smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
   return smtk::io::mesh::Format();
 }
 
-smtk::mesh::ResourcePtr ImportMesh::operator()(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, std::string domainPropertyName) const
+smtk::mesh::ResourcePtr ImportMesh::operator()(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  std::string domainPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -96,7 +100,8 @@ smtk::mesh::ResourcePtr ImportMesh::operator()(const std::string& filePath,
   {
     for (auto&& format : importer->FileFormats())
     {
-      if (format.CanImport() &&
+      if (
+        format.CanImport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -109,7 +114,9 @@ smtk::mesh::ResourcePtr ImportMesh::operator()(const std::string& filePath,
   return smtk::mesh::ResourcePtr();
 }
 
-bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+bool ImportMesh::operator()(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   std::string domainPropertyName) const
 {
   // Grab the file extension
@@ -121,7 +128,8 @@ bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr
   {
     for (auto&& format : importer->FileFormats())
     {
-      if (format.CanImport() &&
+      if (
+        format.CanImport() &&
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
@@ -134,14 +142,17 @@ bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr
 }
 
 smtk::mesh::ResourcePtr importMesh(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface)
 {
   ImportMesh importM;
   return importM(filePath, interface, std::string());
 }
 
-smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName)
+smtk::mesh::ResourcePtr importMesh(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  const std::string& domainPropertyName)
 {
   ImportMesh importM;
   return importM(filePath, interface, domainPropertyName);
@@ -153,7 +164,9 @@ bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource)
   return importM(filePath, resource, std::string());
 }
 
-bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+bool importMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   const std::string& domainPropertyName)
 {
   ImportMesh importM;
@@ -165,5 +178,5 @@ smtk::io::mesh::Format meshFileFormat(const std::string& filePath)
   ImportMesh importM;
   return importM.fileFormat(filePath);
 }
-}
-}
+} // namespace io
+} // namespace smtk

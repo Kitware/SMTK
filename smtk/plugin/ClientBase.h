@@ -27,7 +27,7 @@ class SMTKCORE_EXPORT ClientBase : public std::enable_shared_from_this<ClientBas
 public:
   virtual ~ClientBase();
 };
-}
-}
+} // namespace plugin
+} // namespace smtk
 
 #endif

@@ -31,7 +31,7 @@ class SMTKCORE_EXPORT ViewWidgetFactory
   : public smtk::common::Factory<BaseView, const smtk::view::Information&>
 {
 public:
-  template <typename Type>
+  template<typename Type>
   void addAlias(const std::string& alias)
   {
     addAlias(smtk::view::typeIndex<Type>(), alias);
@@ -50,7 +50,7 @@ public:
   }
 
   /// Create an instance of a Type using its type name.
-  template <typename... Args>
+  template<typename... Args>
   std::unique_ptr<BaseView> createFromAlias(const std::string& alias, Args&&... args) const
   {
     auto found = m_aliases.find(alias);
@@ -64,7 +64,7 @@ public:
 private:
   std::map<std::string, std::size_t> m_aliases;
 };
-}
-}
+} // namespace view
+} // namespace smtk
 
 #endif

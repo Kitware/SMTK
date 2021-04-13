@@ -56,7 +56,7 @@ public:
 
   using WeakManagerPtr = smtk::operation::WeakManagerPtr;
   using Key = smtk::operation::Observers::Key;
-  using ObserverMap = std::map<WeakManagerPtr, Key, std::owner_less<WeakManagerPtr> >;
+  using ObserverMap = std::map<WeakManagerPtr, Key, std::owner_less<WeakManagerPtr>>;
 
   /// Queue an operation to clean up an ephemeral resource.
   bool add(const smtk::operation::OperationPtr& deleter);
@@ -73,7 +73,9 @@ protected:
   GarbageCollector(const GarbageCollector&) = delete;
   GarbageCollector& operator=(const GarbageCollector&) = delete;
 
-  int collectGarbage(const smtk::operation::Operation&, smtk::operation::EventType,
+  int collectGarbage(
+    const smtk::operation::Operation&,
+    smtk::operation::EventType,
     smtk::operation::Operation::Result);
 
   /// Returns true if the operation is ready to be evaluated, false otherwise.
@@ -86,7 +88,7 @@ protected:
   /// The "ids" of observers calling collectGarbage after each operation.
   ObserverMap m_observers;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_GarbageCollector_h

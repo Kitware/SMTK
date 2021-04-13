@@ -94,8 +94,9 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
     test(origin != nullptr, "Origin not found");
     for (int i = 0; i < 3; ++i)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(origin)->setValue(
-             i, originCoords[i]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(origin)->setValue(
+          i, originCoords[i]),
         "Setting origin failed");
     }
 
@@ -104,7 +105,8 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
     test(xAxis != nullptr, "x axis not found");
     for (int i = 0; i < 3; ++i)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(xAxis)->setValue(i, vx[i]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(xAxis)->setValue(i, vx[i]),
         "Setting x axis failed");
     }
 
@@ -113,20 +115,23 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
     test(yAxis != nullptr, "y axis not found");
     for (int i = 0; i < 3; ++i)
     {
-      test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(yAxis)->setValue(i, vy[i]),
+      test(
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(yAxis)->setValue(i, vy[i]),
         "Setting y axis failed");
     }
 
     smtk::attribute::ItemPtr featureSize =
       constructionMethod->findChild("feature size", smtk::attribute::SearchStyle::ACTIVE_CHILDREN);
     test(featureSize != nullptr, "feature size not found");
-    test(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(featureSize)->setValue(1.),
+    test(
+      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(featureSize)->setValue(1.),
       "Setting feature size failed");
 
     // Apply the operation and check the result
     smtk::operation::Operation::Result createOpResult = createOp->operate();
 
-    test(createOpResult->findInt("outcome")->value() ==
+    test(
+      createOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Create operator failed");
 

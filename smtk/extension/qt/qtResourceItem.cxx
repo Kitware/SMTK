@@ -35,21 +35,24 @@ namespace extension
 namespace
 {
 
-nlohmann::json defaultConfiguration = { { "Name", "RefItem" },
+nlohmann::json defaultConfiguration = {
+  { "Name", "RefItem" },
   { "Type", "smtk::view::ResourcePhraseModel" },
   { "Component",
-    { { "Name", "Details" }, { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+    { { "Name", "Details" },
+      { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
       { "Children",
         { { { "Name", "PhraseModel" },
-          { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
-          { "Children",
-            { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
-              { { "Name", "Badges" },
-                { "Children",
-                  { { { "Name", "Badge" },
-                    { "Attributes",
-                      { { "Type",
-                        "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } } };
+            { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+            { "Children",
+              { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "none" } } } },
+                { { "Name", "Badges" },
+                  { "Children",
+                    { { { "Name", "Badge" },
+                        { "Attributes",
+                          { { "Type",
+                              "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } }
+};
 }
 
 qtItem* qtResourceItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -95,7 +98,8 @@ smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
   auto phraseModel =
     m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
       m_itemInfo.baseView()->getObject().get());
-  if (!phraseModel ||
+  if (
+    !phraseModel ||
     !m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
   {
     smtk::view::ConfigurationPtr config = defaultConfiguration;
@@ -135,9 +139,10 @@ std::string qtResourceItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto resource = (this->members().empty() ? smtk::resource::ResourcePtr()
-                                             : std::static_pointer_cast<smtk::resource::Resource>(
-                                                 this->members().begin()->first.lock()));
+    auto resource =
+      (this->members().empty() ? smtk::resource::ResourcePtr()
+                               : std::static_pointer_cast<smtk::resource::Resource>(
+                                   this->members().begin()->first.lock()));
 
     if (resource != nullptr)
     {
@@ -194,5 +199,5 @@ std::string qtResourceItem::synopsis(bool& ok) const
   ok &= (maxAllowed == 0 || numSel <= maxAllowed);
   return label.str();
 }
-}
-}
+} // namespace extension
+} // namespace smtk

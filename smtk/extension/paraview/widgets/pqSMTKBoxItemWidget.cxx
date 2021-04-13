@@ -44,7 +44,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKBoxItemWidget::pqSMTKBoxItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -58,7 +59,8 @@ qtItem* pqSMTKBoxItemWidget::createBoxItemWidget(const qtAttributeItemInfo& info
 }
 
 bool pqSMTKBoxItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   ItemBindings binding;
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -135,7 +137,8 @@ void pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
   ItemBindings binding;
   if (!this->fetchBoxItems(binding, items, control))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -323,7 +326,8 @@ void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
   ItemBindings binding;
   if (!this->fetchBoxItems(binding, items, control))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
     return;
   }
@@ -421,8 +425,10 @@ void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
   }
 }
 
-bool pqSMTKBoxItemWidget::fetchBoxItems(ItemBindings& binding,
-  std::vector<smtk::attribute::DoubleItemPtr>& items, smtk::attribute::StringItemPtr& control)
+bool pqSMTKBoxItemWidget::fetchBoxItems(
+  ItemBindings& binding,
+  std::vector<smtk::attribute::DoubleItemPtr>& items,
+  smtk::attribute::StringItemPtr& control)
 {
   items.clear();
   control = nullptr;

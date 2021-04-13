@@ -60,12 +60,15 @@ int unitUnsetValueError(int argc, char* argv[])
   auto operationManager = smtk::operation::Manager::create();
   operationManager->registerResourceManager(resourceManager);
 
-  auto attributeRegistry = smtk::plugin::Registry<smtk::attribute::Registrar,
-    smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
-  auto operationRegistry = smtk::plugin::Registry<smtk::operation::Registrar,
-    smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
-  auto polygonRegistry = smtk::plugin::Registry<smtk::session::polygon::Registrar,
-    smtk::resource::Manager, smtk::operation::Manager>(resourceManager, operationManager);
+  auto attributeRegistry = smtk::plugin::
+    Registry<smtk::attribute::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      resourceManager, operationManager);
+  auto operationRegistry = smtk::plugin::
+    Registry<smtk::operation::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      resourceManager, operationManager);
+  auto polygonRegistry = smtk::plugin::
+    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
+      resourceManager, operationManager);
 
   for (int i = 1; i < argc; i++)
   {

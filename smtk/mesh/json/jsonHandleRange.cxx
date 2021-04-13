@@ -34,9 +34,9 @@ void from_json(const nlohmann::json& j, smtk::mesh::HandleRange& handleRange)
 
   for (auto& jsonHandleInterval : j)
   {
-    handlePair = jsonHandleInterval.get<std::pair<Handle, Handle> >();
+    handlePair = jsonHandleInterval.get<std::pair<Handle, Handle>>();
     handleRange.insert(handleRange.end(), HandleInterval(handlePair.first, handlePair.second));
   }
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

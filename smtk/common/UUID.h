@@ -98,7 +98,7 @@ SMTK_HASH_NS_BEGIN
 
 #if SMTK_HASH_SPECIALIZATION == 1
 // Specialize hash<UUID> functor
-template <>
+template<>
 struct hash<smtk::common::UUID>
 {
   size_t operator()(const smtk::common::UUID& uid) const
@@ -115,7 +115,7 @@ struct hash<smtk::common::UUID>
 };
 #else
 // Specialize hash typecast operators
-template <>
+template<>
 inline size_t hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
 {
   size_t hash;
@@ -128,7 +128,7 @@ inline size_t hash<const smtk::common::UUID&>::operator()(const smtk::common::UU
   return hash;
 }
 
-template <>
+template<>
 inline size_t hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
 {
   size_t hash;

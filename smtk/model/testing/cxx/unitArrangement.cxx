@@ -20,7 +20,8 @@ int main()
   {
     ArrangementKind k = static_cast<ArrangementKind>(i);
     test(k == ArrangementKindFromName(NameForArrangementKind(k)), "Missing arrangement name");
-    test(k == ArrangementKindFromAbbreviation(AbbreviationForArrangementKind(k)),
+    test(
+      k == ArrangementKindFromAbbreviation(AbbreviationForArrangementKind(k)),
       "Missing arrangement abbreviation");
   }
   return 0;

@@ -25,12 +25,13 @@ bool ItemDefinitionManager::registerResourceManager(smtk::resource::ManagerPtr& 
   {
     // ...add an observer that adds the new definition to all current and
     // future attribute resources associated with this manager.
-    auto registerCustomTypeObserver = [=](
-      const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
+    auto registerCustomTypeObserver =
+      [=](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
-        if (const smtk::attribute::Resource* attributeResource =
-              dynamic_cast<const smtk::attribute::Resource*>(&resource))
+        if (
+          const smtk::attribute::Resource* attributeResource =
+            dynamic_cast<const smtk::attribute::Resource*>(&resource))
         {
           registerFunction.second(const_cast<smtk::attribute::Resource&>(*attributeResource));
         }
@@ -39,7 +40,8 @@ bool ItemDefinitionManager::registerResourceManager(smtk::resource::ManagerPtr& 
 
     // Associate the observer key with the definition type, so we can remove it
     // later if requested.
-    m_observers.insert(std::make_pair(registerFunction.first,
+    m_observers.insert(std::make_pair(
+      registerFunction.first,
       manager->observers().insert(registerCustomTypeObserver, "Register custom attribute type.")));
   }
 
@@ -47,5 +49,5 @@ bool ItemDefinitionManager::registerResourceManager(smtk::resource::ManagerPtr& 
 
   return true;
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

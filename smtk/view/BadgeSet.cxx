@@ -70,8 +70,9 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
         }
         else
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "Badge " << ii << " (" << badgeName
-                                                                << ") could not be constructed.");
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Badge " << ii << " (" << badgeName << ") could not be constructed.");
         }
       }
       else
@@ -81,8 +82,9 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
     }
     else if (configComp.name() != "Comment")
     {
-      smtkWarningMacro(smtk::io::Logger::instance(), "Unknown Badges entry "
-          << configComp.name() << " (" << ii << ") will be ignored.");
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Unknown Badges entry " << configComp.name() << " (" << ii << ") will be ignored.");
     }
   }
 }
@@ -105,5 +107,5 @@ BadgeSet::BadgeList BadgeSet::badgesFor(const DescriptivePhrase* phrase) const
   }
   return result;
 }
-}
-}
+} // namespace view
+} // namespace smtk

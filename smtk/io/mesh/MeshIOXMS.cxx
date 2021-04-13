@@ -40,10 +40,10 @@ using std::sregex_token_iterator;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
-using boost::sregex_token_iterator;
+using boost::regex_match;
 using boost::regex_replace;
 using boost::regex_search;
-using boost::regex_match;
+using boost::sregex_token_iterator;
 #endif
 
 #include <fstream>
@@ -125,7 +125,7 @@ struct MeshByRegion
   int m_regionId;
 };
 
-template <typename T, typename U>
+template<typename T, typename U>
 double find_sum(const U& conn, const T& points, std::size_t index, int nVerts)
 {
   double sum = 0;
@@ -217,8 +217,8 @@ public:
     }
   }
 
-  void write(
-    const smtk::mesh::CellSet& cells, const std::string& cardType, int regionId, int nVerts)
+  void
+  write(const smtk::mesh::CellSet& cells, const std::string& cardType, int regionId, int nVerts)
   {
     //Use the extractTessellation helpers to convert the connectivity
     //to map properly to the PointSet that represents ALL points we are
@@ -245,7 +245,10 @@ public:
   }
 
   void writeCounterClockwise(
-    const smtk::mesh::CellSet& cells, const std::string& cardType, int regionId, int nVerts)
+    const smtk::mesh::CellSet& cells,
+    const std::string& cardType,
+    int regionId,
+    int nVerts)
   {
     //Use the extractTessellation helpers to convert the connectivity
     //to map properly to the PointSet that represents ALL points we are
@@ -291,7 +294,8 @@ public:
 };
 
 std::vector<MeshByRegion> subsetByRegion(
-  smtk::mesh::ResourcePtr meshResource, smtk::mesh::DimensionType type)
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::mesh::DimensionType type)
 {
   std::vector<MeshByRegion> meshesByModelRef;
   smtk::mesh::MeshSet meshes = meshResource->meshes(type);
@@ -327,8 +331,10 @@ std::vector<MeshByRegion> subsetByRegion(
   return meshesByModelRef;
 }
 
-std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
+std::vector<MeshByRegion> subsetByModelProperty(
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName,
   smtk::mesh::DimensionType type)
 {
   std::vector<MeshByRegion> meshesByModelRef;
@@ -371,7 +377,9 @@ smtk::mesh::PointSet pointsUsed(const std::vector<MeshByRegion>& meshes)
 }
 
 bool write_dm(
-  const std::vector<MeshByRegion>& meshes, std::ostream& stream, smtk::mesh::DimensionType type)
+  const std::vector<MeshByRegion>& meshes,
+  std::ostream& stream,
+  smtk::mesh::DimensionType type)
 {
   smtk::mesh::PointSet pointSet = pointsUsed(meshes);
 
@@ -451,7 +459,9 @@ bool write_dm(
 }
 
 bool write_dm(
-  smtk::mesh::ResourcePtr meshResource, std::ostream& stream, smtk::mesh::DimensionType type)
+  smtk::mesh::ResourcePtr meshResource,
+  std::ostream& stream,
+  smtk::mesh::DimensionType type)
 {
   if (!meshResource)
   { //can't write out an empty mesh Resource
@@ -467,8 +477,12 @@ bool write_dm(
   return write_dm(meshes, stream, type);
 }
 
-bool write_dm(smtk::mesh::ResourcePtr meshResource, smtk::model::ResourcePtr resource,
-  const std::string& modelPropertyName, std::ostream& stream, smtk::mesh::DimensionType type)
+bool write_dm(
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName,
+  std::ostream& stream,
+  smtk::mesh::DimensionType type)
 {
   if (!meshResource)
   { //can't write out an empty mesh Resource
@@ -632,7 +646,9 @@ void condenseMeshsetsByDomain(smtk::mesh::ResourcePtr& meshResource)
   }
 }
 
-bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
+bool readCells(
+  std::istream& stream,
+  const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
   smtk::mesh::ResourcePtr& meshResource)
 {
   regex re("\\s+");
@@ -771,7 +787,7 @@ bool read_dm(std::istream& stream, smtk::mesh::ResourcePtr& meshResource)
 
   return success;
 }
-}
+} // namespace
 MeshIOXMS::MeshIOXMS()
 {
   this->Formats.emplace_back(
@@ -780,8 +796,10 @@ MeshIOXMS::MeshIOXMS()
     "xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export);
 }
 
-smtk::mesh::ResourcePtr MeshIOXMS::importMesh(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, const std::string& str) const
+smtk::mesh::ResourcePtr MeshIOXMS::importMesh(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  const std::string& str) const
 {
   smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create(interface);
   if (MeshIOXMS::importMesh(filePath, meshResource, str))
@@ -792,7 +810,9 @@ smtk::mesh::ResourcePtr MeshIOXMS::importMesh(const std::string& filePath,
   return smtk::mesh::ResourcePtr();
 }
 
-bool MeshIOXMS::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
+bool MeshIOXMS::importMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
   const std::string& /*unused*/) const
 {
   ::boost::filesystem::path path(filePath);
@@ -807,12 +827,16 @@ bool MeshIOXMS::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr 
 }
 
 bool MeshIOXMS::exportMesh(
-  std::ostream& stream, smtk::mesh::ResourcePtr meshResource, smtk::mesh::DimensionType dim) const
+  std::ostream& stream,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::mesh::DimensionType dim) const
 {
   return write_dm(meshResource, stream, dim);
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
+bool MeshIOXMS::exportMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
   smtk::mesh::DimensionType dim) const
 {
   bool result = false;
@@ -841,15 +865,21 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr 
   }
 }
 
-bool MeshIOXMS::exportMesh(std::ostream& stream, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
+bool MeshIOXMS::exportMesh(
+  std::ostream& stream,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
   return write_dm(meshResource, resource, modelPropertyName, stream, dim);
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
+bool MeshIOXMS::exportMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
   bool result = false;
@@ -862,8 +892,11 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr 
   return result;
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
-  smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
+bool MeshIOXMS::exportMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr meshResource,
+  smtk::model::ResourcePtr resource,
+  const std::string& modelPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -878,6 +911,6 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr 
     return this->exportMesh(filePath, meshResource, resource, modelPropertyName, smtk::mesh::Dims3);
   }
 }
-}
-}
-}
+} // namespace mesh
+} // namespace io
+} // namespace smtk

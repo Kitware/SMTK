@@ -44,7 +44,9 @@ public:
   typedef MetadataObserver Observer;
   typedef MetadataObservers Observers;
 
-  Metadata(const std::string& typeName, Resource::Index index,
+  Metadata(
+    const std::string& typeName,
+    Resource::Index index,
     std::set<Resource::Index> parentIndices,
     std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor,
     std::function<ResourcePtr(const std::string&)> readFunctor,
@@ -68,10 +70,12 @@ public:
     return m_parentIndices.find(index) != m_parentIndices.end();
   }
 
-  std::function<ResourcePtr(const smtk::common::UUID&)> create = [](
-    const smtk::common::UUID&) { return ResourcePtr(); };
-  std::function<ResourcePtr(const std::string&)> read = [](
-    const std::string&) { return ResourcePtr(); };
+  std::function<ResourcePtr(const smtk::common::UUID&)> create = [](const smtk::common::UUID&) {
+    return ResourcePtr();
+  };
+  std::function<ResourcePtr(const std::string&)> read = [](const std::string&) {
+    return ResourcePtr();
+  };
   std::function<bool(const ResourcePtr&)> write = [](const ResourcePtr&) { return false; };
 
 private:
@@ -79,7 +83,7 @@ private:
   Resource::Index m_index;
   std::set<Resource::Index> m_parentIndices;
 };
-}
-}
+} // namespace resource
+} // namespace smtk
 
 #endif // smtk_resource_Metadata_h

@@ -43,27 +43,28 @@ protected:
   void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def) override;
 
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item) override;
-  void processDateTimeDef(
-    pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef) override;
+  void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef)
+    override;
 
-  virtual void processReferenceItem(
-    pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item) override;
-  virtual void processReferenceDef(pugi::xml_node& node,
+  virtual void processReferenceItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
+    override;
+  virtual void processReferenceDef(
+    pugi::xml_node& node,
     smtk::attribute::ReferenceItemDefinitionPtr idef,
     const std::string& labelsElement = "ReferenceLabels") override;
 
   void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item) override;
-  void processResourceDef(
-    pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef) override;
+  void processResourceDef(pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+    override;
 
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
-  void processComponentDef(
-    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
+  void processComponentDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+    override;
   void getUniqueRoles(pugi::xml_node& rootNode);
 
 private:
 };
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif /* __smtk_io_XmlDocV3Parser_h */

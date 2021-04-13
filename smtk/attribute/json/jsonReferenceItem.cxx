@@ -76,8 +76,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ReferenceItemPtr& i
   }
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+SMTKCORE_EXPORT void from_json(
+  const json& j,
+  smtk::attribute::ReferenceItemPtr& itemPtr,
+  std::vector<ItemExpressionInfo>& itemExpressionInfo,
+  std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr)
@@ -102,8 +105,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
       n = values->size();
       if (!itemPtr->setNumberOfValues(n))
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Unable to set the number of values on "
-            << itemPtr->name() << " to " << n);
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Unable to set the number of values on " << itemPtr->name() << " to " << n);
       }
     }
   }
@@ -120,8 +124,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
     }
     if ((!val.is_array()) || (val.size() != 2))
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "The "
-          << i << "-th value for item:" << itemPtr->name() << " is not the correct size");
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "The " << i << "-th value for item:" << itemPtr->name() << " is not the correct size");
       continue;
     }
     smtk::common::UUID ruid = val[0];
@@ -154,15 +159,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
       auto itemJson = childrenItemsJson->find(childItemName);
       if (itemJson == childrenItemsJson->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(),
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
           "Can not find Child Item: " << childItemName << " for Value Item: " << itemPtr->name());
         continue;
       }
       auto itemValue = itemJson->find("ItemValue");
       if (itemValue == itemJson->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "Can not find Child Item: "
-            << childItemName << "'s ItemValue' for Value Item: " << itemPtr->name());
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Can not find Child Item: " << childItemName
+                                      << "'s ItemValue' for Value Item: " << itemPtr->name());
         continue;
       }
       smtk::attribute::ItemPtr subItemPtr = itemIter->second;
@@ -172,5 +180,5 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
     }
   }
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

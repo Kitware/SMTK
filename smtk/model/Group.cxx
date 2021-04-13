@@ -49,7 +49,9 @@ Group& Group::addEntity(const EntityRef& thing)
   if (this->meetsMembershipConstraints(thing))
   {
     resource->findOrAddEntityToGroup(this->entity(), thing.entity());
-    resource->trigger(std::make_pair(ADD_EVENT, GROUP_SUPERSET_OF_ENTITY), *this,
+    resource->trigger(
+      std::make_pair(ADD_EVENT, GROUP_SUPERSET_OF_ENTITY),
+      *this,
       EntityRef(resource, thing.entity()));
   }
 
@@ -73,7 +75,9 @@ bool Group::removeEntity(const EntityRef& thing)
     // But there we have no access to thing.entity() until too late.
     if (resource->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
     {
-      resource->trigger(std::make_pair(DEL_EVENT, GROUP_SUPERSET_OF_ENTITY), *this,
+      resource->trigger(
+        std::make_pair(DEL_EVENT, GROUP_SUPERSET_OF_ENTITY),
+        *this,
         EntityRef(resource, thing.entity()));
 
       return true;
@@ -172,7 +176,9 @@ BitFlags Group::membershipMask() const
   * be used to update the bitmask of acceptable entries.
   */
 bool Group::meetsMembershipConstraints(
-  const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous)
+  const EntityRef& prospectiveMember,
+  BitFlags& typeMask,
+  bool mustBeHomogenous)
 {
   BitFlags groupFlags = this->entityFlags();
   BitFlags memberMask;

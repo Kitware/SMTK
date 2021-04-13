@@ -42,10 +42,13 @@ public:
 
   //Load the domain sets from a moab data file as a new resource with the
   //given interface.
-  smtk::mesh::ResourcePtr operator()(const std::string& filePath,
+  smtk::mesh::ResourcePtr operator()(
+    const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
-  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+  bool operator()(
+    const std::string& filePath,
+    smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName = std::string()) const;
 
   //Return the file format selected to read the file at <filePath>.
@@ -53,14 +56,19 @@ public:
 };
 
 SMTKCORE_EXPORT smtk::mesh::ResourcePtr importMesh(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
-SMTKCORE_EXPORT smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
-  const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName);
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface);
+SMTKCORE_EXPORT smtk::mesh::ResourcePtr importMesh(
+  const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface,
+  const std::string& domainPropertyName);
 SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource);
-SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+SMTKCORE_EXPORT bool importMesh(
+  const std::string& filePath,
+  smtk::mesh::ResourcePtr resource,
   const std::string& domainPropertyName);
 SMTKCORE_EXPORT smtk::io::mesh::Format meshFileFormat(const std::string& filePath);
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif

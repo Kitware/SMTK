@@ -85,7 +85,10 @@ smtk::common::UUID Session::sessionId() const
   * or when \a requested is 0.
   */
 int Session::transcribe(
-  const EntityRef& entity, SessionInfoBits requested, bool onlyDangling, int depth)
+  const EntityRef& entity,
+  SessionInfoBits requested,
+  bool onlyDangling,
+  int depth)
 {
   int retval = 0;
   if (requested)
@@ -105,7 +108,8 @@ int Session::transcribe(
     // If transcription is complete, then remove the UUID from the dangling
     // entity set. Note that we must refresh the iterator since transcribeInternal
     // may have modified m_dangling.
-    if (((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
+    if (
+      ((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
       ((it = m_dangling.find(entity)) != m_dangling.end()))
       m_dangling.erase(it);
   }
@@ -190,8 +194,8 @@ smtk::io::Logger& Session::log()
   * Subclasses may override this method.
   * If they do not, they should implement the virtual relationship helper methods.
   */
-SessionInfoBits Session::transcribeInternal(
-  const EntityRef& entRef, SessionInfoBits flags, int depth)
+SessionInfoBits
+Session::transcribeInternal(const EntityRef& entRef, SessionInfoBits flags, int depth)
 {
   (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
@@ -574,7 +578,9 @@ ArrangementHelper* Session::createArrangementHelper()
   *
   */
 int Session::findOrAddRelatedEntities(
-  const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  SessionInfoBits flags,
+  ArrangementHelper* helper)
 {
   if (helper->isMarked(entRef))
     return 0;
@@ -640,7 +646,9 @@ int Session::findOrAddRelatedEntities(
   *
   */
 int Session::findOrAddCellAdjacencies(
-  const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const CellEntity& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -652,7 +660,9 @@ int Session::findOrAddCellAdjacencies(
   *
   */
 int Session::findOrAddCellUses(
-  const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const CellEntity& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -664,7 +674,9 @@ int Session::findOrAddCellUses(
   *
   */
 int Session::findOrAddOwningCell(
-  const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const UseEntity& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -676,7 +688,9 @@ int Session::findOrAddOwningCell(
   *
   */
 int Session::findOrAddShellAdjacencies(
-  const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const UseEntity& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -688,7 +702,9 @@ int Session::findOrAddShellAdjacencies(
   *
   */
 int Session::findOrAddUseAdjacencies(
-  const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const ShellEntity& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -700,7 +716,9 @@ int Session::findOrAddUseAdjacencies(
   *
   */
 int Session::findOrAddGroupOwner(
-  const Group& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const Group& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -712,7 +730,9 @@ int Session::findOrAddGroupOwner(
   *
   */
 int Session::findOrAddFreeCells(
-  const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const Model& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -724,7 +744,9 @@ int Session::findOrAddFreeCells(
   *
   */
 int Session::findOrAddRelatedModels(
-  const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const Model& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -736,7 +758,9 @@ int Session::findOrAddRelatedModels(
   *
   */
 int Session::findOrAddPrototype(
-  const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const Instance& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -748,7 +772,9 @@ int Session::findOrAddPrototype(
   *
   */
 int Session::findOrAddRelatedModels(
-  const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const SessionRef& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -760,7 +786,9 @@ int Session::findOrAddRelatedModels(
   *
   */
 int Session::findOrAddRelatedGroups(
-  const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -772,7 +800,9 @@ int Session::findOrAddRelatedGroups(
   *
   */
 int Session::findOrAddRelatedInstances(
-  const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  SessionInfoBits request,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -784,7 +814,10 @@ int Session::findOrAddRelatedInstances(
   *
   */
 SessionInfoBits Session::findOrAddArrangements(
-  const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  EntityPtr entRec,
+  SessionInfoBits flags,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -797,7 +830,10 @@ SessionInfoBits Session::findOrAddArrangements(
   *
   */
 SessionInfoBits Session::updateProperties(
-  const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  EntityPtr entRec,
+  SessionInfoBits flags,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -811,7 +847,9 @@ SessionInfoBits Session::updateProperties(
   * This method will only be called when transcribe() is asked to include the tessellation.
   */
 SessionInfoBits Session::updateTessellation(
-  const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef,
+  SessionInfoBits flags,
+  ArrangementHelper* helper)
 {
   (void)entRef;
   (void)flags;

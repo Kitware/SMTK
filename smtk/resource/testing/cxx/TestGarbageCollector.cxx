@@ -85,8 +85,9 @@ public:
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override
   {
-    auto it = std::find_if(m_components.begin(), m_components.end(),
-      [&](const ComponentA::Ptr& c) { return c->id() == id; });
+    auto it = std::find_if(m_components.begin(), m_components.end(), [&](const ComponentA::Ptr& c) {
+      return c->id() == id;
+    });
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
@@ -154,8 +155,9 @@ protected:
       }
     }
     DeleterA::s_haveRun = true;
-    return this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                 : smtk::operation::Operation::Outcome::FAILED);
+    return this->createResult(
+      ok ? smtk::operation::Operation::Outcome::SUCCEEDED
+         : smtk::operation::Operation::Outcome::FAILED);
   }
 
   Specification createSpecification() override
@@ -179,7 +181,9 @@ protected:
 bool DeleterA::s_haveRun = false;
 
 void testResourceCount(
-  const std::shared_ptr<ResourceA>& resourceA, std::size_t expected, const char* message)
+  const std::shared_ptr<ResourceA>& resourceA,
+  std::size_t expected,
+  const char* message)
 {
   bool ok = false;
   for (int i = 0; i < 5; ++i)
@@ -265,11 +269,11 @@ const char* TestOperation::xmlDescription() const
 {
   return testOperationXML;
 }
-}
+} // namespace detail
 
 using namespace detail;
 
-template <typename T, typename U>
+template<typename T, typename U>
 void TestSingle(const T& resourceA, const U& operationManager)
 {
   auto resourceManager = resourceA->manager();
@@ -307,7 +311,7 @@ void TestSingle(const T& resourceA, const U& operationManager)
   testResourceCount(resourceA, 1, "Expected 1 component after mark-modified.");
 }
 
-template <typename T, typename U>
+template<typename T, typename U>
 void TestMultiple(const T& resourceA, const U& operationManager)
 {
   std::cout << "Test that garbage collection does not happen when it shouldn't.\n";

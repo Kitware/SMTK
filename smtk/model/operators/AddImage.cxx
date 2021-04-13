@@ -38,5 +38,5 @@ const char* AddImage::xmlDescription() const
 {
   return AddImage_xml;
 }
-}
-}
+} // namespace model
+} // namespace smtk

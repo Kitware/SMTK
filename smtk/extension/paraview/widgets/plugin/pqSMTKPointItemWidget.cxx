@@ -37,7 +37,8 @@ using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKPointItemWidget::pqSMTKPointItemWidget(
-  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info,
+  Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -51,7 +52,8 @@ qtItem* pqSMTKPointItemWidget::createPointItemWidget(const qtAttributeItemInfo& 
 }
 
 bool pqSMTKPointItemWidget::createProxyAndWidget(
-  vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
+  vtkSMProxy*& proxy,
+  pqInteractivePropertyWidget*& widget)
 {
   // I. Reject items we can't map to a point:
   ItemBindings binding;
@@ -157,8 +159,10 @@ void pqSMTKPointItemWidget::updateWidgetFromItemInternal()
   }
 }
 
-bool pqSMTKPointItemWidget::fetchPointItems(ItemBindings& binding,
-  smtk::attribute::DoubleItemPtr& coordItem, smtk::attribute::StringItemPtr& controlItem)
+bool pqSMTKPointItemWidget::fetchPointItems(
+  ItemBindings& binding,
+  smtk::attribute::DoubleItemPtr& coordItem,
+  smtk::attribute::StringItemPtr& controlItem)
 {
   coordItem = m_itemInfo.itemAs<smtk::attribute::DoubleItem>();
   if (coordItem && coordItem->numberOfValues() == 3)

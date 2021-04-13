@@ -26,7 +26,7 @@ namespace vtk
 class Session;
 typedef smtk::shared_ptr<smtk::session::vtk::Session> SessionPtr;
 struct EntityHandle;
-}
-}
-}
+} // namespace vtk
+} // namespace session
+} // namespace smtk
 #endif

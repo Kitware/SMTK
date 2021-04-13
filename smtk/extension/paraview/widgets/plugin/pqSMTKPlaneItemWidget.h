@@ -33,7 +33,8 @@ class pqSMTKPlaneItemWidget : public pqSMTKAttributeItemWidget
   Q_OBJECT
 public:
   pqSMTKPlaneItemWidget(
-    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info,
+    Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKPlaneItemWidget();
 
   static qtItem* createPlaneItemWidget(const qtAttributeItemInfo& info);
@@ -49,7 +50,8 @@ protected:
     * If errors are encountered, this method returns false.
     */
   bool fetchOriginAndNormalItems(
-    smtk::attribute::DoubleItemPtr& originItem, smtk::attribute::DoubleItemPtr& normalItem);
+    smtk::attribute::DoubleItemPtr& originItem,
+    smtk::attribute::DoubleItemPtr& normalItem);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKPlaneItemWidget_h

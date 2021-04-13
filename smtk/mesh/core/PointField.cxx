@@ -99,8 +99,9 @@ smtk::mesh::FieldType PointField::type() const
   }
 
   smtk::mesh::PointFieldTag dsTag(m_name);
-  return (iface->hasPointField(m_meshset.range(), dsTag) ? iface->getPointFieldType(dsTag)
-                                                         : smtk::mesh::FieldType::MaxFieldType);
+  return (
+    iface->hasPointField(m_meshset.range(), dsTag) ? iface->getPointFieldType(dsTag)
+                                                   : smtk::mesh::FieldType::MaxFieldType);
 }
 
 smtk::mesh::PointSet PointField::points() const
@@ -161,5 +162,5 @@ bool PointField::set(const void* const values)
 
   return iface->setPointField(m_meshset.range(), smtk::mesh::PointFieldTag(m_name), values);
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,18 +8,18 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 # This Python script is part of the SMTK EntityRef Tutorial.
 # It should be extracted automatically from the tutorial, but isn't yet.
+from uuid import *
+import smtk.model
+import smtk.io
+import smtk.attribute
+import smtk
 import sys
 airfoilFile = sys.argv[1] if len(sys.argv) > 2 else 'airFoilSolidModel.json'
 
 # --- start of tutorial ---
-import smtk
-import smtk.attribute
-import smtk.io
-import smtk.model
-from uuid import *
 
 sm = smtk.model.Resource.create()
 airfoil = sm.addGroup(smtk.model.MODEL_DOMAIN |

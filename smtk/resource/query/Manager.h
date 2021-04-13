@@ -76,11 +76,11 @@ public:
 
   /// Register <QueryType> to all resources for which the input functor <fn>
   /// returns true.
-  template <typename QueryType>
+  template<typename QueryType>
   bool registerQueryIf(std::function<bool(smtk::resource::Resource&)> fn)
   {
-    auto registerQueryType = [fn](
-      const smtk::resource::Resource& rsrc, smtk::resource::EventType eventType) -> void {
+    auto registerQueryType =
+      [fn](const smtk::resource::Resource& rsrc, smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
         smtk::resource::Resource& resource = const_cast<smtk::resource::Resource&>(rsrc);
@@ -93,8 +93,10 @@ public:
 
     if (auto manager = m_manager.lock())
     {
-      m_observers.insert(std::make_pair(typeid(QueryType).hash_code(),
-        manager->observers().insert(registerQueryType,
+      m_observers.insert(std::make_pair(
+        typeid(QueryType).hash_code(),
+        manager->observers().insert(
+          registerQueryType,
           "Register query type <" + smtk::common::typeName<QueryType>() + ">.")));
 
       return true;
@@ -104,7 +106,7 @@ public:
   }
 
   /// Register <QueryType> for all resources derived from <ResourceType>.
-  template <typename ResourceType, typename QueryType>
+  template<typename ResourceType, typename QueryType>
   bool registerQuery()
   {
     return registerQueryIf<QueryType>(
@@ -112,7 +114,7 @@ public:
   }
 
   /// Unregister <QueryType> from all appropriate resources.
-  template <typename QueryType>
+  template<typename QueryType>
   bool unregisterQuery()
   {
     if (auto manager = m_manager.lock())
@@ -132,11 +134,11 @@ public:
 
   /// Register <QueryTypes> to all resources for which the input functor <fn>
   /// returns true.
-  template <typename QueryTypes>
+  template<typename QueryTypes>
   bool registerQueriesIf(std::function<bool(smtk::resource::Resource&)> fn)
   {
-    auto registerQueryTypes = [fn](
-      const smtk::resource::Resource& rsrc, smtk::resource::EventType eventType) -> void {
+    auto registerQueryTypes =
+      [fn](const smtk::resource::Resource& rsrc, smtk::resource::EventType eventType) -> void {
       if (eventType == smtk::resource::EventType::ADDED)
       {
         smtk::resource::Resource& resource = const_cast<smtk::resource::Resource&>(rsrc);
@@ -149,8 +151,10 @@ public:
 
     if (auto manager = m_manager.lock())
     {
-      m_observers.insert(std::make_pair(typeid(QueryTypes).hash_code(),
-        manager->observers().insert(registerQueryTypes,
+      m_observers.insert(std::make_pair(
+        typeid(QueryTypes).hash_code(),
+        manager->observers().insert(
+          registerQueryTypes,
           "Register query types <" + smtk::common::typeName<QueryTypes>() + ">.")));
 
       return true;
@@ -160,7 +164,7 @@ public:
   }
 
   /// Register <QueryTypes> for all resources derived from <ResourceType>.
-  template <typename ResourceType, typename QueryTypes>
+  template<typename ResourceType, typename QueryTypes>
   bool registerQueries()
   {
     return registerQueriesIf<QueryTypes>(
@@ -168,7 +172,7 @@ public:
   }
 
   /// Unregister <QueryTypes> from all appropriate resources.
-  template <typename QueryTypes>
+  template<typename QueryTypes>
   bool unregisterQueries()
   {
     if (auto manager = m_manager.lock())
@@ -193,8 +197,8 @@ protected:
 
   std::unordered_map<std::size_t, smtk::resource::Observers::Key> m_observers;
 };
-}
-}
-}
+} // namespace query
+} // namespace resource
+} // namespace smtk
 
 #endif

@@ -28,6 +28,6 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
   operationManager->registerOperation<smtk::extension::delaunay::TriangulateFaces>(
     "smtk::extension::delaunay::TriangulateFaces");
 }
-}
-}
-}
+} // namespace delaunay
+} // namespace extension
+} // namespace smtk

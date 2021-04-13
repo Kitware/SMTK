@@ -23,7 +23,9 @@ namespace model
   *
   */
 int EntityRefArrangementOps::findSimpleRelationship(
-  const EntityRef& a, ArrangementKind k, const EntityRef& b)
+  const EntityRef& a,
+  ArrangementKind k,
+  const EntityRef& b)
 {
   int na = a.numberOfArrangementsOfKind(k);
   for (int i = 0; i < na; ++i)
@@ -41,7 +43,9 @@ int EntityRefArrangementOps::findSimpleRelationship(
   * In either event, return its index.
   */
 int EntityRefArrangementOps::findOrAddSimpleRelationship(
-  const EntityRef& a, ArrangementKind k, const EntityRef& b)
+  const EntityRef& a,
+  ArrangementKind k,
+  const EntityRef& b)
 {
   int relidx = EntityRefArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
@@ -57,7 +61,9 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
   * if either of the entities do not exist.
   */
 int EntityRefArrangementOps::addSimpleRelationship(
-  const EntityRef& a, ArrangementKind k, const EntityRef& b)
+  const EntityRef& a,
+  ArrangementKind k,
+  const EntityRef& b)
 {
   int relidx = -1;
   EntityPtr ent = a.resource()->findEntity(a.entity());

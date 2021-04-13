@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
     modelEntity = models[0].entityRecord();
 
     // Test for success
-    if (readOpResult->findInt("outcome")->value() !=
+    if (
+      readOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Read operator failed\n";

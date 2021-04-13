@@ -31,7 +31,8 @@ namespace vtk
 namespace geometry
 {
 std::array<double, 3> ClosestPoint::operator()(
-  const smtk::resource::ComponentPtr& component, const std::array<double, 3>& input) const
+  const smtk::resource::ComponentPtr& component,
+  const std::array<double, 3>& input) const
 {
   static constexpr const double nan = std::numeric_limits<double>::quiet_NaN();
   std::array<double, 3> returnValue{ { nan, nan, nan } };
@@ -96,7 +97,7 @@ std::array<double, 3> ClosestPoint::operator()(
 
   return returnValue;
 };
-}
-}
-}
-}
+} // namespace geometry
+} // namespace vtk
+} // namespace extension
+} // namespace smtk

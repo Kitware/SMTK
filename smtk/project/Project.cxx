@@ -50,7 +50,7 @@ namespace
 {
 std::string PROJECT_FILENAME = ".smtkproject";
 int SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED); // 3
-}
+} // namespace
 
 namespace smtk
 {
@@ -119,8 +119,11 @@ std::string Project::importLocation(smtk::resource::ResourcePtr res) const
   return std::string();
 }
 
-bool Project::addModel(const std::string& location, const std::string& identifier,
-  bool copyNativeFile, bool useVTKSession)
+bool Project::addModel(
+  const std::string& location,
+  const std::string& identifier,
+  bool copyNativeFile,
+  bool useVTKSession)
 {
   // Project must not already have a model with the same identifier
   auto model = this->findResource<smtk::model::Resource>(identifier);
@@ -146,7 +149,8 @@ bool Project::addModel(const std::string& location, const std::string& identifie
 }
 
 void Project::setCoreManagers(
-  smtk::resource::ManagerPtr resManager, smtk::operation::ManagerPtr opManager)
+  smtk::resource::ManagerPtr resManager,
+  smtk::operation::ManagerPtr opManager)
 {
   if (!m_resourceDescriptors.empty())
   {
@@ -168,7 +172,9 @@ void Project::setCoreManagers(
   m_operationManager = opManager;
 }
 
-bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
+bool Project::build(
+  smtk::attribute::AttributePtr specification,
+  smtk::io::Logger& logger,
   bool replaceExistingDirectory)
 {
   // Get resource manager
@@ -492,7 +498,8 @@ bool Project::copyTo(ProjectPtr thatProject, smtk::io::Logger& logger) const
 } // copyTo()
 
 bool Project::importModels(
-  const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger)
+  const smtk::attribute::AttributePtr specification,
+  smtk::io::Logger& logger)
 {
   bool useVTKSession = specification->findVoid("use-vtk-session")->isEnabled();
   auto modelGroupItem = specification->findGroup("model-group");
@@ -537,8 +544,12 @@ bool Project::importModels(
   return true;
 }
 
-bool Project::importModel(const std::string& importPath, bool copyNativeModel,
-  ResourceDescriptor& descriptor, bool useVTKSession, smtk::io::Logger& logger)
+bool Project::importModel(
+  const std::string& importPath,
+  bool copyNativeModel,
+  ResourceDescriptor& descriptor,
+  bool useVTKSession,
+  smtk::io::Logger& logger)
 {
   auto opManager = m_operationManager.lock();
   if (!opManager)
@@ -616,7 +627,9 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
 } // importModel()
 
 bool Project::importAttributeTemplate(
-  const std::string& location, ResourceDescriptor& descriptor, smtk::io::Logger& logger)
+  const std::string& location,
+  ResourceDescriptor& descriptor,
+  smtk::io::Logger& logger)
 {
   auto resManager = m_resourceManager.lock();
   if (!resManager)
@@ -821,7 +834,8 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   int outcome = result->findInt("outcome")->value();
   if (outcome != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(),
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
       "\"import python operation\" operation failed, outcome " << outcome);
     return nullptr;
   }
@@ -839,7 +853,8 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
 }
 
 bool Project::populateExportOperator(
-  smtk::operation::OperationPtr exportOp, smtk::io::Logger& /*logger*/) const
+  smtk::operation::OperationPtr exportOp,
+  smtk::io::Logger& /*logger*/) const
 {
   // Locate project attribute and model resources
   std::vector<smtk::resource::ResourcePtr> attResourceList;

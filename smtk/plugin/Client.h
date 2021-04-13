@@ -28,7 +28,7 @@ namespace plugin
 {
 namespace detail
 {
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 class Client;
 }
 
@@ -57,10 +57,11 @@ class Client;
 
 #ifndef SMTK_MSVC
 
-template <typename Registrar, typename Manager, typename... T>
-class SMTK_ALWAYS_EXPORT Client : public detail::Client<Registrar, Manager>,
-                                  public detail::Client<Registrar, T>...,
-                                  public ClientBase
+template<typename Registrar, typename Manager, typename... T>
+class SMTK_ALWAYS_EXPORT Client
+  : public detail::Client<Registrar, Manager>
+  , public detail::Client<Registrar, T>...
+  , public ClientBase
 {
 public:
   static std::shared_ptr<ClientBase> create();
@@ -77,9 +78,10 @@ private:
 
 #else
 
-template <typename Registrar, typename Manager = detail::Sentinel, typename... T>
-class SMTK_ALWAYS_EXPORT Client : public detail::Client<Registrar, Manager>,
-                                  public Client<Registrar, T...>
+template<typename Registrar, typename Manager = detail::Sentinel, typename... T>
+class SMTK_ALWAYS_EXPORT Client
+  : public detail::Client<Registrar, Manager>
+  , public Client<Registrar, T...>
 {
 public:
   static std::shared_ptr<ClientBase> create();
@@ -93,7 +95,7 @@ protected:
   }
 };
 
-template <typename Registrar>
+template<typename Registrar>
 class SMTK_ALWAYS_EXPORT Client<Registrar, detail::Sentinel> : public ClientBase
 {
 public:
@@ -114,7 +116,7 @@ namespace detail
 /// for each plugin is not known but the Manager type is. We therefore present
 /// an API that only depends on the Manager type to the user, and we implement
 /// it in detail::Client.
-template <typename Manager>
+template<typename Manager>
 class SMTK_ALWAYS_EXPORT ClientFor
 {
 public:
@@ -129,7 +131,7 @@ protected:
   std::unordered_set<smtk::plugin::RegistryBase*> m_registries;
 };
 
-template <typename Manager>
+template<typename Manager>
 ClientFor<Manager>::~ClientFor()
 {
   for (auto base_registry : m_registries)
@@ -143,7 +145,7 @@ ClientFor<Manager>::~ClientFor()
 /// object for its Registrar/Manager pair and stores it in its set of
 /// Registries. The lifetime of these Registries are therefore tethered to the
 /// lifetime of the Client, which lives in the plugin's library.
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 class SMTK_ALWAYS_EXPORT Client : public ClientFor<Manager>
 {
 public:
@@ -154,7 +156,7 @@ private:
   smtk::plugin::RegistryBase* find(const std::shared_ptr<Manager>&) override;
 };
 
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 smtk::plugin::RegistryBase* Client<Registrar, Manager>::find(
   const std::shared_ptr<Manager>& manager)
 {
@@ -181,7 +183,7 @@ smtk::plugin::RegistryBase* Client<Registrar, Manager>::find(
   return nullptr;
 }
 
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 bool Client<Registrar, Manager>::registerPluginTo(const std::shared_ptr<Manager>& manager)
 {
   // We search to ensure that a Registry object does not already exist for this
@@ -195,7 +197,7 @@ bool Client<Registrar, Manager>::registerPluginTo(const std::shared_ptr<Manager>
   return false;
 }
 
-template <typename Registrar, typename Manager>
+template<typename Registrar, typename Manager>
 bool Client<Registrar, Manager>::unregisterPluginFrom(const std::shared_ptr<Manager>& manager)
 {
   // We search for the Registry object that connects to this manager. If one
@@ -208,8 +210,8 @@ bool Client<Registrar, Manager>::unregisterPluginFrom(const std::shared_ptr<Mana
   }
   return false;
 }
-}
-}
-}
+} // namespace detail
+} // namespace plugin
+} // namespace smtk
 
 #endif

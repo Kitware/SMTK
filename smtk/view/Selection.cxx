@@ -22,7 +22,9 @@ namespace view
 {
 
 static bool defaultFilter(
-  smtk::view::Selection::Object::Ptr obj, int selectionValue, Selection::SelectionMap& suggestions)
+  smtk::view::Selection::Object::Ptr obj,
+  int selectionValue,
+  Selection::SelectionMap& suggestions)
 {
   (void)obj;
   (void)selectionValue;
@@ -71,7 +73,9 @@ Selection::Ptr Selection::instance()
 }
 
 bool Selection::registerSelectionValue(
-  const std::string& valueLabel, int value, bool valueMustBeUnique)
+  const std::string& valueLabel,
+  int value,
+  bool valueMustBeUnique)
 {
   if (value == 0)
   { // 0 is not allowed; it corresponds to being unselected.
@@ -207,8 +211,12 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
 }
 
 /// Perform the action (IGNORING m_defaultAction!!!), returning true if it had an effect
-bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int value,
-  SelectionAction action, SelectionMap& suggestions, bool bitwise)
+bool Selection::performAction(
+  smtk::resource::PersistentObject::Ptr obj,
+  int value,
+  SelectionAction action,
+  SelectionMap& suggestions,
+  bool bitwise)
 {
   bool modified = false;
   // Filter out irrelevant objects:
@@ -404,5 +412,5 @@ bool Selection::refilter(const std::string& source)
   }
   return modified;
 }
-}
-}
+} // namespace view
+} // namespace smtk

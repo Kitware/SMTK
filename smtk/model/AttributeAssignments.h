@@ -44,7 +44,7 @@ typedef std::map<smtk::common::UUID, AttributeAssignments> UUIDsToAttributeAssig
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
 typedef std::map<smtk::common::UUID, AttributeAssignments>::iterator UUIDWithAttributeAssignments;
 
-} // model namespace
-} // smtk namespace
+} // namespace model
+} // namespace smtk
 
 #endif // __smtk_model_AttributeAssignments_h

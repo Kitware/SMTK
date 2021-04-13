@@ -34,7 +34,7 @@ protected:
 };
 
 SMTKCORE_EXPORT bool write(const smtk::resource::ResourcePtr&);
-}
-}
+} // namespace attribute
+} // namespace smtk
 
 #endif // __smtk_attribute_operators_Write_h

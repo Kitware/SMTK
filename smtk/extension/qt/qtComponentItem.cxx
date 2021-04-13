@@ -52,5 +52,5 @@ qtComponentItem::qtComponentItem(const qtAttributeItemInfo& info)
 }
 
 qtComponentItem::~qtComponentItem() = default;
-}
-}
+} // namespace extension
+} // namespace smtk

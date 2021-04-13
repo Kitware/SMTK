@@ -34,9 +34,11 @@ void testGetsAllDependentExpressions()
 #ifndef NDEBUG
   storage.dump();
 #endif
-  smtkTest((storage.allDependentSymbols("a") == std::vector<std::string>{ "b", "c", "z" }),
+  smtkTest(
+    (storage.allDependentSymbols("a") == std::vector<std::string>{ "b", "c", "z" }),
     "b, c, and z are dependent on a")
-    smtkTest((storage.allDependentSymbols("b") == std::vector<std::string>{ "c", "z" }),
+    smtkTest(
+      (storage.allDependentSymbols("b") == std::vector<std::string>{ "c", "z" }),
       "c and z are dependent on b")
 }
 

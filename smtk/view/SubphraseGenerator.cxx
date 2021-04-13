@@ -50,7 +50,8 @@ std::string SubphraseGenerator::getType(const smtk::view::ConfigurationPtr& view
     return typeName;
   }
   // Look at viewSpec child, should be "PhraseModel", look for its child
-  if ((viewSpec->details().numberOfChildren() != 1) ||
+  if (
+    (viewSpec->details().numberOfChildren() != 1) ||
     (viewSpec->details().child(0).name() != "PhraseModel"))
   {
     return typeName;
@@ -69,7 +70,8 @@ std::string SubphraseGenerator::getType(const smtk::view::ConfigurationPtr& view
 }
 
 SubphraseGeneratorPtr SubphraseGenerator::create(
-  const std::string& typeName, const smtk::view::ManagerPtr& manager)
+  const std::string& typeName,
+  const smtk::view::ManagerPtr& manager)
 {
   if (!manager || typeName.empty())
   {
@@ -144,7 +146,7 @@ bool SubphraseGenerator::setModel(PhraseModelPtr model)
   return true;
 }
 
-template <typename T>
+template<typename T>
 int MutabilityOfComponent(const T& comp)
 {
   constexpr int modelMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
@@ -167,7 +169,7 @@ int MutabilityOfComponent(const T& comp)
   return 0;
 }
 
-template <typename T>
+template<typename T>
 int MutabilityOfObject(const T& obj)
 {
   constexpr int resourceMutability =
@@ -187,7 +189,8 @@ int MutabilityOfObject(const T& obj)
 }
 
 void SubphraseGenerator::subphrasesForCreatedObjects(
-  const smtk::resource::PersistentObjectArray& objects, const DescriptivePhrasePtr& localRoot,
+  const smtk::resource::PersistentObjectArray& objects,
+  const DescriptivePhrasePtr& localRoot,
   PhrasesByPath& resultingPhrases)
 {
   (void)objects;
@@ -288,7 +291,9 @@ bool SubphraseGenerator::setDirectLimit(int val)
 }
 
 bool SubphraseGenerator::shouldOmitProperty(
-  DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype, const std::string& pname) const
+  DescriptivePhrase::Ptr parent,
+  smtk::resource::PropertyType ptype,
+  const std::string& pname) const
 {
   (void)parent;
   (void)ptype;
@@ -315,7 +320,8 @@ void SubphraseGenerator::setSkipAttributes(bool val)
 }
 
 SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
-  const smtk::resource::PersistentObjectPtr& obj, smtk::view::DescriptivePhrasePtr& actualParent,
+  const smtk::resource::PersistentObjectPtr& obj,
+  smtk::view::DescriptivePhrasePtr& actualParent,
   const Path& parentPath)
 {
   // The default subphrase generator will never have resources as children
@@ -340,15 +346,17 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
     // Model resources have only _free_ models as direct children.
     if (rsrc == actualParent->relatedResource())
     {
-      if (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
+      if (
+        std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
         std::dynamic_pointer_cast<smtk::mesh::Component>(comp) ||
         ((ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp)) && ment->isModel() &&
-            !smtk::model::Model(ment).owningModel().isValid()))
+         !smtk::model::Model(ment).owningModel().isValid()))
       {
         PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
         added = true;
       }
-      else if (!std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc) &&
+      else if (
+        !std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc) &&
         !std::dynamic_pointer_cast<smtk::model::Resource>(rsrc) &&
         !std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc))
       {
@@ -358,7 +366,8 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
       }
     }
   }
-  if (!added &&
+  if (
+    !added &&
     (ment = std::dynamic_pointer_cast<smtk::model::Entity>(actualParent->relatedComponent())))
   {
     bool shouldAdd = false;
@@ -436,7 +445,8 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
         {
           auto auxGeoms = parentEntity->referenceAs<smtk::model::Model>().auxiliaryGeometry();
           std::set<smtk::model::AuxiliaryGeometry> searchable(auxGeoms.begin(), auxGeoms.end());
-          if (searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+          if (
+            searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
             searchable.end())
           {
             shouldAdd = true;
@@ -447,7 +457,8 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
           auto auxGeoms =
             parentEntity->referenceAs<smtk::model::AuxiliaryGeometry>().auxiliaryGeometries();
           std::set<smtk::model::AuxiliaryGeometry> searchable(auxGeoms.begin(), auxGeoms.end());
-          if (searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+          if (
+            searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
             searchable.end())
           {
             shouldAdd = true;
@@ -457,14 +468,16 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
         {
           auto members =
             parentEntity->referenceAs<smtk::model::Group>().members<smtk::model::EntityRefs>();
-          if (members.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+          if (
+            members.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
             members.end())
           {
             shouldAdd = true;
           }
         }
       }
-      else if (childEntity->isInstance() &&
+      else if (
+        childEntity->isInstance() &&
         smtk::model::Instance(childEntity).prototype().entity() == parentEntity->id())
       {
         shouldAdd = true;
@@ -480,7 +493,8 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
 }
 
 int SubphraseGenerator::findResourceLocation(
-  smtk::resource::ResourcePtr rsrc, const DescriptivePhrase::Ptr& root) const
+  smtk::resource::ResourcePtr rsrc,
+  const DescriptivePhrase::Ptr& root) const
 {
   if (!root || !rsrc)
   {
@@ -499,8 +513,11 @@ int SubphraseGenerator::findResourceLocation(
   return -1;
 }
 
-bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::attribute::AttributePtr attr,
-  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+bool SubphraseGenerator::findSortedLocation(
+  Path& pathOut,
+  smtk::attribute::AttributePtr attr,
+  DescriptivePhrase::Ptr& phr,
+  const DescriptivePhrase::Ptr& parent) const
 {
   (void)phr;
   if (!attr || !parent || !parent->areSubphrasesBuilt())
@@ -528,8 +545,11 @@ bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::attribute::Attr
   return true;
 }
 
-bool SubphraseGenerator::findSortedLocation(Path& pathInOut, smtk::model::EntityPtr entity,
-  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+bool SubphraseGenerator::findSortedLocation(
+  Path& pathInOut,
+  smtk::model::EntityPtr entity,
+  DescriptivePhrase::Ptr& phr,
+  const DescriptivePhrase::Ptr& parent) const
 {
   (void)phr;
   if (!entity || !parent || !parent->areSubphrasesBuilt())
@@ -556,8 +576,11 @@ bool SubphraseGenerator::findSortedLocation(Path& pathInOut, smtk::model::Entity
   return false;
 }
 
-bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::mesh::ComponentPtr comp,
-  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+bool SubphraseGenerator::findSortedLocation(
+  Path& pathOut,
+  smtk::mesh::ComponentPtr comp,
+  DescriptivePhrase::Ptr& phr,
+  const DescriptivePhrase::Ptr& parent) const
 {
   (void)phr;
   if (!comp || !parent || !parent->areSubphrasesBuilt())
@@ -572,7 +595,9 @@ bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::mesh::Component
 }
 
 void SubphraseGenerator::componentsOfResource(
-  DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  smtk::resource::ResourcePtr rsrc,
+  DescriptivePhrases& result)
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
@@ -620,20 +645,24 @@ void SubphraseGenerator::componentsOfResource(
 // capture rules. Other compilers consider the explicit rules unnecessary,
 // and they warn about it.
 #ifdef SMTK_MSVC
-    smtk::resource::Component::Visitor visitor = [mutability, &result, &src](
+    smtk::resource::Component::Visitor visitor =
+      [mutability, &result, &src](
 #else
-    smtk::resource::Component::Visitor visitor = [&result, &src](
+    smtk::resource::Component::Visitor visitor =
+      [&result, &src](
 #endif
-      const smtk::resource::Component::Ptr& component) {
-      result.push_back(ComponentPhraseContent::createPhrase(component, mutability, src));
-    };
+        const smtk::resource::Component::Ptr& component) {
+        result.push_back(ComponentPhraseContent::createPhrase(component, mutability, src));
+      };
     rsrc->visit(visitor);
     std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTitle);
   }
 }
 
 void SubphraseGenerator::itemsOfAttribute(
-  DescriptivePhrase::Ptr src, smtk::attribute::AttributePtr att, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  smtk::attribute::AttributePtr att,
+  DescriptivePhrases& result)
 {
   (void)att;
   (void)src;
@@ -642,7 +671,9 @@ void SubphraseGenerator::itemsOfAttribute(
 }
 
 void SubphraseGenerator::childrenOfModelEntity(
-  DescriptivePhrase::Ptr src, smtk::model::EntityPtr entity, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  smtk::model::EntityPtr entity,
+  DescriptivePhrases& result)
 {
   smtk::model::BitFlags entityFlags = entity->entityFlags();
   // WARNING: GROUP_ENTITY must go first since other bits may be set for groups in \a entityFlags
@@ -685,7 +716,9 @@ void SubphraseGenerator::childrenOfModelEntity(
 }
 
 void SubphraseGenerator::freeSubmodelsOfModel(
-  DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::Model& mod,
+  DescriptivePhrases& result)
 {
   auto freeSubmodelsInModel = mod.submodels();
   this->filterModelEntityPhraseCandidates(freeSubmodelsInModel);
@@ -693,7 +726,9 @@ void SubphraseGenerator::freeSubmodelsOfModel(
 }
 
 void SubphraseGenerator::freeGroupsOfModel(
-  DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::Model& mod,
+  DescriptivePhrases& result)
 {
   auto freeGroups = mod.groups();
   this->filterModelEntityPhraseCandidates(freeGroups);
@@ -701,7 +736,9 @@ void SubphraseGenerator::freeGroupsOfModel(
 }
 
 void SubphraseGenerator::freeCellsOfModel(
-  DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::Model& mod,
+  DescriptivePhrases& result)
 {
   auto freeCellsInModel = mod.cells();
   this->filterModelEntityPhraseCandidates(freeCellsInModel);
@@ -709,7 +746,9 @@ void SubphraseGenerator::freeCellsOfModel(
 }
 
 void SubphraseGenerator::freeAuxiliaryGeometriesOfModel(
-  DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::Model& mod,
+  DescriptivePhrases& result)
 {
   auto freeAuxGeom = mod.auxiliaryGeometry();
   this->filterModelEntityPhraseCandidates(freeAuxGeom);
@@ -717,7 +756,9 @@ void SubphraseGenerator::freeAuxiliaryGeometriesOfModel(
 }
 
 void SubphraseGenerator::cellOfModelUse(
-  DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::UseEntity& ent,
+  DescriptivePhrases& result)
 {
   auto parentCell = ent.cell();
   if (parentCell.isValid())
@@ -729,7 +770,9 @@ void SubphraseGenerator::cellOfModelUse(
 }
 
 void SubphraseGenerator::boundingShellsOfModelUse(
-  DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::UseEntity& ent,
+  DescriptivePhrases& result)
 {
   smtk::model::ShellEntities boundingShells =
     ent.boundingShellEntities<smtk::model::ShellEntities>();
@@ -738,7 +781,9 @@ void SubphraseGenerator::boundingShellsOfModelUse(
 }
 
 void SubphraseGenerator::toplevelShellsOfModelUse(
-  DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::UseEntity& ent,
+  DescriptivePhrases& result)
 {
   auto toplevelShells = ent.shellEntities<smtk::model::ShellEntities>();
   this->filterModelEntityPhraseCandidates(toplevelShells);
@@ -746,7 +791,9 @@ void SubphraseGenerator::toplevelShellsOfModelUse(
 }
 
 void SubphraseGenerator::usesOfModelCell(
-  DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::CellEntity& ent,
+  DescriptivePhrases& result)
 {
   auto cellUses = ent.uses<smtk::model::UseEntities>();
   this->filterModelEntityPhraseCandidates(cellUses);
@@ -754,19 +801,27 @@ void SubphraseGenerator::usesOfModelCell(
 }
 
 void SubphraseGenerator::inclusionsOfModelCell(
-  DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::CellEntity& ent,
+  DescriptivePhrases& result)
 {
   auto inclusions = ent.inclusions<smtk::model::EntityRefs>();
   auto boundingCells = ent.boundingCells();
   smtk::model::EntityRefArray strictInclusions;
-  std::set_difference(inclusions.begin(), inclusions.end(), boundingCells.begin(),
-    boundingCells.end(), std::inserter(strictInclusions, strictInclusions.end()));
+  std::set_difference(
+    inclusions.begin(),
+    inclusions.end(),
+    boundingCells.begin(),
+    boundingCells.end(),
+    std::inserter(strictInclusions, strictInclusions.end()));
   this->filterModelEntityPhraseCandidates(strictInclusions);
   this->addModelEntityPhrases(strictInclusions, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::boundingCellsOfModelCell(
-  DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::CellEntity& ent,
+  DescriptivePhrases& result)
 {
   auto boundingCells = ent.boundingCells();
   this->filterModelEntityPhraseCandidates(boundingCells);
@@ -774,7 +829,9 @@ void SubphraseGenerator::boundingCellsOfModelCell(
 }
 
 void SubphraseGenerator::usesOfModelShell(
-  DescriptivePhrase::Ptr src, const smtk::model::ShellEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::ShellEntity& ent,
+  DescriptivePhrases& result)
 {
   auto shellUses = ent.uses<smtk::model::UseEntities>();
   this->filterModelEntityPhraseCandidates(shellUses);
@@ -782,7 +839,9 @@ void SubphraseGenerator::usesOfModelShell(
 }
 
 void SubphraseGenerator::membersOfModelGroup(
-  DescriptivePhrase::Ptr src, const smtk::model::Group& grp, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::Group& grp,
+  DescriptivePhrases& result)
 {
   auto members = grp.members<smtk::model::EntityRefArray>();
   this->filterModelEntityPhraseCandidates(members);
@@ -791,7 +850,9 @@ void SubphraseGenerator::membersOfModelGroup(
 }
 
 void SubphraseGenerator::childrenOfModelAuxiliaryGeometry(
-  DescriptivePhrase::Ptr src, const smtk::model::AuxiliaryGeometry& aux, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::AuxiliaryGeometry& aux,
+  DescriptivePhrases& result)
 {
   auto children = aux.embeddedEntities<smtk::model::AuxiliaryGeometries>();
   for (const auto& child : children)
@@ -800,14 +861,18 @@ void SubphraseGenerator::childrenOfModelAuxiliaryGeometry(
   }
 }
 
-void SubphraseGenerator::prototypeOfModelInstance(DescriptivePhrase::Ptr /*src*/,
-  const smtk::model::Instance& /*ent*/, DescriptivePhrases& /*result*/)
+void SubphraseGenerator::prototypeOfModelInstance(
+  DescriptivePhrase::Ptr /*src*/,
+  const smtk::model::Instance& /*ent*/,
+  DescriptivePhrases& /*result*/)
 {
   // For now do nothing here to prevent the generation of infinite nested prototype/glyph phrases.
 }
 
 void SubphraseGenerator::instancesOfModelEntity(
-  DescriptivePhrase::Ptr src, const smtk::model::EntityRef& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src,
+  const smtk::model::EntityRef& ent,
+  DescriptivePhrases& result)
 {
   auto instances = ent.instances<smtk::model::InstanceEntities>();
   this->filterModelEntityPhraseCandidates(instances);

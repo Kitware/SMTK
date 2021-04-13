@@ -128,27 +128,31 @@ void Registrar_2::unregisterFrom(const std::shared_ptr<Manager_2>& m)
   test(it != m->managed.end(), "unregistering an unkown registrar from a manager");
   m->managed.erase(it);
 }
-}
+} // namespace
 
 int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
 {
   auto manager_1 = std::make_shared<Manager_1>();
   auto manager_2 = std::make_shared<Manager_2>();
   auto manager_3 = std::make_shared<Manager_3>();
-  test(manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
+  test(
+    manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
     "New managers should not be managing anything");
   {
     smtk::plugin::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_1(
       manager_1, manager_2, manager_3);
-    test(manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
+    test(
+      manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
         manager_3->managed.size() == 1,
       "Managers should be managing one thing");
   }
-  test(manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
+  test(
+    manager_1->managed.empty() && manager_2->managed.empty() && manager_3->managed.empty(),
     "Cleared managers should not be managing anything");
   smtk::plugin::Registry<Registrar_1, Manager_1, Manager_2, Manager_3> registry_2(
     manager_1, manager_2, manager_3);
-  test(manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
+  test(
+    manager_1->managed.size() == 1 && manager_2->managed.size() == 1 &&
       manager_3->managed.size() == 1,
     "Managers should be managing one thing again");
 

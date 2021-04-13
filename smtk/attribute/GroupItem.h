@@ -50,7 +50,7 @@ class SMTKCORE_EXPORT GroupItem : public Item
   friend class GroupItemDefinition;
 
 public:
-  typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
+  typedef std::vector<std::vector<smtk::attribute::ItemPtr>>::const_iterator const_iterator;
 
   smtkTypeMacro(smtk::attribute::GroupItem);
   ~GroupItem() override;
@@ -65,7 +65,8 @@ public:
   /// @param visitor a lambda function which would be applied on children items
   /// @param activeChildren a flag indicating whether it should be applied to active children only or not
   ///
-  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+  void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
     bool activeChildren = true) override;
 
   bool isExtensible() const;
@@ -96,18 +97,18 @@ public:
     return m_items[element][ith];
   }
 
-  smtk::attribute::ItemPtr find(
-    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
-  smtk::attribute::ConstItemPtr find(
-    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
+  smtk::attribute::ItemPtr
+  find(std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
+  smtk::attribute::ConstItemPtr
+  find(std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
   using Item::find;
 
-  template <typename T>
-  typename T::Ptr findAs(
-    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
-  template <typename T>
-  typename T::ConstPtr findAs(
-    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
+  template<typename T>
+  typename T::Ptr
+  findAs(std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
+  template<typename T>
+  typename T::ConstPtr
+  findAs(std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
   using Item::findAs;
 
   /// \brief Release the item's dependency on its parent attribute's Resource.
@@ -173,28 +174,28 @@ protected:
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   /// \brief Internal implementation of the find method
   smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
-  smtk::attribute::ConstItemPtr findInternal(
-    const std::string& name, SearchStyle style) const override;
+  smtk::attribute::ConstItemPtr findInternal(const std::string& name, SearchStyle style)
+    const override;
   // This method will detach all of the items directly owned by
   // this group
   void detachAllItems();
   bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
-  std::vector<std::vector<smtk::attribute::ItemPtr> > m_items;
+  std::vector<std::vector<smtk::attribute::ItemPtr>> m_items;
   unsigned int m_maxNumberOfChoices;
   unsigned int m_minNumberOfChoices;
 
 private:
 };
 
-template <typename T>
+template<typename T>
 typename T::Ptr GroupItem::findAs(std::size_t element, const std::string& iname, SearchStyle style)
 {
   return smtk::dynamic_pointer_cast<T>(this->find(element, iname, style));
 }
 
-template <typename T>
-typename T::ConstPtr GroupItem::findAs(
-  std::size_t element, const std::string& iname, SearchStyle style) const
+template<typename T>
+typename T::ConstPtr
+GroupItem::findAs(std::size_t element, const std::string& iname, SearchStyle style) const
 {
   return smtk::dynamic_pointer_cast<const T>(this->find(element, iname, style));
 }

@@ -129,7 +129,7 @@ void verify_load_onlyDirichlet()
   std::cout << "number of dirichlet meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
   test(numMeshes == 221, "dataset once loaded should have 221 meshes");
 }
-}
+} // namespace
 
 int UnitTestLoadMesh(int /*unused*/, char** const /*unused*/)
 {

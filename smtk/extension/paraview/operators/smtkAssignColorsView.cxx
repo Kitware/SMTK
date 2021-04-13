@@ -247,10 +247,14 @@ void smtkAssignColorsView::prepPaletteChooser()
   this->Internals->PaletteChooser->setCustomizableLoadAnnotations(true);
   // Signals and slots related to palette mode (this->Internals->PaletteChooser):
   QObject::connect( // Allow the user to choose a new preference.
-    this->Internals->ChoosePaletteBtn, &QToolButton::released, this->Internals->PaletteChooser,
+    this->Internals->ChoosePaletteBtn,
+    &QToolButton::released,
+    this->Internals->PaletteChooser,
     &pqPresetDialog::show);
   QObject::connect( // When the user has chosen a preference, remember and apply it.
-    this->Internals->PaletteChooser, &pqPresetDialog::applyPreset, this,
+    this->Internals->PaletteChooser,
+    &pqPresetDialog::applyPreset,
+    this,
     &smtkAssignColorsView::setDefaultPaletteAndApply);
 }
 
@@ -309,25 +313,41 @@ void smtkAssignColorsView::createWidget()
     0.75 * this->Internals->ApplyDefaultColorBtn->height()));
 
   QObject::connect( // When asked, apply the colormap specified by the user preference.
-    this->Internals->ApplyDefaultPaletteBtn, SIGNAL(released()), this, SLOT(applyDefaultPalette()));
+    this->Internals->ApplyDefaultPaletteBtn,
+    SIGNAL(released()),
+    this,
+    SLOT(applyDefaultPalette()));
 
   // Signals and slots related to single-color mode:
   QObject::connect( // When asked, apply the colormap specified by the user preference.
-    this->Internals->ApplyDefaultColorBtn, SIGNAL(released()), this, SLOT(applyDefaultColor()));
+    this->Internals->ApplyDefaultColorBtn,
+    SIGNAL(released()),
+    this,
+    SLOT(applyDefaultColor()));
   QObject::connect( // Allow the user to choose a new preference.
-    this->Internals->ChooseColorBtn, SIGNAL(released()), this, SLOT(chooseDefaultColorAndApply()));
+    this->Internals->ChooseColorBtn,
+    SIGNAL(released()),
+    this,
+    SLOT(chooseDefaultColorAndApply()));
 
   // Signals and slots related to opacity mode:
   QObject::connect( // When asked, apply the opacity specified by the slider.
-    this->Internals->OpacitySlider, SIGNAL(valueChanged(int)), this,
+    this->Internals->OpacitySlider,
+    SIGNAL(valueChanged(int)),
+    this,
     SLOT(processOpacitySlider(int)));
 
   QObject::connect( // When asked, apply the opacity specified by the slider.
-    this->Internals->OpacityValue, SIGNAL(valueChanged(double)), this,
+    this->Internals->OpacityValue,
+    SIGNAL(valueChanged(double)),
+    this,
     SLOT(processOpacityValue(double)));
 
   QObject::connect( // When asked, invalidate colors on the associated entities.
-    this->Internals->RemoveColorBtn, SIGNAL(released()), this, SLOT(removeColors()));
+    this->Internals->RemoveColorBtn,
+    SIGNAL(released()),
+    this,
+    SLOT(removeColors()));
 
   // Show help when the info button is clicked.
   QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
@@ -410,7 +430,9 @@ void smtkAssignColorsView::chooseDefaultColorAndApply()
   QColor nextDefault = QColorDialog::getColor(
     settings->value("ModelBuilder/Operations/AssignColors/defaultColor", QColor(Qt::white))
       .value<QColor>(),
-    nullptr, "Choose a default color for \"assign colors\"", QColorDialog::DontUseNativeDialog);
+    nullptr,
+    "Choose a default color for \"assign colors\"",
+    QColorDialog::DontUseNativeDialog);
   settings->setValue("ModelBuilder/Operations/AssignColors/defaultColor", nextDefault);
   this->Internals->ApplyDefaultColorBtn->setIcon(smtkAssignColorsView::renderColorSwatch(
     nextDefault, 0.75 * this->Internals->ApplyDefaultColorBtn->height()));

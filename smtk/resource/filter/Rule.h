@@ -29,7 +29,7 @@ public:
 };
 
 /// A class template for rules dealing with a specific property type.
-template <typename Type>
+template<typename Type>
 class RuleFor : public Rule
 {
 public:
@@ -60,8 +60,8 @@ public:
   // Given a value, determine whether this passes the filter.
   std::function<bool(const Type&)> acceptableValue;
 };
-}
-}
-}
+} // namespace filter
+} // namespace resource
+} // namespace smtk
 
 #endif

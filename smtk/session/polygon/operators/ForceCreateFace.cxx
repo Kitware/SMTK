@@ -60,7 +60,7 @@ namespace session
 namespace polygon
 {
 
-typedef std::vector<std::pair<smtk::model::Edge, bool> > EdgesWithOrientation;
+typedef std::vector<std::pair<smtk::model::Edge, bool>> EdgesWithOrientation;
 
 /// Ensure that we are provided the proper edge orientations in addition to the usual checks.
 bool ForceCreateFace::ableToOperate()
@@ -72,10 +72,9 @@ bool ForceCreateFace::ableToOperate()
   int numOrient = edgeDirItem != nullptr ? static_cast<int>(edgeDirItem->numberOfValues()) : -1;
   return this->Superclass::ableToOperate() &&
     (method == ForceCreateFace::POINTS ||
-           (method == ForceCreateFace::EDGES &&
-             (numOrient == -1 ||
-               numOrient ==
-                 static_cast<int>(this->parameters()->associations()->numberOfValues()))));
+     (method == ForceCreateFace::EDGES &&
+      (numOrient == -1 ||
+       numOrient == static_cast<int>(this->parameters()->associations()->numberOfValues()))));
 }
 
 /// Create one or more polygonal faces without sanity checks.
@@ -125,9 +124,11 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
   // Sanity-check point coordinates array size:
   if (method == ForceCreateFace::POINTS && pointsItem->numberOfValues() % numCoordsPerPt > 0)
   {
-    smtkErrorMacro(this->log(), "Number of point-coordinates ("
-        << pointsItem->numberOfValues() << ") "
-        << "not a multiple of the number of coordinates per pt (" << numCoordsPerPt << ")");
+    smtkErrorMacro(
+      this->log(),
+      "Number of point-coordinates (" << pointsItem->numberOfValues() << ") "
+                                      << "not a multiple of the number of coordinates per pt ("
+                                      << numCoordsPerPt << ")");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -147,9 +148,9 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
   if (countsItem->numberOfValues() == 1 && countsItem->value(0) < 0)
   {
     // If given default value, create a simple and valid "counts" array to iterator over:
-    tmpCount.push_back(static_cast<int>(method == ForceCreateFace::POINTS
-        ? pointsItem->numberOfValues() / numCoordsPerPt
-        : modelItem->numberOfValues()));
+    tmpCount.push_back(static_cast<int>(
+      method == ForceCreateFace::POINTS ? pointsItem->numberOfValues() / numCoordsPerPt
+                                        : modelItem->numberOfValues()));
     tmpCount.push_back(0);
     countIt = tmpCount.begin();
     endCount = tmpCount.end();
@@ -179,15 +180,21 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
       }
       else
       {
-        this->pointsForLoop(polypts, *countIt, edgeIt, modelItem->end(), edgeDirIt,
-          edgeDirItem->end(), outerLoopEdges);
+        this->pointsForLoop(
+          polypts,
+          *countIt,
+          edgeIt,
+          modelItem->end(),
+          edgeDirIt,
+          edgeDirItem->end(),
+          outerLoopEdges);
       }
       pface.set(polypts.begin(), polypts.end());
     }
 
     // III. Create a polygon set and add a polygon For each inner loop
     ++countIt;
-    std::vector<poly::polygon_data<internal::Coord> > holes;
+    std::vector<poly::polygon_data<internal::Coord>> holes;
     int numHoles = (countIt == endCount ? 0 : *countIt);
     ++countIt;
     std::vector<EdgesWithOrientation> innerLoopsEdges;
@@ -209,8 +216,14 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
       }
       else
       {
-        this->pointsForLoop(polypts, *countIt, edgeIt, modelItem->end(), edgeDirIt,
-          edgeDirItem->end(), innerLoopsEdges.back());
+        this->pointsForLoop(
+          polypts,
+          *countIt,
+          edgeIt,
+          modelItem->end(),
+          edgeDirIt,
+          edgeDirItem->end(),
+          innerLoopsEdges.back());
       }
       // Add to polygon_set_data
       poly::polygon_data<internal::Coord> loop;
@@ -252,10 +265,10 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
 
     // V. Add tessellation
     poly::polygon_set_data<internal::Coord> polys;
-    std::vector<poly::polygon_data<internal::Coord> > tess;
+    std::vector<poly::polygon_data<internal::Coord>> tess;
     polys.insert(pface);
     polys.get_trapezoids(tess);
-    std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
+    std::vector<poly::polygon_data<internal::Coord>>::const_iterator pit;
     smtk::model::Tessellation* smtkTess = modelFace.resetTessellation();
     double smtkPt[3];
     for (pit = tess.begin(); pit != tess.end(); ++pit)

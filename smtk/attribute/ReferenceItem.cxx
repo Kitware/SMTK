@@ -34,15 +34,16 @@ namespace attribute
 /// "holdReference" in ReferenceItemDefinition. To accomplish this, we cache
 /// retrieved values as a variant that accepts both types.
 struct ReferenceItem::Cache
-  : std::vector<boost::variant<std::shared_ptr<smtk::resource::PersistentObject>,
-      std::weak_ptr<smtk::resource::PersistentObject> > >
+  : std::vector<boost::variant<
+      std::shared_ptr<smtk::resource::PersistentObject>,
+      std::weak_ptr<smtk::resource::PersistentObject>>>
 {
 };
 
 namespace
 {
 class access_reference
-  : public boost::static_visitor<std::shared_ptr<smtk::resource::PersistentObject> >
+  : public boost::static_visitor<std::shared_ptr<smtk::resource::PersistentObject>>
 {
 public:
   const std::shared_ptr<smtk::resource::PersistentObject>& operator()(
@@ -57,7 +58,7 @@ public:
     return weakPersistentObject.lock();
   }
 };
-}
+} // namespace
 
 struct ReferenceItem::const_iterator::CacheIterator : ReferenceItem::Cache::const_iterator
 {
@@ -165,7 +166,8 @@ bool ReferenceItem::const_iterator::isSet() const
 }
 
 ReferenceItem::const_iterator::difference_type operator-(
-  const ReferenceItem::const_iterator& a, const ReferenceItem::const_iterator& b)
+  const ReferenceItem::const_iterator& a,
+  const ReferenceItem::const_iterator& b)
 {
   return static_cast<ReferenceItem::const_iterator::difference_type>(
     *(a.m_cacheIterator) - *(b.m_cacheIterator));
@@ -251,8 +253,8 @@ ReferenceItem::~ReferenceItem()
   }
 }
 
-bool ReferenceItem::isValidInternal(
-  bool useCategories, const std::set<std::string>& categories) const
+bool ReferenceItem::isValidInternal(bool useCategories, const std::set<std::string>& categories)
+  const
 {
   // If we have been given categories we need to see if the item passes its
   // category checks - if it doesn't it means its not be taken into account
@@ -423,7 +425,9 @@ bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::Reference
 }
 
 bool ReferenceItem::setObjectKey(
-  std::size_t i, const smtk::attribute::ReferenceItem::Key& key, std::size_t conditional)
+  std::size_t i,
+  const smtk::attribute::ReferenceItem::Key& key,
+  std::size_t conditional)
 {
   if (this->setObjectKey(i, key))
   {
@@ -431,7 +435,8 @@ bool ReferenceItem::setObjectKey(
 
     const ReferenceItemDefinition* def =
       static_cast<const ReferenceItemDefinition*>(m_definition.get());
-    if ((conditional == ReferenceItemDefinition::s_invalidIndex) ||
+    if (
+      (conditional == ReferenceItemDefinition::s_invalidIndex) ||
       (conditional >= def->numberOfConditionals()))
     {
       // current object does not have any conditional items
@@ -615,8 +620,9 @@ bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
     return this->setValue(emptyIndex, val);
   }
   // Finally - are we allowed to change the number of values?
-  if ((def->isExtensible() && def->maxNumberOfValues() &&
-        m_cache->size() >= def->maxNumberOfValues()) ||
+  if (
+    (def->isExtensible() && def->maxNumberOfValues() &&
+     m_cache->size() >= def->maxNumberOfValues()) ||
     (!def->isExtensible() && m_cache->size() >= def->numberOfRequiredValues()))
   {
     // The number of values is fixed or we reached the max number of items
@@ -756,7 +762,8 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   // Update children items
   for (auto sourceIter = sourceReferenceItem->m_childrenItems.begin();
-       sourceIter != sourceReferenceItem->m_childrenItems.end(); sourceIter++)
+       sourceIter != sourceReferenceItem->m_childrenItems.end();
+       sourceIter++)
   {
     ConstItemPtr sourceChild = smtk::const_pointer_cast<const Item>(sourceIter->second);
     auto newIter = m_childrenItems.find(sourceIter->first);
@@ -890,8 +897,8 @@ smtk::resource::PersistentObjectPtr ReferenceItem::value(const ReferenceItem::Ke
   // If we cannot resolve the linked object, let's check to see if the object
   // is held by the same resource as this ReferenceItem. There's no need for
   // resource management in this event.
-  else if (!key.first.isNull() &&
-    myAtt->attributeResource()->guardedLinks()->resolve(myAtt->resource()))
+  else if (
+    !key.first.isNull() && myAtt->attributeResource()->guardedLinks()->resolve(myAtt->resource()))
   {
     return myAtt->guardedLinks()->linkedObject(key);
   }
@@ -932,7 +939,8 @@ bool ReferenceItem::resolve() const
     //       we are not explicitly holding the reference and the attribute
     //       resource itself is being managed.
     // if (reference == nullptr && (*key) != nullKey)
-    if ((reference == nullptr) ||
+    if (
+      (reference == nullptr) ||
       (!def->holdReference() && (*key) != nullKey && myAtt->resource()->manager() != nullptr))
     {
       // ...set it equal to the object pointer accessed using its key.
@@ -1038,7 +1046,8 @@ void ReferenceItem::updateActiveChildrenItems()
 }
 
 smtk::attribute::ItemPtr ReferenceItem::findInternal(
-  const std::string& childName, SearchStyle style)
+  const std::string& childName,
+  SearchStyle style)
 {
   // Do we have it among our children?
 
@@ -1093,7 +1102,8 @@ smtk::attribute::ItemPtr ReferenceItem::findInternal(
 }
 
 smtk::attribute::ConstItemPtr ReferenceItem::findInternal(
-  const std::string& childName, SearchStyle style) const
+  const std::string& childName,
+  SearchStyle style) const
 {
   // Do we have it among our children?
 
@@ -1165,11 +1175,11 @@ void ReferenceItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bo
   }
 }
 
-template <>
+template<>
 bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
   const ReferenceItem::const_iterator& iterator) const
 {
   return iterator.isSet();
 }
-}
-}
+} // namespace attribute
+} // namespace smtk

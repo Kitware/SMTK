@@ -38,7 +38,7 @@ struct dot : pegtl::one<'.'>
 struct dash : pegtl::one<'-'>
 {
 };
-struct item_identifier : pegtl::plus<pegtl::sor<pegtl::identifier, dot, dash> >
+struct item_identifier : pegtl::plus<pegtl::sor<pegtl::identifier, dot, dash>>
 {
 }; //This will change in the future
 struct leading_identifier : item_identifier
@@ -47,19 +47,19 @@ struct leading_identifier : item_identifier
 struct residual : pegtl::plus<item_sep, item_identifier>
 {
 };
-struct grammar : pegtl::until<pegtl::eof, item_sep, leading_identifier, pegtl::opt<residual> >
+struct grammar : pegtl::until<pegtl::eof, item_sep, leading_identifier, pegtl::opt<residual>>
 {
 };
 
-template <typename Rule>
+template<typename Rule>
 struct action : pegtl::nothing<Rule>
 {
 };
 
-template <>
+template<>
 struct action<leading_identifier>
 {
-  template <typename Input>
+  template<typename Input>
   static bool apply(const Input& in, std::string& itemId, std::string& restOfPath, bool& ok)
   {
     itemId = in.string();
@@ -68,10 +68,10 @@ struct action<leading_identifier>
     return true;
   }
 };
-template <>
+template<>
 struct action<residual>
 {
-  template <typename Input>
+  template<typename Input>
   static bool apply(const Input& in, std::string&, std::string& restOfPath, bool& ok)
   {
     restOfPath = in.string();

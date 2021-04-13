@@ -118,7 +118,8 @@ WriteResource::Result WriteResource::operateInternal()
       smtk::operation::Operation::Result writeOpResult = writeOp->operate(Key());
 
       // Test for success
-      if (writeOpResult->findInt("outcome")->value() !=
+      if (
+        writeOpResult->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         smtkErrorMacro(log(), "Unable to write mesh to  \"" << tmpMeshPath.string() << "\".");
@@ -176,7 +177,8 @@ WriteResource::Result WriteResource::operateInternal()
     smtk::operation::Operation::Result writeOpResult = writeOp->operate(Key());
 
     // Test for success
-    if (writeOpResult->findInt("outcome")->value() !=
+    if (
+      writeOpResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       smtkErrorMacro(log(), "Unable to write files to \"" + meshPath + "\".");
@@ -216,5 +218,5 @@ bool write(const smtk::resource::ResourcePtr& resource)
   return (
     result->findInt("outcome")->value() == static_cast<int>(WriteResource::Outcome::SUCCEEDED));
 }
-}
-}
+} // namespace mesh
+} // namespace smtk

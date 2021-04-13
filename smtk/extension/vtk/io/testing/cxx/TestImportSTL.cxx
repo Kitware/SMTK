@@ -29,7 +29,7 @@ void verify_import_stl()
   test(smtk::io::importMesh(file_path, c), "should be able to import stl file");
   test(!c->meshes().is_empty(), "aggregate meshset should be nonempty");
 }
-}
+} // namespace
 
 int TestImportSTL(int argc, char* argv[])
 {

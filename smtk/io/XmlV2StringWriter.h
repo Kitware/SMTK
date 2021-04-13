@@ -31,7 +31,7 @@ namespace pugi
 {
 class xml_document;
 class xml_node;
-}
+} // namespace pugi
 
 namespace smtk
 {
@@ -47,9 +47,9 @@ public:
 
   void generateXml() override;
 
-  template <typename Container>
-  static std::string concatenate(
-    const Container& v, std::string& sep, smtk::io::Logger* logger = nullptr);
+  template<typename Container>
+  static std::string
+  concatenate(const Container& v, std::string& sep, smtk::io::Logger* logger = nullptr);
 
 protected:
   // Three virtual methods for writing contents
@@ -66,7 +66,8 @@ protected:
 
   void processDefinition(smtk::attribute::DefinitionPtr def);
   virtual void processDefinitionInternal(
-    pugi::xml_node& definition, smtk::attribute::DefinitionPtr def);
+    pugi::xml_node& definition,
+    smtk::attribute::DefinitionPtr def);
   void processAttribute(pugi::xml_node& attributes, smtk::attribute::AttributePtr att);
 
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
@@ -75,9 +76,11 @@ protected:
 
   void processItemDefinition(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
   virtual void processItemDefinitionAttributes(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
+    pugi::xml_node& node,
+    smtk::attribute::ItemDefinitionPtr idef);
   virtual void processItemDefinitionType(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
+    pugi::xml_node& node,
+    smtk::attribute::ItemDefinitionPtr idef);
 
   void processDoubleItem(pugi::xml_node& node, smtk::attribute::DoubleItemPtr item);
   void processDoubleDef(pugi::xml_node& node, smtk::attribute::DoubleItemDefinitionPtr idef);
@@ -87,7 +90,8 @@ protected:
   void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef);
   void processFileSystemItem(pugi::xml_node& node, smtk::attribute::FileSystemItemPtr item);
   void processFileSystemDef(
-    pugi::xml_node& node, smtk::attribute::FileSystemItemDefinitionPtr idef);
+    pugi::xml_node& node,
+    smtk::attribute::FileSystemItemDefinitionPtr idef);
   void processGroupItem(pugi::xml_node& node, smtk::attribute::GroupItemPtr item);
   void processGroupDef(pugi::xml_node& node, smtk::attribute::GroupItemDefinitionPtr idef);
   void processIntItem(pugi::xml_node& node, smtk::attribute::IntItemPtr item);
@@ -96,7 +100,8 @@ protected:
   void processStringDef(pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef);
   void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ModelEntityItemPtr item);
   void processModelEntityDef(
-    pugi::xml_node& node, smtk::attribute::ModelEntityItemDefinitionPtr idef);
+    pugi::xml_node& node,
+    smtk::attribute::ModelEntityItemDefinitionPtr idef);
   void processValueItem(pugi::xml_node& node, smtk::attribute::ValueItemPtr item);
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
@@ -104,7 +109,8 @@ protected:
 
   virtual void processView(smtk::view::ConfigurationPtr view);
   virtual void processViewComponent(
-    const smtk::view::Configuration::Component& comp, pugi::xml_node& node);
+    const smtk::view::Configuration::Component& comp,
+    pugi::xml_node& node);
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 
@@ -120,9 +126,11 @@ protected:
 private:
 };
 
-template <typename Container>
+template<typename Container>
 std::string XmlV2StringWriter::concatenate(
-  const Container& container, std::string& sep, smtk::io::Logger* logger)
+  const Container& container,
+  std::string& sep,
+  smtk::io::Logger* logger)
 {
   std::ostringstream token;
   if (container.empty())
@@ -171,7 +179,8 @@ std::string XmlV2StringWriter::concatenate(
     {
       if (logger != nullptr)
       {
-        smtkErrorMacro((*logger),
+        smtkErrorMacro(
+          (*logger),
           "Tokens use every single possible character; no separator found. Using comma.");
       }
       finalSep = ',';
@@ -193,7 +202,7 @@ std::string XmlV2StringWriter::concatenate(
 
   return token.str();
 }
-}
-}
+} // namespace io
+} // namespace smtk
 
 #endif // __smtk_io_XmlV2StringWriter_h
