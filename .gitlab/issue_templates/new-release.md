@@ -60,7 +60,9 @@ Once the robot supports fast-forward merges, this section replaces the above
 
   - Software process updates (these can all be done independently)
     - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
-    - [ ] Run [this script][cdash-update-groups] to update the CDash groups (must be done after a nightly run to ensure all builds are in the `release` group).
+    - [ ] Run [this script][cdash-update-groups] to update the CDash groups
+      - This must be done after a nightly run to ensure all builds are in the `release` group
+      - See the script itself for usage documentation
     - [ ] Add (or update if `PATCH` is greater than 0) version selection entry in cmb-superbuild
 
 [cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
