@@ -1,0 +1,9 @@
+{
+    "release_user": "kwrobot.release.cmb",
+    "project": "cmb/smtk",
+    "maintainers": [
+        "ben.boeckel",
+        "bob.obara",
+        "dcthomp"
+    ]
+}
