@@ -36,33 +36,26 @@ echo VERSION > version.txt
 git commit -m 'Update version number to VERSION' version.txt
 git tag -a -m 'SMTK VERSION' vVERSION HEAD
 ```
-  - Integrate changes to `master` branch
-    - [ ] Create a merge request targeting `master` (do *not* add `Backport: release`)
-    - [ ] Get positive review
-    - [ ] `Do: merge`
-
-  - Integrate changes to `release` branch
-    - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups and commit it
-    - [ ] `git push origin update-to-vVERSION:release vVERSION`
-
-<!--
-Once the robot supports fast-forward merges, this section replaces the above
-`Integrate changes` sections:
 
   - Integrate changes.
     - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups and commit it
-    - [ ] Create a merge request targeting `release`
-      - [ ] Add `Backport: master:HEAD~` to end of the MR description
-      - [ ] Add `Fast-forward: true` to end of the MR description
+    - Create a merge request targeting `release`
+      - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask @ben.boeckel if you do not have one)
+      - [ ] Add the `kwrobot.release.cmb` user to your fork with at least `Developer` privileges (so it can open MRs)
+      - [ ] Use [the `release-mr`][release-mr] script to open the create the Merge Request (see script for usage)
     - [ ] Get positive review
     - [ ] `Do: merge`
--->
+    - [ ] Push the tag to the main repository
+      - [ ] `git push origin vVERSION`
 
   - Software process updates (these can all be done independently)
     - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
-    - [ ] Run [this script][cdash-update-groups] to update the CDash groups (must be done after a nightly run to ensure all builds are in the `release` group).
+    - [ ] Run [this script][cdash-update-groups] to update the CDash groups
+      - This must be done after a nightly run to ensure all builds are in the `release` group
+      - See the script itself for usage documentation
     - [ ] Add (or update if `PATCH` is greater than 0) version selection entry in cmb-superbuild
 
+[release-mr]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/release-mr.py
 [cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
 
 # Post-release
