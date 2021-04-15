@@ -39,11 +39,13 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
 ```
 
   - Integrate changes.
-    - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups and commit it
+    - Make a commit for each of these `release`-only changes
+      - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups
     - Create a merge request targeting `release`
       - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask @ben.boeckel if you do not have one)
       - [ ] Add the `kwrobot.release.cmb` user to your fork with at least `Developer` privileges (so it can open MRs)
       - [ ] Use [the `release-mr`][release-mr] script to open the create the Merge Request (see script for usage)
+        - Pull the script for each release; it may have been updated since it was last used
     - [ ] Get positive review
     - [ ] `Do: merge`
     - [ ] Push the tag to the main repository
