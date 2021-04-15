@@ -6,6 +6,7 @@ following strings with the associated values:
   - `MAJOR`: e.g. yy is the year
   - `MINOR`: e.g. mm is the month
   - `PATCH`: e.g. the release sequence number (start at 0)
+  - `BRANCHPOINT`: The commit where the release should be started
 
 Please remove this comment.
 -->
@@ -31,7 +32,7 @@ git merge --ff-only origin/master
 ```
   - [ ] Update `version.txt` and tag the commit
 ```
-git checkout -b update-to-vVERSION
+git checkout -b update-to-vVERSION BRANCHPOINT
 echo VERSION > version.txt
 git commit -m 'Update version number to VERSION' version.txt
 git tag -a -m 'SMTK VERSION' vVERSION HEAD
