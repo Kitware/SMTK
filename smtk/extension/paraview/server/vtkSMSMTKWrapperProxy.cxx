@@ -92,16 +92,6 @@ smtk::project::ManagerPtr vtkSMSMTKWrapperProxy::GetProjectManager() const
   return wrapper ? wrapper->GetProjectManager() : nullptr;
 }
 
-smtk::project::old::ManagerPtr vtkSMSMTKWrapperProxy::GetOldProjectManager() const
-{
-  // TODO: This should just "return this->ProjectManager;" but we are getting things
-  //       working in built-in mode first, so just directly fetch the version
-  //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
-  return wrapper ? wrapper->GetOldProjectManager() : nullptr;
-}
-
 smtk::view::ManagerPtr vtkSMSMTKWrapperProxy::GetViewManager() const
 {
   // TODO: This should just "return this->ViewManager;" but we are getting things

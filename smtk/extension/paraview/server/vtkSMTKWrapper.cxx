@@ -33,8 +33,6 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/old/Manager.h"
-
 #include "smtk/view/Manager.h"
 #include "smtk/view/Selection.h"
 
@@ -95,8 +93,6 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   {
     auto operationManager = this->Managers->get<smtk::operation::Manager::Ptr>();
     auto resourceManager = this->Managers->get<smtk::resource::Manager::Ptr>();
-    this->OldProjectManager =
-      smtk::project::old::Manager::create(resourceManager, operationManager);
   }
 
   if (this->Managers->contains<smtk::view::Selection::Ptr>())

@@ -1,19 +1,4 @@
-# Set up sources to build
-set(jsonHeaders
-  old/json/jsonProjectDescriptor.h
-  old/json/jsonResourceDescriptor.h
-)
-
-set(jsonSrcs
-  old/json/jsonProjectDescriptor.cxx
-  old/json/jsonResourceDescriptor.cxx
-)
-
 set(projectSrcs
-  ${jsonSrcs}
-  old/Manager.cxx
-  old/Project.cxx
-
   Manager.cxx
   Operation.cxx
   OperationFactory.cxx
@@ -32,12 +17,6 @@ set(projectSrcs
   )
 
 set(projectHeaders
-  ${jsonHeaders}
-  old/Manager.h
-  old/Project.h
-  old/ProjectDescriptor.h
-  old/ResourceDescriptor.h
-
   Manager.h
   Metadata.h
   MetadataContainer.h
@@ -63,12 +42,6 @@ set(iconFiles
 )
 
 include(EncodeStringFunctions)
-
-configureFileAsCVariable(
-  "${CMAKE_CURRENT_SOURCE_DIR}/old/NewProject.sbt"
-  "${CMAKE_CURRENT_BINARY_DIR}/old/NewProjectTemplate.h"
-  "NewProjectTemplate"
-  "")
 
 foreach (iconFile ${iconFiles})
   get_filename_component(genFileBase "${iconFile}" NAME_WE)
@@ -104,15 +77,14 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
-if (SMTK_ENABLE_PYTHON_WRAPPING)
-  add_subdirectory(old/pybind11)
-endif()
+#if (SMTK_ENABLE_PYTHON_WRAPPING)
+#  add_subdirectory(pybind11)
+#endif()
 
 if (SMTK_ENABLE_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  add_subdirectory(old/testing)
   add_subdirectory(testing)
 endif()
