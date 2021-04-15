@@ -93,7 +93,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
 
   // Create a project and write it to disk.
   std::string projectLocation;
-  int numberOfMeshes;
+  std::size_t numberOfMeshes;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
