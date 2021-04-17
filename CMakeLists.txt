@@ -96,15 +96,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 # convention for this directory's location is OS-dependent. See
 # https://cmake.org/cmake/help/v3.13/command/find_package.html section "Search
 # Procedure" for more information.
-set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
+set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${SMTK_VERSION})
 if (WIN32)
-  set(SMTK_INSTALL_CONFIG_DIR cmake/${PROJECT_NAME}/${PROJECT_VERSION})
+  set(SMTK_INSTALL_CONFIG_DIR cmake/${PROJECT_NAME}/${SMTK_VERSION})
 endif()
 
 # If SMTK_INSTALL_TESTING_DATA is set to ON, set the directory where smtk's data
 # directory is installed.
 if (SMTK_INSTALL_TESTING_DATA)
-  set(SMTK_INSTALL_DATA_DIR share/${PROJECT_NAME}/${PROJECT_VERSION})
+  set(SMTK_INSTALL_DATA_DIR share/${PROJECT_NAME}/${SMTK_VERSION})
 endif()
 
 ################################################################################
@@ -585,7 +585,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Function.h
-  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Determine hash<X> specialization
@@ -600,7 +600,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
-  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Save compile-time options for use by other packages
@@ -611,7 +611,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Options.h
-  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/smtk)
 
 
 ################################################################################
@@ -712,7 +712,7 @@ set(smtk_cmake_build_dir "${CMAKE_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}")
 set(smtk_cmake_destination "${SMTK_INSTALL_CONFIG_DIR}")
 include(SMTKInstallCMakePackage)
 
-set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
+set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${SMTK_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 get_property(SMTK_PLUGINS GLOBAL PROPERTY SMTK_PLUGINS)
