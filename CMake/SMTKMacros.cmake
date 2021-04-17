@@ -39,7 +39,7 @@ function(smtk_public_headers lib)
     else ()
       set(suffix "")
     endif ()
-    install (FILES ${header} DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix}${suffix})
+    install (FILES ${header} DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix}${suffix})
   endforeach ()
 endfunction(smtk_public_headers)
 
@@ -80,7 +80,7 @@ endfunction(smtk_install_library)
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
   generate_export_header(${target} EXPORT_FILE_NAME ${file})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix})
 endfunction(smtk_export_header)
 
 # Builds a source file and an executable that does nothing other than
