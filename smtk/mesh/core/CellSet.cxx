@@ -50,9 +50,7 @@ CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mes
   }
 }
 
-CellSet::CellSet(const smtk::mesh::CellSet& other)
-
-  = default;
+CellSet::CellSet(const smtk::mesh::CellSet& other) = default;
 
 CellSet::~CellSet() = default;
 

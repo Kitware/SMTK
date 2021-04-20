@@ -45,9 +45,7 @@ EdgeFragmentComparator::EdgeFragmentComparator(FragmentArray& frag, SweeplinePos
 {
 }
 
-EdgeFragmentComparator::EdgeFragmentComparator(const EdgeFragmentComparator& other)
-
-  = default;
+EdgeFragmentComparator::EdgeFragmentComparator(const EdgeFragmentComparator& other) = default;
 
 /**\brief Return true when line a lies to the left of and/or below line b for the current sweepLocation.
   *
@@ -181,9 +179,7 @@ SweeplinePosition::SweeplinePosition(const internal::Point& posn)
 {
 }
 
-SweeplinePosition::SweeplinePosition(const SweeplinePosition& other)
-
-  = default;
+SweeplinePosition::SweeplinePosition(const SweeplinePosition& other) = default;
 
 /// Advance the sweepline to another position, ignoring invalid points to the left of the current position.
 void SweeplinePosition::advance(const internal::Point& pt)

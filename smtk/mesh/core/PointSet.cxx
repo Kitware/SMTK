@@ -54,9 +54,7 @@ PointSet::PointSet(
   }
 }
 
-PointSet::PointSet(const smtk::mesh::PointSet& other)
-
-  = default;
+PointSet::PointSet(const smtk::mesh::PointSet& other) = default;
 
 PointSet::~PointSet() = default;
 
