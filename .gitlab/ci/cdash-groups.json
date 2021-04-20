@@ -1,57 +1,57 @@
 {
-    "latest-release ": [
+    "latest-release": [
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_asan"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_coverage"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_nodata"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_paraview"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_plain"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_tidy"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_ubsan"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_vtk_python2"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "fedora31_vtk_python3"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "macos_plain"
         },
         {
-            "group": "release ",
+            "group": "release",
             "site": "gitlab-ci",
             "buildname": "windows_vs2019_ninja"
         }
