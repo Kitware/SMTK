@@ -10,6 +10,7 @@
 
 #include "smtk/io/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

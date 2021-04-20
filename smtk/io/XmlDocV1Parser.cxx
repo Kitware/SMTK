@@ -11,6 +11,7 @@
 #include "smtk/io/XmlDocV1Parser.h"
 
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 #include "smtk/io/ItemDefinitionsHelper.h"

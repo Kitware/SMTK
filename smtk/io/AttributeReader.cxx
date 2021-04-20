@@ -20,6 +20,7 @@
 #include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/view/Configuration.h"
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 #include <algorithm>
 #include <iostream>

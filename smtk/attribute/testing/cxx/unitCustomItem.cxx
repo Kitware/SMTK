@@ -49,6 +49,7 @@
 #include "nlohmann/json.hpp"
 
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 //force to use filesystem version 3
