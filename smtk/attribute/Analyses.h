@@ -113,7 +113,7 @@ public:
     std::vector<Analysis*> m_children;  ///< Children of the Analysis
   };
 
-  /// \brief Basic cconstructor - Note that by default top level Analyses are not Exclusive
+  /// \brief Basic constructor - Note that by default top level Analyses are not Exclusive
   Analyses()
     : m_topLevelExclusive(false)
   {
