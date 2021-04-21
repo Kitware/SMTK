@@ -41,7 +41,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
     auto sitem = def->template addItemDefinition<StringItemDefinition>(analysis->name());
     sitem->setIsOptional(!analysis->isRequired());
     sitem->setLabel(analysis->displayedName());
-    for (auto child : analysis->children())
+    for (auto* child : analysis->children())
     {
       child->buildAnalysisItem(sitem);
     }
@@ -51,7 +51,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   auto gitem = def->template addItemDefinition<GroupItemDefinition>(analysis->name());
   gitem->setIsOptional(!analysis->isRequired());
   gitem->setLabel(analysis->displayedName());
-  for (auto child : analysis->children())
+  for (auto* child : analysis->children())
   {
     child->buildAnalysisItem(gitem);
   }
@@ -104,7 +104,7 @@ bool Analyses::Analysis::setParent(Analysis* p)
 std::set<std::string> Analyses::Analysis::categories() const
 {
   auto result = m_categories;
-  for (auto p = m_parent; p != nullptr; p = p->m_parent)
+  for (auto* p = m_parent; p != nullptr; p = p->m_parent)
   {
     result.insert(p->m_categories.begin(), p->m_categories.end());
   }
@@ -155,7 +155,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
     auto sitem = pitem->addItemDefinition<StringItemDefinition>(m_name);
     sitem->setLabel(this->displayedName());
     pitem->addConditionalItem(this->displayedName(), m_name);
-    for (auto child : m_children)
+    for (auto* child : m_children)
     {
       child->buildAnalysisItem(sitem);
     }
@@ -165,7 +165,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
   auto gitem = pitem->addItemDefinition<GroupItemDefinition>(m_name);
   gitem->setLabel(this->displayedName());
   pitem->addConditionalItem(this->displayedName(), m_name);
-  for (auto child : m_children)
+  for (auto* child : m_children)
   {
     child->buildAnalysisItem(gitem);
   }
@@ -208,7 +208,7 @@ Analyses::Analysis* Analyses::find(const std::string& name) const
 std::vector<Analyses::Analysis*> Analyses::topLevel() const
 {
   std::vector<Analysis*> result;
-  for (auto child : m_analyses)
+  for (auto* child : m_analyses)
   {
     if (child->parent() == nullptr)
     {
@@ -278,14 +278,14 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
   if (m_topLevelExclusive)
   {
     auto sitem = def->addItemDefinition<StringItemDefinition>(label);
-    for (auto child : topAnalyses)
+    for (auto* child : topAnalyses)
     {
       child->buildAnalysisItem(sitem);
     }
   }
   else
   {
-    for (auto child : topAnalyses)
+    for (auto* child : topAnalyses)
     {
       child->buildAnalysisItem(def);
     }
@@ -307,7 +307,7 @@ void Analyses::getAnalysisItemCategories(
   if (!itemNotAnalysis)
   {
     // Add this analysis's categories
-    auto analysis = this->find(item->name());
+    auto* analysis = this->find(item->name());
     if (analysis != nullptr)
     {
       const auto& myCats = analysis->localCategories();
@@ -331,7 +331,7 @@ void Analyses::getAnalysisItemCategories(
       return;
     }
 
-    auto analysis = this->find(sitem->value());
+    auto* analysis = this->find(sitem->value());
     if (analysis != nullptr)
     {
       const auto& myCats = analysis->localCategories();

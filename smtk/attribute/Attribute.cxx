@@ -132,7 +132,7 @@ std::vector<std::string> Attribute::types() const
   // we can safely grab the raw pointer of the definition(s)
   // The reason being the attribute shares ownership of its
   // definition which in turn shares ownership with its base
-  auto def = m_definition.get();
+  auto* def = m_definition.get();
   while (def != nullptr)
   {
     tvec.push_back(def->type());
@@ -547,7 +547,7 @@ bool Attribute::canBeAssociated(const smtk::resource::PersistentObjectPtr& obj) 
     return false;
   }
 
-  auto associationRule =
+  const auto* associationRule =
     this->attributeResource()->associationRules().associationRuleForDefinition(m_definition);
   if (associationRule)
   {
@@ -729,7 +729,7 @@ bool Attribute::canBeDisassociated(
 
   // Is there a user-defined dissociation rule that prevents this action?
   {
-    auto dissociationRule =
+    const auto* dissociationRule =
       this->attributeResource()->associationRules().dissociationRuleForDefinition(m_definition);
     if (dissociationRule)
     {
@@ -862,7 +862,7 @@ smtk::attribute::ItemPtr Attribute::find(const std::string& inName, SearchStyle 
 smtk::attribute::ConstItemPtr Attribute::find(const std::string& inName, SearchStyle style) const
 {
   // Lets see if we can find it in the attribute's items
-  for (auto& item : m_items)
+  for (const auto& item : m_items)
   {
     if (item->name() == inName)
     {
@@ -876,7 +876,7 @@ smtk::attribute::ConstItemPtr Attribute::find(const std::string& inName, SearchS
   }
 
   // Lets check the children
-  for (auto& item : m_items)
+  for (const auto& item : m_items)
   {
     ConstItemPtr result = item->find(inName, style);
     if (result)

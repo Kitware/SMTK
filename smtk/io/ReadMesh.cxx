@@ -49,7 +49,7 @@ bool ReadMesh::ExtensionIsSupported(const std::string& ext)
 {
   for (auto& reader : smtk::io::ReadMesh::SupportedIOTypes())
   {
-    for (auto& format : reader->FileFormats())
+    for (const auto& format : reader->FileFormats())
     {
       if (
         format.CanRead() &&

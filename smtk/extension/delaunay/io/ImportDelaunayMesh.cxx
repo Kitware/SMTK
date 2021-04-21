@@ -54,7 +54,7 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   }
 
   std::size_t idx = 0;
-  for (auto& p : mesh.GetVertices())
+  for (const auto& p : mesh.GetVertices())
   {
     idx = IndexOf(p, mesh.GetVertices());
     coordinateMemory[0][idx] = p.x;
@@ -76,7 +76,7 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   }
 
   idx = 0;
-  for (auto& t : mesh.GetTriangles())
+  for (const auto& t : mesh.GetTriangles())
   {
     connectivity[idx++] = firstVertex + IndexOf(t.AB().A(), mesh.GetVertices());
     connectivity[idx++] = firstVertex + IndexOf(t.AB().B(), mesh.GetVertices());
@@ -102,7 +102,7 @@ bool ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh, smtk::mode
   tess->coords().resize(mesh.GetVertices().size() * 3);
   std::size_t index = 0;
   double xyz[3];
-  for (auto& p : mesh.GetVertices())
+  for (const auto& p : mesh.GetVertices())
   {
     index = IndexOf(p, mesh.GetVertices());
     xyz[0] = p.x;
@@ -111,7 +111,7 @@ bool ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh, smtk::mode
     tess->setPoint(static_cast<int>(index), xyz);
   }
 
-  for (auto& t : mesh.GetTriangles())
+  for (const auto& t : mesh.GetTriangles())
   {
     tess->addTriangle(
       static_cast<int>(IndexOf(t.AB().A(), mesh.GetVertices())),

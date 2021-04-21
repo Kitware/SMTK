@@ -9,6 +9,7 @@ bugprone-*,\
 -bugprone-integer-division,\
 -bugprone-misplaced-widening-cast,\
 -bugprone-narrowing-conversions,\
+-bugprone-reserved-identifier,\
 -bugprone-sizeof-expression,\
 -bugprone-string-integer-assignment,\
 -bugprone-unhandled-self-assignment,\
@@ -32,6 +33,7 @@ clang-analyzer-*,\
 -google-readability-casting,\
 -hicpp-*,\
 misc-*,\
+-misc-no-recursion,\
 -misc-non-private-member-variables-in-classes,\
 -misc-redundant-expression,\
 -misc-throw-by-value-catch-by-reference,\
@@ -49,6 +51,7 @@ openmp-*,\
 performance-*,\
 -performance-inefficient-string-concatenation,\
 -performance-move-const-arg,\
+-performance-trivially-destructible,\
 -performance-type-promotion-in-math-fn,\
 -performance-unnecessary-value-param,\
 portability-*,\
@@ -61,6 +64,7 @@ readability-*,\
 -readability-inconsistent-declaration-parameter-name,\
 -readability-isolate-declaration,\
 -readability-magic-numbers,\
+-readability-make-member-function-const,\
 -readability-named-parameter,\
 -readability-non-const-parameter,\
 -readability-redundant-control-flow,\

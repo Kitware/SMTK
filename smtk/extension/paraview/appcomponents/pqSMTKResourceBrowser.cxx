@@ -75,7 +75,7 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::Information& info
 
   // III. Ensure the phrase model is configured to listen to the proper managers.
   // Listen for resources on current connections:
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
   smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
     this->resourceManagerAdded(r, s);
     return false;
@@ -134,7 +134,7 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
 void pqSMTKResourceBrowser::initSubphraseGenerator()
 {
   std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(m_viewInfo.m_view);
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
 
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
   std::string defaultSubphraseType;
@@ -176,7 +176,7 @@ void pqSMTKResourceBrowser::initSubphraseGenerator()
 
 void pqSMTKResourceBrowser::updateSettings()
 {
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
   this->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();

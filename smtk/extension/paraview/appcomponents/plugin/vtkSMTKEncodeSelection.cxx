@@ -39,6 +39,8 @@
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
 
+#include <algorithm>
+
 // Change "#undef" to "#define" to enable debug printouts
 #undef SMTK_DEBUG_SELECTION
 
@@ -77,8 +79,8 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
   int modifier,
   bool selectBlocks)
 {
-  auto behavior = pqSMTKBehavior::instance();
-  auto wrapper = behavior->builtinOrActiveWrapper();
+  auto* behavior = pqSMTKBehavior::instance();
+  auto* wrapper = behavior->builtinOrActiveWrapper();
   bool didModifySelection = false;
 
 #ifdef SMTK_DEBUG_SELECTION
@@ -143,7 +145,7 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
 
     if (properties->Has(vtkSelectionNode::SOURCE()))
     {
-      auto rr =
+      auto* rr =
         vtkSMTKResourceRepresentation::SafeDownCast(properties->Get(vtkSelectionNode::SOURCE()));
       if (rr)
       {
@@ -198,7 +200,7 @@ bool vtkSMTKEncodeSelection::ProcessResource(
   (void)modifier;
   (void)selectBlocks;
 
-  auto mbds = vtkMultiBlockDataSet::SafeDownCast(resourceRep->GetRenderedDataObject(0));
+  auto* mbds = vtkMultiBlockDataSet::SafeDownCast(resourceRep->GetRenderedDataObject(0));
 #ifdef SMTK_DEBUG_SELECTION
   std::cout << "Select on resource " << resource->name() << " mbds " << mbds << "\n";
 #endif
@@ -206,30 +208,27 @@ bool vtkSMTKEncodeSelection::ProcessResource(
   auto responderGroup = smtk::view::VTKSelectionResponderGroup(
     wrapper->smtkOperationManager(), wrapper->smtkResourceManager());
   auto operationIndices = responderGroup.operationsForResource(resource);
-  for (const auto& operationIndex : operationIndices)
-  {
-    auto operation = std::dynamic_pointer_cast<smtk::view::RespondToVTKSelection>(
-      wrapper->smtkOperationManager()->create(operationIndex));
-    if (!operation || !operation->parameters()->associate(resource))
-    {
-      continue;
-    }
-    int mode = vtkSMPropertyHelper(viewProxy, "InteractionMode").GetAsInt();
-    operation->setInteractionMode(mode);
-    operation->setSMTKSelection(smtkSelection);
-    operation->setVTKSelection(rawSelection);
-    operation->setVTKData(mbds);
-    operation->setModifier(modifier);
-    operation->setSelectingBlocks(selectBlocks);
-    operation->setSMTKSelectionSource("paraview");
-    operation->setSMTKSelectionValue(1);
-    auto result = operation->operate();
-    if (
-      result->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(
+    operationIndices.begin(),
+    operationIndices.end(),
+    [&](smtk::operation::Operation::Index operationIndex) {
+      auto operation = std::dynamic_pointer_cast<smtk::view::RespondToVTKSelection>(
+        wrapper->smtkOperationManager()->create(operationIndex));
+      if (!operation || !operation->parameters()->associate(resource))
+      {
+        return false;
+      }
+      int mode = vtkSMPropertyHelper(viewProxy, "InteractionMode").GetAsInt();
+      operation->setInteractionMode(mode);
+      operation->setSMTKSelection(smtkSelection);
+      operation->setVTKSelection(rawSelection);
+      operation->setVTKData(mbds);
+      operation->setModifier(modifier);
+      operation->setSelectingBlocks(selectBlocks);
+      operation->setSMTKSelectionSource("paraview");
+      operation->setSMTKSelectionValue(1);
+      auto result = operation->operate();
+      return result->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+    });
 }

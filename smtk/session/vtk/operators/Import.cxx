@@ -258,7 +258,7 @@ static void AddBlockChildrenAsModelChildren(vtkMultiBlockDataSet* data)
     return;
 
   std::vector<vtkObjectBase*> children;
-  auto iter = data->NewTreeIterator();
+  auto* iter = data->NewTreeIterator();
   iter->VisitOnlyLeavesOn();
   for (iter->GoToFirstItem(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
   {
@@ -355,7 +355,7 @@ static void FillAndMarkBlocksFromSrc(
   vtkIdType nbi = src->GetNumberOfBlocks();
   for (vtkIdType jj = 0; jj < nbi; ++jj, ++ii)
   {
-    auto blk = src->GetBlock(jj);
+    auto* blk = src->GetBlock(jj);
     int srcDim = 0;
     vtkDataSet* dataSet = vtkDataSet::SafeDownCast(blk);
     {
@@ -396,7 +396,7 @@ vtkSmartPointer<vtkMultiBlockDataSet> importExodusInternal(const std::string fil
   rdr->Update();
 
   int dim = rdr->GetDimensionality();
-  auto topIn = vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0));
+  auto* topIn = vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0));
   if (!topIn || !vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)))
   {
     return vtkSmartPointer<vtkMultiBlockDataSet>();
@@ -428,7 +428,7 @@ vtkSmartPointer<vtkMultiBlockDataSet> importExodusInternal(const std::string fil
 
 Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& resource)
 {
-  auto& session = resource->session();
+  const auto& session = resource->session();
 
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
 
@@ -502,7 +502,7 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
 
 Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resource)
 {
-  auto& session = resource->session();
+  const auto& session = resource->session();
 
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
 
@@ -634,7 +634,7 @@ int DiscoverLabels(vtkDataSet* obj, std::string& labelname, std::set<double>& la
 
 Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& resource)
 {
-  auto& session = resource->session();
+  const auto& session = resource->session();
 
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
 

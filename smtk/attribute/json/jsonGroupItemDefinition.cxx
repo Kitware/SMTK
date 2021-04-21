@@ -161,7 +161,7 @@ SMTKCORE_EXPORT void from_json(
   result = j.find("ItemDefinitions");
   if (result != j.end())
   {
-    for (auto& jIdef : *result)
+    for (const auto& jIdef : *result)
     {
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(jIdef, defPtr, resPtr);
     }

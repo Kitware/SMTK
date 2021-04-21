@@ -171,9 +171,9 @@ void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
     {
       std::cout << " no uuid                            ";
     }
-    auto block = dataset->GetBlock(ii);
+    auto* block = dataset->GetBlock(ii);
     std::cout << "  " << (block ? block->GetClassName() : "(null)") << "\n";
-    auto mbds = vtkMultiBlockDataSet::SafeDownCast(block);
+    auto* mbds = vtkMultiBlockDataSet::SafeDownCast(block);
     if (mbds)
     {
       vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(mbds, counter, indent + 2);
@@ -272,7 +272,7 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
   const smtk::extension::vtk::geometry::Geometry& geometry)
 {
   (void)request;
-  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  auto* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {
     vtkErrorMacro("No output dataset");

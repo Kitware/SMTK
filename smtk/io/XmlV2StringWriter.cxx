@@ -49,6 +49,7 @@
 #include <sstream>
 
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 using namespace pugi;
@@ -134,7 +135,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
             catGroupNode = catInfoNode.append_child("Include");
             catGroupNode.append_attribute("Combination")
               .set_value(Categories::Set::combinationModeAsString(cats.inclusionMode()).c_str());
-            for (auto& str : cats.includedCategoryNames())
+            for (const auto& str : cats.includedCategoryNames())
             {
               catGroupNode.append_child("Cat").text().set(str.c_str());
             }
@@ -145,7 +146,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
             catGroupNode = catInfoNode.append_child("Exclude");
             catGroupNode.append_attribute("Combination")
               .set_value(Categories::Set::combinationModeAsString(cats.exclusionMode()).c_str());
-            for (auto& str : cats.excludedCategoryNames())
+            for (const auto& str : cats.excludedCategoryNames())
             {
               catGroupNode.append_child("Cat").text().set(str.c_str());
             }
@@ -408,7 +409,7 @@ void XmlV2StringWriter::generateXml()
     alist.insert(alist.end(), topLevelAnalyses.begin(), topLevelAnalyses.end());
     while (!alist.empty())
     {
-      auto analysis = alist.back();
+      auto* analysis = alist.back();
       alist.pop_back();
       auto anode = aNodes.append_child("Analysis");
       anode.append_attribute("Type").set_value(analysis->name().c_str());
@@ -426,7 +427,7 @@ void XmlV2StringWriter::generateXml()
         anode.append_child("Cat").text().set(acat.c_str());
       }
       // Does the analysis have a parent?
-      auto parent = analysis->parent();
+      auto* parent = analysis->parent();
       if (parent != nullptr)
       {
         anode.append_attribute("BaseType").set_value(parent->name().c_str());
@@ -711,7 +712,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
     catGroupNode = catInfoNode.append_child("Include");
     catGroupNode.append_attribute("Combination")
       .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
-    for (auto& str : localCats.includedCategoryNames())
+    for (const auto& str : localCats.includedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
     }
@@ -722,7 +723,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
     catGroupNode = catInfoNode.append_child("Exclude");
     catGroupNode.append_attribute("Combination")
       .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
-    for (auto& str : localCats.excludedCategoryNames())
+    for (const auto& str : localCats.excludedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
     }
@@ -1453,13 +1454,13 @@ void XmlV2StringWriter::processStyles()
     .set_value("********** Workflow Styles ***********");
   xml_node stylesNode = m_internals->m_roots.at(0).append_child("Styles");
 
-  for (auto& defType : m_resource->styles())
+  for (const auto& defType : m_resource->styles())
   {
     xml_node defNode;
     defNode = stylesNode.append_child("Att");
     defNode.append_attribute("Type").set_value(defType.first.c_str());
     // Now lets go through all the styles for this definition type
-    for (auto& style : defType.second)
+    for (const auto& style : defType.second)
     {
       xml_node styleNode;
       styleNode = defNode.append_child("Style");

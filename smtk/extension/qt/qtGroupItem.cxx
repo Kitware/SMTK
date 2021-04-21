@@ -126,7 +126,7 @@ void qtGroupItem::createWidget()
   m_internals->m_mainFrame = new QFrame(m_itemInfo.parentWidget());
   m_internals->m_mainFrame->setObjectName("qtGroupItem");
   m_widget = m_internals->m_mainFrame;
-  auto mainLayout = new QVBoxLayout(m_widget);
+  auto* mainLayout = new QVBoxLayout(m_widget);
   mainLayout->setMargin(0);
   mainLayout->setSpacing(0);
   mainLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -135,7 +135,7 @@ void qtGroupItem::createWidget()
   m_internals->m_titleFrame = new QFrame(m_internals->m_mainFrame);
   mainLayout->addWidget(m_internals->m_titleFrame);
   m_internals->m_mainFrame->setObjectName("TitleFrame");
-  auto titleLayout = new QHBoxLayout(m_internals->m_titleFrame);
+  auto* titleLayout = new QHBoxLayout(m_internals->m_titleFrame);
   titleLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   titleLayout->setMargin(0);
 
@@ -165,7 +165,7 @@ void qtGroupItem::createWidget()
   m_internals->m_contentsFrame = new QFrame(m_internals->m_mainFrame);
   m_internals->m_contentsFrame->setObjectName("Contents");
   mainLayout->addWidget(m_internals->m_contentsFrame);
-  auto contentsLayout = new QVBoxLayout(m_internals->m_contentsFrame);
+  auto* contentsLayout = new QVBoxLayout(m_internals->m_contentsFrame);
   contentsLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   // Lets indent the contents a bit to the right.
   contentsLayout->setContentsMargins(10, 0, 0, 0);
@@ -223,7 +223,7 @@ void qtGroupItem::setEnabledState(int state)
   {
     item->setIsEnabled(enabled);
     emit this->modified();
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -249,7 +249,7 @@ void qtGroupItem::updateItemData()
   }
   this->clearChildItems();
   auto myChildren = m_internals->ChildrensFrame->findChildren<QWidget*>("groupitemFrame");
-  for (auto myChild : myChildren)
+  for (auto* myChild : myChildren)
   {
     myChild->deleteLater();
   }
@@ -295,7 +295,7 @@ void qtGroupItem::updateItemData()
       {
         std::string buttonText = "Load from File";
         m_itemInfo.component().attribute("LoadButtonText", buttonText);
-        auto loadButton = new QToolButton(m_internals->ButtonsFrame);
+        auto* loadButton = new QToolButton(m_internals->ButtonsFrame);
         loadButton->setObjectName("loadFileButton");
         loadButton->setText(buttonText.c_str());
         connect(loadButton, SIGNAL(clicked(bool)), this, SLOT(onImportFromFile()));
@@ -363,7 +363,7 @@ void qtGroupItem::addSubGroup(int i)
   {
     return;
   }
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (!iview)
   {
     return;

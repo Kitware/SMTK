@@ -259,7 +259,7 @@ void qtInputsItem::unsetValue(int elementIndex)
   {
     item->unset(elementIndex);
     emit modified();
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -281,7 +281,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -295,7 +295,7 @@ void qtInputsItem::forceUpdate()
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
   emit this->modified();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview)
   {
     iview->valueChanged(item);
@@ -310,7 +310,7 @@ void qtInputsItem::setLabelVisible(bool visible)
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -787,10 +787,10 @@ QFrame* qtInputsItem::createLabelFrame(
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
   auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   // Lets create the label and proper decorations
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  auto labelFrame = new QFrame();
+  auto* labelFrame = new QFrame();
   labelFrame->setObjectName("labelFrame");
   QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
   labelLayout->setObjectName("labelFrame");
@@ -901,7 +901,7 @@ void qtInputsItem::updateUI()
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
   auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -913,7 +913,7 @@ void qtInputsItem::updateUI()
   {
     m_widget->setEnabled(false);
   }
-  auto mainlayout = new QHBoxLayout(m_widget);
+  auto* mainlayout = new QHBoxLayout(m_widget);
   mainlayout->setMargin(0);
   mainlayout->setSpacing(0);
   mainlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -925,7 +925,7 @@ void qtInputsItem::updateUI()
   mainlayout->addWidget(this->createLabelFrame(dataObj.get(), itemDef.get()));
 
   // Add Data Section
-  auto dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
+  auto* dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
   dataLayout->setObjectName("dataLayout");
   dataLayout->setMargin(0);
   dataLayout->setSpacing(0);
@@ -989,7 +989,7 @@ void qtInputsItem::setOutputOptional(int state)
   if (!(item->forceRequired() || (enable == item->localEnabledState())))
   {
     item->setIsEnabled(enable);
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -1134,7 +1134,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 
   if (item->isDiscrete())
   {
-    auto editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
+    auto* editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
     QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     m_internals->DiscreteEditors.append(editor);
@@ -1146,7 +1146,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 QFrame* qtInputsItem::createExpressionRefFrame()
 {
 
-  auto frame = new QFrame();
+  auto* frame = new QFrame();
   frame->setObjectName("expressionFrame");
   QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
   expressionLayout->setObjectName("expressionLayout");
@@ -1330,7 +1330,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
     smtk::attribute::AttributePtr newAtt = lAttResource->createAttribute(attDef->type());
-    auto editor =
+    auto* editor =
       new smtk::extension::qtAttributeEditorDialog(newAtt, m_itemInfo.uiManager(), m_widget);
     auto status = editor->exec();
     QStringList itemsInComboBox;
@@ -1406,7 +1406,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     m_internals->m_lastExpression = currentExpression->name().c_str();
   }
 
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview)
   {
     iview->valueChanged(inputitem->shared_from_this());
@@ -1479,7 +1479,7 @@ QWidget* qtInputsItem::createDoubleWidget(
 
   if (option == "LineEdit")
   {
-    auto editBox = new qtDoubleLineEdit(pWidget);
+    auto* editBox = new qtDoubleLineEdit(pWidget);
     editBox->setUseGlobalPrecisionAndNotation(false);
     std::string notation("Mixed");
     m_itemInfo.component().attribute("Notation", notation);
@@ -1807,8 +1807,8 @@ void qtInputsItem::onLineEditFinished()
 
 void qtInputsItem::doubleValueChanged(double newVal)
 {
-  auto obj = QObject::sender();
-  auto senderWidget = qobject_cast<QWidget*>(obj);
+  auto* obj = QObject::sender();
+  auto* senderWidget = qobject_cast<QWidget*>(obj);
   auto ditem = m_itemInfo.itemAs<DoubleItem>();
   if (!ditem)
   {
@@ -1829,7 +1829,7 @@ void qtInputsItem::doubleValueChanged(double newVal)
   // Lets determine if the item is set to the default value -
   isDefault = ditem->isUsingDefault(elementIdx);
   isInvalid = !ditem->isSet(elementIdx);
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)
@@ -1849,8 +1849,8 @@ void qtInputsItem::doubleValueChanged(double newVal)
 
 void qtInputsItem::intValueChanged(int newVal)
 {
-  auto obj = QObject::sender();
-  auto senderWidget = qobject_cast<QWidget*>(obj);
+  auto* obj = QObject::sender();
+  auto* senderWidget = qobject_cast<QWidget*>(obj);
   auto iitem = m_itemInfo.itemAs<IntItem>();
   if (!iitem)
   {
@@ -1871,7 +1871,7 @@ void qtInputsItem::intValueChanged(int newVal)
   // Lets determine if the item is set to the default value -
   isDefault = iitem->isUsingDefault(elementIdx);
   isInvalid = !iitem->isSet(elementIdx);
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)
@@ -1984,7 +1984,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   // Lets determine if the item is set to the default value -
   isDefault = rawitem->isUsingDefault(elementIdx);
   isInvalid = !rawitem->isSet(elementIdx);
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (iview)

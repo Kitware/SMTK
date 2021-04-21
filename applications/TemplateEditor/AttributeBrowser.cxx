@@ -87,7 +87,7 @@ void AttributeBrowser::onAttDefSelectionChanged(
 //------------------------------------------------------------------------------
 void AttributeBrowser::emitAttDefChanged()
 {
-  auto sm = this->Ui->viewDefinitions->selectionModel();
+  auto* sm = this->Ui->viewDefinitions->selectionModel();
   const auto index = sm->currentIndex();
   emit attDefChanged(index, index);
 }
@@ -109,7 +109,7 @@ void AttributeBrowser::onAddDefinition()
 //------------------------------------------------------------------------------
 void AttributeBrowser::onDeleteDefinition()
 {
-  auto sm = this->Ui->viewDefinitions->selectionModel();
+  auto* sm = this->Ui->viewDefinitions->selectionModel();
   auto attDefIndex = sm->currentIndex();
 
   this->AttDefModel->remove(attDefIndex);

@@ -138,7 +138,7 @@ public:
   smtk::geometry::GeometryPtr operator()(const smtk::geometry::Specification& in) override
   {
     auto rsrc = std::dynamic_pointer_cast<TestResource>(std::get<0>(in));
-    auto provider = new TestGeometry(rsrc);
+    auto* provider = new TestGeometry(rsrc);
     return smtk::geometry::GeometryPtr(provider);
   }
 };

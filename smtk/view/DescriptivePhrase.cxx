@@ -147,7 +147,7 @@ int DescriptivePhrase::argFindChild(const smtk::resource::ResourcePtr& child, bo
   DescriptivePhrases::const_iterator it;
   for (it = m_subphrases.begin(); it != m_subphrases.end(); ++it, ++i)
   {
-    auto sp = it->get();
+    auto* sp = it->get();
     if (sp->relatedResource() == child && (!onlyResource || !sp->relatedComponent()))
     {
       return i;
@@ -199,7 +199,7 @@ int DescriptivePhrase::indexInParent() const
 void DescriptivePhrase::index(std::vector<int>& idx) const
 {
   idx.clear();
-  auto self = this;
+  const auto* self = this;
   while (self)
   {
     DescriptivePhrasePtr prnt = self->parent();

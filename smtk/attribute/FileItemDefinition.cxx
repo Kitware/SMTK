@@ -113,7 +113,7 @@ std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersS
     }
 
     // Collect all of the suffixes using a set to guarantee uniqueness.
-    for (auto i = std::strtok(&suffixes[0], " "); i != nullptr; i = std::strtok(nullptr, " "))
+    for (auto* i = std::strtok(&suffixes[0], " "); i != nullptr; i = std::strtok(nullptr, " "))
     {
       // If all entries are accepted, there is no need to aggregate.
       if (std::string(i) == "*.*")

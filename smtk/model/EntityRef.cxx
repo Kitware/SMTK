@@ -1032,16 +1032,10 @@ bool EntityRef::hasAttributes() const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (const auto& obj : objs)
-  {
-    auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
+  return std::any_of(objs.begin(), objs.end(), [](const smtk::resource::PersistentObjectPtr& obj) {
     // If this is an attribute then return true
-    if (att)
-    {
-      return true;
-    }
-  }
-  return false;
+    return dynamic_pointer_cast<smtk::attribute::Attribute>(obj) != nullptr;
+  });
 }
 
 /** @name Attribute associations
@@ -1072,16 +1066,12 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (const auto& obj : objs)
-  {
-    auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
-    // If this is an attribute then see if it matches the UUID
-    if ((att != nullptr) && (att->id() == attribId))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(
+    objs.begin(), objs.end(), [&attribId](const smtk::resource::PersistentObjectPtr& obj) {
+      auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
+      // If this is an attribute then see if it matches the UUID
+      return att && att->id() == attribId;
+    });
 }
 
 /**\brief Does the entityref have any attributes associated with it? - To be deprecated

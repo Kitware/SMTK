@@ -59,7 +59,7 @@ static QToolBar* findToolBar(QMainWindow* mainWindow, const QString& name)
 
 static bool hideToolBar(QMainWindow* mainWindow, const QString& name)
 {
-  auto tb = findToolBar(mainWindow, name);
+  auto* tb = findToolBar(mainWindow, name);
   if (tb)
   {
     tb->hide();
@@ -70,7 +70,7 @@ static bool hideToolBar(QMainWindow* mainWindow, const QString& name)
 
 static bool showToolBar(QMainWindow* mainWindow, const QString& name)
 {
-  auto tb = findToolBar(mainWindow, name);
+  auto* tb = findToolBar(mainWindow, name);
   if (tb)
   {
     tb->show();
@@ -171,14 +171,14 @@ void pqSMTKSubtractUI::toggleMenuItem(
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
     if (mainWindow)
     {
       QStringList hier = spl;
       QMenuBar* mb = mainWindow->menuBar();
       QMenu* mm = nullptr;
       auto menus = mb->findChildren<QMenu*>();
-      for (auto menu : menus)
+      for (auto* menu : menus)
       {
 #ifdef SMTK_DBG_SUBTRACT_UI
         std::cout << "    Menu \"" << menu->objectName().toStdString() << "\""
@@ -275,16 +275,16 @@ void pqSMTKSubtractUI::toggleMenuItemByObjectName(const std::string& itemObjectN
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
     if (mainWindow)
     {
-      auto menu = mainWindow->findChild<QMenu*>(src);
+      auto* menu = mainWindow->findChild<QMenu*>(src);
       if (menu)
       {
         ::toggleMenuItem(menu, remove);
         return;
       }
-      auto action = mainWindow->findChild<QAction*>(src);
+      auto* action = mainWindow->findChild<QAction*>(src);
       if (action)
       {
         ::toggleAction(action, remove);
@@ -303,7 +303,7 @@ void pqSMTKSubtractUI::toggleToolbar(const std::string& toolbar, bool remove)
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
     if (
       mainWindow &&
       ((remove && hideToolBar(mainWindow, tbName)) || (!remove && showToolBar(mainWindow, tbName))))
@@ -322,12 +322,12 @@ void pqSMTKSubtractUI::toggleToolbarButton(
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
-    auto tb = ::findToolBar(mainWindow, tbName);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* tb = ::findToolBar(mainWindow, tbName);
     if (tb)
     {
       QString buttonName = QString::fromStdString(button);
-      auto action = ::findAction(tb, buttonName);
+      auto* action = ::findAction(tb, buttonName);
       if (action)
       {
         action->setEnabled(!remove);
@@ -350,8 +350,8 @@ void pqSMTKSubtractUI::toggleActionByObjectName(const std::string& action, bool 
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
-    auto act = ::findActionByName(mainWindow, actionName);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* act = ::findActionByName(mainWindow, actionName);
     if (act)
     {
       act->setEnabled(!remove);
@@ -369,14 +369,14 @@ void pqSMTKSubtractUI::togglePanel(const std::string& panel, bool remove)
   auto topLevelWidgets = QApplication::topLevelWidgets();
   for (QWidget* topLevelWidget : topLevelWidgets)
   {
-    auto mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
+    auto* mainWindow = dynamic_cast<QMainWindow*>(topLevelWidget);
     if (mainWindow)
     {
-      auto dock = mainWindow->findChild<QDockWidget*>(panelName);
+      auto* dock = mainWindow->findChild<QDockWidget*>(panelName);
       if (!dock)
       {
         auto docks = mainWindow->findChildren<QDockWidget*>();
-        for (auto dd : docks)
+        for (auto* dd : docks)
         {
           if (dd->windowTitle() == panelName)
           {
@@ -387,7 +387,7 @@ void pqSMTKSubtractUI::togglePanel(const std::string& panel, bool remove)
       }
       if (dock)
       {
-        auto viewAction = dock->toggleViewAction();
+        auto* viewAction = dock->toggleViewAction();
         if (remove)
         {
 #ifdef SMTK_DBG_SUBTRACT_UI

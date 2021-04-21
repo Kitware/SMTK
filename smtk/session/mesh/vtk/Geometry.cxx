@@ -153,13 +153,13 @@ void Geometry::update() const
 
 void Geometry::geometricBounds(const DataType& geom, BoundingBox& bbox) const
 {
-  auto pset = vtkPointSet::SafeDownCast(geom);
+  auto* pset = vtkPointSet::SafeDownCast(geom);
   if (pset)
   {
     pset->GetBounds(bbox.data());
     return;
   }
-  auto comp = vtkCompositeDataSet::SafeDownCast(geom);
+  auto* comp = vtkCompositeDataSet::SafeDownCast(geom);
   if (comp)
   {
     comp->GetBounds(bbox.data());

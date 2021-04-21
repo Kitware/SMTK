@@ -42,8 +42,8 @@ pqSMTKResource::pqSMTKResource(
 #if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
   std::cout << "Creating SMTKResource ( " << this << " )\n";
 #endif
-  auto behavior = pqSMTKBehavior::instance();
-  auto rsrcMgr = behavior->resourceManagerForServer(server);
+  auto* behavior = pqSMTKBehavior::instance();
+  auto* rsrcMgr = behavior->resourceManagerForServer(server);
   auto rsrc = this->getResource();
   if (rsrc && rsrcMgr)
   {
@@ -108,8 +108,8 @@ pqSMTKResource::~pqSMTKResource()
   auto lastRsrc = m_lastResource.lock();
   if (lastRsrc)
   {
-    auto behavior = pqSMTKBehavior::instance();
-    auto rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
+    auto* behavior = pqSMTKBehavior::instance();
+    auto* rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
     if (rsrcMgrPxy)
     {
       auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
@@ -138,14 +138,14 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   // TODO: Actually this currently returns the server's copy and only
   //       works in built-in mode.
   smtk::resource::ResourcePtr rsrc;
-  auto pxy = this->getProxy()->GetClientSideObject();
-  auto smtkRsrcRdr = vtkSMTKResourceSource::SafeDownCast(pxy);
+  auto* pxy = this->getProxy()->GetClientSideObject();
+  auto* smtkRsrcRdr = vtkSMTKResourceSource::SafeDownCast(pxy);
   rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetVTKResource()->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
   }
-  auto smtkRsrc = vtkSMTKResource::SafeDownCast(pxy);
+  auto* smtkRsrc = vtkSMTKResource::SafeDownCast(pxy);
   rsrc = smtkRsrc ? smtkRsrc->GetResource() : nullptr;
   if (rsrc)
   {
@@ -167,8 +167,8 @@ void pqSMTKResource::synchronizeResource()
   auto smtkRsrc = this->getResource();
   if (smtkRsrc != lastRsrc)
   {
-    auto behavior = pqSMTKBehavior::instance();
-    auto rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
+    auto* behavior = pqSMTKBehavior::instance();
+    auto* rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
     auto rsrcMgr = rsrcMgrPxy ? rsrcMgrPxy->smtkResourceManager() : nullptr;
     if (!rsrcMgr)
     {

@@ -43,7 +43,7 @@ std::set<Operation::Index> CreatorGroup::operationsForResource(
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     if (resourceForOperation(index) == resourceName)
     {
@@ -65,7 +65,7 @@ std::set<std::string> CreatorGroup::supportedResources() const
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     resources.insert(resourceForOperation(index));
   }

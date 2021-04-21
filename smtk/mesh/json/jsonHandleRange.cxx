@@ -17,7 +17,7 @@ using nlohmann::json;
 
 void to_json(nlohmann::json& j, const smtk::mesh::HandleRange& handleRange)
 {
-  for (auto& handleInterval : handleRange)
+  for (const auto& handleInterval : handleRange)
   {
     j.push_back(std::make_pair(handleInterval.lower(), handleInterval.upper()));
   }
@@ -32,7 +32,7 @@ void from_json(const nlohmann::json& j, smtk::mesh::HandleRange& handleRange)
 
   std::pair<Handle, Handle> handlePair;
 
-  for (auto& jsonHandleInterval : j)
+  for (const auto& jsonHandleInterval : j)
   {
     handlePair = jsonHandleInterval.get<std::pair<Handle, Handle>>();
     handleRange.insert(handleRange.end(), HandleInterval(handlePair.first, handlePair.second));

@@ -24,7 +24,8 @@ void PointLocatorCache::synchronize(
   const smtk::operation::Operation&,
   const smtk::operation::Operation::Result& result)
 {
-  for (auto& component : { result->findComponent("expunged"), result->findComponent("modified") })
+  for (const auto& component :
+       { result->findComponent("expunged"), result->findComponent("modified") })
   {
     for (std::size_t i = 0; i < component->numberOfValues(); ++i)
     {

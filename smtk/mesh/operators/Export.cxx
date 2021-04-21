@@ -129,7 +129,7 @@ Export::Specification Export::createSpecification()
   bool firstFormat = true;
   for (auto& ioType : smtk::io::ExportMesh::SupportedIOTypes())
   {
-    for (auto& format : ioType->FileFormats())
+    for (const auto& format : ioType->FileFormats())
     {
       if (format.CanExport())
       {
@@ -144,7 +144,7 @@ Export::Specification Export::createSpecification()
 
         fileFilters << format.Name << "(";
         bool first = true;
-        for (auto& ext : format.Extensions)
+        for (const auto& ext : format.Extensions)
         {
           if (first)
           {

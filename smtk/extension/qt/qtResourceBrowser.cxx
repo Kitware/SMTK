@@ -88,7 +88,7 @@ qtResourceBrowser::~qtResourceBrowser()
 
 QTreeView* qtResourceBrowser::createDefaultView(QWidget* parent)
 {
-  auto view = new QTreeView(parent);
+  auto* view = new QTreeView(parent);
   view->setObjectName(QStringLiteral("m_view"));
   view->setAcceptDrops(true);
   view->setDragEnabled(true);
@@ -117,7 +117,7 @@ void qtResourceBrowser::setPhraseModel(const smtk::view::PhraseModelPtr& model)
   }
   m_p->m_phraseModel = model;
   // TODO: Is this all we need?
-  auto dpmodel = m_p->descriptivePhraseModel();
+  auto* dpmodel = m_p->descriptivePhraseModel();
   if (m_p->m_phraseModel && dpmodel)
   {
     dpmodel->setPhraseModel(m_p->m_phraseModel);
@@ -229,8 +229,8 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
     // Ignore selections generated from this panel.
     return;
   }
-  auto qview = m_p->m_view;
-  auto qmodel = m_p->descriptivePhraseModel();
+  auto* qview = m_p->m_view;
+  auto* qmodel = m_p->descriptivePhraseModel();
   auto root = m_p->m_phraseModel->root();
   QItemSelection qseln;
   if (root)
@@ -250,7 +250,7 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
         return 0;
       });
   }
-  auto smodel = dynamic_cast<QAbstractProxyModel*>(qview->selectionModel()->model());
+  auto* smodel = dynamic_cast<QAbstractProxyModel*>(qview->selectionModel()->model());
   // If our top-level model is a proxy model, map the selected
   // indices from the descriptive phrase space into the proxy's
   // space.

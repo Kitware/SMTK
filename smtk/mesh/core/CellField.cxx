@@ -28,9 +28,7 @@ CellField::CellField(const smtk::mesh::MeshSet& meshset, const std::string& name
 {
 }
 
-CellField::CellField(const smtk::mesh::CellField& other)
-
-  = default;
+CellField::CellField(const smtk::mesh::CellField& other) = default;
 
 CellField::~CellField() = default;
 

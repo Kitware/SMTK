@@ -3,8 +3,7 @@ set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000 )
 
 ##------------------------------------------------------------------------------
 ## Ignore warnings in generated code during the build process
-set (CTEST_CUSTOM_WARNING_EXCEPTION
-  ${CTEST_CUSTOM_WARNING_EXCEPTION}
+list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   # For *NIX builds, MOAB does not generate export headers. Instead, it builds
   # its libraries with default (i.e. public) visibility. SMTK builds with hidden
   # visibility, so on MacOS we get warnings that match the following pattern
@@ -14,6 +13,9 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   #
   # There is also an instance from a protected class in smtkQtExt.
   "warning: direct access in function .* to global weak symbol 'typeinfo "
+
+  # Ignore warnings from CMake autogen code
+  "autogen"
 )
 
 ##------------------------------------------------------------------------------

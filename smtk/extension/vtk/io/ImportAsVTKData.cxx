@@ -77,7 +77,7 @@ std::vector<ImportFormat> ImportAsVTKData::fileFormats() const
   auto gens = ImportAsVTKData::generators().lock();
   if (gens != nullptr)
   {
-    for (auto gen : *gens)
+    for (auto* gen : *gens)
     {
       auto formats_ = gen->fileFormats();
       formats.insert(formats.end(), formats_.begin(), formats_.end());

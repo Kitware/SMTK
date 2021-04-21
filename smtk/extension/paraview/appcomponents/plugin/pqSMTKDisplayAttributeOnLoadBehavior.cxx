@@ -49,7 +49,7 @@ pqSMTKDisplayAttributeOnLoadBehavior::pqSMTKDisplayAttributeOnLoadBehavior(QObje
   }
 
   // Track server connects/disconnects
-  auto rsrcBehavior = pqSMTKBehavior::instance();
+  auto* rsrcBehavior = pqSMTKBehavior::instance();
   QObject::connect(
     rsrcBehavior,
     SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
@@ -135,7 +135,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
   const smtk::resource::Resource& rsrc,
   smtk::resource::EventType event)
 {
-  auto attr = dynamic_cast<const smtk::attribute::Resource*>(&rsrc);
+  const auto* attr = dynamic_cast<const smtk::attribute::Resource*>(&rsrc);
   if (attr)
   {
     // Find the attribute panel. For now, only deal with one;

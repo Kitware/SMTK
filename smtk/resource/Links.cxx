@@ -134,7 +134,7 @@ bool Links::isLinkedTo(
   // the input resource. If it doesn't exist, then there is no link.
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
-  auto& resourceLinks = resourceLinkData.get<ResourceLinkData::Right>();
+  const auto& resourceLinks = resourceLinkData.get<ResourceLinkData::Right>();
 
   // All resource links held by a resource have a lhs = the containing resource.
   // We therefore only need to find the resource link with a rhs = the input
@@ -234,7 +234,7 @@ Links::linkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2, const Role
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
 
   PersistentObjectSet objectSet;
-  for (auto& resourceLink : resourceLinkData)
+  for (const auto& resourceLink : resourceLinkData)
   {
     // Access the resource associated with this link. If it cannot be resolved,
     // there's not much we can do with it.
@@ -245,7 +245,7 @@ Links::linkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2, const Role
       continue;
     }
 
-    auto& data = resourceLink.get<Component::Links::Data::Left>();
+    const auto& data = resourceLink.get<Component::Links::Data::Left>();
     auto range = data.equal_range(std::make_tuple(lhs2, role));
 
     for (auto& link = range.first; link != range.second; ++link)
@@ -301,7 +301,7 @@ PersistentObjectSet Links::linkedFrom(
   // there is no link.
   const Component::Links::Data& componentLinkData = *resourceRange.first;
 
-  auto& data = componentLinkData.get<Component::Links::Data::Right>();
+  const auto& data = componentLinkData.get<Component::Links::Data::Right>();
   auto range = data.equal_range(std::make_tuple(rhs2, role));
 
   for (auto& link = range.first; link != range.second; ++link)
@@ -409,8 +409,8 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
     return std::make_pair(ResourcePtr(), Component::Links::Data::undefinedRole);
   }
 
-  auto& resourceLink = resourceLinkData.value(key.first);
-  auto& componentLink = resourceLink.at(key.second);
+  const auto& resourceLink = resourceLinkData.value(key.first);
+  const auto& componentLink = resourceLink.at(key.second);
 
   // Refresh the link using the manager, if one is available
   //
@@ -448,8 +448,8 @@ std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(
     return std::make_pair(smtk::common::UUID::null(), Component::Links::Data::undefinedRole);
   }
 
-  auto& resourceLink = resourceLinkData.value(key.first);
-  auto& componentLink = resourceLink.at(key.second);
+  const auto& resourceLink = resourceLinkData.value(key.first);
+  const auto& componentLink = resourceLink.at(key.second);
 
   if (componentLink.right != linkToResource)
   {
@@ -457,7 +457,7 @@ std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(
   }
   else
   {
-    auto& link = resourceLinkData.at(key.first);
+    const auto& link = resourceLinkData.at(key.first);
     return std::make_pair(link.right, link.role);
   }
 }
@@ -475,8 +475,8 @@ LinkInformation Links::linkedObjectInformation(const Resource* lhs1, const Links
     return information;
   }
 
-  auto& resourceLink = resourceLinkData.at(key.first);
-  auto& componentLink = resourceLink.at(key.second);
+  const auto& resourceLink = resourceLinkData.at(key.first);
+  const auto& componentLink = resourceLink.at(key.second);
 
   // Refresh the link using the manager, if one is available
   //

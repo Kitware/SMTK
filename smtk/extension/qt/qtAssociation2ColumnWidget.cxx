@@ -107,7 +107,7 @@ qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* 
   std::ostringstream receiverSource;
   receiverSource << "qtAssociation2ColumnWidget_" << this;
   m_selectionSourceName = receiverSource.str();
-  auto uiManager = m_view->uiManager();
+  auto* uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
     std::cerr << "qtAssociation2ColumnWidget: Could not find UI Manager!\n";
@@ -716,7 +716,7 @@ void qtAssociation2ColumnWidget::hoverRow(const QModelIndex& idx)
     return;
   }
 
-  auto uiManager = m_view->uiManager();
+  auto* uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
     return;
@@ -763,7 +763,7 @@ void qtAssociation2ColumnWidget::hoverRow(const QModelIndex& idx)
 
 void qtAssociation2ColumnWidget::resetHover()
 {
-  auto uiManager = m_view->uiManager();
+  auto* uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
     return;
@@ -826,7 +826,7 @@ void qtAssociation2ColumnWidget::onCurrentItemChanged(
   // no item needing its background cleared.
   if (item == m_internals->lastHighlightedItem)
   {
-    auto uiManager = m_view->uiManager();
+    auto* uiManager = m_view->uiManager();
     if (uiManager == nullptr)
     {
       return;

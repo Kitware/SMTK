@@ -233,7 +233,7 @@ void qtCategorySelectorView::updateModelAssociation()
 {
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
-    auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
+    auto* iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
     {
       iview->updateModelAssociation();

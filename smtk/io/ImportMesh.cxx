@@ -48,7 +48,7 @@ bool ImportMesh::ExtensionIsSupported(const std::string& ext)
 {
   for (auto& importer : smtk::io::ImportMesh::SupportedIOTypes())
   {
-    for (auto& format : importer->FileFormats())
+    for (const auto& format : importer->FileFormats())
     {
       if (
         format.CanImport() &&
@@ -71,7 +71,7 @@ smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
 
   for (auto& importer : smtk::io::ImportMesh::SupportedIOTypes())
   {
-    for (auto& format : importer->FileFormats())
+    for (const auto& format : importer->FileFormats())
     {
       if (
         format.CanImport() &&

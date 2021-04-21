@@ -139,7 +139,7 @@ void pqSMTKRenderResourceBehavior::destroyPipelineSource(
     pqObjectBuilder* builder = core->getObjectBuilder();
     builder->destroy(source);
 
-    if (auto activeView = pqActiveObjects::instance().activeView())
+    if (auto* activeView = pqActiveObjects::instance().activeView())
     {
       activeView->render();
     }
@@ -152,7 +152,7 @@ void pqSMTKRenderResourceBehavior::renderPipelineSource(pqSMTKResource* source)
 
   m_p->ApplyBehavior(source);
 
-  if (auto activeView = pqActiveObjects::instance().activeView())
+  if (auto* activeView = pqActiveObjects::instance().activeView())
   {
     activeView->render();
     pqCameraReaction::zoomToData();

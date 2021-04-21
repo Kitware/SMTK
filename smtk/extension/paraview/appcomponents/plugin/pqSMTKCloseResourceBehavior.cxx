@@ -112,7 +112,7 @@ void pqCloseResourceReaction::closeResource()
       {
         // If user pref is DontShowAndSave, an Aborted save dialog must mean
         // Discard, otherwise there's no way to discard a modified resource.
-        auto settings = vtkSMTKSettings::GetInstance();
+        auto* settings = vtkSMTKSettings::GetInstance();
         int showSave = settings->GetShowSaveResourceOnClose();
         ret =
           showSave == vtkSMTKSettings::DontShowAndSave ? QMessageBox::Discard : QMessageBox::Cancel;
@@ -194,7 +194,7 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
   QTimer::singleShot(0, this, [this]() {
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       QAction* closeResourceAction =

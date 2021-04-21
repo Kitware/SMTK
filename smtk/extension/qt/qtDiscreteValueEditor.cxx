@@ -86,7 +86,7 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
 
 void qtDiscreteValueEditor::createWidget()
 {
-  auto uiManager = this->Internals->m_inputItem->uiManager();
+  auto* uiManager = this->Internals->m_inputItem->uiManager();
   smtk::attribute::ResourcePtr attResource;
   if (uiManager)
   {
@@ -319,7 +319,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
 
 void qtDiscreteValueEditor::updateContents()
 {
-  auto uiManager = this->Internals->m_inputItem->uiManager();
+  auto* uiManager = this->Internals->m_inputItem->uiManager();
   if (uiManager == nullptr)
     return;
 
@@ -371,7 +371,7 @@ void qtDiscreteValueEditor::updateContents()
       }
     }
 
-    auto iiview = this->Internals->m_inputItem->m_itemInfo.baseView();
+    auto* iiview = this->Internals->m_inputItem->m_itemInfo.baseView();
     int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
     if (this->Internals->m_inputItem->uiManager())
     {

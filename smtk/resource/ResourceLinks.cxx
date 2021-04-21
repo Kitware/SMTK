@@ -14,6 +14,8 @@
 
 #include "smtk/resource/Resource.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace resource
@@ -42,15 +44,15 @@ const Resource* ResourceLinks::leftHandSideResource() const
 
 bool ResourceLinks::resolve(const ResourcePtr& resource) const
 {
-  for (const Surrogate& surrogate : m_data)
+  auto i = std::find_if(m_data.begin(), m_data.end(), [&resource](const Surrogate& surrogate) {
+    return surrogate.typeName() == resource->typeName() && surrogate.id() == resource->id();
+  });
+  if (i == m_data.end())
   {
-    if (surrogate.typeName() == resource->typeName() && surrogate.id() == resource->id())
-    {
-      surrogate.resolve(resource);
-      return true;
-    }
+    return false;
   }
-  return false;
+  i->resolve(resource);
+  return true;
 }
 
 bool ResourceLinks::removeAllLinksTo(const ResourcePtr& resource)

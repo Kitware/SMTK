@@ -60,13 +60,13 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   QObject::connect(
     &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
 
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk attribute panel", this);
   }
 
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
   pqCoreUtilities::connect(smtkSettings, vtkCommand::ModifiedEvent, this, SLOT(updateSettings()));
 }
 
@@ -159,10 +159,10 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   // Start watching the resource's associate PV server for user preference changes.
   pqServer* server = pqActiveObjects::instance().activeServer();
   vtkSMSessionProxyManager* pxm = server ? server->proxyManager() : nullptr;
-  auto paletteProxy = pxm ? pxm->GetProxy("settings", "ColorPalette") : nullptr;
-  auto defaultValueColorProp =
+  auto* paletteProxy = pxm ? pxm->GetProxy("settings", "ColorPalette") : nullptr;
+  auto* defaultValueColorProp =
     paletteProxy ? paletteProxy->GetProperty("SMTKDefaultValueBackground") : nullptr;
-  auto invalidValueColorProp =
+  auto* invalidValueColorProp =
     paletteProxy ? paletteProxy->GetProperty("SMTKInvalidValueBackground") : nullptr;
   if (defaultValueColorProp && invalidValueColorProp)
   {
@@ -237,7 +237,7 @@ bool pqSMTKAttributePanel::displayResourceOnServer(const smtk::attribute::Resour
   smtk::resource::ManagerPtr rsrcMgr;
   if (rsrc && (rsrcMgr = rsrc->manager()))
   {
-    auto behavior = pqSMTKBehavior::instance();
+    auto* behavior = pqSMTKBehavior::instance();
     pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
     if (wrapper)
     {
@@ -271,13 +271,13 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     smtkErrorMacro(smtk::io::Logger::instance(), "View passed but no resource indicated.");
     return false;
   }
-  auto qview = m_attrUIMgr->setSMTKView(view, this->widget());
+  auto* qview = m_attrUIMgr->setSMTKView(view, this->widget());
   return qview != nullptr;
 }
 
 bool pqSMTKAttributePanel::updatePipeline()
 {
-  auto dataSource = pqActiveObjects::instance().activeSource();
+  auto* dataSource = pqActiveObjects::instance().activeSource();
   return this->displayPipelineSource(dataSource);
 }
 
@@ -288,6 +288,6 @@ void pqSMTKAttributePanel::updateSettings()
     return;
   }
 
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
   m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 }

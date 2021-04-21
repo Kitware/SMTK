@@ -38,7 +38,7 @@ bool Instance::setPrototype(const EntityRef& proto)
   }
 
   auto rec = this->entityRecord();
-  auto arr = this->findArrangement(INSTANCE_OF, 0);
+  auto* arr = this->findArrangement(INSTANCE_OF, 0);
   if (arr)
   {
     rec->unarrange(INSTANCE_OF, 0, true);

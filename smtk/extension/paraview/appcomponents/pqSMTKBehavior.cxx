@@ -57,10 +57,10 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
   // Blech: pqApplicationCore doesn't have the selection manager yet,
   // so wait until we hear that the server is ready to make the connection.
   // We can't have a selection before the first connection, anyway.
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
-    auto builder = pqCore->getObjectBuilder();
+    auto* builder = pqCore->getObjectBuilder();
     QObject::connect(
       builder, SIGNAL(proxyCreated(pqProxy*)), this, SLOT(handleNewSMTKProxies(pqProxy*)));
     QObject::connect(
@@ -145,7 +145,7 @@ void pqSMTKBehavior::addPQProxy(pqSMTKWrapper* rsrcMgr)
     return;
   }
 
-  auto server = rsrcMgr->getServer();
+  auto* server = rsrcMgr->getServer();
   auto it = m_p->Remotes.find(server);
   if (it == m_p->Remotes.end())
   {
@@ -205,7 +205,7 @@ void pqSMTKBehavior::visitResourceManagersOnServers(
 
 void pqSMTKBehavior::addManagerOnServer(pqServer* server)
 {
-  auto app = pqApplicationCore::instance();
+  auto* app = pqApplicationCore::instance();
   if (!app)
   {
 #if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
@@ -226,7 +226,7 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   // a pqSMTKWrapper instance so that Qt events (notably selection
   // changes) can trigger SMTK events.
   vtkSMProxy* pxy = builder->createProxy("smtk", "SMTKWrapper", server, "smtk resources");
-  auto rmpxy = dynamic_cast<vtkSMSMTKWrapperProxy*>(pxy);
+  auto* rmpxy = dynamic_cast<vtkSMSMTKWrapperProxy*>(pxy);
   m_p->Remotes[server].first = rmpxy;
 
   // Increase the shared pointer count to prevent the wrapper from being
@@ -267,7 +267,7 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 
 void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
 {
-  auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
+  auto* rsrc = dynamic_cast<pqSMTKResource*>(pxy);
   if (rsrc)
   {
     auto it = m_p->Remotes.find(rsrc->getServer());
@@ -286,7 +286,7 @@ void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
 
 void pqSMTKBehavior::handleOldSMTKProxies(pqPipelineSource* pxy)
 {
-  auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
+  auto* rsrc = dynamic_cast<pqSMTKResource*>(pxy);
   if (rsrc)
   {
     auto it = m_p->Remotes.find(rsrc->getServer());
@@ -300,16 +300,16 @@ void pqSMTKBehavior::handleOldSMTKProxies(pqPipelineSource* pxy)
 
 bool pqSMTKBehavior::createRepresentation(pqSMTKResource* pvr, pqView* view)
 {
-  auto source = qobject_cast<pqPipelineSource*>(pvr);
-  auto pqPort = source ? source->getOutputPort(0) : nullptr;
+  auto* source = qobject_cast<pqPipelineSource*>(pvr);
+  auto* pqPort = source ? source->getOutputPort(0) : nullptr;
   if (!pqPort || !view)
     return false;
 
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (!pqCore)
     return false;
 
-  auto builder = pqCore->getObjectBuilder();
+  auto* builder = pqCore->getObjectBuilder();
   pqDataRepresentation* pqRep = builder->createDataRepresentation(pqPort, view);
   if (pqRep)
   {
@@ -340,7 +340,7 @@ pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
 
   if (!builtin)
   {
-    auto app = pqApplicationCore::instance();
+    auto* app = pqApplicationCore::instance();
     pqServer* server = app->getActiveServer();
     if (server)
     {

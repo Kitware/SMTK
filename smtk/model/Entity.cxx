@@ -1215,7 +1215,7 @@ namespace
 /// Given an entity and a mask, determine if the entity is accepted by the mask.
 bool IsValueValid(const smtk::resource::Component& comp, smtk::model::BitFlags mask)
 {
-  auto modelEnt = dynamic_cast<const smtk::model::Entity*>(&comp);
+  const auto* modelEnt = dynamic_cast<const smtk::model::Entity*>(&comp);
   if (modelEnt)
   {
     smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();
@@ -1387,18 +1387,12 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           regex re(clause.m_propName);
           std::set<std::string> keys = stringProperties.keys();
-          for (auto& key : keys)
-          {
-            if (regex_search(key, re))
-            {
-              if (CheckPropStringValues(stringProperties.at(key), clause))
-              {
-                return true;
-              }
-            }
-          }
-          // No matching property name had matching values
-          return false;
+          return std::any_of(
+            keys.begin(), keys.end(), [&re, &stringProperties, &clause](const std::string& key) {
+              // A matching property name with matching values
+              return regex_search(key, re) &&
+                CheckPropStringValues(stringProperties.at(key), clause);
+            });
         }
       }
       break;

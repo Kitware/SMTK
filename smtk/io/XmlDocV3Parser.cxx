@@ -10,6 +10,7 @@
 
 #include "smtk/io/XmlDocV3Parser.h"
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 #include "smtk/io/ItemDefinitionsHelper.h"
@@ -373,7 +374,7 @@ void XmlDocV3Parser::processExclusion(xml_node& excludeNode)
   std::vector<DefinitionPtr> defs;
   for (child = excludeNode.first_child(); child; child = child.next_sibling())
   {
-    auto tname = child.text().get();
+    const auto* tname = child.text().get();
     auto def = m_resource->findDefinition(tname);
     if (def != nullptr)
     {
@@ -420,7 +421,7 @@ void XmlDocV3Parser::processPrerequisite(xml_node& prereqNode)
   std::vector<DefinitionPtr> defs;
   for (child = prereqNode.first_child(); child; child = child.next_sibling())
   {
-    auto tname = child.text().get();
+    const auto* tname = child.text().get();
     auto def = m_resource->findDefinition(tname);
     if (def != nullptr)
     {

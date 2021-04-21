@@ -23,7 +23,7 @@ TypeContainer::TypeContainer(const TypeContainer& other)
 
 TypeContainer& TypeContainer::operator=(const TypeContainer& other)
 {
-  for (auto& entry : other.m_container)
+  for (const auto& entry : other.m_container)
   {
     m_container.emplace(std::make_pair(entry.first, entry.second->clone()));
   }

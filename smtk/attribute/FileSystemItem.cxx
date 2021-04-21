@@ -90,7 +90,7 @@ bool FileSystemItem::isValidInternal(bool useCategories, const std::set<std::str
 
 bool FileSystemItem::isExtensible() const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (!def)
   {
     return false;
@@ -207,7 +207,7 @@ bool FileSystemItem::appendValue(const std::string& val)
   {
     return false;
   }
-  auto def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (def->isValueValid(val))
   {
     m_values.push_back(val);
@@ -221,7 +221,7 @@ bool FileSystemItem::removeValue(std::size_t i)
 {
   // If i < the required number of values this is the same as unset - else if
   // its extensible remove it completely
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if (i < def->numberOfRequiredValues())
   {
     this->unset(i);
@@ -275,7 +275,7 @@ bool FileSystemItem::setNumberOfValues(std::size_t newSize)
 
 bool FileSystemItem::hasDefault() const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if (!def)
   {
     return false;
@@ -285,7 +285,7 @@ bool FileSystemItem::hasDefault() const
 
 bool FileSystemItem::setToDefault(std::size_t element)
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if (!def->hasDefault())
   {
     return false; // Doesn't have a default value
@@ -297,7 +297,7 @@ bool FileSystemItem::setToDefault(std::size_t element)
 
 bool FileSystemItem::isUsingDefault() const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if (!def->hasDefault())
   {
     return false; // Doesn't have a default value
@@ -319,7 +319,7 @@ bool FileSystemItem::isUsingDefault() const
 
 bool FileSystemItem::isUsingDefault(std::size_t element) const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   assert(m_isSet.size() > element);
   assert(m_values.size() > element);
   return def->hasDefault() && m_isSet[element] && m_values[element] == def->defaultValue();
@@ -327,7 +327,7 @@ bool FileSystemItem::isUsingDefault(std::size_t element) const
 
 std::string FileSystemItem::defaultValue() const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if (!def)
   {
     return "";
@@ -337,7 +337,7 @@ std::string FileSystemItem::defaultValue() const
 
 void FileSystemItem::reset()
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  const auto* def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   std::size_t i, n = this->numberOfRequiredValues();
   if (this->numberOfValues() != n)
   {

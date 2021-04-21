@@ -10,6 +10,7 @@
 
 #include "smtk/attribute/Categories.h"
 
+#include <algorithm>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -75,24 +76,14 @@ bool Categories::Set::passesCheck(
 
   if (comboMode == Set::CombinationMode::Any)
   {
-    for (const auto& cat : testSet)
-    {
-      if (categories.find(cat) != categories.end())
-      {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(testSet.begin(), testSet.end(), [&categories](const std::string& cat) {
+      return categories.find(cat) != categories.end();
+    });
   }
   // Ok we are doing an All check
-  for (const auto& cat : testSet)
-  {
-    if (categories.find(cat) == categories.end())
-    {
-      return false;
-    }
-  }
-  return true;
+  return std::all_of(testSet.begin(), testSet.end(), [&categories](const std::string& cat) {
+    return categories.find(cat) != categories.end();
+  });
 }
 
 bool Categories::Set::operator<(const Set& rhs) const
@@ -142,14 +133,8 @@ bool Categories::passes(const std::string& category) const
     return false;
   }
 
-  for (const auto& set : m_sets)
-  {
-    if (set.passes(category))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(
+    m_sets.begin(), m_sets.end(), [&category](const Set& set) { return set.passes(category); });
 }
 
 bool Categories::passes(const std::set<std::string>& categories) const
@@ -161,14 +146,8 @@ bool Categories::passes(const std::set<std::string>& categories) const
     return false;
   }
 
-  for (const auto& set : m_sets)
-  {
-    if (set.passes(categories))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(
+    m_sets.begin(), m_sets.end(), [&categories](const Set& set) { return set.passes(categories); });
 }
 
 std::set<std::string> Categories::categoryNames() const

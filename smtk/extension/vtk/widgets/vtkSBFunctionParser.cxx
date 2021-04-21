@@ -44,7 +44,6 @@ void vtkSBFunctionParser::vtkInternal::DefineConstants()
 
 vtkSBFunctionParser::vtkSBFunctionParser()
   : IndependentVariableName("X")
-  , Function("")
   , IsVectorResult(false)
   , InitialValue(0.0)
   , Delta(0.0)

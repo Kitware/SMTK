@@ -78,7 +78,7 @@ bool qtEventFilter::eventFilter(QObject* src, QEvent* event)
   (void)src;
   if (event->type() == QEvent::KeyPress)
   {
-    auto keyEvent = static_cast<QKeyEvent*>(event);
+    auto* keyEvent = static_cast<QKeyEvent*>(event);
     int kk = keyEvent->key();
     switch (kk)
     {
@@ -200,15 +200,15 @@ int unitQtComponentItem(int argc, char* argv[])
   std::map<smtk::resource::ComponentPtr, int>
     m_visibleThings; // Our internal state of what is selected.
 
-  auto main = new QWidget;
-  auto qvbl = new QVBoxLayout(main);
-  auto qhbl = new QHBoxLayout();
-  auto labl = new QLabel(main);
-  auto plbl = new QLabel(main);
-  auto pbtn = new QPushButton("…", main);
-  auto lbtn = new QPushButton(main);
-  auto dlog = new QDialog(pbtn);
-  auto dlbl = new QLabel(dlog);
+  auto* main = new QWidget;
+  auto* qvbl = new QVBoxLayout(main);
+  auto* qhbl = new QHBoxLayout();
+  auto* labl = new QLabel(main);
+  auto* plbl = new QLabel(main);
+  auto* pbtn = new QPushButton("…", main);
+  auto* lbtn = new QPushButton(main);
+  auto* dlog = new QDialog(pbtn);
+  auto* dlbl = new QLabel(dlog);
   plbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   dlbl->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   dlog->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
@@ -318,7 +318,7 @@ int unitQtComponentItem(int argc, char* argv[])
     std::cout << "Read operator succeeded but had empty output\n";
     return 4;
   }
-  auto qmodel = new qtDescriptivePhraseModel;
+  auto* qmodel = new qtDescriptivePhraseModel;
 
   // Test that the row count of an invalid index (without phrase model) does not cause problems
   QModelIndex invalid;
@@ -344,7 +344,7 @@ int unitQtComponentItem(int argc, char* argv[])
 
   QObject::connect(pbtn, SIGNAL(clicked()), dlog, SLOT(exec()));
   // auto combo = new QComboBox(dlog);
-  auto layout = new QVBoxLayout(dlog);
+  auto* layout = new QVBoxLayout(dlog);
   // layout->addWidget(combo);
   qmodel->setPhraseModel(phraseModel);
 
@@ -363,8 +363,8 @@ int unitQtComponentItem(int argc, char* argv[])
   layout->addWidget(listView);
   QObject::connect(pbtn, SIGNAL(clicked()), listView, SLOT(setFocus()));
 
-  auto donebox = new QHBoxLayout;
-  auto donebtn = new QPushButton("Done");
+  auto* donebox = new QHBoxLayout;
+  auto* donebtn = new QPushButton("Done");
   donebox->addWidget(dlbl);
   //donebox->addStretch();
   donebox->addWidget(donebtn);
@@ -373,12 +373,12 @@ int unitQtComponentItem(int argc, char* argv[])
   layout->addLayout(donebox);
   QObject::connect(donebtn, SIGNAL(clicked()), dlog, SLOT(accept()));
 
-  auto delegate = new smtk::extension::qtDescriptivePhraseDelegate;
+  auto* delegate = new smtk::extension::qtDescriptivePhraseDelegate;
   delegate->setTextVerticalPad(6);
   delegate->setTitleFontWeight(1);
   delegate->setDrawSubtitle(false);
   delegate->setVisibilityMode(true);
-  auto ef = new qtEventFilter(dlog);
+  auto* ef = new qtEventFilter(dlog);
   listView->installEventFilter(ef);
   QObject::connect(ef, &qtEventFilter::reset, [&m_visibleThings, &phraseModel]() {
     phraseModel->root()->visitChildren(

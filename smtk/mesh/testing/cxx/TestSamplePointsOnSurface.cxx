@@ -108,7 +108,7 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
 
   // Grab the top face (known to be named "Element Block 13")
   smtk::model::EntityRef eRef;
-  for (auto& e : currentEnts)
+  for (const auto& e : currentEnts)
   {
     if (e.name() == "Element Block 13")
     {
@@ -201,7 +201,7 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
 
   std::cout << "There are " << instances.size() << " instances" << std::endl;
 
-  for (auto& instance : instances)
+  for (const auto& instance : instances)
   {
     const std::vector<double>& coords = instance.hasTessellation()->coords();
     for (std::size_t i = 0; i < coords.size(); i += 3)

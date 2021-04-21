@@ -34,18 +34,18 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
     int phraseModelComp = viewSpec->details().findChild("PhraseModel");
     if (phraseModelComp >= 0)
     {
-      auto& phraseConfig = viewSpec->details().child(phraseModelComp);
+      const auto& phraseConfig = viewSpec->details().child(phraseModelComp);
       badgeListComp = phraseConfig.findChild("Badges");
       if (badgeListComp >= 0)
       {
-        auto& tmp = phraseConfig.child(badgeListComp);
+        const auto& tmp = phraseConfig.child(badgeListComp);
         badgeList = &tmp;
       }
     }
   }
   else
   {
-    auto& tmp = viewSpec->details().child(badgeListComp);
+    const auto& tmp = viewSpec->details().child(badgeListComp);
     badgeList = &tmp;
   }
   if (!badgeList)
@@ -56,7 +56,7 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
   for (std::size_t ii = 0; ii < badgeList->numberOfChildren(); ++ii)
   {
     std::string badgeName;
-    auto& configComp(badgeList->child(ii));
+    const auto& configComp(badgeList->child(ii));
     if (configComp.name() == "Badge")
     {
       if (configComp.attribute("Type", badgeName))
@@ -98,7 +98,7 @@ BadgeSet::BadgeList BadgeSet::badgesFor(const DescriptivePhrase* phrase) const
     return result;
   }
 
-  for (auto& badge : m_badges)
+  for (const auto& badge : m_badges)
   {
     if (badge->appliesToPhrase(phrase))
     {

@@ -133,7 +133,7 @@ Write::Specification Write::createSpecification()
   bool firstFormat = true;
   for (auto& ioType : smtk::io::WriteMesh::SupportedIOTypes())
   {
-    for (auto& format : ioType->FileFormats())
+    for (const auto& format : ioType->FileFormats())
     {
       if (format.CanWrite())
       {
@@ -148,7 +148,7 @@ Write::Specification Write::createSpecification()
 
         fileFilters << format.Name << "(";
         bool first = true;
-        for (auto& ext : format.Extensions)
+        for (const auto& ext : format.Extensions)
         {
           if (first)
           {

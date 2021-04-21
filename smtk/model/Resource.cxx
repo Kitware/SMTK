@@ -2827,7 +2827,7 @@ smtk::resource::ResourceSet Resource::associations() const
 {
   auto associatedObjects = this->links().linkedTo(AssociationRole);
   smtk::resource::ResourceSet resources;
-  for (auto& object : associatedObjects)
+  for (const auto& object : associatedObjects)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
     if (resource != nullptr)

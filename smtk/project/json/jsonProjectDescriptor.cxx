@@ -33,7 +33,7 @@ void to_json(json& j, const ProjectDescriptor& pd)
     { "projectDirectory", pd.m_directory },
   };
   json jDescriptors = json::array();
-  for (auto& descriptor : pd.m_resourceDescriptors)
+  for (const auto& descriptor : pd.m_resourceDescriptors)
   {
     json jDescriptor = descriptor;
     jDescriptors.push_back(jDescriptor);

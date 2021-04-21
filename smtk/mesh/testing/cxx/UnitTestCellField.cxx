@@ -87,7 +87,7 @@ void verify_partial_cellfields()
 
   {
     std::set<smtk::mesh::CellField> cellfields = mesh.cellFields();
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << " "
                 << cellfield.size() << std::endl;
@@ -103,7 +103,7 @@ void verify_partial_cellfields()
   std::vector<std::string> cellfieldnames;
   {
     std::set<smtk::mesh::CellField> cellfields = one.cellFields();
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << std::endl;
       cellfieldnames.push_back(cellfield.name());
@@ -132,7 +132,7 @@ void verify_partial_cellfields()
   {
     std::set<smtk::mesh::CellField> cellfields = two.cellFields();
     test(cellfields.size() == 2);
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << " "
                 << cellfield.size() << std::endl;
@@ -172,7 +172,7 @@ void verify_duplicate_cellfields()
   // Verify that the field values have been updated to the new values.
   {
     std::set<smtk::mesh::CellField> cellfields = mesh.cellFields();
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << " "
                 << cellfield.size() << std::endl;

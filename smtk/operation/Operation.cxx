@@ -362,7 +362,7 @@ void Operation::markModifiedResources(Operation::Result& result)
 
   // All resources referenced in the result are assumed to be modified.
   auto resourcesFromResult = extractResources(result);
-  for (auto& rsrc : resourcesFromResult)
+  for (const auto& rsrc : resourcesFromResult)
   {
     auto resource = rsrc.lock();
     if (resource != nullptr)
@@ -372,7 +372,7 @@ void Operation::markModifiedResources(Operation::Result& result)
       // Allow synchronized query caches to update according to this result.
       for (auto& cache : resource->queries().caches())
       {
-        if (auto synchronizedCache = dynamic_cast<SynchronizedCache*>(cache.second.get()))
+        if (auto* synchronizedCache = dynamic_cast<SynchronizedCache*>(cache.second.get()))
         {
           synchronizedCache->synchronize(*this, result);
         }

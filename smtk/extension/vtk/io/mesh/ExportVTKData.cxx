@@ -353,7 +353,7 @@ void ExportVTKData::operator()(
   {
     std::set<smtk::mesh::CellField> cellfields =
       toRender.subset(static_cast<smtk::mesh::DimensionType>(dimension)).cellFields();
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       if (cellfield.type() == smtk::mesh::FieldType::Double)
       {
@@ -389,7 +389,7 @@ void ExportVTKData::operator()(
 
     std::set<smtk::mesh::PointField> pointfields =
       toRender.subset(static_cast<smtk::mesh::DimensionType>(dimension)).pointFields();
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       if (pointfield.type() == smtk::mesh::FieldType::Double)
       {
@@ -537,7 +537,7 @@ void ExportVTKData::operator()(
   // required to be set on all of the cells/points in the meshset.
   {
     std::set<smtk::mesh::CellField> cellfields = meshset.cellFields();
-    for (auto& cellfield : cellfields)
+    for (const auto& cellfield : cellfields)
     {
       double* cellData = new double[cellfield.size() * cellfield.dimension()];
       cellfield.get(cellData);
@@ -554,7 +554,7 @@ void ExportVTKData::operator()(
     }
 
     std::set<smtk::mesh::PointField> pointfields = meshset.pointFields();
-    for (auto& pointfield : pointfields)
+    for (const auto& pointfield : pointfields)
     {
       double* pointData = new double[pointfield.size() * pointfield.dimension()];
       pointfield.get(pointData);

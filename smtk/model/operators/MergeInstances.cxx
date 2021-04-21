@@ -24,6 +24,8 @@
 
 #include "smtk/model/MergeInstances_xml.h"
 
+#include <algorithm>
+
 using namespace smtk::model;
 
 namespace smtk
@@ -51,14 +53,9 @@ bool MergeInstances::ableToOperate()
   {
     return false;
   }
-  for (const auto& instance : instances)
-  {
-    if (instance.prototype() != proto)
-    {
-      return false;
-    }
-  }
-  return true;
+  return std::all_of(instances.begin(), instances.end(), [&proto](const Instance& instance) {
+    return instance.prototype() == proto;
+  });
 }
 
 MergeInstances::Result MergeInstances::operateInternal()

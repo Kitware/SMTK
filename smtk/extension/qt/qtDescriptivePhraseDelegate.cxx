@@ -129,7 +129,7 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
   // find out the size of a badge
-  for (auto badge : badges)
+  for (auto* badge : badges)
   {
     QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     iconsize = badgeIcon.actualSize(option.decorationSize);
@@ -237,7 +237,7 @@ void qtDescriptivePhraseDelegate::paint(
   // make zero size if there are no badges.
   iconRect.setRight(iconRect.left() + padding);
 
-  for (auto badge : badges)
+  for (auto* badge : badges)
   {
     QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
@@ -336,7 +336,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
   // find out the size of each badge, so we can shift the editor over correctly.
-  for (auto badge : badges)
+  for (auto* badge : badges)
   {
     QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase.get(), backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
@@ -401,7 +401,7 @@ int determineAction(
   int py = pPos.y();
 
   int i = 0;
-  for (auto badge : badges)
+  for (auto* badge : badges)
   {
     QIcon badgeIcon(new SVGIconEngine(badge->icon(phrase, backgroundArray)));
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);

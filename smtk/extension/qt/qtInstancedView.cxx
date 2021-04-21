@@ -310,7 +310,7 @@ int qtInstancedView::handleOperationEvent(
         {
           // Update the attribute's items
           auto items = qatt->items();
-          for (auto item : items)
+          for (auto* item : items)
           {
             item->updateItemData();
           }

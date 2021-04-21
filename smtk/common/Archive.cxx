@@ -57,7 +57,7 @@ Archive::Archive(const std::string& archivePath)
 
 Archive::~Archive()
 {
-  for (auto& tempDir : m_internals->temporaryDirectories)
+  for (const auto& tempDir : m_internals->temporaryDirectories)
   {
     auto path = boost::filesystem::path(tempDir);
     if (boost::filesystem::exists(path))

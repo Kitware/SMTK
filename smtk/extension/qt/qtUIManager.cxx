@@ -278,7 +278,7 @@ void qtUIManager::initializeUI(
 
 bool qtUIManager::hasViewConstructor(const std::string& vtype) const
 {
-  auto& viewManager = m_managers.get<smtk::view::Manager::Ptr>();
+  const auto& viewManager = m_managers.get<smtk::view::Manager::Ptr>();
   if (!viewManager)
   {
     return false;
@@ -939,7 +939,7 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
   // If there is a View associated with the item - does it want it
   // displayed?
   auto item = info.item();
-  auto iview = info.baseView();
+  auto* iview = info.baseView();
   if (iview && (!iview->displayItem(item)))
   {
     return nullptr;

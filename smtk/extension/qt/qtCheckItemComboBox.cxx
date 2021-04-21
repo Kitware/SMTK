@@ -116,7 +116,7 @@ bool qtCheckItemComboBox::eventFilter(QObject* editor, QEvent* evt)
   if (evt->type() == QEvent::MouseButtonRelease)
   {
     const int index = view()->currentIndex().row();
-    auto itemModel = qobject_cast<QStandardItemModel*>(this->model());
+    auto* itemModel = qobject_cast<QStandardItemModel*>(this->model());
     QStandardItem* item = itemModel->item(index);
     if (item->isCheckable())
     {

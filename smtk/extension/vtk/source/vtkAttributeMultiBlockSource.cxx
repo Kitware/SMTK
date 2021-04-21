@@ -59,7 +59,7 @@ int vtkAttributeMultiBlockSource::RequestData(
   vtkInformationVector** /*inInfo*/,
   vtkInformationVector* outInfo)
 {
-  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  auto* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {
     vtkErrorMacro("No output dataset.");

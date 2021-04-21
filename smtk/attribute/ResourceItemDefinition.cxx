@@ -36,7 +36,7 @@ Item::Type ResourceItemDefinition::type() const
 
 bool ResourceItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto rsrc = dynamic_cast<const smtk::resource::Resource*>(obj.get());
+  const auto* rsrc = dynamic_cast<const smtk::resource::Resource*>(obj.get());
   if (rsrc == nullptr)
   {
     return false;

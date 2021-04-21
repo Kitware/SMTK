@@ -45,7 +45,7 @@ AssociationBadge::AssociationBadge(BadgeSet& parent, const Configuration::Compon
   std::size_t numChildren = config.numberOfChildren();
   for (std::size_t ii = 0; ii < numChildren; ++ii)
   {
-    auto& child = config.child(ii);
+    const auto& child = config.child(ii);
     if (child.name() == "Requires")
     {
       std::string def;
@@ -181,7 +181,7 @@ bool AssociationBadge::appliesToObject(const smtk::resource::PersistentObjectPtr
   {
     return true;
   }
-  auto rsrc = dynamic_cast<smtk::resource::Resource*>(obj.get());
+  auto* rsrc = dynamic_cast<smtk::resource::Resource*>(obj.get());
   if (rsrc)
   {
     if (m_applyToComponent.empty())
@@ -190,7 +190,7 @@ bool AssociationBadge::appliesToObject(const smtk::resource::PersistentObjectPtr
     }
     return false;
   }
-  auto comp = dynamic_cast<smtk::resource::Component*>(obj.get());
+  auto* comp = dynamic_cast<smtk::resource::Component*>(obj.get());
   if (comp)
   {
     rsrc = comp->resource().get();
@@ -216,7 +216,7 @@ std::set<std::string> AssociationBadge::unmetRequirements(
   // Subtract requirements as they are met.
   for (const auto& candidate : poset)
   {
-    auto att = dynamic_cast<smtk::attribute::Attribute*>(candidate.get());
+    auto* att = dynamic_cast<smtk::attribute::Attribute*>(candidate.get());
     if (!att)
     {
       continue;

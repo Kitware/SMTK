@@ -109,7 +109,7 @@ pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
   m_p = new Internal;
   m_p->setup(this);
 
-  auto behavior = pqSMTKBehavior::instance();
+  auto* behavior = pqSMTKBehavior::instance();
   QObject::connect(
     behavior,
     SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)),
@@ -126,7 +126,7 @@ pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
     return false; // terminate early
   });
 
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk operation panel", this);
@@ -273,7 +273,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   }
 
   smtk::view::ConfigurationPtr view = m_attrUIMgr->findOrCreateOperationView();
-  auto baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
+  auto* baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
   didDisplay = baseView != nullptr;
 
   // Connect the signal emitted from the operation view after an operation is
@@ -434,7 +434,7 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     {
       if (opInstance->configure(nullptr, params->associations()))
       {
-        auto baseView = dynamic_cast<smtk::extension::qtBaseAttributeView*>(
+        auto* baseView = dynamic_cast<smtk::extension::qtBaseAttributeView*>(
           m_attrUIMgr ? m_attrUIMgr->topView() : nullptr);
         if (baseView)
         {

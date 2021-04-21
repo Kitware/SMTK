@@ -137,7 +137,7 @@ SMTKCORE_EXPORT void from_json(
   result = j.find("Items");
   if (result != j.end())
   {
-    for (auto& item : *result)
+    for (const auto& item : *result)
     {
       auto itemName = item.find("Name");
       if (itemName == item.end())

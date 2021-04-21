@@ -80,7 +80,7 @@ bool pqSMTKInfiniteCylinderItemWidget::createProxyAndWidget(
   // II. Initialize the properties.
   m_p->m_pvwidget = widget;
   this->updateWidgetFromItem();
-  auto widgetProxy = widget->widgetProxy();
+  auto* widgetProxy = widget->widgetProxy();
   widgetProxy->UpdateVTKObjects();
   // vtkSMPropertyHelper(widgetProxy, "RotationEnabled").Set(false);
 

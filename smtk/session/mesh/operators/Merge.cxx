@@ -227,7 +227,7 @@ Merge::Result Merge::operateInternal()
 
   // Now that the new mesh is created, we can delete the old meshes without
   // losing the cell and point information.
-  for (auto& mesh : toRemove)
+  for (const auto& mesh : toRemove)
   {
     meshResource->removeMeshes(mesh);
   }
@@ -247,7 +247,7 @@ Merge::Result Merge::operateInternal()
   // Declare the model as "dangling" so it will be transcribed.
   resource->session()->declareDanglingEntity(entityRef);
 
-  for (auto& parentId : element->m_parents)
+  for (const auto& parentId : element->m_parents)
   {
     smtk::model::EntityRef parentEntityRef(resource, parentId);
     resource->session()->declareDanglingEntity(parentEntityRef);

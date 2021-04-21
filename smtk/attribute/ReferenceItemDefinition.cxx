@@ -20,6 +20,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 
+#include <algorithm>
 #include <cassert>
 
 namespace smtk
@@ -223,11 +224,11 @@ void ReferenceItemDefinition::copyTo(Ptr dest, smtk::attribute::ItemDefinition::
   dest->setNumberOfRequiredValues(m_numberOfRequiredValues);
   dest->setMaxNumberOfValues(m_maxNumberOfValues);
   dest->setIsExtensible(m_isExtensible);
-  for (auto& acceptable : m_acceptable)
+  for (const auto& acceptable : m_acceptable)
   {
     dest->setAcceptsEntries(acceptable.first, acceptable.second, true);
   }
-  for (auto& rejected : m_rejected)
+  for (const auto& rejected : m_rejected)
   {
     dest->setRejectsEntries(rejected.first, rejected.second, true);
   }
@@ -272,7 +273,7 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
   // to see if any are exact matches for rsrc.
 
   // For every element in the rejected filter map...
-  for (auto& rejected : m_rejected)
+  for (const auto& rejected : m_rejected)
   {
     // ...we check if the resource in question is of that type. Rejected
     // entries for resources do not have a filter string, so we check that
@@ -289,19 +290,18 @@ bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc
     return true;
   }
 
-  // For every element in the accepted filter map...
-  for (auto& acceptable : m_acceptable)
-  {
+  // Finally, for every element in the accepted filter map...
+  using ValueType = std::multimap<std::string, std::string>::value_type;
+  return std::any_of(
+    m_acceptable.begin(),
+    m_acceptable.end(),
     // ...we check if the resource in question is of that type. Acceptable
     // entries for resources do not have a filter string, so we check that
     // the filter string is empty.
-    if ((acceptable.second.empty() || m_onlyResources) && rsrc.isOfType(acceptable.first))
-    {
-      return true;
-    }
-  }
-
-  return false;
+    [this, &rsrc](const ValueType& acceptable) {
+      return (acceptable.second.empty() || this->m_onlyResources) &&
+        rsrc.isOfType(acceptable.first);
+    });
 }
 
 bool ReferenceItemDefinition::checkCategories(const smtk::resource::Component* comp) const
@@ -311,7 +311,7 @@ bool ReferenceItemDefinition::checkCategories(const smtk::resource::Component* c
     return true;
   }
 
-  const auto att = dynamic_cast<const smtk::attribute::Attribute*>(comp);
+  const auto* const att = dynamic_cast<const smtk::attribute::Attribute*>(comp);
   if (!att)
   {
     return true;
@@ -335,7 +335,7 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
   }
 
   // For every element in the rejected filter map...
-  for (auto& rejected : m_rejected)
+  for (const auto& rejected : m_rejected)
   {
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
@@ -355,7 +355,7 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
   }
 
   // For every element in the accepted filter map...
-  for (auto& acceptable : m_acceptable)
+  for (const auto& acceptable : m_acceptable)
   {
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts

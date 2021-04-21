@@ -142,7 +142,7 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
 
   if (m_state & 0x02)
   {
-    auto currView = pqActiveObjects::instance().activeView();
+    auto* currView = pqActiveObjects::instance().activeView();
     if (!m_surfacePickHelper)
     {
       m_surfacePickHelper = new pqPointPickingHelper(QKeySequence(tr("P")), false, this);

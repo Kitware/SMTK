@@ -251,7 +251,7 @@ public:
     auto rsrc = std::dynamic_pointer_cast<ResourceA>(std::get<0>(in));
     if (rsrc)
     {
-      auto provider = new Geometry2(rsrc);
+      auto* provider = new Geometry2(rsrc);
       return smtk::geometry::GeometryPtr(provider);
     }
     throw std::invalid_argument("Not a test resource.");

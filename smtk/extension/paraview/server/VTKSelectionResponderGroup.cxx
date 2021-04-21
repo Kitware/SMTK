@@ -35,7 +35,7 @@ std::set<smtk::operation::Operation::Index> VTKSelectionResponderGroup::operatio
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     for (const auto& resourceTypeName : this->values(index))
     {
@@ -61,7 +61,7 @@ std::set<std::string> VTKSelectionResponderGroup::supportedResources() const
 
   std::set<Operation::Index> allOperations = this->operations();
 
-  for (auto& index : allOperations)
+  for (const auto& index : allOperations)
   {
     for (const auto& resourceTypeName : this->values(index))
     {

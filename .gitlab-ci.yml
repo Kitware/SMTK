@@ -33,179 +33,179 @@ stages:
 
 ## Build and test
 
-build:fedora31:
+build:fedora33:
     extends:
-        - .fedora31
+        - .fedora33
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31:
+test:fedora33:
     extends:
-        - .fedora31
+        - .fedora33
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31
+        - build:fedora33
     needs:
-        - build:fedora31
+        - build:fedora33
 
-build:fedora31-vtk-python3:
+build:fedora33-vtk-python3:
     extends:
-        - .fedora31_vtk_python3
+        - .fedora33_vtk_python3
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-vtk-python3:
+test:fedora33-vtk-python3:
     extends:
-        - .fedora31_vtk_python3
+        - .fedora33_vtk_python3
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-vtk-python3
+        - build:fedora33-vtk-python3
     needs:
-        - build:fedora31-vtk-python3
+        - build:fedora33-vtk-python3
 
-build:fedora31-paraview:
+build:fedora33-paraview:
     extends:
-        - .fedora31_paraview
+        - .fedora33_paraview
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-paraview:
+test:fedora33-paraview:
     extends:
-        - .fedora31_paraview
+        - .fedora33_paraview
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-paraview
+        - build:fedora33-paraview
     needs:
-        - build:fedora31-paraview
+        - build:fedora33-paraview
 
-build:fedora31-nodata:
+build:fedora33-nodata:
     extends:
-        - .fedora31_nodata
+        - .fedora33_nodata
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-nodata:
+test:fedora33-nodata:
     extends:
-        - .fedora31_nodata
+        - .fedora33_nodata
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-nodata
+        - build:fedora33-nodata
     needs:
-        - build:fedora31-nodata
+        - build:fedora33-nodata
 
-build:fedora31-vtk-python2:
+build:fedora33-vtk-python2:
     extends:
-        - .fedora31_vtk_python2
+        - .fedora33_vtk_python2
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-vtk-python2:
+test:fedora33-vtk-python2:
     extends:
-        - .fedora31_vtk_python2
+        - .fedora33_vtk_python2
         - .cmake_test_linux
         - .linux_test_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-vtk-python2
+        - build:fedora33-vtk-python2
     needs:
-        - build:fedora31-vtk-python2
+        - build:fedora33-vtk-python2
 
 ## Lint builds
 
-build:fedora31-asan:
+build:fedora33-asan:
     extends:
-        - .fedora31_asan
+        - .fedora33_asan
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-asan:
+test:fedora33-asan:
     extends:
-        - .fedora31_asan
+        - .fedora33_asan
         - .cmake_memcheck_linux
         - .linux_test_priv_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-asan
+        - build:fedora33-asan
     needs:
-        - build:fedora31-asan
+        - build:fedora33-asan
 
-build:fedora31-ubsan:
+build:fedora33-ubsan:
     extends:
-        - .fedora31_ubsan
+        - .fedora33_ubsan
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-ubsan:
+test:fedora33-ubsan:
     extends:
-        - .fedora31_ubsan
+        - .fedora33_ubsan
         - .cmake_memcheck_linux
         - .linux_test_priv_tags
         - .run_automatically
     dependencies:
-        - build:fedora31-ubsan
+        - build:fedora33-ubsan
     needs:
-        - build:fedora31-ubsan
+        - build:fedora33-ubsan
 
-build:fedora31-tidy:
+build:fedora33-tidy:
     extends:
-        - .fedora31_tidy
+        - .fedora33_tidy
         - .cmake_build_linux_tidy
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-build:fedora31-coverage:
+build:fedora33-coverage:
     extends:
-        - .fedora31_coverage
+        - .fedora33_coverage
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora31-coverage:
+test:fedora33-coverage:
     extends:
-        - .fedora31_coverage
+        - .fedora33_coverage
         - .cmake_test_linux
         - .linux_test_tags
         - .cmake_coverage_artifacts
         - .run_automatically
     dependencies:
-        - build:fedora31-coverage
+        - build:fedora33-coverage
     needs:
-        - build:fedora31-coverage
+        - build:fedora33-coverage
 
-analyze:fedora31-coverage:
+analyze:fedora33-coverage:
     extends:
-        - .fedora31_coverage
+        - .fedora33_coverage
         - .cmake_coverage_linux
         - .linux_builder_tags
         - .run_automatically
     dependencies:
-        - test:fedora31-coverage
+        - test:fedora33-coverage
     needs:
-        - test:fedora31-coverage
+        - test:fedora33-coverage
 
 # macOS
 

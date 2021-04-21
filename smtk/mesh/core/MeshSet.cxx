@@ -539,7 +539,7 @@ std::set<smtk::mesh::CellField> MeshSet::cellFields() const
   }
 
   std::set<smtk::mesh::CellFieldTag> tags = iface->computeCellFieldTags(m_handle);
-  for (auto& tag : tags)
+  for (const auto& tag : tags)
   {
     if (iface->hasCellField(this->range(), tag))
     {
@@ -604,7 +604,7 @@ std::set<smtk::mesh::PointField> MeshSet::pointFields() const
   }
 
   std::set<smtk::mesh::PointFieldTag> tags = iface->computePointFieldTags(m_handle);
-  for (auto& tag : tags)
+  for (const auto& tag : tags)
   {
     if (iface->hasPointField(this->range(), tag))
     {

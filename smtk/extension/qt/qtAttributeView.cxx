@@ -299,7 +299,7 @@ void qtAttributeView::createWidget()
 
   if (!m_attributeNameRegex.empty())
   {
-    auto nameDelegate = new qtRegexDelegate(m_internals->ListTable);
+    auto* nameDelegate = new qtRegexDelegate(m_internals->ListTable);
     nameDelegate->setExpression(m_attributeNameRegex);
     m_internals->ListTable->setItemDelegateForColumn(name_column, nameDelegate);
   }
@@ -478,7 +478,7 @@ void qtAttributeView::createWidget()
     &QStandardItemModel::dataChanged,
     this,
     [this](const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&) {
-      auto item = m_internals->ListTableModel->itemFromIndex(topLeft);
+      auto* item = m_internals->ListTableModel->itemFromIndex(topLeft);
       this->onAttributeItemChanged(item);
     },
     Qt::QueuedConnection);
@@ -1100,7 +1100,7 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   this->setFixedLabelWidth(tmpLen);
   smtk::attribute::DefinitionPtr def = att->definition();
   // Lets get a style for this attribute
-  auto& style = this->findStyle(def);
+  const auto& style = this->findStyle(def);
   m_internals->CurrentAtt = new qtAttribute(att, style, m_internals->AttFrame, this);
   m_internals->selectedAttribute = att;
   // By default use the basic layout with no model associations since this class
@@ -1439,7 +1439,7 @@ int qtAttributeView::handleOperationEvent(
       {
         // Update the attribute's items
         auto items = m_internals->CurrentAtt->items();
-        for (auto item : items)
+        for (auto* item : items)
         {
           item->updateItemData();
         }
@@ -1598,7 +1598,7 @@ const smtk::view::Configuration::Component& smtk::extension::qtAttributeView::fi
   // Are there more definitions for us to check?
   if (def->baseDefinition())
   {
-    auto& style = this->findStyle(def->baseDefinition(), false);
+    const auto& style = this->findStyle(def->baseDefinition(), false);
     // Did we get an empty style?
     if (style.numberOfChildren())
     {

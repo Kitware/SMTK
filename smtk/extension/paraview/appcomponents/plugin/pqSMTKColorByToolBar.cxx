@@ -27,7 +27,7 @@ pqSMTKColorByToolBar::pqSMTKColorByToolBar(QWidget* parent)
   : Superclass("SMTK Color Mode", parent)
 {
   this->setObjectName("SMTKColorMode");
-  auto widget = new pqSMTKColorByWidget(this);
+  auto* widget = new pqSMTKColorByWidget(this);
   widget << pqSetName("colorBy");
   widget->setToolTip("Color SMTK components by...");
   this->addWidget(widget);

@@ -141,7 +141,7 @@ void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, C
   }
   auto resource = m_parent.lock();
   auto polyEnt = resource->findStorage<internal::entity>(ent->id());
-  auto polyModel = polyEnt ? polyEnt->parentAs<internal::pmodel>() : nullptr;
+  auto* polyModel = polyEnt ? polyEnt->parentAs<internal::pmodel>() : nullptr;
   if (std::dynamic_pointer_cast<internal::pmodel>(polyEnt))
   {
     // The model itself does not have geometry; its children do.
@@ -223,13 +223,13 @@ void Geometry::update() const
 
 void Geometry::geometricBounds(const DataType& geom, BoundingBox& bbox) const
 {
-  auto pset = vtkPointSet::SafeDownCast(geom);
+  auto* pset = vtkPointSet::SafeDownCast(geom);
   if (pset)
   {
     pset->GetBounds(bbox.data());
     return;
   }
-  auto comp = vtkCompositeDataSet::SafeDownCast(geom);
+  auto* comp = vtkCompositeDataSet::SafeDownCast(geom);
   if (comp)
   {
     comp->GetBounds(bbox.data());
@@ -446,7 +446,7 @@ public:
     auto rsrc = std::dynamic_pointer_cast<smtk::session::polygon::Resource>(std::get<0>(in));
     if (rsrc)
     {
-      auto provider = new Geometry(rsrc);
+      auto* provider = new Geometry(rsrc);
       return GeometryPtr(provider);
     }
     throw std::invalid_argument("Not a polygon resource.");

@@ -71,7 +71,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     int i, size = m_ChildViews.size();
     for (i = 0; i < size; i++)
     {
-      auto child = m_ChildViews.at(i);
+      auto* child = m_ChildViews.at(i);
       (child->*mfunc)();
       if (child->isEmpty())
       {
@@ -101,7 +101,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     int i, size = m_ChildViews.size();
     for (i = 0; i < size; i++)
     {
-      auto child = m_ChildViews.at(i);
+      auto* child = m_ChildViews.at(i);
       (child->*mfunc)();
       if (child->isEmpty())
       {
@@ -515,7 +515,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
 
 void qtGroupView::childModified()
 {
-  auto child = dynamic_cast<qtBaseView*>(this->sender());
+  auto* child = dynamic_cast<qtBaseView*>(this->sender());
   if (child == nullptr)
   {
     return;
@@ -588,7 +588,7 @@ void qtGroupView::updateModelAssociation()
 {
   foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
-    auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
+    auto* iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
     {
       iview->updateModelAssociation();

@@ -64,7 +64,7 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
     // Blech: pqApplicationCore doesn't have the selection manager yet,
     // so wait until we hear that the server is ready to make the connection.
     // We can't have a selection before the first connection, anyway.
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       // This functor is connected to the main window's "close" signal, and

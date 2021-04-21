@@ -226,7 +226,7 @@ void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& 
   // Let the toplevel view process attribute creation
   if (!this->isTopLevel())
   {
-    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
     if (topView)
     {
       topView->attributeCreated(attr);
@@ -288,7 +288,7 @@ void qtBaseAttributeView::attributeChanged(
   // Let the toplevel view process attribute modification
   if (!this->isTopLevel())
   {
-    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
     if (topView)
     {
       topView->attributeChanged(attr, items);
@@ -321,7 +321,7 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
   // Let the toplevel view process attribute removal
   if (!this->isTopLevel())
   {
-    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
     if (topView)
     {
       topView->attributeRemoved(attr);
@@ -773,7 +773,7 @@ void qtBaseAttributeView::onConfigurationChanged(int index)
     // Tell the Resource we don't want to filter on active categories
     bool origEnableActiveCategories = attRes->activeCategoriesEnabled();
     attRes->setActiveCategoriesEnabled(false);
-    auto editor =
+    auto* editor =
       new smtk::extension::qtAttributeEditorDialog(att, this->uiManager(), this->widget());
     auto status = editor->exec();
     attRes->setActiveCategoriesEnabled(origEnableActiveCategories);

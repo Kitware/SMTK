@@ -79,7 +79,7 @@ qtAttribute::qtAttribute(
   qtBaseView* myView,
   bool createWidgetWhenEmpty)
 {
-  auto attView = dynamic_cast<qtBaseAttributeView*>(myView);
+  auto* attView = dynamic_cast<qtBaseAttributeView*>(myView);
   m_internals = new qtAttributeInternals(myAttribute, comp, p, attView);
   m_widget = nullptr;
   m_useSelectionManager = false;
@@ -190,7 +190,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   QLayout* layout = m_widget->layout();
   qtItem* qItem = nullptr;
   smtk::attribute::AttributePtr att = this->attribute();
-  auto uiManager = m_internals->m_view->uiManager();
+  auto* uiManager = m_internals->m_view->uiManager();
   // If there are model assocications for the attribute, create UI for them if requested.
   // This will be the same widget used for ModelEntityItem.
   if (includeAssociations && att->associations())
@@ -253,7 +253,7 @@ void qtAttribute::onItemModified()
   {
     return;
   }
-  auto iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
+  auto* iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
   if (iobject == nullptr)
   {
     return;

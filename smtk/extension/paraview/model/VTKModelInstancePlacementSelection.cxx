@@ -121,21 +121,21 @@ bool VTKModelInstancePlacementSelection::transcribePlacementSelection(Result& re
   }
 
   auto selnMgr = this->smtkSelection();
-  auto selnBlock = this->vtkSelection();
-  auto mbdsThing = this->vtkData();
+  auto* selnBlock = this->vtkSelection();
+  auto* mbdsThing = this->vtkData();
   unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
   std::map<vtkIdType, vtkIdTypeArray*> glyphPlacements;
   vtkSMTKResourceRepresentation* source = nullptr;
   for (unsigned ii = 0; ii < nn; ++ii)
   {
-    auto selnNode = selnBlock->GetNode(ii);
+    auto* selnNode = selnBlock->GetNode(ii);
     if (!selnNode)
     {
       continue;
     }
     vtkIdType propId = -1;
     vtkIdType compositeIndex = -1;
-    auto sp = selnNode->GetProperties();
+    auto* sp = selnNode->GetProperties();
     if (sp->Has(vtkSelectionNode::PROP_ID()))
     {
       propId = sp->Get(vtkSelectionNode::PROP_ID());
@@ -173,11 +173,11 @@ bool VTKModelInstancePlacementSelection::transcribePlacementSelection(Result& re
   if (!glyphPlacements.empty())
   {
     auto created = result->findComponent("created");
-    auto instances = vtkMultiBlockDataSet::SafeDownCast(
+    auto* instances = vtkMultiBlockDataSet::SafeDownCast(
       mbdsThing->GetBlock(vtkResourceMultiBlockSource::BlockId::Value::Instances));
     if (instances)
     {
-      auto mit = instances->NewIterator();
+      auto* mit = instances->NewIterator();
       for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
       {
         auto git = glyphPlacements.find(mit->GetCurrentFlatIndex());

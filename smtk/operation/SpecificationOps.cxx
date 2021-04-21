@@ -372,7 +372,7 @@ std::set<std::string> extractTagNames(Operation::Specification specification)
   for (auto& definition : definitions)
   {
     auto tags = definition->tags();
-    for (auto& tag : tags)
+    for (const auto& tag : tags)
     {
       tagNames.insert(tag.name());
     }
@@ -418,7 +418,7 @@ bool actOnTag(
   // For each definition, access the tag.
   for (auto& definition : definitions)
   {
-    auto tag = definition->tag(tagName);
+    auto* tag = definition->tag(tagName);
     // If we are adding...
     if (action == Action::ADD)
     {
@@ -430,7 +430,7 @@ bool actOnTag(
       else
       {
         // ...and the tag already exists, add the new values to the existing tag.
-        for (auto& tagValue : tagValues)
+        for (const auto& tagValue : tagValues)
         {
           modified |= tag->add(tagValue);
         }

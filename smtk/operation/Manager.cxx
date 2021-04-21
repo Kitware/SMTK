@@ -206,7 +206,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 std::set<std::string> Manager::availableOperations() const
 {
   std::set<std::string> availableOperations;
-  for (auto& md : m_metadata)
+  for (const auto& md : m_metadata)
   {
     availableOperations.insert(md.typeName());
   }
@@ -217,7 +217,7 @@ std::set<Operation::Index> Manager::availableOperations(
   const smtk::resource::ComponentPtr& component) const
 {
   std::set<Operation::Index> availableOperations;
-  for (auto& md : m_metadata)
+  for (const auto& md : m_metadata)
   {
     if (md.acceptsComponent(component))
     {
@@ -230,7 +230,7 @@ std::set<Operation::Index> Manager::availableOperations(
 std::set<std::string> Manager::availableGroups() const
 {
   std::set<std::string> available;
-  for (auto& md : m_metadata)
+  for (const auto& md : m_metadata)
   {
     std::set<std::string> operatorGroups = md.groups();
     available.insert(operatorGroups.begin(), operatorGroups.end());

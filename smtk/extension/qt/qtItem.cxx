@@ -185,7 +185,7 @@ void qtItem::setLocalAdvanceLevel(unsigned int l)
 bool qtItem::isReadOnly() const
 {
   auto item = m_itemInfo.item();
-  auto view = m_itemInfo.baseView();
+  auto* view = m_itemInfo.baseView();
   return (
     (m_readOnly || (item == nullptr) || (view == nullptr)) ? true : !view->isItemWriteable(item));
 }

@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     analysis.insert("Flow");
     analysis.insert("General");
     analysis.insert("Time");
-    auto a = analyses.create("CFD Flow");
+    auto* a = analyses.create("CFD Flow");
     a->setLocalCategories(analysis);
 
     analysis.clear();

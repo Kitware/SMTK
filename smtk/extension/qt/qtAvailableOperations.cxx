@@ -71,7 +71,7 @@ void qtAvailableOperations::updateList()
   for (auto op : ops)
   {
     ++precedence;
-    auto data = m_operationSource->operationData(op);
+    const auto* data = m_operationSource->operationData(op);
     std::string label;
     std::string icon;
     std::string toolTip;
@@ -102,7 +102,7 @@ void qtAvailableOperations::updateList()
         label = opMeta->typeName();
       }
     }
-    auto item = new QListWidgetItem(m_operationList);
+    auto* item = new QListWidgetItem(m_operationList);
     item->setData(
       Qt::UserRole + 47,        // TODO: why 47?
       QVariant::fromValue(op)); // Store the operation's index with the list item.

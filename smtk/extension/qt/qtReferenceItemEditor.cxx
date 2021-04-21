@@ -93,7 +93,7 @@ qtItem* qtReferenceItemEditor::createItemWidget(const qtAttributeItemInfo& info)
   {
     return nullptr;
   }
-  auto qi = new qtReferenceItemEditor(info);
+  auto* qi = new qtReferenceItemEditor(info);
   return qi;
 }
 
@@ -121,7 +121,7 @@ qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
   std::ostringstream receiverSource;
   receiverSource << "qtReferenceItemEditor_" << this;
   m_selectionSourceName = receiverSource.str();
-  auto uiManager = this->uiManager();
+  auto* uiManager = this->uiManager();
   if (uiManager == nullptr)
   {
 #if !defined(NDEBUG)
@@ -250,7 +250,7 @@ void qtReferenceItemEditor::createWidget()
   }
   QLabel* label = new QLabel(labelText, comboFrame);
   label->setSizePolicy(sizeFixedPolicy);
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview)
   {
     label->setFixedWidth(iview->fixedLabelWidth() - padding);
@@ -342,9 +342,9 @@ void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResour
   // Do we have to apply categories to this result?
   if (itemDef->enforcesCategories() && m_itemInfo.uiManager())
   {
-    auto uiManager = m_itemInfo.uiManager();
+    auto* uiManager = m_itemInfo.uiManager();
     std::set<smtk::resource::PersistentObjectPtr> toBeRemoved;
-    for (auto& obj : objSet)
+    for (const auto& obj : objSet)
     {
       auto att = std::dynamic_pointer_cast<attribute::Attribute>(obj);
       if (att && !att->isRelevant())
@@ -353,7 +353,7 @@ void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResour
       }
     }
     // OK - lets remove all attributes that failed the category check
-    for (auto& obj : toBeRemoved)
+    for (const auto& obj : toBeRemoved)
     {
       objSet.erase(obj);
     }
@@ -491,7 +491,7 @@ void qtReferenceItemEditor::highlightItem(int index)
   }
   // If there is no selection manager then there is nothing
   // we need to do
-  auto uiManager = this->uiManager();
+  auto* uiManager = this->uiManager();
   if (uiManager == nullptr)
   {
     return;
@@ -674,7 +674,7 @@ void qtReferenceItemEditor::handleResourceEvent(
 
 void qtReferenceItemEditor::resetHover()
 {
-  auto uiManager = this->uiManager();
+  auto* uiManager = this->uiManager();
   if (uiManager == nullptr)
   {
     return;
@@ -700,7 +700,7 @@ void qtReferenceItemEditor::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -741,7 +741,7 @@ void qtReferenceItemEditor::itemChanged(smtk::attribute::ItemPtr modifiedItem)
 
 void qtReferenceItemEditor::updateContents()
 {
-  auto uiManager = this->uiManager();
+  auto* uiManager = this->uiManager();
   if (uiManager == nullptr)
     return;
 
@@ -794,7 +794,7 @@ void qtReferenceItemEditor::updateContents()
     }
   }
 
-  auto iiview = m_itemInfo.baseView();
+  auto* iiview = m_itemInfo.baseView();
   int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
 
   int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());

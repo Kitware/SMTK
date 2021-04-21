@@ -48,7 +48,7 @@ bool StructuredGridFromVTKFile::valid(const std::string& fileName) const
 smtk::mesh::StructuredGrid StructuredGridFromVTKFile::operator()(const std::string& fileName)
 {
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  auto externalData = vtkDataSet::SafeDownCast(importAsVTKData(fileName));
+  auto* externalData = vtkDataSet::SafeDownCast(importAsVTKData(fileName));
   if (!externalData)
   {
     // Something went wrong and we have no vtkDataSet.

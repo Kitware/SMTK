@@ -57,7 +57,7 @@ std::shared_ptr<smtk::operation::Operation> ReaderGroup::readerForResource(
   }
 
   std::set<Operation::Index> operationIndices = operations();
-  for (auto& index : operationIndices)
+  for (const auto& index : operationIndices)
   {
     std::set<std::string> resourceNames = readsResources(index);
     if (resourceNames.find(resourceName) != resourceNames.end())

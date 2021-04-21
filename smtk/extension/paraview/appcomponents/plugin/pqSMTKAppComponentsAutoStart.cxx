@@ -78,28 +78,28 @@ void pqSMTKAppComponentsAutoStart::startup()
   vtkNew<vtkSMTKAppComponentsFactory> factory;
   vtkObjectFactory::RegisterFactory(factory);
 
-  auto rsrcMgr = pqSMTKBehavior::instance(this);
-  auto renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
-  auto closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
-  auto callObserversOnMainThread = pqSMTKCallObserversOnMainThreadBehavior::instance(this);
+  auto* rsrcMgr = pqSMTKBehavior::instance(this);
+  auto* renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
+  auto* closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
+  auto* callObserversOnMainThread = pqSMTKCallObserversOnMainThreadBehavior::instance(this);
 #ifdef SMTK_PYTHON_ENABLED
-  auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
-  auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
+  auto* rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
+  auto* rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
 #endif
-  auto pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
-  auto displayOnLoad = pqSMTKDisplayAttributeOnLoadBehavior::instance(this);
+  auto* pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
+  auto* displayOnLoad = pqSMTKDisplayAttributeOnLoadBehavior::instance(this);
 
   // The "New Resource" menu item keys off of the "Save Resource" menu item,
   // so the order of initialization for the following two global statics is
   // important!
   //
   // TODO: There must be a better way to do this.
-  auto rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
-  auto rsrcNewMgr = pqSMTKNewResourceBehavior::instance(this);
-  auto rsrcImportIntoMgr = pqSMTKImportIntoResourceBehavior::instance(this);
-  auto registerImportersBehavior = pqSMTKRegisterImportersBehavior::instance(this);
+  auto* rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
+  auto* rsrcNewMgr = pqSMTKNewResourceBehavior::instance(this);
+  auto* rsrcImportIntoMgr = pqSMTKImportIntoResourceBehavior::instance(this);
+  auto* registerImportersBehavior = pqSMTKRegisterImportersBehavior::instance(this);
 
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk resource", rsrcMgr);
@@ -107,10 +107,10 @@ void pqSMTKAppComponentsAutoStart::startup()
     // If we are running inside CTest, don't pop up dialogs on close.
     if (!vtksys::SystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST"))
     {
-      auto saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
+      auto* saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
       pqCore->registerManager("smtk save on close resource", saveOnCloseResourceBehavior);
 
-      auto closeWithActiveOperationBehavior =
+      auto* closeWithActiveOperationBehavior =
         pqSMTKCloseWithActiveOperationBehavior::instance(this);
       pqCore->registerManager("smtk close with active operation", closeWithActiveOperationBehavior);
     }
@@ -128,7 +128,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
 
     // If there is already an active server, create a wrapper for it.
-    auto server = pqCore->getActiveServer();
+    auto* server = pqCore->getActiveServer();
     if (server)
     {
       rsrcMgr->addManagerOnServer(server);
@@ -139,7 +139,7 @@ void pqSMTKAppComponentsAutoStart::startup()
 
 void pqSMTKAppComponentsAutoStart::shutdown()
 {
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->unRegisterManager("smtk resource");

@@ -28,9 +28,7 @@ PointField::PointField(const smtk::mesh::MeshSet& meshset, const std::string& na
 {
 }
 
-PointField::PointField(const smtk::mesh::PointField& other)
-
-  = default;
+PointField::PointField(const smtk::mesh::PointField& other) = default;
 
 PointField::~PointField() = default;
 

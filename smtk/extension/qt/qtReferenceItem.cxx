@@ -81,7 +81,7 @@ qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
   {
     return nullptr;
   }
-  auto qi = new qtReferenceItem(info);
+  auto* qi = new qtReferenceItem(info);
   // Unlike its subclasses, qtReferenceItem does not call
   // createWidget in its constructor (because that would cause
   // problems for subclasses since the method is virtual and
@@ -399,7 +399,7 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 void qtReferenceItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(dataObj))
   {
     return;
@@ -424,7 +424,7 @@ void qtReferenceItem::clearWidgets()
 void qtReferenceItem::updateUI()
 {
   smtk::attribute::ItemPtr itm = m_itemInfo.item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(itm))
   {
     return;
@@ -603,7 +603,7 @@ void qtReferenceItem::updateUI()
   m_p->m_popupList->setSelectionMode(
     multiselect ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
   m_p->m_popupList->setSelectionBehavior(QAbstractItemView::SelectRows);
-  auto action = new QWidgetAction(m_p->m_editBtn);
+  auto* action = new QWidgetAction(m_p->m_editBtn);
   action->setDefaultWidget(m_p->m_popup);
   m_p->m_editBtn->menu()->addAction(action);
   m_p->m_editBtn->setMaximumSize(QSize(16, 20));
@@ -759,7 +759,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
       case QEvent::ShortcutOverride: // What keypresses look like to the parent of the QListView.
       {
         // std::cout << "  Popup key\n";
-        auto keyEvent = static_cast<QKeyEvent*>(event);
+        auto* keyEvent = static_cast<QKeyEvent*>(event);
         int kk = keyEvent->key();
         switch (kk)
         {
@@ -810,7 +810,7 @@ void qtReferenceItem::toggleCurrentItem()
   if (cphr)
   {
     auto persistentObj = cphr->relatedObject();
-    auto badge =
+    auto* badge =
       m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>();
     auto selected = m_p->m_popupList->selectionModel()->selection();
     badge->action(cphr.get(), smtk::extension::qtBadgeActionToggle(selected));

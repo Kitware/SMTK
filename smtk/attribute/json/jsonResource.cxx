@@ -59,7 +59,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     std::vector<std::string> rInfo;
     // we need this for backward compatibility
     std::map<std::string, std::set<std::string>> aInfo;
-    for (auto analysis : analyses.analyses())
+    for (auto* analysis : analyses.analyses())
     {
       aNames.push_back(analysis->name());
       aInfo[analysis->name()] = analysis->localCategories();
@@ -259,10 +259,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   if (!res->styles().empty())
   {
     json stylesObj = json::array();
-    for (auto& def : res->styles())
+    for (const auto& def : res->styles())
     {
       json defsObj = json::array();
-      for (auto& style : def.second)
+      for (const auto& style : def.second)
       {
         defsObj.push_back(style.second);
       }
@@ -346,7 +346,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         auto it = aInfo.find(name);
         if (it != aInfo.end())
         {
-          auto analysis = analyses.create(name);
+          auto* analysis = analyses.create(name);
           analysis->setLocalCategories(it->second);
         }
         else
@@ -361,7 +361,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       // There is no specified order so use the dictionary itself
       for (auto const& info : aInfo)
       {
-        auto analysis = analyses.create(info.first);
+        auto* analysis = analyses.create(info.first);
         analysis->setLocalCategories(info.second);
       }
     }
@@ -386,7 +386,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       auto eNames = analysesExclusiveInfo->get<std::vector<std::string>>();
       for (auto const& name : eNames)
       {
-        auto a = analyses.find(name);
+        auto* a = analyses.find(name);
         if (a != nullptr)
         {
           a->setExclusive(true);
@@ -406,7 +406,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       auto rNames = analysesRequiredInfo->get<std::vector<std::string>>();
       for (auto const& name : rNames)
       {
-        auto a = analyses.find(name);
+        auto* a = analyses.find(name);
         if (a != nullptr)
         {
           a->setRequired(true);
@@ -425,7 +425,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     {
       for (auto const& val : analysesLabelInfo->items())
       {
-        auto a = analyses.find(val.key());
+        auto* a = analyses.find(val.key());
         if (a != nullptr)
         {
           a->setLabel(val.value());
@@ -486,7 +486,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   if (definitions != j.end())
   {
     smtk::attribute::DefinitionPtr def, baseDef;
-    for (auto& currentDef : *definitions)
+    for (const auto& currentDef : *definitions)
     {
       auto type = currentDef.find("Type");
       if (type == currentDef.end())
@@ -534,12 +534,12 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto exclusions = j.find("Exclusions");
   if (exclusions != j.end())
   {
-    for (auto& exclusion : *exclusions)
+    for (const auto& exclusion : *exclusions)
     {
       // First lets convert the strings to definitions
       std::vector<smtk::attribute::DefinitionPtr> defs;
       smtk::attribute::DefinitionPtr def;
-      for (auto& defName : exclusion)
+      for (const auto& defName : exclusion)
       {
         def = res->findDefinition(defName);
         if (def)
@@ -568,7 +568,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto prerequisites = j.find("Prerequisites");
   if (prerequisites != j.end())
   {
-    for (auto& pInfo : *prerequisites)
+    for (const auto& pInfo : *prerequisites)
     {
       auto type = pInfo.find("Type");
       if (type == pInfo.end())
@@ -596,7 +596,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
       // OK now lets add the prerequisites to the definition
       smtk::attribute::DefinitionPtr def;
-      for (auto& defName : *prerequisite)
+      for (const auto& defName : *prerequisite)
       {
         def = res->findDefinition(defName);
         if (def)
@@ -617,7 +617,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto associationRules = j.find("Association Rules");
   if (associationRules != j.end())
   {
-    for (auto& associationRuleObj : *associationRules)
+    for (const auto& associationRuleObj : *associationRules)
     {
       if (!res->associationRules().associationRuleFactory().containsAlias(
             associationRuleObj["Alias"].get<std::string>()))
@@ -642,7 +642,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto dissociationRules = j.find("Dissociation Rules");
   if (dissociationRules != j.end())
   {
-    for (auto& dissociationRuleObj : *dissociationRules)
+    for (const auto& dissociationRuleObj : *dissociationRules)
     {
       if (!res->associationRules().dissociationRuleFactory().containsAlias(
             dissociationRuleObj["Alias"].get<std::string>()))
@@ -667,7 +667,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto evaluators = j.find("Evaluators");
   if (evaluators != j.end())
   {
-    for (auto& eval : *evaluators)
+    for (const auto& eval : *evaluators)
     {
       auto evaluatorName = eval.find("Name");
       if (evaluatorName == eval.end() || !evaluatorName->is_string())
@@ -683,7 +683,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         continue;
       }
 
-      for (auto& def : *evaluatorDefinitions)
+      for (const auto& def : *evaluatorDefinitions)
       {
         if (!def.is_string())
         {
@@ -715,7 +715,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto attributes = j.find("Attributes");
   if (attributes != j.end())
   {
-    for (auto& jAtt : *attributes)
+    for (const auto& jAtt : *attributes)
     {
       auto name = jAtt.find("Name");
       if (name == jAtt.end())
@@ -814,7 +814,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto styles = j.find("Styles");
   if (styles != j.end())
   {
-    for (auto& defInfo : (styles.value()))
+    for (const auto& defInfo : (styles.value()))
     {
       auto defName = defInfo.find("Type");
       auto defStyles = defInfo.find("Styles");
@@ -835,7 +835,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
           continue;
         }
       }
-      for (auto& styleInfo : *defStyles)
+      for (const auto& styleInfo : *defStyles)
       {
         smtk::view::Configuration::Component style = styleInfo;
         res->addStyle(*defName, style);
@@ -847,7 +847,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto views = j.find("Views");
   if (views != j.end())
   {
-    for (auto& jView : *views)
+    for (const auto& jView : *views)
     {
       smtk::view::ConfigurationPtr view = jView;
       res->addView(view);

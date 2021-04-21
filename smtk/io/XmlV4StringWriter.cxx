@@ -11,6 +11,7 @@
 #include "smtk/io/XmlV4StringWriter.h"
 
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 using namespace pugi;
@@ -81,7 +82,7 @@ void XmlV4StringWriter::processItemDefinitionAttributes(
     tagsNode.set_name("Tags");
 
     std::string sep; // TODO: The writer could accept a user-provided separator.
-    for (auto& tag : idef->tags())
+    for (const auto& tag : idef->tags())
     {
       xml_node tagNode = tagsNode.append_child();
       tagNode.set_name("Tag");

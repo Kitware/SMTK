@@ -483,7 +483,7 @@ void qtFileItem::updateItemValue(int elementIdx)
       this->updateFileComboLists();
     }
 
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);
@@ -732,7 +732,7 @@ void qtFileItem::setInputValue(int i, const QString& val)
 void qtFileItem::createWidget()
 {
   smtk::attribute::ItemPtr item = m_itemInfo.item();
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   if (iview && !iview->displayItem(item))
   {
     return;
@@ -869,7 +869,7 @@ void qtFileItem::loadInputValues(
 
 void qtFileItem::updateUI()
 {
-  auto iview = m_itemInfo.baseView();
+  auto* iview = m_itemInfo.baseView();
   auto item = m_itemInfo.itemAs<FileSystemItem>();
   auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
   if (iview && !iview->displayItem(item))
@@ -993,7 +993,7 @@ void qtFileItem::setOutputOptional(int state)
   {
     item->setIsEnabled(enable);
     emit this->modified();
-    auto iview = m_itemInfo.baseView();
+    auto* iview = m_itemInfo.baseView();
     if (iview)
     {
       iview->valueChanged(item);

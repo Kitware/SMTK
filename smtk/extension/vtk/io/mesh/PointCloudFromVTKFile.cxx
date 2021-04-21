@@ -48,7 +48,7 @@ bool PointCloudFromVTKFile::valid(const std::string& fileName) const
 smtk::mesh::PointCloud PointCloudFromVTKFile::operator()(const std::string& fileName)
 {
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  auto externalData = vtkDataSet::SafeDownCast(importAsVTKData(fileName));
+  auto* externalData = vtkDataSet::SafeDownCast(importAsVTKData(fileName));
   if (!externalData)
   {
     // Something went wrong and we have no vtkDataSet.

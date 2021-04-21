@@ -26,6 +26,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include <algorithm>
 #include <iostream>
 #include <numeric>
 #include <queue>
@@ -553,7 +554,7 @@ smtk::resource::ResourceSet Resource::associations() const
 {
   auto associatedObjects = this->links().linkedTo(AssociationRole);
   smtk::resource::ResourceSet resources;
-  for (auto& object : associatedObjects)
+  for (const auto& object : associatedObjects)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
     if (resource != nullptr)
@@ -1014,7 +1015,7 @@ std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
       if (defn)
       {
         return [defn](const smtk::resource::Component& comp) {
-          auto attr = dynamic_cast<const Attribute*>(&comp);
+          const auto* attr = dynamic_cast<const Attribute*>(&comp);
           return (attr && attr->isA(defn));
         };
       }
@@ -1063,15 +1064,10 @@ bool Resource::hasAttributes(const smtk::resource::ConstPersistentObjectPtr& obj
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (const auto& obj : objs)
-  {
-    auto entry = std::dynamic_pointer_cast<Attribute>(obj);
-    if (entry)
-    { //If we find even one attribute report yes
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(objs.begin(), objs.end(), [](const smtk::resource::PersistentObjectPtr& obj) {
+    // If we find even one attribute report yes
+    return dynamic_pointer_cast<Attribute>(obj) != nullptr;
+  });
 }
 
 void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectPtr& object)

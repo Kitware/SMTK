@@ -11,6 +11,7 @@
 #include "smtk/io/XmlDocV1Parser.h"
 
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 
 #include "smtk/io/ItemDefinitionsHelper.h"
@@ -589,7 +590,7 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
         }
         categories.insert(cnode.text().get());
       }
-      auto analysis = analyses.create(s);
+      auto* analysis = analyses.create(s);
       if (analysis == nullptr)
       {
         smtkErrorMacro(m_logger, "Failed to create Analysis: " << s);
@@ -600,8 +601,8 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
       xatt = anode.attribute("BaseType");
       if (xatt)
       {
-        auto bt = xatt.value();
-        auto parent = analyses.find(bt);
+        const auto* bt = xatt.value();
+        auto* parent = analyses.find(bt);
         if (parent == nullptr)
         {
           smtkErrorMacro(m_logger, "Failed to set Analysis: " << s << " parent to " << bt);

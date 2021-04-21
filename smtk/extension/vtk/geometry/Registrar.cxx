@@ -47,7 +47,7 @@ void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr& geometryManag
 void Registrar::registerTo(const smtk::resource::query::Manager::Ptr& queryManager)
 {
   queryManager->registerQueriesIf<QueryList>([](smtk::resource::Resource& resource) -> bool {
-    if (auto geometryResource = dynamic_cast<smtk::geometry::Resource*>(&resource))
+    if (auto* geometryResource = dynamic_cast<smtk::geometry::Resource*>(&resource))
     {
       smtk::extension::vtk::geometry::Backend vtk;
       return !!geometryResource->geometry(vtk);

@@ -10,6 +10,7 @@
 
 #include "smtk/io/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -370,7 +371,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
-      for (auto& association : m_resource->associations())
+      for (const auto& association : m_resource->associations())
       {
         if (auto entity = association->find(uid))
         {
@@ -386,7 +387,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
     if (val)
     {
       uid = smtk::common::UUID(val.text().get());
-      for (auto& association : m_resource->associations())
+      for (const auto& association : m_resource->associations())
       {
         if (auto entity = association->find(uid))
         {
