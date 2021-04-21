@@ -138,6 +138,7 @@ ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator
   {
     throw UnsetValueError();
   }
+  // NOLINTNEXTLINE(performance-no-automatic-move)
   return ref;
 }
 ReferenceItem::const_iterator::pointer ReferenceItem::const_iterator::operator->() const
@@ -147,6 +148,7 @@ ReferenceItem::const_iterator::pointer ReferenceItem::const_iterator::operator->
   {
     throw UnsetValueError();
   }
+  // NOLINTNEXTLINE(performance-no-automatic-move)
   return ptr;
 }
 ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator[](
@@ -157,6 +159,7 @@ ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator
   {
     throw UnsetValueError();
   }
+  // NOLINTNEXTLINE(performance-no-automatic-move)
   return ref;
 }
 
