@@ -49,7 +49,7 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
     return false;
   }
 
-  auto& projectManager =
+  const auto& projectManager =
     (managers.contains<smtk::project::ManagerPtr>() ? managers.get<smtk::project::ManagerPtr>()
                                                     : smtk::project::ManagerPtr());
   if (projectManager)

@@ -62,7 +62,7 @@ int main(int argc, char** const argv)
 
   // Access its type name from its registered metadata
   std::string typeName;
-  for (auto& metadatum : projectManager->metadata())
+  for (const auto& metadatum : projectManager->metadata())
     typeName = metadatum.typeName();
 
   // Construct an instance of the project

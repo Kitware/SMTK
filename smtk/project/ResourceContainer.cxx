@@ -120,7 +120,7 @@ bool ResourceContainer::registerResource(const smtk::resource::Resource::Index& 
 bool ResourceContainer::registerResources(const std::set<std::string>& typeNames)
 {
   bool registered = true;
-  for (auto& typeName : typeNames)
+  for (const auto& typeName : typeNames)
   {
     registered &= this->registerResource(typeName);
   }
@@ -267,7 +267,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(const std::string&
       return values;
     }
 
-    for (auto& metadatum : manager->metadata())
+    for (const auto& metadatum : manager->metadata())
     {
       if (metadatum.isOfType(metadata->index()))
       {
@@ -277,7 +277,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(const std::string&
 
     typedef Container::index<IndexTag>::type ResourcesByIndex;
     const ResourcesByIndex& resources = m_resources.get<IndexTag>();
-    for (auto& idx : validIndices)
+    for (const auto& idx : validIndices)
     {
       auto resourceItRange = resources.equal_range(idx);
       values.insert(resourceItRange.first, resourceItRange.second);
@@ -288,7 +288,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(const std::string&
     // Otherwise, we must iterate the list of resources and check if they match
     // the index type (which is less performant).
 
-    for (auto& resource : m_resources)
+    for (const auto& resource : m_resources)
     {
       if (resource->isOfType(typeName))
       {
@@ -312,7 +312,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(
     // these indices.
     std::set<smtk::resource::Resource::Index> validIndices;
 
-    for (auto& metadatum : manager->metadata())
+    for (const auto& metadatum : manager->metadata())
     {
       if (metadatum.isOfType(index))
       {
@@ -322,7 +322,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(
 
     typedef Container::index<IndexTag>::type ResourcesByIndex;
     const ResourcesByIndex& resources = m_resources.get<IndexTag>();
-    for (auto& idx : validIndices)
+    for (const auto& idx : validIndices)
     {
       auto resourceItRange = resources.equal_range(idx);
       values.insert(resourceItRange.first, resourceItRange.second);
@@ -333,7 +333,7 @@ std::set<smtk::resource::ResourcePtr> ResourceContainer::find(
     // Otherwise, we must iterate the list of resources and check if they match
     // the index type (which is less performant).
 
-    for (auto& resource : m_resources)
+    for (const auto& resource : m_resources)
     {
       if (resource->isOfType(index))
       {

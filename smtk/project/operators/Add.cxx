@@ -55,7 +55,7 @@ bool Add::configure(
 
   if (!project->resources().types().empty())
   {
-    for (auto& type : project->resources().types())
+    for (const auto& type : project->resources().types())
     {
       resourceDef->setAcceptsEntries(type, true);
     }

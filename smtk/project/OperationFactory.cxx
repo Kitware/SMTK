@@ -60,7 +60,7 @@ bool OperationFactory::registerOperation(const smtk::operation::Operation::Index
 bool OperationFactory::registerOperations(const std::set<std::string>& typeNames)
 {
   bool registered = true;
-  for (auto& typeName : typeNames)
+  for (const auto& typeName : typeNames)
   {
     registered &= this->registerOperation(typeName);
   }
@@ -128,7 +128,7 @@ std::set<smtk::operation::Operation::Index> OperationFactory::availableOperation
     return allIndices;
   }
 
-  for (auto& index : allIndices)
+  for (const auto& index : allIndices)
   {
     if (
       m_types.find(manager->metadata().get<smtk::operation::IndexTag>().find(index)->typeName()) !=

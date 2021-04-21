@@ -148,7 +148,7 @@ Define::Specification Define::createSpecification()
 
   resourcesDef->setIsExtensible(true);
   resourcesDef->clearDiscreteValues();
-  for (auto& metadatum : projectManager->resourceManager()->metadata())
+  for (const auto& metadatum : projectManager->resourceManager()->metadata())
   {
     resourcesDef->addDiscreteValue(metadatum.typeName());
   }

@@ -184,9 +184,9 @@ int main(int argc, char* argv[])
     };
   }
 
-  auto qmodel = new smtk::extension::qtDescriptivePhraseModel;
+  auto* qmodel = new smtk::extension::qtDescriptivePhraseModel;
   qmodel->setColumnName("Project");
-  auto qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
+  auto* qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);

@@ -356,7 +356,7 @@ smtk::project::ConstProjectPtr Manager::get(const std::string& url) const
 std::set<smtk::project::ProjectPtr> Manager::find(const std::string& typeName)
 {
   std::set<smtk::project::ProjectPtr> values;
-  for (auto& project : m_projects)
+  for (const auto& project : m_projects)
   {
     if (project->isOfType(typeName))
     {
@@ -369,7 +369,7 @@ std::set<smtk::project::ProjectPtr> Manager::find(const std::string& typeName)
 std::set<smtk::project::ProjectPtr> Manager::find(const Project::Index& index)
 {
   std::set<smtk::project::ProjectPtr> values;
-  for (auto& project : m_projects)
+  for (const auto& project : m_projects)
   {
     if (project->isOfType(index))
     {

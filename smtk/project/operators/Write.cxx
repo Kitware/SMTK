@@ -89,7 +89,7 @@ Write::Result Write::operateInternal()
   }
 
   // Write the modified resources.
-  for (auto& resource : project->resources())
+  for (const auto& resource : project->resources())
   {
     const std::string& role = detail::role(resource);
 
