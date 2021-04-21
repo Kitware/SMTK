@@ -36,6 +36,7 @@ function(smtk_test_plugin test_plugin_file_url)
 
   # Derive a test name from the contract file name.
   get_filename_component(test_name ${test_plugin_file_url} NAME_WE)
+  set(test_name "contract-${test_name}")
 
   set(ctest_extra_args)
   if (CMAKE_MAKE_PROGRAM)
