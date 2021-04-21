@@ -30,6 +30,8 @@
     )
 
 if (SMTK_ENABLE_POLYGON_SESSION)
+  set(CMAKE_AUTOMOC 1)
+
   list(APPEND unit_tests_headers_data
     unitQtComponentItem.h
     )
