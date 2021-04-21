@@ -45,8 +45,6 @@ public:
   template<typename... Args>
   ArcWithVisit(Args&&... args)
     : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
-    , visited(false)
-    , constVisited(false)
   {
   }
 
@@ -69,8 +67,8 @@ public:
     }
   };
 
-  bool visited;
-  mutable bool constVisited;
+  bool visited{ false };
+  mutable bool constVisited{ false };
 };
 
 /// A description of the node types and arc types that comprise our test
