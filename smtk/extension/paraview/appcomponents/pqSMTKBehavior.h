@@ -75,7 +75,7 @@ public:
   ///
   /// Note that this is an O(N) operation (linear in the number of
   /// resources loaded across all servers).
-  pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc) const;
+  QPointer<pqSMTKResource> getPVResource(const smtk::resource::ResourcePtr& rsrc) const;
 
   /**\brief Call a visitor function \a fn on each existing resource manager/server pair.
     *
@@ -130,6 +130,8 @@ protected slots:
   virtual void handleNewSMTKProxies(pqProxy* pxy);
   /// Track when resources are removed (not all \a pxy may cast to SMTK objects but some may)
   virtual void handleOldSMTKProxies(pqPipelineSource* pxy);
+  /// Track when SMTK proxy resources are changed.
+  virtual void updateResourceProxyMap(const std::shared_ptr<smtk::resource::Resource>& resource);
 
 private:
   Q_DISABLE_COPY(pqSMTKBehavior);

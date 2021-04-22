@@ -289,35 +289,6 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
       &smtk::extension::qtOperationView::doneEditing,
       this,
       &pqSMTKOperationPanel::cancelEditing);
-    QObject::connect(
-      operationView,
-      &smtk::extension::qtOperationView::operationExecuted,
-      [&](const smtk::operation::Operation::Result& result) {
-        // Gather all resource items
-        std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-        std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
-          [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
-        result->filterItems(resourceItems, filter);
-
-        // For each resource item found...
-        for (auto& resourceItem : resourceItems)
-        {
-          // ...for each resource in a resource item...
-          for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
-          {
-            // (no need to look at resources that cannot be resolved)
-            if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
-            {
-              continue;
-            }
-            smtk::resource::Resource::Ptr resource = resourceItem->value(i);
-            if (pqSMTKBehavior::instance()->getPVResource(resource) == nullptr)
-            {
-              pqSMTKRenderResourceBehavior::instance()->createPipelineSource(resource);
-            }
-          }
-        }
-      });
   }
 
   auto rsrcMgr = op->specification()->manager();

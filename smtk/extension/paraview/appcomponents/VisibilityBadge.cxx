@@ -51,7 +51,7 @@ pqSMTKResourceRepresentation* representationInView(
   auto* smtkBehavior = pqSMTKBehavior::instance();
 
   // Find the ParaView pipeline for the resource
-  auto* pvrc = smtkBehavior->getPVResource(rsrc);
+  auto pvrc = smtkBehavior->getPVResource(rsrc);
   if (!pvrc)
   {
     return nullptr;
@@ -100,7 +100,7 @@ int UpdateVisibilityForFootprint(
       for (childIt.begin(); !childIt.isAtEnd(); ++childIt)
       {
         auto child = childIt.current().entityRecord();
-        int ok = smap->setVisibility(child, visible);
+        int ok = smap ? smap->setVisibility(child, visible) : true;
         any |= ok;
         visibleThings[child->id()] = visible;
       }
@@ -121,14 +121,14 @@ int UpdateVisibilityForFootprint(
       {
         for (const auto& child : auxgeomChildren)
         {
-          int ok = smap->setVisibility(child.component(), visible != 0);
+          int ok = smap ? smap->setVisibility(child.component(), visible != 0) : true;
           any |= ok;
           visibleThings[child.entity()] = visible;
         }
       }
       rval |= any;
 
-      rval |= smap->setVisibility(comp, visible != 0) ? 1 : 0;
+      rval |= smap ? (smap->setVisibility(comp, visible != 0) ? 1 : 0) : 1;
       if (rval)
       {
         visibleThings[comp->id()] =
@@ -139,7 +139,7 @@ int UpdateVisibilityForFootprint(
   }
   else if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
   {
-    rval |= smap->setVisibility(comp, visible != 0) ? 1 : 0;
+    rval |= smap ? (smap->setVisibility(comp, visible != 0) ? 1 : 0) : 1;
     if (rval)
     {
       visibleThings[comp->id()] = visible;
@@ -171,7 +171,8 @@ int UpdateVisibilityForFootprint(
             int vv = 0;
             if (itemComp->resource() == resource)
             {
-              vv = smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0;
+              vv = smap ? (smap->setVisibility(itemComp->shared_from_this(), visible != 0) ? 1 : 0)
+                        : 1;
             }
             else
             {
@@ -192,7 +193,7 @@ int UpdateVisibilityForFootprint(
       else
       {
         visibleThings[comp->id()] = visible;
-        int vv = smap->setVisibility(comp, visible != 0) ? 1 : 0;
+        int vv = smap ? (smap->setVisibility(comp, visible != 0) ? 1 : 0) : 1;
         rval |= vv;
         if (vv)
         {
@@ -202,7 +203,7 @@ int UpdateVisibilityForFootprint(
     }
   }
 
-  if (didUpdate)
+  if (didUpdate && smap)
   {
     smap->renderViewEventually();
   }
@@ -280,12 +281,10 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
 
   auto* smtkBehavior = pqSMTKBehavior::instance();
 
-  // If we are trying to get the value of a resource that has no pipeline
-  // source, we create one.
-  auto* pvrc = smtkBehavior->getPVResource(rsrc);
-  if (pvrc == nullptr && rsrc)
+  auto pvrc = smtkBehavior->getPVResource(rsrc);
+  if (!pvrc)
   {
-    pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
+    return true; // pipeline hasn't been created yet; the default is visible.
   }
 
   if (ent || msh)
@@ -333,23 +332,14 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
 
   auto* smtkBehavior = pqSMTKBehavior::instance();
 
-  // If we are trying to get the value of a resource that has no pipeline
-  // source, we create one.
-  auto* pvrc = smtkBehavior->getPVResource(rsrc);
-  if (pvrc == nullptr && rsrc)
-  {
-    pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
-  }
+  auto pvrc = smtkBehavior->getPVResource(rsrc);
 
   if (ent || msh || (comp && geomRsrc))
   { // Find the mapper in the active view for the related resource, then set the visibility.
     auto* view = pqActiveObjects::instance().activeView();
     auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
     auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
-    if (smap)
-    {
-      UpdateVisibilityForFootprint(smap, comp, val, m_visibleThings, phrase);
-    }
+    UpdateVisibilityForFootprint(smap, comp, val, m_visibleThings, phrase);
   }
   else if (geomRsrc)
   { // A resource, not a component, is being modified. Change the pipeline object's visibility.
@@ -440,7 +430,7 @@ void VisibilityBadge::activeViewChanged(pqView* view)
     {
       continue;
     }
-    auto* pvr = behavior->getPVResource(rsrc);
+    auto pvr = behavior->getPVResource(rsrc);
     auto* rep = pvr ? pvr->getRepresentation(view) : nullptr;
     // TODO: At a minimum, we can update the representation's visibility now
     //       since if rep is null it is invisible and if not null, we can ask
