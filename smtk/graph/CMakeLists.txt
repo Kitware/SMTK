@@ -7,6 +7,7 @@ set(graphSrcs
 )
 
 set(graphHeaders
+  ArcMap.h
   Component.h
   Resource.h
   ResourceBase.h

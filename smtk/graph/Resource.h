@@ -125,8 +125,8 @@ public:
   }
 
   /// Access the arcs of the graph resource.
-  const ResourceBase::ArcSet& arcs() const override { return m_arcs; }
-  ResourceBase::ArcSet& arcs() override { return m_arcs; }
+  const ArcMap& arcs() const override { return m_arcs; }
+  ArcMap& arcs() override { return m_arcs; }
 
   std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string& filterString) const override
@@ -147,7 +147,7 @@ protected:
   {
   }
 
-  ResourceBase::ArcSet m_arcs;
+  ArcMap m_arcs;
 };
 
 } // namespace graph
