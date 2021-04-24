@@ -71,9 +71,13 @@ Read::Result Read::operateInternal()
   smtk::common::UUID projectId(projectIdStr);
 
   // Create a new project for the import
-  auto project = this->projectManager()->create(j.at("type").get<std::string>());
+  boost::filesystem::path projectFilePath(j.at("type").get<std::string>());
+  auto project = this->projectManager()->create(projectFilePath.string());
   project->setId(projectId);
   project->setLocation(filename);
+
+  // Get folder path - might be needed to load resources
+  boost::filesystem::path projectPath = projectFilePath.parent_path();
 
   // Transcribe project data into the project
   smtk::project::from_json(j, project);
@@ -84,8 +88,13 @@ Read::Result Read::operateInternal()
   j = j["resources"];
   for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
   {
-    smtk::resource::ResourcePtr resource = project->resources().manager()->read(
-      it->at("type").get<std::string>(), it->at("location").get<std::string>());
+    boost::filesystem::path path(it->at("location").get<std::string>());
+    if (path.is_relative())
+    {
+      path = projectPath / path;
+    }
+    smtk::resource::ResourcePtr resource =
+      project->resources().manager()->read(it->at("type").get<std::string>(), path.string());
     if (!resource)
     {
       smtkErrorMacro(
