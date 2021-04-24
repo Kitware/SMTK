@@ -43,6 +43,7 @@ simulation domain.
    model/index.rst
    graph/index.rst
    mesh/index.rst
+   project/index.rst
    simulation/index.rst
    view/index.rst
    extension/index.rst

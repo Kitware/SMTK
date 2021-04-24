@@ -37,6 +37,14 @@ add_test(NAME implement_an_operator
     PROPERTIES
     ENVIRONMENT "${smtk_python_test_environment}")
 
+add_test(NAME create_a_project
+  COMMAND ${CMAKE_CTEST_COMMAND} --build-and-test
+    ${CMAKE_CURRENT_SOURCE_DIR}/create_a_project
+    ${CMAKE_CURRENT_BINARY_DIR}/create_a_project
+    --build-generator ${CMAKE_GENERATOR}
+    --build-options ${build_options}
+    --test-command ${CMAKE_CTEST_COMMAND})
+
 endif()
 
 add_subdirectory(python_first_steps)

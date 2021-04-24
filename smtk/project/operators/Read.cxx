@@ -71,8 +71,8 @@ Read::Result Read::operateInternal()
   smtk::common::UUID projectId(projectIdStr);
 
   // Create a new project for the import
-  boost::filesystem::path projectFilePath(j.at("type").get<std::string>());
-  auto project = this->projectManager()->create(projectFilePath.string());
+  boost::filesystem::path projectFilePath(filename);
+  auto project = this->projectManager()->create(j.at("type").get<std::string>());
   project->setId(projectId);
   project->setLocation(filename);
 
