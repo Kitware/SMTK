@@ -17,7 +17,6 @@ set_target_properties(
   browseModel PROPERTIES AUTOMOC TRUE
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 
-
 ##
 ## Create an application to test attribute editing
 add_executable(qtAttributePreview MACOSX_BUNDLE qtAttributePreview.cxx)
