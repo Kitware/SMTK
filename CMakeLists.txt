@@ -97,9 +97,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 # https://cmake.org/cmake/help/latest/command/find_package.html#search-procedure
 # for more information.
 set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${SMTK_VERSION})
-if (WIN32)
-  set(SMTK_INSTALL_CONFIG_DIR cmake/${PROJECT_NAME}-${SMTK_VERSION})
-endif()
 
 # If SMTK_INSTALL_TESTING_DATA is set to ON, set the directory where smtk's data
 # directory is installed.
