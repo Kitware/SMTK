@@ -44,9 +44,16 @@ public:
   // Override ableToOperate() to support test mode
   bool ableToOperate() override;
 
+  virtual ~ImportPPG();
+
 protected:
+  ImportPPG();
   smtk::operation::Operation::Result operateInternal() override;
   const char* xmlDescription() const override;
+
+private:
+  class Internal;
+  Internal* m_internal;
 };
 
 } // namespace polygon
