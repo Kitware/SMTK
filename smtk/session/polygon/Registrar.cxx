@@ -22,6 +22,7 @@
 #include "smtk/session/polygon/operators/Delete.h"
 #include "smtk/session/polygon/operators/DemoteVertex.h"
 #include "smtk/session/polygon/operators/ForceCreateFace.h"
+#include "smtk/session/polygon/operators/ImportPPG.h"
 #include "smtk/session/polygon/operators/LegacyRead.h"
 #include "smtk/session/polygon/operators/Read.h"
 #include "smtk/session/polygon/operators/SplitEdge.h"
@@ -65,6 +66,7 @@ typedef std::tuple<
   ExtractContours,
   Import,
 #endif
+  ImportPPG,
   LegacyRead,
   Read,
   SplitEdge,

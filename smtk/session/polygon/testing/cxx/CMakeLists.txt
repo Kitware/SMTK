@@ -17,7 +17,8 @@ set (unit_tests
   UnitTestPolygonCreateFacesFromEdges.cxx
   UnitTestPolygonDemoteVertex.cxx
   UnitTestPolygonFindOperationAttItems.cxx
-  UnitTestPolygonCleanGeometry.cxx)
+  UnitTestPolygonCleanGeometry.cxx
+  UnitTestPolygonImportPPG.cxx)
 
 if(SMTK_ENABLE_VTK_SUPPORT)
   set (unit_tests_which_require_data
