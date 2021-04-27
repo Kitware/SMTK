@@ -1,22 +1,5 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 
-cmake_policy(SET CMP0012 NEW)
-cmake_policy(SET CMP0020 NEW)
-if (POLICY CMP0028)
-  cmake_policy(SET CMP0028 NEW)
-endif()
-if (POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
-endif()
-if (POLICY CMP0046)
-  cmake_policy(SET CMP0046 NEW)
-endif()
-if (POLICY CMP0048)
-  cmake_policy(SET CMP0048 NEW)
-endif()
-if (POLICY CMP0071)
-  cmake_policy(SET CMP0071 NEW)
-endif()
 #If the user/superbuild hasn't explicitly stated what c++ standard to use
 #require C++11
 if(NOT DEFINED CMAKE_CXX_STANDARD)
