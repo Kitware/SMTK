@@ -33,12 +33,13 @@
 #include "smtk/session/polygon/operators/CreateEdgeFromVertices.h"
 #include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
-#include "smtk/session/polygon/operators/CreateVertices.h"
 #include "smtk/session/polygon/operators/Delete.h"
+
+#include "smtk/session/polygon/internal/Model.h"
+#include "smtk/session/polygon/internal/Model.txx"
 
 #include "smtk/session/polygon/ImportPPG_xml.h"
 
-#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -115,7 +116,7 @@ public:
 
   // Build model entities
   bool createModel(smtk::operation::ManagerPtr opManager);
-  bool createVertices(smtk::operation::ManagerPtr opManager);
+  bool createVertices();
   bool createEdges(smtk::operation::ManagerPtr opManager);
   bool createFaces(smtk::operation::ManagerPtr opManager);
 
@@ -146,6 +147,11 @@ protected:
 
 bool ImportPPG::Internal::createModel(smtk::operation::ManagerPtr opManager)
 {
+#ifndef NDEBUG
+  std::cout << "Creating Model..." << std::endl;
+#endif
+
+  // Initialize and run CreateModel operation.
   auto createOp = opManager->create<smtk::session::polygon::CreateModel>();
   auto result = createOp->operate();
   int outcome = result->findInt("outcome")->value();
@@ -165,122 +171,43 @@ bool ImportPPG::Internal::createModel(smtk::operation::ManagerPtr opManager)
   return true;
 }
 
-bool ImportPPG::Internal::createVertices(smtk::operation::ManagerPtr opManager)
+bool ImportPPG::Internal::createVertices()
 {
-  if (m_ppgVertexList.size() < 2)
+  if (m_ppgVertexList.empty())
   {
+    smtkWarningMacro(m_log, "No input vertices specified.");
     return true;
   }
-  auto vertsOp = opManager->create<smtk::session::polygon::CreateVertices>();
-  bool associated = vertsOp->parameters()->associate(m_modelEntity);
 
-  vertsOp->parameters()->findInt("point dimension")->setValue(2);
+#ifndef NDEBUG
+  std::cout << "Creating Vertices..." << std::endl;
+#endif
 
-  auto pointsGroup = vertsOp->parameters()->findGroup("2d points");
-  pointsGroup->setNumberOfGroups(m_ppgVertexList.size());
+  // Initialize new vertex list with one no-op vertex, because indices start with 1
+  m_newVertexList.clear();
+  m_newVertexList.emplace(m_newVertexList.end());
 
-  // Scan vertex list at 1
+  auto polyResource = std::dynamic_pointer_cast<smtk::session::polygon::Resource>(m_resource);
+  internal::pmodel::Ptr storage = polyResource->findStorage<internal::pmodel>(m_modelEntity->id());
+
+  std::stringstream ss;
+  std::vector<double> coords(2);
   for (std::size_t i = 0; i < m_ppgVertexList.size(); ++i)
   {
     auto v = m_ppgVertexList[i];
-    auto pointItem = pointsGroup->findAs<smtk::attribute::DoubleItem>(i, "points");
-    pointItem->setValue(0, v.x);
-    pointItem->setValue(1, v.y);
-  }
+    coords[0] = v.x;
+    coords[1] = v.y;
+    smtk::session::polygon::internal::Point projected =
+      storage->projectPoint(coords.begin(), coords.begin() + 2);
+    smtk::model::Vertex newVertex = storage->addModelVertex(m_resource, projected);
 
-  auto result = vertsOp->operate();
-  int outcome = result->findInt("outcome")->value();
-  if (outcome != OP_SUCCEEDED)
-  {
-    errorMacroFalse(
-      "CreateVertices operation failed with outcome " << outcome << ". "
-                                                      << vertsOp->log().convertToString());
-  }
-
-  // Now gotta sort created vertices to match input order (never easy)
-  // First just copy the vertices into a std::set
-  std::set<smtk::model::Vertex> vertexSet;
-  std::vector<smtk::model::Vertex> vertexList;
-  auto createdItem = result->findComponent("created");
-  std::stringstream ss;
-  for (std::size_t i = 0; i < createdItem->numberOfValues(); ++i)
-  {
-    // smtk::resource::PersistentObject pobj = createdItem->value();
-    smtk::resource::ComponentPtr pcomp = createdItem->value(i);
-    // smtk::model::EntityRef ref(m_resource, pcomp->id());
-    smtk::model::Vertex vref(m_resource, pcomp->id());
-    vertexSet.insert(vref);
-    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexSet.size() << std::endl;
-    vertexList.push_back(vref);
-    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexList.size() << std::endl;
-  }
-
-  // And the sorting by bruce force
-  // To reduce computation, the logic uses dx + dy in lieu of actual distance
-  // This requires that all points are at least 2*tol apart.
-  double tol = 1.0e-6;
-  m_newVertexList.clear();
-  for (std::size_t i = 0; i < m_ppgVertexList.size(); ++i)
-  {
-    double x = m_ppgVertexList[i].x;
-    double y = m_ppgVertexList[i].y;
-    //std::shared_ptr<smtk::model::Vertex> matchVertex;
-    smtk::model::Vertex matchRef;
-    // matchRef.setEntity(smtk::common::UUID::null());
-
-    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexSet.size() << std::endl;
-    for (const auto ref : vertexSet)
-    {
-      std::cout << __FILE__ << ":" << __LINE__ << " dim: " << ref.dimension()
-                << " flags: " << ref.flagSummary() << " is vertex: " << ref.isVertex()
-                << " coords: " << ref.coordinates()[0] << ", " << ref.coordinates()[1] << std::endl;
-#if 0
-      smtk::model::EntityPtr ent = ref.entityRecord();
-      std::cout << __FILE__ << ":" << __LINE__ << " " << std::hex << ent.get() << std::dec << std::endl;
-      //auto vertex = std::dynamic_pointer_cast<smtk::model::Vertex>(ent);
-      const smtk::model::EntityRef* pref = &ref;
-      // smtk::model::EntityRef dref = const_cast<smtk::model::EntityRef>(ref);
-      const smtk::model::Vertex* vertex = dynamic_cast<const smtk::model::Vertex*>(pref);
-      std::cout << __FILE__ << ":" << __LINE__ << " " << std::hex << vertex << std::dec << std::endl;
-#else
-
-#endif
-      double dx2 = std::fabs(x - ref.coordinates()[0]);
-      std::cout << __FILE__ << ":" << __LINE__ << " "
-                << "dx2: " << dx2 << std::endl;
-      if (dx2 > tol)
-      {
-        continue;
-      }
-      double dy2 = std::fabs(y - ref.coordinates()[1]);
-      std::cout << __FILE__ << ":" << __LINE__ << " "
-                << "dy2: " << dy2 << std::endl;
-      if (dy2 < tol)
-      {
-        matchRef = ref;
-        std::cout << __FILE__ << ":" << __LINE__ << " " << ref.isValid() << std::endl;
-        std::cout << __FILE__ << ":" << __LINE__ << " " << matchRef.isValid() << std::endl;
-        break;
-      }
-    } // for (vertex)
-
-    if (!matchRef.isValid())
-    {
-      errorMacroFalse(
-        "CreateVertices unable to match input vertex " << (i + 1) << " at coords " << x << ", "
-                                                       << y);
-    }
-
-    // Now set name starting with vertex 1 (not 0)
-    // smtk::model::Vertex pv = matchRef.entityRecord();
-    // smtk::model::EntityRef ref(*pv);
+    // Set the name starting with vertex 1 (not 0)
     ss.str(std::string());
     ss.clear();
     ss << "vertex " << (i + 1);
-    matchRef.setName(ss.str());
-    m_newVertexList.push_back(matchRef);
+    newVertex.setName(ss.str());
+    m_newVertexList.push_back(newVertex);
   }
-
   return true;
 }
 
@@ -445,7 +372,7 @@ smtk::operation::Operation::Result ImportPPG::operateInternal()
   }
 
   this->log().reset();
-  if (!m_internal->createVertices(this->manager()))
+  if (!m_internal->createVertices())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
