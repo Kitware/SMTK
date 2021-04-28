@@ -25,6 +25,7 @@
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
+#include "smtk/model/Vertex.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Component.h"
@@ -37,6 +38,7 @@
 
 #include "smtk/session/polygon/ImportPPG_xml.h"
 
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -136,7 +138,7 @@ protected:
   std::vector<PPGFace> m_ppgFaceList;
   std::vector<PPGVertex> m_ppgVertexList;
 
-  std::vector<smtk::model::EntityPtr> m_newVertexList;
+  std::vector<smtk::model::EntityRef> m_newVertexList;
 
   smtk::model::ResourcePtr m_resource;
   std::shared_ptr<smtk::resource::PersistentObject> m_modelEntity;
@@ -195,17 +197,88 @@ bool ImportPPG::Internal::createVertices(smtk::operation::ManagerPtr opManager)
                                                       << vertsOp->log().convertToString());
   }
 
+  // Now gotta sort created vertices to match input order (never easy)
+  // First just copy the vertices into a std::set
+  std::set<smtk::model::Vertex> vertexSet;
+  std::vector<smtk::model::Vertex> vertexList;
   auto createdItem = result->findComponent("created");
   std::stringstream ss;
   for (std::size_t i = 0; i < createdItem->numberOfValues(); ++i)
   {
-    auto entity = std::dynamic_pointer_cast<smtk::model::Entity>(createdItem->value());
-    smtk::model::EntityRef ref(entity);
+    // smtk::resource::PersistentObject pobj = createdItem->value();
+    smtk::resource::ComponentPtr pcomp = createdItem->value(i);
+    // smtk::model::EntityRef ref(m_resource, pcomp->id());
+    smtk::model::Vertex vref(m_resource, pcomp->id());
+    vertexSet.insert(vref);
+    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexSet.size() << std::endl;
+    vertexList.push_back(vref);
+    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexList.size() << std::endl;
+  }
+
+  // And the sorting by bruce force
+  // To reduce computation, the logic uses dx + dy in lieu of actual distance
+  // This requires that all points are at least 2*tol apart.
+  double tol = 1.0e-6;
+  m_newVertexList.clear();
+  for (std::size_t i = 0; i < m_ppgVertexList.size(); ++i)
+  {
+    double x = m_ppgVertexList[i].x;
+    double y = m_ppgVertexList[i].y;
+    //std::shared_ptr<smtk::model::Vertex> matchVertex;
+    smtk::model::Vertex matchRef;
+    // matchRef.setEntity(smtk::common::UUID::null());
+
+    std::cout << __FILE__ << ":" << __LINE__ << " " << vertexSet.size() << std::endl;
+    for (const auto ref : vertexSet)
+    {
+      std::cout << __FILE__ << ":" << __LINE__ << " dim: " << ref.dimension()
+                << " flags: " << ref.flagSummary() << " is vertex: " << ref.isVertex()
+                << " coords: " << ref.coordinates()[0] << ", " << ref.coordinates()[1] << std::endl;
+#if 0
+      smtk::model::EntityPtr ent = ref.entityRecord();
+      std::cout << __FILE__ << ":" << __LINE__ << " " << std::hex << ent.get() << std::dec << std::endl;
+      //auto vertex = std::dynamic_pointer_cast<smtk::model::Vertex>(ent);
+      const smtk::model::EntityRef* pref = &ref;
+      // smtk::model::EntityRef dref = const_cast<smtk::model::EntityRef>(ref);
+      const smtk::model::Vertex* vertex = dynamic_cast<const smtk::model::Vertex*>(pref);
+      std::cout << __FILE__ << ":" << __LINE__ << " " << std::hex << vertex << std::dec << std::endl;
+#else
+
+#endif
+      double dx2 = std::fabs(x - ref.coordinates()[0]);
+      std::cout << __FILE__ << ":" << __LINE__ << " "
+                << "dx2: " << dx2 << std::endl;
+      if (dx2 > tol)
+      {
+        continue;
+      }
+      double dy2 = std::fabs(y - ref.coordinates()[1]);
+      std::cout << __FILE__ << ":" << __LINE__ << " "
+                << "dy2: " << dy2 << std::endl;
+      if (dy2 < tol)
+      {
+        matchRef = ref;
+        std::cout << __FILE__ << ":" << __LINE__ << " " << ref.isValid() << std::endl;
+        std::cout << __FILE__ << ":" << __LINE__ << " " << matchRef.isValid() << std::endl;
+        break;
+      }
+    } // for (vertex)
+
+    if (!matchRef.isValid())
+    {
+      errorMacroFalse(
+        "CreateVertices unable to match input vertex " << (i + 1) << " at coords " << x << ", "
+                                                       << y);
+    }
+
+    // Now set name starting with vertex 1 (not 0)
+    // smtk::model::Vertex pv = matchRef.entityRecord();
+    // smtk::model::EntityRef ref(*pv);
     ss.str(std::string());
     ss.clear();
     ss << "vertex " << (i + 1);
-    ref.setName(ss.str());
-    m_newVertexList.push_back(entity);
+    matchRef.setName(ss.str());
+    m_newVertexList.push_back(matchRef);
   }
 
   return true;
