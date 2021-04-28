@@ -14,6 +14,7 @@
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/operators/Import.h"
 
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/io/Logger.h"
@@ -118,11 +119,19 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
     {
       // Create an import operator
-      smtk::operation::ImportResource::Ptr importOp =
+      smtk::operation::Operation::Ptr importAnyOp =
         operationManager->create<smtk::operation::ImportResource>();
-      if (!importOp)
+      smtk::operation::Operation::Ptr importSBTOp =
+        operationManager->create<smtk::attribute::Import>();
+
+      if (!importSBTOp)
       {
-        std::cerr << "No import operator\n";
+        std::cerr << "No sbt import operator\n";
+        return 1;
+      }
+      if (!importAnyOp)
+      {
+        std::cerr << "No any import operator\n";
         return 1;
       }
 
@@ -140,10 +149,19 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
         std::string importFilePath(data_root);
         importFilePath += path;
-        importOp->parameters()->findFile("filename")->setValue(importFilePath);
+        std::string ext = boost::filesystem::path(importFilePath).extension().string();
 
-        // Execute the operation
-        smtk::operation::Operation::Result importOpResult = importOp->operate();
+        smtk::operation::Operation::Result importOpResult;
+        if (ext == ".sbt")
+        {
+          importSBTOp->parameters()->findFile("filename")->setValue(importFilePath);
+          importOpResult = importSBTOp->operate();
+        }
+        else
+        {
+          importAnyOp->parameters()->findFile("filename")->setValue(importFilePath);
+          importOpResult = importAnyOp->operate();
+        }
 
         // Test for success
         if (
