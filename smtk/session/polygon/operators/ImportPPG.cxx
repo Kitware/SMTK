@@ -20,9 +20,11 @@
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUID.h"
 #include "smtk/io/Logger.h"
+#include "smtk/model/Edge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
@@ -30,13 +32,12 @@
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Component.h"
 #include "smtk/session/polygon/Resource.h"
+#include "smtk/session/polygon/internal/Model.h"
+#include "smtk/session/polygon/internal/Model.txx"
 #include "smtk/session/polygon/operators/CreateEdgeFromVertices.h"
 #include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 #include "smtk/session/polygon/operators/Delete.h"
-
-#include "smtk/session/polygon/internal/Model.h"
-#include "smtk/session/polygon/internal/Model.txx"
 
 #include "smtk/session/polygon/ImportPPG_xml.h"
 
@@ -79,13 +80,14 @@ struct PPGVertex
 
 struct PPGFace
 {
-  std::vector<unsigned int> vertices;
+  std::vector<unsigned int> vertexIds; // from input
+  std::vector<unsigned int> edgeIds;   // generated internally
   bool isHole;
 
-  PPGFace(const std::vector<unsigned int>& inputVerts, bool hole = false)
+  PPGFace(const std::vector<unsigned int>& inputVertexIds, bool hole = false)
     : isHole(hole)
   {
-    vertices = std::move(inputVerts);
+    vertexIds = std::move(inputVertexIds);
   }
 };
 } // namespace
@@ -140,6 +142,8 @@ protected:
   std::vector<PPGVertex> m_ppgVertexList;
 
   std::vector<smtk::model::EntityRef> m_newVertexList;
+  std::vector<smtk::model::EntityRef> m_newEdgeList;
+  std::vector<smtk::model::EntityRef> m_newFaceList;
 
   smtk::model::ResourcePtr m_resource;
   std::shared_ptr<smtk::resource::PersistentObject> m_modelEntity;
@@ -168,6 +172,10 @@ bool ImportPPG::Internal::createModel(smtk::operation::ManagerPtr opManager)
 
   smtk::attribute::ComponentItemPtr compItem = result->findComponent("model");
   m_modelEntity = compItem->value();
+
+  // Set name
+  smtk::model::Model modelRef(m_resource, m_modelEntity->id());
+  modelRef.setName("model 1");
   return true;
 }
 
@@ -213,11 +221,130 @@ bool ImportPPG::Internal::createVertices()
 
 bool ImportPPG::Internal::createEdges(smtk::operation::ManagerPtr opManager)
 {
+#ifndef NDEBUG
+  std::cout << "Creating Edges..." << std::endl;
+#endif
+
+  // Initialize new vertex list with one no-op vertex, because indices start with 1
+  m_newEdgeList.clear();
+  m_newEdgeList.emplace(m_newEdgeList.end());
+  std::stringstream ss;
+
+  // Initialize and run CreateEdgeFromVertices operation.
+  auto createOp = opManager->create<smtk::session::polygon::CreateEdgeFromVertices>();
+  for (auto& ppgFace : m_ppgFaceList)
+  {
+    ppgFace.edgeIds.clear();
+    std::vector<unsigned int>& vertexIds(ppgFace.vertexIds); // shorthand
+    // Temporarily add first vertex to the end of the list
+    vertexIds.push_back(vertexIds.front());
+    for (std::size_t i = 1; i < vertexIds.size(); ++i)
+    {
+      createOp->parameters()->removeAllAssociations();
+      unsigned id1 = vertexIds[i - 1];
+      unsigned id2 = vertexIds[i];
+
+      auto v1 = m_newVertexList[id1];
+      auto v2 = m_newVertexList[id2];
+
+      createOp->parameters()->associateEntity(v1);
+      createOp->parameters()->associateEntity(v2);
+      auto result = createOp->operate();
+      int outcome = result->findInt("outcome")->value();
+      if (outcome != OP_SUCCEEDED)
+      {
+        errorMacroFalse("Failed to create edge from vertex " << (i - 1) << " to " << i);
+      }
+
+      // Assign name
+      auto createdItem = result->findComponent("created");
+      smtk::resource::ComponentPtr pcomp = createdItem->value();
+      smtk::model::Edge edgeRef(m_resource, pcomp->id());
+      std::size_t edgeId = m_newEdgeList.size();
+      ppgFace.edgeIds.push_back(edgeId);
+
+      ss.str(std::string());
+      ss.clear();
+      ss << "edge " << edgeId;
+      edgeRef.setName(ss.str());
+
+      m_newEdgeList.push_back(edgeRef);
+    } // for (i)
+
+    // Remove temp vertex added to end of list
+    vertexIds.pop_back();
+  } // for (ppgFace)
+
   return true;
 }
 
 bool ImportPPG::Internal::createFaces(smtk::operation::ManagerPtr opManager)
 {
+#ifndef NDEBUG
+  std::cout << "Creating Faces..." << std::endl;
+#endif
+
+  m_newFaceList.clear();
+  m_newFaceList.emplace(m_newFaceList.end());
+  std::vector<smtk::model::Face> facesToDelete;
+  std::stringstream ss;
+
+  // Initialize and run CreateFacesFromEdges operation.
+  auto createOp = opManager->create<smtk::session::polygon::CreateFacesFromEdges>();
+  for (auto& ppgFace : m_ppgFaceList)
+  {
+    createOp->parameters()->removeAllAssociations();
+    for (unsigned int id : ppgFace.edgeIds)
+    {
+      auto edgeRef = m_newEdgeList[id];
+      createOp->parameters()->associateEntity(edgeRef);
+    }
+
+    auto result = createOp->operate();
+    int outcome = result->findInt("outcome")->value();
+    if (outcome != OP_SUCCEEDED)
+    {
+      errorMacroFalse("Failed to create face " << m_newFaceList.size());
+    }
+
+    // Assign name
+    auto createdItem = result->findComponent("created");
+    smtk::resource::ComponentPtr pcomp = createdItem->value();
+    smtk::model::Face faceRef(m_resource, pcomp->id());
+    std::size_t faceId = m_newFaceList.size();
+
+    ss.str(std::string());
+    ss.clear();
+    ss << "face " << faceId;
+    faceRef.setName(ss.str());
+
+    m_newFaceList.push_back(faceRef);
+
+    if (ppgFace.isHole)
+    {
+      facesToDelete.push_back(faceRef);
+    }
+  } // for (ppgFace)
+
+  if (!facesToDelete.empty())
+  {
+#ifndef NDEBUG
+    std::cout << "Deleting Faces (" << facesToDelete.size() << ")..." << std::endl;
+#endif
+    // Initialize and run Delete operation.
+    auto deleteOp = opManager->create<smtk::session::polygon::Delete>();
+    for (auto& faceRef : facesToDelete)
+    {
+      deleteOp->parameters()->associateEntity(faceRef);
+    }
+    auto deleteResult = deleteOp->operate();
+    int deleteOutcome = deleteResult->findInt("outcome")->value();
+    if (deleteOutcome != OP_SUCCEEDED)
+    {
+      errorMacroFalse("Failed to delete face(s) " << m_newFaceList.size());
+    }
+  } // if (facesToDelete)
+
   return true;
 }
 
@@ -277,35 +404,37 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
     errorMacroFalse("Face on line " << lineNum << " not specified with any vertex indices.");
   }
 
-  std::vector<unsigned int> vertices;
-  unsigned int index;
+  std::vector<unsigned int> vertexIds;
+  unsigned int vertexId;
   for (auto it = symbols.begin() + 1; it != symbols.end(); ++it)
   {
     std::string s = *it;
     try
     {
-      index = std::stoi(s);
+      vertexId = std::stoi(s);
     }
     catch (const std::exception& e)
     {
-      errorMacroFalse("Error parsing index " << s << " in line " << lineNum);
+      errorMacroFalse("Error parsing vertex id " << s << " in line " << lineNum);
     }
 
-    if (index == 0)
+    if (vertexId == 0)
     {
-      errorMacroFalse("Invalid index 0 on line " << lineNum << ". (Vertex indices starts at 1.)");
+      errorMacroFalse("Invalid vertex id 0 on line " << lineNum << ". (Vertex ids start at 1.)");
     }
-    else if (index > m_ppgVertexList.size())
+    else if (vertexId > m_ppgVertexList.size())
     {
       errorMacroFalse(
-        "Invalid index " << index << " on line " << lineNum
-                         << ". Greater than number of vertices specified ("
-                         << m_ppgVertexList.size() << ").");
+        "Invalid vertexId " << vertexId << " on line " << lineNum
+                            << ". Greater than number of vertices specified ("
+                            << m_ppgVertexList.size() << ").");
     }
+
+    vertexIds.push_back(vertexId);
   } // for (it)
 
   bool isHole = symbols[0] == "h";
-  m_ppgFaceList.emplace(m_ppgFaceList.end(), vertices, isHole);
+  m_ppgFaceList.emplace(m_ppgFaceList.end(), vertexIds, isHole);
 
   return true;
 } // parsePPGFace()

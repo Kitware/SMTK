@@ -97,6 +97,14 @@ int UnitTestPolygonImportPPG(int /*argc*/, char* /*argv*/[])
   auto modelResource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);
   test(modelResource != nullptr, "Model resource not found.");
 
+  // Check entity counts
+  auto vList = modelResource->entitiesMatchingFlags(smtk::model::VERTEX);
+  smtkTest(vList.size() == 12, "Expected 12 model vertices not " << vList.size() << ".");
+  auto eList = modelResource->entitiesMatchingFlags(smtk::model::EDGE);
+  smtkTest(eList.size() == 12, "Expected 12 model edges not " << eList.size() << ".");
+  auto fList = modelResource->entitiesMatchingFlags(smtk::model::FACE);
+  smtkTest(fList.size() == 1, "Expected 2 model faces not " << fList.size() << ".");
+
   // Write model resource to file
   std::cout << "Writing " << smtkPath << std::endl;
   auto writeOp = opManager->create<smtk::operation::WriteResource>();

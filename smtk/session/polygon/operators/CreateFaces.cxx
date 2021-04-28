@@ -258,8 +258,8 @@ CreateFaces::Result CreateFaces::operateInternal()
   if (m_debugLevel > 0)
   {
     DumpEventQueue("Initial", eventQueue);
+    std::cout << "Bounds: " << xblo << " " << yblo << "    " << xbhi << " " << ybhi << "\n";
   }
-  std::cout << "Bounds: " << xblo << " " << yblo << "    " << xbhi << " " << ybhi << "\n";
 
   // The first event in eventQueue had better be a segment-start event.
   // So the first thing this event-loop should do is start processing edges.
