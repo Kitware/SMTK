@@ -10,13 +10,30 @@
 #include "ImportPPG.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/common/StringUtil.h"
+#include "smtk/common/UUID.h"
 #include "smtk/io/Logger.h"
+#include "smtk/model/Entity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
+#include "smtk/resource/Component.h"
 #include "smtk/session/polygon/Resource.h"
+#include "smtk/session/polygon/operators/CreateEdgeFromVertices.h"
+#include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
+#include "smtk/session/polygon/operators/CreateModel.h"
+#include "smtk/session/polygon/operators/CreateVertices.h"
+#include "smtk/session/polygon/operators/Delete.h"
 
 #include "smtk/session/polygon/ImportPPG_xml.h"
 
@@ -27,6 +44,8 @@
 
 namespace
 {
+const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+
 // Macro for returning on error
 #define errorMacro(msg)                                                                            \
   do                                                                                               \
@@ -83,15 +102,124 @@ public:
   }
   ~Internal() = default;
 
+  void clear()
+  {
+    m_ppgFaceList.clear();
+    m_ppgVertexList.clear();
+
+    m_resource.reset();
+    m_modelEntity.reset();
+  }
+
+  // Build model entities
+  bool createModel(smtk::operation::ManagerPtr opManager);
+  bool createVertices(smtk::operation::ManagerPtr opManager);
+  bool createEdges(smtk::operation::ManagerPtr opManager);
+  bool createFaces(smtk::operation::ManagerPtr opManager);
+
   // Parse input line
   bool parseInputLine(const std::string& line, unsigned lineNum);
+
+  void print() const
+  {
+    std::cout << "PPG input vertex count: " << m_ppgVertexList.size() << std::endl;
+    std::cout << "PPG input face count: " << m_ppgFaceList.size() << std::endl;
+  }
+
+  smtk::model::ResourcePtr resource() const { return m_resource; }
+
+protected:
   bool parsePPGVertex(const std::vector<std::string>& symbols, unsigned lineNum);
   bool parsePPGFace(const std::vector<std::string>& symbols, unsigned lineNum);
 
   smtk::io::Logger& m_log;
-  std::vector<PPGVertex> m_ppgVertexList;
   std::vector<PPGFace> m_ppgFaceList;
+  std::vector<PPGVertex> m_ppgVertexList;
+
+  std::vector<smtk::model::EntityPtr> m_newVertexList;
+
+  smtk::model::ResourcePtr m_resource;
+  std::shared_ptr<smtk::resource::PersistentObject> m_modelEntity;
 };
+
+bool ImportPPG::Internal::createModel(smtk::operation::ManagerPtr opManager)
+{
+  auto createOp = opManager->create<smtk::session::polygon::CreateModel>();
+  auto result = createOp->operate();
+  int outcome = result->findInt("outcome")->value();
+  if (outcome != OP_SUCCEEDED)
+  {
+    errorMacroFalse(
+      "CreateModel operation failed with outcome " << outcome << ". "
+                                                   << createOp->log().convertToString());
+  }
+
+  auto resourceItem = result->findResource("resource");
+  auto resource = resourceItem->value();
+  m_resource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);
+
+  smtk::attribute::ComponentItemPtr compItem = result->findComponent("model");
+  m_modelEntity = compItem->value();
+  return true;
+}
+
+bool ImportPPG::Internal::createVertices(smtk::operation::ManagerPtr opManager)
+{
+  if (m_ppgVertexList.size() < 2)
+  {
+    return true;
+  }
+  auto vertsOp = opManager->create<smtk::session::polygon::CreateVertices>();
+  bool associated = vertsOp->parameters()->associate(m_modelEntity);
+
+  vertsOp->parameters()->findInt("point dimension")->setValue(2);
+
+  auto pointsGroup = vertsOp->parameters()->findGroup("2d points");
+  pointsGroup->setNumberOfGroups(m_ppgVertexList.size());
+
+  // Scan vertex list at 1
+  for (std::size_t i = 0; i < m_ppgVertexList.size(); ++i)
+  {
+    auto v = m_ppgVertexList[i];
+    auto pointItem = pointsGroup->findAs<smtk::attribute::DoubleItem>(i, "points");
+    pointItem->setValue(0, v.x);
+    pointItem->setValue(1, v.y);
+  }
+
+  auto result = vertsOp->operate();
+  int outcome = result->findInt("outcome")->value();
+  if (outcome != OP_SUCCEEDED)
+  {
+    errorMacroFalse(
+      "CreateVertices operation failed with outcome " << outcome << ". "
+                                                      << vertsOp->log().convertToString());
+  }
+
+  auto createdItem = result->findComponent("created");
+  std::stringstream ss;
+  for (std::size_t i = 0; i < createdItem->numberOfValues(); ++i)
+  {
+    auto entity = std::dynamic_pointer_cast<smtk::model::Entity>(createdItem->value());
+    smtk::model::EntityRef ref(entity);
+    ss.str(std::string());
+    ss.clear();
+    ss << "vertex " << (i + 1);
+    ref.setName(ss.str());
+    m_newVertexList.push_back(entity);
+  }
+
+  return true;
+}
+
+bool ImportPPG::Internal::createEdges(smtk::operation::ManagerPtr opManager)
+{
+  return true;
+}
+
+bool ImportPPG::Internal::createFaces(smtk::operation::ManagerPtr opManager)
+{
+  return true;
+}
 
 bool ImportPPG::Internal::parseInputLine(const std::string& line, unsigned lineNum)
 {
@@ -117,7 +245,7 @@ bool ImportPPG::Internal::parseInputLine(const std::string& line, unsigned lineN
   }
 
   return true;
-}
+} // parseInputLine()
 
 bool ImportPPG::Internal::parsePPGVertex(const std::vector<std::string>& symbols, unsigned lineNum)
 {
@@ -140,7 +268,7 @@ bool ImportPPG::Internal::parsePPGVertex(const std::vector<std::string>& symbols
 
   m_ppgVertexList.emplace(m_ppgVertexList.end(), x, y);
   return true;
-}
+} // parsePPGVertex()
 
 bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, unsigned lineNum)
 {
@@ -179,9 +307,8 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
   bool isHole = symbols[0] == "h";
   m_ppgFaceList.emplace(m_ppgFaceList.end(), vertices, isHole);
 
-  // m_ppgVertexList.emplace(m_ppgVertexList.end(), x, y);
   return true;
-}
+} // parsePPGFace()
 
 ImportPPG::ImportPPG()
 {
@@ -195,8 +322,7 @@ ImportPPG::~ImportPPG()
 
 smtk::operation::Operation::Result ImportPPG::operateInternal()
 {
-  m_internal->m_ppgVertexList.clear();
-  m_internal->m_ppgFaceList.clear();
+  m_internal->clear();
 
   std::stringstream ss;
 
@@ -236,17 +362,35 @@ smtk::operation::Operation::Result ImportPPG::operateInternal()
   }   // if
 
 #ifndef NDEBUG
-  std::cout << "PPG input vertex count: " << m_internal->m_ppgVertexList.size() << std::endl;
-  std::cout << "PPG input face count: " << m_internal->m_ppgFaceList.size() << std::endl;
+  m_internal->print();
 #endif
 
-  // Create the resource (note that polygon session is also required)
-  auto polySession = smtk::session::polygon::Session::create();
-  auto resource = smtk::session::polygon::Resource::create();
-  resource->setSession(polySession);
+  this->log().reset();
+  if (!m_internal->createModel(this->manager()))
+  {
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  this->log().reset();
+  if (!m_internal->createVertices(this->manager()))
+  {
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  this->log().reset();
+  if (!m_internal->createEdges(this->manager()))
+  {
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  this->log().reset();
+  if (!m_internal->createFaces(this->manager()))
+  {
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  result->findResource("resource")->setValue(resource);
+  result->findResource("resource")->setValue(m_internal->resource());
   return result;
 }
 
