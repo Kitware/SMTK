@@ -19,13 +19,11 @@
         <String Name="resources" Label="Restrict Available Resource Types"
                 AdvanceLevel="0" Optional="true"
                 IsEnabledByDefault="false" >
-          <!-- [defined programmatically] -->
         </String>
 
         <String Name="operations" Label="Restrict Available Operation Types"
                 AdvanceLevel="0" Optional="true"
                 IsEnabledByDefault="false" >
-          <!-- [defined programmatically] -->
         </String>
 
       </ItemDefinitions>

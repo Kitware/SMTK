@@ -18,6 +18,13 @@ namespace smtk
 namespace project
 {
 
+/**\brief Write a project, including its resources, to the file system.
+
+  This operator writes the selected project to the file system along
+  with its resources. Because the project itself is an SMTK resource,
+  it uses the standard .smtk extension. Resources contained by the
+  project are written to a "resources" subdirectory.
+  */
 class SMTKCORE_EXPORT Write : public smtk::project::Operation
 {
 public:

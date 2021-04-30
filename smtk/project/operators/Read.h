@@ -18,6 +18,11 @@ namespace smtk
 namespace project
 {
 
+/**\brief Read project from file system.
+
+  This operator reads a project file and all of its
+  resource files from disk.
+  */
 class SMTKCORE_EXPORT Read : public smtk::project::Operation
 {
 public:

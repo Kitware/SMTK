@@ -5,17 +5,16 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="create" Label="Project - Create" BaseType="operation">
       <BriefDescription>
-        Create a basic project type.
+        Create a project instance for a specified type.
       </BriefDescription>
       <DetailedDescription>
-        &lt;p&gt;Create a basic project type.
-        &lt;p&gt;Options are available to white-list associated resources and operations.
+        Create a project instance. The project type must be one that
+        has been registered with the project manager.
       </DetailedDescription>
 
       <ItemDefinitions>
 
         <String Name="typeName" Label="Project Type">
-          <!-- [defined programmatically] -->
         </String>
 
       </ItemDefinitions>

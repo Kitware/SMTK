@@ -22,6 +22,12 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+// This test registers a project type ("MyProject") with a resource whitelist with
+// one type ("MyResource"). It then creates project and resource instances and adds
+// the resource to the project, and verifies that the resource can be accessed from
+// the project. It then removes the resource from the project, deletes the project,
+// and verifies that the resource is still held in memory by the resource manager.
+
 namespace
 {
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>

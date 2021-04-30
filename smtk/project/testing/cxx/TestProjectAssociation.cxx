@@ -22,6 +22,9 @@
 
 #include <iostream>
 
+// This test verifies that project instances can be associated to
+// SMTK attributes.
+
 const char* templateString =
   "<SMTK_AttributeResource Version=\"4\">\n"
   "  <Definitions>\n"

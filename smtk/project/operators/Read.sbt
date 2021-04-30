@@ -9,8 +9,8 @@
       </BriefDescription>
       <DetailedDescription>
         &lt;p&gt;Read a project from disk.
-        &lt;p&gt;This operator reads a file representing the
-        selected project from disk.
+        &lt;p&gt;This operator reads the project file and all of its
+        resources from disk.
       </DetailedDescription>
 
       <ItemDefinitions>

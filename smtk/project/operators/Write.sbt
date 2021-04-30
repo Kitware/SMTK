@@ -9,8 +9,10 @@
       </BriefDescription>
       <DetailedDescription>
         &lt;p&gt;Write a project to disk.
-        &lt;p&gt;This operator creates a file representing the
-        selected project and saves it and its contents to disk.
+        &lt;p&gt;This operator writes the selected project to disk along
+        with its constituent resources. Because the project is an SMTK
+        resource, it uses the standard .smtk extension. The resources
+        contained by a project are written to a "resources" subdirectory.
       </DetailedDescription>
 
       <AssociationsDef Name="project" LockType="Read" NumberOfRequiredValues="1"

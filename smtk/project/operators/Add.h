@@ -18,6 +18,12 @@ namespace smtk
 namespace project
 {
 
+/**\brief Add a resource to a project.
+
+    Add a resource with an optional role to a project.
+    If the project includes a resource whitelist, the
+    resource type must be in the whitelist.
+  */
 class SMTKCORE_EXPORT Add : public smtk::project::Operation
 {
 public:

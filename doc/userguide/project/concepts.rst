@@ -5,7 +5,7 @@ The project system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
 :smtk:`Project`
-  instances represent an encapsulation of a subset of SMTK Resources and
+  instances represent an encapsulation of a set of SMTK Resources and
   Operations for the purpose of accomplishing a targeted set of tasks. Each
   project instance contains Resources and a list of Operations that are
   pertinent to the Project. As a descendent of Resource, the Project class

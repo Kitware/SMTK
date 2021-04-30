@@ -20,6 +20,10 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+// This test creates a project manager, registers a basic project type ("MyProject"),
+// creates a project instance, adds a resource to the project, and checks that the
+// resource can be accessed from the project.
+
 namespace
 {
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>

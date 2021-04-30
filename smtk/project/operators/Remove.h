@@ -18,6 +18,8 @@ namespace smtk
 namespace project
 {
 
+/**\brief Remove a resource from a project.
+  */
 class SMTKCORE_EXPORT Remove : public smtk::project::Operation
 {
 public:

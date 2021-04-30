@@ -39,6 +39,9 @@
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
+// This test verifies that projects can be serialized to the file system
+// and unserialized back. The test project contains an SMTK mesh resource.
+
 namespace
 {
 

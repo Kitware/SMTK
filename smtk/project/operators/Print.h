@@ -18,6 +18,10 @@ namespace smtk
 namespace project
 {
 
+/**\brief Lists project contents.
+
+  Writes a list of project contents to the operation's log.
+  */
 class SMTKCORE_EXPORT Print : public smtk::project::Operation
 {
 public:

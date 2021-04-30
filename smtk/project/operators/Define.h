@@ -18,6 +18,12 @@ namespace smtk
 namespace project
 {
 
+/**\brief Define a basic project type.
+
+  Register a new project type with the project manager.
+  Options are available to white-list associated resources
+  and operations.
+  */
 class SMTKCORE_EXPORT Define : public smtk::project::Operation
 {
 public:

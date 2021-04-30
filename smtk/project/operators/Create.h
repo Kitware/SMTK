@@ -18,6 +18,11 @@ namespace smtk
 namespace project
 {
 
+/**\brief Create a project instance of specified type.
+
+  Create a project instance. The project type must be one that
+  has been registered with the project manager.
+  */
 class SMTKCORE_EXPORT Create : public smtk::project::Operation
 {
 public:

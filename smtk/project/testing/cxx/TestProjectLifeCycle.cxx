@@ -31,6 +31,9 @@
 #define OP_NAME "create-project-op"
 #define PROJECT_TYPE "foo"
 
+// This test verifies that projects can be instantiated outside of the
+// SMTK resource manager.
+
 namespace
 {
 const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
