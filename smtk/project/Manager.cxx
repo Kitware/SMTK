@@ -7,238 +7,427 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
 #include "smtk/project/Manager.h"
-#include "smtk/project/NewProjectTemplate.h"
+
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
+
+#include "smtk/project/Operation.h"
 #include "smtk/project/Project.h"
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Registrar.h"
-#include "smtk/attribute/Resource.h"
-#include "smtk/io/AttributeReader.h"
-#include "smtk/operation/Manager.h"
-#include "smtk/resource/Manager.h"
+#include "smtk/project/operators/Read.h"
+#include "smtk/project/operators/Write.h"
 
-#include "boost/filesystem.hpp"
+#include "smtk/common/UUIDGenerator.h"
+
+namespace
+{
+
+void InitializeObserver(smtk::project::Manager* manager, smtk::project::Observer fn)
+{
+  if (!manager || !fn)
+  {
+    return;
+  }
+
+  for (const auto& project : manager->projects())
+  {
+    fn(*project, smtk::project::EventType::ADDED);
+  }
+}
+
+void InitializeMetadataObserver(smtk::project::Manager* manager, smtk::project::MetadataObserver fn)
+{
+  if (!manager || !fn)
+  {
+    return;
+  }
+
+  for (const auto& metadata : manager->metadata())
+  {
+    fn(metadata, true);
+  }
+}
+} // namespace
 
 namespace smtk
 {
 namespace project
 {
-smtk::project::ManagerPtr Manager::create(
-  smtk::resource::ManagerPtr& resourceManager,
-  smtk::operation::ManagerPtr& operationManager)
-{
-  if (!resourceManager || !operationManager)
-  {
-    return smtk::project::ManagerPtr();
-  }
-
-  return smtk::project::ManagerPtr(new Manager(resourceManager, operationManager));
-}
-
 Manager::Manager(
-  smtk::resource::ManagerPtr& resourceManager,
-  smtk::operation::ManagerPtr& operationManager)
-  : m_resourceManager(resourceManager)
+  const smtk::resource::ManagerPtr& resourceManager,
+  const smtk::operation::ManagerPtr& operationManager)
+  : m_observers(std::bind(InitializeObserver, this, std::placeholders::_1))
+  , m_metadataObservers(std::bind(InitializeMetadataObserver, this, std::placeholders::_1))
+  , m_resourceManager(resourceManager)
   , m_operationManager(operationManager)
 {
-  resourceManager->registerResource<smtk::attribute::Resource>();
+  // Define a metadata observer that appends the assignment of the resource
+  // manager to the create functor for operations that inherit from
+  // ResourceManagerOperation.
+  auto operationMetadataObserver = [&, this](const smtk::operation::Metadata& md, bool adding) {
+    if (!adding)
+      return;
+
+    // We are only interested in operations that inherit from
+    // smtk::project::Operation.
+    if (std::dynamic_pointer_cast<smtk::project::Operation>(md.create()) == nullptr)
+    {
+      return;
+    }
+
+    // This metadata observer actually manipulates the metadata, so we need a
+    // const cast. This is an exception to the rule of metadata observers.
+    smtk::operation::Metadata& metadata = const_cast<smtk::operation::Metadata&>(md);
+
+    auto create = metadata.create;
+    metadata.create = [=]() {
+      auto op = create();
+      std::dynamic_pointer_cast<smtk::project::Operation>(op)->setProjectManager(
+        this->shared_from_this());
+      return op;
+    };
+  };
+
+  // Add this metadata observer to the set of metadata observers, invoking it
+  // immediately on all extant metadata.
+  m_operationMetadataObserverKey = operationManager->metadataObservers().insert(
+    operationMetadataObserver,
+    "Append the assignment of the project manager to the create functor "
+    "for operations that inherit from smtk::project::Operation");
 }
 
-Manager::~Manager()
+bool Manager::registerProject(
+  const std::string& name,
+  const std::set<std::string>& resources,
+  const std::set<std::string>& operations,
+  const std::string& version)
 {
-  if (m_project)
-  {
-    m_project->close();
-  }
+  return registerProject(Metadata(
+    name,
+    std::hash<std::string>{}(name),
+    [name](const smtk::common::UUID& id) -> ProjectPtr {
+      ProjectPtr project = Project::create(name);
+      project->setId(id);
+      return project;
+    },
+    resources,
+    operations,
+    version));
 }
 
-smtk::attribute::AttributePtr Manager::getProjectSpecification()
+bool Manager::registerProject(Metadata&& metadata)
 {
-  auto newTemplate = this->getProjectTemplate();
-  std::string name = "new-project";
-  auto att = newTemplate->findAttribute(name);
-  if (!att)
+  auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
+  if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
   {
-    auto defn = newTemplate->findDefinition(name);
-    att = newTemplate->createAttribute(name, defn);
+    auto inserted = m_metadata.get<IndexTag>().insert(metadata);
+    if (inserted.second)
+    {
+      if (auto operationManager = m_operationManager.lock())
+      {
+        if (!operationManager->registered<smtk::project::Read>())
+        {
+          operationManager->registerOperation<smtk::project::Read>();
+        }
+        if (!operationManager->registered<smtk::project::Write>())
+        {
+          operationManager->registerOperation<smtk::project::Write>();
+        }
+      }
+
+      if (auto resourceManager = m_resourceManager.lock())
+      {
+        smtk::resource::Resource::Index resourceIndex =
+          std::type_index(typeid(smtk::resource::Resource)).hash_code();
+        smtk::resource::Resource::Index projectIndex =
+          std::type_index(typeid(smtk::project::Project)).hash_code();
+        resourceManager->registerResource(smtk::resource::Metadata(
+          inserted.first->typeName(),
+          inserted.first->index(),
+          { resourceIndex, projectIndex, metadata.index() },
+          inserted.first->create,
+          &smtk::project::read,
+          &smtk::project::write));
+      }
+      smtk::operation::ReaderGroup(this->operationManager())
+        .registerOperation(
+          smtk::common::typeName<smtk::project::Read>(), inserted.first->typeName());
+      smtk::operation::WriterGroup(this->operationManager())
+        .registerOperation(
+          smtk::common::typeName<smtk::project::Write>(), inserted.first->typeName());
+
+      m_metadataObservers(*inserted.first, true);
+      return true;
+    }
   }
-  return att;
+
+  return false;
 }
 
-ProjectPtr Manager::createProject(
-  smtk::attribute::AttributePtr specification,
-  bool replaceExistingDirectory,
-  smtk::io::Logger& logger)
+bool Manager::unregisterProject(const std::string& typeName)
 {
-  if (m_project)
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata != m_metadata.get<NameTag>().end())
   {
-    smtkErrorMacro(logger, "Cannot initalize new project - must close current project first");
-    return ProjectPtr();
+    m_metadata.get<NameTag>().erase(metadata);
+    m_metadataObservers(*metadata, false);
+    return true;
   }
 
-  auto newProject = this->initProject(logger);
-  if (!newProject)
-  {
-    return newProject;
-  }
-
-  bool success = newProject->build(specification, logger, replaceExistingDirectory);
-  if (success)
-  {
-    m_project = newProject;
-    return newProject;
-  }
-
-  // (else)
-  return smtk::project::ProjectPtr();
+  return false;
 }
 
-bool Manager::saveProject(smtk::io::Logger& logger)
+bool Manager::unregisterProject(const Project::Index& index)
 {
-  if (!m_project)
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
   {
-    smtkErrorMacro(logger, "No current project to save.");
-    return false;
+    m_metadata.get<IndexTag>().erase(metadata);
+    return true;
   }
 
-  return m_project->save(logger);
+  return false;
 }
 
-ProjectPtr Manager::saveAsProject(const std::string& directory, smtk::io::Logger& logger)
+bool Manager::registered(const std::string& typeName) const
 {
-  if (m_project == nullptr)
-  {
-    smtkErrorMacro(logger, "No current project to copy");
-    return nullptr;
-  }
-
-  auto projectPath = boost::filesystem::path(directory);
-  if (boost::filesystem::exists(projectPath) && !boost::filesystem::is_empty(projectPath))
-  {
-    smtkErrorMacro(logger, "Cannot copy project to non-empty directory: \"" << directory << "\"");
-    return nullptr;
-  } // if (projectPath exists)
-
-  if (!boost::filesystem::exists(projectPath) && !boost::filesystem::create_directory(projectPath))
-  {
-    smtkErrorMacro(logger, "Unable to create project directory: \"" << directory << "\"");
-    return nullptr;
-  }
-
-  // Build the new project
-  auto newProject = this->initProject(logger);
-  if (newProject == nullptr)
-  {
-    return nullptr;
-  }
-
-  // Set location and name
-  newProject->m_name = projectPath.filename().string();
-  newProject->m_directory = projectPath.string();
-
-  if (!m_project->copyTo(newProject, logger))
-  {
-    smtkErrorMacro(logger, "Failed copying project content");
-    return nullptr;
-  }
-
-  if (!newProject->save(logger))
-  {
-    return nullptr;
-  }
-
-  //Finally, close the current project and switch to the new project
-  m_project->close();
-  m_project = newProject;
-
-  return newProject;
+  const auto metadata = m_metadata.get<NameTag>().find(typeName);
+  return metadata != m_metadata.get<NameTag>().end();
 }
 
-bool Manager::closeProject(smtk::io::Logger& logger)
+bool Manager::registered(const Project::Index& index) const
 {
-  if (!m_project)
-  {
-    smtkErrorMacro(logger, "No current project to close.");
-    return false;
-  }
-
-  bool closed = m_project->close();
-  if (closed)
-  {
-    m_project = nullptr;
-  }
-
-  return closed;
+  const auto metadata = m_metadata.get<IndexTag>().find(index);
+  return metadata != m_metadata.get<IndexTag>().end();
 }
 
-ProjectPtr Manager::openProject(const std::string& projectPath, smtk::io::Logger& logger)
+bool Manager::registerOperation(smtk::operation::Metadata&& metadata)
 {
-  auto newProject = this->initProject(logger);
-  if (!newProject)
+  if (auto operationManager = this->operationManager())
   {
-    return newProject;
+    return operationManager->registered(metadata.typeName())
+      ? true
+      : operationManager->registerOperation(std::move(metadata));
   }
-
-  bool success = newProject->open(projectPath, logger);
-  if (success)
-  {
-    m_project = newProject;
-    return newProject;
-  }
-
-  // (else)
-  return ProjectPtr();
+  return false;
 }
 
-smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logger, bool reset) const
+bool Manager::unregisterOperation(const std::string& typeName)
 {
-  if (!m_project)
+  if (auto operationManager = this->operationManager())
   {
-    smtkErrorMacro(logger, "Cannot get export operator because no project is loaded");
-    return nullptr;
+    return operationManager->unregisterOperation(typeName);
   }
-
-  return m_project->getExportOperator(logger, reset);
+  return false;
 }
 
-smtk::attribute::ResourcePtr Manager::getProjectTemplate()
+bool Manager::unregisterOperation(const smtk::operation::Operation::Index& index)
 {
-  // The current presumption is to reuse the previous project settings.
-  // This might be revisited for usability purposes.
-  if (m_template)
+  if (auto operationManager = this->operationManager())
   {
-    return m_template;
+    return operationManager->unregisterOperation(index);
   }
-
-  auto reader = smtk::io::AttributeReader();
-  m_template = smtk::attribute::Resource::create();
-  reader.readContents(m_template, NewProjectTemplate, smtk::io::Logger::instance());
-  return m_template;
+  return false;
 }
 
-ProjectPtr Manager::initProject(smtk::io::Logger& logger)
+smtk::project::Project::Ptr Manager::create(const std::string& typeName)
 {
-  auto resManager = m_resourceManager.lock();
-  if (!resManager)
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata != m_metadata.get<NameTag>().end())
   {
-    smtkErrorMacro(logger, "Resource manager is null");
-    return ProjectPtr();
+    // Create the resource using its index
+    return this->create(metadata->index());
   }
 
-  auto opManager = m_operationManager.lock();
-  if (!opManager)
+  return smtk::project::Project::Ptr();
+}
+
+smtk::project::Project::Ptr Manager::create(const Project::Index& index)
+{
+  smtk::common::UUID uuid;
+
+  // Though the chances are super small, we ensure here that the UUID associated
+  // to our new project is unique to the manager's set of resources.
+  do
   {
-    smtkErrorMacro(logger, "Operation manager is null");
-    return ProjectPtr();
+    uuid = smtk::common::UUIDGenerator::instance().random();
+  } while (m_projects.find(uuid) != m_projects.end());
+
+  return this->create(index, uuid);
+}
+
+smtk::project::Project::Ptr Manager::create(
+  const std::string& typeName,
+  const smtk::common::UUID& id)
+{
+  smtk::project::ProjectPtr project;
+
+  // Locate the metadata associated with this project type
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata != m_metadata.get<NameTag>().end())
+  {
+    // Create the project with the appropriate UUID
+    project = metadata->create(id);
+    this->add(metadata->index(), project);
   }
 
-  auto project = smtk::project::Project::create();
-  project->setCoreManagers(resManager, opManager);
   return project;
 }
 
+smtk::project::Project::Ptr Manager::create(
+  const Project::Index& index,
+  const smtk::common::UUID& id)
+{
+  smtk::project::ProjectPtr project;
+
+  // Locate the metadata associated with this project type
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
+  {
+    // Create the project with the appropriate UUID
+    project = metadata->create(id);
+    this->add(index, project);
+  }
+
+  return project;
+}
+
+smtk::project::ProjectPtr Manager::get(const smtk::common::UUID& id)
+{
+  // No type casting is required, so we simply find and return the project by
+  // key.
+  typedef Container::index<IdTag>::type ProjectsById;
+  ProjectsById& projects = m_projects.get<IdTag>();
+  ProjectsById::iterator projectIt = projects.find(id);
+  if (projectIt != projects.end())
+  {
+    return (*projectIt)->shared_from_this();
+  }
+
+  return smtk::project::ProjectPtr();
+}
+
+smtk::project::ConstProjectPtr Manager::get(const smtk::common::UUID& id) const
+{
+  // No type casting is required, so we simply find and return the project by
+  // key.
+  typedef Container::index<IdTag>::type ProjectsById;
+  const ProjectsById& projects = m_projects.get<IdTag>();
+  ProjectsById::const_iterator projectIt = projects.find(id);
+  if (projectIt != projects.end())
+  {
+    return (*projectIt)->shared_from_this();
+  }
+
+  return smtk::project::ConstProjectPtr();
+}
+
+smtk::project::ProjectPtr Manager::get(const std::string& url)
+{
+  // No type casting is required, so we simply find and return the project by
+  // key.
+  typedef Container::index<LocationTag>::type ProjectsByLocation;
+  ProjectsByLocation& projects = m_projects.get<LocationTag>();
+  ProjectsByLocation::iterator projectIt = projects.find(url);
+  if (projectIt != projects.end())
+  {
+    return (*projectIt)->shared_from_this();
+  }
+
+  return smtk::project::ProjectPtr();
+}
+
+smtk::project::ConstProjectPtr Manager::get(const std::string& url) const
+{
+  // No type casting is required, so we simply find and return the project by
+  // key.
+  typedef Container::index<LocationTag>::type ProjectsByLocation;
+  const ProjectsByLocation& projects = m_projects.get<LocationTag>();
+  ProjectsByLocation::const_iterator projectIt = projects.find(url);
+  if (projectIt != projects.end())
+  {
+    return (*projectIt)->shared_from_this();
+  }
+
+  return smtk::project::ConstProjectPtr();
+}
+
+std::set<smtk::project::ProjectPtr> Manager::find(const std::string& typeName)
+{
+  std::set<smtk::project::ProjectPtr> values;
+  for (const auto& project : m_projects)
+  {
+    if (project->isOfType(typeName))
+    {
+      values.insert(project);
+    }
+  }
+  return values;
+}
+
+std::set<smtk::project::ProjectPtr> Manager::find(const Project::Index& index)
+{
+  std::set<smtk::project::ProjectPtr> values;
+  for (const auto& project : m_projects)
+  {
+    if (project->isOfType(index))
+    {
+      values.insert(project);
+    }
+  }
+  return values;
+}
+
+bool Manager::add(const smtk::project::ProjectPtr& project)
+{
+  // If the project is null, do not add it to the manager
+  if (!project)
+  {
+    return false;
+  }
+
+  return this->add(project->index(), project);
+}
+
+bool Manager::add(const Project::Index& index, const smtk::project::Project::Ptr& project)
+{
+  if (!project)
+  {
+    return false;
+  }
+
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata == m_metadata.get<IndexTag>().end())
+  {
+    return false;
+  }
+
+  smtk::project::Project::Ptr p = const_cast<ProjectPtr&>(project);
+
+  {
+    // Set the project's managers
+    p->m_manager = this;
+    p->resources().setManager(m_resourceManager);
+    p->operations().setManager(m_operationManager);
+
+    // Set the project's resource and operation filters
+    p->resources().registerResources(metadata->resources());
+    p->operations().registerOperations(metadata->operations());
+  }
+
+  m_projects.insert(project);
+
+  // Tell observers we just added a project
+  m_observers(*project, smtk::project::EventType::ADDED);
+
+  return true;
+}
+
+bool Manager::remove(const smtk::project::ProjectPtr& project)
+{
+  // Remove the project from the manager's set of projects
+  return m_projects.erase(project->id()) > 0;
+}
 } // namespace project
 } // namespace smtk

@@ -114,7 +114,8 @@ endif()
 
 add_library(smtkCore ${smtk_srcs})
 # dependencies on generated files from subdirectories
-add_dependencies(smtkCore attibuteGenHeaders meshGenHeaders modelGenHeaders operationGenHeaders)
+add_dependencies(smtkCore
+  attibuteGenHeaders meshGenHeaders modelGenHeaders operationGenHeaders projectGenHeaders)
 
 target_include_directories(smtkCore
   PUBLIC

@@ -37,6 +37,8 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/groups/CreatorGroup.h"
+#include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/view/Selection.h"
 
@@ -46,15 +48,20 @@
 #include <QMenuBar>
 
 #include <stdexcept>
+#include <string>
 
 namespace
 {
 class UnreleasedMemoryError : public std::exception
 {
 public:
-  explicit UnreleasedMemoryError(const std::string& name, const std::string& typeName)
+  explicit UnreleasedMemoryError(
+    const std::string& name,
+    const std::string& typeName,
+    long useCount)
     : message(
-        "Resource \"" + name + "\" (Type \"" + typeName + "\") has not been released from memory.")
+        "Resource \"" + name + "\" (Type \"" + typeName +
+        "\") has not been released from memory. Use count is " + std::to_string(useCount))
   {
   }
   const char* what() const noexcept override { return message.c_str(); }
@@ -134,6 +141,16 @@ void pqCloseResourceReaction::closeResource()
       manager->remove(resource);
     }
 
+    // Remove project instance from project manager
+    auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
+    if (project)
+    {
+      pqServer* server = pqActiveObjects::instance().activeServer();
+      pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+      auto projectManager = wrapper->smtkProjectManager();
+      projectManager->remove(project);
+    }
+
     // Remove it from the active selection
     {
       smtk::view::Selection::SelectionMap& selections =
@@ -148,7 +165,7 @@ void pqCloseResourceReaction::closeResource()
 #ifndef NDEBUG
   if (resource && resource.use_count() != 1)
   {
-    throw UnreleasedMemoryError(resource->name(), resource->typeName());
+    throw UnreleasedMemoryError(resource->name(), resource->typeName(), resource.use_count());
   }
 #endif
 }

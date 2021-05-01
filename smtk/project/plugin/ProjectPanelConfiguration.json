@@ -1,0 +1,47 @@
+[
+  {
+    "Name": "ProjectBrowser",
+    "Type": "pqSMTKProjectBrowser",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "Title": "Projects",
+        "TopLevel": true,
+        "Widget": "ResourceTree"
+      },
+      "Children": [
+        {
+          "Name": "PhraseModel",
+          "Attributes": {
+            "Type": "smtk::project::view::PhraseModel"
+          },
+          "Children": [
+            {
+              "Name": "SubphraseGenerator",
+              "Attributes": {
+                "Type": "smtk::project::view::SubphraseGenerator"
+              }
+            },
+            {
+              "Name": "Badges",
+              "Children": [
+                {
+                  "Name": "Badge",
+                  "Attributes": {
+                    "Type": "smtk::extension::paraview::appcomponents::VisibilityBadge"
+                  }
+                },
+                {
+                  "Name": "Badge",
+                  "Attributes": {
+                    "Type": "smtk::extension::qt::TypeAndColorBadge"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

@@ -3,7 +3,6 @@ set(module_path "project")
 set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
-
 pybind11_add_module(${library_name} PybindProject.cxx)
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>

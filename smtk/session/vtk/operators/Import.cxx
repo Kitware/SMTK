@@ -82,7 +82,7 @@ Import::Result Import::operateInternal()
       filetype = "slac";
     else if (ext == ".vti")
       filetype = "label map";
-    else if (ext == ".exo" || ext == ".g" || ext == ".ex2" || ext == ".exii")
+    else if (ext == ".exo" || ext == ".g" || ext == ".gen" || ext == ".ex2" || ext == ".exii")
       filetype = "exodus";
   }
 

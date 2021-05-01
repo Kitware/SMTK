@@ -13,189 +13,99 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"
-#include "smtk/SystemConfig.h"
 
-#include "smtk/io/Logger.h"
-#include "smtk/project/ProjectDescriptor.h"
-#include "smtk/project/ResourceDescriptor.h"
-#include "smtk/resource/Manager.h"
+#include "smtk/resource/DerivedFrom.h"
 
-#include <string>
-#include <vector>
+#include "smtk/project/OperationFactory.h"
+#include "smtk/project/ResourceContainer.h"
+
+#include <boost/type_index.hpp>
 
 namespace smtk
 {
 namespace project
 {
+
 class Manager;
 
-/// A project Manager is responsible for tracking a set of smtk
-/// resources used in constructing one or more simulation input
-/// datasets.
-class SMTKCORE_EXPORT Project : smtkEnableSharedPtr(Project)
+template<typename Self, typename Parent>
+using DerivedFrom = smtk::resource::DerivedFrom<Self, Parent>;
+
+/// A Project represents an encapsulation of a subset of SMTK's Resources and
+/// Operations for the purpose of accomplishing a targeted set of tasks. It
+/// contains Resources and a list of Operations that are pertinent to the
+/// Project. As a descendent of Resource, it also contains links, properties, and
+/// Query functionality.
+class SMTKCORE_EXPORT Project
+  : public smtk::resource::DerivedFrom<Project, smtk::resource::Resource>
 {
   friend class Manager;
 
 public:
   smtkTypedefs(smtk::project::Project);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  virtual ~Project();
+  static constexpr const char* const type_name = "smtk::project::Project";
+  std::string typeName() const override { return (m_typeName.empty() ? type_name : m_typeName); }
 
-  /// Return simulation code this project targets
-  std::string simulationCode() const { return m_simulationCode; }
-
-  /// Return project name
-  std::string name() const { return m_name; }
-
-  /// Return project directory
-  std::string directory() const { return m_directory; }
-
-  /// Return project resources
-  std::vector<smtk::resource::ResourcePtr> resources() const;
-
-  /// Indicates if all resources are in sync with their locations
-  bool clean() const;
-
-  /// Return resource "import location", which is the location in the
-  /// file system that was imported to create the resource. The return
-  /// string might be empty (unknown).
-  std::string importLocation(smtk::resource::ResourcePtr res) const;
-
-  /// Return resource of specified type and identifier
-  template<typename ResourceType>
-  smtk::shared_ptr<ResourceType> findResource(const std::string& identifier) const;
-
-  /// Load model file and add to the project resources.
-  /// Returns boolean indicating if the resource was successfully added.
-  /// This method only accepts the model if the project doesn't already have one with the same
-  /// identifer. In other words, you can add a model, but not replace an existing one.
-  /// This method does not add resource links to the input model; any required links
-  /// must be created in the application code.
-  bool addModel(
-    const std::string& location,
-    const std::string& identifier,
-    bool copyNativeFile,
-    bool useVTKSession);
-
-protected:
-  /// First set of methods are called by (friend class) smtk::project::Manager
-  smtkCreateMacro(Project);
-
-  /// Assign resource & operation managers
-  void setCoreManagers(smtk::resource::ManagerPtr, smtk::operation::ManagerPtr);
-
-  /// Create project from application-provided specification
-  bool build(
-    smtk::attribute::AttributePtr specification,
-    smtk::io::Logger& logger = smtk::io::Logger::instance(),
-    bool replaceExistingDirectory = false);
-
-  bool save(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
-
-  bool close();
-
-  /// Load project from filesystem
-  bool open(const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
-
-  // Copy contents to a differnet project (for save-as functionality).
-  // Note that this method is *destructive* to the this project, which should
-  // be closed (and not saved) after this method is used.
-  bool copyTo(ProjectPtr thatProject, smtk::io::Logger& logger = smtk::io::Logger::instance())
-    const;
-
-  // Remaining calls are for internal use
-
-  bool importModels(const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger);
-
-  bool importModel(
-    const std::string& location,
-    bool copyNativeFile,
-    ResourceDescriptor& descriptor,
-    bool useVtkSession,
-    smtk::io::Logger& logger = smtk::io::Logger::instance());
-
-  bool importAttributeTemplate(
-    const std::string& location,
-    ResourceDescriptor& descriptor,
-    smtk::io::Logger& logger = smtk::io::Logger::instance());
-
-  bool writeProjectFile(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
-
-  bool loadResources(
-    const std::string& path,
-    smtk::io::Logger& logger = smtk::io::Logger::instance());
-
-  /// Return export operator
-  /// If reset flag is true, will create new operator in order to
-  /// reset contents to their default values.
-  smtk::operation::OperationPtr getExportOperator(
-    smtk::io::Logger& logger = smtk::io::Logger::instance(),
-    bool reset = false);
-
-  bool populateExportOperator(
-    smtk::operation::OperationPtr exportOp,
-    smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
-
-  void releaseExportOperator();
-
-  /// Resource manager for the project resources.
-  smtk::resource::WeakManagerPtr m_resourceManager;
-
-  /// Operation manager for the project operations.
-  smtk::operation::WeakManagerPtr m_operationManager;
-
-  /// Target simulation code, e.g., ACE3P, OpenFOAM, Truchas.
-  /// The convention is to use the name of the folder in the
-  /// simulation-workflows repository, converted to lower case,
-  /// e.g. ace3p, openfoam, truchas.
-  std::string m_simulationCode;
-
-  /// User-supplied name for the project
-  std::string m_name;
-
-  /// Filesystem directory where project resources are stored.
-  std::string m_directory;
-
-  /// Array of ResourceDescriptor objects for each project resource.
-  /// These data are stored in a file in the project directory.
-  std::vector<ResourceDescriptor> m_resourceDescriptors;
-
-  /// Export operator (cached)
-  smtk::operation::OperationPtr m_exportOperator;
-  std::string m_exportOperatorUniqueName;
-
-private:
-  Project();
-}; // class smtk::project::Project
-
-template<typename ResourceType>
-smtk::shared_ptr<ResourceType> Project::findResource(const std::string& identifier) const
-{
-  auto resManager = m_resourceManager.lock();
-  if (!resManager)
+  static std::shared_ptr<smtk::project::Project> create(const std::string& typeName = "")
   {
-    return nullptr;
+    return smtk::shared_ptr<smtk::project::Project>(new smtk::project::Project(typeName));
   }
 
-  // Traverse resource descriptors
-  for (const auto& rd : m_resourceDescriptors)
+  /// A hash value uniquely representing the project type.
+  typedef std::size_t Index;
+
+  virtual ~Project() {}
+
+  Index index() const override
   {
-    if (rd.m_identifier == identifier)
-    {
-      smtk::resource::ResourcePtr resource = resManager->get(rd.m_uuid);
-      if ((resource != nullptr) && (resource->isOfType<ResourceType>()))
-      {
-        return smtk::static_pointer_cast<ResourceType>(resource);
-      }
-    } // if (identifier match)
-  }   // for (resource descriptors)
+    return (
+      m_typeName.empty() ? std::type_index(typeid(*this)).hash_code()
+                         : std::hash<std::string>{}(m_typeName));
+  }
 
-  // (Resource was not found)
-  return nullptr;
-}
+  /// Access the Project's Resources.
+  const ResourceContainer& resources() const { return m_resources; }
+  ResourceContainer& resources() { return m_resources; }
 
+  /// Access the Project's Operations.
+  const OperationFactory& operations() const { return m_operations; }
+  OperationFactory& operations() { return m_operations; }
+
+  /// Access the Project's version string.
+  const std::string& version() const { return m_version; }
+  void setVersion(const std::string& version) { m_version = version; }
+
+  // Current project design does not contain any components (this could change in the future)
+  std::function<bool(const smtk::resource::Component&)> queryOperation(
+    const std::string&) const override
+  {
+    return [](const smtk::resource::Component&) { return true; };
+  }
+
+  void visit(smtk::resource::Component::Visitor&) const override {}
+
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override
+  {
+    return smtk::resource::ComponentPtr();
+  }
+
+  const smtk::project::Manager* manager() const { return m_manager; }
+
+  bool clean() const override;
+
+protected:
+  Project(const std::string& typeName = "");
+
+private:
+  ResourceContainer m_resources;
+  OperationFactory m_operations;
+  std::string m_typeName;
+  std::string m_version;
+  smtk::project::Manager* m_manager;
+};
 } // namespace project
 } // namespace smtk
 
-#endif // smtk_project_Project_h
+#endif

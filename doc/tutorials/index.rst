@@ -15,4 +15,5 @@ requiring much theory.
    python_first_steps/index.rst
    add_a_session/index.rst
    implement_an_operator/index.rst
+   create_a_project/index.rst
    debugging_python_tests/index.rst

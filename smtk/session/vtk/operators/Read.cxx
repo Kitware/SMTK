@@ -122,6 +122,14 @@ const char* Read::xmlDescription() const
 void Read::markModifiedResources(Read::Result& res)
 {
   auto resourceItem = res->findResource("resource");
+
+  // Special case, if loaded from project, resource item is not set
+  // Reason is not known, but this serves as a workaround
+  if ((resourceItem->numberOfValues() == 1) && resourceItem->value(0) == nullptr)
+  {
+    return;
+  }
+
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);

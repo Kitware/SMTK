@@ -12,38 +12,45 @@
 #define pybind_smtk_project_Project_h
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "smtk/project/Project.h"
 
-#include "smtk/attribute/Resource.h"
-#include "smtk/mesh/core/Resource.h"
-#include "smtk/model/Resource.h"
-#include "smtk/resource/Resource.h"
+#include "smtk/project/pybind11/PyProject.h"
+
+#include "smtk/common/UUID.h"
+#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/project/Manager.h"
+#include "smtk/project/OperationFactory.h"
+#include "smtk/project/ResourceContainer.h"
+#include "smtk/resource/Component.h"
 
 namespace py = pybind11;
 
 PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::module& m)
 {
-  PySharedPtrClass<smtk::project::Project> instance(m, "Project");
-  instance.def(py::init< ::smtk::project::Project const&>())
-    .def("simulationCode", &smtk::project::Project::simulationCode)
+  PySharedPtrClass<smtk::project::Project, smtk::project::PyProject, smtk::resource::Resource>
+    instance(m, "Project");
+  instance
+    .def(py::init_alias<>())
+    .def_static("create", &smtk::project::Project::create, py::arg("typeName") = "")
+    .def("find", &smtk::project::Project::find, py::arg("compId"))
+    .def("index", &smtk::project::Project::index)
+    .def("manager", &smtk::project::Project::manager)
     .def("name", &smtk::project::Project::name)
-    .def("directory", &smtk::project::Project::directory)
-    .def("resources", &smtk::project::Project::resources)
-    .def("importLocation", &smtk::project::Project::importLocation)
-    .def("addModel", &smtk::project::Project::addModel)
-
-    .def("findAttributeResource", [](smtk::project::Project& prj, const std::string& identifier) {
-        return prj.findResource<smtk::attribute::Resource>(identifier);
-      })
-    .def("findMeshResource", [](smtk::project::Project& prj, const std::string& identifier) {
-        return prj.findResource<smtk::mesh::Resource>(identifier);
-      })
-    .def("findModelResource", [](smtk::project::Project& prj, const std::string& identifier) {
-        return prj.findResource<smtk::model::Resource>(identifier);
-      })
-    ;
+    .def("operations", (smtk::project::OperationFactory const& (smtk::project::Project::*)() const) &smtk::project::Project::operations)
+    .def("operations", (smtk::project::OperationFactory & (smtk::project::Project::*)()) &
+        smtk::project::Project::operations)
+    .def("queryOperation", &smtk::project::Project::queryOperation, py::arg("arg0"))
+    .def("resources", (smtk::project::ResourceContainer const& (smtk::project::Project::*)() const) &smtk::project::Project::resources)
+    .def("resources", (smtk::project::ResourceContainer & (smtk::project::Project::*)()) &smtk::project::Project::resources)
+    .def("setId", &smtk::project::Project::setId, py::arg("newId"))
+    .def("setVersion", &smtk::project::Project::setVersion, py::arg("version"))
+    .def("shared_from_this",
+      (std::shared_ptr<const smtk::project::Project> (smtk::project::Project::*)() const) &smtk::project::Project::shared_from_this)
+    .def("shared_from_this", (std::shared_ptr<smtk::project::Project> (smtk::project::Project::*)()) &smtk::project::Project::shared_from_this)
+    .def("typeName", &smtk::project::Project::typeName)
+    .def("version", &smtk::project::Project::version)
+    .def("visit", &smtk::project::Project::visit, py::arg("arg0"));
   return instance;
 }
 

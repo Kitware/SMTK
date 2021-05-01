@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtReferenceItem.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
 
 #include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/qtBadgeActionToggle.h"
@@ -77,9 +78,17 @@ nlohmann::json defaultConfiguration = {
 qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
-  if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
+  auto item = info.itemAs<smtk::attribute::ReferenceItem>();
+  if (item == nullptr)
   {
     return nullptr;
+  }
+  // If we are dealing with a non-extensible item with only 1 required value lets
+  // use a simple combobox UI else we will use the more advance UI.
+  auto itemDef = item->definitionAs<smtk::attribute::ReferenceItemDefinition>();
+  if ((itemDef->numberOfRequiredValues() == 1) && !itemDef->isExtensible())
+  {
+    return new qtReferenceItemEditor(info);
   }
   auto* qi = new qtReferenceItem(info);
   // Unlike its subclasses, qtReferenceItem does not call

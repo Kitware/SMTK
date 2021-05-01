@@ -1,17 +1,20 @@
 # Using smtk test harness
 
-set(unit_tests)
-set(unit_tests_which_require_data)
+set(unit_tests
+  TestDefineOp
+  TestProject
+  TestProjectAssociation
+  TestProjectLifeCycle
+  TestProjectResources
+)
+set(unit_tests_which_require_data
+  TestProjectReadWrite
+  TestProjectReadWrite2
+)
 set(extra_libs)
-
-if(SMTK_ENABLE_VTK_SESSION)
-  list(APPEND unit_tests_which_require_data
-    TestProjectCopy.cxx
-    TestResourceCopy.cxx
-    )
-  list(APPEND extra_libs
-    smtkVTKSession
-    )
+if (SMTK_ENABLE_VTK_SUPPORT)
+  add_compile_definitions(VTK_SUPPORT)
+  list(APPEND extra_libs smtkVTKSession)
 endif()
 
 smtk_unit_tests(

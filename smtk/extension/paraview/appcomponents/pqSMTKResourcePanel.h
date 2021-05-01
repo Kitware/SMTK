@@ -34,6 +34,9 @@ public:
   /// Let the panel display a custom view config, from json or xml.
   void setView(const smtk::view::ConfigurationPtr& view);
 
+  /// Access the underlying resource browser.
+  pqSMTKResourceBrowser* resourceBrowser() const { return m_browser; }
+
 protected slots:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
