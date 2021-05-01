@@ -28,7 +28,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
-#include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Component.h"
 #include "smtk/session/polygon/Resource.h"
@@ -140,10 +139,10 @@ public:
   }
 
   // Build model entities
-  bool createModel(smtk::operation::ManagerPtr opManager);
+  bool createModel();
   bool createVertices();
-  bool createEdges(smtk::operation::ManagerPtr opManager);
-  bool createFaces(smtk::operation::ManagerPtr opManager);
+  bool createEdges();
+  bool createFaces();
 
   // Parse input line
   bool parseInputLine(const std::string& line, unsigned lineNum);
@@ -162,7 +161,7 @@ protected:
   bool parsePPGFace(const std::vector<std::string>& symbols, unsigned lineNum);
 
   // Process holes and update member data (maps)
-  bool createHoles(smtk::operation::ManagerPtr opManager);
+  bool createHoles();
 
   // Locate model face by matching vertex ids; uses member data (maps)
   smtk::common::UUID findMatchingModelFace(const PPGFace& ppgFace);
@@ -184,14 +183,14 @@ protected:
   std::shared_ptr<smtk::resource::PersistentObject> m_modelEntity;
 };
 
-bool ImportPPG::Internal::createModel(smtk::operation::ManagerPtr opManager)
+bool ImportPPG::Internal::createModel()
 {
 #ifndef NDEBUG
   std::cout << "Creating Model..." << std::endl;
 #endif
 
   // Initialize and run CreateModel operation.
-  auto createOp = opManager->create<smtk::session::polygon::CreateModel>();
+  auto createOp = smtk::session::polygon::CreateModel::create();
   auto result = createOp->operate();
   int outcome = result->findInt("outcome")->value();
   if (outcome != OP_SUCCEEDED)
@@ -258,7 +257,7 @@ bool ImportPPG::Internal::createVertices()
   return true;
 }
 
-bool ImportPPG::Internal::createEdges(smtk::operation::ManagerPtr opManager)
+bool ImportPPG::Internal::createEdges()
 {
 #ifndef NDEBUG
   std::cout << "Creating Edges..." << std::endl;
@@ -268,7 +267,7 @@ bool ImportPPG::Internal::createEdges(smtk::operation::ManagerPtr opManager)
   std::stringstream ss;
 
   // Initialize and run CreateEdgeFromVertices operation.
-  auto createOp = opManager->create<smtk::session::polygon::CreateEdgeFromVertices>();
+  auto createOp = smtk::session::polygon::CreateEdgeFromVertices::create();
   for (auto& ppgFace : m_ppgFaceList)
   {
     std::vector<std::size_t>& vertexIds(ppgFace.vertexIds); // shorthand
@@ -311,14 +310,14 @@ bool ImportPPG::Internal::createEdges(smtk::operation::ManagerPtr opManager)
   return true;
 }
 
-bool ImportPPG::Internal::createFaces(smtk::operation::ManagerPtr opManager)
+bool ImportPPG::Internal::createFaces()
 {
 #ifndef NDEBUG
   std::cout << "Creating Faces..." << std::endl;
 #endif
 
   // Initialize and run CreateFaces operation.
-  auto createOp = opManager->create<smtk::session::polygon::CreateFaces>();
+  auto createOp = smtk::session::polygon::CreateFaces::create();
   createOp->parameters()->associate(m_modelEntity);
   auto result = createOp->operate();
   int outcome = result->findInt("outcome")->value();
@@ -354,7 +353,7 @@ bool ImportPPG::Internal::createFaces(smtk::operation::ManagerPtr opManager)
   } // for (i)
 
   // Now call createHoles, which prunes m_vertexIdMap and m_faceVertexIdMap
-  if (!this->createHoles(opManager))
+  if (!this->createHoles())
   {
     return false;
   }
@@ -478,7 +477,7 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
   return true;
 } // parsePPGFace()
 
-bool ImportPPG::Internal::createHoles(smtk::operation::ManagerPtr opManager)
+bool ImportPPG::Internal::createHoles()
 {
   // First check if any input faces are holes
   if (m_holeCount == 0)
@@ -491,7 +490,7 @@ bool ImportPPG::Internal::createHoles(smtk::operation::ManagerPtr opManager)
 #endif
 
   // Initialize Delete operation.
-  auto deleteOp = opManager->create<smtk::session::polygon::Delete>();
+  auto deleteOp = smtk::session::polygon::Delete::create();
 
   for (auto& ppgFace : m_ppgFaceList)
   {
@@ -610,7 +609,7 @@ smtk::operation::Operation::Result ImportPPG::operateInternal()
 #endif
 
   this->log().reset();
-  if (!m_internal->createModel(this->manager()))
+  if (!m_internal->createModel())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
@@ -622,13 +621,13 @@ smtk::operation::Operation::Result ImportPPG::operateInternal()
   }
 
   this->log().reset();
-  if (!m_internal->createEdges(this->manager()))
+  if (!m_internal->createEdges())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   this->log().reset();
-  if (!m_internal->createFaces(this->manager()))
+  if (!m_internal->createFaces())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
