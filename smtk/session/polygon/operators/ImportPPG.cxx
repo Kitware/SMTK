@@ -47,6 +47,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace
@@ -173,6 +174,9 @@ protected:
 
   std::vector<smtk::model::EntityRef> m_newVertexList;
 
+  // Track vertex-pairs used to make edges, to avoid duplication
+  std::set<std::pair<unsigned, unsigned>> m_ppgVertexPairSet;
+
   // Map model vertex uuid to user id
   std::map<smtk::common::UUID, std::size_t> m_vertexIdMap;
 
@@ -278,6 +282,15 @@ bool ImportPPG::Internal::createEdges()
       createOp->parameters()->removeAllAssociations();
       unsigned id1 = vertexIds[i - 1];
       unsigned id2 = vertexIds[i];
+
+      // Check for duplicate
+      auto pair1 = std::make_pair(id1, id2);
+      if (m_ppgVertexPairSet.count(pair1))
+      {
+        continue;
+      }
+      m_ppgVertexPairSet.insert(pair1);
+      m_ppgVertexPairSet.insert(std::make_pair(id2, id1));
 
       auto v1 = m_newVertexList[id1];
       auto v2 = m_newVertexList[id2];
