@@ -31,6 +31,7 @@ public:
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
+  void markModifiedResources(Result&) override;
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };

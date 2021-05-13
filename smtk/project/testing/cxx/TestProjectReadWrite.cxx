@@ -235,6 +235,12 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       std::cerr << "Resulting project is invalid\n";
       return 1;
     }
+
+    if (!project->clean())
+    {
+      std::cerr << "Resulting project is marked modified\n";
+      return 1;
+    }
   }
 
   smtk::mesh::Resource::Ptr myMesh =

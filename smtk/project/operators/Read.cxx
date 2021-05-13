@@ -41,6 +41,22 @@ namespace smtk
 namespace project
 {
 
+void Read::markModifiedResources(Read::Result& result)
+{
+  int outcome = result->findInt("outcome")->value();
+  if (outcome != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+  {
+    return;
+  }
+
+  auto resourceItem = result->findResource("resource");
+  auto resource = resourceItem->value();
+  if (resource != nullptr)
+  {
+    resource->setClean(true);
+  }
+}
+
 Read::Result Read::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
