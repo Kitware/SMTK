@@ -21,6 +21,7 @@ ctest_memcheck(
   RETURN_VALUE test_result
   EXCLUDE "${test_exclusions}"
   DEFECT_COUNT defects)
+ctest_submit_multi(PARTS Test)
 ctest_submit_multi(PARTS Memcheck)
 
 if (test_result)
