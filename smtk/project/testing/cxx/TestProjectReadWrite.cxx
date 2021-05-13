@@ -235,6 +235,12 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       std::cerr << "Resulting project is invalid\n";
       return 1;
     }
+
+    if (!project->clean())
+    {
+      std::cerr << "Resulting project is marked modified\n";
+      return 1;
+    }
   }
 
   smtk::mesh::Resource::Ptr myMesh =
@@ -250,6 +256,23 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   {
     std::cerr << "Resulting project's mesh resource was incorrectly transcribed\n";
     return 1;
+  }
+
+  // Fail (and not crash) when project type isn't registered
+  projectManager->unregisterProject("foo");
+  {
+    smtk::operation::ReadResource::Ptr readOp =
+      operationManager->create<smtk::operation::ReadResource>();
+    readOp->parameters()->findFile("filename")->setValue(projectLocation);
+    smtk::operation::Operation::Result readOpResult = readOp->operate();
+    if (
+      readOpResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::FAILED))
+    {
+      std::cerr << "Read operation should have failed\n";
+      return 1;
+    }
+    std::cout << readOp->log().convertToString();
   }
 
   cleanup(projectLocation);

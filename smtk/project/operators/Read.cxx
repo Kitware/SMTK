@@ -41,6 +41,22 @@ namespace smtk
 namespace project
 {
 
+void Read::markModifiedResources(Read::Result& result)
+{
+  int outcome = result->findInt("outcome")->value();
+  if (outcome != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+  {
+    return;
+  }
+
+  auto resourceItem = result->findResource("resource");
+  auto resource = resourceItem->value();
+  if (resource != nullptr)
+  {
+    resource->setClean(true);
+  }
+}
+
 Read::Result Read::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
@@ -73,6 +89,12 @@ Read::Result Read::operateInternal()
   // Create a new project for the import
   boost::filesystem::path projectFilePath(filename);
   auto project = this->projectManager()->create(j.at("type").get<std::string>());
+  if (project == nullptr)
+  {
+    smtkErrorMacro(log(), "project of type " << j.at("type") << " was not created.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
   project->setId(projectId);
   project->setLocation(filename);
 
