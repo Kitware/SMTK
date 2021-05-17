@@ -60,7 +60,7 @@ public:
   }
 
   Filter(Filter&& other) noexcept
-    : m_filterString(other.m_filterString)
+    : m_filterString(std::move(other.m_filterString))
     , m_rules(std::move(other.m_rules))
   {
   }
