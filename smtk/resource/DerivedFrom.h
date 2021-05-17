@@ -72,7 +72,7 @@ protected:
   {
   }
 
-  DerivedFrom(DerivedFrom&& rhs)
+  DerivedFrom(DerivedFrom&& rhs) noexcept
     : Parent(std::move(rhs))
   {
   }

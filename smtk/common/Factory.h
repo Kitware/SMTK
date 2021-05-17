@@ -471,7 +471,7 @@ private:
       : m_factory(factory)
     {
     }
-    InterfaceBase(InterfaceBase&&) = default;
+    InterfaceBase(InterfaceBase&&) noexcept = default;
 
     const Factory& m_factory;
   };
@@ -504,7 +504,7 @@ private:
       : InterfaceBase(factory)
     {
     }
-    Interface(Interface&&) = default;
+    Interface(Interface&&) noexcept = default;
   };
 
   // Specialization that uses the type name to select the right metadata type.
@@ -531,7 +531,7 @@ private:
       : InterfaceBase(factory)
     {
     }
-    Interface(Interface&&) = default;
+    Interface(Interface&&) noexcept = default;
   };
 
   // Specialization that uses the type index to select the right metadata type.
@@ -558,7 +558,7 @@ private:
       : InterfaceBase(factory)
     {
     }
-    Interface(Interface&&) = default;
+    Interface(Interface&&) noexcept = default;
   };
 
   // The container of metadata.

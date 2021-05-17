@@ -59,7 +59,7 @@ public:
   {
   }
 
-  Filter(Filter&& other)
+  Filter(Filter&& other) noexcept
     : m_filterString(other.m_filterString)
     , m_rules(std::move(other.m_rules))
   {
@@ -72,7 +72,7 @@ public:
     return *this;
   }
 
-  Filter& operator=(Filter&& other)
+  Filter& operator=(Filter&& other) noexcept
   {
     m_filterString = other.m_filterString;
     m_rules = std::move(other.m_rules);

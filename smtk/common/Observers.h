@@ -115,7 +115,7 @@ public:
     Key(const Key&) = delete;
     Key& operator=(const Key&) = delete;
 
-    Key(Key&& key)
+    Key(Key&& key) noexcept
       : InternalKey(std::move(key))
     {
       m_observers = key.m_observers;
@@ -127,7 +127,7 @@ public:
       }
     }
 
-    Key& operator=(Key&& key)
+    Key& operator=(Key&& key) noexcept
     {
       if (m_observers)
       {

@@ -49,13 +49,13 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
   PointLocatorCache() = default;
   ~PointLocatorCache() override = default;
   PointLocatorCache(const PointLocatorCache&) = delete;
-  PointLocatorCache(PointLocatorCache&& rhs)
+  PointLocatorCache(PointLocatorCache&& rhs) noexcept
     : m_caches(std::move(rhs.m_caches))
   {
   }
 
   PointLocatorCache& operator=(const PointLocatorCache&) = delete;
-  PointLocatorCache& operator=(PointLocatorCache&& rhs)
+  PointLocatorCache& operator=(PointLocatorCache&& rhs) noexcept
   {
     m_caches = std::move(rhs.m_caches);
     return *this;
