@@ -14,6 +14,8 @@
 
 #include "smtk/resource/filter/Rule.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace resource
@@ -36,14 +38,9 @@ public:
 
   bool operator()(const PersistentObject& object) const
   {
-    for (const auto& rule : m_data)
-    {
-      if (!(*rule)(object))
-      {
-        return false;
-      }
-    }
-    return true;
+    return std::all_of(m_data.begin(), m_data.end(), [&object](const std::unique_ptr<Rule>& rule) {
+      return (*rule)(object);
+    });
   }
 
   template<typename... Args>

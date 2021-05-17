@@ -13,6 +13,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
 #include <set>
@@ -181,14 +182,10 @@ bool Generator<Input, Output, Base>::valid(const Input& input) const
   {
     return false;
   }
-  for (auto gen : *gens)
-  {
-    if (gen->valid(input))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(
+    gens->begin(), gens->end(), [&input](const GeneratorBase<Input, Output, Base>* gen) {
+      return gen->valid(input);
+    });
 }
 
 template<class Input, class Output, class Base>

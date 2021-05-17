@@ -12,6 +12,8 @@
 
 #include "smtk/resource/PersistentObject.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace resource
@@ -43,14 +45,11 @@ public:
 
   bool operator()(const PersistentObject& object) const override
   {
-    for (const auto& key : acceptableKeys(object))
-    {
-      if (acceptableValue(object.properties().at<Type>(key)))
-      {
-        return true;
-      }
-    }
-    return false;
+    auto acceptable = acceptableKeys(object);
+    return std::any_of(
+      acceptable.begin(), acceptable.end(), [this, &object](const std::string& key) {
+        return acceptableValue(object.properties().at<Type>(key));
+      });
   }
 
   // Given a persistent object, return a vector of keys that match the
