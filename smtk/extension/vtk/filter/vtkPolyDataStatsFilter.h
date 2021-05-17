@@ -28,6 +28,9 @@ public:
   vtkTypeMacro(vtkPolyDataStatsFilter, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkPolyDataStatsFilter(const vtkPolyDataStatsFilter&) = delete;
+  vtkPolyDataStatsFilter& operator=(const vtkPolyDataStatsFilter&) = delete;
+
   vtkGetVector3Macro(AreaStats, double);
   vtkGetMacro(TotalSurfaceArea, double);
   vtkGetMacro(NumberOfPoints, vtkIdType);
@@ -67,10 +70,6 @@ protected:
   vtkTransform* Transform;
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   vtkTimeStamp BuildTime; // time at which the transform was built
-
-private:
-  vtkPolyDataStatsFilter(const vtkPolyDataStatsFilter&); // Not implemented.
-  void operator=(const vtkPolyDataStatsFilter&);         // Not implemented.
 };
 
 #endif

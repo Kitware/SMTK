@@ -40,6 +40,9 @@ public:
   ItemDefDataModel(QObject* parent = nullptr);
   ~ItemDefDataModel() override;
 
+  ItemDefDataModel(const ItemDefDataModel&) = delete;
+  ItemDefDataModel& operator=(const ItemDefDataModel&) = delete;
+
   /**
    * Appends a branch of ItemDefinition instances contained in a Definition
    * to the data model's root node.  This method is used to populate the tree.
@@ -108,9 +111,5 @@ protected:
    * could cause a crash).
    */
   void clearAttributes(smtk::attribute::DefinitionPtr def);
-
-private:
-  ItemDefDataModel(const ItemDefDataModel&) = delete;
-  void operator=(const ItemDefDataModel&) = delete;
 };
 #endif //__ItemDefDataModel_h

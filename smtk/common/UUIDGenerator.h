@@ -26,7 +26,7 @@ public:
   UUIDGenerator();
   virtual ~UUIDGenerator();
   UUIDGenerator(const UUIDGenerator&) = delete;
-  void operator=(const UUIDGenerator&) = delete;
+  UUIDGenerator& operator=(const UUIDGenerator&) = delete;
 
   UUID random();
   UUID null();

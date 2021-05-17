@@ -33,16 +33,15 @@ public:
   HandlerValue();
   ~HandlerValue() override;
 
+  HandlerValue(const HandlerValue&) = delete;
+  HandlerValue& operator=(const HandlerValue&) = delete;
+
 protected:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override = 0;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
 
   std::shared_ptr<Ui::ItemDefValueForm> Ui;
-
-private:
-  HandlerValue(const HandlerValue&) = delete;
-  void operator=(const HandlerValue&) = delete;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -60,10 +59,10 @@ public:
   HandlerString();
   ~HandlerString() override;
 
-private:
   HandlerString(const HandlerString&) = delete;
-  void operator=(const HandlerString&) = delete;
+  HandlerString& operator=(const HandlerString&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -81,10 +80,10 @@ public:
   HandlerDouble() = default;
   ~HandlerDouble() override = default;
 
-private:
   HandlerDouble(const HandlerDouble&) = delete;
-  void operator=(const HandlerDouble&) = delete;
+  HandlerDouble& operator=(const HandlerDouble&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -100,10 +99,10 @@ public:
   HandlerInt() = default;
   ~HandlerInt() override = default;
 
-private:
   HandlerInt(const HandlerInt&) = delete;
-  void operator=(const HandlerInt&) = delete;
+  HandlerInt& operator=(const HandlerInt&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;

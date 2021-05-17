@@ -145,6 +145,9 @@ public:
     return smtk::model::SESSION_EVERYTHING;
   }
 
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
   smtk::model::EntityRef toEntityRef(const EntityHandle& ent);
 
@@ -205,10 +208,6 @@ protected:
   }
 
   smtk::model::SessionIOPtr createIODelegate(const std::string& format) override;
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 // ++ 3 ++

@@ -33,6 +33,9 @@ public:
   vtkTypeMacro(vtkLIDARElevationFilter, vtkDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkLIDARElevationFilter(const vtkLIDARElevationFilter&) = delete;
+  vtkLIDARElevationFilter& operator=(const vtkLIDARElevationFilter&) = delete;
+
   // Description:
   // Define one end of the line (small scalar values).  Default is
   // (0,0,0).
@@ -74,10 +77,6 @@ protected:
   double HighPoint[3];
   double ScalarRange[2];
   bool CreateElevation;
-
-private:
-  vtkLIDARElevationFilter(const vtkLIDARElevationFilter&); // Not implemented.
-  void operator=(const vtkLIDARElevationFilter&);          // Not implemented.
 };
 
 #endif

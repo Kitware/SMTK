@@ -26,6 +26,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   ~vtkSMTKSettings() override;
 
+  vtkSMTKSettings(const vtkSMTKSettings&) = delete;
+  vtkSMTKSettings& operator=(const vtkSMTKSettings&) = delete;
+
   /**\brief Return the singleton.
    */
   static vtkSMTKSettings* GetInstance();
@@ -92,9 +95,6 @@ protected:
   char* ProjectsRootFolder;
 
 private:
-  vtkSMTKSettings(const vtkSMTKSettings&) = delete;
-  void operator=(const vtkSMTKSettings&) = delete;
-
   static vtkSmartPointer<vtkSMTKSettings> Instance;
 };
 

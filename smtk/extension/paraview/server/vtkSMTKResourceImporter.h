@@ -36,6 +36,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKResourceImporter* New();
 
+  vtkSMTKResourceImporter(const vtkSMTKResourceImporter&) = delete;
+  vtkSMTKResourceImporter& operator=(const vtkSMTKResourceImporter&) = delete;
+
   /// Set/get the URL of the SMTK resource.
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
@@ -53,10 +56,6 @@ protected:
 
   char* FileName;
   char* ResourceName;
-
-private:
-  vtkSMTKResourceImporter(const vtkSMTKResourceImporter&) = delete;
-  void operator=(const vtkSMTKResourceImporter&) = delete;
 };
 
 #endif

@@ -28,6 +28,9 @@ public:
   // Macro to determine if a class is same class or a subclass of same class.
   vtkTypeMacro(vtkSBFunctionParser, vtkObject);
 
+  vtkSBFunctionParser(const vtkSBFunctionParser&) = delete;
+  vtkSBFunctionParser& operator=(const vtkSBFunctionParser&) = delete;
+
   // Description:
   // Function to create new instance of this class.
   static vtkSBFunctionParser* New();
@@ -103,9 +106,6 @@ private:
   vtkInternal* Implementation;
 
   vtkTimeStamp CheckMTime;
-
-  vtkSBFunctionParser(const vtkSBFunctionParser&); // Not implemented.
-  void operator=(const vtkSBFunctionParser&);      // Not implemented.
 };
 
 #endif // __vtkSBFunctionParser_h

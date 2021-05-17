@@ -42,6 +42,9 @@ public:
   vtkTypeMacro(vtkImplicitConeFrustum, vtkImplicitBoolean);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkImplicitConeFrustum(const vtkImplicitConeFrustum&) = delete;
+  vtkImplicitConeFrustum& operator=(const vtkImplicitConeFrustum&) = delete;
+
   /**
    * Construct with default parameters.
    */
@@ -120,10 +123,6 @@ protected:
   vtkVector3d TopPoint;
   double TopRadius;
   vtkNew<vtkPlane> TopPlane;
-
-private:
-  vtkImplicitConeFrustum(const vtkImplicitConeFrustum&) = delete;
-  void operator=(const vtkImplicitConeFrustum&) = delete;
 };
 
 #endif

@@ -29,6 +29,10 @@ public:
   vtkTypeMacro(vtkSMSMTKResourceRepresentationProxy, vtkSMPVRepresentationProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkSMSMTKResourceRepresentationProxy(const vtkSMSMTKResourceRepresentationProxy&) = delete;
+  vtkSMSMTKResourceRepresentationProxy& operator=(const vtkSMSMTKResourceRepresentationProxy&) =
+    delete;
+
   vtkSMProxy* GetResourceRepresentationSubProxy();
 
 protected:
@@ -36,10 +40,6 @@ protected:
   ~vtkSMSMTKResourceRepresentationProxy() override;
 
   friend class pqSMTKResourceRepresentation;
-
-private:
-  vtkSMSMTKResourceRepresentationProxy(const vtkSMSMTKResourceRepresentationProxy&) = delete;
-  void operator=(const vtkSMSMTKResourceRepresentationProxy&) = delete;
 };
 
 #endif

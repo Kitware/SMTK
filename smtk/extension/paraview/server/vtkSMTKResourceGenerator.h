@@ -23,6 +23,9 @@ class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceGenerator : public vtkSMTKResource
 public:
   vtkTypeMacro(vtkSMTKResourceGenerator, vtkSMTKResource);
 
+  vtkSMTKResourceGenerator(const vtkSMTKResourceGenerator&) = delete;
+  vtkSMTKResourceGenerator& operator=(const vtkSMTKResourceGenerator&) = delete;
+
   virtual smtk::resource::ResourcePtr GenerateResource() const = 0;
 
 protected:
@@ -30,10 +33,6 @@ protected:
   ~vtkSMTKResourceGenerator() override = default;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-private:
-  vtkSMTKResourceGenerator(const vtkSMTKResourceGenerator&) = delete;
-  void operator=(const vtkSMTKResourceGenerator&) = delete;
 };
 
 #endif

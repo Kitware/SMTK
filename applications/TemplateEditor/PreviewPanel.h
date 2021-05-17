@@ -50,6 +50,9 @@ public:
   PreviewPanel(QWidget* parent, smtk::attribute::ResourcePtr resource);
   ~PreviewPanel() override;
 
+  PreviewPanel(const PreviewPanel&) = delete;
+  PreviewPanel& operator=(const PreviewPanel&) = delete;
+
 public slots:
   /**
    * This method should be connected to the signal that will trigger an
@@ -59,9 +62,6 @@ public slots:
   void updateCurrentView(const QModelIndex& currentDef, const QModelIndex& previousDef);
 
 private:
-  PreviewPanel(const PreviewPanel&) = delete;
-  void operator=(const PreviewPanel&) = delete;
-
   /**
    * Sample code to create a View for each AttDef (taken form qtAttributePreview).
    * \note TODO This is deprecated and will be deleted after finishing this class.

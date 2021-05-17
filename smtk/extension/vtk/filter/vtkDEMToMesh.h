@@ -19,6 +19,9 @@ public:
   static vtkDEMToMesh* New();
   vtkTypeMacro(vtkDEMToMesh, vtkPolyDataAlgorithm);
 
+  vtkDEMToMesh(const vtkDEMToMesh&) = delete;
+  vtkDEMToMesh& operator=(const vtkDEMToMesh&) = delete;
+
   void SetUseScalerForZ(int v);
 
 protected:
@@ -32,10 +35,6 @@ protected:
 
   int UseScalerForZ;
   int SubSampleStepSize;
-
-private:
-  vtkDEMToMesh(const vtkDEMToMesh&);   // Not implemented.
-  void operator=(const vtkDEMToMesh&); // Not implemented.
 };
 
 #endif // __smtk_vtk_DEMToMesh_h

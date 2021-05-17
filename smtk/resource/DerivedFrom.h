@@ -62,6 +62,8 @@ public:
         : 1 + ParentResource::numberOfGenerationsFromBase(typeName));
   }
 
+  DerivedFrom(const DerivedFrom&) = delete;
+
 protected:
   /// Forward all constructor arguments to the parent class.
   template<typename... T>
@@ -74,8 +76,6 @@ protected:
     : Parent(std::move(rhs))
   {
   }
-
-  DerivedFrom(const DerivedFrom&) = delete;
 };
 
 template<typename Self, typename Parent>

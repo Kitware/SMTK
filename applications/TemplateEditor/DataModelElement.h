@@ -28,6 +28,9 @@ public:
   DataModelElement(QTreeWidgetItem* parent = nullptr);
   ~DataModelElement() override = default;
 
+  DataModelElement(const DataModelElement&) = delete;
+  DataModelElement& operator=(const DataModelElement&) = delete;
+
   void setReferencedData(const T& data);
 
   /**
@@ -37,9 +40,6 @@ public:
   const T& getReferencedDataConst() const;
 
 private:
-  DataModelElement(const DataModelElement&) = delete;
-  void operator=(const DataModelElement&) = delete;
-
   /**
    * Copy of the underlying referenced data.
    */

@@ -28,6 +28,9 @@ public:
   vtkTypeMacro(vtkPolygonArcProvider, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkPolygonArcProvider(const vtkPolygonArcProvider&) = delete;
+  vtkPolygonArcProvider& operator=(const vtkPolygonArcProvider&) = delete;
+
   // Description:
   // Select the block index to be extracted.  The filter will iterate through
   // the leves of the dataset until it reaches the indicated leaf block.
@@ -48,10 +51,6 @@ protected:
   int FillInputPortInformation(int port, vtkInformation* info) override;
 
   vtkIdType BlockIndex;
-
-private:
-  vtkPolygonArcProvider(const vtkPolygonArcProvider&); // Not implemented.
-  void operator=(const vtkPolygonArcProvider&);        // Not implemented.
 };
 
 #endif

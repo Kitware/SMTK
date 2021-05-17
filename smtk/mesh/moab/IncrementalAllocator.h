@@ -43,6 +43,9 @@ public:
 
   ~IncrementalAllocator() override {}
 
+  IncrementalAllocator(const IncrementalAllocator& other) = delete;
+  IncrementalAllocator& operator=(const IncrementalAllocator& other) = delete;
+
   std::size_t addCoordinate(double* xyz) override;
   bool setCoordinate(std::size_t coord, double* xyz) override;
 
@@ -74,10 +77,6 @@ protected:
   void initialize();
 
 private:
-  IncrementalAllocator(const IncrementalAllocator& other); //blank since we are used by shared_ptr
-  IncrementalAllocator& operator=(
-    const IncrementalAllocator& other); //blank since we are used by shared_ptr
-
   std::size_t m_index;
   std::vector<std::vector<double*>> m_coordinateMemories;
 };

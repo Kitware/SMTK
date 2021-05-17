@@ -29,6 +29,9 @@ public:
   vtkTypeMacro(vtkExtractImageBlock, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkExtractImageBlock(const vtkExtractImageBlock&) = delete;
+  vtkExtractImageBlock& operator=(const vtkExtractImageBlock&) = delete;
+
   // Description:
   // Select the block index to be extracted. Default is 0.
   vtkSetMacro(BlockIndex, int);
@@ -49,9 +52,6 @@ protected:
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
-  vtkExtractImageBlock(const vtkExtractImageBlock&); // Not implemented.
-  void operator=(const vtkExtractImageBlock&);       // Not implemented.
-
   int BlockIndex;
   int Extent[6];
 };

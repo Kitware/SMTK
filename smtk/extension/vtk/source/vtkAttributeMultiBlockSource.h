@@ -41,6 +41,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkAttributeMultiBlockSource, vtkResourceMultiBlockSource);
 
+  vtkAttributeMultiBlockSource(const vtkAttributeMultiBlockSource&) = delete;
+  vtkAttributeMultiBlockSource& operator=(const vtkAttributeMultiBlockSource&) = delete;
+
   smtk::attribute::ResourcePtr GetAttributeResource();
   void SetAttributeResource(const smtk::attribute::ResourcePtr&);
 
@@ -52,10 +55,6 @@ protected:
     vtkInformation* request,
     vtkInformationVector** inInfo,
     vtkInformationVector* outInfo) override;
-
-private:
-  vtkAttributeMultiBlockSource(const vtkAttributeMultiBlockSource&); // Not implemented.
-  void operator=(const vtkAttributeMultiBlockSource&);               // Not implemented.
 };
 
 #endif // smtk_vtk_AttributeMultiBlockSource_h

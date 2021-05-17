@@ -36,6 +36,9 @@ public:
 
   ~Allocator() override;
 
+  Allocator(const Allocator& other) = delete;
+  Allocator& operator=(const Allocator& other) = delete;
+
   bool allocatePoints(
     std::size_t numPointsToAlloc,
     smtk::mesh::Handle& firstVertexHandle,
@@ -61,9 +64,6 @@ protected:
     const smtk::mesh::Handle* connectivityArray);
 
 private:
-  Allocator(const Allocator& other);            //blank since we are used by shared_ptr
-  Allocator& operator=(const Allocator& other); //blank since we are used by shared_ptr
-
   //holds a reference to the real moab interface
   ::moab::ReadUtilIface* m_rface;
 };

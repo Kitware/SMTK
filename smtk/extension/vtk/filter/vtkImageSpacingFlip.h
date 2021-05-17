@@ -24,15 +24,14 @@ public:
   static vtkImageSpacingFlip* New();
   vtkTypeMacro(vtkImageSpacingFlip, vtkImageAlgorithm);
 
+  vtkImageSpacingFlip(const vtkImageSpacingFlip&) = delete;
+  vtkImageSpacingFlip& operator=(const vtkImageSpacingFlip&) = delete;
+
 protected:
   vtkImageSpacingFlip();
   ~vtkImageSpacingFlip() override;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-private:
-  vtkImageSpacingFlip(const vtkImageSpacingFlip&); // Not implemented.
-  void operator=(const vtkImageSpacingFlip&);      // Not implemented.
 };
 
 #endif

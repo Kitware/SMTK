@@ -58,6 +58,9 @@ public:
   ~Session() override;
   virtual SessionInfoBits allSupportedInformation() const;
 
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   // These are specific to each session but required in some form:
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
   smtk::model::EntityRef toEntityRef(const EntityHandle& ent);
@@ -84,10 +87,6 @@ protected:
     SessionInfoBits requestedInfo,
     int depth);
   bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 } // namespace tutorial

@@ -27,6 +27,9 @@ public:
   vtkTypeMacro(vtkCleanPolylines, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkCleanPolylines(const vtkCleanPolylines&) = delete;
+  vtkCleanPolylines& operator=(const vtkCleanPolylines&) = delete;
+
   vtkSetClampMacro(MinimumLineLength, double, 0, VTK_FLOAT_MAX);
   vtkGetMacro(MinimumLineLength, double);
 
@@ -65,9 +68,6 @@ protected:
     double* length);
 
 private:
-  vtkCleanPolylines(const vtkCleanPolylines&); // Not implemented.
-  void operator=(const vtkCleanPolylines&);    // Not implemented.
-
   double MinimumLineLength;
   bool UseRelativeLineLength;
 };

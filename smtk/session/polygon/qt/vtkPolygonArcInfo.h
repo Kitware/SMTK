@@ -24,6 +24,9 @@ public:
   vtkTypeMacro(vtkPolygonArcInfo, vtkPVInformation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkPolygonArcInfo(const vtkPolygonArcInfo&) = delete;
+  vtkPolygonArcInfo& operator=(const vtkPolygonArcInfo&) = delete;
+
   // Description:
   // Transfer information about a single object into this object.
   void CopyFromObject(vtkObject*) override;
@@ -71,10 +74,6 @@ protected:
   vtkIdType NumberOfPoints;
   double SelectedPointCoordinates[3];
   char* ModelEntityID;
-
-private:
-  vtkPolygonArcInfo(const vtkPolygonArcInfo&); // Not implemented
-  void operator=(const vtkPolygonArcInfo&);    // Not implemented
 };
 
 #endif

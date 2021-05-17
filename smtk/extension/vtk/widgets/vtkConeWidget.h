@@ -103,6 +103,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   //@}
 
+  vtkConeWidget(const vtkConeWidget&) = delete;
+  vtkConeWidget& operator=(const vtkConeWidget&) = delete;
+
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
@@ -153,10 +156,6 @@ protected:
    * if the cursor shape requested is different from the existing one.
    */
   int UpdateCursorShape(int interactionState);
-
-private:
-  vtkConeWidget(const vtkConeWidget&) = delete;
-  void operator=(const vtkConeWidget&) = delete;
 };
 
 #endif

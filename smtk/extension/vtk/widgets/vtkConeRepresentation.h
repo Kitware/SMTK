@@ -67,6 +67,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   //@}
 
+  vtkConeRepresentation(const vtkConeRepresentation&) = delete;
+  vtkConeRepresentation& operator=(const vtkConeRepresentation&) = delete;
+
   //@{
   /**
    * Set/get an endpoint of the cone.
@@ -428,10 +431,6 @@ protected:
   vtkNew<vtkGlyph3DMapper> TopHandleMapper;
 
   vtkNew<vtkTransform> Transform;
-
-private:
-  vtkConeRepresentation(const vtkConeRepresentation&) = delete;
-  void operator=(const vtkConeRepresentation&) = delete;
 };
 
 #endif

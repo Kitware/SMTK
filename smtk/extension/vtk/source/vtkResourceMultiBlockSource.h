@@ -59,6 +59,9 @@ public:
   static vtkResourceMultiBlockSource* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkResourceMultiBlockSource(const vtkResourceMultiBlockSource&) = delete;
+  vtkResourceMultiBlockSource& operator=(const vtkResourceMultiBlockSource&) = delete;
+
   using UUID = smtk::common::UUID;
 
   /// Block Ids for the primary blocks that comprise the output.
@@ -170,10 +173,6 @@ protected:
   std::map<UUID, CacheEntry> Cache;
   std::set<UUID> Visited; // Populated with extant entities during RequestData.
   smtk::geometry::Geometry::GenerationNumber LastModified;
-
-private:
-  vtkResourceMultiBlockSource(const vtkResourceMultiBlockSource&) = delete;
-  void operator=(const vtkResourceMultiBlockSource&) = delete;
 };
 
 #endif

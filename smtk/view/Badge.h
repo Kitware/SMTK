@@ -84,7 +84,7 @@ public:
   {
   }
   Badge(const Badge&) = delete;
-  void operator=(const Badge&) = delete;
+  Badge& operator=(const Badge&) = delete;
   virtual ~Badge() {}
 
   /// Returns true if the badge should appear next to the given phrase:

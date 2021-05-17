@@ -40,6 +40,9 @@ public:
   ItemDefDialog(QWidget* parent = nullptr);
   ~ItemDefDialog() override;
 
+  ItemDefDialog(const ItemDefDialog&) = delete;
+  ItemDefDialog& operator=(const ItemDefDialog&) = delete;
+
   /**
    * Set the ItemDefinition to Show or Edit.
    * ///TODO Make the Dialog choose the EditMode automatically (no need
@@ -86,9 +89,6 @@ private slots:
   void onTypeChanged(const int type);
 
 private:
-  ItemDefDialog(const ItemDefDialog&) = delete;
-  void operator=(const ItemDefDialog&) = delete;
-
   /**
    * Implements validation of critical fields for ItemDefinition instantiation
    * (e.g. Name, etc.).

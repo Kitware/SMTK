@@ -28,6 +28,9 @@ public:
   vtkTypeMacro(vtkPolygonArcOperation, vtkSMTKOperation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkPolygonArcOperation(const vtkPolygonArcOperation&) = delete;
+  vtkPolygonArcOperation& operator=(const vtkPolygonArcOperation&) = delete;
+
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
   bool AbleToOperate() override;
@@ -43,10 +46,6 @@ protected:
   ~vtkPolygonArcOperation() override;
 
   vtkContourRepresentation* ArcRepresentation;
-
-private:
-  vtkPolygonArcOperation(const vtkPolygonArcOperation&); // Not implemented.
-  void operator=(const vtkPolygonArcOperation&);         // Not implemented.
 };
 
 #endif

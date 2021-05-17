@@ -30,6 +30,9 @@ public:
   vtkTypeMacro(vtkLIDARPtsWriter, vtkWriter);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkLIDARPtsWriter(const vtkLIDARPtsWriter&) = delete;
+  vtkLIDARPtsWriter& operator=(const vtkLIDARPtsWriter&) = delete;
+
   // Description:
   // Get/Set the filename.
   vtkSetStringMacro(FileName);
@@ -73,10 +76,6 @@ protected:
   bool WriteAsSinglePiece;
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
-
-private:
-  vtkLIDARPtsWriter(const vtkLIDARPtsWriter&); // Not implemented.
-  void operator=(const vtkLIDARPtsWriter&);    // Not implemented.
 };
 
 #endif

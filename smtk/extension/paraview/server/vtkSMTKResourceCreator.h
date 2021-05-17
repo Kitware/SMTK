@@ -25,6 +25,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKResourceCreator* New();
 
+  vtkSMTKResourceCreator(const vtkSMTKResourceCreator&) = delete;
+  vtkSMTKResourceCreator& operator=(const vtkSMTKResourceCreator&) = delete;
+
   /// Set/get the create operation type name.
   vtkGetStringMacro(TypeName);
   vtkSetStringMacro(TypeName);
@@ -42,10 +45,6 @@ protected:
 
   char* TypeName;
   char* Parameters;
-
-private:
-  vtkSMTKResourceCreator(const vtkSMTKResourceCreator&) = delete;
-  void operator=(const vtkSMTKResourceCreator&) = delete;
 };
 
 #endif

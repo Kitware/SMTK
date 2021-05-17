@@ -38,7 +38,7 @@ public:
   void DisplayDebugText(const char* msg) override;
 
   OutputWindow(const OutputWindow&) = delete;
-  void operator=(const OutputWindow&) = delete;
+  OutputWindow& operator=(const OutputWindow&) = delete;
 
 protected:
   OutputWindow();

@@ -32,6 +32,9 @@ public:
   smtkTypeMacroBase(ArrangementHelper);
   virtual ~ArrangementHelper();
 
+  ArrangementHelper(const ArrangementHelper& other) = delete;
+  ArrangementHelper& operator=(const ArrangementHelper& other) = delete;
+
   virtual void doneAddingEntities(SessionPtr sess, SessionInfoBits flags);
 
   void mark(const EntityRef& ent, bool m);
@@ -45,10 +48,6 @@ protected:
   ArrangementHelper();
 
   EntityRefs m_marked;
-
-private:
-  ArrangementHelper(const ArrangementHelper& other); // Not implemented.
-  void operator=(const ArrangementHelper& other);    // Not implemented.
 };
 
 } // namespace model

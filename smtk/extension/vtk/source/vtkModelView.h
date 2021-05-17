@@ -24,13 +24,12 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelView, vtkRenderView);
 
+  vtkModelView(const vtkModelView&) = delete;
+  vtkModelView& operator=(const vtkModelView&) = delete;
+
 protected:
   vtkModelView();
   ~vtkModelView() override;
-
-private:
-  vtkModelView(const vtkModelView&);   // Not implemented.
-  void operator=(const vtkModelView&); // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelView_h

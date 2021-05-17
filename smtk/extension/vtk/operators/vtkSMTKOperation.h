@@ -30,6 +30,9 @@ public:
   vtkTypeMacro(vtkSMTKOperation, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkSMTKOperation(const vtkSMTKOperation&) = delete;
+  vtkSMTKOperation& operator=(const vtkSMTKOperation&) = delete;
+
   //Description:
   //Derived class should override this methods to do vtk specific processing,
   //such as converting vtk data to smtk geometry either directly, or through
@@ -48,10 +51,6 @@ protected:
   ~vtkSMTKOperation() override;
 
   std::weak_ptr<smtk::operation::Operation> m_smtkOp;
-
-private:
-  vtkSMTKOperation(const vtkSMTKOperation&); // Not implemented.
-  void operator=(const vtkSMTKOperation&);   // Not implemented.
 };
 
 #endif

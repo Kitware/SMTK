@@ -70,6 +70,9 @@ public:
   bool hasDerivedTypes(const QModelIndex& index) const;
   //@}
 
+  AttDefDataModel(const AttDefDataModel&) = delete;
+  AttDefDataModel& operator=(const AttDefDataModel&) = delete;
+
 protected:
   void initializeRootItem() override;
 
@@ -88,9 +91,6 @@ protected:
     const smtk::attribute::DefinitionPtr& dataMatch);
 
 private:
-  AttDefDataModel(const AttDefDataModel&) = delete;
-  void operator=(const AttDefDataModel&) = delete;
-
   smtk::attribute::ResourcePtr Resource;
 };
 #endif //__AttDefDataModel_h

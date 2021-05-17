@@ -56,6 +56,9 @@ public:
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   ~Session() override;
 
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   SessionInfoBits allSupportedInformation() const override;
 
   template<typename T, typename U, typename V>
@@ -122,10 +125,6 @@ protected:
 
   internal::EntityIdToPtr m_storage;
   int m_nextModelNumber;
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 } // namespace polygon

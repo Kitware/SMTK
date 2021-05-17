@@ -25,10 +25,10 @@ public:
   HandlerGroup();
   ~HandlerGroup() override;
 
-private:
   HandlerGroup(const HandlerGroup&) = delete;
-  void operator=(const HandlerGroup&) = delete;
+  HandlerGroup& operator=(const HandlerGroup&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;

@@ -20,10 +20,10 @@ public:
   HandlerVoid() = default;
   ~HandlerVoid() override = default;
 
-private:
   HandlerVoid(const HandlerVoid&) = delete;
-  void operator=(const HandlerVoid&) = delete;
+  HandlerVoid& operator=(const HandlerVoid&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -46,10 +46,10 @@ public:
   HandlerFile() = default;
   ~HandlerFile() override = default;
 
-private:
   HandlerFile(const HandlerFile&) = delete;
-  void operator=(const HandlerFile&) = delete;
+  HandlerFile& operator=(const HandlerFile&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -66,10 +66,10 @@ public:
   HandlerDirectory() = default;
   ~HandlerDirectory() override = default;
 
-private:
   HandlerDirectory(const HandlerDirectory&) = delete;
-  void operator=(const HandlerDirectory&) = delete;
+  HandlerDirectory& operator=(const HandlerDirectory&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -85,10 +85,10 @@ public:
   HandlerComponent() = default;
   ~HandlerComponent() override = default;
 
-private:
   HandlerComponent(const HandlerComponent&) = delete;
-  void operator=(const HandlerComponent&) = delete;
+  HandlerComponent& operator=(const HandlerComponent&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -104,10 +104,10 @@ public:
   HandlerResource() = default;
   ~HandlerResource() override = default;
 
-private:
   HandlerResource(const HandlerResource&) = delete;
-  void operator=(const HandlerResource&) = delete;
+  HandlerResource& operator=(const HandlerResource&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -123,10 +123,10 @@ public:
   HandlerDateTime() = default;
   ~HandlerDateTime() override = default;
 
-private:
   HandlerDateTime(const HandlerDateTime&) = delete;
-  void operator=(const HandlerDateTime&) = delete;
+  HandlerDateTime& operator=(const HandlerDateTime&) = delete;
 
+private:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;

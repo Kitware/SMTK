@@ -36,6 +36,9 @@ public:
   AttDefInformation(QWidget* parent = nullptr);
   ~AttDefInformation() override;
 
+  AttDefInformation(const AttDefInformation&) = delete;
+  AttDefInformation& operator=(const AttDefInformation&) = delete;
+
 public slots:
   /**
    * Handles signals from the view (QSelectionModel) displaying the attribute
@@ -63,9 +66,6 @@ private slots:
   void onRemoveItemDef();
 
 private:
-  AttDefInformation(const AttDefInformation&) = delete;
-  void operator=(const AttDefInformation&) = delete;
-
   void updateAttDefData(const QModelIndex& currentDef);
 
   void updateInheritedItemDef();

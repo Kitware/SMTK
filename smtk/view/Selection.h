@@ -116,6 +116,9 @@ public:
   smtkTypeMacroBase(Selection);
   smtkCreateMacro(Selection);
 
+  Selection(const Selection&) = delete;
+  Selection& operator=(const Selection&) = delete;
+
   static Ptr instance();
 
   /// This is the underlying storage type that holds selections.
@@ -344,10 +347,6 @@ protected:
   SelectionMap m_selection;
   Observers m_observers;
   SelectionFilter m_filter;
-
-private:
-  Selection(const Selection&) = delete;
-  void operator=(const Selection&) = delete;
 };
 
 template<typename T>

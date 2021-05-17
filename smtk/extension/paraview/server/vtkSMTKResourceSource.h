@@ -38,6 +38,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKResourceSource* New();
 
+  vtkSMTKResourceSource(const vtkSMTKResourceSource&) = delete;
+  vtkSMTKResourceSource& operator=(const vtkSMTKResourceSource&) = delete;
+
   /**
    * Set/get the internal resource.
    */
@@ -58,10 +61,6 @@ protected:
   ~vtkSMTKResourceSource() override;
 
   vtkSMTKResource* VTKResource;
-
-private:
-  vtkSMTKResourceSource(const vtkSMTKResourceSource&) = delete;
-  void operator=(const vtkSMTKResourceSource&) = delete;
 };
 
 #endif

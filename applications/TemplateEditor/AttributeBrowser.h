@@ -45,6 +45,9 @@ public:
    */
   void populate(smtk::attribute::ResourcePtr resource);
 
+  AttributeBrowser(const AttributeBrowser&) = delete;
+  AttributeBrowser& operator=(const AttributeBrowser&) = delete;
+
 public slots:
   /**
    * Emits attDefChanged() with whatever the current selection is. Forcing
@@ -80,9 +83,6 @@ private slots:
   void onSearchAttDef(const QString& text);
 
 private:
-  AttributeBrowser(const AttributeBrowser&) = delete;
-  void operator=(const AttributeBrowser&) = delete;
-
   void clear();
 
   void populateDefinitions(smtk::attribute::ResourcePtr resource);

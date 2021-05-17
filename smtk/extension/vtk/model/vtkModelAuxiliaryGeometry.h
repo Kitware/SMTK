@@ -38,6 +38,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelAuxiliaryGeometry, vtkMultiBlockDataSetAlgorithm);
 
+  vtkModelAuxiliaryGeometry(const vtkModelAuxiliaryGeometry&) = delete;
+  vtkModelAuxiliaryGeometry& operator=(const vtkModelAuxiliaryGeometry&) = delete;
+
   vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
 
   smtk::model::ResourcePtr GetModelResource();
@@ -77,10 +80,6 @@ protected:
   int AllowNormalGeneration;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
   vtkAuxiliaryGeometryExtension::Ptr AuxGeomHelper;
-
-private:
-  vtkModelAuxiliaryGeometry(const vtkModelAuxiliaryGeometry&); // Not implemented.
-  void operator=(const vtkModelAuxiliaryGeometry&);            // Not implemented.
 };
 
 #endif

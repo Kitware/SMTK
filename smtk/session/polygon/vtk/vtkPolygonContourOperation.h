@@ -27,6 +27,9 @@ public:
   vtkTypeMacro(vtkPolygonContourOperation, vtkSMTKOperation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkPolygonContourOperation(const vtkPolygonContourOperation&) = delete;
+  vtkPolygonContourOperation& operator=(const vtkPolygonContourOperation&) = delete;
+
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
   bool AbleToOperate() override;
@@ -48,10 +51,6 @@ protected:
 
   vtkPolyData* ContourInput;
   double ImageBounds[6];
-
-private:
-  vtkPolygonContourOperation(const vtkPolygonContourOperation&); // Not implemented.
-  void operator=(const vtkPolygonContourOperation&);             // Not implemented.
 };
 
 #endif

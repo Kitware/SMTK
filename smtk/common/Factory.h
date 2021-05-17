@@ -459,6 +459,11 @@ private:
   // restrictions and hold a reference to the parent Factory instance.
   class InterfaceBase
   {
+  public:
+    InterfaceBase(const InterfaceBase&) = delete;
+    InterfaceBase& operator=(const InterfaceBase&) = delete;
+    InterfaceBase& operator=(InterfaceBase&&) = delete;
+
   protected:
     friend class Factory;
 
@@ -466,10 +471,7 @@ private:
       : m_factory(factory)
     {
     }
-    InterfaceBase(const InterfaceBase&) = delete;
     InterfaceBase(InterfaceBase&&) = default;
-    InterfaceBase& operator=(const InterfaceBase&) = delete;
-    InterfaceBase& operator=(InterfaceBase&&) = delete;
 
     const Factory& m_factory;
   };

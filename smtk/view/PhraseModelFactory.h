@@ -42,7 +42,7 @@ public:
 
   PhraseModelFactory() = delete;
   PhraseModelFactory(const PhraseModelFactory&) = delete;
-  void operator=(const PhraseModelFactory&) = delete;
+  PhraseModelFactory& operator=(const PhraseModelFactory&) = delete;
 
   /// Simplify creation by passing in the factory's view-manager.
   template<typename Class>
