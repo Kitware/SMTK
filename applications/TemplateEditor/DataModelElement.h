@@ -31,9 +31,9 @@ public:
   void setReferencedData(const T& data);
 
   /**
- * Get the actual underlying data referenced by this element in the
- * data model.
- */
+   * Get the actual underlying data referenced by this element in the
+   * data model.
+   */
   const T& getReferencedDataConst() const;
 
 private:
@@ -41,8 +41,8 @@ private:
   void operator=(const DataModelElement&) = delete;
 
   /**
- * Copy of the underlying referenced data.
- */
+   * Copy of the underlying referenced data.
+   */
   T m_data;
 };
 

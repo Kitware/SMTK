@@ -41,8 +41,8 @@ public:
   ~AttributeBrowser();
 
   /**
- * Populate the UI with attribute definitions.
- */
+   * Populate the UI with attribute definitions.
+   */
   void populate(smtk::attribute::ResourcePtr resource);
 
 public slots:
@@ -59,24 +59,24 @@ signals:
 
 private slots:
   /**
- * Show add definition dialog.
- */
+   * Show add definition dialog.
+   */
   void onAddDefinition();
 
   /**
- * Remove the currently selected AttDef from the tree. This also removes
- * all of its children AttDefs.
- */
+   * Remove the currently selected AttDef from the tree. This also removes
+   * all of its children AttDefs.
+   */
   void onDeleteDefinition();
 
   /**
- * Adjust UI (enable/disable buttons, etc.) and emit attDefChanged().
- */
+   * Adjust UI (enable/disable buttons, etc.) and emit attDefChanged().
+   */
   void onAttDefSelectionChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
 
   /**
-* Trigger model search.
-*/
+   * Trigger model search.
+   */
   void onSearchAttDef(const QString& text);
 
 private:

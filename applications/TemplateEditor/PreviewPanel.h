@@ -63,23 +63,23 @@ private:
   void operator=(const PreviewPanel&) = delete;
 
   /**
- * Sample code to create a View for each AttDef (taken form qtAttributePreview).
- * \note TODO This is deprecated and will be deleted after finishing this class.
- */
+   * Sample code to create a View for each AttDef (taken form qtAttributePreview).
+   * \note TODO This is deprecated and will be deleted after finishing this class.
+   */
   void createViewForAllAttributes(smtk::view::ConfigurationPtr& root);
 
   /**
- * Instances a smtk::view::Configuration for the input AttDef. Returns a nullptr if the
- * Definition is invalid. Make sure SMTK's specific View "types" are used on
- * View construction for it to construct/display correctly.
- *
- * \sa smtk::extension::qtUIManager qtUIManager::createView
- */
+   * Instances a smtk::view::Configuration for the input AttDef. Returns a nullptr if the
+   * Definition is invalid. Make sure SMTK's specific View "types" are used on
+   * View construction for it to construct/display correctly.
+   *
+   * \sa smtk::extension::qtUIManager qtUIManager::createView
+   */
   smtk::view::ConfigurationPtr createView(const smtk::attribute::DefinitionPtr& def);
 
   /**
- * Populate widget with SMTK-generated attribute widgets.
- */
+   * Populate widget with SMTK-generated attribute widgets.
+   */
   void createViewWidget(const smtk::view::ConfigurationPtr& view);
 
   std::unique_ptr<Ui::PreviewPanel> Ui;
