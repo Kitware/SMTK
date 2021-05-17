@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::AttributeAssignments > pybind11_init_smtk_model_AttributeAssignments(py::module &m)
+inline py::class_< smtk::model::AttributeAssignments > pybind11_init_smtk_model_AttributeAssignments(py::module &m)
 {
   py::class_< smtk::model::AttributeAssignments > instance(m, "AttributeAssignments");
   instance

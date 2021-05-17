@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_ElevateMesh(py::module &m)
+inline PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_ElevateMesh(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > instance(m, "ElevateMesh");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::project::Registrar > pybind11_init_smtk_project_Registrar(py::module &m)
+inline py::class_< smtk::project::Registrar > pybind11_init_smtk_project_Registrar(py::module &m)
 {
   py::class_< smtk::project::Registrar > instance(m, "Registrar");
   instance

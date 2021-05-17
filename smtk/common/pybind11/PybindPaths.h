@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::module &m)
+inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::module &m)
 {
   py::class_< smtk::common::Paths > instance(m, "Paths");
   instance

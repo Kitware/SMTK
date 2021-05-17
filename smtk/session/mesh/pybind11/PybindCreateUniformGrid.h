@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation::XMLOperation > pybind11_init_smtk_session_mesh_CreateUniformGrid(py::module &m)
+inline PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation::XMLOperation > pybind11_init_smtk_session_mesh_CreateUniformGrid(py::module &m)
 {
   PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation::XMLOperation > instance(m, "CreateUniformGrid");
   instance

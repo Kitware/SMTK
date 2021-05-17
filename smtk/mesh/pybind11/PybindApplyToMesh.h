@@ -19,32 +19,32 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_mesh_utility_applyScalarCellField(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_applyScalarCellField(py::module &m)
 {
   m.def("applyScalarCellField", &smtk::mesh::utility::applyScalarCellField, "", py::arg("arg0"), py::arg("name"), py::arg("ms"));
 }
 
-void pybind11_init_smtk_mesh_utility_applyScalarPointField(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_applyScalarPointField(py::module &m)
 {
   m.def("applyScalarPointField", &smtk::mesh::utility::applyScalarPointField, "", py::arg("arg0"), py::arg("name"), py::arg("ms"));
 }
 
-void pybind11_init_smtk_mesh_utility_applyVectorCellField(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_applyVectorCellField(py::module &m)
 {
   m.def("applyVectorCellField", &smtk::mesh::utility::applyVectorCellField, "", py::arg("arg0"), py::arg("name"), py::arg("ms"));
 }
 
-void pybind11_init_smtk_mesh_utility_applyVectorPointField(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_applyVectorPointField(py::module &m)
 {
   m.def("applyVectorPointField", &smtk::mesh::utility::applyVectorPointField, "", py::arg("arg0"), py::arg("name"), py::arg("ms"));
 }
 
-void pybind11_init_smtk_mesh_utility_applyWarp(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_applyWarp(py::module &m)
 {
   m.def("applyWarp", &smtk::mesh::utility::applyWarp, "", py::arg("arg0"), py::arg("ms"), py::arg("storePriorCoordinates") = false);
 }
 
-void pybind11_init_smtk_mesh_utility_undoWarp(py::module &m)
+inline void pybind11_init_smtk_mesh_utility_undoWarp(py::module &m)
 {
   m.def("undoWarp", &smtk::mesh::utility::undoWarp, "", py::arg("ms"));
 }

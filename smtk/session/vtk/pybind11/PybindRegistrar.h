@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::session::vtk::Registrar > pybind11_init_smtk_session_vtk_Registrar(py::module &m)
+inline py::class_< smtk::session::vtk::Registrar > pybind11_init_smtk_session_vtk_Registrar(py::module &m)
 {
   py::class_< smtk::session::vtk::Registrar > instance(m, "Registrar");
   instance

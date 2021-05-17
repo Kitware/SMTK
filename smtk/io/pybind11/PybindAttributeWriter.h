@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWriter(py::module &m)
+inline PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWriter(py::module &m)
 {
   PySharedPtrClass< smtk::io::AttributeWriter > instance(m, "AttributeWriter");
   instance

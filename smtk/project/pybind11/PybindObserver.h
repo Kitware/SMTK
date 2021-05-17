@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_project_EventType(py::module &m)
+inline void pybind11_init_smtk_project_EventType(py::module &m)
 {
   py::enum_<smtk::project::EventType>(m, "EventType")
     .value("ADDED", smtk::project::EventType::ADDED)

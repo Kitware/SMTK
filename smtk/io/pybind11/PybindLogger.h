@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::Logger > pybind11_init_smtk_io_Logger(py::module &m)
+inline PySharedPtrClass< smtk::io::Logger > pybind11_init_smtk_io_Logger(py::module &m)
 {
   PySharedPtrClass< smtk::io::Logger > instance(m, "Logger");
   instance

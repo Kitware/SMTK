@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Associate, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Associate(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Associate, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Associate(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Associate, smtk::operation::XMLOperation > instance(m, "Associate");
   instance

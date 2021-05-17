@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::session::polygon::SessionIOJSON, smtk::model::SessionIOJSON > pybind11_init_smtk_session_polygon_SessionIOJSON(py::module &m)
+inline py::class_< smtk::session::polygon::SessionIOJSON, smtk::model::SessionIOJSON > pybind11_init_smtk_session_polygon_SessionIOJSON(py::module &m)
 {
   py::class_< smtk::session::polygon::SessionIOJSON, smtk::model::SessionIOJSON > instance(m, "SessionIOJSON");
   instance

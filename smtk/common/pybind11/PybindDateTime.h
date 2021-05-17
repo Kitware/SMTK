@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::DateTime > pybind11_init_smtk_common_DateTime(py::module &m)
+inline py::class_< smtk::common::DateTime > pybind11_init_smtk_common_DateTime(py::module &m)
 {
   py::class_< smtk::common::DateTime > instance(m, "DateTime");
   instance

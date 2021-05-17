@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::AttributeReader > pybind11_init_smtk_io_AttributeReader(py::module &m)
+inline PySharedPtrClass< smtk::io::AttributeReader > pybind11_init_smtk_io_AttributeReader(py::module &m)
 {
   PySharedPtrClass< smtk::io::AttributeReader > instance(m, "AttributeReader");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_EntityTypeBits(py::module &m)
+inline void pybind11_init_smtk_model_EntityTypeBits(py::module &m)
 {
   py::enum_<smtk::model::EntityTypeBits>(m, "EntityTypeBits")
     .value("DIMENSION_0", smtk::model::EntityTypeBits::DIMENSION_0)
@@ -93,7 +93,7 @@ void pybind11_init_smtk_model_EntityTypeBits(py::module &m)
     ;
 }
 
-void pybind11_init_smtk_model_ModelGeometryStyle(py::module &m)
+inline void pybind11_init_smtk_model_ModelGeometryStyle(py::module &m)
 {
   py::enum_<smtk::model::ModelGeometryStyle>(m, "ModelGeometryStyle")
     .value("DISCRETE", smtk::model::ModelGeometryStyle::DISCRETE)
@@ -101,112 +101,112 @@ void pybind11_init_smtk_model_ModelGeometryStyle(py::module &m)
     .export_values();
 }
 
-void pybind11_init_smtk_model_isCellEntity(py::module &m)
+inline void pybind11_init_smtk_model_isCellEntity(py::module &m)
 {
   m.def("isCellEntity", &smtk::model::isCellEntity, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isVertex(py::module &m)
+inline void pybind11_init_smtk_model_isVertex(py::module &m)
 {
   m.def("isVertex", &smtk::model::isVertex, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isEdge(py::module &m)
+inline void pybind11_init_smtk_model_isEdge(py::module &m)
 {
   m.def("isEdge", &smtk::model::isEdge, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isFace(py::module &m)
+inline void pybind11_init_smtk_model_isFace(py::module &m)
 {
   m.def("isFace", &smtk::model::isFace, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isVolume(py::module &m)
+inline void pybind11_init_smtk_model_isVolume(py::module &m)
 {
   m.def("isVolume", &smtk::model::isVolume, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isUseEntity(py::module &m)
+inline void pybind11_init_smtk_model_isUseEntity(py::module &m)
 {
   m.def("isUseEntity", &smtk::model::isUseEntity, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isVertexUse(py::module &m)
+inline void pybind11_init_smtk_model_isVertexUse(py::module &m)
 {
   m.def("isVertexUse", &smtk::model::isVertexUse, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isEdgeUse(py::module &m)
+inline void pybind11_init_smtk_model_isEdgeUse(py::module &m)
 {
   m.def("isEdgeUse", &smtk::model::isEdgeUse, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isFaceUse(py::module &m)
+inline void pybind11_init_smtk_model_isFaceUse(py::module &m)
 {
   m.def("isFaceUse", &smtk::model::isFaceUse, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isVolumeUse(py::module &m)
+inline void pybind11_init_smtk_model_isVolumeUse(py::module &m)
 {
   m.def("isVolumeUse", &smtk::model::isVolumeUse, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isShellEntity(py::module &m)
+inline void pybind11_init_smtk_model_isShellEntity(py::module &m)
 {
   m.def("isShellEntity", &smtk::model::isShellEntity, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isChain(py::module &m)
+inline void pybind11_init_smtk_model_isChain(py::module &m)
 {
   m.def("isChain", &smtk::model::isChain, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isLoop(py::module &m)
+inline void pybind11_init_smtk_model_isLoop(py::module &m)
 {
   m.def("isLoop", &smtk::model::isLoop, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isShell(py::module &m)
+inline void pybind11_init_smtk_model_isShell(py::module &m)
 {
   m.def("isShell", &smtk::model::isShell, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isGroup(py::module &m)
+inline void pybind11_init_smtk_model_isGroup(py::module &m)
 {
   m.def("isGroup", &smtk::model::isGroup, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isModel(py::module &m)
+inline void pybind11_init_smtk_model_isModel(py::module &m)
 {
   m.def("isModel", &smtk::model::isModel, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isInstance(py::module &m)
+inline void pybind11_init_smtk_model_isInstance(py::module &m)
 {
   m.def("isInstance", &smtk::model::isInstance, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isAuxiliaryGeometry(py::module &m)
+inline void pybind11_init_smtk_model_isAuxiliaryGeometry(py::module &m)
 {
   m.def("isAuxiliaryGeometry", &smtk::model::isAuxiliaryGeometry, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isConcept(py::module &m)
+inline void pybind11_init_smtk_model_isConcept(py::module &m)
 {
   m.def("isConcept", &smtk::model::isConcept, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_isSessionRef(py::module &m)
+inline void pybind11_init_smtk_model_isSessionRef(py::module &m)
 {
   m.def("isSessionRef", &smtk::model::isSessionRef, "", py::arg("entityFlags"));
 }
 
-void pybind11_init_smtk_model_ModelGeometryStyleName(py::module &m)
+inline void pybind11_init_smtk_model_ModelGeometryStyleName(py::module &m)
 {
   m.def("ModelGeometryStyleName", &smtk::model::ModelGeometryStyleName, "", py::arg("s"));
 }
 
-void pybind11_init_smtk_model_NamedModelGeometryStyle(py::module &m)
+inline void pybind11_init_smtk_model_NamedModelGeometryStyle(py::module &m)
 {
   m.def("NamedModelGeometryStyle", &smtk::model::NamedModelGeometryStyle, "", py::arg("s"));
 }

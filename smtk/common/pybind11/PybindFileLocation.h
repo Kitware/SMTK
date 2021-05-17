@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::FileLocation > pybind11_init_smtk_common_FileLocation(py::module &m)
+inline py::class_< smtk::common::FileLocation > pybind11_init_smtk_common_FileLocation(py::module &m)
 {
   py::class_< smtk::common::FileLocation > instance(m, "FileLocation");
   instance

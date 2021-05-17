@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::PointLocator > pybind11_init_smtk_mesh_PointLocator(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointLocator > pybind11_init_smtk_mesh_PointLocator(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::PointLocator > instance(m, "PointLocator");
   instance

@@ -30,7 +30,7 @@
 #include "smtk/model/Tessellation.h"
 
 namespace py = pybind11;
-void pybind11_init_smtk_model_Exclusions(py::module &m)
+inline void pybind11_init_smtk_model_Exclusions(py::module &m)
 {
   py::enum_<smtk::model::Exclusions>(m, "Exclusions")
     .value("Nothing", smtk::model::Exclusions::Nothing)
@@ -40,7 +40,7 @@ void pybind11_init_smtk_model_Exclusions(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::module &m)
+inline py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::module &m)
 {
   py::class_< smtk::model::EntityRef > instance(m, "EntityRef");
   instance
@@ -177,7 +177,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
   return instance;
 }
 
-void pybind11_init_smtk_model_entityrefHash(py::module &m)
+inline void pybind11_init_smtk_model_entityrefHash(py::module &m)
 {
   m.def("entityrefHash", &smtk::model::entityrefHash, "", py::arg("c"));
 }

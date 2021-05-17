@@ -24,7 +24,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_view_DescriptivePhraseType(py::module &m)
+inline void pybind11_init_smtk_view_DescriptivePhraseType(py::module &m)
 {
   py::enum_<smtk::view::DescriptivePhraseType>(m, "DescriptivePhraseType")
     .value("RESOURCE_LIST", smtk::view::DescriptivePhraseType::RESOURCE_LIST)
@@ -39,7 +39,7 @@ void pybind11_init_smtk_view_DescriptivePhraseType(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::view::DescriptivePhrase > pybind11_init_smtk_view_DescriptivePhrase(py::module &m)
+inline PySharedPtrClass< smtk::view::DescriptivePhrase > pybind11_init_smtk_view_DescriptivePhrase(py::module &m)
 {
   PySharedPtrClass< smtk::view::DescriptivePhrase > instance(m, "DescriptivePhrase");
   instance

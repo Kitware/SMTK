@@ -25,7 +25,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Chain, smtk::model::ShellEntity > pybind11_init_smtk_model_Chain(py::module &m)
+inline py::class_< smtk::model::Chain, smtk::model::ShellEntity > pybind11_init_smtk_model_Chain(py::module &m)
 {
   py::class_< smtk::model::Chain, smtk::model::ShellEntity > instance(m, "Chain");
   instance

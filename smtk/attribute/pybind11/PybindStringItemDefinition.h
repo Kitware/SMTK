@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> > > pybind11_init_smtk_attribute_StringItemDefinition(py::module &m)
+inline PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> > > pybind11_init_smtk_attribute_StringItemDefinition(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> > > instance(m, "StringItemDefinition");
   instance

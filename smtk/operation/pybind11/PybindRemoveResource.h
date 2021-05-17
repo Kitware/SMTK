@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::RemoveResource, smtk::operation::XMLOperation > pybind11_init_smtk_operation_RemoveResource(py::module &m)
+inline PySharedPtrClass< smtk::operation::RemoveResource, smtk::operation::XMLOperation > pybind11_init_smtk_operation_RemoveResource(py::module &m)
 {
   PySharedPtrClass< smtk::operation::RemoveResource, smtk::operation::XMLOperation > instance(m, "RemoveResource");
   instance

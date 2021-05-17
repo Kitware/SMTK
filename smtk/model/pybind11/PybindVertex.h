@@ -25,7 +25,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Vertex, smtk::model::CellEntity > pybind11_init_smtk_model_Vertex(py::module &m)
+inline py::class_< smtk::model::Vertex, smtk::model::CellEntity > pybind11_init_smtk_model_Vertex(py::module &m)
 {
   py::class_< smtk::model::Vertex, smtk::model::CellEntity > instance(m, "Vertex");
   instance

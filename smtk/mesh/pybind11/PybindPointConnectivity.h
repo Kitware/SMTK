@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::PointConnectivity > pybind11_init_smtk_mesh_PointConnectivity(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointConnectivity > pybind11_init_smtk_mesh_PointConnectivity(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::PointConnectivity > instance(m, "PointConnectivity");
   instance

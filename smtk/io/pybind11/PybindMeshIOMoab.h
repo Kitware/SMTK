@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::mesh::MeshIOMoab > pybind11_init_smtk_io_mesh_MeshIOMoab(py::module &m, PySharedPtrClass< smtk::io::mesh::MeshIO >& parent)
+inline PySharedPtrClass< smtk::io::mesh::MeshIOMoab > pybind11_init_smtk_io_mesh_MeshIOMoab(py::module &m, PySharedPtrClass< smtk::io::mesh::MeshIO >& parent)
 {
   PySharedPtrClass< smtk::io::mesh::MeshIOMoab > instance(m, "MeshIOMoab", parent);
   instance

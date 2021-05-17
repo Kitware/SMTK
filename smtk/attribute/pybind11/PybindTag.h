@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::attribute::Tag > pybind11_init_smtk_attribute_Tag(py::module &m)
+inline py::class_< smtk::attribute::Tag > pybind11_init_smtk_attribute_Tag(py::module &m)
 {
   py::class_< smtk::attribute::Tag > instance(m, "Tag");
   instance

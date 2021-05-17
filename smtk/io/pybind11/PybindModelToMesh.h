@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::ModelToMesh > pybind11_init_smtk_io_ModelToMesh(py::module &m)
+inline PySharedPtrClass< smtk::io::ModelToMesh > pybind11_init_smtk_io_ModelToMesh(py::module &m)
 {
   PySharedPtrClass< smtk::io::ModelToMesh > instance(m, "ModelToMesh");
   instance

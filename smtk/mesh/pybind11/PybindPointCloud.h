@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::mesh::PointCloud > pybind11_init_smtk_mesh_PointCloud(py::module &m)
+inline py::class_< smtk::mesh::PointCloud > pybind11_init_smtk_mesh_PointCloud(py::module &m)
 {
   py::class_< smtk::mesh::PointCloud > instance(m, "PointCloud");
   instance

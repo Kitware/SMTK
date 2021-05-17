@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::operation::IndexTag > pybind11_init_smtk_operation_IndexTag(py::module &m)
+inline py::class_< smtk::operation::IndexTag > pybind11_init_smtk_operation_IndexTag(py::module &m)
 {
   py::class_< smtk::operation::IndexTag > instance(m, "IndexTag");
   instance
@@ -28,7 +28,7 @@ py::class_< smtk::operation::IndexTag > pybind11_init_smtk_operation_IndexTag(py
   return instance;
 }
 
-py::class_< smtk::operation::NameTag > pybind11_init_smtk_operation_NameTag(py::module &m)
+inline py::class_< smtk::operation::NameTag > pybind11_init_smtk_operation_NameTag(py::module &m)
 {
   py::class_< smtk::operation::NameTag > instance(m, "NameTag");
   instance

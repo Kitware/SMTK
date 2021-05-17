@@ -55,7 +55,7 @@ public:
   }
 };
 
-PySharedPtrClass< smtk::mesh::MeshForEach > pybind11_init_smtk_mesh_MeshForEach(py::module &m)
+inline PySharedPtrClass< smtk::mesh::MeshForEach > pybind11_init_smtk_mesh_MeshForEach(py::module &m)
 {
   py::class_<smtk::mesh::MeshForEach, std::shared_ptr<smtk::mesh::MeshForEach>, PyMeshForEach > instance(m, "MeshForEach");
   instance
@@ -68,7 +68,7 @@ PySharedPtrClass< smtk::mesh::MeshForEach > pybind11_init_smtk_mesh_MeshForEach(
   return std::move(instance);
 }
 
-PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellForEach(py::module &m)
+inline PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellForEach(py::module &m)
 {
   py::class_<smtk::mesh::CellForEach, std::shared_ptr<smtk::mesh::CellForEach>, PyCellForEach > instance(m, "CellForEach");
   instance
@@ -88,7 +88,7 @@ PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellForEach(
   return std::move(instance);
 }
 
-PySharedPtrClass< smtk::mesh::PointForEach > pybind11_init_smtk_mesh_PointForEach(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointForEach > pybind11_init_smtk_mesh_PointForEach(py::module &m)
 {
   py::class_<smtk::mesh::PointForEach, std::shared_ptr<smtk::mesh::PointForEach>, PyPointForEach > instance(m, "PointForEach");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::mesh::Format > pybind11_init_smtk_io_mesh_Format(py::module &m)
+inline PySharedPtrClass< smtk::io::mesh::Format > pybind11_init_smtk_io_mesh_Format(py::module &m)
 {
   PySharedPtrClass< smtk::io::mesh::Format > instance(m, "Format");
   instance

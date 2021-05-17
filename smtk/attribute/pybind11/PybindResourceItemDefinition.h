@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > pybind11_init_smtk_attribute_ResourceItemDefinition(py::module &m)
+inline py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > pybind11_init_smtk_attribute_ResourceItemDefinition(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > instance(m, "ResourceItemDefinition");
   instance

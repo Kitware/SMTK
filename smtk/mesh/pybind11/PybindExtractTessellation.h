@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > pybind11_init_smtk_mesh_PreAllocatedTessellation(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > pybind11_init_smtk_mesh_PreAllocatedTessellation(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > instance(m, "PreAllocatedTessellation");
   instance
@@ -49,7 +49,7 @@ PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > pybind11_init_
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::utility::Tessellation > pybind11_init_smtk_mesh_Tessellation(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::Tessellation > pybind11_init_smtk_mesh_Tessellation(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::Tessellation > instance(m, "Tessellation");
   instance
@@ -71,57 +71,57 @@ PySharedPtrClass< smtk::mesh::utility::Tessellation > pybind11_init_smtk_mesh_Te
   return instance;
 }
 
-void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractOrderedTessellation", (void (*)(::smtk::model::EdgeUse const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractOrderedTessellation", (void (*)(::smtk::model::Loop const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractOrderedTessellation", (void (*)(::smtk::model::EdgeUse const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"), py::arg("arg3"));
 }
 
-void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractOrderedTessellation", (void (*)(::smtk::model::Loop const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"), py::arg("arg3"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7MeshSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7MeshSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7CellSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7CellSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::mesh::CellSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10ResourceEEERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::model::EntityRef const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7MeshSetERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7MeshSetERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7CellSetERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7CellSetERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::mesh::CellSet const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERNS0_17PointConnectivityERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERNS0_17PointConnectivityERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::mesh::PointConnectivity &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10ResourceEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
   m.def("extractTessellation", (void (*)(::smtk::model::EntityRef const &, ::smtk::mesh::ResourcePtr const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedTessellation &)) &smtk::mesh::utility::extractTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"), py::arg("arg3"));
 }

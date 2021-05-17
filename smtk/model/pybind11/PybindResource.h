@@ -47,7 +47,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resource(py::module &m)
+inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resource(py::module &m)
 {
   PySharedPtrClass< smtk::model::Resource, smtk::resource::Resource > instance(m, "Resource");
   instance

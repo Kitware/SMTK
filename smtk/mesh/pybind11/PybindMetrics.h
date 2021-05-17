@@ -19,7 +19,7 @@
 namespace py = pybind11;
 
 
-void pybind11_init_smtk_mesh_metrics(py::module &m)
+inline void pybind11_init_smtk_mesh_metrics(py::module &m)
 {
   m.def("extent", &smtk::mesh::utility::extent);
   m.def("highestDimension", &smtk::mesh::utility::highestDimension);

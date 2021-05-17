@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > pybind11_init_smtk_model_SessionIOJSON(py::module &m)
+inline py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > pybind11_init_smtk_model_SessionIOJSON(py::module &m)
 {
   py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > instance(m, "SessionIOJSON");
   instance

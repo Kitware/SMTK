@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_View(py::module &m)
+inline PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_View(py::module &m)
 {
   PySharedPtrClass< smtk::view::Configuration > instance(m, "View");
   instance

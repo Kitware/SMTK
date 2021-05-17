@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_init_smtk_model_AuxiliaryGeometry(py::module &m)
+inline py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_init_smtk_model_AuxiliaryGeometry(py::module &m)
 {
   py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > instance(m, "AuxiliaryGeometry");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_attribute_SearchStyle(py::module &m)
+inline void pybind11_init_smtk_attribute_SearchStyle(py::module &m)
 {
   py::enum_<smtk::attribute::SearchStyle>(m, "SearchStyle")
     .value("IMMEDIATE", smtk::attribute::SearchStyle::IMMEDIATE)

@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_FileSystemItemDefinition(py::module &m)
+inline PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_FileSystemItemDefinition(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::ItemDefinition > instance(m, "FileSystemItemDefinition");
   instance

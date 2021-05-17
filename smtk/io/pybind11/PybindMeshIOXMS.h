@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::mesh::MeshIOXMS > pybind11_init_smtk_io_mesh_MeshIOXMS(py::module &m, PySharedPtrClass< smtk::io::mesh::MeshIO >& parent)
+inline PySharedPtrClass< smtk::io::mesh::MeshIOXMS > pybind11_init_smtk_io_mesh_MeshIOXMS(py::module &m, PySharedPtrClass< smtk::io::mesh::MeshIO >& parent)
 {
   PySharedPtrClass< smtk::io::mesh::MeshIOXMS > instance(m, "MeshIOXMS", parent);
   instance

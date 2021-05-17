@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_Write(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_Write(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > instance(m, "Write");
   instance

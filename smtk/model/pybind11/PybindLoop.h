@@ -27,7 +27,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Loop, smtk::model::ShellEntity > pybind11_init_smtk_model_Loop(py::module &m)
+inline py::class_< smtk::model::Loop, smtk::model::ShellEntity > pybind11_init_smtk_model_Loop(py::module &m)
 {
   py::class_< smtk::model::Loop, smtk::model::ShellEntity > instance(m, "Loop");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::ExportMesh > pybind11_init_smtk_io_ExportMesh(py::module &m)
+inline PySharedPtrClass< smtk::io::ExportMesh > pybind11_init_smtk_io_ExportMesh(py::module &m)
 {
   PySharedPtrClass< smtk::io::ExportMesh > instance(m, "ExportMesh");
   instance
@@ -29,12 +29,12 @@ PySharedPtrClass< smtk::io::ExportMesh > pybind11_init_smtk_io_ExportMesh(py::mo
   return instance;
 }
 
-void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("exportMesh", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::exportMesh, "", py::arg("filePath"), py::arg("resource"));
 }
 
-void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEENSA_INS_5model7ResourceEEES9_(py::module &m)
+inline void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEENSA_INS_5model7ResourceEEES9_(py::module &m)
 {
   m.def("exportMesh", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr, ::smtk::model::ResourcePtr, ::std::string const &)) &smtk::io::exportMesh, "", py::arg("filePath"), py::arg("resource"), py::arg("resource"), py::arg("modelPropertyName"));
 }

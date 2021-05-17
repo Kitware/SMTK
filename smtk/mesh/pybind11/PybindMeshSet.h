@@ -30,7 +30,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::module &m)
+inline PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::MeshSet > instance(m, "MeshSet");
   instance
@@ -95,22 +95,22 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
   return instance;
 }
 
-void pybind11_init_smtk_mesh_mesh_for_each(py::module &m)
+inline void pybind11_init_smtk_mesh_mesh_for_each(py::module &m)
 {
   m.def("for_each", (void (*)(const smtk::mesh::MeshSet&, smtk::mesh::MeshForEach&)) &smtk::mesh::for_each, "", py::arg("a"), py::arg("filter"));
 }
 
-void pybind11_init_smtk_mesh_mesh_set_difference(py::module &m)
+inline void pybind11_init_smtk_mesh_mesh_set_difference(py::module &m)
 {
   m.def("set_difference", (smtk::mesh::MeshSet (*)(const smtk::mesh::MeshSet&, const smtk::mesh::MeshSet&)) &smtk::mesh::set_difference, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_mesh_set_intersect(py::module &m)
+inline void pybind11_init_smtk_mesh_mesh_set_intersect(py::module &m)
 {
   m.def("set_intersect", (smtk::mesh::MeshSet (*)(const smtk::mesh::MeshSet&, const smtk::mesh::MeshSet&)) &smtk::mesh::set_intersect, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_mesh_set_union(py::module &m)
+inline void pybind11_init_smtk_mesh_mesh_set_union(py::module &m)
 {
   m.def("set_union", (smtk::mesh::MeshSet (*)(const smtk::mesh::MeshSet&, const smtk::mesh::MeshSet&)) &smtk::mesh::set_union, "", py::arg("a"), py::arg("b"));
 }

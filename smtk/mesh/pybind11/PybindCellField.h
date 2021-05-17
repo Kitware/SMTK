@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::CellField > pybind11_init_smtk_mesh_CellField(py::module &m)
+inline PySharedPtrClass< smtk::mesh::CellField > pybind11_init_smtk_mesh_CellField(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::CellField > instance(m, "CellField");
   instance

@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_operation_EventType(py::module &m)
+inline void pybind11_init_smtk_operation_EventType(py::module &m)
 {
   py::enum_<smtk::operation::EventType>(m, "EventType")
     .value("WILL_OPERATE", smtk::operation::EventType::WILL_OPERATE)
@@ -27,7 +27,7 @@ void pybind11_init_smtk_operation_EventType(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::operation::Observers > pybind11_init_smtk_operation_Observers(py::module &m)
+inline py::class_< smtk::operation::Observers > pybind11_init_smtk_operation_Observers(py::module &m)
 {
   py::class_< smtk::operation::Observers > instance(m, "Observers");
   instance

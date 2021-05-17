@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::UUID > pybind11_init_smtk_common_UUID(py::module &m)
+inline py::class_< smtk::common::UUID > pybind11_init_smtk_common_UUID(py::module &m)
 {
   py::class_< smtk::common::UUID > instance(m, "UUID");
   instance

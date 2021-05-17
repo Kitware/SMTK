@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_resource_PropertyType(py::module &m)
+inline void pybind11_init_smtk_resource_PropertyType(py::module &m)
 {
   py::enum_<smtk::resource::PropertyType>(m, "PropertyType")
     .value("FLOAT_PROPERTY", smtk::resource::PropertyType::FLOAT_PROPERTY)

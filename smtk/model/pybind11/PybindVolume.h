@@ -25,7 +25,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Volume, smtk::model::CellEntity > pybind11_init_smtk_model_Volume(py::module &m)
+inline py::class_< smtk::model::Volume, smtk::model::CellEntity > pybind11_init_smtk_model_Volume(py::module &m)
 {
   py::class_< smtk::model::Volume, smtk::model::CellEntity > instance(m, "Volume");
   instance

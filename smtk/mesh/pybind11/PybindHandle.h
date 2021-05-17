@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::mesh::HandleInterval > pybind11_init_HandleInterval(py::module &m)
+inline py::class_< smtk::mesh::HandleInterval > pybind11_init_HandleInterval(py::module &m)
 {
   py::class_< smtk::mesh::HandleInterval > instance(m, "HandleInterval");
   instance
@@ -34,7 +34,7 @@ py::class_< smtk::mesh::HandleInterval > pybind11_init_HandleInterval(py::module
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::const_element_iterator > pybind11_init_const_element_iterator(py::module &m)
+inline PySharedPtrClass< smtk::mesh::const_element_iterator > pybind11_init_const_element_iterator(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::const_element_iterator > instance(m, "const_element_iterator");
   instance
@@ -45,7 +45,7 @@ PySharedPtrClass< smtk::mesh::const_element_iterator > pybind11_init_const_eleme
   return instance;
 }
 
-py::class_< smtk::mesh::HandleRange > pybind11_init_HandleRange(py::module &m)
+inline py::class_< smtk::mesh::HandleRange > pybind11_init_HandleRange(py::module &m)
 {
   py::class_< smtk::mesh::HandleRange > instance(m, "HandleRange");
   instance
@@ -64,38 +64,38 @@ py::class_< smtk::mesh::HandleRange > pybind11_init_HandleRange(py::module &m)
   return instance;
 }
 
-void pybind11_init_smtk_mesh_rangeElementsBegin(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeElementsBegin(py::module &m)
 {
   m.def("rangeElementsBegin", &smtk::mesh::rangeElementsBegin, "", py::arg("arg0"));
 }
 
-void pybind11_init_smtk_mesh_rangeElementsEnd(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeElementsEnd(py::module &m)
 {
   m.def("rangeElementsEnd", &smtk::mesh::rangeElementsEnd, "", py::arg("arg0"));
 }
 
-void pybind11_init_smtk_mesh_rangeElement(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeElement(py::module &m)
 {
   m.def("rangeElement", &smtk::mesh::rangeElement, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init_smtk_mesh_rangeContains(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeContains(py::module &m)
 {
   m.def("rangeContains", (bool (*)(smtk::mesh::HandleRange const &, smtk::mesh::Handle)) &smtk::mesh::rangeContains, "", py::arg("arg0"), py::arg("arg1"));
   m.def("rangeContains", (bool (*)(smtk::mesh::HandleRange const &, smtk::mesh::HandleRange const &)) &smtk::mesh::rangeContains, "", py::arg("super"), py::arg("sub"));
 }
 
-void pybind11_init_smtk_mesh_rangeIndex(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeIndex(py::module &m)
 {
   m.def("rangeIndex", &smtk::mesh::rangeIndex, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init_smtk_mesh_rangeIntervalCount(py::module &m)
+inline void pybind11_init_smtk_mesh_rangeIntervalCount(py::module &m)
 {
   m.def("rangeIntervalCount", &smtk::mesh::rangeIntervalCount, "", py::arg("arg0"));
 }
 
-void pybind11_init_smtk_mesh_rangesEqual(py::module &m)
+inline void pybind11_init_smtk_mesh_rangesEqual(py::module &m)
 {
   m.def("rangesEqual", &smtk::mesh::rangesEqual, "", py::arg("arg0"), py::arg("arg1"));
 }

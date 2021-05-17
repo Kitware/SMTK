@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::polygon::Session, smtk::model::Session > pybind11_init_smtk_session_polygon_Session(py::module &m)
+inline PySharedPtrClass< smtk::session::polygon::Session, smtk::model::Session > pybind11_init_smtk_session_polygon_Session(py::module &m)
 {
   PySharedPtrClass< smtk::session::polygon::Session, smtk::model::Session > instance(m, "Session");
   instance

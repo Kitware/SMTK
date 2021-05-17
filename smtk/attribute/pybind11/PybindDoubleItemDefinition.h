@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::DoubleItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<double> > pybind11_init_smtk_attribute_DoubleItemDefinition(py::module &m)
+inline PySharedPtrClass< smtk::attribute::DoubleItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<double> > pybind11_init_smtk_attribute_DoubleItemDefinition(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::DoubleItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<double> > instance(m, "DoubleItemDefinition");
   instance

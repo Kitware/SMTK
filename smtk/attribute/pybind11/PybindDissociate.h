@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Dissociate(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Dissociate(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > instance(m, "Dissociate");
   instance

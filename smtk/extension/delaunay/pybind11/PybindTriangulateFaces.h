@@ -17,7 +17,7 @@
 
 #include "smtk/operation/XMLOperation.h"
 
-PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
+inline PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
 {
   PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > instance(m, "TriangulateFaces");
   instance

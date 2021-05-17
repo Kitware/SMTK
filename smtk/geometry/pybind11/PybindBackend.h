@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::geometry::Backend > pybind11_init_smtk_geometry_Backend(py::module &m)
+inline py::class_< smtk::geometry::Backend > pybind11_init_smtk_geometry_Backend(py::module &m)
 {
   py::class_< smtk::geometry::Backend > instance(m, "Backend");
   instance

@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::operation::Metadata > pybind11_init_smtk_operation_Metadata(py::module &m)
+inline py::class_< smtk::operation::Metadata > pybind11_init_smtk_operation_Metadata(py::module &m)
 {
   py::class_< smtk::operation::Metadata > instance(m, "Metadata");
   instance

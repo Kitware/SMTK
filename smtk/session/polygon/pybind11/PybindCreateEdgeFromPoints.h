@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::polygon::CreateEdgeFromPoints > pybind11_init_smtk_session_polygon_CreateEdgeFromPoints(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::polygon::CreateEdgeFromPoints > pybind11_init_smtk_session_polygon_CreateEdgeFromPoints(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::polygon::CreateEdgeFromPoints > instance(m, "CreateEdgeFromPoints", parent);
   instance

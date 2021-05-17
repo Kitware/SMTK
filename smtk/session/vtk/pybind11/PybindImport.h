@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::vtk::Import > pybind11_init_smtk_session_vtk_Import(py::module &m, PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::vtk::Import > pybind11_init_smtk_session_vtk_Import(py::module &m, PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::vtk::Import > instance(m, "Import", parent);
   instance

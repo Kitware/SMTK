@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::CellSet > pybind11_init_smtk_mesh_CellSet(py::module &m)
+inline PySharedPtrClass< smtk::mesh::CellSet > pybind11_init_smtk_mesh_CellSet(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::CellSet > instance(m, "CellSet");
   instance
@@ -43,32 +43,32 @@ PySharedPtrClass< smtk::mesh::CellSet > pybind11_init_smtk_mesh_CellSet(py::modu
   return instance;
 }
 
-void pybind11_init_smtk_mesh_cell_for_each(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_for_each(py::module &m)
 {
   m.def("for_each", (void (*)(const smtk::mesh::CellSet&, smtk::mesh::CellForEach&)) &smtk::mesh::for_each, "", py::arg("a"), py::arg("filter"));
 }
 
-void pybind11_init_smtk_mesh_cell_point_difference(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_point_difference(py::module &m)
 {
   m.def("point_difference", (smtk::mesh::CellSet (*)(const smtk::mesh::CellSet&, const smtk::mesh::CellSet&, smtk::mesh::ContainmentType)) &smtk::mesh::point_difference, "", py::arg("a"), py::arg("b"), py::arg("t"));
 }
 
-void pybind11_init_smtk_mesh_cell_point_intersect(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_point_intersect(py::module &m)
 {
   m.def("point_intersect", (smtk::mesh::CellSet (*)(const smtk::mesh::CellSet&, const smtk::mesh::CellSet&, smtk::mesh::ContainmentType)) &smtk::mesh::point_intersect, "", py::arg("a"), py::arg("b"), py::arg("t"));
 }
 
-void pybind11_init_smtk_mesh_cell_set_difference(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_set_difference(py::module &m)
 {
   m.def("set_difference", (smtk::mesh::CellSet (*)(const smtk::mesh::CellSet&, const smtk::mesh::CellSet&)) &smtk::mesh::set_difference, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_cell_set_intersect(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_set_intersect(py::module &m)
 {
   m.def("set_intersect", (smtk::mesh::CellSet (*)(const smtk::mesh::CellSet&, const smtk::mesh::CellSet&)) &smtk::mesh::set_intersect, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_cell_set_union(py::module &m)
+inline void pybind11_init_smtk_mesh_cell_set_union(py::module &m)
 {
   m.def("set_union", (smtk::mesh::CellSet (*)(const smtk::mesh::CellSet&, const smtk::mesh::CellSet&)) &smtk::mesh::set_union, "", py::arg("a"), py::arg("b"));
 }

@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::UUIDGenerator > pybind11_init_smtk_common_UUIDGenerator(py::module &m)
+inline py::class_< smtk::common::UUIDGenerator > pybind11_init_smtk_common_UUIDGenerator(py::module &m)
 {
   py::class_< smtk::common::UUIDGenerator > instance(m, "UUIDGenerator");
   instance

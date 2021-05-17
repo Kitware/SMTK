@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_init_smtk_attribute_ValueItem(py::module &m)
+inline PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_init_smtk_attribute_ValueItem(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > instance(m, "ValueItem");
   instance

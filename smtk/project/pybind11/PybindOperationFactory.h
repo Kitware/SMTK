@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::project::OperationFactory > pybind11_init_smtk_project_OperationFactory(py::module &m)
+inline py::class_< smtk::project::OperationFactory > pybind11_init_smtk_project_OperationFactory(py::module &m)
 {
   py::class_< smtk::project::OperationFactory > instance(m, "OperationFactory");
   instance

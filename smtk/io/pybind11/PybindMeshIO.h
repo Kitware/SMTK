@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_io_mesh_Subset(py::module &m)
+inline void pybind11_init_smtk_io_mesh_Subset(py::module &m)
 {
   py::enum_<smtk::io::mesh::Subset>(m, "Subset")
     .value("EntireResource", smtk::io::mesh::Subset::EntireResource)
@@ -27,7 +27,7 @@ void pybind11_init_smtk_io_mesh_Subset(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::io::mesh::MeshIO > pybind11_init_smtk_io_mesh_MeshIO(py::module &m)
+inline PySharedPtrClass< smtk::io::mesh::MeshIO > pybind11_init_smtk_io_mesh_MeshIO(py::module &m)
 {
   PySharedPtrClass< smtk::io::mesh::MeshIO > instance(m, "MeshIO");
   instance

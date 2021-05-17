@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::geometry::Resource, smtk::resource::DerivedFrom<smtk::geometry::Resource, smtk::resource::Resource> > pybind11_init_smtk_geometry_Resource(py::module &m)
+inline PySharedPtrClass< smtk::geometry::Resource, smtk::resource::DerivedFrom<smtk::geometry::Resource, smtk::resource::Resource> > pybind11_init_smtk_geometry_Resource(py::module &m)
 {
   PySharedPtrClass< smtk::geometry::Resource, smtk::resource::DerivedFrom<smtk::geometry::Resource, smtk::resource::Resource> > instance(m, "Resource");
   instance

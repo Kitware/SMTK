@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Categories(py::module &m)
+inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Categories(py::module &m)
 {
   py::class_< smtk::attribute::Categories > instance(m, "Categories");
   instance

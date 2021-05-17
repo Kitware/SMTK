@@ -24,7 +24,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportSpec(py::module &m)
+inline py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportSpec(py::module &m)
 {
   py::class_< smtk::simulation::ExportSpec > instance(m, "ExportSpec");
   instance

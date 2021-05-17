@@ -27,7 +27,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::EdgeUse, smtk::model::UseEntity > pybind11_init_smtk_model_EdgeUse(py::module &m)
+inline py::class_< smtk::model::EdgeUse, smtk::model::UseEntity > pybind11_init_smtk_model_EdgeUse(py::module &m)
 {
   py::class_< smtk::model::EdgeUse, smtk::model::UseEntity > instance(m, "EdgeUse");
   instance

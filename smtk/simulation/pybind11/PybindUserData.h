@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::simulation::UserData > pybind11_init_smtk_simulation_UserData(py::module &m)
+inline PySharedPtrClass< smtk::simulation::UserData > pybind11_init_smtk_simulation_UserData(py::module &m)
 {
   PySharedPtrClass< smtk::simulation::UserData > instance(m, "UserData");
   instance
@@ -28,7 +28,7 @@ PySharedPtrClass< smtk::simulation::UserData > pybind11_init_smtk_simulation_Use
   return instance;
 }
 
-PySharedPtrClass< smtk::simulation::UserDataInt, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataInt(py::module &m)
+inline PySharedPtrClass< smtk::simulation::UserDataInt, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataInt(py::module &m)
 {
   PySharedPtrClass< smtk::simulation::UserDataInt, smtk::simulation::UserData  > instance(m, "UserDataInt");
   instance
@@ -41,7 +41,7 @@ PySharedPtrClass< smtk::simulation::UserDataInt, smtk::simulation::UserData > py
   return instance;
 }
 
-PySharedPtrClass< smtk::simulation::UserDataDouble, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataDouble(py::module &m)
+inline PySharedPtrClass< smtk::simulation::UserDataDouble, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataDouble(py::module &m)
 {
   PySharedPtrClass< smtk::simulation::UserDataDouble, smtk::simulation::UserData  > instance(m, "UserDataDouble");
   instance
@@ -54,7 +54,7 @@ PySharedPtrClass< smtk::simulation::UserDataDouble, smtk::simulation::UserData >
   return instance;
 }
 
-PySharedPtrClass< smtk::simulation::UserDataString, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataString(py::module &m)
+inline PySharedPtrClass< smtk::simulation::UserDataString, smtk::simulation::UserData > pybind11_init_smtk_simulation_UserDataString(py::module &m)
 {
   PySharedPtrClass< smtk::simulation::UserDataString, smtk::simulation::UserData  > instance(m, "UserDataString");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::Version > pybind11_init_smtk_common_Version(py::module &m)
+inline py::class_< smtk::common::Version > pybind11_init_smtk_common_Version(py::module &m)
 {
   py::class_< smtk::common::Version > instance(m, "Version");
   instance

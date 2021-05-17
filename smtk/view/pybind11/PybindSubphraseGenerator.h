@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::view::SubphraseGenerator > pybind11_init_smtk_view_SubphraseGenerator(py::module &m)
+inline PySharedPtrClass< smtk::view::SubphraseGenerator > pybind11_init_smtk_view_SubphraseGenerator(py::module &m)
 {
   PySharedPtrClass< smtk::view::SubphraseGenerator > instance(m, "SubphraseGenerator");
   instance

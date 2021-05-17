@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > pybind11_init_smtk_attribute_DateTimeItem(py::module &m)
+inline PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > pybind11_init_smtk_attribute_DateTimeItem(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > instance(m, "DateTimeItem");
   instance

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::session::mesh::Registrar > pybind11_init_smtk_session_mesh_Registrar(py::module &m)
+inline py::class_< smtk::session::mesh::Registrar > pybind11_init_smtk_session_mesh_Registrar(py::module &m)
 {
   py::class_< smtk::session::mesh::Registrar > instance(m, "Registrar");
   instance

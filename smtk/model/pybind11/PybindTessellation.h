@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_TessellationCellType(py::module &m)
+inline void pybind11_init_smtk_model_TessellationCellType(py::module &m)
 {
   py::enum_<smtk::model::TessellationCellType>(m, "TessellationCellType")
     .value("TESS_VERTEX", smtk::model::TessellationCellType::TESS_VERTEX)
@@ -41,7 +41,7 @@ void pybind11_init_smtk_model_TessellationCellType(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::model::Tessellation > pybind11_init_smtk_model_Tessellation(py::module &m)
+inline py::class_< smtk::model::Tessellation > pybind11_init_smtk_model_Tessellation(py::module &m)
 {
   py::class_< smtk::model::Tessellation > instance(m, "Tessellation");
   instance

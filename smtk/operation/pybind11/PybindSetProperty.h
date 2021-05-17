@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > pybind11_init_smtk_operation_SetProperty(py::module &m)
+inline PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > pybind11_init_smtk_operation_SetProperty(py::module &m)
 {
   PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > instance(m, "SetProperty");
   instance

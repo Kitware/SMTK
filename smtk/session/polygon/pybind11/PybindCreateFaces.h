@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::session::polygon::ModelEdgeInfo > pybind11_init_smtk_session_polygon_ModelEdgeInfo(py::module &m)
+inline py::class_< smtk::session::polygon::ModelEdgeInfo > pybind11_init_smtk_session_polygon_ModelEdgeInfo(py::module &m)
 {
   py::class_< smtk::session::polygon::ModelEdgeInfo > instance(m, "ModelEdgeInfo");
   instance
@@ -30,7 +30,7 @@ py::class_< smtk::session::polygon::ModelEdgeInfo > pybind11_init_smtk_session_p
   return instance;
 }
 
-PySharedPtrClass< smtk::session::polygon::CreateFaces > pybind11_init_smtk_session_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::polygon::CreateFaces > pybind11_init_smtk_session_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::polygon::CreateFaces > instance(m, "CreateFaces", parent);
   instance

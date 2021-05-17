@@ -15,7 +15,7 @@
 
 #include "smtk/extension/delaunay/operators/TessellateFaces.h"
 
-PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > pybind11_init_smtk_extension_delaunay_TessellateFaces(py::module &m)
+inline PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > pybind11_init_smtk_extension_delaunay_TessellateFaces(py::module &m)
 {
   PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > instance(m, "TessellateFaces");
   instance

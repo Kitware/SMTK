@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::ResourceManagerOperation, smtk::operation::XMLOperation > pybind11_init_smtk_operation_ResourceManagerOperation(py::module &m)
+inline PySharedPtrClass< smtk::operation::ResourceManagerOperation, smtk::operation::XMLOperation > pybind11_init_smtk_operation_ResourceManagerOperation(py::module &m)
 {
   PySharedPtrClass< smtk::operation::ResourceManagerOperation, smtk::operation::XMLOperation > instance(m, "ResourceManagerOperation");
   instance

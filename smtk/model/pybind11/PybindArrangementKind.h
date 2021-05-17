@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_Orientation(py::module &m)
+inline void pybind11_init_smtk_model_Orientation(py::module &m)
 {
   py::enum_<smtk::model::Orientation>(m, "Orientation")
     .value("NEGATIVE", smtk::model::Orientation::NEGATIVE)
@@ -28,7 +28,7 @@ void pybind11_init_smtk_model_Orientation(py::module &m)
     .export_values();
 }
 
-void pybind11_init_smtk_model_ArrangementKind(py::module &m)
+inline void pybind11_init_smtk_model_ArrangementKind(py::module &m)
 {
   py::enum_<smtk::model::ArrangementKind>(m, "ArrangementKind")
     .value("INCLUDES", smtk::model::ArrangementKind::INCLUDES)
@@ -44,27 +44,27 @@ void pybind11_init_smtk_model_ArrangementKind(py::module &m)
     .export_values();
 }
 
-void pybind11_init_smtk_model_ArrangementKindFromName(py::module &m)
+inline void pybind11_init_smtk_model_ArrangementKindFromName(py::module &m)
 {
   m.def("ArrangementKindFromName", &smtk::model::ArrangementKindFromName, "", py::arg("name"));
 }
 
-void pybind11_init_smtk_model_NameForArrangementKind(py::module &m)
+inline void pybind11_init_smtk_model_NameForArrangementKind(py::module &m)
 {
   m.def("NameForArrangementKind", &smtk::model::NameForArrangementKind, "", py::arg("k"));
 }
 
-void pybind11_init_smtk_model_ArrangementKindFromAbbreviation(py::module &m)
+inline void pybind11_init_smtk_model_ArrangementKindFromAbbreviation(py::module &m)
 {
   m.def("ArrangementKindFromAbbreviation", &smtk::model::ArrangementKindFromAbbreviation, "", py::arg("abbr"));
 }
 
-void pybind11_init_smtk_model_AbbreviationForArrangementKind(py::module &m)
+inline void pybind11_init_smtk_model_AbbreviationForArrangementKind(py::module &m)
 {
   m.def("AbbreviationForArrangementKind", &smtk::model::AbbreviationForArrangementKind, "", py::arg("k"));
 }
 
-void pybind11_init_smtk_model_Dual(py::module &m)
+inline void pybind11_init_smtk_model_Dual(py::module &m)
 {
   m.def("Dual", &smtk::model::Dual, "", py::arg("entType"), py::arg("k"));
 }

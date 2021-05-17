@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Write(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Write(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > instance(m, "Write");
   instance

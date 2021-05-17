@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_session_vtk_Operation(py::module &m)
+inline PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_session_vtk_Operation(py::module &m)
 {
   PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > instance(m, "Operation");
   instance
