@@ -76,13 +76,8 @@ struct SMTKCORE_EXPORT SelectionFootprint
       return false;
     }
     auto& geom = resource->geometry(backend);
-    if (
-      !geom ||
-      geom->generationNumber(object.shared_from_this()) == smtk::geometry::Geometry::Invalid)
-    {
-      return false;
-    }
-    return true;
+    return geom &&
+      geom->generationNumber(object.shared_from_this()) != smtk::geometry::Geometry::Invalid;
   }
 
   /// If \a object is a Resource, add all the components it owns that have geometry.

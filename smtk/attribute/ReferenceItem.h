@@ -182,7 +182,7 @@ public:
   {
     for (auto it = this->begin(); it != this->end(); ++it)
     {
-      if (it.isSet() == false)
+      if (!it.isSet())
       {
         continue;
       }
@@ -507,7 +507,7 @@ bool ReferenceItem::setValues(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
-      if (iteratorIsSet(it) == false)
+      if (!iteratorIsSet(it))
       {
         continue;
       }
@@ -522,7 +522,7 @@ bool ReferenceItem::setValues(
   // Enable or disable the item if it is optional.
   if (ok)
   {
-    this->setIsEnabled(num > 0 ? true : false);
+    this->setIsEnabled(num > 0);
   }
   return ok;
 }
@@ -548,7 +548,7 @@ bool ReferenceItem::setValuesVia(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
-      if (iteratorIsSet(it) == false)
+      if (!iteratorIsSet(it))
       {
         continue;
       }
@@ -563,7 +563,7 @@ bool ReferenceItem::setValuesVia(
   // Enable or disable the item if it is optional.
   if (ok)
   {
-    this->setIsEnabled(num > 0 ? true : false);
+    this->setIsEnabled(num > 0);
   }
   return ok;
 }

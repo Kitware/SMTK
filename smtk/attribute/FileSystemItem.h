@@ -117,7 +117,7 @@ bool FileSystemItem::setValues(I vbegin, I vend, std::size_t offset)
   }
   // Enable or disable the item if it is optional.
   if (ok)
-    this->setIsEnabled(num > 0 ? true : false);
+    this->setIsEnabled(num > 0);
   return ok;
 }
 

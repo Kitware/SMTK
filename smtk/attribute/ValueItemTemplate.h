@@ -244,11 +244,7 @@ bool ValueItemTemplate<DataT>::setValueFromString(std::size_t element, const std
   std::istringstream iss(sval);
   DataT val;
   iss >> val;
-  if (iss.fail() || !this->setValue(element, val))
-  {
-    return false;
-  }
-  return true;
+  return !iss.fail() && this->setValue(element, val);
 }
 
 template<typename DataT>

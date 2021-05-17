@@ -169,7 +169,7 @@ public:
   /// Check whether a property associated with \a key is present.
   bool contains(const std::string& key) const
   {
-    if (m_properties.contains(key) == false)
+    if (!m_properties.contains(key))
     {
       return false;
     }
@@ -235,7 +235,7 @@ public:
   /// Check whether a property associated with \a key is present.
   bool contains(const std::string& key) const
   {
-    if (m_properties.contains(key) == false)
+    if (!m_properties.contains(key))
     {
       return false;
     }
@@ -307,7 +307,7 @@ private:
   }
   std::unordered_map<smtk::common::UUID, Type>& get(const std::string& key)
   {
-    if (m_properties.contains(key) == false)
+    if (!m_properties.contains(key))
     {
       m_properties.emplace(key, typename detail::PropertiesOfType<IndexedType>::mapped_type());
     }

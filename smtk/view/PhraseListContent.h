@@ -65,7 +65,7 @@ public:
   bool displayable(ContentType attr) const override;
   bool editable(ContentType attr) const override
   {
-    return (m_mutability & static_cast<int>(attr)) ? true : false;
+    return (m_mutability & static_cast<int>(attr)) != 0;
   }
 
   std::string stringValue(ContentType attr) const override;
