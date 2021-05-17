@@ -31,7 +31,6 @@ class SMTKCORE_EXPORT Tag
 public:
   Tag(const std::string& name)
     : m_name(name)
-    , m_values()
   {
   }
 

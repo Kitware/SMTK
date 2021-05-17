@@ -46,19 +46,16 @@ public:
     const smtk::common::UUID& id,
     const std::string& location)
     : Surrogate(index, typeName, id, location)
-    , ComponentLinks::Data()
   {
   }
 
   ResourceLinkBase(const ResourcePtr& resource)
     : Surrogate(resource)
-    , ComponentLinks::Data()
   {
   }
 
   ResourceLinkBase(Surrogate&& surrogate)
     : Surrogate(surrogate)
-    , ComponentLinks::Data()
   {
   }
 

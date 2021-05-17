@@ -43,10 +43,7 @@ class SMTKQTEXT_EXPORT qtEmittingStringBuffer
   Q_OBJECT
 
 public:
-  qtEmittingStringBuffer()
-    : std::stringbuf()
-  {
-  }
+  qtEmittingStringBuffer() = default;
 
   ~qtEmittingStringBuffer() override { sync(); }
 
