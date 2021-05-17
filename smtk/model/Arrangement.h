@@ -89,8 +89,8 @@ public:
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;
 
-  bool relations(smtk::common::UUIDArray& relsOut, const EntityPtr ent, ArrangementKind k) const;
-  bool relationIndices(std::vector<int>& relsOut, const EntityPtr ent, ArrangementKind k) const;
+  bool relations(smtk::common::UUIDArray& relsOut, EntityPtr ent, ArrangementKind k) const;
+  bool relationIndices(std::vector<int>& relsOut, EntityPtr ent, ArrangementKind k) const;
 
   /// A helper to extract the relationship from an arrangement that stores only an index.
   template<bool (Arrangement::*M)(int&) const>

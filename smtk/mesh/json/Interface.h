@@ -180,11 +180,11 @@ public:
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz) override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const double* xyz) override;
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const float* xyz) override;
 
   std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const override;
 

@@ -58,7 +58,7 @@ public:
   /// This can be used by other smtk::model::AuxiliaryGeometryExtension
   /// subclasses to provide VTK representations to the vtkModelMultiBlockSource.
   static void addCacheGeometry(
-    const vtkSmartPointer<vtkDataObject> dataset,
+    vtkSmartPointer<vtkDataObject> dataset,
     const smtk::model::AuxiliaryGeometry& entity,
     std::time_t& mtime,
     bool trimCache);

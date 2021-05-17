@@ -97,11 +97,11 @@ public:
 
   //Set all the point coordinates from the pre-allocated buffer. The
   //buffer is required to have a length of size*3.
-  bool set(const double* const xyz) const;
+  bool set(const double* xyz) const;
 
   //Set all the point coordinates from the pre-allocated buffer. The
   //buffer is required to have a length of size*3.
-  bool set(const float* const xyz);
+  bool set(const float* xyz);
 
   //Set all the point coordinates from the pre-allocated buffer. The
   //buffer is required to have a length of size*3.

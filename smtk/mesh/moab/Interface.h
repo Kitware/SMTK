@@ -189,11 +189,11 @@ public:
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz) override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const double* xyz) override;
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const float* xyz) override;
 
   std::string name(const smtk::mesh::Handle& meshset) const override;
   bool setName(const smtk::mesh::Handle& meshset, const std::string& name) override;
@@ -295,12 +295,12 @@ public:
   bool setField(
     const smtk::mesh::HandleRange& cells,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) override;
+    const void* data) override;
 
   bool setCellField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) override;
+    const void* data) override;
 
   std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const override;
@@ -340,12 +340,12 @@ public:
   bool setField(
     const smtk::mesh::HandleRange& points,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) override;
+    const void* data) override;
 
   bool setPointField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) override;
+    const void* data) override;
 
   std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const override;

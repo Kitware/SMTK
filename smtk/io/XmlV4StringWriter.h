@@ -33,7 +33,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV4StringWriter : public XmlV3StringWriter
 {
 public:
-  XmlV4StringWriter(const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
+  XmlV4StringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   ~XmlV4StringWriter() override;
 
 protected:

@@ -40,7 +40,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
-  XmlV2StringWriter(const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
+  XmlV2StringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   ~XmlV2StringWriter() override;
   std::string convertToString(bool no_declaration = false) override;
   std::string getString(std::size_t ith, bool no_declaration = false) override;

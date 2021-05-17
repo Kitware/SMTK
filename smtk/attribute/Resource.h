@@ -233,9 +233,7 @@ public:
   ///
   /// A style is represented as a smtk::view::Configuration::Component and represents
   /// customizations for displaying the attribute in a GUI.
-  void addStyle(
-    const std::string& definitionType,
-    const smtk::view::Configuration::Component style);
+  void addStyle(const std::string& definitionType, smtk::view::Configuration::Component style);
   const smtk::view::Configuration::Component& findStyle(
     const smtk::attribute::DefinitionPtr& def,
     const std::string& styleName = "") const;
@@ -278,14 +276,14 @@ public:
 
   // Copies definition from another Resource
   smtk::attribute::DefinitionPtr copyDefinition(
-    const smtk::attribute::DefinitionPtr def,
+    smtk::attribute::DefinitionPtr def,
     unsigned int options = 0);
   // Copies attribute from another Resource
   // Note: that if the attribute is unique (meaning only 1 attribute of this type can be asociated
   // to a model entity, the copyModelAssociations flag is ignored since it would violate this constraint.
   // In terms of options - these are item assignment options - see Item.h for documentation.
   smtk::attribute::AttributePtr copyAttribute(
-    const smtk::attribute::AttributePtr att,
+    smtk::attribute::AttributePtr att,
     const bool& copyModelAssociations = false,
     const unsigned int& options = 0);
 
@@ -375,7 +373,7 @@ protected:
     attribute::DefinitionPtr def,
     std::vector<smtk::attribute::AttributePtr>& result) const;
   bool copyDefinitionImpl(
-    const smtk::attribute::DefinitionPtr sourceDef,
+    smtk::attribute::DefinitionPtr sourceDef,
     smtk::attribute::ItemDefinition::CopyInfo& info);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;

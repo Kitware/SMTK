@@ -41,9 +41,9 @@ public:
 
   bool randomPoint(
     const smtk::model::EntityRef& entity,
-    const std::size_t nPoints,
+    std::size_t nPoints,
     std::vector<double>& points,
-    const std::size_t seed) override;
+    std::size_t seed) override;
 
 protected:
   ModelEntityPointLocator();

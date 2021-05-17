@@ -99,8 +99,8 @@ protected:
 
 private:
   void TriangulateEnd(
-    const int innerRes,
-    const int outerRes,
+    int innerRes,
+    int outerRes,
     bool forceDelaunay,
     vtkCellArray* cells,
     vtkPoints* fullPoints);

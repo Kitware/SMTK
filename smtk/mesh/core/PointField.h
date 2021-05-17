@@ -80,7 +80,7 @@ public:
   //Set the data associated with all of the cells in the meshset and return
   //a success flag. <values> must be at least
   //sizeof(type()) * cellIds.size() * dimension() in size.
-  bool set(const smtk::mesh::HandleRange& cellIds, const void* const values);
+  bool set(const smtk::mesh::HandleRange& cellIds, const void* values);
 
   //Get the data associated with all of the cells in the meshset and return
   //a success flag. <values> must be at least
@@ -90,7 +90,7 @@ public:
   //Set the data associated with all of the cells in the meshset and return
   //a success flag. <values> must be at least
   //sizeof(type()) * cellIds.size() * dimension() in size.
-  bool set(const void* const values);
+  bool set(const void* values);
 
   //Convenience method for accessing field data.
   template<typename T>

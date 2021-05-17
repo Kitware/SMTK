@@ -380,11 +380,11 @@ public:
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz) = 0;
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const double* xyz) = 0;
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) = 0;
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const float* xyz) = 0;
 
   virtual std::string name(const smtk::mesh::Handle& meshset) const = 0;
   virtual bool setName(const smtk::mesh::Handle& meshset, const std::string& name) = 0;
@@ -502,7 +502,7 @@ public:
   virtual bool setCellField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) = 0;
+    const void* data) = 0;
 
   virtual bool getField(
     const smtk::mesh::HandleRange& cells,
@@ -512,7 +512,7 @@ public:
   virtual bool setField(
     const smtk::mesh::HandleRange& cells,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) = 0;
+    const void* data) = 0;
 
   virtual std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const = 0;
@@ -548,7 +548,7 @@ public:
   virtual bool setPointField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) = 0;
+    const void* data) = 0;
 
   virtual bool getField(
     const smtk::mesh::HandleRange& points,
@@ -558,7 +558,7 @@ public:
   virtual bool setField(
     const smtk::mesh::HandleRange& points,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) = 0;
+    const void* data) = 0;
 
   virtual std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const = 0;

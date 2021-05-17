@@ -756,7 +756,7 @@ bool Interface::getPointField(
 bool Interface::setPointField(
   const smtk::mesh::HandleRange& /*meshsets*/,
   const smtk::mesh::PointFieldTag& /*pfTag*/,
-  const void* const /*data*/)
+  const void* /*data*/)
 {
   return false;
 }
@@ -772,7 +772,7 @@ bool Interface::getField(
 bool Interface::setField(
   const smtk::mesh::HandleRange& /*points*/,
   const smtk::mesh::PointFieldTag& /*pfTag*/,
-  const void* const /*data*/)
+  const void* /*data*/)
 {
   return false;
 }
