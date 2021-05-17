@@ -48,7 +48,7 @@ public:
   const std::string& units() const { return m_units; }
   void setUnits(const std::string& newUnits) { m_units = newUnits; }
 
-  bool isDiscrete() const { return (m_discreteValueEnums.size() != 0); }
+  bool isDiscrete() const { return !m_discreteValueEnums.empty(); }
   std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
   const std::string& discreteEnum(std::size_t ith) const
   {

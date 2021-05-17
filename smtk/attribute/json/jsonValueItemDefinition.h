@@ -59,14 +59,14 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
       conditionalItems = defPtr->conditionalItems(enumName);
       const smtk::attribute::Categories::Set& categoryValues = defPtr->enumCategories(enumName);
       json valueJson, structureJson, resultJson;
-      if (conditionalItems.size() || !categoryValues.empty())
+      if (!conditionalItems.empty() || !categoryValues.empty())
       {
         // Structure enums
         // TODO: Simplifiy the logic here
         valueJson["Enum"][enumName] = defPtr->discreteValue(i);
         structureJson["Value"] = valueJson;
         // Structure Items
-        if (conditionalItems.size())
+        if (!conditionalItems.empty())
         {
           structureJson["Items"] = conditionalItems;
         }

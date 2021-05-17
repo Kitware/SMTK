@@ -268,7 +268,7 @@ public:
   // true if the PersistentObject has attributes associated with it
   bool hasAttributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
 
-  bool hasAttributes() const { return m_attributes.size() > 0; }
+  bool hasAttributes() const { return !m_attributes.empty(); }
 
   void disassociateAllAttributes(const smtk::resource::PersistentObjectPtr& object);
 

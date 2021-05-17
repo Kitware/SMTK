@@ -45,10 +45,10 @@ public:
     const std::string& name() const { return m_name; }
 
     /// \brief Return the string to represent the Analysis in UI's
-    const std::string& displayedName() const { return ((m_label == "") ? m_name : m_label); }
+    const std::string& displayedName() const { return (m_label.empty() ? m_name : m_label); }
     void setLabel(const std::string& analysisLabel) { m_label = analysisLabel; }
     const std::string& label() const { return m_label; }
-    bool hasLabel() const { return m_label != ""; }
+    bool hasLabel() const { return !m_label.empty(); }
 
     /// @{
     /// \brief Methods to set and retrieve the categories locally associated with the Analysis
