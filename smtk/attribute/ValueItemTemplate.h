@@ -496,7 +496,7 @@ bool ValueItemTemplate<DataT>::isUsingDefault() const
   }
 
   std::size_t i, n = this->numberOfValues();
-  DataT dval = def->defaultValue();
+  const DataT& dval = def->defaultValue();
   const std::vector<DataT>& dvals = def->defaultValues();
   bool vectorDefault = (dvals.size() == n);
   for (i = 0; i < n; i++)
@@ -521,7 +521,7 @@ bool ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
     return false; // Doesn't have a default value
   }
 
-  DataT dval = def->defaultValue();
+  const DataT& dval = def->defaultValue();
   const std::vector<DataT>& dvals = def->defaultValues();
   bool vectorDefault = (dvals.size() == def->numberOfRequiredValues());
   assert(m_values.size() > element);
