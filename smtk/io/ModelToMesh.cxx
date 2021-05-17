@@ -263,7 +263,7 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
     // Allocate handles.
     typedef std::pair<smtk::mesh::HandleRange, smtk::mesh::Handle*> HandleData;
     HandleData blank;
-    blank.second = NULL;
+    blank.second = nullptr;
     std::vector<HandleData> cellMBConn(smtk::mesh::CellType_MAX, blank);
     std::vector<HandleData>::iterator allocIt = cellMBConn.begin();
     std::vector<std::size_t>::iterator cellsOfTypeIt = numCellsOfType.begin();

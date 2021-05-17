@@ -38,7 +38,7 @@ public:
   pqGenerateContoursDialog(
     pqPipelineSource*,
     const bool& mapScalars2Colors,
-    QWidget* parent = NULL,
+    QWidget* parent = nullptr,
     Qt::WindowFlags flags = {});
   ~pqGenerateContoursDialog() override;
 

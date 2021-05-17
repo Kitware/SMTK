@@ -33,7 +33,7 @@ class SMTKQTEXT_EXPORT qtTimeZoneRegionModel : public QAbstractItemModel
   Q_OBJECT
 
 public:
-  qtTimeZoneRegionModel(QObject* parent = NULL);
+  qtTimeZoneRegionModel(QObject* parent = nullptr);
   ~qtTimeZoneRegionModel() override;
   void initialize();
 

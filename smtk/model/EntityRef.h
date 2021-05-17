@@ -64,7 +64,7 @@ class MeshSet;
   bool isValid(EntityPtr* entRec) const override                                                   \
   {                                                                                                \
     EntityPtr er;                                                                                  \
-    if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \
+    if (/* NB: EntityRef::isValid() may return true even when er == nullptr */                     \
         this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))          \
     {                                                                                              \
       if (entRec)                                                                                  \

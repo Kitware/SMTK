@@ -311,7 +311,7 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
     }
     return true;
   }
-  return false; // visibility is false if the component is not a model entity or NULL.
+  return false; // visibility is false if the component is not a model entity or nullptr.
 }
 
 void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int val)

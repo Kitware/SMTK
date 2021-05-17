@@ -340,10 +340,10 @@ public:
   virtual std::string valueAsString(std::size_t i) const;
   /**\brief Return whether the \a i-th value is set.
     *
-    * This returns true when the item and its UUID are non-NULL and false otherwise.
+    * This returns true when the item and its UUID are non-nullptr and false otherwise.
     *
     * Note that this is **not always what you would expect**!
-    * You can set a value to be an invalid, non-NULL UUID so that
+    * You can set a value to be an invalid, non-nullptr UUID so that
     * entities which have been expunged can be reported (and other
     * use cases).
     */

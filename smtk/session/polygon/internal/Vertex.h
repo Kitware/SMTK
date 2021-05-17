@@ -38,8 +38,8 @@ public:
 
   struct incident_edge_data
   {
-    Id m_edgeId;       // Should never be NULL
-    Id m_adjacentFace; // Face immediately CW of m_edgeId. May be NULL.
+    Id m_edgeId;       // Should never be nullptr
+    Id m_adjacentFace; // Face immediately CW of m_edgeId. May be nullptr.
     bool
       m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
 

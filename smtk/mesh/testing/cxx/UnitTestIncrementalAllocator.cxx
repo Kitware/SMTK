@@ -63,7 +63,7 @@ void verify_json_incremental_allocator_creation()
   //at this point extract the allocator from json and verify that it
   //is null
   smtk::mesh::IncrementalAllocatorPtr allocator = resource->interface()->incrementalAllocator();
-  test(!allocator, "json incremental allocator should be NULL");
+  test(!allocator, "json incremental allocator should be nullptr");
 
   //verify that is modified is true
   test(!resource->isModified(), "resource shouldn't be modified");

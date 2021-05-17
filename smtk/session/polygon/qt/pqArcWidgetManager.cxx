@@ -430,6 +430,6 @@ void pqArcWidgetManager::disableArcWidget()
   //  this->ArcWidget->removeAllNodes();
   //  this->ArcWidget->setWidgetVisible(false);
   //  this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
-  //  this->ArcWidget->setView(NULL);
+  //  this->ArcWidget->setView(nullptr);
   //  }
 }

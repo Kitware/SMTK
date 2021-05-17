@@ -112,7 +112,7 @@ class qModelEntityAttributeViewComboBoxItemDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
 public:
-  qModelEntityAttributeViewComboBoxItemDelegate(const QStringList& vals, QObject* parent = 0);
+  qModelEntityAttributeViewComboBoxItemDelegate(const QStringList& vals, QObject* parent = nullptr);
   ~qModelEntityAttributeViewComboBoxItemDelegate();
 
   virtual QWidget*

@@ -116,7 +116,7 @@ bool write_file(
   const smtk::mesh::moab::InterfacePtr& interface,
   const std::string& path,
   const char* tag_name = nullptr)
-{ //tag_name which is NULL loads in all meshes
+{ //tag_name which is nullptr loads in all meshes
   return moab_write(interface, path, tag_name);
 }
 } // namespace

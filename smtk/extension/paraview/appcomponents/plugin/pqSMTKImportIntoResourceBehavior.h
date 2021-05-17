@@ -26,7 +26,7 @@ class pqImportIntoResourceReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqImportIntoResourceReaction(QAction* parent);
 

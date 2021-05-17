@@ -26,7 +26,7 @@ class pqCloseResourceReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqCloseResourceReaction(QAction* parent);
 

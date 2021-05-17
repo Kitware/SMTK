@@ -31,7 +31,7 @@ class ProjectBrowser : public QWidget
 {
   Q_OBJECT
 public:
-  ProjectBrowser(QWidget* parent = NULL);
+  ProjectBrowser(QWidget* parent = nullptr);
   virtual ~ProjectBrowser();
 
   QTreeView* tree() const;

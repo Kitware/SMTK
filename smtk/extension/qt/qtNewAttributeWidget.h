@@ -29,7 +29,7 @@ class SMTKQTEXT_EXPORT qtNewAttributeWidget : public QDialog
   typedef QDialog Superclass;
 
 public:
-  qtNewAttributeWidget(QWidget* parent = 0);
+  qtNewAttributeWidget(QWidget* parent = nullptr);
   ~qtNewAttributeWidget() override;
 
   QString attributeName() const;

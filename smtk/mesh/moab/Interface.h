@@ -71,7 +71,7 @@ public:
   //are than assigned to an existing mesh or new mesh
   //
   //If the current interface is read-only, the AllocatorPtr that is returned
-  //will be NULL.
+  //will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
@@ -83,7 +83,7 @@ public:
   //cells that are than assigned to an existing mesh or new mesh.
   //
   //If the current interface is read-only, the BufferedCellAllocatorPtr that is
-  //returned will be NULL.
+  //returned will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
@@ -95,7 +95,7 @@ public:
   //cells that are than assigned to an existing mesh or new mesh.
   //
   //If the current interface is read-only, the IncrementalAllocatorPtr that is
-  //returned will be NULL.
+  //returned will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that

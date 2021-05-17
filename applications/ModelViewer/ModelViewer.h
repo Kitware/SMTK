@@ -19,7 +19,7 @@ class ModelViewer : public QWidget
 {
   Q_OBJECT
 public:
-  ModelViewer(QWidget* parent = NULL);
+  ModelViewer(QWidget* parent = nullptr);
   virtual ~ModelViewer();
 
 protected:

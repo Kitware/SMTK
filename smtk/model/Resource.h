@@ -339,13 +339,13 @@ public:
     const smtk::common::UUID& cellId,
     const Tessellation& geom,
     int analysis = 0,
-    int* gen = NULL);
+    int* gen = nullptr);
 
   tess_iter_type setTessellationAndBoundingBox(
     const smtk::common::UUID& cellId,
     const Tessellation& geom,
     int analysis = 0,
-    int* gen = NULL);
+    int* gen = nullptr);
   // if BBox is provided, just replace corrds with BBox else we would loop through coords
   // BBox format: [xmin, xmax, ymin, ymax, zmin, zmax]
   bool setBoundingBox(

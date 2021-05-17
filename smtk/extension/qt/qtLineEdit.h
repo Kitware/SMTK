@@ -77,8 +77,8 @@ class SMTKQTEXT_EXPORT qtLineEdit : public QLineEdit
   typedef QLineEdit Superclass;
 
 public:
-  qtLineEdit(QWidget* parent = 0);
-  qtLineEdit(const QString& contents, QWidget* parent = 0);
+  qtLineEdit(QWidget* parent = nullptr);
+  qtLineEdit(const QString& contents, QWidget* parent = nullptr);
 
   ~qtLineEdit() override;
 

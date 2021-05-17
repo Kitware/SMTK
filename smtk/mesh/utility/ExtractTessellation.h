@@ -102,12 +102,12 @@ public:
   //If this is disabled we use the smtk/mesh cell enum values.
   void disableVTKCellTypes(bool disable) { m_useVTKCellTypes = !disable; }
 
-  bool hasConnectivity() const { return m_connectivity != NULL; }
-  bool hasCellLocations() const { return m_cellLocations != NULL; }
-  bool hasCellTypes() const { return m_cellTypes != NULL; }
+  bool hasConnectivity() const { return m_connectivity != nullptr; }
+  bool hasCellLocations() const { return m_cellLocations != nullptr; }
+  bool hasCellTypes() const { return m_cellTypes != nullptr; }
 
-  bool hasDoublePoints() const { return m_dpoints != NULL; }
-  bool hasFloatPoints() const { return m_fpoints != NULL; }
+  bool hasDoublePoints() const { return m_dpoints != nullptr; }
+  bool hasFloatPoints() const { return m_fpoints != nullptr; }
 
   bool useVTKConnectivity() const { return m_useVTKConnectivity; }
   bool useVTKCellTypes() const { return m_useVTKCellTypes; }

@@ -66,7 +66,7 @@ class pqPointPropertyWidget : public pqInteractivePropertyWidget
   typedef pqInteractivePropertyWidget Superclass;
 
 public:
-  pqPointPropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = 0);
+  pqPointPropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = nullptr);
   ~pqPointPropertyWidget() override;
 
   std::string controlState();

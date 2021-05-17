@@ -203,7 +203,7 @@ bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitio
   const DefType* def = dynamic_cast<const DefType*>(tdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!ValueItem::setDefinition(tdef)))
+  if ((def == nullptr) || (!ValueItem::setDefinition(tdef)))
   {
     return false;
   }

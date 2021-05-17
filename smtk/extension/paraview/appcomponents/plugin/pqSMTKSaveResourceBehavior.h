@@ -29,7 +29,7 @@ class pqSaveResourceReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqSaveResourceReaction(QAction* parent);
 
@@ -67,7 +67,7 @@ class pqSaveResourceAsReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqSaveResourceAsReaction(QAction* parent);
 

@@ -220,7 +220,7 @@ T* EntityHandle::object() const
     !this->m_session || !this->m_object || this->m_modelNumber < 0 ||
     this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
   {
-    return NULL;
+    return nullptr;
   }
 
   return dynamic_cast<T*>(this->m_object.GetPointer());

@@ -86,7 +86,7 @@ class SMTKQTEXT_EXPORT qtDoubleLineEdit : public qtLineEdit
   using Superclass = qtLineEdit;
 
 public:
-  qtDoubleLineEdit(QWidget* parent = 0);
+  qtDoubleLineEdit(QWidget* parent = nullptr);
   ~qtDoubleLineEdit() override;
 
   /**

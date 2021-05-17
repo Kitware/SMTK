@@ -149,7 +149,7 @@ vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edge
   incident_edge_data edgeData;
   edgeData.m_edgeId = edgeId;
   edgeData.m_edgeOut = edgeOutwards;
-  // NB: Not inserting edge where a face exists, so edgeData.m_adjacentFace should be left NULL.
+  // NB: Not inserting edge where a face exists, so edgeData.m_adjacentFace should be left nullptr.
   return m_edges.insert(where, edgeData);
 }
 

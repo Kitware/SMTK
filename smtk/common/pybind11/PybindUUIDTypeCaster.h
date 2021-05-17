@@ -42,9 +42,9 @@ public:
     }
 
 #if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
-    char* ustr = uuidBytes ? PyBytes_AS_STRING(uuidBytes) : NULL;
+    char* ustr = uuidBytes ? PyBytes_AS_STRING(uuidBytes) : nullptr;
 #else
-    char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
+    char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : nullptr;
 #endif
     if (ustr)
     {

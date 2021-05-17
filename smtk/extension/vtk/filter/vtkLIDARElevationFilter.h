@@ -61,7 +61,7 @@ public:
   void SetTransform(vtkTransform* transform);
   vtkGetObjectMacro(Transform, vtkTransform);
   void SetTransform(double elements[16]);
-  void ClearTransform() { this->SetTransform(static_cast<vtkTransform*>(0)); }
+  void ClearTransform() { this->SetTransform(static_cast<vtkTransform*>(nullptr)); }
 
 protected:
   vtkLIDARElevationFilter();

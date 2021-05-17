@@ -35,7 +35,7 @@ vtkTexturePointIntensityFilter::vtkTexturePointIntensityFilter()
   this->SetNumberOfInputPorts(2);
   this->TestPoint[0] = this->TestPoint[1] = this->TestPoint[2] = 0.0;
   this->Intensity = 0.0;
-  this->TransformInverse = NULL;
+  this->TransformInverse = nullptr;
 }
 
 vtkTexturePointIntensityFilter::~vtkTexturePointIntensityFilter()
@@ -53,7 +53,7 @@ vtkImageData* vtkTexturePointIntensityFilter::GetTextureData()
 {
   if (this->GetNumberOfInputConnections(2) != 2)
   {
-    return NULL;
+    return nullptr;
   }
 
   return vtkImageData::SafeDownCast(this->GetExecutive()->GetInputData(1, 0));

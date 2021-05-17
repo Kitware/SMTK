@@ -49,7 +49,7 @@ public:
 
 protected:
   entity()
-    : m_parent(NULL)
+    : m_parent(nullptr)
   {
   }
   entity(const Id& uid, entity* p)
@@ -57,7 +57,7 @@ protected:
     , m_id(uid)
   {
   }
-  virtual ~entity() { m_parent = NULL; }
+  virtual ~entity() { m_parent = nullptr; }
 
   entity* m_parent;
   Id m_id;

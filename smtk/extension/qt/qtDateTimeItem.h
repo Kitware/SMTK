@@ -67,7 +67,7 @@ protected:
   /* virtual void updateExtensibleState(); */
   virtual void clearChildWidgets();
   void updateBackground(QDateTimeEdit* dtEdit, bool valid);
-  void updateTimeZoneMenu(QAction* selectedAction = NULL);
+  void updateTimeZoneMenu(QAction* selectedAction = nullptr);
 
   void setTimeZone(std::size_t element, const QString& region);
   void setTimeZoneToUTC(std::size_t element);

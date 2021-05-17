@@ -28,7 +28,7 @@ class pqNewResourceReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqNewResourceReaction(const std::string& operationName, QAction* parent);
 

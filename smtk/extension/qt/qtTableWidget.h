@@ -36,7 +36,7 @@ class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
   Q_OBJECT
 
 public:
-  qtTableWidget(QWidget* p = NULL);
+  qtTableWidget(QWidget* p = nullptr);
   ~qtTableWidget() override;
 
   QModelIndexList getSelectedIndexes() const { return this->selectedIndexes(); }

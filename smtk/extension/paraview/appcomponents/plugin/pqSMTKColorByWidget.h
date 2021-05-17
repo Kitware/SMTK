@@ -32,7 +32,7 @@ class pqSMTKColorByWidget : public QWidget
   typedef QWidget Superclass;
 
 public:
-  pqSMTKColorByWidget(QWidget* parent = 0);
+  pqSMTKColorByWidget(QWidget* parent = nullptr);
   ~pqSMTKColorByWidget() override;
 
   /**
@@ -87,7 +87,7 @@ class pqSMTKColorByPropertyWidget : public pqPropertyWidget
   Q_OBJECT
 
 public:
-  pqSMTKColorByPropertyWidget(vtkSMProxy* proxy, QWidget* parent = 0);
+  pqSMTKColorByPropertyWidget(vtkSMProxy* proxy, QWidget* parent = nullptr);
   ~pqSMTKColorByPropertyWidget() override;
 
 private:

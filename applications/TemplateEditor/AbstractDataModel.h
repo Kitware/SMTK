@@ -34,7 +34,7 @@ public:
   const QModelIndex getDefaultIndex();
 
 protected:
-  AbstractDataModel(QObject* parent_ = NULL);
+  AbstractDataModel(QObject* parent_ = nullptr);
   virtual ~AbstractDataModel();
 
   /**

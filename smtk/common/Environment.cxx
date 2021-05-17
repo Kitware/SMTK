@@ -28,8 +28,8 @@ bool Environment::hasVariable(const std::string& varName)
 #else
   bool valid;
 
-  valid = (_dupenv_s(&buf, NULL, varName.c_str()) == 0) && (buf != NULL);
-  free(buf); //perfectly valid to free a NULL pointer
+  valid = (_dupenv_s(&buf, nullptr, varName.c_str()) == 0) && (buf != nullptr);
+  free(buf); //perfectly valid to free a nullptr pointer
   return valid;
 #endif
 }
@@ -47,10 +47,10 @@ std::string Environment::getVariable(const std::string& varName)
   bool valid;
   std::string result;
 
-  valid = (_dupenv_s(&buf, NULL, varName.c_str()) == 0) && (buf != NULL);
+  valid = (_dupenv_s(&buf, nullptr, varName.c_str()) == 0) && (buf != nullptr);
   if (valid)
     result = buf;
-  free(buf); //perfectly valid to free a NULL pointer
+  free(buf); //perfectly valid to free a nullptr pointer
   return result;
 #endif
 }

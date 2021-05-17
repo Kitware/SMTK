@@ -49,7 +49,7 @@ class SMTKPOLYGONQTEXT_EXPORT pqSplitEdgeWidget : public QWidget
   Q_OBJECT
 
 public:
-  explicit pqSplitEdgeWidget(QWidget* parent = 0);
+  explicit pqSplitEdgeWidget(QWidget* parent = nullptr);
   virtual ~pqSplitEdgeWidget();
 
   virtual void setView(pqRenderView* view);

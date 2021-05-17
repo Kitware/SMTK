@@ -172,7 +172,7 @@ bool pqPolygonArc::updateArc(
       }
     }
 
-  if ( newlyCreatedArcIds == NULL)
+  if ( newlyCreatedArcIds == nullptr)
     {
     //this needs to be created before being passed in
     return false;
