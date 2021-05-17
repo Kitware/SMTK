@@ -45,7 +45,6 @@ public:
 
   virtual ~Manager();
 
-public:
   BadgeFactory& badgeFactory() { return m_badgeFactory; }
   const BadgeFactory& badgeFactory() const { return m_badgeFactory; }
 
