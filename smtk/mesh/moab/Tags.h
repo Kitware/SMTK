@@ -21,7 +21,7 @@
 
 #include "MBTagConventions.hpp"
 
-#include <string.h> // for memcpy (opaque tags)
+#include <cstring> // for memcpy (opaque tags)
 
 namespace smtk
 {

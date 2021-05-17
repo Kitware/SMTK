@@ -20,9 +20,9 @@
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include "smtk/io/Logger.h"
 #include <cassert>
+#include <cstdio>
 #include <limits>
 #include <sstream>
-#include <stdio.h>
 #include <vector>
 
 namespace smtk
