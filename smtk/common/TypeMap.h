@@ -173,7 +173,7 @@ public:
   template<typename Type>
   bool emplace(const KeyType& key, Type&& value)
   {
-    return get<Type>().emplace(key, std::move(value));
+    return get<Type>().emplace(key, std::forward<Type>(value));
   }
 
   /// Erase value of type \a Type indexed by \a key from the map.
