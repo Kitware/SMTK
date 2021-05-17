@@ -40,7 +40,7 @@ public:
 
 protected:
   vtkExtractImageBlock();
-  ~vtkExtractImageBlock() override{};
+  ~vtkExtractImageBlock() override {}
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
   int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;

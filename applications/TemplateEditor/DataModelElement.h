@@ -48,7 +48,9 @@ private:
 
 template<typename T>
 DataModelElement<T>::DataModelElement(QTreeWidgetItem* parent)
-  : QTreeWidgetItem(parent){};
+  : QTreeWidgetItem(parent)
+{
+}
 
 template<typename T>
 void DataModelElement<T>::setReferencedData(const T& data)

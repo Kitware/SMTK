@@ -23,7 +23,9 @@ class AttDefTreeView : public QTreeView
 
 public:
   AttDefTreeView(QWidget* parent = nullptr)
-    : QTreeView(parent){};
+    : QTreeView(parent)
+  {
+  }
 
   ~AttDefTreeView() = default;
 
