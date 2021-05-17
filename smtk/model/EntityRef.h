@@ -80,6 +80,7 @@ namespace model
 {
 
 class EntityRef;
+class Group;
 class Model;
 class Tessellation;
 typedef std::set<EntityRef> EntityRefs;

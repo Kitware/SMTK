@@ -156,7 +156,6 @@ typedef std::set<smtk::model::EntityRef> EntityRefs;
 /// @see smtk::model::EntityRef
 typedef std::vector<smtk::model::EntityRef> EntityRefArray;
 class DefaultSession;
-class DescriptivePhrase;
 class Edge;
 /// @see smtk::model::Edge
 typedef std::vector<smtk::model::Edge> Edges;
@@ -178,7 +177,6 @@ typedef std::vector<smtk::model::FaceUse> FaceUses;
 class GridInfo;
 class GridInfo2D;
 class GridInfo3D;
-class Group;
 class Instance;
 /// @see smtk::model::Instance
 typedef std::vector<smtk::model::Instance> Instances;
@@ -202,7 +200,6 @@ class ShellEntity;
 /// @see smtk::model::ShellEntity
 typedef std::vector<smtk::model::ShellEntity> ShellEntities;
 class SimpleModelSubphrases;
-class SubphraseGenerator;
 class Tessellation;
 class UseEntity;
 /// @see smtk::model::UseEntity

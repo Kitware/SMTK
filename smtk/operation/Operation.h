@@ -33,7 +33,6 @@ namespace operation
 {
 class ImportPythonOperation;
 class Manager;
-class Metadata;
 
 /// Operation is a base class for all SMTK operations. SMTK operations are
 /// essentially functors that operate on SMTK resources and resource components.
