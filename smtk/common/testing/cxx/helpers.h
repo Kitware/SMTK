@@ -42,7 +42,7 @@ inline int test(int condition, const std::string& explanation = std::string())
 #define smtkTest(condition, msg)                                                                   \
   {                                                                                                \
     std::ostringstream explanation;                                                                \
-    explanation << msg;                                                                            \
+    explanation << msg; /* NOLINT(bugprone-macro-parentheses) */                                   \
     test(condition, explanation.str());                                                            \
   }
 

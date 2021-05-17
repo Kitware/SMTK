@@ -38,8 +38,8 @@
   do                                                                                               \
   {                                                                                                \
     std::stringstream s1;                                                                          \
-    s1 << x;                                                                                       \
-    logger.addRecord(smtk::io::Logger::ERROR, s1.str(), __FILE__, __LINE__);                       \
+    s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
+    (logger).addRecord(smtk::io::Logger::ERROR, s1.str(), __FILE__, __LINE__);                     \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as a warning message.
@@ -50,8 +50,8 @@
   do                                                                                               \
   {                                                                                                \
     std::stringstream s1;                                                                          \
-    s1 << x;                                                                                       \
-    logger.addRecord(smtk::io::Logger::WARNING, s1.str(), __FILE__, __LINE__);                     \
+    s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
+    (logger).addRecord(smtk::io::Logger::WARNING, s1.str(), __FILE__, __LINE__);                   \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as a debug message.
@@ -62,8 +62,8 @@
   do                                                                                               \
   {                                                                                                \
     std::stringstream s1;                                                                          \
-    s1 << x;                                                                                       \
-    logger.addRecord(smtk::io::Logger::DEBUG, s1.str(), __FILE__, __LINE__);                       \
+    s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
+    (logger).addRecord(smtk::io::Logger::DEBUG, s1.str(), __FILE__, __LINE__);                     \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as an informational message.
@@ -77,8 +77,8 @@
   do                                                                                               \
   {                                                                                                \
     std::stringstream s1;                                                                          \
-    s1 << x;                                                                                       \
-    logger.addRecord(smtk::io::Logger::INFO, s1.str());                                            \
+    s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
+    (logger).addRecord(smtk::io::Logger::INFO, s1.str());                                          \
   } while (0)
 
 namespace smtk
