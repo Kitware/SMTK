@@ -248,7 +248,7 @@ inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type tupleTo
 
 template<std::size_t I, typename Tuple>
 inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type tupleToTypeNames(
-  std::set<std::string>& typeNames)
+  std::set<std::string>& /*typeNames*/)
 {
   return;
 }
