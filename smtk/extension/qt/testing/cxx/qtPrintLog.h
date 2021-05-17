@@ -27,7 +27,7 @@ public:
   {
   }
 
-  ~qtPrintLog() override {}
+  ~qtPrintLog() override = default;
 
 public slots:
   void print()

@@ -51,7 +51,7 @@ public:
   // {
   // }
 
-  OperationViewInfo() {}
+  OperationViewInfo() = default;
   smtk::operation::OperationPtr m_operator;
 };
 

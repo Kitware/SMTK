@@ -40,7 +40,7 @@ public:
       : m_name("Default")
     {
     }
-    ~Component() {}
+    ~Component() = default;
 
     const std::string& name() const { return m_name; }
     const std::string& contents() const { return m_contents; }

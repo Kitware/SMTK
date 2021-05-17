@@ -37,7 +37,7 @@ class PointConnectivity;
 class SMTKCORE_EXPORT Allocator
 {
 public:
-  virtual ~Allocator() {}
+  virtual ~Allocator() = default;
 
   virtual bool allocatePoints(
     std::size_t numPointsToAlloc,
@@ -82,7 +82,7 @@ public:
   {
   }
 
-  virtual ~BufferedCellAllocator() {}
+  virtual ~BufferedCellAllocator() = default;
 
   virtual bool reserveNumberOfCoordinates(std::size_t nCoordinates) = 0;
   virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
@@ -125,9 +125,9 @@ protected:
 class SMTKCORE_EXPORT IncrementalAllocator
 {
 public:
-  IncrementalAllocator() {}
+  IncrementalAllocator() = default;
 
-  virtual ~IncrementalAllocator() {}
+  virtual ~IncrementalAllocator() = default;
 
   virtual std::size_t addCoordinate(double* xyz) = 0;
   virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
@@ -175,7 +175,7 @@ public:
 class SMTKCORE_EXPORT ConnectivityStorage
 {
 public:
-  virtual ~ConnectivityStorage() {}
+  virtual ~ConnectivityStorage() = default;
 
   //struct that holds the required information to compute what is the
   //current cell when we are iterating.
@@ -229,7 +229,7 @@ public:
     bool want_Coordinates;
   };
 
-  virtual ~PointLocatorImpl() {}
+  virtual ~PointLocatorImpl() = default;
 
   //returns all the point ids that are inside the locator
   virtual smtk::mesh::HandleRange range() const = 0;
@@ -241,9 +241,9 @@ public:
 class SMTKCORE_EXPORT Interface
 {
 public:
-  Interface() {}
+  Interface() = default;
 
-  virtual ~Interface() {}
+  virtual ~Interface() = default;
 
   //get back a string that contains the pretty name for the interface class.
   //Requirements: The string must be all lower-case.

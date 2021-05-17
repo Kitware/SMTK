@@ -38,7 +38,7 @@ namespace common
 class SMTKCORE_EXPORT TypeMapEntryBase
 {
 public:
-  virtual ~TypeMapEntryBase() {}
+  virtual ~TypeMapEntryBase() = default;
 
   virtual void to_json(nlohmann::json&) const {}
   virtual void from_json(const nlohmann::json&) {}
@@ -58,7 +58,7 @@ class SMTK_ALWAYS_EXPORT TypeMapEntry : public TypeMapEntryBase
 
 protected:
   /// Construction of this class is delegated to TypeMap.
-  TypeMapEntry() {}
+  TypeMapEntry() = default;
 
 public:
   typedef KeyType key_type;
@@ -266,6 +266,8 @@ class SMTK_ALWAYS_EXPORT TypeMap : public TypeMapBase<KeyType>
 public:
   typedef KeyType key_type;
 
+  // MSVC sees `= default` as a duplicate of the template version.
+  // NOLINTNEXTLINE(modernize-use-equals-default)
   TypeMap() {}
 
   template<typename List>
@@ -280,7 +282,7 @@ public:
     insertTypes<List>();
   }
 
-  ~TypeMap() override {}
+  ~TypeMap() override = default;
 
 protected:
   template<typename Type>

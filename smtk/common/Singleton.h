@@ -23,8 +23,8 @@ public:
   static typename T::Ptr& instance();
 
 private:
-  virtual ~Singleton() {}
-  inline explicit Singleton() {}
+  virtual ~Singleton() = default;
+  inline explicit Singleton() = default;
 };
 
 template<typename T>

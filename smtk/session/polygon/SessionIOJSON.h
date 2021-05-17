@@ -33,7 +33,7 @@ public:
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
 
-  ~SessionIOJSON() override {}
+  ~SessionIOJSON() override = default;
 
   /**\brief Serialize a resource into a set of JSON records.
     */

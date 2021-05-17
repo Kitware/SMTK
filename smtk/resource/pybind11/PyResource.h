@@ -134,9 +134,9 @@ namespace resource
 class PyResource : public Resource
 {
 public:
-  PyResource() {}
+  PyResource() = default;
 
-  ~PyResource() override {}
+  ~PyResource() override = default;
 
   static std::shared_ptr<smtk::resource::Resource> create(
     std::string modulename, std::string className, smtk::resource::Resource::Index index)

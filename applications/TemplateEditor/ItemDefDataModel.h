@@ -61,7 +61,7 @@ public:
    */
   struct Container
   {
-    Container(){};
+    Container() = default;
 
     smtk::attribute::ItemDefinitionPtr ItemDefinition;
     smtk::attribute::DefinitionPtr Definition;

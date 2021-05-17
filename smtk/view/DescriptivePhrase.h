@@ -92,7 +92,7 @@ public:
 
   smtkTypeMacroBase(DescriptivePhrase);
   smtkCreateMacro(DescriptivePhrase);
-  virtual ~DescriptivePhrase() {}
+  virtual ~DescriptivePhrase() = default;
 
   /// Populate a phrase with its type and parent in the hierarchy of phrases.
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());

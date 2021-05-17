@@ -34,7 +34,7 @@ public:
   smtkTypeMacro(smtk::session::multiscale::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
-  ~Resource() override {}
+  ~Resource() override = default;
 
   Session::Ptr session() const
   {

@@ -140,7 +140,7 @@ public:
   {
   }
 
-  virtual ~PointCloud() {}
+  virtual ~PointCloud() = default;
 
   std::size_t size() const { return m_size; }
 

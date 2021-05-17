@@ -41,7 +41,7 @@ class SMTKCORE_EXPORT IncrementalAllocator
 public:
   IncrementalAllocator(::moab::Interface* interface);
 
-  ~IncrementalAllocator() override {}
+  ~IncrementalAllocator() override = default;
 
   IncrementalAllocator(const IncrementalAllocator& other) = delete;
   IncrementalAllocator& operator=(const IncrementalAllocator& other) = delete;

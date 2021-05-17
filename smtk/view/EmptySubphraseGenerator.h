@@ -27,7 +27,7 @@ public:
   smtkSuperclassMacro(smtk::view::SubphraseGenerator);
   smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
   EmptySubphraseGenerator();
-  ~EmptySubphraseGenerator() override {}
+  ~EmptySubphraseGenerator() override = default;
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.
     *

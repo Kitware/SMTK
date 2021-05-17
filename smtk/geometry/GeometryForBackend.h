@@ -43,7 +43,7 @@ public:
   smtkSuperclassMacro(Geometry);
   using DataType = Format;
 
-  ~GeometryForBackend() override {}
+  ~GeometryForBackend() override = default;
 
   virtual void update() const {}
   virtual void geometricBounds(const Format&, BoundingBox&) const = 0;

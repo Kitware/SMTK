@@ -38,7 +38,7 @@ public:
   {
   }
 
-  virtual ~PhraseModelFactory() {}
+  virtual ~PhraseModelFactory() = default;
 
   PhraseModelFactory() = delete;
   PhraseModelFactory(const PhraseModelFactory&) = delete;

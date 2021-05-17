@@ -15,7 +15,7 @@
  */
 struct AttDefContainer
 {
-  AttDefContainer(){};
+  AttDefContainer() = default;
 
   std::string Type;
   std::string BaseType;

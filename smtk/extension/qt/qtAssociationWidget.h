@@ -32,7 +32,7 @@ public:
     , m_view(view)
   {
   }
-  ~qtAssociationWidget() override {}
+  ~qtAssociationWidget() override = default;
   ///\brief Return true if there are persistent objects selected.
   ///
   /// This comes in handy when a parent group view changes tabs.  With this

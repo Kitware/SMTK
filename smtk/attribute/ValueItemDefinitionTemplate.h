@@ -28,7 +28,7 @@ class ValueItemDefinitionTemplate : public smtk::attribute::ValueItemDefinition
 public:
   typedef DataT DataType;
 
-  ~ValueItemDefinitionTemplate() override {}
+  ~ValueItemDefinitionTemplate() override = default;
 
   const DataT& defaultValue() const;
   const DataT& defaultValue(std::size_t element) const;

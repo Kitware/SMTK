@@ -54,8 +54,8 @@ public:
   // {
   // }
 
-  ViewInfo() {}
-  ~ViewInfo() override {}
+  ViewInfo() = default;
+  ~ViewInfo() override = default;
 
   const smtk::view::Configuration* configuration() const override { return m_view.get(); }
 

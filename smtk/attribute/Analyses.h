@@ -102,7 +102,7 @@ public:
       , m_required(false)
     {
     }
-    ~Analysis() {}
+    ~Analysis() = default;
 
     std::string m_name;                 ///< Name of the Analysis
     Analysis* m_parent;                 ///< Analysis' Parent

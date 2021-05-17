@@ -39,7 +39,7 @@ class SMTKCORE_EXPORT PhraseContent : smtkEnableSharedPtr(PhraseContent)
 {
 public:
   smtkTypeMacroBase(PhraseContent);
-  virtual ~PhraseContent() {}
+  virtual ~PhraseContent() = default;
 
   /// Accepted types of content
   enum ContentType
@@ -129,7 +129,7 @@ public:
   virtual bool operator==(const PhraseContent& other) const { return this->equalTo(other); }
 
 protected:
-  PhraseContent() {}
+  PhraseContent() = default;
 
   WeakDescriptivePhrasePtr m_location;
 };

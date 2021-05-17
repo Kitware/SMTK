@@ -35,8 +35,8 @@ namespace resource
 class PyComponent : public Component
 {
 public:
-  PyComponent() {}
-  ~PyComponent() override {}
+  PyComponent() = default;
+  ~PyComponent() override = default;
 
   std::string typeName() const override { return m_typeName; }
   void setTypeName(const std::string& typeName) { m_typeName = typeName; }

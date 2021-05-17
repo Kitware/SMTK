@@ -41,7 +41,7 @@ namespace resource
 class Key
 {
   friend class operation::Operation;
-  Key() {}
+  Key() = default;
 };
 
 template<typename Self, typename Parent>

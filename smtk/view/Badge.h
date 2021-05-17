@@ -85,7 +85,7 @@ public:
   }
   Badge(const Badge&) = delete;
   Badge& operator=(const Badge&) = delete;
-  virtual ~Badge() {}
+  virtual ~Badge() = default;
 
   /// Returns true if the badge should appear next to the given phrase:
   virtual bool appliesToPhrase(const DescriptivePhrase*) const { return false; }

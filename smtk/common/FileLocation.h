@@ -36,14 +36,10 @@ namespace common
 class SMTKCORE_EXPORT FileLocation
 {
 public:
-  FileLocation()
-  {
-    m_filePath = std::string();
-    m_referencePath = std::string();
-  }
+  FileLocation() = default;
   FileLocation(const std::string& filePath, const std::string& refPath = std::string());
   FileLocation(const FileLocation& other);
-  virtual ~FileLocation() {}
+  virtual ~FileLocation() = default;
 
   std::string absolutePath() const;
   std::string relativePath() const;
@@ -55,12 +51,7 @@ public:
     m_filePath.clear();
     m_referencePath.clear();
   }
-  FileLocation& operator=(const FileLocation& from)
-  {
-    m_filePath = from.m_filePath;
-    m_referencePath = from.m_referencePath;
-    return *this;
-  }
+  FileLocation& operator=(const FileLocation& from) = default;
   bool operator==(const FileLocation& from) const;
   bool operator==(const std::string& from) const { return *this == FileLocation(from); }
 

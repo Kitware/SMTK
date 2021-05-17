@@ -52,7 +52,7 @@ private:
 class SMTKCORE_EXPORT CanonicalIndices
 {
 public:
-  CanonicalIndices() {}
+  CanonicalIndices() = default;
 
   // Assume the cells in <ms> are of the same dimension
   void extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::MeshSet& referenceMS);

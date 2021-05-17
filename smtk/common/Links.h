@@ -81,7 +81,7 @@ struct Link : base_type
   {
   }
 
-  ~Link() override {}
+  ~Link() override = default;
 
   id_type id;
   left_type left;
@@ -241,7 +241,7 @@ class Links : public detail::LinkContainer<id_type, left_type, right_type, role_
 public:
   static const role_type undefinedRole;
 
-  virtual ~Links() {}
+  virtual ~Links() = default;
 
   /// The "Left", "Right" and "Role" tags facilitate access to views into the
   /// container that are sorted according to the left, right or role values,

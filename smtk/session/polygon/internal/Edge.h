@@ -40,7 +40,7 @@ public:
   smtkTypeMacro(edge);
   smtkCreateMacro(edge);
   smtkSharedFromThisMacro(entity);
-  ~edge() override {}
+  ~edge() override = default;
 
   std::size_t pointsSize() const { return m_points.size(); }
 
@@ -72,7 +72,7 @@ public:
   const PointSeq& points() const { return m_points; }
 
 protected:
-  edge() {}
+  edge() = default;
 
   friend class pmodel;
 

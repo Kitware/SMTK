@@ -239,7 +239,7 @@ protected:
     smtk::resource::Observers::Key m_rsrcHandle;
     smtk::operation::Observers::Key m_operHandle;
     smtk::view::SelectionObservers::Key m_selnHandle;
-    Source() {}
+    Source() = default;
 
     [[deprecated("PhraseModel::Source::Source now accepts managers held in a const "
                  "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)

@@ -51,7 +51,7 @@ public:
   smtkTypeMacroBase(smtk::view::SubphraseGenerator);
   smtkCreateMacro(smtk::view::SubphraseGenerator);
   SubphraseGenerator();
-  virtual ~SubphraseGenerator() {}
+  virtual ~SubphraseGenerator() = default;
 
   using Path = std::vector<int>;
   using PhrasesByPath = std::multimap<Path, DescriptivePhrasePtr>;

@@ -49,7 +49,7 @@ public:
   {
   }
 
-  virtual ~XmlStringWriter() {}
+  virtual ~XmlStringWriter() = default;
 
   // Subclass methods
   virtual std::string className() const = 0;

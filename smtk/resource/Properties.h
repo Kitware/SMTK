@@ -37,7 +37,7 @@ namespace detail
 class SMTKCORE_EXPORT PropertiesBase
 {
 public:
-  virtual ~PropertiesBase() {}
+  virtual ~PropertiesBase() = default;
 
   virtual void eraseId(const smtk::common::UUID&) = 0;
 };
@@ -78,6 +78,8 @@ public:
 class SMTKCORE_EXPORT Properties : public smtk::common::TypeMapBase<std::string>
 {
 public:
+  // MSVC sees `= default` as a duplicate of the template version.
+  // NOLINTNEXTLINE(modernize-use-equals-default)
   Properties() {}
 
   template<typename List>

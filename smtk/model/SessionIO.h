@@ -47,7 +47,7 @@ class SMTKCORE_EXPORT SessionIO
 {
 public:
   smtkTypeMacroBase(SessionIO);
-  virtual ~SessionIO() {} // virtual method needed so dynamic_cast will work
+  virtual ~SessionIO() = default; // virtual method needed so dynamic_cast will work
 
   /**\brief Return a reference directory to use during import/export.
     *

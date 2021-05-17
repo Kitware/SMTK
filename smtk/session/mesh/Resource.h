@@ -33,7 +33,7 @@ public:
   smtkTypeMacro(smtk::session::mesh::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
-  ~Resource() override {}
+  ~Resource() override = default;
 
   const Session::Ptr& session() const { return m_session; }
   void setSession(const Session::Ptr&);

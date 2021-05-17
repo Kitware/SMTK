@@ -34,7 +34,7 @@ public:
   smtkTypeMacro(vertex);
   smtkCreateMacro(vertex);
   smtkSharedFromThisMacro(entity);
-  ~vertex() override {}
+  ~vertex() override = default;
 
   struct incident_edge_data
   {

@@ -39,7 +39,7 @@ public:
   typedef value_type const_iterator;
   typedef ValueItemDefinitionTemplate<DataType> DefType;
 
-  ~ValueItemTemplate() override {}
+  ~ValueItemTemplate() override = default;
   typename std::vector<DataT>::const_iterator begin() const { return m_values.begin(); }
   typename std::vector<DataT>::const_iterator end() const { return m_values.end(); }
   bool setNumberOfValues(std::size_t newSize) override;

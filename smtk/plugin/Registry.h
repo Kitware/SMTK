@@ -127,7 +127,7 @@ class MaybeRegister<Registrar, Manager, std::false_type>
 {
 public:
   MaybeRegister(const std::shared_ptr<Manager>&) {}
-  virtual ~MaybeRegister() {}
+  virtual ~MaybeRegister() = default;
 
   template<typename M>
   bool contains(const std::shared_ptr<M>&) const
@@ -326,7 +326,7 @@ public:
     return tmp != nullptr && tmp->contains(m);
   }
 
-  ~Registry() override {}
+  ~Registry() override = default;
 
   typedef int DoNotRegisterDependencies;
 
@@ -383,7 +383,7 @@ public:
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
 
-  ~Registry() override {}
+  ~Registry() override = default;
 
   template<typename M>
   bool contains(const std::shared_ptr<M>& m)
@@ -426,12 +426,9 @@ template<typename Registrar>
 class Registry<Registrar, detail::Sentinel> : public RegistryBase
 {
 public:
-  Registry()
-    : RegistryBase()
-  {
-  }
+  Registry() = default;
 
-  ~Registry() override {}
+  ~Registry() override = default;
 };
 
 #endif

@@ -56,7 +56,7 @@ public:
   /// A hash value uniquely representing the project type.
   typedef std::size_t Index;
 
-  ~Project() override {}
+  ~Project() override = default;
 
   Index index() const override
   {
