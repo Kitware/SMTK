@@ -262,10 +262,10 @@ Collection Resource::findAs(const std::string& queryString) const
 template<typename QueryType>
 SMTKCORE_NO_EXPORT QueryType& queryForObject(const PersistentObject& object)
 {
-  auto resource = dynamic_cast<const Resource*>(&object);
+  const auto* resource = dynamic_cast<const Resource*>(&object);
   if (!resource)
   {
-    const auto component = dynamic_cast<const Component*>(&object);
+    const auto* const component = dynamic_cast<const Component*>(&object);
     if (component)
     {
       resource = component->resource().get();

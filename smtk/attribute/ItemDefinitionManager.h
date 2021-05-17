@@ -87,7 +87,7 @@ public:
   /// resource.
   bool registerDefinitionsTo(smtk::attribute::Resource::Ptr& resource) const
   {
-    for (auto& registerFunction : m_registerFunctions)
+    for (const auto& registerFunction : m_registerFunctions)
     {
       registerFunction.second(*resource);
     }
@@ -154,7 +154,7 @@ public:
     if (auto manager = m_manager.lock())
     {
       // ...remove the definition from all of its attribute resources.
-      for (auto resource : manager->find<smtk::attribute::Resource>())
+      for (const auto& resource : manager->find<smtk::attribute::Resource>())
       {
         resource->customItemDefinitionFactory().unregisterType<CustomDefinitionType>();
       }

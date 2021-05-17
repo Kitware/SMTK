@@ -43,7 +43,7 @@ protected:
       case Qt::Key_Enter:
       case Qt::Key_Return:
       {
-        auto sm = QTreeView::selectionModel();
+        auto* sm = QTreeView::selectionModel();
         emit showDialog(sm->currentIndex());
       }
       break;

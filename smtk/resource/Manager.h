@@ -333,7 +333,7 @@ std::set<smtk::shared_ptr<ResourceType>> Manager::find()
 {
   Resource::Index index(typeid(ResourceType).hash_code());
   std::set<Resource::Index> validIndices;
-  for (auto& metadatum : m_metadata)
+  for (const auto& metadatum : m_metadata)
   {
     if (metadatum.m_parentIndices.find(index) != metadatum.m_parentIndices.end())
     {
@@ -347,7 +347,7 @@ std::set<smtk::shared_ptr<ResourceType>> Manager::find()
     ScopedLockGuard guard(m_lock, LockType::Read);
     typedef Container::index<IndexTag>::type ResourcesByIndex;
     ResourcesByIndex& resources = m_resources.get<IndexTag>();
-    for (auto& idx : validIndices)
+    for (const auto& idx : validIndices)
     {
       auto resourceItRange = resources.equal_range(idx);
       for (auto& it = resourceItRange.first; it != resourceItRange.second; ++it)

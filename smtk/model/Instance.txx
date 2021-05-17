@@ -127,7 +127,7 @@ Container Instance::divide(bool merge, Container* clonesIncluded)
     std::set<int> taken;
     Container tmp;
     this->divideMapInternal(*this, taken, merge, output, clonesIncluded);
-    auto tess = this->generateTessellation();
+    auto* tess = this->generateTessellation();
     std::size_t size = static_cast<std::size_t>(tess->coords().size() / 3);
 
     std::vector<int> untaken;

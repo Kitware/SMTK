@@ -351,7 +351,7 @@ std::set<std::shared_ptr<ProjectType>> Manager::find()
 {
   std::set<std::shared_ptr<Project>> tmp = this->find(smtk::common::typeName<ProjectType>());
   std::set<std::shared_ptr<ProjectType>> projects;
-  for (auto& project : tmp)
+  for (const auto& project : tmp)
   {
     projects.insert(std::static_pointer_cast<ProjectType>(project));
   }

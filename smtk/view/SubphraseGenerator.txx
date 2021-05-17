@@ -40,7 +40,7 @@ int SubphraseGenerator::IndexFromTitle(const std::string& title, const T& phrase
 {
   // TODO: Use bisection to speed this up.
   int ii = 0;
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     if (title < phrase->title())
     {

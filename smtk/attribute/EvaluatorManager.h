@@ -77,7 +77,7 @@ public:
   // Explicitly add the contained Evaluator types to an attribute resource.
   bool registerEvaluatorsTo(smtk::attribute::Resource::Ptr& resource) const
   {
-    for (auto& registerFunction : m_registerFunctions)
+    for (const auto& registerFunction : m_registerFunctions)
     {
       registerFunction.second(*resource);
     }
@@ -144,7 +144,7 @@ public:
     // If there is an associated resource manager...
     if (auto manager = m_manager.lock())
     {
-      for (auto resource : manager->find<smtk::attribute::Resource>())
+      for (const auto& resource : manager->find<smtk::attribute::Resource>())
       {
         // ...remove the Evaluator from all of its attribute resources.
         resource->evaluatorFactory().unregisterEvaluator<EvaluatorType>();

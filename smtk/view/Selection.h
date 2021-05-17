@@ -288,7 +288,7 @@ public:
   /// Visit every selected object with the given functor.
   void visitSelection(std::function<void(Object::Ptr, int)> visitor)
   {
-    for (auto entry : m_selection)
+    for (const auto& entry : m_selection)
     {
       visitor(entry.first, entry.second);
     }
@@ -354,7 +354,7 @@ T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
 {
   if (exactMatch)
   {
-    for (auto entry : m_selection)
+    for (const auto& entry : m_selection)
     {
       if ((entry.second & value) == value)
       {
@@ -368,7 +368,7 @@ T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
   }
   else
   {
-    for (auto entry : m_selection)
+    for (const auto& entry : m_selection)
     {
       if (entry.second & value)
       {
@@ -442,13 +442,13 @@ bool Selection::modifySelection(
     if (!willErase.empty())
     {
       modified = true;
-      for (auto key : willErase)
+      for (const auto& key : willErase)
       {
         m_selection.erase(key);
       }
     }
   }
-  for (auto object : objects)
+  for (const auto& object : objects)
   {
     modified |= this->performAction(object, value, action, suggestions, bitwise);
   }

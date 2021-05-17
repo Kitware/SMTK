@@ -265,7 +265,7 @@ public:
   bool disassociateAttributes(const T& attribPtrs)
   {
     bool removedAny = false;
-    for (auto attribPtr : attribPtrs)
+    for (const auto& attribPtr : attribPtrs)
     {
       removedAny |= this->disassociateAttribute(attribPtr->attributeResource(), attribPtr->id());
     }

@@ -39,7 +39,7 @@ public:
     auto rsrc = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(std::get<0>(in));
     if (rsrc)
     {
-      auto provider = new Geometry(rsrc);
+      auto* provider = new Geometry(rsrc);
       return GeometryPtr(provider);
     }
     throw std::invalid_argument("Not a VTK-session resource.");
