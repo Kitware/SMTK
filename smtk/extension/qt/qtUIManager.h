@@ -76,7 +76,7 @@ public:
   qtUIManager(
     const smtk::resource::ManagerPtr& resourceManager,
     const smtk::view::ManagerPtr& viewManager);
-  virtual ~qtUIManager();
+  ~qtUIManager() override;
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
   void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);

@@ -32,7 +32,7 @@ public:
 protected:
   DeleteMesh();
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   void generateSummary(smtk::operation::Operation::Result&) override;
 

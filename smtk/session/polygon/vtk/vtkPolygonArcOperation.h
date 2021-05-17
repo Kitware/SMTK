@@ -40,7 +40,7 @@ public:
 
 protected:
   vtkPolygonArcOperation();
-  virtual ~vtkPolygonArcOperation();
+  ~vtkPolygonArcOperation() override;
 
   vtkContourRepresentation* ArcRepresentation;
 

@@ -31,7 +31,7 @@ class HandlerValue : public HandlerItemDef
   //Q_OBJECT
 public:
   HandlerValue();
-  ~HandlerValue();
+  ~HandlerValue() override;
 
 protected:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override = 0;
@@ -58,7 +58,7 @@ class HandlerString : public HandlerValue
 {
 public:
   HandlerString();
-  ~HandlerString();
+  ~HandlerString() override;
 
 private:
   HandlerString(const HandlerString&) = delete;
@@ -79,7 +79,7 @@ class HandlerDouble : public HandlerValue
 {
 public:
   HandlerDouble() = default;
-  virtual ~HandlerDouble() = default;
+  ~HandlerDouble() override = default;
 
 private:
   HandlerDouble(const HandlerDouble&) = delete;
@@ -98,7 +98,7 @@ class HandlerInt : public HandlerValue
 {
 public:
   HandlerInt() = default;
-  ~HandlerInt() = default;
+  ~HandlerInt() override = default;
 
 private:
   HandlerInt(const HandlerInt&) = delete;

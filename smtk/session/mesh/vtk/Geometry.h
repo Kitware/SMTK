@@ -43,7 +43,7 @@ public:
   smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType>);
 
   Geometry(const std::shared_ptr<smtk::session::mesh::Resource>& parent);
-  virtual ~Geometry() = default;
+  ~Geometry() override = default;
 
   smtk::geometry::Resource::Ptr resource() const override;
   void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)

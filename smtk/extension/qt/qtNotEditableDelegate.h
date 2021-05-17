@@ -32,10 +32,11 @@ public:
 
 protected:
   bool editorEvent(QEvent*, QAbstractItemModel*, const QStyleOptionViewItem&, const QModelIndex&)
+    override
   {
     return false;
   }
-  QWidget* createEditor(QWidget*, const QStyleOptionViewItem&, const QModelIndex&) const
+  QWidget* createEditor(QWidget*, const QStyleOptionViewItem&, const QModelIndex&) const override
   {
     return nullptr;
   }

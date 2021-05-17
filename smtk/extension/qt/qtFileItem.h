@@ -73,7 +73,7 @@ public:
   ///\brief Factory method that can be registered with smtk::extension::qtUIManager
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtFileItem(const qtAttributeItemInfo& info);
-  virtual ~qtFileItem();
+  ~qtFileItem() override;
   void setLabelVisible(bool) override;
 
   void enableFileBrowser(bool state = true);

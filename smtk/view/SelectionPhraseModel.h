@@ -32,7 +32,7 @@ public:
 
   SelectionPhraseModel();
   SelectionPhraseModel(const Configuration*, Manager*);
-  virtual ~SelectionPhraseModel();
+  ~SelectionPhraseModel() override;
 
   /// Return the root phrase of the hierarchy.
   DescriptivePhrasePtr root() const override;
@@ -43,7 +43,7 @@ public:
   int selectionBit() const { return m_selectionBit; }
 
 protected:
-  virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
+  void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
 
   void populateRoot(const std::string& src, Selection::Ptr seln);
 

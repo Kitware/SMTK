@@ -33,7 +33,7 @@ public:
   smtkTypeMacro(smtk::session::vtk::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
-  virtual ~Resource() {}
+  ~Resource() override {}
 
   const Session::Ptr& session() const { return m_session; }
   void setSession(const Session::Ptr&);

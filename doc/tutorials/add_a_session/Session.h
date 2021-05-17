@@ -55,7 +55,7 @@ public:
   typedef smtk::shared_ptr<Session> Ptr;
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   static SessionPtr create();
-  virtual ~Session();
+  ~Session() override;
   virtual SessionInfoBits allSupportedInformation() const;
 
   // These are specific to each session but required in some form:

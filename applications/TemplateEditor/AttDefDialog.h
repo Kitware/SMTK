@@ -30,7 +30,7 @@ class AttDefDialog : public InputDialog
 
 public:
   AttDefDialog(QWidget* parent = nullptr);
-  ~AttDefDialog();
+  ~AttDefDialog() override;
 
   void setBaseAttDef(smtk::attribute::DefinitionPtr def);
 

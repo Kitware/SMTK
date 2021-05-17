@@ -27,7 +27,7 @@ public:
   {
   }
 
-  ~AttDefTreeView() = default;
+  ~AttDefTreeView() override = default;
 
 signals:
   void showDialog(const QModelIndex&);

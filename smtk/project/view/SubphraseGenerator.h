@@ -28,7 +28,7 @@ public:
   smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
 
   SubphraseGenerator();
-  virtual ~SubphraseGenerator();
+  ~SubphraseGenerator() override;
 
   /// Return a list of descriptive phrases that elaborate upon \a src.
   smtk::view::DescriptivePhrases subphrases(smtk::view::DescriptivePhrase::Ptr src) override;

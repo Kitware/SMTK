@@ -81,7 +81,7 @@ struct Link : base_type
   {
   }
 
-  virtual ~Link() {}
+  ~Link() override {}
 
   id_type id;
   left_type left;

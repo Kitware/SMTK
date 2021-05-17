@@ -28,7 +28,7 @@ public:
 
 protected:
   vtkImageDual();
-  ~vtkImageDual();
+  ~vtkImageDual() override;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 

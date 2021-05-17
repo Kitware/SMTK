@@ -30,7 +30,7 @@ public:
   smtkTypeMacro(PointLocatorExtension);
   smtkSuperclassMacro(smtk::common::Extension);
   smtkSharedFromThisMacro(smtk::common::Extension);
-  virtual ~PointLocatorExtension();
+  ~PointLocatorExtension() override;
 
   /// Overwrites \a closestPoints with points on \a entity closest to
   /// \a sourcePoints. If \a snapToPoint, the nearest point explicitly defined

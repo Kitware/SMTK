@@ -32,7 +32,7 @@ public:
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::Operation);
 
-  virtual bool ableToOperate() override;
+  bool ableToOperate() override;
 
   static std::vector<std::string> importOperationsFromModule(const std::string&, Manager&);
 

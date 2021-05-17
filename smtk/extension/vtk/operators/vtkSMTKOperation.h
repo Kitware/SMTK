@@ -45,7 +45,7 @@ public:
 
 protected:
   vtkSMTKOperation();
-  virtual ~vtkSMTKOperation();
+  ~vtkSMTKOperation() override;
 
   std::weak_ptr<smtk::operation::Operation> m_smtkOp;
 

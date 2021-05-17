@@ -48,7 +48,7 @@ class PreviewPanel : public QDockWidget
 
 public:
   PreviewPanel(QWidget* parent, smtk::attribute::ResourcePtr resource);
-  ~PreviewPanel();
+  ~PreviewPanel() override;
 
 public slots:
   /**

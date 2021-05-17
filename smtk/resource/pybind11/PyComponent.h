@@ -36,7 +36,7 @@ class PyComponent : public Component
 {
 public:
   PyComponent() {}
-  virtual ~PyComponent() {}
+  ~PyComponent() override {}
 
   std::string typeName() const override { return m_typeName; }
   void setTypeName(const std::string& typeName) { m_typeName = typeName; }

@@ -36,7 +36,7 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
   {
   }
 
-  virtual std::array<double, 3> operator()(const smtk::resource::Component::Ptr& component) const
+  std::array<double, 3> operator()(const smtk::resource::Component::Ptr& component) const override
   {
     if (
       auto resource =
@@ -56,7 +56,7 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
     return smtk::geometry::RandomPoint::operator()(component);
   }
 
-  virtual void seed(std::size_t i) { m_seed = i; }
+  void seed(std::size_t i) override { m_seed = i; }
 
 private:
   std::size_t m_seed;

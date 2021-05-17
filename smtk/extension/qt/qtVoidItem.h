@@ -31,7 +31,7 @@ class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtVoidItem(const qtAttributeItemInfo& info);
-  virtual ~qtVoidItem();
+  ~qtVoidItem() override;
   void setLabelVisible(bool) override;
 
 public slots:

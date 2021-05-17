@@ -49,7 +49,7 @@ static int numDeleted = 0;
 class testItemWidgetFactory : public qtAttributeItemWidgetFactory
 {
 public:
-  virtual ~testItemWidgetFactory() { ++numDeleted; }
+  ~testItemWidgetFactory() override { ++numDeleted; }
 
   virtual qtItem* createValueItemWidget(const qtAttributeItemInfo& info)
   {

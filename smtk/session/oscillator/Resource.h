@@ -33,7 +33,7 @@ public:
   smtkTypeMacro(smtk::session::oscillator::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
-  virtual ~Resource() {}
+  ~Resource() override {}
 
   bool resetDomainTessellation(smtk::model::Volume& v);
 

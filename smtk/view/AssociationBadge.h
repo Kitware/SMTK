@@ -54,7 +54,7 @@ public:
   smtkTypeMacro(smtk::view::AssociationBadge);
   AssociationBadge();
   AssociationBadge(BadgeSet&, const Configuration::Component&);
-  virtual ~AssociationBadge();
+  ~AssociationBadge() override;
 
   /// This badge only applies to phrases with a persistent object that has an icon.
   bool appliesToPhrase(const DescriptivePhrase* phrase) const override;

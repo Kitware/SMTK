@@ -34,7 +34,7 @@ public:
 
   ResourcePhraseModel();
   ResourcePhraseModel(const Configuration*, Manager*);
-  virtual ~ResourcePhraseModel();
+  ~ResourcePhraseModel() override;
 
   static Ptr create(const Configuration*, Manager*);
 

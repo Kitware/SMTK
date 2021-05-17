@@ -30,7 +30,7 @@ public:
   smtkTypeMacro(AuxiliaryGeometryExtension);
   smtkSuperclassMacro(smtk::common::Extension);
   smtkSharedFromThisMacro(smtk::common::Extension);
-  virtual ~AuxiliaryGeometryExtension();
+  ~AuxiliaryGeometryExtension() override;
 
   /// Returns true (and sets \a bboxOut) if \a entity's tessellation can be created.
   virtual bool canHandleAuxiliaryGeometry(

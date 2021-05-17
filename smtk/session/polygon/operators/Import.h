@@ -50,7 +50,7 @@ public:
 protected:
   Import();
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
   int taggedPolyData2PolygonModelEntities(
     smtk::session::polygon::Resource::Ptr& resource,
     vtkIdTypeArray* tagInfo,

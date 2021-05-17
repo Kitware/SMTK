@@ -33,7 +33,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   template<typename T, typename U, typename V, typename W, typename X>
   bool splitEdgeAsNeeded(

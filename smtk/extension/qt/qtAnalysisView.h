@@ -59,9 +59,9 @@ public:
   /// \brief Factory method to create a qtAnalysisView from a smtk::view::Information
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtAnalysisView(const smtk::view::Information& info);
-  virtual ~qtAnalysisView();
+  ~qtAnalysisView() override;
 
-  virtual bool isValid() const override;
+  bool isValid() const override;
 
 public slots:
   /// \brief Slot used to update the UI when Analysis Attribute changes

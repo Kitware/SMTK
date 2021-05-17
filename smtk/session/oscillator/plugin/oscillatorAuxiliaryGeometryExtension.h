@@ -24,7 +24,7 @@ public:
   smtkTypeMacro(oscillatorAuxiliaryGeometryExtension);
   smtkCreateMacro(smtk::common::Extension);
   smtkSuperclassMacro(vtkAuxiliaryGeometryExtension);
-  virtual ~oscillatorAuxiliaryGeometryExtension();
+  ~oscillatorAuxiliaryGeometryExtension() override;
 
   /**\brief Implement the extension's API.
     *

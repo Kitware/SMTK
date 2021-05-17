@@ -24,7 +24,7 @@ public:
   static vtkSMTKSettings* New();
   vtkTypeMacro(vtkSMTKSettings, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  virtual ~vtkSMTKSettings();
+  ~vtkSMTKSettings() override;
 
   /**\brief Return the singleton.
    */

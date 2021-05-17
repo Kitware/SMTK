@@ -26,7 +26,7 @@ public:
 
 protected:
   vtkImageSpacingFlip();
-  ~vtkImageSpacingFlip();
+  ~vtkImageSpacingFlip() override;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 

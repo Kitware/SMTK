@@ -32,7 +32,7 @@ public:
   smtkSharedFromThisMacro(smtk::resource::Component);
 
   Selection(const smtk::mesh::CellSet&);
-  ~Selection();
+  ~Selection() override;
 
   static std::shared_ptr<Selection> create(const smtk::mesh::CellSet&);
   static std::shared_ptr<Selection> create(

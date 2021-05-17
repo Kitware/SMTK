@@ -35,7 +35,7 @@ public:
   pqSMTKPlaneItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKPlaneItemWidget();
+  ~pqSMTKPlaneItemWidget() override;
 
   static qtItem* createPlaneItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

@@ -34,9 +34,9 @@ namespace mesh
 struct SMTKMESHSESSION_EXPORT DistanceTo
   : public smtk::resource::query::DerivedFrom<DistanceTo, smtk::geometry::DistanceTo>
 {
-  virtual std::pair<double, std::array<double, 3>> operator()(
+  std::pair<double, std::array<double, 3>> operator()(
     const smtk::resource::Component::Ptr& component,
-    const std::array<double, 3>& sourcePoint) const
+    const std::array<double, 3>& sourcePoint) const override
   {
     if (
       auto resource =

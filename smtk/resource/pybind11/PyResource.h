@@ -136,7 +136,7 @@ class PyResource : public Resource
 public:
   PyResource() {}
 
-  virtual ~PyResource() {}
+  ~PyResource() override {}
 
   static std::shared_ptr<smtk::resource::Resource> create(
     std::string modulename, std::string className, smtk::resource::Resource::Index index)

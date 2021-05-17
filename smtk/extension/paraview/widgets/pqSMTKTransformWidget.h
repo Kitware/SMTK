@@ -24,7 +24,7 @@ public:
   pqSMTKTransformWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKTransformWidget();
+  ~pqSMTKTransformWidget() override;
 
   static qtItem* createTransformWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

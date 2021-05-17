@@ -36,7 +36,7 @@ public:
 
   TypeAndColorBadge();
   TypeAndColorBadge(smtk::view::BadgeSet&, const smtk::view::Configuration::Component&);
-  virtual ~TypeAndColorBadge();
+  ~TypeAndColorBadge() override;
 
   bool action(const DescriptivePhrase* phrase, const BadgeAction& act) override;
 };

@@ -45,7 +45,7 @@ public:
 
   MembershipBadge();
   MembershipBadge(smtk::view::BadgeSet&, const smtk::view::Configuration::Component&);
-  virtual ~MembershipBadge();
+  ~MembershipBadge() override;
 
   bool appliesToPhrase(const DescriptivePhrase*) const override { return true; }
 

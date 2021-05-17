@@ -27,7 +27,7 @@ public:
   smtkTypeMacro(smtk::mesh::moab::ModelEntityPointLocator);
   smtkCreateMacro(smtk::common::Extension);
   smtkSuperclassMacro(smtk::model::PointLocatorExtension);
-  virtual ~ModelEntityPointLocator();
+  ~ModelEntityPointLocator() override;
 
   /// Overwrites \a closestPoints with points on \a entity closest to \a sourcePoints.
   bool closestPointOn(

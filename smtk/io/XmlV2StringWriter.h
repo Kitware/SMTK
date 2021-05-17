@@ -41,9 +41,9 @@ class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
   XmlV2StringWriter(const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
-  virtual ~XmlV2StringWriter();
+  ~XmlV2StringWriter() override;
   std::string convertToString(bool no_declaration = false) override;
-  virtual std::string getString(std::size_t ith, bool no_declaration = false) override;
+  std::string getString(std::size_t ith, bool no_declaration = false) override;
 
   void generateXml() override;
 

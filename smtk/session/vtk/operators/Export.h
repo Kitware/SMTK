@@ -32,7 +32,7 @@ protected:
   virtual Result exportSLAC();
   virtual Result exportLabelMap();
 
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 };
 
 SMTKVTKSESSION_EXPORT bool exportResource(const smtk::resource::ResourcePtr&);

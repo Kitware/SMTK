@@ -36,7 +36,7 @@ public:
 
   ReferenceItemPhraseModel();
   ReferenceItemPhraseModel(const Configuration*, Manager*);
-  virtual ~ReferenceItemPhraseModel();
+  ~ReferenceItemPhraseModel() override;
 
   /**\brief Create a model and configure it given a view description.
     *

@@ -125,7 +125,7 @@ public:
     const smtk::common::UUID& uid,
     smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Resource(Resource&& rhs) = default;
-  virtual ~Resource();
+  ~Resource() override;
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;

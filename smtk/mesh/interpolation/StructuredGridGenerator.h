@@ -45,7 +45,7 @@ public:
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>::operator();
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>::valid;
 
-  virtual ~StructuredGridGenerator();
+  ~StructuredGridGenerator() override;
 };
 } // namespace mesh
 } // namespace smtk

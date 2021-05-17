@@ -29,7 +29,7 @@ class SMTKQTEXT_EXPORT qtResourceItem : public qtReferenceItem
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtResourceItem(const qtAttributeItemInfo& info);
-  virtual ~qtResourceItem();
+  ~qtResourceItem() override;
 
 protected:
   smtk::view::PhraseModelPtr createPhraseModel() const override;

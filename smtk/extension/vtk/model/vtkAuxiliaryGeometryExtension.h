@@ -28,7 +28,7 @@ public:
   smtkTypeMacro(vtkAuxiliaryGeometryExtension);
   smtkCreateMacro(smtk::common::Extension);
   smtkSuperclassMacro(smtk::model::AuxiliaryGeometryExtension);
-  virtual ~vtkAuxiliaryGeometryExtension();
+  ~vtkAuxiliaryGeometryExtension() override;
 
   /**\brief Implement the extension's API.
     *

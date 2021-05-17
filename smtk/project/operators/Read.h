@@ -33,7 +33,7 @@ public:
 protected:
   void markModifiedResources(Result&) override;
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 };
 
 SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);

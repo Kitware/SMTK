@@ -42,7 +42,7 @@ public:
   ArcMap(const ArcMap&) = delete;
   ArcMap& operator=(const ArcMap&) = delete;
 
-  ~ArcMap() = default;
+  ~ArcMap() override = default;
 };
 
 } // namespace graph

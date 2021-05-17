@@ -34,7 +34,7 @@ public:
   smtkCreateMacro(VTKMeshCellSelection);
   smtkSharedFromThisMacro(smtk::view::RespondToVTKSelection);
   smtkSuperclassMacro(smtk::view::RespondToVTKSelection);
-  virtual ~VTKMeshCellSelection();
+  ~VTKMeshCellSelection() override;
 
 protected:
   VTKMeshCellSelection();

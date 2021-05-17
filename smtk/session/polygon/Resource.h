@@ -37,7 +37,7 @@ public:
   smtkTypeMacro(smtk::session::polygon::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
-  virtual ~Resource() {}
+  ~Resource() override {}
 
   void setSession(const Session::Ptr&);
 

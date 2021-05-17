@@ -20,7 +20,7 @@ class ModelViewer : public QWidget
   Q_OBJECT
 public:
   ModelViewer(QWidget* parent = nullptr);
-  virtual ~ModelViewer();
+  ~ModelViewer() override;
 
 protected:
   class Internals;

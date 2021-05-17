@@ -65,7 +65,7 @@ class SMTK_ALWAYS_EXPORT Client
 {
 public:
   static std::shared_ptr<ClientBase> create();
-  virtual ~Client() {}
+  ~Client() override {}
 
 private:
   Client()
@@ -85,7 +85,7 @@ class SMTK_ALWAYS_EXPORT Client
 {
 public:
   static std::shared_ptr<ClientBase> create();
-  virtual ~Client() {}
+  ~Client() override {}
 
 protected:
   Client()
@@ -104,7 +104,7 @@ public:
   {
   }
 
-  virtual ~Client() {}
+  ~Client() override {}
 };
 
 #endif

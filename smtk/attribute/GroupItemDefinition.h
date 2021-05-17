@@ -151,7 +151,7 @@ public:
 
 protected:
   GroupItemDefinition(const std::string& myname);
-  virtual void applyCategories(
+  void applyCategories(
     const smtk::attribute::Categories& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(

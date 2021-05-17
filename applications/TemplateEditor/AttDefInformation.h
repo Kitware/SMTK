@@ -34,7 +34,7 @@ class AttDefInformation : public QWidget
 
 public:
   AttDefInformation(QWidget* parent = nullptr);
-  ~AttDefInformation();
+  ~AttDefInformation() override;
 
 public slots:
   /**

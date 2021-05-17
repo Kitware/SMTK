@@ -343,7 +343,7 @@ public:
 
 protected:
   vtkSMTKResourceRepresentation();
-  ~vtkSMTKResourceRepresentation();
+  ~vtkSMTKResourceRepresentation() override;
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
   void SetupDefaults();

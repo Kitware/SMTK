@@ -30,7 +30,7 @@ public:
   smtkTypeMacroBase(smtk::common::Managers);
   smtkCreateMacro(Managers);
 
-  virtual ~Managers();
+  ~Managers() override;
 
 protected:
   Managers();

@@ -40,7 +40,7 @@ class SMTKQTEXT_EXPORT VisibilityBadge
   Q_OBJECT
 public:
   VisibilityBadge();
-  virtual ~VisibilityBadge();
+  ~VisibilityBadge() override;
 };
 } // namespace qt
 } // namespace extension

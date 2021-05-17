@@ -46,7 +46,7 @@ public:
 
   ComponentPhraseModel();
   ComponentPhraseModel(const Configuration*, Manager* mgr);
-  virtual ~ComponentPhraseModel();
+  ~ComponentPhraseModel() override;
 
   /// Return the root phrase of the hierarchy.
   DescriptivePhrasePtr root() const override;

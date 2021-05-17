@@ -38,7 +38,7 @@ class ItemDefDialog : public InputDialog
 
 public:
   ItemDefDialog(QWidget* parent = nullptr);
-  ~ItemDefDialog();
+  ~ItemDefDialog() override;
 
   /**
    * Set the ItemDefinition to Show or Edit.

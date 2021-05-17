@@ -54,7 +54,7 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
   typedef smtk::model::SessionInfoBits SessionInfoBits;
-  virtual ~Session();
+  ~Session() override;
 
   SessionInfoBits allSupportedInformation() const override;
 

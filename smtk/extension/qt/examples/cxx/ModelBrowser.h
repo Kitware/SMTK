@@ -32,7 +32,7 @@ class ModelBrowser : public QWidget
   Q_OBJECT
 public:
   ModelBrowser(QWidget* parent = nullptr);
-  virtual ~ModelBrowser();
+  ~ModelBrowser() override;
 
   QTreeView* tree() const;
 

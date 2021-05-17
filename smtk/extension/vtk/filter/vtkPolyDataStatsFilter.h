@@ -52,7 +52,7 @@ public:
 
 protected:
   vtkPolyDataStatsFilter();
-  ~vtkPolyDataStatsFilter();
+  ~vtkPolyDataStatsFilter() override;
 
   double AreaStats[3];
   double GeometryBounds[6];

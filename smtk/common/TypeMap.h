@@ -280,7 +280,7 @@ public:
     insertTypes<List>();
   }
 
-  ~TypeMap() {}
+  ~TypeMap() override {}
 
 protected:
   template<typename Type>

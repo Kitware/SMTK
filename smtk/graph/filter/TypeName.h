@@ -46,9 +46,9 @@ struct TypeName
   class Rule : public smtk::resource::filter::Rule
   {
   public:
-    virtual ~Rule() = default;
+    ~Rule() override = default;
 
-    virtual bool operator()(const smtk::resource::PersistentObject& object) const
+    bool operator()(const smtk::resource::PersistentObject& object) const override
     {
       return (object.typeName() == value);
     }
@@ -59,9 +59,9 @@ struct TypeName
   class RegexRule : public smtk::resource::filter::Rule
   {
   public:
-    virtual ~RegexRule() = default;
+    ~RegexRule() override = default;
 
-    virtual bool operator()(const smtk::resource::PersistentObject& object) const
+    bool operator()(const smtk::resource::PersistentObject& object) const override
     {
       return std::regex_match(object.typeName(), std::regex(value));
     }

@@ -35,7 +35,7 @@ public:
 
 protected:
   AbstractDataModel(QObject* parent_ = nullptr);
-  virtual ~AbstractDataModel();
+  ~AbstractDataModel() override;
 
   /**
   * @{

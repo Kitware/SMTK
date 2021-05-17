@@ -34,7 +34,7 @@ public:
 protected:
   Result operateInternal() override;
   Specification createSpecification() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
   void markModifiedResources(Result&) override;
 };
 } // namespace mesh

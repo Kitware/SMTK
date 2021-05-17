@@ -43,7 +43,7 @@ public:
   smtkCreateMacro(RespondToVTKSelection);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
-  virtual ~RespondToVTKSelection();
+  ~RespondToVTKSelection() override;
 
   /**\brief Set/get the interaction mode.
     *

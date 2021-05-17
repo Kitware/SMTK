@@ -38,7 +38,7 @@ public:
   using ItemDefElement = DataModelElement<smtk::attribute::ItemDefinitionPtr>;
 
   ItemDefDataModel(QObject* parent = nullptr);
-  ~ItemDefDataModel();
+  ~ItemDefDataModel() override;
 
   /**
    * Appends a branch of ItemDefinition instances contained in a Definition

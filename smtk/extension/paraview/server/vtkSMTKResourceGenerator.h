@@ -27,7 +27,7 @@ public:
 
 protected:
   vtkSMTKResourceGenerator() = default;
-  ~vtkSMTKResourceGenerator() = default;
+  ~vtkSMTKResourceGenerator() override = default;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 

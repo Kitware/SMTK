@@ -29,7 +29,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   /**\brief Return the parent instance of clones in the provided \a item.
     *

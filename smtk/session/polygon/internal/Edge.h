@@ -40,7 +40,7 @@ public:
   smtkTypeMacro(edge);
   smtkCreateMacro(edge);
   smtkSharedFromThisMacro(entity);
-  virtual ~edge() {}
+  ~edge() override {}
 
   std::size_t pointsSize() const { return m_points.size(); }
 

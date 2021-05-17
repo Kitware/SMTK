@@ -23,7 +23,7 @@ class HandlerGroup : public HandlerItemDef
 {
 public:
   HandlerGroup();
-  virtual ~HandlerGroup();
+  ~HandlerGroup() override;
 
 private:
   HandlerGroup(const HandlerGroup&) = delete;

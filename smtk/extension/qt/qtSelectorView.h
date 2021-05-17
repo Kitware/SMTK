@@ -55,7 +55,7 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtSelectorView(const smtk::view::Information& info);
-  virtual ~qtSelectorView();
+  ~qtSelectorView() override;
 
   void getChildView(const std::string& viewType, QList<qtBaseView*>& views);
   qtBaseView* getChildView(int pageIndex);

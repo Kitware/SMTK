@@ -43,7 +43,7 @@ class SMTKQTEXT_EXPORT qtInfixExpressionEditor : public qtItem
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtInfixExpressionEditor(const qtAttributeItemInfo& info);
-  virtual ~qtInfixExpressionEditor() override;
+  ~qtInfixExpressionEditor() override;
 
   void setLabelVisible(bool) override;
   bool isFixedWidth() const override;

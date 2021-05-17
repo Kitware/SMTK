@@ -32,7 +32,7 @@ class InputDialog : public QDialog
 
 public:
   InputDialog(QWidget* parent = nullptr);
-  ~InputDialog();
+  ~InputDialog() override;
 
   QWidget* centralWidget();
 

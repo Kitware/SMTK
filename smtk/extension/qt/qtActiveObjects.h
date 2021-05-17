@@ -60,7 +60,7 @@ private slots:
 
 protected:
   qtActiveObjects();
-  virtual ~qtActiveObjects();
+  ~qtActiveObjects() override;
 
   smtk::model::Model m_activeModel;
   std::weak_ptr<smtk::extension::qtSelectionManager> m_selectionMgr;

@@ -35,7 +35,7 @@ public:
   using AttDefElement = DataModelElement<smtk::attribute::DefinitionPtr>;
 
   AttDefDataModel(QObject* parent = nullptr);
-  ~AttDefDataModel();
+  ~AttDefDataModel() override;
 
   /**
    * Populates the attribute definition tree.

@@ -67,7 +67,7 @@ public:
 
 protected:
   vtkCmbLayeredConeSource();
-  ~vtkCmbLayeredConeSource();
+  ~vtkCmbLayeredConeSource() override;
 
   vtkSmartPointer<vtkPolyData> CreateLayer(
     double h,

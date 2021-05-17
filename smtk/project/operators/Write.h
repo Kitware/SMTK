@@ -34,7 +34,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 };
 
 SMTKCORE_EXPORT bool write(const smtk::resource::ResourcePtr&);

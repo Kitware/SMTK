@@ -26,7 +26,7 @@ class SMTKCORE_EXPORT XmlDocV4Parser : public XmlDocV3Parser
 {
 public:
   XmlDocV4Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
-  virtual ~XmlDocV4Parser();
+  ~XmlDocV4Parser() override;
 
   void process(pugi::xml_document& doc) override;
   void process(pugi::xml_node& rootNode) override;

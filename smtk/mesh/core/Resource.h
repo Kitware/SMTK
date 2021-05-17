@@ -99,7 +99,7 @@ public:
     return smtk::static_pointer_cast<Resource>(shared);
   }
 
-  ~Resource();
+  ~Resource() override;
 
   resource::ComponentPtr find(const common::UUID& compId) const override;
   std::function<bool(const resource::Component&)> queryOperation(const std::string&) const override;

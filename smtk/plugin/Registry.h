@@ -326,7 +326,7 @@ public:
     return tmp != nullptr && tmp->contains(m);
   }
 
-  virtual ~Registry() {}
+  ~Registry() override {}
 
   typedef int DoNotRegisterDependencies;
 
@@ -383,7 +383,7 @@ public:
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
 
-  virtual ~Registry() {}
+  ~Registry() override {}
 
   template<typename M>
   bool contains(const std::shared_ptr<M>& m)
@@ -431,7 +431,7 @@ public:
   {
   }
 
-  virtual ~Registry() {}
+  ~Registry() override {}
 };
 
 #endif

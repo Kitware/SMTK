@@ -45,7 +45,7 @@ public:
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>::operator();
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>::valid;
 
-  virtual ~PointCloudGenerator();
+  ~PointCloudGenerator() override;
 };
 } // namespace mesh
 } // namespace smtk

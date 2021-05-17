@@ -54,7 +54,7 @@ public:
   qtReferenceItemEditor(const qtAttributeItemInfo& info);
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
-  virtual ~qtReferenceItemEditor();
+  ~qtReferenceItemEditor() override;
   void markForDeletion() override;
 
   virtual std::string selectionSourceName() { return m_selectionSourceName; }

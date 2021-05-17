@@ -40,7 +40,7 @@ class SMTKQTEXT_EXPORT qtInputsItem : public qtItem
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtInputsItem(const qtAttributeItemInfo& info);
-  virtual ~qtInputsItem();
+  ~qtInputsItem() override;
   void setLabelVisible(bool) override;
   void unsetValue(int elementIndex);
   bool setDiscreteValue(int elementIndex, int discreteValIndex);

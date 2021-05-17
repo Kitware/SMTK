@@ -18,7 +18,7 @@ class HandlerVoid : public HandlerItemDef
 {
 public:
   HandlerVoid() = default;
-  ~HandlerVoid() = default;
+  ~HandlerVoid() override = default;
 
 private:
   HandlerVoid(const HandlerVoid&) = delete;
@@ -44,7 +44,7 @@ class HandlerFile : public HandlerItemDef
 {
 public:
   HandlerFile() = default;
-  ~HandlerFile() = default;
+  ~HandlerFile() override = default;
 
 private:
   HandlerFile(const HandlerFile&) = delete;
@@ -64,7 +64,7 @@ class HandlerDirectory : public HandlerItemDef
 {
 public:
   HandlerDirectory() = default;
-  ~HandlerDirectory() = default;
+  ~HandlerDirectory() override = default;
 
 private:
   HandlerDirectory(const HandlerDirectory&) = delete;
@@ -83,7 +83,7 @@ class HandlerComponent : public HandlerItemDef
 {
 public:
   HandlerComponent() = default;
-  ~HandlerComponent() = default;
+  ~HandlerComponent() override = default;
 
 private:
   HandlerComponent(const HandlerComponent&) = delete;
@@ -102,7 +102,7 @@ class HandlerResource : public HandlerItemDef
 {
 public:
   HandlerResource() = default;
-  ~HandlerResource() = default;
+  ~HandlerResource() override = default;
 
 private:
   HandlerResource(const HandlerResource&) = delete;
@@ -121,7 +121,7 @@ class HandlerDateTime : public HandlerItemDef
 {
 public:
   HandlerDateTime() = default;
-  ~HandlerDateTime() = default;
+  ~HandlerDateTime() override = default;
 
 private:
   HandlerDateTime(const HandlerDateTime&) = delete;

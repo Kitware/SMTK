@@ -34,7 +34,7 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtGroupView(const smtk::view::Information& info);
-  virtual ~qtGroupView();
+  ~qtGroupView() override;
 
   qtBaseView* getChildView(int pageIndex);
 
@@ -44,8 +44,8 @@ public:
 
   //Returns true if the view does not contain any information to display - the default
   // behavior is to return false
-  virtual bool isEmpty() const override;
-  virtual bool isValid() const override;
+  bool isEmpty() const override;
+  bool isValid() const override;
   const QIcon& alertIcon() const;
 
 public slots:

@@ -62,7 +62,7 @@ public:
   {
   }
 
-  virtual ~ResourceLinkBase() {}
+  ~ResourceLinkBase() override {}
 };
 
 /// The ResourceLinks class is a resource-specific API for manipulating

@@ -49,7 +49,7 @@ class SMTKCORE_EXPORT TypeContainer
     {
     }
 
-    std::unique_ptr<Wrapper> clone() const
+    std::unique_ptr<Wrapper> clone() const override
     {
 #ifdef SMTK_HAVE_CXX_14
       return std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(*value));

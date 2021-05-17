@@ -37,7 +37,7 @@ class TemplateEditorMain : public QMainWindow
 
 public:
   TemplateEditorMain();
-  ~TemplateEditorMain();
+  ~TemplateEditorMain() override;
 
   /**
    * Load a template file to edit. This method is also used for commmand

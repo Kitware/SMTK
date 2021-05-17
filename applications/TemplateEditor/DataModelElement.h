@@ -26,7 +26,7 @@ class DataModelElement : public QTreeWidgetItem
 {
 public:
   DataModelElement(QTreeWidgetItem* parent = nullptr);
-  ~DataModelElement() = default;
+  ~DataModelElement() override = default;
 
   void setReferencedData(const T& data);
 

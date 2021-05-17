@@ -89,7 +89,7 @@ class PyOperation : public Operation
 {
 public:
   PyOperation() : Operation() {}
-  virtual ~PyOperation() {}
+  ~PyOperation() override {}
 
   static std::shared_ptr<smtk::operation::Operation> create(std::string modulename,
                                                             std::string className,

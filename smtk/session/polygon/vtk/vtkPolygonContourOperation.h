@@ -44,7 +44,7 @@ public:
 
 protected:
   vtkPolygonContourOperation();
-  virtual ~vtkPolygonContourOperation();
+  ~vtkPolygonContourOperation() override;
 
   vtkPolyData* ContourInput;
   double ImageBounds[6];

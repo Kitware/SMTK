@@ -38,7 +38,7 @@ class AttributeBrowser : public QDockWidget
 
 public:
   AttributeBrowser(QWidget* parent = nullptr);
-  ~AttributeBrowser();
+  ~AttributeBrowser() override;
 
   /**
    * Populate the UI with attribute definitions.

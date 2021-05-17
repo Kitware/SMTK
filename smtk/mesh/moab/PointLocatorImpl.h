@@ -39,7 +39,7 @@ public:
     std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates);
 
-  ~PointLocatorImpl();
+  ~PointLocatorImpl() override;
 
   smtk::mesh::HandleRange range() const override;
 
