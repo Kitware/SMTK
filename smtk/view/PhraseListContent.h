@@ -60,7 +60,7 @@ public:
     int mutability = 0,
     const DescriptivePhrases& children = DescriptivePhrases());
 
-  virtual ~PhraseListContent() {}
+  ~PhraseListContent() override = default;
 
   bool displayable(ContentType attr) const override;
   bool editable(ContentType attr) const override

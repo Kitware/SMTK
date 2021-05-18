@@ -37,7 +37,7 @@ public:
   smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  virtual ~Resource();
+  ~Resource() override;
 
   /// Given a backend, return a provider of geometry for that backend.
   ///

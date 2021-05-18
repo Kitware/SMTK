@@ -17,7 +17,7 @@ namespace polygon
 {
 
 Region::Region()
-  : m_seedFragment(-1)
+  : m_seedFragment(static_cast<FragmentId>(-1))
   , m_seedSense(true)
 {
 }

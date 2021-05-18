@@ -72,6 +72,9 @@ public:
   smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>);
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
+  Resource(const Resource& other) = delete;
+  Resource& operator=(const Resource& other) = delete;
+
   // typedef referring to the parent resource.
   typedef smtk::geometry::Resource ParentResource;
 
@@ -99,7 +102,7 @@ public:
     return smtk::static_pointer_cast<Resource>(shared);
   }
 
-  ~Resource();
+  ~Resource() override;
 
   resource::ComponentPtr find(const common::UUID& compId) const override;
   std::function<bool(const resource::Component&)> queryOperation(const std::string&) const override;
@@ -306,9 +309,6 @@ public:
   smtk::model::ResourcePtr modelResource() const { return m_modelResource.lock(); }
 
 private:
-  Resource(const Resource& other);            //blank since we are used by shared_ptr
-  Resource& operator=(const Resource& other); //blank since we are used by shared_ptr
-
   //Sets the location that this resource was loaded from
   void readLocation(const std::string& path)
   {

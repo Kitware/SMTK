@@ -28,7 +28,7 @@ class pqExportSimulationReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqExportSimulationReaction(QAction* parent);
 

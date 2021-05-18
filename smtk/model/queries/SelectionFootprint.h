@@ -44,7 +44,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
   ///
   /// Returns true if at least one persistent object was added to (or was already in)
   /// the \a footprint set — either \a selectedObject itself or some other object.
-  virtual bool operator()(
+  bool operator()(
     smtk::resource::PersistentObject& selectedObject,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const override

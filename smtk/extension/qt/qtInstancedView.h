@@ -38,7 +38,7 @@ public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
 
   qtInstancedView(const smtk::view::Information& info);
-  virtual ~qtInstancedView();
+  ~qtInstancedView() override;
   // Returns true if all attributes in the view are valid
   bool isValid() const override;
 

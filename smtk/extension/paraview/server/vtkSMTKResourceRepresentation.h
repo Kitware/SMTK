@@ -97,6 +97,9 @@ public:
   vtkTypeMacro(vtkSMTKResourceRepresentation, vtkPVDataRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkSMTKResourceRepresentation(const vtkSMTKResourceRepresentation&) = delete;
+  vtkSMTKResourceRepresentation& operator=(const vtkSMTKResourceRepresentation&) = delete;
+
   /// The visual state of a single component
   struct State
   {
@@ -343,7 +346,7 @@ public:
 
 protected:
   vtkSMTKResourceRepresentation();
-  ~vtkSMTKResourceRepresentation();
+  ~vtkSMTKResourceRepresentation() override;
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
   void SetupDefaults();
@@ -500,10 +503,6 @@ protected:
   vtkTimeStamp SelectionTime;
   /// Timestamp for when highlighting styles related to the selection were last applied.
   vtkTimeStamp ApplyStyleTime;
-
-private:
-  vtkSMTKResourceRepresentation(const vtkSMTKResourceRepresentation&) = delete;
-  void operator=(const vtkSMTKResourceRepresentation&) = delete;
 };
 
 #endif

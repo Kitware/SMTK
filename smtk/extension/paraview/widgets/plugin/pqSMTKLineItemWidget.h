@@ -35,7 +35,7 @@ public:
   pqSMTKLineItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKLineItemWidget();
+  ~pqSMTKLineItemWidget() override;
 
   static qtItem* createLineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

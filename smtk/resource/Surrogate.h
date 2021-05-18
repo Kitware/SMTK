@@ -41,7 +41,7 @@ public:
   /// Constructor for resolved resource
   Surrogate(const ResourcePtr&);
 
-  virtual ~Surrogate() {}
+  virtual ~Surrogate() = default;
 
   std::string typeName() const { return m_typeName; }
   Index index() const { return m_index; }

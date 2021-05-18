@@ -24,7 +24,10 @@ public:
   static vtkSMTKSettings* New();
   vtkTypeMacro(vtkSMTKSettings, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  virtual ~vtkSMTKSettings();
+  ~vtkSMTKSettings() override;
+
+  vtkSMTKSettings(const vtkSMTKSettings&) = delete;
+  vtkSMTKSettings& operator=(const vtkSMTKSettings&) = delete;
 
   /**\brief Return the singleton.
    */
@@ -92,9 +95,6 @@ protected:
   char* ProjectsRootFolder;
 
 private:
-  vtkSMTKSettings(const vtkSMTKSettings&) = delete;
-  void operator=(const vtkSMTKSettings&) = delete;
-
   static vtkSmartPointer<vtkSMTKSettings> Instance;
 };
 

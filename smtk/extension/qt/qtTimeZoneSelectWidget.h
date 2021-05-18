@@ -32,7 +32,7 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
   Q_OBJECT
 
 public:
-  qtTimeZoneSelectWidget(QWidget* parent = NULL);
+  qtTimeZoneSelectWidget(QWidget* parent = nullptr);
   ~qtTimeZoneSelectWidget() override;
 
   // Used to initialize model

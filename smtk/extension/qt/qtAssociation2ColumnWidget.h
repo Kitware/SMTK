@@ -35,7 +35,7 @@ class SMTKQTEXT_EXPORT qtAssociation2ColumnWidget : public qtAssociationWidget
 
 public:
   qtAssociation2ColumnWidget(QWidget* p, qtBaseView* view);
-  virtual ~qtAssociation2ColumnWidget();
+  ~qtAssociation2ColumnWidget() override;
   bool hasSelectedItem() override;
   // when register the instance with qtSelectionManager, also add the memory address.
   virtual std::string selectionSourceName() { return m_selectionSourceName; }

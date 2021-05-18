@@ -65,15 +65,10 @@ class SMTK_ALWAYS_EXPORT Client
 {
 public:
   static std::shared_ptr<ClientBase> create();
-  virtual ~Client() {}
+  ~Client() override = default;
 
 private:
-  Client()
-    : detail::Client<Registrar, Manager>()
-    , detail::Client<Registrar, T>()...
-    , ClientBase()
-  {
-  }
+  Client() = default;
 };
 
 #else
@@ -85,7 +80,7 @@ class SMTK_ALWAYS_EXPORT Client
 {
 public:
   static std::shared_ptr<ClientBase> create();
-  virtual ~Client() {}
+  ~Client() override = default;
 
 protected:
   Client()
@@ -99,12 +94,9 @@ template<typename Registrar>
 class SMTK_ALWAYS_EXPORT Client<Registrar, detail::Sentinel> : public ClientBase
 {
 public:
-  Client()
-    : ClientBase()
-  {
-  }
+  Client() = default;
 
-  virtual ~Client() {}
+  ~Client() override = default;
 };
 
 #endif

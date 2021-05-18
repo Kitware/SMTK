@@ -42,25 +42,27 @@ public:
 
   /// given a resource index, return whether or not this resource is or is
   /// derived from the resource described by the index.
-  virtual bool isOfType(const Resource::Index& index) const override
+  bool isOfType(const Resource::Index& index) const override
   {
     return DerivedFrom<Self, Parent>::type_index == index ? true : ParentResource::isOfType(index);
   }
 
   /// given a resource's unique name, return whether or not this resource is or
   /// is derived from the resource described by the name.
-  virtual bool isOfType(const std::string& typeName) const override
+  bool isOfType(const std::string& typeName) const override
   {
     return smtk::common::typeName<Self>() == typeName ? true : ParentResource::isOfType(typeName);
   }
 
-  virtual int numberOfGenerationsFromBase(const std::string& typeName) const override
+  int numberOfGenerationsFromBase(const std::string& typeName) const override
   {
     return (
       smtk::common::typeName<Self>() == typeName
         ? 0
         : 1 + ParentResource::numberOfGenerationsFromBase(typeName));
   }
+
+  DerivedFrom(const DerivedFrom&) = delete;
 
 protected:
   /// Forward all constructor arguments to the parent class.
@@ -74,8 +76,6 @@ protected:
     : Parent(std::move(rhs))
   {
   }
-
-  DerivedFrom(const DerivedFrom&) = delete;
 };
 
 template<typename Self, typename Parent>

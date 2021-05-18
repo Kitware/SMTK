@@ -59,12 +59,12 @@ class MeshSet;
       m_entity = src->id();                                                                        \
     }                                                                                              \
   }                                                                                                \
-  virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
+  ~thisclass() override = default; /* Avoid warnings about non-virtual destructor */               \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
   bool isValid(EntityPtr* entRec) const override                                                   \
   {                                                                                                \
     EntityPtr er;                                                                                  \
-    if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \
+    if (/* NB: EntityRef::isValid() may return true even when er == nullptr */                     \
         this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))          \
     {                                                                                              \
       if (entRec)                                                                                  \
@@ -116,7 +116,7 @@ public:
   EntityRef(ResourcePtr resource, const smtk::common::UUID& entityId);
   EntityRef(EntityPtr src);
   // Add a virtual destructor to avoid clang warnings on macos 10.14:
-  virtual ~EntityRef() {}
+  virtual ~EntityRef() = default;
 
   bool setResource(ResourcePtr resource);
   ResourcePtr resource();

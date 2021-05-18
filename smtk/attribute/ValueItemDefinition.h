@@ -48,7 +48,7 @@ public:
   const std::string& units() const { return m_units; }
   void setUnits(const std::string& newUnits) { m_units = newUnits; }
 
-  bool isDiscrete() const { return (m_discreteValueEnums.size() != 0); }
+  bool isDiscrete() const { return !m_discreteValueEnums.empty(); }
   std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
   const std::string& discreteEnum(std::size_t ith) const
   {
@@ -161,7 +161,7 @@ public:
   // Description:
   // Create an item definition based on a given idName. If an item
   // with that name already exists then return a shared_pointer
-  // that points to NULL.
+  // that points to nullptr.
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
   template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(

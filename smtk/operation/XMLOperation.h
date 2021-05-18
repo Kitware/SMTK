@@ -26,13 +26,13 @@ public:
   smtkTypeMacro(XMLOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  virtual ~XMLOperation();
+  ~XMLOperation() override;
 
 protected:
   XMLOperation();
 
   // Perform the actual operation and construct the result.
-  virtual Result operateInternal() override = 0;
+  Result operateInternal() override = 0;
 
   // Construct the operation's specification from the class's XML description.
   Specification createSpecification() override;

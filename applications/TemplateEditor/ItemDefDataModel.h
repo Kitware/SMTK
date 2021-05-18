@@ -38,27 +38,30 @@ public:
   using ItemDefElement = DataModelElement<smtk::attribute::ItemDefinitionPtr>;
 
   ItemDefDataModel(QObject* parent = nullptr);
-  ~ItemDefDataModel();
+  ~ItemDefDataModel() override;
+
+  ItemDefDataModel(const ItemDefDataModel&) = delete;
+  ItemDefDataModel& operator=(const ItemDefDataModel&) = delete;
 
   /**
-* Appends a branch of ItemDefinition instances contained in a Definition
-* to the data model's root node.  This method is used to populate the tree.
-*/
+   * Appends a branch of ItemDefinition instances contained in a Definition
+   * to the data model's root node.  This method is used to populate the tree.
+   */
   void appendBranchToRoot(smtk::attribute::DefinitionPtr def);
 
   /**
-* Query the internal data (ItemDefinitionPtr in this case) of a given index.
-*/
+   * Query the internal data (ItemDefinitionPtr in this case) of a given index.
+   */
   const smtk::attribute::ItemDefinitionPtr& get(const QModelIndex& index) const;
 
   /**
- * \brief Container for parameters to insert an item definition.
- * Holds the ItemDefinition itself, the Definition it belongs to and its
- * parent index in the tree.
- */
+   * \brief Container for parameters to insert an item definition.
+   * Holds the ItemDefinition itself, the Definition it belongs to and its
+   * parent index in the tree.
+   */
   struct Container
   {
-    Container(){};
+    Container() = default;
 
     smtk::attribute::ItemDefinitionPtr ItemDefinition;
     smtk::attribute::DefinitionPtr Definition;
@@ -66,15 +69,15 @@ public:
   };
 
   /**
-* Insert an ItemDefinition into an AttDef. It inserts as well a data element
-* into the tree defined by this data model.
-*/
+   * Insert an ItemDefinition into an AttDef. It inserts as well a data element
+   * into the tree defined by this data model.
+   */
   void insert(const Container& props);
 
   /**
-* Remove an ItemDef from an AttDef (and its corresponding data element in the
-* tree.
-*/
+   * Remove an ItemDef from an AttDef (and its corresponding data element in the
+   * tree.
+   */
   void remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
 
 protected:
@@ -108,9 +111,5 @@ protected:
    * could cause a crash).
    */
   void clearAttributes(smtk::attribute::DefinitionPtr def);
-
-private:
-  ItemDefDataModel(const ItemDefDataModel&) = delete;
-  void operator=(const ItemDefDataModel&) = delete;
 };
 #endif //__ItemDefDataModel_h

@@ -29,7 +29,7 @@ class SMTKCORE_EXPORT Backend
 {
 public:
   using index_t = std::size_t;
-  virtual ~Backend() {}
+  virtual ~Backend() = default;
 
   /// Index is a compile-time intrinsic of the derived backend. It is used for disambiguation of backends.
   virtual index_t index() const { return std::type_index(typeid(*this)).hash_code(); }

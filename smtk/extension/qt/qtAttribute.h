@@ -42,7 +42,7 @@ public:
     QWidget* parent,
     qtBaseView* view,
     bool createWidgetWhenEmpty = false);
-  virtual ~qtAttribute();
+  ~qtAttribute() override;
 
   ///\brief Return the SMTK attribute referenced by the instance
   smtk::attribute::AttributePtr attribute() const;

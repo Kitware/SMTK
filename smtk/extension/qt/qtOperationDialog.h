@@ -55,7 +55,7 @@ public:
     smtk::resource::ManagerPtr resourceManager,
     smtk::view::ManagerPtr viewManager,
     QWidget* parentWidget = nullptr);
-  virtual ~qtOperationDialog();
+  ~qtOperationDialog() override;
 
 signals:
   void operationExecuted(const smtk::operation::Operation::Result& result);

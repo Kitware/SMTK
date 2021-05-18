@@ -60,7 +60,7 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtModelEntityAttributeView(const smtk::view::Information& info);
-  virtual ~qtModelEntityAttributeView();
+  ~qtModelEntityAttributeView() override;
   const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& attDefinitionMap() const;
   void updateModelEntities();
   QTableWidgetItem* getSelectedItem();
@@ -112,14 +112,16 @@ class qModelEntityAttributeViewComboBoxItemDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
 public:
-  qModelEntityAttributeViewComboBoxItemDelegate(const QStringList& vals, QObject* parent = 0);
-  ~qModelEntityAttributeViewComboBoxItemDelegate();
+  qModelEntityAttributeViewComboBoxItemDelegate(const QStringList& vals, QObject* parent = nullptr);
+  ~qModelEntityAttributeViewComboBoxItemDelegate() override;
 
-  virtual QWidget*
-  createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-  virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
-  virtual void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
-    const;
+  QWidget* createEditor(
+    QWidget* parent,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& index) const override;
+  void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+  void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
+    const override;
 
 signals:
   void choiceMade();

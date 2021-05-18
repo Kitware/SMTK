@@ -28,7 +28,7 @@ class pqImportOperationReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqImportOperationReaction(QAction* parent);
 

@@ -88,8 +88,8 @@ namespace operation
 class PyOperation : public Operation
 {
 public:
-  PyOperation() : Operation() {}
-  virtual ~PyOperation() {}
+  PyOperation() = default;
+  ~PyOperation() override = default;
 
   static std::shared_ptr<smtk::operation::Operation> create(std::string modulename,
                                                             std::string className,

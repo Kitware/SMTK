@@ -51,6 +51,9 @@ public:
   vtkTypeMacro(vtkSMSMTKWrapperProxy, vtkSMProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkSMSMTKWrapperProxy(const vtkSMSMTKWrapperProxy&) = delete;
+  vtkSMSMTKWrapperProxy& operator=(const vtkSMSMTKWrapperProxy&) = delete;
+
   /// Return the client-side resource manager (mirrored on the server via this proxy).
   smtk::resource::ManagerPtr GetResourceManager() const;
 
@@ -123,10 +126,6 @@ protected:
   json JSONRPCRequest(const std::string& request);
   void JSONRPCNotification(const json& note);
   void JSONRPCNotification(const std::string& note);
-
-private:
-  vtkSMSMTKWrapperProxy(const vtkSMSMTKWrapperProxy&) = delete;
-  void operator=(const vtkSMSMTKWrapperProxy&) = delete;
 };
 
 #endif

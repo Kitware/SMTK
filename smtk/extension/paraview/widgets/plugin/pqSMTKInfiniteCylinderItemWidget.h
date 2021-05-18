@@ -36,7 +36,7 @@ public:
   pqSMTKInfiniteCylinderItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKInfiniteCylinderItemWidget();
+  ~pqSMTKInfiniteCylinderItemWidget() override;
 
   static qtItem* createCylinderItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

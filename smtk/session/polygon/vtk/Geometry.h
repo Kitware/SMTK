@@ -48,7 +48,7 @@ public:
   using PolyModel = internal::pmodel*;
 
   Geometry(const std::shared_ptr<smtk::session::polygon::Resource>& parent);
-  virtual ~Geometry() = default;
+  ~Geometry() override = default;
 
   smtk::geometry::Resource::Ptr resource() const override;
   void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)

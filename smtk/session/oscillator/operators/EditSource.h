@@ -43,7 +43,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   void assignName(smtk::model::Model& model, smtk::model::AuxiliaryGeometry& source);
 };

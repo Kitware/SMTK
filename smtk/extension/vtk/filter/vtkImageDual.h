@@ -26,15 +26,14 @@ public:
   static vtkImageDual* New();
   vtkTypeMacro(vtkImageDual, vtkImageAlgorithm);
 
+  vtkImageDual(const vtkImageDual&) = delete;
+  vtkImageDual& operator=(const vtkImageDual&) = delete;
+
 protected:
   vtkImageDual();
-  ~vtkImageDual();
+  ~vtkImageDual() override;
 
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-private:
-  vtkImageDual(const vtkImageDual&);   // Not implemented.
-  void operator=(const vtkImageDual&); // Not implemented.
 };
 
 #endif

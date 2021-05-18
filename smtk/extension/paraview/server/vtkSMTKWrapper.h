@@ -70,6 +70,9 @@ public:
   /// Create a new SMTK wrapper. There should usually be one per server-side process.
   static vtkSMTKWrapper* New();
 
+  vtkSMTKWrapper(const vtkSMTKWrapper&) = delete;
+  vtkSMTKWrapper& operator=(const vtkSMTKWrapper&) = delete;
+
   /// Set/get the pipeline source for the currently-active resource
   vtkSetObjectMacro(ActiveResource, vtkAlgorithmOutput);
   vtkGetObjectMacro(ActiveResource, vtkAlgorithmOutput);
@@ -161,10 +164,6 @@ protected:
   std::string SelectionSource;
   int HoveredValue;
   int SelectedValue;
-
-private:
-  vtkSMTKWrapper(const vtkSMTKWrapper&) = delete;
-  void operator=(const vtkSMTKWrapper&) = delete;
 };
 
 #endif

@@ -89,7 +89,7 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
   , m_sessions(new UUIDsToSessions)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
-  // TODO: throw() when topology == NULL?
+  // TODO: throw() when topology == nullptr?
   this->queries().registerQueries<QueryList>();
   this->properties().insertPropertyType<smtk::common::UUID>();
 }
@@ -103,7 +103,7 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
   , m_sessions(new UUIDsToSessions)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
-  // TODO: throw() when topology == NULL?
+  // TODO: throw() when topology == nullptr?
   this->queries().registerQueries<QueryList>();
   this->properties().insertPropertyType<smtk::common::UUID>();
 }
@@ -997,7 +997,7 @@ UUIDs Resource::entitiesOfDimension(int dim)
 }
 //@}
 
-/**\brief Return the smtk::model::Entity associated with \a uid (or NULL).
+/**\brief Return the smtk::model::Entity associated with \a uid (or nullptr).
   *
   * Note that even though const, this method may change the records in
   * \a m_topology when \a trySessions is true (as transcription may modify
@@ -1719,7 +1719,7 @@ bool Resource::unregisterSession(SessionPtr session, bool expungeSession)
   return m_sessions->erase(sessId) != 0;
 }
 
-/// Find a session given its session UUID (or NULL).
+/// Find a session given its session UUID (or nullptr).
 SessionPtr Resource::sessionData(const smtk::model::SessionRef& sessId) const
 {
   if (sessId.entity().isNull())
@@ -1892,7 +1892,7 @@ EntityRefArray Resource::findEntitiesOfType(BitFlags flags, bool exactMatch)
   * the integer-valued "_tessgen" property on \a cellId.
   * This property enables fast display updates when only a few
   * entity tessellations have changed.
-  * If \a generation is a non-NULL pointer (NULL is the default),
+  * If \a generation is a non-nullptr pointer (nullptr is the default),
   * then the new generation number of the Tessellation is stored at
   * the address provided.
   */
@@ -1949,7 +1949,7 @@ Resource::tess_iter_type Resource::setTessellation(
   * the integer-valued "_tessgen" property on \a cellId.
   * This property enables fast display updates when only a few
   * entity tessellations have changed.
-  * If \a generation is a non-NULL pointer (NULL is the default),
+  * If \a generation is a non-nullptr pointer (nullptr is the default),
   * then the new generation number of the Tessellation is stored at
   * the address provided.
   */
@@ -2396,7 +2396,7 @@ std::set<int> Resource::findCellHasUsesWithOrientation(const UUID& cellId, Orien
 }
 
 /**\brief Return the UUID of a use record for the
-  * given \a cell and \a sense, or NULL if it does not exist.
+  * given \a cell and \a sense, or nullptr if it does not exist.
   */
 UUID Resource::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orientation orient)
   const
@@ -2420,7 +2420,7 @@ UUID Resource::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orie
 }
 
 /**\brief Find a use record for the given \a cell and \a sense,
-  * creating one if it does not exist or replacing it if \a replacement is non-NULL.
+  * creating one if it does not exist or replacing it if \a replacement is non-nullptr.
   *
   */
 UUID Resource::findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -2459,7 +2459,7 @@ UUID Resource::findCreateOrReplaceCellUseOfSenseAndOrientation(
           break;
         }
         else if (!entity->relations()[itIdx] || !this->findEntity(entity->relations()[itIdx]))
-        { // The arrangement is valid but it references a NULL entity.
+        { // The arrangement is valid but it references a nullptr entity.
           arrIdx = arrCtr;
           break;
         }

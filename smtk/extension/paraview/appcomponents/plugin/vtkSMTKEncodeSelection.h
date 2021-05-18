@@ -43,6 +43,9 @@ public:
   static vtkSMTKEncodeSelection* New();
   vtkTypeMacro(vtkSMTKEncodeSelection, vtkPVEncodeSelectionForServer);
 
+  vtkSMTKEncodeSelection(const vtkSMTKEncodeSelection&) = delete;
+  vtkSMTKEncodeSelection& operator=(const vtkSMTKEncodeSelection&) = delete;
+
   bool ProcessSelection(
     vtkSelection* rawSelection,
     vtkSMRenderViewProxy* viewProxy,
@@ -72,10 +75,6 @@ protected:
     vtkSMRenderViewProxy* vtkNotUsed(viewProxy),
     int modifier,
     bool selectBlocks);
-
-private:
-  vtkSMTKEncodeSelection(const vtkSMTKEncodeSelection&) = delete;
-  void operator=(const vtkSMTKEncodeSelection&) = delete;
 };
 
 #endif // smtk_extension_paraview_appcomponents_vtkSMTKEncodeSelection_h

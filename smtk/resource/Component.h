@@ -40,7 +40,7 @@ public:
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  virtual ~Component();
+  ~Component() override;
   virtual const ResourcePtr resource() const = 0;
 
   Links& links() override { return m_links; }

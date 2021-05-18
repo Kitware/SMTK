@@ -48,7 +48,7 @@ public:
   {
   }
 
-  virtual ~qtEmittingStringBuffer() { sync(); }
+  ~qtEmittingStringBuffer() override { sync(); }
 
 protected:
   int sync() override

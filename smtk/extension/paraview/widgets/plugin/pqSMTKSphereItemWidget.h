@@ -28,7 +28,7 @@ public:
   pqSMTKSphereItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKSphereItemWidget();
+  ~pqSMTKSphereItemWidget() override;
 
   static qtItem* createSphereItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

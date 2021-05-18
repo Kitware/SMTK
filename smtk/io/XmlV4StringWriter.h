@@ -34,7 +34,7 @@ class SMTKCORE_EXPORT XmlV4StringWriter : public XmlV3StringWriter
 {
 public:
   XmlV4StringWriter(const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
-  virtual ~XmlV4StringWriter();
+  ~XmlV4StringWriter() override;
 
 protected:
   // Override methods

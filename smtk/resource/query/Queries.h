@@ -30,8 +30,8 @@ namespace query
 class SMTKCORE_EXPORT Queries
 {
 public:
-  Queries() {}
-  virtual ~Queries() {}
+  Queries() = default;
+  virtual ~Queries() = default;
 
   Queries(const Queries&) = delete;
   Queries(Queries&& rhs)

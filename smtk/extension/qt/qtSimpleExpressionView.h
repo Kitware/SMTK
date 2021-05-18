@@ -39,7 +39,7 @@ class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseAttributeView
   class SMTKQTEXT_EXPORT qtSimpleExpressionViewInternals
   {
   public:
-    qtSimpleExpressionViewInternals() { this->FunctionParserDescription = 0; }
+    qtSimpleExpressionViewInternals() { this->FunctionParserDescription = nullptr; }
 
     ~qtSimpleExpressionViewInternals();
 
@@ -68,7 +68,7 @@ class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseAttributeView
 public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtSimpleExpressionView(const smtk::view::Information& info);
-  virtual ~qtSimpleExpressionView();
+  ~qtSimpleExpressionView() override;
 
   void buildSimpleExpression(QString& funcExpr, QString& funcVals, int numberOfComponents);
   virtual void createNewFunction(smtk::attribute::DefinitionPtr attDef);

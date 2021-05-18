@@ -49,7 +49,7 @@ public:
   smtkTypeMacro(smtk::extension::vtk::geometry::Geometry);
   smtkSuperclassMacro(smtk::geometry::GeometryForBackend<DataType>);
   Geometry() = default;
-  virtual ~Geometry() = default;
+  ~Geometry() override = default;
 
   /// The contextual purpose of geometry supplied by the provider.
   enum Purpose

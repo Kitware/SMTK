@@ -47,7 +47,7 @@ namespace io
 class SMTKDELAUNAYEXT_EXPORT ExportDelaunayMesh
 {
 public:
-  ExportDelaunayMesh() {}
+  ExportDelaunayMesh() = default;
   ExportDelaunayMesh(const ExportDelaunayMesh&) = delete;
   ExportDelaunayMesh& operator=(const ExportDelaunayMesh&) = delete;
 

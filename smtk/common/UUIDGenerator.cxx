@@ -27,8 +27,8 @@ bool checkenv(const char* vname)
   return getenv(vname) != nullptr;
 #else
   char* buf; //allocated or assigned by _dupenv_s
-  const bool valid = (_dupenv_s(&buf, NULL, vname) == 0) && (buf != NULL);
-  free(buf); //perfectly valid to free a NULL pointer
+  const bool valid = (_dupenv_s(&buf, nullptr, vname) == 0) && (buf != nullptr);
+  free(buf); //perfectly valid to free a nullptr pointer
   return valid;
 #endif
 }

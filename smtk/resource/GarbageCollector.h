@@ -54,6 +54,9 @@ public:
   smtkCreateMacro(smtk::resource::GarbageCollector);
   virtual ~GarbageCollector();
 
+  GarbageCollector(const GarbageCollector&) = delete;
+  GarbageCollector& operator=(const GarbageCollector&) = delete;
+
   using WeakManagerPtr = smtk::operation::WeakManagerPtr;
   using Key = smtk::operation::Observers::Key;
   using ObserverMap = std::map<WeakManagerPtr, Key, std::owner_less<WeakManagerPtr>>;
@@ -70,8 +73,6 @@ protected:
   };
 
   GarbageCollector();
-  GarbageCollector(const GarbageCollector&) = delete;
-  GarbageCollector& operator=(const GarbageCollector&) = delete;
 
   int collectGarbage(
     const smtk::operation::Operation&,

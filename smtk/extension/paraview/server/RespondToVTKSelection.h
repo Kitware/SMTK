@@ -43,7 +43,7 @@ public:
   smtkCreateMacro(RespondToVTKSelection);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
-  virtual ~RespondToVTKSelection();
+  ~RespondToVTKSelection() override;
 
   /**\brief Set/get the interaction mode.
     *
@@ -146,7 +146,7 @@ protected:
   /// By default, only handle block selections by calling transcribeBlockSelection().
   Result operateInternal() override;
   /// Fail or succeed quietly.
-  void generateSummary(Operation::Result&) override{};
+  void generateSummary(Operation::Result&) override {}
 
   int m_interactionMode;
   ::vtkSelection* m_vtkSelection;

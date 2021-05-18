@@ -27,7 +27,7 @@ public:
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::Operation);
 
-  virtual bool ableToOperate() override;
+  bool ableToOperate() override;
 
 protected:
   ImportResource();

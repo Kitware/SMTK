@@ -378,7 +378,7 @@ int vtkSMTKArcRepresentation::ComputeInteractionState(int X, int Y, int modified
     int numPoints = this->GetNumberOfNodes();
     //Some times the focal point has no data with it.  This results in a
     //segfault in Superclass::ComputeInteractionState, since when there is
-    //no data, part of FocalPoint is NULL. there is no check on FocalPoint
+    //no data, part of FocalPoint is nullptr. there is no check on FocalPoint
     //in the superclass.
     for (int i = 0; i < numPoints; i++)
     {

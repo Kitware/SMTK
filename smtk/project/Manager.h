@@ -49,7 +49,7 @@ public:
     return smtk::shared_ptr<Manager>(new Manager(resourceManager, operationManager));
   }
 
-  virtual ~Manager() {}
+  virtual ~Manager() = default;
 
   /// Register a project identified by its class type, available resources and
   /// operations, and its version.

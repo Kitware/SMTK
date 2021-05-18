@@ -35,7 +35,7 @@ class SMTKQTEXT_EXPORT qtReferenceItem : public qtItem
 
 public:
   qtReferenceItem(const qtAttributeItemInfo& info);
-  virtual ~qtReferenceItem();
+  ~qtReferenceItem() override;
   void markForDeletion() override;
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
@@ -129,7 +129,7 @@ protected:
     */
   virtual smtk::view::PhraseModelPtr createPhraseModel() const;
 
-  virtual void createWidget() override;
+  void createWidget() override;
 
   virtual void clearWidgets();
   virtual void updateUI();

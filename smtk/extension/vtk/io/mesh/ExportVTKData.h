@@ -47,6 +47,9 @@ class SMTKIOVTK_EXPORT ExportVTKData
 public:
   explicit ExportVTKData();
 
+  ExportVTKData(const ExportVTKData& other) = delete;
+  ExportVTKData& operator=(const ExportVTKData& other) = delete;
+
   //Export a resource as a VTK xml polydata or xml unstructured grid file
   //(determined by the file name suffix .vtp or .vtu).
   bool operator()(
@@ -73,11 +76,6 @@ public:
     const smtk::mesh::MeshSet& meshset,
     vtkUnstructuredGrid* ug,
     std::string domainPropertyName = std::string()) const;
-
-private:
-  //both are blank since we currently don't want to support copy by value
-  ExportVTKData(const ExportVTKData& other);
-  ExportVTKData& operator=(const ExportVTKData& other);
 };
 } // namespace mesh
 } // namespace io

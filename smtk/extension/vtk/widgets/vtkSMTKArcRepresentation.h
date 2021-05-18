@@ -39,6 +39,9 @@ public:
   // Instantiate this class.
   static vtkSMTKArcRepresentation* New();
 
+  vtkSMTKArcRepresentation(const vtkSMTKArcRepresentation&) = delete;
+  vtkSMTKArcRepresentation& operator=(const vtkSMTKArcRepresentation&) = delete;
+
   // Description:
   // Standard methods for instances of this class.
   vtkTypeMacro(vtkSMTKArcRepresentation, vtkOrientedGlyphContourRepresentation);
@@ -145,9 +148,6 @@ protected:
   void UpdatePropertyMap(int index, int flags);
 
 private:
-  vtkSMTKArcRepresentation(const vtkSMTKArcRepresentation&); //Not implemented
-  void operator=(const vtkSMTKArcRepresentation&);           //Not implemented
-
   unsigned pointId;
 };
 

@@ -27,6 +27,9 @@ public:
   static vtkCmbLayeredConeSource* New();
   vtkTypeMacro(vtkCmbLayeredConeSource, vtkMultiBlockDataSetAlgorithm);
 
+  vtkCmbLayeredConeSource(const vtkCmbLayeredConeSource&) = delete;
+  vtkCmbLayeredConeSource& operator=(const vtkCmbLayeredConeSource&) = delete;
+
   void SetNumberOfLayers(int layers);
   int GetNumberOfLayers();
 
@@ -67,7 +70,7 @@ public:
 
 protected:
   vtkCmbLayeredConeSource();
-  ~vtkCmbLayeredConeSource();
+  ~vtkCmbLayeredConeSource() override;
 
   vtkSmartPointer<vtkPolyData> CreateLayer(
     double h,
@@ -95,9 +98,6 @@ protected:
   int GenerateEnds;
 
 private:
-  vtkCmbLayeredConeSource(const vtkCmbLayeredConeSource&);
-  void operator=(const vtkCmbLayeredConeSource&);
-
   void TriangulateEnd(
     const int innerRes,
     const int outerRes,

@@ -77,7 +77,7 @@ protected:
 
   virtual bool populateEdgeMap();
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
   void updateLoopVertices(const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW);

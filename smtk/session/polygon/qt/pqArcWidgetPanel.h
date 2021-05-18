@@ -38,7 +38,7 @@ struct PickInfo
   vtkIdType BlockIndex;
 
   PickInfo()
-    : port(NULL)
+    : port(nullptr)
     , EdgeId(smtk::common::UUID::null())
     , BlockIndex(-1)
   {
@@ -84,7 +84,7 @@ class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetPanel : public QWidget
   Q_OBJECT
 
 public:
-  explicit pqArcWidgetPanel(QWidget* parent = 0);
+  explicit pqArcWidgetPanel(QWidget* parent = nullptr);
   ~pqArcWidgetPanel() override;
 
   virtual void setView(pqRenderView* view) { this->View = view; }

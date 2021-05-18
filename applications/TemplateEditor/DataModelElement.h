@@ -26,29 +26,31 @@ class DataModelElement : public QTreeWidgetItem
 {
 public:
   DataModelElement(QTreeWidgetItem* parent = nullptr);
-  ~DataModelElement() = default;
+  ~DataModelElement() override = default;
+
+  DataModelElement(const DataModelElement&) = delete;
+  DataModelElement& operator=(const DataModelElement&) = delete;
 
   void setReferencedData(const T& data);
 
   /**
- * Get the actual underlying data referenced by this element in the
- * data model.
- */
+   * Get the actual underlying data referenced by this element in the
+   * data model.
+   */
   const T& getReferencedDataConst() const;
 
 private:
-  DataModelElement(const DataModelElement&) = delete;
-  void operator=(const DataModelElement&) = delete;
-
   /**
- * Copy of the underlying referenced data.
- */
+   * Copy of the underlying referenced data.
+   */
   T m_data;
 };
 
 template<typename T>
 DataModelElement<T>::DataModelElement(QTreeWidgetItem* parent)
-  : QTreeWidgetItem(parent){};
+  : QTreeWidgetItem(parent)
+{
+}
 
 template<typename T>
 void DataModelElement<T>::setReferencedData(const T& data)

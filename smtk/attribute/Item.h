@@ -227,10 +227,10 @@ public:
   virtual void detachOwningResource() {}
 
   /// This should be used only by attributes
-  void detachOwningAttribute() { m_attribute = NULL; }
+  void detachOwningAttribute() { m_attribute = nullptr; }
   /// This should only be called by the item that owns
   /// this one
-  void detachOwningItem() { m_owningItem = NULL; }
+  void detachOwningItem() { m_owningItem = nullptr; }
 
   /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
   /// Returns true if success and false if a problem occured

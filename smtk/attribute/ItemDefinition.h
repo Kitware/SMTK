@@ -64,7 +64,7 @@ public:
   virtual Item::Type type() const = 0;
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
-  const std::string& label() const { return (m_label != "" ? m_label : m_name); }
+  const std::string& label() const { return (!m_label.empty() ? m_label : m_name); }
 
   void setLabel(const std::string& newLabel) { m_label = newLabel; }
 

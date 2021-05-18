@@ -40,7 +40,7 @@ protected:
   virtual Result importSLAC(const smtk::session::vtk::Resource::Ptr&);
   virtual Result importLabelMap(const smtk::session::vtk::Resource::Ptr&);
 
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 
   std::vector<smtk::common::UUID> m_preservedUUIDs;
 };

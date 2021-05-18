@@ -37,7 +37,7 @@ public:
   smtkCreateMacro(smtk::model::Session);
   typedef smtk::model::SessionInfoBits SessionInfoBits;
 
-  virtual ~Session() {}
+  ~Session() override = default;
 
   void addTopology(Topology t) { m_topologies.push_back(t); }
   void addTopology(const std::shared_ptr<smtk::session::mesh::Resource>& modelResource, Topology t);

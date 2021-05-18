@@ -30,16 +30,16 @@ class AttDefDialog : public InputDialog
 
 public:
   AttDefDialog(QWidget* parent = nullptr);
-  ~AttDefDialog();
+  ~AttDefDialog() override;
 
   void setBaseAttDef(smtk::attribute::DefinitionPtr def);
 
   const AttDefContainer& getInputValues();
 
-private:
   AttDefDialog(const AttDefDialog&) = delete;
-  void operator=(const AttDefDialog&) = delete;
+  AttDefDialog& operator=(const AttDefDialog&) = delete;
 
+private:
   bool validate_impl() override;
 
   std::unique_ptr<Ui::AttDefDialog> Ui;

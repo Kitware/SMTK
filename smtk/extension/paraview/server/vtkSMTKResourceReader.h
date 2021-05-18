@@ -34,6 +34,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKResourceReader* New();
 
+  vtkSMTKResourceReader(const vtkSMTKResourceReader&) = delete;
+  vtkSMTKResourceReader& operator=(const vtkSMTKResourceReader&) = delete;
+
   /// Set/get the URL of the SMTK resource.
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
@@ -46,10 +49,6 @@ protected:
   ~vtkSMTKResourceReader() override;
 
   char* FileName;
-
-private:
-  vtkSMTKResourceReader(const vtkSMTKResourceReader&) = delete;
-  void operator=(const vtkSMTKResourceReader&) = delete;
 };
 
 #endif

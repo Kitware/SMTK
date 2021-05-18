@@ -1024,7 +1024,7 @@ model::Edge pmodel::createModelEdgeFromVertices(
     smtkErrorMacro(
       m_session->log(),
       "Detected either invalid Model Resource or at "
-      "least one of the vertices was NULL");
+      "least one of the vertices was nullptr");
     return smtk::model::Edge();
   }
 

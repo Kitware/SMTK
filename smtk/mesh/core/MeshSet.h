@@ -83,7 +83,7 @@ public:
   //append another MeshSet to this MeshSet.
   //If both MeshSets have valid parent pointers they must be to the same parent
   //for the append to occur.
-  //If the lhs MeshSet parent is NULL and the rhs parent isn't we will copy
+  //If the lhs MeshSet parent is nullptr and the rhs parent isn't we will copy
   //the rhs parent to be the lhs parent.
   //This is done so the following works:
   //

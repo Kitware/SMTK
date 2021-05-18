@@ -49,7 +49,7 @@ typedef std::unique_ptr<MeshIO> MeshIOPtr;
 class SMTKCORE_EXPORT MeshIO
 {
 public:
-  virtual ~MeshIO() {}
+  virtual ~MeshIO() = default;
 
   virtual smtk::mesh::ResourcePtr
   importMesh(const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const

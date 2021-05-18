@@ -26,7 +26,7 @@ class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
 {
 public:
   XmlDocV3Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
-  virtual ~XmlDocV3Parser();
+  ~XmlDocV3Parser() override;
   void process(pugi::xml_document& doc) override;
   void process(pugi::xml_node& rootNode) override;
 
@@ -46,9 +46,8 @@ protected:
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef)
     override;
 
-  virtual void processReferenceItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
-    override;
-  virtual void processReferenceDef(
+  void processReferenceItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item) override;
+  void processReferenceDef(
     pugi::xml_node& node,
     smtk::attribute::ReferenceItemDefinitionPtr idef,
     const std::string& labelsElement = "ReferenceLabels") override;

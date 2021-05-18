@@ -116,8 +116,8 @@ public:
       std::end(m_format.Extensions);
   }
 
-  virtual vtkSmartPointer<vtkDataObject> operator()(
-    const std::pair<std::string, std::string>&) override = 0;
+  vtkSmartPointer<vtkDataObject> operator()(const std::pair<std::string, std::string>&) override =
+    0;
 
 protected:
   ImportFormat m_format;
@@ -145,7 +145,7 @@ public:
     ImportAsVTKDataBase>::operator();
 
   ImportAsVTKData();
-  virtual ~ImportAsVTKData();
+  ~ImportAsVTKData() override;
 
   std::vector<ImportFormat> fileFormats() const override;
 

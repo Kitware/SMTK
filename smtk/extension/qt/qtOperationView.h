@@ -51,7 +51,7 @@ public:
   // {
   // }
 
-  OperationViewInfo() {}
+  OperationViewInfo() = default;
   smtk::operation::OperationPtr m_operator;
 };
 
@@ -70,7 +70,7 @@ public:
   }
 
   qtOperationView(const OperationViewInfo& info);
-  virtual ~qtOperationView();
+  ~qtOperationView() override;
 
   QPointer<QPushButton> applyButton() const;
   smtk::operation::OperationPtr operation() const;

@@ -24,7 +24,11 @@ public:
   smtkTypeMacro(oscillatorAuxiliaryGeometryExtension);
   smtkCreateMacro(smtk::common::Extension);
   smtkSuperclassMacro(vtkAuxiliaryGeometryExtension);
-  virtual ~oscillatorAuxiliaryGeometryExtension();
+  ~oscillatorAuxiliaryGeometryExtension() override;
+
+  oscillatorAuxiliaryGeometryExtension(const oscillatorAuxiliaryGeometryExtension&) = delete;
+  oscillatorAuxiliaryGeometryExtension& operator=(const oscillatorAuxiliaryGeometryExtension&) =
+    delete;
 
   /**\brief Implement the extension's API.
     *
@@ -58,11 +62,6 @@ protected:
   // Helper function for generateOscillatorRepresentation
   static vtkSmartPointer<vtkDataObject> generateOscillatorSourceRepresentation(
     const smtk::model::AuxiliaryGeometry& src);
-
-private:
-  oscillatorAuxiliaryGeometryExtension(
-    const oscillatorAuxiliaryGeometryExtension&);              // Not implemented.
-  void operator=(const oscillatorAuxiliaryGeometryExtension&); // Not implemented.
 };
 
 #endif

@@ -47,6 +47,9 @@ public:
 
   ~BufferedCellAllocator() override;
 
+  BufferedCellAllocator(const BufferedCellAllocator& other) = delete;
+  BufferedCellAllocator& operator=(const BufferedCellAllocator& other) = delete;
+
   bool reserveNumberOfCoordinates(std::size_t nCoordinates) override;
   bool setCoordinate(std::size_t coord, double* xyz) override;
 
@@ -82,11 +85,6 @@ protected:
   int m_nCoords;
   std::vector<std::int64_t> m_localConnectivity;
   ::moab::Range m_cells;
-
-private:
-  BufferedCellAllocator(const BufferedCellAllocator& other); //blank since we are used by shared_ptr
-  BufferedCellAllocator& operator=(
-    const BufferedCellAllocator& other); //blank since we are used by shared_ptr
 };
 
 template<typename IntegerType>

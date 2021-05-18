@@ -31,7 +31,10 @@ class HandlerValue : public HandlerItemDef
   //Q_OBJECT
 public:
   HandlerValue();
-  ~HandlerValue();
+  ~HandlerValue() override;
+
+  HandlerValue(const HandlerValue&) = delete;
+  HandlerValue& operator=(const HandlerValue&) = delete;
 
 protected:
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override = 0;
@@ -39,10 +42,6 @@ protected:
   bool initialize_impl(QWidget* parent) override;
 
   std::shared_ptr<Ui::ItemDefValueForm> Ui;
-
-private:
-  HandlerValue(const HandlerValue&) = delete;
-  void operator=(const HandlerValue&) = delete;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -58,12 +57,12 @@ class HandlerString : public HandlerValue
 {
 public:
   HandlerString();
-  ~HandlerString();
+  ~HandlerString() override;
+
+  HandlerString(const HandlerString&) = delete;
+  HandlerString& operator=(const HandlerString&) = delete;
 
 private:
-  HandlerString(const HandlerString&) = delete;
-  void operator=(const HandlerString&) = delete;
-
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -79,12 +78,12 @@ class HandlerDouble : public HandlerValue
 {
 public:
   HandlerDouble() = default;
-  virtual ~HandlerDouble() = default;
+  ~HandlerDouble() override = default;
+
+  HandlerDouble(const HandlerDouble&) = delete;
+  HandlerDouble& operator=(const HandlerDouble&) = delete;
 
 private:
-  HandlerDouble(const HandlerDouble&) = delete;
-  void operator=(const HandlerDouble&) = delete;
-
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;
@@ -98,12 +97,12 @@ class HandlerInt : public HandlerValue
 {
 public:
   HandlerInt() = default;
-  ~HandlerInt() = default;
+  ~HandlerInt() override = default;
+
+  HandlerInt(const HandlerInt&) = delete;
+  HandlerInt& operator=(const HandlerInt&) = delete;
 
 private:
-  HandlerInt(const HandlerInt&) = delete;
-  void operator=(const HandlerInt&) = delete;
-
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
   bool initialize_impl(QWidget* parent) override;

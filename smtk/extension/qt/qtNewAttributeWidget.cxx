@@ -27,7 +27,7 @@ class qtNewAttributeWidget::PIMPL : public Ui::qtNewAttributeWidget
 public:
   PIMPL(QWidget* parentW)
   {
-    this->BaseWidget = parentW ? qobject_cast<QComboBox*>(parentW) : NULL;
+    this->BaseWidget = parentW ? qobject_cast<QComboBox*>(parentW) : nullptr;
     ;
   }
   ~PIMPL() = default;
@@ -50,7 +50,7 @@ qtNewAttributeWidget::~qtNewAttributeWidget()
 
 void qtNewAttributeWidget::setBaseWidget(QWidget* widget)
 {
-  this->Private->BaseWidget = widget ? qobject_cast<QComboBox*>(widget) : NULL;
+  this->Private->BaseWidget = widget ? qobject_cast<QComboBox*>(widget) : nullptr;
   ;
 }
 

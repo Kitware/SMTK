@@ -33,8 +33,8 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual void generateSummary(Operation::Result&) override;
-  virtual const char* xmlDescription() const override;
+  void generateSummary(Operation::Result&) override;
+  const char* xmlDescription() const override;
 };
 } // namespace attribute
 } // namespace smtk

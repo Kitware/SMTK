@@ -58,7 +58,7 @@ public:
     int second = 0,
     int millisecond = 0)
   {
-    return this->setComponents(year, month, day, hour, minute, second, millisecond, NULL);
+    return this->setComponents(year, month, day, hour, minute, second, millisecond, nullptr);
   }
 
   // Returns each component WITH time zone conversion
@@ -80,7 +80,7 @@ public:
   components(int& year, int& month, int& day, int& hour, int& minute, int& second, int& millisecond)
     const
   {
-    return this->components(year, month, day, hour, minute, second, millisecond, NULL);
+    return this->components(year, month, day, hour, minute, second, millisecond, nullptr);
   }
 
   /// Indicates if instance represents valid datetime value

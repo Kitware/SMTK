@@ -47,7 +47,7 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
   };
 
   PointLocatorCache() = default;
-  ~PointLocatorCache() = default;
+  ~PointLocatorCache() override = default;
   PointLocatorCache(const PointLocatorCache&) = delete;
   PointLocatorCache(PointLocatorCache&& rhs)
     : m_caches(std::move(rhs.m_caches))
@@ -61,7 +61,8 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
     return *this;
   }
 
-  void synchronize(const smtk::operation::Operation&, const smtk::operation::Operation::Result&);
+  void synchronize(const smtk::operation::Operation&, const smtk::operation::Operation::Result&)
+    override;
 
   std::unordered_map<smtk::common::UUID, std::unique_ptr<CacheForIndex>> m_caches;
 };

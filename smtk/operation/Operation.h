@@ -181,7 +181,7 @@ protected:
   // called in this manner have valid inputs.
   struct Key
   {
-    explicit Key() {}
+    explicit Key() = default;
     Key(std::initializer_list<int>) {}
   };
 

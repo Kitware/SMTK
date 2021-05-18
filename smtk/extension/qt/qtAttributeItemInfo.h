@@ -45,8 +45,8 @@ public:
     QPointer<QWidget> parent,
     qtBaseView* bview);
 
-  qtAttributeItemInfo() {}
-  virtual ~qtAttributeItemInfo() {}
+  qtAttributeItemInfo() = default;
+  virtual ~qtAttributeItemInfo() = default;
 
   /// @{
   /// \brief Methods to set and retrieve the item to be used by the generated qtItem

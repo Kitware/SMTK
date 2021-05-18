@@ -59,7 +59,7 @@ public:
   pqSMTKPointItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKPointItemWidget();
+  ~pqSMTKPointItemWidget() override;
 
   static qtItem* createPointItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

@@ -43,7 +43,7 @@ public:
 
   Interface(const std::vector<smtk::mesh::json::MeshInfo>& info);
 
-  virtual ~Interface();
+  ~Interface() override;
 
   //returns if the underlying data has been modified since the mesh was loaded
   //from disk. If the mesh has no underlying file, it will always be considered
@@ -63,7 +63,7 @@ public:
   //are than assigned to an existing mesh or new mesh
   //
   //If the current interface is read-only, the AllocatorPtr that is returned
-  //will be NULL.
+  //will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
@@ -75,7 +75,7 @@ public:
   //cells that are than assigned to an existing mesh or new mesh.
   //
   //If the current interface is read-only, the BufferedCellAllocatorPtr that is
-  //returned will be NULL.
+  //returned will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
@@ -87,7 +87,7 @@ public:
   //cells that are than assigned to an existing mesh or new mesh.
   //
   //If the current interface is read-only, the IncrementalAllocatorPtr that is
-  //returned will be NULL.
+  //returned will be nullptr.
   //
   //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
@@ -180,13 +180,11 @@ public:
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz)
-    override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz) override;
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz)
-    override;
+  bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) override;
 
   std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const override;
 

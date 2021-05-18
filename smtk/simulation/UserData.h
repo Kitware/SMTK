@@ -49,7 +49,7 @@ public:
 
   void setValue(int val) { m_value = val; }
 
-  virtual ~UserDataInt();
+  ~UserDataInt() override;
 
 protected:
   UserDataInt();
@@ -69,7 +69,7 @@ public:
 
   void setValue(double val) { m_value = val; }
 
-  virtual ~UserDataDouble();
+  ~UserDataDouble() override;
 
 protected:
   UserDataDouble();
@@ -89,7 +89,7 @@ public:
 
   void setValue(const std::string& val) { m_value = val; }
 
-  virtual ~UserDataString();
+  ~UserDataString() override;
 
 protected:
   UserDataString();

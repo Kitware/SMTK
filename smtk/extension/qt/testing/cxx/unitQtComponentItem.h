@@ -19,7 +19,7 @@ class qtEventFilter : public QObject
 
 public:
   qtEventFilter(QObject* parent = nullptr);
-  virtual ~qtEventFilter();
+  ~qtEventFilter() override;
 
 signals:
   void reset();
@@ -28,7 +28,7 @@ signals:
   void popDown();
 
 protected:
-  bool eventFilter(QObject* src, QEvent* event);
+  bool eventFilter(QObject* src, QEvent* event) override;
 };
 
 #endif

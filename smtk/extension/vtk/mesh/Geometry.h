@@ -39,7 +39,7 @@ public:
   using DataType = Superclass::DataType;
 
   Geometry(const std::shared_ptr<smtk::mesh::Resource>& parent);
-  virtual ~Geometry() = default;
+  ~Geometry() override = default;
 
   smtk::geometry::Resource::Ptr resource() const override;
   void queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry)

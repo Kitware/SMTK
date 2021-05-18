@@ -468,7 +468,7 @@ bool EntityRef::isValid() const
   * create a Vertex entityref from a UUID referring to an EdgeUse. While
   * EntityRef::isValid() will return true, Vertex::isValid() will return false.
   *
-  * The optional \a entityRecord will be set when a non-NULL value is passed
+  * The optional \a entityRecord will be set when a non-nullptr value is passed
   * and the entity is valid.
   */
 bool EntityRef::isValid(EntityPtr* entityRecord) const
@@ -844,7 +844,7 @@ smtk::mesh::MeshSet EntityRef::meshTessellation() const
   return smtk::mesh::MeshSet();
 }
 
-/**\brief Return the entity's tessellation if one exists or NULL otherwise.
+/**\brief Return the entity's tessellation if one exists or nullptr otherwise.
   *
   */
 const Tessellation* EntityRef::hasTessellation() const
@@ -867,7 +867,7 @@ const Tessellation* EntityRef::hasTessellation() const
   return nullptr;
 }
 
-/**\brief Return the entity's analysis mesh if one exists or NULL otherwise.
+/**\brief Return the entity's analysis mesh if one exists or nullptr otherwise.
   *
   */
 const Tessellation* EntityRef::hasAnalysisMesh() const
@@ -884,7 +884,7 @@ const Tessellation* EntityRef::hasAnalysisMesh() const
 
 /**\brief Return the entity's analysis mesh if one exists,
   * otherwise return the entity's tessellation. If neither
-  * exist return NULL.
+  * exist return nullptr.
   *
   */
 const Tessellation* EntityRef::gotMesh() const
@@ -1506,14 +1506,14 @@ int EntityRef::numberOfArrangementsOfKind(ArrangementKind k) const
   return arr ? static_cast<int>(arr->size()) : 0;
 }
 
-/// Return the \a i-th arrangement of kind \a k (or NULL).
+/// Return the \a i-th arrangement of kind \a k (or nullptr).
 Arrangement* EntityRef::findArrangement(ArrangementKind k, int i)
 {
   ResourcePtr rsrc = m_resource.lock();
   return rsrc->findArrangement(m_entity, k, i);
 }
 
-/// Return the \a i-th arrangement of kind \a k (or NULL).
+/// Return the \a i-th arrangement of kind \a k (or nullptr).
 const Arrangement* EntityRef::findArrangement(ArrangementKind k, int i) const
 {
   ResourcePtr rsrc = m_resource.lock();
@@ -1754,7 +1754,7 @@ std::size_t entityrefHash(const EntityRef& c)
  *\brief Convert a set of UUIDs into a set of entityrefs referencing the same \a rsrc.
  *
  * Only valid entities are inserted into \a result.
- * This means that the UUID must be non-NULL **and** have a corresponding
+ * This means that the UUID must be non-nullptr **and** have a corresponding
  * entry in the model resource, \a rsrc, that matches the output container type
  * in order to appear in \a result.
  */
@@ -1763,7 +1763,7 @@ std::size_t entityrefHash(const EntityRef& c)
  *\brief Convert a set of entity references into just UUIDs.
  *
  * EntityRef entities in \a entRefs are **not** checked for validity before insertion;
- * however, only non-NULL UUIDs are inserted into \a result.
+ * however, only non-nullptr UUIDs are inserted into \a result.
  * (This means that cursors that do not have entries in the model resource will
  * still have their UUIDs added to the result.)
  */

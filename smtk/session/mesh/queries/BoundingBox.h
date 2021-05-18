@@ -32,7 +32,7 @@ namespace mesh
 struct SMTKMESHSESSION_EXPORT BoundingBox
   : public smtk::resource::query::DerivedFrom<BoundingBox, smtk::geometry::BoundingBox>
 {
-  virtual std::array<double, 6> operator()(const smtk::resource::PersistentObjectPtr& object) const
+  std::array<double, 6> operator()(const smtk::resource::PersistentObjectPtr& object) const override
   {
     smtk::session::mesh::Resource::Ptr resource =
       std::dynamic_pointer_cast<smtk::session::mesh::Resource>(object);

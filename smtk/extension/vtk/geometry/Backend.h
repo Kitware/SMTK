@@ -42,7 +42,7 @@ class VTKSMTKGEOMETRYEXT_EXPORT Backend : public smtk::geometry::Backend
 public:
   using format_t = vtkSmartPointer<vtkDataObject>;
 
-  virtual std::string name() const override { return "VTK"; }
+  std::string name() const override { return "VTK"; }
 };
 
 } // namespace geometry

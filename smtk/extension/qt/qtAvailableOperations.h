@@ -36,7 +36,7 @@ class SMTKQTEXT_EXPORT qtAvailableOperations : public QWidget
   Q_OBJECT
 public:
   qtAvailableOperations(QWidget* parent = nullptr);
-  virtual ~qtAvailableOperations();
+  ~qtAvailableOperations() override;
 
   smtk::view::AvailableOperationsPtr operationSource() const { return m_operationSource; }
   void setOperationSource(smtk::view::AvailableOperationsPtr avail);

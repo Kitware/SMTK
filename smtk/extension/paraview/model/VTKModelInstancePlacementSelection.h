@@ -41,7 +41,7 @@ public:
   smtkCreateMacro(VTKModelInstancePlacementSelection);
   smtkSharedFromThisMacro(smtk::view::RespondToVTKSelection);
   smtkSuperclassMacro(smtk::view::RespondToVTKSelection);
-  virtual ~VTKModelInstancePlacementSelection();
+  ~VTKModelInstancePlacementSelection() override;
 
 protected:
   VTKModelInstancePlacementSelection();

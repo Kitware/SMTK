@@ -38,7 +38,7 @@ public:
   smtkCreateMacro(pmodel);
   smtkSharedFromThisMacro(entity);
   pmodel();
-  ~pmodel();
+  ~pmodel() override;
 
   bool computeModelScaleAndNormal(
     std::vector<double>& origin,

@@ -47,7 +47,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
   /// This is a set of persistent objects that should be rendered as "selected"
   /// instead of the input \a selectedObject, usually because \a selectedObject
   /// has no visual representation itself.
-  virtual bool operator()(
+  bool operator()(
     smtk::resource::PersistentObject& selectedObject,
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const override

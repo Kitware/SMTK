@@ -39,7 +39,7 @@ class SMTKPOLYGONQTEXT_EXPORT pqPolygonArc : public QObject
 public:
   //Description: Default constructor that than
   //needs createArc called on once its input for arc shape is created
-  pqPolygonArc(QObject* parent = 0);
+  pqPolygonArc(QObject* parent = nullptr);
 
   ~pqPolygonArc() override;
 

@@ -26,7 +26,7 @@ class pqNewProjectReaction : public pqReaction
 
 public:
   /**
-  * Constructor. Parent cannot be NULL.
+  * Constructor. Parent cannot be nullptr.
   */
   pqNewProjectReaction(QAction* parent);
 

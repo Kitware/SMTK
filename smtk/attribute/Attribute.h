@@ -91,7 +91,7 @@ public:
     return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId));
   }
 
-  virtual ~Attribute();
+  ~Attribute() override;
 
   AttributePtr shared_from_this()
   {

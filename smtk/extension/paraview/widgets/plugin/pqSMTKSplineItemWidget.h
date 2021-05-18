@@ -24,7 +24,7 @@ public:
   pqSMTKSplineItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKSplineItemWidget();
+  ~pqSMTKSplineItemWidget() override;
 
   static qtItem* createSplineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

@@ -47,7 +47,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  virtual const char* xmlDescription() const override;
+  const char* xmlDescription() const override;
 };
 
 } // namespace polygon

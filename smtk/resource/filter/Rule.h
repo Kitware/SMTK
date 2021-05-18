@@ -39,7 +39,7 @@ public:
   {
   }
 
-  virtual ~RuleFor() = default;
+  ~RuleFor() override = default;
 
   bool operator()(const PersistentObject& object) const override
   {

@@ -29,7 +29,7 @@ public:
   smtkTypeMacro(ResourcePhraseContent);
   smtkSharedPtrCreateMacro(PhraseContent);
   Ptr setup(const smtk::resource::ResourcePtr& resource, int mutability = 0);
-  virtual ~ResourcePhraseContent();
+  ~ResourcePhraseContent() override;
 
   static DescriptivePhrasePtr createPhrase(
     const smtk::resource::ResourcePtr& resource,

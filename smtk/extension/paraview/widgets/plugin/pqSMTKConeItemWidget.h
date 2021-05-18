@@ -43,7 +43,7 @@ public:
   pqSMTKConeItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKConeItemWidget();
+  ~pqSMTKConeItemWidget() override;
 
   /// Create an instance of the widget that allows users to define a cone.
   static qtItem* createConeItemWidget(const qtAttributeItemInfo& info);

@@ -33,7 +33,7 @@ public:
   {
   }
   smtkAssignColorsView(const smtk::extension::OperationViewInfo& info);
-  virtual ~smtkAssignColorsView();
+  ~smtkAssignColorsView() override;
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
   static QIcon renderColorSwatch(const QColor& color, int radius);

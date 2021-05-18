@@ -54,7 +54,7 @@ public:
 
   smtkTypeMacro(smtk::model::Entity);
   smtkSharedPtrCreateMacro(smtk::resource::Component);
-  virtual ~Entity();
+  ~Entity() override;
 
   static EntityPtr create(
     const UUID& uid,

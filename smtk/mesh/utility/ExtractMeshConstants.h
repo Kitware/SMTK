@@ -53,7 +53,7 @@ private:
 class SMTKCORE_EXPORT MeshConstants
 {
 public:
-  MeshConstants() {}
+  MeshConstants() = default;
 
   //This class self allocates all the memory needed to extract tessellation
   //and auto extract the tessellation based on the MeshSet you pass in

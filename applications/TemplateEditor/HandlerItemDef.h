@@ -25,6 +25,9 @@ class HandlerItemDef
 public:
   using ItemDefPtr = smtk::attribute::ItemDefinitionPtr;
 
+  HandlerItemDef(const HandlerItemDef&) = delete;
+  HandlerItemDef& operator=(const HandlerItemDef&) = delete;
+
   /**
    * Factory method. Maps attribute::Item::Type to corresponding Handler.
    */
@@ -54,9 +57,6 @@ protected:
   ItemDefPtr ItemDef;
 
 private:
-  HandlerItemDef(const HandlerItemDef&) = delete;
-  void operator=(const HandlerItemDef&) = delete;
-
   /**
    * Concrete ItemDef handlers implement actual behavior.
    */

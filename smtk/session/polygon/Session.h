@@ -54,7 +54,10 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
   typedef smtk::model::SessionInfoBits SessionInfoBits;
-  virtual ~Session();
+  ~Session() override;
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
 
   SessionInfoBits allSupportedInformation() const override;
 
@@ -122,10 +125,6 @@ protected:
 
   internal::EntityIdToPtr m_storage;
   int m_nextModelNumber;
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 } // namespace polygon

@@ -25,7 +25,7 @@ class SMTKQTEXT_EXPORT qtComponentItem : public qtReferenceItem
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
   qtComponentItem(const qtAttributeItemInfo& info);
-  virtual ~qtComponentItem();
+  ~qtComponentItem() override;
 };
 } // namespace extension
 } // namespace smtk

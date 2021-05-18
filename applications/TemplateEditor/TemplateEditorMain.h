@@ -37,7 +37,10 @@ class TemplateEditorMain : public QMainWindow
 
 public:
   TemplateEditorMain();
-  ~TemplateEditorMain();
+  ~TemplateEditorMain() override;
+
+  TemplateEditorMain(const TemplateEditorMain&) = delete;
+  TemplateEditorMain& operator=(const TemplateEditorMain&) = delete;
 
   /**
    * Load a template file to edit. This method is also used for commmand
@@ -62,9 +65,6 @@ public slots:
   ///@}
 
 private:
-  TemplateEditorMain(const TemplateEditorMain&) = delete;
-  void operator=(const TemplateEditorMain&) = delete;
-
   void connectActions();
 
   /**

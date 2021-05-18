@@ -203,7 +203,7 @@ std::string Logger::convertToHTML(bool includeSourceLog) const
   *
   * If \a ownFile is true, then the Logger takes ownership of \a output
   * and will delete it when the Logger is destructed.
-  * If \a output is NULL, then this stops future log records from
+  * If \a output is nullptr, then this stops future log records from
   * being appended to any file.
   * If \a includePast is true, then all pre-existing records are
   * written to the stream before this method returns (and future

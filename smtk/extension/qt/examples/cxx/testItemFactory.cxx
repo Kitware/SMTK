@@ -49,7 +49,7 @@ static int numDeleted = 0;
 class testItemWidgetFactory : public qtAttributeItemWidgetFactory
 {
 public:
-  virtual ~testItemWidgetFactory() { ++numDeleted; }
+  ~testItemWidgetFactory() override { ++numDeleted; }
 
   virtual qtItem* createValueItemWidget(const qtAttributeItemInfo& info)
   {
@@ -78,7 +78,7 @@ int testLifecycle()
   test(numDeleted == 0, "Bad initial value for numDeleted.");
   qtAttribute::setItemWidgetFactory(new testItemWidgetFactory());
   test(numDeleted == 1, "Expected to delete the old test factory.");
-  qtAttribute::setItemWidgetFactory(NULL);
+  qtAttribute::setItemWidgetFactory(nullptr);
   test(numDeleted == 2, "Expected to delete the new test factory.");
 
   // This should not crash even though the factory is null

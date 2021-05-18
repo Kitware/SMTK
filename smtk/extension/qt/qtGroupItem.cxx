@@ -467,7 +467,7 @@ void qtGroupItem::onRemoveSubGroup()
   item->removeGroup(gIdx);
   int rowIdx = -1, rmIdx = -1;
   // normally rowIdx is same as gIdx, but we need to find
-  // explicitly since minusButton could be NULL in MinusButtonIndices
+  // explicitly since minusButton could be nullptr in MinusButtonIndices
   foreach (QToolButton* tb, m_internals->MinusButtonIndices)
   {
     rowIdx = tb != nullptr ? rowIdx + 1 : rowIdx;

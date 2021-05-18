@@ -32,9 +32,12 @@ class InputDialog : public QDialog
 
 public:
   InputDialog(QWidget* parent = nullptr);
-  ~InputDialog();
+  ~InputDialog() override;
 
   QWidget* centralWidget();
+
+  InputDialog(const InputDialog&) = delete;
+  InputDialog& operator=(const InputDialog&) = delete;
 
 protected slots:
   void validate();
@@ -53,9 +56,6 @@ private slots:
   void acceptOnApply(QAbstractButton* button);
 
 private:
-  InputDialog(const InputDialog&) = delete;
-  void operator=(const InputDialog&) = delete;
-
   std::unique_ptr<Ui::InputDialog> Ui;
 };
 #endif //__InputDialog_h

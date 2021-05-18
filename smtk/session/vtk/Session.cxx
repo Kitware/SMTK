@@ -126,7 +126,7 @@ EntityHandle::EntityHandle(
   }
 }
 
-/// Returns true when the object is owned by a session and has a non-NULL pointer.
+/// Returns true when the object is owned by a session and has a non-nullptr pointer.
 bool EntityHandle::isValid() const
 {
   return this->m_session && this->m_object && this->m_modelNumber >= 0 &&

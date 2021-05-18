@@ -43,6 +43,9 @@ public:
   vtkTypeMacro(vtkConeFrustum, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  vtkConeFrustum(const vtkConeFrustum&) = delete;
+  vtkConeFrustum& operator=(const vtkConeFrustum&) = delete;
+
   /// An enum indexing data present at each output.
   enum OutputPorts
   {
@@ -141,10 +144,6 @@ protected:
   double TopRadius;
   int Resolution;
   int OutputPointsPrecision;
-
-private:
-  vtkConeFrustum(const vtkConeFrustum&) = delete;
-  void operator=(const vtkConeFrustum&) = delete;
 };
 
 #endif

@@ -33,9 +33,9 @@ namespace mesh
 struct SMTKMESHSESSION_EXPORT ClosestPoint
   : public smtk::resource::query::DerivedFrom<ClosestPoint, smtk::geometry::ClosestPoint>
 {
-  virtual std::array<double, 3> operator()(
+  std::array<double, 3> operator()(
     const smtk::resource::Component::Ptr& component,
-    const std::array<double, 3>& sourcePoint) const
+    const std::array<double, 3>& sourcePoint) const override
   {
     if (
       auto resource =

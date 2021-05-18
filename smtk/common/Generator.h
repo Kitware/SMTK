@@ -111,7 +111,7 @@ public:
   {
   }
 
-  virtual ~GeneratorBase() {}
+  virtual ~GeneratorBase() = default;
 
   /// A discriminating method to determine whether or not the input should be
   /// considered for use as input by a generator type. If this method returns

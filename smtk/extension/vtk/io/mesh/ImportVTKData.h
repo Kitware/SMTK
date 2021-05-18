@@ -46,6 +46,9 @@ class SMTKIOVTK_EXPORT ImportVTKData
 public:
   explicit ImportVTKData();
 
+  ImportVTKData(const ImportVTKData& other) = delete;
+  ImportVTKData& operator=(const ImportVTKData& other) = delete;
+
   //Import a VTK dataset unstructured grid file (legacy or xml) as a
   //resource. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
@@ -80,11 +83,6 @@ public:
     vtkDataSet* dataset,
     const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
-
-private:
-  //both are blank since we currently don't want to support copy by value
-  ImportVTKData(const ImportVTKData& other);
-  ImportVTKData& operator=(const ImportVTKData& other);
 };
 } // namespace mesh
 } // namespace io

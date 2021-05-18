@@ -34,7 +34,10 @@ class AttDefInformation : public QWidget
 
 public:
   AttDefInformation(QWidget* parent = nullptr);
-  ~AttDefInformation();
+  ~AttDefInformation() override;
+
+  AttDefInformation(const AttDefInformation&) = delete;
+  AttDefInformation& operator=(const AttDefInformation&) = delete;
 
 public slots:
   /**
@@ -63,9 +66,6 @@ private slots:
   void onRemoveItemDef();
 
 private:
-  AttDefInformation(const AttDefInformation&) = delete;
-  void operator=(const AttDefInformation&) = delete;
-
   void updateAttDefData(const QModelIndex& currentDef);
 
   void updateInheritedItemDef();

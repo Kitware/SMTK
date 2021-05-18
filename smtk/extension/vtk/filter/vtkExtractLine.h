@@ -35,7 +35,6 @@ public:
   vtkSetMacro(LineId, int);
   vtkGetMacro(LineId, int);
 
-  //BTX
 protected:
   vtkExtractLine();
 
@@ -55,7 +54,6 @@ private:
   void operator=(const vtkExtractLine&); // Not implemented.
 
   int LineId;
-  //ETX
 };
 
 #endif

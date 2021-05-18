@@ -52,7 +52,7 @@ class SMTKQTEXT_EXPORT qtReferenceItemData : public QObject
 
 public:
   qtReferenceItemData();
-  virtual ~qtReferenceItemData();
+  ~qtReferenceItemData() override;
 
   // SMTK view
   smtk::view::PhraseModelPtr m_phraseModel;

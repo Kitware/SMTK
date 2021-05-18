@@ -38,7 +38,10 @@ class ItemDefDialog : public InputDialog
 
 public:
   ItemDefDialog(QWidget* parent = nullptr);
-  ~ItemDefDialog();
+  ~ItemDefDialog() override;
+
+  ItemDefDialog(const ItemDefDialog&) = delete;
+  ItemDefDialog& operator=(const ItemDefDialog&) = delete;
 
   /**
    * Set the ItemDefinition to Show or Edit.
@@ -86,9 +89,6 @@ private slots:
   void onTypeChanged(const int type);
 
 private:
-  ItemDefDialog(const ItemDefDialog&) = delete;
-  void operator=(const ItemDefDialog&) = delete;
-
   /**
    * Implements validation of critical fields for ItemDefinition instantiation
    * (e.g. Name, etc.).

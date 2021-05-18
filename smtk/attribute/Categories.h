@@ -181,7 +181,7 @@ public:
     Set::CombinationMode m_includeMode, m_excludeMode, m_combinationMode;
     std::set<std::string> m_includedCategories, m_excludedCategories;
   };
-  Categories() {}
+  Categories() = default;
   ///@{
   /// \brief Returns true if atleast one of its sets passes its check
   bool passes(const std::set<std::string>& cats) const;

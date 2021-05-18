@@ -36,6 +36,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKResource* New();
 
+  vtkSMTKResource(const vtkSMTKResource&) = delete;
+  vtkSMTKResource& operator=(const vtkSMTKResource&) = delete;
+
   /// Set the SMTK resource by the string representation of its resource Id.
   void SetResourceById(const char* resourceIdStr);
 
@@ -64,10 +67,6 @@ protected:
   smtk::common::UUID ResourceId;
   vtkSmartPointer<vtkAlgorithm> Converter;
   vtkSMTKWrapper* Wrapper;
-
-private:
-  vtkSMTKResource(const vtkSMTKResource&) = delete;
-  void operator=(const vtkSMTKResource&) = delete;
 };
 
 #endif

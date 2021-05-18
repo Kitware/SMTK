@@ -39,7 +39,7 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::session::multiscale::Session);
 
-  virtual ~Session();
+  ~Session() override;
 
 protected:
   friend class Operation;

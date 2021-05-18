@@ -26,10 +26,10 @@ class SMTKPQWIDGETSEXT_EXPORT qtSimpleExpressionEvaluationView
 public:
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtSimpleExpressionEvaluationView(const smtk::view::Information& info);
-  virtual ~qtSimpleExpressionEvaluationView();
+  ~qtSimpleExpressionEvaluationView() override;
 
 public slots:
-  virtual void createFunctionWithExpression() override;
+  void createFunctionWithExpression() override;
 
 protected:
   void createWidget() override;

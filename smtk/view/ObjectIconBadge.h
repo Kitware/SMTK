@@ -29,7 +29,7 @@ public:
   smtkTypeMacro(smtk::view::ObjectIconBadge);
   ObjectIconBadge();
   ObjectIconBadge(BadgeSet&, const Configuration::Component&);
-  virtual ~ObjectIconBadge();
+  ~ObjectIconBadge() override;
 
   /// This badge only applies to phrases with a persistent object that has an icon.
   bool appliesToPhrase(const DescriptivePhrase* phrase) const override;

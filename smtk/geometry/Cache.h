@@ -232,7 +232,7 @@ public:
   /// Visitors may erase the cache entry for the object they are
   /// passed, but may not erase others as that may invalidate
   /// iteration.
-  virtual void visit(Visitor visitor) const override
+  void visit(Visitor visitor) const override
   {
     this->update();
     auto rsrc = this->resource();

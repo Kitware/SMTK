@@ -39,7 +39,7 @@ public:
   pqSMTKBoxItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKBoxItemWidget();
+  ~pqSMTKBoxItemWidget() override;
 
   static qtItem* createBoxItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;

@@ -56,6 +56,7 @@ set(TE_SOURCE
   TemplateEditorMain.cxx
   TemplateEditorMain.h)
 
+set(CMAKE_AUTOMOC 1)
 set(CMAKE_AUTOUIC 1)
 
 # ==============================================================================
@@ -63,7 +64,7 @@ set(CMAKE_AUTOUIC 1)
 # ==============================================================================
 
 add_executable(TemplateEditor MACOSX_BUNDLE ${TE_SOURCE} ${TE_UI_FORMS})
-set_target_properties(TemplateEditor PROPERTIES AUTOMOC TRUE
+set_target_properties(TemplateEditor PROPERTIES
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 target_link_libraries(TemplateEditor
   LINK_PRIVATE

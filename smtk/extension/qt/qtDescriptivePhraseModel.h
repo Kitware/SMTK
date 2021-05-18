@@ -41,8 +41,8 @@ class SMTKQTEXT_EXPORT qtDescriptivePhraseModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
-  qtDescriptivePhraseModel(QObject* parent = 0);
-  virtual ~qtDescriptivePhraseModel();
+  qtDescriptivePhraseModel(QObject* parent = nullptr);
+  ~qtDescriptivePhraseModel() override;
   // Set and get default entity color
   static void setDefaultPhraseColor(const std::string& entityType, const QColor& color)
   {

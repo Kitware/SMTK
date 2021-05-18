@@ -30,6 +30,9 @@ public:
 
   ~ConnectivityStorage() override;
 
+  ConnectivityStorage(const ConnectivityStorage& other) = delete;
+  ConnectivityStorage& operator=(const ConnectivityStorage& other) = delete;
+
   void initTraversal(smtk::mesh::ConnectivityStorage::IterationState& state) override;
 
   bool fetchNextCell(
@@ -45,11 +48,6 @@ public:
   std::size_t vertSize() const override { return NumberOfVerts; }
 
 private:
-  //blank since we are used by shared_ptr
-  ConnectivityStorage(const ConnectivityStorage& other);
-  //blank since we are used by shared_ptr
-  ConnectivityStorage& operator=(const ConnectivityStorage& other);
-
   std::vector<const smtk::mesh::Handle*> ConnectivityStartPositions;
   std::vector<int> ConnectivityArraysLengths;
   std::vector<int> ConnectivityVertsPerCell;

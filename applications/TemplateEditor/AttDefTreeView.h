@@ -23,9 +23,14 @@ class AttDefTreeView : public QTreeView
 
 public:
   AttDefTreeView(QWidget* parent = nullptr)
-    : QTreeView(parent){};
+    : QTreeView(parent)
+  {
+  }
 
-  ~AttDefTreeView() = default;
+  ~AttDefTreeView() override = default;
+
+  AttDefTreeView(const AttDefTreeView&) = delete;
+  AttDefTreeView& operator=(const AttDefTreeView&) = delete;
 
 signals:
   void showDialog(const QModelIndex&);
@@ -46,9 +51,5 @@ protected:
 
     QTreeView::keyPressEvent(event);
   };
-
-private:
-  AttDefTreeView(const AttDefTreeView&) = delete;
-  void operator=(const AttDefTreeView&) = delete;
 };
 #endif //__AttDefTreeView_h

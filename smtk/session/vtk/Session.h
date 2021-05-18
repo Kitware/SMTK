@@ -139,11 +139,14 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
   typedef smtk::model::SessionInfoBits SessionInfoBits;
-  virtual ~Session();
+  ~Session() override;
   SessionInfoBits allSupportedInformation() const override
   {
     return smtk::model::SESSION_EVERYTHING;
   }
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
 
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
   smtk::model::EntityRef toEntityRef(const EntityHandle& ent);
@@ -205,10 +208,6 @@ protected:
   }
 
   smtk::model::SessionIOPtr createIODelegate(const std::string& format) override;
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 // ++ 3 ++
@@ -220,7 +219,7 @@ T* EntityHandle::object() const
     !this->m_session || !this->m_object || this->m_modelNumber < 0 ||
     this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
   {
-    return NULL;
+    return nullptr;
   }
 
   return dynamic_cast<T*>(this->m_object.GetPointer());

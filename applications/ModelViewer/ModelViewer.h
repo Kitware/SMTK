@@ -19,8 +19,8 @@ class ModelViewer : public QWidget
 {
   Q_OBJECT
 public:
-  ModelViewer(QWidget* parent = NULL);
-  virtual ~ModelViewer();
+  ModelViewer(QWidget* parent = nullptr);
+  ~ModelViewer() override;
 
 protected:
   class Internals;

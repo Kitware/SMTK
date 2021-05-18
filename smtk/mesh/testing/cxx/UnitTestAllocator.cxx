@@ -46,7 +46,7 @@ void verify_json_allocator_creation()
   //at this point extract the allocator from json and verify that it
   //is null
   smtk::mesh::AllocatorPtr allocator = resource->interface()->allocator();
-  test(!allocator, "json allocator should be NULL");
+  test(!allocator, "json allocator should be nullptr");
 
   //verify that is modified is true
   test(!resource->isModified(), "resource shouldn't be modified");

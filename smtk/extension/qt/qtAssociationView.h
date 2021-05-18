@@ -58,7 +58,7 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   qtAssociationView(const smtk::view::Information& info);
-  virtual ~qtAssociationView();
+  ~qtAssociationView() override;
   const QMap<QString, QList<smtk::attribute::DefinitionPtr>>& attDefinitionMap() const;
 
   bool isEmpty() const override;

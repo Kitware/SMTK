@@ -29,7 +29,7 @@ class EdgePointPicker : public QAction
 
 public:
   EdgePointPicker(QObject* p);
-  virtual ~EdgePointPicker();
+  ~EdgePointPicker() override;
 
   void doPick(pqRenderView* view);
   void donePicking(pqRenderView* view);
@@ -49,8 +49,8 @@ class SMTKPOLYGONQTEXT_EXPORT pqSplitEdgeWidget : public QWidget
   Q_OBJECT
 
 public:
-  explicit pqSplitEdgeWidget(QWidget* parent = 0);
-  virtual ~pqSplitEdgeWidget();
+  explicit pqSplitEdgeWidget(QWidget* parent = nullptr);
+  ~pqSplitEdgeWidget() override;
 
   virtual void setView(pqRenderView* view);
   void setEdgeOperation(smtk::operation::OperationPtr edgeOp);

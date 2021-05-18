@@ -63,7 +63,7 @@ void verify_json_buffered_cell_allocator_creation()
   //at this point extract the allocator from json and verify that it
   //is null
   smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
-  test(!allocator, "json incremental allocator should be NULL");
+  test(!allocator, "json incremental allocator should be nullptr");
 
   //verify that is modified is true
   test(!resource->isModified(), "resource shouldn't be modified");

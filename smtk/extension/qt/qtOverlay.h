@@ -24,7 +24,7 @@ class SMTKQTEXT_EXPORT qtOverlay : public QWidget
   Q_OBJECT
 
 public:
-  qtOverlay(QWidget* parent = 0);
+  qtOverlay(QWidget* parent = nullptr);
   void addOverlayWidget(QWidget* w);
   void setColor(const QColor& ocolor) { m_overlayColor = ocolor; }
 
@@ -40,7 +40,7 @@ class SMTKQTEXT_EXPORT qtOverlayFilter : public QObject
 
 public:
   // onWidget is what the overlay will be covering
-  qtOverlayFilter(QWidget* onWidget, QObject* parent = 0);
+  qtOverlayFilter(QWidget* onWidget, QObject* parent = nullptr);
   ~qtOverlayFilter() override;
   qtOverlay* overlay() { return m_overlay; }
   void setActive(bool val);

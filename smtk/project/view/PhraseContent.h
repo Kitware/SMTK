@@ -33,7 +33,7 @@ public:
   smtkSharedPtrCreateMacro(smtk::view::PhraseContent);
   Ptr setup(const smtk::project::ProjectPtr& project, int mutability = 0);
   Ptr setup(const smtk::resource::ResourcePtr& resource, int mutability = 0);
-  virtual ~PhraseContent();
+  ~PhraseContent() override;
 
   static smtk::view::DescriptivePhrasePtr createPhrase(
     const smtk::project::ProjectPtr& project,

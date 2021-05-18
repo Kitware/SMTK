@@ -38,7 +38,7 @@ public:
     const std::string& title,
     const std::string& resourceFilter,
     const std::string& componentFilter);
-  virtual ~ObjectGroupPhraseContent();
+  ~ObjectGroupPhraseContent() override;
 
   static DescriptivePhrasePtr createPhrase(
     const std::string& title,

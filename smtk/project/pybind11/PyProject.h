@@ -88,7 +88,7 @@ class PyProject : public Project
 public:
   PyProject() = default;
 
-  virtual ~PyProject() = default;
+  ~PyProject() override = default;
 
   static std::shared_ptr<smtk::project::Project> create(
     std::string modulename, std::string className, smtk::project::Project::Index index)

@@ -56,7 +56,7 @@ class SMTKQTEXT_EXPORT qtItem : public QObject
 
 public:
   qtItem(const qtAttributeItemInfo& info);
-  virtual ~qtItem();
+  ~qtItem() override;
 
   smtk::attribute::ItemPtr item() const { return m_itemInfo.item(); }
 

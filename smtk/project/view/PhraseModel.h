@@ -35,7 +35,7 @@ public:
 
   PhraseModel();
   PhraseModel(const smtk::view::Configuration*, smtk::view::Manager*);
-  virtual ~PhraseModel();
+  ~PhraseModel() override;
 
   static smtk::view::PhraseModelPtr create(const smtk::view::ConfigurationPtr& view);
 

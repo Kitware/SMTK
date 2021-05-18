@@ -35,7 +35,7 @@ class SMTKQTEXT_EXPORT qtDescriptivePhraseDelegate : public QStyledItemDelegate
   Q_PROPERTY(bool drawSubtitle READ drawSubtitle WRITE setDrawSubtitle)
   Q_PROPERTY(bool visibilityMode READ visibilityMode WRITE setVisibilityMode)
 public:
-  qtDescriptivePhraseDelegate(QWidget* parent = 0);
+  qtDescriptivePhraseDelegate(QWidget* parent = nullptr);
 
   int titleFontSize() const;
   int subtitleFontSize() const;

@@ -41,7 +41,7 @@ namespace resource
 class Key
 {
   friend class operation::Operation;
-  Key() {}
+  Key() = default;
 };
 
 template<typename Self, typename Parent>
@@ -70,7 +70,7 @@ public:
   smtkTypeMacro(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
-  virtual ~Resource();
+  ~Resource() override;
 
   /// index is a compile-time intrinsic of the derived resource; as such, it
   /// cannot be set.
