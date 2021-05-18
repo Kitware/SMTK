@@ -66,6 +66,10 @@ function(smtk_test_plugin test_plugin_file_url)
   # dashboards.
   set_tests_properties(${test_name} PROPERTIES RUN_SERIAL TRUE)
 
+  set_property(TEST ${test_name} APPEND
+    PROPERTY
+      ENVIRONMENT "CTEST_OUTPUT_ON_FAILURE=1")
+
   if (_smtk_superbuild_prefix)
     set_property(TEST ${test_name} APPEND
       PROPERTY
