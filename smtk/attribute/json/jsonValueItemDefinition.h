@@ -201,7 +201,7 @@ static void processDerivedValueDefFromJson(
           std::string discreteEnum = defPtr->discreteEnum(i);
           if (itemsValue != structure->end())
           {
-            for (auto currentItem : *itemsValue)
+            for (const auto& currentItem : *itemsValue)
             {
               defPtr->addConditionalItem(discreteEnum, currentItem);
             }

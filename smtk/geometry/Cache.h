@@ -60,7 +60,7 @@ public:
     {
     }
 
-    CacheEntry(CacheEntry&&) = default;
+    CacheEntry(CacheEntry&&) noexcept = default;
     CacheEntry(const CacheEntry&) = default;
     CacheEntry(GenerationNumber gen, const DataType& data)
       : m_generation(gen)

@@ -463,7 +463,7 @@ T Attribute::entityRefsAs(const std::string& iname) const
 
   for (auto it = itm->begin(); it != itm->end(); ++it)
   {
-    if (it.isSet() == false)
+    if (!it.isSet())
     {
       continue;
     }
@@ -488,7 +488,7 @@ T Attribute::associatedObjects() const
 
   for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
-    if (it.isSet() == false)
+    if (!it.isSet())
     {
       continue;
     }
@@ -513,7 +513,7 @@ T Attribute::associatedModelEntities() const
 
   for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
-    if (it.isSet() == false)
+    if (!it.isSet())
     {
       continue;
     }

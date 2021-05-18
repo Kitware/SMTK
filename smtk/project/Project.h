@@ -86,7 +86,7 @@ public:
 
   void visit(smtk::resource::Component::Visitor&) const override {}
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }

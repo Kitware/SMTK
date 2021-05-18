@@ -80,7 +80,7 @@ class RegistersTo
   static_assert(
     std::is_same<
       decltype(testRegisterTo<Manager>(nullptr)),
-      decltype(testUnregisterFrom<Manager>(nullptr))>::value == true,
+      decltype(testUnregisterFrom<Manager>(nullptr))>::value,
     "Registrar must be able to both register and unregister from a manager.");
 
 public:
@@ -201,9 +201,7 @@ class Dependencies
 public:
   using type = decltype(deps<Registrar>(nullptr));
 
-  static_assert(
-    is_tuple<type>::value == true,
-    "Registrar dependencies must be given as a std::tuple.");
+  static_assert(is_tuple<type>::value, "Registrar dependencies must be given as a std::tuple.");
 };
 
 /// AllDependenciesWithDuplicates is an intermediate step in constructing a flat

@@ -110,12 +110,12 @@ public:
   /// Explicilty add the contained custom rules to an attribute resource.
   bool registerRulesTo(smtk::attribute::Resource::Ptr& resource) const
   {
-    for (auto& registerFunction : m_associationRegisterFunctions)
+    for (const auto& registerFunction : m_associationRegisterFunctions)
     {
       registerFunction.second(*resource);
     }
 
-    for (auto& registerFunction : m_dissociationRegisterFunctions)
+    for (const auto& registerFunction : m_dissociationRegisterFunctions)
     {
       registerFunction.second(*resource);
     }
@@ -214,7 +214,7 @@ protected:
     if (auto manager = m_manager.lock())
     {
       // ...remove the rule from all of its attribute resources.
-      for (auto resource : manager->find<smtk::attribute::Resource>())
+      for (const auto& resource : manager->find<smtk::attribute::Resource>())
       {
         Trait<BaseRuleType>::factory(*resource).template unregisterType<CustomRuleType>();
       }

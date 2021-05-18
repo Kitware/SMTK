@@ -39,8 +39,7 @@ struct SMTKCORE_EXPORT Format
   typedef std::bitset<4> IOFlags;
 
   Format()
-    : Name("")
-    , Extensions()
+    : Extensions()
     , Flags(IOFlags(0x0))
   {
   }

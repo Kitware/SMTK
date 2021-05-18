@@ -62,10 +62,10 @@ struct SMTKCORE_EXPORT SelectionFootprint
   bool hasGeometry(smtk::resource::PersistentObject& object, const smtk::geometry::Backend& backend)
     const
   {
-    auto resource = dynamic_cast<smtk::geometry::Resource*>(&object);
+    auto* resource = dynamic_cast<smtk::geometry::Resource*>(&object);
     if (!resource)
     {
-      auto component = dynamic_cast<smtk::resource::Component*>(&object);
+      auto* component = dynamic_cast<smtk::resource::Component*>(&object);
       if (component)
       {
         resource = dynamic_cast<smtk::geometry::Resource*>(component->resource().get());
@@ -76,13 +76,8 @@ struct SMTKCORE_EXPORT SelectionFootprint
       return false;
     }
     auto& geom = resource->geometry(backend);
-    if (
-      !geom ||
-      geom->generationNumber(object.shared_from_this()) == smtk::geometry::Geometry::Invalid)
-    {
-      return false;
-    }
-    return true;
+    return geom &&
+      geom->generationNumber(object.shared_from_this()) != smtk::geometry::Geometry::Invalid;
   }
 
   /// If \a object is a Resource, add all the components it owns that have geometry.
@@ -94,7 +89,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
     std::unordered_set<smtk::resource::PersistentObject*>& footprint,
     const smtk::geometry::Backend& backend) const
   {
-    auto resource = dynamic_cast<smtk::geometry::Resource*>(&object);
+    auto* resource = dynamic_cast<smtk::geometry::Resource*>(&object);
     if (!resource)
     {
       return false;

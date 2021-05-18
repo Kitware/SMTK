@@ -126,7 +126,7 @@ protected:
 template<typename Manager>
 ClientFor<Manager>::~ClientFor()
 {
-  for (auto base_registry : m_registries)
+  for (auto* base_registry : m_registries)
   {
     delete base_registry;
   }

@@ -53,7 +53,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
     const smtk::geometry::Backend& backend) const override
   {
     bool hasFootprint = false;
-    auto attr = dynamic_cast<smtk::attribute::Attribute*>(&selectedObject);
+    auto* attr = dynamic_cast<smtk::attribute::Attribute*>(&selectedObject);
     if (attr)
     {
       // If the attribute has geometry, use it:

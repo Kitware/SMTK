@@ -130,7 +130,7 @@ std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<Retu
     //       std::thread. The derived methods will only be available after
     //       the base constructor has returned, so we cannot construct
     //       std::thread instances in this class's constructor.
-    if (m_initialized == false)
+    if (!m_initialized)
     {
       m_initialized = true;
       this->initialize();

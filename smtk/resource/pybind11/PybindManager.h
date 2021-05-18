@@ -39,7 +39,7 @@ PySharedPtrClass<smtk::resource::Manager> pybind11_init_smtk_resource_Manager(py
     .def("get", (std::shared_ptr<const smtk::resource::Resource> (smtk::resource::Manager::*)(const std::string&) const) &smtk::resource::Manager::get)
     .def("find", (std::set<std::shared_ptr<smtk::resource::Resource>> (smtk::resource::Manager::*)(const std::string&)) &smtk::resource::Manager::find, py::arg("location"))
     .def("find", (std::set<std::shared_ptr<smtk::resource::Resource>> (smtk::resource::Manager::*)(const smtk::resource::Resource::Index&, bool)) &smtk::resource::Manager::find, py::arg("index"), py::arg("strict") = false)
-    .def("metadata", [](smtk::resource::Manager& man) { std::vector<std::reference_wrapper<smtk::resource::Metadata>> vec; vec.reserve(man.metadata().size()); for (auto md : man.metadata()) { vec.push_back(md); } return vec; })
+    .def("metadata", [](smtk::resource::Manager& man) { std::vector<std::reference_wrapper<smtk::resource::Metadata>> vec; vec.reserve(man.metadata().size()); for (auto md : man.metadata()) { vec.emplace_back(md); } return vec; })
     .def("observers", (smtk::resource::Observers & (smtk::resource::Manager::*)()) &smtk::resource::Manager::observers, pybind11::return_value_policy::reference_internal)
     .def("observers", (smtk::resource::Observers const & (smtk::resource::Manager::*)() const) &smtk::resource::Manager::observers, pybind11::return_value_policy::reference_internal)
     .def("read", (smtk::resource::ResourcePtr (smtk::resource::Manager::*)(const smtk::resource::Resource::Index&, const std::string&)) &smtk::resource::Manager::read)

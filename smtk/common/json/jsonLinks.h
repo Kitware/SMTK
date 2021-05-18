@@ -31,10 +31,10 @@ template<
   typename base_type>
 void to_json(json& j, const Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
-  for (auto link : links)
+  for (const auto& link : links)
   {
     json jlink;
-    const base_type& base = static_cast<base_type&>(link);
+    const base_type& base = static_cast<const base_type&>(link);
     jlink["id"] = link.id;
     jlink["base"] = base;
     jlink["left"] = link.left;

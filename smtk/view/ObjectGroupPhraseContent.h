@@ -52,7 +52,7 @@ public:
   /// Add this phrase's children to the container.
   void children(DescriptivePhrases& container) const;
 
-  bool displayable(ContentType attr) const override { return attr == TITLE ? true : false; }
+  bool displayable(ContentType attr) const override { return attr == TITLE; }
   bool editable(ContentType) const override { return false; }
 
   std::string stringValue(ContentType) const override { return m_title; }

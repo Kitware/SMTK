@@ -109,7 +109,7 @@ struct hash<smtk::common::UUID>
     // causes collisions when sizeof(size_t) == 8.
     // This will need to be revisited if we switch to node-based
     // UUIDs, but for random UUIDs it works well.
-    memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
+    memmove(&hash, uid.begin() + smtk::common::UUID::size() - sizeof(hash), sizeof(hash));
     return hash;
   }
 };

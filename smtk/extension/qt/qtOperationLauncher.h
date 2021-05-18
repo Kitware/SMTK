@@ -103,13 +103,13 @@ public:
   {
   }
 
-  Launcher(Launcher&& other)
+  Launcher(Launcher&& other) noexcept
     : m_launcher{ other.m_launcher }
   {
     other.m_launcher = nullptr;
   }
 
-  Launcher& operator=(Launcher&& other)
+  Launcher& operator=(Launcher&& other) noexcept
   {
     if (&other != this)
     {

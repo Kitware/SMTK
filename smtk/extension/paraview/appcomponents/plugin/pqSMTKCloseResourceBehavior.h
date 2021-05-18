@@ -42,7 +42,7 @@ protected:
   /**
   * Called when the action is triggered.
   */
-  void onTriggered() override { this->closeResource(); }
+  void onTriggered() override { pqCloseResourceReaction::closeResource(); }
 
 private:
   Q_DISABLE_COPY(pqCloseResourceReaction)

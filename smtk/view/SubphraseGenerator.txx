@@ -40,7 +40,7 @@ int SubphraseGenerator::IndexFromTitle(const std::string& title, const T& phrase
 {
   // TODO: Use bisection to speed this up.
   int ii = 0;
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     if (title < phrase->title())
     {
@@ -84,7 +84,7 @@ void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
   filteredEntities.reserve(ents.size());
   for (const auto& ent : ents)
   {
-    bool isHidden = ent.exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+    bool isHidden = ent.exclusions(smtk::model::Exclusions::ViewPresentation);
     if (!isHidden)
     {
       filteredEntities.push_back(ent);
@@ -106,7 +106,7 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(
   {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
-      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation);
       if (isHidden)
       {
         continue;
@@ -124,7 +124,7 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(
     DescriptivePhrases phrases;
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
-      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation);
       if (isHidden)
       {
         continue;

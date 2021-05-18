@@ -248,7 +248,7 @@ inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type tupleTo
 
 template<std::size_t I, typename Tuple>
 inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type tupleToTypeNames(
-  std::set<std::string>& typeNames)
+  std::set<std::string>& /*typeNames*/)
 {
   return;
 }
@@ -351,7 +351,7 @@ std::set<std::shared_ptr<ProjectType>> Manager::find()
 {
   std::set<std::shared_ptr<Project>> tmp = this->find(smtk::common::typeName<ProjectType>());
   std::set<std::shared_ptr<ProjectType>> projects;
-  for (auto& project : tmp)
+  for (const auto& project : tmp)
   {
     projects.insert(std::static_pointer_cast<ProjectType>(project));
   }

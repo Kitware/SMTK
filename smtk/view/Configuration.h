@@ -17,6 +17,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include <memory>
 #include <string>
 
 namespace smtk
@@ -101,7 +102,7 @@ public:
   Configuration(const std::string& myType, const std::string& myName);
   static smtk::view::ConfigurationPtr New(const std::string& myType, const std::string& myName)
   {
-    return smtk::view::ConfigurationPtr(new smtk::view::Configuration(myType, myName));
+    return std::make_shared<smtk::view::Configuration>(myType, myName);
   }
 
   ~Configuration();

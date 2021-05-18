@@ -54,12 +54,12 @@ struct SMTKCORE_EXPORT SelectionFootprint
     {
       return hasFootprint;
     }
-    auto ent = dynamic_cast<smtk::model::Entity*>(&selectedObject);
+    auto* ent = dynamic_cast<smtk::model::Entity*>(&selectedObject);
     if (!ent)
     {
       return hasFootprint;
     }
-    auto resource = dynamic_cast<smtk::geometry::Resource*>(ent->resource().get());
+    auto* resource = dynamic_cast<smtk::geometry::Resource*>(ent->resource().get());
     if (!resource)
     {
       return hasFootprint;
@@ -92,7 +92,7 @@ struct SMTKCORE_EXPORT SelectionFootprint
       {
         auto members =
           smtk::model::Group(ent->shared_from_this()).members<smtk::model::EntityRefs>();
-        for (auto member : members)
+        for (const auto& member : members)
         {
           hasFootprint |= this->addComponentFootprint(member.entityRecord().get(), footprint, geom);
         }

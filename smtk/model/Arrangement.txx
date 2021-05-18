@@ -32,7 +32,7 @@ struct Arrangement::IndexHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           rels.push_back(entity->relations()[idx]);
     }
-    return rels.empty() ? false : true;
+    return !rels.empty();
   }
   bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
   {
@@ -43,7 +43,7 @@ struct Arrangement::IndexHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           relIdxs.push_back(idx);
     }
-    return relIdxs.empty() ? false : true;
+    return !relIdxs.empty();
   }
 };
 
@@ -61,7 +61,7 @@ struct Arrangement::IndexAndSenseHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           rels.push_back(entity->relations()[idx]);
     }
-    return rels.empty() ? false : true;
+    return !rels.empty();
   }
   bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
   {
@@ -72,7 +72,7 @@ struct Arrangement::IndexAndSenseHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           relIdxs.push_back(idx);
     }
-    return relIdxs.empty() ? false : true;
+    return !relIdxs.empty();
   }
 };
 
@@ -91,7 +91,7 @@ struct Arrangement::IndexRangeHelper
           if (ibeg >= 0 && ibeg < static_cast<int>(entity->relations().size()))
             rels.push_back(entity->relations()[ibeg]);
     }
-    return rels.empty() ? false : true;
+    return !rels.empty();
   }
   bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
   {
@@ -103,7 +103,7 @@ struct Arrangement::IndexRangeHelper
           if (ibeg >= 0 && ibeg < static_cast<int>(entity->relations().size()))
             relIdxs.push_back(ibeg);
     }
-    return relIdxs.empty() ? false : true;
+    return !relIdxs.empty();
   }
 };
 
@@ -122,7 +122,7 @@ struct Arrangement::IndexSenseAndOrientationHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           rels.push_back(entity->relations()[idx]);
     }
-    return rels.empty() ? false : true;
+    return !rels.empty();
   }
   bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
   {
@@ -134,7 +134,7 @@ struct Arrangement::IndexSenseAndOrientationHelper
         if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
           relIdxs.push_back(idx);
     }
-    return relIdxs.empty() ? false : true;
+    return !relIdxs.empty();
   }
 };
 
