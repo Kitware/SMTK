@@ -37,7 +37,6 @@ public:
   vtkSetMacro(UseRelativeLineLength, bool);
   vtkGetMacro(UseRelativeLineLength, bool);
 
-  //BTX
 protected:
   vtkCleanPolylines();
 
@@ -71,7 +70,6 @@ private:
 
   double MinimumLineLength;
   bool UseRelativeLineLength;
-  //ETX
 };
 
 #endif

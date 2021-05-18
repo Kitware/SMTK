@@ -46,15 +46,11 @@ public:
   vtkSetMacro(WriteAsSinglePiece, bool);
   vtkGetMacro(WriteAsSinglePiece, bool);
 
-  //BTX
   // Description:
   // Unlike vtkWriter which assumes data per port - this Writer can have multiple connections
   // on Port 0
   vtkDataObject* GetInputFromPort0(int connection);
   vtkDataObject* GetInputFromPort0() { return this->GetInputFromPort0(0); };
-  //ETX
-
-  //BTX
 
 protected:
   vtkLIDARPtsWriter();
@@ -81,8 +77,6 @@ protected:
 private:
   vtkLIDARPtsWriter(const vtkLIDARPtsWriter&); // Not implemented.
   void operator=(const vtkLIDARPtsWriter&);    // Not implemented.
-
-  //ETX
 };
 
 #endif

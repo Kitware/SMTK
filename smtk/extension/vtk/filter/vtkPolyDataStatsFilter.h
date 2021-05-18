@@ -50,8 +50,6 @@ public:
   // Return the time of the last transform build.
   vtkGetMacro(BuildTime, unsigned long);
 
-  //BTX
-
 protected:
   vtkPolyDataStatsFilter();
   ~vtkPolyDataStatsFilter();
@@ -73,8 +71,6 @@ protected:
 private:
   vtkPolyDataStatsFilter(const vtkPolyDataStatsFilter&); // Not implemented.
   void operator=(const vtkPolyDataStatsFilter&);         // Not implemented.
-
-  //ETX
 };
 
 #endif
