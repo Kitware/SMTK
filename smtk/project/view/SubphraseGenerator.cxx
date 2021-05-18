@@ -53,7 +53,7 @@ void SubphraseGenerator::childrenOfProject(
   smtk::view::DescriptivePhrases& result)
 {
   constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
-  for (const auto& resource : project->resources().resources())
+  for (const auto& resource : project->resources())
   {
     result.push_back(smtk::project::view::PhraseContent::createPhrase(resource, mutability, src));
   }

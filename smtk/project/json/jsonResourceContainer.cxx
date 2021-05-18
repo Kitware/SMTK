@@ -21,7 +21,7 @@ void to_json(json& j, const ResourceContainer& resourceContainer)
 {
   j["types"] = resourceContainer.types();
   j["resources"] = json::array();
-  for (const auto& resource : resourceContainer.resources())
+  for (const auto& resource : resourceContainer)
   {
     j["resources"].push_back(resource);
   }

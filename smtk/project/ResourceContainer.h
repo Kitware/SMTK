@@ -67,13 +67,16 @@ public:
           const smtk::resource::ResourcePtr&,
           const std::string&,
           &smtk::resource::detail::location>>,
-      boost::multi_index::ordered_unique<
+      boost::multi_index::ordered_non_unique<
         boost::multi_index::tag<RoleTag>,
         boost::multi_index::global_fun<
           const smtk::resource::ResourcePtr&,
           const std::string&,
           &smtk::project::detail::role>>>>
     Container;
+
+  using iterator = typename Container::iterator;
+  using const_iterator = typename Container::const_iterator;
 
   /// A property key for accessing string-valued roles assigned to a resource
   /// held by a project.
@@ -118,12 +121,55 @@ public:
 
   /// Returns the resource that relates to the given role.  If no association
   /// exists this will return a null pointer
-  smtk::resource::ResourcePtr getByRole(const std::string&);
-  smtk::resource::ConstResourcePtr getByRole(const std::string&) const;
+  [[deprecated("New API is findByRole and returns a std::set")]] smtk::resource::ResourcePtr
+  getByRole(const std::string& role)
+  {
+    auto resource_set = this->findByRole(role);
+    if (resource_set.empty())
+    {
+      return smtk::resource::ResourcePtr(nullptr);
+    }
+    else
+    {
+      return *(resource_set.begin());
+    }
+  }
+
+  [[deprecated("New API is findByRole and returns a std::set")]] smtk::resource::ConstResourcePtr
+  getByRole(const std::string& role) const
+  {
+    auto resource_set = this->findByRole(role);
+    if (resource_set.empty())
+    {
+      return smtk::resource::ConstResourcePtr(nullptr);
+    }
+    else
+    {
+      return *(resource_set.begin());
+    }
+  }
+
   template<typename ResourceType>
-  smtk::shared_ptr<ResourceType> getByRole(const std::string&);
+  [[deprecated("New API is findByRole and returns a std::set")]] smtk::shared_ptr<ResourceType>
+  getByRole(const std::string& role)
+  {
+    return std::dynamic_pointer_cast<ResourceType>(this->getByRole(role));
+  }
+
   template<typename ResourceType>
-  smtk::shared_ptr<const ResourceType> getByRole(const std::string&) const;
+  [[deprecated(
+    "New API is findByRole and returns a std::set")]] smtk::shared_ptr<const ResourceType>
+  getByRole(const std::string& role) const
+  {
+    return std::dynamic_pointer_cast<const ResourceType>(this->getByRole(role));
+  }
+
+  std::set<smtk::resource::ResourcePtr> findByRole(const std::string&);
+  std::set<smtk::resource::ConstResourcePtr> findByRole(const std::string&) const;
+  template<typename ResourceType>
+  std::set<smtk::shared_ptr<ResourceType>> findByRole(const std::string&);
+  template<typename ResourceType>
+  std::set<smtk::shared_ptr<const ResourceType>> findByRole(const std::string&) const;
 
   /// Returns a set of resources that have a given typename, type index or class
   /// type.
@@ -152,17 +198,17 @@ public:
   const std::set<std::string>& types() const { return m_types; }
   std::set<std::string>& types() { return m_types; }
 
-  const Container& resources() const { return m_resources; }
-  Container& resources() { return m_resources; }
+  //const Container& resources() const { return m_resources; }
+  //Container& resources() { return m_resources; }
 
   std::shared_ptr<smtk::resource::Manager> manager() const { return m_manager.lock(); }
   void setManager(const std::weak_ptr<smtk::resource::Manager>& manager) { m_manager = manager; }
 
-  Container::const_iterator begin() const { return m_resources.begin(); }
-  Container::iterator begin() { return m_resources.begin(); }
+  const_iterator begin() const { return m_resources.begin(); }
+  iterator begin() { return m_resources.begin(); }
 
-  Container::const_iterator end() const { return m_resources.end(); }
-  Container::iterator end() { return m_resources.end(); }
+  const_iterator end() const { return m_resources.end(); }
+  iterator end() { return m_resources.end(); }
 
   bool empty() const { return m_resources.empty(); }
   std::size_t size() const { return m_resources.size(); }
@@ -215,15 +261,26 @@ smtk::shared_ptr<const ResourceType> ResourceContainer::get(const std::string& u
 }
 
 template<typename ResourceType>
-smtk::shared_ptr<ResourceType> ResourceContainer::getByRole(const std::string& role)
+std::set<smtk::shared_ptr<ResourceType>> ResourceContainer::findByRole(const std::string& role)
 {
-  return smtk::static_pointer_cast<ResourceType>(this->getByRole(role));
+  std::set<smtk::shared_ptr<ResourceType>> cast_set;
+  for (auto resourceptr : this->findByRole(role))
+  {
+    cast_set.insert(smtk::dynamic_pointer_cast<ResourceType>(resourceptr));
+  }
+  return cast_set;
 }
 
 template<typename ResourceType>
-smtk::shared_ptr<const ResourceType> ResourceContainer::getByRole(const std::string& role) const
+std::set<smtk::shared_ptr<const ResourceType>> ResourceContainer::findByRole(
+  const std::string& role) const
 {
-  return smtk::static_pointer_cast<const ResourceType>(this->getByRole(role));
+  std::set<smtk::shared_ptr<ResourceType>> cast_set;
+  for (auto resourceptr : this->findByRole(role))
+  {
+    cast_set.insert(smtk::dynamic_pointer_cast<const ResourceType>(resourceptr));
+  }
+  return cast_set;
 }
 
 template<typename ResourceType>
