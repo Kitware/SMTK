@@ -5,11 +5,14 @@ set(unit_tests
   TestProject
   TestProjectAssociation
   TestProjectLifeCycle
+  TestProjectLifeCycle_Deprecated
   TestProjectResources
 )
 set(unit_tests_which_require_data
   TestProjectReadWrite
+  TestProjectReadWrite_Deprecated
   TestProjectReadWrite2
+  TestProjectReadWrite2_Deprecated
   TestProjectReadWriteEmpty
 )
 set(extra_libs)

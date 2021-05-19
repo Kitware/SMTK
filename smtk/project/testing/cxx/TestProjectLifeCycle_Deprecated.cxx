@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#define SMTK_DEPRECATION_LEVEL 2105
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Registrar.h"
@@ -120,7 +122,7 @@ const char* CreateProjectOp::xmlDescription() const
 
 } // namespace
 
-int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
+int TestProjectLifeCycle_Deprecated(int /*unused*/, char** const /*unused*/)
 {
   // Create managers
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();
@@ -166,8 +168,8 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
     smtkTest(res == nullptr, "resource manager contains project")
       smtkTest(resManager->size() == 1, "resource manager size not 1");
 
-    auto attRes = project->resources().findByRole(ATT_ROLE_NAME);
-    smtkTest(!attRes.empty(), "project missing attribute resource with role: " << ATT_ROLE_NAME);
+    auto attRes = project->resources().getByRole(ATT_ROLE_NAME);
+    smtkTest(attRes != nullptr, "project missing attribute resource");
 
     // Release the project, check that resource manager unchanged
     std::cout << "Removing project" << std::endl;
@@ -175,7 +177,7 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
     smtkTest(resManager->size() == 1, "resource manager size not 1");
 
     // And remove the attribute resource
-    resManager->remove(*(attRes.begin()));
+    resManager->remove(attRes);
     smtkTest(resManager->empty(), "resource manager not empty");
   }
 

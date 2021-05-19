@@ -59,8 +59,10 @@ void cleanup(const std::string& location)
 {
   //first verify the file exists
   ::boost::filesystem::path path(location);
+  printf("Removing: %s...\n", location.c_str());
   if (::boost::filesystem::exists(path))
   {
+    printf("Removing: %s...Success\n", location.c_str());
     //remove the file_path if it exists.
     ::boost::filesystem::remove_all(path);
   }
@@ -112,7 +114,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   projectManager->registerProject("foo");
 
   // Create a project and write it to disk.
-  int numberOfResources = 0;
+  size_t numberOfResources = 0;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
@@ -189,9 +191,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     }
 
     {
-      smtk::attribute::Resource::Ptr myAtts =
-        project->resources().getByRole<smtk::attribute::Resource>("my attributes");
-      numberOfResources = myAtts == nullptr ? 0 : 1;
+      std::set<smtk::attribute::Resource::Ptr> myAtts =
+        project->resources().findByRole<smtk::attribute::Resource>("my attributes");
+      numberOfResources = myAtts.size();
     }
 
     {
@@ -274,14 +276,23 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     }
   }
 
-  smtk::attribute::Resource::Ptr myAtts =
-    project->resources().getByRole<smtk::attribute::Resource>("my attributes");
+  std::set<smtk::attribute::Resource::Ptr> myAttSet =
+    project->resources().findByRole<smtk::attribute::Resource>("my attributes");
 
-  if (myAtts == nullptr)
+  if (myAttSet.empty())
   {
     std::cerr << "Resulting project does not contain attribute resource\n";
     return 1;
   }
+
+  if (myAttSet.size() > 1)
+  {
+    std::cerr << "Resulting project contains more than one(1) attribute resource with role \"my "
+                 "attributes\"\n";
+    return 1;
+  }
+
+  smtk::attribute::Resource::Ptr myAtts = *(myAttSet.begin());
 
   if (!myAtts->clean())
   {
