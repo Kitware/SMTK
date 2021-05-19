@@ -65,7 +65,7 @@ inline PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session
     .def("removeGeneratedProperties", &smtk::model::Session::removeGeneratedProperties, py::arg("entity"), py::arg("propFlags"))
     .def("splitProperties", &smtk::model::Session::splitProperties, py::arg("from"), py::arg("to"))
     .def("mergeProperties", &smtk::model::Session::mergeProperties, py::arg("from"), py::arg("to"))
-    .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) { return i; })
+    .def_static("CastTo", [](std::shared_ptr<smtk::model::Session> i) { return i; })
     ;
   return instance;
 }
