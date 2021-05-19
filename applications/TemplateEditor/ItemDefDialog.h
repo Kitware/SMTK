@@ -86,7 +86,7 @@ private slots:
    *
    * \sa HandlerItemDef
    */
-  void onTypeChanged(const int type);
+  void onTypeChanged(int type);
 
 private:
   /**

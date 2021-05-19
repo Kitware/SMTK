@@ -26,7 +26,7 @@
 #endif
 
 #define ADD_OBSERVER(key, observers, observer, priority, initialize)                               \
-  key = observers->insert(                                                                         \
+  key = (observers)->insert(                                                                       \
     observer,                                                                                      \
     priority,                                                                                      \
     initialize,                                                                                    \

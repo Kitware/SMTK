@@ -31,8 +31,6 @@
 
 namespace smtk
 {
-class Model;
-
 namespace attribute
 {
 class Evaluator;

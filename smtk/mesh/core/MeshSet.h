@@ -190,7 +190,7 @@ public:
     const std::string& name,
     int dimension,
     const smtk::mesh::FieldType& type,
-    const void* const field = nullptr);
+    const void* field = nullptr);
   smtk::mesh::CellField cellField(const std::string& name) const;
   std::set<smtk::mesh::CellField> cellFields() const;
   //Remove the dataset from this meshset.
@@ -203,7 +203,7 @@ public:
     const std::string& name,
     int dimension,
     const smtk::mesh::FieldType& type,
-    const void* const field = nullptr);
+    const void* field = nullptr);
   smtk::mesh::PointField pointField(const std::string& name) const;
   std::set<smtk::mesh::PointField> pointFields() const;
   //Remove the dataset from this meshset.

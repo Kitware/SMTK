@@ -53,7 +53,7 @@ protected slots:
 protected:
   Ui_qtTimeZoneSelectWidget* UI;
 
-  void setContinent(const QModelIndex index);
+  void setContinent(QModelIndex index);
 
 private:
   class qtTimeZoneSelectWidgetInternal;

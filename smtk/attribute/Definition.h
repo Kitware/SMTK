@@ -36,11 +36,6 @@
 
 namespace smtk
 {
-namespace model
-{
-class Item;
-}
-
 namespace attribute
 {
 class Attribute;

@@ -40,8 +40,8 @@ public:
 
   /// Access the association/dissociation rule for a given definition, if one
   /// exists.
-  const Rule* associationRuleForDefinition(const smtk::attribute::DefinitionPtr definition) const;
-  const Rule* dissociationRuleForDefinition(const smtk::attribute::DefinitionPtr definition) const;
+  const Rule* associationRuleForDefinition(smtk::attribute::DefinitionPtr definition) const;
+  const Rule* dissociationRuleForDefinition(smtk::attribute::DefinitionPtr definition) const;
 
   /// Access the mapping between definition names and association/dissociation
   /// rules.

@@ -31,7 +31,7 @@ public:
   /**
    * Factory method. Maps attribute::Item::Type to corresponding Handler.
    */
-  static std::shared_ptr<HandlerItemDef> create(const int type);
+  static std::shared_ptr<HandlerItemDef> create(int type);
 
   /**
    * Instantiates UI forms with parent. Syncrhonize widget state/contents

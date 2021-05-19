@@ -39,11 +39,11 @@ public:
 
   // Returns true if there was a problem with writing the file
   bool write(
-    const smtk::attribute::ResourcePtr resource,
+    smtk::attribute::ResourcePtr resource,
     const std::string& filename,
     smtk::io::Logger& logger);
   bool writeContents(
-    const smtk::attribute::ResourcePtr resource,
+    smtk::attribute::ResourcePtr resource,
     std::string& filecontents,
     smtk::io::Logger& logger,
     bool no_declaration = false);
@@ -110,7 +110,7 @@ protected:
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
   XmlStringWriter* newXmlStringWriter(
-    const smtk::attribute::ResourcePtr resource,
+    smtk::attribute::ResourcePtr resource,
     smtk::io::Logger& logger) const;
 
 private:

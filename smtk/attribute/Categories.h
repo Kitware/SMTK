@@ -129,7 +129,7 @@ public:
       Set::CombinationMode comboMode);
     ///\brief Comparison operator needed to create a set of Categories::Sets
     bool operator<(const Set& rhs) const;
-    static std::string combinationModeAsString(const Set::CombinationMode mode);
+    static std::string combinationModeAsString(Set::CombinationMode mode);
     static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
 
     // Deprecated Methods

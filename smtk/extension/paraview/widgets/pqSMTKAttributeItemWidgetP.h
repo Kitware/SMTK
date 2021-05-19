@@ -52,7 +52,6 @@ public:
     , m_overrideWhen(OverrideWhen::Unset)
     , m_geometrySource(GeometrySource::BestGuess)
     , m_fallbackStrategy(FallbackStrategy::Hide)
-    , m_opObserver()
     , m_state(State::Idle)
   {
     (void)itm;

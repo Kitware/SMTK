@@ -72,7 +72,7 @@ public:
   }
 
   /// Unregister a Query type using its type index.
-  bool unregisterQuery(const std::size_t typeIndex);
+  bool unregisterQuery(std::size_t typeIndex);
 
   /// Unregister a tuple of Query types.
   template<typename Tuple>
@@ -91,7 +91,7 @@ public:
 
   /// Determine whether or not a Query type (or a suitable replacement for it)
   /// is available using its type index.
-  bool contains(const std::size_t typeIndex) const;
+  bool contains(std::size_t typeIndex) const;
 
   /// Create an instance of a concrete Query type (or a suitable replacement for
   /// it), registering the Query type if it is not already registered.

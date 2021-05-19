@@ -14,6 +14,11 @@
 
 namespace smtk
 {
+namespace model
+{
+class Group;
+}
+
 namespace view
 {
 

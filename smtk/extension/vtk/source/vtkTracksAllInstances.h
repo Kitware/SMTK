@@ -27,9 +27,9 @@
   */
 #define smtkDeclareTracksAllInstances(cls)                                                         \
 protected:                                                                                         \
-  static cls* s_allInstances;                                                                      \
-  cls* m_prevInstance;                                                                             \
-  cls* m_nextInstance;                                                                             \
+  static cls* s_allInstances; /* NOLINT(bugprone-macro-parentheses) */                             \
+  cls* m_prevInstance;        /* NOLINT(bugprone-macro-parentheses) */                             \
+  cls* m_nextInstance;        /* NOLINT(bugprone-macro-parentheses) */                             \
                                                                                                    \
 public:                                                                                            \
   void linkInstance();                                                                             \
@@ -76,6 +76,7 @@ public:                                                                         
   }                                                                                                \
   void cls::visitInstances(std::function<bool(cls*)> visitor)                                      \
   {                                                                                                \
+    /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                                               \
     for (cls* inst = cls::s_allInstances; inst; inst = inst->m_nextInstance)                       \
     {                                                                                              \
       if (!visitor(inst))                                                                          \

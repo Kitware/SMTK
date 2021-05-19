@@ -37,7 +37,7 @@ public:
 
   ~MergeMeshVertices();
 
-  ::moab::ErrorCode merge_entities(const ::moab::Range& meshsets, const double merge_tol = 1.0e-6);
+  ::moab::ErrorCode merge_entities(const ::moab::Range& meshsets, double merge_tol = 1.0e-6);
 
 private:
   //- given a kdtree, set tag on vertices in leaf nodes with vertices

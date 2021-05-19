@@ -64,7 +64,8 @@ class MeshSet;
   bool isValid(EntityPtr* entRec) const override                                                   \
   {                                                                                                \
     EntityPtr er;                                                                                  \
-    if (/* NB: EntityRef::isValid() may return true even when er == nullptr */                     \
+    if (/* NB: EntityRef::isValid() may return true even when er == nullptr
+         * NOLINTNEXTLINE(bugprone-parent-virtual-call) */                        \
         this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))          \
     {                                                                                              \
       if (entRec)                                                                                  \
@@ -80,6 +81,7 @@ namespace model
 {
 
 class EntityRef;
+class Group;
 class Model;
 class Tessellation;
 typedef std::set<EntityRef> EntityRefs;

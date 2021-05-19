@@ -38,7 +38,7 @@ private:
 public:
   static constexpr auto name = _<Class>();
 
-  static handle cast(const Class* src, return_value_policy policy, handle parent)
+  static handle cast(const Class* src, return_value_policy policy, handle /*parent*/)
   {
     if (!src)
       return none().release();

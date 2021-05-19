@@ -30,8 +30,6 @@ namespace vtk
 namespace geometry
 {
 
-class Geometry;
-
 /**\brief This class is used to indicate VTK exists as a consumer of renderable geometry.
   *
   * You may optionally construct the backend with a geometry provider and
