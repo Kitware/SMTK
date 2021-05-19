@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/TypeName.h"
 
 #include "smtk/project/Tags.h"
@@ -121,8 +122,8 @@ public:
 
   /// Returns the resource that relates to the given role.  If no association
   /// exists this will return a null pointer
-  [[deprecated("New API is findByRole and returns a std::set")]] smtk::resource::ResourcePtr
-  getByRole(const std::string& role)
+  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  smtk::resource::ResourcePtr getByRole(const std::string& role)
   {
     auto resource_set = this->findByRole(role);
     if (resource_set.empty())
@@ -135,8 +136,8 @@ public:
     }
   }
 
-  [[deprecated("New API is findByRole and returns a std::set")]] smtk::resource::ConstResourcePtr
-  getByRole(const std::string& role) const
+  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  smtk::resource::ConstResourcePtr getByRole(const std::string& role) const
   {
     auto resource_set = this->findByRole(role);
     if (resource_set.empty())
@@ -150,16 +151,15 @@ public:
   }
 
   template<typename ResourceType>
-  [[deprecated("New API is findByRole and returns a std::set")]] smtk::shared_ptr<ResourceType>
-  getByRole(const std::string& role)
+  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  smtk::shared_ptr<ResourceType> getByRole(const std::string& role)
   {
     return std::dynamic_pointer_cast<ResourceType>(this->getByRole(role));
   }
 
   template<typename ResourceType>
-  [[deprecated(
-    "New API is findByRole and returns a std::set")]] smtk::shared_ptr<const ResourceType>
-  getByRole(const std::string& role) const
+  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  smtk::shared_ptr<const ResourceType> getByRole(const std::string& role) const
   {
     return std::dynamic_pointer_cast<const ResourceType>(this->getByRole(role));
   }
@@ -197,9 +197,6 @@ public:
   /// Resource types are allowed.
   const std::set<std::string>& types() const { return m_types; }
   std::set<std::string>& types() { return m_types; }
-
-  //const Container& resources() const { return m_resources; }
-  //Container& resources() { return m_resources; }
 
   std::shared_ptr<smtk::resource::Manager> manager() const { return m_manager.lock(); }
   void setManager(const std::weak_ptr<smtk::resource::Manager>& manager) { m_manager = manager; }
