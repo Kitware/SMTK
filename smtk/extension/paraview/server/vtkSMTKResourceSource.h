@@ -60,7 +60,7 @@ protected:
   vtkSMTKResourceSource();
   ~vtkSMTKResourceSource() override;
 
-  vtkSMTKResource* VTKResource;
+  vtkSMTKResource* VTKResource{ nullptr };
 };
 
 #endif

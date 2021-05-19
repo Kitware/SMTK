@@ -114,10 +114,7 @@ public:
   };
 
   /// \brief Basic constructor - Note that by default top level Analyses are not Exclusive
-  Analyses()
-    : m_topLevelExclusive(false)
-  {
-  }
+  Analyses() = default;
   /// \brief Create a new Analysis and return it.
   /// Note that the name must be unique with respects to the other Analysis Instances defined within
   /// this Instance.  If the name is not unique no Analysis is created and nullptr is returned.
@@ -174,7 +171,9 @@ protected:
   void
   getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis);
 
-  bool m_topLevelExclusive; ///< Indicates if the top level Analysis Instances are exclusive
+  bool m_topLevelExclusive{
+    false
+  }; ///< Indicates if the top level Analysis Instances are exclusive
   std::vector<Analysis*> m_analyses; ///< Analysis Instances managed by the Analyses Instance
 };
 } // namespace attribute

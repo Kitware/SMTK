@@ -18,7 +18,6 @@ namespace polygon
 
 Region::Region()
   : m_seedFragment(static_cast<FragmentId>(-1))
-  , m_seedSense(true)
 {
 }
 

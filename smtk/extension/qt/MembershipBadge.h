@@ -68,11 +68,13 @@ signals:
   void membershipChange(int val);
 
 protected:
-  MemberMap m_members;   //!< From available items, has this object been turned on?
-  bool m_singleSelect;   //!< If true, only 1 item may be a member; toggling an item resets others.
+  MemberMap m_members; //!< From available items, has this object been turned on?
+  bool m_singleSelect{
+    false
+  };                     //!< If true, only 1 item may be a member; toggling an item resets others.
   std::string m_iconOn;  //!< SVG for icon showing membership.
   std::string m_iconOff; //!< SVG for icon showing non-membership.
-  const smtk::view::BadgeSet* m_parent;
+  const smtk::view::BadgeSet* m_parent{ nullptr };
 };
 } // namespace qt
 } // namespace extension

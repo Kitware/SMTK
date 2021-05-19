@@ -50,11 +50,11 @@ signals:
   void hoverOperation(const smtk::operation::Operation::Index& op);
 
 protected:
-  QListWidget* m_operationList;
-  QVBoxLayout* m_layout;
+  QListWidget* m_operationList{ nullptr };
+  QVBoxLayout* m_layout{ nullptr };
   smtk::view::AvailableOperationsPtr m_operationSource;
   smtk::view::AvailableOperations::Observers::Key m_operationSourceObserverId;
-  bool m_useLabels;
+  bool m_useLabels{ false };
 
   void updateList();
 };

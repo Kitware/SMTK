@@ -100,11 +100,7 @@ qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
 }
 
 qtReferenceItemData::qtReferenceItemData()
-  : m_optional(nullptr)
-  , m_alreadyClosingPopup(false)
-  , m_qtModel(nullptr)
-  , m_qtDelegate(nullptr)
-  , m_selectedIconURL(":/icons/display/selected.png")
+  : m_selectedIconURL(":/icons/display/selected.png")
   , m_unselectedIconURL(":/icons/display/unselected.png")
 {
 }

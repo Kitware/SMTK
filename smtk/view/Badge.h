@@ -79,10 +79,7 @@ class SMTKCORE_EXPORT Badge : smtkEnableSharedPtr(Badge)
 {
 public:
   smtkTypeMacroBase(Badge);
-  Badge()
-    : m_isDefault(false)
-  {
-  }
+  Badge() = default;
   Badge(const Badge&) = delete;
   Badge& operator=(const Badge&) = delete;
   virtual ~Badge() = default;
@@ -129,7 +126,7 @@ public:
 
 protected:
   /// Should this badge be invoked by non-specific user gestures when it is applicable?
-  bool m_isDefault;
+  bool m_isDefault{ false };
 };
 } // namespace view
 } // namespace smtk

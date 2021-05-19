@@ -154,11 +154,11 @@ protected:
   vtkSMTKResource* GetVTKResource(vtkAlgorithm*);
 
   vtkPVDataRepresentation* Representation = nullptr;
-  vtkAlgorithmOutput* ActiveResource;
-  vtkAlgorithmOutput* SelectedPort;
-  vtkAlgorithmOutput* SelectionObj;
-  char* JSONRequest;
-  char* JSONResponse;
+  vtkAlgorithmOutput* ActiveResource{ nullptr };
+  vtkAlgorithmOutput* SelectedPort{ nullptr };
+  vtkAlgorithmOutput* SelectionObj{ nullptr };
+  char* JSONRequest{ nullptr };
+  char* JSONResponse{ nullptr };
   smtk::common::Managers::Ptr Managers;
 
   std::string SelectionSource;

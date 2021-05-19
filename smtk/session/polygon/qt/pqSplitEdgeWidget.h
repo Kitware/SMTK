@@ -77,7 +77,7 @@ private:
 
   pqSplitEdgeWidgetInternals::EdgePointPicker* m_edgePointPicker;
 
-  pqRenderView* View;
+  pqRenderView* View{ nullptr };
   smtk::weak_ptr<smtk::operation::Operation> m_edgeOp;
 };
 

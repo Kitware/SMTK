@@ -40,8 +40,9 @@ public:
   {
     Id m_edgeId;       // Should never be nullptr
     Id m_adjacentFace; // Face immediately CW of m_edgeId. May be nullptr.
-    bool
-      m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
+    bool m_edgeOut{
+      false
+    }; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
 
     incident_edge_data(Id edgeId, bool isEdgeOut)
       : m_edgeId(edgeId)
@@ -64,10 +65,7 @@ public:
       , m_edgeOut(other.isEdgeOutgoing())
     {
     }
-    incident_edge_data()
-      : m_edgeOut(false)
-    {
-    }
+    incident_edge_data() = default;
 
     Id edgeId() const { return m_edgeId; }
     Id clockwiseFaceId() const { return m_adjacentFace; }
@@ -127,15 +125,13 @@ public:
 protected:
   friend class pmodel;
 
-  vertex()
-    : m_insideSplit(false)
-  {
-  }
+  vertex() = default;
 
   Point m_coords;         // position in the plane.
   incident_edges m_edges; // CCW list of incident edges
-  bool
-    m_insideSplit; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
+  bool m_insideSplit{
+    false
+  }; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
 
   // NB: One extension to this structure would be:
   // Ptr m_prev; // Previous model vertex located at this exact point in the plane

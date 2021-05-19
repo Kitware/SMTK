@@ -38,14 +38,12 @@ smtk::mesh::json::InterfacePtr make_interface()
 
 Interface::Interface()
   : m_associated_model(smtk::common::UUID::null())
-  , m_modified(false)
 {
 }
 
 Interface::Interface(const std::vector<smtk::mesh::json::MeshInfo>& info)
   : m_meshInfo(info)
   , m_associated_model(smtk::common::UUID::null())
-  , m_modified(false)
 {
 }
 

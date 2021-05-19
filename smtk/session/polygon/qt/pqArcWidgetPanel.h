@@ -33,14 +33,12 @@ namespace Ui
 
 struct PickInfo
 {
-  pqOutputPort* port;
+  pqOutputPort* port{ nullptr };
   smtk::common::UUID EdgeId;
-  vtkIdType BlockIndex;
+  vtkIdType BlockIndex{ -1 };
 
   PickInfo()
-    : port(nullptr)
-    , EdgeId(smtk::common::UUID::null())
-    , BlockIndex(-1)
+    : EdgeId(smtk::common::UUID::null())
   {
   }
 };
@@ -139,10 +137,10 @@ private:
 
   Ui::PickInfo ArcInfo;
   Ui::ArcPicker Picker;
-  pqRenderView* View;
-  pqPolygonArc* Arc;
+  pqRenderView* View{ nullptr };
+  pqPolygonArc* Arc{ nullptr };
   QPointer<qtArcWidget> ArcWidget;
-  pqArcWidgetManager* ArcManager;
+  pqArcWidgetManager* ArcManager{ nullptr };
 };
 
 #endif // __smtk_polygon_pq_ArcWidgetPanel_h

@@ -46,9 +46,9 @@ public:
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
   void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
 
-  QWidget* m_container;
-  QVBoxLayout* m_layout;
-  QTreeView* m_view;
+  QWidget* m_container{ nullptr };
+  QVBoxLayout* m_layout{ nullptr };
+  QTreeView* m_view{ nullptr };
   QPointer<qtResourceBrowser> m_self;
   QPointer<QAbstractItemModel> m_model;
   QPointer<smtk::extension::qtDescriptivePhraseDelegate> m_delegate;
@@ -63,12 +63,12 @@ public:
   std::string m_hoverLabel;
   std::string m_viewName;
   std::string m_resourceTreeType; // "default" or specific type.
-  int m_resourceTreeStyle;        // Which default subphrase generator should be used?
+  int m_resourceTreeStyle{ -1 };  // Which default subphrase generator should be used?
 
   // Set to true when inside sendSMTKSelectionToPanel.
   // Used to avoid updating the SMTK selection from the panel while
   // the panel is being updated from SMTK:
-  bool m_updatingPanelSelectionFromSMTK;
+  bool m_updatingPanelSelectionFromSMTK{ false };
 };
 } // namespace extension
 } // namespace smtk

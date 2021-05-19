@@ -35,8 +35,7 @@ static bool defaultFilter(
 static Selection* g_instance = nullptr;
 
 Selection::Selection()
-  : m_defaultAction(SelectionAction::FILTERED_REPLACE)
-  , m_observers(
+  : m_observers(
       [this](Selection::Observer& fn) { fn(g_selectionManagerSource, this->shared_from_this()); })
   , m_filter(defaultFilter)
 {

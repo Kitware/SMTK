@@ -24,11 +24,7 @@
 using namespace smtk::view;
 
 AvailableOperations::AvailableOperations()
-  : m_selectionMask(1)
-  , m_selectionExact(true)
-  , m_useSelection(true)
-  , m_workflowFilter(nullptr)
-
+  : m_workflowFilter(nullptr)
 {
 // For debugging:
 #if !defined(NDEBUG) && DEBUG_AVAILABLE_OPERATIONS

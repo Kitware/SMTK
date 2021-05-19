@@ -213,7 +213,6 @@ int UpdateVisibilityForFootprint(
 VisibilityBadge::VisibilityBadge()
   : m_icon(pqEyeball_svg)
   , m_iconClosed(pqEyeballClosed_svg)
-  , m_parent(nullptr)
 {
 }
 

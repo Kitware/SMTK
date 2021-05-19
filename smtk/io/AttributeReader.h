@@ -72,7 +72,7 @@ public:
 
 protected:
 private:
-  bool m_reportAsError;
+  bool m_reportAsError{ true };
   std::vector<std::string> m_searchPaths;
   AttributeReaderInternals* m_internals;
 };

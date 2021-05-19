@@ -177,11 +177,11 @@ protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);
 
-  BitFlags m_entityFlags;
+  BitFlags m_entityFlags{ INVALID };
   smtk::common::UUIDArray m_relations;
   smtk::model::WeakResourcePtr m_resource;
   KindsToArrangements m_arrangements;
-  int m_firstInvalid;
+  int m_firstInvalid{ -1 };
   smtk::common::UUID m_id;
 };
 

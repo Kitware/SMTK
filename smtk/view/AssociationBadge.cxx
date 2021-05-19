@@ -32,10 +32,7 @@ namespace smtk
 namespace view
 {
 
-AssociationBadge::AssociationBadge()
-  : m_parent(nullptr)
-{
-}
+AssociationBadge::AssociationBadge() = default;
 
 AssociationBadge::AssociationBadge(BadgeSet& parent, const Configuration::Component& config)
   : m_parent(&parent)

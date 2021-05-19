@@ -28,13 +28,8 @@ using namespace smtk::extension;
 
 /// @relates smtk::extension::qtResourceBrowser::Internal
 qtResourceBrowser::Internal::Internal()
-  : m_container(nullptr)
-  , m_layout(nullptr)
-  , m_view(nullptr)
-  , m_selnLabel("selected")
+  : m_selnLabel("selected")
   , m_hoverLabel("hovered")
-  , m_resourceTreeStyle(-1)
-  , m_updatingPanelSelectionFromSMTK(false)
 {
   std::ostringstream name;
   name << "resource panel " << this;

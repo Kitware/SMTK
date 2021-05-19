@@ -53,16 +53,6 @@
 vtkStandardNewMacro(vtkConeRepresentation);
 
 vtkConeRepresentation::vtkConeRepresentation()
-  : BumpDistance(0.01)
-  , AlongXAxis(0)
-  , AlongYAxis(0)
-  , AlongZAxis(0)
-  , Resolution(128)
-  , Tolerance(1e-8)
-  , ScaleEnabled(1)
-  , DrawCone(1)
-  , Tubing(1)
-  , Cylindrical(0)
 {
   this->HandleSize = 7.5;
   this->Cone->SetResolution(128);

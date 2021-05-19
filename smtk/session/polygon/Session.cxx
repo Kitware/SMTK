@@ -50,10 +50,7 @@ namespace polygon
 {
 
 /// Default constructor.
-Session::Session()
-  : m_nextModelNumber(0)
-{
-}
+Session::Session() = default;
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
 Session::~Session() = default;

@@ -52,7 +52,7 @@ protected slots:
   virtual void unobserveSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
 
 protected:
-  bool m_changingSource;
+  bool m_changingSource{ false };
   std::string m_selectionValue;
   std::map<smtk::view::SelectionPtr, smtk::view::SelectionObservers::Key> m_selectionObservers;
 

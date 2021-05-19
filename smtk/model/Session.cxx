@@ -41,7 +41,6 @@ namespace model
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
   : m_sessionId(smtk::common::UUID::random())
-  , m_resource(nullptr)
 {
 }
 

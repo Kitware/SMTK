@@ -38,7 +38,6 @@ static pqSMTKPipelineSelectionBehavior* g_pipelineSelection = nullptr;
 
 pqSMTKPipelineSelectionBehavior::pqSMTKPipelineSelectionBehavior(QObject* parent)
   : Superclass(parent)
-  , m_changingSource(false)
   , m_selectionValue("selected")
 {
   if (!g_pipelineSelection)

@@ -22,9 +22,7 @@ vtkStandardNewMacro(vtkImplicitConeFrustum);
 
 vtkImplicitConeFrustum::vtkImplicitConeFrustum()
   : BottomPoint{ 0, 0, 0 }
-  , BottomRadius(0.5)
   , TopPoint{ 0, 0, 1 }
-  , TopRadius(0.0)
 {
   // Our output is defined by our subclass, which we configure based on
   // calls that set our member variables.

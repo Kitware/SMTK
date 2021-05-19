@@ -32,8 +32,6 @@ using namespace smtk::view;
 SelectionPhraseModel::SelectionPhraseModel()
   : m_root(DescriptivePhrase::create())
   , m_selectionBit(~0)
-  , m_componentMutability(0)
-  , m_resourceMutability(0)
 {
   // By default, do not show children of selected objects.
   auto generator = smtk::view::EmptySubphraseGenerator::create();
@@ -44,8 +42,6 @@ SelectionPhraseModel::SelectionPhraseModel(const Configuration* config, Manager*
   : Superclass(config, manager)
   , m_root(DescriptivePhrase::create())
   , m_selectionBit(~0)
-  , m_componentMutability(0)
-  , m_resourceMutability(0)
 {
   auto generator = PhraseModel::configureSubphraseGenerator(config, manager);
   m_root->setDelegate(generator);

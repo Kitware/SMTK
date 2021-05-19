@@ -33,10 +33,7 @@ namespace moab
 struct SMTKCORE_EXPORT RandomPoint
   : public smtk::resource::query::DerivedFrom<RandomPoint, smtk::geometry::RandomPoint>
 {
-  RandomPoint()
-    : m_seed(0)
-  {
-  }
+  RandomPoint() = default;
 
   std::array<double, 3> operator()(const smtk::resource::Component::Ptr&) const override;
 
@@ -45,7 +42,7 @@ struct SMTKCORE_EXPORT RandomPoint
   void seed(std::size_t seed) override { m_seed = seed; }
 
 private:
-  std::size_t m_seed;
+  std::size_t m_seed{ 0 };
 };
 } // namespace moab
 } // namespace mesh

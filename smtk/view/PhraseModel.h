@@ -17,6 +17,7 @@
 #include "smtk/common/TypeContainer.h"
 
 #include "smtk/view/BadgeSet.h"
+#include "smtk/view/PhraseContent.h"
 #include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
 
@@ -273,7 +274,7 @@ protected:
 
   BadgeSet m_badges;
 
-  int m_mutableAspects;
+  int m_mutableAspects{ PhraseContent::EVERYTHING };
 
   WeakManagerPtr m_manager;
 };

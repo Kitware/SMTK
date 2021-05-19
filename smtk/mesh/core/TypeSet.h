@@ -51,8 +51,8 @@ public:
 private:
   smtk::mesh::CellTypes m_cellTypes;
   smtk::mesh::DimensionTypes m_dimTypes;
-  bool m_hasMesh;
-  bool m_hasCell;
+  bool m_hasMesh{ false };
+  bool m_hasCell{ false };
 };
 } // namespace mesh
 } // namespace smtk

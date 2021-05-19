@@ -124,7 +124,7 @@ protected:
   internal::EntityIdToPtr::iterator findStorageIterator(const smtk::common::UUID& uid);
 
   internal::EntityIdToPtr m_storage;
-  int m_nextModelNumber;
+  int m_nextModelNumber{ 0 };
 };
 
 } // namespace polygon

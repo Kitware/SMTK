@@ -103,7 +103,7 @@ private:
   OperationFactory m_operations;
   std::string m_typeName;
   std::string m_version;
-  smtk::project::Manager* m_manager;
+  smtk::project::Manager* m_manager{ nullptr };
 };
 } // namespace project
 } // namespace smtk

@@ -75,7 +75,6 @@ PythonInterpreter& PythonInterpreter::instance()
 }
 
 PythonInterpreter::PythonInterpreter()
-  : m_embedded(false)
 {
   this->initialize();
 }

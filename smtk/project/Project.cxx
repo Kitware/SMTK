@@ -19,7 +19,6 @@ Project::Project(const std::string& typeName)
   : m_resources(this, smtk::resource::Resource::m_manager)
   , m_operations(std::weak_ptr<smtk::operation::Manager>())
   , m_typeName(typeName)
-  , m_manager(nullptr)
 {
 }
 

@@ -139,11 +139,11 @@ protected:
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   double BottomPoint[3];
-  double BottomRadius;
+  double BottomRadius{ 0.5 };
   double TopPoint[3];
-  double TopRadius;
+  double TopRadius{ 0.0 };
   int Resolution;
-  int OutputPointsPrecision;
+  int OutputPointsPrecision{ SINGLE_PRECISION };
 };
 
 #endif

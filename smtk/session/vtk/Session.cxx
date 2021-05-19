@@ -95,8 +95,7 @@ std::string EntityTypeNameString(EntityType etype)
 
 /// Construct an invalid handle.
 EntityHandle::EntityHandle()
-  : m_modelNumber(-1)
-  , m_object(nullptr)
+  : m_object(nullptr)
   , m_session(nullptr)
 {
 }

@@ -240,7 +240,6 @@ smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& 
 
 Interface::Interface()
   : m_iface(new ::moab::Core())
-  , m_modified(false)
 {
   m_alloc.reset(new smtk::mesh::moab::Allocator(m_iface.get()));
   m_bcAlloc.reset(new smtk::mesh::moab::BufferedCellAllocator(m_iface.get()));

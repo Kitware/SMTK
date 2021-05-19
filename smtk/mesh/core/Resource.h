@@ -328,7 +328,7 @@ private:
 
   smtk::model::WeakResourcePtr m_modelResource;
 
-  int m_nameCounter;
+  int m_nameCounter{ -1 };
 
   friend std::shared_ptr<Component> Component::create(
     const ResourcePtr&,

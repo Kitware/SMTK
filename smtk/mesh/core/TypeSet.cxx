@@ -33,11 +33,7 @@ namespace smtk
 namespace mesh
 {
 
-TypeSet::TypeSet()
-  : m_hasMesh(false)
-  , m_hasCell(false)
-{
-}
+TypeSet::TypeSet() = default;
 
 TypeSet::TypeSet(smtk::mesh::CellTypes ctypes, bool hasM, bool hasC)
   : m_cellTypes(ctypes)

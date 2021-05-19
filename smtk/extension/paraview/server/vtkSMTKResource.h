@@ -66,7 +66,7 @@ protected:
   std::weak_ptr<smtk::resource::Resource> Resource;
   smtk::common::UUID ResourceId;
   vtkSmartPointer<vtkAlgorithm> Converter;
-  vtkSMTKWrapper* Wrapper;
+  vtkSMTKWrapper* Wrapper{ nullptr };
 };
 
 #endif

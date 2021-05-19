@@ -126,7 +126,6 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget* prent)
   : QWidget(prent)
   , Internals(new pqSplitEdgeWidget::pqInternals)
   , m_edgePointPicker(new pqSplitEdgeWidgetInternals::EdgePointPicker(this))
-  , View(nullptr)
 {
   this->setObjectName("pqSplitEdgeWidget");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

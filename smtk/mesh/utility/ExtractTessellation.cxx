@@ -240,11 +240,7 @@ PreAllocatedTessellation::PreAllocatedTessellation(
 {
 }
 
-Tessellation::Tessellation()
-  : m_useVTKConnectivity(true)
-  , m_useVTKCellTypes(true)
-{
-}
+Tessellation::Tessellation() = default;
 
 Tessellation::Tessellation(bool useVTKConnectivity, bool useVTKCellTypes)
   : m_useVTKConnectivity(useVTKConnectivity)

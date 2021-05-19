@@ -93,7 +93,7 @@ private:
 
   static PythonInterpreter m_instance;
 
-  bool m_embedded;
+  bool m_embedded{ false };
 };
 } // namespace common
 } // namespace smtk

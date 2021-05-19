@@ -135,8 +135,8 @@ protected:
 private:
   Q_DISABLE_COPY(qtLineEdit)
 
-  bool EditingFinishedPending;
-  bool ResetCursorPositionOnEditingFinished;
+  bool EditingFinishedPending{ false };
+  bool ResetCursorPositionOnEditingFinished{ true };
 };
 } // namespace extension
 } // namespace smtk

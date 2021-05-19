@@ -62,7 +62,7 @@ protected:
   ComponentPhraseContent();
 
   std::weak_ptr<smtk::resource::Component> m_component;
-  int m_mutability;
+  int m_mutability{ 0 };
 };
 
 } // namespace view

@@ -18,17 +18,11 @@ UserData::UserData() = default;
 
 UserData::~UserData() = default;
 
-UserDataInt::UserDataInt()
-  : m_value(0)
-{
-}
+UserDataInt::UserDataInt() = default;
 
 UserDataInt::~UserDataInt() = default;
 
-UserDataDouble::UserDataDouble()
-  : m_value(0.0)
-{
-}
+UserDataDouble::UserDataDouble() = default;
 
 UserDataDouble::~UserDataDouble() = default;
 

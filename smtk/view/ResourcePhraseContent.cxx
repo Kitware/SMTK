@@ -27,10 +27,7 @@ namespace smtk
 namespace view
 {
 
-ResourcePhraseContent::ResourcePhraseContent()
-  : m_mutability(0)
-{
-}
+ResourcePhraseContent::ResourcePhraseContent() = default;
 
 ResourcePhraseContent::~ResourcePhraseContent() = default;
 

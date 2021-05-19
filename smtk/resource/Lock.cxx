@@ -14,12 +14,7 @@ namespace smtk
 namespace resource
 {
 
-Lock::Lock()
-  : m_activeReaders(0)
-  , m_waitingWriters(0)
-  , m_activeWriters(0)
-{
-}
+Lock::Lock() = default;
 
 void Lock::lock(LockType lockType)
 {

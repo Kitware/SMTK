@@ -42,9 +42,9 @@ protected slots:
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
 protected:
-  pqSMTKResourceBrowser* m_browser;
+  pqSMTKResourceBrowser* m_browser{ nullptr };
   smtk::view::ConfigurationPtr m_view;
-  smtk::extension::qtUIManager* m_viewUIMgr;
+  smtk::extension::qtUIManager* m_viewUIMgr{ nullptr };
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h

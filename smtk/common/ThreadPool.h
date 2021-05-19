@@ -71,15 +71,14 @@ protected:
   std::mutex m_queueMutex;
   std::vector<std::thread> m_threads;
   std::queue<std::packaged_task<ReturnType()>> m_queue;
-  bool m_initialized;
+  bool m_initialized{ false };
   std::atomic<bool> m_active;
   unsigned int m_maxThreads;
 };
 
 template<typename ReturnType>
 ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
-  : m_initialized(false)
-  , m_active(true)
+  : m_active(true)
   , m_maxThreads(maxThreads == 0 ? std::thread::hardware_concurrency() : maxThreads)
 {
 }

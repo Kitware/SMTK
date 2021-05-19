@@ -45,8 +45,6 @@ using namespace smtk::extension;
 //-----------------------------------------------------------------------------
 qtLineEdit::qtLineEdit(QWidget* _parent)
   : Superclass(_parent)
-  , EditingFinishedPending(false)
-  , ResetCursorPositionOnEditingFinished(true)
 {
   qtLineEdit::connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
   qtLineEdit::connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));
@@ -55,8 +53,6 @@ qtLineEdit::qtLineEdit(QWidget* _parent)
 //-----------------------------------------------------------------------------
 qtLineEdit::qtLineEdit(const QString& _contents, QWidget* _parent)
   : Superclass(_contents, _parent)
-  , EditingFinishedPending(false)
-  , ResetCursorPositionOnEditingFinished(true)
 {
   qtLineEdit::connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
   qtLineEdit::connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));

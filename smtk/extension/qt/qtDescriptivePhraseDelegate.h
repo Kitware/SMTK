@@ -88,14 +88,14 @@ protected:
     const QStyleOptionViewItem& option,
     const QModelIndex& index) override;
 
-  int m_titleFontSize;
-  int m_subtitleFontSize;
-  int m_titleFontWeight;
-  int m_subtitleFontWeight;
-  int m_textVerticalPad;
-  bool m_drawSubtitle;
-  bool m_visibilityMode;
-  bool m_highlightOnHover;
+  int m_titleFontSize{ 14 };
+  int m_subtitleFontSize{ 10 };
+  int m_titleFontWeight{ 2 };
+  int m_subtitleFontWeight{ 1 };
+  int m_textVerticalPad{ 2 };
+  bool m_drawSubtitle{ true };
+  bool m_visibilityMode{ false };
+  bool m_highlightOnHover{ false };
 };
 
 } // namespace extension

@@ -31,7 +31,6 @@ vtkCxxSetObjectMacro(vtkSMTKResource, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKResource::vtkSMTKResource()
   : Converter(nullptr)
-  , Wrapper(nullptr)
 {
   this->SetNumberOfInputPorts(0);
 }

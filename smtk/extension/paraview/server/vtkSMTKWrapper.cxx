@@ -75,12 +75,7 @@ vtkStandardNewMacro(vtkSMTKWrapper);
 vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation);
 
 vtkSMTKWrapper::vtkSMTKWrapper()
-  : ActiveResource(nullptr)
-  , Managers(smtk::common::Managers::create())
-  , SelectedPort(nullptr)
-  , SelectionObj(nullptr)
-  , JSONRequest(nullptr)
-  , JSONResponse(nullptr)
+  : Managers(smtk::common::Managers::create())
   , SelectionSource("paraview")
 {
   smtk::plugin::Manager::instance()->registerPluginsTo(this->Managers);

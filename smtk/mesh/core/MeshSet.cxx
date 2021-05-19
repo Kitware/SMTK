@@ -22,10 +22,7 @@ namespace smtk
 namespace mesh
 {
 
-MeshSet::MeshSet()
-  : m_handle()
-{
-}
+MeshSet::MeshSet() = default;
 
 MeshSet::MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle)
 {

@@ -52,7 +52,7 @@ protected slots:
 
 protected:
   std::map<smtk::resource::ManagerPtr, smtk::resource::Observers::Key> m_resourceManagerObservers;
-  pqSMTKAttributePanel* m_panel;
+  pqSMTKAttributePanel* m_panel{ nullptr };
   std::weak_ptr<smtk::attribute::Resource> m_attr;
 
 private:

@@ -114,18 +114,19 @@ protected:
     smtk::io::Logger& logger) const;
 
 private:
+  // NOLINTNEXTLINE(modernize-use-default-member-init)
   unsigned int m_fileVersion;
-  bool m_includeAdvanceLevels;
-  bool m_includeAnalyses;
-  bool m_includeAttributeAssociations;
-  bool m_includeDefinitions;
-  bool m_includeEvaluators;
-  bool m_includeInstances;
-  bool m_includeResourceAssociations;
-  bool m_includeResourceID;
-  bool m_includeUniqueRoles;
-  bool m_includeViews;
-  bool m_useDirectoryInfo;
+  bool m_includeAdvanceLevels{ true };
+  bool m_includeAnalyses{ true };
+  bool m_includeAttributeAssociations{ true };
+  bool m_includeDefinitions{ true };
+  bool m_includeEvaluators{ true };
+  bool m_includeInstances{ true };
+  bool m_includeResourceAssociations{ true };
+  bool m_includeResourceID{ true };
+  bool m_includeUniqueRoles{ true };
+  bool m_includeViews{ true };
+  bool m_useDirectoryInfo{ false };
   std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
 };
 } // namespace io

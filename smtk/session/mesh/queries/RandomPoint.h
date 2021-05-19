@@ -31,10 +31,7 @@ namespace mesh
 struct SMTKMESHSESSION_EXPORT RandomPoint
   : public smtk::resource::query::DerivedFrom<RandomPoint, smtk::geometry::RandomPoint>
 {
-  RandomPoint()
-    : m_seed(0)
-  {
-  }
+  RandomPoint() = default;
 
   std::array<double, 3> operator()(const smtk::resource::Component::Ptr& component) const override
   {
@@ -59,7 +56,7 @@ struct SMTKMESHSESSION_EXPORT RandomPoint
   void seed(std::size_t i) override { m_seed = i; }
 
 private:
-  std::size_t m_seed;
+  std::size_t m_seed{ 0 };
 };
 } // namespace mesh
 } // namespace session

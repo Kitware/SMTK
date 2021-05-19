@@ -397,7 +397,7 @@ private:
   smtk::mesh::AllocatorPtr m_alloc;
   smtk::mesh::BufferedCellAllocatorPtr m_bcAlloc;
   smtk::mesh::IncrementalAllocatorPtr m_iAlloc;
-  mutable bool m_modified;
+  mutable bool m_modified{ false };
 };
 } // namespace moab
 } // namespace mesh

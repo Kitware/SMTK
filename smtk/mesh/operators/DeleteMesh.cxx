@@ -28,10 +28,7 @@ namespace smtk
 namespace mesh
 {
 
-DeleteMesh::DeleteMesh()
-  : m_suppressOutput(false)
-{
-}
+DeleteMesh::DeleteMesh() = default;
 
 smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
 {

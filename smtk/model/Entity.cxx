@@ -91,9 +91,7 @@ static const char* entityTypeNames[] = { "cell",     "use",     "shell",    "gro
 
 /// The default constructor creates an invalid link.
 Entity::Entity()
-  : m_entityFlags(INVALID)
-  , m_firstInvalid(-1)
-  , m_id(smtk::common::UUIDGenerator::instance().random())
+  : m_id(smtk::common::UUIDGenerator::instance().random())
 {
 }
 

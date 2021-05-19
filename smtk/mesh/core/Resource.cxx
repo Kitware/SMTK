@@ -54,7 +54,6 @@ typedef std::tuple<BoundingBox> QueryList;
 
 Resource::Resource()
   : Superclass(smtk::common::UUIDGenerator::instance().random())
-  , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
   queries().registerQueries<QueryList>();
@@ -63,7 +62,6 @@ Resource::Resource()
 
 Resource::Resource(const smtk::common::UUID& resourceID)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(resourceID)
-  , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
   queries().registerQueries<QueryList>();
@@ -73,7 +71,6 @@ Resource::Resource(const smtk::common::UUID& resourceID)
 Resource::Resource(smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
   queries().registerQueries<QueryList>();
@@ -82,7 +79,6 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(resourceID)
-  , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
   queries().registerQueries<QueryList>();

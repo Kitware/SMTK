@@ -22,12 +22,9 @@ vtkSMTKSettings* vtkSMTKSettings::New()
 }
 
 vtkSMTKSettings::vtkSMTKSettings()
-  : HighlightOnHover(true)
-  , ShowSaveResourceOnClose(AskUser)
+  : ShowSaveResourceOnClose(AskUser)
   , SelectionRenderStyle(SolidSelectionStyle)
   , ResourceTreeStyle(HierarchicalStyle)
-  , WorkflowsFolder(nullptr)
-  , ProjectsRootFolder(nullptr)
 {
 }
 

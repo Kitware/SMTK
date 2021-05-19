@@ -31,8 +31,6 @@ namespace view
 unsigned int DescriptivePhrase::s_nextPhraseId = 0;
 
 DescriptivePhrase::DescriptivePhrase()
-  : m_type(DescriptivePhraseType::INVALID_DESCRIPTION)
-  , m_subphrasesBuilt(false)
 {
   m_phraseId = DescriptivePhrase::s_nextPhraseId++;
 }

@@ -65,8 +65,9 @@ SMTKVTKSESSION_EXPORT std::string EntityTypeNameString(EntityType etype);
 /// A "handle" for a VTK entity (file, block, side set, or node set)
 struct SMTKVTKSESSION_EXPORT EntityHandle
 {
-  int
-    m_modelNumber; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
+  int m_modelNumber{
+    -1
+  }; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
   vtkSmartPointer<vtkDataObject> m_object; //!< The dataset being presented as this entity.
   SessionPtr m_session;                    //!< The session owning this entity.
 

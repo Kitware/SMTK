@@ -42,18 +42,15 @@ namespace qt
 {
 
 MembershipBadge::MembershipBadge()
-  : m_singleSelect(false)
-  , m_iconOn(selected_svg)
+  : m_iconOn(selected_svg)
   , m_iconOff(unselected_svg)
-  , m_parent(nullptr)
 {
 }
 
 MembershipBadge::MembershipBadge(
   smtk::view::BadgeSet& parent,
   const smtk::view::Configuration::Component& config)
-  : m_singleSelect(false)
-  , m_iconOn(selected_svg)
+  : m_iconOn(selected_svg)
   , m_iconOff(unselected_svg)
   , m_parent(&parent)
 {

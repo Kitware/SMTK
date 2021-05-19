@@ -174,8 +174,7 @@ typename std::enable_if<!HasNewAPI<RenderView>::value, void>::type MarkRedistrib
 vtkStandardNewMacro(vtkSMTKResourceRepresentation);
 
 vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
-  : Wrapper(nullptr)
-  , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
+  : EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , SelectedGlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
@@ -183,10 +182,6 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
   , SelectedEntities(vtkSmartPointer<vtkActor>::New())
   , GlyphEntities(vtkSmartPointer<vtkActor>::New())
   , SelectedGlyphEntities(vtkSmartPointer<vtkActor>::New())
-  , EntitiesActorPickId(-1)
-  , SelectedEntitiesActorPickId(-1)
-  , GlyphEntitiesActorPickId(-1)
-  , SelectedGlyphEntitiesActorPickId(-1)
 {
   this->SetupDefaults();
   this->SetNumberOfInputPorts(3);

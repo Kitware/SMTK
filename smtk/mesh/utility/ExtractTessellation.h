@@ -162,8 +162,8 @@ private:
 
   std::vector<double> m_points;
 
-  bool m_useVTKConnectivity;
-  bool m_useVTKCellTypes;
+  bool m_useVTKConnectivity{ true };
+  bool m_useVTKCellTypes{ true };
 };
 
 //Don't wrap these for python, instead python should use the Tessellation class

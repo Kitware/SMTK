@@ -77,7 +77,7 @@ protected:
   bool appliesToObject(const smtk::resource::PersistentObjectPtr& obj) const;
   std::set<std::string> unmetRequirements(const smtk::resource::PersistentObjectPtr& obj) const;
 
-  const BadgeSet* m_parent;
+  const BadgeSet* m_parent{ nullptr };
   std::string m_applyToResource;
   std::string m_applyToComponent;
   std::set<std::string> m_requiredDefinitions;

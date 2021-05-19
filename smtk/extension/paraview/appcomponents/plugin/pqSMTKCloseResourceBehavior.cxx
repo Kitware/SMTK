@@ -204,7 +204,6 @@ static pqSMTKCloseResourceBehavior* g_instance = nullptr;
 
 pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
   : Superclass(parent)
-  , m_newMenu(nullptr)
 {
   initCloseResourceBehaviorResources();
 

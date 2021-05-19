@@ -193,12 +193,10 @@ public:
 
   Observers()
     : m_initializer()
-    , m_observing(false)
   {
   }
   Observers(Initializer&& initializer)
     : m_initializer(initializer)
-    , m_observing(false)
   {
   }
 
@@ -428,7 +426,7 @@ private:
     return m_observers.erase(key);
   }
 
-  bool m_observing;
+  bool m_observing{ false };
   std::set<InternalKey> m_toErase;
 
   std::mutex m_mutex;

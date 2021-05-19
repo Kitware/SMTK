@@ -48,10 +48,7 @@ public:
   }
 
 protected:
-  entity()
-    : m_parent(nullptr)
-  {
-  }
+  entity() = default;
   entity(const Id& uid, entity* p)
     : m_parent(p)
     , m_id(uid)
@@ -59,7 +56,7 @@ protected:
   }
   virtual ~entity() { m_parent = nullptr; }
 
-  entity* m_parent;
+  entity* m_parent{ nullptr };
   Id m_id;
 };
 

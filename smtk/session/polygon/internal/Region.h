@@ -36,7 +36,7 @@ class SMTKPOLYGONSESSION_EXPORT Region
 {
 public:
   FragmentId m_seedFragment;
-  bool m_seedSense;
+  bool m_seedSense{ true };
   //std::deque<std::pair<FragmentId,bool> > m_boundary; // size_t = fragment id, bool = sense rel to fragment
   std::set<int> m_innerLoops;
 
