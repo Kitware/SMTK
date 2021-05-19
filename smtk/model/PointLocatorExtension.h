@@ -48,7 +48,7 @@ public:
     const EntityRef& entity,
     std::size_t nPoints,
     std::vector<double>& points,
-    const std::size_t seed) = 0;
+    std::size_t seed) = 0;
 
   /// Same as above, but seeded with a hardware-supplied random integer.
   bool randomPoint(const EntityRef& entity, std::size_t nPoints, std::vector<double>& points);

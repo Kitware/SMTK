@@ -43,7 +43,7 @@ public:
   //Based on the backend these points maybe be added to the resource for
   //duration of the PointLocator
   PointLocator(
-    const smtk::mesh::ResourcePtr resource,
+    smtk::mesh::ResourcePtr resource,
     std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates);
   PointLocator(
