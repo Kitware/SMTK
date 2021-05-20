@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QTimer>
@@ -67,6 +68,7 @@ void qtOperationDialog::buildUI(
   smtk::operation::OperationPtr op,
   QSharedPointer<smtk::extension::qtUIManager> uiManager)
 {
+  this->setObjectName("ExportDialog");
   m_internals = new qtOperationDialogInternals();
   m_internals->m_uiManager = uiManager;
   m_internals->m_operation = op;
@@ -76,16 +78,19 @@ void qtOperationDialog::buildUI(
   m_internals->m_tabWidget->setStyleSheet("QTabBar::tab { min-width: 100px; }");
 
   // 1. Create the editor tab
-  QWidget* editorWidget = new QWidget(this);
-  QVBoxLayout* editorLayout = new QVBoxLayout(editorWidget);
+  // Make contents scrollable.
+  QScrollArea* scroll = new QScrollArea();
+  QWidget* viewport = new QWidget();
+  scroll->setWidget(viewport);
+  scroll->setWidgetResizable(true);
+  QVBoxLayout* viewportLayout = new QVBoxLayout(viewport);
+  viewport->setLayout(viewportLayout);
 
   // Create the SMTK view
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
-  auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
+  auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, viewport);
   m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
-
-  editorWidget->setLayout(editorLayout);
-  m_internals->m_tabWidget->addTab(editorWidget, "Parameters");
+  m_internals->m_tabWidget->addTab(scroll, "Parameters");
 
   // 2. Create the info tab
   QTextEdit* infoWidget = new QTextEdit(this);
@@ -125,6 +130,9 @@ void qtOperationDialog::buildUI(
   // 4. And the window title
   std::string title = viewConfig->label();
   this->setWindowTitle(title.c_str());
+
+  // Set default size
+  this->setMinimumSize(480, 320);
 }
 
 qtOperationDialog::~qtOperationDialog()
