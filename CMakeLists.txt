@@ -403,6 +403,11 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   set_property(CACHE SMTK_PYTHON_VERSION
     PROPERTY
       STRINGS "2;3")
+  if (SMTK_PYTHON_VERSION STREQUAL "2")
+    message(DEPRECATION
+      "Python2 support is deprecated and will be removed in a future release. "
+      "Please migrate to a supported version of Python.")
+  endif ()
   if (SMTK_ENABLE_VTK_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
     if (NOT SMTK_PYTHON_VERSION STREQUAL VTK_PYTHON_VERSION)
       message(FATAL_ERROR
