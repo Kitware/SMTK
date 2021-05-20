@@ -64,9 +64,23 @@ qtOperationDialog::qtOperationDialog(
   this->buildUI(op, uiManager);
 }
 
+qtOperationDialog::qtOperationDialog(
+  smtk::operation::OperationPtr op,
+  smtk::resource::ManagerPtr resManager,
+  smtk::view::ManagerPtr viewManager,
+  bool scrollable,
+  QWidget* parentWidget)
+  : QDialog(parentWidget)
+{
+  auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
+    new smtk::extension::qtUIManager(op, resManager, viewManager));
+  this->buildUI(op, uiManager, scrollable);
+}
+
 void qtOperationDialog::buildUI(
   smtk::operation::OperationPtr op,
-  QSharedPointer<smtk::extension::qtUIManager> uiManager)
+  QSharedPointer<smtk::extension::qtUIManager> uiManager,
+  bool scrollable)
 {
   this->setObjectName("ExportDialog");
   m_internals = new qtOperationDialogInternals();
@@ -78,19 +92,30 @@ void qtOperationDialog::buildUI(
   m_internals->m_tabWidget->setStyleSheet("QTabBar::tab { min-width: 100px; }");
 
   // 1. Create the editor tab
-  // Make contents scrollable.
-  QScrollArea* scroll = new QScrollArea();
-  QWidget* viewport = new QWidget();
-  scroll->setWidget(viewport);
-  scroll->setWidgetResizable(true);
-  QVBoxLayout* viewportLayout = new QVBoxLayout(viewport);
-  viewport->setLayout(viewportLayout);
-
-  // Create the SMTK view
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
-  auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, viewport);
-  m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
-  m_internals->m_tabWidget->addTab(scroll, "Parameters");
+  if (scrollable)
+  {
+    QScrollArea* scroll = new QScrollArea();
+    QWidget* viewport = new QWidget();
+    scroll->setWidget(viewport);
+    scroll->setWidgetResizable(true);
+    QVBoxLayout* viewportLayout = new QVBoxLayout(viewport);
+    viewport->setLayout(viewportLayout);
+
+    // Create the SMTK view
+    auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, viewport);
+    m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
+    m_internals->m_tabWidget->addTab(scroll, "Parameters");
+  }
+  else
+  {
+    QWidget* editorWidget = new QWidget(this);
+    QVBoxLayout* editorLayout = new QVBoxLayout(editorWidget);
+    auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
+    editorWidget->setLayout(editorLayout);
+    m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
+    m_internals->m_tabWidget->addTab(editorWidget, "Parameters");
+  }
 
   // 2. Create the info tab
   QTextEdit* infoWidget = new QTextEdit(this);
@@ -131,8 +156,12 @@ void qtOperationDialog::buildUI(
   std::string title = viewConfig->label();
   this->setWindowTitle(title.c_str());
 
-  // Set default size
-  this->setMinimumSize(480, 320);
+  if (scrollable)
+  {
+    // Set min size for reasonable display
+    // Application can always override this
+    this->setMinimumSize(480, 320);
+  }
 }
 
 qtOperationDialog::~qtOperationDialog()
