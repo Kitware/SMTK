@@ -24,7 +24,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Allocator > pybind11_init_smtk_mesh_Allocator(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Allocator > pybind11_init_smtk_mesh_Allocator(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Allocator > instance(m, "Allocator");
   instance
@@ -36,7 +36,7 @@ PySharedPtrClass< smtk::mesh::Allocator > pybind11_init_smtk_mesh_Allocator(py::
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::BufferedCellAllocator > pybind11_init_smtk_mesh_BufferedCellAllocator(py::module &m)
+inline PySharedPtrClass< smtk::mesh::BufferedCellAllocator > pybind11_init_smtk_mesh_BufferedCellAllocator(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::BufferedCellAllocator > instance(m, "BufferedCellAllocator");
   instance
@@ -56,7 +56,7 @@ PySharedPtrClass< smtk::mesh::BufferedCellAllocator > pybind11_init_smtk_mesh_Bu
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::ConnectivityStorage > pybind11_init_smtk_mesh_ConnectivityStorage(py::module &m)
+inline PySharedPtrClass< smtk::mesh::ConnectivityStorage > pybind11_init_smtk_mesh_ConnectivityStorage(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::ConnectivityStorage > instance(m, "ConnectivityStorage");
   instance
@@ -77,7 +77,7 @@ PySharedPtrClass< smtk::mesh::ConnectivityStorage > pybind11_init_smtk_mesh_Conn
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::IncrementalAllocator > pybind11_init_smtk_mesh_IncrementalAllocator(py::module &m)
+inline PySharedPtrClass< smtk::mesh::IncrementalAllocator > pybind11_init_smtk_mesh_IncrementalAllocator(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::IncrementalAllocator > instance(m, "IncrementalAllocator");
   instance
@@ -100,7 +100,7 @@ PySharedPtrClass< smtk::mesh::IncrementalAllocator > pybind11_init_smtk_mesh_Inc
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::Interface > pybind11_init_smtk_mesh_Interface(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Interface > pybind11_init_smtk_mesh_Interface(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Interface > instance(m, "Interface");
   instance
@@ -177,7 +177,7 @@ PySharedPtrClass< smtk::mesh::Interface > pybind11_init_smtk_mesh_Interface(py::
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::PointLocatorImpl > pybind11_init_smtk_mesh_PointLocatorImpl(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointLocatorImpl > pybind11_init_smtk_mesh_PointLocatorImpl(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::PointLocatorImpl > instance(m, "PointLocatorImpl");
   instance

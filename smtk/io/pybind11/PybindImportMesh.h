@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::ImportMesh > pybind11_init_smtk_io_ImportMesh(py::module &m)
+inline PySharedPtrClass< smtk::io::ImportMesh > pybind11_init_smtk_io_ImportMesh(py::module &m)
 {
   PySharedPtrClass< smtk::io::ImportMesh > instance(m, "ImportMesh");
   instance
@@ -30,22 +30,22 @@ PySharedPtrClass< smtk::io::ImportMesh > pybind11_init_smtk_io_ImportMesh(py::mo
   return instance;
 }
 
-void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
   m.def("importMesh", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::importMesh, "", py::arg("filePath"), py::arg("interface"));
 }
 
-void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEES9_(py::module &m)
+inline void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEES9_(py::module &m)
 {
   m.def("importMesh", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&, ::std::string const &)) &smtk::io::importMesh, "", py::arg("filePath"), py::arg("interface"), py::arg("domainPropertyName"));
 }
 
-void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("importMesh", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::importMesh, "", py::arg("filePath"), py::arg("resource"));
 }
 
-void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEES9_(py::module &m)
+inline void pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEES9_(py::module &m)
 {
   m.def("importMesh", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr, ::std::string const &)) &smtk::io::importMesh, "", py::arg("filePath"), py::arg("resource"), py::arg("domainPropertyName"));
 }

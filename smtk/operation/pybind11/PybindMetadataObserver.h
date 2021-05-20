@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::operation::MetadataObservers > pybind11_init_smtk_operation_MetadataObservers(py::module &m)
+inline py::class_< smtk::operation::MetadataObservers > pybind11_init_smtk_operation_MetadataObservers(py::module &m)
 {
   py::class_< smtk::operation::MetadataObservers > instance(m, "MetadataObservers");
   instance

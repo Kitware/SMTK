@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::Color > pybind11_init_smtk_common_Color(py::module &m)
+inline py::class_< smtk::common::Color > pybind11_init_smtk_common_Color(py::module &m)
 {
   py::class_< smtk::common::Color > instance(m, "Color");
   instance

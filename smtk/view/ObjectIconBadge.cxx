@@ -22,10 +22,7 @@ namespace smtk
 namespace view
 {
 
-ObjectIconBadge::ObjectIconBadge()
-  : m_parent(nullptr)
-{
-}
+ObjectIconBadge::ObjectIconBadge() = default;
 
 ObjectIconBadge::ObjectIconBadge(BadgeSet& parent, const Configuration::Component&)
   : m_parent(&parent)

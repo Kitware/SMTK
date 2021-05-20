@@ -20,10 +20,7 @@ namespace extension
 
 qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   : QWidget(parent)
-  , m_operationList(nullptr)
-  , m_layout(nullptr)
   , m_operationSource(nullptr)
-  , m_useLabels(false)
 {
   m_operationList = new QListWidget(this);
   m_layout = new QVBoxLayout(this);

@@ -16,6 +16,9 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
 
   # Ignore warnings from CMake autogen code
   "autogen"
+
+  # ParaView generated code (paraview/paraview!4957)
+  "AutoStartImplementation.*modernize-use-nullptr"
 )
 
 ##------------------------------------------------------------------------------

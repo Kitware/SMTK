@@ -96,10 +96,7 @@ public:
 
 pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
   : Superclass(parent)
-  , m_p(nullptr)
-  , m_wrapper(nullptr)
   , m_editing(nullptr)
-  , m_attrUIMgr(nullptr)
 {
   // This must come before m_p is created, since the m_p->OperationList widget will reference it:
   auto opFilterSort = smtk::workflow::OperationFilterSort::create();

@@ -59,7 +59,7 @@ public:
 
   // Main widget contents
   QGridLayout* m_grid;
-  QCheckBox* m_optional;            // Added if the item is optional to reflect IsEnabled().
+  QCheckBox* m_optional{ nullptr }; // Added if the item is optional to reflect IsEnabled().
   QLabel* m_label;                  // The item's label (or name if no label).
   QLabel* m_synopsis;               // A live summary of the item's entries and acceptability
   QPushButton* m_copyFromSelection; // A button to copy the selection into the item's entries
@@ -72,7 +72,9 @@ public:
   QDialog* m_popup;
   QVBoxLayout* m_popupLayout;
   QListView* m_popupList;
-  bool m_alreadyClosingPopup; // Set when synchronizeAndHide() should **not** hide the QMenu.
+  bool m_alreadyClosingPopup{
+    false
+  }; // Set when synchronizeAndHide() should **not** hide the QMenu.
 
   // Selection state of items shown in m_phraseModel, from the MembershipBadge
   // std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
@@ -80,8 +82,8 @@ public:
   //   m_members;
 
   // Link between Qt and SMTK
-  smtk::extension::qtDescriptivePhraseModel* m_qtModel;
-  smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate;
+  smtk::extension::qtDescriptivePhraseModel* m_qtModel{ nullptr };
+  smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate{ nullptr };
 
   smtk::view::PhraseModelObservers::Key m_modelObserverId;
 

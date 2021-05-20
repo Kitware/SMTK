@@ -26,7 +26,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::module& m)
+inline PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::module& m)
 {
   PySharedPtrClass<smtk::project::Project, smtk::project::PyProject, smtk::resource::Resource>
     instance(m, "Project");

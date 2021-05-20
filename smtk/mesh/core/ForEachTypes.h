@@ -72,8 +72,8 @@ public:
 
 private:
   smtk::mesh::ResourcePtr m_resource;
-  const smtk::mesh::Handle* m_pointIds;
-  std::vector<double>* m_coords;
+  const smtk::mesh::Handle* m_pointIds{ nullptr };
+  std::vector<double>* m_coords{ nullptr };
   bool m_wantsCoordinates;
 };
 

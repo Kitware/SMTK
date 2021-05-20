@@ -87,7 +87,7 @@ private:
   std::string m_iconClosed;
   // Selection state of items shown in m_phraseModel:
   std::map<smtk::common::UUID, int> m_visibleThings;
-  const smtk::view::BadgeSet* m_parent;
+  const smtk::view::BadgeSet* m_parent{ nullptr };
 };
 } // namespace appcomponents
 } // namespace paraview

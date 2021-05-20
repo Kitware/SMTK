@@ -20,13 +20,8 @@ namespace smtk
 namespace view
 {
 
-PhraseListContent::PhraseListContent()
-  : m_mutability(0)
-  , m_commonFlags(smtk::model::INVALID)
-  , m_unionFlags(0)
-{
-  // only color is mutable
-}
+// only color is mutable
+PhraseListContent::PhraseListContent() = default;
 
 PhraseListContent::Ptr PhraseListContent::setup(
   DescriptivePhrase::Ptr parent,

@@ -25,7 +25,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::ShellEntity, smtk::model::EntityRef > pybind11_init_smtk_model_ShellEntity(py::module &m)
+inline py::class_< smtk::model::ShellEntity, smtk::model::EntityRef > pybind11_init_smtk_model_ShellEntity(py::module &m)
 {
   py::class_< smtk::model::ShellEntity, smtk::model::EntityRef > instance(m, "ShellEntity");
   instance

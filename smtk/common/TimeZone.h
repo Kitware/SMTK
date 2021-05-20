@@ -61,7 +61,7 @@ public:
 
 private:
   boost::local_time::time_zone_ptr m_boostTimeZone;
-  bool m_isUTC;
+  bool m_isUTC{ false };
   std::string m_region;
 
   // Static timezone database

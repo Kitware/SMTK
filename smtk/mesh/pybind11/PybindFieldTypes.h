@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_mesh_FieldType(py::module &m)
+inline void pybind11_init_smtk_mesh_FieldType(py::module &m)
 {
   py::enum_<smtk::mesh::FieldType>(m, "FieldType")
     .value("Integer", smtk::mesh::FieldType::Integer)

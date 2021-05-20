@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::PointField > pybind11_init_smtk_mesh_PointField(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointField > pybind11_init_smtk_mesh_PointField(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::PointField > instance(m, "PointField");
   instance

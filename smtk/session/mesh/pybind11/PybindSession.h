@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > pybind11_init_smtk_session_mesh_Session(py::module &m)
+inline PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > pybind11_init_smtk_session_mesh_Session(py::module &m)
 {
   PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > instance(m, "Session");
   instance

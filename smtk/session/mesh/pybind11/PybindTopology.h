@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topology(py::module &m)
+inline py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topology(py::module &m)
 {
   py::class_< smtk::session::mesh::Topology > instance(m, "Topology");
   instance

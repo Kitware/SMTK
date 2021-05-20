@@ -23,7 +23,6 @@ using namespace smtk;
 vtkStandardNewMacro(vtkSMTKResourceSource);
 
 vtkSMTKResourceSource::vtkSMTKResourceSource()
-  : VTKResource(nullptr)
 {
   this->SetNumberOfInputPorts(0);
 }

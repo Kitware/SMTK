@@ -27,14 +27,6 @@ const int padding = 7;
 
 qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   : QStyledItemDelegate(owner)
-  , m_titleFontSize(14)
-  , m_subtitleFontSize(10)
-  , m_titleFontWeight(2)
-  , m_subtitleFontWeight(1)
-  , m_textVerticalPad(2)
-  , m_drawSubtitle(true)
-  , m_visibilityMode(false)
-  , m_highlightOnHover(false)
 {
 }
 

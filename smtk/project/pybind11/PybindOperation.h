@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_project_Operation(py::module &m)
+inline PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_project_Operation(py::module &m)
 {
   py::module::import("smtk.operation");
 

@@ -107,10 +107,10 @@ public:
 
   struct Record
   {
-    Severity severity;
+    Severity severity{ INFO };
     std::string message;
     std::string fileName;
-    unsigned int lineNumber;
+    unsigned int lineNumber{ 0 };
     Record(Severity s, const std::string& m, const std::string& f = "", unsigned int l = 0)
       : severity(s)
       , message(m)
@@ -118,24 +118,14 @@ public:
       , lineNumber(l)
     {
     }
-    Record()
-      : severity(INFO)
-      , lineNumber(0)
-    {
-    }
+    Record() = default;
   };
 
-  Logger()
-    : m_hasErrors(false)
-    , m_stream(nullptr)
-    , m_ownStream(false)
-  {
-  }
+  Logger() = default;
 
   Logger(const Logger& logger)
     : m_hasErrors(logger.m_hasErrors)
     , m_records(logger.m_records)
-    , m_ownStream(false)
   {
   }
 
@@ -184,10 +174,10 @@ protected:
   void flushRecordsToStream(std::size_t beginRec, std::size_t endRec);
   std::string toStringInternal(std::size_t i, std::size_t j, bool includeSourceLoc = false) const;
 
-  bool m_hasErrors;
+  bool m_hasErrors{ false };
   std::vector<Record> m_records;
-  std::ostream* m_stream;
-  bool m_ownStream;
+  std::ostream* m_stream{ nullptr };
+  bool m_ownStream{ false };
   std::function<void()> m_callback;
 
 private:

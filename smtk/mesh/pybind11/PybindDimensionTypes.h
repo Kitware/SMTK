@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_mesh_DimensionType(py::module &m)
+inline void pybind11_init_smtk_mesh_DimensionType(py::module &m)
 {
   py::enum_<smtk::mesh::DimensionType>(m, "DimensionType")
     .value("Dims0", smtk::mesh::DimensionType::Dims0)

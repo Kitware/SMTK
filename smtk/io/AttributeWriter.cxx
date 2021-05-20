@@ -29,17 +29,6 @@ namespace io
 
 AttributeWriter::AttributeWriter()
   : m_fileVersion(DEFAULT_FILE_VERSION)
-  , m_includeAdvanceLevels(true)
-  , m_includeAnalyses(true)
-  , m_includeAttributeAssociations(true)
-  , m_includeDefinitions(true)
-  , m_includeEvaluators(true)
-  , m_includeInstances(true)
-  , m_includeResourceAssociations(true)
-  , m_includeResourceID(true)
-  , m_includeUniqueRoles(true)
-  , m_includeViews(true)
-  , m_useDirectoryInfo(false)
 {
 }
 

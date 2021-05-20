@@ -43,8 +43,8 @@ public:
   smtk::mesh::ResourcePtr operator()(const smtk::model::Model& model) const;
 
 private:
-  bool m_mergeDuplicates;
-  double m_tolerance;
+  bool m_mergeDuplicates{ true };
+  double m_tolerance{ -1 };
 };
 } // namespace io
 } // namespace smtk

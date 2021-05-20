@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::extension::delaunay::Registrar > pybind11_init_smtk_extension_delaunay_Registrar(py::module &m)
+inline py::class_< smtk::extension::delaunay::Registrar > pybind11_init_smtk_extension_delaunay_Registrar(py::module &m)
 {
   py::class_< smtk::extension::delaunay::Registrar > instance(m, "Registrar");
   instance

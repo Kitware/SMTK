@@ -52,12 +52,9 @@ public:
   {
     ApiReturnType returnType;
     std::string errorMessage;
-    smtk::io::Logger* logger;
+    smtk::io::Logger* logger{ nullptr };
 
-    ApiStatus()
-      : logger(0)
-    {
-    }
+    ApiStatus() = default;
   };
 
   /// Enum for specifying point set closure.

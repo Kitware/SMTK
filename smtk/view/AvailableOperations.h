@@ -128,9 +128,9 @@ protected:
   smtk::operation::MetadataObservers::Key m_operationManagerObserverId;
   SelectionPtr m_selection;
   SelectionObservers::Key m_selectionObserverId;
-  int m_selectionMask;
-  bool m_selectionExact;
-  bool m_useSelection;
+  int m_selectionMask{ 1 };
+  bool m_selectionExact{ true };
+  bool m_useSelection{ true };
   OperationFilterSort m_workflowFilter;
   smtk::workflow::OperationFilterSort::Observers::Key m_workflowFilterObserverId;
   OperationIndexSet m_workingSet;

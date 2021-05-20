@@ -391,21 +391,21 @@ protected:
   // Keep track of event positions
   double LastEventPosition[3];
   // Controlling the push operation
-  double BumpDistance;
+  double BumpDistance{ 0.01 };
   // Controlling ivars
-  vtkTypeBool AlongXAxis;
-  vtkTypeBool AlongYAxis;
-  vtkTypeBool AlongZAxis;
+  vtkTypeBool AlongXAxis{ 0 };
+  vtkTypeBool AlongYAxis{ 0 };
+  vtkTypeBool AlongZAxis{ 0 };
   // The actual cylinder which is being manipulated
   vtkNew<vtkConeFrustum> Cone;
   // The facet resolution for rendering purposes.
-  int Resolution;
-  double Tolerance;         // How close are endpoints allowed to be?
-  vtkTypeBool ScaleEnabled; //whether the widget can be scaled
-  vtkTypeBool DrawCone;
+  int Resolution{ 128 };
+  double Tolerance{ 1e-8 };      // How close are endpoints allowed to be?
+  vtkTypeBool ScaleEnabled{ 1 }; //whether the widget can be scaled
+  vtkTypeBool DrawCone{ 1 };
   vtkNew<vtkTubeFilter> AxisTuber; // Used to style edges.
-  vtkTypeBool Tubing;              //control whether tubing is on
-  int Cylindrical;                 // control whether the cone is a cylinder (apex at infinity)
+  vtkTypeBool Tubing{ 1 };         //control whether tubing is on
+  int Cylindrical{ 0 };            // control whether the cone is a cylinder (apex at infinity)
 
   // Source of endpoint handle geometry
   vtkNew<vtkSphereSource> Sphere;

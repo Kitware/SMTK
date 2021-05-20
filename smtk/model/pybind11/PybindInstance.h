@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Instance, smtk::model::EntityRef > pybind11_init_smtk_model_Instance(py::module &m)
+inline py::class_< smtk::model::Instance, smtk::model::EntityRef > pybind11_init_smtk_model_Instance(py::module &m)
 {
   py::class_< smtk::model::Instance, smtk::model::EntityRef > instance(m, "Instance");
   instance

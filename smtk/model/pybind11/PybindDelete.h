@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > pybind11_init_smtk_model_Delete(py::module &m)
+inline PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > pybind11_init_smtk_model_Delete(py::module &m)
 {
   PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > instance(m, "Delete");
   instance

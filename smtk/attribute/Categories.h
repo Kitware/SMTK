@@ -56,12 +56,7 @@ public:
       Any = 0, //!< Check passes if any of the set's categories are found
       All = 1  //!< Check passes if all of the set's categories are found
     };
-    Set()
-      : m_includeMode(CombinationMode::Any)
-      , m_excludeMode(CombinationMode::Any)
-      , m_combinationMode(CombinationMode::All)
-    {
-    }
+    Set() = default;
     ///@{
     ///\brief Set/Get the how the sets of included and excluded categories are combined
     Set::CombinationMode combinationMode() const { return m_combinationMode; }
@@ -178,7 +173,8 @@ public:
     }
 
   private:
-    Set::CombinationMode m_includeMode, m_excludeMode, m_combinationMode;
+    Set::CombinationMode m_includeMode{ CombinationMode::Any },
+      m_excludeMode{ CombinationMode::Any }, m_combinationMode{ CombinationMode::All };
     std::set<std::string> m_includedCategories, m_excludedCategories;
   };
   Categories() = default;

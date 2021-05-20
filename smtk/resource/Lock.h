@@ -51,9 +51,9 @@ private:
   std::mutex m_mutex;
   std::condition_variable m_readerCondition;
   std::condition_variable m_writerCondition;
-  std::size_t m_activeReaders;
-  std::size_t m_waitingWriters;
-  std::size_t m_activeWriters;
+  std::size_t m_activeReaders{ 0 };
+  std::size_t m_waitingWriters{ 0 };
+  std::size_t m_activeWriters{ 0 };
 };
 
 /// A scope-guarded utility for handling locks.

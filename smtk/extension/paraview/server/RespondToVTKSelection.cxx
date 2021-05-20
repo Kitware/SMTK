@@ -54,12 +54,7 @@ namespace view
 {
 
 RespondToVTKSelection::RespondToVTKSelection()
-  : m_vtkSelection(nullptr)
-  , m_vtkData(nullptr)
-  , m_smtkSelectionSource("paraview")
-  , m_smtkSelectionValue(1)
-  , m_modifier(/* replace current selection */ 0)
-  , m_selectingBlocks(false)
+  : m_smtkSelectionSource("paraview")
 {
 }
 

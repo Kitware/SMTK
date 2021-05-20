@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_resource_EventType(py::module &m)
+inline void pybind11_init_smtk_resource_EventType(py::module &m)
 {
   py::enum_<smtk::resource::EventType>(m, "EventType")
     .value("ADDED", smtk::resource::EventType::ADDED)
@@ -28,7 +28,7 @@ void pybind11_init_smtk_resource_EventType(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::resource::Observers > pybind11_init_smtk_resource_Observers(py::module &m)
+inline py::class_< smtk::resource::Observers > pybind11_init_smtk_resource_Observers(py::module &m)
 {
   py::class_< smtk::resource::Observers > instance(m, "Observers");
   instance

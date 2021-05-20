@@ -53,7 +53,7 @@ public:
 
 protected:
   UserDataInt();
-  int m_value;
+  int m_value{ 0 };
 };
 
 // User Data Representing Doubles
@@ -73,7 +73,7 @@ public:
 
 protected:
   UserDataDouble();
-  double m_value;
+  double m_value{ 0.0 };
 };
 
 // User Data Representing Strings

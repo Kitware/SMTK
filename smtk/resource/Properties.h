@@ -17,6 +17,8 @@
 
 #include "smtk/common/json/jsonUUID.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace resource
@@ -183,14 +185,13 @@ public:
   /// Check if any properties of this type are associated with m_id.
   bool empty() const
   {
-    for (auto& pair : m_properties.data())
-    {
-      if (pair.second.find(m_id) != pair.second.end())
-      {
-        return false;
-      }
-    }
-    return true;
+    using PropertyDataMap =
+      std::unordered_map<std::string, std::unordered_map<smtk::common::UUID, Type>>;
+    const PropertyDataMap& data = m_properties.data();
+    return std::all_of(
+      data.begin(), data.end(), [this](const typename PropertyDataMap::value_type& pair) {
+        return pair.second.find(m_id) == pair.second.end();
+      });
   }
 
   std::set<std::string> keys() const

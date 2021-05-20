@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > pybind11_init_smtk_model_ExportModelJSON(py::module &m)
+inline PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > pybind11_init_smtk_model_ExportModelJSON(py::module &m)
 {
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > instance(m, "ExportModelJSON");
   instance

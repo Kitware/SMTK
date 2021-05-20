@@ -168,7 +168,7 @@ protected:
   // an attribute .sbt file.
   Specification createBaseSpecification() const;
 
-  int m_debugLevel;
+  int m_debugLevel{ 0 };
   std::weak_ptr<Manager> m_manager;
 
   // Operations need the ability to execute Operations without going through

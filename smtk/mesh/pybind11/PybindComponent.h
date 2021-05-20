@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Component, smtk::resource::Component > pybind11_init_smtk_mesh_Component(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Component, smtk::resource::Component > pybind11_init_smtk_mesh_Component(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Component, smtk::resource::Component > instance(m, "Component");
   instance

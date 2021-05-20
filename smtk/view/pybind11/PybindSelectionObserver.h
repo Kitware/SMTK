@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::view::SelectionObservers > pybind11_init_smtk_view_SelectionObservers(py::module &m)
+inline py::class_< smtk::view::SelectionObservers > pybind11_init_smtk_view_SelectionObservers(py::module &m)
 {
   py::class_< smtk::view::SelectionObservers > instance(m, "SelectionObservers");
   instance

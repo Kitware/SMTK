@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::project::IdTag > pybind11_init_smtk_project_IdTag(py::module &m)
+inline py::class_< smtk::project::IdTag > pybind11_init_smtk_project_IdTag(py::module &m)
 {
   py::class_< smtk::project::IdTag > instance(m, "IdTag");
   instance
@@ -28,7 +28,7 @@ py::class_< smtk::project::IdTag > pybind11_init_smtk_project_IdTag(py::module &
   return instance;
 }
 
-py::class_< smtk::project::IndexTag > pybind11_init_smtk_project_IndexTag(py::module &m)
+inline py::class_< smtk::project::IndexTag > pybind11_init_smtk_project_IndexTag(py::module &m)
 {
   py::class_< smtk::project::IndexTag > instance(m, "IndexTag");
   instance
@@ -39,7 +39,7 @@ py::class_< smtk::project::IndexTag > pybind11_init_smtk_project_IndexTag(py::mo
   return instance;
 }
 
-py::class_< smtk::project::LocationTag > pybind11_init_smtk_project_LocationTag(py::module &m)
+inline py::class_< smtk::project::LocationTag > pybind11_init_smtk_project_LocationTag(py::module &m)
 {
   py::class_< smtk::project::LocationTag > instance(m, "LocationTag");
   instance
@@ -50,7 +50,7 @@ py::class_< smtk::project::LocationTag > pybind11_init_smtk_project_LocationTag(
   return instance;
 }
 
-py::class_< smtk::project::NameTag > pybind11_init_smtk_project_NameTag(py::module &m)
+inline py::class_< smtk::project::NameTag > pybind11_init_smtk_project_NameTag(py::module &m)
 {
   py::class_< smtk::project::NameTag > instance(m, "NameTag");
   instance
@@ -61,7 +61,7 @@ py::class_< smtk::project::NameTag > pybind11_init_smtk_project_NameTag(py::modu
   return instance;
 }
 
-py::class_< smtk::project::RoleTag > pybind11_init_smtk_project_RoleTag(py::module &m)
+inline py::class_< smtk::project::RoleTag > pybind11_init_smtk_project_RoleTag(py::module &m)
 {
   py::class_< smtk::project::RoleTag > instance(m, "RoleTag");
   instance

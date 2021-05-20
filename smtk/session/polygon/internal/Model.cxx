@@ -48,7 +48,6 @@ typedef std::vector<std::pair<size_t, Segment>> SegmentSplitsT;
 
 pmodel::pmodel()
   : m_session(nullptr)
-  , m_featureSize(1e-8)
 {
   for (int i = 0; i < 3; ++i)
   {

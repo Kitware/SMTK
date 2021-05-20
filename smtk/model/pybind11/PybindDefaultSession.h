@@ -21,7 +21,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_init_smtk_model_DefaultSession(py::module &m)
+inline PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_init_smtk_model_DefaultSession(py::module &m)
 {
   PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > instance(m, "DefaultSession");
   instance

@@ -21,22 +21,22 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_project_detail_id(py::module &m)
+inline void pybind11_init_smtk_project_detail_id(py::module &m)
 {
   m.def("id", &smtk::project::detail::id, "", py::arg("r"));
 }
 
-void pybind11_init_smtk_project_detail_index(py::module &m)
+inline void pybind11_init_smtk_project_detail_index(py::module &m)
 {
   m.def("index", &smtk::project::detail::index, "", py::arg("r"));
 }
 
-void pybind11_init_smtk_project_detail_location(py::module &m)
+inline void pybind11_init_smtk_project_detail_location(py::module &m)
 {
   m.def("location", &smtk::project::detail::location, "", py::arg("r"));
 }
 
-void pybind11_init_smtk_project_detail_name(py::module &m)
+inline void pybind11_init_smtk_project_detail_name(py::module &m)
 {
   m.def("name", &smtk::project::detail::name, "", py::arg("r"));
 }

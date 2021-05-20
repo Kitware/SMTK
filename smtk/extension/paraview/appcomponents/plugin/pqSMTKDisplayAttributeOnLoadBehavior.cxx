@@ -41,7 +41,6 @@ static pqSMTKDisplayAttributeOnLoadBehavior* g_displayOnLoad = nullptr;
 
 pqSMTKDisplayAttributeOnLoadBehavior::pqSMTKDisplayAttributeOnLoadBehavior(QObject* parent)
   : Superclass(parent)
-  , m_panel(nullptr)
 {
   if (!g_displayOnLoad)
   {

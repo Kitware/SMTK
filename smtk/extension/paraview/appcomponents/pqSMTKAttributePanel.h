@@ -96,7 +96,7 @@ protected slots:
   virtual void updateSettings();
 
 protected:
-  smtk::extension::qtUIManager* m_attrUIMgr;
+  smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;
   smtk::view::ManagerPtr m_viewManager;

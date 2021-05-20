@@ -237,7 +237,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  Resource* m_resource;
+  Resource* m_resource{ nullptr };
 };
 
 } // namespace model

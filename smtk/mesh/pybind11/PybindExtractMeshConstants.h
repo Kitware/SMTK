@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::utility::PreAllocatedMeshConstants > pybind11_init_smtk_mesh_PreAllocatedMeshConstants(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::PreAllocatedMeshConstants > pybind11_init_smtk_mesh_PreAllocatedMeshConstants(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::PreAllocatedMeshConstants > instance(m, "PreAllocatedMeshConstants");
   instance
@@ -29,7 +29,7 @@ PySharedPtrClass< smtk::mesh::utility::PreAllocatedMeshConstants > pybind11_init
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::utility::MeshConstants > pybind11_init_smtk_mesh_MeshConstants(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::MeshConstants > pybind11_init_smtk_mesh_MeshConstants(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::MeshConstants > instance(m, "MeshConstants");
   instance
@@ -48,32 +48,32 @@ PySharedPtrClass< smtk::mesh::utility::MeshConstants > pybind11_init_smtk_mesh_M
   return instance;
 }
 
-void pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractDirichletMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractDirichletMeshConstants, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractDirichletMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractDirichletMeshConstants, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh18extractDomainMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh18extractDomainMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractDomainMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractDomainMeshConstants, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init__ZN4smtk4mesh18extractDomainMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh18extractDomainMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractDomainMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractDomainMeshConstants, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractNeumannMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractNeumannMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractNeumannMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractNeumannMeshConstants, "", py::arg("arg0"), py::arg("arg1"));
 }
 
-void pybind11_init__ZN4smtk4mesh19extractNeumannMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
+inline void pybind11_init__ZN4smtk4mesh19extractNeumannMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(py::module &m)
 {
   m.def("extractNeumannMeshConstants", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::utility::PreAllocatedMeshConstants &)) &smtk::mesh::utility::extractNeumannMeshConstants, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }

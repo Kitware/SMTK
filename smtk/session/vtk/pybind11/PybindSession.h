@@ -32,7 +32,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_session_vtk_EntityType(py::module &m)
+inline void pybind11_init_smtk_session_vtk_EntityType(py::module &m)
 {
   py::enum_<smtk::session::vtk::EntityType>(m, "EntityType")
     .value("EXO_MODEL", smtk::session::vtk::EntityType::EXO_MODEL)
@@ -48,7 +48,7 @@ void pybind11_init_smtk_session_vtk_EntityType(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::session::vtk::EntityHandle > pybind11_init_smtk_session_vtk_EntityHandle(py::module &m)
+inline py::class_< smtk::session::vtk::EntityHandle > pybind11_init_smtk_session_vtk_EntityHandle(py::module &m)
 {
   py::class_< smtk::session::vtk::EntityHandle > instance(m, "EntityHandle");
   instance
@@ -71,7 +71,7 @@ py::class_< smtk::session::vtk::EntityHandle > pybind11_init_smtk_session_vtk_En
   return instance;
 }
 
-PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > pybind11_init_smtk_session_vtk_Session(py::module &m)
+inline PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > pybind11_init_smtk_session_vtk_Session(py::module &m)
 {
   PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > instance(m, "Session");
   instance
@@ -98,7 +98,7 @@ PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > pybind11_i
   return instance;
 }
 
-void pybind11_init_smtk_session_vtk_EntityTypeNameString(py::module &m)
+inline void pybind11_init_smtk_session_vtk_EntityTypeNameString(py::module &m)
 {
   m.def("EntityTypeNameString", &smtk::session::vtk::EntityTypeNameString, "", py::arg("etype"));
 }

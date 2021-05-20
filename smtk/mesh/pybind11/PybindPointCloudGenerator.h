@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-py::class_<smtk::mesh::PointCloudGenerator> pybind11_init_smtk_mesh_PointCloudGenerator(py::module &m)
+inline py::class_<smtk::mesh::PointCloudGenerator> pybind11_init_smtk_mesh_PointCloudGenerator(py::module &m)
 {
   py::class_<smtk::mesh::PointCloudGenerator> instance(m, "PointCloudGenerator");
   instance

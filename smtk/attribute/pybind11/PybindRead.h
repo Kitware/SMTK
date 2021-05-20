@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Read(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Read(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > instance(m, "Read");
   instance

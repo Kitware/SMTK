@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::PathsHelperUnix > pybind11_init_smtk_common_PathsHelperUnix(py::module &m)
+inline py::class_< smtk::common::PathsHelperUnix > pybind11_init_smtk_common_PathsHelperUnix(py::module &m)
 {
   py::class_< smtk::common::PathsHelperUnix > instance(m, "PathsHelperUnix");
   instance

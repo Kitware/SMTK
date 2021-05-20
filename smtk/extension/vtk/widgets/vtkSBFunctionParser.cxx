@@ -44,12 +44,6 @@ void vtkSBFunctionParser::vtkInternal::DefineConstants()
 
 vtkSBFunctionParser::vtkSBFunctionParser()
   : IndependentVariableName("X")
-  , IsVectorResult(false)
-  , InitialValue(0.0)
-  , Delta(0.0)
-  , NumberOfValues(-1)
-  , Help(nullptr)
-  , Result(nullptr)
 {
   this->Implementation = new vtkInternal();
 

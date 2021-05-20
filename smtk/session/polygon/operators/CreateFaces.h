@@ -36,11 +36,7 @@ class Neighborhood;
 /// An internal structure used when discovering edge loops.
 struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
 {
-  ModelEdgeInfo()
-    : m_allowedOrientations(0)
-  {
-    m_visited[0] = m_visited[1] = false;
-  }
+  ModelEdgeInfo() { m_visited[0] = m_visited[1] = false; }
   ModelEdgeInfo(int allowedOrientations)
   {
     m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
@@ -53,7 +49,7 @@ struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
       m_visited[i] = other.m_visited[i];
   }
 
-  int m_allowedOrientations; // 0: all, -1: only negative, +1: only positive
+  int m_allowedOrientations{ 0 }; // 0: all, -1: only negative, +1: only positive
   bool m_visited
     [2]; // has the [0]: negative, [1]: positive orientation of the edge been visited already?
 };

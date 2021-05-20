@@ -77,10 +77,7 @@ public:
 class SMTKCORE_EXPORT BufferedCellAllocator
 {
 public:
-  BufferedCellAllocator()
-    : m_validState(false)
-  {
-  }
+  BufferedCellAllocator() = default;
 
   virtual ~BufferedCellAllocator() = default;
 
@@ -115,7 +112,7 @@ public:
   bool isValid() const { return m_validState; }
 
 protected:
-  bool m_validState;
+  bool m_validState{ false };
 };
 
 // IncrementalAllocator allows for the allocation of meshes by incrementally
@@ -181,13 +178,9 @@ public:
   //current cell when we are iterating.
   struct IterationState
   {
-    IterationState()
-      : whichConnectivityVector(0)
-      , ptrOffsetInVector(0)
-    {
-    }
-    std::size_t whichConnectivityVector;
-    std::size_t ptrOffsetInVector;
+    IterationState() = default;
+    std::size_t whichConnectivityVector{ 0 };
+    std::size_t ptrOffsetInVector{ 0 };
   };
 
   virtual void initTraversal(IterationState& state) = 0;
@@ -211,22 +204,13 @@ public:
   //copy of vector on return, ugggh.
   struct Results
   {
-    Results()
-      : pointIds()
-      , sqDistances()
-      , x_s()
-      , y_s()
-      , z_s()
-      , want_sqDistances(false)
-      , want_Coordinates(false)
-    {
-    }
+    Results() = default;
 
     std::vector<std::size_t> pointIds;
     std::vector<double> sqDistances;
     std::vector<double> x_s, y_s, z_s;
-    bool want_sqDistances;
-    bool want_Coordinates;
+    bool want_sqDistances{ false };
+    bool want_Coordinates{ false };
   };
 
   virtual ~PointLocatorImpl() = default;

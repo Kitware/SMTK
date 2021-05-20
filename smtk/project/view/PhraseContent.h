@@ -73,8 +73,8 @@ protected:
   PhraseContent();
 
   std::weak_ptr<smtk::resource::Resource> m_resource;
-  bool m_isProject;
-  int m_mutability;
+  bool m_isProject{ false };
+  int m_mutability{ 0 };
 };
 } // namespace view
 } // namespace project

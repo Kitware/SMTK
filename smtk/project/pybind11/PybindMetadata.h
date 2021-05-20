@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::project::Metadata > pybind11_init_smtk_project_Metadata(py::module &m)
+inline py::class_< smtk::project::Metadata > pybind11_init_smtk_project_Metadata(py::module &m)
 {
   py::class_< smtk::project::Metadata > instance(m, "Metadata");
   instance

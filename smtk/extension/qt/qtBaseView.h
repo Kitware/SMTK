@@ -38,8 +38,7 @@ class SMTKQTEXT_EXPORT ViewInfo : public smtk::view::Information
 {
 public:
   ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman)
-    : smtk::view::Information()
-    , m_view(view)
+    : m_view(view)
     , m_parent(parent)
     , m_UIManager(uiman)
   {

@@ -46,8 +46,7 @@ namespace operation
 {
 
 Operation::Operation()
-  : m_debugLevel(0)
-  , m_specification(nullptr)
+  : m_specification(nullptr)
   , m_parameters(nullptr)
   , m_resultDefinition(nullptr)
 {

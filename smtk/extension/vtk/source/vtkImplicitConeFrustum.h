@@ -117,11 +117,11 @@ protected:
   vtkNew<vtkTransform> ConeTransform;
 
   vtkVector3d BottomPoint;
-  double BottomRadius;
+  double BottomRadius{ 0.5 };
   vtkNew<vtkPlane> BottomPlane;
 
   vtkVector3d TopPoint;
-  double TopRadius;
+  double TopRadius{ 0.0 };
   vtkNew<vtkPlane> TopPlane;
 };
 

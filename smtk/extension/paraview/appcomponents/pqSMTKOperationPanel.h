@@ -100,10 +100,12 @@ protected:
   virtual void displayDocumentation(const smtk::operation::Operation::Index& index);
 
   class Internal;
-  Internal* m_p;
-  pqSMTKWrapper* m_wrapper; // TODO: Remove the need for me. This ties us to a single pqServer.
+  Internal* m_p{ nullptr };
+  pqSMTKWrapper* m_wrapper{
+    nullptr
+  }; // TODO: Remove the need for me. This ties us to a single pqServer.
   smtk::operation::OperationPtr m_editing;
-  smtk::extension::qtUIManager* m_attrUIMgr;
+  smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::AvailableOperationsPtr m_availableOperations;
   smtk::resource::Observers::Key m_observer;

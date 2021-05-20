@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project_ResourceContainer(py::module &m)
+inline py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project_ResourceContainer(py::module &m)
 {
   py::class_< smtk::project::ResourceContainer > instance(m, "ResourceContainer");
   instance
@@ -67,7 +67,7 @@ py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project_Resour
   return instance;
 }
 
-void pybind11_init_smtk_project_detail_role(py::module &m)
+inline void pybind11_init_smtk_project_detail_role(py::module &m)
 {
   m.def("role", &smtk::project::detail::role, "", py::arg("r"));
 }

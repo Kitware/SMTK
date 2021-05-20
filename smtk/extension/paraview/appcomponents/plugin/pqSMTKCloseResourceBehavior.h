@@ -69,7 +69,7 @@ protected:
 private:
   Q_DISABLE_COPY(pqSMTKCloseResourceBehavior);
 
-  QMenu* m_newMenu;
+  QMenu* m_newMenu{ nullptr };
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKCloseResourceBehavior_h

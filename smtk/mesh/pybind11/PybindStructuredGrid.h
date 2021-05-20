@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::mesh::StructuredGrid > pybind11_init_smtk_mesh_StructuredGrid(py::module &m)
+inline py::class_< smtk::mesh::StructuredGrid > pybind11_init_smtk_mesh_StructuredGrid(py::module &m)
 {
   py::class_< smtk::mesh::StructuredGrid > instance(m, "StructuredGrid");
   instance

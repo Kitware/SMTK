@@ -73,7 +73,7 @@ protected:
 private:
   Q_DISABLE_COPY(pqSMTKNewResourceBehavior);
 
-  QMenu* m_newMenu;
+  QMenu* m_newMenu{ nullptr };
 
   smtk::operation::GroupObservers::Key m_key;
 };

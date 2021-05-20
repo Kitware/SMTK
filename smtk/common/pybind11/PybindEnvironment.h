@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::Environment > pybind11_init_smtk_common_Environment(py::module &m)
+inline py::class_< smtk::common::Environment > pybind11_init_smtk_common_Environment(py::module &m)
 {
   py::class_< smtk::common::Environment > instance(m, "Environment");
   instance

@@ -381,7 +381,6 @@ void AttributeReaderInternals::readAttributes(
 }
 
 AttributeReader::AttributeReader()
-  : m_reportAsError(true)
 {
   m_internals = new AttributeReaderInternals();
 }

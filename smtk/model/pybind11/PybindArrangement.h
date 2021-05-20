@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Arrangement > pybind11_init_smtk_model_Arrangement(py::module &m)
+inline py::class_< smtk::model::Arrangement > pybind11_init_smtk_model_Arrangement(py::module &m)
 {
   py::class_< smtk::model::Arrangement > instance(m, "Arrangement");
   instance
@@ -71,7 +71,7 @@ py::class_< smtk::model::Arrangement > pybind11_init_smtk_model_Arrangement(py::
   return instance;
 }
 
-py::class_< smtk::model::ArrangementReference > pybind11_init_smtk_model_ArrangementReference(py::module &m)
+inline py::class_< smtk::model::ArrangementReference > pybind11_init_smtk_model_ArrangementReference(py::module &m)
 {
   py::class_< smtk::model::ArrangementReference > instance(m, "ArrangementReference");
   instance

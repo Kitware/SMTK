@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Export, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_Export(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Export, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_Export(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Export, smtk::operation::XMLOperation > instance(m, "Export");
   instance

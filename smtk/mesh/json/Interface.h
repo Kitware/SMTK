@@ -280,7 +280,7 @@ public:
   bool setCellField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) override;
+    const void* data) override;
 
   bool getField(
     const smtk::mesh::HandleRange& cells,
@@ -290,7 +290,7 @@ public:
   bool setField(
     const smtk::mesh::HandleRange& cells,
     const smtk::mesh::CellFieldTag& cfTag,
-    const void* const data) override;
+    const void* data) override;
 
   std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const override;
@@ -325,7 +325,7 @@ public:
   bool setPointField(
     const smtk::mesh::HandleRange& meshsets,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) override;
+    const void* data) override;
 
   bool getField(
     const smtk::mesh::HandleRange& points,
@@ -335,7 +335,7 @@ public:
   bool setField(
     const smtk::mesh::HandleRange& points,
     const smtk::mesh::PointFieldTag& pfTag,
-    const void* const data) override;
+    const void* data) override;
 
   std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const override;
@@ -380,7 +380,7 @@ private:
   //with it. If we start adding more member variables, we should offload it
   //all to an internal class
   mutable smtk::common::UUID m_associated_model;
-  mutable bool m_modified;
+  mutable bool m_modified{ false };
 };
 } // namespace json
 } // namespace mesh

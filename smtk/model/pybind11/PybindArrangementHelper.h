@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::ArrangementHelper > pybind11_init_smtk_model_ArrangementHelper(py::module &m)
+inline py::class_< smtk::model::ArrangementHelper > pybind11_init_smtk_model_ArrangementHelper(py::module &m)
 {
   py::class_< smtk::model::ArrangementHelper > instance(m, "ArrangementHelper");
   instance

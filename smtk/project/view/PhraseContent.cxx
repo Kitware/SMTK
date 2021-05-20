@@ -29,11 +29,7 @@ namespace project
 namespace view
 {
 
-PhraseContent::PhraseContent()
-  : m_isProject(false)
-  , m_mutability(0)
-{
-}
+PhraseContent::PhraseContent() = default;
 
 PhraseContent::~PhraseContent() = default;
 

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::StringUtil > pybind11_init_smtk_common_StringUtil(py::module &m)
+inline py::class_< smtk::common::StringUtil > pybind11_init_smtk_common_StringUtil(py::module &m)
 {
   py::class_< smtk::common::StringUtil > instance(m, "StringUtil");
   instance

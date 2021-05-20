@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_mesh_ContainmentType(py::module &m)
+inline void pybind11_init_smtk_mesh_ContainmentType(py::module &m)
 {
   py::enum_<smtk::mesh::ContainmentType>(m, "ContainmentType")
     .value("PartiallyContained", smtk::mesh::ContainmentType::PartiallyContained)
@@ -25,7 +25,7 @@ void pybind11_init_smtk_mesh_ContainmentType(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::mesh::Dirichlet > pybind11_init_smtk_mesh_Dirichlet(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
+inline PySharedPtrClass< smtk::mesh::Dirichlet > pybind11_init_smtk_mesh_Dirichlet(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
 {
   PySharedPtrClass< smtk::mesh::Dirichlet > instance(m, "Dirichlet", parent);
   instance
@@ -36,7 +36,7 @@ PySharedPtrClass< smtk::mesh::Dirichlet > pybind11_init_smtk_mesh_Dirichlet(py::
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::Domain > pybind11_init_smtk_mesh_Domain(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
+inline PySharedPtrClass< smtk::mesh::Domain > pybind11_init_smtk_mesh_Domain(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
 {
   PySharedPtrClass< smtk::mesh::Domain > instance(m, "Domain", parent);
   instance
@@ -47,7 +47,7 @@ PySharedPtrClass< smtk::mesh::Domain > pybind11_init_smtk_mesh_Domain(py::module
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::IntegerTag > pybind11_init_smtk_mesh_IntegerTag(py::module &m)
+inline PySharedPtrClass< smtk::mesh::IntegerTag > pybind11_init_smtk_mesh_IntegerTag(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::IntegerTag > instance(m, "IntegerTag");
   instance
@@ -62,7 +62,7 @@ PySharedPtrClass< smtk::mesh::IntegerTag > pybind11_init_smtk_mesh_IntegerTag(py
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::Model > pybind11_init_smtk_mesh_Model(py::module &m, PySharedPtrClass< smtk::mesh::UUIDTag >& parent)
+inline PySharedPtrClass< smtk::mesh::Model > pybind11_init_smtk_mesh_Model(py::module &m, PySharedPtrClass< smtk::mesh::UUIDTag >& parent)
 {
   PySharedPtrClass< smtk::mesh::Model > instance(m, "Model", parent);
   instance
@@ -73,7 +73,7 @@ PySharedPtrClass< smtk::mesh::Model > pybind11_init_smtk_mesh_Model(py::module &
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::Neumann > pybind11_init_smtk_mesh_Neumann(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
+inline PySharedPtrClass< smtk::mesh::Neumann > pybind11_init_smtk_mesh_Neumann(py::module &m, PySharedPtrClass< smtk::mesh::IntegerTag >& parent)
 {
   PySharedPtrClass< smtk::mesh::Neumann > instance(m, "Neumann", parent);
   instance
@@ -84,7 +84,7 @@ PySharedPtrClass< smtk::mesh::Neumann > pybind11_init_smtk_mesh_Neumann(py::modu
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::OpaqueTag<16> > pybind11_init_smtk_mesh_OpaqueTag_16_(py::module &m)
+inline PySharedPtrClass< smtk::mesh::OpaqueTag<16> > pybind11_init_smtk_mesh_OpaqueTag_16_(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::OpaqueTag<16> > instance(m, "OpaqueTag_16_");
   instance
@@ -100,7 +100,7 @@ PySharedPtrClass< smtk::mesh::OpaqueTag<16> > pybind11_init_smtk_mesh_OpaqueTag_
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::UUIDTag > pybind11_init_smtk_mesh_UUIDTag(py::module &m, PySharedPtrClass< smtk::mesh::OpaqueTag<16> >& parent)
+inline PySharedPtrClass< smtk::mesh::UUIDTag > pybind11_init_smtk_mesh_UUIDTag(py::module &m, PySharedPtrClass< smtk::mesh::OpaqueTag<16> >& parent)
 {
   PySharedPtrClass< smtk::mesh::UUIDTag > instance(m, "UUIDTag", parent);
   instance

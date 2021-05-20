@@ -23,7 +23,7 @@ namespace smtk
 namespace view
 {
 
-std::string SMTKCORE_EXPORT DefaultOperationIcon(const std::string& secondaryColor)
+inline std::string SMTKCORE_EXPORT DefaultOperationIcon(const std::string& secondaryColor)
 {
   std::string svg = default_operation_opt_svg;
   std::array<double, 4> rgba;

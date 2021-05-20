@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > pybind11_init_smtk_model_CreateInstances(py::module &m)
+inline PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > pybind11_init_smtk_model_CreateInstances(py::module &m)
 {
   PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > instance(m, "CreateInstances");
   instance

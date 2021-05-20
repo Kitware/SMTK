@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::polygon::TweakEdge > pybind11_init_smtk_session_polygon_TweakEdge(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::polygon::TweakEdge > pybind11_init_smtk_session_polygon_TweakEdge(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::polygon::TweakEdge > instance(m, "TweakEdge", parent);
   instance

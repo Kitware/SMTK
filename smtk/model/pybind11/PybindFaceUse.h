@@ -27,7 +27,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::FaceUse, smtk::model::UseEntity > pybind11_init_smtk_model_FaceUse(py::module &m)
+inline py::class_< smtk::model::FaceUse, smtk::model::UseEntity > pybind11_init_smtk_model_FaceUse(py::module &m)
 {
   py::class_< smtk::model::FaceUse, smtk::model::UseEntity > instance(m, "FaceUse");
   instance

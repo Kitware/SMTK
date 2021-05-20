@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_ResourceEventChangeType(py::module &m)
+inline void pybind11_init_smtk_model_ResourceEventChangeType(py::module &m)
 {
   py::enum_<smtk::model::ResourceEventChangeType>(m, "ResourceEventChangeType")
     .value("ADD_EVENT", smtk::model::ResourceEventChangeType::ADD_EVENT)
@@ -27,7 +27,7 @@ void pybind11_init_smtk_model_ResourceEventChangeType(py::module &m)
     .export_values();
 }
 
-void pybind11_init_smtk_model_ResourceEventRelationType(py::module &m)
+inline void pybind11_init_smtk_model_ResourceEventRelationType(py::module &m)
 {
   py::enum_<smtk::model::ResourceEventRelationType>(m, "ResourceEventRelationType")
     .value("ENTITY_ENTRY", smtk::model::ResourceEventRelationType::ENTITY_ENTRY)

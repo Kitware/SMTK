@@ -36,7 +36,7 @@ protected:
 
   void generateSummary(smtk::operation::Operation::Result&) override;
 
-  bool m_suppressOutput;
+  bool m_suppressOutput{ false };
 };
 
 } //namespace mesh

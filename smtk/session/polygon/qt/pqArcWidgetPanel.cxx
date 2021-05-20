@@ -216,10 +216,7 @@ pqArcWidgetPanel::pqArcWidgetPanel(QWidget* parent)
   : QWidget(parent)
   , Internals(new pqArcWidgetPanel::pqInternals)
   , Picker(parent)
-  , View(nullptr)
-  , Arc(nullptr)
   , ArcWidget(nullptr)
-  , ArcManager(nullptr)
 {
   Internals->setupUi(this);
   this->setObjectName("pqArcWidgetPanel");

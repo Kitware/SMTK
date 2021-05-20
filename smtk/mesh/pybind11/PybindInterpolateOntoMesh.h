@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_InterpolateOntoMesh(py::module &m)
+inline PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_InterpolateOntoMesh(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > instance(m, "InterpolateOntoMesh");
   instance

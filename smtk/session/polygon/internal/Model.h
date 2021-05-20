@@ -226,7 +226,7 @@ protected:
   SessionPtr m_session; // Parent session of this pmodel.
   long long
     m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
-  double m_featureSize;
+  double m_featureSize{ 1e-8 };
 
   double m_origin[3]; // Base point of plane for pmodel
 

@@ -107,6 +107,7 @@ SMTKCORE_EXPORT void extractDomainMeshConstants(
   PreAllocatedMeshConstants&);
 
 template<typename QueryTag>
+// NOLINTNEXTLINE(readability-redundant-declaration)
 SMTKCORE_EXPORT void extractMeshConstants(
   const smtk::mesh::MeshSet&,
   const smtk::mesh::PointSet&,

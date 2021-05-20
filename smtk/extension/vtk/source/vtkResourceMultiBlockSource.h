@@ -172,7 +172,7 @@ protected:
   std::weak_ptr<smtk::resource::Resource> Resource;
   std::map<UUID, CacheEntry> Cache;
   std::set<UUID> Visited; // Populated with extant entities during RequestData.
-  smtk::geometry::Geometry::GenerationNumber LastModified;
+  smtk::geometry::Geometry::GenerationNumber LastModified{ 0 };
 };
 
 #endif

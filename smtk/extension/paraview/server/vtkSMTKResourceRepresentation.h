@@ -425,7 +425,7 @@ protected:
     * + to determine the color for some non-visual entity types such as groups or models; and
     * + in certain coloring modes, such as when coloring by volume.
     */
-  vtkSMTKWrapper* Wrapper;
+  vtkSMTKWrapper* Wrapper{ nullptr };
   /// If Wrapper is non-null, SelectionObserver is the handle of an observer of Wrapper->GetSelection().
   smtk::view::SelectionObservers::Key SelectionObserver;
   /**
@@ -456,10 +456,10 @@ protected:
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
 
   // IDs assigned by vtkPVRenderView for hardware picking:
-  int EntitiesActorPickId;
-  int SelectedEntitiesActorPickId;
-  int GlyphEntitiesActorPickId;
-  int SelectedGlyphEntitiesActorPickId;
+  int EntitiesActorPickId{ -1 };
+  int SelectedEntitiesActorPickId{ -1 };
+  int GlyphEntitiesActorPickId{ -1 };
+  int SelectedGlyphEntitiesActorPickId{ -1 };
 
   /**
    * Rendering properties shared between Entities and GlyphEntities

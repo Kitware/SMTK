@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::extension::vtk::io::mesh::ExportVTKData > pybind11_init_smtk_extension_vtk_io_mesh_ExportVTKData(py::module &m)
+inline py::class_< smtk::extension::vtk::io::mesh::ExportVTKData > pybind11_init_smtk_extension_vtk_io_mesh_ExportVTKData(py::module &m)
 {
   py::class_< smtk::extension::vtk::io::mesh::ExportVTKData > instance(m, "ExportVTKData");
   instance

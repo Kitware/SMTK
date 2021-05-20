@@ -87,12 +87,12 @@ public:
 protected:
   vtkSMTKSettings();
 
-  bool HighlightOnHover;
+  bool HighlightOnHover{ true };
   int ShowSaveResourceOnClose;
   int SelectionRenderStyle;
   int ResourceTreeStyle;
-  char* WorkflowsFolder;
-  char* ProjectsRootFolder;
+  char* WorkflowsFolder{ nullptr };
+  char* ProjectsRootFolder{ nullptr };
 
 private:
   static vtkSmartPointer<vtkSMTKSettings> Instance;

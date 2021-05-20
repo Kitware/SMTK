@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::PointSet > pybind11_init_smtk_mesh_PointSet(py::module &m)
+inline PySharedPtrClass< smtk::mesh::PointSet > pybind11_init_smtk_mesh_PointSet(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::PointSet > instance(m, "PointSet");
   instance
@@ -49,22 +49,22 @@ PySharedPtrClass< smtk::mesh::PointSet > pybind11_init_smtk_mesh_PointSet(py::mo
   return instance;
 }
 
-void pybind11_init_smtk_mesh_point_for_each(py::module &m)
+inline void pybind11_init_smtk_mesh_point_for_each(py::module &m)
 {
   m.def("for_each", (void (*)(const smtk::mesh::PointSet&, smtk::mesh::PointForEach&)) &smtk::mesh::for_each, "", py::arg("a"), py::arg("filter"));
 }
 
-void pybind11_init_smtk_mesh_point_set_difference(py::module &m)
+inline void pybind11_init_smtk_mesh_point_set_difference(py::module &m)
 {
   m.def("set_difference", (smtk::mesh::PointSet (*)(const smtk::mesh::PointSet&, const smtk::mesh::PointSet&)) &smtk::mesh::set_difference, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_point_set_intersect(py::module &m)
+inline void pybind11_init_smtk_mesh_point_set_intersect(py::module &m)
 {
   m.def("set_intersect", (smtk::mesh::PointSet (*)(const smtk::mesh::PointSet&, const smtk::mesh::PointSet&)) &smtk::mesh::set_intersect, "", py::arg("a"), py::arg("b"));
 }
 
-void pybind11_init_smtk_mesh_point_set_union(py::module &m)
+inline void pybind11_init_smtk_mesh_point_set_union(py::module &m)
 {
   m.def("set_union", (smtk::mesh::PointSet (*)(const smtk::mesh::PointSet&, const smtk::mesh::PointSet&)) &smtk::mesh::set_union, "", py::arg("a"), py::arg("b"));
 }

@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > pybind11_init_smtk_extension_vtk_io_mesh_ImportVTKData(py::module &m)
+inline py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > pybind11_init_smtk_extension_vtk_io_mesh_ImportVTKData(py::module &m)
 {
   py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > instance(m, "ImportVTKData");
   instance

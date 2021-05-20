@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::utility::PreAllocatedCanonicalIndices > pybind11_init_smtk_mesh_PreAllocatedCanonicalIndices(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::PreAllocatedCanonicalIndices > pybind11_init_smtk_mesh_PreAllocatedCanonicalIndices(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::PreAllocatedCanonicalIndices > instance(m, "PreAllocatedCanonicalIndices");
   instance
@@ -29,7 +29,7 @@ PySharedPtrClass< smtk::mesh::utility::PreAllocatedCanonicalIndices > pybind11_i
   return instance;
 }
 
-PySharedPtrClass< smtk::mesh::utility::CanonicalIndices > pybind11_init_smtk_mesh_CanonicalIndices(py::module &m)
+inline PySharedPtrClass< smtk::mesh::utility::CanonicalIndices > pybind11_init_smtk_mesh_CanonicalIndices(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::utility::CanonicalIndices > instance(m, "CanonicalIndices");
   instance
@@ -43,7 +43,7 @@ PySharedPtrClass< smtk::mesh::utility::CanonicalIndices > pybind11_init_smtk_mes
   return instance;
 }
 
-void pybind11_init__extractCanonicalIndices(py::module &m)
+inline void pybind11_init__extractCanonicalIndices(py::module &m)
 {
   m.def("extractCanonicalIndices", (void (*)(::smtk::mesh::MeshSet const &, ::smtk::mesh::MeshSet const &, ::smtk::mesh::utility::PreAllocatedCanonicalIndices &)) &smtk::mesh::utility::extractCanonicalIndices, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }

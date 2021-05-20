@@ -403,11 +403,7 @@ void find_entities_with_tessellation(
 }
 } //namespace detail
 
-ModelToMesh::ModelToMesh()
-  : m_mergeDuplicates(true)
-  , m_tolerance(-1)
-{
-}
+ModelToMesh::ModelToMesh() = default;
 
 smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::ResourcePtr& modelResource) const
 {

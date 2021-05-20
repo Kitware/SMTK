@@ -64,7 +64,7 @@ protected:
   ResourcePhraseContent();
 
   std::weak_ptr<smtk::resource::Resource> m_resource;
-  int m_mutability;
+  int m_mutability{ 0 };
 };
 
 } // namespace view

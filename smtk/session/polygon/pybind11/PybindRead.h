@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::polygon::Read > pybind11_init_smtk_session_polygon_Read(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::polygon::Read > pybind11_init_smtk_session_polygon_Read(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::polygon::Read > instance(m, "Read", parent);
   instance

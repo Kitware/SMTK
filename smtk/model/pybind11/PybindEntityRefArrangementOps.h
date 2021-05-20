@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::EntityRefArrangementOps > pybind11_init_smtk_model_EntityRefArrangementOps(py::module &m)
+inline py::class_< smtk::model::EntityRefArrangementOps > pybind11_init_smtk_model_EntityRefArrangementOps(py::module &m)
 {
   py::class_< smtk::model::EntityRefArrangementOps > instance(m, "EntityRefArrangementOps");
   instance

@@ -30,7 +30,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manager(py::module &m)
+inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manager(py::module &m)
 {
   PySharedPtrClass< smtk::operation::Manager > instance(m, "Manager");
   instance

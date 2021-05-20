@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::geometry::Manager > pybind11_init_smtk_geometry_Manager(py::module &m)
+inline PySharedPtrClass< smtk::geometry::Manager > pybind11_init_smtk_geometry_Manager(py::module &m)
 {
   PySharedPtrClass< smtk::geometry::Manager > instance(m, "Manager");
   instance

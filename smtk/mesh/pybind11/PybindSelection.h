@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Selection, smtk::mesh::Component > pybind11_init_smtk_mesh_Selection(py::module &m)
+inline PySharedPtrClass< smtk::mesh::Selection, smtk::mesh::Component > pybind11_init_smtk_mesh_Selection(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Selection, smtk::mesh::Component > instance(m, "Selection");
   instance

@@ -155,7 +155,6 @@ static pqSMTKNewResourceBehavior* g_instance = nullptr;
 
 pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
   : Superclass(parent)
-  , m_newMenu(nullptr)
 {
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.

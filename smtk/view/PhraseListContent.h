@@ -132,9 +132,9 @@ protected:
   std::string generateTitle(smtk::model::BitFlags& flagCommon, smtk::model::BitFlags& flagUnion)
     const;
 
-  int m_mutability;
-  mutable smtk::model::BitFlags m_commonFlags;
-  mutable smtk::model::BitFlags m_unionFlags;
+  int m_mutability{ 0 };
+  mutable smtk::model::BitFlags m_commonFlags{ smtk::model::INVALID };
+  mutable smtk::model::BitFlags m_unionFlags{ 0 };
   mutable std::string m_title;
 };
 

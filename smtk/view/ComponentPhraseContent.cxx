@@ -36,10 +36,7 @@ namespace smtk
 namespace view
 {
 
-ComponentPhraseContent::ComponentPhraseContent()
-  : m_mutability(0)
-{
-}
+ComponentPhraseContent::ComponentPhraseContent() = default;
 
 ComponentPhraseContent::~ComponentPhraseContent() = default;
 

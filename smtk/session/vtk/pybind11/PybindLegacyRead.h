@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::vtk::LegacyRead > pybind11_init_smtk_session_vtk_LegacyRead(py::module &m, PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::vtk::LegacyRead > pybind11_init_smtk_session_vtk_LegacyRead(py::module &m, PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::vtk::LegacyRead > instance(m, "LegacyRead", parent);
   instance

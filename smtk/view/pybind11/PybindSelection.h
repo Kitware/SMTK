@@ -27,7 +27,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_view_SelectionAction(py::module &m)
+inline void pybind11_init_smtk_view_SelectionAction(py::module &m)
 {
   py::enum_<smtk::view::SelectionAction>(m, "SelectionAction")
     .value("FILTERED_REPLACE", smtk::view::SelectionAction::FILTERED_REPLACE)
@@ -40,7 +40,7 @@ void pybind11_init_smtk_view_SelectionAction(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::module &m)
+inline PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::module &m)
 {
   PySharedPtrClass< smtk::view::Selection > instance(m, "Selection");
   instance

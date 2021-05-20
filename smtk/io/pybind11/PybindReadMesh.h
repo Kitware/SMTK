@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::ReadMesh > pybind11_init_smtk_io_ReadMesh(py::module &m)
+inline PySharedPtrClass< smtk::io::ReadMesh > pybind11_init_smtk_io_ReadMesh(py::module &m)
 {
   PySharedPtrClass< smtk::io::ReadMesh > instance(m, "ReadMesh");
   instance
@@ -30,52 +30,52 @@ PySharedPtrClass< smtk::io::ReadMesh > pybind11_init_smtk_io_ReadMesh(py::module
   return instance;
 }
 
-void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
   m.def("readDirichlet", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readDirichlet, "", py::arg("filePath"), py::arg("interface"));
 }
 
-void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("readDirichlet", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::readDirichlet, "", py::arg("filePath"), py::arg("resource"));
 }
 
-void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
   m.def("readDomain", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readDomain, "", py::arg("filePath"), py::arg("interface"));
 }
 
-void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("readDomain", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::readDomain, "", py::arg("filePath"), py::arg("resource"));
 }
 
-void pybind11_init__ZN4smtk2io20readEntireResourceERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io20readEntireResourceERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
   m.def("readEntireResource", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readEntireResource, "", py::arg("filePath"), py::arg("interface"));
 }
 
-void pybind11_init__ZN4smtk2io20readEntireResourceERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io20readEntireResourceERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("readEntireResource", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::readEntireResource, "", py::arg("filePath"), py::arg("resource"));
 }
 
-void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEENS0_4mesh6SubsetE(py::module &m)
+inline void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEENS0_4mesh6SubsetE(py::module &m)
 {
   m.def("readMesh", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&, ::smtk::io::mesh::Subset)) &smtk::io::readMesh, "", py::arg("filePath"), py::arg("interface"), py::arg("subset") = ::smtk::io::mesh::Subset::EntireResource);
 }
 
-void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEENS0_4mesh6SubsetE(py::module &m)
+inline void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEENS0_4mesh6SubsetE(py::module &m)
 {
   m.def("readMesh", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr, ::smtk::io::mesh::Subset)) &smtk::io::readMesh, "", py::arg("filePath"), py::arg("resource"), py::arg("subset") = ::smtk::io::mesh::Subset::EntireResource);
 }
 
-void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
   m.def("readNeumann", (smtk::mesh::ResourcePtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readNeumann, "", py::arg("filePath"), py::arg("interface"));
 }
 
-void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
+inline void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10ResourceEEE(py::module &m)
 {
   m.def("readNeumann", (bool (*)(::std::string const &, ::smtk::mesh::ResourcePtr)) &smtk::io::readNeumann, "", py::arg("filePath"), py::arg("resource"));
 }

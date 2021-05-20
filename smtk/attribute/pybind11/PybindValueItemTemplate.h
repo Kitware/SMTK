@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_int_(py::module &m)
+inline PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_int_(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_int_");
   instance
@@ -47,7 +47,7 @@ PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::Valu
   return instance;
 }
 
-PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_double_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_double_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_double_");
   instance
@@ -76,7 +76,7 @@ PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::Va
   return instance;
 }
 
-PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_string_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_string_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_string_");
   instance

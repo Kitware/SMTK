@@ -44,7 +44,6 @@
 
 pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
-  , m_attrUIMgr(nullptr)
 {
   this->setObjectName("attributeEditor");
   this->setWindowTitle("Attribute Editor");

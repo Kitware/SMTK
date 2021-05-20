@@ -222,7 +222,7 @@ private:
   friend std::shared_ptr<Component> Component::create(const MeshSet&);
 
   smtk::mesh::ResourcePtr m_parent;
-  smtk::mesh::Handle m_handle;
+  smtk::mesh::Handle m_handle{};
   smtk::mesh::HandleRange m_range; //range of entity sets
   mutable smtk::common::UUID m_id;
 };

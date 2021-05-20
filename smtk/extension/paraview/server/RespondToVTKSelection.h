@@ -149,13 +149,13 @@ protected:
   void generateSummary(Operation::Result&) override {}
 
   int m_interactionMode;
-  ::vtkSelection* m_vtkSelection;
-  vtkMultiBlockDataSet* m_vtkData;
+  ::vtkSelection* m_vtkSelection{ nullptr };
+  vtkMultiBlockDataSet* m_vtkData{ nullptr };
   smtk::view::WeakSelectionPtr m_smtkSelection;
   std::string m_smtkSelectionSource;
-  int m_smtkSelectionValue;
-  int m_modifier;
-  bool m_selectingBlocks;
+  int m_smtkSelectionValue{ 1 };
+  int m_modifier{ /* replace current selection */ 0 };
+  bool m_selectingBlocks{ false };
 
 private:
   const char* xmlDescription() const override;

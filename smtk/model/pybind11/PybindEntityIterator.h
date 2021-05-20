@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_IteratorStyle(py::module &m)
+inline void pybind11_init_smtk_model_IteratorStyle(py::module &m)
 {
   py::enum_<smtk::model::IteratorStyle>(m, "IteratorStyle")
     .value("ITERATE_BARE", smtk::model::IteratorStyle::ITERATE_BARE)
@@ -28,7 +28,7 @@ void pybind11_init_smtk_model_IteratorStyle(py::module &m)
     .export_values();
 }
 
-py::class_< smtk::model::EntityIterator > pybind11_init_smtk_model_EntityIterator(py::module &m)
+inline py::class_< smtk::model::EntityIterator > pybind11_init_smtk_model_EntityIterator(py::module &m)
 {
   py::class_< smtk::model::EntityIterator > instance(m, "EntityIterator");
   instance

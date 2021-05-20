@@ -94,13 +94,13 @@ private:
 
   std::string Function;
 
-  bool IsVectorResult;
-  double InitialValue;
-  double Delta;
-  int NumberOfValues;
+  bool IsVectorResult{ false };
+  double InitialValue{ 0.0 };
+  double Delta{ 0.0 };
+  int NumberOfValues{ -1 };
 
-  char* Help;
-  vtkDoubleArray* Result;
+  char* Help{ nullptr };
+  vtkDoubleArray* Result{ nullptr };
 
   class vtkInternal;
   vtkInternal* Implementation;

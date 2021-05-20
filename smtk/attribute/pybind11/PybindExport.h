@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Export(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > pybind11_init_smtk_attribute_Export(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > instance(m, "Export");
   instance

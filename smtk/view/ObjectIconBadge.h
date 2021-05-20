@@ -49,7 +49,7 @@ public:
   // void action(const DescriptivePhrase* phrase) const override { }
 
 protected:
-  const BadgeSet* m_parent;
+  const BadgeSet* m_parent{ nullptr };
 };
 } // namespace view
 } // namespace smtk

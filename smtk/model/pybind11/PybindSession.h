@@ -24,7 +24,7 @@
 
 namespace py = pybind11;
 
-void pybind11_init_smtk_model_SessionInformation(py::module &m)
+inline void pybind11_init_smtk_model_SessionInformation(py::module &m)
 {
   py::enum_<smtk::model::SessionInformation>(m, "SessionInformation")
     .value("SESSION_ENTITY_TYPE", smtk::model::SessionInformation::SESSION_ENTITY_TYPE)
@@ -45,7 +45,7 @@ void pybind11_init_smtk_model_SessionInformation(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::module &m)
+inline PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::module &m)
 {
   PySharedPtrClass< smtk::model::Session > instance(m, "Session");
   instance
@@ -65,7 +65,7 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("removeGeneratedProperties", &smtk::model::Session::removeGeneratedProperties, py::arg("entity"), py::arg("propFlags"))
     .def("splitProperties", &smtk::model::Session::splitProperties, py::arg("from"), py::arg("to"))
     .def("mergeProperties", &smtk::model::Session::mergeProperties, py::arg("from"), py::arg("to"))
-    .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) { return i; })
+    .def_static("CastTo", [](std::shared_ptr<smtk::model::Session> i) { return i; })
     ;
   return instance;
 }

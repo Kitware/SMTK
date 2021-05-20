@@ -356,12 +356,12 @@ protected:
   int visitChildrenInternal(Visitor fn, std::vector<int>& indices);
 
   WeakDescriptivePhrasePtr m_parent;
-  DescriptivePhraseType m_type;
+  DescriptivePhraseType m_type{ DescriptivePhraseType::INVALID_DESCRIPTION };
   SubphraseGeneratorPtr m_delegate;
   PhraseContentPtr m_content;
   unsigned int m_phraseId;
   mutable DescriptivePhrases m_subphrases;
-  mutable bool m_subphrasesBuilt;
+  mutable bool m_subphrasesBuilt{ false };
 
 private:
   static unsigned int s_nextPhraseId;

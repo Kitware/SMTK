@@ -50,8 +50,8 @@ protected:
   smtk::view::DescriptivePhrasePtr m_root;
   smtk::view::SelectionPtr m_selection;
   int m_selectionBit;
-  int m_componentMutability;
-  int m_resourceMutability;
+  int m_componentMutability{ 0 };
+  int m_resourceMutability{ 0 };
 };
 } // namespace view
 } // namespace smtk

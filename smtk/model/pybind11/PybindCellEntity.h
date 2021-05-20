@@ -26,7 +26,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_init_smtk_model_CellEntity(py::module &m)
+inline py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_init_smtk_model_CellEntity(py::module &m)
 {
   py::class_< smtk::model::CellEntity, smtk::model::EntityRef > instance(m, "CellEntity");
   instance

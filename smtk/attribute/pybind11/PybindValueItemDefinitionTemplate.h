@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<int>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_int_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<int>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_int_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<int>, smtk::attribute::ValueItemDefinition> instance(m, "ValueItemDefinitionTemplate_int_");
   instance
@@ -48,7 +48,7 @@ PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<int>, smtk::attrib
   return instance;
 }
 
-PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<double>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_double_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<double>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_double_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<double>, smtk::attribute::ValueItemDefinition> instance(m, "ValueItemDefinitionTemplate_double_");
   instance
@@ -77,7 +77,7 @@ PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<double>, smtk::att
   return instance;
 }
 
-PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::string>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_string_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::string>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_string_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::string>, smtk::attribute::ValueItemDefinition> instance(m, "ValueItemDefinitionTemplate_string_");
   instance
@@ -106,7 +106,7 @@ PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::string>, smtk
   return instance;
 }
 
-PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_datetime_(py::module &m)
+inline PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_datetime_(py::module &m)
 {
   PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition> instance(m, "ValueItemDefinitionTemplate_datetime_");
   instance

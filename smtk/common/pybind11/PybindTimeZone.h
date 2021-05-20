@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::TimeZone > pybind11_init_smtk_common_TimeZone(py::module &m)
+inline py::class_< smtk::common::TimeZone > pybind11_init_smtk_common_TimeZone(py::module &m)
 {
   py::class_< smtk::common::TimeZone > instance(m, "TimeZone");
   instance

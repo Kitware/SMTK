@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > pybind11_init_smtk_session_mesh_EulerCharacteristicRatio(py::module &m)
+inline PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > pybind11_init_smtk_session_mesh_EulerCharacteristicRatio(py::module &m)
 {
   PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > instance(m, "EulerCharacteristicRatio");
   instance

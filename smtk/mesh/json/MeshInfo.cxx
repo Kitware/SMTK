@@ -21,10 +21,7 @@ namespace mesh
 namespace json
 {
 
-MeshInfo::MeshInfo()
-  : m_mesh()
-{
-}
+MeshInfo::MeshInfo() = default;
 
 MeshInfo::MeshInfo(
   smtk::mesh::Handle meshId,

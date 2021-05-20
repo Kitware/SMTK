@@ -31,10 +31,7 @@ class SMTKCORE_EXPORT BadgeSet
 {
 public:
   /// Remove this once view::Manager uses the new factory method to construct PhraseModel with arguments.
-  BadgeSet()
-    : m_phraseModel(nullptr)
-  {
-  }
+  BadgeSet() = default;
 
   /// Construct and configure a set of badges for a view.
   BadgeSet(const Configuration* viewSpec, const ManagerPtr& manager, PhraseModel* phraseModel)
@@ -69,7 +66,7 @@ public:
 
 private:
   std::weak_ptr<Manager> m_manager;
-  PhraseModel* m_phraseModel;
+  PhraseModel* m_phraseModel{ nullptr };
   std::vector<std::unique_ptr<Badge>> m_badges;
 };
 

@@ -20,7 +20,7 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::common::DateTimeZonePair > pybind11_init_smtk_common_DateTimeZonePair(py::module &m)
+inline py::class_< smtk::common::DateTimeZonePair > pybind11_init_smtk_common_DateTimeZonePair(py::module &m)
 {
   py::class_< smtk::common::DateTimeZonePair > instance(m, "DateTimeZonePair");
   instance

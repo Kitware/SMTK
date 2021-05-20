@@ -30,12 +30,9 @@ namespace model
   */
 struct SMTKCORE_EXPORT LimitingClause
 {
-  LimitingClause()
-    : m_propType(smtk::resource::PropertyType::INVALID_PROPERTY)
-  {
-  }
+  LimitingClause() = default;
 
-  smtk::resource::PropertyType m_propType;
+  smtk::resource::PropertyType m_propType{ smtk::resource::PropertyType::INVALID_PROPERTY };
   std::string m_propName;
   bool m_propNameIsRegex{ false };
   std::vector<std::string> m_propStringValues;

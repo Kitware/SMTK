@@ -19,7 +19,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_DeleteMesh(py::module &m)
+inline PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_DeleteMesh(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > instance(m, "DeleteMesh");
   instance

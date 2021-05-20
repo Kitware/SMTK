@@ -152,11 +152,7 @@ public:
   {
   }
   /// Construct an invalid reference.
-  ArrangementReference()
-    : kind(KINDS_OF_ARRANGEMENTS)
-    , index(-1)
-  {
-  }
+  ArrangementReference() = default;
 
   /// Indicate whether a reference is valid or not:
   bool isValid() const
@@ -165,8 +161,8 @@ public:
   }
 
   smtk::common::UUID entityId; //!< The ID of the entity on which the arrangement is defined.
-  ArrangementKind kind;        //!< The kind of the arrangement.
-  int index;                   //!< The index of the arrangement.
+  ArrangementKind kind{ KINDS_OF_ARRANGEMENTS }; //!< The kind of the arrangement.
+  int index{ -1 };                               //!< The index of the arrangement.
 };
 
 /// A vector of Arrangements is associated to each Manager entity.

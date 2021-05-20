@@ -339,7 +339,7 @@ protected:
     bool bitwise);
   bool refilter(const std::string& source);
 
-  SelectionAction m_defaultAction;
+  SelectionAction m_defaultAction{ SelectionAction::FILTERED_REPLACE };
   //smtk::model::BitFlags m_modelEntityMask;
   bool m_meshSetMask;
   std::set<std::string> m_selectionSources;
