@@ -19,14 +19,44 @@
 
 #include <QDebug>
 #include <QDialogButtonBox>
+#include <QEvent>
+#include <QObject>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QWidget>
 
 using namespace smtk::extension;
+
+namespace
+{
+// Internal class for constraining QScrollArea to vertical direction
+class qtVerticalScrollArea : public QScrollArea
+{
+public:
+  qtVerticalScrollArea(QWidget* parent = nullptr)
+    : QScrollArea(parent)
+  {
+  }
+
+protected:
+  // Override eventFilter on resize events to set width
+  bool eventFilter(QObject* obj, QEvent* event) override
+  {
+    if (obj && obj == this->widget() && event->type() == QEvent::Resize)
+    {
+      int w = this->widget()->minimumSizeHint().width() + this->verticalScrollBar()->width();
+      this->setMinimumWidth(w);
+    }
+    return QScrollArea::eventFilter(obj, event);
+  }
+};
+
+} // namespace
 
 class qtOperationDialogInternals
 {
@@ -95,10 +125,11 @@ void qtOperationDialog::buildUI(
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
   if (scrollable)
   {
-    QScrollArea* scroll = new QScrollArea();
+    qtVerticalScrollArea* scroll = new qtVerticalScrollArea();
     QWidget* viewport = new QWidget();
     scroll->setWidget(viewport);
     scroll->setWidgetResizable(true);
+
     QVBoxLayout* viewportLayout = new QVBoxLayout(viewport);
     viewport->setLayout(viewportLayout);
 
@@ -158,9 +189,9 @@ void qtOperationDialog::buildUI(
 
   if (scrollable)
   {
-    // Set min size for reasonable display
+    // Set min height for reasonable display
     // Application can always override this
-    this->setMinimumSize(480, 320);
+    this->setMinimumHeight(480);
   }
 }
 

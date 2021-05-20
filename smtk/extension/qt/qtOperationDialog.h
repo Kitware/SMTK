@@ -56,9 +56,12 @@ public:
     smtk::view::ManagerPtr viewManager,
     QWidget* parentWidget = nullptr);
 
-  // Use this constructor to include a scrolling area in the opertion
-  // view. Only set this flag if the operation parameters are
-  // lengthy and take up alot of vertical display space.
+  // Use this constructor to display the operation view in a
+  // vertically-scrolling area. You would generally only need
+  // this option if the operation parameters are lengthy and
+  // take up a significant amount of vertical display space.
+  // When setting the scrollable option, you would generally
+  // also want to call this class' setMinimumHeight() method.
   qtOperationDialog(
     smtk::operation::OperationPtr operation,
     smtk::resource::ManagerPtr resourceManager,
