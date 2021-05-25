@@ -34,12 +34,11 @@ git merge --ff-only origin/master
       - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
         - [ ] Get positive review and merge.
-      - [ ] Update `version.txt` and tag the commit
+      - [ ] Update `version.txt` and tag the commit (tag this commit below)
 ```
 git checkout -b update-to-vVERSION BRANCHPOINT
 echo VERSION > version.txt
 git commit -m 'Update version number to VERSION' version.txt
-git tag -a -m 'SMTK VERSION' vVERSION HEAD
 ```
       - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash
             groups
@@ -61,6 +60,7 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
     - [ ] Get positive review
     - [ ] `Do: merge`
     - [ ] Push the tag to the main repository
+      - [ ] `git tag -a -m 'SMTK VERSION' vVERSION commit-that-updated-version.txt`
       - [ ] `git push origin vVERSION`
 
   - Software process updates (these can all be done independently)
