@@ -42,10 +42,14 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
     - Make a commit for each of these `release`-only changes
       - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups
     - Create a merge request targeting `release`
-      - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask @ben.boeckel if you do not have one)
-      - [ ] Add the `kwrobot.release.cmb` user to your fork with at least `Developer` privileges (so it can open MRs)
-      - [ ] Use [the `release-mr`][release-mr] script to open the create the Merge Request (see script for usage)
-        - Pull the script for each release; it may have been updated since it was last used
+      - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask
+            @ben.boeckel if you do not have one)
+      - [ ] Add the `kwrobot.release.cmb` user to your fork with at least
+            `Developer` privileges (so it can open MRs)
+      - [ ] Use [the `release-mr`][release-mr] script to open the create the
+            Merge Request (see script for usage)
+        - Pull the script for each release; it may have been updated since it
+          was last used
     - [ ] Get positive review
     - [ ] `Do: merge`
     - [ ] Push the tag to the main repository
@@ -54,9 +58,11 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
   - Software process updates (these can all be done independently)
     - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
     - [ ] Run [this script][cdash-update-groups] to update the CDash groups
-      - This must be done after a nightly run to ensure all builds are in the `release` group
+      - This must be done after a nightly run to ensure all builds are in the
+        `release` group
       - See the script itself for usage documentation
-    - [ ] Add (or update if `PATCH` is greater than 0) version selection entry in cmb-superbuild
+    - [ ] Add (or update if `PATCH` is greater than 0) version selection entry
+          in cmb-superbuild
 
 [release-mr]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/release-mr.py
 [cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
