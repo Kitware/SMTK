@@ -14,9 +14,6 @@ Please remove this comment.
 # Preparatory steps
 
   - Update smtk guides
-    - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
-      - [ ] If `PATCH` is greater than 0, add items to the end of this file.
-      - [ ] Get positive review and merge.
 
 # Update smtk
 
@@ -30,17 +27,23 @@ git fetch origin
 git checkout master
 git merge --ff-only origin/master
 ```
-  - [ ] Update `version.txt` and tag the commit
+
+  - Integrate changes.
+    - Make a commit for each of these `release`-only changes on a single topic
+      (suggested branch name: `update-to-vVERSION`):
+      - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
+        - [ ] If `PATCH` is greater than 0, add items to the end of this file.
+        - [ ] Get positive review and merge.
+      - [ ] Update `version.txt` and tag the commit
 ```
 git checkout -b update-to-vVERSION BRANCHPOINT
 echo VERSION > version.txt
 git commit -m 'Update version number to VERSION' version.txt
 git tag -a -m 'SMTK VERSION' vVERSION HEAD
 ```
+      - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash
+            groups
 
-  - Integrate changes.
-    - Make a commit for each of these `release`-only changes
-      - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups
     - Create a merge request targeting `release`
       - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask
             @ben.boeckel if you do not have one)
