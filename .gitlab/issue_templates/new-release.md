@@ -25,6 +25,11 @@ git fetch origin
 git checkout $branch
 git merge --ff-only origin/$branch # if this fails, there are local commits that need to be removed
 ```
+    - If this is not the first release candidate from `master`, i.e., `PATCH` >
+      0, ensure merge requests which should be in the release have been merged.
+      The [`backport-mrs.py`][backport-mrs] script can be used to find and
+      ensure that merge requests assigned to the associated milestone are
+      available on the `release` branch.
 
   - Integrate changes.
     - Make a commit for each of these `release`-only changes on a single topic
@@ -70,6 +75,7 @@ git commit -m 'Update version number to VERSION' version.txt
     - [ ] Add (or update if `PATCH` is greater than 0) version selection entry
           in cmb-superbuild
 
+[backport-mrs]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/backport-mrs.py
 [release-mr]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/release-mr.py
 [cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
 
