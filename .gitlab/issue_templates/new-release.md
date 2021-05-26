@@ -17,15 +17,13 @@ Please remove this comment.
 
 # Update smtk
 
-Keep the relevant items for the kind of release this is.
-
-If making a first release candidate from master, i.e., `PATCH` is 0.
-
-  - [ ] Update `master` branch for **smtk**
+  - Update the local copy of the base branch.
+    - If `PATCH` is 0, update `master`
+    - Otherwise, update `release`
 ```
 git fetch origin
-git checkout master
-git merge --ff-only origin/master
+git checkout $branch
+git merge --ff-only origin/$branch # if this fails, there are local commits that need to be removed
 ```
 
   - Integrate changes.
