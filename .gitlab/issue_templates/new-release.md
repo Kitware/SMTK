@@ -14,50 +14,68 @@ Please remove this comment.
 # Preparatory steps
 
   - Update smtk guides
-    - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
-      - [ ] If `PATCH` is greater than 0, add items to the end of this file.
-      - [ ] Get positive review and merge.
 
 # Update smtk
 
-Keep the relevant items for the kind of release this is.
-
-If making a first release candidate from master, i.e., `PATCH` is 0.
-
-  - [ ] Update `master` branch for **smtk**
+  - Update the local copy of the base branch.
+    - If `PATCH` is 0, update `master`
+    - Otherwise, update `release`
 ```
 git fetch origin
-git checkout master
-git merge --ff-only origin/master
+git checkout $branch
+git merge --ff-only origin/$branch # if this fails, there are local commits that need to be removed
 ```
-  - [ ] Update `version.txt` and tag the commit
+    - If this is not the first release candidate from `master`, i.e., `PATCH` >
+      0, ensure merge requests which should be in the release have been merged.
+      The [`backport-mrs.py`][backport-mrs] script can be used to find and
+      ensure that merge requests assigned to the associated milestone are
+      available on the `release` branch.
+
+  - Integrate changes.
+    - Make a commit for each of these `release`-only changes on a single topic
+      (suggested branch name: `update-to-vVERSION`):
+      - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
+        - [ ] If `PATCH` is greater than 0, add items to the end of this file.
+        - [ ] Get positive review and merge.
+      - [ ] Update `version.txt` and tag the commit (tag this commit below)
 ```
 git checkout -b update-to-vVERSION BRANCHPOINT
 echo VERSION > version.txt
 git commit -m 'Update version number to VERSION' version.txt
-git tag -a -m 'SMTK VERSION' vVERSION HEAD
 ```
+      - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash
+            groups
 
-  - Integrate changes.
-    - Make a commit for each of these `release`-only changes
-      - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash groups
     - Create a merge request targeting `release`
-      - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask @ben.boeckel if you do not have one)
-      - [ ] Add the `kwrobot.release.cmb` user to your fork with at least `Developer` privileges (so it can open MRs)
-      - [ ] Use [the `release-mr`][release-mr] script to open the create the Merge Request (see script for usage)
-        - Pull the script for each release; it may have been updated since it was last used
+      - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask
+            @ben.boeckel if you do not have one)
+      - [ ] Add the `kwrobot.release.cmb` user to your fork with at least
+            `Developer` privileges (so it can open MRs)
+      - [ ] Use [the `release-mr`][release-mr] script to open the create the
+            Merge Request (see script for usage)
+        - Pull the script for each release; it may have been updated since it
+          was last used
+        - The script outputs the information it will be using to create the
+          merge request. Please verify that it is all correct before creating
+          the merge request. See usage at the top of the script to provide
+          information that is either missing or incorrect (e.g., if its data
+          extraction heuristics fail).
     - [ ] Get positive review
     - [ ] `Do: merge`
     - [ ] Push the tag to the main repository
+      - [ ] `git tag -a -m 'SMTK VERSION' vVERSION commit-that-updated-version.txt`
       - [ ] `git push origin vVERSION`
 
   - Software process updates (these can all be done independently)
     - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
     - [ ] Run [this script][cdash-update-groups] to update the CDash groups
-      - This must be done after a nightly run to ensure all builds are in the `release` group
+      - This must be done after a nightly run to ensure all builds are in the
+        `release` group
       - See the script itself for usage documentation
-    - [ ] Add (or update if `PATCH` is greater than 0) version selection entry in cmb-superbuild
+    - [ ] Add (or update if `PATCH` is greater than 0) version selection entry
+          in cmb-superbuild
 
+[backport-mrs]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/backport-mrs.py
 [release-mr]: https://gitlab.kitware.com/utils/release-utils/-/blob/master/release-mr.py
 [cdash-update-groups]: https://gitlab.kitware.com/utils/cdash-utils/-/blob/master/cdash-update-groups.py
 
