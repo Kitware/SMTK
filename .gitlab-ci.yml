@@ -109,25 +109,6 @@ test:fedora33-nodata:
     needs:
         - build:fedora33-nodata
 
-build:fedora33-vtk-python2:
-    extends:
-        - .fedora33_vtk_python2
-        - .cmake_build_linux
-        - .cmake_build_artifacts
-        - .linux_builder_tags
-        - .run_automatically
-
-test:fedora33-vtk-python2:
-    extends:
-        - .fedora33_vtk_python2
-        - .cmake_test_linux
-        - .linux_test_tags
-        - .run_automatically
-    dependencies:
-        - build:fedora33-vtk-python2
-    needs:
-        - build:fedora33-vtk-python2
-
 ## Lint builds
 
 build:fedora33-asan:
