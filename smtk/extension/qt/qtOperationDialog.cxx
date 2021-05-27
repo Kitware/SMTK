@@ -17,11 +17,15 @@
 #include "smtk/model/Registrar.h"
 #include "smtk/view/Manager.h"
 
+#include <QApplication>
 #include <QDebug>
+#include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QEvent>
 #include <QObject>
 #include <QPushButton>
+#include <QRect>
+#include <QScreen>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTabWidget>
@@ -29,6 +33,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QtGlobal>
 
 using namespace smtk::extension;
 
@@ -49,8 +54,23 @@ protected:
   {
     if (obj && obj == this->widget() && event->type() == QEvent::Resize)
     {
-      int w = this->widget()->minimumSizeHint().width() + this->verticalScrollBar()->width();
-      this->setMinimumWidth(w);
+      // Get width of contents
+      int contentsWidth =
+        this->widget()->minimumSizeHint().width() + this->verticalScrollBar()->width();
+
+      // Get width of screen
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+      const QRect screenRect = QApplication::desktop()->screenGeometry(this->widget());
+      int screenWidth = screenRect.width();
+#else
+      int screenWidth = this->widget()->screen()->size().width();
+#endif
+      // If contents width is less than 1/2 screen width, expand
+      // so that horizontal scrolling is not needed.
+      if (contentsWidth < screenWidth / 2)
+      {
+        this->setMinimumWidth(contentsWidth);
+      }
     }
     return QScrollArea::eventFilter(obj, event);
   }
