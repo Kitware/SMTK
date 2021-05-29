@@ -61,9 +61,9 @@ AutoStart::~AutoStart() = default;
 void AutoStart::startup()
 {
 #ifdef ENABLE_PROJECT_UI
-  auto projectMenuMgr = pqSMTKProjectMenu::instance(this);
+  auto* projectMenuMgr = pqSMTKProjectMenu::instance(this);
 
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk project menu", projectMenuMgr);
@@ -77,7 +77,7 @@ void AutoStart::startup()
 
 void AutoStart::shutdown()
 {
-  auto pqCore = pqApplicationCore::instance();
+  auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->unRegisterManager("smtk project menu");

@@ -31,7 +31,7 @@ pqSMTKProjectPanel::pqSMTKProjectPanel(QWidget* parent)
   smtk::view::ConfigurationPtr config = j[0];
   this->setView(config);
 
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
   // Now listen for future connections.
   QObject::connect(
     smtkBehavior,
@@ -56,7 +56,7 @@ void pqSMTKProjectPanel::setView(const smtk::view::ConfigurationPtr& view)
 {
   m_view = view;
 
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
 
   smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
     this->sourceAdded(r, s);
@@ -93,7 +93,7 @@ void pqSMTKProjectPanel::sourceAdded(pqSMTKWrapper* wrapper, pqServer* server)
   smtk::extension::ViewInfo resinfo(m_view, this, m_viewUIMgr);
 
   // the top-level "Type" in m_view should be pqSMTKProjectBrowser or compatible.
-  auto baseview = m_viewUIMgr->setSMTKView(resinfo);
+  auto* baseview = m_viewUIMgr->setSMTKView(resinfo);
   m_browser = dynamic_cast<pqSMTKProjectBrowser*>(baseview);
   if (!m_browser)
   {
