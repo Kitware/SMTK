@@ -78,7 +78,7 @@ set(projectDependencies ${_projectDependencies} PARENT_SCOPE)
 smtk_public_headers(smtkCore ${projectHeaders})
 
 cmake_dependent_option(
-  SMTK_ENABLE_PROJECT_UI "Build plugin with smtk::project UI elements" OFF SMTK_ENABLE_PARAVIEW_SUPPORT OFF)
+  SMTK_ENABLE_PROJECT_UI "Build plugin with smtk::project UI elements" ON SMTK_ENABLE_PARAVIEW_SUPPORT OFF)
 mark_as_advanced(SMTK_ENABLE_PROJECT_UI)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
