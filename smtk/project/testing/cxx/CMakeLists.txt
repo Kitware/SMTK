@@ -10,6 +10,7 @@ set(unit_tests
 set(unit_tests_which_require_data
   TestProjectReadWrite
   TestProjectReadWrite2
+  TestProjectReadWrite3
 )
 set(extra_libs)
 if (SMTK_ENABLE_VTK_SUPPORT)
