@@ -38,11 +38,6 @@
         {
             "group": "master",
             "site": "gitlab-ci",
-            "buildname": "fedora33_vtk_python2"
-        },
-        {
-            "group": "master",
-            "site": "gitlab-ci",
             "buildname": "fedora33_vtk_python3"
         },
         {

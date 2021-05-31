@@ -77,13 +77,6 @@
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
 
-.fedora33_vtk_python2:
-    extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-vtk-python2-20210420"
-
-    variables:
-        CMAKE_CONFIGURATION: fedora33_vtk_python2
-
 ## Tags
 
 .linux_builder_tags:
