@@ -134,6 +134,8 @@ public:
     return smtk::resource::filter::Filter<smtk::graph::filter::Grammar>(filterString);
   }
 
+  Resource(const Resource&) = delete;
+
 protected:
   Resource(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)
