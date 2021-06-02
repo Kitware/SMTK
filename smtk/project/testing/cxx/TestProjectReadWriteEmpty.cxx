@@ -48,7 +48,7 @@ void cleanup(const std::string& file_path)
 }
 } // namespace
 
-int TestProjectReadWrite3(int /*unused*/, char** const /*unused*/)
+int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
 {
   // Create smtk managers
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
