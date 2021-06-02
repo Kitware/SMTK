@@ -219,7 +219,8 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
     for (const auto& obj : objects)
     {
       DescriptivePhrasePtr actualParent(parent);
-      Path childPath = this->indexOfObjectInParent(obj, actualParent, parentPath);
+      Path childPath =
+        actualParent->findDelegate()->indexOfObjectInParent(obj, actualParent, parentPath);
       if (childPath.empty())
       {
         continue;
@@ -248,31 +249,6 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
     }
     return 0; // 0 => continue iterating, 1 => skip children of parent, 2 => terminate
   });
-
-  smtk::attribute::AttributePtr attr;
-  smtk::model::EntityPtr ment;
-  smtk::mesh::ComponentPtr mcmp;
-  for (const auto& obj : objects)
-  {
-    auto comp = obj->as<smtk::resource::Component>();
-    if (!comp)
-    {
-      continue;
-    }
-
-    int rsrcIdx = this->findResourceLocation(comp->resource(), localRoot);
-    if (rsrcIdx < 0)
-    {
-      continue;
-    }
-
-    Path path{ rsrcIdx, -1 };
-
-    DescriptivePhrasePtr parent = localRoot->subphrases()[rsrcIdx];
-    DescriptivePhrasePtr phr;
-  }
-  /*
-  */
 }
 
 int SubphraseGenerator::directLimit() const
