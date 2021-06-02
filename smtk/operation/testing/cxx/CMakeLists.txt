@@ -3,6 +3,7 @@ set(unit_tests
   TestAvailableOperations
   TestMutexedOperation
   unitOperation
+  unitNamingGroup
   TestOperationGroup
   TestOperationLauncher
   TestRemoveResource

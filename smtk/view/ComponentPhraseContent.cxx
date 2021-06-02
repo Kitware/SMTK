@@ -18,6 +18,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/graph/Component.h"
+
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
@@ -27,6 +29,7 @@
 #include "smtk/model/EntityRef.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/groups/NamingGroup.h"
 #include "smtk/operation/operators/SetProperty.h"
 
 #include "smtk/resource/Resource.h"
@@ -77,8 +80,9 @@ bool ComponentPhraseContent::editable(ContentType contentType) const
       {
         auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
         auto meshComponent = dynamic_pointer_cast<smtk::mesh::Component>(component);
-        // Models and meshes may be assigned a name.
-        return !!modelComponent || !!meshComponent;
+        auto graphComponent = dynamic_pointer_cast<smtk::graph::Component>(component);
+        // Models, meshes and graphs may be assigned a name.
+        return !!modelComponent || !!meshComponent || !!graphComponent;
       }
     }
   }
@@ -202,30 +206,20 @@ bool ComponentPhraseContent::editStringValue(ContentType contentType, const std:
     if (contentType == TITLE)
     {
       smtk::operation::Operation::Ptr op;
-      if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component))
+      if (opManager)
       {
-        if (opManager)
+        smtk::operation::NamingGroup nameSetter(opManager);
+        auto index = nameSetter.matchingOperation(*component);
+        op = opManager->create(index);
+        if (op)
         {
-          op = opManager->create<smtk::mesh::SetMeshName>();
+          op->parameters()->findString("name")->setValue(val);
         }
-        if (!op)
-        {
-          op = smtk::mesh::SetMeshName::create();
-        }
-
-        op->parameters()->findString("name")->setValue(val);
       }
-      else
+      if (!op)
       {
-        if (opManager)
-        {
-          op = opManager->create<smtk::operation::SetProperty>();
-        }
-        if (!op)
-        {
-          op = smtk::operation::SetProperty::create();
-        }
-
+        // Todo: Use component setName if no operation provided
+        op = smtk::operation::SetProperty::create();
         op->parameters()->findString("name")->setValue("name");
         op->parameters()->findString("string value")->appendValue(val);
       }

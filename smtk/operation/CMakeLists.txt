@@ -15,6 +15,7 @@ set(operationSrcs
   groups/ImporterGroup.cxx
   groups/InternalGroup.cxx
   groups/ExporterGroup.cxx
+  groups/NamingGroup.cxx
   groups/ReaderGroup.cxx
   groups/ResourceIOGroup.cxx
   groups/WriterGroup.cxx
@@ -43,6 +44,7 @@ set(operationHeaders
   groups/ImporterGroup.h
   groups/InternalGroup.h
   groups/ExporterGroup.h
+  groups/NamingGroup.h
   groups/ReaderGroup.h
   groups/ResourceIOGroup.h
   groups/WriterGroup.h
