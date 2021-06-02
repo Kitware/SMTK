@@ -173,6 +173,13 @@ public:
 
   size_t numberOfModels() const;
 
+  /// Get/set whether adding cells to models during transcription will check for pre-existing
+  /// entries to avoid adding duplicates. This defaults to true, but some operations such as
+  /// imports may wish to diable for efficiency (if adding many cells to a model that cannot
+  /// already be present on the model).
+  static bool transcriptionChecksEnabled() { return s_transcriptionChecks; }
+  static void setEnableTranscriptionChecks(bool doCheck) { s_transcriptionChecks = doCheck; }
+
 protected:
   friend struct EntityHandle;
 
@@ -189,6 +196,7 @@ protected:
     m_cpMap; // vtkMultiBlockDataSet doesn't provide a fast way to obtain parent of leaf datasets.
   // std::map<EntityHandle,smtk::model::EntityRef> m_fwdIdMap; // not needed; store UUID in vtkInformation.
   // -- 1 --
+  static bool s_transcriptionChecks;
 
   vtkDataObject* modelOfHandle(const EntityHandle& h) const;
   vtkDataObject* parent(vtkDataObject* obj) const;

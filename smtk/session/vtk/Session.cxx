@@ -53,6 +53,8 @@ vtkInformationKeyMacro(Session, SMTK_OUTER_LABEL, Integer);
 vtkInformationKeyMacro(Session, SMTK_CHILDREN, ObjectBaseVector);
 vtkInformationKeyMacro(Session, SMTK_LABEL_VALUE, Double);
 
+bool Session::s_transcriptionChecks = true;
+
 enum smtkCellTessRole
 {
   SMTK_ROLE_VERTS,
@@ -406,15 +408,23 @@ SessionInfoBits Session::transcribeInternal(
       if (handle.entityType() == EXO_MODEL)
       {
         if (childEntityRef.isCellEntity())
-          mutableEntityRef.as<smtk::model::Model>().addCell(childEntityRef);
+        {
+          auto model = mutableEntityRef.as<smtk::model::Model>();
+          model.addCell(childEntityRef, s_transcriptionChecks);
+        }
         else if (childEntityRef.isGroup())
+        {
           mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+        }
       }
       else
       {
         mutableEntityRef.as<smtk::model::Group>().addEntity(childEntityRef);
         if (childEntityRef.isCellEntity())
-          mutableEntityRef.owningModel().addCell(childEntityRef);
+        {
+          auto model = mutableEntityRef.owningModel();
+          model.addCell(childEntityRef, s_transcriptionChecks);
+        }
       }
     }
 

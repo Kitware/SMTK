@@ -1588,8 +1588,9 @@ EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed, bool checkExist
     }
     else
     {
-      EntityRefArrangementOps::addSimpleRelationship(*this, INCLUDES, thingToEmbed);
-      EntityRefArrangementOps::addSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+      EntityRefArrangementOps::addSimpleRelationship(*this, INCLUDES, thingToEmbed, checkExistence);
+      EntityRefArrangementOps::addSimpleRelationship(
+        thingToEmbed, EMBEDDED_IN, *this, checkExistence);
     }
     rsrc->trigger(event, *this, thingToEmbed);
   }
