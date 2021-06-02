@@ -41,6 +41,7 @@
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
+#include "smtk/operation/groups/NamingGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -91,6 +92,9 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
     .registerOperation<smtk::mesh::Resource, smtk::mesh::WriteResource>();
 
   smtk::operation::DeleterGroup(operationManager).registerOperation<DeleteMesh>();
+
+  smtk::operation::NamingGroup(operationManager)
+    .registerOperation<smtk::mesh::Resource, SetMeshName>();
 
   smtk::operation::InternalGroup(operationManager).registerOperation<smtk::mesh::SelectCells>();
 }
