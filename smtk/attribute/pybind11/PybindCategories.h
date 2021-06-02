@@ -61,14 +61,6 @@ inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Ca
     .def("reset", &smtk::attribute::Categories::Set::reset)
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::Set::passes, py::arg("categories"))
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::string&) const) &smtk::attribute::Categories::Set::passes, py::arg("category"))
-
-    .def("mode", &smtk::attribute::Categories::Set::inclusionMode)
-    .def("setMode", &smtk::attribute::Categories::Set::setInclusionMode)
-    .def("categoryNames", &smtk::attribute::Categories::Set::includedCategoryNames)
-    .def("set", &smtk::attribute::Categories::Set::setInclusions)
-    .def("insert", &smtk::attribute::Categories::Set::insertInclusion)
-    .def("erase", &smtk::attribute::Categories::Set::eraseInclusion)
-    .def("size", &smtk::attribute::Categories::Set::inclusionSize)
     ;
   py::enum_<smtk::attribute::Categories::Set::CombinationMode>(instance, "CombinationMode")
     .value("Any", smtk::attribute::Categories::Set::CombinationMode::Any)

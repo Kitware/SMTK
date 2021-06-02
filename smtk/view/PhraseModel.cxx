@@ -196,69 +196,6 @@ std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
   return result;
 }
 
-bool PhraseModel::addSource(
-  smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr,
-  smtk::view::ManagerPtr viewMgr,
-  smtk::view::SelectionPtr seln)
-{
-  for (const auto& source : m_sources)
-  {
-    if (
-      ((!rsrcMgr && !source.m_managers.contains<smtk::resource::ManagerPtr>()) ||
-       (source.m_managers.contains<smtk::resource::ManagerPtr>() &&
-        source.m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr)) &&
-      ((!operMgr && !source.m_managers.contains<smtk::operation::ManagerPtr>()) ||
-       (source.m_managers.contains<smtk::operation::ManagerPtr>() &&
-        source.m_managers.get<smtk::operation::ManagerPtr>() == operMgr)) &&
-      ((!viewMgr && !source.m_managers.contains<smtk::view::ManagerPtr>()) ||
-       (source.m_managers.contains<smtk::view::ManagerPtr>() &&
-        source.m_managers.get<smtk::view::ManagerPtr>() == viewMgr)) &&
-      ((!seln && !source.m_managers.contains<smtk::view::SelectionPtr>()) ||
-       (source.m_managers.contains<smtk::view::SelectionPtr>() &&
-        source.m_managers.get<smtk::view::SelectionPtr>() == seln)))
-    {
-      return false; // Do not add what we already have
-    }
-  }
-  std::ostringstream description;
-  description << "PhraseModel " << this << ": ";
-  auto rsrcHandle = rsrcMgr ? rsrcMgr->observers().insert(
-                                [this](const Resource& rsrc, const resource::EventType& event) {
-                                  this->handleResourceEvent(rsrc, event);
-                                  return 0;
-                                },
-                                0,    // assign a neutral priority
-                                true, // observeImmediately
-                                description.str() + "Update phrases when resources change.")
-                            : smtk::resource::Observers::Key();
-  auto operHandle = operMgr
-    ? operMgr->observers().insert(
-        [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
-          this->handleOperationEvent(op, event, res);
-          return 0;
-        },
-        description.str() + "Update phrases based on operation results.")
-    : smtk::operation::Observers::Key();
-  auto selnHandle = seln ? seln->observers().insert(
-                             [this](const std::string& src, smtk::view::SelectionPtr seln) {
-                               this->handleSelectionEvent(src, seln);
-                             },
-                             0,    // assign a neutral priority
-                             true, // observeImmediately
-                             description.str() + "Update phrases when selection changes.")
-                         : smtk::view::SelectionObservers::Key();
-  m_sources.emplace_back(
-    rsrcMgr,
-    operMgr,
-    viewMgr,
-    seln,
-    std::move(rsrcHandle),
-    std::move(operHandle),
-    std::move(selnHandle));
-  return true;
-}
-
 bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
 {
   const auto& rsrcMgr =
@@ -323,27 +260,6 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
   m_sources.emplace_back(
     managers, std::move(rsrcHandle), std::move(operHandle), std::move(selnHandle));
   return true;
-}
-
-bool PhraseModel::removeSource(
-  smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr,
-  smtk::view::ManagerPtr viewMgr,
-  smtk::view::SelectionPtr seln)
-{
-  for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
-  {
-    if (
-      it->m_managers.get<smtk::resource::ManagerPtr>() == rsrcMgr &&
-      it->m_managers.get<smtk::operation::ManagerPtr>() == operMgr &&
-      it->m_managers.get<smtk::view::ManagerPtr>() == viewMgr &&
-      it->m_managers.get<smtk::view::SelectionPtr>() == seln)
-    {
-      m_sources.erase(it);
-      return true;
-    }
-  }
-  return false;
 }
 
 bool PhraseModel::removeSource(const smtk::common::TypeContainer& managers)

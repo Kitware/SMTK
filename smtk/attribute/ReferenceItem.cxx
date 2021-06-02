@@ -449,11 +449,6 @@ bool ReferenceItem::setObjectKey(
   return false;
 }
 
-smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) const
-{
-  return this->value(i);
-}
-
 smtk::resource::PersistentObjectPtr ReferenceItem::value(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(m_cache->size()))
