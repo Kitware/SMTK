@@ -46,10 +46,15 @@ UUID::UUID(const_iterator inBegin, const_iterator inEnd)
 }
 
 /// Construct a UUID from a text string (36 characters long, including hyphens).
+/// The UUID stays in its default state of nil if the input string is empty.
 UUID::UUID(const std::string& txt)
+  : m_data()
 {
-  boost::uuids::string_generator sgen;
-  m_data = sgen(txt);
+  if (!txt.empty())
+  {
+    boost::uuids::string_generator sgen;
+    m_data = sgen(txt);
+  }
 }
 
 /// Construct a UUID from a boost UUID object.

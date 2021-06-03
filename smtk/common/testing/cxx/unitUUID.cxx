@@ -31,7 +31,14 @@ int main(int argc, char* argv[])
   UUID fromRaw(data, data + 16);
 
   // String constructor
-  UUID fromStr("a3d75703-fc9b-4d99-a104-ee67cf6d11b9");
+  std::string str = "a3d75703-fc9b-4d99-a104-ee67cf6d11b9";
+  UUID fromStr(str);
+  test(fromStr.toString() == str, "String constructor must match its string input");
+
+  str = "";
+  UUID fromEmptyStr(str);
+  test(
+    fromEmptyStr.isNull(), "String constructor with empty string as input must create a null UUID");
 
   // Try the << operator
   std::ostringstream os;
