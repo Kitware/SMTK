@@ -1164,15 +1164,15 @@ void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
             break;
           }
         }
-        else if (!setAnalysisConfigurationHelper<AttributePtr>(configAtt, analysisNode, m_logger))
-        {
-          smtkErrorMacro(
-            m_logger,
-            "Encountered problem constructing configuration: " << configAtt->name()
-                                                               << " - configuration not built");
-          m_resource->removeAttribute(configAtt);
-          break;
-        }
+      }
+      else if (!setAnalysisConfigurationHelper<AttributePtr>(configAtt, analysisNode, m_logger))
+      {
+        smtkErrorMacro(
+          m_logger,
+          "Encountered problem constructing configuration: " << configAtt->name()
+                                                             << " - configuration not built");
+        m_resource->removeAttribute(configAtt);
+        break;
       }
     }
   }
