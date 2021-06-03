@@ -63,13 +63,14 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
 int EntityRefArrangementOps::addSimpleRelationship(
   const EntityRef& a,
   ArrangementKind k,
-  const EntityRef& b)
+  const EntityRef& b,
+  bool find)
 {
   int relidx = -1;
   EntityPtr ent = a.resource()->findEntity(a.entity());
   if (ent)
   {
-    int offset = ent->findOrAppendRelation(b.entity());
+    int offset = find ? ent->findOrAppendRelation(b.entity()) : ent->appendRelation(b.entity());
     relidx = a.resource()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
   }
   return relidx;
