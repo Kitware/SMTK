@@ -154,6 +154,7 @@ public:
 
   //Last selected attribute
   WeakAttributePtr selectedAttribute;
+  const std::string m_activeAttributeViewAttName = "ActiveAttribute";
 
   // Model for filtering the attribute by combobox.
   QPointer<QStandardItemModel> checkableAttComboModel;
@@ -637,6 +638,8 @@ void qtAttributeView::onListBoxSelectionChanged()
 
   if (dataItem)
   {
+    this->getObject()->details().setAttribute(
+      m_internals->m_activeAttributeViewAttName, dataItem->id().toString());
     this->updateAssociationEnableState(dataItem);
     this->updateTableWithAttribute(dataItem);
     emit attributeSelected(dataItem);
@@ -1027,7 +1030,28 @@ void qtAttributeView::onViewBy()
   if (m_internals->ListTableModel->rowCount() && !this->getSelectedItem())
   {
     // so switch tabs would not reset selection
-    if (!m_internals->AssociationsWidget->hasSelectedItem())
+    // get the active tab from the view config if it exists
+    std::string activeAttUuid = "";
+    this->getObject()->details().attribute(
+      m_internals->m_activeAttributeViewAttName, activeAttUuid);
+    smtk::attribute::ConstAttributePtr activeAtt =
+      this->uiManager()->attResource()->findAttribute(smtk::common::UUID(activeAttUuid));
+
+    if (activeAtt)
+    {
+      auto items = this->m_internals->ListTableModel->findItems(
+        activeAtt->name().c_str(), Qt::MatchExactly, name_column);
+      if (!items.empty())
+      {
+        auto activeItem = items.at(0);
+        // Select the newly created attribute
+        m_internals->ListTable->selectRow(activeItem->row());
+        QModelIndex index = activeItem->index();
+        QModelIndex mappedIndex = m_internals->ListTableProxyModel->mapFromSource(index);
+        m_internals->ListTable->setCurrentIndex(mappedIndex);
+      }
+    }
+    else if (!m_internals->AssociationsWidget->hasSelectedItem())
     {
       // In this case there was no previous selection so lets select the
       // first attribute
