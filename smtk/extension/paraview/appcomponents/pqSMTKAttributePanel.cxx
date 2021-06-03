@@ -55,10 +55,14 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
     &pqActiveObjects::instance(),
     SIGNAL(sourceChanged(pqPipelineSource*)),
     this,
-    SLOT(displayPipelineSource(pqPipelineSource*)));
+    SLOT(displayPipelineSource(pqPipelineSource*)),
+    Qt::QueuedConnection);
   QObject::connect(
-    &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
-
+    &pqActiveObjects::instance(),
+    SIGNAL(dataUpdated()),
+    this,
+    SLOT(updatePipeline()),
+    Qt::QueuedConnection);
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
