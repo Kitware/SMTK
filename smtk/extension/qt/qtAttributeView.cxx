@@ -83,6 +83,22 @@ class qtAttributeViewInternals
 public:
   ~qtAttributeViewInternals() { delete this->CurrentAtt; }
 
+  // Return a list of defs from the input that pass the advance read level check
+  QList<smtk::attribute::DefinitionPtr> removeAdvancedDefs(
+    smtk::extension::qtUIManager* uiManager,
+    const QList<smtk::attribute::DefinitionPtr>& defs) const
+  {
+    QList<smtk::attribute::DefinitionPtr> allVisibleDefs;
+    for (const auto& def : defs)
+    {
+      if (uiManager->passAdvancedCheck(def->advanceLevel()))
+      {
+        allVisibleDefs.append(def);
+      }
+    }
+    return allVisibleDefs;
+  }
+
   // Return a list of definitions based on the current settings
   // of the UI Manager and whether the View is to ignore
   // categories
@@ -92,14 +108,14 @@ public:
   {
     if (ignoreCategories)
     {
-      return this->AllDefs;
+      return removeAdvancedDefs(uiManager, this->AllDefs);
     }
 
     auto attResource = uiManager->attResource();
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
       // There are no active categories - return everything
-      return this->AllDefs;
+      return removeAdvancedDefs(uiManager, this->AllDefs);
     }
 
     if (attResource->activeCategories().size() == 1)
@@ -107,9 +123,9 @@ public:
       std::string theCategory = *(attResource->activeCategories().begin());
       if (this->AttDefMap.keys().contains(theCategory.c_str()))
       {
-        return this->AttDefMap[theCategory.c_str()];
+        return removeAdvancedDefs(uiManager, this->AttDefMap[theCategory.c_str()]);
       }
-      return this->AllDefs;
+      return removeAdvancedDefs(uiManager, this->AllDefs);
     }
 
     QList<smtk::attribute::DefinitionPtr> defs;
@@ -120,7 +136,7 @@ public:
         defs.push_back(attDef);
       }
     }
-    return defs;
+    return removeAdvancedDefs(uiManager, defs);
   }
 
   QTableView* ListTable;
