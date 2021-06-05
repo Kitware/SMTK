@@ -139,7 +139,7 @@ class SMTK_ALWAYS_EXPORT Factory
     }
   };
 
-  // A Metdata class that holds the create methods for a spcecific construction
+  // A Metdata class that holds the create methods for a specific construction
   // signature (InputType, defined at class-template scope) and derived type to
   // create (Type, defined explicitly using the class's constructor). This class
   // is the composing element for the factory's Metadata instance.
