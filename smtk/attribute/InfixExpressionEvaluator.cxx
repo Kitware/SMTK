@@ -203,7 +203,7 @@ bool smtk::attribute::InfixExpressionEvaluator::doesEvaluate(std::size_t element
 
 bool smtk::attribute::InfixExpressionEvaluator::doesEvaluate()
 {
-  for (int i = 0; i < numberOfEvaluatableElements(); ++i)
+  for (std::size_t i = 0; i < numberOfEvaluatableElements(); ++i)
   {
     if (!doesEvaluate(i))
       return false;
