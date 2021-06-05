@@ -18,7 +18,7 @@ import site
 import sys
 
 __all__ = ('common', 'attribute', 'extension', 'model',
-           'mesh', 'io', 'project', 'session', 'simulation')
+           'mesh', 'io', 'project', 'session', 'simulation', 'task')
 
 
 def _windows_dll_path():

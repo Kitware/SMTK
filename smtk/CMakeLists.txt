@@ -33,6 +33,9 @@ smtk_source_group(model)
 add_subdirectory(simulation)
 smtk_source_group(simulation)
 
+add_subdirectory(task)
+smtk_source_group(task)
+
 add_subdirectory(io)
 smtk_source_group(io)
 
@@ -59,6 +62,7 @@ set(smtk_headers
   ${workflowHeaders}
   ${pluginHeaders}
   ${simulationHeaders}
+  ${taskHeaders}
   ${ioHeaders}
 )
 set(smtk_srcs
@@ -75,6 +79,7 @@ set(smtk_srcs
   ${workflowSrcs}
   ${pluginSrcs}
   ${simulationSrcs}
+  ${taskSrcs}
   ${ioSrcs}
 )
 
