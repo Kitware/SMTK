@@ -31,6 +31,7 @@ void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
+  (void)viewManager;
 #ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().registerType<pqSMTKProjectBrowser>();
 #endif
@@ -38,6 +39,7 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
+  (void)viewManager;
 #ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().unregisterType<pqSMTKProjectBrowser>();
 #endif
