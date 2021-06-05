@@ -184,7 +184,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
       } // for (path)
     }
 
-    if (project->resources().size() != numberOfResources)
+    if (project->resources().size() != static_cast<std::size_t>(numberOfResources))
     {
       std::cerr << "Failed to add a resource to the project\n";
       return 1;
