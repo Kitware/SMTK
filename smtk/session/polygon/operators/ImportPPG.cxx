@@ -70,6 +70,13 @@ const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::S
     return false;                                                                                  \
   } while (0)
 
+enum class LoopType
+{
+  FACE = 0, // outer loop
+  EMBEDDED, // inner loop as embedded face
+  HOLE      // inner loop as hole
+};
+
 struct PPGVertex
 {
   std::size_t userId;
@@ -93,18 +100,23 @@ struct PPGFace
 {
   std::size_t userId;
   std::vector<std::size_t> vertexIds; // from input
-  bool isHole;
+  LoopType loopType;
+  std::size_t innerLoopCount;
+  std::vector<smtk::model::EntityRef> edgeRefs;
 
-  PPGFace(std::size_t inputId, const std::vector<std::size_t>& inputVertexIds, bool hole = false)
+  PPGFace(std::size_t inputId, const std::vector<std::size_t>& inputVertexIds, LoopType lt)
     : userId(inputId)
-    , isHole(hole)
+    , loopType(lt)
+    , innerLoopCount(0)
   {
     vertexIds = std::move(inputVertexIds);
   }
 
   void dump() const
   {
-    std::cout << "PPGFace userId: " << userId << ", isHole: " << isHole << '\n' << "vertex ids:";
+    std::cout << "PPGFace userId: " << userId << ", loop type: " << static_cast<int>(loopType)
+              << ", inner loops: " << innerLoopCount << '\n'
+              << "vertex ids:";
     for (auto vid : vertexIds)
     {
       std::cout << " " << vid;
@@ -307,13 +319,15 @@ bool ImportPPG::Internal::createEdges()
       // Get the new edge and assign name
       auto createdItem = result->findComponent("created");
       smtk::resource::ComponentPtr pcomp = createdItem->value();
-      smtk::model::Edge edgeRef(m_resource, pcomp->id());
+      smtk::model::EntityRef edgeRef(m_resource, pcomp->id());
 
       ++edgeId;
       ss.str(std::string());
       ss.clear();
       ss << "edge " << edgeId;
       edgeRef.setName(ss.str());
+
+      ppgFace.edgeRefs.push_back(edgeRef);
     } // for (i)
 
     // Remove temp vertex added to end of list
@@ -375,7 +389,7 @@ bool ImportPPG::Internal::createFaces()
   std::stringstream ss;
   for (const auto& ppgFace : m_ppgFaceList)
   {
-    if (ppgFace.isHole)
+    if (ppgFace.loopType == LoopType::HOLE)
     {
       continue;
     }
@@ -409,7 +423,7 @@ bool ImportPPG::Internal::parseInputLine(const std::string& line, unsigned lineN
   {
     return this->parsePPGVertex(symbols, lineNum);
   }
-  else if (("f" == symbols[0]) || ("h") == symbols[0])
+  else if (("f" == symbols[0]) || ("e" == symbols[0]) || ("h" == symbols[0]))
   {
     return this->parsePPGFace(symbols, lineNum);
   }
@@ -455,6 +469,7 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
 
   std::vector<std::size_t> vertexIds;
   unsigned int vertexId;
+  std::size_t outerLoopIndex = 0; // for counting inner loops
   for (auto it = symbols.begin() + 1; it != symbols.end(); ++it)
   {
     std::string s = *it;
@@ -482,9 +497,33 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
     vertexIds.push_back(vertexId);
   } // for (it)
 
-  bool isHole = symbols[0] == "h";
+  LoopType lt = LoopType::FACE;
+  lt = symbols[0] == "e" ? LoopType::EMBEDDED : lt;
+  lt = symbols[0] == "h" ? LoopType::HOLE : lt;
+  bool isHole = lt == LoopType::HOLE;
+
+  // Sanity check
+  if (m_ppgFaceList.empty() && lt != LoopType::FACE)
+  {
+    errorMacroFalse("First model face is not type 'f', on line " << lineNum);
+  }
+
+  // Capture inner loop info
+  if (lt == LoopType::FACE)
+  {
+    // Set the index for the current outer loop
+    outerLoopIndex = m_ppgFaceList.size();
+  }
+  else
+  {
+    // Increment inner loop count for the outer loop
+    auto& outerLoop = m_ppgFaceList[outerLoopIndex];
+    outerLoop.innerLoopCount += 1;
+    m_ppgFaceList[outerLoopIndex] = outerLoop;
+  }
+
   std::size_t inputId = isHole ? 0 : 1 + m_ppgFaceList.size() - m_holeCount;
-  m_ppgFaceList.emplace(m_ppgFaceList.end(), inputId, vertexIds, isHole);
+  m_ppgFaceList.emplace(m_ppgFaceList.end(), inputId, vertexIds, lt);
   m_holeCount += isHole ? 1 : 0;
 
   return true;
@@ -508,7 +547,7 @@ bool ImportPPG::Internal::createHoles()
   for (auto& ppgFace : m_ppgFaceList)
   {
     // Skip faces that aren't specified to be holes
-    if (!ppgFace.isHole)
+    if (ppgFace.loopType != LoopType::HOLE)
     {
       continue;
     }
@@ -548,7 +587,7 @@ smtk::common::UUID ImportPPG::Internal::findMatchingModelFace(const PPGFace& ppg
     // Matching logic is different for holes and faces
     //  - holes must be exact match
     //  - model faces may have more vertices than ppgFace specifies (because of holes)
-    bool match = ppgFace.isHole
+    bool match = ppgFace.loopType == LoopType::HOLE
       ? vertexIds == ppgFaceVertexIds
       : std::includes(
           vertexIds.begin(), vertexIds.end(), ppgFaceVertexIds.begin(), ppgFaceVertexIds.end());
