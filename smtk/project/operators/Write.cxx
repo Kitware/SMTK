@@ -100,7 +100,7 @@ Write::Result Write::operateInternal()
 
       if (resource->location().empty())
       {
-        std::string filename = role + ".smtk";
+        std::string filename = role + "-" + resource->id().toString() + ".smtk";
         boost::filesystem::path location = resourcesFolderPath / filename;
         resource->setLocation(location.string());
       }
