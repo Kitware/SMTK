@@ -34,7 +34,7 @@
 #include "smtk/session/polygon/internal/Model.h"
 #include "smtk/session/polygon/internal/Model.txx"
 #include "smtk/session/polygon/operators/CreateEdgeFromVertices.h"
-#include "smtk/session/polygon/operators/CreateFaces.h"
+#include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 #include "smtk/session/polygon/operators/Delete.h"
 
@@ -52,7 +52,8 @@
 
 namespace
 {
-const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+constexpr std::size_t INVALID_INDEX = std::numeric_limits<std::size_t>::max();
+constexpr int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
 
 // Macro for returning on error
 #define errorMacro(msg)                                                                            \
@@ -102,20 +103,28 @@ struct PPGFace
   std::vector<std::size_t> vertexIds; // from input
   LoopType loopType;
   std::size_t innerLoopCount;
-  std::vector<smtk::model::EntityRef> edgeRefs;
+  std::vector<smtk::model::EntityPtr> edges;
+  double center[2];
 
-  PPGFace(std::size_t inputId, const std::vector<std::size_t>& inputVertexIds, LoopType lt)
+  PPGFace(
+    std::size_t inputId,
+    const std::vector<std::size_t>& inputVertexIds,
+    LoopType lt,
+    double centerCoords[2])
     : userId(inputId)
     , loopType(lt)
     , innerLoopCount(0)
   {
     vertexIds = std::move(inputVertexIds);
+    center[0] = centerCoords[0];
+    center[1] = centerCoords[1];
   }
 
   void dump() const
   {
     std::cout << "PPGFace userId: " << userId << ", loop type: " << static_cast<int>(loopType)
-              << ", inner loops: " << innerLoopCount << '\n'
+              << ", inner loops: " << innerLoopCount << ", center: " << center[0] << ", "
+              << center[1] << '\n'
               << "vertex ids:";
     for (auto vid : vertexIds)
     {
@@ -138,6 +147,7 @@ public:
   Internal(smtk::io::Logger& logger)
     : m_log(logger)
     , m_holeCount(0)
+    , m_outerLoopIndex(INVALID_INDEX)
   {
   }
   ~Internal() = default;
@@ -157,6 +167,33 @@ public:
   bool createEdges();
   bool createFaces();
 
+  std::size_t findInnerLoop(smtk::model::EntityRef& faceRef, std::size_t outerIndex) const
+  {
+    const PPGFace& outerPPGFace = m_ppgFaceList[outerIndex];
+    if (outerPPGFace.innerLoopCount < 1)
+    {
+      smtkErrorMacro(m_log, "Internal Error - PPGFace has no inner loops");
+      return INVALID_INDEX;
+    }
+
+    // Find which inner loop corresponds to this model face
+    // Uses the fact that faces are convex and don't intersect
+    std::vector<double> bbox = faceRef.boundingBox();
+    std::size_t index = outerIndex + 1;
+    for (int i = 0; i < outerPPGFace.innerLoopCount; ++i, ++index)
+    {
+      // Get xmean, ymean
+      const PPGFace& innerFace = m_ppgFaceList[index];
+      double x = innerFace.center[0];
+      double y = innerFace.center[1];
+      if ((x >= bbox[0]) && (x <= bbox[1]) && (y >= bbox[2]) && (y <= bbox[3]))
+      {
+        return index;
+      }
+    }
+    return INVALID_INDEX; // not found
+  }
+
   // Parse input line
   bool parseInputLine(const std::string& line, unsigned lineNum);
 
@@ -165,6 +202,11 @@ public:
     std::cout << "PPG input vertex count: " << m_ppgVertexList.size() << std::endl;
     std::cout << "PPG input face count: " << m_ppgFaceList.size() - m_holeCount << std::endl;
     std::cout << "PPG input hole count: " << m_holeCount << std::endl;
+
+    for (auto& ppgFace : m_ppgFaceList)
+    {
+      ppgFace.dump();
+    }
   }
 
   smtk::model::ResourcePtr resource() const { return m_resource; }
@@ -183,6 +225,7 @@ protected:
   std::vector<PPGFace> m_ppgFaceList;
   std::vector<PPGVertex> m_ppgVertexList;
   unsigned int m_holeCount;
+  std::size_t m_outerLoopIndex; // used parsing input to store current outer edge loop
 
   std::vector<smtk::model::EntityRef> m_newVertexList;
 
@@ -327,7 +370,7 @@ bool ImportPPG::Internal::createEdges()
       ss << "edge " << edgeId;
       edgeRef.setName(ss.str());
 
-      ppgFace.edgeRefs.push_back(edgeRef);
+      ppgFace.edges.push_back(edgeRef.entityRecord());
     } // for (i)
 
     // Remove temp vertex added to end of list
@@ -344,67 +387,92 @@ bool ImportPPG::Internal::createFaces()
 #endif
 
   // Initialize and run CreateFaces operation.
-  auto createOp = smtk::session::polygon::CreateFaces::create();
-  createOp->parameters()->associate(m_modelEntity);
-  auto result = createOp->operate();
-  int outcome = result->findInt("outcome")->value();
-  if (outcome != OP_SUCCEEDED)
+  auto createOp = smtk::session::polygon::CreateFacesFromEdges::create();
+  auto deleteOp = smtk::session::polygon::Delete::create();
+  std::stringstream ss;
+  for (std::size_t i = 0; i < m_ppgFaceList.size(); ++i)
   {
-    errorMacroFalse("Failed to create model faces.");
-  }
+    createOp->parameters()->removeAllAssociations();
 
-  // Build m_faceVertexIdMap for relating back to input spec
-  auto createdItem = result->findComponent("created");
-  for (std::size_t i = 0; i < createdItem->numberOfValues(); ++i)
-  {
-    smtk::resource::ComponentPtr pcomp = createdItem->value(i);
-    smtk::model::Face faceRef(m_resource, pcomp->id());
+    // Add the next face (outer loop)
+    auto& outerPPGFace = m_ppgFaceList[i];
+    outerPPGFace.dump();
 
-    // Get the set of vertex uuids on this face
-    smtk::common::UUID faceUUID = faceRef.entity();
-    std::set<smtk::common::UUID> uuidList = m_resource->lowerDimensionalBoundaries(faceUUID, 0);
-    std::set<std::size_t> vertexIds;
-    for (auto& uuid : uuidList)
+    std::size_t outerPPGIndex = i;
+    for (auto& edge : outerPPGFace.edges)
     {
-#ifndef NDEBUG
-      if (m_vertexIdMap.count(uuid) == 0)
+      createOp->parameters()->associate(edge);
+    }
+
+    // Add inner edge loops
+    for (std::size_t n = 0; n < outerPPGFace.innerLoopCount; ++n)
+    {
+      ++i;
+      const auto& innerPPGFace = m_ppgFaceList[i];
+      for (auto& edge : innerPPGFace.edges)
       {
-        std::cout << "ERROR: uuid " << uuid << " is NOT in m_vertexIdMap" << std::endl;
+        createOp->parameters()->associate(edge);
+      }
+    }
+
+    auto result = createOp->operate();
+    int outcome = result->findInt("outcome")->value();
+    if (outcome != OP_SUCCEEDED)
+    {
+      errorMacroFalse("Failed to create model faces.");
+    }
+
+    // Deal with inner edge loops
+    auto createdItem = result->findComponent("created");
+    for (std::size_t n = 0; n < createdItem->numberOfValues(); ++n)
+    {
+      smtk::resource::ComponentPtr pcomp = createdItem->value(n);
+      smtk::model::EntityRef faceRef(m_resource, pcomp->id());
+      if (n == 0)
+      {
+        // First face is the outer loop
+        ss.str(std::string());
+        ss.clear();
+        ss << "face " << outerPPGFace.userId;
+        faceRef.setName(ss.str());
+
         continue;
       }
-#endif
-      vertexIds.insert(m_vertexIdMap[uuid]);
-    }
 
-    m_faceVertexIdMap[faceUUID] = vertexIds;
-  } // for (i)
+      // Find matching inner edge loop
+      std::size_t index = this->findInnerLoop(faceRef, outerPPGIndex);
+      if (index == INVALID_INDEX)
+      {
+        errorMacroFalse("Error: unabled to find inner face");
+      }
 
-  // Now call createHoles, which prunes m_vertexIdMap and m_faceVertexIdMap
-  if (!this->createHoles())
+      const auto& innerPPGFace = m_ppgFaceList[index];
+      if (innerPPGFace.loopType == LoopType::HOLE)
+      {
+        deleteOp->parameters()->associate(faceRef.entityRecord());
+      }
+      else
+      {
+        // First face is the outer loop
+        ss.str(std::string());
+        ss.clear();
+        ss << "face " << innerPPGFace.userId;
+        faceRef.setName(ss.str());
+      }
+    } // for (n)
+  }   // for (ppg faces)
+
+  auto refItem = deleteOp->parameters()->associations();
+  if (refItem->numberOfValues() == 0)
   {
-    return false;
+    return true;
   }
 
-  // Use m_faceVertexIdList to match model faces to ppg faces.
-  std::stringstream ss;
-  for (const auto& ppgFace : m_ppgFaceList)
+  auto deleteResult = deleteOp->operate();
+  int deleteOutcome = deleteResult->findInt("outcome")->value();
+  if (deleteOutcome != OP_SUCCEEDED)
   {
-    if (ppgFace.loopType == LoopType::HOLE)
-    {
-      continue;
-    }
-
-    auto faceUUID = this->findMatchingModelFace(ppgFace);
-    if (faceUUID.isNull())
-    {
-      errorMacroFalse("Failed to find match for ppgFace " << ppgFace.userId);
-    }
-
-    smtk::model::Face faceRef(m_resource, faceUUID);
-    ss.str(std::string());
-    ss.clear();
-    ss << "face " << ppgFace.userId;
-    faceRef.setName(ss.str());
+    errorMacroFalse("Failed to create model faces.");
   }
 
   return true;
@@ -469,7 +537,8 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
 
   std::vector<std::size_t> vertexIds;
   unsigned int vertexId;
-  std::size_t outerLoopIndex = 0; // for counting inner loops
+  double xsum = 0.0;
+  double ysum = 0.0;
   for (auto it = symbols.begin() + 1; it != symbols.end(); ++it)
   {
     std::string s = *it;
@@ -495,7 +564,13 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
     }
 
     vertexIds.push_back(vertexId);
+
+    xsum += m_ppgVertexList[vertexId - 1].x;
+    ysum += m_ppgVertexList[vertexId - 1].y;
   } // for (it)
+
+  double npoints = static_cast<double>(vertexIds.size());
+  double center[2] = { xsum / npoints, ysum / npoints };
 
   LoopType lt = LoopType::FACE;
   lt = symbols[0] == "e" ? LoopType::EMBEDDED : lt;
@@ -508,23 +583,23 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
     errorMacroFalse("First model face is not type 'f', on line " << lineNum);
   }
 
-  // Capture inner loop info
+  std::size_t inputId = isHole ? 0 : 1 + m_ppgFaceList.size() - m_holeCount;
+  m_ppgFaceList.emplace(m_ppgFaceList.end(), inputId, vertexIds, lt, center);
+  m_holeCount += isHole ? 1 : 0;
+
+  // Handle outer and inner edge loops differently
   if (lt == LoopType::FACE)
   {
     // Set the index for the current outer loop
-    outerLoopIndex = m_ppgFaceList.size();
+    m_outerLoopIndex = m_ppgFaceList.size() - 1;
   }
   else
   {
     // Increment inner loop count for the outer loop
-    auto& outerLoop = m_ppgFaceList[outerLoopIndex];
+    auto& outerLoop = m_ppgFaceList[m_outerLoopIndex];
     outerLoop.innerLoopCount += 1;
-    m_ppgFaceList[outerLoopIndex] = outerLoop;
+    m_ppgFaceList[m_outerLoopIndex] = outerLoop;
   }
-
-  std::size_t inputId = isHole ? 0 : 1 + m_ppgFaceList.size() - m_holeCount;
-  m_ppgFaceList.emplace(m_ppgFaceList.end(), inputId, vertexIds, lt);
-  m_holeCount += isHole ? 1 : 0;
 
   return true;
 } // parsePPGFace()

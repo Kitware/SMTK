@@ -61,7 +61,7 @@ v 2 6
 f 1 2 3 4 5
 f 3 6 7 4
 h 8 9 10
-f 11 12 13 14
+e 11 12 13 14
 """
 
 OP_SUCCEEDED = int(smtk.operation.Operation.Outcome.SUCCEEDED)
