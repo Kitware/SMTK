@@ -259,10 +259,6 @@ public:
   int hoverBit() const { return m_hoverBit; }
   void setHoverBit(int val) { m_hoverBit = val; }
 
-  ///methods for saving/retrieving the active tab in a group view
-  void setActiveTabInfo(const std::string& groupViewName, const std::string& activeTabName);
-  std::string activeTabInfo(const std::string& groupViewName) const;
-
   bool highlightOnHover() const { return m_highlightOnHover; }
 
   void setHighlightOnHover(bool val);
@@ -360,6 +356,8 @@ private:
 
   std::map<std::string, std::string> m_activeTabInfo;
   QPixmap m_alertPixmap;
+
+  const std::string m_activeAdvLevelXmlAttName = "ActiveAdvanceLevel";
 
 }; // class
 

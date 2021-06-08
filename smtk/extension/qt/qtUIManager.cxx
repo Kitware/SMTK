@@ -232,6 +232,11 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   }
   if (m_topView)
   {
+    if (m_topView->getObject()->details().attribute(m_activeAdvLevelXmlAttName))
+    {
+      m_topView->getObject()->details().attributeAsInt(
+        m_activeAdvLevelXmlAttName, m_currentAdvLevel);
+    }
     if (m_currentAdvLevel) // only build advanced level when needed)
     {
       m_topView->showAdvanceLevel(m_currentAdvLevel);
@@ -442,6 +447,7 @@ void qtUIManager::setAdvanceLevel(int b)
   if (m_topView)
   {
     m_topView->showAdvanceLevel(b);
+    m_topView->getObject()->details().setAttribute(m_activeAdvLevelXmlAttName, std::to_string(b));
   }
 }
 
@@ -1130,23 +1136,6 @@ qtItem* qtUIManager::defaultItemConstructor(const qtAttributeItemInfo& info)
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
   }
   return aItem;
-}
-
-void qtUIManager::setActiveTabInfo(
-  const std::string& groupViewName,
-  const std::string& activeTabName)
-{
-  m_activeTabInfo[groupViewName] = activeTabName;
-}
-
-std::string qtUIManager::activeTabInfo(const std::string& groupViewName) const
-{
-  auto it = m_activeTabInfo.find(groupViewName);
-  if (it == m_activeTabInfo.end())
-  {
-    return "";
-  }
-  return it->second;
 }
 
 void qtUIManager::setHighlightOnHover(bool val)

@@ -60,6 +60,7 @@ public:
   QTabWidget::TabPosition m_tabPosition{ QTabWidget::East };
   std::string m_savedViewName;
   QIcon m_alertIcon;
+  const std::string m_activeTabViewAttNamee = "ActiveTab";
 };
 
 void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc)
@@ -95,7 +96,8 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     }
     tabWidget->blockSignals(true);
     tabWidget->clear();
-    std::string lastSavedViewName = gview->uiManager()->activeTabInfo(gview->getObject()->name());
+    std::string lastSavedViewName = "";
+    gview->getObject()->details().attribute(m_activeTabViewAttNamee, lastSavedViewName);
     m_TabbedViews.clear();
     m_currentTabSelected = -1;
     int i, size = m_ChildViews.size();
@@ -204,13 +206,14 @@ void qtGroupView::updateCurrentTab(int ithTab)
   if (ithTab == -1)
   {
     //Clear the active tab info since nothing is selected
-    this->uiManager()->setActiveTabInfo(this->getObject()->name(), "");
+    this->getObject()->details().setAttribute(m_internals->m_activeTabViewAttNamee, "");
     return;
   }
   qtBaseView* currView = this->getChildView(ithTab);
   if (currView)
   {
-    this->uiManager()->setActiveTabInfo(this->getObject()->name(), currView->getObject()->name());
+    this->getObject()->details().setAttribute(
+      m_internals->m_activeTabViewAttNamee, currView->getObject()->name());
     currView->updateUI();
   }
 }
@@ -254,7 +257,8 @@ void qtGroupView::createWidget()
     QTabWidget* tab = new QTabWidget(this->parentWidget());
     // If we have previously created a widget for this view
     // lets get the name of the last selected tab View name
-    m_internals->m_savedViewName = this->uiManager()->activeTabInfo(this->getObject()->name());
+    this->getObject()->details().attribute(
+      m_internals->m_activeTabViewAttNamee, m_internals->m_savedViewName);
     tab->setUsesScrollButtons(true);
     this->Widget = tab;
   }
@@ -321,9 +325,9 @@ void qtGroupView::createWidget()
       qtBaseView* currView = this->getChildView(m_internals->m_currentTabSelected);
       if (currView)
       {
-        this->uiManager()->setActiveTabInfo(
-          this->getObject()->name(), currView->getObject()->name());
         m_internals->m_savedViewName = currView->getObject()->name();
+        this->getObject()->details().setAttribute(
+          m_internals->m_activeTabViewAttNamee, m_internals->m_savedViewName);
       }
     }
     QObject::connect(tabWidget, &QTabWidget::currentChanged, this, &qtGroupView::updateCurrentTab);
