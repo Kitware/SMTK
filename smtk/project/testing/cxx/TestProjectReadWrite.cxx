@@ -176,7 +176,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
 
       // Make sure all and only the added resources with the common role exist in the project
       std::map<std::string, bool> check_names{ { "common0", false }, { "common1", false } };
-      for (auto& res : commonResources)
+      for (const auto& res : commonResources)
       {
         auto it = check_names.find(res->name());
         smtkTest(
@@ -184,7 +184,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
           "Found unexpected smtk::attribute::Resource with project_role \"common\"");
         it->second = true;
       }
-      for (auto& check : check_names)
+      for (const auto& check : check_names)
       {
         smtkTest(
           check.second,

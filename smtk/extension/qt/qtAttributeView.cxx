@@ -1047,7 +1047,7 @@ void qtAttributeView::onViewBy()
   {
     // so switch tabs would not reset selection
     // get the active tab from the view config if it exists
-    std::string activeAttUuid = "";
+    std::string activeAttUuid;
     this->getObject()->details().attribute(
       m_internals->m_activeAttributeViewAttName, activeAttUuid);
     smtk::attribute::ConstAttributePtr activeAtt =
@@ -1059,7 +1059,7 @@ void qtAttributeView::onViewBy()
         activeAtt->name().c_str(), Qt::MatchExactly, name_column);
       if (!items.empty())
       {
-        auto activeItem = items.at(0);
+        auto* activeItem = items.at(0);
         // Select the newly created attribute
         m_internals->ListTable->selectRow(activeItem->row());
         QModelIndex index = activeItem->index();
