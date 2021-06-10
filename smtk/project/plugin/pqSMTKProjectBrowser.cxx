@@ -85,7 +85,7 @@ pqSMTKProjectBrowser::pqSMTKProjectBrowser(const smtk::view::Information& info)
 
   // Ensure the phrase model is configured to listen to the proper managers.
   // Listen for resources on current connections:
-  auto smtkBehavior = pqSMTKBehavior::instance();
+  auto* smtkBehavior = pqSMTKBehavior::instance();
   smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
     this->sourceAdded(r, s);
     return false;
@@ -143,6 +143,6 @@ void pqSMTKProjectBrowser::sourceRemoved(pqSMTKWrapper* mgr, pqServer* server)
 
 void pqSMTKProjectBrowser::updateSettings()
 {
-  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
   this->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 }

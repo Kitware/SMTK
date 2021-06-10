@@ -106,8 +106,8 @@ void pqNewProjectReaction::newProject()
 
   if (!typeName.empty())
   {
-    auto pqCore = pqApplicationCore::instance();
-    auto builder = pqCore->getObjectBuilder();
+    auto* pqCore = pqApplicationCore::instance();
+    auto* builder = pqCore->getObjectBuilder();
 
     pqSMTKResource* src =
       static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResourceCreator", server));
@@ -158,7 +158,7 @@ pqSMTKProjectMenu::pqSMTKProjectMenu(QObject* parent)
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
   QTimer::singleShot(10, this, [this]() {
-    auto pqCore = pqApplicationCore::instance();
+    auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
