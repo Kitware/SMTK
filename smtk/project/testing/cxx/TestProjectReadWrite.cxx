@@ -53,10 +53,10 @@ void cleanup(const std::string& file_path)
 {
   //first verify the file exists
   ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
+  if (::boost::filesystem::exists(path))
   {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
+    ::boost::filesystem::remove_all(path);
   }
 }
 } // namespace
@@ -67,6 +67,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
+    smtk::attribute::Registrar::registerTo(resourceManager);
     smtk::mesh::Registrar::registerTo(resourceManager);
     smtk::project::Registrar::registerTo(resourceManager);
   }
@@ -75,6 +76,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
+    smtk::attribute::Registrar::registerTo(operationManager);
     smtk::mesh::Registrar::registerTo(operationManager);
     smtk::operation::Registrar::registerTo(operationManager);
   }
@@ -95,6 +97,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   projectManager->registerProject("foo");
 
   // Create a project and write it to disk.
+  std::string projectDirectory = write_root + "/TestProjectReadWrite/";
   std::string projectLocation;
   std::size_t numberOfMeshes;
   {
@@ -139,18 +142,54 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
 
       project->resources().add(
         std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value()), "my mesh");
+
+      // Create resource with non-unique role
+      for (int i = 0; i < 2; i++)
+      {
+        auto resource = resourceManager->create("smtk::attribute::Resource");
+        resource->setName("common" + std::to_string(i));
+        project->resources().add(resource, "common");
+      }
+      {
+        auto resource = resourceManager->create("smtk::attribute::Resource");
+        resource->setName("common" + std::to_string(2));
+        project->resources().add(resource, "uncommon");
+      }
     }
 
-    if (project->resources().size() != 1)
+    if (project->resources().size() != 4)
     {
       std::cerr << "Failed to add a resource to the project\n";
       return 1;
     }
 
     {
-      smtk::mesh::Resource::Ptr myMesh =
-        project->resources().getByRole<smtk::mesh::Resource>("my mesh");
-      numberOfMeshes = myMesh->meshes().size();
+      std::set<smtk::mesh::Resource::Ptr> myMesh =
+        project->resources().findByRole<smtk::mesh::Resource>("my mesh");
+      numberOfMeshes = (*(myMesh.begin()))->meshes().size();
+    }
+
+    {
+      std::set<smtk::attribute::Resource::Ptr> commonResources =
+        project->resources().findByRole<smtk::attribute::Resource>("common");
+      smtkTest(commonResources.size() == 2, "Expected two(2) resources with the role \"common\"");
+
+      // Make sure all and only the added resources with the common role exist in the project
+      std::map<std::string, bool> check_names{ { "common0", false }, { "common1", false } };
+      for (const auto& res : commonResources)
+      {
+        auto it = check_names.find(res->name());
+        smtkTest(
+          it != check_names.end(),
+          "Found unexpected smtk::attribute::Resource with project_role \"common\"");
+        it->second = true;
+      }
+      for (const auto& check : check_names)
+      {
+        smtkTest(
+          check.second,
+          "Did not find expected smtk::attribute::Resource with name: " << check.first);
+      }
     }
 
     {
@@ -165,7 +204,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       }
 
       // Set the file path
-      projectLocation = write_root + "/" + smtk::common::UUID::random().toString() + ".smtk";
+      projectLocation = projectDirectory + smtk::common::UUID::random().toString() + ".smtk";
 
       writeOp->parameters()->associate(project);
       writeOp->parameters()->findFile("filename")->setIsEnabled(true);
@@ -243,15 +282,22 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
     }
   }
 
-  smtk::mesh::Resource::Ptr myMesh =
-    project->resources().getByRole<smtk::mesh::Resource>("my mesh");
+  std::set<smtk::mesh::Resource::Ptr> myMeshSet =
+    project->resources().findByRole<smtk::mesh::Resource>("my mesh");
 
-  if (!myMesh)
+  if (myMeshSet.empty())
   {
     std::cerr << "Resulting project does not contain mesh resource\n";
     return 1;
   }
 
+  if (myMeshSet.size() > 1)
+  {
+    std::cerr
+      << "Resulting project contains more than one(1) mesh resource with role \"my mesh\"\n";
+    return 1;
+  }
+  smtk::mesh::Resource::Ptr myMesh = *(myMeshSet.begin());
   if (myMesh->meshes().size() != numberOfMeshes)
   {
     std::cerr << "Resulting project's mesh resource was incorrectly transcribed\n";
@@ -275,7 +321,9 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
     std::cout << readOp->log().convertToString();
   }
 
-  cleanup(projectLocation);
+#ifdef NDEBUG
+  cleanup(projectDirectory);
+#endif
 
   return 0;
 }

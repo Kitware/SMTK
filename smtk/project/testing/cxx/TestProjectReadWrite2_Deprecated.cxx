@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#define SMTK_DEPRECATION_LEVEL 2105
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -59,20 +61,18 @@ void cleanup(const std::string& location)
 {
   //first verify the file exists
   ::boost::filesystem::path path(location);
-  printf("Removing: %s...\n", location.c_str());
   if (::boost::filesystem::exists(path))
   {
-    printf("Removing: %s...Success\n", location.c_str());
     //remove the file_path if it exists.
     ::boost::filesystem::remove_all(path);
   }
 }
 } // namespace
 
-int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
+int TestProjectReadWrite2_Deprecated(int /*unused*/, char** const /*unused*/)
 {
   // Set the file path
-  std::string projectDirectory = write_root + "/TestProjectReadWrite2";
+  std::string projectDirectory = write_root + "/TestProjectReadWrite2_Deprecated";
   cleanup(projectDirectory);
   std::string projectFileLocation = projectDirectory + "/foo.smtk";
 
@@ -114,7 +114,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   projectManager->registerProject("foo");
 
   // Create a project and write it to disk.
-  size_t numberOfResources = 0;
+  int numberOfResources = 0;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
@@ -191,9 +191,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     }
 
     {
-      std::set<smtk::attribute::Resource::Ptr> myAtts =
-        project->resources().findByRole<smtk::attribute::Resource>("my attributes");
-      numberOfResources = myAtts.size();
+      smtk::attribute::Resource::Ptr myAtts =
+        project->resources().getByRole<smtk::attribute::Resource>("my attributes");
+      numberOfResources = myAtts == nullptr ? 0 : 1;
     }
 
     {
@@ -276,23 +276,14 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     }
   }
 
-  std::set<smtk::attribute::Resource::Ptr> myAttSet =
-    project->resources().findByRole<smtk::attribute::Resource>("my attributes");
+  smtk::attribute::Resource::Ptr myAtts =
+    project->resources().getByRole<smtk::attribute::Resource>("my attributes");
 
-  if (myAttSet.empty())
+  if (myAtts == nullptr)
   {
     std::cerr << "Resulting project does not contain attribute resource\n";
     return 1;
   }
-
-  if (myAttSet.size() > 1)
-  {
-    std::cerr << "Resulting project contains more than one(1) attribute resource with role \"my "
-                 "attributes\"\n";
-    return 1;
-  }
-
-  smtk::attribute::Resource::Ptr myAtts = *(myAttSet.begin());
 
   if (!myAtts->clean())
   {

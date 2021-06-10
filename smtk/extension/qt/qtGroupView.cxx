@@ -96,7 +96,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     }
     tabWidget->blockSignals(true);
     tabWidget->clear();
-    std::string lastSavedViewName = "";
+    std::string lastSavedViewName;
     gview->getObject()->details().attribute(m_activeTabViewAttNamee, lastSavedViewName);
     m_TabbedViews.clear();
     m_currentTabSelected = -1;

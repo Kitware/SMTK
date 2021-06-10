@@ -8,19 +8,20 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#define SMTK_DEPRECATION_LEVEL 2105
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/Registrar.h"
-#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
-#include "smtk/attribute/operators/Import.h"
 
 #include "smtk/common/UUIDGenerator.h"
-#include "smtk/io/Logger.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
+
+#include "smtk/mesh/core/Resource.h"
+#include "smtk/mesh/resource/Registrar.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
@@ -33,10 +34,6 @@
 #include "smtk/project/Registrar.h"
 #include "smtk/project/operators/Define.h"
 
-#ifdef VTK_SUPPORT
-#include "smtk/session/vtk/Registrar.h"
-#endif
-
 #include "smtk/common/testing/cxx/helpers.h"
 
 //force to use filesystem version 3
@@ -45,8 +42,7 @@
 using namespace boost::filesystem;
 
 // This test verifies that projects can be serialized to the file system
-// and unserialized back. The test project contains an SMTK attribute
-// resource plus (if vtk support is built) an SMTK vtk model resource.
+// and unserialized back. The test project contains an SMTK mesh resource.
 
 namespace
 {
@@ -55,35 +51,25 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void cleanup(const std::string& location)
+void cleanup(const std::string& file_path)
 {
   //first verify the file exists
-  ::boost::filesystem::path path(location);
-  printf("Removing: %s...\n", location.c_str());
+  ::boost::filesystem::path path(file_path);
   if (::boost::filesystem::exists(path))
   {
-    printf("Removing: %s...Success\n", location.c_str());
     //remove the file_path if it exists.
     ::boost::filesystem::remove_all(path);
   }
 }
 } // namespace
 
-int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
+int TestProjectReadWrite_Deprecated(int /*unused*/, char** const /*unused*/)
 {
-  // Set the file path
-  std::string projectDirectory = write_root + "/TestProjectReadWrite2";
-  cleanup(projectDirectory);
-  std::string projectFileLocation = projectDirectory + "/foo.smtk";
-
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::attribute::Registrar::registerTo(resourceManager);
-#ifdef VTK_SUPPORT
-    smtk::session::vtk::Registrar::registerTo(resourceManager);
-#endif
+    smtk::mesh::Registrar::registerTo(resourceManager);
     smtk::project::Registrar::registerTo(resourceManager);
   }
 
@@ -91,10 +77,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
-    smtk::attribute::Registrar::registerTo(operationManager);
-#ifdef VTK_SUPPORT
-    smtk::session::vtk::Registrar::registerTo(operationManager);
-#endif
+    smtk::mesh::Registrar::registerTo(operationManager);
     smtk::operation::Registrar::registerTo(operationManager);
   }
 
@@ -114,7 +97,9 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   projectManager->registerProject("foo");
 
   // Create a project and write it to disk.
-  size_t numberOfResources = 0;
+  std::string projectDirectory = write_root + "/TestProjectReadWrite_Deprecated/";
+  std::string projectLocation;
+  std::size_t numberOfMeshes;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
@@ -125,75 +110,50 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
 
     {
       // Create an import operator
-      smtk::operation::Operation::Ptr importAnyOp =
+      smtk::operation::ImportResource::Ptr importOp =
         operationManager->create<smtk::operation::ImportResource>();
-      smtk::operation::Operation::Ptr importSBTOp =
-        operationManager->create<smtk::attribute::Import>();
-
-      if (!importSBTOp)
+      if (!importOp)
       {
-        std::cerr << "No sbt import operator\n";
-        return 1;
-      }
-      if (!importAnyOp)
-      {
-        std::cerr << "No any import operator\n";
+        std::cerr << "No import operator\n";
         return 1;
       }
 
-      // Input data files
-      std::map<std::string, std::string> importPaths = {
-        { "my attributes", "/attribute/attribute_collection/DoubleItemExample.sbt" }
-      };
-#ifdef VTK_SUPPORT
-      importPaths["my model"] = "/model/3d/genesis/casting-mesh1.gen";
-#endif
-      for (auto& keyval : importPaths)
+      // Set the file path
+      std::string importFilePath(data_root);
+      importFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
+      importOp->parameters()->findFile("filename")->setValue(importFilePath);
+
+      // Execute the operation
+      smtk::operation::Operation::Result importOpResult = importOp->operate();
+
+      // Test for success
+      if (
+        importOpResult->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
-        auto role = keyval.first;
-        auto path = keyval.second;
+        std::cerr << "Import operation failed\n";
+        return 1;
+      }
 
-        std::string importFilePath(data_root);
-        importFilePath += path;
-        std::string ext = boost::filesystem::path(importFilePath).extension().string();
+      // Add the mesh resource to the project
+      smtk::attribute::ResourceItemPtr resourceItem =
+        std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
+          importOpResult->findResource("resource"));
 
-        smtk::operation::Operation::Result importOpResult;
-        if (ext == ".sbt")
-        {
-          importSBTOp->parameters()->findFile("filename")->setValue(importFilePath);
-          importOpResult = importSBTOp->operate();
-        }
-        else
-        {
-          importAnyOp->parameters()->findFile("filename")->setValue(importFilePath);
-          importOpResult = importAnyOp->operate();
-        }
-
-        // Test for success
-        if (
-          importOpResult->findInt("outcome")->value() !=
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-        {
-          std::cerr << "Import operation failed\n";
-          return 1;
-        }
-
-        auto resourceItem = importOpResult->findResource("resource");
-        project->resources().add(resourceItem->value(), role);
-        ++numberOfResources;
-      } // for (path)
+      project->resources().add(
+        std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value()), "my mesh");
     }
 
-    if (project->resources().size() != numberOfResources)
+    if (project->resources().size() != 1)
     {
       std::cerr << "Failed to add a resource to the project\n";
       return 1;
     }
 
     {
-      std::set<smtk::attribute::Resource::Ptr> myAtts =
-        project->resources().findByRole<smtk::attribute::Resource>("my attributes");
-      numberOfResources = myAtts.size();
+      smtk::mesh::Resource::Ptr myMesh =
+        project->resources().getByRole<smtk::mesh::Resource>("my mesh");
+      numberOfMeshes = myMesh->meshes().size();
     }
 
     {
@@ -207,9 +167,12 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
         return 1;
       }
 
+      // Set the file path
+      projectLocation = projectDirectory + smtk::common::UUID::random().toString() + ".smtk";
+
       writeOp->parameters()->associate(project);
       writeOp->parameters()->findFile("filename")->setIsEnabled(true);
-      writeOp->parameters()->findFile("filename")->setValue(projectFileLocation);
+      writeOp->parameters()->findFile("filename")->setValue(projectLocation);
 
       if (!writeOp->ableToOperate())
       {
@@ -230,6 +193,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
         return 1;
       }
     }
+
     projectManager->remove(project);
   }
 
@@ -246,7 +210,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
       return 1;
     }
 
-    readOp->parameters()->findFile("filename")->setValue(projectFileLocation);
+    readOp->parameters()->findFile("filename")->setValue(projectLocation);
 
     if (!readOp->ableToOperate())
     {
@@ -276,54 +240,22 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
     }
   }
 
-  std::set<smtk::attribute::Resource::Ptr> myAttSet =
-    project->resources().findByRole<smtk::attribute::Resource>("my attributes");
+  smtk::mesh::Resource::Ptr myMesh =
+    project->resources().getByRole<smtk::mesh::Resource>("my mesh");
 
-  if (myAttSet.empty())
+  if (!myMesh)
   {
-    std::cerr << "Resulting project does not contain attribute resource\n";
+    std::cerr << "Resulting project does not contain mesh resource\n";
     return 1;
   }
 
-  if (myAttSet.size() > 1)
+  if (myMesh->meshes().size() != numberOfMeshes)
   {
-    std::cerr << "Resulting project contains more than one(1) attribute resource with role \"my "
-                 "attributes\"\n";
+    std::cerr << "Resulting project's mesh resource was incorrectly transcribed\n";
     return 1;
   }
 
-  smtk::attribute::Resource::Ptr myAtts = *(myAttSet.begin());
-
-  if (!myAtts->clean())
-  {
-    std::cerr << "Attribute resource is marked modified\n";
-    return 1;
-  }
-
-  {
-    boost::filesystem::path myAttsPath(myAtts->location());
-    boost::filesystem::path projectPath(projectDirectory);
-    boost::filesystem::path resourcesPath = projectPath / "resources";
-    if (myAttsPath.parent_path().compare(resourcesPath) != 0)
-    {
-      std::cerr << "Wrong attribute resource location: " << myAtts->location() << "\n";
-      return 1;
-    }
-  }
-
-  {
-    std::vector<smtk::attribute::DefinitionPtr> defList;
-    myAtts->definitions(defList);
-    if (defList.size() != 2)
-    {
-      std::cerr << "Attribute resource missing definitions\n";
-      return 1;
-    }
-  }
-
-#ifdef NDEBUG
   cleanup(projectDirectory);
-#endif
 
   return 0;
 }

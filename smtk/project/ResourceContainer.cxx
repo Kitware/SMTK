@@ -220,34 +220,45 @@ smtk::resource::ConstResourcePtr ResourceContainer::get(const std::string& url) 
   return smtk::resource::ConstResourcePtr();
 }
 
-smtk::resource::ResourcePtr ResourceContainer::getByRole(const std::string& role)
+std::set<smtk::resource::ResourcePtr> ResourceContainer::findByRole(const std::string& role)
 {
-  // No type casting is required, so we simply find and return the resource by
-  // key.
+  std::set<smtk::resource::ResourcePtr> resource_set;
+
+  // Get the resources by role
   typedef Container::index<RoleTag>::type ResourcesByRole;
   ResourcesByRole& resources = m_resources.get<RoleTag>();
   ResourcesByRole::iterator resourceIt = resources.find(role);
-  if (resourceIt != resources.end())
+  for (; resourceIt != resources.end(); ++resourceIt)
   {
-    return *resourceIt;
+    if (detail::role(*resourceIt) != role)
+    {
+      break;
+    }
+    resource_set.insert(*resourceIt);
   }
 
-  return smtk::resource::ResourcePtr();
+  return resource_set;
 }
 
-smtk::resource::ConstResourcePtr ResourceContainer::getByRole(const std::string& role) const
+std::set<smtk::resource::ConstResourcePtr> ResourceContainer::findByRole(
+  const std::string& role) const
 {
-  // No type casting is required, so we simply find and return the resource by
-  // key.
+  std::set<smtk::resource::ConstResourcePtr> resource_set;
+
+  // Get the resources by role
   typedef Container::index<RoleTag>::type ResourcesByRole;
   const ResourcesByRole& resources = m_resources.get<RoleTag>();
-  ResourcesByRole::const_iterator resourceIt = resources.find(role);
-  if (resourceIt != resources.end())
+  ResourcesByRole::iterator resourceIt = resources.find(role);
+  for (; resourceIt != resources.end(); ++resourceIt)
   {
-    return *resourceIt;
+    if (detail::role(*resourceIt) != role)
+    {
+      break;
+    }
+    resource_set.insert(*resourceIt);
   }
 
-  return smtk::resource::ConstResourcePtr();
+  return resource_set;
 }
 
 std::set<smtk::resource::ResourcePtr> ResourceContainer::find(const std::string& typeName) const
