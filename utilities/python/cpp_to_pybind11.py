@@ -339,7 +339,7 @@ def parse_free_enumeration(enum, stream):
     Write bindings for a free enumeration
     """
     init_function_name = "pybind11_init_" + mangled_name(enum)
-    stream("void %s(py::module &m)" % init_function_name)
+    stream("inline void %s(py::module &m)" % init_function_name)
     stream("{")
     full_enum_name = full_class_name(enum)
     stream("  py::enum_<%s>(m, \"%s\")" %
@@ -358,7 +358,7 @@ def parse_free_function(func, overloaded, stream):
     """
     init_function_name = "pybind11_init_" + \
         (func.mangled if overloaded else mangled_name(func))
-    stream("void %s(py::module &m)" % init_function_name)
+    stream("inline void %s(py::module &m)" % init_function_name)
     stream("{")
     if overloaded:
         stream("  m.def(\"%s\", (%s (*)(%s)) &%s, \"\", %s);" %
@@ -409,8 +409,8 @@ def parse_class(class_, stream, top_level=True):
     init_function_name = "pybind11_init_" + mangled_name(class_)
 
     if top_level:
-        stream("%s %s(py::module &m)" % (bind_class_name(class_),
-                                         init_function_name))
+        stream("inline %s %s(py::module &m)" % (bind_class_name(class_),
+                                                init_function_name))
         stream("{")
         stream("  %s instance(m, \"%s\");" %
                (bind_class_name(class_),
