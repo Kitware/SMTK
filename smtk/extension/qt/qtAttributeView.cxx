@@ -1080,6 +1080,7 @@ void qtAttributeView::onViewBy()
   }
   else
   {
+    m_internals->selectedAttribute.reset();
     this->onListBoxSelectionChanged();
   }
   frame->handle(1)->setEnabled(true);
