@@ -312,8 +312,9 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
     return false;
   }
 
-  // also check associations
-  return !(m_associatedObjects && !m_associatedObjects->isValid());
+  // also check associations - make sure to turn active categories off
+  // since associations don't have them set
+  return !(m_associatedObjects && !m_associatedObjects->isValid(false));
 }
 
 bool Attribute::isRelevant() const
