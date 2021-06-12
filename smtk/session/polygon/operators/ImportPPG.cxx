@@ -425,10 +425,9 @@ bool ImportPPG::Internal::createFaces()
     } // for (n)
   }   // for (ppg faces)
 
-  auto refItem = deleteOp->parameters()->associations();
-  if (refItem->numberOfValues() == 0)
+  if (!deleteOp->ableToOperate())
   {
-    return true;
+    return true; // no faces to delete
   }
 
   auto deleteResult = deleteOp->operate();

@@ -1,0 +1,26 @@
+# example1.ppg
+# Polygon domain with embedded face and hole
+# Note that vertex indices start with 1
+# Vertices 1-8 for the outer polygon
+v  0.0  2.0
+v  1.0  0.0
+v  9.0  0.0
+v  9.0  2.0
+v  8.0  4.0
+v  6.0  5.0
+v  3.0  5.0
+v  1.0  4.0
+# Vertices 9-12 for the embedded parallelogram
+v 2.0 1.5
+v 4.0 1.5
+v 4.5 3.0
+v 2.5 3.0
+# Vertices 12-16 for the square hole
+v  7.0  1.0
+v  8.0  1.0
+v  8.0  2.0
+v  7.0  2.0
+# Faces
+f 1 2 3 4 5 6 7 8  # face 1
+e 9 10 11 12       # face 2 (embedded)
+h 13 14 15 16      # hole
