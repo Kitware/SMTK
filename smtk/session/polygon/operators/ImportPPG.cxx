@@ -534,6 +534,11 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
   for (auto it = symbols.begin() + 1; it != symbols.end(); ++it)
   {
     std::string s = *it;
+    if (s.at(0) == '#')
+    {
+      break; // comment at end of line
+    }
+
     try
     {
       vertexId = std::stoi(s);

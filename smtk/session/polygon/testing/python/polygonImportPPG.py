@@ -58,10 +58,10 @@ v 2 5
 v 3 5
 v 4 6
 v 2 6
-f 1 2 3 4 5
-f 3 6 7 4
-h 8 9 10
-e 11 12 13 14
+f 1 2 3 4 5    # face 1
+f 3 6 7 4      # face 2
+h 8 9 10       # hole in face 2
+e 11 12 13 14  # face 3 embedded in face 2
 """
 
 OP_SUCCEEDED = int(smtk.operation.Operation.Outcome.SUCCEEDED)
