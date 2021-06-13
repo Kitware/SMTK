@@ -26,6 +26,7 @@ set(commonHeaders
   CompilerInformation.h
   DateTime.h
   DateTimeZonePair.h
+  Deprecation.h
   Environment.h
   Extension.h
   Factory.h
