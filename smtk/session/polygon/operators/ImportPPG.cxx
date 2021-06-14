@@ -179,7 +179,7 @@ public:
     std::cout << "PPG input face count: " << m_ppgFaceList.size() - m_holeCount << std::endl;
     std::cout << "PPG input hole count: " << m_holeCount << std::endl;
 
-    for (auto& ppgFace : m_ppgFaceList)
+    for (const auto& ppgFace : m_ppgFaceList)
     {
       ppgFace.dump();
     }
@@ -201,7 +201,7 @@ protected:
   std::vector<smtk::model::EntityRef> m_smtkVertexList;
 
   // Track vertex-pairs used to make edges, to avoid duplication
-  std::set<std::pair<unsigned, unsigned>> m_ppgVertexPairSet;
+  std::set<std::pair<std::size_t, std::size_t>> m_ppgVertexPairSet;
 
   smtk::model::ResourcePtr m_resource;
   std::shared_ptr<smtk::resource::PersistentObject> m_modelEntity;
@@ -298,8 +298,8 @@ bool ImportPPG::Internal::createEdges()
     for (std::size_t i = 1; i < vertexIds.size(); ++i)
     {
       createOp->parameters()->removeAllAssociations();
-      unsigned id1 = vertexIds[i - 1];
-      unsigned id2 = vertexIds[i];
+      std::size_t id1 = vertexIds[i - 1];
+      std::size_t id2 = vertexIds[i];
 
       // Check for duplicate
       auto pair1 = std::make_pair(id1, id2);
@@ -372,7 +372,7 @@ bool ImportPPG::Internal::createFaces()
     {
       ++i;
       const auto& innerPPGFace = m_ppgFaceList[i];
-      for (auto& edge : innerPPGFace.edges)
+      for (const auto& edge : innerPPGFace.edges)
       {
         createOp->parameters()->associate(edge);
       }
@@ -511,7 +511,7 @@ bool ImportPPG::Internal::parsePPGVertex(const std::vector<std::string>& symbols
   }
   catch (const std::exception& e)
   {
-    errorMacroFalse("Error parsing vertex on line " << lineNum);
+    errorMacroFalse("Error parsing vertex on line " << lineNum << ": " << e.what());
   }
 
   auto userId = 1 + m_ppgVertexList.size();
@@ -527,7 +527,7 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
   }
 
   std::vector<std::size_t> vertexIds;
-  unsigned int vertexId;
+  std::size_t vertexId;
   double xsum = 0.0;
   double ysum = 0.0;
   for (auto it = symbols.begin() + 1; it != symbols.end(); ++it)
@@ -544,7 +544,8 @@ bool ImportPPG::Internal::parsePPGFace(const std::vector<std::string>& symbols, 
     }
     catch (const std::exception& e)
     {
-      errorMacroFalse("Error parsing vertex id " << s << " in line " << lineNum);
+      errorMacroFalse(
+        "Error parsing vertex id " << s << " in line " << lineNum << ": " << e.what());
     }
 
     if (vertexId == 0)

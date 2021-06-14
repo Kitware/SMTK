@@ -5,11 +5,11 @@
 
     <!-- Specification -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="import-ppg" Label="Polygonal Planar Model from PPG File" BaseType="operation">
+    <AttDef Type="import-ppg" Label="Planar Polygon Model from PPG File" BaseType="operation">
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Planar Polygon Files (*.ppg);;All files (*.*)">
+          FileFilters="Planar Polygon Files (*.ppg)">
           <BriefDescription>Input file listing vertex and face specifications.</BriefDescription>
         </File>
         <String Name="string" Label="String Input" Optional="true" IsEnabledByDefault="false" AdvanceLevel="1">

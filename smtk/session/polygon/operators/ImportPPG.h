@@ -44,7 +44,7 @@ public:
   // Override ableToOperate() to support test mode
   bool ableToOperate() override;
 
-  virtual ~ImportPPG();
+  ~ImportPPG() override;
 
 protected:
   ImportPPG();

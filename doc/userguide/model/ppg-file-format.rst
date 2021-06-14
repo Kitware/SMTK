@@ -5,9 +5,10 @@ The SMTK polygon session includes an ``ImportPPG`` operation for creating 2-D
 models from text file input. The ``ImportPPG`` operation is provided as a
 convenience for exploring CMB's many capabilities as well as for testing,
 debug, and demonstration.
-The file format is a simple data-format that specifies 2-D geometry as a
-list of vertex positions and polygon face definitions, with vertices
-connected by straight-line segments.
+The "ppg" (Planar PolyGon) file format is a simple data format
+that specifies 2-D geometry as a list of vertex coordinates and
+polygon face definitions, with vertices connected implicitly by
+straight-line model edges.
 
 .. include:: example1.ppg
    :literal:

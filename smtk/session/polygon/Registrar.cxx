@@ -85,8 +85,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   // Register operations
   operationManager->registerOperations<OperationList>();
 
-  // smtk::operation::CreatorGroup(operationManager)
-  //   .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::CreateModel>();
+  smtk::operation::CreatorGroup(operationManager)
+    .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::CreateModel>();
   smtk::operation::CreatorGroup(operationManager)
     .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::ImportPPG>();
 
@@ -111,8 +111,8 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
-  // smtk::operation::CreatorGroup(operationManager)
-  //   .unregisterOperation<smtk::session::polygon::CreateModel>();
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::CreateModel>();
   smtk::operation::CreatorGroup(operationManager)
     .unregisterOperation<smtk::session::polygon::ImportPPG>();
 

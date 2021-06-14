@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::polygon::ImportPPG > pybind11_init_smtk_session_polygon_ImportPPG(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
+inline PySharedPtrClass< smtk::session::polygon::ImportPPG > pybind11_init_smtk_session_polygon_ImportPPG(py::module &m, PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::session::polygon::ImportPPG > instance(m, "ImportPPG", parent);
   instance
