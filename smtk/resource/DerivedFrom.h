@@ -72,10 +72,7 @@ protected:
   {
   }
 
-  DerivedFrom(DerivedFrom&& rhs) noexcept
-    : Parent(std::move(rhs))
-  {
-  }
+  DerivedFrom(DerivedFrom&& rhs) = default;
 };
 
 template<typename Self, typename Parent>
