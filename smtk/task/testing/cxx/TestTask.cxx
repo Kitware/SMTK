@@ -28,6 +28,8 @@ namespace test_task
 
 using namespace smtk::task;
 
+static bool taskDestroyed = false;
+
 class UnavailableTask : public Task
 {
 public:
@@ -39,6 +41,7 @@ public:
     const smtk::common::Managers::Ptr& managers = nullptr)
     : Task(config, managers)
   {
+    this->internalStateChanged(State::Unavailable);
   }
   UnavailableTask(
     const Configuration& config,
@@ -46,8 +49,13 @@ public:
     const smtk::common::Managers::Ptr& managers = nullptr)
     : Task(config, deps, managers)
   {
+    this->internalStateChanged(State::Unavailable);
   }
-  State state() const override { return State::Unavailable; }
+  ~UnavailableTask() override
+  {
+    std::cout << "Destroying " << this->title() << "\n";
+    taskDestroyed = true;
+  }
 };
 
 } // namespace test_task
@@ -77,166 +85,211 @@ int TestTask(int, char*[])
     smtk::task::Registrar::registerTo(taskManager);
   }
 
-  taskManager->taskFactory().registerType<test_task::UnavailableTask>();
-  smtk::task::Task::PassedDependencies empty;
+  taskManager->instances().registerType<test_task::UnavailableTask>();
 
-  std::shared_ptr<Task> t1 =
-    taskManager->taskFactory().create<Task>(Task::Configuration{ { "title", "Task 1" } }, managers);
-  test(!!t1, "Expecting to create a non-null task.");
-  test(t1->state() == State::Completable, "Expected task without dependencies to be completable.");
+  auto ikey = taskManager->instances().observers().insert(
+    [](smtk::common::InstanceEvent event, const smtk::task::Task::Ptr& task) {
+      std::cout << (event == smtk::common::InstanceEvent::Managed ? "Manage" : "Unmanage") << " "
+                << task->title() << "\n";
+    });
 
-  State from;
-  State to;
-  int called = 0;
-  auto callback = [&from, &to, &called](Task& task, State prev, State next) {
-    (void)task;
-    ++called;
-    from = prev;
-    to = next;
-    std::cout << "  " << task.title() << " transitioned: " << prev << " ⟶ " << next << "\n";
+  int count = 0;
+  auto countInstances = [&count](const std::shared_ptr<smtk::task::Task>& task) {
+    ++count;
+    std::cout << "  " << task->title() << " " << task->state() << "\n";
+    return smtk::common::Visit::Continue;
   };
-  auto okey = t1->observers().insert(callback);
 
-  bool success = t1->markCompleted(true);
-  test(success, "Expected completion to be accepted.");
-  test(called == 1, "Expected observer to be invoked.");
-  test(
-    from == State::Completable && to == State::Completed,
-    "Expected state transition completable⟶completed.");
+  {
+    std::shared_ptr<Task> t1 =
+      taskManager->instances().create<Task>(Task::Configuration{ { "title", "Task 1" } }, managers);
+    test(!!t1, "Expecting to create a non-null task.");
+    test(
+      t1->state() == State::Completable, "Expected task without dependencies to be completable.");
 
-  called = 0;
-  success = t1->markCompleted(true);
-  test(!success, "Expected completion to be rejected on double-complete.");
-  test(called == 0, "Expected observer to be skipped on double-complete.");
+    State from;
+    State to;
+    int called = 0;
+    auto callback = [&from, &to, &called](Task& task, State prev, State next) {
+      (void)task;
+      ++called;
+      from = prev;
+      to = next;
+      std::cout << "  " << task.title() << " transitioned: " << prev << " ⟶ " << next << "\n";
+    };
+    auto okey = t1->observers().insert(callback);
 
-  called = 0;
-  success = t1->markCompleted(false);
-  test(success, "Expected uncompletion to be accepted.");
-  test(called == 1, "Expected observer to be invoked.");
-  test(
-    from == State::Completed && to == State::Completable,
-    "Expected state transition completed⟶completable.");
+    bool success = t1->markCompleted(true);
+    test(success, "Expected completion to be accepted.");
+    test(called == 1, "Expected observer to be invoked.");
+    test(
+      from == State::Completable && to == State::Completed,
+      "Expected state transition completable⟶completed.");
 
-  // Now add a dependent task that is unavailable.
-  std::shared_ptr<Task> t2 = taskManager->taskFactory().create<test_task::UnavailableTask>(
-    Task::Configuration{ { "title", "Task 2" } }, managers);
-  called = 0;
-  success = t1->addDependency(t2);
-  test(success, "Expected to add dependency to task.");
-  test(called == 1, "Expected observer to be invoked upon dependency insertion.");
-  test(
-    from == State::Completable && to == State::Unavailable,
-    "Expected state transition completable⟶unavailable.");
-  success = t1->addDependency(t2);
-  test(!success, "Expected failure when adding redundant dependency to task.");
+    called = 0;
+    success = t1->markCompleted(true);
+    test(!success, "Expected completion to be rejected on double-complete.");
+    test(called == 0, "Expected observer to be skipped on double-complete.");
 
-  // Test construction with dependencies
-  Task::Configuration c3{ { "title", "Task 3" }, { "completed", true } };
-  auto t3 = taskManager->taskFactory().create<smtk::task::Task>(
-    c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, managers);
+    called = 0;
+    success = t1->markCompleted(false);
+    test(success, "Expected uncompletion to be accepted.");
+    test(called == 1, "Expected observer to be invoked.");
+    test(
+      from == State::Completed && to == State::Completable,
+      "Expected state transition completed⟶completable.");
 
-  // Test dependency removal and notification.
-  auto dokey = t3->observers().insert(callback);
-  called = 0;
-  success = t3->removeDependency(t2);
-  test(success, "Expected to remove dependency from Task 3.");
-  test(called == 0, "Did not expect state to change when removing first dependency.");
-  success = t1->removeDependency(t2);
-  test(success, "Expected to remove dependency from Task 1.");
-  test(called == 2, "Expected 2 tasks to change state.");
-  test(
-    from == State::Unavailable && to == State::Completed,
-    "Expected state transition unavailable⟶completed.");
-  success = t1->removeDependency(t2);
-  test(!success, "Expected removal of non-existent dependency to fail.");
+    // Now add a dependent task that is unavailable.
+    test(
+      taskManager->instances().contains<test_task::UnavailableTask>(),
+      "Expected UnavailableTask to be registered.");
+    std::shared_ptr<Task> t2 = taskManager->instances().create<test_task::UnavailableTask>(
+      Task::Configuration{ { "title", "Task 2" } }, managers);
+    called = 0;
+    success = t1->addDependency(t2);
+    test(success, "Expected to add dependency to task.");
+    test(called == 1, "Expected observer to be invoked upon dependency insertion.");
+    test(
+      from == State::Completable && to == State::Unavailable,
+      "Expected state transition completable⟶unavailable.");
+    success = t1->addDependency(t2);
+    test(!success, "Expected failure when adding redundant dependency to task.");
 
-  // Test TaskNeedsResources
-  // I. Construction w/ configuration.
-  //    The task is incomplete unless 1 or 2 model geometry resources
-  //    and 1 or more simulation attribute resources are held by the
-  //    resource manager.
-  Task::Configuration c4{
-    { "title", "Task 4" },
-    { "resources",
-      { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
-        { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
-  };
-  auto t4 = taskManager->taskFactory().create<smtk::task::TaskNeedsResources>(c4, managers);
-  test(!!t4, "Could not create TaskNeedsResources.");
-  test(t4->state() == State::Incomplete, "Task with no resources should be incomplete.");
-  auto hokey = t4->observers().insert(callback);
+    // Test construction with dependencies
+    Task::Configuration c3{ { "title", "Task 3" }, { "completed", true } };
+    auto t3 = taskManager->instances().create<smtk::task::Task>(
+      c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, managers);
 
-  // II. State transitions
-  called = 0;
-  bool didAdd;
-  // Add 3 resources. Addition of the last should cause transition.
-  auto model1 = smtk::model::Resource::create();
-  model1->properties().get<std::string>()["project_role"] = "model geometry";
-  didAdd = resourceManager->add(model1);
-  test(didAdd, "Expected to add model1 resource.");
-  test(called == 0, "Did not expect state to change when adding first model.");
-  auto model2 = smtk::model::Resource::create();
-  model2->properties().get<std::string>()["project_role"] = "model geometry";
-  didAdd = resourceManager->add(model2);
-  test(didAdd, "Expected to add model2 resource.");
-  test(called == 0, "Did not expect state to change when adding first model.");
-  auto attr1 = smtk::attribute::Resource::create();
-  attr1->properties().get<std::string>()["project_role"] = "simulation attribute";
-  didAdd = resourceManager->add(attr1);
-  test(didAdd, "Expected to add attr1 resource.");
-  test(called == 1, "Expected state to change when required resources present.");
-  test(
-    from == State::Incomplete && to == State::Completable,
-    "Expected state transition incomplete⟶completable.");
+    // Test dependency removal and notification.
+    auto dokey = t3->observers().insert(callback);
+    called = 0;
+    success = t3->removeDependency(t2);
+    test(success, "Expected to remove dependency from Task 3.");
+    test(called == 0, "Did not expect state to change when removing first dependency.");
+    success = t1->removeDependency(t2);
+    test(success, "Expected to remove dependency from Task 1.");
+    test(called == 2, "Expected 2 tasks to change state.");
+    test(
+      from == State::Unavailable && to == State::Completed,
+      "Expected state transition unavailable⟶completed.");
+    success = t1->removeDependency(t2);
+    test(!success, "Expected removal of non-existent dependency to fail.");
 
-  t4->markCompleted(true); // We'll test below that completion is reset.
-  test(called == 2, "Expected state to change when user marks completed.");
-  test(
-    from == State::Completable && to == State::Completed,
-    "Expected state transition completable⟶completed.");
+    // Test TaskNeedsResources
+    // I. Construction w/ configuration.
+    //    The task is incomplete unless 1 or 2 model geometry resources
+    //    and 1 or more simulation attribute resources are held by the
+    //    resource manager.
+    Task::Configuration c4{
+      { "title", "Task 4" },
+      { "resources",
+        { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
+          { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
+    };
+    auto t4 = taskManager->instances().create<smtk::task::TaskNeedsResources>(c4, managers);
+    test(!!t4, "Could not create TaskNeedsResources.");
+    test(t4->state() == State::Incomplete, "Task with no resources should be incomplete.");
+    auto hokey = t4->observers().insert(callback);
 
-  called = 0;
-  bool didRemove;
-  // Remove 2 resources. Removal of the last should cause a transition.
-  didRemove = resourceManager->remove(model1);
-  test(didRemove, "Expected to remove model1 resource.");
-  test(called == 0, "Did not expect state to change when removing model1.");
-  didRemove = resourceManager->remove(attr1);
-  test(didRemove, "Expected to remove attr1 resource.");
-  test(called == 1, "Expected state to change when removing attr1 model.");
-  test(
-    from == State::Completed && to == State::Incomplete,
-    "Expected state transition completed⟶incomplete.");
+    // II. State transitions
+    called = 0;
+    bool didAdd;
+    // Add 3 resources. Addition of the last should cause transition.
+    auto model1 = smtk::model::Resource::create();
+    model1->properties().get<std::string>()["project_role"] = "model geometry";
+    didAdd = resourceManager->add(model1);
+    test(didAdd, "Expected to add model1 resource.");
+    test(called == 0, "Did not expect state to change when adding first model.");
+    auto model2 = smtk::model::Resource::create();
+    model2->properties().get<std::string>()["project_role"] = "model geometry";
+    didAdd = resourceManager->add(model2);
+    test(didAdd, "Expected to add model2 resource.");
+    test(called == 0, "Did not expect state to change when adding first model.");
+    auto attr1 = smtk::attribute::Resource::create();
+    attr1->properties().get<std::string>()["project_role"] = "simulation attribute";
+    didAdd = resourceManager->add(attr1);
+    test(didAdd, "Expected to add attr1 resource.");
+    test(called == 1, "Expected state to change when required resources present.");
+    test(
+      from == State::Incomplete && to == State::Completable,
+      "Expected state transition incomplete⟶completable.");
 
-  // Test that user completion is reset by transitions "below" Completeable and back.
-  called = 0;
-  didAdd = resourceManager->add(attr1);
-  test(didAdd, "Expected to add attr1 resource.");
-  test(called == 1, "Expected state to change when required resources present.");
-  test(
-    from == State::Incomplete && to == State::Completable,
-    "Expected state transition incomplete⟶completable.");
+    t4->markCompleted(true); // We'll test below that completion is reset.
+    test(called == 2, "Expected state to change when user marks completed.");
+    test(
+      from == State::Completable && to == State::Completed,
+      "Expected state transition completable⟶completed.");
 
-  // III. Verify that an empty role is allowed, as are empty resource types.
-  //      This should also test initialization of TaskNeedsResources when
-  //      resource manager is not empty.
-  Task::Configuration c5{ { "title", "Task 5" },
-                          { "resources",
-                            { { { "type", "smtk::model::Resource" } },
-                              { { "role", "simulation attribute" } } } } };
-  auto t5 =
-    taskManager->taskFactory().createFromName("smtk::task::TaskNeedsResources", c5, managers);
-  test(!!t5, "Could not create TaskNeedsResources.");
-  auto pokey = t5->observers().insert(callback);
-  test(t5->state() == State::Completable, "Task 5 should be completable initially.");
-  called = 0;
-  didRemove = resourceManager->remove(attr1);
-  test(didRemove, "Expected to remove attr1 resource.");
-  // NB: called == 2 since both task 4 and 5 should transition:
-  test(called == 2, "Expected state to change when removing attr1 model.");
-  test(
-    from == State::Completable && to == State::Incomplete,
-    "Expected state transition completable⟶incomplete.");
+    called = 0;
+    bool didRemove;
+    // Remove 2 resources. Removal of the last should cause a transition.
+    didRemove = resourceManager->remove(model1);
+    test(didRemove, "Expected to remove model1 resource.");
+    test(called == 0, "Did not expect state to change when removing model1.");
+    didRemove = resourceManager->remove(attr1);
+    test(didRemove, "Expected to remove attr1 resource.");
+    test(called == 1, "Expected state to change when removing attr1 model.");
+    test(
+      from == State::Completed && to == State::Incomplete,
+      "Expected state transition completed⟶incomplete.");
+
+    // Test that user completion is reset by transitions "below" Completeable and back.
+    called = 0;
+    didAdd = resourceManager->add(attr1);
+    test(didAdd, "Expected to add attr1 resource.");
+    test(called == 1, "Expected state to change when required resources present.");
+    test(
+      from == State::Incomplete && to == State::Completable,
+      "Expected state transition incomplete⟶completable.");
+
+    // III. Verify that an empty role is allowed, as are empty resource types.
+    //      This should also test initialization of TaskNeedsResources when
+    //      resource manager is not empty.
+    Task::Configuration c5{ { "title", "Task 5" },
+                            { "resources",
+                              { { { "type", "smtk::model::Resource" } },
+                                { { "role", "simulation attribute" } } } } };
+    auto t5 =
+      taskManager->instances().createFromName("smtk::task::TaskNeedsResources", c5, managers);
+    test(!!t5, "Could not create TaskNeedsResources.");
+    auto pokey = t5->observers().insert(callback);
+    test(t5->state() == State::Completable, "Task 5 should be completable initially.");
+    called = 0;
+    didRemove = resourceManager->remove(attr1);
+    test(didRemove, "Expected to remove attr1 resource.");
+    // NB: called == 2 since both task 4 and 5 should transition:
+    test(called == 2, "Expected state to change when removing attr1 model.");
+    test(
+      from == State::Completable && to == State::Incomplete,
+      "Expected state transition completable⟶incomplete.");
+
+    // Test task Instances methods:
+
+    // Verify double-add fails.
+    didAdd = taskManager->instances().manage(t5);
+    test(!didAdd, "Should not return true when duplicate instance managed.");
+
+    // Test visit()
+    std::cout << "Tasks:\n";
+    taskManager->instances().visit(countInstances);
+    test(count == 5, "Expected 5 tasks.");
+
+    // Test removal and addition.
+    didRemove = taskManager->instances().unmanage(t5);
+    test(didRemove, "Expected to unmanage task 5.");
+    test(!taskManager->instances().contains(t5), "Expected task 5 to be absent.");
+    didAdd = taskManager->instances().manage(t5);
+    test(didAdd, "Expected to manage task 5.");
+    test(taskManager->instances().contains(t5), "Expected task 5 to be present.");
+
+    taskManager->instances().clear();
+    test(!test_task::taskDestroyed, "Task 2 should still be alive while t2 in scope.");
+  }
+  test(test_task::taskDestroyed, "Task 2 should be dead once t2 is out of scope.");
+
+  count = 0;
+  taskManager->instances().visit(countInstances);
+  test(count == 0, "Expected 0 tasks.");
 
   return 0;
 }

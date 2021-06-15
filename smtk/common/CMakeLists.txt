@@ -37,6 +37,7 @@ set(commonHeaders
   InfixExpressionEvaluation.h
   InfixExpressionGrammar.h
   InfixExpressionGrammarImpl.h
+  Instances.h
   json/jsonLinks.h
   json/jsonTypeMap.h
   json/jsonUUID.h
@@ -57,6 +58,7 @@ set(commonHeaders
   UUID.h
   UUIDGenerator.h
   VersionMacros.h
+  Visit.h
   testing/cxx/helpers.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h

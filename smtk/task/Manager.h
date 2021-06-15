@@ -15,10 +15,11 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/Instances.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
 
-#include "smtk/task/Factory.h"
+#include "smtk/task/Task.h"
 
 #include <array>
 #include <string>
@@ -43,16 +44,28 @@ public:
 
   virtual ~Manager();
 
-  /// Return a factory object used to register task types and create tasks.
-  Factory& taskFactory() { return m_taskFactory; }
-  const Factory& taskFactory() const { return m_taskFactory; }
+  /// Managed instances of Task objects (and a registry of Task classes).
+  using Instances = smtk::common::Instances<
+    smtk::task::Task,
+    void,
+    std::tuple<smtk::task::Task::Configuration&, std::shared_ptr<smtk::common::Managers>>,
+    std::tuple<
+      smtk::task::Task::Configuration&,
+      smtk::task::Task::PassedDependencies,
+      std::shared_ptr<smtk::common::Managers>>>;
+
+  /// Return the set of managed task instances.
+  ///
+  /// This class also acts as a registrar for Task subclasses.
+  Instances& instances() { return m_instances; }
+  const Instances& instances() const { return m_instances; }
 
   /// Return the managers instance that contains this manager, if it exists.
   smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
   void setManagers(const smtk::common::Managers::Ptr& managers) { m_managers = managers; }
 
 private:
-  Factory m_taskFactory;
+  Instances m_instances;
   std::weak_ptr<smtk::common::Managers> m_managers;
 
 protected:

@@ -51,14 +51,14 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
-  auto& factory = taskManager->taskFactory();
-  factory.registerTypes<TaskList>();
+  auto& instances = taskManager->instances();
+  instances.registerTypes<TaskList>();
 }
 
 void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
 {
-  auto& factory = taskManager->taskFactory();
-  factory.unregisterTypes<TaskList>();
+  auto& instances = taskManager->instances();
+  instances.unregisterTypes<TaskList>();
 }
 
 } // namespace task

@@ -6,7 +6,6 @@ set(taskSrcs
 )
 
 set(taskHeaders
-  Factory.h
   Manager.h
   Registrar.h
   Task.h

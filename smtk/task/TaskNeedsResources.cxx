@@ -80,7 +80,7 @@ void from_json(const json& j, TaskNeedsResources::Predicate& p)
   }
 }
 
-TaskNeedsResources::TaskNeedsResources() {}
+TaskNeedsResources::TaskNeedsResources() = default;
 
 TaskNeedsResources::TaskNeedsResources(
   const Configuration& config,
@@ -151,7 +151,7 @@ void TaskNeedsResources::updateResources(
     case smtk::resource::EventType::ADDED:
     {
       // Add the resource to the appropriate entry:
-      std::string role = smtk::project::detail::role(resourcePtr);
+      const std::string& role = smtk::project::detail::role(resourcePtr);
       auto it = m_resourcesByRole.find(role);
       if (it != m_resourcesByRole.end())
       {
@@ -166,7 +166,7 @@ void TaskNeedsResources::updateResources(
     case smtk::resource::EventType::REMOVED:
     {
       // Remove the resource from the appropriate entry.
-      std::string role = smtk::project::detail::role(resourcePtr);
+      const std::string& role = smtk::project::detail::role(resourcePtr);
       auto it = m_resourcesByRole.find(role);
       if (it != m_resourcesByRole.end())
       {
