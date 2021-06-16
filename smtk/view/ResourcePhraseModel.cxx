@@ -73,7 +73,7 @@ bool ResourcePhraseModel::setResourceFilters(
   const std::multimap<std::string, std::string>& resourceFilters)
 {
   auto filter = [resourceFilters](const smtk::resource::Resource& resource) -> bool {
-    bool acceptable = false;
+    bool acceptable = resourceFilters.empty();
     for (const auto& filter : resourceFilters)
     {
       if (resource.isOfType(filter.first))
@@ -82,7 +82,7 @@ bool ResourcePhraseModel::setResourceFilters(
         break;
       }
     }
-    return !acceptable;
+    return acceptable;
   };
   return setFilter(filter);
 }
