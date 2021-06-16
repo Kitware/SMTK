@@ -46,7 +46,7 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
 {
   this->setObjectName("attributeEditor");
-  this->setWindowTitle("Attribute Editor");
+  updateTitle();
   QWidget* w = new QWidget(this);
   w->setObjectName("attributePanel");
   this->setWidget(w);
@@ -118,33 +118,58 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
   return false;
 }
 
-bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& rsrc)
+void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 {
-  bool didDisplay = false;
-  auto previousResource = m_rsrc.lock();
-  if (!rsrc || rsrc == previousResource)
-  {
-    return didDisplay;
-  }
-
-  if (previousResource)
-  {
-    auto rsrcMgr = previousResource->manager();
-    if (rsrcMgr && m_observer.assigned())
-    {
-      rsrcMgr->observers().erase(m_observer);
-    }
-  }
-  m_rsrc = rsrc;
   if (m_attrUIMgr)
   {
     m_propertyLinks.clear();
     delete m_attrUIMgr;
+    m_attrUIMgr = nullptr;
     while (QWidget* w = this->widget()->findChild<QWidget*>())
     {
       delete w;
     }
   }
+
+  if (rsrcMgr && m_observer.assigned())
+  {
+    rsrcMgr->observers().erase(m_observer);
+  }
+
+  m_rsrc = std::weak_ptr<smtk::resource::Resource>();
+}
+
+bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& rsrc)
+{
+  bool didDisplay = false;
+
+  if (rsrc)
+  {
+    auto previousResource = m_rsrc.lock();
+
+    if (rsrc->isPrivate() && rsrc != previousResource)
+    {
+      resetPanel(rsrc->manager());
+      didDisplay = displayResourceInternal(rsrc);
+    }
+    else if (!rsrc->isPrivate() && rsrc == previousResource)
+    {
+      // the panel is displaying a resource that is now private
+      // stop displaying it
+      resetPanel(rsrc->manager());
+    }
+  }
+
+  this->updateTitle();
+
+  return didDisplay;
+}
+
+bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc)
+{
+  bool didDisplay = false;
+
+  m_rsrc = rsrc;
 
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
@@ -217,17 +242,9 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
         {
           // The application is removing the attribute resource we are viewing.
           // Clear out the panel and unobserve the manager.
-          delete m_attrUIMgr;
-          m_attrUIMgr = nullptr;
+          this->resetPanel(weakResourceManager.lock());
+          this->updateTitle();
           m_seln = nullptr;
-          while (QWidget* w = this->widget()->findChild<QWidget*>())
-          {
-            delete w;
-          }
-          if (auto rsrcMgr = weakResourceManager.lock())
-          {
-            rsrcMgr->observers().erase(m_observer);
-          }
         }
       },
       "pqSMTKAttributePanel: Clear panel if a removed resource is being displayed.");
@@ -293,4 +310,12 @@ void pqSMTKAttributePanel::updateSettings()
 
   auto* smtkSettings = vtkSMTKSettings::GetInstance();
   m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
+}
+
+void pqSMTKAttributePanel::updateTitle()
+{
+  auto rsrc = m_rsrc.lock();
+  QString panelName = "Attribute Editor";
+  QString title = rsrc ? (panelName + '(' + rsrc->name().c_str() + ')') : panelName;
+  this->setWindowTitle(title);
 }

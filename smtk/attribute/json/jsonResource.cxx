@@ -37,6 +37,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
   // Set the version to 4.0
   j["version"] = "4.0";
+  j["IsPrivate"] = res->isPrivate();
   // Write out the active category information
   if (!res->activeCategories().empty())
   {
@@ -325,6 +326,12 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
   auto resource = std::static_pointer_cast<smtk::resource::Resource>(res);
   smtk::resource::from_json(j, resource);
+
+  // Set Private State
+  auto isPrivateResult = j.find("IsPrivate");
+  // if we're reading in an older attribute resource, default value to true
+  bool isPrivateValue = isPrivateResult != j.end() ? isPrivateResult->get<bool>() : true;
+  res->setIsPrivate(isPrivateValue);
 
   // Process Analysis Info
   auto result = j.find("Analyses");

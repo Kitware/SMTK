@@ -83,6 +83,10 @@ public slots:
     * contents have changed). Re-render.
     */
   virtual bool updatePipeline();
+  /**\brief Clear panel widgets, unobserve displayed resource,
+    *       and set the attribute resource pointer to null.
+    */
+  virtual void resetPanel(smtk::resource::ManagerPtr rsrcMgr);
 
 protected slots:
   /**\brief Called when vtkSMTKSettings is modified, indicating user preferences have changed.
@@ -96,6 +100,8 @@ protected slots:
   virtual void updateSettings();
 
 protected:
+  virtual bool displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc);
+  virtual void updateTitle();
   smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;

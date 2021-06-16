@@ -104,6 +104,12 @@ public:
   // removed (external nodes).
   bool removeDefinition(smtk::attribute::DefinitionPtr def);
 
+  // Description:
+  // Provide a way to mark a resource enabled/disabled
+  // so that we can hide it in certain contexts
+  void setIsPrivate(bool isPrivateValue) { m_isPrivate = isPrivateValue; }
+  bool isPrivate() const { return m_isPrivate; };
+
   smtk::attribute::AttributePtr createAttribute(const std::string& name, const std::string& type);
   smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
   smtk::attribute::AttributePtr createAttribute(const std::string& type);
@@ -403,6 +409,8 @@ protected:
   CustomItemDefinitionFactory m_customItemDefinitionFactory;
 
   AssociationRules m_associationRules;
+
+  bool m_isPrivate = true;
 
   EvaluatorFactory m_evaluatorFactory;
 
