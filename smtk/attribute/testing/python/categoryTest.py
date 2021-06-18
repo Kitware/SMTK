@@ -42,18 +42,18 @@ if __name__ == '__main__':
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
     base.addItemDefinition(iitemdef)
-    iitemdef.localCategories().insert("Flow")
+    iitemdef.localCategories().insertInclusion("Flow")
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem2")
     base.addItemDefinition(iitemdef)
     iitemdef.setDefaultValue(10)
-    iitemdef.localCategories().insert("Heat")
+    iitemdef.localCategories().insertInclusion("Heat")
 
     def1 = resource.createDefinition("Derived1", "BaseDef")
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
     def1.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
-    ditemdef.localCategories().insert("Veg")
+    ditemdef.localCategories().insertInclusion("Veg")
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
@@ -62,17 +62,17 @@ if __name__ == '__main__':
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
     def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
-    ditemdef.localCategories().insert("Constituent")
+    ditemdef.localCategories().insertInclusion("Constituent")
 
     def2 = resource.createDefinition("Derived2", "Derived1")
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
     def2.addItemDefinition(sitemdef)
-    sitemdef.localCategories().insert("Flow")
+    sitemdef.localCategories().insertInclusion("Flow")
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem2")
     def2.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue("Default")
-    sitemdef.localCategories().insert("General")
+    sitemdef.localCategories().insertInclusion("General")
 
     # Process Definition Information
     resource.finalizeDefinitions()

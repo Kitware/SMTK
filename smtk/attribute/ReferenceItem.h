@@ -222,13 +222,6 @@ public:
   {
     return std::dynamic_pointer_cast<T>(this->value(i));
   }
-  /** Return the \a i-th object stored in this item.
-    * \deprecated This method will go away in future versions of SMTK
-    * See instead value(std::size_t)
-    */
-  [[deprecated(
-    "ReferenceItem::objectValue has been replaced with ReferenceItem::value")]] PersistentObjectPtr
-  objectValue(std::size_t i = 0) const;
 
   virtual bool isValueValid(std::size_t ii, const PersistentObjectPtr& entity) const;
   bool isValueValid(const PersistentObjectPtr& entity) const
@@ -247,58 +240,11 @@ public:
     * Return the \a i-th object stored in this item.
     */
   bool setValue(std::size_t i, const PersistentObjectPtr& val);
-  /**\brief Set the component stored with this item.
-    *
-    * This always sets the 0-th item and is a convenience method
-    * for cases where only 1 value is needed.
-    * \deprecated This method will go away in future versions of SMTK
-    * See instead setValue()
-    */
-  [[deprecated(
-    "ReferenceItem::setObjectValue has been replaced with ReferenceItem::setValue")]] bool
-  setObjectValue(const PersistentObjectPtr& val)
-  {
-    return this - setValue(val);
-  }
-  /** Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
-    * bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
-    * Return the \a i-th object stored in this item.
-    * \deprecated This method will go away in future versions of SMTK
-    * See instead setValue(std::size_t, const PersistentObjectPtr&)
-    */
-  [[deprecated(
-    "ReferenceItem::setObjectValue has been replaced with ReferenceItem::setValue")]] bool
-  setObjectValue(std::size_t i, const PersistentObjectPtr& val)
-  {
-    return this->setValue(i, val);
-  }
-  [[deprecated(
-    "ReferenceItem::appendObjectValue has been replaced with ReferenceItem::appendValue")]] bool
-  appendObjectValue(const PersistentObjectPtr& val)
-  {
-    return this->appendValue(val);
-  }
 
   template<typename I>
   bool setValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
   template<typename I>
   bool appendValues(I vbegin, I vend);
-
-  template<typename I>
-  [[deprecated(
-    "ReferenceItem::setObjectValues has been replaced with ReferenceItem::setValues")]] bool
-  setObjectValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0)
-  {
-    return this->setValues<I>(vbegin, vend, offset);
-  }
-
-  template<typename I>
-  [[deprecated(
-    "ReferenceItem::appendObjectValues has been replaced with ReferenceItem::appendValues")]] bool
-  appendObjectValues(I vbegin, I vend)
-  {
-    return this->appendValues<I>(vbegin, vend);
-  }
 
   template<typename I, typename T>
   bool setValuesVia(

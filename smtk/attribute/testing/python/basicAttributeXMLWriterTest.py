@@ -85,11 +85,11 @@ if __name__ == '__main__':
     iitemdef.addDiscreteValue(2, 'Hours')
     iitemdef.addDiscreteValue(3, 'Days')
     iitemdef.setDefaultDiscreteIndex(0)
-    iitemdef.localCategories().insert('Time')
+    iitemdef.localCategories().insertInclusion('Time')
     iitemdef = smtk.attribute.IntItemDefinition.New('IntItem2')
     base.addItemDefinition(iitemdef)
     iitemdef.setDefaultValue(10)
-    iitemdef.localCategories().insert('Heat')
+    iitemdef.localCategories().insertInclusion('Heat')
 
     def1 = resource.createDefinition('Derived1', 'BaseDef')
     def1.setLocalAssociationMask(
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem1')
     def1.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
-    ditemdef.localCategories().insert('Veg')
+    ditemdef.localCategories().insertInclusion('Veg')
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     ditemdef.setDefaultValue(-35.2)
     ditemdef.setMinRange(-100, True)
     ditemdef.setMaxRange(125.0, False)
-    ditemdef.localCategories().insert('Constituent')
+    ditemdef.localCategories().insertInclusion('Constituent')
     vdef = smtk.attribute.VoidItemDefinition.New('VoidItem')
     def1.addItemDefinition(vdef)
     vdef.setIsOptional(True)
@@ -121,18 +121,18 @@ if __name__ == '__main__':
     sitemdef = smtk.attribute.StringItemDefinition.New('StringItem1')
     def2.addItemDefinition(sitemdef)
     sitemdef.setIsMultiline(True)
-    sitemdef.localCategories().insert('Flow')
+    sitemdef.localCategories().insertInclusion('Flow')
     sitemdef = smtk.attribute.StringItemDefinition.New('StringItem2')
     def2.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue('Default')
-    sitemdef.localCategories().insert('General')
+    sitemdef.localCategories().insertInclusion('General')
     uitemdef = smtk.attribute.ModelEntityItemDefinition.New('ModelEntityItem1')
     def2.addItemDefinition(uitemdef)
-    uitemdef.localCategories().insert('Flow')
+    uitemdef.localCategories().insertInclusion('Flow')
     uitemdef.setMembershipMask(int(smtk.model.FACE))
     uitemdef = smtk.attribute.ModelEntityItemDefinition.New('ModelEntityItem2')
     def2.addItemDefinition(uitemdef)
-    uitemdef.localCategories().insert('General')
+    uitemdef.localCategories().insertInclusion('General')
     uitemdef.setMembershipMask(
         int(smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
     dirdef = smtk.attribute.DirectoryItemDefinition.New('DirectoryItem')
@@ -151,8 +151,8 @@ if __name__ == '__main__':
     sitemdef = smtk.attribute.StringItemDefinition.New('GroupString')
     gdef1.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue('Something Cool')
-    sitemdef.localCategories().insert('General')
-    sitemdef.localCategories().insert('Flow')
+    sitemdef.localCategories().insertInclusion('General')
+    sitemdef.localCategories().insertInclusion('Flow')
 
     # Add in a Attribute definition with a reference to another attribute
     attcompdef = resource.createDefinition('AttributeComponentDef')

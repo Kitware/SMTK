@@ -98,21 +98,9 @@ public:
     * the phrase hierarcy as required.
     */
   ///@{
-  /// Indicate a resource and operation manager that should be monitored for changes.
-  [[deprecated("PhraseModel::addSource now accepts const smtk::common::TypeContainer&")]] bool
-  addSource(
-    smtk::resource::ManagerPtr rsrcMgr,
-    smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr,
-    smtk::view::SelectionPtr seln);
+  /// Indicate the managers that should be monitored for changes.
   virtual bool addSource(const smtk::common::TypeContainer& managers);
-  /// Indicate a resource and operation manager that should no longer be monitored for changes.
-  [[deprecated("PhraseModel::removeSource now accepts const smtk::common::TypeContainer&")]] bool
-  removeSource(
-    smtk::resource::ManagerPtr rsrcMgr,
-    smtk::operation::ManagerPtr operMgr,
-    smtk::view::ManagerPtr viewMgr,
-    smtk::view::SelectionPtr seln);
+  /// Indicate managers that should no longer be monitored for changes.
   virtual bool removeSource(const smtk::common::TypeContainer& managers);
   /// Stop listening for changes from all sources.
   virtual bool resetSources();

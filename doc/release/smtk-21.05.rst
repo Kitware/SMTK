@@ -2,6 +2,11 @@
 SMTK 21.05 Release Notes
 =========
 
+See also `SMTK 21.04 Release Notes`_ for previous changes.
+
+.. _`SMTK 21.04 Release Notes`: smtk-21.04.md
+
+
 Changes to Project Subsystem
 ------
 

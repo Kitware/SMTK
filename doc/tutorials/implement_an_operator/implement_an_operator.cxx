@@ -79,7 +79,7 @@ void testOperation(Model model)
   auto op = ex::CounterOperation::create();
 
   smtk::attribute::ComponentItemPtr input = op->parameters()->findComponent("model");
-  input->setObjectValue(model.component());
+  input->setValue(model.component());
 
   test(!!op, "Could not create operator.");
   test(

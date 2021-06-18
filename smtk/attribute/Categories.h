@@ -127,51 +127,6 @@ public:
     static std::string combinationModeAsString(Set::CombinationMode mode);
     static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
 
-    // Deprecated Methods
-    [[deprecated(
-      "Categories::Set::mode has been replaced with Categories::Set::inclusionMode")]] Set::
-      CombinationMode
-      mode() const
-    {
-      return this->inclusionMode();
-    }
-    [[deprecated(
-      "Categories::Set::setMode has been replaced with Categories::Set::setInclusionMode")]] void
-    setMode(const Set::CombinationMode& newMode)
-    {
-      this->setInclusionMode(newMode);
-    }
-    [[deprecated("Categories::Set::categoryNames has been replaced with "
-                 "Categories::Set::includedCategoryNames")]] const std::set<std::string>&
-    categoryNames() const
-    {
-      return this->includedCategoryNames();
-    }
-    [[deprecated(
-      "Categories::Set::set has been replaced with Categories::Set::setInclusions")]] void
-    set(const std::set<std::string>& values, Set::CombinationMode mode)
-    {
-      this->setInclusions(values, mode);
-    }
-    [[deprecated(
-      "Categories::Set::insert has been replaced with Categories::Set::insertInclusion")]] void
-    insert(const std::string& val)
-    {
-      this->insertInclusion(val);
-    }
-    [[deprecated(
-      "Categories::Set::erase has been replaced with Categories::Set::eraseInclusion")]] void
-    erase(const std::string& val)
-    {
-      this->eraseInclusion(val);
-    }
-    [[deprecated(
-      "Categories::Set::size has been replaced with Categories::Set::inclusionSize")]] std::size_t
-    size() const
-    {
-      return this->inclusionSize();
-    }
-
   private:
     Set::CombinationMode m_includeMode{ CombinationMode::Any },
       m_excludeMode{ CombinationMode::Any }, m_combinationMode{ CombinationMode::All };
