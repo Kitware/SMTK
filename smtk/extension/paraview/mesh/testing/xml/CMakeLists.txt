@@ -9,7 +9,7 @@ set(MeshSelection_USES_DIRECT_DATA ON)
 
 if (SMTK_DATA_DIR)
 smtk_add_client_tests(
-#  LABEL "pv_meshsession"
+  #LABEL "MeshSession"
   TEST_SCRIPTS ${TESTS_WITH_BASELINES}
   LOAD_PLUGINS
     smtkResourcePlugin

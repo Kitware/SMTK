@@ -33,25 +33,25 @@ endif()
 
 set(unit_tests
   TestArchive.cxx
-  UnitTestDerivedThreadPool
+  UnitTestDerivedThreadPool.cxx
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
-  UnitTestFactory
+  UnitTestFactory.cxx
   UnitTestInfixExpressionGrammar.cxx
   UnitTestInfixExpressionGrammarImpl.cxx
-  UnitTestLinks
-  UnitTestObservers
-  UnitTestThreadPool
-  UnitTestTypeContainer
-  UnitTestTypeMap
-  UnitTestTypeName
+  UnitTestLinks.cxx
+  UnitTestObservers.cxx
+  UnitTestThreadPool.cxx
+  UnitTestTypeContainer.cxx
+  UnitTestTypeMap.cxx
+  UnitTestTypeName.cxx
 )
 
 set(unit_tests_which_require_data
 )
 
 smtk_unit_tests(
-  Label "Common"
+  LABEL "Common"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads MOAB

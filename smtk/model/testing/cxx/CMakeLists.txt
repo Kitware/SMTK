@@ -46,7 +46,7 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 #add_test(NAME benchmarkModel COMMAND benchmarkModel)
 
 set(unit_tests
-  unitDeleterGroup
+  unitDeleterGroup.cxx
 )
 
 ################################################################################

@@ -9,7 +9,7 @@ set(unit_tests
 )
 
 smtk_unit_tests(
-  Label "GraphResource"
+  LABEL "Graph"
   SOURCES ${unit_tests}
   LIBRARIES smtkCore
 )

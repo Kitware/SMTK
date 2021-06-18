@@ -67,7 +67,8 @@ endif ()
 
 set(CMAKE_AUTOMOC 1)
 
-smtk_unit_tests(LABEL "qt"
+smtk_unit_tests(
+  LABEL "Qt"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   EXTRA_SOURCES ${unit_tests_headers}

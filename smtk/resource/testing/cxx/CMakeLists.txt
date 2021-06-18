@@ -21,7 +21,7 @@ set(unit_tests
 )
 
 smtk_unit_tests(
-  Label "Resource"
+  LABEL "Resource"
   SOURCES ${unit_tests}
   LIBRARIES smtkCore
 )

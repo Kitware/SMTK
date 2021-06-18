@@ -58,7 +58,7 @@ function(smtk_unit_tests)
         )
       set_tests_properties(${tname} PROPERTIES TIMEOUT 120)
       if(SMTK_ut_LABEL)
-        set_tests_properties(${tname} PROPERTIES LABELS ${SMTK_ut_LABEL})
+        set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_ut_LABEL}")
       endif()
     endforeach(test)
 
@@ -130,7 +130,7 @@ function(smtk_build_failure_tests)
         )
         set_tests_properties(${tname} PROPERTIES TIMEOUT 120 WILL_FAIL TRUE)
         if(SMTK_ut_LABEL)
-          set_tests_properties(${tname} PROPERTIES LABELS ${SMTK_ut_LABEL})
+          set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_ut_LABEL}")
         endif()
       endforeach() # attempt
     endforeach() # source_idx

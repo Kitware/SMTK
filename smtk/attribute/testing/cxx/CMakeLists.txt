@@ -74,38 +74,38 @@ endif()
 ################################################################################
 
 set(unit_tests
-  unitAdvanceLevelTest
-  unitAssociationRulesTest
-  unitAssociationTest
-  unitAttributeAnalysis
-  unitAttributeAssociation
-  unitAttributeAssociationConstraints
-  unitAttributeBasics
-  unitAttributeExclusiveAnalysis
-  unitReferenceItemChildrenTest
-  unitCategories
+  unitAdvanceLevelTest.cxx
+  unitAssociationRulesTest.cxx
+  unitAssociationTest.cxx
+  unitAttributeAnalysis.cxx
+  unitAttributeAssociation.cxx
+  unitAttributeAssociationConstraints.cxx
+  unitAttributeBasics.cxx
+  unitAttributeExclusiveAnalysis.cxx
+  unitReferenceItemChildrenTest.cxx
+  unitCategories.cxx
   unitComponentItem.cxx
-  unitComponentItemConstraints
-  unitCustomItem
+  unitComponentItemConstraints.cxx
+  unitCustomItem.cxx
   unitDateTimeItem.cxx
-  unitDefinitionTags
+  unitDefinitionTags.cxx
   unitDoubleItem.cxx
   unitEvaluatorFactory.cxx
   unitEvaluatorManager.cxx
-  unitExclusionCategories
+  unitExclusionCategories.cxx
   unitInfixExpressionEvaluator.cxx
   unitJsonItemDefinitions.cxx
-  unitOptionalItems
-  unitPassCategories
+  unitOptionalItems.cxx
+  unitPassCategories.cxx
   unitPathGrammar.cxx
   unitRegistrar.cxx
   unitSymbolDependencyStorage.cxx
 )
 
 set(unit_tests_which_require_data
-  unitAnalysisConfigurations
-  unitConditionalGroup
-  unitItemBlocks
+  unitAnalysisConfigurations.cxx
+  unitConditionalGroup.cxx
+  unitItemBlocks.cxx
   )
 
 set(extra_libs ${Boost_LIBRARIES})

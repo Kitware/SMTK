@@ -1,5 +1,5 @@
 if (SMTK_ENABLE_PROJECT_UI)
-  set(ui_classes
+  set(uiClasses
     AutoStart
     pqSMTKProjectBrowser
     pqSMTKProjectMenu
@@ -7,6 +7,9 @@ if (SMTK_ENABLE_PROJECT_UI)
   )
 
   set(uiFiles)
+  foreach(class ${uiClasses})
+    list(APPEND uiFiles ${class}.cxx)
+  endforeach()
 
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ProjectPanelConfiguration.json"
     TYPE "_json"
@@ -42,7 +45,6 @@ endif ()
 
 smtk_add_plugin(smtkProjectPlugin
   REGISTRAR smtk::project::plugin::Registrar
-  REGISTRAR_HEADER smtk/project/plugin/Registrar.h
   MANAGERS
     smtk::common::Managers
     smtk::operation::Manager
@@ -52,7 +54,7 @@ smtk_add_plugin(smtkProjectPlugin
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0
     SOURCES
-      Registrar
+      Registrar.cxx
       ${ui_classes}
       ${plugin_ui_srcs}
     UI_INTERFACES
