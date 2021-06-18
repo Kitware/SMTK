@@ -24,7 +24,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
 endif()
 
 smtk_unit_tests(
-  LABEL "vtk"
+  LABEL "VTK"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   EXTRA_SOURCES ${additional_sources}

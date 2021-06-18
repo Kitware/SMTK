@@ -23,7 +23,7 @@ set(unit_tests_which_require_data
 
 set(unit_test_libs)
 
-smtk_unit_tests(LABEL "vtk/io"
+smtk_unit_tests(LABELS "VTK"
                 SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
                 LIBRARIES smtkIOVTK smtkCoreModelTesting

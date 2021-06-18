@@ -1,19 +1,19 @@
 # Using smtk test harness
 
 set(unit_tests
-  TestDefineOp
-  TestProject
-  TestProjectAssociation
-  TestProjectLifeCycle
-  TestProjectLifeCycle_Deprecated
-  TestProjectResources
+  TestDefineOp.cxx
+  TestProject.cxx
+  TestProjectAssociation.cxx
+  TestProjectLifeCycle.cxx
+  TestProjectLifeCycle_Deprecated.cxx
+  TestProjectResources.cxx
 )
 set(unit_tests_which_require_data
-  TestProjectReadWrite
-  TestProjectReadWrite_Deprecated
-  TestProjectReadWrite2
-  TestProjectReadWrite2_Deprecated
-  TestProjectReadWriteEmpty
+  TestProjectReadWrite.cxx
+  TestProjectReadWrite_Deprecated.cxx
+  TestProjectReadWrite2.cxx
+  TestProjectReadWrite2_Deprecated.cxx
+  TestProjectReadWriteEmpty.cxx
 )
 set(extra_libs)
 if (SMTK_ENABLE_VTK_SUPPORT)

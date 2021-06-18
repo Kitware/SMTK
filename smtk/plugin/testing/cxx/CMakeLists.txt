@@ -1,12 +1,12 @@
 set(unit_tests
-  UnitTestRegistry
+  UnitTestRegistry.cxx
 )
 
 set(unit_tests_which_require_data
 )
 
 smtk_unit_tests(
-  Label "Plugin"
+  LABEL "Plugin"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore

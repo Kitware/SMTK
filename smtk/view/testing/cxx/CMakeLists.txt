@@ -17,7 +17,7 @@ set(helper_srcs
 
 if (SMTK_ENABLE_POLYGON_SESSION)
   smtk_unit_tests(
-    Label "View"
+    LABEL "View"
     SOURCES ${unit_tests}
     SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
     EXTRA_SOURCES ${helper_srcs}
