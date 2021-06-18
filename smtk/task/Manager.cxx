@@ -15,7 +15,11 @@ namespace smtk
 namespace task
 {
 
-Manager::Manager() = default;
+Manager::Manager()
+  : m_active(&m_instances)
+{
+}
+
 Manager::~Manager() = default;
 
 } // namespace task

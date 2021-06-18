@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+/*! \file */
 #ifndef smtk_task_State_h
 #define smtk_task_State_h
 

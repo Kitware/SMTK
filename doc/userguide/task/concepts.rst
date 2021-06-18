@@ -27,13 +27,22 @@ that connect completed tasks to incomplete tasks.
   is unavailable until its dependencies are met, at which time it
   will transition straight to completable.
 
-:smtk:`Factory <smtk::task::Factory>`
+:smtk:`Instances <smtk::task::Instances>`
   is used to create instances of registered task classes.
   Any plugins that provide new task subclasses should
   register those classes with the factory in their registrar
   (see :ref:`smtk-plugin-sys`).
 
+:smtk:`Active <smtk::task::Active>`
+  is used to get the currently active task or switch to a different task.
+  There can only be one active task at a time, although there may be
+  no active task.
+  Active tasks must be managed instances so that there is some
+  indication before deletion that the task will be destroyed and
+  thus should not be active.
+  This object can be observed for changes to the active task.
+
 :smtk:`Manager <smtk::task::Manager>`
   is an object applications can create to hold a task factory and
-  the set of tasks the factory has created.
-  It acts as a clearinghouse for information on task state transitions.
+  the set of task instances the factory has created.
+  It also holds the active task tracker.

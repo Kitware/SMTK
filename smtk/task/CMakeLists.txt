@@ -1,4 +1,5 @@
 set(taskSrcs
+  Active.cxx
   Manager.cxx
   Registrar.cxx
   Task.cxx
@@ -6,6 +7,8 @@ set(taskSrcs
 )
 
 set(taskHeaders
+  Active.h
+  Instances.h
   Manager.h
   Registrar.h
   Task.h

@@ -734,6 +734,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/simulation" \
   "@smtk_SOURCE_DIR@/smtk/project" \
   "@smtk_SOURCE_DIR@/smtk/common" \
+  "@smtk_SOURCE_DIR@/smtk/task" \
   "@smtk_SOURCE_DIR@/smtk/workflow" \
   "@smtk_SOURCE_DIR@/smtk/model" \
   "@smtk_SOURCE_DIR@/smtk/model/operators" \
@@ -829,6 +830,7 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/simulation" \
   "@smtk_BINARY_DIR@/smtk/project" \
   "@smtk_BINARY_DIR@/smtk/common" \
+  "@smtk_BINARY_DIR@/smtk/task" \
   "@smtk_BINARY_DIR@/smtk/workflow" \
   "@smtk_BINARY_DIR@/smtk/model" \
   "@smtk_BINARY_DIR@/smtk/model/operators" \

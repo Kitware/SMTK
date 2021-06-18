@@ -1,11 +1,12 @@
 set(unit_tests
-  TestTask
+  TestActive.cxx
+  TestTask.cxx
 )
 
 find_package(Threads REQUIRED)
 
 smtk_unit_tests(
-  Label "task"
+  LABEL "Task"
   SOURCES ${unit_tests}
   LIBRARIES smtkCore
 )

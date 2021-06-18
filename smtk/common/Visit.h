@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+/*! \file */
 #ifndef smtk_common_Visit_h
 #define smtk_common_Visit_h
 

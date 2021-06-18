@@ -15,10 +15,11 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
-#include "smtk/common/Instances.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
 
+#include "smtk/task/Active.h"
+#include "smtk/task/Instances.h"
 #include "smtk/task/Task.h"
 
 #include <array>
@@ -45,14 +46,7 @@ public:
   virtual ~Manager();
 
   /// Managed instances of Task objects (and a registry of Task classes).
-  using Instances = smtk::common::Instances<
-    smtk::task::Task,
-    void,
-    std::tuple<smtk::task::Task::Configuration&, std::shared_ptr<smtk::common::Managers>>,
-    std::tuple<
-      smtk::task::Task::Configuration&,
-      smtk::task::Task::PassedDependencies,
-      std::shared_ptr<smtk::common::Managers>>>;
+  using Instances = smtk::task::Instances;
 
   /// Return the set of managed task instances.
   ///
@@ -60,12 +54,17 @@ public:
   Instances& instances() { return m_instances; }
   const Instances& instances() const { return m_instances; }
 
+  /// Return a tracker for the active task.
+  Active& active() { return m_active; }
+  const Active& active() const { return m_active; }
+
   /// Return the managers instance that contains this manager, if it exists.
   smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
   void setManagers(const smtk::common::Managers::Ptr& managers) { m_managers = managers; }
 
 private:
   Instances m_instances;
+  Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
 
 protected:
