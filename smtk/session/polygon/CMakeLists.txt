@@ -59,6 +59,7 @@ set(polygonOperators
   Delete
   DemoteVertex
   ForceCreateFace
+  ImportPPG
   LegacyRead
   Read
   SplitEdge

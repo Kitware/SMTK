@@ -61,3 +61,5 @@ Boost polygonal models are conforming piecewise-linear cell complexes (PLCs), an
 may thus be meshed by any SMTK mesh worker that accepts models in this form.
 
 .. _Boost.polygon: http://www.boost.org/doc/libs/1_59_0/libs/polygon/doc/index.htm
+
+.. include:: ppg-file-format.rst

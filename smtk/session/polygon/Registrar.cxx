@@ -22,6 +22,7 @@
 #include "smtk/session/polygon/operators/Delete.h"
 #include "smtk/session/polygon/operators/DemoteVertex.h"
 #include "smtk/session/polygon/operators/ForceCreateFace.h"
+#include "smtk/session/polygon/operators/ImportPPG.h"
 #include "smtk/session/polygon/operators/LegacyRead.h"
 #include "smtk/session/polygon/operators/Read.h"
 #include "smtk/session/polygon/operators/SplitEdge.h"
@@ -65,6 +66,7 @@ typedef std::tuple<
   ExtractContours,
   Import,
 #endif
+  ImportPPG,
   LegacyRead,
   Read,
   SplitEdge,
@@ -85,6 +87,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::CreatorGroup(operationManager)
     .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::CreateModel>();
+  smtk::operation::CreatorGroup(operationManager)
+    .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::ImportPPG>();
 
 #ifdef VTK_SUPPORT
   smtk::operation::ImporterGroup(operationManager)
@@ -109,6 +113,8 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 {
   smtk::operation::CreatorGroup(operationManager)
     .unregisterOperation<smtk::session::polygon::CreateModel>();
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::ImportPPG>();
 
 #ifdef VTK_SUPPORT
   smtk::operation::ImporterGroup(operationManager)

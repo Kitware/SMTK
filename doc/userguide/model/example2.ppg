@@ -1,0 +1,11 @@
+# example2.ppg
+# Two adjacent faces with common edge
+v 0 0
+v 3 0
+v 3 1
+v 1 1
+v 0 1
+v 3 2
+v 1 2
+f 1 2 3 4 5    # face 1
+f 3 6 7 4      # face 2

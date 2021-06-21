@@ -214,7 +214,7 @@ bool vertex::setFaceAdjacency(
       {
         it->m_adjacentFace = adjacentFace;
       }
-      this->dump();
+      // this->dump();
       return true;
     }
   }
