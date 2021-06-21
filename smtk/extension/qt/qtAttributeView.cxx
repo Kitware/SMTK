@@ -336,13 +336,16 @@ void qtAttributeView::createWidget()
   )");
 
   m_internals->AddAction = new QAction("New");
+  m_internals->AddAction->setObjectName("actionNew");
+
   m_internals->DeleteAction = new QAction("Delete");
+  m_internals->DeleteAction->setObjectName("actionDelete");
+
   m_internals->CopyAction = new QAction("Copy");
+  m_internals->CopyAction->setObjectName("actionCopy");
 
   m_internals->TopToolBar->addAction(m_internals->AddAction);
-
   m_internals->TopToolBar->addAction(m_internals->CopyAction);
-
   m_internals->TopToolBar->addAction(m_internals->DeleteAction);
 
   //If we have more than 1 def then create a combo box for selecting a def,
@@ -354,6 +357,13 @@ void qtAttributeView::createWidget()
     buttonLayout->addWidget(m_internals->DefsCombo);
     m_internals->DefsCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     m_internals->DefLabel = nullptr;
+
+    //Notify that the user has selected a definition from the drop down
+    connect(
+      m_internals->DefsCombo,
+      QOverload<int>::of(&QComboBox::activated),
+      this,
+      &qtAttributeView::onDefinitionChanged);
   }
   else
   {
@@ -509,6 +519,10 @@ void qtAttributeView::createWidget()
       },
       "qtInstancedView: Refresh qtAttributeView when components are modified.");
   }
+
+  // Initialize any object connected to definitionSelected later
+  smtk::attribute::DefinitionPtr def = getCurrentDef();
+  Q_EMIT this->definitionSelected(def);
 }
 
 void qtAttributeView::updateModelAssociation()
@@ -1405,7 +1419,16 @@ void qtAttributeView::onItemChanged(qtItem* qitem)
   this->valueChanged(item);
   std::vector<std::string> items;
   items.push_back(item->name());
+
   this->attributeChanged(attribute, items);
+}
+
+void smtk::extension::qtAttributeView::onDefinitionChanged(int)
+{
+  //Get the current selected definition - if one is not currently selected
+  // return a null shared pointer
+  smtk::attribute::DefinitionPtr def = this->getCurrentDef();
+  Q_EMIT this->definitionSelected(def);
 }
 
 void qtAttributeView::updateAttributeStatus(Attribute* att)
