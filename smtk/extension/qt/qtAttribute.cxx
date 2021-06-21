@@ -162,6 +162,13 @@ void qtAttribute::addItem(qtItem* child)
     m_internals->m_items.append(child);
     // When the item is modified so is the attribute that uses it
     connect(child, SIGNAL(modified()), this, SLOT(onItemModified()));
+    connect(child, &qtItem::childModified, [this](qtItem* item) {
+      if (item != nullptr)
+      {
+        Q_EMIT this->itemModified(item);
+        Q_EMIT this->modified();
+      }
+    });
   }
 }
 

@@ -103,6 +103,7 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
     .def("items", &smtk::attribute::Attribute::items)
     .def("_item", &smtk::attribute::Attribute::item, py::arg("ith"))
     .def("_itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &, bool)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/", py::arg("activeOnly") = false)
+    .def("itemPath", &smtk::attribute::Attribute::itemPath, py::arg("item"), py::arg("separator") = "/")
     .def("name", &smtk::attribute::Attribute::name)
     .def("numberOfItems", &smtk::attribute::Attribute::numberOfItems)
     .def("removeAllAssociations", &smtk::attribute::Attribute::removeAllAssociations)

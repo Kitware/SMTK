@@ -172,6 +172,11 @@ public:
   itemAtPathAs(const std::string& path, const std::string& seps = "/", bool activeOnly = false);
   /// @}
 
+  /// @{
+  /// \brief Formats the full path to the item with respect to the attribute.
+  std::string itemPath(const ItemPtr& item, const std::string& seps = "/") const;
+  /// @}
+
   smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
   smtk::attribute::ConstItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE)
     const;
@@ -302,7 +307,7 @@ public:
   /**
    * @brief Remove expunged Entities from attribute
    * @param expungedEnts a set of expunged entities
-   * @return if assocation or modelEntityItem has been updated, return true.
+   * @return if association or modelEntityItem has been updated, return true.
    * (then operator widget should update its UI)
    */
   bool removeExpungedEntities(const smtk::model::EntityRefs& expungedEnts);
@@ -354,7 +359,7 @@ public:
   }
 
   // These methods are use primarily by I/O operations.  The include ID corresponds to
-  // the include directory information store in the attribute reosurce and is used
+  // the include directory information store in the attribute resource and is used
   // when writing out the resource to use include files
   void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
 
@@ -415,7 +420,7 @@ protected:
 
   void removeAllItems();
   /// Used to disassociate an attribute from an object without checking constraints.
-  /// Typical use is either when all attributes are being disassocaited from the same
+  /// Typical use is either when all attributes are being disassociated from the same
   /// object or if the attribute is being deleted.
   void forceDisassociate(smtk::resource::PersistentObjectPtr);
   void addItem(smtk::attribute::ItemPtr& iPtr) { m_items.push_back(iPtr); }

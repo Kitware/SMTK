@@ -420,7 +420,7 @@ void qtAttributeView::createWidget()
 
   m_internals->ValuesTable->setVisible(false);
 
-  // Attribte frame
+  // Attribute frame
   m_internals->AttFrame = new QFrame(frame);
   m_internals->AttFrame->setObjectName("attribute");
   new QVBoxLayout(m_internals->AttFrame);
@@ -1163,7 +1163,7 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
         &qtAttribute::itemModified,
         this,
         &qtAttributeView::onItemChanged,
-        Qt::QueuedConnection);
+        Qt::UniqueConnection);
       if (this->advanceLevelVisible())
       {
         m_internals->CurrentAtt->showAdvanceLevelOverlay(true);
@@ -1418,8 +1418,15 @@ void qtAttributeView::onItemChanged(qtItem* qitem)
   this->updateAttributeStatus(attribute.get());
   this->valueChanged(item);
   std::vector<std::string> items;
-  items.push_back(item->name());
 
+  // Get path to item that changed so that it is possible for the item be retrieved
+  // and examined later.
+  std::string path = attribute->itemPath(item);
+
+  // Append path to vector of item paths
+  items.push_back(path);
+
+  // Report changes
   this->attributeChanged(attribute, items);
 }
 
