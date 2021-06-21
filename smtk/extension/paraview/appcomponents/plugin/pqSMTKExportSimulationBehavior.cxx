@@ -223,6 +223,13 @@ pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 
+      // Stop here if main window does not exist
+      // This is typically the case for certain unit tests.
+      if (!mainWindow)
+      {
+        return;
+      }
+
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
       QMenu* menu = nullptr;
