@@ -41,9 +41,9 @@ public:
     const std::set<std::string>& resources = std::set<std::string>(),
     const std::set<std::string>& operations = std::set<std::string>(),
     const std::string& version = "0.0.0")
-    : m_typeName(typeName)
+    : create(createFunctor)
+    , m_typeName(typeName)
     , m_index(index)
-    , create(createFunctor)
     , m_resources(resources)
     , m_operations(operations)
     , m_version(version)

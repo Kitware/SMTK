@@ -32,7 +32,7 @@ namespace
 {
 bool checkGroupItem(GroupItemPtr gitem, int numGroups)
 {
-  if (gitem->numberOfGroups() != numGroups)
+  if (gitem->numberOfGroups() != static_cast<std::size_t>(numGroups))
   {
     std::cerr << "Group has " << gitem->numberOfGroups() << " instead of " << numGroups
               << std::endl;

@@ -47,6 +47,7 @@ simulation domain.
    simulation/index.rst
    view/index.rst
    extension/index.rst
+   task/index.rst
    workflow/index.rst
    bindings/index.rst
    plugin/index.rst

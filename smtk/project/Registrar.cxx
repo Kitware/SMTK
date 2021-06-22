@@ -69,11 +69,15 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
+  (void)operationManager;
   /// Defer the registration of project operations until there is a project
   /// manager available.
 }
 
-void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager) {}
+void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  (void)operationManager;
+}
 
 void Registrar::registerTo(const smtk::project::Manager::Ptr& projectManager)
 {
