@@ -212,6 +212,7 @@ ReferenceItem::ReferenceItem(Attribute* owningAttribute, int itemPosition)
   , m_referencedAttribute(owningAttribute->shared_from_this())
   , m_cache(new Cache())
   , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
+  , m_nextUnsetPos(-1)
 
 {
 }
@@ -221,6 +222,7 @@ ReferenceItem::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGrou
   , m_referencedAttribute(inOwningItem->attribute())
   , m_cache(new Cache())
   , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
+  , m_nextUnsetPos(-1)
 {
 }
 
@@ -229,6 +231,7 @@ ReferenceItem::ReferenceItem(const ReferenceItem& referenceItem)
   , m_referencedAttribute(referenceItem.m_referencedAttribute)
   , m_cache(new Cache(*referenceItem.m_cache))
   , m_currentConditional(ReferenceItemDefinition::s_invalidIndex)
+  , m_nextUnsetPos(-1)
 {
 }
 
@@ -237,6 +240,7 @@ ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
   Item::operator=(referenceItem);
   m_referencedAttribute = referenceItem.m_referencedAttribute;
   m_cache.reset(new ReferenceItem::Cache(*(referenceItem.m_cache)));
+  m_nextUnsetPos = referenceItem.m_nextUnsetPos;
   return *this;
 }
 
@@ -315,7 +319,8 @@ std::size_t ReferenceItem::numberOfValues() const
 bool ReferenceItem::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
-  if (this->numberOfValues() == newSize)
+  std::size_t currentSize = this->numberOfValues();
+  if (currentSize == newSize)
   {
     return true;
   }
@@ -334,6 +339,11 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
   if (n > 0 && newSize > n)
     return false; // The number of values requested is too large.
 
+  // Are we introducing any unset values?
+  if ((currentSize < newSize) && (m_nextUnsetPos > (currentSize + 1)))
+  {
+    m_nextUnsetPos = currentSize + 1;
+  }
   m_keys.resize(newSize);
   m_cache->resize(newSize);
   return true;
@@ -570,6 +580,25 @@ bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
   }
 
   assignToCache(i, val);
+  // Did we set a Null Value?
+  if ((val == nullptr) && (m_nextUnsetPos > i))
+  {
+    m_nextUnsetPos = i;
+  }
+  else if ((val != nullptr) && (i == m_nextUnsetPos))
+  {
+    // We need to scan for the next unset value
+    m_nextUnsetPos = -1;
+    std::size_t numVals = this->numberOfValues();
+    for (size_t j = i + 1; j < numVals; j++)
+    {
+      if (!this->isSet(j))
+      {
+        m_nextUnsetPos = j;
+        break;
+      }
+    }
+  }
   // Update the active children if this is a single value item
   if ((!def->isExtensible()) && (def->numberOfRequiredValues() == 1))
   {
@@ -578,7 +607,7 @@ bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
   return true;
 }
 
-bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
+bool ReferenceItem::appendValue(const PersistentObjectPtr& val, bool allowDuplicates)
 {
   // First - is this value valid?
   const auto* def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
@@ -587,26 +616,25 @@ bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
     return false;
   }
 
-  // Second - is the value already in the item?
-  std::size_t emptyIndex, n = this->numberOfValues();
-  bool foundEmpty = false;
-  for (std::size_t i = 0; i < n; ++i)
+  // Next - are we doing an append unique?
+  if (!allowDuplicates)
   {
-    if (this->isSet(i) && (this->value(i) == val))
+    std::size_t n = this->numberOfValues();
+    for (std::size_t i = 0; i < n; ++i)
     {
-      return true;
-    }
-    if (!this->isSet(i))
-    {
-      foundEmpty = true;
-      emptyIndex = i;
+      if (this->isSet(i) && (this->value(i) == val))
+      {
+        return true;
+      }
     }
   }
-  // If not, was there a space available?
-  if (foundEmpty)
+
+  // Do we have an unset value location?
+  if (m_nextUnsetPos < std::size_t(-1))
   {
-    return this->setValue(emptyIndex, val);
+    return this->setValue(m_nextUnsetPos, val);
   }
+
   // Finally - are we allowed to change the number of values?
   if (
     (def->isExtensible() && def->maxNumberOfValues() &&
@@ -641,6 +669,13 @@ bool ReferenceItem::removeValue(std::size_t i)
   {
     return false; // i can't be greater than the number of values
   }
+
+  // Will removing this value shift the next unset value position?
+  if ((m_nextUnsetPos < std::size_t(-1)) && (m_nextUnsetPos > i))
+  {
+    --m_nextUnsetPos;
+  }
+
   myAtt->guardedLinks()->removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);
   (*m_cache).erase((*m_cache).begin() + i);
@@ -691,6 +726,11 @@ void ReferenceItem::reset()
   {
     m_keys.resize(this->numberOfRequiredValues());
     (*m_cache).resize(this->numberOfRequiredValues());
+    m_nextUnsetPos = 0;
+  }
+  else
+  {
+    m_nextUnsetPos = -1;
   }
 }
 
@@ -860,6 +900,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   {
     m_keys.resize(n);
     m_cache->resize(n);
+    m_nextUnsetPos = 0;
   }
   // Build the item's children
   def->buildChildrenItems(this);

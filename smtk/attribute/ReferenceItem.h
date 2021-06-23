@@ -255,7 +255,8 @@ public:
   template<typename I, typename T>
   bool appendValuesVia(I vbegin, I vend, const T& converter);
 
-  /**\brief Add \a val if it is allowed and \a val is not already present in the item.
+  /**\brief Add \a val if it is allowed and \a val is not already present in the item
+    *  unless allowDuplicates is true.
     *
     * This will **not** enable the item if it is disabled.
     *
@@ -263,7 +264,7 @@ public:
     * if there is an unset value anywhere in the allocated array, that will
     * be preferred to reallocation.
     */
-  bool appendValue(const PersistentObjectPtr& val);
+  bool appendValue(const PersistentObjectPtr& val, bool allowDuplicates = false);
   /**\brief Remove the value at the \a i-th location.
     *
     * If the number of values may not be changed, then the \a i-th
@@ -433,6 +434,9 @@ private:
   std::vector<smtk::attribute::ItemPtr> m_activeChildrenItems;
   /// Index of the current active conditional
   std::size_t m_currentConditional;
+  /// Indicates where the next Null location is.  If set to -1 then
+  /// there are no null locations in the item.
+  std::size_t m_nextUnsetPos;
 };
 
 template<>
@@ -450,19 +454,33 @@ bool ReferenceItem::setValues(
   if (this->setNumberOfValues(num))
   {
     ok = true;
+    std::size_t firstUnsetPos = -1;
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
       if (!iteratorIsSet(it))
       {
+        if (firstUnsetPos > (offset + i))
+        {
+          firstUnsetPos = offset + i;
+        }
         continue;
       }
 
       if (!this->setValue(offset + i, *it))
       {
+        // This value is also now unset
+        if (firstUnsetPos > (offset + i))
+        {
+          firstUnsetPos = offset + i;
+        }
         ok = false;
         break;
       }
+    }
+    if (m_nextUnsetPos > firstUnsetPos)
+    {
+      m_nextUnsetPos = firstUnsetPos;
     }
   }
   // Enable or disable the item if it is optional.
@@ -492,18 +510,31 @@ bool ReferenceItem::setValuesVia(
   {
     ok = true;
     std::size_t i = 0;
+    std::size_t firstUnsetPos = -1;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
       if (!iteratorIsSet(it))
       {
+        if (firstUnsetPos > (offset + i))
+        {
+          firstUnsetPos = offset + i;
+        }
         continue;
       }
 
       if (!this->setValue(offset + i, converter(*it)))
       {
+        if (firstUnsetPos > (offset + i))
+        {
+          firstUnsetPos = offset + i;
+        }
         ok = false;
         break;
       }
+    }
+    if (m_nextUnsetPos > firstUnsetPos)
+    {
+      m_nextUnsetPos = firstUnsetPos;
     }
   }
   // Enable or disable the item if it is optional.
