@@ -164,6 +164,13 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
     {
       QMenu* fileMenu = this->fileMenu();
 
+      // If no main window exists, then there would be no
+      // file menu. Stop here if this is the case.
+      if (fileMenu == nullptr)
+      {
+        return;
+      }
+
       // We want to defer the creation of the menu actions as much as possible
       // so the File menu will already be populated by the time we add our
       // custom actions. If our actions are inserted first, there is no way to
@@ -212,6 +219,13 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
 QMenu* pqSMTKNewResourceBehavior::fileMenu()
 {
   QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
+
+  // Stop here if main window does not exist
+  // This is typically the case for certain unit tests.
+  if (!mainWindow)
+  {
+    return nullptr;
+  }
 
   QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
