@@ -50,7 +50,7 @@ int TestQuery(int /*unused*/, char** const /*unused*/)
   test(factory.registerQuery<QueryA>(), "Could not register QueryA");
   {
     std::unique_ptr<QueryA> queryA = factory.create<QueryA>();
-    test(fabs(queryA->foo() - QueryA().foo()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryA->foo() - QueryA().foo()) < EPSILON, "Unexpected query result");
   }
   test(factory.unregisterQuery<QueryA>(), "Could not unregister QueryA");
 
@@ -64,26 +64,26 @@ int TestQuery(int /*unused*/, char** const /*unused*/)
   {
     std::unique_ptr<QueryB> queryB = factory.create<QueryB>();
     test(queryB != nullptr, "Could not create an instance of QueryB");
-    test(fabs(queryB->foo() - QueryB().foo()) < EPSILON, "Unexpected query result");
-    test(fabs(queryB->bar() - QueryB().bar()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryB->foo() - QueryB().foo()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryB->bar() - QueryB().bar()) < EPSILON, "Unexpected query result");
   }
 
   test(factory.registerQuery<QueryA>(), "Could not register QueryA");
   {
     std::unique_ptr<QueryA> queryA = factory.create<QueryA>();
-    test(fabs(queryA->foo() - QueryA().foo()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryA->foo() - QueryA().foo()) < EPSILON, "Unexpected query result");
   }
 
   test(factory.registerQuery<QueryC>(), "Could not register QueryC");
   {
     std::unique_ptr<QueryA> queryC = factory.create<QueryA>();
-    test(fabs(queryC->foo() - QueryC().foo()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryC->foo() - QueryC().foo()) < EPSILON, "Unexpected query result");
   }
 
   test(factory.registerQuery<QueryD>(), "Could not register QueryD");
   {
     std::unique_ptr<QueryA> queryD = factory.create<QueryA>();
-    test(fabs(queryD->foo() - QueryD().foo()) < EPSILON, "Unexpected query result");
+    test(std::abs(queryD->foo() - QueryD().foo()) < EPSILON, "Unexpected query result");
   }
 
   return 0;
