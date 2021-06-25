@@ -11,7 +11,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-from __future__ import print_function
+
 
 import sys
 import os
@@ -161,9 +161,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'SMTK'
+project = 'SMTK'
 year = datetime.datetime.now().year
-copyright = u'%d, Kitware, Inc.' % year
+copyright = '%d, Kitware, Inc.' % year
 
 
 def readVersionInfo(srcdir):
@@ -314,7 +314,7 @@ else:
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 # html_title = None
-html_title = u'SMTK: Simulation Modeling Tool Kit, v1.0'
+html_title = 'SMTK: Simulation Modeling Tool Kit, v1.0'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
@@ -400,8 +400,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'SMTK.tex', u'SMTK Documentation',
-     u'Kitware, Inc.', 'manual'),
+    ('index', 'SMTK.tex', 'SMTK Documentation',
+     'Kitware, Inc.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -430,8 +430,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'smtk', u'SMTK Documentation',
-     [u'Kitware, Inc.'], 1)
+    ('index', 'smtk', 'SMTK Documentation',
+     ['Kitware, Inc.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -444,8 +444,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'SMTK', u'SMTK Documentation',
-     u'Kitware, Inc.', 'SMTK', 'One line description of project.',
+    ('index', 'SMTK', 'SMTK Documentation',
+     'Kitware, Inc.', 'SMTK', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -464,9 +464,9 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'SMTK: Simulation Modeling Tool Kit'
-epub_author = u'Kitware, Inc.'
-epub_publisher = u'Kitware, Inc.'
+epub_title = 'SMTK: Simulation Modeling Tool Kit'
+epub_author = 'Kitware, Inc.'
+epub_publisher = 'Kitware, Inc.'
 epub_copyright = copyright
 
 # The basename for the epub file. It defaults to the project name.
