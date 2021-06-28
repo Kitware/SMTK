@@ -58,7 +58,7 @@ function (smtk_add_plugin name)
   endif ()
   if (DEFINED _smtk_plugin_REGISTRARS)
     # Additional registrars, must have a unique generated filename.
-    foreach(_smtk_plugin_REGISTRAR ${_smtk_plugin_REGISTRARS})
+    foreach (_smtk_plugin_REGISTRAR IN LISTS _smtk_plugin_REGISTRARS)
       string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
       string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")
       set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
@@ -69,7 +69,7 @@ function (smtk_add_plugin name)
         "${_smtk_plugin_filename}"
         @ONLY)
       list(APPEND _smtk_plugin_sources "${_smtk_plugin_filename}")
-    endforeach(_smtk_plugin_REGISTRAR)
+    endforeach ()
   endif ()
 
   # FIXME: This shouldn't really be necessary. Instead, SMTK should have its
