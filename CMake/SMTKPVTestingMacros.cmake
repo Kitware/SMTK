@@ -1,7 +1,7 @@
 function (_smtk_paraview_add_tests test_function)
   _paraview_add_tests("${test_function}"
     LOAD_PLUGINS smtkPQComponentsPlugin
-    PLUGIN_PATHS $<TARGET_FILE_DIR:smtkPQComponentsPlugin
+    PLUGIN_PATHS $<TARGET_FILE_DIR:smtkPQComponentsPlugin>
     ${ARGN})
 endfunction ()
 
