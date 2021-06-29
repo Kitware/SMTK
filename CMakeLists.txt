@@ -600,29 +600,6 @@ install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Options.h
 
 
 ################################################################################
-# Install Related Settings
-################################################################################
-
-# Copy file needed by SMTKPluginMacros.cmake into the build directory so
-# consuming projects can build against SMTK's build tree
-configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
-  ${PROJECT_BINARY_DIR}/serverSource.cxx.in
-  COPYONLY)
-
-# Install rules for SMTK macros usable by external packages:
-install(
-  FILES
-    ${PROJECT_SOURCE_DIR}/CMake/SMTKMacros.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/EncodeStringFunctions.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/SMTKOperationXML.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
-  DESTINATION
-    ${SMTK_INSTALL_CONFIG_DIR}
-)
-
-################################################################################
 # Include Dirs Settings
 ################################################################################
 
