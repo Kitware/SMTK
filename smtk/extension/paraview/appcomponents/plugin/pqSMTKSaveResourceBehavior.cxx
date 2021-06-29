@@ -278,15 +278,10 @@ pqSMTKSaveResourceBehavior::pqSMTKSaveResourceBehavior(QObject* parent)
 {
   initSaveResourceBehaviorResources();
 
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    // Blech: pqApplicationCore doesn't have the selection manager yet,
-    // so wait until we hear that the server is ready to make the connection.
-    // We can't have a selection before the first connection, anyway.
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* saveResourceAction =
         new QAction(QPixmap(":/SaveResourceBehavior/Save24.png"), tr("&Save Resource"), this);
       saveResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
@@ -354,8 +349,8 @@ pqSMTKSaveResourceBehavior::pqSMTKSaveResourceBehavior(QObject* parent)
       }
       new pqSaveResourceReaction(saveResourceAction);
       new pqSaveResourceAsReaction(saveResourceAsAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKSaveResourceBehavior* pqSMTKSaveResourceBehavior::instance(QObject* parent)

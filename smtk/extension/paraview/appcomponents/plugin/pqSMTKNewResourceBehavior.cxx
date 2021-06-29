@@ -156,12 +156,10 @@ static pqSMTKNewResourceBehavior* g_instance = nullptr;
 pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
   : Superclass(parent)
 {
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QMenu* fileMenu = this->fileMenu();
 
       // If no main window exists, then there would be no
@@ -212,8 +210,8 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
         // Access the creator group.
         auto creatorGroup = smtk::operation::CreatorGroup(wrapper->smtkOperationManager());
       }
-    }
-  });
+    });
+  }
 }
 
 QMenu* pqSMTKNewResourceBehavior::fileMenu()

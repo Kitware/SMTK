@@ -207,12 +207,10 @@ static pqSMTKImportIntoResourceBehavior* g_instance = nullptr;
 pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* parent)
   : Superclass(parent)
 {
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);
       importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 
@@ -275,8 +273,8 @@ pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* pare
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
       new pqImportIntoResourceReaction(importIntoResourceAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKImportIntoResourceBehavior* pqSMTKImportIntoResourceBehavior::instance(QObject* parent)

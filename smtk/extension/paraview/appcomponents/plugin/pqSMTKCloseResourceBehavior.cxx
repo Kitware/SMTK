@@ -207,12 +207,10 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
 {
   initCloseResourceBehaviorResources();
 
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* closeResourceAction =
         new QAction(QPixmap(":/CloseResourceBehavior/Close22.png"), tr("&Close Resource"), this);
       closeResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
@@ -277,8 +275,8 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
       new pqCloseResourceReaction(closeResourceAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKCloseResourceBehavior* pqSMTKCloseResourceBehavior::instance(QObject* parent)

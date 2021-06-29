@@ -213,12 +213,10 @@ static pqSMTKExportSimulationBehavior* g_instance = nullptr;
 pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
   : Superclass(parent)
 {
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* exportSimulationAction = new QAction(tr("&Export Simulation..."), this);
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
@@ -288,8 +286,8 @@ pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
       new pqExportSimulationReaction(exportSimulationAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKExportSimulationBehavior* pqSMTKExportSimulationBehavior::instance(QObject* parent)

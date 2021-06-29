@@ -48,15 +48,10 @@ static pqSMTKSaveOnCloseResourceBehavior* g_instance = nullptr;
 pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* parent)
   : Superclass(parent)
 {
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, []() {
-    // Blech: pqApplicationCore doesn't have the selection manager yet,
-    // so wait until we hear that the server is ready to make the connection.
-    // We can't have a selection before the first connection, anyway.
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this, pqCore]() {
       // The first functor listens to the object builder's "destroying" signal
       // to identify pqPipelineSources that are being removed in order to give
       // the user a chance to save resources before they are destroyed. ParaView
@@ -204,8 +199,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           }
           closeEvent->setAccepted(ret != QMessageBox::Cancel);
         });
-    }
-  });
+    });
+  }
 }
 
 int pqSMTKSaveOnCloseResourceBehavior::showDialog(
