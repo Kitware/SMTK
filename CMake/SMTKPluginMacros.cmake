@@ -41,8 +41,9 @@ function (smtk_add_plugin name)
 
   string(TOLOWER "${_smtk_plugin__SKIP_DEPENDENCIES}" _smtk_plugin__SKIP_DEPENDENCIES)
 
+  set(_smtk_plugin_interfaces "")
   set(_smtk_plugin_sources "")
-  string(REPLACE ";" ", " _smtk_plugin_managers "${_smtk_plugin_MANAGERS}")
+  string(REPLACE ";" "\n  , " _smtk_plugin_managers "${_smtk_plugin_MANAGERS}")
 
   if (DEFINED _smtk_plugin_REGISTRAR)
     if (NOT DEFINED _smtk_plugin_REGISTRAR_HEADER)
@@ -50,11 +51,25 @@ function (smtk_add_plugin name)
       set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
     endif ()
 
+    set(_smtk_plugin_autostart_name "${_smtk_plugin_name}")
     configure_file(
-      "${_smtk_cmake_dir}/serverSource.cxx.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx"
+      "${_smtk_cmake_dir}/pqSMTKAutoStart.h.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
       @ONLY)
-    list(APPEND _smtk_plugin_sources "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx")
+    configure_file(
+      "${_smtk_cmake_dir}/pqSMTKAutoStart.cxx.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+      @ONLY)
+    paraview_plugin_add_auto_start(
+      CLASS_NAME "pqSMTKAutoStart${_smtk_plugin_autostart_name}"
+      INTERFACES _smtk_plugin_autostart_interface
+      SOURCES _smtk_plugin_autostart_sources)
+    list(APPEND _smtk_plugin_interfaces
+      ${_smtk_plugin_autostart_interface})
+    list(APPEND _smtk_plugin_sources
+      "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
+      "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+      ${_smtk_plugin_autostart_sources})
   endif ()
   if (DEFINED _smtk_plugin_REGISTRARS)
     # Additional registrars, must have a unique generated filename.
@@ -62,13 +77,26 @@ function (smtk_add_plugin name)
       string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
       string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")
       set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
-      set(_smtk_plugin_filename "${CMAKE_CURRENT_BINARY_DIR}/serverSource_${_smtk_plugin_header_name}.cxx")
 
+      set(_smtk_plugin_autostart_name "${_smtk_plugin_header_name}")
       configure_file(
-        "${_smtk_cmake_dir}/serverSource.cxx.in"
-        "${_smtk_plugin_filename}"
+        "${_smtk_cmake_dir}/pqSMTKAutoStart.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
         @ONLY)
-      list(APPEND _smtk_plugin_sources "${_smtk_plugin_filename}")
+      configure_file(
+        "${_smtk_cmake_dir}/pqSMTKAutoStart.cxx.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+        @ONLY)
+      paraview_plugin_add_auto_start(
+        CLASS_NAME "pqSMTKAutoStart${_smtk_plugin_autostart_name}"
+        INTERFACES _smtk_plugin_autostart_interface
+        SOURCES _smtk_plugin_autostart_sources)
+      list(APPEND _smtk_plugin_interfaces
+        ${_smtk_plugin_autostart_interface})
+      list(APPEND _smtk_plugin_sources
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+        ${_smtk_plugin_autostart_sources})
     endforeach ()
   endif ()
 
@@ -78,6 +106,7 @@ function (smtk_add_plugin name)
   # as well.
   paraview_add_plugin("${_smtk_plugin_name}"
     SOURCES ${_smtk_plugin_sources}
+    UI_INTERFACES ${_smtk_plugin_interfaces}
     ${_smtk_plugin_PARAVIEW_PLUGIN_ARGS})
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE
