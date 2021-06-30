@@ -22,8 +22,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
-#include "smtk/extension/qt/qtOperationView.h"
-#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtOperationDialog.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ImportPythonOperation.h"
@@ -31,12 +30,14 @@
 #include <QAction>
 #include <QApplication>
 #include <QDialog>
+#include <QGridLayout>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QObject>
 #include <QPushButton>
 #include <QSharedPointer>
+#include <QSpacerItem>
 #include <QWindow>
 
 pqExportSimulationReaction::pqExportSimulationReaction(QAction* parentObject)
@@ -114,34 +115,21 @@ void pqExportSimulationReaction::exportSimulation()
     auto exportOp =
       wrapper->smtkOperationManager()->create(result->findString("unique_name")->value());
 
-    // Construct a modal dialog for the operation.
-    QSharedPointer<QDialog> exportDialog = QSharedPointer<QDialog>(new QDialog());
+    // Construct a modal dialog for the operation spec
+    auto exportDialog =
+      QSharedPointer<smtk::extension::qtOperationDialog>(new smtk::extension::qtOperationDialog(
+        exportOp,
+        wrapper->smtkResourceManager(),
+        wrapper->smtkViewManager(),
+        pqCoreUtilities::mainWidget()));
     exportDialog->setObjectName("SimulationExportDialog");
     exportDialog->setWindowTitle("Simulation Export Dialog");
-    exportDialog->setLayout(new QVBoxLayout(exportDialog.data()));
-    // TODO: the dialog size should not be set this way. It should auto-expand
-    // to accommodate the contained opView. Either Qt is being coy, or smtk's
-    // qtBaseView logic for resizing doesn't inform the containing parent of its
-    // decisions.
-    exportDialog->resize(600, 300);
-
-    // Create a new UI for the dialog.
-    QSharedPointer<smtk::extension::qtUIManager> uiManager =
-      QSharedPointer<smtk::extension::qtUIManager>(new smtk::extension::qtUIManager(
-        exportOp, wrapper->smtkResourceManager(), wrapper->smtkViewManager()));
-
-    // Create an operation view for the operation.
-    smtk::view::ConfigurationPtr view = uiManager->findOrCreateOperationView();
-    smtk::extension::qtOperationView* opView = dynamic_cast<smtk::extension::qtOperationView*>(
-      uiManager->setSMTKView(view, exportDialog.data()));
-
-    exportDialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // Alert the user if the operation fails. Close the dialog if the operation
     // succeeds.
-    connect(
-      opView,
-      &smtk::extension::qtOperationView::operationExecuted,
+    QObject::connect(
+      exportDialog.get(),
+      &smtk::extension::qtOperationDialog::operationExecuted,
       [=](const smtk::operation::Operation::Result& result) {
         if (
           result->findInt("outcome")->value() !=
@@ -156,18 +144,8 @@ void pqExportSimulationReaction::exportSimulation()
           QGridLayout* layout = (QGridLayout*)msgBox.layout();
           layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
           msgBox.exec();
-
-          // Once the user has accepted that their export failed, they are
-          // free to try again without changing any options.
-          opView->onModifiedParameters();
-        }
-        else
-        {
-          exportDialog->done(QDialog::Accepted);
         }
       });
-
-    // Launch the modal dialog and wait for the operation to succeed.
     exportDialog->exec();
 
     // Remove the export operation from the operation manager.

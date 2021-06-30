@@ -17,15 +17,66 @@
 #include "smtk/model/Registrar.h"
 #include "smtk/view/Manager.h"
 
+#include <QApplication>
 #include <QDebug>
+#include <QDesktopWidget>
 #include <QDialogButtonBox>
+#include <QEvent>
+#include <QObject>
 #include <QPushButton>
+#include <QRect>
+#include <QScreen>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QWidget>
+#include <QtGlobal>
 
 using namespace smtk::extension;
+
+namespace
+{
+// Internal class for constraining QScrollArea to vertical direction
+class qtVerticalScrollArea : public QScrollArea
+{
+public:
+  qtVerticalScrollArea(QWidget* parent = nullptr)
+    : QScrollArea(parent)
+  {
+  }
+
+protected:
+  // Override eventFilter on resize events to set width
+  bool eventFilter(QObject* obj, QEvent* event) override
+  {
+    if (obj && obj == this->widget() && event->type() == QEvent::Resize)
+    {
+      // Get width of contents
+      int contentsWidth =
+        this->widget()->minimumSizeHint().width() + this->verticalScrollBar()->width();
+
+      // Get width of screen
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+      const QRect screenRect = QApplication::desktop()->screenGeometry(this->widget());
+      int screenWidth = screenRect.width();
+#else
+      int screenWidth = this->widget()->screen()->size().width();
+#endif
+      // If contents width is less than 1/2 screen width, expand
+      // so that horizontal scrolling is not needed.
+      if (contentsWidth < screenWidth / 2)
+      {
+        this->setMinimumWidth(contentsWidth);
+      }
+    }
+    return QScrollArea::eventFilter(obj, event);
+  }
+};
+
+} // namespace
 
 class qtOperationDialogInternals
 {
@@ -63,10 +114,25 @@ qtOperationDialog::qtOperationDialog(
   this->buildUI(op, uiManager);
 }
 
+qtOperationDialog::qtOperationDialog(
+  smtk::operation::OperationPtr op,
+  smtk::resource::ManagerPtr resManager,
+  smtk::view::ManagerPtr viewManager,
+  bool scrollable,
+  QWidget* parentWidget)
+  : QDialog(parentWidget)
+{
+  auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
+    new smtk::extension::qtUIManager(op, resManager, viewManager));
+  this->buildUI(op, uiManager, scrollable);
+}
+
 void qtOperationDialog::buildUI(
   smtk::operation::OperationPtr op,
-  QSharedPointer<smtk::extension::qtUIManager> uiManager)
+  QSharedPointer<smtk::extension::qtUIManager> uiManager,
+  bool scrollable)
 {
+  this->setObjectName("ExportDialog");
   m_internals = new qtOperationDialogInternals();
   m_internals->m_uiManager = uiManager;
   m_internals->m_operation = op;
@@ -76,16 +142,31 @@ void qtOperationDialog::buildUI(
   m_internals->m_tabWidget->setStyleSheet("QTabBar::tab { min-width: 100px; }");
 
   // 1. Create the editor tab
-  QWidget* editorWidget = new QWidget(this);
-  QVBoxLayout* editorLayout = new QVBoxLayout(editorWidget);
-
-  // Create the SMTK view
   auto viewConfig = m_internals->m_uiManager->findOrCreateOperationView();
-  auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
-  m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
+  if (scrollable)
+  {
+    qtVerticalScrollArea* scroll = new qtVerticalScrollArea();
+    QWidget* viewport = new QWidget();
+    scroll->setWidget(viewport);
+    scroll->setWidgetResizable(true);
 
-  editorWidget->setLayout(editorLayout);
-  m_internals->m_tabWidget->addTab(editorWidget, "Parameters");
+    QVBoxLayout* viewportLayout = new QVBoxLayout(viewport);
+    viewport->setLayout(viewportLayout);
+
+    // Create the SMTK view
+    auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, viewport);
+    m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
+    m_internals->m_tabWidget->addTab(scroll, "Parameters");
+  }
+  else
+  {
+    QWidget* editorWidget = new QWidget(this);
+    QVBoxLayout* editorLayout = new QVBoxLayout(editorWidget);
+    auto* qtView = m_internals->m_uiManager->setSMTKView(viewConfig, editorWidget);
+    editorWidget->setLayout(editorLayout);
+    m_internals->m_smtkView = dynamic_cast<smtk::extension::qtOperationView*>(qtView);
+    m_internals->m_tabWidget->addTab(editorWidget, "Parameters");
+  }
 
   // 2. Create the info tab
   QTextEdit* infoWidget = new QTextEdit(this);
@@ -125,6 +206,13 @@ void qtOperationDialog::buildUI(
   // 4. And the window title
   std::string title = viewConfig->label();
   this->setWindowTitle(title.c_str());
+
+  if (scrollable)
+  {
+    // Set min height for reasonable display
+    // Application can always override this
+    this->setMinimumHeight(480);
+  }
 }
 
 qtOperationDialog::~qtOperationDialog()

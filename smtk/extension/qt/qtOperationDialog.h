@@ -55,7 +55,20 @@ public:
     smtk::resource::ManagerPtr resourceManager,
     smtk::view::ManagerPtr viewManager,
     QWidget* parentWidget = nullptr);
-  ~qtOperationDialog() override;
+
+  // Use this constructor to display the operation view in a
+  // vertically-scrolling area. You would generally only need
+  // this option if the operation parameters are lengthy and
+  // take up a significant amount of vertical display space.
+  // When setting the scrollable option, you would generally
+  // also want to call this class' setMinimumHeight() method.
+  qtOperationDialog(
+    smtk::operation::OperationPtr operation,
+    smtk::resource::ManagerPtr resourceManager,
+    smtk::view::ManagerPtr viewManager,
+    bool scrollable,
+    QWidget* parentWidget = nullptr);
+  virtual ~qtOperationDialog();
 
 signals:
   void operationExecuted(const smtk::operation::Operation::Result& result);
@@ -68,7 +81,8 @@ protected slots:
 protected:
   void buildUI(
     smtk::operation::OperationPtr op,
-    QSharedPointer<smtk::extension::qtUIManager> uiMManager);
+    QSharedPointer<smtk::extension::qtUIManager> uiMManager,
+    bool scrollable = false);
 
   // Override showEvent() in order to fix Qt sizing issue
   void showEvent(QShowEvent* event) override;

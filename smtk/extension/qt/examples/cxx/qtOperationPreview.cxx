@@ -11,7 +11,6 @@
 
 #include "smtk/attribute/Registrar.h"
 #include "smtk/extension/qt/qtOperationDialog.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtViewRegistrar.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
@@ -119,11 +118,8 @@ int main(int argc, char* argv[])
   smtk::view::Registrar::registerTo(viewManager);
   smtk::extension::qtViewRegistrar::registerTo(viewManager);
 
-  auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
-    new smtk::extension::qtUIManager(op, resManager, viewManager));
-
   // Initialize dialog
-  smtk::extension::qtOperationDialog dialog(op, uiManager, nullptr);
+  smtk::extension::qtOperationDialog dialog(op, resManager, viewManager, false, nullptr);
   int retcode = dialog.exec();
   return retcode;
 }
