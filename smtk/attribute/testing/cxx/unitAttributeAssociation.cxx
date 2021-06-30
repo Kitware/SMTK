@@ -94,6 +94,13 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/[])
     e0.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
+  att->removeAllAssociations();
+  att->associateEntity(v2);
+  auto assocObj = att->associations()->value(0);
+  smtkTest(
+    assocObj->id() == v2.entity(),
+    "Associated to wrong entity. Should be " << v2.entity() << " not " << assocObj->id());
+
   {
     auto associateOperation = smtk::attribute::Associate::create();
 
