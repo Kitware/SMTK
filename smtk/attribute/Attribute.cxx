@@ -443,6 +443,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
     }
   }
   m_associatedObjects->detachOwningResource();
+  m_associatedObjects->reset();
   return true;
 }
 
