@@ -155,12 +155,10 @@ static pqSMTKProjectMenu* g_instance = nullptr;
 pqSMTKProjectMenu::pqSMTKProjectMenu(QObject* parent)
   : Superclass(parent)
 {
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(10, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
@@ -231,8 +229,8 @@ pqSMTKProjectMenu::pqSMTKProjectMenu(QObject* parent)
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
       new pqNewProjectReaction(newProjectAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKProjectMenu* pqSMTKProjectMenu::instance(QObject* parent)

@@ -12,6 +12,7 @@ smtk_add_client_tests(
   #LABEL "MeshSession"
   TEST_SCRIPTS ${TESTS_WITH_BASELINES}
   LOAD_PLUGINS
+    smtkAttributePlugin
     smtkResourcePlugin
     smtkOperationPlugin
     smtkGeometryPlugin
@@ -22,6 +23,7 @@ smtk_add_client_tests(
     smtkPQComponentsPlugin
     smtkPVMeshExtPlugin
   PLUGIN_PATHS
+    $<TARGET_FILE_DIR:smtkAttributePlugin>/..
     $<TARGET_FILE_DIR:smtkResourcePlugin>/..
     $<TARGET_FILE_DIR:smtkOperationPlugin>/..
     $<TARGET_FILE_DIR:smtkGeometryPlugin>/..

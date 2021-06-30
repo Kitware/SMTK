@@ -136,12 +136,10 @@ pqSMTKImportOperationBehavior::pqSMTKImportOperationBehavior(QObject* parent)
 {
   initImportOperationBehaviorResources();
 
-  // Wait until the event loop starts, ensuring that the main window will be
-  // accessible.
-  QTimer::singleShot(0, this, [this]() {
-    auto* pqCore = pqApplicationCore::instance();
-    if (pqCore)
-    {
+  auto* pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* importOperationAction = new QAction(
         QPixmap(":/ImportOperationBehavior/python-28x28.png"), tr("&Import Operation..."), this);
 
@@ -212,8 +210,8 @@ pqSMTKImportOperationBehavior::pqSMTKImportOperationBehavior(QObject* parent)
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
       new pqImportOperationReaction(importOperationAction);
-    }
-  });
+    });
+  }
 }
 
 pqSMTKImportOperationBehavior* pqSMTKImportOperationBehavior::instance(QObject* parent)
