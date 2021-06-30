@@ -28,6 +28,7 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -1460,9 +1461,12 @@ int qtAttributeView::handleOperationEvent(
   }
 
   // Since the Signal Operation originates from a Qt Signal
-  // being fired we can ignore this
-  if (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>())
+  // being fired we need to see if this view is one that triggered it
+  if (
+    (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>()) &&
+    (op.parameters()->findString("source")->value() == m_addressString))
   {
+    // We can ignore this operation since we initiated it
     return 0;
   }
 

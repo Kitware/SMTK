@@ -40,6 +40,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include <sstream>
+
 using namespace smtk::extension;
 
 class qtBaseAttributeViewInternals
@@ -82,6 +84,12 @@ qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   m_fixedLabelWidth = m_viewInfo.m_UIManager->maxValueLabelLength();
   m_topLevelInitialized = false;
   m_ignoreCategories = m_viewInfo.m_view->details().attributeAsBool("IgnoreCategories");
+  // We need to be able to determine within the a Signal Operation, which View caused
+  // the change in order to avoid infinite loops.  To do this, each View will have an addressString
+  // set to its address.  This string is then passed to the signalAttribute function when needed.
+  std::stringstream me;
+  me << std::hex << (void const*)this << std::dec;
+  m_addressString = me.str();
 }
 
 qtBaseAttributeView::~qtBaseAttributeView()
@@ -190,7 +198,8 @@ void signalAttribute(
   smtk::extension::qtUIManager* uiManager,
   const smtk::attribute::AttributePtr& attr,
   const char* itemName,
-  std::vector<std::string> items = std::vector<std::string>())
+  std::vector<std::string> items,
+  const std::string& source = "")
 {
   if (attr && uiManager && itemName && itemName[0])
   {
@@ -202,6 +211,7 @@ void signalAttribute(
       auto signalOp = opManager->create<smtk::attribute::Signal>();
       if (signalOp)
       {
+        signalOp->parameters()->findString("source")->setValue(source);
         signalOp->parameters()->findComponent(itemName)->appendValue(attr);
         signalOp->parameters()->findString("items")->setValues(items.begin(), items.end());
         opManager->launchers()(signalOp);
@@ -223,35 +233,25 @@ void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& 
     return;
   }
 
-  // Let the toplevel view process attribute creation
-  if (!this->isTopLevel())
-  {
-    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
-    if (topView)
-    {
-      topView->attributeCreated(attr);
-      return;
-    }
-  }
-
+  qtBaseAttributeView* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
   // If the toplevel view is using analysis configuration we need
   // to check to see if the attribute is an analysis configuration
-  if (this->Internals->m_configurationCombo != nullptr)
+  if (topView && topView->Internals->m_configurationCombo != nullptr)
   {
-    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    smtk::attribute::DefinitionPtr def = topView->m_topLevelConfigurationDef.lock();
     if (attr->definition()->isA(def))
     {
       // if the combobox allows creation of configurations, the number
       // of existing configurations is 1 less.
-      int n = this->Internals->m_configurationCombo->count();
-      if (m_topLevelCanCreateConfigurations)
+      int n = topView->Internals->m_configurationCombo->count();
+      if (topView->m_topLevelCanCreateConfigurations)
       {
         --n;
       }
       // If there are no configurations in the combobox just prep it
       if (!n)
       {
-        this->prepConfigurationComboBox(attr->name());
+        topView->prepConfigurationComboBox(attr->name());
       }
       else
       {
@@ -259,21 +259,21 @@ void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& 
         bool needToInsert = true;
         for (int i = 0; (i < n) && needToInsert; i++)
         {
-          if (this->Internals->m_configurationCombo->itemText(i).toStdString() > attr->name())
+          if (topView->Internals->m_configurationCombo->itemText(i).toStdString() > attr->name())
           {
-            this->Internals->m_configurationCombo->insertItem(i, attr->name().c_str());
+            topView->Internals->m_configurationCombo->insertItem(i, attr->name().c_str());
             needToInsert = false;
           }
         }
         if (needToInsert)
         {
-          this->Internals->m_configurationCombo->insertItem(n, attr->name().c_str());
+          topView->Internals->m_configurationCombo->insertItem(n, attr->name().c_str());
         }
       }
     }
   }
-  //Let observers know the attribute was created
-  signalAttribute(this->uiManager(), attr, "created");
+  //Let observers know the attribute was created and who created it
+  signalAttribute(this->uiManager(), attr, "created", std::vector<std::string>(), m_addressString);
 }
 
 void qtBaseAttributeView::attributeChanged(
@@ -285,30 +285,20 @@ void qtBaseAttributeView::attributeChanged(
     return;
   }
 
-  // Let the toplevel view process attribute modification
-  if (!this->isTopLevel())
-  {
-    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
-    if (topView)
-    {
-      topView->attributeChanged(attr, items);
-      return;
-    }
-  }
-
+  qtBaseAttributeView* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
   // If the toplevel view is using analysis configuration we need
   // to check to see if the attribute is an analysis configuration
-  if (this->Internals->m_configurationCombo != nullptr)
+  if (topView && topView->Internals->m_configurationCombo != nullptr)
   {
-    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    smtk::attribute::DefinitionPtr def = topView->m_topLevelConfigurationDef.lock();
     if (attr->definition()->isA(def))
     {
       // We only need to refresh the combobox
-      this->prepConfigurationComboBox("");
+      topView->prepConfigurationComboBox("");
     }
   }
-  //Let observers know the attribute was modified
-  signalAttribute(this->uiManager(), attr, "modified", items);
+  //Let observers know the attribute was modified and which view  modified it
+  signalAttribute(this->uiManager(), attr, "modified", items, m_addressString);
 }
 
 void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& attr)
@@ -318,31 +308,21 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
     return;
   }
 
-  // Let the toplevel view process attribute removal
-  if (!this->isTopLevel())
-  {
-    auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
-    if (topView)
-    {
-      topView->attributeRemoved(attr);
-      return;
-    }
-  }
-
+  qtBaseAttributeView* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
   // If the toplevel view is using analysis configuration we need
   // to check to see if the attribute is an analysis configuration
-  if (this->Internals->m_configurationCombo != nullptr)
+  if (topView && topView->Internals->m_configurationCombo != nullptr)
   {
-    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    smtk::attribute::DefinitionPtr def = topView->m_topLevelConfigurationDef.lock();
     if (attr->definition()->isA(def))
     {
       // See if we can find the attribute
-      int n = this->Internals->m_configurationCombo->findText(attr->name().c_str());
+      int n = topView->Internals->m_configurationCombo->findText(attr->name().c_str());
 
       if (n != -1)
       {
-        this->Internals->m_configurationCombo->blockSignals(true);
-        int currentIndex = this->Internals->m_configurationCombo->currentIndex();
+        topView->Internals->m_configurationCombo->blockSignals(true);
+        int currentIndex = topView->Internals->m_configurationCombo->currentIndex();
         // If the attribute being removed the selected one?  If it is then select the
         // select another configuration first
         if (n == currentIndex)
@@ -353,22 +333,22 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
           {
             // Else we will select the first one in the list if one
             // exists.
-            int count = this->Internals->m_configurationCombo->count();
-            if (m_topLevelCanCreateConfigurations)
+            int count = topView->Internals->m_configurationCombo->count();
+            if (topView->m_topLevelCanCreateConfigurations)
             {
               --count;
             }
             newSelection = (count > 1) ? 0 : -1;
           }
-          this->Internals->m_configurationCombo->removeItem(n);
-          this->Internals->m_configurationCombo->setCurrentIndex(newSelection);
+          topView->Internals->m_configurationCombo->removeItem(n);
+          topView->Internals->m_configurationCombo->setCurrentIndex(newSelection);
         }
         else
         {
           // This is the case where the attribute is not currently selected.
-          this->Internals->m_configurationCombo->removeItem(n);
+          topView->Internals->m_configurationCombo->removeItem(n);
         }
-        this->Internals->m_configurationCombo->blockSignals(false);
+        topView->Internals->m_configurationCombo->blockSignals(false);
       }
     }
   }
@@ -377,9 +357,12 @@ void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& 
   // the case of an attribute being referenced by a Reference Item
   // - See SMTK Issue 415)
   // so we need to update the UI.
-  this->updateUI();
-  //Let observers know the attribute was removed
-  signalAttribute(this->uiManager(), attr, "expunged");
+  if (topView)
+  {
+    topView->updateUI();
+  }
+  //Let observers know the attribute was removed and which view removed it
+  signalAttribute(this->uiManager(), attr, "expunged", std::vector<std::string>(), m_addressString);
 }
 
 bool qtBaseAttributeView::setFixedLabelWidth(int w)
@@ -845,7 +828,8 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
       att->properties().get<long>()["_selectedConfiguration"] = 1;
       attRes->analyses().getAnalysisAttributeCategories(att, cats);
       //Let observers know the attribute was modified
-      signalAttribute(this->uiManager(), att, "modified", std::vector<std::string>());
+      signalAttribute(
+        this->uiManager(), att, "modified", std::vector<std::string>(), m_addressString);
     }
   }
 

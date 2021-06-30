@@ -120,6 +120,7 @@ protected:
   bool m_topLevelCanCreateConfigurations;
   smtk::attribute::WeakDefinitionPtr m_topLevelConfigurationDef;
   bool m_ignoreCategories;
+  std::string m_addressString;
 
 private:
   int m_fixedLabelWidth;

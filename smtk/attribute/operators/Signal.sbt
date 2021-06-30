@@ -17,12 +17,15 @@
         <Component Name="modified" Extensible="true" NumberOfRequiredValues="0">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
-        <String Name="items" Extensible="true" NumberOfRequiredValues="0" Optional="true"/>
+        <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
+        <String Name="source">
+          <DefaultValue></DefaultValue>
+        </String>
         <Component Name="expunged" Extensible="true"
                    NumberOfRequiredValues="0" HoldReference="true">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
-        <Void Name="update" Optional="True" IsEnableByDefault="false"/>
+        <Void Name="update" Optional="True"/>
       </ItemDefinitions>
     </AttDef>
 
@@ -31,7 +34,7 @@
     <AttDef Type="result(signal)" BaseType="result">
         <ItemDefinitions>
           <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
-          <Void Name="update" IsEnableByDefault="false"/>
+          <Void Name="update"  Optional="True"/>
         </ItemDefinitions>
     </AttDef>
   </Definitions>

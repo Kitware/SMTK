@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -292,9 +293,12 @@ int qtInstancedView::handleOperationEvent(
   }
 
   // Since the Signal Operation originates from a Qt Signal
-  // being fired we can ignore this
-  if (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>())
+  // being fired we need to see if this view is one that triggered it
+  if (
+    (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>()) &&
+    (op.parameters()->findString("source")->value() == m_addressString))
   {
+    // We can ignore this operation since we initiated it
     return 0;
   }
 
