@@ -36,6 +36,41 @@ namespace smtk
 namespace view
 {
 
+// Sort paths from deepest to shallowest, then rear-most to front-most.
+// Doing these things keeps us from invalidating paths when items are removed.
+struct PathComp
+{
+  bool operator()(const std::vector<int>& a, const std::vector<int>& b) const
+  {
+    if (a.size() < b.size())
+    {
+      return false;
+    }
+    else if (a.size() > b.size())
+    {
+      return true;
+    }
+    std::size_t ii = 0;
+    for (auto ai : a)
+    {
+      if (ai < b[ii])
+      {
+        return false;
+      }
+      else if (ai > b[ii])
+      {
+        return true;
+      }
+      ++ii;
+    }
+    return false; // a == b... neither is less than other.
+  }
+};
+
+class PhraseDeltas : public std::set<std::vector<int>, PathComp>
+{
+};
+
 /**\brief Hold and maintain a descriptive phrase hierarchy.
   *
   * This class holds the root descriptive phrase in a hierarchy and
