@@ -59,14 +59,24 @@ protected:
 
 struct Registrar
 {
-  static void registerTo(smtk::resource::Manager::Ptr& resourceManager)
+  static void registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   {
     resourceManager->registerResource<MyResource>();
   }
 
-  static void registerTo(smtk::project::Manager::Ptr& projectManager)
+  static void unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
+  {
+    resourceManager->unregisterResource<MyResource>();
+  }
+
+  static void registerTo(const smtk::project::Manager::Ptr& projectManager)
   {
     projectManager->registerProject("MyProject", { "MyResource" }, {});
+  }
+
+  static void unregisterFrom(const smtk::project::Manager::Ptr& projectManager)
+  {
+    // projectManager->unregisterProject("MyProject");
   }
 };
 } // namespace
