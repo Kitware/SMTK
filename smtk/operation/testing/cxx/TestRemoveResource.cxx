@@ -17,6 +17,8 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/RemoveResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
@@ -58,18 +60,17 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
   auto managers = smtk::common::Managers::create();
 
   // Construct smtk managers
-  {
-    smtk::resource::Registrar::registerTo(managers);
-    smtk::operation::Registrar::registerTo(managers);
-  }
+  auto resourceRegistry = smtk::plugin::addToManagers<smtk::resource::Registrar>(managers);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::operation::Registrar>(managers);
 
   // access smtk managers
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
 
   // Initialize smtk managers
+  auto operationOpRegistry =
+    smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
   {
-    smtk::operation::Registrar::registerTo(operationManager);
     operationManager->registerResourceManager(resourceManager);
   }
 

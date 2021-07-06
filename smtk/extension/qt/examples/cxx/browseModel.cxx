@@ -31,6 +31,8 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include <QApplication>
 #include <QHeaderView>
 #include <QTimer>
@@ -67,9 +69,9 @@ int main(int argc, char* argv[])
   auto operationManager = smtk::operation::Manager::create();
   auto resourceManager = smtk::resource::Manager::create();
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
-  smtk::model::Registrar::registerTo(resourceManager);
-  smtk::attribute::Registrar::registerTo(resourceManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
 
   nlohmann::json jconfig;
   if (configname)

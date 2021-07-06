@@ -34,6 +34,8 @@
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include <memory>
@@ -185,11 +187,11 @@ int TestSelectionFootprint(int /*unused*/, char** const /*unused*/)
   geometryManager->registerBackend<Backend>();
   RegisterBackend::registerClass();
 
-  smtk::model::Registrar::registerTo(resourceManager);
-  smtk::model::Registrar::registerTo(operationManager);
+  auto modelRegistry =
+    smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager, operationManager);
 
-  smtk::attribute::Registrar::registerTo(resourceManager);
-  smtk::attribute::Registrar::registerTo(operationManager);
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
 
   // Create a new model resource type
   auto modelRsrc = resourceManager->create<smtk::model::Resource>();

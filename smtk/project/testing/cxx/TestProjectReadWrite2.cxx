@@ -28,6 +28,8 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -79,24 +81,8 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  {
-    smtk::attribute::Registrar::registerTo(resourceManager);
-#ifdef VTK_SUPPORT
-    smtk::session::vtk::Registrar::registerTo(resourceManager);
-#endif
-    smtk::project::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
-
-  {
-    smtk::attribute::Registrar::registerTo(operationManager);
-#ifdef VTK_SUPPORT
-    smtk::session::vtk::Registrar::registerTo(operationManager);
-#endif
-    smtk::operation::Registrar::registerTo(operationManager);
-  }
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
@@ -106,9 +92,15 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
 
-  {
-    smtk::project::Registrar::registerTo(projectManager);
-  }
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
+#ifdef VTK_SUPPORT
+  auto vtkRegistry =
+    smtk::plugin::addToManagers<smtk::session::vtk::Registrar>(resourceManager, operationManager);
+#endif
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(operationManager);
+  auto projectRegistry =
+    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
 
   // Register a new project type
   projectManager->registerProject("foo");

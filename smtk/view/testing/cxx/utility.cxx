@@ -64,10 +64,9 @@ PhraseModel::Ptr loadTestData(
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::plugin::
-    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
-      rsrcMgr, operMgr);
-  smtk::view::Registrar::registerTo(viewManager);
+  auto polygonRegistry =
+    smtk::plugin::addToManagers<smtk::session::polygon::Registrar>(rsrcMgr, operMgr);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(&viewConfig);
   // auto phraseModel = smtk::view::ResourcePhraseModel::create();
   phraseModel->addSource({ rsrcMgr, operMgr });

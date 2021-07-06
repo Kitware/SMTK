@@ -177,10 +177,9 @@ int unitQtComponentItem(int argc, char* argv[])
   // those resources registered with rsrcMgr:
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::plugin::
-    Registry<smtk::session::polygon::Registrar, smtk::resource::Manager, smtk::operation::Manager>(
-      rsrcMgr, operMgr);
-  smtk::view::Registrar::registerTo(viewMgr);
+  auto polygonRegistry =
+    smtk::plugin::addToManagers<smtk::session::polygon::Registrar>(rsrcMgr, operMgr);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewMgr);
 
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required

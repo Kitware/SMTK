@@ -34,6 +34,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "vtkActor.h"
@@ -125,19 +127,13 @@ int main(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  // Register mesh resources to the resource manager
-  {
-    smtk::session::mesh::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  // Register model and mesh operators to the operation manager
-  {
-    smtk::model::Registrar::registerTo(operationManager);
-    smtk::session::mesh::Registrar::registerTo(operationManager);
-  }
+  // Register model and mesh operators to the managers
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(operationManager);
+  auto meshRegistry =
+    smtk::plugin::addToManagers<smtk::session::mesh::Registrar>(resourceManager, operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).

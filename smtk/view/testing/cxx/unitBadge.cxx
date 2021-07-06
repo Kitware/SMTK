@@ -27,6 +27,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -154,7 +156,7 @@ int unitBadge(int argc, char* argv[])
   // badgeSet.configure(viewConfig, viewManager);
   auto resource = phraseModel->root()->subphrases()[0]->relatedResource();
   auto resourceManager = resource->manager();
-  smtk::attribute::Registrar::registerTo(resourceManager);
+  auto registry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
   auto attRsrc = resourceManager->create<smtk::attribute::Resource>();
   auto defBC = attRsrc->createDefinition("BoundaryCondition");
   auto assoc = defBC->createLocalAssociationRule();

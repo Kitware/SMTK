@@ -14,6 +14,8 @@
 #include "smtk/common/Managers.h"
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
 
@@ -22,25 +24,27 @@
 void testDefaultEvaluatorRegistration()
 {
   auto managers = smtk::common::Managers::create();
-  smtk::resource::Registrar::registerTo(managers);
-  smtk::attribute::Registrar::registerTo(managers);
+  auto resourceRegistry = smtk::plugin::addToManagers<smtk::resource::Registrar>(managers);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(managers);
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto evaluatorManager = managers->get<smtk::attribute::EvaluatorManager::Ptr>();
 
-  smtk::attribute::Registrar::registerTo(evaluatorManager);
+  auto attributeResourceRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
 
-  smtk::attribute::Registrar::registerTo(resourceManager);
   auto attRes = resourceManager->create<smtk::attribute::Resource>();
   auto infixDefinition = attRes->createDefinition("infixExpression");
 
-  smtkTest(
-    attRes->evaluatorFactory().addDefinitionForEvaluator(
-      "InfixExpressionEvaluator", infixDefinition->type()) == true,
-    "Expected to be able to add definition for InfixExpressionEvaluator because "
-    "Registrar already registered InfixExpressionEvaluator.")
-
-    smtk::attribute::Registrar::unregisterFrom(evaluatorManager);
+  {
+    auto attributeEvalRegistry =
+      smtk::plugin::addToManagers<smtk::attribute::Registrar>(evaluatorManager);
+    smtkTest(
+      attRes->evaluatorFactory().addDefinitionForEvaluator(
+        "InfixExpressionEvaluator", infixDefinition->type()) == true,
+      "Expected to be able to add definition for InfixExpressionEvaluator because "
+      "Registrar already registered InfixExpressionEvaluator.");
+  }
 
   auto fooDefinition = attRes->createDefinition("fooExpression");
 

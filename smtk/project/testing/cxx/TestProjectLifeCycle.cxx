@@ -18,6 +18,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/operation/XMLOperation.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -124,10 +125,9 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
 {
   // Create managers
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();
-  smtk::attribute::Registrar::registerTo(resManager);
-
   smtk::operation::ManagerPtr opManager = smtk::operation::Manager::create();
-  smtk::attribute::Registrar::registerTo(opManager);
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resManager, opManager);
 
 #if 0
   // This line changes behavior such that projects ARE stored in resource manager
@@ -137,7 +137,7 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
   opManager->registerOperation<CreateProjectOp>("CreateProjectOp");
 
   smtk::project::ManagerPtr projManager = smtk::project::Manager::create(resManager, opManager);
-  smtk::project::Registrar::registerTo(projManager);
+  auto projectRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(projManager);
   projManager->registerProject(PROJECT_TYPE);
 
   smtkTest(resManager->empty(), "resource manager size is " << resManager->size());

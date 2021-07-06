@@ -18,6 +18,7 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -52,15 +53,16 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
 {
   // Create smtk managers
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-  smtk::project::Registrar::registerTo(resourceManager);
 
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
-  smtk::operation::Registrar::registerTo(operationManager);
+  auto operationRegistry =
+    smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
   operationManager->registerResourceManager(resourceManager);
 
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
-  smtk::project::Registrar::registerTo(projectManager);
+  auto projectRegistry =
+    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
   projectManager->registerProject("foo");
 
   std::string projectLocation = write_root + "/empty-project.smtk";

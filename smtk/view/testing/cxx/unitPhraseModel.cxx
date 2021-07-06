@@ -21,6 +21,8 @@
 
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 
@@ -213,7 +215,7 @@ int unitPhraseModel(int argc, char* argv[])
                          { { { "Name", "SubphraseGenerator" },
                              { "Attributes", { { "Type", "default" } } } } } } } } } } } };
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
+  auto registry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
   viewManager->phraseModelFactory().registerType<DummyPhraseModel>();
   smtk::view::ConfigurationPtr viewConfig = j;
   auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(viewConfig.get());

@@ -24,6 +24,8 @@
 
 #include "smtk/operation/Operation.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include <fstream>
 #include <streambuf>
 
@@ -68,10 +70,8 @@ int RenderMesh(int argc, char* argv[])
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   // Register matplotlib operators to the operation manager
-  {
-    smtk::extension::matplotlib::Registrar registrar;
-    registrar.registerTo(operationManager);
-  }
+  auto registry =
+    smtk::plugin::addToManagers<smtk::extension::matplotlib::Registrar>(operationManager);
 
   // Access a 2-dimensional mesh with interesting z-features from the
   // data directory

@@ -20,6 +20,8 @@
 #include "smtk/project/Registrar.h"
 #include "smtk/project/operators/Define.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
 
 // This test registers a project type ("MyProject") with a resource whitelist with
@@ -90,7 +92,7 @@ int TestDefineOp(int /*unused*/, char** const /*unused*/)
   smtkTest(resourceManager->empty(), "New resource manager should have no resources.");
 
   // Register MyResource
-  ::Registrar::registerTo(resourceManager);
+  auto registry = smtk::plugin::addToManagers<::Registrar>(resourceManager);
   smtkTest(
     resourceManager->metadata().size() == 1, "Resource manager should have registered a type.");
 
@@ -102,7 +104,7 @@ int TestDefineOp(int /*unused*/, char** const /*unused*/)
     smtk::project::Manager::create(resourceManager, operationManager);
 
   // Register project operations with the project manager
-  smtk::project::Registrar::registerTo(projectManager);
+  auto projectRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(projectManager);
 
   auto createProjectTypeOp = operationManager->create<smtk::project::Define>();
 

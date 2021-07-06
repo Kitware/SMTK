@@ -19,6 +19,8 @@
 
 #include "smtk/operation/operators/ReadResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/resource/Metadata.h"
 
 namespace smtk
@@ -31,7 +33,7 @@ namespace testing
 ResourceArray
 loadTestResources(smtk::resource::Manager::Ptr resourceManager, int argc, char* argv[])
 {
-  smtk::model::Registrar::registerTo(resourceManager);
+  auto registry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
 
   ResourceArray result;
   if (argc < 2)

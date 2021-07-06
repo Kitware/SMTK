@@ -14,6 +14,7 @@
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
 #include "smtk/task/Manager.h"
@@ -37,22 +38,19 @@ int TestActive(int, char*[])
 
   // Create managers
   auto managers = smtk::common::Managers::create();
-  {
-    smtk::resource::Registrar::registerTo(managers);
-    smtk::attribute::Registrar::registerTo(managers);
-    smtk::operation::Registrar::registerTo(managers);
-    smtk::task::Registrar::registerTo(managers);
-  }
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(managers);
+  auto resourceRegistry = smtk::plugin::addToManagers<smtk::resource::Registrar>(managers);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::operation::Registrar>(managers);
+  auto taskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(managers);
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
   auto taskManager = managers->get<smtk::task::Manager::Ptr>();
 
-  {
-    smtk::attribute::Registrar::registerTo(resourceManager);
-    smtk::model::Registrar::registerTo(resourceManager);
-    smtk::task::Registrar::registerTo(taskManager);
-  }
+  auto attributeResourceRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
+  auto taskTaskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(taskManager);
 
   std::cout << "Observing changes to active task\n";
   int count = 0;

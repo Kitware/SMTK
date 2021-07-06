@@ -17,6 +17,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/resource/Manager.h"
 
 class FooEvaluator : public smtk::attribute::Evaluator
@@ -52,7 +54,7 @@ int unitEvaluatorManager(int /*argc*/, char** const /*argv*/)
   auto resourceManager = smtk::resource::Manager::create();
   evaluatorManager->registerResourceManager(resourceManager);
 
-  smtk::attribute::Registrar::registerTo(resourceManager);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
 
   smtkTest(
     evaluatorManager->registerEvaluator<FooEvaluator>("FooEvaluator"),

@@ -13,6 +13,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -44,10 +45,10 @@ int TestProjectAssociation(int /*unused*/, char** const /*unused*/)
   std::cout << templateString << std::endl;
   // Create managers
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();
-  smtk::attribute::Registrar::registerTo(resManager);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resManager);
   smtk::operation::ManagerPtr opManager = smtk::operation::Manager::create();
   smtk::project::ManagerPtr prjManager = smtk::project::Manager::create(resManager, opManager);
-  smtk::project::Registrar::registerTo(prjManager);
+  auto projectRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(prjManager);
 
   // Register and create test project
   // The process of registering our foo project also registers a resource with the same name.

@@ -36,6 +36,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include <QApplication>
 #include <QHeaderView>
 #include <QLayout>
@@ -67,26 +69,15 @@ int main(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  // Register mesh resources to the resource manager
-  {
-    smtk::session::mesh::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
-
-  // Register mesh operators to the operation manager
-  {
-    smtk::session::mesh::Registrar::registerTo(operationManager);
-  }
 
   // Create a geometry manager
   smtk::geometry::Manager::Ptr geometryManager = smtk::geometry::Manager::create();
 
-  // Register mesh geometry to the geometry manager
-  {
-    smtk::session::mesh::Registrar::registerTo(geometryManager);
-  }
+  // Register mesh resources to the resource, operation, and geomety managers.
+  auto registry = smtk::plugin::addToManagers<smtk::session::mesh::Registrar>(
+    resourceManager, operationManager, geometryManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).

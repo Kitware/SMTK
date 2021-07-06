@@ -15,6 +15,7 @@
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/view/Manager.h"
 
@@ -59,13 +60,12 @@ int main(int argc, char* argv[])
 
   // Initialize smtk managers
   auto resManager = smtk::resource::Manager::create();
-  smtk::attribute::Registrar::registerTo(resManager);
-  smtk::model::Registrar::registerTo(resManager);
 
   auto opManager = smtk::operation::Manager::create();
   opManager->registerResourceManager(resManager);
-  smtk::attribute::Registrar::registerTo(opManager);
-  smtk::model::Registrar::registerTo(opManager);
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resManager, opManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resManager, opManager);
 
   // Process command line
   QCommandLineParser parser;
@@ -115,8 +115,8 @@ int main(int argc, char* argv[])
 
   // Initialize and register managers
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
-  smtk::extension::qtViewRegistrar::registerTo(viewManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
+  auto qtViewRegistry = smtk::plugin::addToManagers<smtk::extension::qtViewRegistrar>(viewManager);
 
   // Initialize dialog
   smtk::extension::qtOperationDialog dialog(op, resManager, viewManager, false, nullptr);

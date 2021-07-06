@@ -16,6 +16,7 @@
 #include "smtk/extension/qt/qtViewRegistrar.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/Registrar.h"
 
@@ -69,8 +70,8 @@ int UnitTestForceRequiredItem(int argc, char** const argv)
 
   // Initialize view and UI managers
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
-  smtk::extension::qtViewRegistrar::registerTo(viewManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
+  auto qtViewRegistry = smtk::plugin::addToManagers<smtk::extension::qtViewRegistrar>(viewManager);
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);
   uiManager->setViewManager(viewManager);
 
