@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Install build requirements.
 dnf install -y \
     zlib-devel libcurl-devel python-devel python-unversioned-command \
