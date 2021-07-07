@@ -430,6 +430,13 @@ public:
 };
 
 #endif
+
+template<typename Registrar, typename... Manager>
+static Registry<Registrar, Manager...> addToManagers(const std::shared_ptr<Manager>&... manager)
+{
+  return Registry<Registrar, Manager...>(manager...);
+}
+
 } // namespace plugin
 } // namespace smtk
 
