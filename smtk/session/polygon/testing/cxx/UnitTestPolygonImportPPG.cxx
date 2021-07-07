@@ -18,6 +18,7 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/WriteResource.h"
+#include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/session/polygon/Registrar.h"
 #include "smtk/session/polygon/Resource.h"
@@ -69,11 +70,12 @@ int UnitTestPolygonImportPPG(int /*argc*/, char* /*argv*/[])
 
   // Initialize managers
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();
-  smtk::session::polygon::Registrar::registerTo(resManager);
-
   smtk::operation::ManagerPtr opManager = smtk::operation::Manager::create();
-  smtk::operation::Registrar::registerTo(opManager);
-  smtk::session::polygon::Registrar::registerTo(opManager);
+
+  auto polygonRegistry =
+    smtk::plugin::addToManagers<smtk::session::polygon::Registrar>(resManager, opManager);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::operation::Registrar>(opManager);
+
   opManager->registerResourceManager(resManager);
 
   // Create an "import" operation

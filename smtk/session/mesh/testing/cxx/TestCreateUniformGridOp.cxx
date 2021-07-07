@@ -32,6 +32,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/plugin/Registry.h"
+
 #ifdef SMTK_ENABLE_VTK_SUPPORT
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -142,18 +144,12 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     // Create a resource manager
     smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-    // Register mesh resources to the resource manager
-    {
-      smtk::session::mesh::Registrar::registerTo(resourceManager);
-    }
-
     // Create an operation manager
     smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-    // Register mesh operators to the operation manager
-    {
-      smtk::session::mesh::Registrar::registerTo(operationManager);
-    }
+    // Register mesh operators to the resource and operation managers
+    auto meshRegistry = smtk::plugin::addToManagers<smtk::session::mesh::Registrar>(
+      resourceManager, operationManager);
 
     // Register the resource manager to the operation manager (newly created
     // resources will be automatically registered to the resource manager).
@@ -219,18 +215,12 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     // Create a resource manager
     smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-    // Register mesh resources to the resource manager
-    {
-      smtk::session::mesh::Registrar::registerTo(resourceManager);
-    }
-
     // Create an operation manager
     smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-    // Register mesh operators to the operation manager
-    {
-      smtk::session::mesh::Registrar::registerTo(operationManager);
-    }
+    // Register mesh operators to the resource and operation managers
+    auto meshRegistry = smtk::plugin::addToManagers<smtk::session::mesh::Registrar>(
+      resourceManager, operationManager);
 
     // Register the resource manager to the operation manager (newly created
     // resources will be automatically registered to the resource manager).

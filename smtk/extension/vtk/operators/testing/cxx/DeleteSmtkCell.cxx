@@ -34,6 +34,8 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ReadResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/session/polygon/Registrar.h"
 #include "smtk/session/polygon/Resource.h"
 #include "smtk/session/polygon/operators/Delete.h"
@@ -69,18 +71,14 @@ int main(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  {
-    smtk::session::polygon::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  {
-    smtk::operation::Registrar::registerTo(operationManager);
-    smtk::model::Registrar::registerTo(operationManager);
-    smtk::session::polygon::Registrar::registerTo(operationManager);
-  }
+  auto operationRegistry =
+    smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(operationManager);
+  auto polygonRegistry = smtk::plugin::addToManagers<smtk::session::polygon::Registrar>(
+    resourceManager, operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).

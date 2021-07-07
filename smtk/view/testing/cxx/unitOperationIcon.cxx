@@ -21,6 +21,8 @@
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -32,9 +34,9 @@ int unitOperationIcon(int, char*[])
   auto viewManager = smtk::view::Manager::create();
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();
-  smtk::attribute::Registrar::registerTo(resourceManager);
-  smtk::attribute::Registrar::registerTo(operationManager);
-  smtk::view::Registrar::registerTo(viewManager);
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
   std::string color = "dark";
 
   // Create some "icon constructor" functors that really just increment counters:

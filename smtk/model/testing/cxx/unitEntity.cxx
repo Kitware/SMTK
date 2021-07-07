@@ -21,6 +21,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/session/polygon/Registrar.h"
 #include "smtk/session/polygon/Resource.h"
 
@@ -491,14 +493,10 @@ int TestEntityQueryFunctor()
   std::cout << "\nTesting Entity::filterStringToQueryFunctor()\n\n";
   // I. Load in a test model
   smtk::resource::Manager::Ptr rsrcMgr = smtk::resource::Manager::create();
-  {
-    smtk::session::polygon::Registrar::registerTo(rsrcMgr);
-  }
   smtk::operation::Manager::Ptr operMgr = smtk::operation::Manager::create();
-  {
-    smtk::operation::Registrar::registerTo(operMgr);
-    smtk::session::polygon::Registrar::registerTo(operMgr);
-  }
+  auto polygonRegistry =
+    smtk::plugin::addToManagers<smtk::session::polygon::Registrar>(rsrcMgr, operMgr);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::operation::Registrar>(operMgr);
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
   operMgr->registerResourceManager(rsrcMgr);

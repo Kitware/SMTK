@@ -43,6 +43,8 @@
 // SMTK build tree includes
 #include "smtk/operation/Operation_xml.h"
 
+#include "smtk/plugin/Registry.h"
+
 // Qt includes
 #include <QApplication>
 #include <QCommandLineParser>
@@ -288,10 +290,11 @@ int main(int argc, char* argv[])
 
   // Initialize operation manager and view manager
   auto operationManager = smtk::operation::Manager::create();
-  smtk::attribute::Registrar::registerTo(operationManager);
+  auto attributeRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(operationManager);
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
-  smtk::extension::qtViewRegistrar::registerTo(viewManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
+  auto qtViewRegistry = smtk::plugin::addToManagers<smtk::extension::qtViewRegistrar>(viewManager);
 
   // Instantiate smtk's qtUIManager
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);

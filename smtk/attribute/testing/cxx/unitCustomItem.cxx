@@ -36,6 +36,8 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -242,11 +244,9 @@ int unitCustomItem(int /*unused*/, char* /*unused*/[])
   auto managers = smtk::common::Managers::create();
 
   // Construct smtk managers
-  {
-    smtk::resource::Registrar::registerTo(managers);
-    smtk::operation::Registrar::registerTo(managers);
-    smtk::attribute::Registrar::registerTo(managers);
-  }
+  auto resourceRegistry = smtk::plugin::addToManagers<smtk::resource::Registrar>(managers);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::operation::Registrar>(managers);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(managers);
 
   // access smtk managers
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
@@ -254,8 +254,9 @@ int unitCustomItem(int /*unused*/, char* /*unused*/[])
   auto itemDefinitionManager = managers->get<smtk::attribute::ItemDefinitionManager::Ptr>();
 
   // Initialize smtk managers
+  auto attributeOpRegistry =
+    smtk::plugin::addToManagers<smtk::attribute::Registrar>(operationManager);
   {
-    smtk::attribute::Registrar::registerTo(operationManager);
     operationManager->registerResourceManager(resourceManager);
     itemDefinitionManager->registerDefinitions<CustomItemDefinitionsList>();
   }

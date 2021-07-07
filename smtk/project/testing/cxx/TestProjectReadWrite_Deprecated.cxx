@@ -29,6 +29,8 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -68,18 +70,12 @@ int TestProjectReadWrite_Deprecated(int /*unused*/, char** const /*unused*/)
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  {
-    smtk::mesh::Registrar::registerTo(resourceManager);
-    smtk::project::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  {
-    smtk::mesh::Registrar::registerTo(operationManager);
-    smtk::operation::Registrar::registerTo(operationManager);
-  }
+  auto meshRegistry =
+    smtk::plugin::addToManagers<smtk::mesh::Registrar>(resourceManager, operationManager);
+  auto operationRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
@@ -89,9 +85,8 @@ int TestProjectReadWrite_Deprecated(int /*unused*/, char** const /*unused*/)
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
 
-  {
-    smtk::project::Registrar::registerTo(projectManager);
-  }
+  auto projectRegistry =
+    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
 
   // Register a new project type
   projectManager->registerProject("foo");

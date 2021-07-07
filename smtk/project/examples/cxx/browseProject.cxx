@@ -24,6 +24,8 @@
 
 #include "smtk/attribute/Registrar.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/project/examples/cxx/ProjectBrowser.h"
 
 #include "smtk/project/Manager.h"
@@ -76,14 +78,24 @@ protected:
 
 struct Registrar
 {
-  static void registerTo(smtk::resource::Manager::Ptr& resourceManager)
+  static void registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   {
     resourceManager->registerResource<MyResource>();
   }
 
-  static void registerTo(smtk::project::Manager::Ptr& projectManager)
+  static void unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
+  {
+    resourceManager->unregisterResource<MyResource>();
+  }
+
+  static void registerTo(const smtk::project::Manager::Ptr& projectManager)
   {
     projectManager->registerProject("MyProject", { "MyResource" }, {});
+  }
+
+  static void unregisterFrom(const smtk::project::Manager::Ptr& projectManager)
+  {
+    // projectManager->unregisterProject("MyProject");
   }
 };
 } // namespace
@@ -105,24 +117,19 @@ int main(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
 
-  // Register project resources with the resource manager
-  smtk::project::Registrar::registerTo(resourceManager);
-
-  // Register MyResource
-  ::Registrar::registerTo(resourceManager);
-
   // Create an operation manager
   smtk::operation::ManagerPtr operationManager = smtk::operation::Manager::create();
 
-  // Register project operations with the operation manager
-  smtk::project::Registrar::registerTo(operationManager);
+  // Register project resources and operations with their managers
+  auto projectRegistry =
+    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, operationManager);
 
   // Create a project manager
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
 
-  // Register our not-so-custom Project with the manager.
-  ::Registrar::registerTo(projectManager);
+  // Register MyResource our not-so-custom Project with the manager.
+  auto registry = smtk::plugin::addToManagers<::Registrar>(resourceManager, projectManager);
 
   // Create an instance of smtk::project::Project
   auto project = projectManager->create("MyProject");
@@ -135,10 +142,10 @@ int main(int argc, char* argv[])
   project->resources().add(myResource);
 
   auto viewManager = smtk::view::Manager::create();
-  smtk::view::Registrar::registerTo(viewManager);
-  smtk::model::Registrar::registerTo(resourceManager);
-  smtk::attribute::Registrar::registerTo(resourceManager);
-  smtk::project::Registrar::registerTo(viewManager);
+  auto viewRegistry = smtk::plugin::addToManagers<smtk::view::Registrar>(viewManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
+  auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
+  auto projectViewRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(viewManager);
 
   nlohmann::json jconfig;
   if (configname)

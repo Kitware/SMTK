@@ -20,6 +20,8 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
@@ -30,8 +32,8 @@ int unitDeleterGroup(int argc, char* argv[])
 
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();
-  smtk::model::Registrar::registerTo(resourceManager);
-  smtk::model::Registrar::registerTo(operationManager);
+  auto modelRegistry =
+    smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager, operationManager);
 
   smtk::operation::DeleterGroup deleters(operationManager);
 

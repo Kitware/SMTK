@@ -25,6 +25,8 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
+#include "smtk/plugin/Registry.h"
+
 #include "smtk/session/mesh/Registrar.h"
 #include "smtk/session/mesh/Resource.h"
 
@@ -115,17 +117,12 @@ int TestMeshSessionReadWrite(int argc, char* argv[])
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  {
-    smtk::session::mesh::Registrar::registerTo(resourceManager);
-  }
-
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  {
-    smtk::operation::Registrar::registerTo(operationManager);
-    smtk::session::mesh::Registrar::registerTo(operationManager);
-  }
+  auto meshRegistry =
+    smtk::plugin::addToManagers<smtk::session::mesh::Registrar>(resourceManager, operationManager);
+  auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
