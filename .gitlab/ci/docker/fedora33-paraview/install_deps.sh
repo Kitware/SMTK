@@ -24,6 +24,10 @@ dnf install -y --setopt=install_weak_deps=False \
     make \
     chrpath
 
+# Install static analysis tools
+dnf install -y --setopt=install_weak_deps=False \
+    clang-tools-extra
+
 # Install memcheck tools
 dnf install -y \
     libasan \
