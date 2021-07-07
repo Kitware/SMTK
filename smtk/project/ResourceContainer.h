@@ -122,7 +122,7 @@ public:
 
   /// Returns the resource that relates to the given role.  If no association
   /// exists this will return a null pointer
-  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
   smtk::resource::ResourcePtr getByRole(const std::string& role)
   {
     auto resource_set = this->findByRole(role);
@@ -136,7 +136,7 @@ public:
     }
   }
 
-  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
   smtk::resource::ConstResourcePtr getByRole(const std::string& role) const
   {
     auto resource_set = this->findByRole(role);
@@ -151,14 +151,14 @@ public:
   }
 
   template<typename ResourceType>
-  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
   smtk::shared_ptr<ResourceType> getByRole(const std::string& role)
   {
     return std::dynamic_pointer_cast<ResourceType>(this->getByRole(role));
   }
 
   template<typename ResourceType>
-  SMTK_DEPRECATED_IN_21_06("New API is findByRole and returns a std::set")
+  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
   smtk::shared_ptr<const ResourceType> getByRole(const std::string& role) const
   {
     return std::dynamic_pointer_cast<const ResourceType>(this->getByRole(role));
