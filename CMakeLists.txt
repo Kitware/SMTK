@@ -509,24 +509,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(smtk_python_test_environment
       "PYTHONPATH=${smtk_pythonpath_env}")
 
-    if (SMTK_ENABLE_SANITIZER)
-      set(preload_libraries)
-      if (SMTK_SANITIZER MATCHES "address")
-        find_library(SMTK_ASAN_LIBRARY NAMES libasan.so.5 DOC "ASan library")
-        mark_as_advanced(SMTK_ASAN_LIBRARY)
-
-        list(APPEND preload_libraries
-          "${SMTK_ASAN_LIBRARY}")
-      endif ()
-
-      if (preload_libraries)
-        if (UNIX AND NOT APPLE)
-          list(APPEND smtk_python_test_environment
-            "LD_PRELOAD=${preload_libraries}")
-        endif ()
-      endif ()
-    endif ()
-
     if (libpath_envvar AND smtk_libpath_env)
       list(APPEND smtk_python_test_environment
         "${libpath_envvar}=${smtk_libpath_env}")
@@ -543,6 +525,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       set_tests_properties("${name}"
         PROPERTIES
           ENVIRONMENT "${smtk_python_test_environment}")
+      smtk_test_apply_sanitizer("${name}")
     endfunction ()
   endif()
 endif()

@@ -32,3 +32,29 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=${SMTK_SANITIZER}")
   endif()
 endif()
+
+function (smtk_test_apply_sanitizer)
+  # Do nothing if we're not building under a sanitizer.
+  if (NOT SMTK_ENABLE_SANITIZER OR NOT SMTK_SANITIZER STREQUAL "address")
+    return ()
+  endif ()
+
+  # Bail on non-Unix or macOS.
+  if (NOT UNIX OR APPLE)
+    return ()
+  endif ()
+
+  find_library(LIBASAN_LIBRARY NAMES asan libasan.so.6 libasan.so.5)
+  mark_as_advanced(LIBASAN_LIBRARY)
+
+  # Bail if we can't find `libasan`.
+  if (NOT LIBASAN_LIBRARY)
+    return ()
+  endif ()
+
+  set_property(TEST ${ARGN} APPEND
+    PROPERTY
+      # XXX(cmake-3.22): use `ENVIRONMENT_MODIFICATION`.
+      # ENVIRONMENT_MODIFICATION "LD_PRELOAD=path_list_prepend:${LIBASAN_LIBRARY}")
+      ENVIRONMENT "LD_PRELOAD=${LIBASAN_LIBRARY}")
+endfunction ()
