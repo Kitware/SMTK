@@ -145,16 +145,16 @@ public:
   {
     if (ManagerCount::instance().operator[]<Registrar, Manager>(manager.get())++ == 0)
     {
-      Registrar().registerTo(manager);
+      Registrar().registerTo(m_Manager);
     }
   }
 
   ~MaybeRegister()
   {
-    std::shared_ptr<Manager> manager = m_Manager.lock();
-    if (manager && --ManagerCount::instance().operator[]<Registrar, Manager>(manager.get()) == 0)
+    if (
+      m_Manager && --ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager.get()) == 0)
     {
-      Registrar().unregisterFrom(manager);
+      Registrar().unregisterFrom(m_Manager);
     }
   }
 
@@ -164,14 +164,10 @@ public:
     return false;
   }
 
-  bool contains(const std::shared_ptr<Manager>& manager) const
-  {
-    auto m = m_Manager.lock();
-    return m && m == manager;
-  }
+  bool contains(const std::shared_ptr<Manager>& manager) const { return manager == m_Manager; }
 
 private:
-  std::weak_ptr<Manager> m_Manager;
+  std::shared_ptr<Manager> m_Manager;
 };
 
 /// Registrars may declare dependencies to other Registrars by defining a type
