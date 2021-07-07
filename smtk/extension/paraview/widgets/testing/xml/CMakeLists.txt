@@ -42,4 +42,10 @@ smtk_add_client_tests(
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/widgets
   )
+set(pv_tests)
+foreach (test_file IN LISTS TESTS_WITH_BASELINES)
+  get_filename_component(test_basename "${test_file}" NAME_WE)
+  list(APPEND pv_tests "pv.${test_basename}")
+endforeach ()
+smtk_test_apply_sanitizer(${pv_tests})
 endif()
