@@ -2,6 +2,15 @@ set(test_exclusions
   pv.MeshSelection
 )
 
+if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "windows")
+  list(APPEND test_exclusions
+    # PATH setup is needed for these to work. See:
+    # https://gitlab.kitware.com/paraview/paraview/-/merge_requests/5036 and
+    # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/6299
+    "^pv\\."
+    )
+endif ()
+
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
   list(APPEND test_exclusions
     # VTK lighting seems to be wrong.
