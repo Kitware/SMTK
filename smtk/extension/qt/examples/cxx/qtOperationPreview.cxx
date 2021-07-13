@@ -24,6 +24,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QProgressBar>
 #include <QSharedPointer>
 #include <QString>
 #include <QStringList>
@@ -72,6 +73,12 @@ int main(int argc, char* argv[])
   parser.setApplicationDescription("Load operation template and display editor dialog");
   parser.addHelpOption();
   parser.addPositionalArgument("operation_name", "e.g., smtk::model::GroupAuxilliaryGeometry");
+  QCommandLineOption progressOption(
+    QStringList() << "p"
+                  << "progress-bar",
+    "Display Progress Bar");
+  parser.addOption(progressOption);
+
   parser.process(app);
 
   if (!parser.parse(QCoreApplication::arguments()))
@@ -120,6 +127,15 @@ int main(int argc, char* argv[])
 
   // Initialize dialog
   smtk::extension::qtOperationDialog dialog(op, resManager, viewManager, false, nullptr);
+
+  if (parser.isSet(progressOption))
+  {
+    // Display the progress bar
+    QProgressBar* pbar = dialog.progressBar();
+    pbar->setRange(0, 0);
+    pbar->setVisible(true);
+  }
+
   int retcode = dialog.exec();
   return retcode;
 }

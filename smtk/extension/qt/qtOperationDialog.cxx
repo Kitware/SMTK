@@ -22,7 +22,9 @@
 #include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QEvent>
+#include <QHBoxLayout>
 #include <QObject>
+#include <QProgressBar>
 #include <QPushButton>
 #include <QRect>
 #include <QScreen>
@@ -83,6 +85,7 @@ class qtOperationDialogInternals
 public:
   QPushButton* m_applyButton = nullptr;
   QPushButton* m_cancelButton = nullptr;
+  QProgressBar* m_progressBar = nullptr;
   QTabWidget* m_tabWidget = nullptr;
 
   QSharedPointer<smtk::extension::qtUIManager> m_uiManager;
@@ -125,6 +128,11 @@ qtOperationDialog::qtOperationDialog(
   auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
     new smtk::extension::qtUIManager(op, resManager, viewManager));
   this->buildUI(op, uiManager, scrollable);
+}
+
+QProgressBar* qtOperationDialog::progressBar()
+{
+  return m_internals->m_progressBar;
 }
 
 void qtOperationDialog::buildUI(
@@ -181,16 +189,30 @@ void qtOperationDialog::buildUI(
 
   dialogLayout->addWidget(m_internals->m_tabWidget);
 
-  // 3. Add dialog buttons and replace operation view buttons
+  // 3. Add horizontal layout for buttons and progress bar
+  QHBoxLayout* bottomLayout = new QHBoxLayout();
+
+  // Add progress bar (hide by default)
+  m_internals->m_progressBar = new QProgressBar(this);
+  QSizePolicy pbarPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  pbarPolicy.setHorizontalStretch(1);
+  m_internals->m_progressBar->setSizePolicy(pbarPolicy);
+
+  m_internals->m_progressBar->setVisible(false);
+  bottomLayout->addWidget(m_internals->m_progressBar);
+  bottomLayout->addSpacing(10);
+
+  // Replace operation view buttons
   auto* buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
-  dialogLayout->addWidget(buttonBox);
-  this->setLayout(dialogLayout);
+  bottomLayout->addWidget(buttonBox);
 
   m_internals->m_applyButton = buttonBox->button(QDialogButtonBox::Apply);
   m_internals->m_cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
   // don't set a default button, so "Enter" won't dismiss the dialog. But
   // make Apply come first it tab order, so tabbing to Apply then "Enter" works.
   QWidget::setTabOrder(m_internals->m_applyButton, m_internals->m_cancelButton);
+
+  dialogLayout->addLayout(bottomLayout);
 
   QObject::connect(
     m_internals->m_smtkView,

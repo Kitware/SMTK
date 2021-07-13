@@ -19,6 +19,7 @@
 #include <QDialog>
 #include <QSharedPointer>
 
+class QProgressBar;
 class QShowEvent;
 class QWidget;
 class qtOperationDialogInternals;
@@ -69,6 +70,9 @@ public:
     bool scrollable,
     QWidget* parentWidget = nullptr);
   virtual ~qtOperationDialog();
+
+  // Applications can access progress bar, which is hidden by default.
+  QProgressBar* progressBar();
 
 signals:
   void operationExecuted(const smtk::operation::Operation::Result& result);
