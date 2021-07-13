@@ -3,7 +3,6 @@ set(projectSrcs
   Operation.cxx
   OperationFactory.cxx
   Project.cxx
-  RegisterPythonProject.cxx
   Registrar.cxx
   ResourceContainer.cxx
 
@@ -27,7 +26,6 @@ set(projectHeaders
   Operation.h
   OperationFactory.h
   Project.h
-  RegisterPythonProject.h
   Registrar.h
   ResourceContainer.h
   Tags.h
@@ -52,7 +50,7 @@ foreach (iconFile ${iconFiles})
   get_filename_component(genFileBase "${iconFile}" NAME_WE)
   set(genFile "${CMAKE_CURRENT_BINARY_DIR}/view/icons/${genFileBase}_svg.h")
   configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
-endforeach()
+endforeach ()
 
 set(projectOperators
   Add
@@ -70,7 +68,7 @@ foreach (operator ${projectOperators})
   list(APPEND projectSrcs operators/${operator}.cxx)
   list(APPEND projectHeaders operators/${operator}.h)
   list(APPEND _projectDependencies ${headerName})
-endforeach()
+endforeach ()
 add_custom_target(projectGenHeaders DEPENDS ${_projectDependencies})
 set(projectDependencies ${_projectDependencies} PARENT_SCOPE)
 
@@ -87,6 +85,10 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND projectSrcs
+      RegisterPythonProject.cxx)
+  list(APPEND projectHeaders
+      RegisterPythonProject.h)
   add_subdirectory(pybind11)
 endif()
 
