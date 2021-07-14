@@ -192,24 +192,43 @@ analyze:fedora33-coverage:
 
 ## Build and test
 
-build:macos-plain:
+build:macos-arm64:
     extends:
-        - .macos_plain
+        - .macos_arm64
+        - .cmake_build_macos
+        - .cmake_build_artifacts
+        - .macos_arm64_builder_tags
+        - .run_automatically
+
+test:macos-arm64:
+    extends:
+        - .macos_arm64
+        - .cmake_test_macos
+        - .macos_arm64_builder_tags
+        - .run_automatically
+    dependencies:
+        - build:macos-arm64
+    needs:
+        - build:macos-arm64
+
+build:macos-x86_64:
+    extends:
+        - .macos_x86_64
         - .cmake_build_macos
         - .cmake_build_artifacts
         - .macos_builder_tags
         - .run_automatically
 
-test:macos-plain:
+test:macos-x86_64:
     extends:
-        - .macos_plain
+        - .macos_x86_64
         - .cmake_test_macos
         - .macos_builder_tags
         - .run_automatically
     dependencies:
-        - build:macos-plain
+        - build:macos-x86_64
     needs:
-        - build:macos-plain
+        - build:macos-x86_64
 
 # Windows
 
