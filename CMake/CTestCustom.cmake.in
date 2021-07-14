@@ -39,5 +39,8 @@ if(@SMTK_COVERAGE_ENABLED@)
     "qt"
     "autogen"
     "CMakeFiles"
+
+    # ParaView-generated sources.
+    "plugin/.*Plugin\.h"
     )
 endif()
