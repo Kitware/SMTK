@@ -152,7 +152,7 @@ test:fedora33-ubsan:
 build:fedora33-tidy:
     extends:
         - .fedora33_tidy
-        - .cmake_build_linux_tidy
+        - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically

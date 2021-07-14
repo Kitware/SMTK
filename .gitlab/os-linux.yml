@@ -5,7 +5,7 @@
 ### Fedora
 
 .fedora33:
-    image: "kitware/cmb:ci-smtk-fedora33-20210420"
+    image: "kitware/cmb:ci-smtk-fedora33-20210714"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -65,14 +65,14 @@
 
 .fedora33_vtk_python3:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-vtk-20210420"
+    image: "kitware/cmb:ci-smtk-fedora33-vtk-20210714"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_vtk_python3
 
 .fedora33_paraview:
     extends: .fedora33_vtk_python3
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20210420"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20210714"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
@@ -115,20 +115,6 @@
 
     script:
         - *before_script_linux
-        - .gitlab/ci/sccache.sh
-        - sccache --start-server
-        - sccache --show-stats
-        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_configure.cmake"
-        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_build.cmake"
-        - sccache --show-stats
-    interruptible: true
-
-.cmake_build_linux_tidy:
-    stage: build
-
-    script:
-        - *before_script_linux
-        - dnf install -y --setopt=install_weak_deps=False clang-tools-extra
         - .gitlab/ci/sccache.sh
         - sccache --start-server
         - sccache --show-stats
