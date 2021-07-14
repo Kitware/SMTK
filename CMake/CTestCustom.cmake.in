@@ -20,6 +20,19 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   # ParaView generated code (paraview/paraview!4957)
   "AutoStartImplementation.*modernize-use-nullptr"
   "pqSMTKAutoStart.*Implementation.*modernize-use-nullptr"
+  # Fixes from paraview/paraview!5058
+  "_server_manager\\.h.*misc-definitions-in-headers"
+  "_server_manager\\.h.*modernize-use-emplace"
+  "_server_manager_modules\\.h.*misc-definitions-in-headers"
+  "_server_manager_modules\\.h.*modernize-use-emplace"
+  "_client_server\\.h.*misc-definitions-in-headers"
+  "_qch\\.h.*modernize-deprecated-headers"
+  "_qch\\.h.*misc-definitions-in-headers"
+  "_server_manager_modules_data\\.h.*misc-definitions-in-headers"
+  "_server_manager_modules_data\\.h.*modernize-deprecated-headers"
+  "_server_manager_data\\.h.*misc-definitions-in-headers"
+  "_server_manager_data\\.h.*modernize-deprecated-headers"
+  "note: make as 'inline'"
 
   # CMake-generated sources. (cmake/cmake!6352)
   "UnitTests_smtk_"
