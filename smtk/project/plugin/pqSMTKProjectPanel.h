@@ -35,9 +35,9 @@ protected slots:
   virtual void sourceRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
 protected:
-  pqSMTKProjectBrowser* m_browser;
+  pqSMTKProjectBrowser* m_browser{ nullptr };
   smtk::view::ConfigurationPtr m_view;
-  smtk::extension::qtUIManager* m_viewUIMgr;
+  smtk::extension::qtUIManager* m_viewUIMgr{ nullptr };
 };
 
 #endif
