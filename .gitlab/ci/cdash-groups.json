@@ -43,7 +43,12 @@
         {
             "group": "master",
             "site": "gitlab-ci",
-            "buildname": "macos_plain"
+            "buildname": "macos_arm64"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
+            "buildname": "macos_x86_64"
         },
         {
             "group": "master",
