@@ -13,7 +13,7 @@
 
 #include "smtk/common/Version.h"
 
-#define SMTK_VERSION_CHECK(major, minor) (100ULL * major + minor)
+#define SMTK_VERSION_CHECK(major, minor) (100ULL * (major) + (minor))
 
 #define SMTK_VERSION_NUMBER SMTK_VERSION_CHECK(SMTK_VERSION_MAJOR, SMTK_VERSION_MINOR)
 
