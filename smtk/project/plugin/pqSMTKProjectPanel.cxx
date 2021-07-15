@@ -23,8 +23,6 @@
 
 pqSMTKProjectPanel::pqSMTKProjectPanel(QWidget* parent)
   : Superclass(parent)
-  , m_browser(nullptr)
-  , m_viewUIMgr(nullptr)
 {
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(pqSMTKProjectBrowser::getJSONConfiguration());

@@ -68,7 +68,7 @@ public:
     smtk::view::ManagerPtr viewManager,
     bool scrollable,
     QWidget* parentWidget = nullptr);
-  virtual ~qtOperationDialog();
+  ~qtOperationDialog() override;
 
 signals:
   void operationExecuted(const smtk::operation::Operation::Result& result);

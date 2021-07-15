@@ -66,7 +66,7 @@ public:
     const PassedDependencies& dependencies,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
-  virtual ~TaskNeedsResources() = default;
+  ~TaskNeedsResources() override = default;
 
   void configure(const Configuration& config);
 

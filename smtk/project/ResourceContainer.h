@@ -261,7 +261,7 @@ template<typename ResourceType>
 std::set<smtk::shared_ptr<ResourceType>> ResourceContainer::findByRole(const std::string& role)
 {
   std::set<smtk::shared_ptr<ResourceType>> cast_set;
-  for (auto resourceptr : this->findByRole(role))
+  for (const auto& resourceptr : this->findByRole(role))
   {
     cast_set.insert(smtk::dynamic_pointer_cast<ResourceType>(resourceptr));
   }

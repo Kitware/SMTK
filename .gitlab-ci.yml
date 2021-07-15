@@ -45,6 +45,7 @@ test:fedora33:
     extends:
         - .fedora33
         - .cmake_test_linux
+        - .cmake_test_artifacts
         - .linux_test_tags
         - .run_automatically
     dependencies:
@@ -64,6 +65,7 @@ test:fedora33-vtk-python3:
     extends:
         - .fedora33_vtk_python3
         - .cmake_test_linux
+        - .cmake_test_artifacts
         - .linux_test_tags
         - .run_automatically
     dependencies:
@@ -83,6 +85,7 @@ test:fedora33-paraview:
     extends:
         - .fedora33_paraview
         - .cmake_test_linux
+        - .cmake_test_artifacts
         - .linux_test_tags
         - .run_automatically
     dependencies:
@@ -102,6 +105,7 @@ test:fedora33-nodata:
     extends:
         - .fedora33_nodata
         - .cmake_test_linux
+        - .cmake_test_artifacts
         - .linux_test_tags
         - .run_automatically
     dependencies:
@@ -123,6 +127,7 @@ test:fedora33-asan:
     extends:
         - .fedora33_asan
         - .cmake_memcheck_linux
+        - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_automatically
     dependencies:
@@ -142,6 +147,7 @@ test:fedora33-ubsan:
     extends:
         - .fedora33_ubsan
         - .cmake_memcheck_linux
+        - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_automatically
     dependencies:
@@ -204,6 +210,7 @@ test:macos-arm64:
     extends:
         - .macos_arm64
         - .cmake_test_macos
+        - .cmake_test_artifacts
         - .macos_arm64_builder_tags
         - .run_automatically
     dependencies:
@@ -223,6 +230,7 @@ test:macos-x86_64:
     extends:
         - .macos_x86_64
         - .cmake_test_macos
+        - .cmake_test_artifacts
         - .macos_builder_tags
         - .run_automatically
     dependencies:
@@ -246,6 +254,7 @@ test:windows-vs2019-ninja:
     extends:
         - .windows_vs2019_ninja
         - .cmake_test_windows
+        - .cmake_test_artifacts
         - .windows_builder_tags
         - .run_automatically
     dependencies:

@@ -20,6 +20,7 @@ ctest_memcheck(
   PARALLEL_LEVEL "${nproc}"
   RETURN_VALUE test_result
   EXCLUDE "${test_exclusions}"
+  OUTPUT_JUNIT "${CTEST_BINARY_DIRECTORY}/junit.xml"
   DEFECT_COUNT defects)
 ctest_submit_multi(PARTS Test)
 ctest_submit_multi(PARTS Memcheck)

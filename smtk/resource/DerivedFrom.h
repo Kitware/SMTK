@@ -72,7 +72,7 @@ protected:
   {
   }
 
-  DerivedFrom(DerivedFrom&& rhs) = default;
+  DerivedFrom(DerivedFrom&& rhs) noexcept = default;
 };
 
 template<typename Self, typename Parent>

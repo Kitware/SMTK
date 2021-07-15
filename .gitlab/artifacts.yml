@@ -58,9 +58,19 @@
             # CDash files.
             - build/DartConfiguration.tcl
 
+.cmake_test_artifacts:
+    artifacts:
+        expire_in: 1d
+        reports:
+            junit:
+                - build/junit.xml
+
 .cmake_coverage_artifacts:
     artifacts:
         expire_in: 1d
+        reports:
+            junit:
+                - build/junit.xml
         paths:
             # Generated headers.
             # XXX(globbing): Can be simplified with support from
