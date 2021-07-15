@@ -97,7 +97,7 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
     .def("isObjectAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::resource::PersistentObjectPtr const &) const) &smtk::attribute::Attribute::isObjectAssociated, py::arg("componentPtr"))
     .def("isEntityAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::common::UUID const &) const) &smtk::attribute::Attribute::isEntityAssociated, py::arg("entity"))
     .def("isEntityAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::Attribute::isEntityAssociated, py::arg("entityref"))
-    .def("isRelevant", &smtk::attribute::Attribute::isRelevant)
+    .def("isRelevant", &smtk::attribute::Attribute::isRelevant, py::arg("includeReadAccess"), py::arg("readAccessLevel"))
     .def("isValid", (bool (smtk::attribute::Attribute::*)(bool) const) &smtk::attribute::Attribute::isValid, py::arg("useActiveCategories") = true)
     .def("isValid", (bool (smtk::attribute::Attribute::*)(std::set<std::string> const &) const) &smtk::attribute::Attribute::isValid, py::arg("categories"))
     .def("items", &smtk::attribute::Attribute::items)

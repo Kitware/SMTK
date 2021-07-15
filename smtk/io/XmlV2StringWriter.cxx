@@ -1154,6 +1154,10 @@ void XmlV2StringWriter::processItemAttributes(xml_node& node, ItemPtr item)
   {
     node.append_attribute("AdvanceWriteLevel") = item->localAdvanceLevel(1);
   }
+  if (item->isIgnored())
+  {
+    node.append_attribute("IsIgnored").set_value(item->isIgnored());
+  }
 }
 
 void XmlV2StringWriter::processItemType(xml_node& node, ItemPtr item)

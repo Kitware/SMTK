@@ -412,9 +412,13 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
   /// The default value types for all resources and components are int, double,
   /// string, and vectors of these types.
   typedef std::tuple<
+    Indexed<bool>,
+    Indexed<int>,
     Indexed<long>,
     Indexed<double>,
     Indexed<std::string>,
+    Indexed<std::vector<bool>>,
+    Indexed<std::vector<int>>,
     Indexed<std::vector<long>>,
     Indexed<std::vector<double>>,
     Indexed<std::vector<std::string>>>

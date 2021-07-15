@@ -201,6 +201,11 @@ void XmlDocV4Parser::processItem(pugi::xml_node& node, smtk::attribute::ItemPtr 
   {
     item->setForceRequired(xatt.as_bool());
   }
+  xatt = node.attribute("IsIgnored");
+  if (xatt)
+  {
+    item->setIsIgnored(xatt.as_bool());
+  }
 }
 
 void XmlDocV4Parser::processViews(xml_node& root)

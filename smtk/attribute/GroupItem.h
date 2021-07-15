@@ -168,6 +168,9 @@ public:
   /// See Items.h for a description of these options.
   bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
+  ///\brief Returns true if the group item has relevant children.
+  bool hasRelevantChildren(bool includeReadAccess = false, int readAccessLevel = 0) const;
+
 protected:
   GroupItem(Attribute* owningAttribute, int itemPosition);
   GroupItem(Item* owningItem, int myPosition, int mySubGroupPosition);

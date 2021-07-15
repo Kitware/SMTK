@@ -499,3 +499,18 @@ bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   }
   return Item::assign(sourceItem, options);
 }
+
+bool GroupItem::hasRelevantChildren(bool includeReadAccess, int readAccessLevel) const
+{
+  for (size_t elementIndex = 0; elementIndex < this->numberOfGroups(); elementIndex++)
+  {
+    for (size_t valueIndex = 0; valueIndex < this->numberOfItemsPerGroup(); valueIndex++)
+    {
+      if (this->item(elementIndex, valueIndex)->isRelevant(includeReadAccess, readAccessLevel))
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}

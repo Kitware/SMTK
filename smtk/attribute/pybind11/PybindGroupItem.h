@@ -38,6 +38,7 @@ inline PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pyb
     .def("isExtensible", &smtk::attribute::GroupItem::isExtensible)
     .def("item", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t) const) &smtk::attribute::GroupItem::item, py::arg("ith"))
     .def("item", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::size_t) const) &smtk::attribute::GroupItem::item, py::arg("element"), py::arg("ith"))
+    .def("hasRelevantChildren", &smtk::attribute::GroupItem::insertGroups, py::arg("includeReadAccess"), py::arg("readAccessLevel"))
     .def("maxNumberOfChoices", &smtk::attribute::GroupItem::maxNumberOfChoices)
     .def("maxNumberOfGroups", &smtk::attribute::GroupItem::maxNumberOfGroups)
     .def("minNumberOfChoices", &smtk::attribute::GroupItem::minNumberOfChoices)
