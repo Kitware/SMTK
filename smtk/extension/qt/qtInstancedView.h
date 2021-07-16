@@ -35,9 +35,16 @@ class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtInstancedView);
 
-  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  ///\brief Create an instance view using an optionally  specified attribute resource instead of the one
+  /// associated with the UI Manager
 
-  qtInstancedView(const smtk::view::Information& info);
+  static qtBaseView* createViewWidget(
+    const smtk::view::Information& info,
+    smtk::attribute::ResourcePtr overrideResource = nullptr);
+
+  qtInstancedView(
+    const smtk::view::Information& info,
+    smtk::attribute::ResourcePtr overrideResource = nullptr);
   ~qtInstancedView() override;
   // Returns true if all attributes in the view are valid
   bool isValid() const override;
@@ -64,6 +71,7 @@ protected:
 
 private:
   qtInstancedViewInternals* Internals;
+  smtk::attribute::ResourcePtr m_overrideResource;
 
 }; // class
 }; // namespace extension

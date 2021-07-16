@@ -244,6 +244,68 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   }
   return checkUniquenessCondition(compItem, candidates);
 }
+
+smtk::attribute::ResourcePtr findResourceContainingDefinition(
+  const std::string& defType,
+  smtk::attribute::ResourcePtr& sourceAttResource,
+  smtk::resource::ManagerPtr& resManager,
+  const smtk::common::UUID& ignoreResource)
+{
+  if (defType.empty())
+  {
+    return nullptr; // No definition was given
+  }
+
+  // Are we dealing with a source attribute resource?
+  if (sourceAttResource)
+  {
+    // Does it contain the definition?
+    if (sourceAttResource->findDefinition(defType))
+    {
+      return sourceAttResource;
+    }
+    // Are there Resources associated with the sourceAttResource?
+    if (sourceAttResource->hasAssociations())
+    {
+      auto resources = sourceAttResource->associations();
+      // Lets see if any of the resources are attribute resources
+      for (const auto& resource : resources)
+      {
+        if (resource->id() == ignoreResource)
+        {
+          continue;
+        }
+        smtk::attribute::ResourcePtr attRes =
+          std::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
+        if (attRes && attRes->findDefinition(defType))
+        {
+          return attRes;
+        }
+      }
+    }
+  }
+  if (resManager == nullptr) // There is no other place to search
+  {
+    return nullptr;
+  }
+  // Get all of the Attribute Resources stored in the Manager
+  auto managedResources = resManager->find(smtk::common::typeName<attribute::Resource>());
+  for (const auto& resource : managedResources)
+  {
+    if (resource->id() == ignoreResource)
+    {
+      continue;
+    }
+    smtk::attribute::ResourcePtr attRes =
+      std::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
+    if (attRes && attRes->findDefinition(defType))
+    {
+      return attRes;
+    }
+  }
+  // Couldn't find it
+  return nullptr;
+}
 } // namespace utility
 } // namespace attribute
 } // namespace smtk

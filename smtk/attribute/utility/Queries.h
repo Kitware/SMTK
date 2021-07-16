@@ -63,6 +63,23 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   smtk::attribute::ResourcePtr& attResource,
   smtk::resource::ManagerPtr& resManager,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
+///\brief Find an Attribute Resource that contains an Attribute Definition type.
+///
+/// If ignoreResource is specified the corresponding resource will not participate in determining
+/// which objects can be associated. The main use case would be updating the widget because a
+/// resource is about to be removed from the system.  Since it is still in memory we needed a way to ignore it.
+/// There are 3 possible sources of Attribute Resources:
+///
+/// * The sourceAttResource (if specified) contains the Definition - in that case, it is returned
+/// * One of the Attribute Resources associated with the sourceAttResource (if specified), contains the Definition
+/// * The resManager (if specified) has an Attribute Resource that contains the Definition
+/// The above is also the order of precedence in terms of the search order
+SMTKCORE_EXPORT
+smtk::attribute::ResourcePtr findResourceContainingDefinition(
+  const std::string& defType,
+  smtk::attribute::ResourcePtr& sourceAttResource,
+  smtk::resource::ManagerPtr& resManager,
+  const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
 } // namespace utility
 } // namespace attribute
 } // namespace smtk
