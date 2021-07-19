@@ -96,11 +96,15 @@ public:
   }
   /// @}
 
-  ///\brief Returns true if the item is relevant based on the resource's
-  /// active categories.  If the Resource does not have active categories enabled or
-  /// if the item passes its category check, this method will return true; else
-  /// it will return false
-  bool isRelevant() const;
+  ///\brief Returns true if the item is relevant.
+  ///
+  /// If includeReadAccess is false then if the Resource does not have active categories enabled or
+  /// if the item passes its category check this method will return true; else
+  /// it will return false.
+  ///
+  /// If includeReadAccess is true, then the item's
+  /// advanceLevel must also be <= readAccessLevel in addition to passing the category checks in order to pass.
+  virtual bool isRelevant(bool includeReadAccess = false, unsigned int readAccessLevel = 0) const;
 
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle
@@ -186,7 +190,7 @@ public:
   ///
   /// if mode is 1 then the write access level is returned;
   /// else the read access level is returned
-  /// The information can either be specificied directly to the item
+  /// The information can either be specified directly to the item
   /// using setLocalAdvanceLevel() or from the item's definition.
   /// If this item is not owned by another item or attribute the value
   /// is simply returned.  Else the max of the value and that of its
@@ -219,7 +223,7 @@ public:
 
   virtual void reset();
 
-  /// Rotate internal data. Implementation to be added in subclasses.
+  /// Rotate internal data. Implementation to be added in sub-classes.
   /// Default behavior here is no-op (returns false).
   virtual bool rotate(std::size_t fromPosition, std::size_t toPosition);
 
@@ -233,8 +237,20 @@ public:
   void detachOwningItem() { m_owningItem = nullptr; }
 
   /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  /// Returns true if success and false if a problem occured
+  /// Returns true if success and false if a problem occurred
   virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+
+  ///@{
+  /// \brief Controls if an item should be ignored.
+  ///
+  /// There are cases within a work-flow when an item may not be currently relevant and should be ignored.
+  /// When setIgnored is passed true, the item::isRelevant will return false regardless of category or
+  /// advance property checks
+  /// By default isIgnored() will return false.
+  void setIsIgnored(bool val) { m_isIgnored = val; }
+
+  bool isIgnored() const { return m_isIgnored; }
+  ///@}
 
   static std::string type2String(Item::Type t);
   static Item::Type string2Type(const std::string& s);
@@ -259,6 +275,7 @@ protected:
   int m_position;
   int m_subGroupPosition;
   bool m_isEnabled;
+  bool m_isIgnored;
   smtk::attribute::ConstItemDefinitionPtr m_definition;
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
 

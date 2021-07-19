@@ -30,7 +30,7 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("name", &smtk::attribute::Item::name)
     .def("label", &smtk::attribute::Item::label)
     .def("type", &smtk::attribute::Item::type)
-    .def("isRelevant", &smtk::attribute::Item::isRelevant)
+    .def("isRelevant", &smtk::attribute::Item::isRelevant, py::arg("includeReadAccess"), py::arg("readAccessLevel"))
     .def("isValid", (bool (smtk::attribute::Item::*)(bool) const) &smtk::attribute::Item::isValid, py::arg("useActiveCategories") = true)
     .def("isValid", (bool (smtk::attribute::Item::*)(std::set<std::string> const &) const) &smtk::attribute::Item::isValid, py::arg("categories"))
     .def("definition", &smtk::attribute::Item::definition)
@@ -44,6 +44,8 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("localEnabledState", &smtk::attribute::Item::localEnabledState)
     .def("setForceRequired", &smtk::attribute::Item::setForceRequired, py::arg("forceRequiredMode"))
     .def("forceRequired", &smtk::attribute::Item::forceRequired)
+    .def("setIsIgnored", &smtk::attribute::Item::setIsIgnored, py::arg("isIgnoredValue"))
+    .def("isIgnored", &smtk::attribute::Item::isIgnored)
     // NOTE that the Python form of this method is returning a copy since Python
     // doesn't support const references
     .def("categories", &smtk::attribute::Item::categories)

@@ -42,6 +42,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ItemPtr& itemPtr)
   {
     j["AdvanceWriteLevel"] = itemPtr->localAdvanceLevel(1);
   }
+  if (itemPtr->isIgnored())
+  {
+    j["IsIgnored"] = true;
+  }
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
@@ -74,6 +78,11 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
   if (result != j.end())
   {
     itemPtr->setLocalAdvanceLevel(1, *result);
+  }
+  result = j.find("IsIgnored");
+  if (result != j.end())
+  {
+    itemPtr->setIsIgnored(*result);
   }
 }
 } // namespace attribute

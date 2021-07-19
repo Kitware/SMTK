@@ -24,6 +24,7 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_position(itemPosition)
   , m_isEnabled(true)
   , m_forceRequired(false)
+  , m_isIgnored(false)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -37,6 +38,7 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_subGroupPosition(inSubGroupPosition)
   , m_isEnabled(true)
   , m_forceRequired(false)
+  , m_isIgnored(false)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -78,18 +80,27 @@ bool Item::isValid(bool useActiveCategories) const
   return this->isValidInternal(false, cats);
 }
 
-bool Item::isRelevant() const
+bool Item::isRelevant(bool includeReadAccess, unsigned int readAccessLevel) const
 {
+  if (m_isIgnored)
+  {
+    return false; // Item has been marked to be ignored
+  }
+
   auto myAttribute = this->attribute();
   if (myAttribute)
   {
     auto aResource = myAttribute->attributeResource();
     if (aResource && aResource->activeCategoriesEnabled())
     {
-      return this->categories().passes(aResource->activeCategories());
+      if (!this->categories().passes(aResource->activeCategories()))
+      {
+        return false;
+      }
     }
   }
-  return true;
+
+  return (includeReadAccess ? (this->advanceLevel() <= readAccessLevel) : true);
 }
 
 std::string Item::name() const

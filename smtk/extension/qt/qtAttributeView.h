@@ -123,6 +123,8 @@ protected:
   smtk::attribute::AttributePtr getAttributeFromItem(const QStandardItem* item);
   smtk::attribute::AttributePtr getAttributeFromIndex(const QModelIndex& index);
   smtk::attribute::Attribute* getRawAttributeFromItem(const QStandardItem* item);
+  smtk::attribute::Attribute* getRawAttributeFromIndex(const QModelIndex& index);
+  QStandardItem* getItemFromAttribute(smtk::attribute::Attribute* attribute);
 
   ///\brief Method used to delete an attribute from its resource
   virtual bool deleteAttribute(smtk::attribute::AttributePtr att);

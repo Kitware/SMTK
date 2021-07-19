@@ -201,7 +201,9 @@ void qtGroupItem::createWidget()
   {
     m_internals->m_titleCheckbox->setVisible(true);
     m_internals->m_titleCheckbox->setChecked(item->localEnabledState());
-    m_internals->m_contentsFrame->setVisible(item->localEnabledState());
+    m_internals->m_contentsFrame->setVisible(
+      item->localEnabledState() &&
+      item->hasRelevantChildren(true, this->uiManager()->advanceLevel()));
   }
   else
   {
@@ -211,14 +213,15 @@ void qtGroupItem::createWidget()
 
 void qtGroupItem::setEnabledState(int state)
 {
-  bool enabled = (state == Qt::Checked);
-  m_internals->m_contentsFrame->setVisible(enabled);
-  auto item = m_itemInfo.item();
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (item == nullptr)
   {
     return;
   }
 
+  bool enabled = (state == Qt::Checked);
+  m_internals->m_contentsFrame->setVisible(
+    enabled && item->hasRelevantChildren(true, this->uiManager()->advanceLevel()));
   if (enabled != item->localEnabledState())
   {
     item->setIsEnabled(enabled);

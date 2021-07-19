@@ -267,7 +267,7 @@ void qtAttributeView::createWidget()
 
   // m_internals->AttDefMap has to be initialized before getAllDefinitions()
   // since the getAllDefinitions() call needs the categories list in AttDefMap
-  // Create a map for all catagories so we can cluster the definitions
+  // Create a map for all categories so we can cluster the definitions
   m_internals->AttDefMap.clear();
   const ResourcePtr attResource = this->uiManager()->attResource();
   std::set<std::string>::const_iterator it;
@@ -548,6 +548,20 @@ smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(const QStan
   return (item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr);
 }
 
+smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromIndex(const QModelIndex& index)
+{
+  if (!index.isValid())
+  {
+    return nullptr;
+  }
+
+  QModelIndex attIndex = index.sibling(index.row(), name_column);
+  smtk::attribute::Attribute* raw =
+    static_cast<Attribute*>(attIndex.data(Qt::UserRole).value<void*>());
+
+  return raw;
+}
+
 smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(const QStandardItem* item)
 {
   smtk::attribute::Attribute* raw = this->getRawAttributeFromItem(item);
@@ -561,20 +575,22 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(const QStand
 
 smtk::attribute::AttributePtr qtAttributeView::getAttributeFromIndex(const QModelIndex& index)
 {
-  if (!index.isValid())
-  {
-    return smtk::attribute::AttributePtr();
-  }
+  smtk::attribute::Attribute* raw = this->getRawAttributeFromIndex(index);
+  return (raw ? raw->shared_from_this() : smtk::attribute::AttributePtr());
+}
 
-  QModelIndex attIndex = index.sibling(index.row(), name_column);
-  smtk::attribute::Attribute* raw =
-    static_cast<Attribute*>(attIndex.data(Qt::UserRole).value<void*>());
-  if (raw == nullptr)
+QStandardItem* qtAttributeView::getItemFromAttribute(smtk::attribute::Attribute* attribute)
+{
+  int n = m_internals->ListTableModel->rowCount();
+  for (int i = 0; i < n; i++)
   {
-    return smtk::attribute::AttributePtr();
+    QStandardItem* item = m_internals->ListTableModel->item(i);
+    if (this->getRawAttributeFromItem(item) == attribute)
+    {
+      return item;
+    }
   }
-
-  return raw->shared_from_this();
+  return nullptr;
 }
 
 // The selected item will always refer to the item that has the attribute data assigned to
@@ -941,8 +957,13 @@ QStandardItem* qtAttributeView::addAttributeListItem(smtk::attribute::AttributeP
 {
   QStandardItem* item = new QStandardItem(QString::fromUtf8(childData->name().c_str()));
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  Qt::ItemFlags itemFlags(
-    nonEditableFlags | (this->attributeNamesConstant() ? 0x0 : Qt::ItemIsEditable));
+
+  //Can the attribute name be changed?
+  bool nameIsConstant = this->attributeNamesConstant() ||
+    (childData->properties().contains<bool>("smtk.extensions.attribute_view.name_read_only") &&
+     childData->properties().at<bool>("smtk.extensions.attribute_view.name_read_only"));
+
+  Qt::ItemFlags itemFlags(nonEditableFlags | (nameIsConstant ? 0x0 : Qt::ItemIsEditable));
   QVariant vdata;
   vdata.setValue(static_cast<void*>(childData.get()));
   item->setData(vdata, Qt::UserRole);
@@ -1474,13 +1495,34 @@ int qtAttributeView::handleOperationEvent(
   // current attribute being displayed
   smtk::attribute::ComponentItemPtr compItem;
   std::size_t i, n;
-  if (m_internals->CurrentAtt != nullptr)
+  smtk::attribute::DefinitionPtr currentDef = this->getCurrentDef();
+
+  if (currentDef == nullptr)
   {
-    compItem = result->findComponent("modified");
-    n = compItem->numberOfValues();
-    for (i = 0; i < n; i++)
+    // There is nothing being displayed so nothing needs to be updated
+    return 0;
+  }
+
+  compItem = result->findComponent("modified");
+  n = compItem->numberOfValues();
+  for (i = 0; i < n; i++)
+  {
+    // We need to make sure the attribute's name and name edit-ability are properly set
+    if (!compItem->isSet(i))
     {
-      if (compItem->isSet(i) && (compItem->value(i) == m_internals->CurrentAtt->attribute()))
+      continue;
+    }
+
+    auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
+    if (att == nullptr)
+    {
+      continue;
+    }
+    smtk::attribute::DefinitionPtr attDef = att->definition();
+    if (attDef->isA(currentDef))
+    {
+      // Is this the current attribute being displayed?
+      if (att == m_internals->CurrentAtt->attribute())
       {
         // Update the attribute's items
         auto items = m_internals->CurrentAtt->items();
@@ -1488,7 +1530,28 @@ int qtAttributeView::handleOperationEvent(
         {
           item->updateItemData();
         }
-        break; // we don't have to keep looking for this ComponentPtr
+      }
+      // Need to update the item's name and edit ability
+      auto* item = this->getItemFromAttribute(att.get());
+      if (item)
+      {
+        item->setText(QString::fromUtf8(att->name().c_str()));
+        if (!this->attributeNamesConstant())
+        {
+          // Need to see if the name is editable
+          if (
+            att->properties().contains<bool>("smtk.extensions.attribute_view.name_read_only") &&
+            att->properties().at<bool>("smtk.extensions.attribute_view.name_read_only"))
+          {
+            Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+            item->setFlags(itemFlags);
+          }
+          else
+          {
+            Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+            item->setFlags(itemFlags);
+          }
+        }
       }
     }
   }
@@ -1501,14 +1564,26 @@ int qtAttributeView::handleOperationEvent(
   {
     for (i = 0; i < n; i++)
     {
-      if (compItem->isSet(i))
+      if (!compItem->isSet(i))
+      {
+        continue;
+      }
+
+      auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
+      if (att == nullptr)
+      {
+        continue;
+      }
+      smtk::attribute::DefinitionPtr attDef = att->definition();
+      // Is this type of attribute being displayed?
+      if (attDef->isA(currentDef))
       {
         int row, numRows = m_internals->ListTableModel->rowCount();
         for (row = 0; row < numRows; ++row)
         {
           QStandardItem* item = m_internals->ListTableModel->item(row, name_column);
-          smtk::attribute::Attribute* att = this->getRawAttributeFromItem(item);
-          if (compItem->value(i).get() == att)
+          smtk::attribute::Attribute* itemAtt = this->getRawAttributeFromItem(item);
+          if (att.get() == itemAtt)
           {
             m_internals->ListTableModel->removeRow(row);
             break;
@@ -1516,14 +1591,6 @@ int qtAttributeView::handleOperationEvent(
         }
       }
     }
-  }
-
-  // In the case of created components we need to see if anything would
-  // cause us to reset the list view
-  smtk::attribute::DefinitionPtr currentDef = this->getCurrentDef();
-  if (currentDef == nullptr)
-  {
-    return 0; // nothing to do
   }
 
   compItem = result->findComponent("created");

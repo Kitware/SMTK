@@ -321,11 +321,15 @@ public:
   bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const;
 
-  ///\brief Returns true if the attribute is relevant based on the resource's
-  /// active categories.  If the Resource does not have active categories enabled or
-  /// if the attribute passes its category check, this method will return true; else
+  ///\brief Returns true if the attribute is relevant.
+  ///
+  /// If includeReadAccess is false then if the Resource does not have active categories enabled or
+  /// if the attribute passes its category check this method will return true; else
   /// it will return false
-  bool isRelevant() const;
+  ///
+  /// If includeReadAccess is true, then a subset of the attribute's items must have their
+  /// read access <= readAccessLevel in addition to passing the category checks.
+  bool isRelevant(bool includeReadAccess = false, int readAccessLevel = 0) const;
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;
