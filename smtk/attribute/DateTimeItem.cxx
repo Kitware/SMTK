@@ -45,12 +45,8 @@ bool DateTimeItem::isValidInternal(bool useCategories, const std::set<std::strin
   {
     return true;
   }
-  // If the item is not enabled or if all of its values are set then it is valid
-  // else it is enabled and contains unset values making it invalid
-  if (!this->isEnabled())
-  {
-    return true;
-  }
+
+  // Check to see if  all of its values are set
   for (auto it = m_isSet.begin(); it != m_isSet.end(); ++it)
   {
     if (!(*it))

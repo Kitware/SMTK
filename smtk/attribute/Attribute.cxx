@@ -317,14 +317,18 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
   return !(m_associatedObjects && !m_associatedObjects->isValid(false));
 }
 
-bool Attribute::isRelevant(bool includeReadAccess, int readAccessLevel) const
+bool Attribute::isRelevant(bool includeCategoryCheck, bool includeReadAccess, int readAccessLevel)
+  const
 {
-  auto aResource = this->attributeResource();
-  if (aResource && aResource->activeCategoriesEnabled())
+  if (includeCategoryCheck)
   {
-    if (!this->categories().passes(aResource->activeCategories()))
+    auto aResource = this->attributeResource();
+    if (aResource && aResource->activeCategoriesEnabled())
     {
-      return false;
+      if (!this->categories().passes(aResource->activeCategories()))
+      {
+        return false;
+      }
     }
   }
   if (!includeReadAccess)
@@ -334,7 +338,7 @@ bool Attribute::isRelevant(bool includeReadAccess, int readAccessLevel) const
 
   // Lets see if at least one of the attribute's items is relevant.
   if (std::any_of(m_items.begin(), m_items.end(), [=](const ItemPtr& item) {
-        return item->isRelevant(includeReadAccess, readAccessLevel);
+        return item->isRelevant(includeCategoryCheck, includeReadAccess, readAccessLevel);
       }))
   {
     return true;

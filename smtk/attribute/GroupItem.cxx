@@ -62,7 +62,7 @@ bool GroupItem::isConditional() const
   return def->isConditional();
 }
 
-bool GroupItem::conditionalsSatisfied() const
+bool GroupItem::conditionalsSatisfied(bool useActiveCategories) const
 {
   if (!this->isConditional())
   {
@@ -74,7 +74,7 @@ bool GroupItem::conditionalsSatisfied() const
     unsigned int numChoices = 0;
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
     {
-      if (*it1 && (*it1)->isRelevant() && (*it1)->isEnabled())
+      if (*it1 && (*it1)->isRelevant(useActiveCategories) && (*it1)->isEnabled())
       {
         numChoices++;
       }
@@ -91,17 +91,14 @@ bool GroupItem::conditionalsSatisfied() const
 
 bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>& categories) const
 {
-  // First lets see if the group itself would be filtered out based on the categories
+  // Lets see if the group itself would be filtered out based on the categories
   if (useCategories && !this->categories().passes(categories))
   {
     return true;
   }
-  // If the item is not enabled or if all of its values are set then it is valid
-  // else it is enabled and contains unset values making it invalid
-  if (!this->isEnabled())
-  {
-    return true;
-  }
+
+  // Finally, if all of its values are set then it is valid
+  // else it is invalid
   unsigned int numChoices = 0;
   for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
@@ -130,8 +127,20 @@ bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>&
         }
       }
     }
+
+    // Ideally we could just call GroupItem::conditionalsSatisfied but that method
+    // assumes we are testing against active categories, while this method is passed
+    // in the set of categories to be checked. So we do our own check.
+    if (
+      this->isConditional() &&
+      ((numChoices < m_minNumberOfChoices) ||
+       ((m_maxNumberOfChoices != 0) && (numChoices > m_maxNumberOfChoices))))
+    {
+      return false;
+    }
   }
-  return this->conditionalsSatisfied();
+
+  return true;
 }
 
 bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
@@ -500,13 +509,17 @@ bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 }
 
-bool GroupItem::hasRelevantChildren(bool includeReadAccess, int readAccessLevel) const
+bool GroupItem::hasRelevantChildren(
+  bool includeCategories,
+  bool includeReadAccess,
+  int readAccessLevel) const
 {
   for (size_t elementIndex = 0; elementIndex < this->numberOfGroups(); elementIndex++)
   {
     for (size_t valueIndex = 0; valueIndex < this->numberOfItemsPerGroup(); valueIndex++)
     {
-      if (this->item(elementIndex, valueIndex)->isRelevant(includeReadAccess, readAccessLevel))
+      if (this->item(elementIndex, valueIndex)
+            ->isRelevant(includeCategories, includeReadAccess, readAccessLevel))
       {
         return true;
       }
