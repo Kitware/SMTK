@@ -273,10 +273,6 @@ bool ReferenceItem::isValidInternal(bool useCategories, const std::set<std::stri
     return true;
   }
 
-  if (!this->isEnabled())
-  {
-    return true;
-  }
   // Do we have at least the number of required values present?
   if (this->numberOfValues() < this->numberOfRequiredValues())
   {

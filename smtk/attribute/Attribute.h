@@ -323,13 +323,15 @@ public:
 
   ///\brief Returns true if the attribute is relevant.
   ///
-  /// If includeReadAccess is false then if the Resource does not have active categories enabled or
-  /// if the attribute passes its category check this method will return true; else
-  /// it will return false
-  ///
-  /// If includeReadAccess is true, then a subset of the attribute's items must have their
-  /// read access <= readAccessLevel in addition to passing the category checks.
-  bool isRelevant(bool includeReadAccess = false, int readAccessLevel = 0) const;
+  /// If includeCatagories is true and the attribute does not pass it's category checks with respects
+  /// to the resource's active category settings then return false,
+  /// If includeReadAccess is true, and if all of the items in the attribute have their
+  ///  advanceLevel > readAccessLevel then return false.
+  /// Else return true.
+  bool isRelevant(
+    bool includeCategories = true,
+    bool includeReadAccess = false,
+    int readAccessLevel = 0) const;
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;

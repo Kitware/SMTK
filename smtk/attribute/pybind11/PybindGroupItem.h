@@ -28,7 +28,7 @@ inline PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pyb
     .def("appendGroup", &smtk::attribute::GroupItem::appendGroup)
     .def("assign", &smtk::attribute::GroupItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::GroupItem::begin)
-    .def("conditionalsSatisfied", &smtk::attribute::GroupItem::conditionalsSatisfied)
+    .def("conditionalsSatisfied", &smtk::attribute::GroupItem::conditionalsSatisfied, py::arg("useActiveCategories") = true)
     .def("end", &smtk::attribute::GroupItem::end)
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::GroupItem::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::IMMEDIATE)
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::GroupItem::find, py::arg("element"), py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::IMMEDIATE)

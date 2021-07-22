@@ -98,13 +98,14 @@ public:
 
   ///\brief Returns true if the item is relevant.
   ///
-  /// If includeReadAccess is false then if the Resource does not have active categories enabled or
-  /// if the item passes its category check this method will return true; else
-  /// it will return false.
-  ///
-  /// If includeReadAccess is true, then the item's
-  /// advanceLevel must also be <= readAccessLevel in addition to passing the category checks in order to pass.
-  virtual bool isRelevant(bool includeReadAccess = false, unsigned int readAccessLevel = 0) const;
+  /// If the item is marked ignored then return false.
+  /// If includeCatagories is true and the item does not pass it's category checks, then return false,
+  /// If includeReadAccess is true, and the item's advanceLevel is > readAccessLevel then return false.
+  /// Else return true.
+  virtual bool isRelevant(
+    bool includeCatagories = true,
+    bool includeReadAccess = false,
+    unsigned int readAccessLevel = 0) const;
 
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle

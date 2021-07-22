@@ -153,7 +153,7 @@ bool FileItemDefinition::isValueValid(const std::string& val) const
     return false;
   }
 
-  // If file filters are provided, we check if the value has an acceptible
+  // If file filters are provided, we check if the value has an acceptable
   // suffix.
   if (getFileFilters().empty())
   {

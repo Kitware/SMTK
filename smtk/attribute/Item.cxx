@@ -62,6 +62,13 @@ AttributePtr Item::attribute() const
 
 bool Item::isValid(bool useActiveCategories) const
 {
+  // If the item is not enabled, or marked to be ignored, then return true since the item
+  // is not going to have an effect
+  if ((!this->isEnabled()) || this->isIgnored())
+  {
+    return true;
+  }
+
   // If the resource has active categories enabled, use them
   if (useActiveCategories)
   {
@@ -80,22 +87,26 @@ bool Item::isValid(bool useActiveCategories) const
   return this->isValidInternal(false, cats);
 }
 
-bool Item::isRelevant(bool includeReadAccess, unsigned int readAccessLevel) const
+bool Item::isRelevant(bool includeCategories, bool includeReadAccess, unsigned int readAccessLevel)
+  const
 {
   if (m_isIgnored)
   {
     return false; // Item has been marked to be ignored
   }
 
-  auto myAttribute = this->attribute();
-  if (myAttribute)
+  if (includeCategories)
   {
-    auto aResource = myAttribute->attributeResource();
-    if (aResource && aResource->activeCategoriesEnabled())
+    auto myAttribute = this->attribute();
+    if (myAttribute)
     {
-      if (!this->categories().passes(aResource->activeCategories()))
+      auto aResource = myAttribute->attributeResource();
+      if (aResource && aResource->activeCategoriesEnabled())
       {
-        return false;
+        if (!this->categories().passes(aResource->activeCategories()))
+        {
+          return false;
+        }
       }
     }
   }

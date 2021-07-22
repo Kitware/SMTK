@@ -135,9 +135,10 @@ public:
   /// \brief Returns true if the GroupItem satisfies its conditional requirements.
   ///
   /// Requirements are met if the item is not conditional, or if it have the appropriate
-  /// number of enabled items that are relevant w/r to the resource's active set of
-  /// categories
-  bool conditionalsSatisfied() const;
+  /// number of enabled items that are relevant.  If useActiveCategories is true, then
+  /// category checking using the resource's active
+  /// categories is performed, else no category checking is done.
+  bool conditionalsSatisfied(bool useActiveCategories = true) const;
 
   ///@{
   /// \brief Returns or sets the minimum number of choices that must be set for the
@@ -169,7 +170,10 @@ public:
   bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
   ///\brief Returns true if the group item has relevant children.
-  bool hasRelevantChildren(bool includeReadAccess = false, int readAccessLevel = 0) const;
+  bool hasRelevantChildren(
+    bool includeCategories = true,
+    bool includeReadAccess = false,
+    int readAccessLevel = 0) const;
 
 protected:
   GroupItem(Attribute* owningAttribute, int itemPosition);

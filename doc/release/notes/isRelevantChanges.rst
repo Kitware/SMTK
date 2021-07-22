@@ -20,18 +20,21 @@ Both Attribute::isRelevant and Item::isRelevant have been modified to optional d
 
 .. code-block:: c++
 
-  bool isRelevant(bool includeReadAccess = false, int readAccessLevel = 0) const;
+  bool isRelevant(bool includeCategoryChecks = true, bool includeReadAccess = false, int readAccessLevel = 0) const;
 
-If includeReadAccess is set to true then an Attribute is relevant iff at least one of it's children has a read access level <= readAccessLevel as well as passing the existing category checks.
+If includeCategoryChecks is set to true, then the Attribute or Item must pass their category checks based on the
+resource's Active Category Settings.
 
-In the case of an Item, if includeReadAccess is true then it must pass both category checks and have it's read access level <= readAccessLevel
+If includeReadAccess is set to true then an Attribute is relevant iff at least one of it's children has a read access level <= readAccessLevel.
+
+In the case of an Item, if includeReadAccess is true then it must  have it's read access level <= readAccessLevel
 
 Note that this modification does not require any code change in order to preserve previous functionality.
 
 Added hasRelevantChildren method to GroupItem
 =============================================
-GroupItem now has a method to test  if at least on of its children items passes their category checks (and optionally their advance level checks).
+GroupItem now has a method to test  if at least on of its children items passes their category checks and read access checks passed on the caller's requirements.
 
 .. code-block:: c++
 
-  bool hasRelevantChildren(bool includeReadAccess = false, int readAccessLevel = 0) const;
+  bool hasRelevantChildren(bool includeCategoryChecks = true, bool includeReadAccess = false, int readAccessLevel = 0) const;

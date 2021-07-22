@@ -123,13 +123,6 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
     return true;
   }
 
-  // If the item is not enabled or if all of its values are set then it is valid
-  // else it is enabled and contains unset values making it invalid
-  if (!this->isEnabled())
-  {
-    return true;
-  }
-
   // Are we using an expression?  Note that if we have an expression we
   // are not discrete and don't have children
   if (this->allowsExpressions() && (m_expression->value() != nullptr))
@@ -157,6 +150,7 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
     return true;
   }
 
+  // Let check to make sure all of the values are set
   for (std::size_t i = 0; i < m_isSet.size(); ++i)
   {
     if (!m_isSet[i])
