@@ -7,7 +7,8 @@
 set(CTEST_PROJECT_NAME "SuperBuild-ConceptualModelBuilder")
 set(CTEST_NIGHTLY_START_TIME "21:00:00 EDT")
 
-set(drop_sites kitware)
+#set(drop_sites kitware)
+set(drop_sites)
 
 set(CTEST_DROP_METHOD_kitware "https")
 set(CTEST_DROP_SITE_kitware "www.kitware.com/CDash")
