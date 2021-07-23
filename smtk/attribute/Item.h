@@ -92,7 +92,7 @@ public:
   bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const
   {
-    return this->isValidInternal(true, categories);
+    return (!this->isEnabled()) || this->isIgnored() || this->isValidInternal(true, categories);
   }
   /// @}
 
