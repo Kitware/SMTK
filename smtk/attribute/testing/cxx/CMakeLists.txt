@@ -95,6 +95,7 @@ set(unit_tests
   unitExclusionCategories.cxx
   unitInfixExpressionEvaluator.cxx
   unitIsRelevant.cxx
+  unitIsValid.cxx
   unitJsonItemDefinitions.cxx
   unitOptionalItems.cxx
   unitPassCategories.cxx
