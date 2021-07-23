@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#define SMTK_DEPRECATION_LEVEL 0
+
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
