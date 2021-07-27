@@ -19,8 +19,8 @@
 #define SMTK_DEPRECATION_LEVEL SMTK_VERSION_NUMBER
 #endif
 
-// API deprecated before 21.4 have already been removed.
-#define SMTK_MINIMUM_DEPRECATION_LEVEL SMTK_VERSION_CHECK(21, 4)
+// API deprecated before 21.04 have already been removed.
+#define SMTK_MINIMUM_DEPRECATION_LEVEL SMTK_VERSION_CHECK(21, 04)
 
 // Force the deprecation level to be at least that of SMTK's build
 // configuration.

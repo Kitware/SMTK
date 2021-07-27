@@ -34,9 +34,6 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   "_server_manager_data\\.h.*modernize-deprecated-headers"
   "note: make as 'inline'"
 
-  # CMake-generated sources. (cmake/cmake!6352)
-  "UnitTests_smtk_"
-
   # Warnings from the delaunay submodule.
   "thirdparty/delaunay"
 )
