@@ -6,7 +6,7 @@ following strings with the associated values:
   - `MAJOR`: e.g. yy is the year
   - `MINOR`: e.g. mm is the month
   - `PATCH`: e.g. the release sequence number (start at 0)
-  - `BRANCHPOINT`: The commit where the release should be started
+  - `BRANCHPOINT`: The commit where the release should be started - it is a point on master where the release process branch is started from.  The release process branch will have multiple commits including the assembling of release notes and changing of the version.
 
 Please remove this comment.
 -->
@@ -31,7 +31,7 @@ Please remove this comment.
   - Integrate changes.
     - Make a commit for each of these `release`-only changes on a single topic
       (suggested branch name: `update-to-vVERSION`):
-      - Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.md`.
+      - [ ] Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.rst`.
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
       - [ ] Update `version.txt` and tag the commit (tag this commit below)
         - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
