@@ -462,11 +462,11 @@ void VisibilityBadge::activeViewChanged(pqView* view)
 
 void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
 {
-  auto* modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
-  if (modelRep)
+  auto* smtkRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  if (smtkRep)
   {
     QObject::connect(
-      modelRep,
+      smtkRep,
       SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)),
       this,
       SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
@@ -475,21 +475,49 @@ void VisibilityBadge::representationAddedToActiveView(pqRepresentation* rep)
 
 void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
 {
-  auto* modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
-  if (modelRep)
+  auto* smtkRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
+  if (smtkRep)
   {
+    auto* pipeline = dynamic_cast<pqSMTKResource*>(smtkRep->getInput());
+    if (pipeline)
+    {
+      auto resource = pipeline->getResource();
+      // Ensure that when a representation is removed due to
+      // the resource being closed that we "forget" the visibility
+      // state of its components — otherwise, reloading the resource
+      // will result in inconsistent state.
+      if (!this->phraseModel()->root())
+      {
+        return;
+      }
+      auto rsrcPhrases = this->phraseModel()->root()->subphrases();
+      std::function<void(const smtk::view::DescriptivePhrase::Ptr&)> updater =
+        [this, &resource, &updater](const smtk::view::DescriptivePhrase::Ptr& phrase) {
+          if (phrase && phrase->relatedResource() == resource)
+          {
+            m_visibleThings.erase(phrase->relatedObject()->id());
+          }
+          if (phrase->areSubphrasesBuilt())
+          {
+            for (const auto& child : phrase->subphrases())
+            {
+              updater(child);
+            }
+          }
+        };
+      for (const auto& rsrcPhrase : rsrcPhrases)
+      {
+        updater(rsrcPhrase);
+      }
+      // Indicate to the Qt model that it needs to refresh every row,
+      // since in theory visibility may be altered on each one:
+      this->phraseModel()->triggerDataChanged();
+    }
     QObject::disconnect(
-      modelRep,
+      smtkRep,
       SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)),
       this,
       SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
-    // Now, call activeViewChanged() to reset m_visibleThings;
-    // this ensures that when a representation is removed due to
-    // the resource being closed that we "forget" the visibility
-    // state of its components — otherwise, reloading the resource
-    // will result in inconsistent state.
-    auto* view = pqActiveObjects::instance().activeView();
-    this->activeViewChanged(view);
   }
 }
 
