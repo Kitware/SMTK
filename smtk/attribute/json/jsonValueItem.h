@@ -12,8 +12,10 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/json/jsonComponentItem.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
 
@@ -58,8 +60,7 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
   }
   if (itemPtr->isExpression())
   {
-    j["Expression"] = true;
-    j["ExpressionName"] = itemPtr->expression()->name();
+    j["ExpressionReference"] = itemPtr->expressionReference();
     return;
   }
   if ((itemPtr->numberOfRequiredValues() == 1) && !itemPtr->isExtensible())
@@ -100,7 +101,7 @@ static void processDerivedValueFromJson(
   const json& j,
   ItemType itemPtr,
   std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& /*attRefInfo*/)
+  std::vector<AttRefInfo>& attRefInfo)
 {
   auto resPtr = itemPtr->attribute()->attributeResource();
   if (itemPtr->isDiscrete())
@@ -119,7 +120,18 @@ static void processDerivedValueFromJson(
   {
     json expression;
     {
-      auto query = j.find("Expression");
+      // This is the latest version for expressions
+      auto query = j.find("ExpressionReference");
+      if (query != j.end())
+      {
+        std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
+        ItemPtr expressionItem = itemPtr->expressionReference();
+        smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
+          *query, expressionItem, itemExpressionInfo, attRefInfo, convertedAttDefs);
+        return;
+      }
+      // This is the older implementation
+      query = j.find("Expression");
       if (query != j.end())
       {
         expression = *query;

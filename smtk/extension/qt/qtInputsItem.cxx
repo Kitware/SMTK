@@ -11,12 +11,14 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/utility/Queries.h"
 #include "smtk/extension/qt/qtAttributeEditorDialog.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtDoubleLineEdit.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/Logger.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -1188,19 +1190,31 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   }
 
   auto inputitem = m_itemInfo.itemAs<ValueItem>();
-  ResourcePtr lAttResource = inputitem->attribute()->attributeResource();
-
   if (!inputitem)
   {
     return;
   }
+
+  ResourcePtr sourceAttResource = inputitem->attribute()->attributeResource();
 
   if (checkstate)
   {
     m_internals->m_expressionCombo->blockSignals(true);
     m_internals->m_expressionCombo->clear();
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
+    // Lets find the attribute resource that contains the expression information
+    ResourcePtr lAttResource = smtk::attribute::utility::findResourceContainingDefinition(
+      valItemDef->expressionType(), sourceAttResource, this->uiManager()->resourceManager());
+    if (lAttResource == nullptr)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        " Could not find any AttributeResource containing Expressions of Type: "
+          << valItemDef->expressionType());
+      return;
+    }
+    smtk::attribute::DefinitionPtr attDef =
+      lAttResource->findDefinition(valItemDef->expressionType());
     QStringList attNames;
 
     int setIndex = 0;
@@ -1312,6 +1326,12 @@ void qtInputsItem::onExpressionReferenceChanged()
   {
     return;
   }
+  smtk::attribute::ResourcePtr sourceAttResource = inputitem->attribute()->attributeResource();
+  auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
+  // Lets find the attribute resource that contains the expression information
+  ResourcePtr lAttResource = smtk::attribute::utility::findResourceContainingDefinition(
+    valItemDef->expressionType(), sourceAttResource, this->uiManager()->resourceManager());
+
   smtk::attribute::ComponentItemPtr item = inputitem->expressionReference();
   if (!item)
   {
@@ -1326,8 +1346,6 @@ void qtInputsItem::onExpressionReferenceChanged()
   }
   else if (curIdx == 1)
   {
-    smtk::attribute::ResourcePtr lAttResource = item->attribute()->attributeResource();
-    auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
     smtk::attribute::AttributePtr newAtt = lAttResource->createAttribute(attDef->type());
     auto* editor =
@@ -1372,7 +1390,6 @@ void qtInputsItem::onExpressionReferenceChanged()
   }
   else
   {
-    smtk::attribute::ResourcePtr lAttResource = item->attribute()->attributeResource();
     AttributePtr attPtr =
       lAttResource->findAttribute(m_internals->m_expressionCombo->currentText().toStdString());
     if (inputitem->isSet() && attPtr == inputitem->expression())

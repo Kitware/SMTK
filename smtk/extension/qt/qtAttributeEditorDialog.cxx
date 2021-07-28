@@ -49,7 +49,8 @@ qtAttributeEditorDialog::qtAttributeEditorDialog(
   child.setAttribute("Name", m_attribute->name()).setAttribute("Type", m_attribute->type());
 
   ViewInfo v(m_instancedViewDef, this->m_widget->attributeFrame, m_uiManager);
-  qtInstancedView* iview = dynamic_cast<qtInstancedView*>(qtInstancedView::createViewWidget(v));
+  qtInstancedView* iview = dynamic_cast<qtInstancedView*>(
+    qtInstancedView::createViewWidget(v, m_attribute->attributeResource()));
   m_instancedView.reset(iview);
 
   m_widget->attributeName->setText(m_attribute->name().c_str());
