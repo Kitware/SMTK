@@ -12,11 +12,13 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/Item.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
+#include "smtk/simulation/UserData.h"
 
 #include "smtk/view/Configuration.h"
 
@@ -33,6 +35,7 @@
 #include <QVariant>
 
 #include <algorithm>
+#include <vector>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -93,6 +96,24 @@ void qtAnalysisView::createWidget()
     m_analysisAttribute = attRes->createAttribute(attName, attDef);
     attChanged = true;
   }
+
+#if !defined(__APPLE__)
+  // This is a workaround for an unwanted scrolling behavoir that has been observed
+  // on Windows and linux builds. More details can be found at
+  // https://gitlab.kitware.com/cmb/smtk/-/issues/442
+  // The following code marks all void items in the analyis attribute with a UserData
+  // instance that is read by qtVoidItem. This is only done for analysis views.
+  std::vector<smtk::attribute::Item::Ptr> items;
+  auto filter = [](smtk::attribute::Item::Ptr item) {
+    return item->type() == smtk::attribute::Item::VoidType;
+  };
+  m_analysisAttribute->filterItems(items, filter, false);
+  auto uData = smtk::simulation::UserDataInt::New();
+  for (auto& item : items)
+  {
+    item->setUserData("smtk.extensions.void_item.no_focus", uData);
+  }
+#endif
 
   // OK Now lets create a qtAttribute for the Analysis Attribute
   int labelWidth =
