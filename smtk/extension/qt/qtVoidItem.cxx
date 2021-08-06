@@ -20,6 +20,7 @@
 
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/simulation/UserData.h"
 
 using namespace smtk::extension;
 
@@ -86,6 +87,14 @@ void qtVoidItem::createWidget()
   if (dataObj->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_widget);
+
+    // Check for "no_focus" user data
+    auto udata = dataObj->userData("smtk.extensions.void_item.no_focus");
+    if (udata != nullptr)
+    {
+      optionalCheck->setFocusPolicy(Qt::NoFocus);
+    }
+
     optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
     optionalCheck->setSizePolicy(sizeFixedPolicy);
 
