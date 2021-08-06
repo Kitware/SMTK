@@ -140,6 +140,22 @@ void TaskNeedsResources::configure(const Configuration& config)
   }
 }
 
+smtk::common::Visit TaskNeedsResources::visitPredicates(PredicateVisitor visitor)
+{
+  if (!visitor)
+  {
+    return smtk::common::Visit::Halt;
+  }
+  for (const auto& entry : m_resourcesByRole)
+  {
+    if (visitor(entry.second) == smtk::common::Visit::Halt)
+    {
+      return smtk::common::Visit::Halt;
+    }
+  }
+  return smtk::common::Visit::Continue;
+}
+
 void TaskNeedsResources::updateResources(
   smtk::resource::Resource& resource,
   smtk::resource::EventType event)

@@ -4,6 +4,10 @@ set(taskSrcs
   Registrar.cxx
   Task.cxx
   TaskNeedsResources.cxx
+  json/Helper.cxx
+  json/jsonManager.cxx
+  json/jsonTask.cxx
+  json/jsonTaskNeedsResources.cxx
 )
 
 set(taskHeaders
@@ -13,6 +17,10 @@ set(taskHeaders
   Registrar.h
   Task.h
   TaskNeedsResources.h
+  json/Helper.h
+  json/jsonManager.h
+  json/jsonTask.h
+  json/jsonTaskNeedsResources.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

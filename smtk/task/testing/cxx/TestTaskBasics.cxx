@@ -61,7 +61,7 @@ public:
 
 } // namespace test_task
 
-int TestTask(int, char*[])
+int TestTaskBasics(int, char*[])
 {
   using smtk::task::State;
   using smtk::task::Task;
