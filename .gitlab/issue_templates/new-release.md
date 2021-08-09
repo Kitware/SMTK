@@ -32,6 +32,7 @@ Please remove this comment.
     - Make a commit for each of these `release`-only changes on a single topic
       (suggested branch name: `update-to-vVERSION`):
       - [ ] Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.rst`.
+        - [ ] Update the ReadMe file to refer to the new release notes
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
       - [ ] Update `version.txt` and tag the commit (tag this commit below)
         - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
