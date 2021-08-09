@@ -89,10 +89,19 @@ int TestTaskJSON(int, char*[])
     },
     {
       "id": 2,
-      "type": "smtk::task::Task",
-      "title": "Do something",
+      "type": "smtk::task::FillOutAttributes",
+      "title": "Mark up model",
       "state": "incomplete",
-      "dependencies": [ 1 ]
+      "dependencies": [ 1 ],
+      "attribute-sets": [
+        {
+          "role": "simulation attribute",
+          "definitions": [
+            "Material",
+            "BoundaryCondition"
+          ]
+        }
+      ]
     }
   ],
   "//": [

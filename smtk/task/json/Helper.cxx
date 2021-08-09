@@ -33,7 +33,6 @@ Helper::~Helper() = default;
 
 bool Helper::registerType(const std::string& typeName, ConfigurationHelper helper)
 {
-  std::cout << "Register " << typeName << "\n";
   std::lock_guard<std::mutex> lock(g_types);
   return s_types.insert({ typeName, helper }).second;
 }

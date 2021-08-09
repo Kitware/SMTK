@@ -71,3 +71,51 @@ Example:
        }
      ]
    }
+
+FillOutAttributes
+-----------------
+
+The :smtk:`FillOutAttributes task <smtk::task::FillOutAttributes>`
+monitors operations for attribute resources with particular roles.
+When an operation creates or modifies a matching resource, the
+task checks whether all the attributes with matching definitions
+are valid. If so, the task is Completable. If not, it is Incomplete.
+It is Completable by default (i.e., if no matching resources
+or attributes exist).
+
+This task accepts all the JSON configuration that the base Task class does, plus:
+
+* ``attribute-sets``: a JSON array of required attributes, organized by role.
+  Each array entry must be a JSON object holding:
+  * ``role``: an optional string holding an attribute-resource role name.
+    If omitted, any role is allowed.
+  * ``definitions``: a set of :smtk:`smtk::attribute::Definition` type-names
+    specifying which types of attributes to validate before allowing completion.
+
+Example:
+
+.. code:: json
+
+   {
+     "type": "smtk::task::FillOutAttributes",
+     "title": "Assign materials and mesh sizing.",
+     "attribute-sets": [
+       {
+         "role": "simulation attribute",
+         "definitions": ["SolidMaterial", "FluidMaterial"]
+       },
+       {
+         "role": "meshing attribute",
+         "definitions": [
+           "GlobalSizingParameters",
+           "FaceSize",
+           "EdgeSize"
+         ]
+       }
+     ]
+   }
+
+In the example above, you can see that two different attribute resources
+(one for the simulation and one for a mesh generator) are specified with
+different roles and the definitions that should be checked for resources
+in those roles are different.

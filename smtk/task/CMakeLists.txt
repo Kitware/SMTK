@@ -1,10 +1,12 @@
 set(taskSrcs
   Active.cxx
+  FillOutAttributes.cxx
   Manager.cxx
   Registrar.cxx
   Task.cxx
   TaskNeedsResources.cxx
   json/Helper.cxx
+  json/jsonFillOutAttributes.cxx
   json/jsonManager.cxx
   json/jsonTask.cxx
   json/jsonTaskNeedsResources.cxx
@@ -12,11 +14,13 @@ set(taskSrcs
 
 set(taskHeaders
   Active.h
+  FillOutAttributes.h
   Instances.h
   Manager.h
   Registrar.h
   Task.h
   TaskNeedsResources.h
+  json/jsonFillOutAttributes.h
   json/Helper.h
   json/jsonManager.h
   json/jsonTask.h

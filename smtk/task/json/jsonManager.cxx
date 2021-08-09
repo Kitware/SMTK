@@ -90,9 +90,14 @@ bool jsonManager::deserialize(
       }
     }
     // Now configure dependent tasks with adaptors if specified.
-    for (const auto& jsonAdaptor : json.at("task-adaptors"))
+    if (json.contains("task-adaptors"))
     {
-      std::cout << "Adaptor " << jsonAdaptor.at("type") << "\n";
+      /* TODO
+      for (const auto& jsonAdaptor : json.at("task-adaptors"))
+      {
+        std::cout << "Adaptor " << jsonAdaptor.at("type") << "\n";
+      }
+      */
     }
 
     helper.clear();
