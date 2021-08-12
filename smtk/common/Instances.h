@@ -188,6 +188,9 @@ public:
     return smtk::common::Visit::Continue;
   }
 
+  /// Return the number of instances being managed.
+  std::size_t size() const { return m_instances.size(); }
+
 private:
   /// The container that owns managed instances.
   using Container = std::set<std::shared_ptr<BaseType>>;

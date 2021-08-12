@@ -31,7 +31,7 @@ using namespace smtk::task;
 
 } // namespace test_task
 
-int TestActive(int, char*[])
+int TestActiveTask(int, char*[])
 {
   using smtk::task::State;
   using smtk::task::Task;

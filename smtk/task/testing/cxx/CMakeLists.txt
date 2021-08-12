@@ -1,6 +1,7 @@
 set(unit_tests
-  TestActive.cxx
-  TestTask.cxx
+  TestActiveTask.cxx
+  TestTaskBasics.cxx
+  TestTaskJSON.cxx
 )
 
 find_package(Threads REQUIRED)

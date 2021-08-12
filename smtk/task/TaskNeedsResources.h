@@ -15,6 +15,8 @@
 #include "smtk/resource/Resource.h"
 #include "smtk/task/Task.h"
 
+#include "smtk/common/Visit.h"
+
 namespace smtk
 {
 namespace task
@@ -56,6 +58,8 @@ public:
     /// The set of resources being managed that are selected by the validator.
     std::set<Entry, std::owner_less<Entry>> m_resources;
   };
+  /// Signature of functors that visit resources-by-role predicates.
+  using PredicateVisitor = std::function<smtk::common::Visit(const Predicate&)>;
 
   TaskNeedsResources();
   TaskNeedsResources(
@@ -69,6 +73,8 @@ public:
   ~TaskNeedsResources() override = default;
 
   void configure(const Configuration& config);
+
+  smtk::common::Visit visitPredicates(PredicateVisitor visitor);
 
 protected:
   /// Respond to resource changes that may change task state.
