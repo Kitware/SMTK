@@ -19,7 +19,8 @@ The following JSON can be used to configure it:
 * ``completed``: an optional boolean value indicating whether the
   user has marked the task complete or not.
 
-Example:
+Example
+"""""""
 
 .. code:: json
 
@@ -28,6 +29,83 @@ Example:
      "title": "Instructions to users.",
      "completed": false
    }
+
+Group
+-----
+
+A task :smtk:`Group <smtk::task::Group>` exists to organize a set of tasks.
+
+The Group instance is responsible for configuring its children, including
+creating dependencies among them. The Group's state and output are
+dependent on its children.
+
+The Group has a "mode," which describes how children are related to
+one another: when the mode is parallel, children have no dependency on
+one another and the group itself is dependent on all of its children.
+When the mode is serial, children must be completed in the
+order specified (i.e., each successive task is dependent on its
+predecessor) and the group itself is dependent on the final child task.
+
+Task groups are completable by default (i.e., when no children are configured).
+If children exist, the group takes its state as a combination of its dependencies.
+In serial mode, the group has a single internal dependency and its state is identical to
+the dependency's state. If the group also has external dependencies on sibling tasks
+(that are not children), its state also depends on them.
+In parallel mode, the group has at least as many dependencies as children.
+
+The task Group class accepts all the JSON configuration that the base Task class does, plus:
+
+* ``mode``: either ``serial`` or ``parallel``.
+* ``children``: an ordered JSON array of child task specifications.
+  Each child task may have an integer ``id`` whose value may be referenced
+  by ``adaptors`` below.
+* ``adaptors``: an array of task-adaptor specifications that inform
+  the group task how to configure children. The reserved ``id`` of 0
+  refers to the Group itself.
+
+Example
+"""""""
+
+.. code:: json
+
+   {
+     "type": "smtk::task::Group",
+     "title": "Perform the child tasks in order.",
+     "mode": "serial",
+     "children": [
+       {
+         "id": 1,
+         "type": "smtk::task::Task",
+         "title": "Step 1."
+       },
+       {
+         "id": 2,
+         "type": "smtk::task::Task",
+         "title": "Step 2."
+       }
+     ],
+     "adaptors": [
+       {
+         "//": "How the parent configures its child."
+         "type": "smtk::task::adaptor::PassResources",
+         "from": 0,
+         "to": 1
+       },
+       {
+         "//": "How the parent configures its child."
+         "type": "smtk::task::adaptor::PassResources",
+         "from": 0,
+         "to": 2
+       },
+       {
+         "//": "How the serial task configures its successor."
+         "type": "smtk::task::adaptor::PassComponents",
+         "from": 1,
+         "to": 2
+       }
+     ]
+   }
+
 
 GatherResources
 ---------------
@@ -52,7 +130,8 @@ It accepts all the JSON configuration that the base Task class does, plus:
       It defaults to -1.
       It is possible to set this to 0 to indicate that resources of a given role/type are disallowed.
 
-Example:
+Example
+"""""""
 
 .. code:: json
 
@@ -93,7 +172,8 @@ This task accepts all the JSON configuration that the base Task class does, plus
     * ``definitions``: a set of :smtk:`smtk::attribute::Definition` type-names
       specifying which types of attributes to validate before allowing completion.
 
-Example:
+Example
+"""""""
 
 .. code:: json
 

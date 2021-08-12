@@ -5,6 +5,7 @@ set(taskSrcs
   Registrar.cxx
   Task.cxx
   GatherResources.cxx
+  Group.cxx
   json/Helper.cxx
   json/jsonFillOutAttributes.cxx
   json/jsonGatherResources.cxx
@@ -20,6 +21,7 @@ set(taskHeaders
   Registrar.h
   Task.h
   GatherResources.h
+  Group.h
   json/Helper.h
   json/jsonFillOutAttributes.h
   json/jsonGatherResources.h
