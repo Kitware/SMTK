@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_task_TaskNeedsResources_h
-#define smtk_task_TaskNeedsResources_h
+#ifndef smtk_task_GatherResources_h
+#define smtk_task_GatherResources_h
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Observer.h"
@@ -22,16 +22,16 @@ namespace smtk
 namespace task
 {
 
-/**\brief TaskNeedsResources is a task that requires resources from a resource manager.
+/**\brief GatherResources is a task that requires resources from a resource manager.
   *
   * Tasks of this type observe a resource manager for resources to be added and marked
   * with a Role as specified (at construction time). When all the required resources
   * are present with the required roles, then the task becomes completable.
   */
-class SMTKCORE_EXPORT TaskNeedsResources : public Task
+class SMTKCORE_EXPORT GatherResources : public Task
 {
 public:
-  smtkTypeMacro(smtk::task::TaskNeedsResources);
+  smtkTypeMacro(smtk::task::GatherResources);
   smtkSuperclassMacro(smtk::task::Task);
   smtkCreateMacro(smtk::task::Task);
 
@@ -61,16 +61,16 @@ public:
   /// Signature of functors that visit resources-by-role predicates.
   using PredicateVisitor = std::function<smtk::common::Visit(const Predicate&)>;
 
-  TaskNeedsResources();
-  TaskNeedsResources(
+  GatherResources();
+  GatherResources(
     const Configuration& config,
     const smtk::common::Managers::Ptr& managers = nullptr);
-  TaskNeedsResources(
+  GatherResources(
     const Configuration& config,
     const PassedDependencies& dependencies,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
-  ~TaskNeedsResources() override = default;
+  ~GatherResources() override = default;
 
   void configure(const Configuration& config);
 
@@ -90,4 +90,4 @@ protected:
 } // namespace task
 } // namespace smtk
 
-#endif // smtk_task_TaskNeedsResources_h
+#endif // smtk_task_GatherResources_h

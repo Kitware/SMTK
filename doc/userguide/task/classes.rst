@@ -29,10 +29,10 @@ Example:
      "completed": false
    }
 
-TaskNeedsResources
-------------------
+GatherResources
+---------------
 
-The :smtk:`TaskNeedsResources <smtk::task::TaskNeedsResources>` class monitors
+The :smtk:`GatherResources <smtk::task::GatherResources>` class monitors
 a resource manager and is incomplete until its configured list of required
 resources is acceptable, at which time it transitions to completable.
 It is Incomplete by default unless unconfigured (in which case it is Completable).
@@ -41,23 +41,23 @@ It accepts all the JSON configuration that the base Task class does, plus:
 * ``resources``: a JSON array of required resources, organized by role.
   Each array entry must be a JSON object holding:
 
-  * ``role``: an optional string holding a resource role name. If omitted, any role is allowed.
-  * ``type``: an optional string holding a resource typename. If omitted, any resource type is allowed.
-  * ``min``: an optional integer specifying the number of resources with the given role and type that must be present.
-    Only non-negative values are accepted.
-    It defaults to 1, which makes the requirement mandatory.
-    If set to 0, the requirement is optional.
-  * ``max``: an optional integer specifying the maximum number of resources with the given role and type allowed.
-    Negative values indicate that there is no maximum.
-    It defaults to -1.
-    It is possible to set this to 0 to indicate that resources of a given role/type are disallowed.
+    * ``role``: an optional string holding a resource role name. If omitted, any role is allowed.
+    * ``type``: an optional string holding a resource typename. If omitted, any resource type is allowed.
+    * ``min``: an optional integer specifying the number of resources with the given role and type that must be present.
+      Only non-negative values are accepted.
+      It defaults to 1, which makes the requirement mandatory.
+      If set to 0, the requirement is optional.
+    * ``max``: an optional integer specifying the maximum number of resources with the given role and type allowed.
+      Negative values indicate that there is no maximum.
+      It defaults to -1.
+      It is possible to set this to 0 to indicate that resources of a given role/type are disallowed.
 
 Example:
 
 .. code:: json
 
    {
-     "type": "smtk::task::TaskNeedsResources",
+     "type": "smtk::task::GatherResources",
      "title": "Load a geometric model (or models) and a simulation template.",
      "resources": [
        {
@@ -87,10 +87,11 @@ This task accepts all the JSON configuration that the base Task class does, plus
 
 * ``attribute-sets``: a JSON array of required attributes, organized by role.
   Each array entry must be a JSON object holding:
-  * ``role``: an optional string holding an attribute-resource role name.
-    If omitted, any role is allowed.
-  * ``definitions``: a set of :smtk:`smtk::attribute::Definition` type-names
-    specifying which types of attributes to validate before allowing completion.
+
+    * ``role``: an optional string holding an attribute-resource role name.
+      If omitted, any role is allowed.
+    * ``definitions``: a set of :smtk:`smtk::attribute::Definition` type-names
+      specifying which types of attributes to validate before allowing completion.
 
 Example:
 

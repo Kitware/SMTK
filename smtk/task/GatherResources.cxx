@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/task/TaskNeedsResources.h"
+#include "smtk/task/GatherResources.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
@@ -21,7 +21,7 @@ namespace smtk
 namespace task
 {
 
-void to_json(json& j, const TaskNeedsResources::Predicate& p)
+void to_json(json& j, const GatherResources::Predicate& p)
 {
   j = json{ { "role", p.m_role }, { "type", p.m_type } };
   if (p.m_minimumCount == 0 && p.m_maximumCount < 0)
@@ -39,7 +39,7 @@ void to_json(json& j, const TaskNeedsResources::Predicate& p)
   }
 }
 
-void from_json(const json& j, TaskNeedsResources::Predicate& p)
+void from_json(const json& j, GatherResources::Predicate& p)
 {
   if (j.contains("role"))
   {
@@ -80,9 +80,9 @@ void from_json(const json& j, TaskNeedsResources::Predicate& p)
   }
 }
 
-TaskNeedsResources::TaskNeedsResources() = default;
+GatherResources::GatherResources() = default;
 
-TaskNeedsResources::TaskNeedsResources(
+GatherResources::GatherResources(
   const Configuration& config,
   const smtk::common::Managers::Ptr& managers)
   : Task(config, managers)
@@ -91,7 +91,7 @@ TaskNeedsResources::TaskNeedsResources(
   this->configure(config);
 }
 
-TaskNeedsResources::TaskNeedsResources(
+GatherResources::GatherResources(
   const Configuration& config,
   const PassedDependencies& dependencies,
   const smtk::common::Managers::Ptr& managers)
@@ -101,7 +101,7 @@ TaskNeedsResources::TaskNeedsResources(
   this->configure(config);
 }
 
-void TaskNeedsResources::configure(const Configuration& config)
+void GatherResources::configure(const Configuration& config)
 {
   if (config.contains("resources"))
   {
@@ -131,7 +131,7 @@ void TaskNeedsResources::configure(const Configuration& config)
         },
         /* priority */ 0,
         /* initialize */ true,
-        "TaskNeedsResources monitors results for resources and their roles.");
+        "GatherResources monitors results for resources and their roles.");
     }
   }
   if (!m_resourcesByRole.empty())
@@ -140,7 +140,7 @@ void TaskNeedsResources::configure(const Configuration& config)
   }
 }
 
-smtk::common::Visit TaskNeedsResources::visitPredicates(PredicateVisitor visitor)
+smtk::common::Visit GatherResources::visitPredicates(PredicateVisitor visitor)
 {
   if (!visitor)
   {
@@ -156,7 +156,7 @@ smtk::common::Visit TaskNeedsResources::visitPredicates(PredicateVisitor visitor
   return smtk::common::Visit::Continue;
 }
 
-void TaskNeedsResources::updateResources(
+void GatherResources::updateResources(
   smtk::resource::Resource& resource,
   smtk::resource::EventType event)
 {
@@ -200,7 +200,7 @@ void TaskNeedsResources::updateResources(
   }
 }
 
-State TaskNeedsResources::computeInternalState() const
+State GatherResources::computeInternalState() const
 {
   State s = State::Completable;
   for (const auto& entry : m_resourcesByRole)

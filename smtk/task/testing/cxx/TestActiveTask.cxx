@@ -17,10 +17,10 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -98,7 +98,7 @@ int TestActiveTask(int, char*[])
     std::cout << "Switching to task 2:\n";
     taskManager->active().switchTo(t2.get());
 
-    // Test TaskNeedsResources
+    // Test GatherResources
     // I. Construction w/ configuration.
     //    The task is incomplete unless 1 or 2 model geometry resources
     //    and 1 or more simulation attribute resources are held by the
@@ -109,7 +109,7 @@ int TestActiveTask(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->instances().create<smtk::task::TaskNeedsResources>(c4, managers);
+    auto t4 = taskManager->instances().create<smtk::task::GatherResources>(c4, managers);
     t1->addDependency(t4);
     std::cout << "Ensuring switches to unavailable tasks fail.\n";
     bool didSwitch = taskManager->active().switchTo(t1.get());

@@ -20,7 +20,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 using namespace nlohmann;
 
-#include "PybindTaskNeedsResources.h"
+#include "PybindGatherResources.h"
 #include "PybindTask.h"
 #include "PybindManager.h"
 #include "PybindRegistrar.h"
@@ -42,5 +42,6 @@ PYBIND11_MODULE(task, m)
   pybind11_init_smtk_task_State(task);
   pybind11_init_smtk_task_stateEnum(task);
   pybind11_init_smtk_task_stateName(task);
-  auto smtk_task_TaskNeedsResources = pybind11_init_smtk_task_TaskNeedsResources(task);
+  // auto smtk_task_FillOutAttributes = pybind11_init_smtk_task_FillOutAttributes(task);
+  auto smtk_task_GatherResources = pybind11_init_smtk_task_GatherResources(task);
 }

@@ -12,12 +12,12 @@
 #include "smtk/task/Registrar.h"
 
 #include "smtk/task/FillOutAttributes.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
+#include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/jsonTask.h"
-#include "smtk/task/json/jsonTaskNeedsResources.h"
 
 #include "smtk/plugin/Manager.h"
 
@@ -28,9 +28,8 @@ namespace smtk
 namespace task
 {
 
-using TaskList = std::tuple<Task, TaskNeedsResources, FillOutAttributes>;
-using JSONList =
-  std::tuple<json::jsonTask, json::jsonTaskNeedsResources, json::jsonFillOutAttributes>;
+using TaskList = std::tuple<Task, GatherResources, FillOutAttributes>;
+using JSONList = std::tuple<json::jsonTask, json::jsonGatherResources, json::jsonFillOutAttributes>;
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {

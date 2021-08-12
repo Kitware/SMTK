@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/task/json/jsonTaskNeedsResources.h"
+#include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonTask.h"
 
-#include "smtk/task/TaskNeedsResources.h"
+#include "smtk/task/GatherResources.h"
 
 namespace smtk
 {
@@ -20,20 +20,20 @@ namespace task
 namespace json
 {
 
-Task::Configuration jsonTaskNeedsResources::operator()(const Task* task, Helper& helper) const
+Task::Configuration jsonGatherResources::operator()(const Task* task, Helper& helper) const
 {
   Task::Configuration config;
   auto* nctask = const_cast<Task*>(task);
-  auto* taskNeedsResources = dynamic_cast<TaskNeedsResources*>(nctask);
-  if (taskNeedsResources)
+  auto* gatherResources = dynamic_cast<GatherResources*>(nctask);
+  if (gatherResources)
   {
     jsonTask superclass;
-    config = superclass(taskNeedsResources, helper);
+    config = superclass(gatherResources, helper);
     nlohmann::json::array_t predicates;
     nlohmann::json::array_t outputs;
-    taskNeedsResources->visitPredicates(
-      [&predicates, &outputs, taskNeedsResources](
-        const TaskNeedsResources::Predicate& predicate) -> smtk::common::Visit {
+    gatherResources->visitPredicates(
+      [&predicates, &outputs, gatherResources](
+        const GatherResources::Predicate& predicate) -> smtk::common::Visit {
         nlohmann::json jsonPredicate = {
           { "role", predicate.m_role },
           { "type", predicate.m_type },

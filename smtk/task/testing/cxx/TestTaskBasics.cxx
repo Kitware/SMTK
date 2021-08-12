@@ -17,10 +17,10 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -173,7 +173,7 @@ int TestTaskBasics(int, char*[])
     success = t1->removeDependency(t2);
     test(!success, "Expected removal of non-existent dependency to fail.");
 
-    // Test TaskNeedsResources
+    // Test GatherResources
     // I. Construction w/ configuration.
     //    The task is incomplete unless 1 or 2 model geometry resources
     //    and 1 or more simulation attribute resources are held by the
@@ -184,8 +184,8 @@ int TestTaskBasics(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->instances().create<smtk::task::TaskNeedsResources>(c4, managers);
-    test(!!t4, "Could not create TaskNeedsResources.");
+    auto t4 = taskManager->instances().create<smtk::task::GatherResources>(c4, managers);
+    test(!!t4, "Could not create GatherResources.");
     test(t4->state() == State::Incomplete, "Task with no resources should be incomplete.");
     auto hokey = t4->observers().insert(callback);
 
@@ -241,15 +241,14 @@ int TestTaskBasics(int, char*[])
       "Expected state transition incomplete⟶completable.");
 
     // III. Verify that an empty role is allowed, as are empty resource types.
-    //      This should also test initialization of TaskNeedsResources when
+    //      This should also test initialization of GatherResources when
     //      resource manager is not empty.
     Task::Configuration c5{ { "title", "Task 5" },
                             { "resources",
                               { { { "type", "smtk::model::Resource" } },
                                 { { "role", "simulation attribute" } } } } };
-    auto t5 =
-      taskManager->instances().createFromName("smtk::task::TaskNeedsResources", c5, managers);
-    test(!!t5, "Could not create TaskNeedsResources.");
+    auto t5 = taskManager->instances().createFromName("smtk::task::GatherResources", c5, managers);
+    test(!!t5, "Could not create GatherResources.");
     auto pokey = t5->observers().insert(callback);
     test(t5->state() == State::Completable, "Task 5 should be completable initially.");
     called = 0;

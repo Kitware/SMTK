@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_task_json_TaskNeedsResources_h
-#define smtk_task_json_TaskNeedsResources_h
+#ifndef smtk_task_json_GatherResources_h
+#define smtk_task_json_GatherResources_h
 
 #include "smtk/task/Task.h"
 
@@ -24,7 +24,7 @@ namespace json
 
 class Helper;
 
-struct SMTKCORE_EXPORT jsonTaskNeedsResources
+struct SMTKCORE_EXPORT jsonGatherResources
 {
   Task::Configuration operator()(const Task* task, Helper& helper) const;
 };
@@ -33,4 +33,4 @@ struct SMTKCORE_EXPORT jsonTaskNeedsResources
 } // namespace task
 } // namespace smtk
 
-#endif // smtk_task_json_TaskNeedsResources_h
+#endif // smtk_task_json_GatherResources_h

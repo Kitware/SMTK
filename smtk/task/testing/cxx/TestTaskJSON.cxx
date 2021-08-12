@@ -20,7 +20,7 @@
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
+// #include "smtk/task/GatherResources.h"
 
 #include "smtk/task/json/jsonManager.h"
 #include "smtk/task/json/jsonTask.h"
@@ -68,7 +68,7 @@ int TestTaskJSON(int, char*[])
   "tasks": [
     {
       "id": 1,
-      "type": "smtk::task::TaskNeedsResources",
+      "type": "smtk::task::GatherResources",
       "title": "Load a model and attribute",
       "state": "completed",
       "resources": [
