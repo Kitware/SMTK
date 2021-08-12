@@ -1,0 +1,55 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef pybind_smtk_task_FillOutAttributes_h
+#define pybind_smtk_task_FillOutAttributes_h
+
+#include <pybind11/pybind11.h>
+
+#include "smtk/task/FillOutAttributes.h"
+
+#include "smtk/common/Visit.h"
+#include "smtk/task/Task.h"
+
+namespace py = pybind11;
+
+inline PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > pybind11_init_smtk_task_FillOutAttributes(py::module &m)
+{
+  PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > instance(m, "FillOutAttributes");
+  instance
+    .def(py::init<>())
+    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::common::Managers::Ptr const &>())
+    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::task::Task::PassedDependencies const &, ::smtk::common::Managers::Ptr const &>())
+    .def("configure", &smtk::task::FillOutAttributes::configure, py::arg("config"))
+    .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)()) &smtk::task::FillOutAttributes::create)
+    .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)(::std::shared_ptr<smtk::task::FillOutAttributes> &)) &smtk::task::FillOutAttributes::create, py::arg("ref"))
+    .def("typeName", &smtk::task::FillOutAttributes::typeName)
+    .def("visitAttributeSets", &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
+    .def_readonly_static("type_name", &smtk::task::FillOutAttributes::type_name)
+    ;
+  py::class_< smtk::task::FillOutAttributes::AttributeSet >(instance, "AttributeSet")
+    .def(py::init<>())
+    .def(py::init<::smtk::task::FillOutAttributes::AttributeSet const &>())
+    .def("deepcopy", (smtk::task::FillOutAttributes::AttributeSet & (smtk::task::FillOutAttributes::AttributeSet::*)(::smtk::task::FillOutAttributes::AttributeSet const &)) &smtk::task::FillOutAttributes::AttributeSet::operator=)
+    .def_readwrite("m_definitions", &smtk::task::FillOutAttributes::AttributeSet::m_definitions)
+    .def_readwrite("m_resources", &smtk::task::FillOutAttributes::AttributeSet::m_resources)
+    .def_readwrite("m_role", &smtk::task::FillOutAttributes::AttributeSet::m_role)
+    ;
+  py::class_< smtk::task::FillOutAttributes::ResourceAttributes >(instance, "ResourceAttributes")
+    .def(py::init<>())
+    .def(py::init<::smtk::task::FillOutAttributes::ResourceAttributes const &>())
+    .def("deepcopy", (smtk::task::FillOutAttributes::ResourceAttributes & (smtk::task::FillOutAttributes::ResourceAttributes::*)(::smtk::task::FillOutAttributes::ResourceAttributes const &)) &smtk::task::FillOutAttributes::ResourceAttributes::operator=)
+    .def_readwrite("m_invalid", &smtk::task::FillOutAttributes::ResourceAttributes::m_invalid)
+    .def_readwrite("m_valid", &smtk::task::FillOutAttributes::ResourceAttributes::m_valid)
+    ;
+  return instance;
+}
+
+#endif
