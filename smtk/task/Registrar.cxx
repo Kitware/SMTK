@@ -11,12 +11,19 @@
 //=============================================================================
 #include "smtk/task/Registrar.h"
 
+#include "smtk/task/Adaptor.h"
 #include "smtk/task/FillOutAttributes.h"
 #include "smtk/task/GatherResources.h"
+#include "smtk/task/Group.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/json/Helper.h"
+#include "smtk/task/adaptor/ResourceAndRole.h"
+#include "smtk/task/json/Configurator.h"
+#include "smtk/task/json/Configurator.txx"
+#include "smtk/task/json/jsonAdaptor.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
 #include "smtk/task/json/jsonGatherResources.h"
+#include "smtk/task/json/jsonGroup.h"
+#include "smtk/task/json/jsonResourceAndRole.h"
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/plugin/Manager.h"
@@ -28,8 +35,11 @@ namespace smtk
 namespace task
 {
 
-using TaskList = std::tuple<Task, GatherResources, FillOutAttributes>;
-using JSONList = std::tuple<json::jsonTask, json::jsonGatherResources, json::jsonFillOutAttributes>;
+using TaskList = std::tuple<Task, FillOutAttributes, GatherResources, Group>;
+using TaskJSON = std::
+  tuple<json::jsonTask, json::jsonFillOutAttributes, json::jsonGatherResources, json::jsonGroup>;
+using AdaptorList = std::tuple<adaptor::ResourceAndRole>;
+using AdaptorJSON = std::tuple<json::jsonResourceAndRole>;
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
@@ -58,16 +68,24 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
-  auto& instances = taskManager->instances();
-  instances.registerTypes<TaskList>();
-  json::Helper::registerTypes<TaskList, JSONList>();
+  auto& taskInstances = taskManager->taskInstances();
+  taskInstances.registerTypes<TaskList>();
+  json::Configurator<Task>::registerTypes<TaskList, TaskJSON>();
+
+  auto& adaptorInstances = taskManager->adaptorInstances();
+  adaptorInstances.registerTypes<AdaptorList>();
+  json::Configurator<Adaptor>::registerTypes<AdaptorList, AdaptorJSON>();
 }
 
 void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
 {
-  auto& instances = taskManager->instances();
-  instances.unregisterTypes<TaskList>();
-  json::Helper::unregisterTypes<TaskList>();
+  auto& taskInstances = taskManager->taskInstances();
+  taskInstances.unregisterTypes<TaskList>();
+  json::Configurator<Task>::unregisterTypes<TaskList>();
+
+  auto& adaptorInstances = taskManager->adaptorInstances();
+  adaptorInstances.unregisterTypes<AdaptorList>();
+  json::Configurator<Adaptor>::unregisterTypes<AdaptorList>();
 }
 
 } // namespace task

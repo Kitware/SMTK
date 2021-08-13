@@ -21,7 +21,7 @@ namespace smtk
 namespace task
 {
 
-void to_json(json& j, const GatherResources::Predicate& p)
+void to_json(json& j, const GatherResources::ResourceSet& p)
 {
   j = json{ { "role", p.m_role }, { "type", p.m_type } };
   if (p.m_minimumCount == 0 && p.m_maximumCount < 0)
@@ -39,7 +39,7 @@ void to_json(json& j, const GatherResources::Predicate& p)
   }
 }
 
-void from_json(const json& j, GatherResources::Predicate& p)
+void from_json(const json& j, GatherResources::ResourceSet& p)
 {
   if (j.contains("role"))
   {
@@ -74,7 +74,7 @@ void from_json(const json& j, GatherResources::Predicate& p)
     // Accept any resource
     p.m_validator = nullptr;
     /*
-      [](const smtk::resource::Resource&, const TaskNeedsResource::Predicate&)
+      [](const smtk::resource::Resource&, const TaskNeedsResource::ResourceSet&)
       { return true; };
       */
   }
@@ -115,9 +115,9 @@ void GatherResources::configure(const Configuration& config)
           continue;
         }
 
-        Predicate predicate;
-        spec.get_to(predicate);
-        m_resourcesByRole[predicate.m_role] = spec.get<Predicate>();
+        ResourceSet resourceSet;
+        spec.get_to(resourceSet);
+        m_resourcesByRole[resourceSet.m_role] = spec.get<ResourceSet>();
       }
     }
   }
@@ -140,7 +140,7 @@ void GatherResources::configure(const Configuration& config)
   }
 }
 
-smtk::common::Visit GatherResources::visitPredicates(PredicateVisitor visitor)
+smtk::common::Visit GatherResources::visitResourceSets(ResourceSetVisitor visitor)
 {
   if (!visitor)
   {
@@ -160,7 +160,7 @@ void GatherResources::updateResources(
   smtk::resource::Resource& resource,
   smtk::resource::EventType event)
 {
-  bool predicatesUpdated = false;
+  bool resourceSetsUpdated = false;
   auto resourcePtr = resource.shared_from_this();
   switch (event)
   {
@@ -174,7 +174,7 @@ void GatherResources::updateResources(
         if (!it->second.m_validator || it->second.m_validator(resource, it->second))
         {
           it->second.m_resources.insert(resourcePtr);
-          predicatesUpdated = true;
+          resourceSetsUpdated = true;
         }
       }
     }
@@ -186,7 +186,7 @@ void GatherResources::updateResources(
       auto it = m_resourcesByRole.find(role);
       if (it != m_resourcesByRole.end())
       {
-        predicatesUpdated = it->second.m_resources.erase(resourcePtr) > 0;
+        resourceSetsUpdated = it->second.m_resources.erase(resourcePtr) > 0;
       }
     }
     break;
@@ -194,7 +194,7 @@ void GatherResources::updateResources(
       // TODO
       break;
   }
-  if (predicatesUpdated)
+  if (resourceSetsUpdated)
   {
     this->internalStateChanged(this->computeInternalState());
   }
@@ -205,14 +205,14 @@ State GatherResources::computeInternalState() const
   State s = State::Completable;
   for (const auto& entry : m_resourcesByRole)
   {
-    const auto& predicate(entry.second);
-    if (predicate.m_resources.size() < static_cast<std::size_t>(predicate.m_minimumCount))
+    const auto& resourceSet(entry.second);
+    if (resourceSet.m_resources.size() < static_cast<std::size_t>(resourceSet.m_minimumCount))
     {
       s = State::Incomplete;
     }
     else if (
-      predicate.m_maximumCount >= 0 &&
-      predicate.m_resources.size() > static_cast<std::size_t>(predicate.m_maximumCount))
+      resourceSet.m_maximumCount >= 0 &&
+      resourceSet.m_resources.size() > static_cast<std::size_t>(resourceSet.m_maximumCount))
     {
       s = State::Incomplete;
     }

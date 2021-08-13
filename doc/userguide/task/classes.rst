@@ -41,17 +41,24 @@ dependent on its children.
 
 The Group has a "mode," which describes how children are related to
 one another: when the mode is parallel, children have no dependency on
-one another and the group itself is dependent on all of its children.
+one another; the parent group configures them independently.
 When the mode is serial, children must be completed in the
 order specified (i.e., each successive task is dependent on its
-predecessor) and the group itself is dependent on the final child task.
+predecessor) and each child task may configure its successor as
+it becomes completable.
 
 Task groups are completable by default (i.e., when no children are configured).
-If children exist, the group takes its state as a combination of its dependencies.
-In serial mode, the group has a single internal dependency and its state is identical to
-the dependency's state. If the group also has external dependencies on sibling tasks
-(that are not children), its state also depends on them.
-In parallel mode, the group has at least as many dependencies as children.
+If children exist, the group takes its internal state as a combination of its children's
+states:
+
+* irrelevant if all of its children are irrelevant;
+* unavailable if all of its children are unavailable;
+* incomplete if any of its children are incomplete;
+* completable if all of its relevant children are completable; and
+* completed when the user marks either it or all of its children completed.
+
+As with other task classes, the group's overall state also includes the state of
+its external dependencies.
 
 The task Group class accepts all the JSON configuration that the base Task class does, plus:
 
@@ -102,6 +109,13 @@ Example
          "type": "smtk::task::adaptor::PassComponents",
          "from": 1,
          "to": 2
+       },
+       {
+         "//": "How a child task configures its parent's"
+         "//": "output. Be careful to avoid loops."
+         "type": "smtk::task::adaptor::PassComponents",
+         "from": 2,
+         "to": 0
        }
      ]
    }
@@ -171,6 +185,12 @@ This task accepts all the JSON configuration that the base Task class does, plus
       If omitted, any role is allowed.
     * ``definitions``: a set of :smtk:`smtk::attribute::Definition` type-names
       specifying which types of attributes to validate before allowing completion.
+    * ``auto-configure``: either true or false (the default), depending on
+      whether resources with matching roles should automatically be added.
+      The default is false since a task-adaptor, such as
+      :smtk:`ResourceAndRole <smtk::task::adaptor::ResourceAndRole>`, will
+      normally configure only those resources identified by a user as
+      relevant in a dependent task.
 
 Example
 """""""

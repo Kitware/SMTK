@@ -36,7 +36,7 @@ public:
   smtkCreateMacro(smtk::task::Task);
 
   /// A predicate used to collect resources that fit a given role.
-  struct Predicate
+  struct ResourceSet
   {
     using Entry = std::weak_ptr<smtk::resource::Resource>;
     /// The required role. If empty, any role is allowed.
@@ -47,19 +47,19 @@ public:
     unsigned int m_minimumCount;
     /// The maximum number of resources that can be collected while still satisfying the requirement.
     ///
-    /// Note that if 0, the predicate is forcing the task to reject all resources
+    /// Note that if 0, the resourceSet is forcing the task to reject all resources
     /// that the validator selects (i.e., no resources of the given type are allowed).
     /// If negative, then there is no maximum number of validated resources.
     int m_maximumCount;
     /// The resource typename regex; typically just a resource typename.
     std::string m_type;
     /// A lambda used to determine whether the given resource is acceptable.
-    std::function<bool(const smtk::resource::Resource&, const Predicate&)> m_validator;
+    std::function<bool(const smtk::resource::Resource&, const ResourceSet&)> m_validator;
     /// The set of resources being managed that are selected by the validator.
     std::set<Entry, std::owner_less<Entry>> m_resources;
   };
   /// Signature of functors that visit resources-by-role predicates.
-  using PredicateVisitor = std::function<smtk::common::Visit(const Predicate&)>;
+  using ResourceSetVisitor = std::function<smtk::common::Visit(const ResourceSet&)>;
 
   GatherResources();
   GatherResources(
@@ -74,7 +74,7 @@ public:
 
   void configure(const Configuration& config);
 
-  smtk::common::Visit visitPredicates(PredicateVisitor visitor);
+  smtk::common::Visit visitResourceSets(ResourceSetVisitor visitor);
 
 protected:
   /// Respond to resource changes that may change task state.
@@ -85,7 +85,7 @@ protected:
 
   smtk::common::Managers::Ptr m_managers;
   smtk::resource::Observers::Key m_observer;
-  std::map<std::string, Predicate> m_resourcesByRole;
+  std::map<std::string, ResourceSet> m_resourcesByRole;
 };
 } // namespace task
 } // namespace smtk

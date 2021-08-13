@@ -1,33 +1,51 @@
+# Tasks are classes (with header and source files) that also have
+# JSON classes (with header and source files).
+set(tasks
+  Task
+  FillOutAttributes
+  GatherResources
+  Group
+)
+
+set(adaptors
+  ResourceAndRole
+)
+
 set(taskSrcs
   Active.cxx
-  FillOutAttributes.cxx
+  Adaptor.cxx
   Manager.cxx
   Registrar.cxx
-  Task.cxx
-  GatherResources.cxx
-  Group.cxx
+  adaptor/ResourceAndRole.cxx
+  json/Configurator.cxx
   json/Helper.cxx
-  json/jsonFillOutAttributes.cxx
-  json/jsonGatherResources.cxx
   json/jsonManager.cxx
-  json/jsonTask.cxx
+  json/jsonAdaptor.cxx
 )
 
 set(taskHeaders
   Active.h
-  FillOutAttributes.h
+  Adaptor.h
   Instances.h
   Manager.h
   Registrar.h
-  Task.h
-  GatherResources.h
-  Group.h
+  adaptor/ResourceAndRole.h
+  json/Adaptor.h
+  json/Configurator.h
+  json/Configurator.txx
   json/Helper.h
-  json/jsonFillOutAttributes.h
-  json/jsonGatherResources.h
   json/jsonManager.h
-  json/jsonTask.h
 )
+
+foreach(task ${tasks})
+  list(APPEND taskSrcs ${task}.cxx json/json${task}.cxx)
+  list(APPEND taskHeaders ${task}.h json/json${task}.h)
+endforeach()
+
+foreach(adaptor ${adaptors})
+  list(APPEND taskSrcs adaptor/${adaptor}.cxx json/json${adaptor}.cxx)
+  list(APPEND taskHeaders adaptor/${adaptor}.h json/json${adaptor}.h)
+endforeach()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

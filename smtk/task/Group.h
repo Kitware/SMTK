@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_task_FillOutAttributes_h
-#define smtk_task_FillOutAttributes_h
+#ifndef smtk_task_Group_h
+#define smtk_task_Group_h
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Observer.h"
@@ -23,83 +23,50 @@ namespace smtk
 namespace task
 {
 
-/**\brief FillOutAttributes is a task that is incomplete until specified
-  *       attributes are valid.
+/**\brief Group is a task that owns children and draws its state from them.
   *
-  * This task accepts an input attribute resource (configured by a predecessor
-  * task or specified via a role) and observe an operation manager for operations.
-  * After each operation, attributes with a definition are validated.
-  * If all attributes identify are valid, the task becomes completable.
-  * Otherwise, the task will remain (or become) incomplete.
+  * A task group exists to organize a set of tasks.
+  *
+  * The Group instance is responsible for configuring its children, including
+  * creating dependencies among them. The Group's state and output are
+  * dependent on its children.
+  *
+  * The group has a "mode," which describes how children are related to
+  * one another: when the mode is parallel, children have no dependency on
+  * one another and the group itself is dependent on all of its children.
+  * When the mode is serial, children must be completed in the
+  * order specified (i.e., each successive task is dependent on its
+  * predecessor) and the group itself is dependent on the final child task.
+  *
   */
-class SMTKCORE_EXPORT FillOutAttributes : public Task
+class SMTKCORE_EXPORT Group : public Task
 {
 public:
-  smtkTypeMacro(smtk::task::FillOutAttributes);
+  smtkTypeMacro(smtk::task::Group);
   smtkSuperclassMacro(smtk::task::Task);
   smtkCreateMacro(smtk::task::Task);
 
-  /// Per-resource sets of validated attributes
-  ///
-  /// We need to track attributes so incremental updates
-  /// can decide whether to change state.
-  struct ResourceAttributes
-  {
-    /// Attributes matching a definition that are validated.
-    std::set<smtk::common::UUID> m_valid;
-    /// Attributes matching a definition that need attention.
-    std::set<smtk::common::UUID> m_invalid;
-  };
-  /// A predicate used to collect resources that fit a given role.
-  struct AttributeSet
-  {
-    /// The required role. If empty, any role is allowed.
-    std::string m_role;
-    /// The definitions in matching resources whose attributes should be valid.
-    std::set<std::string> m_definitions;
-    /// The set of resources being managed that are selected by the validator.
-    std::map<smtk::common::UUID, ResourceAttributes> m_resources;
-  };
-  /// Signature of functors that visit resources-by-role predicates.
-  using AttributeSetVisitor = std::function<smtk::common::Visit(const AttributeSet&)>;
-
-  FillOutAttributes();
-  FillOutAttributes(
-    const Configuration& config,
-    const smtk::common::Managers::Ptr& managers = nullptr);
-  FillOutAttributes(
+  Group();
+  Group(const Configuration& config, const smtk::common::Managers::Ptr& managers = nullptr);
+  Group(
     const Configuration& config,
     const PassedDependencies& dependencies,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
-  ~FillOutAttributes() override = default;
+  ~Group() override = default;
 
   void configure(const Configuration& config);
 
-  smtk::common::Visit visitAttributeSets(AttributeSetVisitor visitor);
+  std::vector<Task::Ptr> children() const;
 
 protected:
-  /// Initialize with a list of resources from manager in m_managers.
-  bool initializeResources();
-  /// Update a single resource in a predicate
-  bool updateResourceEntry(
-    smtk::attribute::Resource& resource,
-    const AttributeSet& predicate,
-    ResourceAttributes& entry);
-  /// Respond to operations that may change task state.
-  int update(
-    const smtk::operation::Operation& op,
-    smtk::operation::EventType event,
-    smtk::operation::Operation::Result result);
-
   /// Check m_resourcesByRole to see if all requirements are met.
   State computeInternalState() const;
 
   smtk::common::Managers::Ptr m_managers;
-  smtk::operation::Observers::Key m_observer;
-  std::vector<AttributeSet> m_attributeSets;
+  std::map<Task::Ptr, Task::Observers::Key> m_children;
 };
 } // namespace task
 } // namespace smtk
 
-#endif // smtk_task_FillOutAttributes_h
+#endif // smtk_task_Group_h

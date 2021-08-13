@@ -87,7 +87,7 @@ smtk::common::Visit FillOutAttributes::visitAttributeSets(AttributeSetVisitor vi
   {
     return smtk::common::Visit::Halt;
   }
-  for (const auto& entry : m_attributeSets)
+  for (auto& entry : m_attributeSets)
   {
     if (visitor(entry) == smtk::common::Visit::Halt)
     {
@@ -115,9 +115,12 @@ bool FillOutAttributes::initializeResources()
         if (
           attributeSet.m_role.empty() || attributeSet.m_role == "*" || attributeSet.m_role == role)
         {
-          foundResource = true;
-          auto it = attributeSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
-          this->updateResourceEntry(*resource, attributeSet, it->second);
+          if (attributeSet.m_autoconfigure)
+          {
+            foundResource = true;
+            auto it = attributeSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
+            this->updateResourceEntry(*resource, attributeSet, it->second);
+          }
         }
       }
     }
@@ -241,8 +244,11 @@ int FillOutAttributes::update(
             else if (
               predicate.m_role == role || predicate.m_role == "*" || predicate.m_role.empty())
             {
-              it = predicate.m_resources.insert({ resource->id(), { {}, {} } }).first;
-              doUpdate = true;
+              if (predicate.m_autoconfigure)
+              {
+                it = predicate.m_resources.insert({ resource->id(), { {}, {} } }).first;
+                doUpdate = true;
+              }
             }
             if (doUpdate)
             {
@@ -266,16 +272,22 @@ int FillOutAttributes::update(
 State FillOutAttributes::computeInternalState() const
 {
   State s = State::Completable;
+  bool empty = true;
   for (const auto& predicate : m_attributeSets)
   {
     for (const auto& resourceEntry : predicate.m_resources)
     {
+      empty &= resourceEntry.second.m_valid.empty() && resourceEntry.second.m_invalid.empty();
       if (!resourceEntry.second.m_invalid.empty())
       {
         s = State::Incomplete;
         return s;
       }
     }
+  }
+  if (empty)
+  {
+    s = State::Irrelevant;
   }
   return s;
 }

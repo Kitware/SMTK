@@ -22,6 +22,11 @@ namespace smtk
 {
 namespace task
 {
+// Forward declaration
+namespace adaptor
+{
+class ResourceAndRole;
+}
 
 /**\brief FillOutAttributes is a task that is incomplete until specified
   *       attributes are valid.
@@ -57,11 +62,18 @@ public:
     std::string m_role;
     /// The definitions in matching resources whose attributes should be valid.
     std::set<std::string> m_definitions;
+    /// Should all resources with a matching role be added?
+    ///
+    /// If false (default), then resources must be explicitly configured by UUID
+    /// or configured by a task adaptor.
+    /// If true, then all resources with a matching role will have attributes
+    /// matching m_definitions checked.
+    bool m_autoconfigure = false;
     /// The set of resources being managed that are selected by the validator.
     std::map<smtk::common::UUID, ResourceAttributes> m_resources;
   };
-  /// Signature of functors that visit resources-by-role predicates.
-  using AttributeSetVisitor = std::function<smtk::common::Visit(const AttributeSet&)>;
+  /// Signatures of functors that visit resources-by-role predicates.
+  using AttributeSetVisitor = std::function<smtk::common::Visit(AttributeSet&)>;
 
   FillOutAttributes();
   FillOutAttributes(
@@ -79,6 +91,8 @@ public:
   smtk::common::Visit visitAttributeSets(AttributeSetVisitor visitor);
 
 protected:
+  friend class adaptor::ResourceAndRole;
+
   /// Initialize with a list of resources from manager in m_managers.
   bool initializeResources();
   /// Update a single resource in a predicate

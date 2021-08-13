@@ -32,16 +32,16 @@ inline PySharedPtrClass< smtk::task::GatherResources, smtk::task::Task > pybind1
     .def("typeName", &smtk::task::GatherResources::typeName)
     .def_readonly_static("type_name", &smtk::task::GatherResources::type_name)
     ;
-  py::class_< smtk::task::GatherResources::Predicate >(instance, "Predicate")
-    .def(py::init<::smtk::task::GatherResources::Predicate const &>())
+  py::class_< smtk::task::GatherResources::ResourceSet >(instance, "ResourceSet")
+    .def(py::init<::smtk::task::GatherResources::ResourceSet const &>())
     .def(py::init<>())
-    .def("deepcopy", (smtk::task::GatherResources::Predicate & (smtk::task::GatherResources::Predicate::*)(::smtk::task::GatherResources::Predicate const &)) &smtk::task::GatherResources::Predicate::operator=)
-    .def_readwrite("m_role", &smtk::task::GatherResources::Predicate::m_role)
-    .def_readwrite("m_minimumCount", &smtk::task::GatherResources::Predicate::m_minimumCount)
-    .def_readwrite("m_maximumCount", &smtk::task::GatherResources::Predicate::m_maximumCount)
-    .def_readwrite("m_type", &smtk::task::GatherResources::Predicate::m_type)
-    .def_readwrite("m_validator", &smtk::task::GatherResources::Predicate::m_validator)
-    .def_readwrite("m_resources", &smtk::task::GatherResources::Predicate::m_resources)
+    .def("deepcopy", (smtk::task::GatherResources::ResourceSet & (smtk::task::GatherResources::ResourceSet::*)(::smtk::task::GatherResources::ResourceSet const &)) &smtk::task::GatherResources::ResourceSet::operator=)
+    .def_readwrite("m_role", &smtk::task::GatherResources::ResourceSet::m_role)
+    .def_readwrite("m_minimumCount", &smtk::task::GatherResources::ResourceSet::m_minimumCount)
+    .def_readwrite("m_maximumCount", &smtk::task::GatherResources::ResourceSet::m_maximumCount)
+    .def_readwrite("m_type", &smtk::task::GatherResources::ResourceSet::m_type)
+    .def_readwrite("m_validator", &smtk::task::GatherResources::ResourceSet::m_validator)
+    .def_readwrite("m_resources", &smtk::task::GatherResources::ResourceSet::m_resources)
     ;
   return instance;
 }

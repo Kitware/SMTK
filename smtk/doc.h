@@ -149,6 +149,26 @@ namespace io
 {
 }
 
+/**\brief User-interface tasks.
+ *
+ */
+namespace task
+{
+/**\brief Adaptors that configure downstream tasks.
+   *
+   */
+namespace adaptor
+{
+}
+
+/**\brief JSON serialization and deserialization of tasks.
+   *
+   */
+namespace json
+{
+}
+} // namespace task
+
 /**\brief workflow managment.
   *
   */

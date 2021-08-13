@@ -10,7 +10,7 @@
 #ifndef smtk_task_json_Manager_h
 #define smtk_task_json_Manager_h
 
-#include "smtk/task/Task.h"
+#include "smtk/task/Manager.h"
 
 #include "smtk/common/Managers.h"
 

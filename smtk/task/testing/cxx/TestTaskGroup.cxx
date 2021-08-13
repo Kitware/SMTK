@@ -89,42 +89,57 @@ int TestTaskGroup(int, char*[])
     },
     {
       "id": 2,
-      "type": "smtk::task::FillOutAttributes",
-      "title": "Mark up model",
-      "state": "incomplete",
-      "attribute-sets": [
-        {
-          "role": "simulation attribute",
-          "definitions": [
-            "Material",
-            "BoundaryCondition"
-          ]
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "type": "smtk::task::FillOutAttributes",
-      "title": "Specify simulation parameters",
-      "state": "incomplete",
-      "attribute-sets": [
-        {
-          "role": "simulation attribute",
-          "definitions": [
-            "Globals"
-          ]
-        }
-      ]
-    }
-    {
-      "id": 4,
       "type": "smtk::task::Group",
       "title": "Prepare simulation",
       "state": "incomplete",
       "dependencies": [ 1 ],
       "grouping": {
-        "children": [2, 3],
         "mode": "parallel"
+        "children": [
+          {
+            "id": -1,
+            "type": "smtk::task::FillOutAttributes",
+            "title": "Mark up model",
+            "state": "incomplete",
+            "attribute-sets": [
+              {
+                "role": "simulation attribute",
+                "definitions": [
+                  "Material",
+                  "BoundaryCondition"
+                ]
+              }
+            ]
+          },
+          {
+            "id": -2,
+            "type": "smtk::task::FillOutAttributes",
+            "title": "Specify simulation parameters",
+            "state": "incomplete",
+            "attribute-sets": [
+              {
+                "role": "simulation attribute",
+                "definitions": [
+                  "Globals"
+                ]
+              }
+            ]
+          }
+        ],
+        "adaptors": [
+          {
+            "id": -1,
+            "type": "smtk::task::adaptor::ResourceAndRole",
+            "from": 2,
+            "to": -1
+          },
+          {
+            "id": -1,
+            "type": "smtk::task::adaptor::ResourceAndRole",
+            "from": 2,
+            "to": -2
+          }
+        ]
       }
     }
   ],
@@ -136,9 +151,9 @@ int TestTaskGroup(int, char*[])
     "'Ignore' adaptor as a default – which never modifies the",
     "depedent task's configuration."
   ],
-  "task-adaptors": [
+  "adaptors": [
     {
-      "type": "smtk::task::adaptor::Ignore",
+      "type": "smtk::task::adaptor::ResourceAndRole",
       "from": 1,
       "to": 2
     }
@@ -154,7 +169,7 @@ int TestTaskGroup(int, char*[])
   std::cout << config.dump(2) << "\n";
   bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
   test(ok, "Failed to parse configuration.");
-  test(taskManager->instances().size() == 2, "Expected to deserialize 2 tasks.");
+  test(taskManager->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
 
   // Round trip it.
   nlohmann::json config2;

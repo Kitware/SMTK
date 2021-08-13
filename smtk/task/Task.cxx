@@ -75,6 +75,7 @@ State Task::state() const
       case State::Incomplete:
         s = State::Unavailable;
         break;
+      case State::Irrelevant:
       case State::Completable:
       case State::Completed:
         break;
@@ -95,6 +96,7 @@ bool Task::markCompleted(bool completed)
 {
   switch (this->state())
   {
+    case State::Irrelevant:  // fall through
     case State::Unavailable: // fall through
     case State::Incomplete:
       return false;

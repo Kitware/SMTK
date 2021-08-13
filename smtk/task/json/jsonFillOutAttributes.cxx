@@ -28,6 +28,8 @@ void from_json(const nlohmann::json& j, FillOutAttributes::AttributeSet& attribu
   {
     j.at("definitions").get_to(attributeSet.m_definitions);
   }
+  attributeSet.m_autoconfigure =
+    (j.contains("auto-configure") ? j.at("auto-configure").get<bool>() : false);
   if (j.contains("resource-attributes"))
   {
     j.at("resource-attributes").get_to(attributeSet.m_resources);
