@@ -119,8 +119,11 @@ if (SPHINX_FOUND)
     userguide/obtain-build-install.rst
     userguide/simulation/index.rst
     userguide/overview.rst
-    userguide/workflow/index.rst
-    userguide/workflow/concepts.rst
+    userguide/task/adaptors.rst
+    userguide/task/concepts.rst
+    userguide/task/classes.rst
+    userguide/task/index.rst
+    userguide/task/io.rst
     userguide/model/index.rst
     userguide/model/property-names.rst
     userguide/model/sessions.rst

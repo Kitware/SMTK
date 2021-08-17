@@ -31,7 +31,7 @@ public:
   /// Construct an unconfigured adaptor.
   Adaptor();
   Adaptor(const Configuration& config);
-  Adaptor(const Configuration& config, std::shared_ptr<Task>& from, std::shared_ptr<Task>& to);
+  Adaptor(const Configuration& config, Task* from, Task* to);
 
   /// Destructor must be virtual.
   virtual ~Adaptor() = default;
@@ -42,13 +42,13 @@ public:
   virtual bool reconfigureTask() = 0;
 
   /// The task this adaptor uses to fetch configuration parameters.
-  std::shared_ptr<Task> from() const { return m_from.lock(); }
+  Task* from() const { return m_from; }
   /// The task to which this adaptor applies configuration parameters.
-  std::shared_ptr<Task> to() const { return m_to.lock(); }
+  Task* to() const { return m_to; }
 
 protected:
-  std::weak_ptr<Task> m_from;
-  std::weak_ptr<Task> m_to;
+  Task* m_from;
+  Task* m_to;
   smtk::task::Task::Observers::Key m_observer;
 };
 } // namespace task

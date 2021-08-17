@@ -34,8 +34,8 @@ using Instances = smtk::common::Instances<
   // Constructor variant: configuration and tasks.
   std::tuple<
     smtk::task::Adaptor::Configuration&, // JSON configuration information
-    smtk::task::Task::Ptr,               // Source task (from)
-    smtk::task::Task::Ptr                // Task to be configured (to)
+    smtk::task::Task*,                   // Source task (from)
+    smtk::task::Task*                    // Task to be configured (to)
     >>;
 
 } // namespace adaptor

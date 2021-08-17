@@ -158,6 +158,26 @@ int TestTaskBasics(int, char*[])
     auto t3 = taskManager->taskInstances().create<smtk::task::Task>(
       c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, managers);
 
+    // Test visitors.
+    called = 0;
+    test(!t3->hasChildren(), "Expected t3 to have no children.");
+    t3->visit(Task::RelatedTasks::Child, [&called](Task&) {
+      ++called;
+      return smtk::common::Visit::Continue;
+    });
+    test(called == 0, "Expected not to visit any children of t3.");
+    t3->visit(Task::RelatedTasks::Depend, [&called](Task&) {
+      ++called;
+      return smtk::common::Visit::Continue;
+    });
+    test(called == 2, "Expected to visit 2 dependencies of t3.");
+    called = 0;
+    t3->visit(Task::RelatedTasks::Depend, [&called](Task&) -> smtk::common::Visit {
+      ++called;
+      return smtk::common::Visit::Halt;
+    });
+    test(called == 1, "Expected to terminate early for dependency visitor.");
+
     // Test dependency removal and notification.
     auto dokey = t3->observers().insert(callback);
     called = 0;
@@ -180,6 +200,7 @@ int TestTaskBasics(int, char*[])
     //    resource manager.
     Task::Configuration c4{
       { "title", "Task 4" },
+      { "auto-configure", true },
       { "resources",
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
@@ -244,6 +265,7 @@ int TestTaskBasics(int, char*[])
     //      This should also test initialization of GatherResources when
     //      resource manager is not empty.
     Task::Configuration c5{ { "title", "Task 5" },
+                            { "auto-configure", true },
                             { "resources",
                               { { { "type", "smtk::model::Resource" } },
                                 { { "role", "simulation attribute" } } } } };

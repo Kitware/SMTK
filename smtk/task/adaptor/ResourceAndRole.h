@@ -31,10 +31,7 @@ public:
   /// Construct an unconfigured adaptor.
   ResourceAndRole();
   ResourceAndRole(const Configuration& config);
-  ResourceAndRole(
-    const Configuration& config,
-    std::shared_ptr<Task>& from,
-    std::shared_ptr<Task>& to);
+  ResourceAndRole(const Configuration& config, Task* from, Task* to);
 
   /// Reconfigure the "to()" task.
   ///
@@ -44,6 +41,9 @@ public:
 
 protected:
   void configureSelf(const Configuration& config);
+
+  std::string m_fromTag;
+  std::string m_toTag;
 };
 } // namespace adaptor
 } // namespace task

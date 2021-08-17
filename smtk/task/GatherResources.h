@@ -74,6 +74,22 @@ public:
 
   void configure(const Configuration& config);
 
+  /// Explicitly add a \a resource in the given \a role.
+  ///
+  /// If \a autoconfigure is disabled, calling this method is
+  /// the only way to complete this task.
+  ///
+  /// The \a role must be one this task is configured to accept.
+  /// This method will add the \a resource as long as it is of
+  /// the correct type (regardless of whether it is marked with
+  /// the \a role passed to this method).
+  ///
+  /// If the resource was added (i.e., not already present in
+  /// the given \a role), then this method returns true.
+  bool addResourceInRole(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    const std::string& role);
+
   smtk::common::Visit visitResourceSets(ResourceSetVisitor visitor);
 
 protected:
@@ -83,6 +99,7 @@ protected:
   /// Check m_resourcesByRole to see if all requirements are met.
   State computeInternalState() const;
 
+  bool m_autoconfigure = false;
   smtk::common::Managers::Ptr m_managers;
   smtk::resource::Observers::Key m_observer;
   std::map<std::string, ResourceSet> m_resourcesByRole;

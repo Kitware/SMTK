@@ -22,6 +22,7 @@ namespace smtk
 {
 namespace task
 {
+class Adaptor;
 
 /**\brief Group is a task that owns children and draws its state from them.
   *
@@ -58,13 +59,30 @@ public:
   void configure(const Configuration& config);
 
   std::vector<Task::Ptr> children() const;
+  bool hasChildren() const override { return !m_children.empty(); }
+  smtk::common::Visit visit(RelatedTasks relation, Visitor visitor) const override;
+
+  const std::vector<std::weak_ptr<smtk::task::Adaptor>>& adaptors() const { return m_adaptors; }
+
+  /// Set/get adaptor configuration data passed to/from child tasks.
+  void setAdaptorData(const std::string& tagName, Task::Configuration& config);
+  const Task::Configuration& adaptorData() const { return m_adaptorData; }
+  Task::Configuration& adaptorData() { return m_adaptorData; }
+  Task::Configuration adaptorData(const std::string& key) const;
+
+  /// Return the managers used to configure this Group.
+  smtk::common::Managers::Ptr managers() const { return m_managers; }
 
 protected:
   /// Check m_resourcesByRole to see if all requirements are met.
   State computeInternalState() const;
 
+  void childStateChanged(Task& child, State prev, State next);
+
   smtk::common::Managers::Ptr m_managers;
   std::map<Task::Ptr, Task::Observers::Key> m_children;
+  std::vector<std::weak_ptr<smtk::task::Adaptor>> m_adaptors;
+  Task::Configuration m_adaptorData;
 };
 } // namespace task
 } // namespace smtk

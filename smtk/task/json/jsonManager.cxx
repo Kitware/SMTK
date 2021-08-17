@@ -47,8 +47,17 @@ bool jsonManager::serialize(
   // Serialize tasks
   nlohmann::json::array_t taskList;
   taskManager->taskInstances().visit([&taskList](const smtk::task::Task::Ptr& task) {
-    nlohmann::json jsonTask = task;
-    taskList.push_back(jsonTask);
+    auto& helper = Helper::instance();
+    if (
+      !task->parent() ||
+      (smtk::task::json::Helper::nestingDepth() > 1 &&
+       helper.tasks().unswizzle(1) == task->parent()))
+    {
+      // Only serialize top-level tasks. (Tasks with children are responsible
+      // for serializing their children).
+      nlohmann::json jsonTask = task;
+      taskList.push_back(jsonTask);
+    }
     return smtk::common::Visit::Continue;
   });
   json["tasks"] = taskList;
@@ -56,8 +65,15 @@ bool jsonManager::serialize(
   // Serialize adaptors
   nlohmann::json::array_t adaptorList;
   taskManager->adaptorInstances().visit([&adaptorList](const smtk::task::Adaptor::Ptr& adaptor) {
-    nlohmann::json jsonAdaptor = adaptor;
-    adaptorList.push_back(jsonAdaptor);
+    if (
+      adaptor && adaptor->from() && !adaptor->from()->parent() && adaptor->to() &&
+      !adaptor->to()->parent())
+    {
+      // Only serialize top-level adaptors. (Tasks with child adaptors are
+      // responsible for serializing them.)
+      nlohmann::json jsonAdaptor = adaptor;
+      adaptorList.push_back(jsonAdaptor);
+    }
     return smtk::common::Visit::Continue;
   });
   json["adaptors"] = adaptorList;
@@ -65,6 +81,17 @@ bool jsonManager::serialize(
 }
 
 bool jsonManager::deserialize(
+  const std::shared_ptr<smtk::common::Managers>& managers,
+  const nlohmann::json& json)
+{
+  std::vector<std::weak_ptr<smtk::task::Task>> tasks;
+  std::vector<std::weak_ptr<smtk::task::Adaptor>> adaptors;
+  return jsonManager::deserialize(tasks, adaptors, managers, json);
+}
+
+bool jsonManager::deserialize(
+  std::vector<std::weak_ptr<smtk::task::Task>>& tasks,
+  std::vector<std::weak_ptr<smtk::task::Adaptor>>& adaptors,
   const std::shared_ptr<smtk::common::Managers>& managers,
   const nlohmann::json& json)
 {
@@ -76,25 +103,32 @@ bool jsonManager::deserialize(
     return false;
   }
 
+  tasks.clear();
+  adaptors.clear();
   try
   {
     auto& helper = Helper::instance();
-    helper.clear();
+    if (smtk::task::json::Helper::nestingDepth() == 1)
+    { // Do not clear the parent task when deserializing nested tasks.
+      helper.clear();
+    }
     helper.setManagers(managers);
-    std::map<std::size_t, Task::Ptr> taskMap;
+    std::map<Helper::SwizzleId, Task::Ptr> taskMap;
+    std::map<Helper::SwizzleId, Adaptor::Ptr> adaptorMap;
     for (const auto& jsonTask : json.at("tasks"))
     {
-      auto taskId = jsonTask.at("id").get<std::size_t>();
+      auto taskId = jsonTask.at("id").get<Helper::SwizzleId>();
       Task::Ptr task = jsonTask;
       taskMap[taskId] = task;
       helper.tasks().swizzleId(task.get());
+      tasks.push_back(task);
     }
     // Do a second pass to deserialize dependencies.
     for (const auto& jsonTask : json.at("tasks"))
     {
       if (jsonTask.contains("dependencies"))
       {
-        auto taskId = jsonTask.at("id").get<std::size_t>();
+        auto taskId = jsonTask.at("id").get<Helper::SwizzleId>();
         auto task = taskMap[taskId];
         auto taskDeps = helper.unswizzleDependencies(jsonTask.at("dependencies"));
         task->addDependencies(taskDeps);
@@ -107,20 +141,26 @@ bool jsonManager::deserialize(
     {
       for (const auto& jsonAdaptor : json.at("adaptors"))
       {
-        try
+        // Skip things that are not adaptors.
+        if (jsonAdaptor.is_object() && jsonAdaptor.contains("id"))
         {
-          auto adaptorId = jsonAdaptor.at("id").get<std::size_t>();
-          auto taskFromId = jsonAdaptor.at("from").get<std::size_t>();
-          auto taskToId = jsonAdaptor.at("to").get<std::size_t>();
-          helper.setAdaptorTaskIds(taskFromId, taskToId);
-          Adaptor::Ptr adaptor = jsonAdaptor;
-          helper.clearAdaptorTaskIds();
-        }
-        catch (std::exception&)
-        {
-          smtkErrorMacro(
-            smtk::io::Logger::instance(),
-            "Skipping task because 'id', 'from', and/or 'to' fields are missing.");
+          try
+          {
+            auto adaptorId = jsonAdaptor.at("id").get<Helper::SwizzleId>();
+            auto taskFromId = jsonAdaptor.at("from").get<Helper::SwizzleId>();
+            auto taskToId = jsonAdaptor.at("to").get<Helper::SwizzleId>();
+            helper.setAdaptorTaskIds(taskFromId, taskToId);
+            Adaptor::Ptr adaptor = jsonAdaptor;
+            adaptorMap[adaptorId] = adaptor;
+            helper.adaptors().swizzleId(adaptor.get());
+            adaptors.push_back(adaptor);
+          }
+          catch (std::exception&)
+          {
+            smtkErrorMacro(
+              smtk::io::Logger::instance(),
+              "Skipping task because 'id', 'from', and/or 'to' fields are missing.");
+          }
         }
       }
     }

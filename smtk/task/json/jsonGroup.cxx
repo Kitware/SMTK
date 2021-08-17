@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/task/json/jsonGroup.h"
 #include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonAdaptor.h"
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/task/Group.h"
@@ -29,13 +30,30 @@ Task::Configuration jsonGroup::operator()(const Task* task, Helper& helper) cons
   {
     jsonTask superclass;
     config = superclass(group, helper);
+    config["adaptor-data"] = group->adaptorData();
+    // Now that we've serialized the parent task,
+    // push a helper on the stack to serialize children.
+    auto& childHelper = smtk::task::json::Helper::pushInstance(group);
     nlohmann::json::array_t children;
     for (const auto& child : group->children())
     {
+      childHelper.tasks().swizzleId(child.get());
       nlohmann::json jsonChild = child;
-      children.push_back(jsonChild);
+      children.emplace_back(jsonChild);
     }
-    config["children"] = children;
+    nlohmann::json::array_t adaptors;
+    for (const auto& weakAdaptor : group->adaptors())
+    {
+      auto adaptor = weakAdaptor.lock();
+      if (adaptor)
+      {
+        childHelper.adaptors().swizzleId(adaptor.get());
+        nlohmann::json jsonAdaptor = adaptor;
+        adaptors.emplace_back(jsonAdaptor);
+      }
+    }
+    config["children"] = { { "tasks", children }, { "adaptors", adaptors } };
+    smtk::task::json::Helper::popInstance();
   }
   return config;
 }

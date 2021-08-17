@@ -136,10 +136,26 @@ void Configurator<ObjectType, MF>::clear()
   m_nextSwizzle = 1;
 }
 
-/// Return the ID of an object as computed by the swizzler.
-/// This will allocate a new ID if none exists.
 template<typename ObjectType, TypeMutexFunction MF>
-std::size_t Configurator<ObjectType, MF>::swizzleId(const ObjectType* object)
+void Configurator<ObjectType, MF>::clearNestedSwizzles()
+{
+  std::unordered_set<ObjectType*> removals;
+  auto end = m_swizzleBck.lower_bound(SwizzleId(0));
+  for (auto it = m_swizzleBck.begin(); it != end; ++it)
+  {
+    removals.insert(it->second);
+  }
+  m_swizzleBck.erase(m_swizzleBck.begin(), end);
+  for (const auto& object : removals)
+  {
+    m_swizzleFwd.erase(object);
+  }
+  m_nextNested = -1;
+}
+
+template<typename ObjectType, TypeMutexFunction MF>
+typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::nestedSwizzleId(
+  const ObjectType* object)
 {
   if (!object)
   {
@@ -151,7 +167,29 @@ std::size_t Configurator<ObjectType, MF>::swizzleId(const ObjectType* object)
   {
     return it->second;
   }
-  std::size_t id = m_nextSwizzle++;
+  SwizzleId id = m_nextNested--;
+  m_swizzleFwd[ncobject] = id;
+  m_swizzleBck[id] = ncobject;
+  return id;
+}
+
+/// Return the ID of an object as computed by the swizzler.
+/// This will allocate a new ID if none exists.
+template<typename ObjectType, TypeMutexFunction MF>
+typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::swizzleId(
+  const ObjectType* object)
+{
+  if (!object)
+  {
+    return 0;
+  }
+  auto* ncobject = const_cast<ObjectType*>(object); // Need a non-const ObjectType in some cases.
+  const auto& it = m_swizzleFwd.find(ncobject);
+  if (it != m_swizzleFwd.end())
+  {
+    return it->second;
+  }
+  SwizzleId id = m_nextSwizzle++;
   m_swizzleFwd[ncobject] = id;
   m_swizzleBck[id] = ncobject;
   return id;
@@ -159,7 +197,7 @@ std::size_t Configurator<ObjectType, MF>::swizzleId(const ObjectType* object)
 
 /// Return the pointer to an object given its swizzled ID (or null).
 template<typename ObjectType, TypeMutexFunction MF>
-ObjectType* Configurator<ObjectType, MF>::unswizzle(std::size_t objectId) const
+ObjectType* Configurator<ObjectType, MF>::unswizzle(SwizzleId objectId) const
 {
   auto it = m_swizzleBck.find(objectId);
   if (it == m_swizzleBck.end())

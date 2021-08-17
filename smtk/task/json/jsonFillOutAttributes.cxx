@@ -75,8 +75,7 @@ Task::Configuration jsonFillOutAttributes::operator()(const Task* task, Helper& 
     config = superclass(fillOutAttributes, helper);
     nlohmann::json::array_t attributeSets;
     fillOutAttributes->visitAttributeSets(
-      [&attributeSets, fillOutAttributes](
-        const FillOutAttributes::AttributeSet& attributeSet) -> smtk::common::Visit {
+      [&attributeSets](const FillOutAttributes::AttributeSet& attributeSet) -> smtk::common::Visit {
         nlohmann::json jsonAttributeSet = attributeSet;
         attributeSets.push_back(jsonAttributeSet);
         return smtk::common::Visit::Continue;

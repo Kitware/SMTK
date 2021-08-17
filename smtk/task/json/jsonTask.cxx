@@ -29,6 +29,10 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     config["id"] = helper.tasks().swizzleId(task);
     config["type"] = task->typeName();
     config["title"] = task->title();
+    if (!task->style().empty())
+    {
+      config["style"] = task->style();
+    }
     config["state"] = stateName(task->internalState());
     auto deps = helper.swizzleDependencies(task->dependencies());
     if (!deps.empty())

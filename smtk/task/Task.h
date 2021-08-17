@@ -15,6 +15,7 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/Observers.h"
+#include "smtk/common/Visit.h"
 #include "smtk/task/State.h"
 
 #include "nlohmann/json.hpp"
@@ -28,6 +29,20 @@ namespace smtk
 {
 namespace task
 {
+
+class Manager;
+class Task;
+/// Free functions that populate a set of workflow "head" tasks for an input \a task
+/// (this is the set of tasks that \a task ultimately depends on but are not themselves
+/// dependent on any task).
+///
+/// The variant that accepts \a visited can be used to efficiently accumulate workflows
+/// across several tasks (by pruning visited nodes from its traversal).
+SMTKCORE_EXPORT void workflowsOfTask(
+  Task* task,
+  std::set<smtk::task::Task*>& workflows,
+  std::set<smtk::task::Task*>& visited);
+SMTKCORE_EXPORT std::set<smtk::task::Task*> workflowsOfTask(const Task& task);
 
 /**\brief Task is a base class for all SMTK tasks.
   *
@@ -67,6 +82,16 @@ public:
   using PassedDependencies = std::set<Ptr>;
   /// Tasks are configured with arbitrary JSON objects, though this may change.
   using Configuration = nlohmann::json;
+  /// Signature of functions invoked when visiting dependencies or children while
+  /// allowing early termination.
+  using Visitor = std::function<smtk::common::Visit(Task&)>;
+
+  /// The types of related tasks to visit.
+  enum class RelatedTasks
+  {
+    Depend, //!< Visit tasks this task depends upon.
+    Child   //!< Visit child tasks.
+  };
 
   Task();
   Task(
@@ -96,6 +121,27 @@ public:
   /// This is not intended to be a unique identifier.
   void setTitle(const std::string& title);
 
+  /// Set/get style classes for the task.
+  /// A style class specifies how applications should present the task
+  /// (e.g., what type of view to provide the user, what rendering mode
+  /// to use, what objects to list or exclude).
+  const std::set<std::string>& style() const { return m_style; }
+  bool addStyle(const std::string& styleClass);
+  bool removeStyle(const std::string& styleClass);
+  bool clearStyle();
+
+  /// Populate a type-container with view-related data for configuration.
+  ///
+  /// Subclasses should override this method.
+  /// Generally, views will want access to a resource and potentially
+  /// components in the resource that are the subject of the view.
+  /// Other view configuration will come from view style() (see above)
+  /// or smtk::common::Managers.
+  ///
+  /// This method will return true when the \a configuration
+  /// was modified and false otherwise.
+  virtual bool getViewData(smtk::common::TypeContainer& configuration) const;
+
   /// Get the state.
   ///
   /// This state is a composition of \a m_internalState – updated by subclasses as
@@ -111,11 +157,13 @@ public:
   /// <table>
   /// <caption>State "truth table" given internal and dependency states</caption>
   /// <tr><th>Dependencies/<br>Internal</th><th>Unavailable</th><th>Incomplete</th> <th>Completable</th><th>Completed</th></tr>
-  /// <tr><td rowspan="5">User has not marked task completed</td></tr>
+  /// <tr><td colspan="5">User has not marked task completed</td></tr>
+  /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
   /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
   /// <tr><th>Incomplete</th>               <td>Unavailable</td> <td>Incomplete</td><td>Incomplete</td> <td>Incomplete</td></tr>
   /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td>Completable</td></tr>
-  /// <tr><td rowspan="5">User has marked task completed</td></tr>
+  /// <tr><td colspan="5">User has marked task completed</td></tr>
+  /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
   /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
   /// <tr><th>Incomplete</th>               <td>Unavailable</td> <td>Incomplete</td><td>Incomplete</td> <td>Incomplete</td></tr>
   /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td>Completed</td></tr>
@@ -173,6 +221,21 @@ public:
   template<typename Container>
   bool removeDependencies(const Container& tasks);
 
+  /// Return a parent task if one exists; null otherwise.
+  Task* parent() const { return m_parent; }
+
+  /// Return whether or not the task has children.
+  /// By default, tasks do not support children.
+  virtual bool hasChildren() const { return false; }
+
+  /// Visit children. If hasChildren returns false, this will return immediately.
+  ///
+  /// For the signature taking a Visitor, this method returns
+  /// smtk::common::Visit::Halt if iteration was terminated.
+  ///
+  /// Subclasses that override hasChildren should override these methods.
+  virtual smtk::common::Visit visit(RelatedTasks relation, Visitor visitor) const;
+
   /// Return this object's observers so other classes may insert themselves.
   Observers& observers() { return m_observers; }
 
@@ -185,6 +248,9 @@ public:
   State internalState() const { return m_internalState; }
 
 protected:
+  friend SMTKCORE_EXPORT void
+  workflowsOfTask(Task*, std::set<smtk::task::Task*>&, std::set<smtk::task::Task*>&);
+
   /// Indicate the state has changed.
   /// This method invokes observers if and only if \a previous and \a next are different.
   /// It will also update m_completed to match the new state.
@@ -208,13 +274,27 @@ protected:
 
   /// A task name to present to the user.
   std::string m_title;
+  /// The set of style classes for this task.
+  std::set<std::string> m_style;
   /// Whether the user has marked the task completed or not.
   bool m_completed = false;
   /// A set of dependent tasks and the keys used to observe their
   /// state so that this task can update its state in response.
   std::map<WeakPtr, Observers::Key, std::owner_less<WeakPtr>> m_dependencies;
+  /// Tasks upon which this task depends.
+  ///
+  /// This set is maintained by other Task instances when
+  /// addDependency/removeDependency is called.
+  std::set<WeakPtr, std::owner_less<WeakPtr>> m_dependents;
   /// The set of observers of *this* task's state.
   Observers m_observers;
+  /// If  this task is the child of another task, this pointer references its parent.
+  /// The parent is responsible for updating this pointer as needed.
+  /// m_parent is not a weak pointer because it must be initialized in the child
+  /// during the parent's construction (when no shared pointer may exist).
+  Task* m_parent = nullptr;
+  /// If this task is being managed, this will refer to its manager.
+  std::weak_ptr<smtk::task::Manager> m_manager;
 
 private:
   /// The internal state of the task as provided by subclasses.

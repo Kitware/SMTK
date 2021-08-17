@@ -74,7 +74,6 @@ public:
   };
   /// Signatures of functors that visit resources-by-role predicates.
   using AttributeSetVisitor = std::function<smtk::common::Visit(AttributeSet&)>;
-  using ConstAttributeSetVisitor = std::function<smtk::common::Visit(const AttributeSet&)>;
 
   FillOutAttributes();
   FillOutAttributes(
@@ -87,13 +86,8 @@ public:
 
   ~FillOutAttributes() override = default;
 
-  /// Parse configuration information to initialize this instance.
   void configure(const Configuration& config);
 
-  /// Provide the attribute resource(s) that the user should edit.
-  bool getViewData(smtk::common::TypeContainer& configuration) const override;
-
-  smtk::common::Visit visitAttributeSets(ConstAttributeSetVisitor visitor) const;
   smtk::common::Visit visitAttributeSets(AttributeSetVisitor visitor);
 
 protected:

@@ -28,8 +28,8 @@ Adaptor::Configuration jsonAdaptor::operator()(const Adaptor* adaptor, Helper& h
   {
     config = { { "id", helper.adaptors().swizzleId(adaptor) },
                { "type", adaptor->typeName() },
-               { "from", helper.tasks().swizzleId(adaptor->from().get()) },
-               { "to", helper.tasks().swizzleId(adaptor->to().get()) } };
+               { "from", helper.tasks().swizzleId(adaptor->from()) },
+               { "to", helper.tasks().swizzleId(adaptor->to()) } };
   }
   return config;
 }

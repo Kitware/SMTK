@@ -21,10 +21,7 @@ Adaptor::Adaptor(const Configuration& config)
   (void)config; // subclasses may use this
 }
 
-Adaptor::Adaptor(
-  const Configuration& config,
-  std::shared_ptr<Task>& from,
-  std::shared_ptr<Task>& to)
+Adaptor::Adaptor(const Configuration& config, Task* from, Task* to)
   : m_from(from)
   , m_to(to)
 {

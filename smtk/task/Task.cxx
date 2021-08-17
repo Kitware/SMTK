@@ -8,6 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/task/Task.h"
+#include "smtk/task/Manager.h"
+
+#include "smtk/task/json/Helper.h"
 
 #include <stdexcept>
 
@@ -16,11 +19,48 @@ namespace smtk
 namespace task
 {
 
+void workflowsOfTask(
+  Task* task,
+  std::set<smtk::task::Task*>& workflows,
+  std::set<smtk::task::Task*>& visited)
+{
+  if (visited.find(task) != visited.end())
+  {
+    return;
+  }
+  visited.insert(task);
+  if (task->m_dependencies.empty())
+  {
+    workflows.insert(task);
+  }
+  else
+  {
+    for (const auto& weakDependency : task->m_dependencies)
+    {
+      if (auto dependency = weakDependency.first.lock())
+      {
+        workflowsOfTask(dependency.get(), workflows, visited);
+      }
+    }
+  }
+}
+
+std::set<smtk::task::Task*> workflowsOfTask(Task& task)
+{
+  std::set<smtk::task::Task*> result;
+  std::set<smtk::task::Task*> visited;
+  workflowsOfTask(&task, result, visited);
+  return result;
+}
+
 Task::Task() = default;
 
 Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Managers>& managers)
 {
-  (void)managers;
+  if (managers->contains<smtk::task::Manager::Ptr>())
+  {
+    m_manager = managers->get<smtk::task::Manager::Ptr>();
+  }
   this->configure(config);
 }
 
@@ -29,7 +69,10 @@ Task::Task(
   const PassedDependencies& dependencies,
   const std::shared_ptr<smtk::common::Managers>& managers)
 {
-  (void)managers;
+  if (managers->contains<smtk::task::Manager::Ptr>())
+  {
+    m_manager = managers->get<smtk::task::Manager::Ptr>();
+  }
   this->configure(config);
   for (const auto& dependency : dependencies)
   {
@@ -52,15 +95,51 @@ void Task::configure(const Configuration& config)
   {
     m_title = config.at("title").get<std::string>();
   }
+  if (config.contains("style"))
+  {
+    m_style = config.at("style").get<std::set<std::string>>();
+  }
   if (config.contains("completed"))
   {
     m_completed = config.at("completed").get<bool>();
+  }
+  auto& helper = smtk::task::json::Helper::instance();
+  if (!helper.topLevel())
+  {
+    m_parent = helper.tasks().unswizzle(1);
   }
 }
 
 void Task::setTitle(const std::string& title)
 {
   m_title = title;
+}
+
+bool Task::addStyle(const std::string& styleClass)
+{
+  if (styleClass.empty())
+  {
+    return false;
+  }
+  return m_style.insert(styleClass).second;
+}
+
+bool Task::removeStyle(const std::string& styleClass)
+{
+  return m_style.erase(styleClass) > 0;
+}
+
+bool Task::clearStyle()
+{
+  bool didModify = !m_style.empty();
+  m_style.clear();
+  return didModify;
+}
+
+bool Task::getViewData(smtk::common::TypeContainer& configuration) const
+{
+  (void)configuration;
+  return false;
 }
 
 State Task::state() const
@@ -141,6 +220,18 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
   {
     return false;
   }
+  // Was this task previously without dependencies? If so,
+  // it used to be a workflow head and we must notify
+  // the task-manager's instances object that a head task
+  // is being removed.
+  bool wasHead = m_dependencies.empty();
+  if (wasHead)
+  {
+    if (auto taskManager = m_manager.lock())
+    {
+      taskManager->taskInstances().workflowEvent({ this }, WorkflowEvent::Destroyed, nullptr);
+    }
+  }
   State prev = this->state();
   m_dependencies.insert(std::make_pair(
     (const std::weak_ptr<Task>)(dependency),
@@ -148,6 +239,15 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
       bool didChange = this->updateState(dependency, prev, next);
       (void)didChange;
     })));
+  dependency->m_dependents.insert(this->shared_from_this());
+  if (wasHead)
+  {
+    if (auto taskManager = m_manager.lock())
+    {
+      taskManager->taskInstances().workflowEvent(
+        smtk::task::workflowsOfTask(*this), WorkflowEvent::TaskAdded, this);
+    }
+  }
   // Now determine if this dependency changed the state.
   State next = this->state();
   if (prev != next)
@@ -161,9 +261,26 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
 bool Task::removeDependency(const std::shared_ptr<Task>& dependency)
 {
   State prev = this->state();
+  bool willBeHead =
+    m_dependencies.size() == 1 && m_dependencies.begin()->first.lock() == dependency;
+  if (willBeHead)
+  {
+    if (auto taskManager = m_manager.lock())
+    {
+      taskManager->taskInstances().workflowEvent(
+        smtk::task::workflowsOfTask(*this), WorkflowEvent::TaskRemoved, nullptr);
+    }
+  }
   bool didRemove = m_dependencies.erase(dependency) > 0;
   if (didRemove)
   {
+    if (willBeHead)
+    {
+      if (auto taskManager = m_manager.lock())
+      {
+        taskManager->taskInstances().workflowEvent({ this }, WorkflowEvent::Created, nullptr);
+      }
+    }
     State next = this->state();
     if (prev != next)
     {
@@ -172,6 +289,31 @@ bool Task::removeDependency(const std::shared_ptr<Task>& dependency)
     return true;
   }
   return false;
+}
+
+smtk::common::Visit Task::visit(RelatedTasks relation, Visitor visitor) const
+{
+  smtk::common::Visit status = smtk::common::Visit::Continue;
+  switch (relation)
+  {
+    case RelatedTasks::Depend:
+      for (const auto& entry : m_dependencies)
+      {
+        auto dep = entry.first.lock();
+        if (dep)
+        {
+          if (visitor(*dep) == smtk::common::Visit::Halt)
+          {
+            status = smtk::common::Visit::Halt;
+            break;
+          }
+        }
+      }
+      break;
+    case RelatedTasks::Child:
+      break;
+  }
+  return status;
 }
 
 bool Task::changeState(State previous, State next)

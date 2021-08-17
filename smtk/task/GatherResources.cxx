@@ -10,9 +10,15 @@
 
 #include "smtk/task/GatherResources.h"
 
+#include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonGatherResources.h"
+
+#include "smtk/project/ResourceContainer.h"
+
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
-#include "smtk/project/ResourceContainer.h"
+
+#include "smtk/io/Logger.h"
 
 #include <stdexcept>
 
@@ -20,65 +26,6 @@ namespace smtk
 {
 namespace task
 {
-
-void to_json(json& j, const GatherResources::ResourceSet& p)
-{
-  j = json{ { "role", p.m_role }, { "type", p.m_type } };
-  if (p.m_minimumCount == 0 && p.m_maximumCount < 0)
-  {
-    // skip counts; any number of resources are allowed.
-  }
-  else
-  {
-    j["min"] = p.m_minimumCount;
-    j["max"] = p.m_maximumCount;
-  }
-  if (p.m_validator)
-  {
-    j["validator"] = "Cannot serialize validators yet.";
-  }
-}
-
-void from_json(const json& j, GatherResources::ResourceSet& p)
-{
-  if (j.contains("role"))
-  {
-    j.at("role").get_to(p.m_role);
-  }
-  if (j.contains("type"))
-  {
-    j.at("type").get_to(p.m_type);
-  }
-  if (j.contains("min"))
-  {
-    j.at("min").get_to(p.m_minimumCount);
-  }
-  else
-  {
-    p.m_minimumCount = 1;
-  }
-  if (j.contains("max"))
-  {
-    j.at("max").get_to(p.m_maximumCount);
-  }
-  else
-  {
-    p.m_maximumCount = -1;
-  }
-  if (j.contains("validator"))
-  {
-    throw std::logic_error("todo"); // TODO
-  }
-  else
-  {
-    // Accept any resource
-    p.m_validator = nullptr;
-    /*
-      [](const smtk::resource::Resource&, const TaskNeedsResource::ResourceSet&)
-      { return true; };
-      */
-  }
-}
 
 GatherResources::GatherResources() = default;
 
@@ -103,6 +50,12 @@ GatherResources::GatherResources(
 
 void GatherResources::configure(const Configuration& config)
 {
+  if (m_managers)
+  {
+    json::Helper::instance().setManagers(m_managers);
+  }
+  m_autoconfigure =
+    (config.contains("auto-configure") ? config.at("auto-configure").get<bool>() : false);
   if (config.contains("resources"))
   {
     auto rsrcSpecs = config.at("resources");
@@ -131,13 +84,45 @@ void GatherResources::configure(const Configuration& config)
         },
         /* priority */ 0,
         /* initialize */ true,
-        "GatherResources monitors results for resources and their roles.");
+        "GatherResources monitors resources and their roles.");
     }
   }
   if (!m_resourcesByRole.empty())
   {
     this->internalStateChanged(this->computeInternalState());
   }
+}
+
+bool GatherResources::addResourceInRole(
+  const std::shared_ptr<smtk::resource::Resource>& resource,
+  const std::string& role)
+{
+  if (!resource)
+  {
+    return false;
+  }
+  auto it = m_resourcesByRole.find(role);
+  if (it == m_resourcesByRole.end())
+  {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "GatherResources is not configured for the role \"" << role << "\".");
+    return false;
+  }
+  if (it->second.m_type == "*" || resource->isOfType(it->second.m_type))
+  {
+    if (it->second.m_resources.insert(resource).second)
+    {
+      // TODO: Should we set the role:
+      //   resource->properties().get<std::string>()[smtk::project::ResourceContainer::role_name] = role
+      // so that a resource-manager event that drops the resource removes
+      // it from the proper ResourceSet? Otherwise, it can be dropped but
+      // we won't transition from completable to incomplete if we need to...
+      this->internalStateChanged(this->computeInternalState());
+      return true;
+    }
+  }
+  return false;
 }
 
 smtk::common::Visit GatherResources::visitResourceSets(ResourceSetVisitor visitor)
@@ -166,15 +151,18 @@ void GatherResources::updateResources(
   {
     case smtk::resource::EventType::ADDED:
     {
-      // Add the resource to the appropriate entry:
-      const std::string& role = smtk::project::detail::role(resourcePtr);
-      auto it = m_resourcesByRole.find(role);
-      if (it != m_resourcesByRole.end())
+      if (m_autoconfigure)
       {
-        if (!it->second.m_validator || it->second.m_validator(resource, it->second))
+        // Add the resource to the appropriate entry:
+        const std::string& role = smtk::project::detail::role(resourcePtr);
+        auto it = m_resourcesByRole.find(role);
+        if (it != m_resourcesByRole.end())
         {
-          it->second.m_resources.insert(resourcePtr);
-          resourceSetsUpdated = true;
+          if (!it->second.m_validator || it->second.m_validator(resource, it->second))
+          {
+            it->second.m_resources.insert(resourcePtr);
+            resourceSetsUpdated = true;
+          }
         }
       }
     }
@@ -191,7 +179,7 @@ void GatherResources::updateResources(
     }
     break;
     case smtk::resource::EventType::MODIFIED:
-      // TODO
+      // TODO: Maybe a role was removed?
       break;
   }
   if (resourceSetsUpdated)

@@ -14,6 +14,7 @@ set(adaptors
 set(taskSrcs
   Active.cxx
   Adaptor.cxx
+  Instances.cxx
   Manager.cxx
   Registrar.cxx
   adaptor/ResourceAndRole.cxx
