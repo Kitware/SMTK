@@ -77,7 +77,7 @@
         - *before_script_windows
         - Set-Item -Force -Path "env:PATH" -Value "$env:PATH;$env:SCCACHE_PATH"
         - Invoke-Expression -Command .gitlab/ci/vcvarsall.ps1
-        - sccache --start-server
+        - Invoke-Expression -Command "sccache --start-server"
         - sccache --show-stats
         - ctest -VV -S .gitlab/ci/ctest_configure.cmake
         - ctest -VV -S .gitlab/ci/ctest_build.cmake
