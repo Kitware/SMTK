@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/task/json/Helper.h"
+#include "smtk/task/json/Configurator.txx"
 
 #include "smtk/io/Logger.h"
 
@@ -25,24 +26,14 @@ namespace task
 {
 namespace json
 {
-std::unordered_map<std::string, Helper::ConfigurationHelper> Helper::s_types;
 
-Helper::Helper() = default;
+Helper::Helper()
+  : m_tasks(this)
+  , m_adaptors(this)
+{
+}
 
 Helper::~Helper() = default;
-
-bool Helper::registerType(const std::string& typeName, ConfigurationHelper helper)
-{
-  std::cout << "Register " << typeName << "\n";
-  std::lock_guard<std::mutex> lock(g_types);
-  return s_types.insert({ typeName, helper }).second;
-}
-
-bool Helper::unregisterType(const std::string& typeName)
-{
-  std::lock_guard<std::mutex> lock(g_types);
-  return s_types.erase(typeName) > 0;
-}
 
 Helper& Helper::instance()
 {
@@ -51,6 +42,16 @@ Helper& Helper::instance()
     g_instance = std::unique_ptr<Helper>(new Helper);
   }
   return *g_instance;
+}
+
+Configurator<Task>& Helper::tasks()
+{
+  return m_tasks;
+}
+
+Configurator<Adaptor>& Helper::adaptors()
+{
+  return m_adaptors;
 }
 
 void Helper::setManagers(const smtk::common::Managers::Ptr& managers)
@@ -63,52 +64,10 @@ smtk::common::Managers::Ptr Helper::managers()
   return m_managers;
 }
 
-Task::Configuration Helper::configuration(const Task* task)
-{
-  Task::Configuration config;
-  if (task)
-  {
-    auto typeName = task->typeName();
-    ConfigurationHelper taskHelper = nullptr;
-    HelperTypeMap::const_iterator it;
-    {
-      std::lock_guard<std::mutex> lock(g_types);
-      it = s_types.find(typeName);
-      if (it == s_types.end())
-      {
-        return config;
-      }
-      taskHelper = it->second;
-    }
-    this->swizzleId(task); // Assign a task ID as early as possible.
-    config = taskHelper(task, *this);
-  }
-  return config;
-}
-
 void Helper::clear()
 {
-  m_swizzleFwd.clear();
-  m_swizzleBck.clear();
-  m_nextSwizzle = 1;
-}
-
-std::size_t Helper::swizzleId(const Task* task)
-{
-  if (!task)
-  {
-    return 0;
-  }
-  auto* nctask = const_cast<Task*>(task); // Need a non-const Task in some cases.
-  const auto& it = m_swizzleFwd.find(nctask);
-  if (it != m_swizzleFwd.end())
-  {
-    return it->second;
-  }
-  std::size_t id = m_nextSwizzle++;
-  m_swizzleFwd[nctask] = id;
-  m_swizzleBck[id] = nctask;
-  return id;
+  m_tasks.clear();
+  m_adaptors.clear();
 }
 
 Helper::json Helper::swizzleDependencies(const Task::PassedDependencies& deps)
@@ -118,7 +77,7 @@ Helper::json Helper::swizzleDependencies(const Task::PassedDependencies& deps)
   {
     if (dep)
     {
-      std::size_t id = this->swizzleId(const_cast<Task*>(dep.get()));
+      std::size_t id = m_tasks.swizzleId(const_cast<Task*>(dep.get()));
       if (id)
       {
         ids.push_back(id);
@@ -134,15 +93,46 @@ Task::PassedDependencies Helper::unswizzleDependencies(const json& ids) const
   for (const auto& id : ids)
   {
     auto taskId = id.get<std::size_t>();
-    auto it = m_swizzleBck.find(taskId);
-    if (it == m_swizzleBck.end() || !it->second)
+    auto* ptr = m_tasks.unswizzle(id);
+    if (!ptr)
     {
       smtkWarningMacro(
         smtk::io::Logger::instance(), "No task or null task for ID " << taskId << ". Skipping.");
     }
-    deps.insert(it->second->shared_from_this());
+    deps.insert(ptr->shared_from_this());
   }
   return deps;
+}
+
+void Helper::setAdaptorTaskIds(std::size_t fromId, std::size_t toId)
+{
+  m_adaptorFromId = fromId;
+  m_adaptorToId = toId;
+}
+
+void Helper::clearAdaptorTaskIds()
+{
+  m_adaptorFromId = ~0;
+  m_adaptorToId = ~0;
+}
+
+std::pair<Task::Ptr, Task::Ptr> Helper::getAdaptorTasks()
+{
+  Task::Ptr fromPtr;
+  auto* from = m_tasks.unswizzle(m_adaptorFromId);
+  if (from)
+  {
+    fromPtr = from->shared_from_this();
+  }
+
+  Task::Ptr toPtr;
+  auto* to = m_tasks.unswizzle(m_adaptorToId);
+  if (to)
+  {
+    toPtr = to->shared_from_this();
+  }
+
+  return std::make_pair(fromPtr, toPtr);
 }
 
 } // namespace json

@@ -17,10 +17,10 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -83,9 +83,9 @@ int TestTaskBasics(int, char*[])
   auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
   auto taskTaskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(taskManager);
 
-  taskManager->instances().registerType<test_task::UnavailableTask>();
+  taskManager->taskInstances().registerType<test_task::UnavailableTask>();
 
-  auto ikey = taskManager->instances().observers().insert(
+  auto ikey = taskManager->taskInstances().observers().insert(
     [](smtk::common::InstanceEvent event, const smtk::task::Task::Ptr& task) {
       std::cout << (event == smtk::common::InstanceEvent::Managed ? "Manage" : "Unmanage") << " "
                 << task->title() << "\n";
@@ -99,8 +99,8 @@ int TestTaskBasics(int, char*[])
   };
 
   {
-    std::shared_ptr<Task> t1 =
-      taskManager->instances().create<Task>(Task::Configuration{ { "title", "Task 1" } }, managers);
+    std::shared_ptr<Task> t1 = taskManager->taskInstances().create<Task>(
+      Task::Configuration{ { "title", "Task 1" } }, managers);
     test(!!t1, "Expecting to create a non-null task.");
     test(
       t1->state() == State::Completable, "Expected task without dependencies to be completable.");
@@ -139,9 +139,9 @@ int TestTaskBasics(int, char*[])
 
     // Now add a dependent task that is unavailable.
     test(
-      taskManager->instances().contains<test_task::UnavailableTask>(),
+      taskManager->taskInstances().contains<test_task::UnavailableTask>(),
       "Expected UnavailableTask to be registered.");
-    std::shared_ptr<Task> t2 = taskManager->instances().create<test_task::UnavailableTask>(
+    std::shared_ptr<Task> t2 = taskManager->taskInstances().create<test_task::UnavailableTask>(
       Task::Configuration{ { "title", "Task 2" } }, managers);
     called = 0;
     success = t1->addDependency(t2);
@@ -155,7 +155,7 @@ int TestTaskBasics(int, char*[])
 
     // Test construction with dependencies
     Task::Configuration c3{ { "title", "Task 3" }, { "completed", true } };
-    auto t3 = taskManager->instances().create<smtk::task::Task>(
+    auto t3 = taskManager->taskInstances().create<smtk::task::Task>(
       c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, managers);
 
     // Test dependency removal and notification.
@@ -173,7 +173,7 @@ int TestTaskBasics(int, char*[])
     success = t1->removeDependency(t2);
     test(!success, "Expected removal of non-existent dependency to fail.");
 
-    // Test TaskNeedsResources
+    // Test GatherResources
     // I. Construction w/ configuration.
     //    The task is incomplete unless 1 or 2 model geometry resources
     //    and 1 or more simulation attribute resources are held by the
@@ -184,8 +184,8 @@ int TestTaskBasics(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->instances().create<smtk::task::TaskNeedsResources>(c4, managers);
-    test(!!t4, "Could not create TaskNeedsResources.");
+    auto t4 = taskManager->taskInstances().create<smtk::task::GatherResources>(c4, managers);
+    test(!!t4, "Could not create GatherResources.");
     test(t4->state() == State::Incomplete, "Task with no resources should be incomplete.");
     auto hokey = t4->observers().insert(callback);
 
@@ -241,15 +241,15 @@ int TestTaskBasics(int, char*[])
       "Expected state transition incomplete⟶completable.");
 
     // III. Verify that an empty role is allowed, as are empty resource types.
-    //      This should also test initialization of TaskNeedsResources when
+    //      This should also test initialization of GatherResources when
     //      resource manager is not empty.
     Task::Configuration c5{ { "title", "Task 5" },
                             { "resources",
                               { { { "type", "smtk::model::Resource" } },
                                 { { "role", "simulation attribute" } } } } };
     auto t5 =
-      taskManager->instances().createFromName("smtk::task::TaskNeedsResources", c5, managers);
-    test(!!t5, "Could not create TaskNeedsResources.");
+      taskManager->taskInstances().createFromName("smtk::task::GatherResources", c5, managers);
+    test(!!t5, "Could not create GatherResources.");
     auto pokey = t5->observers().insert(callback);
     test(t5->state() == State::Completable, "Task 5 should be completable initially.");
     called = 0;
@@ -264,29 +264,29 @@ int TestTaskBasics(int, char*[])
     // Test task Instances methods:
 
     // Verify double-add fails.
-    didAdd = taskManager->instances().manage(t5);
+    didAdd = taskManager->taskInstances().manage(t5);
     test(!didAdd, "Should not return true when duplicate instance managed.");
 
     // Test visit()
     std::cout << "Tasks:\n";
-    taskManager->instances().visit(countInstances);
+    taskManager->taskInstances().visit(countInstances);
     test(count == 5, "Expected 5 tasks.");
 
     // Test removal and addition.
-    didRemove = taskManager->instances().unmanage(t5);
+    didRemove = taskManager->taskInstances().unmanage(t5);
     test(didRemove, "Expected to unmanage task 5.");
-    test(!taskManager->instances().contains(t5), "Expected task 5 to be absent.");
-    didAdd = taskManager->instances().manage(t5);
+    test(!taskManager->taskInstances().contains(t5), "Expected task 5 to be absent.");
+    didAdd = taskManager->taskInstances().manage(t5);
     test(didAdd, "Expected to manage task 5.");
-    test(taskManager->instances().contains(t5), "Expected task 5 to be present.");
+    test(taskManager->taskInstances().contains(t5), "Expected task 5 to be present.");
 
-    taskManager->instances().clear();
+    taskManager->taskInstances().clear();
     test(!test_task::taskDestroyed, "Task 2 should still be alive while t2 in scope.");
   }
   test(test_task::taskDestroyed, "Task 2 should be dead once t2 is out of scope.");
 
   count = 0;
-  taskManager->instances().visit(countInstances);
+  taskManager->taskInstances().visit(countInstances);
   test(count == 0, "Expected 0 tasks.");
 
   return 0;

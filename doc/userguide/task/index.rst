@@ -13,3 +13,4 @@ These tasks form a graph with dependencies as arcs.
 
    concepts.rst
    classes.rst
+   adaptors.rst

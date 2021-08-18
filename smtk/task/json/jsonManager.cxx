@@ -8,9 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/task/json/jsonManager.h"
+#include "smtk/task/Adaptor.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Task.h"
 #include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonAdaptor.h"
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/io/Logger.h"
@@ -44,12 +46,21 @@ bool jsonManager::serialize(
 
   // Serialize tasks
   nlohmann::json::array_t taskList;
-  taskManager->instances().visit([&taskList](const smtk::task::Task::Ptr& task) {
+  taskManager->taskInstances().visit([&taskList](const smtk::task::Task::Ptr& task) {
     nlohmann::json jsonTask = task;
     taskList.push_back(jsonTask);
     return smtk::common::Visit::Continue;
   });
   json["tasks"] = taskList;
+
+  // Serialize adaptors
+  nlohmann::json::array_t adaptorList;
+  taskManager->adaptorInstances().visit([&adaptorList](const smtk::task::Adaptor::Ptr& adaptor) {
+    nlohmann::json jsonAdaptor = adaptor;
+    adaptorList.push_back(jsonAdaptor);
+    return smtk::common::Visit::Continue;
+  });
+  json["adaptors"] = adaptorList;
   return true;
 }
 
@@ -76,7 +87,7 @@ bool jsonManager::deserialize(
       auto taskId = jsonTask.at("id").get<std::size_t>();
       Task::Ptr task = jsonTask;
       taskMap[taskId] = task;
-      helper.swizzleId(task.get());
+      helper.tasks().swizzleId(task.get());
     }
     // Do a second pass to deserialize dependencies.
     for (const auto& jsonTask : json.at("tasks"))
@@ -90,9 +101,28 @@ bool jsonManager::deserialize(
       }
     }
     // Now configure dependent tasks with adaptors if specified.
-    for (const auto& jsonAdaptor : json.at("task-adaptors"))
+    // Note that tasks have already been deserialized, so the
+    // helper's map from task-id to task-pointer is complete.
+    if (json.contains("adaptors"))
     {
-      std::cout << "Adaptor " << jsonAdaptor.at("type") << "\n";
+      for (const auto& jsonAdaptor : json.at("adaptors"))
+      {
+        try
+        {
+          auto adaptorId = jsonAdaptor.at("id").get<std::size_t>();
+          auto taskFromId = jsonAdaptor.at("from").get<std::size_t>();
+          auto taskToId = jsonAdaptor.at("to").get<std::size_t>();
+          helper.setAdaptorTaskIds(taskFromId, taskToId);
+          Adaptor::Ptr adaptor = jsonAdaptor;
+          helper.clearAdaptorTaskIds();
+        }
+        catch (std::exception&)
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Skipping task because 'id', 'from', and/or 'to' fields are missing.");
+        }
+      }
     }
 
     helper.clear();

@@ -28,6 +28,7 @@ namespace task
 /// The set of states that a task may take on.
 enum class State
 {
+  Irrelevant,  //!< The user's work in prior tasks mean this task needs no user input.
   Unavailable, //!< The task's dependencies are unmet.
   Incomplete,  //!< The task is available but its objective is not accomplished.
   Completable, //!< The task is available and accomplished but has not been marked complete.
@@ -37,8 +38,8 @@ enum class State
 /// A type-conversion operation to cast enumerants to strings.
 inline std::string stateName(const State& s)
 {
-  static std::array<std::string, 4> names{
-    { "unavailable", "incomplete", "completable", "completed" }
+  static std::array<std::string, 5> names{
+    { "irrelevant", "unavailable", "incomplete", "completable", "completed" }
   };
   return names[static_cast<int>(s)];
 }
@@ -54,6 +55,10 @@ inline State stateEnum(const std::string& s)
   {
     stateName = stateName.substr(7);
   }
+  if (stateName == "unavailable")
+  {
+    return State::Unavailable;
+  }
   if (stateName == "incomplete")
   {
     return State::Incomplete;
@@ -66,7 +71,7 @@ inline State stateEnum(const std::string& s)
   {
     return State::Completed;
   }
-  return State::Unavailable;
+  return State::Irrelevant;
 }
 
 /// States may be appended to streams.

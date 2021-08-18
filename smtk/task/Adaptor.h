@@ -1,0 +1,57 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef smtk_task_Adaptor_h
+#define smtk_task_Adaptor_h
+
+#include "smtk/task/Task.h"
+
+namespace smtk
+{
+namespace task
+{
+
+/// This object provides applications a way to configure a task using
+/// information adapted from its dependencies.
+class SMTKCORE_EXPORT Adaptor : smtkEnableSharedPtr(Adaptor)
+{
+public:
+  smtkTypeMacroBase(smtk::task::Adaptor);
+
+  /// Task adaptors are configured using JSON.
+  using Configuration = nlohmann::json;
+
+  /// Construct an unconfigured adaptor.
+  Adaptor();
+  Adaptor(const Configuration& config);
+  Adaptor(const Configuration& config, std::shared_ptr<Task>& from, std::shared_ptr<Task>& to);
+
+  /// Destructor must be virtual.
+  virtual ~Adaptor() = default;
+
+  /// Subclasses must implement this to reconfigure the "to()" task.
+  /// This method is called when the "from()" task changes into a
+  /// completable state.
+  virtual bool reconfigureTask() = 0;
+
+  /// The task this adaptor uses to fetch configuration parameters.
+  std::shared_ptr<Task> from() const { return m_from.lock(); }
+  /// The task to which this adaptor applies configuration parameters.
+  std::shared_ptr<Task> to() const { return m_to.lock(); }
+
+protected:
+  std::weak_ptr<Task> m_from;
+  std::weak_ptr<Task> m_to;
+  smtk::task::Task::Observers::Key m_observer;
+};
+} // namespace task
+} // namespace smtk
+
+#endif // smtk_task_Adaptor_h

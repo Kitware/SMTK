@@ -7,20 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_task_json_ResourceAndRole_h
+#define smtk_task_json_ResourceAndRole_h
 
-#include "smtk/task/Manager.h"
+#include "smtk/task/adaptor/ResourceAndRole.h"
+
+#include "nlohmann/json.hpp"
+
+#include <exception>
+#include <string>
 
 namespace smtk
 {
 namespace task
 {
-
-Manager::Manager()
-  : m_active(&m_taskInstances)
+namespace json
 {
-}
 
-Manager::~Manager() = default;
+class Helper;
 
+struct SMTKCORE_EXPORT jsonResourceAndRole
+{
+  Adaptor::Configuration operator()(const Adaptor* task, Helper& helper) const;
+};
+
+} // namespace json
 } // namespace task
 } // namespace smtk
+
+#endif // smtk_task_json_ResourceAndRole_h

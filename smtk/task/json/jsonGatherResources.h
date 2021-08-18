@@ -7,20 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_task_json_GatherResources_h
+#define smtk_task_json_GatherResources_h
 
-#include "smtk/task/Manager.h"
+#include "smtk/task/Task.h"
+
+#include <exception>
+#include <string>
 
 namespace smtk
 {
 namespace task
 {
-
-Manager::Manager()
-  : m_active(&m_taskInstances)
+namespace json
 {
-}
 
-Manager::~Manager() = default;
+class Helper;
 
+struct SMTKCORE_EXPORT jsonGatherResources
+{
+  Task::Configuration operator()(const Task* task, Helper& helper) const;
+};
+
+} // namespace json
 } // namespace task
 } // namespace smtk
+
+#endif // smtk_task_json_GatherResources_h

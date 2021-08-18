@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/task/json/jsonTaskNeedsResources.h"
+#include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonTask.h"
 
-#include "smtk/task/TaskNeedsResources.h"
+#include "smtk/task/GatherResources.h"
 
 namespace smtk
 {
@@ -20,39 +20,38 @@ namespace task
 namespace json
 {
 
-Task::Configuration jsonTaskNeedsResources::operator()(const Task* task, Helper& helper) const
+Task::Configuration jsonGatherResources::operator()(const Task* task, Helper& helper) const
 {
   Task::Configuration config;
   auto* nctask = const_cast<Task*>(task);
-  auto* taskNeedsResources = dynamic_cast<TaskNeedsResources*>(nctask);
-  if (taskNeedsResources)
+  auto* gatherResources = dynamic_cast<GatherResources*>(nctask);
+  if (gatherResources)
   {
     jsonTask superclass;
-    config = superclass(taskNeedsResources, helper);
-    nlohmann::json::array_t predicates;
-    nlohmann::json::array_t outputs;
-    taskNeedsResources->visitPredicates(
-      [&predicates, &outputs, taskNeedsResources](
-        const TaskNeedsResources::Predicate& predicate) -> smtk::common::Visit {
-        nlohmann::json jsonPredicate = {
-          { "role", predicate.m_role },
-          { "type", predicate.m_type },
+    config = superclass(gatherResources, helper);
+    nlohmann::json::array_t resourceSets;
+    gatherResources->visitResourceSets(
+      [&resourceSets,
+       gatherResources](const GatherResources::ResourceSet& resourceSet) -> smtk::common::Visit {
+        nlohmann::json jsonResourceSet = {
+          { "role", resourceSet.m_role },
+          { "type", resourceSet.m_type },
         };
-        if (predicate.m_minimumCount != 1)
+        if (resourceSet.m_minimumCount != 1)
         {
-          jsonPredicate["min"] = predicate.m_minimumCount;
+          jsonResourceSet["min"] = resourceSet.m_minimumCount;
         }
-        if (predicate.m_maximumCount != -1)
+        if (resourceSet.m_maximumCount != -1)
         {
-          jsonPredicate["max"] = predicate.m_maximumCount;
+          jsonResourceSet["max"] = resourceSet.m_maximumCount;
         }
-        predicates.push_back(jsonPredicate);
+        resourceSets.push_back(jsonResourceSet);
 
         nlohmann::json jsonOutput = {
-          { "role", predicate.m_role },
+          { "role", resourceSet.m_role },
         };
         nlohmann::json::array_t jsonResources;
-        for (const auto& weakResource : predicate.m_resources)
+        for (const auto& weakResource : resourceSet.m_resources)
         {
           if (auto resource = weakResource.lock())
           {
@@ -60,11 +59,9 @@ Task::Configuration jsonTaskNeedsResources::operator()(const Task* task, Helper&
           }
         }
         jsonOutput["resources"] = jsonResources;
-        outputs.push_back(jsonOutput);
         return smtk::common::Visit::Continue;
       });
-    config["resources"] = predicates;
-    config["output"] = outputs;
+    config["resources"] = resourceSets;
   }
   return config;
 }

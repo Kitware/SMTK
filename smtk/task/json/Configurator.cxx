@@ -7,13 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_task_json_TaskNeedsResources_h
-#define smtk_task_json_TaskNeedsResources_h
 
+#include "smtk/task/json/Configurator.h"
+#include "smtk/task/json/Configurator.txx"
+
+#include "smtk/task/Adaptor.h"
 #include "smtk/task/Task.h"
 
-#include <exception>
-#include <string>
+static std::mutex g_types;
 
 namespace smtk
 {
@@ -22,15 +23,14 @@ namespace task
 namespace json
 {
 
-class Helper;
-
-struct SMTKCORE_EXPORT jsonTaskNeedsResources
+std::mutex& typeMutex()
 {
-  Task::Configuration operator()(const Task* task, Helper& helper) const;
-};
+  return g_types;
+}
+
+// template<> Configurator<Task, typeMutex>::HelperTypeMap Configurator<Task, &typeMutex>::s_types;
+// template<> Configurator<Adaptor, typeMutex>::HelperTypeMap Configurator<Adaptor, &typeMutex>::s_types;
 
 } // namespace json
 } // namespace task
 } // namespace smtk
-
-#endif // smtk_task_json_TaskNeedsResources_h

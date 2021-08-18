@@ -17,10 +17,10 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/TaskNeedsResources.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -71,8 +71,8 @@ int TestActiveTask(int, char*[])
   test(previousTask == nullptr && nextTask == nullptr, "Unexpected initialization.");
 
   {
-    std::shared_ptr<Task> t1 =
-      taskManager->instances().create<Task>(Task::Configuration{ { "title", "Task 1" } }, managers);
+    std::shared_ptr<Task> t1 = taskManager->taskInstances().create<Task>(
+      Task::Configuration{ { "title", "Task 1" } }, managers);
     std::cout << "Attempting to set active task:\n";
     taskManager->active().switchTo(t1.get());
     test(count == 2, "Expected to switch active task.");
@@ -92,13 +92,13 @@ int TestActiveTask(int, char*[])
     success = t1->markCompleted(false);
 
     // Now add a task and switch to it.
-    std::shared_ptr<Task> t2 =
-      taskManager->instances().create<Task>(Task::Configuration{ { "title", "Task 2" } }, managers);
+    std::shared_ptr<Task> t2 = taskManager->taskInstances().create<Task>(
+      Task::Configuration{ { "title", "Task 2" } }, managers);
     success = t1->addDependency(t2);
     std::cout << "Switching to task 2:\n";
     taskManager->active().switchTo(t2.get());
 
-    // Test TaskNeedsResources
+    // Test GatherResources
     // I. Construction w/ configuration.
     //    The task is incomplete unless 1 or 2 model geometry resources
     //    and 1 or more simulation attribute resources are held by the
@@ -109,7 +109,7 @@ int TestActiveTask(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->instances().create<smtk::task::TaskNeedsResources>(c4, managers);
+    auto t4 = taskManager->taskInstances().create<smtk::task::GatherResources>(c4, managers);
     t1->addDependency(t4);
     std::cout << "Ensuring switches to unavailable tasks fail.\n";
     bool didSwitch = taskManager->active().switchTo(t1.get());
@@ -159,7 +159,7 @@ int TestActiveTask(int, char*[])
     test(previousTask == nullptr && nextTask == t1.get(), "Expected active switch (none) ⟶  t1.");
 
     std::cout << "Unmanaging the active task should reset the active task:\n";
-    taskManager->instances().clear();
+    taskManager->taskInstances().clear();
     test(count == 7, "Expected switch to null task when a task is dropped from manager.");
     test(previousTask == t1.get() && nextTask == nullptr, "Expected active switch t1 ⟶  (none).");
   }
