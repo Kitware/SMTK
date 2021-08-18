@@ -82,6 +82,8 @@ public:
 
   smtk::attribute::DefinitionPtr getCurrentDef() const;
 
+  // Returns true if the Definition matches any of the View's Definitions
+  bool matchesDefinitions(const smtk::attribute::DefinitionPtr& def) const;
   enum enumViewBy
   {
     VIEWBY_Attribute = 0,

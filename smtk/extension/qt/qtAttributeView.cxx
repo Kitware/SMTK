@@ -584,7 +584,7 @@ QStandardItem* qtAttributeView::getItemFromAttribute(smtk::attribute::Attribute*
   int n = m_internals->ListTableModel->rowCount();
   for (int i = 0; i < n; i++)
   {
-    QStandardItem* item = m_internals->ListTableModel->item(i);
+    QStandardItem* item = m_internals->ListTableModel->item(i, name_column);
     if (this->getRawAttributeFromItem(item) == attribute)
     {
       return item;
@@ -1471,6 +1471,14 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
   }
 }
 
+bool qtAttributeView::matchesDefinitions(const smtk::attribute::DefinitionPtr& def) const
+{
+  return std::any_of(
+    m_internals->m_attDefinitions.begin(),
+    m_internals->m_attDefinitions.end(),
+    [=](const smtk::attribute::DefinitionPtr& viewDef) { return def->isA(viewDef); });
+}
+
 int qtAttributeView::handleOperationEvent(
   const smtk::operation::Operation& op,
   smtk::operation::EventType event,
@@ -1514,43 +1522,40 @@ int qtAttributeView::handleOperationEvent(
     }
 
     auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
-    if (att == nullptr)
+    // If there is no attribute or it's definition is not being displayed in the View - skip it
+    if (!(att && this->matchesDefinitions(att->definition())))
     {
       continue;
     }
-    smtk::attribute::DefinitionPtr attDef = att->definition();
-    if (attDef->isA(currentDef))
+    // Is this the current attribute being displayed?
+    if (m_internals->CurrentAtt && (att == m_internals->CurrentAtt->attribute()))
     {
-      // Is this the current attribute being displayed?
-      if (att == m_internals->CurrentAtt->attribute())
+      // Update the attribute's items
+      auto items = m_internals->CurrentAtt->items();
+      for (auto* item : items)
       {
-        // Update the attribute's items
-        auto items = m_internals->CurrentAtt->items();
-        for (auto* item : items)
-        {
-          item->updateItemData();
-        }
+        item->updateItemData();
       }
-      // Need to update the item's name and edit ability
-      auto* item = this->getItemFromAttribute(att.get());
-      if (item)
+    }
+    // Need to update the item's name and edit ability
+    auto* item = this->getItemFromAttribute(att.get());
+    if (item)
+    {
+      item->setText(QString::fromUtf8(att->name().c_str()));
+      if (!this->attributeNamesConstant())
       {
-        item->setText(QString::fromUtf8(att->name().c_str()));
-        if (!this->attributeNamesConstant())
+        // Need to see if the name is editable
+        if (
+          att->properties().contains<bool>("smtk.extensions.attribute_view.name_read_only") &&
+          att->properties().at<bool>("smtk.extensions.attribute_view.name_read_only"))
         {
-          // Need to see if the name is editable
-          if (
-            att->properties().contains<bool>("smtk.extensions.attribute_view.name_read_only") &&
-            att->properties().at<bool>("smtk.extensions.attribute_view.name_read_only"))
-          {
-            Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-            item->setFlags(itemFlags);
-          }
-          else
-          {
-            Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-            item->setFlags(itemFlags);
-          }
+          Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+          item->setFlags(itemFlags);
+        }
+        else
+        {
+          Qt::ItemFlags itemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+          item->setFlags(itemFlags);
         }
       }
     }
@@ -1570,24 +1575,20 @@ int qtAttributeView::handleOperationEvent(
       }
 
       auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
-      if (att == nullptr)
+      // If there is no attribute or it's definition is not being displayed in the View - skip it
+      if (!(att && this->matchesDefinitions(att->definition())))
       {
         continue;
       }
-      smtk::attribute::DefinitionPtr attDef = att->definition();
-      // Is this type of attribute being displayed?
-      if (attDef->isA(currentDef))
+      int row, numRows = m_internals->ListTableModel->rowCount();
+      for (row = 0; row < numRows; ++row)
       {
-        int row, numRows = m_internals->ListTableModel->rowCount();
-        for (row = 0; row < numRows; ++row)
+        QStandardItem* item = m_internals->ListTableModel->item(row, name_column);
+        smtk::attribute::Attribute* itemAtt = this->getRawAttributeFromItem(item);
+        if (att.get() == itemAtt)
         {
-          QStandardItem* item = m_internals->ListTableModel->item(row, name_column);
-          smtk::attribute::Attribute* itemAtt = this->getRawAttributeFromItem(item);
-          if (att.get() == itemAtt)
-          {
-            m_internals->ListTableModel->removeRow(row);
-            break;
-          }
+          m_internals->ListTableModel->removeRow(row);
+          break;
         }
       }
     }
@@ -1600,15 +1601,12 @@ int qtAttributeView::handleOperationEvent(
     if (compItem->isSet(i))
     {
       auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
-      if (att == nullptr)
+      // If there is no attribute or it's definition is not being displayed in the View - skip it
+      if (!(att && this->matchesDefinitions(att->definition())))
       {
         continue;
       }
-      smtk::attribute::DefinitionPtr attDef = att->definition();
-      if (attDef->isA(currentDef))
-      {
-        this->addAttributeListItem(att);
-      }
+      this->addAttributeListItem(att);
     }
   }
   return 0;
