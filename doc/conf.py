@@ -34,7 +34,7 @@ builddir = sys.argv[-1]
 
 def setup(app):
     # prevent stupid-wide table columns.
-    app.add_stylesheet("theme-overrides.css")
+    app.add_css_file("theme-overrides.css")
 
 
 def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):

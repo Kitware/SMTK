@@ -1,10 +1,10 @@
+.. _release-notes-21.07:
+
 =========================
 SMTK 21.07 Release Notes
 =========================
 
-See also `SMTK 21.05 Release Notes`_ for previous changes.
-
-.. _`SMTK 21.05 Release Notes`: smtk-21.05.md
+See also :ref:`release-notes-21.05` for previous changes.
 
 Registration Changes
 ====================

@@ -17,6 +17,7 @@ Contents:
 
    userguide/index.rst
    tutorials/index.rst
+   release/index.rst
 
 
 ##################
