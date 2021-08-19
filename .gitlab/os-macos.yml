@@ -11,8 +11,6 @@
         DEVELOPER_DIR: "/Applications/Xcode-12.4.app/Contents/Developer"
         # Avoid conflicting with other projects running on the same machine.
         SCCACHE_SERVER_PORT: 4228
-        # Do not let the sccache server shut down due to a slow machine.
-        SCCACHE_IDLE_TIMEOUT: 0
 
 ### Build and test
 
