@@ -101,7 +101,7 @@ protected slots:
 
 protected:
   virtual bool displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc);
-  virtual void updateTitle();
+  virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
   smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;

@@ -46,7 +46,7 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
 {
   this->setObjectName("attributeEditor");
-  updateTitle();
+  this->updateTitle();
   QWidget* w = new QWidget(this);
   w->setObjectName("attributePanel");
   this->setWidget(w);
@@ -159,8 +159,10 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
       resetPanel(rsrc->manager());
     }
   }
-
-  this->updateTitle();
+  else
+  {
+    this->updateTitle();
+  }
 
   return didDisplay;
 }
@@ -228,6 +230,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
   {
     didDisplay = this->displayView(view);
   }
+  this->updateTitle(view);
   auto rsrcMgr = rsrc->manager();
   if (rsrcMgr)
   {
@@ -312,10 +315,20 @@ void pqSMTKAttributePanel::updateSettings()
   m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 }
 
-void pqSMTKAttributePanel::updateTitle()
+void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
 {
-  auto rsrc = m_rsrc.lock();
-  QString panelName = "Attribute Editor";
-  QString title = rsrc ? (panelName + '(' + rsrc->name().c_str() + ')') : panelName;
-  this->setWindowTitle(title);
+  // By default the Panel's name is Attribute Editor
+  std::string panelName = "Attribute Editor";
+  if (view)
+  {
+    // Lets see if the view wants a different base name
+    view->details().attribute("AttributePanelTitle", panelName);
+    // Lets see if we are suppose to add the resource name to it
+    if (view->details().attributeAsBool("IncludeResourceNameInPanel"))
+    {
+      auto rsrc = m_rsrc.lock();
+      panelName = rsrc ? (panelName + '(' + rsrc->name() + ')') : panelName;
+    }
+  }
+  this->setWindowTitle(panelName.c_str());
 }
