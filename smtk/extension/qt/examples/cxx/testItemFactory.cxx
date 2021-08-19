@@ -87,7 +87,10 @@ int testLifecycle()
   AttributePtr att = createAttribForTest(resource);
   qtUIManager* mgr = new qtUIManager(resource);
   QWidget* w = new QWidget;
-  smtk::extension::ViewInfo vinfo(smtk::view::Configuration::New("base", "test view"), w, mgr);
+  smtk::view::Information vinfo;
+  vinfo.insert<smtk::view::ConfigurationPtr>(smtk::view::Configuration::New("base", "test view"));
+  vinfo.insert<QWidget*>(w);
+  vinfo.insert<qtUIManger*>(mgr);
   qtBaseView* v = new qtBaseView(vinfo);
   qtAttribute* qatt = new qtAttribute(att, w, v);
 

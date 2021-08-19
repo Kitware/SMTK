@@ -30,30 +30,6 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT OperationViewInfo : public ViewInfo
-{
-public:
-  OperationViewInfo(
-    smtk::view::ConfigurationPtr view,
-    smtk::operation::OperationPtr targetOperation,
-    QWidget* parent,
-    qtUIManager* uiman)
-    : ViewInfo(view, parent, uiman)
-    , m_operator(targetOperation)
-  {
-  }
-
-  // OperationViewInfo(smtk::view::ConfigurationPtr view,
-  //   smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman,
-  //   const std::map<std::string, QLayout*>& layoutDict)
-  //   : ViewInfo(view, parent, uiman, layoutDict)
-  //   , m_operator(targetOperation)
-  // {
-  // }
-
-  OperationViewInfo() = default;
-  smtk::operation::OperationPtr m_operator;
-};
 
 class SMTKQTEXT_EXPORT qtOperationView : public qtBaseAttributeView
 {
@@ -64,16 +40,12 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  qtOperationView(const smtk::view::Information& info)
-    : qtOperationView(static_cast<const OperationViewInfo&>(info))
-  {
-  }
+  qtOperationView(const smtk::view::Information& info);
 
-  qtOperationView(const OperationViewInfo& info);
   ~qtOperationView() override;
 
   QPointer<QPushButton> applyButton() const;
-  smtk::operation::OperationPtr operation() const;
+  const smtk::operation::OperationPtr& operation() const;
   void showInfoButton(bool visible = true);
 
   // Replaces default buttons, for embedding operation view in other widgets.
@@ -82,6 +54,9 @@ public:
     QPointer<QPushButton> applyButton,
     QPointer<QPushButton> infoButton,
     QPointer<QPushButton> doneButton);
+
+  // Validates the view information to see if it is suitable for creating a qtOperationView instance
+  static bool validateInformation(const smtk::view::Information& info);
 
 public slots:
   void updateUI() override;

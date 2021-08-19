@@ -81,9 +81,13 @@ const char* qtSimpleExpressionView::qtSimpleExpressionViewInternals::getFunction
 
 qtBaseView* qtSimpleExpressionView::createViewWidget(const smtk::view::Information& info)
 {
-  qtSimpleExpressionView* view = new qtSimpleExpressionView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtSimpleExpressionView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtSimpleExpressionView::qtSimpleExpressionView(const smtk::view::Information& info)
@@ -605,7 +609,7 @@ void qtSimpleExpressionView::onDeleteSelected()
       return;
     }
 
-    smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+    smtk::attribute::ResourcePtr resource = this->attributeResource();
     resource->removeAttribute(this->getFunctionFromItem(selItem));
 
     this->Internals->FuncList->takeItem(this->Internals->FuncList->row(selItem));
@@ -779,7 +783,7 @@ void qtSimpleExpressionView::updateUI()
   {
     return;
   }
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
   // There should be only 1 child component called Type
   if ((view->details().numberOfChildren() != 1) || (view->details().child(0).name() != "Att"))
   {

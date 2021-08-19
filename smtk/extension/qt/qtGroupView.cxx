@@ -152,9 +152,13 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
 
 qtBaseView* qtGroupView::createViewWidget(const smtk::view::Information& info)
 {
-  qtGroupView* view = new qtGroupView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtGroupView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtGroupView::qtGroupView(const smtk::view::Information& info)
@@ -280,7 +284,7 @@ void qtGroupView::createWidget()
   smtk::view::Configuration::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
   smtk::view::ConfigurationPtr v;
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
   qtBaseView* qtView;
 
   for (i = 0; i < n; i++)
@@ -304,9 +308,10 @@ void qtGroupView::createWidget()
     }
     // Setup the information for the new child view based off of
     // this one
-    smtk::extension::ViewInfo vinfo = m_viewInfo;
-    vinfo.m_view = v;
-    vinfo.m_parent = this->Widget;
+    auto vinfo = m_viewInfo;
+    vinfo.insert_or_assign<smtk::view::ConfigurationPtr>(v);
+    vinfo.insert_or_assign<QWidget*>(this->Widget);
+    vinfo.insert_or_assign<std::weak_ptr<smtk::attribute::Resource>>(resource);
     qtView = this->uiManager()->createView(vinfo);
     if (qtView)
     {

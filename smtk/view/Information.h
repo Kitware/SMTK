@@ -11,28 +11,45 @@
 #ifndef smtk_view_Information_h
 #define smtk_view_Information_h
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/CoreExports.h"
+#include "smtk/SharedFromThis.h"
+#include "smtk/view/Configuration.h"
 
 namespace smtk
 {
 namespace view
 {
-class Configuration;
 
-/**\brief A base class for information passed to views during initialization.
+/**\brief A  class for information passed to views during initialization.
   *
   * View information must include configuration information, but usually
   * also includes information specific to the GUI system of the view
-  * being constructed. Hence, this class is usually dynamically cast to
-  * a type appropriate to the view.
+  * being constructed. Hence, this class is based off of TypeContainer so it
+  * can hold arbitrary information.
   */
 class SMTKCORE_EXPORT Information
+  : public smtk::common::TypeContainer
+  , public std::enable_shared_from_this<Information>
 {
 public:
-  virtual ~Information() = 0;
+  typedef TypeContainer Container;
 
-  virtual const Configuration* configuration() const = 0;
+  smtkTypeMacroBase(smtk::view::Information);
+  smtkCreateMacro(Information);
+
+  Information() = default;
+  ~Information() override;
+
+  virtual const Configuration* configuration() const
+  {
+    return this->get<smtk::view::ConfigurationPtr>().get();
+  }
+
+protected:
 };
+
 } // namespace view
 } // namespace smtk
 

@@ -42,9 +42,13 @@ using namespace smtk::extension;
 
 qtBaseView* qtAnalysisView::createViewWidget(const smtk::view::Information& info)
 {
-  qtAnalysisView* view = new qtAnalysisView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtAnalysisView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtAnalysisView::qtAnalysisView(const smtk::view::Information& info)
@@ -77,7 +81,7 @@ void qtAnalysisView::createWidget()
   layout->setMargin(0);
   this->Widget->setLayout(layout);
 
-  auto attRes = this->uiManager()->attResource();
+  auto attRes = this->attributeResource();
   std::string attName, defName;
   view->details().attribute("AnalysisAttributeName", attName);
   view->details().attribute("AnalysisAttributeType", defName);
@@ -140,7 +144,7 @@ void qtAnalysisView::analysisChanged(bool attChanged)
   // Lets iterate over the items in the analysis attribute and set
   // the categories accordingly
   std::set<std::string> cats;
-  auto attRes = this->uiManager()->attResource();
+  auto attRes = this->attributeResource();
   if (attRes == nullptr)
   {
     return; // There is nothing we can do

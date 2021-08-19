@@ -54,7 +54,6 @@ set(QAttrLibSrcs
   qtOverlay.cxx
   qtTimeZoneRegionModel.cxx
   qtTimeZoneSelectWidget.cxx
-  qtViewInterface.cxx
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
 
@@ -149,7 +148,6 @@ set(QAttrLibHeaders
   qtSMTKUtilities.h
   qtStringItem.h
   qtTypeDeclarations.h
-  qtViewInterface.h
   qtViewRegistrar.h
 )
 

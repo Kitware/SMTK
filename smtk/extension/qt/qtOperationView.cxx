@@ -42,7 +42,6 @@ public:
     , m_activeOperations(0)
   {
   }
-  smtk::operation::OperationPtr m_operator;
   std::unique_ptr<qtInstancedView> m_instancedView;
   smtk::view::ConfigurationPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
@@ -52,25 +51,28 @@ public:
   std::atomic<std::size_t> m_activeOperations;
 };
 
-qtBaseView* qtOperationView::createViewWidget(const smtk::view::Information& info)
+bool qtOperationView::validateInformation(const smtk::view::Information& info)
 {
-  const OperationViewInfo* opinfo = dynamic_cast<const OperationViewInfo*>(&info);
-  qtOperationView* view;
-  if (!opinfo)
-  {
-    return nullptr;
-  }
-  view = new qtOperationView(*opinfo);
-  view->buildUI();
-  return view;
+  return qtBaseAttributeView::validateInformation(info) &&
+    info.contains<smtk::operation::OperationPtr>();
 }
 
-qtOperationView::qtOperationView(const OperationViewInfo& info)
+qtBaseView* qtOperationView::createViewWidget(const smtk::view::Information& info)
+{
+  if (qtOperationView::validateInformation(info))
+  {
+    auto* view = new qtOperationView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
+}
+
+qtOperationView::qtOperationView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
   , m_applied(false)
 {
   this->Internals = new qtOperationViewInternals;
-  this->Internals->m_operator = info.m_operator;
   // We need to create a new View for the internal instanced View
   this->Internals->m_instancedViewDef = smtk::view::Configuration::New("Instanced", "Parameters");
   smtk::view::ConfigurationPtr view = this->configuration();
@@ -90,7 +92,7 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
       view->details().setAttribute("FilterByCategory", "false");
     }
   }
-  if (auto manager = this->Internals->m_operator->manager())
+  if (auto manager = this->operation()->manager())
   {
     auto* launcher = manager->launchers()[qtOperationLauncher::type_name].target<qt::Launcher>();
     if (launcher == nullptr)
@@ -115,9 +117,9 @@ QPointer<QPushButton> qtOperationView::applyButton() const
   return this->Internals->m_applyButton;
 }
 
-smtk::operation::OperationPtr qtOperationView::operation() const
+const smtk::operation::OperationPtr& qtOperationView::operation() const
 {
-  return this->Internals->m_operator;
+  return m_viewInfo.get<smtk::operation::OperationPtr>();
 }
 
 void qtOperationView::showInfoButton(bool visible)
@@ -183,7 +185,12 @@ void qtOperationView::createWidget()
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);
-  ViewInfo v(this->Internals->m_instancedViewDef, this->Widget, this->uiManager());
+
+  // Create  the information to create an Instance View
+  smtk::view::Information v = m_viewInfo;
+  v.insert_or_assign<smtk::view::ConfigurationPtr>(this->Internals->m_instancedViewDef);
+  v.insert_or_assign<QWidget*>(this->Widget);
+
   qtInstancedView* iview = dynamic_cast<qtInstancedView*>(qtInstancedView::createViewWidget(v));
   this->Internals->m_instancedView.reset(iview);
 
@@ -270,15 +277,16 @@ void qtOperationView::requestModelEntityAssociation()
 
 void qtOperationView::setInfoToBeDisplayed()
 {
-  m_infoDialog->displayInfo(this->Internals->m_operator->parameters());
+  m_infoDialog->displayInfo(this->operation()->parameters());
 }
 
 void qtOperationView::onOperate()
 {
   if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
+    const auto& myOperation = this->operation();
     shared_ptr<smtk::extension::ResultHandler> handler =
-      (*this->Internals->m_launcher)(this->Internals->m_operator);
+      (*this->Internals->m_launcher)(myOperation);
 
     connect(
       handler.get(),
@@ -286,7 +294,7 @@ void qtOperationView::onOperate()
       this,
       &qtOperationView::operationExecuted);
 
-    emit this->operationRequested(this->Internals->m_operator);
+    emit this->operationRequested(myOperation);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);

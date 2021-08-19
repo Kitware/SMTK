@@ -13,6 +13,7 @@
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/TypeContainer.h"
 
 #include "smtk/operation/Manager.h"
@@ -22,7 +23,6 @@
 #include "smtk/view/Selection.h"
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/extension/qt/qtItem.h"
 
 #include <QColor>
@@ -47,7 +47,6 @@ class qtFileItem;
 class qtModelEntityItem;
 class qtBaseView;
 
-typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
 typedef qtItem* (*qtItemConstructor)(const qtAttributeItemInfo& info);
 
 /**\brief Container for managers whose content is presented via Qt widgets.
@@ -79,7 +78,7 @@ public:
   ~qtUIManager() override;
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
-  void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
+  void initializeUI(const smtk::view::Information& v, bool useInternalFileBrowser = false);
 
   /// If this instance was constructed with an operation, return an appropriate view for it.
   smtk::view::ConfigurationPtr findOrCreateOperationView() const;
@@ -89,10 +88,12 @@ public:
 
   ///@{
   /// Use the given smtk::view::Configuration to construct widgets matching the specification.
-  qtBaseView* setSMTKView(smtk::view::ConfigurationPtr v);
-  qtBaseView*
-  setSMTKView(smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
-  qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
+  qtBaseView* setSMTKView(const smtk::view::ConfigurationPtr& v);
+  qtBaseView* setSMTKView(
+    const smtk::view::ConfigurationPtr& v,
+    QWidget* pWidget,
+    bool useInternalFileBrowser = true);
+  qtBaseView* setSMTKView(const smtk::view::Information& v, bool useInternalFileBrowser = true);
   smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
   const smtk::view::Configuration::Component& findStyle(
     const smtk::attribute::DefinitionPtr& def,
@@ -129,8 +130,9 @@ public:
   const smtk::common::TypeContainer& managers() const { return m_managers; }
   smtk::common::TypeContainer& managers() { return m_managers; }
 
+  SMTK_DEPRECATED_IN_21_08("Since the attribute resource is now passed into qtBaseAttributeViews, "
+                           "there is no longer a need to access the resource from the qtUIManager")
   smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
-
   ///@{
   /// Set/Get the color used for indicating items with default values
   void setDefaultValueColor(const QColor& color);
@@ -237,7 +239,7 @@ public:
   virtual int getWidthOfText(const std::string& text, const QFont& font);
 
   ///Mechanism for creating new GUI view based on registered factory functions
-  qtBaseView* createView(const ViewInfo& info);
+  qtBaseView* createView(const smtk::view::Information& info);
 
   ///Mechanism for creating new GUI item based on registered factory functions
   qtItem* createItem(const qtAttributeItemInfo& info);

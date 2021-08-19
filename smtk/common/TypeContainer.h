@@ -109,6 +109,7 @@ public:
   }
 
   /// Insert a Type instance into the TypeContainer.
+  /// Note that if the type already exists in the container, the insertion will fail.
   template<typename Type>
   bool insert(const Type& value)
   {
@@ -121,6 +122,17 @@ public:
         std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))))
 #endif
       .second;
+  }
+
+  /// Insert a Type instance into the TypeContainer if it does not exist already or replace it if it does.
+  template<typename Type>
+  bool insert_or_assign(const Type& value)
+  {
+    if (this->contains<Type>())
+    {
+      this->erase<Type>();
+    }
+    return this->insert<Type>(value);
   }
 
   /// Emplace a Type instance into the TypeContainer.

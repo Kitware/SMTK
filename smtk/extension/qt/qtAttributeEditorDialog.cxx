@@ -48,9 +48,12 @@ qtAttributeEditorDialog::qtAttributeEditorDialog(
     m_instancedViewDef->details().addChild("InstancedAttributes").addChild("Att");
   child.setAttribute("Name", m_attribute->name()).setAttribute("Type", m_attribute->type());
 
-  ViewInfo v(m_instancedViewDef, this->m_widget->attributeFrame, m_uiManager);
-  qtInstancedView* iview = dynamic_cast<qtInstancedView*>(
-    qtInstancedView::createViewWidget(v, m_attribute->attributeResource()));
+  smtk::view::Information v;
+  v.insert<smtk::view::ConfigurationPtr>(m_instancedViewDef);
+  v.insert<QWidget*>(this->m_widget->attributeFrame);
+  v.insert<smtk::extension::qtUIManager*>(m_uiManager);
+  v.insert<std::weak_ptr<smtk::attribute::Resource>>(m_attribute->attributeResource());
+  qtInstancedView* iview = dynamic_cast<qtInstancedView*>(qtInstancedView::createViewWidget(v));
   m_instancedView.reset(iview);
 
   m_widget->attributeName->setText(m_attribute->name().c_str());

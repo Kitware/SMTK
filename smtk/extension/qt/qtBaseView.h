@@ -34,37 +34,6 @@ class qtUIManager;
 class qtItem;
 class qtViewInfoDialog;
 
-// This struct is used to initialize qtView-based classes
-class SMTKQTEXT_EXPORT ViewInfo : public smtk::view::Information
-{
-public:
-  ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman)
-    : m_view(view)
-    , m_parent(parent)
-    , m_UIManager(uiman)
-  {
-  }
-
-  // ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman,
-  //   const std::map<std::string, QLayout*>& layoutDict)
-  //   : m_view(view)
-  //   , m_parent(parent)
-  //   , m_UIManager(uiman)
-  //   , m_layoutDict(layoutDict)
-  // {
-  // }
-
-  ViewInfo() = default;
-  ~ViewInfo() override = default;
-
-  const smtk::view::Configuration* configuration() const override { return m_view.get(); }
-
-  smtk::view::ConfigurationPtr m_view; // View Definition
-  QWidget* m_parent;                   // Parent Widget of the View
-  qtUIManager* m_UIManager;            // UI Manager
-  // std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
-};
-
 ///\brief A base class for all view types implemented using Qt
 class SMTKQTEXT_EXPORT qtBaseView
   : public QObject
@@ -82,20 +51,22 @@ public:
 
   smtkTypenameMacro(qtBaseView);
 
-  qtBaseView(const ViewInfo& info);
-  qtBaseView(const smtk::view::Information& info)
-    : qtBaseView(dynamic_cast<const ViewInfo&>(info))
-  {
-  }
+  qtBaseView(const smtk::view::Information& info);
 
   ~qtBaseView() override;
 
   SMTK_DEPRECATED_IN_21_09("Method has been replaced by qtBaseView::configuration")
-  smtk::view::ConfigurationPtr getObject() const { return m_viewInfo.m_view; }
-  const smtk::view::ConfigurationPtr& configuration() const { return m_viewInfo.m_view; }
+  smtk::view::ConfigurationPtr getObject() const { return this->configuration(); }
+  const smtk::view::ConfigurationPtr& configuration() const
+  {
+    return m_viewInfo.get<smtk::view::ConfigurationPtr>();
+  }
+
   QWidget* widget() const { return this->Widget; }
-  QWidget* parentWidget() const { return m_viewInfo.m_parent; }
-  qtUIManager* uiManager() const { return m_viewInfo.m_UIManager; }
+
+  QWidget* parentWidget() const { return m_viewInfo.get<QWidget*>(); }
+
+  qtUIManager* uiManager() const { return m_viewInfo.get<qtUIManager*>(); }
 
   virtual int advanceLevel() const { return 0; }
   virtual bool categoryEnabled() const { return false; }
@@ -115,6 +86,9 @@ public:
 
   ///\brief Return true if the view's contents are valid.
   virtual bool isValid() const { return true; }
+
+  // Validates the view information to see if it is suitable for creating a qtBaseView instance
+  static bool validateInformation(const smtk::view::Information& info);
 
 signals:
   void aboutToDestroy();
@@ -153,7 +127,7 @@ protected:
   QWidget* Widget;
   bool m_isTopLevel;
   bool m_useSelectionManager;
-  ViewInfo m_viewInfo;
+  smtk::view::Information m_viewInfo;
   QPointer<qtViewInfoDialog> m_infoDialog;
   bool m_advOverlayVisible;
 }; // class

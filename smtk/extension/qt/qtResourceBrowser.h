@@ -35,7 +35,7 @@ class qtDescriptivePhraseModel;
   * This contains Qt widget that displays a tree or list view holding an SMTK
   * descriptive phrase model.
   *
-  * Its ViewInfo should be initialized with json/xml that contains:
+  * Its Information should be initialized with json/xml that contains:
   * (1) an smtk::view::PhraseModel that you have configured,
   * (2) the string name registered to a QAbstractItemView subclass constructor,
   * (3) a QAbstactItemModel implementing qtDescriptivePhraseModel model index queries, and

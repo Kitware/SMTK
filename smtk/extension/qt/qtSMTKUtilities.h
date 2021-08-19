@@ -11,8 +11,7 @@
 #define __smtk_attribute_qtSMTKUtilities_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtUIManager.h"     // for qtItemConstructor definition
-#include "smtk/extension/qt/qtViewInterface.h" // for qtSMTKViewConstructor definition
+#include "smtk/extension/qt/qtUIManager.h" // for qtItemConstructor definition
 
 #include <QVariant>
 
