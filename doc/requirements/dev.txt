@@ -1,9 +1,9 @@
-Sphinx==2.2.1
-pyparsing==2.2.0
-Pygments==2.4.2
-actdiag==0.5.4
-blockdiag==1.5.4
+Sphinx==4.1.2
+pyparsing==2.4.7
+Pygments==2.10.0
+actdiag==2.0.0
+blockdiag==2.0.1
 sphinxcontrib-actdiag==2.0.0
-sphinxcontrib-doxylink==1.6.1
-sphinx-rtd-theme==0.4.3
-breathe==4.13.1
+sphinxcontrib-doxylink==1.8
+sphinx-rtd-theme==0.5.2
+breathe==4.30.0
