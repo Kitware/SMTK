@@ -49,7 +49,7 @@ qtBaseView::~qtBaseView()
 
 void qtBaseView::makeTopLevel()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;
@@ -111,5 +111,5 @@ void qtBaseView::onInfo()
 
 void qtBaseView::setInfoToBeDisplayed()
 {
-  m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->configuration());
 }

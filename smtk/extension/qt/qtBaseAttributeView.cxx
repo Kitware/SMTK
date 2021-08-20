@@ -549,7 +549,7 @@ void qtBaseAttributeView::makeTopLevel()
   this->qtBaseView::makeTopLevel();
   m_topLevelInitialized = true;
 
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
 
   this->Internals->clearWidgets();
   const attribute::ResourcePtr attResource = this->uiManager()->attResource();
@@ -634,7 +634,7 @@ void qtBaseAttributeView::showAdvanceLevel(int level)
     return;
   }
 
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

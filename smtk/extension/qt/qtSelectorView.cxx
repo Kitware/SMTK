@@ -71,7 +71,7 @@ qtSelectorView::~qtSelectorView()
 
 void qtSelectorView::createWidget()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;
@@ -94,7 +94,7 @@ void qtSelectorView::createWidget()
 bool qtSelectorView::createSelector()
 {
   //create the layout for the frame area
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);
@@ -172,7 +172,7 @@ bool qtSelectorView::isEmpty() const
 
 bool qtSelectorView::createChildren()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   // We need the selector item's definition in order to get the enumeration info
@@ -245,11 +245,11 @@ void qtSelectorView::getChildView(const std::string& viewType, QList<qtBaseView*
 {
   foreach (qtBaseView* childView, m_internals->ChildViews)
   {
-    if (childView->getObject()->type() == viewType)
+    if (childView->configuration()->type() == viewType)
     {
       views.append(childView);
     }
-    else if (childView->getObject()->type() == "Group")
+    else if (childView->configuration()->type() == "Group")
     {
       qobject_cast<qtSelectorView*>(childView)->getChildView(viewType, views);
     }
@@ -272,7 +272,7 @@ void qtSelectorView::addChildView(qtBaseView* child, int viewEnumIndex)
     m_internals->ChildViews.append(child);
     m_internals->m_viewEnumIdices.append(viewEnumIndex);
     QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
-    if (!frame || !child || !child->getObject())
+    if (!frame || !child || !child->configuration())
     {
       return;
     }

@@ -260,7 +260,7 @@ void smtkAssignColorsView::prepPaletteChooser()
 
 void smtkAssignColorsView::createWidget()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;
@@ -360,7 +360,7 @@ void smtkAssignColorsView::onShowCategory()
 
 void smtkAssignColorsView::updateUI()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view || !this->Widget)
   {
     return;
@@ -571,5 +571,5 @@ void smtkAssignColorsView::requestModelEntityAssociation()
 
 void smtkAssignColorsView::setInfoToBeDisplayed()
 {
-  m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->configuration());
 }

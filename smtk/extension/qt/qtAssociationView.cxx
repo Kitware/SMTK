@@ -251,7 +251,7 @@ void qtAssociationView::onShowCategory()
 
 void qtAssociationView::getAllDefinitions()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

@@ -67,7 +67,7 @@ qtCategorySelectorView::~qtCategorySelectorView()
 
 void qtCategorySelectorView::createWidget()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;
@@ -83,7 +83,7 @@ void qtCategorySelectorView::createWidget()
 
 bool qtCategorySelectorView::createChildren()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   int viewsIndex;
@@ -144,11 +144,11 @@ void qtCategorySelectorView::getChildView(const std::string& viewType, QList<qtB
 {
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
-    if (childView->getObject()->type() == viewType)
+    if (childView->configuration()->type() == viewType)
     {
       views.append(childView);
     }
-    else if (childView->getObject()->type() == "Group")
+    else if (childView->configuration()->type() == "Group")
     {
       qobject_cast<qtCategorySelectorView*>(childView)->getChildView(viewType, views);
     }
@@ -171,7 +171,7 @@ void qtCategorySelectorView::addChildView(qtBaseView* child, const std::string& 
     this->Internals->ChildViews.append(child);
     this->Internals->m_viewCategories.append(cval);
     QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
-    if (!frame || !child || !child->getObject())
+    if (!frame || !child || !child->configuration())
     {
       return;
     }

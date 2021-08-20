@@ -18,6 +18,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/common/Deprecation.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtViewInfoDialog.h"
 #include "smtk/view/BaseView.h"
@@ -89,7 +90,9 @@ public:
 
   ~qtBaseView() override;
 
+  SMTK_DEPRECATED_IN_21_09("Method has been replaced by qtBaseView::configuration")
   smtk::view::ConfigurationPtr getObject() const { return m_viewInfo.m_view; }
+  const smtk::view::ConfigurationPtr& configuration() const { return m_viewInfo.m_view; }
   QWidget* widget() const { return this->Widget; }
   QWidget* parentWidget() const { return m_viewInfo.m_parent; }
   qtUIManager* uiManager() const { return m_viewInfo.m_UIManager; }

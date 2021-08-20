@@ -97,7 +97,7 @@ smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
   // auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
   auto phraseModel =
     m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
-      m_itemInfo.baseView()->getObject().get());
+      m_itemInfo.baseView()->configuration().get());
   if (
     !phraseModel ||
     !m_p->m_phraseModel->badges().findBadgeOfType<smtk::extension::qt::MembershipBadge>())
