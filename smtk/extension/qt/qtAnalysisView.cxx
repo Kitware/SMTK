@@ -65,7 +65,7 @@ void qtAnalysisView::createWidget()
   // If there is a previous qt analysis attribute delete it
   delete m_qtAnalysisAttribute;
 
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

@@ -79,7 +79,7 @@ qtSimpleExpressionEvaluationView::~qtSimpleExpressionEvaluationView() = default;
 
 void qtSimpleExpressionEvaluationView::createWidget()
 {
-  if (!this->getObject())
+  if (!this->configuration())
   {
     return;
   }
@@ -90,7 +90,7 @@ void qtSimpleExpressionEvaluationView::createWidget()
   // A common add/delete/(copy/paste ??) widget
 
   QSplitter* frame = new QSplitter(this->parentWidget());
-  frame->setObjectName(this->getObject()->name().c_str());
+  frame->setObjectName(this->configuration()->name().c_str());
   QFrame* leftFrame = new QFrame(frame);
   leftFrame->setObjectName("left");
   QFrame* rightFrame = new QFrame(frame);

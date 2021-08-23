@@ -73,7 +73,7 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
   this->Internals->m_operator = info.m_operator;
   // We need to create a new View for the internal instanced View
   this->Internals->m_instancedViewDef = smtk::view::Configuration::New("Instanced", "Parameters");
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (view)
   {
     this->Internals->m_instancedViewDef->copyContents(*view);

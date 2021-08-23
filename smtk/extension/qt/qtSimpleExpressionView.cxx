@@ -99,7 +99,7 @@ qtSimpleExpressionView::~qtSimpleExpressionView()
 
 void qtSimpleExpressionView::createWidget()
 {
-  if (!this->getObject())
+  if (!this->configuration())
   {
     return;
   }
@@ -110,7 +110,7 @@ void qtSimpleExpressionView::createWidget()
   // A common add/delete/(copy/paste ??) widget
 
   QSplitter* frame = new QSplitter(this->parentWidget());
-  frame->setObjectName(this->getObject()->name().c_str());
+  frame->setObjectName(this->configuration()->name().c_str());
   QFrame* leftFrame = new QFrame(frame);
   leftFrame->setObjectName("left");
   QFrame* rightFrame = new QFrame(frame);
@@ -774,7 +774,7 @@ void qtSimpleExpressionView::onShowCategory()
 
 void qtSimpleExpressionView::updateUI()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

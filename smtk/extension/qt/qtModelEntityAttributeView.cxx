@@ -257,7 +257,7 @@ qtModelEntityAttributeView::attDefinitionMap() const
 
 void qtModelEntityAttributeView::createWidget()
 {
-  auto view = this->getObject();
+  auto view = this->configuration();
   if (view == nullptr)
   {
     return;
@@ -699,7 +699,7 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
 
 void qtModelEntityAttributeView::getAllDefinitions()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

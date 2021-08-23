@@ -97,7 +97,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     tabWidget->blockSignals(true);
     tabWidget->clear();
     std::string lastSavedViewName;
-    gview->getObject()->details().attribute(m_activeTabViewAttNamee, lastSavedViewName);
+    gview->configuration()->details().attribute(m_activeTabViewAttNamee, lastSavedViewName);
     m_TabbedViews.clear();
     m_currentTabSelected = -1;
     int i, size = m_ChildViews.size();
@@ -111,13 +111,13 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
       }
       m_PageWidgets.at(i)->show();
       m_TabbedViews.append(child);
-      if (child->getObject()->name() == lastSavedViewName)
+      if (child->configuration()->name() == lastSavedViewName)
       {
         m_currentTabSelected = m_TabbedViews.size() - 1;
       }
       if (m_PageIcons.at(i).isNull())
       {
-        QString secTitle = child->getObject()->label().c_str();
+        QString secTitle = child->configuration()->label().c_str();
         if (child->isValid())
         {
           tabWidget->addTab(m_PageWidgets.at(i), secTitle);
@@ -164,7 +164,7 @@ qtGroupView::qtGroupView(const smtk::view::Information& info)
   QPixmap image = this->uiManager()->alertPixmap();
   QTransform transform;
   std::string val;
-  auto view = this->getObject();
+  auto view = this->configuration();
   transform.scale(0.5, 0.5);
   if (view)
   {
@@ -206,21 +206,21 @@ void qtGroupView::updateCurrentTab(int ithTab)
   if (ithTab == -1)
   {
     //Clear the active tab info since nothing is selected
-    this->getObject()->details().setAttribute(m_internals->m_activeTabViewAttNamee, "");
+    this->configuration()->details().setAttribute(m_internals->m_activeTabViewAttNamee, "");
     return;
   }
   qtBaseView* currView = this->getChildView(ithTab);
   if (currView)
   {
-    this->getObject()->details().setAttribute(
-      m_internals->m_activeTabViewAttNamee, currView->getObject()->name());
+    this->configuration()->details().setAttribute(
+      m_internals->m_activeTabViewAttNamee, currView->configuration()->name());
     currView->updateUI();
   }
 }
 
 void qtGroupView::createWidget()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;
@@ -257,7 +257,7 @@ void qtGroupView::createWidget()
     QTabWidget* tab = new QTabWidget(this->parentWidget());
     // If we have previously created a widget for this view
     // lets get the name of the last selected tab View name
-    this->getObject()->details().attribute(
+    this->configuration()->details().attribute(
       m_internals->m_activeTabViewAttNamee, m_internals->m_savedViewName);
     tab->setUsesScrollButtons(true);
     this->Widget = tab;
@@ -325,8 +325,8 @@ void qtGroupView::createWidget()
       qtBaseView* currView = this->getChildView(m_internals->m_currentTabSelected);
       if (currView)
       {
-        m_internals->m_savedViewName = currView->getObject()->name();
-        this->getObject()->details().setAttribute(
+        m_internals->m_savedViewName = currView->configuration()->name();
+        this->configuration()->details().setAttribute(
           m_internals->m_activeTabViewAttNamee, m_internals->m_savedViewName);
       }
     }
@@ -430,7 +430,7 @@ void qtGroupView::showAdvanceLevelOverlay(bool show)
 void qtGroupView::addTabEntry(qtBaseView* child)
 {
   QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
-  if (!tabWidget || !child || !child->getObject())
+  if (!tabWidget || !child || !child->configuration())
   {
     return;
   }
@@ -441,7 +441,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   QScrollArea* tabPage = new QScrollArea(tabWidget);
   tabPage->setWidgetResizable(true);
   tabPage->setFrameShape(QFrame::NoFrame);
-  QString secTitle = child->getObject()->label().c_str();
+  QString secTitle = child->configuration()->label().c_str();
   QString name = "tab" + QString(secTitle);
   tabPage->setObjectName(name);
   tabPage->setWidget(content);
@@ -454,7 +454,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   //using the ui label name find if we have an icon resource
   QString resourceName = QApplication::applicationDirPath().append("/../Resources/Icons/");
   //QString resourceName = ":/SimBuilder/Icons/";
-  resourceName.append(child->getObject()->iconName().c_str());
+  resourceName.append(child->configuration()->iconName().c_str());
   resourceName.append(".png");
 
   // If user specified icons are not found, use default ones
@@ -504,7 +504,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
 
     m_internals->m_TabbedViews.append(child);
     tabWidget->setTabToolTip(index, secTitle);
-    if (child->getObject()->name() == m_internals->m_savedViewName)
+    if (child->configuration()->name() == m_internals->m_savedViewName)
     {
       m_internals->m_currentTabSelected = index;
     }
@@ -549,14 +549,14 @@ void qtGroupView::childModified()
 void qtGroupView::addGroupBoxEntry(qtBaseView* child)
 {
   QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
-  if (!frame || !child || !child->getObject())
+  if (!frame || !child || !child->configuration())
   {
     return;
   }
   QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
   smtk::extension::qtCollapsibleGroupWidget* gw = new qtCollapsibleGroupWidget(frame);
   this->Widget->layout()->addWidget(gw);
-  gw->setName(child->getObject()->label().c_str());
+  gw->setName(child->configuration()->label().c_str());
   gw->contentsLayout()->addWidget(child->widget());
   gw->collapse();
 }
@@ -564,12 +564,12 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
 void qtGroupView::addTileEntry(qtBaseView* child)
 {
   QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
-  if (!frame || !child || !child->getObject())
+  if (!frame || !child || !child->configuration())
   {
     return;
   }
   QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
-  QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
+  QLabel* label = new QLabel(child->configuration()->label().c_str(), this->Widget);
   m_internals->m_Labels.append(label);
   QFont titleFont;
   titleFont.setBold(true);

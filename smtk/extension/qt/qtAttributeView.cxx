@@ -208,7 +208,7 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
   m_internals = new qtAttributeViewInternals;
   m_internals->m_alertIcon = QIcon(this->uiManager()->alertPixmap());
   m_internals->m_alertSize = this->uiManager()->alertPixmap().size();
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   m_hideAssociations = false;
   m_allAssociatedMode = false;
   m_disableNameField = false;
@@ -254,7 +254,7 @@ smtk::extension::qtAssociationWidget* qtAttributeView::createAssociationWidget(
 
 void qtAttributeView::createWidget()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (view == nullptr)
   {
     return;
@@ -671,7 +671,7 @@ void qtAttributeView::onListBoxSelectionChanged()
 
   if (dataItem)
   {
-    this->getObject()->details().setAttribute(
+    this->configuration()->details().setAttribute(
       m_internals->m_activeAttributeViewAttName, dataItem->id().toString());
     this->updateAssociationEnableState(dataItem);
     this->updateTableWithAttribute(dataItem);
@@ -1070,7 +1070,7 @@ void qtAttributeView::onViewBy()
     // so switch tabs would not reset selection
     // get the active tab from the view config if it exists
     std::string activeAttUuid;
-    this->getObject()->details().attribute(
+    this->configuration()->details().attribute(
       m_internals->m_activeAttributeViewAttName, activeAttUuid);
     smtk::attribute::ConstAttributePtr activeAtt =
       this->uiManager()->attResource()->findAttribute(smtk::common::UUID(activeAttUuid));
@@ -1242,7 +1242,7 @@ int qtAttributeView::currentViewBy()
 
 void qtAttributeView::getAllDefinitions()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

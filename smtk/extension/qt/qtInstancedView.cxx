@@ -86,7 +86,7 @@ qtInstancedView::~qtInstancedView()
 
 void qtInstancedView::createWidget()
 {
-  if (!this->getObject())
+  if (!this->configuration())
   {
     return;
   }
@@ -101,7 +101,7 @@ void qtInstancedView::createWidget()
   }
 
   this->Widget = new QFrame(this->parentWidget());
-  this->Widget->setObjectName(this->getObject()->name().c_str());
+  this->Widget->setObjectName(this->configuration()->name().c_str());
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
@@ -135,7 +135,7 @@ void qtInstancedView::onShowCategory()
 
 void qtInstancedView::updateUI()
 {
-  smtk::view::ConfigurationPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {
     return;

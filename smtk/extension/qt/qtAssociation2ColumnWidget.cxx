@@ -88,7 +88,7 @@ qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* 
   this->initWidget();
 
   // Are there any customizations?
-  const smtk::view::Configuration::Component& config = m_view->getObject()->details();
+  const smtk::view::Configuration::Component& config = m_view->configuration()->details();
   m_allAssociatedMode = config.attributeAsBool("RequireAllAssociated");
   std::string val;
   if (config.attribute("AvailableLabel", val))

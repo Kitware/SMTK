@@ -124,7 +124,7 @@ protected slots:
 protected:
   /**\brief Subclasses override this to create a model of the appropriate type.
     *
-    * The model should be configured using information the item (this->getObject())
+    * The model should be configured using information the item (this->configuration())
     * and be ready for use.
     */
   virtual smtk::view::PhraseModelPtr createPhraseModel() const;

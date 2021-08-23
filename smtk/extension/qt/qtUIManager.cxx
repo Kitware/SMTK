@@ -232,9 +232,9 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   }
   if (m_topView)
   {
-    if (m_topView->getObject()->details().attribute(m_activeAdvLevelXmlAttName))
+    if (m_topView->configuration()->details().attribute(m_activeAdvLevelXmlAttName))
     {
-      m_topView->getObject()->details().attributeAsInt(
+      m_topView->configuration()->details().attributeAsInt(
         m_activeAdvLevelXmlAttName, m_currentAdvLevel);
     }
     if (m_currentAdvLevel) // only build advanced level when needed)
@@ -447,7 +447,8 @@ void qtUIManager::setAdvanceLevel(int b)
   if (m_topView)
   {
     m_topView->showAdvanceLevel(b);
-    m_topView->getObject()->details().setAttribute(m_activeAdvLevelXmlAttName, std::to_string(b));
+    m_topView->configuration()->details().setAttribute(
+      m_activeAdvLevelXmlAttName, std::to_string(b));
   }
 }
 
