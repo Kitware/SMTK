@@ -30,10 +30,10 @@ set(taskHeaders
   Manager.h
   Registrar.h
   adaptor/ResourceAndRole.h
-  json/Adaptor.h
   json/Configurator.h
   json/Configurator.txx
   json/Helper.h
+  json/jsonAdaptor.h
   json/jsonManager.h
 )
 
