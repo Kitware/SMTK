@@ -92,9 +92,4 @@
         - *before_script_windows
         - Invoke-Expression -Command .gitlab/ci/vcvarsall.ps1
         - ctest --output-on-failure -V -S .gitlab/ci/ctest_test.cmake
-    after_script:
-        # Ensure that `git clean` can always remove the directory. But don't
-        # remove so much that the build cannot be debugged.
-        # https://github.com/git-for-windows/git/issues/2715
-        - cmd /C "rmdir /S /Q build\superbuild\smtk\build\PluginTests"
     interruptible: true
