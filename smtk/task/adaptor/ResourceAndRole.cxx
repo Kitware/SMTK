@@ -50,8 +50,15 @@ bool ResourceAndRole::reconfigureTask()
       std::map<std::string, std::set<smtk::resource::ResourcePtr>> configs;
       gather->visitResourceSets(
         [&configs](const GatherResources::ResourceSet& resourceSet) -> smtk::common::Visit {
-          configs[resourceSet.m_role].insert(
-            resourceSet.m_resources.begin(), resourceSet.m_resources.end());
+          auto& role_config = configs[resourceSet.m_role];
+          for (auto const& resource : resourceSet.m_resources)
+          {
+            auto resource_locked = resource.lock();
+            if (resource_locked)
+            {
+              role_config.insert(resource_locked);
+            }
+          }
           return smtk::common::Visit::Continue;
         });
       if (auto fill = std::dynamic_pointer_cast<FillOutAttributes>(dest))
