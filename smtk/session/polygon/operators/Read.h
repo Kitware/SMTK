@@ -33,6 +33,7 @@ public:
 
 protected:
   Result operateInternal() override;
+  void markModifiedResources(Result& res) override;
   const char* xmlDescription() const override;
 };
 
