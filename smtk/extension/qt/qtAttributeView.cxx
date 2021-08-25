@@ -1509,9 +1509,10 @@ int qtAttributeView::handleOperationEvent(
   std::size_t i, n;
   smtk::attribute::DefinitionPtr currentDef = this->getCurrentDef();
 
-  if (currentDef == nullptr)
+  // If there is no definition or it's attribute resource is mark for removal
+  // then we don't need to update anything
+  if ((currentDef == nullptr) || currentDef->resource()->isMarkedForRemoval())
   {
-    // There is nothing being displayed so nothing needs to be updated
     return 0;
   }
 
