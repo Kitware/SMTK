@@ -64,6 +64,12 @@ public:
   void setIgnoreCategories(bool mode);
   bool ignoreCategories() const { return m_ignoreCategories; }
 
+  /// Return the attribute resource used by this View
+  smtk::attribute::ResourcePtr attributeResource() const;
+
+  // Validates the view information to see if it is suitable for creating a qtAttributeBaseView instance
+  static bool validateInformation(const smtk::view::Information& info);
+
 signals:
   void modified(smtk::attribute::ItemPtr);
 

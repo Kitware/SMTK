@@ -120,10 +120,8 @@ class qtModelEntityAttributeViewInternals
 public:
   ~qtModelEntityAttributeViewInternals() { delete this->CurrentAtt; }
 
-  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
-    smtk::extension::qtUIManager* uiManager) const
+  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const ResourcePtr& attResource) const
   {
-    auto attResource = uiManager->attResource();
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
       // There are no active categories - return everything
@@ -196,9 +194,13 @@ public:
 qtBaseView* qtModelEntityAttributeView::createViewWidget(const smtk::view::Information& info)
 {
   // TO DO Need to deal with Selections
-  qtModelEntityAttributeView* view = new qtModelEntityAttributeView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtModelEntityAttributeView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtModelEntityAttributeView::qtModelEntityAttributeView(const smtk::view::Information& info)
@@ -264,7 +266,7 @@ void qtModelEntityAttributeView::createWidget()
   }
 
   this->Internals->AttDefMap.clear();
-  const ResourcePtr attResource = this->uiManager()->attResource();
+  const ResourcePtr attResource = this->attributeResource();
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = attResource->categories();
 
@@ -367,7 +369,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
   std::set<smtk::resource::PersistentObjectPtr> result;
   // First we need to determine if the attribute resource has resources associated with it
   // if not we need to go to resource manager to get the information
-  auto attResource = this->uiManager()->attResource();
+  auto attResource = this->attributeResource();
   auto resources = attResource->associations();
   if (!resources.empty())
   {
@@ -444,7 +446,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->attributeResource());
 
   // Create an initial string list for the combo boxes
   QStringList slist;
@@ -530,7 +532,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   // Get selected type
   std::string tname = this->Internals->ListTable->item(row, 1)->text().toStdString();
 
-  auto attRes = this->uiManager()->attResource();
+  auto attRes = this->attributeResource();
   auto resManager = this->uiManager()->resourceManager();
   if (resManager == nullptr)
   {
@@ -538,7 +540,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->attributeResource());
   // Get the component of the item
   auto entity = this->object(this->Internals->ListTable->item(row, 0));
   if (entity == nullptr)
@@ -705,7 +707,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
 
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;
@@ -802,6 +804,6 @@ void qtModelEntityAttributeView::selectionMade()
 bool qtModelEntityAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->attributeResource());
   return currentDefs.isEmpty();
 }

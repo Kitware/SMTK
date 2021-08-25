@@ -129,11 +129,11 @@ public:
   smtk::shared_ptr<smtk::operation::Operation> CurrentOp;
 };
 
-smtkAssignColorsView::smtkAssignColorsView(const OperationViewInfo& info)
+smtkAssignColorsView::smtkAssignColorsView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new smtkAssignColorsViewInternals;
-  this->Internals->CurrentOp = info.m_operator;
+  this->Internals->CurrentOp = info.get<smtk::shared_ptr<smtk::operation::Operation>>();
 }
 
 smtkAssignColorsView::~smtkAssignColorsView()
@@ -152,15 +152,13 @@ bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item) const
 
 qtBaseView* smtkAssignColorsView::createViewWidget(const smtk::view::Information& info)
 {
-  const OperationViewInfo* opinfo = dynamic_cast<const OperationViewInfo*>(&info);
-  smtkAssignColorsView* view;
-  if (!opinfo)
+  if (qtOperationView::validateInformation(info))
   {
-    return nullptr;
+    auto* view = new smtkAssignColorsView(info);
+    view->buildUI();
+    return view;
   }
-  view = new smtkAssignColorsView(*opinfo);
-  view->buildUI();
-  return view;
+  return nullptr; // Information is not suitable for this View
 }
 
 QIcon smtkAssignColorsView::renderColorSwatch(const QColor& color, int radius)

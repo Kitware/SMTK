@@ -13,6 +13,7 @@
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtDateTimeItem.h"
@@ -220,16 +221,22 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   }
   this->internalInitialize();
 
+  smtk::view::Information vinfo;
+  vinfo.insert<smtk::view::ConfigurationPtr>(m_smtkView);
+  vinfo.insert<QWidget*>(pWidget);
+  vinfo.insert<qtUIManager*>(this);
   if (!m_operation)
   {
-    smtk::extension::ViewInfo vinfo(m_smtkView, pWidget, this);
-    m_topView = this->createView(vinfo);
+    vinfo.insert<std::weak_ptr<smtk::attribute::Resource>>(m_attResource);
   }
   else
   {
-    smtk::extension::OperationViewInfo vinfo(m_smtkView, m_operation, pWidget, this);
-    m_topView = this->createView(vinfo);
+    vinfo.insert<smtk::operation::OperationPtr>(m_operation);
+    vinfo.insert<std::weak_ptr<smtk::attribute::Resource>>(m_operation->specification());
   }
+
+  m_topView = this->createView(vinfo);
+
   if (m_topView)
   {
     if (m_topView->configuration()->details().attribute(m_activeAdvLevelXmlAttName))
@@ -252,12 +259,11 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   }
 }
 
-void qtUIManager::initializeUI(
-  const smtk::extension::ViewInfo& viewInfo,
-  bool useInternalFileBrowser)
+void qtUIManager::initializeUI(const smtk::view::Information& viewInfo, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  m_parentWidget = viewInfo.m_parent;
+  m_parentWidget = viewInfo.get<QWidget*>();
+  m_smtkView = viewInfo.get<smtk::view::ConfigurationPtr>();
   if (m_topView)
   {
     delete m_topView;
@@ -373,21 +379,21 @@ smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  const smtk::extension::ViewInfo& viewInfo,
+  const smtk::view::Information& viewInfo,
   bool useInternalFileBrowser)
 {
   if (
-    (m_smtkView == viewInfo.m_view) && (m_parentWidget == viewInfo.m_parent) &&
+    (m_smtkView == viewInfo.get<smtk::view::ConfigurationPtr>()) &&
+    (m_parentWidget == viewInfo.get<QWidget*>()) &&
     (m_useInternalFileBrowser == useInternalFileBrowser))
   {
     return m_topView;
   }
-  m_smtkView = viewInfo.m_view;
   this->initializeUI(viewInfo, m_useInternalFileBrowser);
   return m_topView;
 }
 
-qtBaseView* qtUIManager::setSMTKView(smtk::view::ConfigurationPtr v)
+qtBaseView* qtUIManager::setSMTKView(const smtk::view::ConfigurationPtr& v)
 {
   if (m_smtkView != v)
   {
@@ -398,7 +404,7 @@ qtBaseView* qtUIManager::setSMTKView(smtk::view::ConfigurationPtr v)
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  smtk::view::ConfigurationPtr v,
+  const smtk::view::ConfigurationPtr& v,
   QWidget* pWidget,
   bool useInternalFileBrowser)
 {
@@ -889,39 +895,40 @@ void qtUIManager::registerItemConstructor(const std::string& itype, qtItemConstr
   m_itemConstructors[itype] = f;
 }
 
-qtBaseView* qtUIManager::createView(const ViewInfo& info)
+qtBaseView* qtUIManager::createView(const smtk::view::Information& info)
 {
-  if (info.m_UIManager != this)
+  if (info.get<smtk::extension::qtUIManager*>() != this)
   {
-    // The view being constructed is not refering to this manager!
+    // The view being constructed is not referring to this manager!
     return nullptr;
   }
 
   auto& viewManager = m_managers.get<smtk::view::Manager::Ptr>();
+  std::string viewType = info.get<smtk::view::ConfigurationPtr>()->type();
   if (!viewManager)
   {
-    std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
+    std::cerr << "No viewManager for View Type: " << viewType << " skipping view!\n";
     return nullptr;
   }
   qtBaseView* qtView = nullptr;
-  if (viewManager->viewWidgetFactory().contains(info.m_view->type()))
+  if (viewManager->viewWidgetFactory().contains(viewType))
   {
     qtView = dynamic_cast<qtBaseView*>(
       viewManager->viewWidgetFactory()
-        .createFromName(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
+        .createFromName(viewType, static_cast<const smtk::view::Information&>(info))
         .release());
   }
-  else if (viewManager->viewWidgetFactory().containsAlias(info.m_view->type()))
+  else if (viewManager->viewWidgetFactory().containsAlias(viewType))
   {
     qtView = dynamic_cast<qtBaseView*>(
       viewManager->viewWidgetFactory()
-        .createFromAlias(info.m_view->type(), static_cast<const smtk::view::Information&>(info))
+        .createFromAlias(viewType, static_cast<const smtk::view::Information&>(info))
         .release());
   }
   if (!qtView)
   {
     // Constructor for that type could not be found)
-    std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
+    std::cerr << "Could not find View Type: " << viewType << " skipping view!\n";
   }
   else
   {

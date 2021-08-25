@@ -88,7 +88,10 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   m_viewUIMgr->setSelection(wrapper->smtkSelection());
   // m_viewUIMgr->setSelectionBit(1);               // ToDo: should be set ?
 
-  smtk::extension::ViewInfo resinfo(m_view, this, m_viewUIMgr);
+  smtk::view::Information resinfo;
+  resinfo.insert<smtk::view::ConfigurationPtr>(m_view);
+  resinfo.insert<QWidget*>(this);
+  resinfo.insert<smtk::extension::qtUIManager*>(m_viewUIMgr);
 
   // the top-level "Type" in m_view should be pqSMTKResourceBrowser or compatible.
   auto* baseview = m_viewUIMgr->setSMTKView(resinfo);

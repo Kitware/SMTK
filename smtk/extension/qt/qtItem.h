@@ -68,6 +68,9 @@ public:
 
   qtUIManager* uiManager() const { return m_itemInfo.uiManager(); }
 
+  /// Return the underlying Attribute Resource
+  smtk::attribute::ResourcePtr attributeResource() const;
+
   QPointer<QWidget> widget() { return m_widget; }
   QPointer<QWidget> parentWidget() { return m_itemInfo.parentWidget(); }
 

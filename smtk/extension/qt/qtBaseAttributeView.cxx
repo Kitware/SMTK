@@ -75,15 +75,21 @@ public:
   QPointer<QLabel> m_configurationLabel;
 };
 
+bool qtBaseAttributeView::validateInformation(const smtk::view::Information& info)
+{
+  return qtBaseView::validateInformation(info) &&
+    info.contains<std::weak_ptr<smtk::attribute::Resource>>();
+}
+
 qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   : qtBaseView(info)
   , m_topLevelCanCreateConfigurations(false)
 {
   this->Internals = new qtBaseAttributeViewInternals;
   m_ScrollArea = nullptr;
-  m_fixedLabelWidth = m_viewInfo.m_UIManager->maxValueLabelLength();
+  m_fixedLabelWidth = this->uiManager()->maxValueLabelLength();
   m_topLevelInitialized = false;
-  m_ignoreCategories = m_viewInfo.m_view->details().attributeAsBool("IgnoreCategories");
+  m_ignoreCategories = this->getObject()->details().attributeAsBool("IgnoreCategories");
   // We need to be able to determine within the a Signal Operation, which View caused
   // the change in order to avoid infinite loops.  To do this, each View will have an addressString
   // set to its address.  This string is then passed to the signalAttribute function when needed.
@@ -95,6 +101,11 @@ qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
 qtBaseAttributeView::~qtBaseAttributeView()
 {
   delete this->Internals;
+}
+
+smtk::attribute::ResourcePtr qtBaseAttributeView::attributeResource() const
+{
+  return m_viewInfo.get<std::weak_ptr<smtk::attribute::Resource>>().lock();
 }
 
 void qtBaseAttributeView::getDefinitions(
@@ -139,7 +150,7 @@ bool qtBaseAttributeView::displayItemDefinition(
   {
     return false;
   }
-  auto attResoure = this->uiManager()->attResource();
+  auto attResoure = this->attributeResource();
   return attResoure->passActiveCategoryCheck(idef->categories());
 }
 
@@ -552,7 +563,7 @@ void qtBaseAttributeView::makeTopLevel()
   smtk::view::ConfigurationPtr view = this->configuration();
 
   this->Internals->clearWidgets();
-  const attribute::ResourcePtr attResource = this->uiManager()->attResource();
+  const attribute::ResourcePtr attResource = this->attributeResource();
 
   this->topLevelPrepAdvanceLevels(view);
   this->topLevelPrepConfigurations(view, attResource);
@@ -723,7 +734,7 @@ bool qtBaseAttributeView::isEmpty() const
 void qtBaseAttributeView::onConfigurationChanged(int index)
 {
   std::set<std::string> cats;
-  smtk::attribute::ResourcePtr attRes = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr attRes = this->attributeResource();
   smtk::attribute::AttributePtr att;
   std::string attName;
 
@@ -783,7 +794,7 @@ void qtBaseAttributeView::onConfigurationChanged(int index)
 void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfigurationName)
 {
   std::set<std::string> cats;
-  smtk::attribute::ResourcePtr attRes = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr attRes = this->attributeResource();
   smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
   if (def == nullptr)
   {

@@ -38,13 +38,9 @@ public:
   ///\brief Create an instance view using an optionally  specified attribute resource instead of the one
   /// associated with the UI Manager
 
-  static qtBaseView* createViewWidget(
-    const smtk::view::Information& info,
-    smtk::attribute::ResourcePtr overrideResource = nullptr);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  qtInstancedView(
-    const smtk::view::Information& info,
-    smtk::attribute::ResourcePtr overrideResource = nullptr);
+  qtInstancedView(const smtk::view::Information& info);
   ~qtInstancedView() override;
   // Returns true if all attributes in the view are valid
   bool isValid() const override;
@@ -71,7 +67,6 @@ protected:
 
 private:
   qtInstancedViewInternals* Internals;
-  smtk::attribute::ResourcePtr m_overrideResource;
 
 }; // class
 }; // namespace extension

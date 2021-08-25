@@ -53,20 +53,19 @@ public:
   smtk::operation::Observers::Key m_observerKey;
 };
 
-qtBaseView* qtInstancedView::createViewWidget(
-  const smtk::view::Information& info,
-  smtk::attribute::ResourcePtr overrideResource)
+qtBaseView* qtInstancedView::createViewWidget(const smtk::view::Information& info)
 {
-  qtInstancedView* view = new qtInstancedView(info, overrideResource);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtInstancedView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
-qtInstancedView::qtInstancedView(
-  const smtk::view::Information& info,
-  smtk::attribute::ResourcePtr overrideResource)
+qtInstancedView::qtInstancedView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
-  , m_overrideResource(overrideResource)
 {
   this->Internals = new qtInstancedViewInternals;
 }
@@ -141,8 +140,7 @@ void qtInstancedView::updateUI()
     return;
   }
 
-  smtk::attribute::ResourcePtr resource =
-    (m_overrideResource ? m_overrideResource : this->uiManager()->attResource());
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
   std::string attName, defName;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;

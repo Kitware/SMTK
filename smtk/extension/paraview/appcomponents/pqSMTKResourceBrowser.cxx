@@ -133,7 +133,7 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
 
 void pqSMTKResourceBrowser::initSubphraseGenerator()
 {
-  std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(m_viewInfo.m_view);
+  std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(this->getObject());
   auto* smtkSettings = vtkSMTKSettings::GetInstance();
 
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
@@ -159,7 +159,7 @@ void pqSMTKResourceBrowser::initSubphraseGenerator()
     m_p->m_resourceTreeType.empty() || m_p->m_resourceTreeType != subphraseViewType ||
     (subphraseViewType == "default" && resourceTreeStyle != m_p->m_resourceTreeStyle))
   {
-    smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
+    smtk::view::ManagerPtr manager = this->uiManager()->viewManager();
     smtk::view::SubphraseGenerator::Ptr spg = smtk::view::SubphraseGenerator::create(
       subphraseViewType == "default" ? defaultSubphraseType : subphraseViewType, manager);
     if (spg)

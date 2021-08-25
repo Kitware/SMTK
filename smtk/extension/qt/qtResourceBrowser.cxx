@@ -57,9 +57,13 @@ std::string qtResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_
 
 qtBaseView* qtResourceBrowser::createViewWidget(const smtk::view::Information& info)
 {
-  qtResourceBrowser* view = new qtResourceBrowser(info);
-  view->buildUI();
-  return view;
+  if (qtBaseView::validateInformation(info))
+  {
+    auto* view = new qtResourceBrowser(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
@@ -69,15 +73,16 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
   smtk::view::PhraseModelPtr phraseModel;
   std::string modelViewType;
   QAbstractItemModel* qtPhraseModel = nullptr;
-  if (m_viewInfo.m_view)
+  const auto& view = this->getObject();
+  if (view)
   {
     // empty Widget attribute is OK, will use default.
-    m_viewInfo.m_view->details().attribute("Widget", modelViewType);
-    smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
-    phraseModel = manager->phraseModelFactory().createFromConfiguration(m_viewInfo.configuration());
+    view->details().attribute("Widget", modelViewType);
+    smtk::view::ManagerPtr manager = this->uiManager()->viewManager();
+    phraseModel = manager->phraseModelFactory().createFromConfiguration(view.get());
     qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
   }
-  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, m_viewInfo.m_parent);
+  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, this->parentWidget());
   this->Widget = m_p->m_container;
 }
 

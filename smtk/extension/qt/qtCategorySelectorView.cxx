@@ -48,9 +48,13 @@ public:
 
 qtBaseView* qtCategorySelectorView::createViewWidget(const smtk::view::Information& info)
 {
-  qtCategorySelectorView* view = new qtCategorySelectorView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtCategorySelectorView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtCategorySelectorView::qtCategorySelectorView(const smtk::view::Information& info)
@@ -84,7 +88,7 @@ void qtCategorySelectorView::createWidget()
 bool qtCategorySelectorView::createChildren()
 {
   smtk::view::ConfigurationPtr view = this->configuration();
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
 
   int viewsIndex;
   viewsIndex = view->details().findChild("Views");
@@ -125,10 +129,10 @@ bool qtCategorySelectorView::createChildren()
       continue;
     }
     // Setup the information for the new child view based off of
-    // this one
-    smtk::extension::ViewInfo vinfo = m_viewInfo;
-    vinfo.m_view = v;
-    vinfo.m_parent = this->Widget;
+    // this one but with a different view configuration and (parent) widget
+    auto vinfo = m_viewInfo;
+    vinfo.insert_or_assign<smtk::view::ConfigurationPtr>(v);
+    vinfo.insert_or_assign<QWidget*>(this->Widget);
     qtView = this->uiManager()->createView(vinfo);
     if (qtView)
     {

@@ -52,9 +52,13 @@ public:
 
 qtBaseView* qtSelectorView::createViewWidget(const smtk::view::Information& info)
 {
-  qtSelectorView* view = new qtSelectorView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtSelectorView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtSelectorView::qtSelectorView(const smtk::view::Information& info)
@@ -100,7 +104,7 @@ bool qtSelectorView::createSelector()
   this->Widget->setLayout(layout);
 
   // Get the Selector Attribute
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
   std::string attName, defName;
   view->details().attribute("SelectorName", attName);
   view->details().attribute("SelectorType", defName);
@@ -173,7 +177,7 @@ bool qtSelectorView::isEmpty() const
 bool qtSelectorView::createChildren()
 {
   smtk::view::ConfigurationPtr view = this->configuration();
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
 
   // We need the selector item's definition in order to get the enumeration info
   auto selItemDef =
@@ -225,9 +229,10 @@ bool qtSelectorView::createChildren()
     }
     // Setup the information for the new child view based off of
     // this one
-    smtk::extension::ViewInfo vinfo = m_viewInfo;
-    vinfo.m_view = v;
-    vinfo.m_parent = this->Widget;
+    auto vinfo = m_viewInfo;
+    vinfo.insert_or_assign<smtk::view::ConfigurationPtr>(v);
+    vinfo.insert_or_assign<QWidget*>(this->Widget);
+
     qtView = this->uiManager()->createView(vinfo);
     if (qtView)
     {

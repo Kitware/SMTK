@@ -39,10 +39,8 @@ using namespace smtk::extension;
 class qtAssociationViewInternals : public Ui::qtAssociationView
 {
 public:
-  QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
-    smtk::extension::qtUIManager* uiManager) const
+  QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const ResourcePtr& attResource) const
   {
-    auto attResource = uiManager->attResource();
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
       // There is no filtering - return everything
@@ -69,9 +67,8 @@ public:
     return defs;
   }
 
-  bool currentDefsIsEmpty(smtk::extension::qtUIManager* uiManager) const
+  bool currentDefsIsEmpty(const ResourcePtr& attResource) const
   {
-    auto attResource = uiManager->attResource();
     if (attResource && attResource->activeCategoriesEnabled())
     {
       if (attResource->activeCategories().empty())
@@ -114,9 +111,13 @@ public:
 
 qtBaseView* qtAssociationView::createViewWidget(const smtk::view::Information& info)
 {
-  qtAssociationView* view = new qtAssociationView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtAssociationView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtAssociationView::qtAssociationView(const smtk::view::Information& info)
@@ -149,7 +150,7 @@ void qtAssociationView::createWidget()
   // since the getAllDefinitions() call needs the categories list in AttDefMap
   // Create a map for all catagories so we can cluster the definitions
   this->Internals->AttDefMap.clear();
-  const ResourcePtr attResource = this->uiManager()->attResource();
+  const ResourcePtr attResource = this->attributeResource();
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = attResource->categories();
 
@@ -217,7 +218,7 @@ void qtAssociationView::updateUI()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->attributeResource());
   std::set<AttributePtr, Attribute::CompareByName> atts;
   // Get all of the attributes that match the list of definitions
   foreach (attribute::DefinitionPtr attDef, currentDefs)
@@ -257,7 +258,7 @@ void qtAssociationView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
 
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;
@@ -339,7 +340,7 @@ void qtAssociationView::getAllDefinitions()
 // hidden at the same time.
 bool qtAssociationView::isEmpty() const
 {
-  return this->Internals->currentDefsIsEmpty(this->uiManager());
+  return this->Internals->currentDefsIsEmpty(this->attributeResource());
 }
 
 void qtAssociationView::associationsChanged()

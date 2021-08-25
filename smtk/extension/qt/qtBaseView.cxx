@@ -28,17 +28,24 @@
 
 using namespace smtk::extension;
 
-qtBaseView::qtBaseView(const ViewInfo& info)
+bool qtBaseView::validateInformation(const smtk::view::Information& info)
+{
+  return info.contains<qtUIManager*>() && info.contains<smtk::view::ConfigurationPtr>() &&
+    info.contains<QWidget*>();
+}
+
+qtBaseView::qtBaseView(const smtk::view::Information& info)
 {
   m_viewInfo = info;
   this->Widget = nullptr;
   m_advOverlayVisible = false;
   m_isTopLevel = false;
   m_useSelectionManager = false;
-  if (m_viewInfo.m_view)
+  const auto& view = this->getObject();
+  if (view)
   {
-    m_isTopLevel = m_viewInfo.m_view->details().attributeAsBool("TopLevel");
-    m_useSelectionManager = m_viewInfo.m_view->details().attributeAsBool("UseSelectionManager");
+    m_isTopLevel = view->details().attributeAsBool("TopLevel");
+    m_useSelectionManager = view->details().attributeAsBool("UseSelectionManager");
   }
 }
 

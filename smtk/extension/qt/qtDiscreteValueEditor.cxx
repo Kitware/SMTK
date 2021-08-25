@@ -86,12 +86,8 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
 
 void qtDiscreteValueEditor::createWidget()
 {
+  smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
   auto* uiManager = this->Internals->m_inputItem->uiManager();
-  smtk::attribute::ResourcePtr attResource;
-  if (uiManager)
-  {
-    attResource = uiManager->attResource();
-  }
 
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item)
@@ -321,9 +317,11 @@ void qtDiscreteValueEditor::updateContents()
 {
   auto* uiManager = this->Internals->m_inputItem->uiManager();
   if (uiManager == nullptr)
+  {
     return;
+  }
 
-  smtk::attribute::ResourcePtr attResource = uiManager->attResource();
+  smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
 
   this->Internals->clearChildItems();
 
@@ -373,14 +371,10 @@ void qtDiscreteValueEditor::updateContents()
 
     auto* iiview = this->Internals->m_inputItem->m_itemInfo.baseView();
     int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
-    if (this->Internals->m_inputItem->uiManager())
+    int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
+    if (iiview)
     {
-      int tmpLen = this->Internals->m_inputItem->uiManager()->getWidthOfItemsMaxLabel(
-        activeChildDefs, this->Internals->m_inputItem->uiManager()->advancedFont());
-      if (iiview)
-      {
-        iiview->setFixedLabelWidth(tmpLen);
-      }
+      iiview->setFixedLabelWidth(tmpLen);
     }
     bool hasVisibleChildren = false;
     for (i = 0; i < m; i++)
@@ -407,7 +401,7 @@ void qtDiscreteValueEditor::updateContents()
           comp,
           this->Internals->m_childrenFrame.data(),
           this->Internals->m_inputItem->m_itemInfo.baseView());
-        childItem = this->Internals->m_inputItem->uiManager()->createItem(info);
+        childItem = uiManager->createItem(info);
       }
       if (childItem)
       {

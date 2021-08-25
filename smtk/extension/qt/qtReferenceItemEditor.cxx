@@ -743,9 +743,11 @@ void qtReferenceItemEditor::updateContents()
 {
   auto* uiManager = this->uiManager();
   if (uiManager == nullptr)
+  {
     return;
+  }
 
-  smtk::attribute::ResourcePtr attResource = uiManager->attResource();
+  smtk::attribute::ResourcePtr attResource = this->attributeResource();
 
   // First clear all of the current children items being displayed
   m_internals->clearChildItems();

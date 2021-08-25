@@ -52,6 +52,11 @@ qtItem::~qtItem()
   delete this->Internals;
 }
 
+smtk::attribute::ResourcePtr qtItem::attributeResource() const
+{
+  return m_itemInfo.baseView()->attributeResource();
+}
+
 void qtItem::markForDeletion()
 {
   // Disconnect this object's signals
@@ -135,7 +140,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
       int idx = std::distance(levels.begin(), it) - 1;
       this->Internals->AdvLevelCombo->setCurrentIndex(idx);
     }
-    const double* rgba = m_itemInfo.uiManager()->attResource()->advanceLevelColor(mylevel);
+    const double* rgba = this->attributeResource()->advanceLevelColor(mylevel);
     if (rgba)
     {
       this->Internals->advOverlay->overlay()->setColor(
@@ -172,7 +177,7 @@ void qtItem::setLocalAdvanceLevel(unsigned int l)
   item->setLocalAdvanceLevel(1, l);
   if (this->Internals->advOverlay)
   {
-    const double* rgba = m_itemInfo.uiManager()->attResource()->advanceLevelColor(l);
+    const double* rgba = this->attributeResource()->advanceLevelColor(l);
     if (rgba)
     {
       this->Internals->advOverlay->overlay()->setColor(

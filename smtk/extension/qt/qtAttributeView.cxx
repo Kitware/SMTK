@@ -104,6 +104,7 @@ public:
   // of the UI Manager and whether the View is to ignore
   // categories
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    const ResourcePtr& attResource,
     smtk::extension::qtUIManager* uiManager,
     bool ignoreCategories) const
   {
@@ -112,7 +113,6 @@ public:
       return removeAdvancedDefs(uiManager, this->AllDefs);
     }
 
-    auto attResource = uiManager->attResource();
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
       // There are no active categories - return everything
@@ -197,9 +197,13 @@ public:
 
 qtBaseView* qtAttributeView::createViewWidget(const smtk::view::Information& info)
 {
-  qtAttributeView* view = new qtAttributeView(info);
-  view->buildUI();
-  return view;
+  if (qtBaseAttributeView::validateInformation(info))
+  {
+    auto* view = new qtAttributeView(info);
+    view->buildUI();
+    return view;
+  }
+  return nullptr; // Information is not suitable for this View
 }
 
 qtAttributeView::qtAttributeView(const smtk::view::Information& info)
@@ -269,7 +273,7 @@ void qtAttributeView::createWidget()
   // since the getAllDefinitions() call needs the categories list in AttDefMap
   // Create a map for all categories so we can cluster the definitions
   m_internals->AttDefMap.clear();
-  const ResourcePtr attResource = this->uiManager()->attResource();
+  const ResourcePtr attResource = this->attributeResource();
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = attResource->categories();
 
@@ -835,7 +839,7 @@ smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 
   foreach (
     attribute::DefinitionPtr attDef,
-    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
+    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories))
   {
     std::string txtDef = attDef->displayedTypeName();
     if (strDef == QString::fromUtf8(txtDef.c_str()))
@@ -1001,7 +1005,7 @@ void qtAttributeView::onViewBy()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
+    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories);
 
   m_internals->AddAction->setEnabled(currentDefs.count() > 0);
 
@@ -1073,7 +1077,7 @@ void qtAttributeView::onViewBy()
     this->configuration()->details().attribute(
       m_internals->m_activeAttributeViewAttName, activeAttUuid);
     smtk::attribute::ConstAttributePtr activeAtt =
-      this->uiManager()->attResource()->findAttribute(smtk::common::UUID(activeAttUuid));
+      this->attributeResource()->findAttribute(smtk::common::UUID(activeAttUuid));
 
     if (activeAtt)
     {
@@ -1248,7 +1252,7 @@ void qtAttributeView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+  smtk::attribute::ResourcePtr resource = this->attributeResource();
 
   std::string attName, defName, val, styleName;
   smtk::attribute::AttributePtr att;
@@ -1396,7 +1400,7 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
 bool qtAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
+    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories);
   return currentDefs.isEmpty();
 }
 
