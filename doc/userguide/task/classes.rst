@@ -33,26 +33,6 @@ Example
      "completed": false
    }
 
-ConfigureOperation
-------------------
-
-:smtk:`ConfigureOperation <smtk::task::ConfigureOperation>` exists to
-create and validate inputs to an operation.
-
-You can use a :smtk:`MapComponents <smtk::task::adaptor::MapComponents>`
-adaptor to configure the operation's associated objects.
-
-Example
-"""""""
-
-.. code:: json
-
-   {
-     "type": "smtk::task::ConfigureOperation",
-     "title": "Export simulation",
-     "operation": "smtk::session::oscillator::Export"
-   }
-
 FillOutAttributes
 -----------------
 
