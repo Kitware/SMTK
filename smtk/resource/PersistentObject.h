@@ -49,7 +49,7 @@ public:
   ///       connect to this object (see Resource::setId and its treatment of
   ///       manager registration for reference).
   virtual bool setId(const common::UUID& myID) = 0;
-  /// Return the name of the object - by default it will return the UUID but that can be overriden
+  /// Return the name of the object - by default it will return the UUID but that can be overridden
   virtual std::string name() const;
 
   /// Attempt to cast this object to a subclass.

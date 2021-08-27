@@ -665,6 +665,14 @@ void qtReferenceItemEditor::handleResourceEvent(
   auto theAttribute = item->attribute();
   auto attResource = theAttribute->attributeResource();
 
+  // If this resource is marked for removal, then we don't need to update this widget since
+  // it should be deleted shortly - this will also prevent the resource's links system from
+  // pulling in associated resources unnecessarily
+  if (attResource->isMarkedForRemoval())
+  {
+    return;
+  }
+
   if ((event == smtk::resource::EventType::REMOVED) && (attResource->id() != resource.id()))
   {
     // The simplest solution is just to refresh the widget

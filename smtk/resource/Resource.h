@@ -126,6 +126,12 @@ public:
   virtual bool clean() const { return m_clean; }
   void setClean(bool state = true);
 
+  /// Mark the resource to indicate it is about to removed (meaning it is being removed from memory
+  /// not necessarily for deletion)
+  void setMarkedForRemoval(bool val) { m_markedForRemoval = val; }
+
+  /// Return whether the object is marked for removal
+  virtual bool isMarkedForRemoval() const { return m_markedForRemoval; }
   /// Resources that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
 
@@ -223,6 +229,7 @@ private:
   Links m_links;
   Properties m_properties;
   Queries m_queries;
+  bool m_markedForRemoval = false;
   mutable Lock m_lock;
 };
 

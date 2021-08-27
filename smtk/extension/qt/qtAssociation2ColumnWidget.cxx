@@ -355,6 +355,13 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
   }
 
   ResourcePtr attResource = attDef->resource();
+  // If this resource is marked for removal there is nothing to be done
+  if (attResource->isMarkedForRemoval())
+  {
+    m_internals->CurrentList->blockSignals(false);
+    m_internals->AvailableList->blockSignals(false);
+    return;
+  }
   auto resManager = m_view->uiManager()->resourceManager();
   // Lets get the objects that can possibly be associated with the attribute/definition
   if (theAttribute)

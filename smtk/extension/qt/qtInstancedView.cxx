@@ -291,7 +291,11 @@ int qtInstancedView::handleOperationEvent(
   smtk::operation::EventType event,
   smtk::operation::Operation::Result result)
 {
-  if (event != smtk::operation::EventType::DID_OPERATE)
+  // If the operation did not execute or if the view's
+  // attribute resource is marked for removal, just return
+  if (
+    (event != smtk::operation::EventType::DID_OPERATE) ||
+    this->attributeResource()->isMarkedForRemoval())
   {
     return 0;
   }
