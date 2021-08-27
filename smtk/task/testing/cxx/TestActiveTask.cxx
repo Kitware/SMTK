@@ -105,6 +105,7 @@ int TestActiveTask(int, char*[])
     //    resource manager.
     Task::Configuration c4{
       { "title", "Task 4" },
+      { "auto-configure", true },
       { "resources",
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }

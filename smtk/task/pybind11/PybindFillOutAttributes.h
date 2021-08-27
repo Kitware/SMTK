@@ -31,7 +31,9 @@ inline PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > pybin
     .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)()) &smtk::task::FillOutAttributes::create)
     .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)(::std::shared_ptr<smtk::task::FillOutAttributes> &)) &smtk::task::FillOutAttributes::create, py::arg("ref"))
     .def("typeName", &smtk::task::FillOutAttributes::typeName)
-    .def("visitAttributeSets", &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
+    .def("visitAttributeSets", (smtk::common::Visit (smtk::task::FillOutAttributes::*)(::smtk::task::FillOutAttributes::ConstAttributeSetVisitor) const) &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
+    .def("visitAttributeSets", (smtk::common::Visit (smtk::task::FillOutAttributes::*)(::smtk::task::FillOutAttributes::AttributeSetVisitor)) &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
+
     .def_readonly_static("type_name", &smtk::task::FillOutAttributes::type_name)
     ;
   py::class_< smtk::task::FillOutAttributes::AttributeSet >(instance, "AttributeSet")

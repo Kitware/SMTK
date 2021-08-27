@@ -35,14 +35,38 @@ namespace json
 class SMTKCORE_EXPORT Helper
 {
 public:
+  /// Swizzle IDs are serializable substitutes for pointers.
+  using SwizzleId = Configurator<Task>::SwizzleId;
   /// JSON data type
   using json = nlohmann::json;
 
   /// Destructor is public, but you shouldn't use it.
   ~Helper();
 
-  /// Return the helper singleton.
+  /// Return the helper "singleton".
+  ///
+  /// The object returned is a per-thread instance
+  /// at the top of a stack that may be altered using
+  /// the pushInstance() and popInstance() methods.
+  /// This allows nested deserializers to each have
+  /// their own context that appears to be globally
+  /// available.
   static Helper& instance();
+
+  /// Push a new helper instance on the local thread's stack.
+  ///
+  /// The returned \a Helper will have:
+  /// + The same managers as the previous (if any) helper.
+  /// + The \a parent task is assigned the ID 0.
+  static Helper& pushInstance(smtk::task::Task* parent);
+
+  /// Pop a helper instance off the local thread's stack.
+  static void popInstance();
+
+  /// Return the nesting level (i.e., the number of helper instances in the stack).
+  ///
+  /// The outermost helper will return 1 (assuming you have called instance() first).
+  static std::size_t nestingDepth();
 
   /// Return an object for registering task classes and serialization helpers.
   Configurator<Task>& tasks();
@@ -57,6 +81,13 @@ public:
   /// are allowed to use managers as needed.
   void setManagers(const smtk::common::Managers::Ptr& managers);
   smtk::common::Managers::Ptr managers();
+
+  /// Reset only negative task IDs.
+  ///
+  /// Negative task IDs are used to when deserializing a Group task's
+  /// children. Because only a single Group is deserialized at a time
+  /// (per thread), there are no namespace collisions.
+  void clearGroupTaskIds();
 
   /// Reset the helper's state.
   ///
@@ -75,17 +106,30 @@ public:
   /// Return a deserialization of de-swizzled task-references.
   Task::PassedDependencies unswizzleDependencies(const json& ids) const;
 
-  void setAdaptorTaskIds(std::size_t fromId, std::size_t toId);
+  /// Returns true if the helper is for deserializing top-level or child tasks.
+  bool topLevel() const { return m_topLevel; }
+
+  /// Set/clear a pair of task IDs used when deserializing a single adaptor.
+  ///
+  /// Storing these IDs as state in the helper allows `from_json()` to
+  /// be "stateless" (i.e., taking no additional parameters and using
+  /// the Helper as a side effect).
+  void setAdaptorTaskIds(SwizzleId fromId, SwizzleId toId);
   void clearAdaptorTaskIds();
-  std::pair<Task::Ptr, Task::Ptr> getAdaptorTasks();
+  /// Get task-pointers based on the IDs set earlier.
+  std::pair<Task*, Task*> getAdaptorTasks();
 
 protected:
   Helper();
   Configurator<Task> m_tasks;
   Configurator<Adaptor> m_adaptors;
   smtk::common::Managers::Ptr m_managers;
-  std::size_t m_adaptorFromId = ~0;
-  std::size_t m_adaptorToId = ~0;
+  SwizzleId m_adaptorFromId = ~static_cast<SwizzleId>(0);
+  SwizzleId m_adaptorToId = ~static_cast<SwizzleId>(0);
+  /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
+  /// was used to create this helper. If m_topLevel is false, the parent task
+  /// is assigned swizzle ID 1.
+  bool m_topLevel = true;
 };
 
 } // namespace json

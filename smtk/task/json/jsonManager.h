@@ -41,7 +41,16 @@ public:
   /// task manager. Depending on the task instances being deserialized,
   /// this method may access and modify other managers held by the
   /// \a managers instance.
+  ///
+  /// The second variant accepts a container holding weak pointers
+  /// to each top-level task deserialized (i.e., child tasks are
+  /// not included).
   static bool deserialize(
+    const std::shared_ptr<smtk::common::Managers>& managers,
+    const nlohmann::json& json);
+  static bool deserialize(
+    std::vector<std::weak_ptr<smtk::task::Task>>& tasks,
+    std::vector<std::weak_ptr<smtk::task::Adaptor>>& adaptors,
     const std::shared_ptr<smtk::common::Managers>& managers,
     const nlohmann::json& json);
 };

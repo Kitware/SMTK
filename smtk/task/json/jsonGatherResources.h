@@ -10,7 +10,7 @@
 #ifndef smtk_task_json_GatherResources_h
 #define smtk_task_json_GatherResources_h
 
-#include "smtk/task/Task.h"
+#include "smtk/task/GatherResources.h"
 
 #include <exception>
 #include <string>
@@ -19,6 +19,10 @@ namespace smtk
 {
 namespace task
 {
+
+void from_json(const nlohmann::json& j, GatherResources::ResourceSet& resourceSet);
+void to_json(nlohmann::json& j, const GatherResources::ResourceSet& resourceSet);
+
 namespace json
 {
 

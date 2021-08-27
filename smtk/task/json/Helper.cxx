@@ -13,11 +13,12 @@
 #include "smtk/io/Logger.h"
 
 #include <thread>
+#include <vector>
 
 namespace
 {
 std::mutex g_types;
-thread_local std::unique_ptr<smtk::task::json::Helper> g_instance;
+thread_local std::vector<std::unique_ptr<smtk::task::json::Helper>> g_instanceStack;
 } // anonymous namespace
 
 namespace smtk
@@ -37,11 +38,38 @@ Helper::~Helper() = default;
 
 Helper& Helper::instance()
 {
-  if (!g_instance)
+  if (g_instanceStack.empty())
   {
-    g_instance = std::unique_ptr<Helper>(new Helper);
+    g_instanceStack.emplace_back(new Helper);
   }
-  return *g_instance;
+  return *(g_instanceStack.back());
+}
+
+Helper& Helper::pushInstance(smtk::task::Task* parent)
+{
+  std::shared_ptr<smtk::common::Managers> managers;
+  if (!g_instanceStack.empty())
+  {
+    managers = g_instanceStack.back()->managers();
+  }
+  g_instanceStack.emplace_back(new Helper);
+  g_instanceStack.back()->setManagers(managers);
+  g_instanceStack.back()->tasks().swizzleId(parent);
+  g_instanceStack.back()->m_topLevel = false;
+  return *(g_instanceStack.back());
+}
+
+void Helper::popInstance()
+{
+  if (!g_instanceStack.empty())
+  {
+    g_instanceStack.pop_back();
+  }
+}
+
+std::size_t Helper::nestingDepth()
+{
+  return g_instanceStack.size();
 }
 
 Configurator<Task>& Helper::tasks()
@@ -77,7 +105,7 @@ Helper::json Helper::swizzleDependencies(const Task::PassedDependencies& deps)
   {
     if (dep)
     {
-      std::size_t id = m_tasks.swizzleId(const_cast<Task*>(dep.get()));
+      SwizzleId id = m_tasks.swizzleId(const_cast<Task*>(dep.get()));
       if (id)
       {
         ids.push_back(id);
@@ -92,7 +120,7 @@ Task::PassedDependencies Helper::unswizzleDependencies(const json& ids) const
   Task::PassedDependencies deps;
   for (const auto& id : ids)
   {
-    auto taskId = id.get<std::size_t>();
+    auto taskId = id.get<SwizzleId>();
     auto* ptr = m_tasks.unswizzle(id);
     if (!ptr)
     {
@@ -104,7 +132,7 @@ Task::PassedDependencies Helper::unswizzleDependencies(const json& ids) const
   return deps;
 }
 
-void Helper::setAdaptorTaskIds(std::size_t fromId, std::size_t toId)
+void Helper::setAdaptorTaskIds(SwizzleId fromId, SwizzleId toId)
 {
   m_adaptorFromId = fromId;
   m_adaptorToId = toId;
@@ -112,27 +140,16 @@ void Helper::setAdaptorTaskIds(std::size_t fromId, std::size_t toId)
 
 void Helper::clearAdaptorTaskIds()
 {
-  m_adaptorFromId = ~0;
-  m_adaptorToId = ~0;
+  m_adaptorFromId = ~static_cast<SwizzleId>(0);
+  m_adaptorToId = ~static_cast<SwizzleId>(0);
 }
 
-std::pair<Task::Ptr, Task::Ptr> Helper::getAdaptorTasks()
+std::pair<Task*, Task*> Helper::getAdaptorTasks()
 {
   Task::Ptr fromPtr;
   auto* from = m_tasks.unswizzle(m_adaptorFromId);
-  if (from)
-  {
-    fromPtr = from->shared_from_this();
-  }
-
-  Task::Ptr toPtr;
   auto* to = m_tasks.unswizzle(m_adaptorToId);
-  if (to)
-  {
-    toPtr = to->shared_from_this();
-  }
-
-  return std::make_pair(fromPtr, toPtr);
+  return std::make_pair(from, to);
 }
 
 } // namespace json

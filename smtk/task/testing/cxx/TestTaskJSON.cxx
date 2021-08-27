@@ -61,6 +61,7 @@ int TestTaskJSON(int, char*[])
 {
   using smtk::task::State;
   using smtk::task::Task;
+  using smtk::task::WorkflowEvent;
 
   // Create managers
   auto managers = smtk::common::Managers::create();
@@ -80,6 +81,18 @@ int TestTaskJSON(int, char*[])
   auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
   auto taskTaskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(taskManager);
 
+  smtk::task::Instances::WorkflowObserver wfObserver =
+    [&](const std::set<Task*>& workflows, WorkflowEvent event, Task* subject) {
+      std::cout << "-- Workflow event " << static_cast<int>(event) << " subject: " << subject
+                << " workflows:\n";
+      for (const auto& wftask : workflows)
+      {
+        std::cout << "--  head task " << wftask->title() << "\n";
+      }
+      std::cout << "--\n";
+    };
+  auto workflowObserver = taskManager->taskInstances().workflowObservers().insert(wfObserver);
+
   auto attrib = resourceManager->create<smtk::attribute::Resource>();
   auto model = resourceManager->create<smtk::model::Resource>();
   attrib->setName("simulation");
@@ -95,7 +108,9 @@ int TestTaskJSON(int, char*[])
       "id": 1,
       "type": "smtk::task::GatherResources",
       "title": "Load a model and attribute",
+      "style": [ "foo", "bar", "baz" ],
       "state": "completed",
+      "auto-configure": true,
       "resources": [
         {
           "role": "model geometry",
@@ -106,10 +121,6 @@ int TestTaskJSON(int, char*[])
           "role": "simulation attribute",
           "type": "smtk::attribute::Resource"
         }
-      ],
-      "output": [
-        { "role": "model geometry", "resources": [ "feedface-0000-0000-0000-000000000000" ] },
-        { "role": "simulation attribute", "resources": [ "deadbeef-0000-0000-0000-000000000000" ] }
       ]
     },
     {
@@ -144,17 +155,20 @@ int TestTaskJSON(int, char*[])
       "from": 1,
       "to": 2
     }
-  ]
+  ],
+  "styles": {
+    "foo": { },
+    "bar": { },
+    "baz": { }
+  }
 }
     )";
-  auto cursor = configString.find("deadbeef", 0);
-  configString = configString.replace(cursor, attribUUIDStr.length(), attribUUIDStr);
-  cursor = configString.find("feedface", 0);
-  configString = configString.replace(cursor, modelUUIDStr.length(), modelUUIDStr);
 
   auto config = nlohmann::json::parse(configString);
   std::cout << config.dump(2) << "\n";
+  taskManager->taskInstances().pauseWorkflowNotifications(true);
   bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
+  taskManager->taskInstances().pauseWorkflowNotifications(false);
   test(ok, "Failed to parse configuration.");
   test(taskManager->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
 
@@ -172,6 +186,10 @@ int TestTaskJSON(int, char*[])
       }
       return smtk::common::Visit::Continue;
     });
+
+  // Test that styles are properly deserialized.
+  test(fillOutAttributes->style().empty(), "Expected no style for fillOutAttributes.");
+  test(gatherResources->style().size() == 3, "Expected 3 style class-names for gatherResources.");
 
   // Add components and signal to test FillOutAttributes.
   // First, the FillOutAttributes task is irrelevant
@@ -227,6 +245,26 @@ int TestTaskJSON(int, char*[])
     ok = smtk::task::json::jsonManager::deserialize(managers2, config3);
     test(ok, "Failed to parse second configuration.");
     test(taskManager2->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
+
+    // Test that styles are properly round-tripped.
+    smtk::task::GatherResources::Ptr gatherResources2;
+    smtk::task::FillOutAttributes::Ptr fillOutAttributes2;
+    taskManager->taskInstances().visit(
+      [&gatherResources2, &fillOutAttributes2](const smtk::task::Task::Ptr& task) {
+        if (!gatherResources2)
+        {
+          gatherResources2 = std::dynamic_pointer_cast<smtk::task::GatherResources>(task);
+        }
+        if (!fillOutAttributes2)
+        {
+          fillOutAttributes2 = std::dynamic_pointer_cast<smtk::task::FillOutAttributes>(task);
+        }
+        return smtk::common::Visit::Continue;
+      });
+    test(fillOutAttributes2->style().empty(), "Expected no style for fillOutAttributes2.");
+    test(
+      gatherResources2->style().size() == 3, "Expected 3 style class-names for gatherResources2.");
+
     nlohmann::json config4;
     ok = smtk::task::json::jsonManager::serialize(managers2, config4);
     test(ok, "Failed to serialize second manager.");

@@ -44,11 +44,10 @@ simulation domain.
    graph/index.rst
    mesh/index.rst
    project/index.rst
+   task/index.rst
    simulation/index.rst
    view/index.rst
    extension/index.rst
-   task/index.rst
-   workflow/index.rst
    bindings/index.rst
    plugin/index.rst
    administration.rst

@@ -1,6 +1,7 @@
 set(unit_tests
   TestActiveTask.cxx
   TestTaskBasics.cxx
+  TestTaskGroup.cxx
   TestTaskJSON.cxx
 )
 

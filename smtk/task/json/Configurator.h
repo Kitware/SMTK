@@ -51,6 +51,11 @@ public:
   /// Keys are task class-names; values are functors that produce a JSON
   /// object given a task of that type.
   using HelperTypeMap = std::unordered_map<std::string, ConfigurationHelper>;
+  /// Swizzle IDs are serializable substitutes for pointers.
+  ///
+  /// This type must be signed since negative IDs are used for children of
+  /// a Group task.
+  using SwizzleId = int;
   /// JSON data type
   using json = nlohmann::json;
 
@@ -98,19 +103,35 @@ public:
   /// Return json configuration for the given object using registered helpers.
   typename ObjectType::Configuration configuration(const ObjectType* object);
 
-  /// Reset the helper's state.
+  /// Reset the configurator's state.
   ///
   /// This should be called before beginning serialization or deserialization.
   /// Additionally, calling it after each of these tasks is recommended since
   /// it will free memory.
   void clear();
 
+  /// Reset just the portion of the configurator's state related to negative SwizzleIds.
+  ///
+  /// Sometimes serializers need to process nested objects.
+  /// While a more general solution is possible (wherein each nested
+  /// call to the serializer creates a new helper and pops it once
+  /// complete, it is simpler to constrain nested swizzlers to never
+  /// overlap one another. Then, we can simply re-use the namespace
+  /// of negative swizzle IDs for each nested call.
+  /// This method clears any negative swizzle IDs and should be called
+  /// at the start of each nested deserialization.
+  void clearNestedSwizzles();
+
+  /// Return the ID of an object as computed by the swizzler.
+  /// This will allocate a new, negative ID if none exists.
+  SwizzleId nestedSwizzleId(const ObjectType* object);
+
   /// Return the ID of an object as computed by the swizzler.
   /// This will allocate a new ID if none exists.
-  std::size_t swizzleId(const ObjectType* object);
+  SwizzleId swizzleId(const ObjectType* object);
 
   /// Return the pointer to an object given its swizzled ID (or null).
-  ObjectType* unswizzle(std::size_t objectId) const;
+  ObjectType* unswizzle(SwizzleId objectId) const;
 
   /// Return a serialization of task-references that is consistent within
   /// the scope of serializing a set of tasks.
@@ -121,9 +142,10 @@ public:
 
 protected:
   Helper* m_helper;
-  std::unordered_map<ObjectType*, std::size_t> m_swizzleFwd;
-  std::unordered_map<std::size_t, ObjectType*> m_swizzleBck;
-  std::size_t m_nextSwizzle = 1;
+  std::unordered_map<ObjectType*, SwizzleId> m_swizzleFwd;
+  std::map<SwizzleId, ObjectType*> m_swizzleBck;
+  SwizzleId m_nextSwizzle = 1;
+  SwizzleId m_nextNested = -1;
   static HelperTypeMap s_types;
 };
 
