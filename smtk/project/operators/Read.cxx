@@ -105,32 +105,6 @@ Read::Result Read::operateInternal()
   smtk::project::from_json(j, project);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-
-  // For now, load all project resources
-  j = j["resources"];
-  for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
-  {
-    boost::filesystem::path path(it->at("location").get<std::string>());
-    if (path.is_relative())
-    {
-      path = projectPath / path;
-    }
-    smtk::resource::ResourcePtr resource =
-      project->resources().manager()->read(it->at("type").get<std::string>(), path.string());
-    if (!resource)
-    {
-      smtkErrorMacro(
-        log(),
-        "Cannot read resource type \"" << it->at("type").get<std::string>() << "\" at location \""
-                                       << it->at("location").get<std::string>() << "\".");
-
-      result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
-      continue;
-    }
-    resource->setClean(true);
-    project->resources().add(resource, detail::role(resource));
-  }
-
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
     created->setValue(project);
