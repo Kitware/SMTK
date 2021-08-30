@@ -42,6 +42,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <limits>
 #include <map>
 #include <set>
@@ -133,6 +134,20 @@ struct PPGFace
     std::cout << std::endl;
   }
 };
+
+// Returns the number of digits needed to represent a give number, e.g. for numbers < 10 only
+// one digit is required. For 100 <= number < 999, three digits are needed.
+unsigned int numDigitsFor(std::size_t number)
+{
+  int digits = 0;
+  while (number)
+  {
+    number /= 10;
+    digits++;
+  }
+  return digits;
+}
+
 } // namespace
 
 namespace smtk
@@ -258,6 +273,7 @@ bool ImportPPG::Internal::createVertices()
 
   std::stringstream ss;
   std::vector<double> coords(2);
+  unsigned digits = numDigitsFor(m_ppgVertexList.size());
   for (const auto& v : m_ppgVertexList)
   {
     coords[0] = v.x;
@@ -269,7 +285,7 @@ bool ImportPPG::Internal::createVertices()
     // Set the vertex name
     ss.str(std::string());
     ss.clear();
-    ss << "vertex " << v.userId;
+    ss << "vertex " << std::setfill('0') << std::setw(digits) << v.userId;
     newVertex.setName(ss.str());
 
     // Update member data
@@ -287,6 +303,14 @@ bool ImportPPG::Internal::createEdges()
 
   std::size_t edgeId = 0;
   std::stringstream ss;
+
+  // Get upper limit on number of edges
+  std::size_t numEdges = 0;
+  for (auto& ppgFace : m_ppgFaceList)
+  {
+    numEdges += ppgFace.vertexIds.size();
+  }
+  unsigned digits = numDigitsFor(numEdges);
 
   // Initialize and run CreateEdgeFromVertices operation.
   auto createOp = smtk::session::polygon::CreateEdgeFromVertices::create();
@@ -330,7 +354,7 @@ bool ImportPPG::Internal::createEdges()
       ++edgeId;
       ss.str(std::string());
       ss.clear();
-      ss << "edge " << edgeId;
+      ss << "edge " << std::setfill('0') << std::setw(digits) << edgeId;
       edgeRef.setName(ss.str());
 
       ppgFace.edges.push_back(edgeRef.entityRecord());
@@ -387,6 +411,7 @@ bool ImportPPG::Internal::createFaces()
 
     // Deal with inner edge loops
     auto createdItem = result->findComponent("created");
+    unsigned digits = numDigitsFor(m_ppgFaceList.size() - m_holeCount);
     for (std::size_t n = 0; n < createdItem->numberOfValues(); ++n)
     {
       smtk::resource::ComponentPtr pcomp = createdItem->value(n);
@@ -396,7 +421,7 @@ bool ImportPPG::Internal::createFaces()
         // First face is the outer loop
         ss.str(std::string());
         ss.clear();
-        ss << "face " << outerPPGFace.userId;
+        ss << "face " << std::setfill('0') << std::setw(digits) << outerPPGFace.userId;
         faceRef.setName(ss.str());
 
         continue;
@@ -419,7 +444,7 @@ bool ImportPPG::Internal::createFaces()
         // First face is the outer loop
         ss.str(std::string());
         ss.clear();
-        ss << "face " << innerPPGFace.userId;
+        ss << "face " << std::setfill('0') << std::setw(digits) << innerPPGFace.userId;
         faceRef.setName(ss.str());
       }
     } // for (n)
