@@ -283,7 +283,12 @@ std::set<smtk::shared_ptr<const ResourceType>> ResourceContainer::findByRole(
 template<typename ResourceType>
 std::set<smtk::shared_ptr<ResourceType>> ResourceContainer::find() const
 {
-  return this->find(typeid(ResourceType).hash_code());
+  std::set<smtk::shared_ptr<ResourceType>> cast_set;
+  for (const auto& resourceptr : this->find(typeid(ResourceType).hash_code()))
+  {
+    cast_set.insert(std::dynamic_pointer_cast<ResourceType>(resourceptr));
+  }
+  return cast_set;
 }
 
 template<typename ResourceType>

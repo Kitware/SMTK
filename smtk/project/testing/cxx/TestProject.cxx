@@ -116,6 +116,10 @@ int TestProject(int /*unused*/, char** const /*unused*/)
     resource = project->resources().get(myResource->id());
     smtkTest(!!resource, "could not access resource from project interface");
 
+    // Verify the find by type method
+    auto resourceSet = project->resources().find<MyResource>();
+    smtkTest(resourceSet.size() == 1, "could not get resources by type");
+
     // Remove the instance of smtk::project::Project
     projectManager->remove(project);
 
