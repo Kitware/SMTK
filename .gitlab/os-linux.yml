@@ -72,7 +72,7 @@
 
 .fedora33_paraview:
     extends: .fedora33_vtk_python3
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20210714"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20210829"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
