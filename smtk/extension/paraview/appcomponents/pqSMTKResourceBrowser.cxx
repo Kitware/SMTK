@@ -133,7 +133,7 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
 
 void pqSMTKResourceBrowser::initSubphraseGenerator()
 {
-  std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(this->getObject());
+  std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(this->configuration());
   auto* smtkSettings = vtkSMTKSettings::GetInstance();
 
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
