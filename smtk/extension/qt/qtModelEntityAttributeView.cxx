@@ -66,7 +66,12 @@ QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
 {
   auto* cbox = new QComboBox(parent);
   cbox->addItems(m_values);
-  connect(cbox, SIGNAL(currentIndexChanged(int)), this, SIGNAL(choiceMade()));
+  // We want the combo box to immediately display when chosen and
+  // to immediately closed when a value has been selected
+  connect(cbox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), [=]() {
+    // This event will be captured by the delegate eventFilter()
+    QApplication::sendEvent(cbox, new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
+  });
   return cbox;
 }
 
@@ -78,7 +83,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
   if (cb != nullptr)
   {
     // Lets find the proper index of the current value w/r the combobox
-    auto currentText = index.data(Qt::EditRole).toString();
+    auto currentText = index.data(Qt::DisplayRole).toString();
     int pos = cb->findText(currentText);
     if (pos >= 0)
     {
@@ -101,18 +106,33 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
   {
     if (cb->currentIndex() > -1)
     {
-      model->setData(index, cb->currentText(), Qt::EditRole);
+      model->setData(index, cb->currentText(), Qt::DisplayRole);
       model->setData(index, qtUIManager::contrastWithText(Qt::white), Qt::BackgroundRole);
     }
-    //QApplication::postEvent(model, new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
-    emit const_cast<qModelEntityAttributeViewComboBoxItemDelegate*>(this)->choiceMade();
-    emit const_cast<qModelEntityAttributeViewComboBoxItemDelegate*>(this)->destroyEditor(
-      editor, index);
   }
   else
   {
     QStyledItemDelegate::setModelData(editor, model, index);
   }
+}
+
+bool qModelEntityAttributeViewComboBoxItemDelegate::eventFilter(QObject* object, QEvent* event)
+{
+  // Show combo box popup when the box gains focus
+  if (event->type() == QEvent::FocusIn)
+  {
+    auto* combo_box = qobject_cast<QComboBox*>(object);
+    auto* focus_event = dynamic_cast<QFocusEvent*>(event);
+    if (
+      combo_box && focus_event &&
+      // Do not consider focus gained when the popup closes
+      focus_event->reason() != Qt::PopupFocusReason)
+    {
+      combo_box->showPopup();
+    }
+  }
+
+  return QStyledItemDelegate::eventFilter(object, event);
 }
 
 class qtModelEntityAttributeViewInternals
@@ -463,7 +483,6 @@ void qtModelEntityAttributeView::updateModelEntities()
 
   auto* col2Delegate =
     new qModelEntityAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
-  connect(col2Delegate, SIGNAL(choiceMade()), this, SLOT(selectionMade()));
   this->Internals->ListTable->blockSignals(true);
   this->Internals->ListTable->setRowCount(0);
   this->Internals->ListTable->setItemDelegateForColumn(1, col2Delegate);
@@ -550,16 +569,19 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   }
 
   // Get the current attribute associated with the model entity (if any)
-  auto att = this->Internals->getAttribute(entity);
-  if (att && att->definition()->displayedTypeName() == tname)
+  smtk::attribute::AttributePtr exisitingAtt = this->Internals->getAttribute(entity);
+  smtk::attribute::AttributePtr newAtt;
+  if (exisitingAtt && exisitingAtt->definition()->displayedTypeName() == tname)
   {
     // The attribute itself didn't change, so we can stop here
     return;
   }
-  else if (att)
+  else if (exisitingAtt)
   {
-    attRes->removeAttribute(att);
-    this->attributeRemoved(att);
+    // Note though we are removing the attribute from the resource here, we can't call
+    // attributeRemoved until after we have created it's replacement since it will
+    // cause the view to update.
+    attRes->removeAttribute(exisitingAtt);
   }
 
   // Now create a new attribute for the model entity of the correct type
@@ -568,12 +590,16 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   {
     if (currentDefs.at(j)->displayedTypeName() == tname)
     {
-      att = attRes->createAttribute(currentDefs.at(j));
-      att->associate(entity);
+      newAtt = attRes->createAttribute(currentDefs.at(j));
+      newAtt->associate(entity);
       // Notify the application of the new attribute via an "operation"
-      this->attributeCreated(att);
+      this->attributeCreated(newAtt);
       break;
     }
+  }
+  if (exisitingAtt)
+  {
+    this->attributeRemoved(exisitingAtt);
   }
   this->Internals->ListTable->selectRow(row);
   this->selectedRowChanged();
@@ -788,16 +814,6 @@ void qtModelEntityAttributeView::showAdvanceLevelOverlay(bool show)
   if (this->Internals->CurrentAtt)
   {
     this->Internals->CurrentAtt->showAdvanceLevelOverlay(show);
-  }
-}
-
-void qtModelEntityAttributeView::selectionMade()
-{
-  if (this->Internals->ListTable)
-  {
-    QApplication::postEvent(
-      this->Internals->ListTable,
-      new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
   }
 }
 

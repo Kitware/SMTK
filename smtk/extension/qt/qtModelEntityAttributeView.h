@@ -100,9 +100,6 @@ protected:
   /**\brief Return a presistent object that cooresponds to a table widget item.*/
   smtk::resource::PersistentObjectPtr object(QTableWidgetItem* item);
 
-protected slots:
-  void selectionMade();
-
 private:
   qtModelEntityAttributeViewInternals* Internals;
 
@@ -123,10 +120,8 @@ public:
   void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
     const override;
 
-signals:
-  void choiceMade();
-
 protected:
+  bool eventFilter(QObject* object, QEvent* event) override;
   QStringList m_values;
 };
 
