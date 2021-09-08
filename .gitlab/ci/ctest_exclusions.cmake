@@ -1,6 +1,4 @@
-set(test_exclusions
-  pv.MeshSelection
-)
+set(test_exclusions)
 
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "windows")
   list(APPEND test_exclusions
@@ -15,9 +13,6 @@ if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
   list(APPEND test_exclusions
     # VTK lighting seems to be wrong.
     "^RenderMesh$"
-
-    # Fails in CI; works locally. Needs investigation.
-    "^pv\\.OpenExodusFile$"
     )
 endif ()
 
