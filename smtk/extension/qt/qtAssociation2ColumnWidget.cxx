@@ -20,6 +20,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
@@ -660,16 +661,104 @@ int qtAssociation2ColumnWidget::handleOperationEvent(
     return 0;
   }
 
-  std::size_t count = smtk::operation::extractResources(result).size();
-  // If nothing has changed then just return
-  if (count == 0)
+  auto theAttribute = m_internals->currentAtt.lock();
+  attribute::DefinitionPtr attDef;
+
+  if (theAttribute)
+  {
+    attDef = theAttribute->definition();
+  }
+  else
+  {
+    attDef = m_internals->currentDef.lock();
+  }
+
+  // If we have no current attribute definition then there is nothing we
+  // need to update
+  if (attDef == nullptr)
+  {
+    return 0;
+  }
+  // Lets get the definition's association rule
+  auto associationRuleDef = attDef->associationRule();
+  if (associationRuleDef == nullptr)
   {
     return 0;
   }
 
-  // The simplest solution is just to refresh the widget
-  this->refreshAssociations();
-  emit this->availableChanged();
+  bool needToRefresh = false;
+
+  smtk::attribute::ComponentItemPtr compItem;
+  std::size_t i, n;
+  // Lets first go through the modified list.  If the component modified is either
+  // the current attribute or a component that can be associated with the current attribute
+  // then we need to refresh
+
+  compItem = result->findComponent("modified");
+  n = compItem->numberOfValues();
+  for (i = 0; i < n; i++)
+  {
+    if (!compItem->isSet(i))
+    {
+      continue;
+    }
+
+    if (
+      (dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i)) == theAttribute) ||
+      (associationRuleDef->isValueValid(compItem->value(i))))
+    {
+      needToRefresh = true;
+      break;
+    }
+  }
+
+  // Lets see if we need to refresh due to expunged components
+  if (!needToRefresh)
+  {
+    // In the case of expunged components, we only need to see if any can be associated
+    compItem = result->findComponent("expunged");
+    n = compItem->numberOfValues();
+    for (i = 0; i < n; i++)
+    {
+      if (!compItem->isSet(i))
+      {
+        continue;
+      }
+
+      if (associationRuleDef->isValueValid(compItem->value(i)))
+      {
+        needToRefresh = true;
+        break;
+      }
+    }
+  }
+
+  // Lets see if we need to refresh due to created components
+  if (!needToRefresh)
+  {
+    // In the case of created components, we only need to see if any can be associated
+    compItem = result->findComponent("created");
+    n = compItem->numberOfValues();
+    for (i = 0; i < n; i++)
+    {
+      if (!compItem->isSet(i))
+      {
+        continue;
+      }
+
+      if (associationRuleDef->isValueValid(compItem->value(i)))
+      {
+        needToRefresh = true;
+        break;
+      }
+    }
+  }
+
+  if (needToRefresh)
+  {
+    this->refreshAssociations();
+    emit this->availableChanged();
+  }
   return 0;
 }
 
