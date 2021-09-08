@@ -173,8 +173,9 @@ private:
   qtAttributeViewInternals* m_internals;
   bool m_hideAssociations;
   bool m_allAssociatedMode; //!< Indicates that all potential objects that can be associated must be
-  bool m_disableNameField;  //!< Indicates that attribute names can not be modified
-  bool m_searchBoxVisibility;  //!< Indicates if the search box should be displayed
+  bool m_associationWidgetIsUsed; // <! Indicates if the association widget is currently being used
+  bool m_disableNameField;        //!< Indicates that attribute names can not be modified
+  bool m_searchBoxVisibility;     //!< Indicates if the search box should be displayed
   std::string m_searchBoxText; //!< Text to be displayed in the search box when no text is entered
   std::string m_attributeNameRegex; //!< Regex pattern for attribute names
 };
