@@ -77,8 +77,35 @@ public:
 
 bool qtBaseAttributeView::validateInformation(const smtk::view::Information& info)
 {
-  return qtBaseView::validateInformation(info) &&
-    info.contains<std::weak_ptr<smtk::attribute::Resource>>();
+  if (!qtBaseView::validateInformation(info))
+  {
+    return false;
+  }
+  if (info.contains<smtk::attribute::Resource::WeakPtr>())
+  {
+    return true;
+  }
+  if (info.contains<std::set<smtk::attribute::Resource::WeakPtr>>())
+  {
+    std::size_t num = info.get<std::set<smtk::attribute::Resource::WeakPtr>>().size();
+    if (num == 0)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "View Information's set of attribute Resources is empty.");
+      return false;
+    }
+    if (num > 1)
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "View Information's set of attribute Resources contains "
+          << num << ", only the first will be used.");
+    }
+    return true;
+  }
+  smtkErrorMacro(
+    smtk::io::Logger::instance(), "View Information's does not contain an attribute resource.");
+  return false;
 }
 
 qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
@@ -105,7 +132,11 @@ qtBaseAttributeView::~qtBaseAttributeView()
 
 smtk::attribute::ResourcePtr qtBaseAttributeView::attributeResource() const
 {
-  return m_viewInfo.get<std::weak_ptr<smtk::attribute::Resource>>().lock();
+  if (m_viewInfo.contains<smtk::attribute::Resource::WeakPtr>())
+  {
+    return m_viewInfo.get<smtk::attribute::Resource::WeakPtr>().lock();
+  }
+  return m_viewInfo.get<std::set<smtk::attribute::Resource::WeakPtr>>().begin()->lock();
 }
 
 void qtBaseAttributeView::getDefinitions(
