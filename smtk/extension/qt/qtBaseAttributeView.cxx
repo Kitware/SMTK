@@ -89,7 +89,7 @@ qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   m_ScrollArea = nullptr;
   m_fixedLabelWidth = this->uiManager()->maxValueLabelLength();
   m_topLevelInitialized = false;
-  m_ignoreCategories = this->getObject()->details().attributeAsBool("IgnoreCategories");
+  m_ignoreCategories = this->configuration()->details().attributeAsBool("IgnoreCategories");
   // We need to be able to determine within the a Signal Operation, which View caused
   // the change in order to avoid infinite loops.  To do this, each View will have an addressString
   // set to its address.  This string is then passed to the signalAttribute function when needed.

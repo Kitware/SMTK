@@ -41,7 +41,7 @@ qtBaseView::qtBaseView(const smtk::view::Information& info)
   m_advOverlayVisible = false;
   m_isTopLevel = false;
   m_useSelectionManager = false;
-  const auto& view = this->getObject();
+  const auto& view = this->configuration();
   if (view)
   {
     m_isTopLevel = view->details().attributeAsBool("TopLevel");

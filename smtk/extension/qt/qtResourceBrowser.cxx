@@ -73,7 +73,7 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
   smtk::view::PhraseModelPtr phraseModel;
   std::string modelViewType;
   QAbstractItemModel* qtPhraseModel = nullptr;
-  const auto& view = this->getObject();
+  const auto& view = this->configuration();
   if (view)
   {
     // empty Widget attribute is OK, will use default.
