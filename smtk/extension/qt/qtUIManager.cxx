@@ -10,11 +10,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/extension/qt/qtAnalysisView.h"
-#include "smtk/extension/qt/qtAssociationView.h"
-#include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtBaseView.h"
-#include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtDateTimeItem.h"
 #include "smtk/extension/qt/qtDirectoryItem.h"
@@ -23,16 +19,11 @@
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtInfixExpressionEditor.h"
-#include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtIntItem.h"
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/extension/qt/qtModelEntityAttributeView.h"
-#include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtResourceItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
-#include "smtk/extension/qt/qtSelectorView.h"
-#include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtStringItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 

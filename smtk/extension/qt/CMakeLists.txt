@@ -23,7 +23,7 @@ set(QAttrLibSrcs
   qtAssociation2ColumnWidget.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
-  qtModelEntityAttributeView.cxx
+  qtComponentAttributeView.cxx
   qtOperationDialog.cxx
   qtOperationLauncher.cxx
   qtOperationView.cxx
@@ -97,7 +97,7 @@ set(QAttrLibMocHeaders
   qtAssociationView.h
   qtAttributeView.h
   qtInstancedView.h
-  qtModelEntityAttributeView.h
+  qtComponentAttributeView.h
   qtNotEditableDelegate.h
   qtOperationDialog.h
   qtOperationLauncher.h
