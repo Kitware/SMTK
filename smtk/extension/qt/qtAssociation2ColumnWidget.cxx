@@ -391,7 +391,7 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
       }
     }
   }
-  else // We are dealing with potential associations based on a definition onlu
+  else // We are dealing with potential associations based on a definition only
   {
     auto associationItemDef = attDef->associationRule();
     smtk::attribute::DefinitionPtr preDef;

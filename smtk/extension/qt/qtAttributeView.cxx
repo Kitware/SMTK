@@ -215,6 +215,7 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
   smtk::view::ConfigurationPtr view = this->configuration();
   m_hideAssociations = false;
   m_allAssociatedMode = false;
+  m_associationWidgetIsUsed = false;
   m_disableNameField = false;
   m_searchBoxVisibility = true;
   m_searchBoxText = "Search attributes...";
@@ -634,29 +635,25 @@ smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
-  if (this->hideAssociations())
-  {
-    m_internals->AssociationsWidget->setVisible(false);
-    return;
-  }
-  if (theAtt)
-  {
-    bool showAssocs = (theAtt->definition()->associationRule() != nullptr);
-    if (showAssocs)
-    {
-      m_internals->AssociationsWidget->showEntityAssociation(theAtt);
-    }
-    m_internals->AssociationsWidget->setVisible(showAssocs);
-    return;
-  }
+  m_associationWidgetIsUsed = false;
 
-  if (this->requireAllAssociated() && !m_internals->AllDefs.empty())
+  if (!this->hideAssociations())
   {
-    m_internals->AssociationsWidget->showEntityAssociation(m_internals->AllDefs.at(0));
-    m_internals->AssociationsWidget->setVisible(true);
-    return;
+    if (theAtt)
+    {
+      m_associationWidgetIsUsed = (theAtt->definition()->associationRule() != nullptr);
+      if (m_associationWidgetIsUsed)
+      {
+        m_internals->AssociationsWidget->showEntityAssociation(theAtt);
+      }
+    }
+    else if (this->requireAllAssociated() && !m_internals->AllDefs.empty())
+    {
+      m_associationWidgetIsUsed = true;
+      m_internals->AssociationsWidget->showEntityAssociation(m_internals->AllDefs.at(0));
+    }
   }
-  m_internals->AssociationsWidget->setVisible(false);
+  m_internals->AssociationsWidget->setVisible(m_associationWidgetIsUsed);
 }
 
 void qtAttributeView::onListBoxSelectionChanged()
@@ -1628,7 +1625,7 @@ bool qtAttributeView::isValid() const
       return false;
     }
   }
-  if ((m_internals->AssociationsWidget != nullptr) && m_internals->AssociationsWidget->isVisible())
+  if ((m_internals->AssociationsWidget != nullptr) && m_associationWidgetIsUsed)
   {
     return m_internals->AssociationsWidget->isValid();
   }
