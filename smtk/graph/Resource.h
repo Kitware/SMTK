@@ -166,7 +166,7 @@ public:
     return smtk::resource::filter::Filter<smtk::graph::filter::Grammar>(filterString);
   }
 
-  Resource(const Resource&) = delete;
+  Resource(const Resource&) noexcept = delete;
 
   std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID& uuid) const override
   {
