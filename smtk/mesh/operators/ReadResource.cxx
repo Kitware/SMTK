@@ -134,8 +134,11 @@ void ReadResource::markModifiedResources(ReadResource::Result& res)
   }
 }
 
-smtk::resource::ResourcePtr read(const std::string& filename)
+smtk::resource::ResourcePtr read(
+  const std::string& filename,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
+  (void)managers;
   ReadResource::Ptr read = ReadResource::create();
   read->parameters()->findFile("filename")->setValue(filename);
   ReadResource::Result result = read->operate();

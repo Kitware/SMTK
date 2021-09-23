@@ -28,6 +28,7 @@
 #include "smtk/operation/Manager.h"
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/json/Helper.h"
 
 #include "smtk/common/VersionNumber.h"
 #include "smtk/common/json/jsonVersionNumber.h"
@@ -57,6 +58,11 @@ Read::Result Read::operateInternal()
     smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+
+  // Configure the JSON helper with managers passed to us.
+  auto helper = smtk::resource::json::Helper::instance();
+  helper.clear();
+  helper.setManagers(this->managers());
 
   // Read the file into nlohmann json.
   nlohmann::json j;
@@ -152,6 +158,8 @@ Read::Result Read::operateInternal()
     created->setValue(resource);
   }
 
+  helper.clear();
+
   // Return with success.
   return result;
 }
@@ -183,9 +191,12 @@ void Read::markModifiedResources(Read::Result& res)
   }
 }
 
-smtk::resource::ResourcePtr read(const std::string& filename)
+smtk::resource::ResourcePtr read(
+  const std::string& filename,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   Read::Ptr read = Read::create();
+  read->setManagers(managers);
   read->parameters()->findFile("filename")->setValue(filename);
   Read::Result result = read->operate();
   if (result->findInt("outcome")->value() != static_cast<int>(Read::Outcome::SUCCEEDED))

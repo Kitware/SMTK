@@ -22,7 +22,7 @@ inline py::class_< smtk::project::Metadata > pybind11_init_smtk_project_Metadata
   py::class_< smtk::project::Metadata > instance(m, "Metadata");
   instance
     .def(py::init<::smtk::project::Metadata const &>())
-    .def(py::init<::std::string const &, ::smtk::project::Project::Index, ::std::function<std::shared_ptr<smtk::project::Project> (const smtk::common::UUID &)>, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::std::string const &>())
+    .def(py::init<::std::string const &, ::smtk::project::Project::Index, ::std::function<std::shared_ptr<smtk::project::Project> (const smtk::common::UUID &, const std::shared_ptr<smtk::common::Managers>&)>, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::std::string const &>())
     .def("index", &smtk::project::Metadata::index)
     .def("operations", &smtk::project::Metadata::operations)
     .def("resources", &smtk::project::Metadata::resources)

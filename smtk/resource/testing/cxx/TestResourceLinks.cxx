@@ -303,6 +303,7 @@ int TestResourceLinks(int /*unused*/, char** const /*unused*/)
 
     // Add a link from component A to component B.
     smtk::resource::Links::Key key = componentA->links().addLinkTo(componentB, role1);
+    (void)key;
 
     smtkTest(
       resourceA->links().removeAllLinksTo(resourceB),

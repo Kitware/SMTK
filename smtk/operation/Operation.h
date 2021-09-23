@@ -147,6 +147,10 @@ public:
   /// restore operation parameters from the trace of a previously run operation.
   bool restoreTrace(const std::string& trace);
 
+  /// Operations may be passed application state in the form of a Managers type-container.
+  void setManagers(const std::shared_ptr<smtk::common::Managers>& m) { m_managers = m; }
+  std::shared_ptr<smtk::common::Managers> managers() const { return m_managers; }
+
 protected:
   Operation();
 
@@ -173,6 +177,7 @@ protected:
 
   int m_debugLevel{ 0 };
   std::weak_ptr<Manager> m_manager;
+  std::shared_ptr<smtk::common::Managers> m_managers;
 
   // Operations need the ability to execute Operations without going through
   // all of the checks and locks associated with the public operate() method.

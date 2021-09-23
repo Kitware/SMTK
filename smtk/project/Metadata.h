@@ -37,22 +37,36 @@ public:
   Metadata(
     const std::string& typeName,
     Project::Index index,
-    std::function<ProjectPtr(const smtk::common::UUID&)> createFunctor,
+    std::function<
+      ProjectPtr(const smtk::common::UUID&, const std::shared_ptr<smtk::common::Managers>&)>
+      createFunctor,
     const std::set<std::string>& resources = std::set<std::string>(),
     const std::set<std::string>& operations = std::set<std::string>(),
     const std::string& version = "0.0.0")
-    : create(createFunctor)
-    , m_typeName(typeName)
+    : m_typeName(typeName)
     , m_index(index)
     , m_resources(resources)
     , m_operations(operations)
     , m_version(version)
   {
+    if (createFunctor)
+    {
+      this->create = createFunctor;
+    }
   }
 
   const std::string& typeName() const { return m_typeName; }
   const Project::Index& index() const { return m_index; }
-  const std::function<ProjectPtr(const smtk::common::UUID&)> create;
+
+  std::function<
+    ProjectPtr(const smtk::common::UUID&, const std::shared_ptr<smtk::common::Managers>&)>
+    create =
+      [this](const smtk::common::UUID& uid, const shared_ptr<smtk::common::Managers>& managers) {
+        (void)uid;
+        (void)managers;
+        return ProjectPtr();
+      };
+
   const std::set<std::string>& resources() const { return m_resources; }
   const std::set<std::string>& operations() const { return m_operations; }
   const std::string& version() const { return m_version; }

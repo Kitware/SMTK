@@ -39,7 +39,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKMESHSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
+SMTKMESHSESSION_EXPORT bool write(
+  const smtk::resource::ResourcePtr&,
+  const std::shared_ptr<smtk::common::Managers>&);
 } // namespace mesh
 } // namespace session
 } // namespace smtk

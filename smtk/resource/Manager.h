@@ -59,9 +59,14 @@ public:
   /// operations.
   template<typename ResourceType>
   bool registerResource(
-    const std::function<ResourcePtr(const std::string&)>& read = nullptr,
-    const std::function<bool(const ResourcePtr&)>& write = nullptr,
-    const std::function<ResourcePtr(const smtk::common::UUID&)>& create = nullptr);
+    const std::function<
+      ResourcePtr(const std::string&, const std::shared_ptr<smtk::common::Managers>&)>& read =
+      nullptr,
+    const std::function<bool(const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)>&
+      write = nullptr,
+    const std::function<
+      ResourcePtr(const smtk::common::UUID&, const std::shared_ptr<smtk::common::Managers>&)>&
+      create = nullptr);
 
   /// Register a resource identified by its metadata.
   bool registerResource(Metadata&&);
@@ -91,24 +96,34 @@ public:
   void clear();
 
   /// Construct a resource identified by its type name.
-  ResourcePtr create(const std::string&);
+  ResourcePtr create(const std::string&, const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a resource identified by its type index.
-  ResourcePtr create(const Resource::Index&);
+  ResourcePtr create(
+    const Resource::Index&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a resource identified by its class type.
   template<typename ResourceType>
-  smtk::shared_ptr<ResourceType> create();
+  smtk::shared_ptr<ResourceType> create(const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a resource with a given UUID identified by its type name.
-  ResourcePtr create(const std::string&, const smtk::common::UUID&);
+  ResourcePtr create(
+    const std::string&,
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a resource with a given UUID identified by its type index.
-  ResourcePtr create(const Resource::Index&, const smtk::common::UUID&);
+  ResourcePtr create(
+    const Resource::Index&,
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a resource with a given UUID identified by its class type.
   template<typename ResourceType>
-  smtk::shared_ptr<ResourceType> create(const smtk::common::UUID&);
+  smtk::shared_ptr<ResourceType> create(
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Returns the resource that relates to the given uuid.  If no association exists
   /// this will return a null pointer
@@ -149,22 +164,33 @@ public:
   std::set<smtk::shared_ptr<ResourceType>> find();
 
   /// Read resource identified by its type index from file.
-  ResourcePtr read(const std::string&, const std::string&);
+  ResourcePtr read(
+    const std::string&,
+    const std::string&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Read resource identified by its type index from file.
-  ResourcePtr read(const Resource::Index&, const std::string&);
+  ResourcePtr read(
+    const Resource::Index&,
+    const std::string&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Read resource from file.
   template<typename ResourceType>
-  smtk::shared_ptr<ResourceType> read(const std::string&);
+  smtk::shared_ptr<ResourceType> read(
+    const std::string&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Write resource to file. The resource's write location is held by the
   /// resource itself.
-  bool write(const ResourcePtr&);
+  bool write(const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Write resource to file. The resource's write location is passed as an
   /// input parameter.
-  bool write(const ResourcePtr&, const std::string&);
+  bool write(
+    const ResourcePtr&,
+    const std::string&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Add a resource identified by its type index. Returns true if the resource
   /// was added or already is part of this manager. If the resource is currently
@@ -291,17 +317,20 @@ bool Manager::registered() const
 }
 
 template<typename ResourceType>
-smtk::shared_ptr<ResourceType> Manager::create()
+smtk::shared_ptr<ResourceType> Manager::create(
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->create(std::type_index(typeid(ResourceType)).hash_code()));
+    this->create(std::type_index(typeid(ResourceType)).hash_code(), managers));
 }
 
 template<typename ResourceType>
-smtk::shared_ptr<ResourceType> Manager::create(const smtk::common::UUID& id)
+smtk::shared_ptr<ResourceType> Manager::create(
+  const smtk::common::UUID& id,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->create(std::type_index(typeid(ResourceType)).hash_code(), id));
+    this->create(std::type_index(typeid(ResourceType)).hash_code(), id, managers));
 }
 
 template<typename ResourceType>
@@ -361,10 +390,12 @@ std::set<smtk::shared_ptr<ResourceType>> Manager::find()
 }
 
 template<typename ResourceType>
-smtk::shared_ptr<ResourceType> Manager::read(const std::string& url)
+smtk::shared_ptr<ResourceType> Manager::read(
+  const std::string& url,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->read(std::type_index(typeid(ResourceType)).hash_code(), url));
+    this->read(std::type_index(typeid(ResourceType)).hash_code(), url, managers));
 }
 
 template<typename ResourceType>
@@ -454,9 +485,12 @@ struct resource_index_set_generator<ResourceType, true>
 
 template<typename ResourceType>
 bool Manager::registerResource(
-  const std::function<ResourcePtr(const std::string&)>& read,
-  const std::function<bool(const ResourcePtr&)>& write,
-  const std::function<ResourcePtr(const smtk::common::UUID&)>& create)
+  const std::function<
+    ResourcePtr(const std::string&, const std::shared_ptr<smtk::common::Managers>&)>& read,
+  const std::function<bool(const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)>&
+    write,
+  const std::function<
+    ResourcePtr(const smtk::common::UUID&, const std::shared_ptr<smtk::common::Managers>&)>& create)
 {
   // For standard Resources, the metadata is comprised of the following:
   // Type Name: either the "type_name" field or (if the former does not exist)
@@ -473,13 +507,13 @@ bool Manager::registerResource(
     smtk::common::typeName<ResourceType>(), std::type_index(typeid(ResourceType)).hash_code(),
     (detail::resource_index_set_generator<ResourceType,
       detail::is_derived_resource<ResourceType>::value>::indices()),
-    (create ? create : [](const smtk::common::UUID& id) {
+    (create ? create : [](const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>&) {
       Resource::Ptr resource = ResourceType::create();
       resource->setId(id);
       return resource;
     }),
-    (read ? read : [](const std::string&){ return ResourcePtr(); }),
-    (write ? write : [](const ResourcePtr&){ return false; })));
+    (read ? read : [](const std::string&, const std::shared_ptr<smtk::common::Managers>&){ return ResourcePtr(); }),
+    (write ? write : [](const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&){ return false; })));
 }
 } // namespace resource
 } // namespace smtk

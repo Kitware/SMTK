@@ -118,9 +118,12 @@ const char* Read::xmlDescription() const
   return Read_xml;
 }
 
-smtk::resource::ResourcePtr read(const std::string& filename)
+smtk::resource::ResourcePtr read(
+  const std::string& filename,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   Read::Ptr read = Read::create();
+  read->setManagers(managers);
   read->parameters()->findFile("filename")->setValue(filename);
   Read::Result result = read->operate();
   if (result->findInt("outcome")->value() != static_cast<int>(Read::Outcome::SUCCEEDED))

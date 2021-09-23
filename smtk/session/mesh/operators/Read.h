@@ -45,7 +45,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKMESHSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+SMTKMESHSESSION_EXPORT smtk::resource::ResourcePtr read(
+  const std::string&,
+  const std::shared_ptr<smtk::common::Managers>&);
 } // namespace mesh
 } // namespace session
 } // namespace smtk

@@ -40,7 +40,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKOSCILLATORSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
+SMTKOSCILLATORSESSION_EXPORT bool write(
+  const smtk::resource::ResourcePtr&,
+  const std::shared_ptr<smtk::common::Managers>&);
 
 } // namespace oscillator
 } // namespace session

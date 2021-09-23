@@ -25,6 +25,8 @@ namespace smtk
 {
 namespace common
 {
+class Managers;
+typedef std::shared_ptr<Managers> ManagersPtr;
 class UUID;
 class UUIDGenerator;
 /// @see smtk::common::UUID
