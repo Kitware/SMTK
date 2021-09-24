@@ -329,7 +329,7 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
 {
   // All components are required to have resources in order to be valid.
   auto rsrc = comp->resource();
-  if (!rsrc)
+  if (m_onlyResources || !rsrc)
   {
     return false;
   }
@@ -340,11 +340,9 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
-    if (
-      m_onlyResources ||
-      (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(*comp)))
+    if (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(*comp))
     {
-      return this->checkCategories(comp);
+      return false;
     }
   }
 

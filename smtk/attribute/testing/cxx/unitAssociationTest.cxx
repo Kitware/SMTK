@@ -25,10 +25,15 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
   // I. Let's create an attribute resource and some definitions
   attribute::ResourcePtr attRes = attribute::Resource::create();
   DefinitionPtr TestDef = attRes->createDefinition("testDef");
+  DefinitionPtr TestDef1 = attRes->createDefinition("testDef1", TestDef);
+  // In the case of Type A - let's allow testDef attributes to be associated with
+  // this type of attribute but not those derived from testDef1
   DefinitionPtr A = attRes->createDefinition("A");
   auto associationRule = A->createLocalAssociationRule();
   associationRule->setAcceptsEntries(
     "smtk::attribute::Resource", "attribute[type='testDef']", true);
+  associationRule->setRejectsEntries(
+    "smtk::attribute::Resource", "attribute[type='testDef1']", true);
   associationRule->setNumberOfRequiredValues(0);
   associationRule->setIsExtensible(true);
   DefinitionPtr B = attRes->createDefinition("B");
@@ -42,8 +47,9 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
   auto a = attRes->createAttribute("a", A);
   auto b = attRes->createAttribute("b", B);
   auto t = attRes->createAttribute("test", TestDef);
+  auto t1 = attRes->createAttribute("test1", TestDef1);
 
-  // Let associate a to t
+  // Let's associate a to t
   smtkTest(a->associate(t), "Failed to associate a to test");
   smtkTest(
     a->associatedObjects()->numberOfValues() == 1,
@@ -52,6 +58,9 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
   smtkTest(
     !a->associatedObjects()->removeInvalidValues(),
     "a's associations said there was an invalid value - it should have been ok");
+
+  // Let's try to associate a to t1
+  smtkTest(!a->associate(t1), "Succeeded in associating a to test1");
 
   // Now remove t and clean up the invalid association
   attRes->removeAttribute(t);
@@ -62,7 +71,7 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
     a->associatedObjects()->numberOfValues() == 0,
     "Incorrect number of associated objects returned - should be 0");
 
-  // Lets test validity based on categories
+  // Let's test validity based on categories
   std::set<std::string> cats1 = { "foo" };
   std::set<std::string> cats2 = { "bar" };
   smtkTest(
