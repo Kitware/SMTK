@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtModelEntityAttributeView.h"
+#include "smtk/extension/qt/qtComponentAttributeView.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -19,6 +19,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/utility/Queries.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
 #include "smtk/resource/Manager.h"
@@ -49,17 +50,17 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-qModelEntityAttributeViewComboBoxItemDelegate::qModelEntityAttributeViewComboBoxItemDelegate(
+qComponentAttributeViewComboBoxItemDelegate::qComponentAttributeViewComboBoxItemDelegate(
   const QStringList& vals,
   QObject* parent)
   : QStyledItemDelegate(parent)
   , m_values(vals)
 {
 }
-qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBoxItemDelegate() =
+qComponentAttributeViewComboBoxItemDelegate::~qComponentAttributeViewComboBoxItemDelegate() =
   default;
 
-QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
+QWidget* qComponentAttributeViewComboBoxItemDelegate::createEditor(
   QWidget* parent,
   const QStyleOptionViewItem& /*option*/,
   const QModelIndex& /*index*/) const
@@ -75,7 +76,7 @@ QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
   return cbox;
 }
 
-void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
+void qComponentAttributeViewComboBoxItemDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& index) const
 {
@@ -96,7 +97,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setEditorData(
   }
 }
 
-void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
+void qComponentAttributeViewComboBoxItemDelegate::setModelData(
   QWidget* editor,
   QAbstractItemModel* model,
   const QModelIndex& index) const
@@ -116,7 +117,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
   }
 }
 
-bool qModelEntityAttributeViewComboBoxItemDelegate::eventFilter(QObject* object, QEvent* event)
+bool qComponentAttributeViewComboBoxItemDelegate::eventFilter(QObject* object, QEvent* event)
 {
   // Show combo box popup when the box gains focus
   if (event->type() == QEvent::FocusIn)
@@ -135,10 +136,10 @@ bool qModelEntityAttributeViewComboBoxItemDelegate::eventFilter(QObject* object,
   return QStyledItemDelegate::eventFilter(object, event);
 }
 
-class qtModelEntityAttributeViewInternals
+class qtComponentAttributeViewInternals
 {
 public:
-  ~qtModelEntityAttributeViewInternals() { delete this->CurrentAtt; }
+  ~qtComponentAttributeViewInternals() { delete this->CurrentAtt; }
 
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const ResourcePtr& attResource) const
   {
@@ -204,32 +205,31 @@ public:
   QPointer<QStandardItemModel> checkablePropComboModel;
   QMap<std::string, Qt::CheckState> AttProperties;
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
-  std::string m_modelEntityMask;
   std::string m_selectionSourceName;
   std::string m_unSetVal;
   smtk::view::SelectionObservers::Key m_selectionObserverId;
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
 };
 
-qtBaseView* qtModelEntityAttributeView::createViewWidget(const smtk::view::Information& info)
+qtBaseView* qtComponentAttributeView::createViewWidget(const smtk::view::Information& info)
 {
   // TO DO Need to deal with Selections
   if (qtBaseAttributeView::validateInformation(info))
   {
-    auto* view = new qtModelEntityAttributeView(info);
+    auto* view = new qtComponentAttributeView(info);
     view->buildUI();
     return view;
   }
   return nullptr; // Information is not suitable for this View
 }
 
-qtModelEntityAttributeView::qtModelEntityAttributeView(const smtk::view::Information& info)
+qtComponentAttributeView::qtComponentAttributeView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
-  this->Internals = new qtModelEntityAttributeViewInternals;
+  this->Internals = new qtComponentAttributeViewInternals;
 }
 
-qtModelEntityAttributeView::~qtModelEntityAttributeView()
+qtComponentAttributeView::~qtComponentAttributeView()
 {
   auto sel = this->uiManager()->selection();
   if (sel)
@@ -240,11 +240,11 @@ qtModelEntityAttributeView::~qtModelEntityAttributeView()
   delete this->Internals;
 }
 
-void qtModelEntityAttributeView::buildUI()
+void qtComponentAttributeView::buildUI()
 {
   this->qtBaseAttributeView::buildUI();
   std::ostringstream receiverSource;
-  receiverSource << "qtModelEntityAttributeView" << this;
+  receiverSource << "qtComponentAttributeView" << this;
   this->Internals->m_selectionSourceName = receiverSource.str();
 
   auto sel = this->uiManager()->selection();
@@ -257,27 +257,27 @@ void qtModelEntityAttributeView::buildUI()
         "register selection source " << this->Internals->m_selectionSourceName
                                      << "failed. Already existed!");
     }
-    QPointer<qtModelEntityAttributeView> guardedObject(this);
+    QPointer<qtComponentAttributeView> guardedObject(this);
     this->Internals->m_selectionObserverId = sel->observers().insert(
       [guardedObject](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
         if (guardedObject != nullptr)
         {
-          guardedObject->updateSelectedModelEntity(selectionSource, sp);
+          guardedObject->updateSelectedComponent(selectionSource, sp);
         }
       },
       0,
       true,
-      "qtModelEntityAttributeView: Change focus on selection.");
+      "qtComponentAttributeView: Change focus on selection.");
   }
 }
 
 const QMap<QString, QList<smtk::attribute::DefinitionPtr>>&
-qtModelEntityAttributeView::attDefinitionMap() const
+qtComponentAttributeView::attDefinitionMap() const
 {
   return this->Internals->AttDefMap;
 }
 
-void qtModelEntityAttributeView::createWidget()
+void qtComponentAttributeView::createWidget()
 {
   auto view = this->configuration();
   if (view == nullptr)
@@ -333,7 +333,7 @@ void qtModelEntityAttributeView::createWidget()
   }
   else
   {
-    headers << "Entity";
+    headers << "Component";
   }
   if (view->details().attribute("ColHeader2", s))
   {
@@ -350,7 +350,7 @@ void qtModelEntityAttributeView::createWidget()
   this->Internals->ListTable->setEditTriggers(
     QAbstractItemView::SelectedClicked | QAbstractItemView::DoubleClicked);
 
-  // Lets see if a unset name has been set (which is used if the model entity does not currently have an attribute
+  // Lets see if a unset name has been set (which is used if the resource component does not currently have an attribute
   // assigned to it)
   if (view->details().attribute("NoValueLabel", s))
   {
@@ -383,50 +383,7 @@ void qtModelEntityAttributeView::createWidget()
   this->Widget = frame;
 }
 
-std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associatableObjects()
-  const
-{
-  std::set<smtk::resource::PersistentObjectPtr> result;
-  // First we need to determine if the attribute resource has resources associated with it
-  // if not we need to go to resource manager to get the information
-  auto attResource = this->attributeResource();
-  auto resources = attResource->associations();
-  if (!resources.empty())
-  {
-    // Lets see if any of the resources are model resources
-    for (const auto& resource : resources)
-    {
-      if (resource->isOfType(smtk::model::Resource::type_name))
-      {
-        // Find all components of the proper type
-        auto comps = resource->find(this->Internals->m_modelEntityMask);
-        result.insert(comps.begin(), comps.end());
-      }
-    }
-  }
-  else // we need to use the resource manager
-  {
-    // Iterate over the acceptable entries
-    auto resManager = this->uiManager()->resourceManager();
-    if (resManager == nullptr)
-    {
-      std::cerr << "qtModelEntityAttributeView: Could not find Resource Manager!\n";
-      return result;
-    }
-    // Ask the resource manager to get all appropriate resources
-    resources = resManager->find(smtk::model::Resource::type_name);
-    // Need to process all of these resources
-    for (const auto& resource : resources)
-    {
-      // Find all components of the proper type
-      auto comps = resource->find(this->Internals->m_modelEntityMask);
-      result.insert(comps.begin(), comps.end());
-    }
-  }
-  return result;
-}
-
-smtk::resource::PersistentObjectPtr qtModelEntityAttributeView::object(QTableWidgetItem* item)
+smtk::resource::PersistentObjectPtr qtComponentAttributeView::object(QTableWidgetItem* item)
 {
   auto resManager = this->uiManager()->resourceManager();
   smtk::resource::PersistentObjectPtr object;
@@ -456,7 +413,7 @@ smtk::resource::PersistentObjectPtr qtModelEntityAttributeView::object(QTableWid
   return comp;
 }
 
-void qtModelEntityAttributeView::updateModelEntities()
+void qtComponentAttributeView::updateModelEntities()
 {
   // First lets clear out the attribute editor
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
@@ -482,12 +439,20 @@ void qtModelEntityAttributeView::updateModelEntities()
   slist.append(this->Internals->m_unSetVal.c_str());
 
   auto* col2Delegate =
-    new qModelEntityAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
+    new qComponentAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
   this->Internals->ListTable->blockSignals(true);
   this->Internals->ListTable->setRowCount(0);
   this->Internals->ListTable->setItemDelegateForColumn(1, col2Delegate);
 
-  auto entities = this->associatableObjects();
+  std::set<smtk::resource::PersistentObjectPtr> entities;
+  if (!this->Internals->m_attDefinitions.empty())
+  {
+    ResourcePtr attResource = this->attributeResource();
+    entities = attribute::utility::associatableObjects(
+      this->Internals->m_attDefinitions.at(0)->associationRule(),
+      attResource,
+      this->uiManager()->resourceManager());
+  }
 
   int rcount = 0;
   for (const auto& entity : entities)
@@ -529,19 +494,19 @@ void qtModelEntityAttributeView::updateModelEntities()
   this->Internals->ListTable->sortItems(0);
 }
 
-QTableWidgetItem* qtModelEntityAttributeView::getSelectedItem()
+QTableWidgetItem* qtComponentAttributeView::getSelectedItem()
 {
   return this->Internals->ListTable->selectedItems().count() > 0
     ? this->Internals->ListTable->selectedItems().value(0)
     : nullptr;
 }
 
-void qtModelEntityAttributeView::updateModelAssociation()
+void qtComponentAttributeView::updateModelAssociation()
 {
   this->updateModelEntities();
 }
 
-void qtModelEntityAttributeView::cellChanged(int row, int column)
+void qtComponentAttributeView::cellChanged(int row, int column)
 {
   if (column != 1)
   {
@@ -568,7 +533,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
     return;
   }
 
-  // Get the current attribute associated with the model entity (if any)
+  // Get the current attribute associated with the resource component (if any)
   smtk::attribute::AttributePtr exisitingAtt = this->Internals->getAttribute(entity);
   smtk::attribute::AttributePtr newAtt;
   if (exisitingAtt && exisitingAtt->definition()->displayedTypeName() == tname)
@@ -584,7 +549,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
     attRes->removeAttribute(exisitingAtt);
   }
 
-  // Now create a new attribute for the model entity of the correct type
+  // Now create a new attribute for the resource component of the correct type
   // Find the def we need to use
   for (int j = 0; j < currentDefs.size(); ++j)
   {
@@ -605,17 +570,17 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   this->selectedRowChanged();
 }
 
-void qtModelEntityAttributeView::selectedRowChanged()
+void qtComponentAttributeView::selectedRowChanged()
 {
   this->showCurrentRow(true);
 }
 
-void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
+void qtComponentAttributeView::showCurrentRow(bool broadcastSelected)
 {
-  // Lets get the model entity that is selected in the table
+  // Lets get the resource component that is selected in the table
   int index = this->Internals->ListTable->currentRow();
   auto entity = this->object(this->Internals->ListTable->item(index, 0));
-  // Get the current attribute associated with the model entity (if any)
+  // Get the current attribute associated with the resource component (if any)
   auto att = this->Internals->getAttribute(entity);
   this->displayAttribute(att);
 
@@ -624,9 +589,8 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
     auto sel = this->uiManager()->selection();
     if (sel)
     {
-      smtk::model::EntityArray selents;
-      auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(entity);
-      selents.push_back(modelEnt);
+      smtk::resource::PersistentObjectArray selents;
+      selents.push_back(entity);
       auto selBit = this->uiManager()->selectionBit();
 
       sel->modifySelection(
@@ -638,13 +602,14 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
   }
 }
 
-void qtModelEntityAttributeView::updateSelectedModelEntity(
+void qtComponentAttributeView::updateSelectedComponent(
   const std::string& /*unused*/,
   smtk::view::SelectionPtr p)
 {
   this->Internals->ListTable->blockSignals(true);
   auto selBit = this->uiManager()->selectionBit();
-  const auto& selEnts = p->currentSelectionByValueAs<smtk::model::EntityArray>(selBit, false);
+  const auto& selEnts =
+    p->currentSelectionByValueAs<smtk::resource::PersistentObjectArray>(selBit, false);
   if (selEnts.size() != 1)
   {
     this->Internals->ListTable->clearSelection();
@@ -671,17 +636,17 @@ void qtModelEntityAttributeView::updateSelectedModelEntity(
   this->Internals->ListTable->blockSignals(false);
 }
 
-void qtModelEntityAttributeView::onShowCategory()
+void qtComponentAttributeView::onShowCategory()
 {
   this->updateUI();
 }
 
-void qtModelEntityAttributeView::updateUI()
+void qtComponentAttributeView::updateUI()
 {
   this->updateModelEntities();
 }
 
-void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr att)
+void qtComponentAttributeView::displayAttribute(smtk::attribute::AttributePtr att)
 {
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
@@ -725,7 +690,7 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
   }
 }
 
-void qtModelEntityAttributeView::getAllDefinitions()
+void qtComponentAttributeView::getAllDefinitions()
 {
   smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
@@ -746,15 +711,6 @@ void qtModelEntityAttributeView::getAllDefinitions()
   {
     // Should present error message
     return;
-  }
-
-  if (view->details().attribute("ModelEntityFilter", val))
-  {
-    this->Internals->m_modelEntityMask = val;
-  }
-  else
-  {
-    this->Internals->m_modelEntityMask = "*";
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
@@ -809,7 +765,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
 #endif
 }
 
-void qtModelEntityAttributeView::showAdvanceLevelOverlay(bool show)
+void qtComponentAttributeView::showAdvanceLevelOverlay(bool show)
 {
   if (this->Internals->CurrentAtt)
   {
@@ -817,7 +773,7 @@ void qtModelEntityAttributeView::showAdvanceLevelOverlay(bool show)
   }
 }
 
-bool qtModelEntityAttributeView::isEmpty() const
+bool qtComponentAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->attributeResource());

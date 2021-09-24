@@ -80,8 +80,15 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   smtk::resource::ManagerPtr& resManager,
   const smtk::common::UUID& ignoreResource)
 {
-  auto assocMap = refItemDef->acceptableEntries();
   std::set<smtk::resource::PersistentObjectPtr> candidates;
+
+  // if there is no reference Item Def, then there are no candidates
+  if (refItemDef == nullptr)
+  {
+    return candidates;
+  }
+
+  auto assocMap = refItemDef->acceptableEntries();
 
   // Are we dealing with the case where the attribute resource has resources directly associated
   // with it (or if we don't have a resource manager)

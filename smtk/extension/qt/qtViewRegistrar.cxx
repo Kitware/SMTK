@@ -17,9 +17,9 @@
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
+#include "smtk/extension/qt/qtComponentAttributeView.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
-#include "smtk/extension/qt/qtModelEntityAttributeView.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
@@ -40,7 +40,7 @@ typedef std::tuple<
   qtCategorySelectorView,
   qtGroupView,
   qtInstancedView,
-  qtModelEntityAttributeView,
+  qtComponentAttributeView,
   qtOperationView,
   qtResourceBrowser,
   qtSelectorView,
@@ -63,7 +63,9 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtSelectorView>("Selector");
   manager->viewWidgetFactory().addAlias<qtSimpleExpressionView>("SimpleExpression");
   manager->viewWidgetFactory().addAlias<qtCategorySelectorView>("Category");
-  manager->viewWidgetFactory().addAlias<qtModelEntityAttributeView>("ModelEntity");
+  // Keeping this for backward compatibility for the time being
+  manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ModelEntity");
+  manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ComponentAttribute");
   manager->viewWidgetFactory().addAlias<qtResourceBrowser>("ResourceBrowser");
 
   manager->badgeFactory().registerTypes<BadgeList>();
