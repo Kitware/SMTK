@@ -13,9 +13,11 @@ Please remove this comment.
 
 # Preparatory steps
 
+  - Make sure you have run the `utility/SetupForDevelopment.sh` script.
   - Update smtk guides
 
 # Update smtk
+
 
   - Update the local copy of the base branch.
     - If `PATCH` is 0, update `master`
@@ -29,17 +31,24 @@ Please remove this comment.
       ensure that merge requests assigned to the associated milestone are
       available on the `release` branch. See its documentation for usage.
   - Integrate changes.
-    - Make a commit for each of these `release`-only changes on a single topic
-      (suggested branch name: `update-to-vVERSION`):
+    - Create branch for release commits
+        - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
+
+    - Make a commit for each of these `release`-only changes:
       - [ ] Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.rst`.
         - [ ] Update the ReadMe file to refer to the new release notes
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
+        - [ ] `git rm` all of the individual release note files *except* `00-example.rst`.
+        - [ ] `git commit -m 'Compile release notes for VERSION' doc/release/notes/smtk-MAJOR.MINOR.rst`
       - [ ] Update `version.txt` and tag the commit (tag this commit below)
-        - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
         - [ ] `echo VERSION > version.txt`
-        - [ ] `git commit -m 'Update version number to VERSION' version.txt`
+        - [ ] Rebuild smtk to check for deprecation warnings
+        - [ ] `git commit -m 'Update version number to VERSION' version.txt` (commit message must be verbatum)
       - [ ] Update `.gitlab/ci/cdash-groups.json` to track the `release` CDash
-            groups
+            groups.
+        - [ ] Change "master" => "release" everywhere in `.gitlab/ci/cdash-groups.json`,
+              and change "latest-master" => "latest-release".
+        - [ ] `git commit -m 'Update cdash-groups.json to track the release group .gitlab/ci/cdash-groups.json`
 
     - Create a merge request targeting `release`
       - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask
@@ -56,8 +65,8 @@ Please remove this comment.
           information that is either missing or incorrect (e.g., if its data
           extraction heuristics fail).
     - [ ] Get positive review
-    - [ ] `Do: merge`
-    - [ ] Push the tag to the main repository
+    - [ ] Get a repo maintainer (currently Ben) or owner (currently Bob) to`Do: merge`
+    - [ ] Get a repo maintainer or ownder to push the tag to the main repository
       - [ ] `git tag -a -m 'SMTK VERSION' vVERSION commit-that-updated-version.txt`
       - [ ] `git push origin vVERSION`
 
