@@ -10,6 +10,7 @@
 
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/attribute//filter/Grammar.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Definition.h"
@@ -23,6 +24,7 @@
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
+#include "smtk/resource/filter/Filter.h"
 
 #include "smtk/common/UUID.h"
 
@@ -995,33 +997,9 @@ std::string Resource::createAttributeQuery(const std::string& defType)
 }
 
 std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
-  const std::string& filter) const
+  const std::string& filterString) const
 {
-  if (filter.empty() || filter == "any" || filter == "*")
-  {
-    return [](const smtk::resource::Component& /*unused*/) { return true; };
-  }
-  const std::string attributeFilter("attribute");
-  if (!filter.compare(0, attributeFilter.size(), attributeFilter))
-  {
-    std::string spec = filter.substr(attributeFilter.size());
-    const std::string definitionFilter("[type='");
-    auto sszm2 = spec.size() - 2;
-    auto dfsz = definitionFilter.size();
-    if (!spec.compare(0, dfsz, definitionFilter) && spec.substr(sszm2) == "']")
-    {
-      const std::string sdef = spec.substr(dfsz, sszm2 - dfsz);
-      smtk::attribute::DefinitionPtr defn = this->findDefinition(sdef);
-      if (defn)
-      {
-        return [defn](const smtk::resource::Component& comp) {
-          const auto* attr = dynamic_cast<const Attribute*>(&comp);
-          return (attr && attr->isA(defn));
-        };
-      }
-    }
-  }
-  return [](const smtk::resource::Component& /*unused*/) { return false; };
+  return smtk::resource::filter::Filter<smtk::attribute::filter::Grammar>(filterString);
 }
 
 // visit all components in the resource.

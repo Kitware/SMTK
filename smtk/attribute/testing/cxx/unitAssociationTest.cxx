@@ -24,30 +24,76 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
   //
   // I. Let's create an attribute resource and some definitions
   attribute::ResourcePtr attRes = attribute::Resource::create();
-  DefinitionPtr TestDef = attRes->createDefinition("testDef");
-  DefinitionPtr TestDef1 = attRes->createDefinition("testDef1", TestDef);
-  // In the case of Type A - let's allow testDef attributes to be associated with
-  // this type of attribute but not those derived from testDef1
+  DefinitionPtr BaseSupplyDef = attRes->createDefinition("baseSupplyDef");
+  DefinitionPtr OtherSupplyDef = attRes->createDefinition("otherSupplyDef", BaseSupplyDef);
+
+  // In the case of Type A - let's allow baseSupplyDef attributes to be associated with
+  // this type of attribute but not those derived from otherSupplyDef
   DefinitionPtr A = attRes->createDefinition("A");
   auto associationRule = A->createLocalAssociationRule();
   associationRule->setAcceptsEntries(
-    "smtk::attribute::Resource", "attribute[type='testDef']", true);
+    "smtk::attribute::Resource", "attribute[type = 'baseSupplyDef']", true);
   associationRule->setRejectsEntries(
-    "smtk::attribute::Resource", "attribute[type='testDef1']", true);
+    "smtk::attribute::Resource", "attribute[type='otherSupplyDef']", true);
   associationRule->setNumberOfRequiredValues(0);
   associationRule->setIsExtensible(true);
+
+  // In the case of Type B - lets allow baseSupplyDef attributes to be associated with it
+  // but also make B belong to category foo
   DefinitionPtr B = attRes->createDefinition("B");
-  auto associationRule1 = B->createLocalAssociationRule();
-  associationRule1->setAcceptsEntries(
-    "smtk::attribute::Resource", "attribute[type='testDef']", true);
-  associationRule1->setNumberOfRequiredValues(1);
+  associationRule = B->createLocalAssociationRule();
+  associationRule->setAcceptsEntries(
+    "smtk::attribute::Resource", "attribute[type='baseSupplyDef']", true);
+  associationRule->setNumberOfRequiredValues(1);
   associationRule->setIsExtensible(true);
   B->localCategories().insertInclusion("foo");
+
+  // In the case of Type C - lets allow baseSupplyDef attribute that contain integer property alpha
+  // to be associated with it
+  DefinitionPtr C = attRes->createDefinition("C");
+  associationRule = C->createLocalAssociationRule();
+  associationRule->setAcceptsEntries(
+    "smtk::attribute::Resource", "attribute[type='baseSupplyDef', long {'alpha'}]", true);
+  associationRule->setNumberOfRequiredValues(0);
+  associationRule->setIsExtensible(true);
+
+  // In the case of Type D - lets allow baseSupplyDef attribute that contain integer property alpha
+  // with value 4 to be associated with it
+  DefinitionPtr D = attRes->createDefinition("D");
+  associationRule = D->createLocalAssociationRule();
+  associationRule->setAcceptsEntries(
+    "smtk::attribute::Resource", "attribute[type='baseSupplyDef', long {'alpha' = 4}]", true);
+  associationRule->setNumberOfRequiredValues(0);
+  associationRule->setIsExtensible(true);
+
+  // In the case of Type E - lets allow baseSupplyDef attribute whose definition contains base
+  // in the type name
+  DefinitionPtr E = attRes->createDefinition("E");
+  associationRule = E->createLocalAssociationRule();
+  associationRule->setAcceptsEntries(
+    "smtk::attribute::Resource", "attribute[type= /base.*/]", true);
+  associationRule->setNumberOfRequiredValues(0);
+  associationRule->setIsExtensible(true);
+
+  // In the case of Type F - lets allow baseSupplyDef attribute that contain both an integer and long property
+  DefinitionPtr F = attRes->createDefinition("F");
+  associationRule = F->createLocalAssociationRule();
+  associationRule->setAcceptsEntries(
+    "smtk::attribute::Resource",
+    "attribute[type='baseSupplyDef', long{'alpha'}, double{'beta'}]",
+    true);
+  associationRule->setNumberOfRequiredValues(0);
+  associationRule->setIsExtensible(true);
+
   attRes->finalizeDefinitions();
   auto a = attRes->createAttribute("a", A);
   auto b = attRes->createAttribute("b", B);
-  auto t = attRes->createAttribute("test", TestDef);
-  auto t1 = attRes->createAttribute("test1", TestDef1);
+  auto c = attRes->createAttribute("c", C);
+  auto d = attRes->createAttribute("d", D);
+  auto e = attRes->createAttribute("e", E);
+  auto f = attRes->createAttribute("f", F);
+  auto t = attRes->createAttribute("test", BaseSupplyDef);
+  auto t1 = attRes->createAttribute("test1", OtherSupplyDef);
 
   // Let's associate a to t
   smtkTest(a->associate(t), "Failed to associate a to test");
@@ -92,5 +138,36 @@ int unitAssociationTest(int /*unused*/, char* /*unused*/[])
   smtkTest(
     b->isValid(), "b with bar specified was considered invalid but it should have been valid");
 
+  attRes->setActiveCategoriesEnabled(false);
+  //Lets try associating test1 to c, d, e and f - c, d, and f should fail because test 1 does not have the
+  // correct property alpha (to be associated with ) set to 4 (to be associated with d) and f will fail since
+  // it requires both a long and double property to be set
+  smtkTest(!c->associate(t1), "Succeeded in associating c to test1 w/o having alpha property");
+  smtkTest(!d->associate(t1), "Succeeded in associating d to test1 w/o having alpha property = 4");
+  smtkTest(e->associate(t1), "Failed in associating e to test1");
+  smtkTest(
+    !f->associate(t1), "Succeeded in associating f to test1 w/o having a double and long property");
+
+  // Lets now set property alpha to t1
+  t1->properties().emplace<long>("alpha", 2);
+
+  // Lets retest c, d, f - c should pass but d should still fail due to alpha not set to 4 and f still requires
+  // a double property
+  smtkTest(c->associate(t1), "Failed in associating c to test1 having alpha property");
+  smtkTest(!d->associate(t1), "Succeeded in associating d to test1 w/o having alpha property = 4");
+  smtkTest(!f->associate(t1), "Succeeded in associating f to test1 w/o having double property");
+  // Lets set alpha to 4
+  t1->properties().get<long>()["alpha"] = 4;
+  smtkTest(d->associate(t1), "Failed in associating d to test1 having alpha property = 4");
+  smtkTest(
+    d->isValid(),
+    "d with test1 (having alpha property  = 4) associated with it was considered invalid.");
+  // Lets set alpha to 10
+  t1->properties().get<long>()["alpha"] = 10;
+  smtkTest(
+    !d->isValid(),
+    "d with test1 (having alpha property  = 10) associated with it was considered valid.");
+  t1->properties().emplace<double>("beta", 2);
+  smtkTest(f->associate(t1), "Failed in associating f to test1 having double and long properties");
   return 0;
 }

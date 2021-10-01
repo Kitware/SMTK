@@ -286,7 +286,9 @@ bool ReferenceItem::isValidInternal(bool useCategories, const std::set<std::stri
   }
 
   const auto* def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
-  if (def && def->enforcesCategories())
+  // Since an association rule can conditionally depend on properties or the  assignment can
+  // depend on categories we should reset all of the values
+  if (def)
   {
     for (size_t i = 0; i < this->numberOfValues(); i++)
     {
