@@ -594,7 +594,7 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
 
     if len(args.include_dirs) == 0:
-        args.include_dirs.append(args.input_directory)
+        args.include_dirs.append(os.path.getdirname(args.input))
 
     def stream_with_line_breaks(stream):
         def write(string):
