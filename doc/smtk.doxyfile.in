@@ -744,6 +744,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/model/queries" \
   "@smtk_SOURCE_DIR@/smtk/model/utility" \
   "@smtk_SOURCE_DIR@/smtk/smtk" \
+  "@smtk_SOURCE_DIR@/smtk/string" \
   "@smtk_SOURCE_DIR@/smtk/view" \
   "@smtk_SOURCE_DIR@/smtk/view/plugin" \
   "@smtk_SOURCE_DIR@/smtk/view/icons" \
@@ -842,6 +843,7 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/model/queries" \
   "@smtk_BINARY_DIR@/smtk/model/utility" \
   "@smtk_BINARY_DIR@/smtk/smtk" \
+  "@smtk_BINARY_DIR@/smtk/string" \
   "@smtk_BINARY_DIR@/smtk/view" \
   "@smtk_BINARY_DIR@/smtk/view/plugin" \
   "@smtk_BINARY_DIR@/smtk/view/icons" \
