@@ -139,6 +139,8 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
+  filter/Attribute.h
+  filter/Grammar.h
   utility/Queries.h
 )
 

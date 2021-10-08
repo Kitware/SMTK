@@ -22,4 +22,5 @@ and solver parameters.
 
    concepts.rst
    file-syntax.rst
+   filtering-and-searching.rst
    evaluators.rst
