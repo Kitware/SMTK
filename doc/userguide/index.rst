@@ -50,6 +50,7 @@ simulation domain.
    extension/index.rst
    bindings/index.rst
    plugin/index.rst
+   tips/index.rst
    administration.rst
    contributing/index.rst
 
