@@ -51,7 +51,7 @@ namespace plugin
 /// accommodate additional managers in the future without incurring a runtime
 /// dispatch penalty, c) construction of an object that can call new code
 /// during its own destruction (pure virtual methods should not be called in a
-/// base class's destructor), and d) to keep homologous Manager clsses from
+/// base class's destructor), and d) to keep homologous Manager classes from
 /// being entwined via a superfluous base class.
 
 namespace detail

@@ -30,9 +30,9 @@
 #include <vtkTransform.h>
 #include <vtksys/SystemTools.hxx>
 
-#include <vtkPVConfig.h>
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
+#include <vtkPVVersion.h>
 
 #include "vtkDataObjectTreeIterator.h"
 

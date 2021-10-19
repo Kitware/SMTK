@@ -41,8 +41,8 @@ set(smtk_cmake_module_files
   SMTKMacros.cmake
   SMTKOperationXML.cmake
   SMTKPluginMacros.cmake
-  pqSMTKAutoStart.h.in
-  pqSMTKAutoStart.cxx.in)
+  smtkPluginInitializer.h.in
+  smtkPluginInitializer.cxx.in)
 
 set(smtk_cmake_files_to_install
   "${prefix_file}")
