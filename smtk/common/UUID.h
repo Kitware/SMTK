@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_UUID_h
-#define __smtk_common_UUID_h
+#ifndef smtk_common_UUID_h
+#define smtk_common_UUID_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/HashFunctor.h"
@@ -144,4 +144,4 @@ inline size_t hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
 
 SMTK_HASH_NS_END
 
-#endif // __smtk_common_UUID_h
+#endif // smtk_common_UUID_h

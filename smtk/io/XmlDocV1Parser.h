@@ -169,6 +169,11 @@ protected:
     smtk::attribute::DefinitionPtr& def,
     std::set<std::string>& activeBlockNames);
 
+  /// Process hints that may be on the document's root node.
+  ///
+  /// This is first used by XmlDocV5Parser.
+  virtual void processHints(pugi::xml_node& root);
+
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
   bool m_reportAsError;

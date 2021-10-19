@@ -372,6 +372,17 @@ pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
   return builtin;
 }
 
+bool pqSMTKBehavior::setPostProcessingMode(bool inPost)
+{
+  if (inPost == m_postProcessingMode)
+  {
+    return false;
+  }
+  m_postProcessingMode = inPost;
+  emit postProcessingModeChanged(m_postProcessingMode);
+  return true;
+}
+
 void pqSMTKBehavior::setDefaultRepresentationVisibility(pqOutputPort* pqPort, pqView* view)
 {
   // ControllerWithRendering finds and uses the appropriate vtkSMRepresentationProxy

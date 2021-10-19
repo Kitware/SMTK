@@ -55,6 +55,8 @@
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/resource/Properties.h"
+
 #include "smtk/common/StringUtil.h"
 #include "smtk/view/Configuration.h"
 
@@ -700,6 +702,8 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
         m_logger, "Category: " << *it << " was not listed in Resource's Category Section");
     }
   }
+
+  this->processHints(amnode);
 }
 
 void XmlDocV1Parser::processItemDefinitionBlocks(xml_node& root)
@@ -2645,4 +2649,16 @@ bool XmlDocV1Parser::getCategoryComboMode(
     }
   }
   return false;
+}
+
+void XmlDocV1Parser::processHints(pugi::xml_node& root)
+{
+  (void)root;
+  if (m_resource)
+  {
+    // By default, old readers will make their resources visible.
+    // Starting with V5, this property will only be added if an
+    // XML attribute ("DisplayHint") exists on the root document node.
+    m_resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+  }
 }

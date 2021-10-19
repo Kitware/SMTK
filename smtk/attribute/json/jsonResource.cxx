@@ -15,6 +15,8 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonDefinition.h"
+#include "smtk/common/VersionNumber.h"
+#include "smtk/common/json/jsonVersionNumber.h"
 #include "smtk/io/Logger.h"
 #include "smtk/resource/json/jsonResource.h"
 #include "smtk/view/json/jsonView.h"
@@ -22,6 +24,7 @@
 #include "smtk/CoreExports.h"
 
 #include <queue>
+#include <regex>
 #include <string>
 
 namespace smtk
@@ -35,8 +38,8 @@ using json = nlohmann::json;
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 {
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
-  // Set the version to 4.0
-  j["version"] = "4.0";
+  // Set the version to 5.0
+  j["version"] = "5.0";
   j["IsPrivate"] = res->isPrivate();
   // Write out the active category information
   if (!res->activeCategories().empty())
@@ -326,6 +329,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
   auto resource = std::static_pointer_cast<smtk::resource::Resource>(res);
   smtk::resource::from_json(j, resource);
+  auto jversion = j.find("version");
+  smtk::common::VersionNumber version;
+  if (jversion != j.end())
+  {
+    version = jversion->get<smtk::common::VersionNumber>();
+  }
+
+  // Starting with version 5, this property must be explicitly present in the file.
+  if (version.major() < 5)
+  {
+    resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+  }
 
   // Set Private State
   auto isPrivateResult = j.find("IsPrivate");

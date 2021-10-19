@@ -99,6 +99,15 @@ protected slots:
     */
   virtual void updateSettings();
 
+  /**\brief Connect/disconnect signals+slots controlling synchronization of
+   *        ParaView pipeline sources and the attribute panel.
+   *
+   * This slot is attached to pqSMTKBehavior::postProcessingModeChanged()
+   * so that the connections only exist during post-processing (when the
+   * pipeline browser is visible).
+   */
+  virtual void displayActivePipelineSource(bool doDisplay);
+
 protected:
   virtual bool displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc);
   virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
