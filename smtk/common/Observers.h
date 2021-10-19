@@ -11,6 +11,7 @@
 #define __smtk_common_Observers_h
 
 #include <functional>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <mutex>
@@ -18,12 +19,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-
-#define DEBUG_OBSERVERS 0
-
-#if !defined(NDEBUG) && DEBUG_OBSERVERS
-#include <iostream>
-#endif
 
 #define ADD_OBSERVER(key, observers, observer, priority, initialize)                               \
   key = (observers)->insert(                                                                       \
@@ -67,7 +62,7 @@ namespace common
 /// goes out of scope, the Observer functor is removed from the Observers
 /// instance) by default. To decouple the Key's lifetime from that of the
 /// Observer functor, use the Key's release() method.
-template<typename Observer>
+template<typename Observer, bool DebugObservers = false>
 class Observers
 {
   friend class Key;
@@ -237,11 +232,17 @@ public:
       // these observers from being called (as though they were erased).
       if (m_toErase.find(entry.first) == m_toErase.end())
       {
-#if !defined(NDEBUG) && DEBUG_OBSERVERS
-        std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
-                  << "): " << m_descriptions[entry.first] << std::endl;
-#endif
+        if (DebugObservers)
+        {
+          std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
+                    << "): " << m_descriptions[entry.first] << std::endl;
+        }
         result |= entry.second(std::forward<Types>(args)...);
+      }
+      else if (DebugObservers)
+      {
+        std::cerr << "Skipping erased observer (" << entry.first.first << ", " << entry.first.second
+                  << "): " << m_descriptions[entry.first] << std::endl;
       }
     }
     // Now that the iteration loop is complete, it is now safe to erase
@@ -251,6 +252,11 @@ public:
     // Remove observers that were marked for erasure during observation.
     for (auto& toErase : m_toErase)
     {
+      if (DebugObservers)
+      {
+        std::cerr << "Erasing observer (" << toErase.first << ", " << toErase.second
+                  << "): " << m_descriptions[toErase] << std::endl;
+      }
       erase(toErase);
     }
     m_toErase.clear();
@@ -275,11 +281,17 @@ public:
       // these observers from being called (as though they were erased).
       if (m_toErase.find(entry.first) == m_toErase.end())
       {
-#if !defined(NDEBUG) && DEBUG_OBSERVERS
-        std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
-                  << "): " << m_descriptions[entry.first] << std::endl;
-#endif
+        if (DebugObservers)
+        {
+          std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
+                    << "): " << m_descriptions[entry.first] << std::endl;
+        }
         entry.second(std::forward<Types>(args)...);
+      }
+      else if (DebugObservers)
+      {
+        std::cerr << "Skipping erased observer (" << entry.first.first << ", " << entry.first.second
+                  << "): " << m_descriptions[entry.first] << std::endl;
       }
     }
     // Now that the iteration loop is complete, it is now safe to erase
@@ -289,6 +301,11 @@ public:
     // Remove observers that were marked for erasure during observation.
     for (auto& toErase : m_toErase)
     {
+      if (DebugObservers)
+      {
+        std::cerr << "Erasing observer (" << toErase.first << ", " << toErase.second
+                  << "): " << m_descriptions[toErase] << std::endl;
+      }
       erase(toErase);
     }
     m_toErase.clear();
@@ -355,6 +372,11 @@ public:
     }
 
     m_descriptions.insert(std::make_pair(handle, description));
+    if (DebugObservers)
+    {
+      std::cerr << "Inserting observer (" << handle.first << ", " << handle.second
+                << "): " << description << std::endl;
+    }
     return m_observers.insert(std::make_pair(handle, fn)).second ? Key(handle, this) : Key();
   }
 
@@ -371,8 +393,18 @@ public:
 
     if (m_observing)
     {
+      if (DebugObservers)
+      {
+        std::cerr << "Queueing observer erasure (" << handle.first << ", " << handle.second
+                  << "): " << m_descriptions[handle] << std::endl;
+      }
       m_toErase.insert(handle);
       return m_observers.size() - m_toErase.size();
+    }
+    if (DebugObservers)
+    {
+      std::cerr << "Immediate observer erasure (" << handle.first << ", " << handle.second
+                << "): " << m_descriptions[handle] << std::endl;
     }
     return erase(static_cast<InternalKey&>(handle));
   }

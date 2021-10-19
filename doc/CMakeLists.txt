@@ -124,6 +124,8 @@ if (SPHINX_FOUND)
     userguide/task/classes.rst
     userguide/task/index.rst
     userguide/task/io.rst
+    userguide/tips/index.rst
+    userguide/tips/observers.rst
     userguide/model/index.rst
     userguide/model/property-names.rst
     userguide/model/sessions.rst
