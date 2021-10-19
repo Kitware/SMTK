@@ -29,13 +29,15 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_MODULE(_smtkPybindResource, geometry)
+PYBIND11_MODULE(_smtkPybindGeometry, geometry)
 {
   geometry.doc() = "Geometric data for resources and components.";
 
+  py::module::import("smtk.resource");
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  py::class_< smtk::geometry::Resource > smtk_geometry_Resource = pybind11_init_smtk_geometry_Resource(geometry);
+  PySharedPtrClass< smtk::geometry::Resource > smtk_geometry_Resource = pybind11_init_smtk_geometry_Resource(geometry);
   py::class_< smtk::geometry::Manager > smtk_geometry_Manager = pybind11_init_smtk_geometry_Manager(geometry);
   py::class_< smtk::geometry::Backend > smtk_geometry_Backend = pybind11_init_smtk_geometry_Backend(geometry);
   py::class_< smtk::geometry::Geometry > smtk_geometry_Geometry = pybind11_init_smtk_geometry_Geometry(geometry);

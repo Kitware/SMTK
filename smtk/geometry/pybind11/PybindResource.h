@@ -16,19 +16,20 @@
 #include "smtk/geometry/Resource.h"
 
 #include "smtk/geometry/Backend.h"
+#include "smtk/resource/Resource.h"
 
 namespace py = pybind11;
 
-inline PySharedPtrClass< smtk::geometry::Resource, smtk::resource::DerivedFrom<smtk::geometry::Resource, smtk::resource::Resource> > pybind11_init_smtk_geometry_Resource(py::module &m)
+
+inline PySharedPtrClass< smtk::geometry::Resource, smtk::resource::Resource > pybind11_init_smtk_geometry_Resource(py::module &m)
 {
-  PySharedPtrClass< smtk::geometry::Resource, smtk::resource::DerivedFrom<smtk::geometry::Resource, smtk::resource::Resource> > instance(m, "Resource");
+  PySharedPtrClass< smtk::geometry::Resource, smtk::resource::Resource > instance(m, "Resource");
   instance
     // .def("geometry", &smtk::geometry::Resource::geometry, py::arg("backend"))
     .def("shared_from_this", (std::shared_ptr<const smtk::geometry::Resource> (smtk::geometry::Resource::*)() const) &smtk::geometry::Resource::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::geometry::Resource> (smtk::geometry::Resource::*)()) &smtk::geometry::Resource::shared_from_this)
     .def("typeName", &smtk::geometry::Resource::typeName)
     // .def("visitGeometry", &smtk::geometry::Resource::visitGeometry, py::arg("visitor"))
-    .def_readonly_static("type_name", &smtk::geometry::Resource::type_name)
     ;
   return instance;
 }
