@@ -144,6 +144,8 @@ if (SPHINX_FOUND)
     userguide/bindings/customizing-pybind11-bindings.rst
     userguide/resource/index.rst
     userguide/resource/concepts.rst
+    userguide/string/index.rst
+    userguide/string/concepts.rst
 
     tutorials/index.rst
     tutorials/add_a_session/index.rst

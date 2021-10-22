@@ -6,6 +6,9 @@
 add_subdirectory(common)
 smtk_source_group(common)
 
+add_subdirectory(string)
+smtk_source_group(string)
+
 add_subdirectory(resource)
 smtk_source_group(resource)
 
@@ -50,6 +53,7 @@ smtk_source_group(plugin)
 
 set(smtk_headers
   ${commonHeaders}
+  ${stringHeaders}
   ${resourceHeaders}
   ${geometryHeaders}
   ${graphHeaders}
@@ -67,6 +71,7 @@ set(smtk_headers
 )
 set(smtk_srcs
   ${commonSrcs}
+  ${stringSrcs}
   ${resourceSrcs}
   ${geometrySrcs}
   ${graphSrcs}
