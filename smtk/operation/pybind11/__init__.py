@@ -94,3 +94,25 @@ def _params(self):
 setattr(Operation, 'parameters', _params)
 
 del _params
+
+""" Provide a method to register all operations in a module.
+"""
+
+
+def _registerModuleOperations(self, module):
+    """Register all SMTK operations in a python module to this manager.
+
+    Note this does not recurse modules; only operations directly inside
+    the module are imported.
+    """
+    for item in dir(module):
+        try:
+            thing = getattr(module, item)
+            if issubclass(thing, Operation):
+                self.registerOperation(module.__name__, item)
+        except:
+            continue
+
+
+setattr(Manager, 'registerModuleOperations', _registerModuleOperations)
+del _registerModuleOperations
