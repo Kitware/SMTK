@@ -5,7 +5,7 @@
 ### Fedora
 
 .fedora33:
-    image: "kitware/cmb:ci-smtk-fedora33-20210714"
+    image: "kitware/cmb:ci-smtk-fedora33-20211024"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -65,14 +65,14 @@
 
 .fedora33_vtk_python3:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-vtk-20210714"
+    image: "kitware/cmb:ci-smtk-fedora33-vtk-20211024"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_vtk_python3
 
 .fedora33_paraview:
     extends: .fedora33_vtk_python3
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20210829"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20211024"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
