@@ -17,8 +17,6 @@ set(sources
   pqSMTKImportIntoResourceBehavior.h
   pqSMTKNewResourceBehavior.cxx
   pqSMTKNewResourceBehavior.h
-  pqSMTKPipelineSelectionBehavior.cxx
-  pqSMTKPipelineSelectionBehavior.h
   pqSMTKRegisterImportersBehavior.cxx
   pqSMTKRegisterImportersBehavior.h
   pqSMTKSaveOnCloseResourceBehavior.cxx

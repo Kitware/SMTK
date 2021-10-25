@@ -1,15 +1,17 @@
 set(classes
   Registrar
+  VisibilityBadge
   pqSMTKAttributePanel
   pqSMTKBehavior
   pqSMTKOperationPanel
+  pqSMTKPipelineSelectionBehavior
   pqSMTKRenderResourceBehavior
   pqSMTKResource
-  pqSMTKWrapper
   pqSMTKResourceBrowser
-  pqSMTKResourceRepresentation
   pqSMTKResourcePanel
-  VisibilityBadge)
+  pqSMTKResourceRepresentation
+  pqSMTKWrapper
+)
 
 set(CMAKE_AUTOMOC 1)
 set(CMAKE_AUTOUIC 1)

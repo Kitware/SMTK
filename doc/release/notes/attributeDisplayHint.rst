@@ -15,6 +15,22 @@ to the new resource to be displayed.
 Thus saving a project with several resources will resume upon reload
 with the same attribute resource displayed in the editor.
 
+Finally, this change to SMTK removes the default behavior that
+displays attribute resources when the ParaView pipeline browser's
+selection changes.
+This change was made because the pipeline-browser's selection
+changes when (a) a user or python script modifies the active
+pipeline source or (b) a new pipeline source is created.
+The second case was causing many updates to the attribute panel
+when projects with many resources are loaded/created.
+Now, this behavior is only enabled in "ParaView mode" (i.e., when
+post-processing is enabled).
+To reduce the impact of this change, we have also added a (default)
+option to :smtk:`pqSMTKPipelineSelectionBehavior` that will display
+attribute resources as they are selected (specifically: when the SMTK
+selection holds a single entry in its primary selection and that
+entry is an attribute resource marked as displayable).
+
 Developer changes
 ~~~~~~~~~~~~~~~~~~
 

@@ -12,6 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtkPQComponentsExtModule.h"
 
 #include "smtk/view/SelectionObserver.h"
 
@@ -29,8 +30,13 @@ class pqServer;
   * to components), select those resources in the pipeline browser.
   * Similarly, when pipeline sources in ParaView are selected, replace
   * the SMTK selection with the related resources.
+  *
+  * This behavior can also be configured to update the attribute editor
+  * panel (pqSMTKAttributePanel) when the selection is set to an
+  * attribute resource. (The default behavior is to show the resource
+  * when it is selected.)
   */
-class pqSMTKPipelineSelectionBehavior : public QObject
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKPipelineSelectionBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
@@ -46,6 +52,19 @@ public:
   void setSelectionValue(const std::string& selectionValue);
   const std::string& selectionValue() const { return m_selectionValue; }
 
+  /// Return whether selecting an attribute resource should cause that
+  /// resource to appear in the attribute-editor panel (assuming it is not marked private).
+  bool displayAttributeResourcesOnSelection() const
+  {
+    return m_displayAttributeResourcesOnSelection;
+  }
+public slots:
+  /// Set whether selecting an attribute resource should cause that
+  /// resource to appear in the attribute-editor panel (assuming it is not marked private).
+  ///
+  /// This is true by default.
+  virtual void setDisplayAttributeResourcesOnSelection(bool shouldDisplay);
+
 protected slots:
   virtual void onActiveSourceChanged(pqPipelineSource* source);
   virtual void observeSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
@@ -53,6 +72,7 @@ protected slots:
 
 protected:
   bool m_changingSource{ false };
+  bool m_displayAttributeResourcesOnSelection{ true };
   std::string m_selectionValue;
   std::map<smtk::view::SelectionPtr, smtk::view::SelectionObservers::Key> m_selectionObservers;
 
