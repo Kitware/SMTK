@@ -45,6 +45,7 @@ set(unit_tests
   UnitTestTypeContainer.cxx
   UnitTestTypeMap.cxx
   UnitTestTypeName.cxx
+  UnitTestVersionNumber.cxx
 )
 
 set(unit_tests_which_require_data

@@ -19,7 +19,12 @@ namespace common
 
 /// Default constructor creates a nil VersionNumber (IsNull() == true).
 VersionNumber::VersionNumber()
-  : std::array<int, 3>{ 0, 0, 0 }
+  : std::array<int, 3>{ -1, 0, 0 }
+{
+}
+
+VersionNumber::VersionNumber(int major, int minor, int patch)
+  : std::array<int, 3>{ major, minor, patch }
 {
 }
 
@@ -38,13 +43,13 @@ VersionNumber::VersionNumber(const std::string& txt)
       for (std::size_t ii = 1; ii < versionMatch.size() && ii < 4; ++ii)
       {
         auto num = versionMatch[ii].str();
-        // std::cout << "Piece " << ii << " is \"" << num << "\"\n";
-        if (!num.empty())
-        {
-          (*this)[ii - 1] = std::stoul(num);
-        }
+        (*this)[ii - 1] = num.empty() ? 0 : std::stoul(num);
       }
     }
+  }
+  else
+  {
+    *this = VersionNumber{ -1, 0, 0 };
   }
 }
 
@@ -74,23 +79,15 @@ std::string VersionNumber::string() const
   return result.str();
 }
 
-/// Compare two VersionNumbers for inequality.
-// bool VersionNumber::operator!=(const VersionNumber& other) const = default;
-
-/// Compare two VersionNumbers for equality.
-// bool VersionNumber::operator==(const VersionNumber& other) const = default;
-
-/// Compare two VersionNumbers for ordering.
-// bool VersionNumber::operator<(const VersionNumber& other) const = default;
-
-/// Assignment operator.
-// VersionNumber& VersionNumber::operator=(const VersionNumber& other) = default;
-
-#if 0
-/// Write a VersionNumber to a stream (as a string).
-std::ostream& operator<<(std::ostream& stream, const VersionNumber& uid)
+bool VersionNumber::isValid() const
 {
-  stream << uid.toString().c_str();
+  return (*this)[0] >= 0;
+}
+
+/// Write a VersionNumber to a stream (as a string).
+std::ostream& operator<<(std::ostream& stream, const VersionNumber& version)
+{
+  stream << version.string();
   return stream;
 }
 
@@ -102,7 +99,6 @@ std::istream& operator>>(std::istream& stream, VersionNumber& uid)
   uid = VersionNumber(txt);
   return stream;
 }
-#endif
 
 } // namespace common
 } // namespace smtk

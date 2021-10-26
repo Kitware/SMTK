@@ -40,7 +40,7 @@ class SMTKCORE_EXPORT VersionNumber : public std::array<int, 3>
 public:
   VersionNumber();
   VersionNumber(const VersionNumber& other);
-  VersionNumber(int major, int minor, int patch = 0);
+  VersionNumber(int major, int minor = 0, int patch = 0);
   VersionNumber(const std::string& versionString);
 
   int major() const;
@@ -49,12 +49,15 @@ public:
 
   std::string string() const;
 
-  // bool operator==(VersionNumber const& other) const = default;
-  // bool operator<(VersionNumber const& other) const = default;
+  /// Returns true if the version number has been set; false otherwise.
+  ///
+  /// Note that VersionNumber instances are initialized with a negative
+  /// major version number that marks them as invalid.
+  bool isValid() const;
 };
 
-// SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& stream, const VersionNumber& uid);
-// SMTKCORE_EXPORT std::istream& operator>>(std::istream& stream, VersionNumber& uid);
+SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& stream, const VersionNumber& uid);
+SMTKCORE_EXPORT std::istream& operator>>(std::istream& stream, VersionNumber& uid);
 
 } // namespace common
 } // namespace smtk
