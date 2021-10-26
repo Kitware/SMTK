@@ -116,6 +116,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
 
 void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 {
+  (void)rsrcMgr;
   if (m_attrUIMgr)
   {
     m_propertyLinks.clear();
