@@ -140,7 +140,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   {
     auto previousResource = m_rsrc.lock();
 
-    if (rsrc->isPrivate() && rsrc != previousResource)
+    if (!rsrc->isPrivate() && rsrc != previousResource)
     {
       if (previousResource)
       {
@@ -149,7 +149,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
       resetPanel(rsrc->manager());
       didDisplay = displayResourceInternal(rsrc);
     }
-    else if (!rsrc->isPrivate() && rsrc == previousResource)
+    else if (rsrc->isPrivate() && rsrc == previousResource)
     {
       // the panel is displaying a resource that is now private
       // stop displaying it

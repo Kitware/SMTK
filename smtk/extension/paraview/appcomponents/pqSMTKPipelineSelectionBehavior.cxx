@@ -144,7 +144,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
           {
             auto attrResource =
               std::dynamic_pointer_cast<smtk::attribute::Resource>(selectedResource);
-            if (attrResource && attrResource->isPrivate())
+            if (attrResource && !attrResource->isPrivate())
             {
               // Find the attribute panel. For now, only deal with one;
               // it doesn't make sense to switch multiple panels to display

@@ -15,7 +15,7 @@ to the new resource to be displayed.
 Thus saving a project with several resources will resume upon reload
 with the same attribute resource displayed in the editor.
 
-Finally, this change to SMTK removes the default behavior that
+This change to SMTK also removes the default behavior that
 displays attribute resources when the ParaView pipeline browser's
 selection changes.
 This change was made because the pipeline-browser's selection
@@ -31,6 +31,9 @@ attribute resources as they are selected (specifically: when the SMTK
 selection holds a single entry in its primary selection and that
 entry is an attribute resource marked as displayable).
 
+Finally, this change corrects the sense of `smtk::attribute::Resource::isPrivate()`,
+which was previously reversed.
+
 Developer changes
 ~~~~~~~~~~~~~~~~~~
 
@@ -38,6 +41,12 @@ File version numbers have increased to prevent breaking changes in behavior.
 Old files (XML version 4 or JSON version) will always mark this property to
 preserve existing behavior.
 New files must enable the hint explicitly.
+
+If you used `smtk::attribute::Resource::isPrivate()` or
+`smtk::attribute::Resource::setIsPrivate()` in your code, you should
+reverse the sense of values obtained-from/passed-to these methods.
+It now returns true when a resource is private (i.e., should not be
+shown) and false when a resource is public.
 
 User-facing changes
 ~~~~~~~~~~~~~~~~~~~
