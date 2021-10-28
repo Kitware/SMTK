@@ -1,4 +1,5 @@
 set(smtkGeometryPythonTests
+  testGeometryModuleImport
 )
 
 # Additional tests that require SMTK_DATA_DIR

@@ -15,8 +15,6 @@
 
 #include "smtk/geometry/Geometry.h"
 
-#include "smtk/common/UUID.h"
-#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/geometry/Backend.h"
 #include "smtk/geometry/Resource.h"
 
@@ -35,9 +33,8 @@ inline PySharedPtrClass< smtk::geometry::Geometry > pybind11_init_smtk_geometry_
     .def("resource", &smtk::geometry::Geometry::resource)
     .def("typeName", &smtk::geometry::Geometry::typeName)
     .def("visit", &smtk::geometry::Geometry::visit, py::arg("fn"))
-    .def_readonly_static("Initial", &smtk::geometry::Geometry::Initial)
-    .def_readonly_static("Invalid", &smtk::geometry::Geometry::Invalid)
-    .def_readonly_static("type_name", &smtk::geometry::Geometry::type_name)
+    .def("Initial", [](){ return smtk::geometry::Geometry::Initial; })
+    .def("Invalid", [](){ return smtk::geometry::Geometry::Invalid; })
     ;
   return instance;
 }
