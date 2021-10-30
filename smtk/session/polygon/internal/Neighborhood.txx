@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_internal_Neighborhood_txx
-#define __smtk_session_polygon_internal_Neighborhood_txx
+#ifndef smtk_session_polygon_internal_Neighborhood_txx
+#define smtk_session_polygon_internal_Neighborhood_txx
 
 #include "smtk/session/polygon/internal/Neighborhood.h"
 
@@ -72,4 +72,4 @@ void Neighborhood::getLoops(T evaluator)
 } //namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_internal_Neighborhood_txx
+#endif // smtk_session_polygon_internal_Neighborhood_txx

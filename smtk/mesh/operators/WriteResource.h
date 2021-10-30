@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_WriteResource_h
-#define __smtk_mesh_WriteResource_h
+#ifndef smtk_mesh_WriteResource_h
+#define smtk_mesh_WriteResource_h
 
 #include "smtk/operation/XMLOperation.h"
 

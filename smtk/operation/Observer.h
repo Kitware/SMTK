@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_operation_Observer_h
-#define __smtk_operation_Observer_h
+#ifndef smtk_operation_Observer_h
+#define smtk_operation_Observer_h
 
 #include "smtk/common/Observers.h"
 #include "smtk/operation/Operation.h"
@@ -46,4 +46,4 @@ typedef smtk::common::Observers<Observer> Observers;
 } // namespace operation
 } // namespace smtk
 
-#endif // __smtk_operation_Observer_h
+#endif // smtk_operation_Observer_h

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_core_QueryTypes_h
-#define __smtk_mesh_core_QueryTypes_h
+#ifndef smtk_mesh_core_QueryTypes_h
+#define smtk_mesh_core_QueryTypes_h
 
 //Query Types is a convenience header, whose goal is to make it easier
 //for users to query a manager

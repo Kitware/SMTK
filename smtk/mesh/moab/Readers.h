@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_Readers_h
-#define __smtk_mesh_moab_Readers_h
+#ifndef smtk_mesh_moab_Readers_h
+#define smtk_mesh_moab_Readers_h
 
 #include "smtk/PublicPointerDefs.h"
 

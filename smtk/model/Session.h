@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Session_h
-#define __smtk_model_Session_h
+#ifndef smtk_model_Session_h
+#define smtk_model_Session_h
 /*! \file */
 
 #include "smtk/AutoInit.h"
@@ -243,4 +243,4 @@ protected:
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Session_h
+#endif // smtk_model_Session_h

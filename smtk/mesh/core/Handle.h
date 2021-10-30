@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_core_Handle_h
-#define __smtk_mesh_core_Handle_h
+#ifndef smtk_mesh_core_Handle_h
+#define smtk_mesh_core_Handle_h
 
 #include "smtk/CoreExports.h"
 

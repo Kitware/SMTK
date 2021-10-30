@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_simulation_UserData_h
-#define __smtk_simulation_UserData_h
+#ifndef smtk_simulation_UserData_h
+#define smtk_simulation_UserData_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -98,4 +98,4 @@ protected:
 } // namespace simulation
 } // namespace smtk
 
-#endif // __smtk_simulation_UserData_h
+#endif // smtk_simulation_UserData_h

@@ -12,8 +12,8 @@
 //  Create and controls the arc editing singelton widget
 // .SECTION Caveats
 
-#ifndef __smtk_polygon_pq_ArcWidgetManager_h
-#define __smtk_polygon_pq_ArcWidgetManager_h
+#ifndef smtk_polygon_pq_ArcWidgetManager_h
+#define smtk_polygon_pq_ArcWidgetManager_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
@@ -98,4 +98,4 @@ protected:
   bool EnableWidgetApplyButton;
 };
 
-#endif /* __smtk_polygon_pq_ArcWidgetManager_h */
+#endif /* smtk_polygon_pq_ArcWidgetManager_h */

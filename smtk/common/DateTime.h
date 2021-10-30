@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_DateTime_h
-#define __smtk_common_DateTime_h
+#ifndef smtk_common_DateTime_h
+#define smtk_common_DateTime_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -130,4 +130,4 @@ protected:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_DateTime_h
+#endif // smtk_common_DateTime_h

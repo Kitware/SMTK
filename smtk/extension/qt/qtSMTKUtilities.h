@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_qtSMTKUtilities_h
-#define __smtk_attribute_qtSMTKUtilities_h
+#ifndef smtk_attribute_qtSMTKUtilities_h
+#define smtk_attribute_qtSMTKUtilities_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtUIManager.h" // for qtItemConstructor definition

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_common_UnionFind_h
-#define __smtk_common_UnionFind_h
+#ifndef smtk_common_UnionFind_h
+#define smtk_common_UnionFind_h
 
 #include <map>
 #include <set>
@@ -163,4 +163,4 @@ void UnionFind<T>::collapseIds(std::map<T, T>& collapsedIds, T startCount)
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_UnionFind_h
+#endif // smtk_common_UnionFind_h

@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_vtk_ModelView_h
-#define __smtk_vtk_ModelView_h
+#ifndef smtk_vtk_ModelView_h
+#define smtk_vtk_ModelView_h
 
 #include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 #include "vtkRenderView.h"
@@ -32,4 +32,4 @@ protected:
   ~vtkModelView() override;
 };
 
-#endif // __smtk_vtk_ModelView_h
+#endif // smtk_vtk_ModelView_h

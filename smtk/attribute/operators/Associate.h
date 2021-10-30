@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_operators_Associate_h
-#define __smtk_attribute_operators_Associate_h
+#ifndef smtk_attribute_operators_Associate_h
+#define smtk_attribute_operators_Associate_h
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -37,4 +37,4 @@ protected:
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_operators_Associate_h
+#endif // smtk_attribute_operators_Associate_h

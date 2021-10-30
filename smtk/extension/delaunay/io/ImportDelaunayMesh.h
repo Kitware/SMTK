@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_extension_delaunay_io_ImportDelaunayMesh_h
-#define __smtk_extension_delaunay_io_ImportDelaunayMesh_h
+#ifndef smtk_extension_delaunay_io_ImportDelaunayMesh_h
+#define smtk_extension_delaunay_io_ImportDelaunayMesh_h
 
 #include "smtk/extension/delaunay/Exports.h"
 //forward declarers for Manager and Meshresource

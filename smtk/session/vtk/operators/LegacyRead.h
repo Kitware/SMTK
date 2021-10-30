@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_vtk_LegacyRead_h
-#define __smtk_session_vtk_LegacyRead_h
+#ifndef smtk_session_vtk_LegacyRead_h
+#define smtk_session_vtk_LegacyRead_h
 
 #include "smtk/session/vtk/Operation.h"
 #include "smtk/session/vtk/Resource.h"
@@ -49,4 +49,4 @@ SMTKVTKSESSION_EXPORT smtk::resource::ResourcePtr legacyRead(const std::string&)
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_vtk_LegacyRead_h
+#endif // smtk_session_vtk_LegacyRead_h

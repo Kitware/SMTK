@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_resource_query_Manager_h
-#define __smtk_resource_query_Manager_h
+#ifndef smtk_resource_query_Manager_h
+#define smtk_resource_query_Manager_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"

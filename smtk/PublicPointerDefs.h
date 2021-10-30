@@ -9,8 +9,8 @@
 //=========================================================================
 /// @file PublicPointerDefs.h Shared pointer typedefs for readable code.
 
-#ifndef __smtk_PublicPointerDefs_h
-#define __smtk_PublicPointerDefs_h
+#ifndef smtk_PublicPointerDefs_h
+#define smtk_PublicPointerDefs_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
@@ -724,4 +724,4 @@ struct shared_ptr_type<T, true>
 };
 } // namespace internal
 } // namespace smtk
-#endif /* __smtk_PublicPointerDefs_h */
+#endif /* smtk_PublicPointerDefs_h */

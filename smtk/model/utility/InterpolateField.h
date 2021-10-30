@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_model_utility_InterpolateField_h
-#define __smtk_model_utility_InterpolateField_h
+#ifndef smtk_model_utility_InterpolateField_h
+#define smtk_model_utility_InterpolateField_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"

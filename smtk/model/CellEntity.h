@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_CellEntity_h
-#define __smtk_model_CellEntity_h
+#ifndef smtk_model_CellEntity_h
+#define smtk_model_CellEntity_h
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityRefArrangementOps.h" // For appendAllRelations
@@ -74,4 +74,4 @@ T CellEntity::uses() const
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_CellEntity_h
+#endif // smtk_model_CellEntity_h

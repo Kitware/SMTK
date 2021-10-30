@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_extension_qtDoubleItem_h
-#define __smtk_extension_qtDoubleItem_h
+#ifndef smtk_extension_qtDoubleItem_h
+#define smtk_extension_qtDoubleItem_h
 
 #include "smtk/extension/qt/qtInputsItem.h"
 

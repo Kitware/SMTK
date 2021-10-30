@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
-#define __smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
+#ifndef smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
+#define smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
 #ifndef __VTK_WRAP__
 
 #include "smtk/AutoInit.h"

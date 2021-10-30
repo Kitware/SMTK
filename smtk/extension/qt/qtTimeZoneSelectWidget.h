@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef __smtk_extension_qtTimeZoneSelectWidget_h
-#define __smtk_extension_qtTimeZoneSelectWidget_h
+#ifndef smtk_extension_qtTimeZoneSelectWidget_h
+#define smtk_extension_qtTimeZoneSelectWidget_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QItemSelection>
@@ -63,4 +63,4 @@ private:
 } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_extension_qtTimeZoneSelectWidget_h
+#endif // smtk_extension_qtTimeZoneSelectWidget_h

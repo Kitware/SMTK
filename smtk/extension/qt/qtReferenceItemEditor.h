@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtReferenceItemEditor_h
-#define __smtk_extension_qtReferenceItemEditor_h
+#ifndef smtk_extension_qtReferenceItemEditor_h
+#define smtk_extension_qtReferenceItemEditor_h
 
 #include "smtk/extension/qt/qtItem.h"
 

@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_qt_InteractionWidget_h
-#define __smtk_qt_InteractionWidget_h
+#ifndef smtk_qt_InteractionWidget_h
+#define smtk_qt_InteractionWidget_h
 
 #include <QPointer>
 #include <QWidget>

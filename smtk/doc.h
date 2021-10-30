@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_doc_h
-#define __smtk_doc_h
+#ifndef smtk_doc_h
+#define smtk_doc_h
 
 /*!\mainpage Simulation Modeling Tool Kit
  *
@@ -272,4 +272,4 @@ namespace vxl
 } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_doc_h
+#endif // smtk_doc_h

@@ -17,8 +17,8 @@
 // vtkOrientedGlyphContourRepresentation vtkContourRepresentation vtkContourWidget vtkPointPlacer
 // vtkContourLineInterpolator
 
-#ifndef __smtk_vtk_SMTKArcRepresentation_h
-#define __smtk_vtk_SMTKArcRepresentation_h
+#ifndef smtk_vtk_SMTKArcRepresentation_h
+#define smtk_vtk_SMTKArcRepresentation_h
 
 #include "smtk/extension/vtk/widgets/vtkSMTKWidgetsExtModule.h" // For export macro
 

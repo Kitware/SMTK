@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ShellEntity_txx
-#define __smtk_model_ShellEntity_txx
+#ifndef smtk_model_ShellEntity_txx
+#define smtk_model_ShellEntity_txx
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRefArrangementOps.h"
@@ -36,4 +36,4 @@ T ShellEntity::cellsOfUses() const
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_ShellEntity_txx
+#endif // smtk_model_ShellEntity_txx

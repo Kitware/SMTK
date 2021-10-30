@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_io_XmlDocV2Parser_h
-#define __smtk_io_XmlDocV2Parser_h
+#ifndef smtk_io_XmlDocV2Parser_h
+#define smtk_io_XmlDocV2Parser_h
 
 #include "smtk/io/XmlDocV1Parser.h"
 #include "smtk/view/Configuration.h"
@@ -59,4 +59,4 @@ private:
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_XmlDocV2Parser_h */
+#endif /* smtk_io_XmlDocV2Parser_h */

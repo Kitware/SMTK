@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_attribute_EvaluatorFactory_h
-#define __smtk_attribute_EvaluatorFactory_h
+#ifndef smtk_attribute_EvaluatorFactory_h
+#define smtk_attribute_EvaluatorFactory_h
 
 #include "smtk/CoreExports.h"
 
@@ -132,4 +132,4 @@ bool EvaluatorFactory::unregisterEvaluator()
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_EvaluatorFactory_h
+#endif // smtk_attribute_EvaluatorFactory_h

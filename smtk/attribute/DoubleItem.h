@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_DoubleItem_h
-#define __smtk_attribute_DoubleItem_h
+#ifndef smtk_attribute_DoubleItem_h
+#define smtk_attribute_DoubleItem_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/attribute/ValueItemTemplate.h"
@@ -47,4 +47,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_DoubleItem_h */
+#endif /* smtk_attribute_DoubleItem_h */

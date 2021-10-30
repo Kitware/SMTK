@@ -17,8 +17,8 @@
 // filter multiple times for each line in a polydata, and we want each
 // as a separate polydate but all using the same points.
 
-#ifndef __smtk_vtk_ExtractLine_h
-#define __smtk_vtk_ExtractLine_h
+#ifndef smtk_vtk_ExtractLine_h
+#define smtk_vtk_ExtractLine_h
 
 #include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"

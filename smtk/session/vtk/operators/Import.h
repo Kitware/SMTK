@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_vtk_Import_h
-#define __smtk_session_vtk_Import_h
+#ifndef smtk_session_vtk_Import_h
+#define smtk_session_vtk_Import_h
 
 #include "smtk/session/vtk/Operation.h"
 #include "smtk/session/vtk/Resource.h"
@@ -50,4 +50,4 @@ SMTKVTKSESSION_EXPORT smtk::resource::ResourcePtr importResource(const std::stri
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_vtk_Import_h
+#endif // smtk_session_vtk_Import_h

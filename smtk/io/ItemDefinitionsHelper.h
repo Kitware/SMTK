@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_io_ItemDefinitionsHelper_h
-#define __smtk_io_ItemDefinitionsHelper_h
+#ifndef smtk_io_ItemDefinitionsHelper_h
+#define smtk_io_ItemDefinitionsHelper_h
 
 #include "smtk/io/XmlDocV1Parser.h"
 
@@ -339,4 +339,4 @@ public:
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_ItemDefinitionsHelper_h */
+#endif /* smtk_io_ItemDefinitionsHelper_h */

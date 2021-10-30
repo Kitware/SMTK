@@ -13,8 +13,8 @@
 // and a collection of internal points.
 // Each arc has a unique Id
 
-#ifndef __smtk_polygon_vtkPolygonArcProvider_h
-#define __smtk_polygon_vtkPolygonArcProvider_h
+#ifndef smtk_polygon_vtkPolygonArcProvider_h
+#define smtk_polygon_vtkPolygonArcProvider_h
 
 #include "smtk/session/polygon/vtk/vtkPolygonOperationsExtModule.h"
 #include "vtkPolyDataAlgorithm.h"

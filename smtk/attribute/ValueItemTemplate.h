@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ValueItemTemplate_h
-#define __smtk_attribute_ValueItemTemplate_h
+#ifndef smtk_attribute_ValueItemTemplate_h
+#define smtk_attribute_ValueItemTemplate_h
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Evaluator.h"
@@ -663,4 +663,4 @@ std::string ValueItemTemplate<DataT>::streamValue(const DataT& val) const
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_ValueItemTemplate_h */
+#endif /* smtk_attribute_ValueItemTemplate_h */

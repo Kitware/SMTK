@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_RegisterPythonOperations_h
-#define __smtk_model_RegisterPythonOperations_h
+#ifndef smtk_model_RegisterPythonOperations_h
+#define smtk_model_RegisterPythonOperations_h
 
 #include "smtk/CoreExports.h"
 

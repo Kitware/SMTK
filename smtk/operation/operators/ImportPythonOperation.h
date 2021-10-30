@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ImportPythonOperation_h
-#define __smtk_model_ImportPythonOperation_h
+#ifndef smtk_model_ImportPythonOperation_h
+#define smtk_model_ImportPythonOperation_h
 
 #include "smtk/operation/Operation.h"
 
@@ -48,4 +48,4 @@ protected:
 } // namespace operation
 } // namespace smtk
 
-#endif // __smtk_model_ImportPythonOperation_h
+#endif // smtk_model_ImportPythonOperation_h

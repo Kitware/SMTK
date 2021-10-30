@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_common_timezonespec_h
-#define __smtk_common_timezonespec_h
+#ifndef smtk_common_timezonespec_h
+#define smtk_common_timezonespec_h
 
 #include "smtk/CoreExports.h"
 
@@ -25,4 +25,4 @@ extern const char timezonespec_csv[35855];
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_timezonespec_h
+#endif // smtk_common_timezonespec_h

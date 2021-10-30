@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_Observers_h
-#define __smtk_common_Observers_h
+#ifndef smtk_common_Observers_h
+#define smtk_common_Observers_h
 
 #include <functional>
 #include <iostream>
@@ -473,4 +473,4 @@ private:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_Observers_h
+#endif // smtk_common_Observers_h

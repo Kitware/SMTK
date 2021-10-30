@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_vtk_Write_h
-#define __smtk_session_vtk_Write_h
+#ifndef smtk_session_vtk_Write_h
+#define smtk_session_vtk_Write_h
 
 #include "smtk/session/vtk/Operation.h"
 #include "smtk/session/vtk/Resource.h"
@@ -45,4 +45,4 @@ SMTKVTKSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_vtk_Write_h
+#endif // smtk_session_vtk_Write_h

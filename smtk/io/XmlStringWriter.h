@@ -11,8 +11,8 @@
 // .SECTION Description - Header file only
 // .SECTION See Also
 
-#ifndef __smtk_io_XmlStringWriter_h
-#define __smtk_io_XmlStringWriter_h
+#ifndef smtk_io_XmlStringWriter_h
+#define smtk_io_XmlStringWriter_h
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -127,4 +127,4 @@ protected:
 } // namespace io
 } // namespace smtk
 
-#endif // __smtk_io_XmlStringWriter_h
+#endif // smtk_io_XmlStringWriter_h

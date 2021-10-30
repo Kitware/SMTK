@@ -12,8 +12,8 @@
 // Operation to convert the line cells in the input polygon to multiple edge(s)
 // in a polygon model.
 
-#ifndef __smtk_polygon_vtkPolygonContourOperation_h
-#define __smtk_polygon_vtkPolygonContourOperation_h
+#ifndef smtk_polygon_vtkPolygonContourOperation_h
+#define smtk_polygon_vtkPolygonContourOperation_h
 
 #include "smtk/extension/vtk/operators/vtkSMTKOperation.h"
 #include "smtk/session/polygon/vtk/vtkPolygonOperationsExtModule.h"

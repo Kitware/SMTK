@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Volume_h
-#define __smtk_model_Volume_h
+#ifndef smtk_model_Volume_h
+#define smtk_model_Volume_h
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/VolumeUse.h"
@@ -45,4 +45,4 @@ typedef std::vector<Volume> Volumes;
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Volume_h
+#endif // smtk_model_Volume_h

@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_extension_qtEmittingStringBuffer_h
-#define __smtk_extension_qtEmittingStringBuffer_h
+#ifndef smtk_extension_qtEmittingStringBuffer_h
+#define smtk_extension_qtEmittingStringBuffer_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/io/Logger.h"

@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_DeleteMesh_h
-#define __smtk_mesh_DeleteMesh_h
+#ifndef smtk_mesh_DeleteMesh_h
+#define smtk_mesh_DeleteMesh_h
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -42,4 +42,4 @@ protected:
 } //namespace mesh
 } // namespace smtk
 
-#endif // __smtk_mesh_DeleteMesh_h
+#endif // smtk_mesh_DeleteMesh_h

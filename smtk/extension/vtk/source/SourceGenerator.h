@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extensions_vtk_source_SourceGenerator_h
-#define __smtk_extensions_vtk_source_SourceGenerator_h
+#ifndef smtk_extensions_vtk_source_SourceGenerator_h
+#define smtk_extensions_vtk_source_SourceGenerator_h
 
 #include "smtk/PublicPointerDefs.h"
 

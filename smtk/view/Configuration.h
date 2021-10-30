@@ -12,8 +12,8 @@
 //   A SMTK view is used to describe workflows
 // .SECTION See Also
 
-#ifndef __smtk_view_Configuration_h
-#define __smtk_view_Configuration_h
+#ifndef smtk_view_Configuration_h
+#define smtk_view_Configuration_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -147,4 +147,4 @@ protected:
 } // namespace view
 } // namespace smtk
 
-#endif /* __smtk_view_Configuration_h */
+#endif /* smtk_view_Configuration_h */

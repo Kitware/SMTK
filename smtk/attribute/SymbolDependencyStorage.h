@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_SymbolDependencyStorage_h
-#define __smtk_attribute_SymbolDependencyStorage_h
+#ifndef smtk_attribute_SymbolDependencyStorage_h
+#define smtk_attribute_SymbolDependencyStorage_h
 
 #include "smtk/CoreExports.h"
 
@@ -64,4 +64,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_SymbolDependencyStorage_h
+#endif // smtk_attribute_SymbolDependencyStorage_h

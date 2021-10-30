@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef __smtk_extension_qtNewAttributeWidget_h
-#define __smtk_extension_qtNewAttributeWidget_h
+#ifndef smtk_extension_qtNewAttributeWidget_h
+#define smtk_extension_qtNewAttributeWidget_h
 
 #include <QDialog>
 

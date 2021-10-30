@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_project_MetadataObserver_h
-#define __smtk_project_MetadataObserver_h
+#ifndef smtk_project_MetadataObserver_h
+#define smtk_project_MetadataObserver_h
 
 #include "smtk/CoreExports.h"
 

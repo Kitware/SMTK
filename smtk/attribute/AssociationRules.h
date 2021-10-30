@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_attribute_AssociationRules_h
-#define __smtk_attribute_AssociationRules_h
+#ifndef smtk_attribute_AssociationRules_h
+#define smtk_attribute_AssociationRules_h
 
 #include "smtk/CoreExports.h"
 

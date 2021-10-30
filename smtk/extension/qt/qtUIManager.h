@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_qtUIManager_h
-#define __smtk_extension_qtUIManager_h
+#ifndef smtk_extension_qtUIManager_h
+#define smtk_extension_qtUIManager_h
 
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"

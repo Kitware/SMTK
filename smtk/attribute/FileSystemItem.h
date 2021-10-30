@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_FileSystemItem_h
-#define __smtk_attribute_FileSystemItem_h
+#ifndef smtk_attribute_FileSystemItem_h
+#define smtk_attribute_FileSystemItem_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -130,4 +130,4 @@ bool FileSystemItem::appendValues(I vbegin, I vend)
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_FileSystemItem_h */
+#endif /* smtk_attribute_FileSystemItem_h */

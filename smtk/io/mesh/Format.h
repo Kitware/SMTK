@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_io_Formats_h
-#define __smtk_io_Formats_h
+#ifndef smtk_io_Formats_h
+#define smtk_io_Formats_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/common/CompilerInformation.h"

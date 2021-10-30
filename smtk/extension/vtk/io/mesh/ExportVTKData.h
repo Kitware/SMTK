@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_extension_vtk_io_mesh_ExportVTKData_h
-#define __smtk_extension_vtk_io_mesh_ExportVTKData_h
+#ifndef smtk_extension_vtk_io_mesh_ExportVTKData_h
+#define smtk_extension_vtk_io_mesh_ExportVTKData_h
 
 #include "smtk/extension/vtk/io/IOVTKExports.h"
 //forward declarers for Manager and Resource

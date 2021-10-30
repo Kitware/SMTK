@@ -13,8 +13,8 @@
 // For example, a vtk polydata is used as a geometry intput to an operator
 // in an smtk session where the vtk data will be converted to smtk geometry.
 
-#ifndef __smtk_vtk_SMTKOperation_h
-#define __smtk_vtk_SMTKOperation_h
+#ifndef smtk_vtk_SMTKOperation_h
+#define smtk_vtk_SMTKOperation_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/vtk/operators/vtkSMTKOperationsExtModule.h" // For export macro

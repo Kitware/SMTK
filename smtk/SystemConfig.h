@@ -12,8 +12,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_SystemConfig_h
-#define __smtk_SystemConfig_h
+#ifndef smtk_SystemConfig_h
+#define smtk_SystemConfig_h
 
 //Windows specific stuff
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)

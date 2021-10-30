@@ -11,8 +11,8 @@
 /// \file GroupItemDefinition.h
 /// \brief Documents the GroupItemDefintion class.
 
-#ifndef __smtk_attribute_GroupItemDefinition_h
-#define __smtk_attribute_GroupItemDefinition_h
+#ifndef smtk_attribute_GroupItemDefinition_h
+#define smtk_attribute_GroupItemDefinition_h
 
 #include "smtk/attribute/ItemDefinition.h"
 #include <map>
@@ -184,4 +184,4 @@ inline int GroupItemDefinition::findItemPosition(const std::string& inName) cons
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_GroupItemDefinition_h */
+#endif /* smtk_attribute_GroupItemDefinition_h */

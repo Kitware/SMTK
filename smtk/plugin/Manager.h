@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_plugin_Manager_h
-#define __smtk_plugin_Manager_h
+#ifndef smtk_plugin_Manager_h
+#define smtk_plugin_Manager_h
 
 #include "smtk/CoreExports.h"
 

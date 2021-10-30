@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_PointerDefs_h
-#define __smtk_session_polygon_PointerDefs_h
+#ifndef smtk_session_polygon_PointerDefs_h
+#define smtk_session_polygon_PointerDefs_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
@@ -27,4 +27,4 @@ typedef smtk::shared_ptr<smtk::session::polygon::Session> SessionPtr;
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_PointerDefs_h
+#endif // smtk_session_polygon_PointerDefs_h

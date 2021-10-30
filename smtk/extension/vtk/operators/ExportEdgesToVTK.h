@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ExportEdgesToVTK_h
-#define __smtk_model_ExportEdgesToVTK_h
+#ifndef smtk_model_ExportEdgesToVTK_h
+#define smtk_model_ExportEdgesToVTK_h
 #ifndef __VTK_WRAP__
 
 #include "smtk/extension/vtk/operators/vtkSMTKOperationsExtModule.h" // For export macro
@@ -36,4 +36,4 @@ protected:
 } // namespace smtk
 
 #endif
-#endif // __smtk_model_ExportEdgesToVTK_h
+#endif // smtk_model_ExportEdgesToVTK_h

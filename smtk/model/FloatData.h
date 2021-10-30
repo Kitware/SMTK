@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_FloatData_h
-#define __smtk_model_FloatData_h
+#ifndef smtk_model_FloatData_h
+#define smtk_model_FloatData_h
 
 #include "smtk/SystemConfig.h"
 
@@ -34,4 +34,4 @@ typedef FloatData::const_iterator PropertyNameWithConstFloats;
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_FloatData_h
+#endif // smtk_model_FloatData_h

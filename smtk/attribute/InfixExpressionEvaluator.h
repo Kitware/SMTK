@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_InfixExpressionEvaluator_h
-#define __smtk_attribute_InfixExpressionEvaluator_h
+#ifndef smtk_attribute_InfixExpressionEvaluator_h
+#define smtk_attribute_InfixExpressionEvaluator_h
 
 #include "smtk/CoreExports.h"
 
@@ -52,4 +52,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_InfixExpressionEvaluator_h
+#endif // smtk_attribute_InfixExpressionEvaluator_h

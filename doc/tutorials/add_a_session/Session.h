@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_ex_session_h
-#define __smtk_ex_session_h
+#ifndef smtk_ex_session_h
+#define smtk_ex_session_h
 
 #include "smtk/common/UUID.h"
 #include "smtk/model/Session.h"
@@ -93,4 +93,4 @@ protected:
 } // namespace session
 } // namespace smtk
 
-#endif //  __smtk_ex_session_h
+#endif //  smtk_ex_session_h

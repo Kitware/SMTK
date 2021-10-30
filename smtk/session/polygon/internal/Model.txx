@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_internal_model_txx
-#define __smtk_session_polygon_internal_model_txx
+#ifndef smtk_session_polygon_internal_model_txx
+#define smtk_session_polygon_internal_model_txx
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
@@ -367,4 +367,4 @@ bool pmodel::tweakEdge(
 } // namespace polygon
 } // namespace session
 } // namespace smtk
-#endif // __smtk_session_polygon_internal_model_txx
+#endif // smtk_session_polygon_internal_model_txx

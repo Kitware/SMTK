@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_Tags_h
-#define __smtk_mesh_moab_Tags_h
+#ifndef smtk_mesh_moab_Tags_h
+#define smtk_mesh_moab_Tags_h
 
 #ifndef BEING_INCLUDED_BY_INTERFACE_CXX
 #error This file can only be included by smtk::mesh::moab::Interface

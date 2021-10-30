@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_io_attributeUtils_h
-#define __smtk_io_attributeUtils_h
+#ifndef smtk_io_attributeUtils_h
+#define smtk_io_attributeUtils_h
 
 #include "smtk/CoreExports.h"
 

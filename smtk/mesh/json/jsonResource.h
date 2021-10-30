@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_json_jsonResource_h
-#define __smtk_mesh_json_jsonResource_h
+#ifndef smtk_mesh_json_jsonResource_h
+#define smtk_mesh_json_jsonResource_h
 
 #include "smtk/mesh/core/Resource.h"
 

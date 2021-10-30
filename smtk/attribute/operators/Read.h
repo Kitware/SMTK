@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_operators_Read_h
-#define __smtk_attribute_operators_Read_h
+#ifndef smtk_attribute_operators_Read_h
+#define smtk_attribute_operators_Read_h
 
 #include "smtk/operation/ResourceManagerOperation.h"
 
@@ -37,4 +37,4 @@ SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_operators_Read_h
+#endif // smtk_attribute_operators_Read_h

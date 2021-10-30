@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_Options_h
-#define __smtk_Options_h
+#ifndef smtk_Options_h
+#define smtk_Options_h
 
 // Compile-time options chosen for this build of SMTK.
 
@@ -27,4 +27,4 @@
 
 #define SMTK_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
-#endif // __smtk_Options_h
+#endif // smtk_Options_h

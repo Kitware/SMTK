@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_view_SelectionObserver_h
-#define __smtk_view_SelectionObserver_h
+#ifndef smtk_view_SelectionObserver_h
+#define smtk_view_SelectionObserver_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -30,4 +30,4 @@ typedef smtk::common::Observers<SelectionObserver> SelectionObservers;
 } // namespace view
 } // namespace smtk
 
-#endif // __smtk_view_SelectionObserver_h
+#endif // smtk_view_SelectionObserver_h

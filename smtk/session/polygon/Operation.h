@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_polygon_Operation_h
-#define __smtk_session_polygon_Operation_h
+#ifndef smtk_session_polygon_Operation_h
+#define smtk_session_polygon_Operation_h
 
 #include "smtk/operation/XMLOperation.h"
 #include "smtk/session/polygon/Exports.h"
@@ -64,4 +64,4 @@ protected:
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_Operation_h
+#endif // smtk_session_polygon_Operation_h

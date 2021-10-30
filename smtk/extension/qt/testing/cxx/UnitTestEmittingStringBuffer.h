@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
-#define __smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
+#ifndef smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
+#define smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
 
 #include <QObject>
 

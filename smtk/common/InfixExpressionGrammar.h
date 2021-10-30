@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_InfixExpressionGrammar_h
-#define __smtk_common_InfixExpressionGrammar_h
+#ifndef smtk_common_InfixExpressionGrammar_h
+#define smtk_common_InfixExpressionGrammar_h
 /*!\file InfixExpressionGrammar.h - Public interface to evaluating infix mathematical expressions. */
 
 #include <functional>
@@ -65,4 +65,4 @@ private:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_InfixExpressionGrammar_h
+#endif // smtk_common_InfixExpressionGrammar_h

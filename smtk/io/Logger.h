@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_io_Logger_h
-#define __smtk_io_Logger_h
+#ifndef smtk_io_Logger_h
+#define smtk_io_Logger_h
 /*! \file */
 
 #include "smtk/CoreExports.h"
@@ -196,4 +196,4 @@ void to_json(J& json, const Logger::Record& rec)
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_Logger_h */
+#endif /* smtk_io_Logger_h */

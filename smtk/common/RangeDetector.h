@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_RangeDetector_h
-#define __smtk_common_RangeDetector_h
+#ifndef smtk_common_RangeDetector_h
+#define smtk_common_RangeDetector_h
 
 #include <iostream>
 #include <map>
@@ -109,4 +109,4 @@ protected:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_RangeDetector_h
+#endif // smtk_common_RangeDetector_h

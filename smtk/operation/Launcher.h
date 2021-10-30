@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_operation_Launcher_h
-#define __smtk_operation_Launcher_h
+#ifndef smtk_operation_Launcher_h
+#define smtk_operation_Launcher_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/common/Generator.h"
@@ -68,4 +68,4 @@ protected:
 } // namespace operation
 } // namespace smtk
 
-#endif // __smtk_operation_Launcher_h
+#endif // smtk_operation_Launcher_h

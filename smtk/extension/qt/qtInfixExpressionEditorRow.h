@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_qtInfixExpressionEditorRow_h
-#define __smtk_extension_qtInfixExpressionEditorRow_h
+#ifndef smtk_extension_qtInfixExpressionEditorRow_h
+#define smtk_extension_qtInfixExpressionEditorRow_h
 
 #include "smtk/extension/qt/Exports.h"
 

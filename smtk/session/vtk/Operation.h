@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_vtk_Operation_h
-#define __smtk_session_vtk_Operation_h
+#ifndef smtk_session_vtk_Operation_h
+#define smtk_session_vtk_Operation_h
 
 #include "smtk/operation/XMLOperation.h"
 #include "smtk/session/vtk/Exports.h"
@@ -40,4 +40,4 @@ class SMTKVTKSESSION_EXPORT Operation : public smtk::operation::XMLOperation
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_vtk_Operation_h
+#endif // smtk_session_vtk_Operation_h

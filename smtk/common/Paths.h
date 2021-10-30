@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_common_Paths_h
-#define __smtk_common_Paths_h
+#ifndef smtk_common_Paths_h
+#define smtk_common_Paths_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/common/CompilerInformation.h"
@@ -93,4 +93,4 @@ protected:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_Paths_h
+#endif // smtk_common_Paths_h

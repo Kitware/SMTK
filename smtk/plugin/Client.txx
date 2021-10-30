@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_plugin_Client_txx
-#define __smtk_plugin_Client_txx
+#ifndef smtk_plugin_Client_txx
+#define smtk_plugin_Client_txx
 
 #include "smtk/plugin/Client.h"
 #include "smtk/plugin/ClientBase.h"

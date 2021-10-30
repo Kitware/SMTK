@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_qt_ArcWidget_h
-#define __smtk_qt_ArcWidget_h
+#ifndef smtk_qt_ArcWidget_h
+#define smtk_qt_ArcWidget_h
 
 /// qtArcWidget is a qtInteractionWidget subclass that uses a
 /// **smtkArcWidgetRepresentation** for enabling users to interactively add

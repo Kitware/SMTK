@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_DateTimeItem_h
-#define __smtk_attribute_DateTimeItem_h
+#ifndef smtk_attribute_DateTimeItem_h
+#define smtk_attribute_DateTimeItem_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
@@ -78,4 +78,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_DateTimeItem_h */
+#endif /* smtk_attribute_DateTimeItem_h */

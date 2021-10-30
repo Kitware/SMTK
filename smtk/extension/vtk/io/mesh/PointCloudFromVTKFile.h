@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extensions_vtk_mesh_PointCloudFromVTK_h
-#define __smtk_extensions_vtk_mesh_PointCloudFromVTK_h
+#ifndef smtk_extensions_vtk_mesh_PointCloudFromVTK_h
+#define smtk_extensions_vtk_mesh_PointCloudFromVTK_h
 
 #include "smtk/AutoInit.h"
 

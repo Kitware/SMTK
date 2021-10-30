@@ -14,8 +14,8 @@
 // Resource::createAttribute().
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Definition_h
-#define __smtk_attribute_Definition_h
+#ifndef smtk_attribute_Definition_h
+#define smtk_attribute_Definition_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -536,4 +536,4 @@ void Definition::filterItemDefinitions(
 }
 } // namespace attribute
 } // namespace smtk
-#endif /* __smtk_attribute_Definition_h */
+#endif /* smtk_attribute_Definition_h */

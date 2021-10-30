@@ -15,8 +15,8 @@
 // This class might be better implemented as a singleton, but it is not
 // clear that the added complexity (for thread-safe use) is justified.
 
-#ifndef __smtk_extension_qtTimeZoneRegionModel_h
-#define __smtk_extension_qtTimeZoneRegionModel_h
+#ifndef smtk_extension_qtTimeZoneRegionModel_h
+#define smtk_extension_qtTimeZoneRegionModel_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QAbstractItemModel>

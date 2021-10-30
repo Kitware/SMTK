@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_VoidItem_h
-#define __smtk_attribute_VoidItem_h
+#ifndef smtk_attribute_VoidItem_h
+#define smtk_attribute_VoidItem_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -44,4 +44,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_VoidItem_h */
+#endif /* smtk_attribute_VoidItem_h */

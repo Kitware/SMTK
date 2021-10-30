@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_InfixExpressionError_h
-#define __smtk_common_InfixExpressionError_h
+#ifndef smtk_common_InfixExpressionError_h
+#define smtk_common_InfixExpressionError_h
 /*!\file InfixExpressionError.h - Error codes for infix expression parsing and evaluation. */
 
 namespace smtk
@@ -30,4 +30,4 @@ enum class InfixExpressionError
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_InfixExpressionError_h
+#endif // smtk_common_InfixExpressionError_h

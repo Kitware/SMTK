@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_io_AttributeWriter_h
-#define __smtk_io_AttributeWriter_h
+#ifndef smtk_io_AttributeWriter_h
+#define smtk_io_AttributeWriter_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -132,4 +132,4 @@ private:
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_AttributeWriter_h */
+#endif /* smtk_io_AttributeWriter_h */

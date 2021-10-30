@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ModelEntityItemDefinition_h
-#define __smtk_attribute_ModelEntityItemDefinition_h
+#ifndef smtk_attribute_ModelEntityItemDefinition_h
+#define smtk_attribute_ModelEntityItemDefinition_h
 
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/common/UUID.h"
@@ -56,4 +56,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_ModelEntityItemDefinition_h */
+#endif /* smtk_attribute_ModelEntityItemDefinition_h */

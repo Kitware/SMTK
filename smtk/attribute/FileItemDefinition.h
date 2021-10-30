@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_FileItemDefinition_h
-#define __smtk_attribute_FileItemDefinition_h
+#ifndef smtk_attribute_FileItemDefinition_h
+#define smtk_attribute_FileItemDefinition_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -70,4 +70,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_FileItemDefinition_h */
+#endif /* smtk_attribute_FileItemDefinition_h */

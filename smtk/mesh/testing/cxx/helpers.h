@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_testing_cxx_helpers_h
-#define __smtk_mesh_testing_cxx_helpers_h
+#ifndef smtk_mesh_testing_cxx_helpers_h
+#define smtk_mesh_testing_cxx_helpers_h
 
 #include "smtk/mesh/core/CellTraits.h"
 

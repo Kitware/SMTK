@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_polygon_pq_SplitEdgeWidget_h
-#define __smtk_polygon_pq_SplitEdgeWidget_h
+#ifndef smtk_polygon_pq_SplitEdgeWidget_h
+#define smtk_polygon_pq_SplitEdgeWidget_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/session/polygon/qt/Exports.h"
@@ -81,4 +81,4 @@ private:
   smtk::weak_ptr<smtk::operation::Operation> m_edgeOp;
 };
 
-#endif // __smtk_polygon_pq_SplitEdgeWidget_h
+#endif // smtk_polygon_pq_SplitEdgeWidget_h
