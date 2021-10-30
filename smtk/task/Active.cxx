@@ -14,6 +14,8 @@ namespace smtk
 namespace task
 {
 
+constexpr const char* const Active::type_name;
+
 Active::Active(smtk::task::Instances* instances)
   : m_instances(instances)
   , m_observers(/* initializer */

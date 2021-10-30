@@ -29,6 +29,8 @@ namespace smtk
 namespace task
 {
 
+constexpr const char* const FillOutAttributes::type_name;
+
 FillOutAttributes::FillOutAttributes() = default;
 
 FillOutAttributes::FillOutAttributes(

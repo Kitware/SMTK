@@ -15,6 +15,8 @@ namespace smtk
 namespace task
 {
 
+constexpr const char* const Manager::type_name;
+
 Manager::Manager()
   : m_active(&m_taskInstances)
 {

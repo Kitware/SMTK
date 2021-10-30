@@ -53,6 +53,8 @@ std::set<smtk::task::Task*> workflowsOfTask(Task& task)
   return result;
 }
 
+constexpr const char* const Task::type_name;
+
 Task::Task() = default;
 
 Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Managers>& managers)

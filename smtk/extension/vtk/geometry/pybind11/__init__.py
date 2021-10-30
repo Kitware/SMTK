@@ -10,5 +10,5 @@
 #
 # =============================================================================
 
-import ._smtkPybindVTKGeometry
+from ._smtkPybindVTKGeometry import *
 from .._modules import vtkSMTKGeometryExt
