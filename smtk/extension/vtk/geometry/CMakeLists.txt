@@ -22,3 +22,7 @@ vtk_module_link(vtkSMTKGeometryExt
     # TODO: Use Boost:: imported targets and vtk_module_find_package.
     ${Boost_LIBRARIES}
 )
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  add_subdirectory(pybind11)
+endif()
