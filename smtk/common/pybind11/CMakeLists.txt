@@ -31,8 +31,9 @@ install(
   )
 
 install(
-     FILES
-     PybindUUIDTypeCaster.h
-     DESTINATION
-       include/smtk/${SMTK_VERSION}/smtk/common/pybind11
-     )
+  FILES
+    PybindUUIDTypeCaster.h
+    PybindScopedRawPointer.h
+  DESTINATION
+    include/smtk/${SMTK_VERSION}/smtk/common/pybind11
+)
