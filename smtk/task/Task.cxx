@@ -59,7 +59,7 @@ Task::Task() = default;
 
 Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Managers>& managers)
 {
-  if (managers->contains<smtk::task::Manager::Ptr>())
+  if (managers && managers->contains<smtk::task::Manager::Ptr>())
   {
     m_manager = managers->get<smtk::task::Manager::Ptr>();
   }
