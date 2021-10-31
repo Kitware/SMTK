@@ -27,6 +27,7 @@ using namespace nlohmann;
 #include "PybindRegistrar.h"
 #include "PybindState.h"
 #include "PybindTask.h"
+#include "PybindInstances.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -40,6 +41,7 @@ PYBIND11_MODULE(_smtkPybindTask, m)
   // comparing the dependencies of each of the wrapped objects.
   auto smtk_task_Active = pybind11_init_smtk_task_Active(m);
   auto smtk_task_Manager = pybind11_init_smtk_task_Manager(m);
+  auto smtk_task_Instances = pybind11_init_smtk_task_Instances(m);
   auto smtk_task_Registrar = pybind11_init_smtk_task_Registrar(m);
   auto smtk_task_Task = pybind11_init_smtk_task_Task(m);
   pybind11_init_smtk_task_State(m);
