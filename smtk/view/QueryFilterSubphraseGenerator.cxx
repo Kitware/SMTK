@@ -75,7 +75,8 @@ SubphraseGenerator::Path QueryFilterSubphraseGenerator::indexOfObjectInParent(
   {
     return result;
   }
-  resource::ComponentSet components = comp->resource()->find(objectGroupParent->componentFilter());
+  resource::ComponentSet components =
+    comp->resource()->filter(objectGroupParent->componentFilter());
   if (components.count(comp))
   {
     this->PreparePath(result, parentPath, this->IndexFromTitle(comp->name(), parent->subphrases()));

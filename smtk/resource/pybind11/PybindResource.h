@@ -33,8 +33,12 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("setName", &smtk::resource::Resource::setName)
    .def("setId", &smtk::resource::Resource::setId)
     .def("setLocation", &smtk::resource::Resource::setLocation)
-    .def("find", (smtk::resource::ComponentSet (smtk::resource::Resource::*)(const std::string&) const) &smtk::resource::Resource::find)
+    .def("filter", (smtk::resource::ComponentSet (smtk::resource::Resource::*)(const std::string&) const) &smtk::resource::Resource::filter)
+    .def("find", (smtk::resource::Component::Ptr (smtk::resource::Resource::*)(const smtk::common::UUID&) const) &smtk::resource::Resource::find)
     .def("manager", &smtk::resource::Resource::manager)
+
+    // SMTK_DEPRECATED_IN_21_09("Replaced by Resource.filter")
+    .def("find", (smtk::resource::ComponentSet (smtk::resource::Resource::*)(const std::string&) const) &smtk::resource::Resource::filter)
     ;
   return instance;
 }
