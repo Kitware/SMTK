@@ -44,7 +44,7 @@ function (smtk_add_client_tests)
         __paraview_args__
         __paraview_script__
         __paraview_client_args__
-        -dr
+        --dr
         --exit
     ${ARGN})
 endfunction ()

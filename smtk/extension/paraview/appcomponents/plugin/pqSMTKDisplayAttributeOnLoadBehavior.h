@@ -27,10 +27,11 @@ class vtkSMSMTKWrapperProxy;
 class pqPipelineSource;
 class pqServer;
 
-/**\brief Make the SMTK attribute panel display an attribute whenever one is added.
+/**\brief Make the SMTK attribute panel display an attribute resource when one is added.
   *
-  * When any SMTK resource manager is updated to include a new attribute,
-  * display that attribute.
+  * When any SMTK resource manager is updated to include a new attribute resource,
+  * if a boolean property named `smtk.attribute_panel.display_hint` set to true exists
+  * on the resource, then display that resource in the panel.
   */
 class pqSMTKDisplayAttributeOnLoadBehavior : public QObject
 {

@@ -100,6 +100,16 @@ public:
    */
   pqSMTKWrapper* builtinOrActiveWrapper() const;
 
+  /**\brief Return whether SMTK is in "post-processing" mode or not.
+   */
+  bool postProcessingMode() const { return m_postProcessingMode; }
+
+public slots:
+  /// Set whether post-processing mode is enabled (true) or disabled (false; default).
+  ///
+  /// The return value indicates whether the value changed.
+  virtual bool setPostProcessingMode(bool inPost);
+
 signals:
   /// Called from within addManagerOnServer (in response to server becoming ready)
   void addedManagerOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
@@ -107,6 +117,8 @@ signals:
   /// Called from within removeManagerFromServer (in response to server disconnect prep)
   void removingManagerFromServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   void removingManagerFromServer(pqSMTKWrapper* mgr, pqServer* server);
+  /// Called from within setPostProcessingMode.
+  void postProcessingModeChanged(bool isPostProcessing);
 
 protected:
   pqSMTKBehavior(QObject* parent = nullptr);
@@ -120,6 +132,7 @@ protected:
 
   class Internal;
   Internal* m_p;
+  bool m_postProcessingMode{ false };
 
 protected slots:
   /// Called whenever a PV server becomes ready.

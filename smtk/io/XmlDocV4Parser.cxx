@@ -38,6 +38,7 @@ void XmlDocV4Parser::process(xml_document& doc)
   }
 
   this->process(amnode);
+  this->processHints(amnode);
 }
 
 void XmlDocV4Parser::process(xml_node& rootNode)

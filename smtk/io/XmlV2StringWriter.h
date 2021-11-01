@@ -114,6 +114,11 @@ protected:
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 
+  /// Provide writers with a chance to add hints (such as whether
+  /// the resource should be displayed by default) to the document.
+  /// XmlV5StringWriter is the first subclass to override this.
+  virtual void addHints() {}
+
   pugi::xml_node& topDefinitionsNode() const;
   pugi::xml_node& topRootNode() const;
   pugi::xml_node& topAttributesNode() const;

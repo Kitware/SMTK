@@ -410,7 +410,7 @@ protected:
 
   AssociationRules m_associationRules;
 
-  bool m_isPrivate = true;
+  bool m_isPrivate = false;
 
   EvaluatorFactory m_evaluatorFactory;
 

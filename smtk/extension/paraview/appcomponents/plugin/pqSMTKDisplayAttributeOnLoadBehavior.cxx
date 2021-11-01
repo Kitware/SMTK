@@ -169,9 +169,16 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
         // the attribute may exist but be empty because it is added
         // to the resource manager before the reader inserts data.
         // So, queue the slot to be invoked by a timer. Ugly!
-        m_attr = const_cast<smtk::attribute::Resource*>(attr)->shared_from_this();
-        m_panel = panel;
-        QTimer::singleShot(0, this, SLOT(displayAttribute()));
+        {
+          bool haveHint = attr->properties().contains<bool>("smtk.attribute_panel.display_hint") &&
+            attr->properties().at<bool>("smtk.attribute_panel.display_hint");
+          if (attr && haveHint)
+          {
+            m_attr = const_cast<smtk::attribute::Resource*>(attr)->shared_from_this();
+            m_panel = panel;
+            QTimer::singleShot(0, this, SLOT(displayAttribute()));
+          }
+        }
         break;
       case smtk::resource::EventType::REMOVED:
         // TODO: Find another attribute to display

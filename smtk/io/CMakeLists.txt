@@ -12,6 +12,7 @@ set(ioSrcs
   XmlDocV2Parser.cxx
   XmlDocV3Parser.cxx
   XmlDocV4Parser.cxx
+  XmlDocV5Parser.cxx
   XmlV2StringWriter.cxx
   XmlV3StringWriter.cxx
   XmlV4StringWriter.cxx
@@ -30,6 +31,7 @@ set(ioHeaders
   XmlDocV2Parser.h
   XmlDocV3Parser.h
   XmlDocV4Parser.h
+  XmlDocV5Parser.h
   XmlStringWriter.h
   XmlV2StringWriter.h
   XmlV3StringWriter.h

@@ -17,12 +17,12 @@
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKDisplayAttributeOnLoadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportIntoResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKNewResourceBehavior.h"
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKRegisterImportersBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/vtkSMTKEncodeSelection.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 

@@ -237,7 +237,10 @@ public:
           std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
                     << "): " << m_descriptions[entry.first] << std::endl;
         }
-        result |= entry.second(std::forward<Types>(args)...);
+        if (entry.first.assigned())
+        {
+          result |= entry.second(std::forward<Types>(args)...);
+        }
       }
       else if (DebugObservers)
       {
@@ -286,7 +289,10 @@ public:
           std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
                     << "): " << m_descriptions[entry.first] << std::endl;
         }
-        entry.second(std::forward<Types>(args)...);
+        if (entry.first.assigned())
+        {
+          entry.second(std::forward<Types>(args)...);
+        }
       }
       else if (DebugObservers)
       {

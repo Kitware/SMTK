@@ -21,6 +21,8 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/Observer.h"
+#include "smtk/resource/Properties.h"
 #include "smtk/resource/Resource.h"
 
 #include "smtk/view/Configuration.h"
@@ -51,18 +53,12 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   w->setObjectName("attributePanel");
   this->setWidget(w);
   w->setLayout(new QVBoxLayout);
+  auto* behavior = pqSMTKBehavior::instance();
   QObject::connect(
-    &pqActiveObjects::instance(),
-    SIGNAL(sourceChanged(pqPipelineSource*)),
+    behavior,
+    SIGNAL(postProcessingModeChanged(bool)),
     this,
-    SLOT(displayPipelineSource(pqPipelineSource*)),
-    Qt::QueuedConnection);
-  QObject::connect(
-    &pqActiveObjects::instance(),
-    SIGNAL(dataUpdated()),
-    this,
-    SLOT(updatePipeline()),
-    Qt::QueuedConnection);
+    SLOT(displayActivePipelineSource(bool)));
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
@@ -120,6 +116,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
 
 void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 {
+  (void)rsrcMgr;
   if (m_attrUIMgr)
   {
     m_propertyLinks.clear();
@@ -131,11 +128,7 @@ void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
     }
   }
 
-  if (rsrcMgr && m_observer.assigned())
-  {
-    rsrcMgr->observers().erase(m_observer);
-  }
-
+  m_observer.release();
   m_rsrc = std::weak_ptr<smtk::resource::Resource>();
 }
 
@@ -147,12 +140,16 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   {
     auto previousResource = m_rsrc.lock();
 
-    if (rsrc->isPrivate() && rsrc != previousResource)
+    if (!rsrc->isPrivate() && rsrc != previousResource)
     {
+      if (previousResource)
+      {
+        previousResource->properties().erase<bool>("smtk.attribute_panel.display_hint");
+      }
       resetPanel(rsrc->manager());
       didDisplay = displayResourceInternal(rsrc);
     }
-    else if (!rsrc->isPrivate() && rsrc == previousResource)
+    else if (rsrc->isPrivate() && rsrc == previousResource)
     {
       // the panel is displaying a resource that is now private
       // stop displaying it
@@ -229,6 +226,10 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
   if (view)
   {
     didDisplay = this->displayView(view);
+    if (didDisplay)
+    {
+      rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+    }
   }
   this->updateTitle(view);
   auto rsrcMgr = rsrc->manager();
@@ -250,8 +251,11 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
           m_seln = nullptr;
         }
       },
+      std::numeric_limits<smtk::resource::Observers::Priority>::lowest(),
+      /* initialize */ false,
       "pqSMTKAttributePanel: Clear panel if a removed resource is being displayed.");
   }
+  m_rsrc = rsrc;
   return didDisplay;
 }
 
@@ -313,6 +317,35 @@ void pqSMTKAttributePanel::updateSettings()
 
   auto* smtkSettings = vtkSMTKSettings::GetInstance();
   m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
+}
+
+void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
+{
+  if (doDisplay)
+  {
+    QObject::connect(
+      &pqActiveObjects::instance(),
+      SIGNAL(sourceChanged(pqPipelineSource*)),
+      this,
+      SLOT(displayPipelineSource(pqPipelineSource*)),
+      Qt::QueuedConnection);
+    QObject::connect(
+      &pqActiveObjects::instance(),
+      SIGNAL(dataUpdated()),
+      this,
+      SLOT(updatePipeline()),
+      Qt::QueuedConnection);
+  }
+  else
+  {
+    QObject::disconnect(
+      &pqActiveObjects::instance(),
+      SIGNAL(sourceChanged(pqPipelineSource*)),
+      this,
+      SLOT(displayPipelineSource(pqPipelineSource*)));
+    QObject::disconnect(
+      &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
+  }
 }
 
 void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)

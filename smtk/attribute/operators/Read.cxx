@@ -29,6 +29,9 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/common/VersionNumber.h"
+#include "smtk/common/json/jsonVersionNumber.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -42,6 +45,8 @@ namespace attribute
 
 Read::Result Read::operateInternal()
 {
+  using smtk::common::VersionNumber;
+
   // Access the file name.
   std::string filename = this->parameters()->findFile("filename")->value();
 
@@ -65,11 +70,24 @@ Read::Result Read::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // is the a supported version?  Should be 3.0 or 4.0
-  auto version = j.find("version");
-  if ((version == j.end()) || !((*version == "3.0") || (*version == "4.0")))
+  bool supportedVersion = false;
+  VersionNumber version;
+  try
   {
-    if (version == j.end())
+    // Is this a supported version?  Should be 3.0, 4.0, or 5.0.
+    version = j.at("version");
+    if (version >= VersionNumber(3) && version < VersionNumber(6))
+    {
+      supportedVersion = true;
+    }
+  }
+  catch (const std::exception&)
+  {
+    supportedVersion = false;
+  }
+  if (!supportedVersion)
+  {
+    if (!version.isValid())
     {
       smtkErrorMacro(log(), "Cannot read attribute file \"" << filename << "\" - Missing Version.");
     }
@@ -77,7 +95,7 @@ Read::Result Read::operateInternal()
     {
       smtkErrorMacro(
         log(),
-        "Cannot read attribute file \"" << filename << "\" - Unsupported Version: " << *version
+        "Cannot read attribute file \"" << filename << "\" - Unsupported Version: " << version
                                         << ".");
     }
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

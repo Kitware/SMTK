@@ -495,6 +495,9 @@ void XmlV2StringWriter::generateXml()
   {
     this->processEvaluators();
   }
+
+  // Add hints to the output document(s).
+  this->addHints();
 }
 
 void XmlV2StringWriter::processAttributeInformation()

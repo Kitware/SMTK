@@ -7,9 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPipelineSelectionBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
@@ -24,12 +25,14 @@
 
 // Client side
 #include "pqActiveObjects.h"
+#include "pqCoreUtilities.h"
 #include "pqLiveInsituManager.h"
 #include "pqPipelineSource.h"
 #include "pqSelectionManager.h"
 #include "pqServerManagerModel.h"
 
 // Qt
+#include <QMainWindow>
 #include <QWidget>
 
 using namespace smtk;
@@ -135,6 +138,38 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
           {
             pqActiveObjects::instance().setActiveSource(rsrcSrc);
           }
+          // Also, if the selected resource is an attribute and we are configured to display
+          // selected attributes in the editor panel, do so:
+          if (m_displayAttributeResourcesOnSelection)
+          {
+            auto attrResource =
+              std::dynamic_pointer_cast<smtk::attribute::Resource>(selectedResource);
+            if (attrResource && !attrResource->isPrivate())
+            {
+              // Find the attribute panel. For now, only deal with one;
+              // it doesn't make sense to switch multiple panels to display
+              // the same attribute anyway.
+              pqSMTKAttributePanel* panel = nullptr;
+              QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
+              if (!mainWindow)
+              {
+                return;
+              }
+              foreach (
+                pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
+              {
+                panel = attrPanel;
+                if (panel)
+                {
+                  break;
+                }
+              }
+              if (panel)
+              {
+                panel->displayResource(attrResource);
+              }
+            }
+          }
         }
       }
     },
@@ -163,6 +198,15 @@ void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
     seln->observers().erase(entry->second);
     m_selectionObservers.erase(entry);
   }
+}
+
+void pqSMTKPipelineSelectionBehavior::setDisplayAttributeResourcesOnSelection(bool shouldDisplay)
+{
+  if (shouldDisplay == m_displayAttributeResourcesOnSelection)
+  {
+    return;
+  }
+  m_displayAttributeResourcesOnSelection = shouldDisplay;
 }
 
 void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* source)
