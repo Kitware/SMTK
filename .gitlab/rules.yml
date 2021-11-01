@@ -4,6 +4,8 @@
     rules:
         - if: '$CI_MERGE_REQUEST_ID'
           when: on_success
+        - if: '$CI_PROJECT_PATH == "cmb/smtk" && $CI_PIPELINE_SOURCE == "schedule"'
+          when: on_success
         - if: '$CI_PROJECT_PATH == "cmb/smtk"'
           when: delayed
           start_in: 30 minutes
