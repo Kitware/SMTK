@@ -263,7 +263,11 @@ std::set<smtk::shared_ptr<ResourceType>> ResourceContainer::findByRole(const std
   std::set<smtk::shared_ptr<ResourceType>> cast_set;
   for (const auto& resourceptr : this->findByRole(role))
   {
-    cast_set.insert(smtk::dynamic_pointer_cast<ResourceType>(resourceptr));
+    auto castedResource = smtk::dynamic_pointer_cast<ResourceType>(resourceptr);
+    if (castedResource != nullptr)
+    {
+      cast_set.insert(castedResource);
+    }
   }
   return cast_set;
 }
@@ -275,7 +279,11 @@ std::set<smtk::shared_ptr<const ResourceType>> ResourceContainer::findByRole(
   std::set<smtk::shared_ptr<ResourceType>> cast_set;
   for (auto resourceptr : this->findByRole(role))
   {
-    cast_set.insert(smtk::dynamic_pointer_cast<const ResourceType>(resourceptr));
+    auto castedResource = smtk::dynamic_pointer_cast<const ResourceType>(resourceptr);
+    if (castedResource != nullptr)
+    {
+      cast_set.insert(castedResource);
+    }
   }
   return cast_set;
 }
