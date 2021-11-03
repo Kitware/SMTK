@@ -88,7 +88,9 @@ Please remove this comment.
   - [ ] Write and publish blog post with release notes.
   - [ ] Post an announcement in the Announcements category on
         [discourse.smtk.org](https://discourse.kitware.com/c/smtk/).
-  - [ ] Remove deprecated methods on `master`
+  - [ ] Create a new commit on `master` that does the following:
+    - [ ] Remove the deprecated methods on `master`.  Note that it should be discussed before hand which deprecated methods should be removed in this release.
+    - [ ] Set the version.txt on `master` to be yy.mm.100
 
 /cc @ben.boeckel
 /cc @bob.obara
