@@ -120,56 +120,16 @@ public:
   template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string&) const;
 
-  /// Returns the resource that relates to the given role.  If no association
-  /// exists this will return a null pointer
-  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
-  smtk::resource::ResourcePtr getByRole(const std::string& role)
-  {
-    auto resource_set = this->findByRole(role);
-    if (resource_set.empty())
-    {
-      return smtk::resource::ResourcePtr(nullptr);
-    }
-    else
-    {
-      return *(resource_set.begin());
-    }
-  }
-
-  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
-  smtk::resource::ConstResourcePtr getByRole(const std::string& role) const
-  {
-    auto resource_set = this->findByRole(role);
-    if (resource_set.empty())
-    {
-      return smtk::resource::ConstResourcePtr(nullptr);
-    }
-    else
-    {
-      return *(resource_set.begin());
-    }
-  }
-
-  template<typename ResourceType>
-  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
-  smtk::shared_ptr<ResourceType> getByRole(const std::string& role)
-  {
-    return std::dynamic_pointer_cast<ResourceType>(this->getByRole(role));
-  }
-
-  template<typename ResourceType>
-  SMTK_DEPRECATED_IN_21_07("New API is findByRole and returns a std::set")
-  smtk::shared_ptr<const ResourceType> getByRole(const std::string& role) const
-  {
-    return std::dynamic_pointer_cast<const ResourceType>(this->getByRole(role));
-  }
-
+  ///@{
+  /// Returns the set of resources that relates to the given role.  If no association
+  /// exists this will return an empty set.
   std::set<smtk::resource::ResourcePtr> findByRole(const std::string&);
   std::set<smtk::resource::ConstResourcePtr> findByRole(const std::string&) const;
   template<typename ResourceType>
   std::set<smtk::shared_ptr<ResourceType>> findByRole(const std::string&);
   template<typename ResourceType>
   std::set<smtk::shared_ptr<const ResourceType>> findByRole(const std::string&) const;
+  ///@}
 
   /// Returns a set of resources that have a given typename, type index or class
   /// type.

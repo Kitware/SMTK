@@ -50,8 +50,6 @@ inline py::class_< smtk::project::ResourceContainer > pybind11_init_smtk_project
     .def("get", (smtk::resource::ConstResourcePtr (smtk::project::ResourceContainer::*)(::std::string const &) const) &smtk::project::ResourceContainer::get, py::arg("arg0"))
     .def("findByRole", (std::set<smtk::resource::ResourcePtr> (smtk::project::ResourceContainer::*)(::std::string const &)) &smtk::project::ResourceContainer::findByRole, py::arg("arg0"))
     .def("findByRole", (std::set<smtk::resource::ConstResourcePtr> (smtk::project::ResourceContainer::*)(::std::string const &) const) &smtk::project::ResourceContainer::findByRole, py::arg("arg0"))
-    .def("getByRole", (smtk::resource::ResourcePtr (smtk::project::ResourceContainer::*)(::std::string const &)) &smtk::project::ResourceContainer::getByRole, py::arg("arg0"))
-    .def("getByRole", (smtk::resource::ConstResourcePtr (smtk::project::ResourceContainer::*)(::std::string const &) const) &smtk::project::ResourceContainer::getByRole, py::arg("arg0"))
     .def("manager", &smtk::project::ResourceContainer::manager)
     .def("registerResource", (bool (smtk::project::ResourceContainer::*)(::std::string const &)) &smtk::project::ResourceContainer::registerResource, py::arg("arg0"))
     .def("registerResource", (bool (smtk::project::ResourceContainer::*)(::smtk::resource::Resource::Index const &)) &smtk::project::ResourceContainer::registerResource, py::arg("arg0"))

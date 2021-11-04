@@ -130,9 +130,6 @@ public:
   const smtk::common::TypeContainer& managers() const { return m_managers; }
   smtk::common::TypeContainer& managers() { return m_managers; }
 
-  SMTK_DEPRECATED_IN_21_08("Since the attribute resource is now passed into qtBaseAttributeViews, "
-                           "there is no longer a need to access the resource from the qtUIManager")
-  smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
   ///@{
   /// Set/Get the color used for indicating items with default values
   void setDefaultValueColor(const QColor& color);
