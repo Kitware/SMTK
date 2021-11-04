@@ -17,7 +17,7 @@ Attributes that can be included in this XML Element.
    * - Version
      - Integer value that indicates the SMTK attribute format (Required)
 
-       Current value is 3 (latest version)
+       Current value is 4 (latest version)
 
 This element can contain the following optional children XML Elements:
 
@@ -26,10 +26,10 @@ This element can contain the following optional children XML Elements:
   GUIs (see `Advance Level Section`_)
 - Categories : used to define workflow specific categories (see `Category Section`_)
 - Analyses : used to define various analysis groups (see `Analysis Section`_)
+- Item Blocks : used to define reusable  blocks of Item Definitions(see `Item Blocks Section`_)
 - Definitions : used to define attribute definitions (see `Definitions Section`_)
 - Attributes : used to define attributes
 - Views : used to define various Views (used to create GUIs)
-- ModelInfo
 
 Includes Section
 --------------------
@@ -38,7 +38,7 @@ files.  This allows designers to assemble a complete attribute
 description by referencing attribute files that represent specific
 aspects.  For example a set of attribute definitions may be referenced
 by several different simulation workflows.  Below is an example of
-including two attribute files both located in a subdirectory
+including two attribute files both located in a sub-directory
 IncludeTest.
 
 .. code-block:: xml
@@ -190,6 +190,54 @@ Attributes that can be included in this XML Element.
 
 
 Each element contains a set of Cat XML Elements.
+
+Item Blocks Section
+---------------------------------
+Item Definition Blocks allows the reuse of a group of Item Definitions in different Attribute Definitions.  Providing a "hasA" relationship as opposed to the currently supported "isA". These blocks can then be referenced in the "ItemDefinitions" nodes of Attribute or Group Item Definitions or in the "ChildrenDefinitions" nodes for Reference or Value Item Definitions.  Blocks themselves can reference other blocks.  But care must be taken not to form a recursive relationship.  In the parser detects such a pattern it will report an error.
+
+When referencing a Block, the items will be inserted relative to where the Block is being referenced.
+
+Note that category constraints are inherited as usual and that Blocks can call other blocks.  Here is an example of an Item Block:
+
+.. code-block:: xml
+
+  <ItemBlocks>
+    <Block Name="B1">
+      <ItemDefinitions>
+        <String Name="s1">
+          <Categories>
+            <Cat>Solid Mechanics</Cat>
+          </Categories>
+        </String>
+        <Int Name="i1"/>
+      </ItemDefinitions>
+    </Block>
+  </ItemBlocks>
+
+  <Definitions>
+    <AttDef Type="Type1">
+      <Categories>
+        <Cat>Fluid Flow</Cat>
+      </Categories>
+      <ItemDefinitions>
+        <Double Name="foo"/>
+        <Block Name="B1"/>
+        <String Name="bar"/>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="Type2">
+      <Categories>
+        <Cat>Heat Transfer</Cat>
+      </Categories>
+      <ItemDefinitions>
+        <Block Name="B1"/>
+        <String Name="str2"/>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+
+See data/attribute/attribute_collection/ItemBlockTest.sbt and smtk/attribute/testing/cxx/unitItemBlocks.cxx for examples.
+
 
 Definitions Section
 ---------------------------------
