@@ -29,6 +29,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindProperties.h"
 #include "PybindPropertyType.h"
 #include "PybindResource.h"
+#include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -63,4 +64,6 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
   auto smtk_resource_Manager = pybind11_init_smtk_resource_Manager(resource);
   auto smtk_resource_Observers = pybind11_init_smtk_resource_Observers(resource);
   pybind11_init_smtk_resource_EventType(resource);
+
+  auto smtk_resource_Registrar = pybind11_init_smtk_resource_Registrar(resource);
 }
