@@ -26,6 +26,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindManager.h"
 #include "PybindObserver.h"
 #include "PybindPersistentObject.h"
+#include "PybindProperties.h"
 #include "PybindPropertyType.h"
 #include "PybindResource.h"
 
@@ -39,17 +40,27 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  py::class_<smtk::resource::PersistentObject> smtk_resource_PersistentObject =
-    pybind11_init_smtk_resource_PersistentObject(resource);
-  PySharedPtrClass<smtk::resource::Resource, smtk::resource::PyResource,
-    smtk::resource::PersistentObject>
-    smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);
-  py::class_<smtk::resource::Component, smtk::resource::PyComponent,
-    smtk::resource::PersistentObject>
-    smtk_resource_Component = pybind11_init_smtk_resource_Component(resource);
-  py::class_<smtk::resource::Manager> smtk_resource_Manager =
-    pybind11_init_smtk_resource_Manager(resource);
-  py::class_<smtk::resource::Observers> smtk_resource_Observers =
-    pybind11_init_smtk_resource_Observers(resource);
+  auto smtk_resource_PersistentObject = pybind11_init_smtk_resource_PersistentObject(resource);
+  auto smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);
+  auto smtk_resource_Component = pybind11_init_smtk_resource_Component(resource);
+  //auto smtk_resource_Properties = pybind11_init_smtk_resource_Properties(resource);
+
+  // Declare each type of property we support. See smtk::resource::ResourceProperties::PropertyTypes
+  // for the list of predefined property types. If you have a plugin that wants other types supported,
+  // you must add them to this module as these are added:
+  auto smtk_resource_PropertiesOfTypeBool = pybind11_init_smtk_resource_PropertiesOfType<bool>(resource);
+  auto smtk_resource_PropertiesOfTypeInt = pybind11_init_smtk_resource_PropertiesOfType<int>(resource);
+  auto smtk_resource_PropertiesOfTypeLong = pybind11_init_smtk_resource_PropertiesOfType<long>(resource);
+  auto smtk_resource_PropertiesOfTypeDouble = pybind11_init_smtk_resource_PropertiesOfType<double>(resource);
+  auto smtk_resource_PropertiesOfTypeString = pybind11_init_smtk_resource_PropertiesOfType<std::string>(resource);
+
+  auto smtk_resource_PropertiesOfTypeVecBool = pybind11_init_smtk_resource_PropertiesOfType<std::vector<bool>>(resource);
+  auto smtk_resource_PropertiesOfTypeVecInt = pybind11_init_smtk_resource_PropertiesOfType<std::vector<int>>(resource);
+  auto smtk_resource_PropertiesOfTypeVecLong = pybind11_init_smtk_resource_PropertiesOfType<std::vector<long>>(resource);
+  auto smtk_resource_PropertiesOfTypeVecDouble = pybind11_init_smtk_resource_PropertiesOfType<std::vector<double>>(resource);
+  auto smtk_resource_PropertiesOfTypeVecString = pybind11_init_smtk_resource_PropertiesOfType<std::vector<std::string>>(resource);
+
+  auto smtk_resource_Manager = pybind11_init_smtk_resource_Manager(resource);
+  auto smtk_resource_Observers = pybind11_init_smtk_resource_Observers(resource);
   pybind11_init_smtk_resource_EventType(resource);
 }
