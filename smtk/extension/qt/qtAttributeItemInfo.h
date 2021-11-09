@@ -10,8 +10,8 @@
 // .NAME qtItem - an abstract UI class for attribute item
 // .SECTION Description
 
-#ifndef __smtk_extension_qtAttributeItemInfo_h
-#define __smtk_extension_qtAttributeItemInfo_h
+#ifndef smtk_extension_qtAttributeItemInfo_h
+#define smtk_extension_qtAttributeItemInfo_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"

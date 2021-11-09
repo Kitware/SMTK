@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_polygon_pq_ArcWidgetPanel_h
-#define __smtk_polygon_pq_ArcWidgetPanel_h
+#ifndef smtk_polygon_pq_ArcWidgetPanel_h
+#define smtk_polygon_pq_ArcWidgetPanel_h
 
 #include "smtk/common/UUID.h"
 #include "smtk/session/polygon/qt/Exports.h"
@@ -143,4 +143,4 @@ private:
   pqArcWidgetManager* ArcManager{ nullptr };
 };
 
-#endif // __smtk_polygon_pq_ArcWidgetPanel_h
+#endif // smtk_polygon_pq_ArcWidgetPanel_h

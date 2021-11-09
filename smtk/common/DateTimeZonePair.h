@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_DateTimeZonePair_h
-#define __smtk_common_DateTimeZonePair_h
+#ifndef smtk_common_DateTimeZonePair_h
+#define smtk_common_DateTimeZonePair_h
 
 #include "smtk/common/DateTime.h"
 #include "smtk/common/TimeZone.h"
@@ -52,4 +52,4 @@ SMTKCORE_EXPORT std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_DateTimeZonePair_h
+#endif // smtk_common_DateTimeZonePair_h

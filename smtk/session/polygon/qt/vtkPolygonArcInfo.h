@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats This class only works in built-in mode
 
-#ifndef __smtk_polygon_vtkPolygonArcInfo_h
-#define __smtk_polygon_vtkPolygonArcInfo_h
+#ifndef smtk_polygon_vtkPolygonArcInfo_h
+#define smtk_polygon_vtkPolygonArcInfo_h
 
 #include "smtk/session/polygon/qt/Exports.h"
 #include "vtkPVInformation.h"

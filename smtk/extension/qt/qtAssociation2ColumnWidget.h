@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtAssociation2ColumnWidget_h
-#define __smtk_extension_qtAssociation2ColumnWidget_h
+#ifndef smtk_extension_qtAssociation2ColumnWidget_h
+#define smtk_extension_qtAssociation2ColumnWidget_h
 
 #include "smtk/extension/qt/qtAssociationWidget.h"
 #include <QString>

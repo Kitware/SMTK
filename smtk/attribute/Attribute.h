@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Attribute_h
-#define __smtk_attribute_Attribute_h
+#ifndef smtk_attribute_Attribute_h
+#define smtk_attribute_Attribute_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -588,4 +588,4 @@ void Attribute::filterItems(
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_Attribute_h */
+#endif /* smtk_attribute_Attribute_h */

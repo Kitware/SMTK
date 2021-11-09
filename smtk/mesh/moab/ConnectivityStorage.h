@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_moab_ConnectivityStorage_h
-#define __smtk_mesh_moab_ConnectivityStorage_h
+#ifndef smtk_mesh_moab_ConnectivityStorage_h
+#define smtk_mesh_moab_ConnectivityStorage_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/mesh/core/Handle.h"

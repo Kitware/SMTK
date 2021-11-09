@@ -13,6 +13,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/resource/Links.h"
+
 #include "smtk/common/UUID.h"
 
 namespace smtk

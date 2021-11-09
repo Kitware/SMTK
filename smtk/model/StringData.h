@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_StringData_h
-#define __smtk_model_StringData_h
+#ifndef smtk_model_StringData_h
+#define smtk_model_StringData_h
 /** \file StringData.h
  * Typedefs that specify how string properties are stored.
  */
@@ -44,4 +44,4 @@ typedef StringData::const_iterator PropertyNameWithConstStrings;
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_StringData_h
+#endif // smtk_model_StringData_h

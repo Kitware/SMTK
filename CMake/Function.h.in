@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_Function_h
-#define __smtk_Function_h
+#ifndef smtk_Function_h
+#define smtk_Function_h
 
 @FUNCTION_TYPE_HEADERS@
 
@@ -42,4 +42,4 @@ namespace smtk
     }
 }
 
-#endif /* __smtk_Function_h */
+#endif /* smtk_Function_h */

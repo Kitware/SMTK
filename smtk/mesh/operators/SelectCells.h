@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_SelectCells_h
-#define __smtk_mesh_SelectCells_h
+#ifndef smtk_mesh_SelectCells_h
+#define smtk_mesh_SelectCells_h
 
 #include "smtk/operation/XMLOperation.h"
 

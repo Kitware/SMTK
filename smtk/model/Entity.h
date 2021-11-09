@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Entity_h
-#define __smtk_model_Entity_h
+#ifndef smtk_model_Entity_h
+#define smtk_model_Entity_h
 
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
@@ -191,4 +191,4 @@ typedef std::pair<smtk::common::UUID, Entity> UUIDEntityPair;
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Entity_h
+#endif // smtk_model_Entity_h

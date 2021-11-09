@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_common_Singleton_h
-#define __smtk_common_Singleton_h
+#ifndef smtk_common_Singleton_h
+#define smtk_common_Singleton_h
 
 namespace smtk
 {

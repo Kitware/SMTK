@@ -23,14 +23,11 @@ inline PySharedPtrClass< smtk::task::Manager > pybind11_init_smtk_task_Manager(p
 {
   PySharedPtrClass< smtk::task::Manager > instance(m, "Manager");
   instance
-    .def("active", (smtk::task::Active & (smtk::task::Manager::*)()) &smtk::task::Manager::active)
-    .def("active", (smtk::task::Active const & (smtk::task::Manager::*)() const) &smtk::task::Manager::active)
+    .def("active", (smtk::task::Active & (smtk::task::Manager::*)()) &smtk::task::Manager::active, py::return_value_policy::reference_internal)
     .def_static("create", (std::shared_ptr<smtk::task::Manager> (*)()) &smtk::task::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::task::Manager> (*)(::std::shared_ptr<smtk::task::Manager> &)) &smtk::task::Manager::create, py::arg("ref"))
-    .def("adaptorInstances", (smtk::task::Manager::AdaptorInstances & (smtk::task::Manager::*)()) &smtk::task::Manager::adaptorInstances)
-    .def("adaptorInstances", (smtk::task::Manager::AdaptorInstances const & (smtk::task::Manager::*)() const) &smtk::task::Manager::adaptorInstances)
-    .def("taskInstances", (smtk::task::Manager::TaskInstances & (smtk::task::Manager::*)()) &smtk::task::Manager::taskInstances)
-    .def("taskInstances", (smtk::task::Manager::TaskInstances const & (smtk::task::Manager::*)() const) &smtk::task::Manager::taskInstances)
+    .def("adaptorInstances", [](smtk::task::Manager& mgr) { return &mgr.adaptorInstances(); }, py::return_value_policy::reference_internal)
+    .def("taskInstances", [](smtk::task::Manager& mgr) { return &mgr.taskInstances(); }, py::return_value_policy::reference_internal)
     .def("managers", &smtk::task::Manager::managers)
     .def("setManagers", &smtk::task::Manager::setManagers, py::arg("managers"))
     .def("typeName", &smtk::task::Manager::typeName)

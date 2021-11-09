@@ -13,8 +13,8 @@
 // .SECTION See Also
 // qtBaseAttributeView
 
-#ifndef __smtk_extension_qtSimpleExpressionView_h
-#define __smtk_extension_qtSimpleExpressionView_h
+#ifndef smtk_extension_qtSimpleExpressionView_h
+#define smtk_extension_qtSimpleExpressionView_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"

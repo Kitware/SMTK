@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_HashFunctor_h
-#define __smtk_HashFunctor_h
+#ifndef smtk_HashFunctor_h
+#define smtk_HashFunctor_h
 
 #include @SMTK_HASH_H@
 #define SMTK_HASH_NS @SMTK_HASH_NS@
@@ -16,4 +16,4 @@
 #define SMTK_HASH_NS_END @SMTK_HASH_END_NS@
 #define SMTK_HASH_SPECIALIZATION @SMTK_HASH_SPECIALIZATION@
 
-#endif // __smtk_HashFunctor_h
+#endif // smtk_HashFunctor_h

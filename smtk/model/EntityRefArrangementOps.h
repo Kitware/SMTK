@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_EntityRefArrangementOps_h
-#define __smtk_model_EntityRefArrangementOps_h
+#ifndef smtk_model_EntityRefArrangementOps_h
+#define smtk_model_EntityRefArrangementOps_h
 
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/EntityRef.h"
@@ -229,4 +229,4 @@ T EntityRef::instances() const
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_EntityRefArrangementOps_h
+#endif // smtk_model_EntityRefArrangementOps_h

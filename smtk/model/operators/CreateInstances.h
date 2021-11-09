@@ -38,4 +38,4 @@ protected:
 } //namespace model
 } // namespace smtk
 
-#endif // __smtk_model_operators_CreateInstances_h
+#endif // smtk_model_operators_CreateInstances_h

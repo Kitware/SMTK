@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_Evaluator_h
-#define __smtk_attribute_Evaluator_h
+#ifndef smtk_attribute_Evaluator_h
+#define smtk_attribute_Evaluator_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -91,4 +91,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_Evaluator_h
+#endif // smtk_attribute_Evaluator_h

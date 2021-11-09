@@ -1,5 +1,5 @@
-#ifndef __smtk_ex_CounterOperation_h
-#define __smtk_ex_CounterOperation_h
+#ifndef smtk_ex_CounterOperation_h
+#define smtk_ex_CounterOperation_h
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -28,4 +28,4 @@ protected:
 
 } // namespace ex
 
-#endif // __smtk_ex_CounterOperation_h
+#endif // smtk_ex_CounterOperation_h

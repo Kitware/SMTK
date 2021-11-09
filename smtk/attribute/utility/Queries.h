@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_utility_Queries_h
-#define __smtk_attribute_utility_Queries_h
+#ifndef smtk_attribute_utility_Queries_h
+#define smtk_attribute_utility_Queries_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -84,4 +84,4 @@ smtk::attribute::ResourcePtr findResourceContainingDefinition(
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_attribute_utility_Queries_h
+#endif // smtk_attribute_utility_Queries_h

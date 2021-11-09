@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_PythonInterpreter_h
-#define __smtk_PythonInterpreter_h
+#ifndef smtk_PythonInterpreter_h
+#define smtk_PythonInterpreter_h
 
 #include "smtk/CoreExports.h"
 

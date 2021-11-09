@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_mesh_EulerCharacteristicRatio_h
-#define __smtk_session_mesh_EulerCharacteristicRatio_h
+#ifndef smtk_session_mesh_EulerCharacteristicRatio_h
+#define smtk_session_mesh_EulerCharacteristicRatio_h
 
 #include "smtk/session/mesh/Exports.h"
 
@@ -40,4 +40,4 @@ protected:
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_mesh_EulerCharacteristicRatio_h
+#endif // smtk_session_mesh_EulerCharacteristicRatio_h

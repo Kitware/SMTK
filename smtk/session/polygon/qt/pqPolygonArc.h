@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef __smtk_polygon_pq_Arc_h
-#define __smtk_polygon_pq_Arc_h
+#ifndef smtk_polygon_pq_Arc_h
+#define smtk_polygon_pq_Arc_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"

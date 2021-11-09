@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_extension_vtk_io_mesh_ImportVTKData_h
-#define __smtk_extension_vtk_io_mesh_ImportVTKData_h
+#ifndef smtk_extension_vtk_io_mesh_ImportVTKData_h
+#define smtk_extension_vtk_io_mesh_ImportVTKData_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/vtk/io/IOVTKExports.h"

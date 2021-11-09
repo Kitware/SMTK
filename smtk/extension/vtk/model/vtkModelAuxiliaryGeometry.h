@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
-#define __smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
+#ifndef smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
+#define smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"

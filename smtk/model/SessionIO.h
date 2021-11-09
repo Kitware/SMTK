@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_SessionIO_h
-#define __smtk_model_SessionIO_h
+#ifndef smtk_model_SessionIO_h
+#define smtk_model_SessionIO_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -68,4 +68,4 @@ protected:
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_SessionIO_h
+#endif // smtk_model_SessionIO_h

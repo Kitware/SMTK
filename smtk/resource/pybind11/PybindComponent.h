@@ -31,6 +31,66 @@ inline PySharedPtrClass< smtk::resource::Component, smtk::resource::PyComponent,
     .def(py::init<>())
     .def("deepcopy", (smtk::resource::Component & (smtk::resource::Component::*)(::smtk::resource::Component const &)) &smtk::resource::Component::operator=)
     .def("resource", &smtk::resource::Component::resource)
+    .def("stringProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::string> props = component.properties().get<std::string>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("doubleProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<double> props = component.properties().get<double>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("intProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<int> props = component.properties().get<int>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("boolProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<bool> props = component.properties().get<bool>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("longProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<long> props = component.properties().get<long>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("stringVectorProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::vector<std::string>> props = component.properties().get<std::vector<std::string>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("doubleVectorProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::vector<double>> props = component.properties().get<std::vector<double>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("intVectorProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::vector<int>> props = component.properties().get<std::vector<int>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("boolVectorProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::vector<bool>> props = component.properties().get<std::vector<bool>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("longVectorProperties", [](smtk::resource::Component& component)
+      {
+        smtk::resource::PropertiesOfType<std::vector<long>> props = component.properties().get<std::vector<long>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
     ;
   return instance;
 }

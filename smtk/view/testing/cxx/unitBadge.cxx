@@ -167,7 +167,7 @@ int unitBadge(int argc, char* argv[])
   auto defNBC = attRsrc->createDefinition("Neumann", "BoundaryCondition");
   auto attDBC = attRsrc->createAttribute(defDBC);
   auto attNBC = attRsrc->createAttribute(defNBC);
-  auto edges = resource->find("edge");
+  auto edges = resource->filter("edge");
   // Associate all but 2 edges with a boundary condition
   for (const auto& edge : edges)
   {

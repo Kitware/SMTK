@@ -19,8 +19,8 @@
 //  5.  Customized Drag-n-Drop
 // .SECTION Caveats
 
-#ifndef __smtk_extension_qtTableWidget_h
-#define __smtk_extension_qtTableWidget_h
+#ifndef smtk_extension_qtTableWidget_h
+#define smtk_extension_qtTableWidget_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QTableWidget>
@@ -51,4 +51,4 @@ protected slots:
 }; // namespace extension
 }; // namespace smtk
 
-#endif // __smtk_extension_qtTableWidget_h
+#endif // smtk_extension_qtTableWidget_h

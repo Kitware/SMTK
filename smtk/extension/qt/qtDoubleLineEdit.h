@@ -39,8 +39,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ========================================================================*/
-#ifndef __smtk_extension_qtDoubleLineEdit_h
-#define __smtk_extension_qtDoubleLineEdit_h
+#ifndef smtk_extension_qtDoubleLineEdit_h
+#define smtk_extension_qtDoubleLineEdit_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtLineEdit.h"

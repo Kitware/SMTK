@@ -28,6 +28,7 @@ namespace smtk
 namespace resource
 {
 
+constexpr const char* const Resource::type_name;
 const Resource::Index Resource::type_index = std::type_index(typeid(Resource)).hash_code();
 
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
@@ -66,7 +67,7 @@ std::function<bool(const Component&)> Resource::queryOperation(
   return smtk::resource::filter::Filter<>(filterString);
 }
 
-ComponentSet Resource::find(const std::string& queryString) const
+ComponentSet Resource::filter(const std::string& queryString) const
 {
   // Construct a query operation from the query string
   auto queryOp = this->queryOperation(queryString);

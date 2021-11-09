@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_extension_qtOperationView_h
-#define __smtk_extension_qtOperationView_h
+#ifndef smtk_extension_qtOperationView_h
+#define smtk_extension_qtOperationView_h
 
 #include "smtk/operation/Operation.h"
 

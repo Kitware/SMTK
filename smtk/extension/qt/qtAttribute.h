@@ -10,8 +10,8 @@
 // .NAME qtAttribute - a class that encapsulates the UI of an Attribute
 // .SECTION Description
 
-#ifndef __smtk_extension_qtAttribute_h
-#define __smtk_extension_qtAttribute_h
+#ifndef smtk_extension_qtAttribute_h
+#define smtk_extension_qtAttribute_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"

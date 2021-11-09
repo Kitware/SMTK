@@ -106,7 +106,7 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
         }
         else
         {
-          auto comps = rsrc->find(m_componentFilter);
+          auto comps = rsrc->filter(m_componentFilter);
           std::cout << "ObjectGroupPhraseContent: Find " << comps.size()
                     << " Components"
                        " with filter="

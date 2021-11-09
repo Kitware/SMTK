@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtAttributeView_h
-#define __smtk_extension_qtAttributeView_h
+#ifndef smtk_extension_qtAttributeView_h
+#define smtk_extension_qtAttributeView_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_io_ImportMesh_h
-#define __smtk_io_ImportMesh_h
+#ifndef smtk_io_ImportMesh_h
+#define smtk_io_ImportMesh_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"

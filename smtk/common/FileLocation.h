@@ -17,8 +17,8 @@
 // easily with other users.
 // .SECTION See Also
 
-#ifndef __smtk_common_FileLocation_h
-#define __smtk_common_FileLocation_h
+#ifndef smtk_common_FileLocation_h
+#define smtk_common_FileLocation_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/common/CompilerInformation.h"
@@ -62,4 +62,4 @@ protected:
 } // namespace common
 } // namespace smtk
 
-#endif /* __smtk_common_FileLocation_h */
+#endif /* smtk_common_FileLocation_h */

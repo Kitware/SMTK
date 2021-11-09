@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 
 namespace smtk
 {

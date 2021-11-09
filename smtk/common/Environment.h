@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_common_Environment_h
-#define __smtk_common_Environment_h
+#ifndef smtk_common_Environment_h
+#define smtk_common_Environment_h
 
 #include "smtk/CoreExports.h"
 
@@ -35,4 +35,4 @@ public:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_Environment_h
+#endif // smtk_common_Environment_h

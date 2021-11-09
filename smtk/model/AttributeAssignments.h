@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_AttributeAssignments_h
-#define __smtk_model_AttributeAssignments_h
+#ifndef smtk_model_AttributeAssignments_h
+#define smtk_model_AttributeAssignments_h
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -47,4 +47,4 @@ typedef std::map<smtk::common::UUID, AttributeAssignments>::iterator UUIDWithAtt
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_AttributeAssignments_h
+#endif // smtk_model_AttributeAssignments_h

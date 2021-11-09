@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_FilterGrammar_h
-#define __smtk_model_FilterGrammar_h
+#ifndef smtk_model_FilterGrammar_h
+#define smtk_model_FilterGrammar_h
 /*!\file FilterGrammar.h - PEGTL structures for parsing resource filter strings */
 
 #include "smtk/model/LimitingClause.h"
@@ -273,4 +273,4 @@ struct FilterAction<string_property_regex_value>
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_FilterGrammar_h
+#endif // smtk_model_FilterGrammar_h

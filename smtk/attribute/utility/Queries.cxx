@@ -125,7 +125,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
             }
             else
             {
-              auto comps = resource->find(j->second);
+              auto comps = resource->filter(j->second);
               for (auto comp = comps.begin(); comp != comps.end(); ++comp)
               {
                 if (*comp && refItemDef->isValueValid(*comp))
@@ -168,7 +168,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
           }
           else
           {
-            auto comps = resource->find(j->second);
+            auto comps = resource->filter(j->second);
             for (auto comp = comps.begin(); comp != comps.end(); ++comp)
             {
               if (*comp && refItemDef->isValueValid(*comp))

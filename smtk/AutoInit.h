@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_AutoInit_h
-#define __smtk_AutoInit_h
+#ifndef smtk_AutoInit_h
+#define smtk_AutoInit_h
 /*! \file */
 
 // This file contains macros used to initialize components of SMTK
@@ -52,4 +52,4 @@
     ~C##_ComponentInit() { smtkAutoInitDestructMacro(C) }                                          \
   } C##_ComponentInit_Instance;
 
-#endif // __smtk_AutoInit_h
+#endif // smtk_AutoInit_h

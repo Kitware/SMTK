@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtItem_h
-#define __smtk_extension_qtItem_h
+#ifndef smtk_extension_qtItem_h
+#define smtk_extension_qtItem_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"

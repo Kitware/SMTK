@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_qtInfixExpressionEditor_h
-#define __smtk_extension_qtInfixExpressionEditor_h
+#ifndef smtk_extension_qtInfixExpressionEditor_h
+#define smtk_extension_qtInfixExpressionEditor_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtAttributeItemInfo.h"
@@ -87,4 +87,4 @@ private slots:
 } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_extension_qtInfixExpressionEditor_h
+#endif // smtk_extension_qtInfixExpressionEditor_h

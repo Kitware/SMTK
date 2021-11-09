@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Events_h
-#define __smtk_model_Events_h
+#ifndef smtk_model_Events_h
+#define smtk_model_Events_h
 
 #include "smtk/PublicPointerDefs.h" // For EntityRef and EntityRefArray
 
@@ -154,4 +154,4 @@ typedef std::pair<ResourceEventType, OneToManyObserver> OneToManyTrigger;
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Events_h
+#endif // smtk_model_Events_h

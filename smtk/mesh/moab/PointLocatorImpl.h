@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_moab_PointLocatorImpl_h
-#define __smtk_mesh_moab_PointLocatorImpl_h
+#ifndef smtk_mesh_moab_PointLocatorImpl_h
+#define smtk_mesh_moab_PointLocatorImpl_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"

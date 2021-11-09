@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_utility_ExtractTessellation_h
-#define __smtk_mesh_utility_ExtractTessellation_h
+#ifndef smtk_mesh_utility_ExtractTessellation_h
+#define smtk_mesh_utility_ExtractTessellation_h
 
 #include <cstdint>
 

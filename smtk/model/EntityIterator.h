@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_EntityIterator_h
-#define __smtk_model_EntityIterator_h
+#ifndef smtk_model_EntityIterator_h
+#define smtk_model_EntityIterator_h
 
 #include "smtk/model/Resource.h"
 
@@ -111,4 +111,4 @@ void EntityIterator::traverse(C ebegin, C eend, IteratorStyle related)
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_EntityIterator_h
+#endif // smtk_model_EntityIterator_h

@@ -14,8 +14,8 @@
 // before discarding any polylines, the polylines are appended to adjacent
 // polylines where possible.
 
-#ifndef __smtk_vtk_CleanPolylines_h
-#define __smtk_vtk_CleanPolylines_h
+#ifndef smtk_vtk_CleanPolylines_h
+#define smtk_vtk_CleanPolylines_h
 
 #include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"

@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_multiscale_Resource_h
-#define __smtk_session_multiscale_Resource_h
+#ifndef smtk_session_multiscale_Resource_h
+#define smtk_session_multiscale_Resource_h
 
 #include "smtk/session/multiscale/Exports.h"
 #include "smtk/session/multiscale/Session.h"

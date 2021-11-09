@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_vtk_DEMToMesh_h
-#define __smtk_vtk_DEMToMesh_h
+#ifndef smtk_vtk_DEMToMesh_h
+#define smtk_vtk_DEMToMesh_h
 
 #include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
@@ -37,4 +37,4 @@ protected:
   int SubSampleStepSize;
 };
 
-#endif // __smtk_vtk_DEMToMesh_h
+#endif // smtk_vtk_DEMToMesh_h

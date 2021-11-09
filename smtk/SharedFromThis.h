@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_SharedFromThis_h
-#define __smtk_SharedFromThis_h
+#ifndef smtk_SharedFromThis_h
+#define smtk_SharedFromThis_h
 /*! \file SharedFromThis.h
  *  \brief Macros for dealing with shared-pointer classes.
  */
@@ -242,4 +242,4 @@ public                                                                          
 #define smtkSharedPtrHelper(...)                                                                   \
   smtk::static_pointer_cast<SelfType>(SharedPtrBaseType::Ptr(__VA_ARGS__))
 
-#endif // __smtk_SharedFromThis_h
+#endif // smtk_SharedFromThis_h

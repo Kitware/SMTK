@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtCheckItemComboBox_h
-#define __smtk_extension_qtCheckItemComboBox_h
+#ifndef smtk_extension_qtCheckItemComboBox_h
+#define smtk_extension_qtCheckItemComboBox_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
@@ -58,4 +58,4 @@ private:
 } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_extension_qtCheckItemComboBox_h
+#endif // smtk_extension_qtCheckItemComboBox_h

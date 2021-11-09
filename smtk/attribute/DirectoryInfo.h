@@ -29,8 +29,8 @@
   the default value for the IncludeIndex Property is 0!
 */
 
-#ifndef __smtk_attribute_DirectoryInfo_h
-#define __smtk_attribute_DirectoryInfo_h
+#ifndef smtk_attribute_DirectoryInfo_h
+#define smtk_attribute_DirectoryInfo_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"

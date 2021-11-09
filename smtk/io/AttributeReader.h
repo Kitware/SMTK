@@ -11,8 +11,8 @@
 // .SECTION Description Used to Read an Attribute Manager from a string or file
 // .SECTION See Also
 
-#ifndef __smtk_io_AttributeReader_h
-#define __smtk_io_AttributeReader_h
+#ifndef smtk_io_AttributeReader_h
+#define smtk_io_AttributeReader_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -79,4 +79,4 @@ private:
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_AttributeReader_h */
+#endif /* smtk_io_AttributeReader_h */

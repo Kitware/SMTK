@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_SharedPtr_h
-#define __smtk_SharedPtr_h
+#ifndef smtk_SharedPtr_h
+#define smtk_SharedPtr_h
 
 #include <memory>
 
@@ -43,4 +43,4 @@ using std::enable_shared_from_this;
 //we store weak ptr in sets/maps even more safely
 using std::owner_less;
 } // namespace smtk
-#endif /* __smtk_SharedPtr_h */
+#endif /* smtk_SharedPtr_h */

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_project_Read_h
-#define __smtk_project_Read_h
+#ifndef smtk_project_Read_h
+#define smtk_project_Read_h
 
 #include "smtk/project/Operation.h"
 

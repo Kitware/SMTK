@@ -23,8 +23,8 @@
 //
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ModelEntityItem_h
-#define __smtk_attribute_ModelEntityItem_h
+#ifndef smtk_attribute_ModelEntityItem_h
+#define smtk_attribute_ModelEntityItem_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -111,4 +111,4 @@ bool ModelEntityItem::appendValues(I vbegin, I vend)
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_ModelEntityItem_h */
+#endif /* smtk_attribute_ModelEntityItem_h */

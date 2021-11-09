@@ -13,8 +13,8 @@
 // .SECTION See Also
 // qtSimpleExpressionView
 
-#ifndef __smtk_extension_qtSimpleExpressionEvaluationView_h
-#define __smtk_extension_qtSimpleExpressionEvaluationView_h
+#ifndef smtk_extension_qtSimpleExpressionEvaluationView_h
+#define smtk_extension_qtSimpleExpressionEvaluationView_h
 
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"

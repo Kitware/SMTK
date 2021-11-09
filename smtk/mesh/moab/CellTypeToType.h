@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_CellTypeToType_h
-#define __smtk_mesh_moab_CellTypeToType_h
+#ifndef smtk_mesh_moab_CellTypeToType_h
+#define smtk_mesh_moab_CellTypeToType_h
 
 #include "smtk/mesh/core/CellTypes.h"
 
@@ -32,4 +32,4 @@ int smtkToMOABCell(smtk::mesh::CellType t);
 } // namespace mesh
 } // namespace smtk
 
-#endif // __smtk_mesh_moab_CellTypeToType_h
+#endif // smtk_mesh_moab_CellTypeToType_h

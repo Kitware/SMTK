@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_internal_Vertex_h
-#define __smtk_session_polygon_internal_Vertex_h
+#ifndef smtk_session_polygon_internal_Vertex_h
+#define smtk_session_polygon_internal_Vertex_h
 
 #include "smtk/SharedFromThis.h"
 #include "smtk/session/polygon/internal/Entity.h"
@@ -148,4 +148,4 @@ protected:
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_internal_Vertex_h
+#endif // smtk_session_polygon_internal_Vertex_h

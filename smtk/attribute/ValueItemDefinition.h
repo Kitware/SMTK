@@ -17,8 +17,8 @@
 // m_valueLabels should only be used if m_numberOfRequiredValues is not 1.
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ValueItemDefinition_h
-#define __smtk_attribute_ValueItemDefinition_h
+#ifndef smtk_attribute_ValueItemDefinition_h
+#define smtk_attribute_ValueItemDefinition_h
 
 #include <cassert>
 #include <map>
@@ -231,4 +231,4 @@ inline bool smtk::attribute::ValueItemDefinition::hasChildItemDefinition(
     m_itemToValueAssociations[itemName].end());
 }
 
-#endif /* __smtk_attribute_ValueItemDefinition_h */
+#endif /* smtk_attribute_ValueItemDefinition_h */

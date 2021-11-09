@@ -27,6 +27,8 @@ namespace smtk
 namespace task
 {
 
+constexpr const char* const GatherResources::type_name;
+
 GatherResources::GatherResources() = default;
 
 GatherResources::GatherResources(

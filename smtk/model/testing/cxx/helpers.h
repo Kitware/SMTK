@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_testing_helpers_h
-#define __smtk_model_testing_helpers_h
+#ifndef smtk_model_testing_helpers_h
+#define smtk_model_testing_helpers_h
 
 #include "smtk/common/UUID.h"
 #include "smtk/model/Resource.h"
@@ -53,4 +53,4 @@ protected:
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_testing_helpers_h
+#endif // smtk_model_testing_helpers_h

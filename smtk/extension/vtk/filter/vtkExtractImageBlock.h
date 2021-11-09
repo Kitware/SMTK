@@ -15,8 +15,8 @@
 // .SECTION See Also
 // vtkExtractBlock
 
-#ifndef __smtk_vtk_ExtractImageBlock_h
-#define __smtk_vtk_ExtractImageBlock_h
+#ifndef smtk_vtk_ExtractImageBlock_h
+#define smtk_vtk_ExtractImageBlock_h
 
 #include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 

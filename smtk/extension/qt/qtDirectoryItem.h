@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_extension_qtDirectoryItem_h
-#define __smtk_extension_qtDirectoryItem_h
+#ifndef smtk_extension_qtDirectoryItem_h
+#define smtk_extension_qtDirectoryItem_h
 
 #include "smtk/extension/qt/qtFileItem.h"
 

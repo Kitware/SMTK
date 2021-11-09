@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_io_XmlDocV1Parser_h
-#define __smtk_io_XmlDocV1Parser_h
+#ifndef smtk_io_XmlDocV1Parser_h
+#define smtk_io_XmlDocV1Parser_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -190,4 +190,4 @@ private:
 } // namespace io
 } // namespace smtk
 
-#endif /* __smtk_io_XmlDocV1Parser_h */
+#endif /* smtk_io_XmlDocV1Parser_h */

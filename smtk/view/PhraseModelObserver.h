@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_view_PhraseModelObserver_h
-#define __smtk_view_PhraseModelObserver_h
+#ifndef smtk_view_PhraseModelObserver_h
+#define smtk_view_PhraseModelObserver_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -48,4 +48,4 @@ typedef smtk::common::Observers<PhraseModelObserver> PhraseModelObservers;
 } // namespace view
 } // namespace smtk
 
-#endif // __smtk_view_PhraseModelObserver_h
+#endif // smtk_view_PhraseModelObserver_h

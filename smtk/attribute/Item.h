@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Item_h
-#define __smtk_attribute_Item_h
+#ifndef smtk_attribute_Item_h
+#define smtk_attribute_Item_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -339,4 +339,4 @@ bool Item::rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_Item_h */
+#endif /* smtk_attribute_Item_h */

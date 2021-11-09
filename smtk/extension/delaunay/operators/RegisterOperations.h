@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_delaunay_RegisterOperations_h
-#define __smtk_extension_delaunay_RegisterOperations_h
+#ifndef smtk_extension_delaunay_RegisterOperations_h
+#define smtk_extension_delaunay_RegisterOperations_h
 
 #include "smtk/extension/delaunay/Exports.h"
 

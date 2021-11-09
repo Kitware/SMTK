@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_FaceUse_h
-#define __smtk_model_FaceUse_h
+#ifndef smtk_model_FaceUse_h
+#define smtk_model_FaceUse_h
 
 #include "smtk/model/ArrangementKind.h" // for Orientation
 #include "smtk/model/UseEntity.h"
@@ -48,4 +48,4 @@ public:
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_FaceUse_h
+#endif // smtk_model_FaceUse_h

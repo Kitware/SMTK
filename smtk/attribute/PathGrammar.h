@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_PathGrammar_h
-#define __smtk_attribute_PathGrammar_h
+#ifndef smtk_attribute_PathGrammar_h
+#define smtk_attribute_PathGrammar_h
 /*!\file FilterGrammar.h - PEGTL structures for parsing resource filter strings */
 
 #include "tao/pegtl.hpp"
@@ -83,4 +83,4 @@ struct action<residual>
 } // namespace attribute
 } // namespace smtk
 
-#endif // __smtk_model_FilterGrammar_h
+#endif // smtk_model_FilterGrammar_h

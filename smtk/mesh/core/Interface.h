@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_mesh_core_Interface_h
-#define __smtk_mesh_core_Interface_h
+#ifndef smtk_mesh_core_Interface_h
+#define smtk_mesh_core_Interface_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"

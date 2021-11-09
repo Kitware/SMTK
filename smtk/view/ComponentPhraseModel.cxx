@@ -161,7 +161,7 @@ void ComponentPhraseModel::populateRoot()
         continue;
       }
 
-      auto entries = resource->find(filter.second);
+      auto entries = resource->filter(filter.second);
       comps.insert(entries.begin(), entries.end());
     }
   }

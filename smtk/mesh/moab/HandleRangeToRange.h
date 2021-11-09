@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_HandleRangeToRange_h
-#define __smtk_mesh_moab_HandleRangeToRange_h
+#ifndef smtk_mesh_moab_HandleRangeToRange_h
+#define smtk_mesh_moab_HandleRangeToRange_h
 
 #include "smtk/CoreExports.h"
 

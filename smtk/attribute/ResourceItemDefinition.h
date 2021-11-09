@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_attribute_ResourceItemDefinition_h
-#define __smtk_attribute_ResourceItemDefinition_h
+#ifndef smtk_attribute_ResourceItemDefinition_h
+#define smtk_attribute_ResourceItemDefinition_h
 
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
@@ -71,4 +71,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_ResourceItemDefinition_h */
+#endif /* smtk_attribute_ResourceItemDefinition_h */

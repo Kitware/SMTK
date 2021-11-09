@@ -13,8 +13,8 @@
 // to python scripts.
 // .SECTION See Also
 
-#ifndef __smtk_simulation_ExportSpec_h
-#define __smtk_simulation_ExportSpec_h
+#ifndef smtk_simulation_ExportSpec_h
+#define smtk_simulation_ExportSpec_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -53,4 +53,4 @@ private:
 } // namespace simulation
 } // namespace smtk
 
-#endif /* __smtk_simulation_ExportSpec_h */
+#endif /* smtk_simulation_ExportSpec_h */

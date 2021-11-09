@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_project_plugin_Registrar_h
-#define __smtk_project_plugin_Registrar_h
+#ifndef smtk_project_plugin_Registrar_h
+#define smtk_project_plugin_Registrar_h
 
 #include "smtk/project/Manager.h"
 #include "smtk/project/Registrar.h"

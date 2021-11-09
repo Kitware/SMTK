@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_UUIDGenerator_h
-#define __smtk_common_UUIDGenerator_h
+#ifndef smtk_common_UUIDGenerator_h
+#define smtk_common_UUIDGenerator_h
 
 #include "smtk/common/UUID.h"
 
@@ -39,4 +39,4 @@ protected:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_UUIDGenerator_h
+#endif // smtk_common_UUIDGenerator_h

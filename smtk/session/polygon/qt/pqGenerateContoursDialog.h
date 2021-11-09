@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef __smtk_pq_GenerateContoursDialog_h
-#define __smtk_pq_GenerateContoursDialog_h
+#ifndef smtk_pq_GenerateContoursDialog_h
+#define smtk_pq_GenerateContoursDialog_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/session/polygon/qt/Exports.h"

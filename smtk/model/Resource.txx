@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Resource_txx
-#define __smtk_model_Resource_txx
+#ifndef smtk_model_Resource_txx
+#define smtk_model_Resource_txx
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -289,4 +289,4 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Resource_txx
+#endif // smtk_model_Resource_txx

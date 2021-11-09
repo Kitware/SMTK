@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ValueItemDefinitionTemplate_h
-#define __smtk_attribute_ValueItemDefinitionTemplate_h
+#ifndef smtk_attribute_ValueItemDefinitionTemplate_h
+#define smtk_attribute_ValueItemDefinitionTemplate_h
 
 #include "smtk/attribute/ValueItemDefinition.h"
 #include <cassert>
@@ -328,4 +328,4 @@ void ValueItemDefinitionTemplate<DataT>::copyTo(
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_ValueItemDefinitionTemplate_h */
+#endif /* smtk_attribute_ValueItemDefinitionTemplate_h */

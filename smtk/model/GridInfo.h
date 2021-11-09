@@ -15,8 +15,8 @@
 // introducing a dependency on CMB.
 // .SECTION See Also
 
-#ifndef __smtk_model_GridInfo_h
-#define __smtk_model_GridInfo_h
+#ifndef smtk_model_GridInfo_h
+#define smtk_model_GridInfo_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -137,4 +137,4 @@ public:
 } // namespace model
 } // namespace smtk
 
-#endif /* __smtk_model_GridInfo_h */
+#endif /* smtk_model_GridInfo_h */

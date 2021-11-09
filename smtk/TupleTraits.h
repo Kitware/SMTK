@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_TupleTraits_h
-#define __smtk_TupleTraits_h
+#ifndef smtk_TupleTraits_h
+#define smtk_TupleTraits_h
 
 #include <tuple>
 

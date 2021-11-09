@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_StringItemDefinition_h
-#define __smtk_attribute_StringItemDefinition_h
+#ifndef smtk_attribute_StringItemDefinition_h
+#define smtk_attribute_StringItemDefinition_h
 
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 
@@ -56,4 +56,4 @@ private:
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_StringItemDefinition_h */
+#endif /* smtk_attribute_StringItemDefinition_h */

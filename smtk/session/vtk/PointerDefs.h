@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_session_vtk_PointerDefs_h
-#define __smtk_session_vtk_PointerDefs_h
+#ifndef smtk_session_vtk_PointerDefs_h
+#define smtk_session_vtk_PointerDefs_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"

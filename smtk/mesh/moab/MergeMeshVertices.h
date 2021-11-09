@@ -10,8 +10,8 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_MergeMeshVertices_h
-#define __smtk_mesh_moab_MergeMeshVertices_h
+#ifndef smtk_mesh_moab_MergeMeshVertices_h
+#define smtk_mesh_moab_MergeMeshVertices_h
 
 #include "smtk/common/CompilerInformation.h"
 

@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_internal_Region_h
-#define __smtk_session_polygon_internal_Region_h
+#ifndef smtk_session_polygon_internal_Region_h
+#define smtk_session_polygon_internal_Region_h
 
 #include "smtk/session/polygon/Operation.h"
 #include "smtk/session/polygon/internal/Fragment.h"
@@ -53,4 +53,4 @@ typedef std::map<RegionIdSet::value_type, smtk::shared_ptr<Region>> RegionDefini
 } //namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_internal_Region_h
+#endif // smtk_session_polygon_internal_Region_h

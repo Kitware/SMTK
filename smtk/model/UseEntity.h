@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_UseEntity_h
-#define __smtk_model_UseEntity_h
+#ifndef smtk_model_UseEntity_h
+#define smtk_model_UseEntity_h
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityRefArrangementOps.h" // For shellEntities<T>().
@@ -99,4 +99,4 @@ UseEntity& UseEntity::addShellEntities(const T& shellContainer)
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_UseEntity_h
+#endif // smtk_model_UseEntity_h

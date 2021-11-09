@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_project_Remove_h
-#define __smtk_project_Remove_h
+#ifndef smtk_project_Remove_h
+#define smtk_project_Remove_h
 
 #include "smtk/project/Operation.h"
 

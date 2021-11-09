@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_extension_qtDiscreteValueEditor_h
-#define __smtk_extension_qtDiscreteValueEditor_h
+#ifndef smtk_extension_qtDiscreteValueEditor_h
+#define smtk_extension_qtDiscreteValueEditor_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"

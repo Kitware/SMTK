@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_GeometryUtilities_h
-#define __smtk_common_GeometryUtilities_h
+#ifndef smtk_common_GeometryUtilities_h
+#define smtk_common_GeometryUtilities_h
 
 namespace smtk
 {
@@ -31,4 +31,4 @@ double distance2(const T* p0, const T* p1)
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_GeometryUtilities_h
+#endif // smtk_common_GeometryUtilities_h

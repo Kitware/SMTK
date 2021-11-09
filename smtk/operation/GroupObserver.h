@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_operation_GroupObserver_h
-#define __smtk_operation_GroupObserver_h
+#ifndef smtk_operation_GroupObserver_h
+#define smtk_operation_GroupObserver_h
 
 #include "smtk/CoreExports.h"
 
@@ -28,4 +28,4 @@ typedef smtk::common::Observers<GroupObserver> GroupObservers;
 } // namespace operation
 } // namespace smtk
 
-#endif // __smtk_operation_GroupObserver_h
+#endif // smtk_operation_GroupObserver_h

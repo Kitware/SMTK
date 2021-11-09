@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_common_PathsHelperMacOSX_h
-#define __smtk_common_PathsHelperMacOSX_h
+#ifndef smtk_common_PathsHelperMacOSX_h
+#define smtk_common_PathsHelperMacOSX_h
 
 #include "smtk/CoreExports.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_PathsHelperMacOSX_h
+#endif // smtk_common_PathsHelperMacOSX_h

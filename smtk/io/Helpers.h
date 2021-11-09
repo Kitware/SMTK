@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_io_Helpers_h
-#define __smtk_io_Helpers_h
+#ifndef smtk_io_Helpers_h
+#define smtk_io_Helpers_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SystemConfig.h"
@@ -62,4 +62,4 @@ public:
 } // namespace io
 } // namespace smtk
 
-#endif // __smtk_io_Helpers_h
+#endif // smtk_io_Helpers_h

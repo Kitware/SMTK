@@ -17,6 +17,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/task/Manager.h"
 
 #include "smtk/plugin/Manager.txx"
 
@@ -53,5 +54,14 @@ PYBIND11_MODULE(_smtkPybindPlugin, plugin)
       })
     .def("unregisterPluginsFrom", [](const std::shared_ptr<smtk::operation::Manager>& manager) {
       smtk::plugin::Manager::instance()->unregisterPluginsFrom(manager);
-    });
+    })
+    .def("registerPluginsTo",
+      [](const std::shared_ptr<smtk::task::Manager>& manager) {
+        smtk::plugin::Manager::instance()->registerPluginsTo(manager);
+      })
+    .def("unregisterPluginsFrom",
+      [](const std::shared_ptr<smtk::task::Manager>& manager) {
+        smtk::plugin::Manager::instance()->unregisterPluginsFrom(manager);
+      })
+    ;
 }

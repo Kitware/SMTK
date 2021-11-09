@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_vtk_vtkCmbLayeredConeSource_h
-#define __smtk_vtk_vtkCmbLayeredConeSource_h
+#ifndef smtk_vtk_vtkCmbLayeredConeSource_h
+#define smtk_vtk_vtkCmbLayeredConeSource_h
 
 #include <vector>
 

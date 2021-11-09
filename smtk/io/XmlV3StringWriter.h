@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_io_XmlV3StringWriter_h
-#define __smtk_io_XmlV3StringWriter_h
+#ifndef smtk_io_XmlV3StringWriter_h
+#define smtk_io_XmlV3StringWriter_h
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/io/XmlV2StringWriter.h"
@@ -73,4 +73,4 @@ private:
 } // namespace io
 } // namespace smtk
 
-#endif // __smtk_io_XmlV3StringWriter_h
+#endif // smtk_io_XmlV3StringWriter_h

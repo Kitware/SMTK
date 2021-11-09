@@ -7,8 +7,8 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_polygon_internal_bpConfig_h
-#define __smtk_session_polygon_internal_bpConfig_h
+#ifndef smtk_session_polygon_internal_bpConfig_h
+#define smtk_session_polygon_internal_bpConfig_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/common/CompilerInformation.h"
@@ -61,4 +61,4 @@ typedef std::map<Point, VertexPtr> VertexById;
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_internal_bpConfig_h
+#endif // smtk_session_polygon_internal_bpConfig_h

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_core_TypeSet_h
-#define __smtk_mesh_core_TypeSet_h
+#ifndef smtk_mesh_core_TypeSet_h
+#define smtk_mesh_core_TypeSet_h
 
 //TypeSet is a helper class whose goal is to make it easier to determine
 //what kind of information you would extract from a resource given an

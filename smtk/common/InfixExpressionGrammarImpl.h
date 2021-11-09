@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_ExpressionGrammarImpl_h
-#define __smtk_common_ExpressionGrammarImpl_h
+#ifndef smtk_common_ExpressionGrammarImpl_h
+#define smtk_common_ExpressionGrammarImpl_h
 /*!\file InfixExpressionGrammarImpl.h - PEGTL structures for parsing mathematical expressions. */
 
 #include <functional>
@@ -265,4 +265,4 @@ struct ExpressionAction<one<')'>>
 } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_ExpressionGrammarImpl_h
+#endif // smtk_common_ExpressionGrammarImpl_h

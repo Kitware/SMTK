@@ -11,8 +11,8 @@
 // .SECTION Description
 // Reader for SceneGen vegetation file.
 
-#ifndef __smtk_vtk_PolyDataStatsFilter_h
-#define __smtk_vtk_PolyDataStatsFilter_h
+#ifndef smtk_vtk_PolyDataStatsFilter_h
+#define smtk_vtk_PolyDataStatsFilter_h
 
 #include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"

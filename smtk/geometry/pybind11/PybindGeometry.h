@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind__stage_source_smtk_4_smtk_geometry_Geometry_h
-#define pybind__stage_source_smtk_4_smtk_geometry_Geometry_h
+#ifndef pybind__smtk_geometry_Geometry_h
+#define pybind__smtk_geometry_Geometry_h
 
 #include <pybind11/pybind11.h>
 

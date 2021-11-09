@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_polygon_LegacyRead_h
-#define __smtk_session_polygon_LegacyRead_h
+#ifndef smtk_session_polygon_LegacyRead_h
+#define smtk_session_polygon_LegacyRead_h
 
 #include "smtk/session/polygon/Operation.h"
 #include "smtk/session/polygon/Resource.h"
@@ -49,4 +49,4 @@ SMTKPOLYGONSESSION_EXPORT smtk::resource::ResourcePtr legacyRead(const std::stri
 } // namespace session
 } // namespace smtk
 
-#endif // __smtk_session_polygon_LegacyRead_h
+#endif // smtk_session_polygon_LegacyRead_h

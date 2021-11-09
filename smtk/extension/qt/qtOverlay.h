@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtOverlay_h
+#ifndef smtk_extension_qtOverlay_h
 #define _qtOverlay_h
 
 #include "smtk/extension/qt/Exports.h"
@@ -58,4 +58,4 @@ protected:
 }; // namespace extension
 }; // namespace smtk
 
-#endif // __smtk_extension_qtOverlay_
+#endif // smtk_extension_qtOverlay_

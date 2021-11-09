@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_attribute_Categories_h
-#define __smtk_attribute_Categories_h
+#ifndef smtk_attribute_Categories_h
+#define smtk_attribute_Categories_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows

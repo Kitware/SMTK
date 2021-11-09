@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_extension_qtCollapsibleGroupWidget_h
-#define __smtk_extension_qtCollapsibleGroupWidget_h
+#ifndef smtk_extension_qtCollapsibleGroupWidget_h
+#define smtk_extension_qtCollapsibleGroupWidget_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QWidget>
@@ -50,4 +50,4 @@ private:
 }; // namespace extension
 }; // namespace smtk
 
-#endif /* __smtk_extension_qtCollapsibleGroupWidget_h */
+#endif /* smtk_extension_qtCollapsibleGroupWidget_h */

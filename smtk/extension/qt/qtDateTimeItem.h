@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_extension_qtDateTimeItem_h
-#define __smtk_extension_qtDateTimeItem_h
+#ifndef smtk_extension_qtDateTimeItem_h
+#define smtk_extension_qtDateTimeItem_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"

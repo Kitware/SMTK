@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_SessionRef_h
-#define __smtk_model_SessionRef_h
+#ifndef smtk_model_SessionRef_h
+#define smtk_model_SessionRef_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityRefArrangementOps.h" // for templated methods
@@ -54,4 +54,4 @@ T SessionRef::models() const
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_SessionRef_h
+#endif // smtk_model_SessionRef_h

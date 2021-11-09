@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_mesh_Read_h
-#define __smtk_session_mesh_Read_h
+#ifndef smtk_session_mesh_Read_h
+#define smtk_session_mesh_Read_h
 
 #include "smtk/session/mesh/Exports.h"
 

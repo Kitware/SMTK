@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Tessellation_h
-#define __smtk_model_Tessellation_h
+#ifndef smtk_model_Tessellation_h
+#define smtk_model_Tessellation_h
 
 #include "smtk/common/UUID.h"
 
@@ -165,4 +165,4 @@ typedef std::map<smtk::common::UUID, Tessellation>::iterator UUIDWithTessellatio
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Tessellation_h
+#endif // smtk_model_Tessellation_h

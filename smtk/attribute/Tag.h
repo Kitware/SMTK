@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Tag_h
-#define __smtk_attribute_Tag_h
+#ifndef smtk_attribute_Tag_h
+#define smtk_attribute_Tag_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -67,4 +67,4 @@ typedef std::set<Tag> Tags;
 } // namespace attribute
 } // namespace smtk
 
-#endif /* __smtk_attribute_Tag_h */
+#endif /* smtk_attribute_Tag_h */

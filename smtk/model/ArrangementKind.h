@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ArrangementKind_h
-#define __smtk_model_ArrangementKind_h
+#ifndef smtk_model_ArrangementKind_h
+#define smtk_model_ArrangementKind_h
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -78,4 +78,4 @@ SMTKCORE_EXPORT ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k);
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_ArrangementKind_h
+#endif // smtk_model_ArrangementKind_h

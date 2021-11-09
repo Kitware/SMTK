@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Loop_h
-#define __smtk_model_Loop_h
+#ifndef smtk_model_Loop_h
+#define smtk_model_Loop_h
 
 #include "smtk/model/ShellEntity.h"
 
@@ -47,4 +47,4 @@ public:
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Loop_h
+#endif // smtk_model_Loop_h

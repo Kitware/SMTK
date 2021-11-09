@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_operation_MetadataObserver_h
-#define __smtk_operation_MetadataObserver_h
+#ifndef smtk_operation_MetadataObserver_h
+#define smtk_operation_MetadataObserver_h
 
 #include "smtk/CoreExports.h"
 
@@ -31,4 +31,4 @@ extern
 #endif
   template class SMTKCORE_EXPORT std::function<void(const smtk::operation::Metadata&)>;
 
-#endif // __smtk_operation_MetadataObserver_h
+#endif // smtk_operation_MetadataObserver_h
