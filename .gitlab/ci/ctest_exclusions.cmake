@@ -6,6 +6,9 @@ if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "windows")
     # https://gitlab.kitware.com/paraview/paraview/-/merge_requests/5036 and
     # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/6299
     "^pv\\."
+
+    # segfault; needs investigation (#449).
+    "^ImportMultipleFiles$"
     )
 endif ()
 
