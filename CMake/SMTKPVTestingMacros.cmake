@@ -10,7 +10,7 @@ function (_smtk_sanitizer_env variable)
   if (SMTK_ENABLE_SANITIZER)
     set(preload_libraries)
     if (SMTK_SANITIZER MATCHES "address")
-      find_library(SMTK_ASAN_LIBRARY NAMES libasan.so.5 DOC "ASan library")
+      find_library(SMTK_ASAN_LIBRARY NAMES libasan.so.6 libasan.so.5 DOC "ASan library")
       mark_as_advanced(SMTK_ASAN_LIBRARY)
 
       list(APPEND preload_libraries

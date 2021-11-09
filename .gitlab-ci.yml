@@ -261,6 +261,3 @@ test:windows-vs2019-ninja:
         - build:windows-vs2019-ninja
     needs:
         - build:windows-vs2019-ninja
-    # XXX: Some tests spuriously fail, likely for CI-related reasons. At least
-    # let the build do its thing in CI though.
-    allow_failure: true
