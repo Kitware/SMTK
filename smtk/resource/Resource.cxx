@@ -28,6 +28,7 @@ namespace smtk
 namespace resource
 {
 
+constexpr const char* const Resource::type_name;
 const Resource::Index Resource::type_index = std::type_index(typeid(Resource)).hash_code();
 
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
