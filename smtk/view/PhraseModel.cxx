@@ -395,27 +395,38 @@ void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRan
 
 void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expungedObjects)
 {
-  // By default, search all existing phrases for matching components and remove them.
-  std::set<smtk::common::UUID> uuids;
-  for (auto it = expungedObjects.begin(); it != expungedObjects.end(); ++it)
+  if (this->root() == nullptr)
   {
-    uuids.insert((*it)->id());
+    return;
+  }
+  //std::cerr << "Number of Object being removed = " << expungedObjects.size() << std::endl;
+  // Remove phrases that correspond to the set of expunged objects
+  // For each object get all of the phrased that corresponds to it, calculate their indices,
+  //  and add them to the Phrase Delta
+  PhraseDeltas phrasePaths;
+  for (auto& object : expungedObjects)
+  {
+    //    std::cerr << "\tRemoving Obj: " << object->name() << " ID: " << object->id().toString() << " Phrase Model: " << this <<  std::endl;
+    auto it = m_objectMap.find(object->id());
+    if (it == m_objectMap.end())
+    {
+      continue; // the object is not in the tree
+    }
+    for (auto& wdp : it->second)
+    {
+      auto dp = wdp.lock(); // get the shared pointer from the phrase weak pointer
+      if (dp == nullptr)
+      {
+        continue; // the phrase was previously released
+      }
+      std::vector<int> path;
+      dp->index(path);
+      phrasePaths.insert(path);
+      //      std::cerr << "For obj: " << object->name() << " found DP: " << dp->title() << std::endl;
+    }
   }
 
-  PhraseDeltas pd;
-
-  // TODO: It would be more efficient to aggregate all deletions that share a
-  // common path vector and update that path's children at once.
-  this->root()->visitChildren([&uuids, &pd](DescriptivePhrasePtr phr, std::vector<int>& path) {
-    auto comp = phr->relatedComponent();
-    if (comp && uuids.find(comp->id()) != uuids.end())
-    {
-      pd.insert(path);
-    }
-    return 0;
-  });
-
-  for (auto idx : pd)
+  for (auto idx : phrasePaths)
   {
     if (idx.empty())
     {
@@ -432,23 +443,36 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
 
 void PhraseModel::handleModified(const smtk::resource::PersistentObjectSet& modifiedObjects)
 {
-  auto rootPhrase = this->root();
-  if (rootPhrase)
+  if (this->root() == nullptr)
   {
-    rootPhrase->visitChildren(
-      [this, &modifiedObjects](DescriptivePhrasePtr phr, const std::vector<int>& idx) -> int {
-        if (modifiedObjects.find(phr->relatedComponent()) != modifiedObjects.end())
-        {
-          this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
-          // Now check whether the modification requires a reorder
-          auto pp = phr->parent();
-          smtk::view::DescriptivePhrases sorted(pp->subphrases().begin(), pp->subphrases().end());
-          std::sort(sorted.begin(), sorted.end(), DescriptivePhrase::compareByTypeThenTitle);
-          std::vector<int> pidx(idx.begin(), idx.begin() + idx.size() - 1);
-          this->updateChildren(pp, sorted, pidx);
-        }
-        return 0;
-      });
+    return;
+  }
+
+  for (auto& object : modifiedObjects)
+  {
+    auto it = m_objectMap.find(object->id());
+    if (it == m_objectMap.end())
+    {
+      continue; // the object is not in the tree
+    }
+    for (auto& wdp : it->second)
+    {
+      auto dp = wdp.lock(); // get the shared pointer from the phrase weak pointer
+      if (dp == nullptr)
+      {
+        continue; // the phrase was previously released
+      }
+      std::vector<int> path;
+      dp->index(path);
+
+      this->trigger(dp, PhraseModelEvent::PHRASE_MODIFIED, path, path, std::vector<int>());
+      // Now check whether the modification requires a reorder
+      auto pp = dp->parent();
+      smtk::view::DescriptivePhrases sorted(pp->subphrases().begin(), pp->subphrases().end());
+      std::sort(sorted.begin(), sorted.end(), DescriptivePhrase::compareByTypeThenTitle);
+      std::vector<int> pidx(path.begin(), path.begin() + path.size() - 1);
+      this->updateChildren(pp, sorted, pidx);
+    }
   }
 }
 
@@ -503,6 +527,11 @@ void PhraseModel::updateChildren(
     return;
   }
 
+  /*std::cerr << "Updating Children for DP:" << src->title() << std::endl;
+for (const auto& nc : next)
+{
+  std::cerr << "\tNew Child: " << nc->title() << std::endl;
+}*/
   std::map<DescriptivePhrasePtr, int> lkup;
   std::map<int, DescriptivePhrasePtr> insert;
   int ii = 0;
@@ -552,7 +581,7 @@ void PhraseModel::updateChildren(
       }
     }
   }
-
+  //std::cerr << "\tNumber to be inserted: " << insert.size() << std::endl;
   // Now delete unused from model, starting at the back so we don't invalidate indices.
   std::vector<int> removalRange(2);
   for (auto uu = unused.rbegin(); uu != unused.rend(); ++uu)
@@ -732,6 +761,59 @@ int depth(DescriptivePhrasePtr phr)
 } // namespace
 #endif
 
+void PhraseModel::removeFromMap(const DescriptivePhrasePtr& phr)
+{
+  if (!phr)
+  {
+    return;
+  }
+  // Does the phrase contain a Persistent Object?
+  smtk::resource::PersistentObjectPtr obj = phr->relatedObject();
+  if (obj)
+  {
+    auto it = m_objectMap.find(obj->id());
+    // If the object is in the map then remove the phrase from the set
+    if (it != m_objectMap.end())
+    {
+      std::size_t numPhrases = it->second.size();
+      if (numPhrases == 0)
+      {
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "Found an empty set of descriptive phrases for persistent object: "
+            << obj->name() << " with UUID: " << obj->id().toString());
+      }
+      else
+      {
+        it->second.erase(phr);
+        if (it->second.size() == numPhrases)
+        {
+          smtkWarningMacro(
+            smtk::io::Logger::instance(),
+            "Found a set of descriptive phrases for persistent object: "
+              << obj->name() << " with UUID: " << obj->id().toString()
+              << " that did not include the phrase being removed");
+        }
+        else if (it->second.empty())
+        {
+          m_objectMap.erase(it);
+        }
+      }
+    }
+  }
+  // see if the phrase has children that need to be removed
+  if (!phr->areSubphrasesBuilt())
+  {
+    return;
+  }
+
+  DescriptivePhrases& children(phr->subphrases());
+  for (const auto& child : children)
+  {
+    this->removeFromMap(child);
+  }
+}
+
 void PhraseModel::trigger(
   DescriptivePhrasePtr phr,
   PhraseModelEvent event,
@@ -760,6 +842,15 @@ void PhraseModel::trigger(
   std::cout.flush();
 #endif
 
+  if ((event == PhraseModelEvent::ABOUT_TO_REMOVE) && phr && phr->areSubphrasesBuilt())
+  {
+    DescriptivePhrases& children(phr->subphrases());
+    for (int ci = arg[0]; ci <= arg[1]; ++ci)
+    {
+      this->removeFromMap(children[ci]);
+    }
+  }
+
   this->observers()(phr, event, src, dst, arg);
   // Check to see if phrases we just inserted have pre-existing children. If so, trigger them.
   if (event == PhraseModelEvent::INSERT_FINISHED && phr && phr->areSubphrasesBuilt())
@@ -769,7 +860,39 @@ void PhraseModel::trigger(
     range[0] = 0;
     for (int ci = arg[0]; ci <= arg[1]; ++ci)
     {
-      if (!children[ci] || !children[ci]->areSubphrasesBuilt())
+      // If the child is null then skip it
+      if (!children[ci])
+      {
+        continue;
+      }
+
+      // Do we need to update the object map?
+      smtk::resource::PersistentObjectPtr obj = children[ci]->relatedObject();
+      if (obj)
+      {
+        auto it = m_objectMap.find(obj->id());
+        if (it == m_objectMap.end())
+        {
+          // OK this is the first descriptive phrase that uses this object
+          std::set<
+            std::weak_ptr<smtk::view::DescriptivePhrase>,
+            std::owner_less<std::weak_ptr<smtk::view::DescriptivePhrase>>>
+            phrases;
+          phrases.insert(children[ci]);
+          m_objectMap.insert({ { obj->id(), phrases } });
+          /*          std::cerr << "Inserted Obj: " << obj->name() << " in Phrase: " << children[ci]->title() << std::endl;
+          if (m_objectMap.find(obj->id()) == m_objectMap.end())
+          {
+            std::cerr << "ERROR: can not find recently add obj: " << obj->name() << std::endl;
+          }*/
+        }
+        else
+        {
+          it->second.insert(children[ci]);
+        }
+      }
+      // Do we need to deal with its children?
+      if (!children[ci]->areSubphrasesBuilt())
       {
         continue;
       }

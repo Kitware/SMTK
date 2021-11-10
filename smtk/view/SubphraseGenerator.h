@@ -67,11 +67,25 @@ public:
     */
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
 
+  /**\brief Return a set of parent Persistent Objects for this object.
+   * based on the generator's parent/child rules
+   */
+  virtual smtk::resource::PersistentObjectSet parentObjects(
+    const smtk::resource::PersistentObjectPtr& obj) const;
+
   /// Set the phrase model used to adapt phrases to a user interface.
   bool setModel(PhraseModelPtr model);
 
   /// Return the phrase model (if any) used to adapt phrases to a user interface.
   PhraseModelPtr model() const { return m_model.lock(); }
+
+  /**\brief Create a new Sub-phrase for an object which will be a child of parent
+   *  and return the path to the phrase.
+   */
+  virtual DescriptivePhrasePtr createSubPhrase(
+    const smtk::resource::PersistentObjectPtr& obj,
+    const DescriptivePhrasePtr& parent,
+    Path& childPath);
 
   /**\brief Append subphrases and their paths that the given set of created objects implies.
     *
@@ -145,7 +159,7 @@ public:
 protected:
   virtual Path indexOfObjectInParent(
     const smtk::resource::PersistentObjectPtr& obj,
-    smtk::view::DescriptivePhrasePtr& parent,
+    const smtk::view::DescriptivePhrasePtr& parent,
     const Path& parentPath);
 
   virtual int findResourceLocation(

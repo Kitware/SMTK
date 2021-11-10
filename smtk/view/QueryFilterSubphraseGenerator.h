@@ -37,7 +37,7 @@ public:
 protected:
   Path indexOfObjectInParent(
     const smtk::resource::PersistentObjectPtr& obj,
-    smtk::view::DescriptivePhrasePtr& parent,
+    const smtk::view::DescriptivePhrasePtr& parent,
     const Path& parentPath) override;
 };
 } // namespace view
