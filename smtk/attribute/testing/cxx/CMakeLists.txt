@@ -75,7 +75,6 @@ endif()
 
 set(unit_tests
   unitAdvanceLevelTest.cxx
-  unitAssociationRulesTest.cxx
   unitAssociationTest.cxx
   unitAttributeAnalysis.cxx
   unitAttributeAssociation.cxx
@@ -123,6 +122,10 @@ if(SMTK_ENABLE_POLYGON_SESSION)
     )
 endif()
 
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND unit_tests
+    unitAssociationRulesTest.cxx)
+endif ()
 
 smtk_unit_tests(
   LABEL "Attribute"
