@@ -83,8 +83,8 @@ endif()
 
 # Generate the version header using CMake variables.
 configure_file(
-  ${smtk_SOURCE_DIR}/CMake/Version.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/Version.h
+  "${CMAKE_CURRENT_SOURCE_DIR}/Version.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/Version.h"
   @ONLY
 )
 
