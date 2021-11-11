@@ -114,7 +114,7 @@ def configFile(srcdir, blddir, templateFile, outputFile, keywords):
 if readTheDocs or localReadTheDocs:
     """Configure files and run Doxygen ourselves"""
     # Configure some files
-    configFile(sourcedir, builddir, '../CMake/Version.h.in', '../smtk/common/Version.h', {
+    configFile(sourcedir, builddir, '../smtk/common/Version.h.in', '../smtk/common/Version.h', {
         '@SMTK_VERSION_MAJOR@': 1,
         '@SMTK_VERSION_MINOR@': 1,
         '@SMTK_VERSION_PATCH@': 0,
