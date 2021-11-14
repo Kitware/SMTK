@@ -17,20 +17,9 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   # Ignore warnings from CMake autogen code
   "autogen"
 
-  # ParaView generated code (paraview/paraview!4957)
-  "AutoStartImplementation.*modernize-use-nullptr"
-  # Fixes from paraview/paraview!5058
+  # Fixes from paraview/paraview!5322
   "_server_manager\\.h.*misc-definitions-in-headers"
-  "_server_manager\\.h.*modernize-use-emplace"
   "_server_manager_modules\\.h.*misc-definitions-in-headers"
-  "_server_manager_modules\\.h.*modernize-use-emplace"
-  "_client_server\\.h.*misc-definitions-in-headers"
-  "_qch\\.h.*modernize-deprecated-headers"
-  "_qch\\.h.*misc-definitions-in-headers"
-  "_server_manager_modules_data\\.h.*misc-definitions-in-headers"
-  "_server_manager_modules_data\\.h.*modernize-deprecated-headers"
-  "_server_manager_data\\.h.*misc-definitions-in-headers"
-  "_server_manager_data\\.h.*modernize-deprecated-headers"
   "note: make as 'inline'"
 
   # Warnings from the delaunay submodule.
