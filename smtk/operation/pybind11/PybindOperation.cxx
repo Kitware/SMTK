@@ -25,6 +25,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindMetadataObserver.h"
 #include "PybindOperation.h"
 #include "PybindManager.h"
+#include "PybindMarkGeometry.h"
 #include "PybindObserver.h"
 #include "PybindResourceManagerOperation.h"
 #include "PybindXMLOperation.h"
@@ -49,6 +50,7 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
   py::class_< smtk::operation::MetadataObservers > smtk_operation_MetadataObservers = pybind11_init_smtk_operation_MetadataObservers(operation);
   py::class_< smtk::operation::NameTag > smtk_operation_NameTag = pybind11_init_smtk_operation_NameTag(operation);
   PySharedPtrClass< smtk::operation::Manager > smtk_operation_Manager = pybind11_init_smtk_operation_Manager(operation);
+  auto smtk_operation_MarkGeometry = pybind11_init_smtk_operation_MarkGeometry(operation);
   PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > smtk_operation_Operation = pybind11_init_smtk_operation_Operation(operation);
   py::class_< smtk::operation::Observers > smtk_operation_Observers = pybind11_init_smtk_operation_Observers(operation);
   pybind11_init_smtk_operation_EventType(operation);
