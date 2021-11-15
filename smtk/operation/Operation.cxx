@@ -422,5 +422,26 @@ Operation::Specification Operation::createBaseSpecification() const
   return spec;
 }
 
+bool Operation::restoreTrace(const std::string& trace)
+{
+  auto specification = this->specification();
+  smtk::resource::ScopedLockGuard lock(specification->lock({}), smtk::resource::LockType::Write);
+  // clear existing instances
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(specification, this->typeName());
+  std::vector<smtk::attribute::AttributePtr> defnAttrs;
+  specification->findAttributes(parameterDefinition, defnAttrs);
+  if (!defnAttrs.empty())
+  {
+    for (const auto& attr : defnAttrs)
+    {
+      specification->removeAttribute(attr);
+    }
+  }
+  // repopulate with instances from the trace
+  smtk::io::AttributeReader reader;
+  return reader.readContents(specification, trace, this->log());
+}
+
 } // namespace operation
 } // namespace smtk
