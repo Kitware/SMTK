@@ -94,6 +94,7 @@ public:
   /// - these sections can be included by calling enabling them after calling
   // this method.
   void treatAsLibrary(const std::vector<smtk::attribute::DefinitionPtr>& includedDefs);
+
   // Restricts the types of attribute instances written out to those derived from a
   // specified list.  If the list is empty then all attributes will be saved.
   // Any redundant definitions (definitions that can be derived from others in the list)
@@ -104,6 +105,20 @@ public:
   const std::vector<smtk::attribute::DefinitionPtr>& includedDefinitions() const
   {
     return m_includedDefs;
+  }
+
+  // Restricts the types of attribute instances written out to those *not* derived from a
+  // specified list.  If the list is empty then no attributes will be omitted.
+  // Inclusions are applied before exclusions.
+  // This allows you to include base definitions (by adding them to the inclusions) while
+  // omitting definitions derived from the base (by adding the derived definition(s) to
+  // the exclusions).
+  void setExcludedDefinitions(const std::set<smtk::attribute::DefinitionPtr>& excludedDefs);
+
+  // Return the list of definitions to be used to filter out unwanted attribute instances.
+  const std::set<smtk::attribute::DefinitionPtr>& excludedDefinitions() const
+  {
+    return m_excludedDefs;
   }
 
 protected:
@@ -128,6 +143,7 @@ private:
   bool m_includeViews{ true };
   bool m_useDirectoryInfo{ false };
   std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
+  std::set<smtk::attribute::DefinitionPtr> m_excludedDefs;
 };
 } // namespace io
 } // namespace smtk

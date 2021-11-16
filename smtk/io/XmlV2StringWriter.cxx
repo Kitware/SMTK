@@ -521,6 +521,16 @@ void XmlV2StringWriter::processAttributeInformation()
 
 void XmlV2StringWriter::processDefinition(DefinitionPtr def)
 {
+  if (!m_excludedDefs.empty())
+  {
+    for (const auto& exclusion : m_excludedDefs)
+    {
+      if (def && def->isA(exclusion))
+      {
+        return;
+      }
+    }
+  }
   if (m_includeDefinitions)
   {
     std::size_t index = 0;

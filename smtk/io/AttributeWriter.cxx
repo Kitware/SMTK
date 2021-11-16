@@ -74,6 +74,7 @@ bool AttributeWriter::write(
   theWriter->includeViews(m_includeViews);
   theWriter->useDirectoryInfo(m_useDirectoryInfo);
   theWriter->setIncludedDefinitions(m_includedDefs);
+  theWriter->setExcludedDefinitions(m_excludedDefs);
 
   std::string result = theWriter->convertToString();
   if (m_useDirectoryInfo && (!logger.hasErrors()))
@@ -149,6 +150,7 @@ bool AttributeWriter::writeContents(
   theWriter->includeResourceID(m_includeResourceID);
   theWriter->includeViews(m_includeViews);
   theWriter->setIncludedDefinitions(m_includedDefs);
+  theWriter->setExcludedDefinitions(m_excludedDefs);
   theWriter->useDirectoryInfo(false);
   filecontents = theWriter->convertToString(no_declaration);
   delete theWriter;
@@ -226,6 +228,14 @@ void AttributeWriter::setIncludedDefinitions(
     }
   }
 }
+
+void AttributeWriter::setExcludedDefinitions(
+  const std::set<smtk::attribute::DefinitionPtr>& excludedDefs)
+{
+  // We do not need to prune exclusions as you can only die once, Mr. Bond.
+  m_excludedDefs = excludedDefs;
+}
+
 void AttributeWriter::treatAsLibrary(
   const std::vector<smtk::attribute::DefinitionPtr>& includedDefs)
 {

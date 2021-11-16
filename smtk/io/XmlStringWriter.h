@@ -19,6 +19,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/Logger.h"
 
+#include <set>
 #include <string>
 
 namespace pugi
@@ -107,6 +108,13 @@ public:
     m_includedDefs = includedDefs;
   }
 
+  // Restricts the types of attribute instances written out to those *not* derived
+  // from a specified list.  If the list is empty then all attributes will be saved.
+  void setExcludedDefinitions(const std::set<smtk::attribute::DefinitionPtr>& excludedDefs)
+  {
+    m_excludedDefs = excludedDefs;
+  }
+
 protected:
   smtk::attribute::ResourcePtr m_resource;
   bool m_includeAnalyses;
@@ -121,6 +129,7 @@ protected:
   bool m_includeViews;
   bool m_useDirectoryInfo;
   std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
+  std::set<smtk::attribute::DefinitionPtr> m_excludedDefs;
 
   smtk::io::Logger& m_logger;
 };
