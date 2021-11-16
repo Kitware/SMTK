@@ -144,6 +144,9 @@ public:
   /// Operations that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
 
+  /// restore operation parameters from the trace of a previously run operation.
+  bool restoreTrace(const std::string& trace);
+
 protected:
   Operation();
 
