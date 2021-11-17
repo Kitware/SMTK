@@ -24,11 +24,13 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #ifdef SMTK_PYTHON_ENABLED
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportOperationBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPythonTrace.h"
 #endif
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"
@@ -62,12 +64,25 @@ public:
 vtkStandardNewMacro(vtkSMTKAppComponentsFactory);
 } // namespace
 
+class pqSMTKAppComponentsAutoStart::pqInternal
+{
+public:
+  smtk::operation::Observers::Key m_opObserver;
+#ifdef SMTK_PYTHON_ENABLED
+  pqSMTKPythonTrace m_pythonTrace;
+#endif
+};
+
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
 {
+  m_p = new pqInternal();
 }
 
-pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart() = default;
+pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
+{
+  delete m_p;
+}
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
@@ -78,7 +93,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   vtkNew<vtkSMTKAppComponentsFactory> factory;
   vtkObjectFactory::RegisterFactory(factory);
 
-  auto* rsrcMgr = pqSMTKBehavior::instance(this);
+  auto* behavior = pqSMTKBehavior::instance(this);
   auto* renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
   auto* closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
   auto* callObserversOnMainThread = pqSMTKCallObserversOnMainThreadBehavior::instance(this);
@@ -102,7 +117,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
-    pqCore->registerManager("smtk resource", rsrcMgr);
+    pqCore->registerManager("smtk resource", behavior);
     pqCore->registerManager("smtk render resource", renderResourceBehavior);
     // If we are running inside CTest, don't pop up dialogs on close.
     if (!vtksys::SystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST"))
@@ -127,14 +142,23 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk pipeline selection sync", pipelineSync);
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
 
+    QObject::connect(
+      behavior,
+      SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)),
+      this,
+      SLOT(observeWrapper(pqSMTKWrapper*, pqServer*)));
+    QObject::connect(
+      behavior,
+      SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)),
+      this,
+      SLOT(unobserveWrapper(pqSMTKWrapper*, pqServer*)));
     // If there is already an active server, create a wrapper for it.
     auto* server = pqCore->getActiveServer();
     if (server)
     {
-      rsrcMgr->addManagerOnServer(server);
+      behavior->addManagerOnServer(server);
     }
   }
-  (void)rsrcMgr;
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()
@@ -162,4 +186,33 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     pqCore->unRegisterManager("smtk pipeline selection sync");
     pqCore->unRegisterManager("smtk display attribute on load");
   }
+}
+
+void pqSMTKAppComponentsAutoStart::observeWrapper(pqSMTKWrapper* wrapper, pqServer* /*server*/)
+{
+  m_p->m_opObserver = wrapper->smtkOperationManager()->observers().insert(
+    [this](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
+      smtk::operation::Operation::Result const &
+      /*result*/) -> int {
+      if (event == smtk::operation::EventType::DID_OPERATE)
+      {
+      // Trace operation in python
+#ifdef SMTK_PYTHON_ENABLED
+        this->m_p->m_pythonTrace.traceOperation(op);
+#endif
+      }
+      return 0;
+    },
+    std::numeric_limits<smtk::operation::Observers::Priority>::lowest(),
+    /* invoke observer on current selection */ false,
+    "pqSMTKAppComponentsAutoStart: observe operations and trace in python.");
+}
+
+void pqSMTKAppComponentsAutoStart::unobserveWrapper(
+  pqSMTKWrapper* /*wrapper*/,
+  pqServer* /*server*/)
+{
+  m_p->m_opObserver = smtk::operation::Observers::Key();
 }

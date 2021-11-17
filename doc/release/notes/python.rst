@@ -16,3 +16,13 @@ You may call its ``instance()`` method in the ModelBuilder or ParaView python sh
 and use the returned instance to obtain managers (using the ``activeWrapperResourceManager``,
 ``activeWrapperOperationManager``, ``activeWrapperViewManager``, and
 ``activeWrapperSelection`` methods).
+
+
+Operation Tracing
+-----------------
+
+Operations executed in the gui are added to any active python trace. The first
+operation adds imports and retrieves the managers used to replay an
+operation. Operation inputs and associations are recorded in an XML string so
+they are complete. Users should be able to copy-paste or replay the trace in
+the internal python shell.

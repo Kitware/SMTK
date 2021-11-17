@@ -12,6 +12,8 @@
 
 #include <QObject>
 
+class pqSMTKWrapper;
+class pqServer;
 class vtkSMProxy;
 
 class pqSMTKAppComponentsAutoStart : public QObject
@@ -27,6 +29,18 @@ public:
 
   void startup();
   void shutdown();
+
+protected slots:
+  /// Called whenever a new client-server connection is made and SMTK is enabled on the server.
+  ///
+  /// This is used to observe operations
+  virtual void observeWrapper(pqSMTKWrapper* wrapper, pqServer* server);
+  /// Called whenever a client-server disconnect is performed on an SMTK-enabled server.
+  virtual void unobserveWrapper(pqSMTKWrapper* wrapper, pqServer* server);
+
+protected:
+  class pqInternal;
+  pqInternal* m_p;
 
 private:
   Q_DISABLE_COPY(pqSMTKAppComponentsAutoStart);
