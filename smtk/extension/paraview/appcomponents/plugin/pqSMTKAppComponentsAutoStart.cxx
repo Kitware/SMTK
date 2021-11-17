@@ -196,7 +196,7 @@ void pqSMTKAppComponentsAutoStart::observeWrapper(pqSMTKWrapper* wrapper, pqServ
       smtk::operation::EventType event,
       smtk::operation::Operation::Result const &
       /*result*/) -> int {
-      if (event == smtk::operation::EventType::DID_OPERATE)
+      if (event == smtk::operation::EventType::WILL_OPERATE)
       {
       // Trace operation in python
 #ifdef SMTK_PYTHON_ENABLED
