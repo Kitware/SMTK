@@ -440,7 +440,17 @@ bool Operation::restoreTrace(const std::string& trace)
   }
   // repopulate with instances from the trace
   smtk::io::AttributeReader reader;
-  return reader.readContents(specification, trace, this->log());
+  if (!reader.readContents(specification, trace, this->log()))
+  {
+    specification->findAttributes(parameterDefinition, defnAttrs);
+    if (!defnAttrs.empty())
+    {
+      // set m_parameters so the default isn't re-created.
+      m_parameters = defnAttrs[0];
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace operation

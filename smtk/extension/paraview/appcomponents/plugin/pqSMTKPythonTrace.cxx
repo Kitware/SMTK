@@ -67,6 +67,7 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
     SM_SCOPED_TRACE(TraceText)
       .arg("import smtk.extension.paraview.appcomponents\n"
            "import smtk.attribute\n"
+           "import smtk.operation\n"
            "import uuid\n"
            "behavior = smtk.extension.paraview.appcomponents.pqSMTKBehavior.instance()\n"
            "opMgr = behavior.activeWrapperOperationManager()\n"
@@ -98,6 +99,7 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
   text << "op.restoreTrace(xmlSpec)\n";
 
   text << "res = op.operate()\n";
+
   SM_SCOPED_TRACE(TraceText)
     .arg(text.str().c_str())
     .arg("comment", "Setup SMTK operation and parameters");
