@@ -33,7 +33,7 @@ stages:
 
 ## Build and test
 
-build:fedora33:
+fedora33:build:
     extends:
         - .fedora33
         - .cmake_build_linux
@@ -41,7 +41,7 @@ build:fedora33:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33:
+fedora33:test:
     extends:
         - .fedora33
         - .cmake_test_linux
@@ -49,11 +49,11 @@ test:fedora33:
         - .linux_test_tags
         - .run_dependent
     dependencies:
-        - build:fedora33
+        - fedora33:build
     needs:
-        - build:fedora33
+        - fedora33:build
 
-build:fedora33-vtk-python3:
+fedora33-vtk-python3:build:
     extends:
         - .fedora33_vtk_python3
         - .cmake_build_linux
@@ -61,7 +61,7 @@ build:fedora33-vtk-python3:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33-vtk-python3:
+fedora33-vtk-python3:test:
     extends:
         - .fedora33_vtk_python3
         - .cmake_test_linux
@@ -69,11 +69,11 @@ test:fedora33-vtk-python3:
         - .linux_test_tags
         - .run_dependent
     dependencies:
-        - build:fedora33-vtk-python3
+        - fedora33-vtk-python3:build
     needs:
-        - build:fedora33-vtk-python3
+        - fedora33-vtk-python3:build
 
-build:fedora33-paraview:
+fedora33-paraview:build:
     extends:
         - .fedora33_paraview
         - .cmake_build_linux
@@ -81,7 +81,7 @@ build:fedora33-paraview:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33-paraview:
+fedora33-paraview:test:
     extends:
         - .fedora33_paraview
         - .cmake_test_linux
@@ -89,11 +89,11 @@ test:fedora33-paraview:
         - .linux_test_tags
         - .run_dependent
     dependencies:
-        - build:fedora33-paraview
+        - fedora33-paraview:build
     needs:
-        - build:fedora33-paraview
+        - fedora33-paraview:build
 
-build:fedora33-nodata:
+fedora33-nodata:build:
     extends:
         - .fedora33_nodata
         - .cmake_build_linux
@@ -101,7 +101,7 @@ build:fedora33-nodata:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33-nodata:
+fedora33-nodata:test:
     extends:
         - .fedora33_nodata
         - .cmake_test_linux
@@ -109,13 +109,13 @@ test:fedora33-nodata:
         - .linux_test_tags
         - .run_dependent
     dependencies:
-        - build:fedora33-nodata
+        - fedora33-nodata:build
     needs:
-        - build:fedora33-nodata
+        - fedora33-nodata:build
 
 ## Lint builds
 
-build:fedora33-asan:
+fedora33-asan:build:
     extends:
         - .fedora33_asan
         - .cmake_build_linux
@@ -123,7 +123,7 @@ build:fedora33-asan:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33-asan:
+fedora33-asan:test:
     extends:
         - .fedora33_asan
         - .cmake_memcheck_linux
@@ -131,11 +131,11 @@ test:fedora33-asan:
         - .linux_test_priv_tags
         - .run_dependent
     dependencies:
-        - build:fedora33-asan
+        - fedora33-asan:build
     needs:
-        - build:fedora33-asan
+        - fedora33-asan:build
 
-build:fedora33-ubsan:
+fedora33-ubsan:build:
     extends:
         - .fedora33_ubsan
         - .cmake_build_linux
@@ -143,7 +143,7 @@ build:fedora33-ubsan:
         - .linux_builder_tags
         - .run_automatically
 
-test:fedora33-ubsan:
+fedora33-ubsan:test:
     extends:
         - .fedora33_ubsan
         - .cmake_memcheck_linux
@@ -151,11 +151,11 @@ test:fedora33-ubsan:
         - .linux_test_priv_tags
         - .run_dependent
     dependencies:
-        - build:fedora33-ubsan
+        - fedora33-ubsan:build
     needs:
-        - build:fedora33-ubsan
+        - fedora33-ubsan:build
 
-build:fedora33-tidy:
+fedora33-tidy:build:
     extends:
         - .fedora33_tidy
         - .cmake_build_linux
@@ -163,7 +163,7 @@ build:fedora33-tidy:
         - .linux_builder_tags
         - .run_automatically
 
-build:fedora33-coverage:
+fedora33-coverage:build:
     extends:
         - .fedora33_coverage
         - .cmake_build_linux
@@ -171,7 +171,7 @@ build:fedora33-coverage:
         - .linux_builder_tags
         - .run_dependent
 
-test:fedora33-coverage:
+fedora33-coverage:test:
     extends:
         - .fedora33_coverage
         - .cmake_test_linux
@@ -179,26 +179,26 @@ test:fedora33-coverage:
         - .cmake_coverage_artifacts
         - .run_dependent
     dependencies:
-        - build:fedora33-coverage
+        - fedora33-coverage:build
     needs:
-        - build:fedora33-coverage
+        - fedora33-coverage:build
 
-analyze:fedora33-coverage:
+fedora33-coverage:analyze:
     extends:
         - .fedora33_coverage
         - .cmake_coverage_linux
         - .linux_builder_tags
         - .run_dependent
     dependencies:
-        - test:fedora33-coverage
+        - fedora33-coverage:test
     needs:
-        - test:fedora33-coverage
+        - fedora33-coverage:test
 
 # macOS
 
 ## Build and test
 
-build:macos-arm64:
+macos-arm64:build:
     extends:
         - .macos_arm64
         - .cmake_build_macos
@@ -206,7 +206,7 @@ build:macos-arm64:
         - .macos_arm64_builder_tags
         - .run_automatically
 
-test:macos-arm64:
+macos-arm64:test:
     extends:
         - .macos_arm64
         - .cmake_test_macos
@@ -214,11 +214,11 @@ test:macos-arm64:
         - .macos_arm64_builder_tags
         - .run_dependent
     dependencies:
-        - build:macos-arm64
+        - macos-arm64:build
     needs:
-        - build:macos-arm64
+        - macos-arm64:build
 
-build:macos-x86_64:
+macos-x86_64:build:
     extends:
         - .macos_x86_64
         - .cmake_build_macos
@@ -226,7 +226,7 @@ build:macos-x86_64:
         - .macos_builder_tags
         - .run_automatically
 
-test:macos-x86_64:
+macos-x86_64:test:
     extends:
         - .macos_x86_64
         - .cmake_test_macos
@@ -234,15 +234,15 @@ test:macos-x86_64:
         - .macos_builder_tags
         - .run_dependent
     dependencies:
-        - build:macos-x86_64
+        - macos-x86_64:build
     needs:
-        - build:macos-x86_64
+        - macos-x86_64:build
 
 # Windows
 
 ## Build and test
 
-build:windows-vs2019-ninja:
+windows-vs2019-ninja:build:
     extends:
         - .windows_vs2019_ninja
         - .cmake_build_windows
@@ -250,7 +250,7 @@ build:windows-vs2019-ninja:
         - .windows_builder_tags
         - .run_automatically
 
-test:windows-vs2019-ninja:
+windows-vs2019-ninja:test:
     extends:
         - .windows_vs2019_ninja
         - .cmake_test_windows
@@ -258,6 +258,6 @@ test:windows-vs2019-ninja:
         - .windows_builder_tags
         - .run_dependent
     dependencies:
-        - build:windows-vs2019-ninja
+        - windows-vs2019-ninja:build
     needs:
-        - build:windows-vs2019-ninja
+        - windows-vs2019-ninja:build
