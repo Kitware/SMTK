@@ -12,7 +12,9 @@
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
+#include "smtk/Options.h"
 #include "smtk/common/Paths.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/extension/vtk/filter/vtkImageDual.h"
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
@@ -28,7 +30,6 @@
 #include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
 #include "vtkExodusIIReader.h"
-#include "vtkGDALRasterReader.h"
 #include "vtkGraph.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
@@ -57,6 +58,10 @@
 #include "vtkXMLMultiBlockDataReader.h"
 #include "vtkXMLPolyDataReader.h"
 #include "vtkXMLUnstructuredGridReader.h"
+
+#if SMTK_ENABLE_GDAL_SUPPORT
+#include "vtkGDALRasterReader.h"
+#endif
 
 namespace smtk
 {
@@ -293,6 +298,8 @@ ImportAsVTKData_tif::ImportAsVTKData_tif()
 vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
+  vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
+#if SMTK_ENABLE_GDAL_SUPPORT
   vtkNew<vtkGDALRasterReader> rdr;
   rdr->SetFileName(fileInfo.second.c_str());
   rdr->Update();
@@ -300,7 +307,6 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
   vtkSmartPointer<vtkImageData> outImage = vtkSmartPointer<vtkImageData>::New();
   outImage->ShallowCopy(rdr->GetOutput());
 
-  vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
   if (outImage.GetPointer())
   {
     // vtkGDALRasterReader has switched from storing its data as point data to
@@ -330,6 +336,11 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
     flipImage->Update();
     data->ShallowCopy(flipImage->GetOutput());
   }
+#else
+  (void)fileInfo;
+  smtkErrorMacro(
+    smtk::io::Logger::instance(), "Cannot read file: SMTK built without SMTK_ENABLE_GDAL_SUPPORT.");
+#endif
 
   return data;
 }

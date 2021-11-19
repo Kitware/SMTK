@@ -22,6 +22,10 @@ set(headers
 
 add_library(smtkIOVTK ${srcs})
 
+if (SMTK_ENABLE_GDAL_SUPPORT AND TARGET VTK::IOGDAL)
+  set(_smtk_extra_iovtk_libraries VTK::IOGDAL)
+endif()
+
 target_link_libraries(smtkIOVTK
   LINK_PUBLIC
     smtkCore
@@ -35,7 +39,6 @@ target_link_libraries(smtkIOVTK
     VTK::FiltersCore
     VTK::FiltersGeneral
     VTK::IOExodus
-    VTK::IOGDAL
     VTK::IOGeometry
     VTK::IOImage
     VTK::IOLegacy
@@ -47,29 +50,33 @@ target_link_libraries(smtkIOVTK
     VTK::RenderingCore
     VTK::RenderingFreeType
     VTK::RenderingOpenGL2
-    VTK::vtksys)
+    VTK::vtksys
+    ${_smtk_extra_iovtk_libraries}
+)
 vtk_module_autoinit(
   TARGETS smtkIOVTK
-  MODULES VTK::CommonCore
-          vtkSMTKFilterExt
-          VTK::IOCore
-          VTK::CommonDataModel
-          VTK::CommonExecutionModel
-          VTK::FiltersCore
-          VTK::FiltersGeneral
-          VTK::IOExodus
-          VTK::IOGDAL
-          VTK::IOGeometry
-          VTK::IOImage
-          VTK::IOLegacy
-          VTK::IONetCDF
-          VTK::IOPLY
-          VTK::IOXML
-          VTK::ImagingCore
-          VTK::InteractionStyle
-          VTK::RenderingCore
-          VTK::RenderingFreeType
-          VTK::RenderingOpenGL2)
+  MODULES
+    vtkSMTKFilterExt
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::CommonExecutionModel
+    VTK::FiltersCore
+    VTK::FiltersGeneral
+    VTK::IOCore
+    VTK::IOExodus
+    VTK::IOGeometry
+    VTK::IOImage
+    VTK::IOLegacy
+    VTK::IONetCDF
+    VTK::IOPLY
+    VTK::IOXML
+    VTK::ImagingCore
+    VTK::InteractionStyle
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingOpenGL2
+    ${_smtk_extra_iovtk_libraries}
+)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 

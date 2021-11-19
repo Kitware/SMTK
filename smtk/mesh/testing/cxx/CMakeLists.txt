@@ -65,9 +65,13 @@ if(SMTK_ENABLE_MESH_SESSION)
        )
   if (SMTK_ENABLE_VTK_SUPPORT)
     list(APPEND unit_tests_which_require_data
-         TestElevateMesh.cxx
-         TestElevateMeshOnStructuredGrid.cxx
-         )
+      TestElevateMesh.cxx
+    )
+    if (SMTK_ENABLE_GDAL_SUPPORT)
+      list(APPEND unit_tests_which_require_data
+        TestElevateMeshOnStructuredGrid.cxx
+      )
+    endif()
     if (SMTK_ENABLE_UNSTABLE_TESTS)
       list(APPEND unit_tests_which_require_data
          TestExtractByDihedralAngle.cxx
@@ -75,14 +79,14 @@ if(SMTK_ENABLE_MESH_SESSION)
        )
     endif()
     list(APPEND extra_libs
-         smtkIOVTK
-         vtkSMTKSourceExt
-         VTK::IOXML
-         )
+      smtkIOVTK
+      vtkSMTKSourceExt
+      VTK::IOXML
+    )
   endif()
   list(APPEND extra_libs
-       smtkMeshSession
-       )
+    smtkMeshSession
+  )
 endif()
 
 if (extra_libs)
