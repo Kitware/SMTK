@@ -262,9 +262,10 @@ public:
     *
     * This will **not** always add \a val to the end of the item's array;
     * if there is an unset value anywhere in the allocated array, that will
-    * be preferred to reallocation.
+    * be preferred to reallocation.  Note that disallowing duplicates will
+    * result in a performance impact.
     */
-  bool appendValue(const PersistentObjectPtr& val, bool allowDuplicates = false);
+  bool appendValue(const PersistentObjectPtr& val, bool allowDuplicates = true);
   /**\brief Remove the value at the \a i-th location.
     *
     * If the number of values may not be changed, then the \a i-th
