@@ -1,3 +1,15 @@
+.. _release-notes-21.10:
+
+=========================
+SMTK 21.11 Release Notes
+=========================
+
+See also :ref:`release-notes-21.10` for previous changes.
+
+
+SMTK Attribute Resource Changes
+===================================
+
 Display hint for attribute resources
 ------------------------------------
 
@@ -55,3 +67,54 @@ New files – depending on how they were created – may not appear immediately
 in the attribute editor.
 Also, files saved to the new format will "remember" which one was showing
 in the attribute editor.
+
+Attribute writer now has exclusions
+-----------------------------------
+
+The :smtk:`smtk::io::AttributeWriter` class now accepts definitions to
+include (pre-existing) and exclude (new functionality).
+Exclusions are processed after inclusions, so it is possible to include
+a base Definition and exclude some subset of its children Definitions
+for more exact pruning of which definitions and instances should be
+output by the writer.
+
+Changing the default behavior of smtk::attribute::ReferenceItem::appendValue()
+------------------------------------------------------------------------------
+
+The original default behavior was to uniquely append values and to do an "normal"
+append when explicitly requested.  Based on how this method is used and the fact that
+doing an append unique does incur a performance hit (order N-squared), the new default
+behavior does a normal append.  The developer will now need to explicitly indicate that
+a unique append is requested.
+
+Python Related Changes
+======================
+
+Updated Python bindings
+-----------------------
+
+Python bindings for accessing properties of resources and components
+have been added; the bindings for the task system have been fixed
+and are now tested.
+
+If you have a python module that defines classes which inherit
+``smtk.operation.Operation``, you can register all of these
+operation classes to an operation manager by calling
+a new ``registerModuleOperations`` method on the manager (passing
+the module as a parameter).
+
+There is now a python binding for ``smtk.extension.paraview.appcomponents.pqSMTKBehavior``.
+You may call its ``instance()`` method in the ModelBuilder or ParaView python shell
+and use the returned instance to obtain managers (using the ``activeWrapperResourceManager``,
+``activeWrapperOperationManager``, ``activeWrapperViewManager``, and
+``activeWrapperSelection`` methods).
+
+
+Operation Tracing
+-----------------
+
+Operations executed in the gui are added to any active python trace. The first
+operation adds imports and retrieves the managers used to replay an
+operation. Operation inputs and associations are recorded in an XML string so
+they are complete. Users should be able to copy-paste or replay the trace in
+the internal python shell.
