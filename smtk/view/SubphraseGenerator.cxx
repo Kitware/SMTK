@@ -318,57 +318,52 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
     return;
   }
 
-  PhraseModelPtr pmodel = this->model();
-  if (!pmodel)
-  {
-    return;
-  }
-
-  const UUIDsToPhrasesMap& uuidPhraseMap = pmodel->uuidPhraseMap();
-  Path childPath;
-  DescriptivePhrasePtr child;
-
-  // We only want to add subphrases in portions of the tree that already exist.
-  // First we need to find the parent objects for each object.
-  // Next - using the Phrase Model's uuid to phrases map, we find the descriptive phrases
-  // that correspond to each parent.  If a parent has no phrase or if the phrase does not
-  // have subphrases built, it is skipped.
-  // A new phrase for the created object is added to each of the parent phrases
-  // If an object has no parent object then the local root is assumed to be parent phrase.
-
-  for (const auto& obj : objects)
-  {
-    smtk::resource::PersistentObjectSet parentObjs = this->parentObjects(obj);
-
-    // If the object has no parents then create a child at the local root node
-    if (parentObjs.empty())
+  // We only want to add sub-phrases in portions of the tree that already exist.
+  // So we iterate over phrases; any phrase that has children will ask each object
+  // if its subject should be an immediate parent of the phrase with children (and,
+  // if so, what its index in the existing children should be).
+  //
+  // This search is O(m*n) where m = number of phrases in tree and n = number of
+  // objects created.
+  localRoot->visitChildren([&](DescriptivePhrasePtr parent, std::vector<int>& parentPath) -> int {
+    // Terminate early if this phrase has not been expanded by user.
+    if (!parent->areSubphrasesBuilt())
     {
-      continue;
+      return 0;
     }
 
-    // Create a new child phrase for each parent that has a descriptive phase that
-    // has sub phrases built
-    for (const auto& pobj : parentObjs)
+    smtk::resource::ResourcePtr rsrc;
+    smtk::resource::ComponentPtr comp;
+    for (const auto& obj : objects)
     {
-      auto it = uuidPhraseMap.find(pobj->id());
-      if (it == uuidPhraseMap.end())
+      Path childPath = parent->findDelegate()->indexOfObjectInParent(obj, parent, parentPath);
+      if (childPath.empty())
       {
-        continue; // parent is not in map and therefore does not have any descriptive phrases
-      }
-      for (const auto& wdp : it->second)
+        continue;
+      } // obj is not a direct child of parent
+
+      DescriptivePhrasePtr child;
+      if ((comp = obj->as<smtk::resource::Component>()))
       {
-        DescriptivePhrasePtr dp = wdp.lock();
-        if (dp && dp->areSubphrasesBuilt())
+        // Only add components with valid ids
+        if (comp->id())
         {
-          child = this->createSubPhrase(obj, dp, childPath);
-          if (child)
-          {
-            resultingPhrases.insert(std::make_pair(childPath, child));
-          }
+          child = ComponentPhraseContent::createPhrase(comp, MutabilityOfComponent(comp), parent);
+          resultingPhrases.insert(std::make_pair(childPath, child));
         }
       }
+      else if ((rsrc = obj->as<smtk::resource::Resource>()))
+      {
+        child = ResourcePhraseContent::createPhrase(rsrc, MutabilityOfObject(rsrc), parent);
+        resultingPhrases.insert(std::make_pair(childPath, child));
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Unsupported object type. Skipping.");
+      }
     }
-  }
+    return 0; // 0 => continue iterating, 1 => skip children of parent, 2 => terminate
+  });
 }
 
 int SubphraseGenerator::directLimit() const
