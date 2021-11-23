@@ -57,7 +57,10 @@ public:
     *
     * This method ensures compile-time type-safety while appendValue() does not.
     */
-  bool appendValue(ResourcePtr value) { return ReferenceItem::appendValue(value); }
+  bool appendValue(ResourcePtr value, bool allowDuplicates = true)
+  {
+    return ReferenceItem::appendValue(value, allowDuplicates);
+  }
 
   /// Serialize the \a i-th value to a string.
   std::string valueAsString(std::size_t i) const override;

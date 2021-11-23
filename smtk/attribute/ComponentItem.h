@@ -69,7 +69,10 @@ public:
     *
     * This method ensures compile-time type-safety while appendValue() does not.
     */
-  bool appendValue(ComponentPtr value) { return ReferenceItem::appendValue(value); }
+  bool appendValue(ComponentPtr value, bool allowDuplicates = true)
+  {
+    return ReferenceItem::appendValue(value, allowDuplicates);
+  }
 
   /// Serialize the \a i-th value to a string.
   std::string valueAsString(std::size_t ii) const override;
