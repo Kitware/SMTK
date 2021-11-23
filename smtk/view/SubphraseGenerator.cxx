@@ -140,7 +140,7 @@ smtk::resource::PersistentObjectSet SubphraseGenerator::parentObjects(
   else if (ment->isCellEntity())
   {
     smtk::model::EntityRefs pEnts = smtk::model::EntityRef(ment).bordantEntities();
-    for (auto& ent : pEnts)
+    for (const auto& ent : pEnts)
     {
       if (ent.isValid())
       {
@@ -214,6 +214,46 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
     }
   }
   return result;
+}
+
+bool SubphraseGenerator::hasChildren(const DescriptivePhrase& src) const
+{
+  auto comp = src.relatedComponent();
+  if (!comp)
+  {
+    auto rsrc = src.relatedResource();
+    if (!rsrc)
+    {
+      PhraseContentPtr content = src.content();
+      auto ogpc = std::dynamic_pointer_cast<smtk::view::ObjectGroupPhraseContent>(content);
+      if (ogpc)
+      {
+        return ogpc->hasChildren();
+      }
+      return false; // Don't know what this is
+    }
+    return SubphraseGenerator::resourceHasChildren(rsrc);
+  }
+
+  // OK we have a component
+  auto attr = dynamic_pointer_cast<smtk::attribute::Attribute>(comp);
+  if (attr)
+  {
+    // Currently we don't show an Attribute's Items - if we did we would
+    // return attr->numberOfItems() > 0
+    return false;
+  }
+  auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);
+  if (modelEnt)
+  {
+    return SubphraseGenerator::modelEntityHasChildren(modelEnt);
+  }
+  // auto meshSet = dynamic_pointer_cast<smtk::mesh::Component>(comp);
+  // if (meshSet)
+  // {
+  //   ???
+  // }
+  return false;
 }
 
 bool SubphraseGenerator::setModel(PhraseModelPtr model)
@@ -318,7 +358,7 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
     return;
   }
 
-  // We only want to add sub-phrases in portions of the tree that already exist.
+  // We only want to add subphrases in portions of the tree that already exist.
   // So we iterate over phrases; any phrase that has children will ask each object
   // if its subject should be an immediate parent of the phrase with children (and,
   // if so, what its index in the existing children should be).
@@ -750,6 +790,37 @@ void SubphraseGenerator::componentsOfResource(
   }
 }
 
+bool SubphraseGenerator::resourceHasChildren(const smtk::resource::ResourcePtr& rsrc) const
+{
+  auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
+  if (modelRsrc)
+  {
+    auto models =
+      modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
+    return !models.empty();
+  }
+
+  auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+  if (attrRsrc)
+  {
+    return attrRsrc->hasAttributes();
+  }
+
+  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
+  if (meshRsrc)
+  {
+    return (meshRsrc->numberOfMeshes() > 0);
+  }
+  else
+  { // Some random resource...
+    bool hasChild = false;
+    smtk::resource::Component::Visitor visitor =
+      [&hasChild](const smtk::resource::Component::Ptr&) { hasChild = true; };
+    rsrc->visit(visitor);
+    return hasChild;
+  }
+}
+
 void SubphraseGenerator::itemsOfAttribute(
   DescriptivePhrase::Ptr src,
   smtk::attribute::AttributePtr att,
@@ -759,6 +830,77 @@ void SubphraseGenerator::itemsOfAttribute(
   (void)src;
   (void)result;
   // TODO: Need an AttributeItemPhrase
+}
+
+bool SubphraseGenerator::modelEntityHasChildren(const smtk::model::EntityPtr& entity) const
+{
+  smtk::model::BitFlags entityFlags = entity->entityFlags();
+  // WARNING: GROUP_ENTITY must go first since other bits may be set for groups in \a entityFlags
+  if (entityFlags & smtk::model::GROUP_ENTITY)
+  {
+    auto group = entity->referenceAs<smtk::model::Group>();
+    auto groups = group.members<smtk::model::EntityRefArray>();
+    if (!groups.empty())
+    {
+      return true;
+    }
+  }
+  else if (entityFlags & smtk::model::MODEL_ENTITY)
+  {
+    auto model = entity->referenceAs<smtk::model::Model>();
+    auto submodelsInModel = model.submodels();
+    if (!submodelsInModel.empty())
+    {
+      return true;
+    }
+    auto groupsInModel = model.groups();
+    if (!groupsInModel.empty())
+    {
+      return true;
+    }
+    auto auxGeomsInModel = model.auxiliaryGeometry();
+    if (!auxGeomsInModel.empty())
+    {
+      return true;
+    }
+    auto cellsInModel = model.cells();
+    if (!cellsInModel.empty())
+    {
+      return true;
+    }
+  }
+  else if (entityFlags & smtk::model::CELL_ENTITY)
+  {
+    auto cell = entity->referenceAs<smtk::model::CellEntity>();
+    auto boundingCells = cell.boundingCells();
+    if (!boundingCells.empty())
+    {
+      return true;
+    }
+    auto inclusions = cell.inclusions<smtk::model::EntityRefs>();
+    if (!inclusions.empty())
+    {
+      return true;
+    }
+  }
+  else if (entityFlags & smtk::model::AUX_GEOM_ENTITY)
+  {
+    auto auxGeom = entity->referenceAs<smtk::model::AuxiliaryGeometry>();
+    auto auxChildren = auxGeom.embeddedEntities<smtk::model::AuxiliaryGeometries>();
+    if (!auxChildren.empty())
+    {
+      return true;
+    }
+  }
+  // To avoid infinite nesting we currently don't look at the children
+  // of instances
+
+  // TODO: Finish handling other model-entity types
+
+  auto ref = entity->referenceAs<smtk::model::EntityRef>();
+  // Any entity may have instances
+  auto instances = ref.instances<smtk::model::InstanceEntities>();
+  return (!instances.empty());
 }
 
 void SubphraseGenerator::childrenOfModelEntity(

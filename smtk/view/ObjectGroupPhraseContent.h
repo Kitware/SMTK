@@ -52,6 +52,9 @@ public:
   /// Add this phrase's children to the container.
   void children(DescriptivePhrases& container) const;
 
+  /// Return true if the phrase content has children
+  bool hasChildren() const;
+
   bool displayable(ContentType attr) const override { return attr == TITLE; }
   bool editable(ContentType) const override { return false; }
 

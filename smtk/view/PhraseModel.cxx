@@ -298,6 +298,34 @@ void PhraseModel::visitSources(SourceVisitor visitor)
   }
 }
 
+void PhraseModel::visitSources(SourceVisitorFunction visitor)
+{
+  if (!visitor)
+  {
+    return;
+  }
+  for (const auto& src : m_sources)
+  {
+    if (
+      visitor(
+        (src.m_managers.contains<smtk::resource::ManagerPtr>()
+           ? src.m_managers.get<smtk::resource::ManagerPtr>()
+           : smtk::resource::ManagerPtr()),
+        (src.m_managers.contains<smtk::operation::ManagerPtr>()
+           ? src.m_managers.get<smtk::operation::ManagerPtr>()
+           : smtk::operation::ManagerPtr()),
+        (src.m_managers.contains<smtk::view::ManagerPtr>()
+           ? src.m_managers.get<smtk::view::ManagerPtr>()
+           : smtk::view::ManagerPtr()),
+        (src.m_managers.contains<smtk::view::SelectionPtr>()
+           ? src.m_managers.get<smtk::view::SelectionPtr>()
+           : smtk::view::SelectionPtr())) == smtk::common::Visit::Halt)
+    {
+      break;
+    }
+  }
+}
+
 DescriptivePhrasePtr PhraseModel::root() const
 {
   return DescriptivePhrasePtr();
@@ -399,20 +427,18 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
   {
     return;
   }
-  //std::cerr << "Number of Object being removed = " << expungedObjects.size() << std::endl;
   // Remove phrases that correspond to the set of expunged objects
   // For each object get all of the phrased that corresponds to it, calculate their indices,
   //  and add them to the Phrase Delta
   PhraseDeltas phrasePaths;
-  for (auto& object : expungedObjects)
+  for (const auto& object : expungedObjects)
   {
-    //    std::cerr << "\tRemoving Obj: " << object->name() << " ID: " << object->id().toString() << " Phrase Model: " << this <<  std::endl;
     auto it = m_objectMap.find(object->id());
     if (it == m_objectMap.end())
     {
       continue; // the object is not in the tree
     }
-    for (auto& wdp : it->second)
+    for (const auto& wdp : it->second)
     {
       auto dp = wdp.lock(); // get the shared pointer from the phrase weak pointer
       if (dp == nullptr)
@@ -422,7 +448,6 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
       std::vector<int> path;
       dp->index(path);
       phrasePaths.insert(path);
-      //      std::cerr << "For obj: " << object->name() << " found DP: " << dp->title() << std::endl;
     }
   }
 
@@ -448,14 +473,14 @@ void PhraseModel::handleModified(const smtk::resource::PersistentObjectSet& modi
     return;
   }
 
-  for (auto& object : modifiedObjects)
+  for (const auto& object : modifiedObjects)
   {
     auto it = m_objectMap.find(object->id());
     if (it == m_objectMap.end())
     {
       continue; // the object is not in the tree
     }
-    for (auto& wdp : it->second)
+    for (const auto& wdp : it->second)
     {
       auto dp = wdp.lock(); // get the shared pointer from the phrase weak pointer
       if (dp == nullptr)
@@ -527,11 +552,6 @@ void PhraseModel::updateChildren(
     return;
   }
 
-  /*std::cerr << "Updating Children for DP:" << src->title() << std::endl;
-for (const auto& nc : next)
-{
-  std::cerr << "\tNew Child: " << nc->title() << std::endl;
-}*/
   std::map<DescriptivePhrasePtr, int> lkup;
   std::map<int, DescriptivePhrasePtr> insert;
   int ii = 0;
@@ -581,7 +601,6 @@ for (const auto& nc : next)
       }
     }
   }
-  //std::cerr << "\tNumber to be inserted: " << insert.size() << std::endl;
   // Now delete unused from model, starting at the back so we don't invalidate indices.
   std::vector<int> removalRange(2);
   for (auto uu = unused.rbegin(); uu != unused.rend(); ++uu)
@@ -723,14 +742,8 @@ for (const auto& nc : next)
 
 void PhraseModel::triggerDataChanged()
 {
-  // It is possible the 2 lines below could work, but the feature is not well-documented in Qt:
-  //   auto idx = this->root()->index();
-  //   this->trigger(this->root(), PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
-  // Just to be safe, do it the long way:
-  this->root()->visitChildren([this](DescriptivePhrasePtr phr, std::vector<int>& idx) -> int {
-    this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
-    return 0; // continue iterating.
-  });
+  auto idx = this->root()->index();
+  this->trigger(this->root(), PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
 }
 
 void PhraseModel::triggerDataChangedFor(smtk::resource::ComponentPtr comp)
@@ -880,11 +893,6 @@ void PhraseModel::trigger(
             phrases;
           phrases.insert(children[ci]);
           m_objectMap.insert({ { obj->id(), phrases } });
-          /*          std::cerr << "Inserted Obj: " << obj->name() << " in Phrase: " << children[ci]->title() << std::endl;
-          if (m_objectMap.find(obj->id()) == m_objectMap.end())
-          {
-            std::cerr << "ERROR: can not find recently add obj: " << obj->name() << std::endl;
-          }*/
         }
         else
         {
