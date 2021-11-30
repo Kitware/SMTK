@@ -39,7 +39,7 @@ Please remove this comment.
         - [ ] Update the ReadMe file to refer to the new release notes
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
         - [ ] `git rm` all of the individual release note files *except* `00-example.rst`.
-        - [ ] `git commit -m 'Compile release notes for VERSION' doc/release/notes/smtk-MAJOR.MINOR.rst`
+        - [ ] `git commit -m 'Compile release notes for VERSION' doc/release/smtk-MAJOR.MINOR.rst`
       - [ ] Update `version.txt` and tag the commit (tag this commit below)
         - [ ] `echo VERSION > version.txt`
         - [ ] Rebuild smtk to check for deprecation warnings
@@ -48,7 +48,7 @@ Please remove this comment.
             groups.
         - [ ] Change "master" => "release" everywhere in `.gitlab/ci/cdash-groups.json`,
               and change "latest-master" => "latest-release".
-        - [ ] `git commit -m 'Update cdash-groups.json to track the release group .gitlab/ci/cdash-groups.json`
+        - [ ] `git commit -m 'Update cdash-groups.json to track the release group' .gitlab/ci/cdash-groups.json`
 
     - Create a merge request targeting `release`
       - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask

@@ -55,8 +55,6 @@ public:
 
   ~qtBaseView() override;
 
-  SMTK_DEPRECATED_IN_21_09("Method has been replaced by qtBaseView::configuration")
-  smtk::view::ConfigurationPtr getObject() const { return this->configuration(); }
   const smtk::view::ConfigurationPtr& configuration() const
   {
     return m_viewInfo.get<smtk::view::ConfigurationPtr>();
