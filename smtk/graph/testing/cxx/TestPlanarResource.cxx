@@ -34,11 +34,15 @@ namespace
 class Vertex : public smtk::graph::Component
 {
 public:
-  Vertex(const std::shared_ptr<smtk::graph::ResourceBase>& resource, double x, double y)
+  Vertex(const std::shared_ptr<smtk::graph::ResourceBase>& resource)
     : Component(resource)
-    , m_x(x)
-    , m_y(y)
   {
+  }
+
+  void initialize(double x, double y)
+  {
+    m_x = x;
+    m_y = y;
   }
 
   const double& x() const { return m_x; }
@@ -54,7 +58,9 @@ private:
 class Edge : public smtk::graph::Component
 {
 public:
-  Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource, Vertex& v1, Vertex& v2);
+  Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource);
+
+  void initialize(Vertex& v1, Vertex& v2);
 };
 
 // Face inherits from smtk::graph::Component and accepts an arbitrary number of
@@ -62,8 +68,10 @@ public:
 class Face : public smtk::graph::Component
 {
 public:
+  Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource);
+
   template<typename... T, typename = smtk::graph::CompatibleTypes<Edge, T...>>
-  Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... edges);
+  void initialize(T&&... edges);
 
   // An example for data access.
   std::array<double, 2> centroid() const;
@@ -118,8 +126,12 @@ struct PlanarTraits
 // The constructor for our edge sets up the relationships between the newly
 // created edge and the vertices that comprise it. Since this modeling session
 // is for planar polygons, an edge is comprised of two vertices.
-Edge::Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource, Vertex& v1, Vertex& v2)
+Edge::Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource)
   : Component(resource)
+{
+}
+
+void Edge::initialize(Vertex& v1, Vertex& v2)
 {
   // Create a Vertices arc that connects this edge to its two vertices.
   // Alternatively, we could have called the following:
@@ -138,13 +150,18 @@ Edge::Edge(const std::shared_ptr<smtk::graph::ResourceBase>& resource, Vertex& v
 
 // Similarly, the constructor for our face sets up the relationships between the
 // newly created face and the edges that comprise it.
-template<typename... T, typename>
-Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... edges)
+Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource)
   : Component(resource)
+{
+}
+
+template<typename... T, typename>
+void Face::initialize(T&&... edges)
 {
   // Access our resource in its derived form, so we can take advantage of the
   // compile-time grammar checking we have put in place.
-  auto planarResource = std::static_pointer_cast<smtk::graph::Resource<PlanarTraits>>(resource);
+  auto planarResource =
+    std::static_pointer_cast<smtk::graph::Resource<PlanarTraits>>(this->resource());
 
   // Create a Loop that connects this face to its edges.
   // Alternatively, we could have called the following:
@@ -153,12 +170,10 @@ Face::Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource, T&&... ed
   // ```
   planarResource->create<Loop>(*this, std::forward<T>(edges)...);
 
-  // Add the created face to the edges' face lists.
-  std::vector<std::reference_wrapper<Edge>> edgeVector{ edges... };
-  for (Edge& edge : edgeVector)
-  {
+  this->visit<Loop>([&](Edge& edge) -> bool {
     edge.get<Faces>().insert(*this);
-  }
+    return false;
+  });
 }
 
 // As an example of the API, this is how to compute the centroid of a face.

@@ -5,6 +5,7 @@ set(unit_tests
   TestPlanarResource.cxx
   TestNodalResource.cxx
   TestNodalResourceFilter.cxx
+  TestScalability.cxx
   TestVisitArcs.cxx
 )
 

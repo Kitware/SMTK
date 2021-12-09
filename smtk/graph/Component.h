@@ -27,6 +27,24 @@ namespace smtk
 {
 namespace graph
 {
+namespace detail
+{
+
+template<typename T>
+using remove_cvref_t = typename std::remove_reference<typename std::remove_cv<T>::type>::type;
+
+template<typename T, typename = void>
+struct TestValid
+{
+  bool operator()(const T&) const { return true; }
+};
+
+template<typename T>
+struct TestValid<T, smtk::common::void_t<decltype(&T::expired)>>
+{
+  bool operator()(const T& node) const { return !node.expired(); }
+};
+} // namespace detail
 
 template<typename GraphTraits>
 class Resource;
@@ -135,9 +153,10 @@ public:
   visit(const Visitor& visitor) const
   {
     typedef const typename ArcType::template API<ArcType> API;
+    // NOLINTNEXTLINE(readability-use-anyofallof)
     for (const auto& toType : API().get(*static_cast<const typename ArcType::FromType*>(this)))
     {
-      if (visitor(toType))
+      if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
       {
         return true;
       }
@@ -157,9 +176,10 @@ public:
   visit(const Visitor& visitor)
   {
     typedef typename ArcType::template API<ArcType> API;
+    // NOLINTNEXTLINE(readability-use-anyofallof)
     for (auto& toType : API().get(*static_cast<typename ArcType::FromType*>(this)))
     {
-      if (visitor(toType))
+      if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
       {
         return true;
       }
@@ -233,6 +253,8 @@ protected:
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&);
 
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&, const smtk::common::UUID&);
+
+  virtual void createDependentArcs() {}
 
   std::weak_ptr<smtk::graph::ResourceBase> m_resource;
   smtk::common::UUID m_id;
