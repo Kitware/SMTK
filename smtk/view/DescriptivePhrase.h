@@ -181,6 +181,10 @@ public:
   /// Return the parent phrase of this phrase (or null).
   virtual DescriptivePhrasePtr parent() const { return m_parent.lock(); }
 
+  /// Indicate if the Phrase has children.  Note that this does not build the
+  /// child subphrases.
+  bool hasChildren() const;
+
   /// Indicate that this phrases children need to be rebuilt (or not if \a dirty is false).
   virtual void markDirty(bool dirty = true) { m_subphrasesBuilt = !dirty; }
   /// Indicate whether the list of subphrases is built by a subphrase generator and is up to date.

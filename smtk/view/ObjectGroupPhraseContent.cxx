@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/view/ObjectGroupPhraseContent.h"
 
+#include "smtk/common/Visit.h"
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseModel.h"
@@ -90,10 +91,10 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
       const smtk::operation::ManagerPtr& /*unused*/,
       const smtk::view::ManagerPtr& /*unused*/,
       const smtk::view::SelectionPtr &
-      /*unused*/) -> bool {
+      /*unused*/) -> smtk::common::Visit {
       if (!rsrcMgr)
       {
-        return true;
+        return smtk::common::Visit::Continue;
       }
       auto rsrcs = rsrcMgr->find(m_resourceFilter);
       for (const auto& rsrc : rsrcs)
@@ -107,10 +108,6 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
         else
         {
           auto comps = rsrc->filter(m_componentFilter);
-          std::cout << "ObjectGroupPhraseContent: Find " << comps.size()
-                    << " Components"
-                       " with filter="
-                    << m_componentFilter << std::endl;
           for (const auto& comp : comps)
           {
             auto phr = ComponentPhraseContent::createPhrase(
@@ -119,9 +116,66 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
           }
         }
       }
-      return true;
+      return smtk::common::Visit::Continue;
     });
   // TODO: sort phrases
+}
+
+bool ObjectGroupPhraseContent::hasChildren() const
+{
+  DescriptivePhrasePtr location = m_location.lock();
+  if (!location)
+  {
+    return false;
+  }
+
+  PhraseModelPtr model = location->phraseModel();
+  // Why model is empty
+  if (!model)
+  {
+    return false;
+  }
+
+  bool result = false;
+  model->visitSources(
+    [this, &result](
+      const smtk::resource::ManagerPtr& rsrcMgr,
+      const smtk::operation::ManagerPtr& /*unused*/,
+      const smtk::view::ManagerPtr& /*unused*/,
+      const smtk::view::SelectionPtr &
+      /*unused*/) -> smtk::common::Visit {
+      if (!rsrcMgr)
+      {
+        return smtk::common::Visit::Continue;
+      }
+      auto rsrcs = rsrcMgr->find(m_resourceFilter);
+      if (m_componentFilter.empty())
+      {
+        // OK we are looking for resources, did we find any from this source?
+        if (rsrcs.empty())
+        {
+          return smtk::common::Visit::Continue;
+        }
+
+        result = true;
+        return smtk::common::Visit::Halt;
+      }
+
+      for (const auto& rsrc : rsrcs)
+      {
+        auto comps = rsrc->filter(m_componentFilter);
+        // OK we are looking for Components, did we find any?
+        if (comps.empty())
+        {
+          return smtk::common::Visit::Continue;
+        }
+
+        result = true;
+        return smtk::common::Visit::Halt;
+      }
+      return smtk::common::Visit::Continue;
+    });
+  return result;
 }
 
 } // namespace view

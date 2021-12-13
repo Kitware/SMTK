@@ -112,7 +112,7 @@ int UpdateVisibilityForFootprint(
     }
     else
     {
-      // Composite auxliliary geometry condition
+      // Composite auxiliary geometry condition
       int any = 0;
       smtk::model::AuxiliaryGeometry auxgeom =
         ment->template referenceAs<smtk::model::AuxiliaryGeometry>();
@@ -523,9 +523,8 @@ void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
 
 void VisibilityBadge::componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible)
 {
-  // The visibilty should change for every row displaying the same \a ent:
+  // The visibility should change for every row displaying the same \a comp:
   m_visibleThings[comp->id()] = visible;
-  this->phraseModel()->triggerDataChangedFor(comp);
 }
 } // namespace appcomponents
 } // namespace paraview

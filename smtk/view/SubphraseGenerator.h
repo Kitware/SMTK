@@ -67,11 +67,29 @@ public:
     */
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
 
+  /**\brief Return true if children would be generated for the Descriptive Phrase.
+   */
+  virtual bool hasChildren(const DescriptivePhrase& src) const;
+
+  /**\brief Return a set of parent Persistent Objects for this object.
+   * based on the generator's parent/child rules
+   */
+  virtual smtk::resource::PersistentObjectSet parentObjects(
+    const smtk::resource::PersistentObjectPtr& obj) const;
+
   /// Set the phrase model used to adapt phrases to a user interface.
   bool setModel(PhraseModelPtr model);
 
   /// Return the phrase model (if any) used to adapt phrases to a user interface.
   PhraseModelPtr model() const { return m_model.lock(); }
+
+  /**\brief Create a new Subphrase for an object which will be a child of parent
+   *  and return the path to the phrase.
+   */
+  virtual DescriptivePhrasePtr createSubPhrase(
+    const smtk::resource::PersistentObjectPtr& obj,
+    const DescriptivePhrasePtr& parent,
+    Path& childPath);
 
   /**\brief Append subphrases and their paths that the given set of created objects implies.
     *
@@ -145,7 +163,7 @@ public:
 protected:
   virtual Path indexOfObjectInParent(
     const smtk::resource::PersistentObjectPtr& obj,
-    smtk::view::DescriptivePhrasePtr& parent,
+    const smtk::view::DescriptivePhrasePtr& parent,
     const Path& parentPath);
 
   virtual int findResourceLocation(
@@ -166,6 +184,11 @@ protected:
     smtk::mesh::ComponentPtr comp,
     DescriptivePhrase::Ptr& phr,
     const DescriptivePhrase::Ptr& parent) const;
+
+  /// Return true if the resource would cause subphrases to be generated
+  bool resourceHasChildren(const smtk::resource::ResourcePtr& rsrc) const;
+  /// Return true if the model entity would cause subphrases to be generated
+  bool modelEntityHasChildren(const smtk::model::EntityPtr& entity) const;
 
   /// Populate \a result with the top-level components of \a rsrc with \a src as their parent.
   void componentsOfResource(

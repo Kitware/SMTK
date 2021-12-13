@@ -14,7 +14,9 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/TypeContainer.h"
+#include "smtk/common/Visit.h"
 
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/PhraseContent.h"
@@ -29,12 +31,22 @@
 
 #include <functional>
 #include <list>
-#include <map>
+#include <set>
+#include <unordered_map>
 
 namespace smtk
 {
 namespace view
 {
+
+// Typedef representing a map of UUID to a set of weak pointers to Descriptive Phrases that refer to
+// that UUId's PersistentObject
+typedef std::unordered_map<
+  smtk::common::UUID,
+  std::set<
+    std::weak_ptr<smtk::view::DescriptivePhrase>,
+    std::owner_less<std::weak_ptr<smtk::view::DescriptivePhrase>>>>
+  UUIDsToPhrasesMap;
 
 // Sort paths from deepest to shallowest, then rear-most to front-most.
 // Doing these things keeps us from invalidating paths when items are removed.
@@ -95,7 +107,16 @@ public:
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
   /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
+  /// Note that this is an old format that is being deprecated.
   using SourceVisitor = std::function<bool(
+    const smtk::resource::ManagerPtr&,
+    const smtk::operation::ManagerPtr&,
+    const smtk::view::ManagerPtr&,
+    const smtk::view::SelectionPtr&)>;
+
+  /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
+  /// Note that this is an current format that is being supported.
+  using SourceVisitorFunction = std::function<smtk::common::Visit(
     const smtk::resource::ManagerPtr&,
     const smtk::operation::ManagerPtr&,
     const smtk::view::ManagerPtr&,
@@ -140,7 +161,11 @@ public:
   /// Stop listening for changes from all sources.
   virtual bool resetSources();
   /// Invoke the visitor on each source that has been added to the model.
+  SMTK_DEPRECATED_IN_21_12("This is the older style visitor which returns true to continue and "
+                           "false to halt instead of using the smtk::common::Visit enums");
   virtual void visitSources(SourceVisitor visitor);
+  /// Invoke the visitor function on each source that has been added to the model.
+  virtual void visitSources(SourceVisitorFunction visitor);
   ///@}
 
   /// Return the root phrase of the hierarchy.
@@ -191,6 +216,9 @@ public:
   /// Return the badges that may apply to phrases in this model.
   const BadgeSet& badges() const { return m_badges; }
   BadgeSet& badges() { return m_badges; }
+
+  /// Return the map between persistent object IDs and Descriptive Phrases
+  const UUIDsToPhrasesMap uuidPhraseMap() const { return m_objectMap; }
 
 protected:
   PhraseModel();
@@ -257,6 +285,10 @@ protected:
     const std::vector<int>& dst,
     const std::vector<int>& refs);
 
+  /**\brief the Descriptive Phrase and its descendants from the Persistent Object / Phrases Map
+   */
+  void removeFromMap(const DescriptivePhrasePtr& phr);
+
   struct Source
   {
     smtk::common::TypeContainer m_managers;
@@ -291,6 +323,7 @@ protected:
   };
   std::list<Source> m_sources;
 
+  UUIDsToPhrasesMap m_objectMap;
   Observers m_observers;
 
   PhraseDecorator m_decorator;

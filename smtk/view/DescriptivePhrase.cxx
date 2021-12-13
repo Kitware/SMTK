@@ -301,6 +301,22 @@ PhraseModelPtr DescriptivePhrase::phraseModel() const
   return PhraseModelPtr();
 }
 
+bool DescriptivePhrase::hasChildren() const
+{
+  // Do we have sub phrases already
+  if (m_subphrasesBuilt)
+  {
+    return !m_subphrases.empty();
+  }
+  // Ok we need to ask the subphrase generator
+  auto delegate = this->findDelegate();
+  if (!delegate)
+  {
+    return false; // No generator so no children
+  }
+  return delegate->hasChildren(*this);
+}
+
 static int modelEntitySortOrder(smtk::model::EntityPtr ent)
 {
   if (!ent)
