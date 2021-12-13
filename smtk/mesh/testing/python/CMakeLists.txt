@@ -11,10 +11,14 @@ set(smtkMeshPythonDataTests
 )
 
 if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
-list(APPEND smtkMeshPythonDataTests
-  elevateMeshOnStructuredGrid
-  snapPointsToSurface
+  list(APPEND smtkMeshPythonDataTests
+    snapPointsToSurface
   )
+  if (SMTK_ENABLE_GDAL_SUPPORT)
+    list(APPEND smtkMeshPythonDataTests
+      elevateMeshOnStructuredGrid
+    )
+  endif()
 endif()
 
 #only run these tests if we have a valid data directory and we have a moab
