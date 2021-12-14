@@ -39,6 +39,11 @@ public:
   void setInitialCategory() override;
 
   /// Determines if an item should be displayed
+  ///
+  /// This method is called by qtAttribute::createWidget().
+  /// If you override this method, you may wish to call this from
+  /// your override, since it checks the advance-level and category
+  /// settings for the item.
   virtual bool displayItem(smtk::attribute::ItemPtr) const;
   virtual bool displayItemDefinition(const smtk::attribute::ItemDefinitionPtr&) const;
   /// Determines if an item can be modified
@@ -89,6 +94,7 @@ public slots:
   void enableShowBy(int /* enable */) override;
   void onInfo() override;
 
+  SMTK_DEPRECATED_IN_21_12("No longer relevant or called.")
   virtual void requestModelEntityAssociation() { ; }
 
 protected slots:

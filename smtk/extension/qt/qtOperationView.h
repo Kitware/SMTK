@@ -61,7 +61,6 @@ public:
 public slots:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
-  void requestModelEntityAssociation() override;
   void onShowCategory() override;
   virtual void onModifiedParameters();
   virtual void onModifiedParameter(qtItem* item);

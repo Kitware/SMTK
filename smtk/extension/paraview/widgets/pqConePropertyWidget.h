@@ -11,8 +11,9 @@
 #define smtk_extension_paraview_widgets_pqConePropertyWidget_h
 
 #include "pqInteractivePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
-class pqConePropertyWidget : public pqInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqConePropertyWidget : public pqInteractivePropertyWidget
 {
   Q_OBJECT
   using Superclass = pqInteractivePropertyWidget;

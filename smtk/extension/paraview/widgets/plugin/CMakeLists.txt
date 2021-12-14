@@ -1,33 +1,7 @@
 set(sources
-  pqConePropertyWidget.cxx
-  pqConePropertyWidget.h
-  pqPointPropertyWidget.cxx
-  pqPointPropertyWidget.h
-  pqSMTKConeItemWidget.cxx
-  pqSMTKConeItemWidget.h
-  pqSMTKInfiniteCylinderItemWidget.cxx
-  pqSMTKInfiniteCylinderItemWidget.h
-  pqSMTKLineItemWidget.cxx
-  pqSMTKLineItemWidget.h
-  pqSMTKPlaneItemWidget.cxx
-  pqSMTKPlaneItemWidget.h
-  pqSMTKPointItemWidget.cxx
-  pqSMTKPointItemWidget.h
-  pqSMTKSphereItemWidget.cxx
-  pqSMTKSphereItemWidget.h
-  pqSMTKSplineItemWidget.cxx
-  pqSMTKSplineItemWidget.h
   pqSMTKWidgetsAutoStart.cxx
-  pqSMTKWidgetsAutoStart.h)
-
-set(ui_files
-  resources/pqConePropertyWidget.ui
-  resources/pqPointPropertyWidget.ui)
-set(CMAKE_AUTOUIC_SEARCH_PATHS
-  "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-
-set(rc_files
-  qtWidgetsIcons.qrc)
+  pqSMTKWidgetsAutoStart.h
+)
 
 # for Qt methods
 set(CMAKE_AUTOMOC 1)
@@ -35,11 +9,18 @@ set(CMAKE_AUTOMOC 1)
 paraview_plugin_add_auto_start(
   CLASS_NAME pqSMTKWidgetsAutoStart
   INTERFACES auto_start_interfaces
-  SOURCES auto_start_sources)
+  SOURCES auto_start_sources
+)
 list(APPEND interfaces
-  ${auto_start_interfaces})
+  ${auto_start_interfaces}
+)
 list(APPEND sources
-  ${auto_start_sources})
+  ${auto_start_sources}
+)
+
+set(smxml_files
+  pqSlicePropertyWidget.xml
+)
 
 smtk_add_plugin(smtkPQWidgetsPlugin
   REGISTRAR
@@ -49,13 +30,23 @@ smtk_add_plugin(smtkPQWidgetsPlugin
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
     UI_INTERFACES ${interfaces}
-    UI_FILES ${ui_files}
-    UI_RESOURCES ${rc_files}
-    SOURCES ${sources})
+    SOURCES ${sources}
+    SERVER_MANAGER_XML ${smxml_files}
+    MODULES smtkPQWidgetsExt
+)
 target_link_libraries(smtkPQWidgetsPlugin
   PRIVATE
     ParaView::pqApplicationComponents
     ParaView::RemotingViews
     smtkPQWidgetsExt
     smtkQtExt
-    vtkSMTKWidgetsExt)
+    vtkSMTKWidgetsExt
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::CommonExecutionModel
+    VTK::CommonMath
+    VTK::CommonTransforms
+    VTK::InteractionWidgets
+    VTK::RenderingCore
+    VTK::RenderingOpenGL2
+)

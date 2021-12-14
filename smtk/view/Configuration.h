@@ -144,6 +144,11 @@ protected:
   Component m_details;
   std::size_t m_includeIndex;
 };
+
+/// Print component information to a stream (for debugging).
+SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const Configuration::Component& comp);
+/// Print configuration information to a stream (for debugging).
+SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const Configuration& conf);
 } // namespace view
 } // namespace smtk
 

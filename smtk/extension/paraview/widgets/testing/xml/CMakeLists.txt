@@ -1,6 +1,7 @@
 set(TESTS_WITH_BASELINES
   ${CMAKE_CURRENT_SOURCE_DIR}/BoxWidget.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/ConeWidget.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/FrameWidget.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/LineWidget.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/PlaneWidget.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/PointWidget.xml
@@ -11,8 +12,9 @@ set(TESTS_WITH_BASELINES
 include(SMTKPVTestingMacros)
 
 #TODO: this should be set for the entire project's xml tests
-set(ConeWidget_USES_DIRECT_DATA ON)
 set(BoxWidget_USES_DIRECT_DATA ON)
+set(ConeWidget_USES_DIRECT_DATA ON)
+set(FrameWidget_USES_DIRECT_DATA ON)
 set(LineWidget_USES_DIRECT_DATA ON)
 set(PlaneWidget_USES_DIRECT_DATA ON)
 set(PointWidget_USES_DIRECT_DATA ON)

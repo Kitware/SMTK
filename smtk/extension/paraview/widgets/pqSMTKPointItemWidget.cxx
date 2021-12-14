@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKPointItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKPointItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
 #include "smtk/attribute/Attribute.h"

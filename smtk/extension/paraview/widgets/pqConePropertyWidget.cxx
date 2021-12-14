@@ -7,9 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/plugin/pqConePropertyWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/ui_pqConePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/pqConePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/pqPointPickingVisibilityHelper.h"
+#include "smtk/extension/paraview/widgets/ui_pqConePropertyWidget.h"
 
 #include "pqCoreUtilities.h"
 #include "pqPointPickingHelper.h"

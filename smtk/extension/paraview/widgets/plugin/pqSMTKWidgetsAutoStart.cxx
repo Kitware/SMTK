@@ -11,14 +11,16 @@
 
 #include "smtk/view/Selection.h"
 
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKConeItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKInfiniteCylinderItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKLineItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKPlaneItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKPointItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKSphereItemWidget.h"
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKSplineItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKBoxItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKConeItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKCoordinateFrameItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKInfiniteCylinderItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKLineItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKPlaneItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKPointItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKSliceItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKSphereItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKSplineItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKTransformWidget.h"
 #include "smtk/extension/paraview/widgets/qtSimpleExpressionEvaluationView.h"
 
@@ -49,10 +51,13 @@ void pqSMTKWidgetsAutoStart::startup()
   qtSMTKUtilities::registerItemConstructor(
     "Cylinder", pqSMTKConeItemWidget::createCylinderItemWidget);
   qtSMTKUtilities::registerItemConstructor(
+    "CoordinateFrame", pqSMTKCoordinateFrameItemWidget::createCoordinateFrameItemWidget);
+  qtSMTKUtilities::registerItemConstructor(
     "InfiniteCylinder", pqSMTKInfiniteCylinderItemWidget::createCylinderItemWidget);
   qtSMTKUtilities::registerItemConstructor("Line", pqSMTKLineItemWidget::createLineItemWidget);
   qtSMTKUtilities::registerItemConstructor("Plane", pqSMTKPlaneItemWidget::createPlaneItemWidget);
   qtSMTKUtilities::registerItemConstructor("Point", pqSMTKPointItemWidget::createPointItemWidget);
+  qtSMTKUtilities::registerItemConstructor("Slice", pqSMTKSliceItemWidget::createSliceItemWidget);
   qtSMTKUtilities::registerItemConstructor(
     "Sphere", pqSMTKSphereItemWidget::createSphereItemWidget);
   qtSMTKUtilities::registerItemConstructor(

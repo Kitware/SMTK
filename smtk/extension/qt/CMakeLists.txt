@@ -29,6 +29,7 @@ set(QAttrLibSrcs
   qtOperationView.cxx
   qtReferenceItem.cxx
   qtReferenceItemEditor.cxx
+  qtReferenceTree.cxx
   qtResourceItem.cxx
   qtResourceBrowser.cxx
   qtResourceBrowserP.cxx
@@ -105,6 +106,8 @@ set(QAttrLibMocHeaders
   qtReferenceItem.h
   qtReferenceItemEditor.h
   qtReferenceItemData.h
+  qtReferenceTree.h
+  qtReferenceTreeData.h
   qtRegexDelegate.h
   qtResourceItem.h
   qtResourceBrowser.h

@@ -195,9 +195,22 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   // This will be the same widget used for ModelEntityItem.
   if (includeAssociations && att->associations())
   {
-    smtk::view::Configuration::Component comp; // not currently used but will be
-    qtAttributeItemInfo info(att->associations(), comp, m_widget, m_internals->m_view);
-    qItem = uiManager->createItem(info);
+    // Allow the association widget to be overridden the same as other items.
+    auto assoc = att->associatedObjects();
+    auto it = m_internals->m_itemViewMap.find(assoc->name());
+    if (it != m_internals->m_itemViewMap.end())
+    {
+      auto info = it->second;
+      info.setParentWidget(m_widget);
+      info.setItem(assoc);
+      qItem = uiManager->createItem(info);
+    }
+    else
+    {
+      smtk::view::Configuration::Component comp; // not currently used but will be
+      qtAttributeItemInfo info(att->associations(), comp, m_widget, m_internals->m_view);
+      qItem = uiManager->createItem(info);
+    }
     if (qItem && qItem->widget())
     {
       m_isEmpty = false;

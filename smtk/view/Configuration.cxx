@@ -203,5 +203,57 @@ std::string Configuration::label() const
   return m_name;
 }
 
+static thread_local std::size_t g_indentCount = 0;
+
+std::ostream& operator<<(std::ostream& os, const Configuration::Component& comp)
+{
+  g_indentCount += 2;
+  std::string indent(g_indentCount, ' ');
+  os << indent << "Name: " << comp.name() << "\n";
+  if (!comp.attributes().empty())
+  {
+    os << indent << "Attributes:\n";
+    for (const auto& attr : comp.attributes())
+    {
+      os << indent << "  " << attr.first << ": " << attr.second << "\n";
+    }
+  }
+  if (!comp.contents().empty())
+  {
+    os << indent << "Content:\n" << indent << comp.contents() << "\n";
+  }
+  if (!comp.children().empty())
+  {
+    os << indent << "Children:\n";
+    for (const auto& child : comp.children())
+    {
+      os << child;
+    }
+  }
+  g_indentCount -= 2;
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Configuration& conf)
+{
+  g_indentCount += 2;
+  std::string indent(g_indentCount, ' ');
+  os << indent << "Configuration\n"
+     << indent << "Name:  " << conf.name() << "\n"
+     << indent << "Type:  " << conf.type() << "\n"
+     << indent << "Index: " << conf.includeIndex() << "\n";
+  if (!conf.iconName().empty())
+  {
+    os << indent << "Icon:  " << conf.iconName() << "\n";
+  }
+  if (conf.label() != conf.name())
+  {
+    os << indent << "Label: " << conf.label() << "\n";
+  }
+  os << indent << "Component Data:\n" << conf.details();
+  g_indentCount -= 2;
+  return os;
+}
+
 } // namespace view
 } // namespace smtk

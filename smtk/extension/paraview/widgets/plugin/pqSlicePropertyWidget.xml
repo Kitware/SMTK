@@ -1,0 +1,285 @@
+<ServerManagerConfiguration>
+  <!-- ****************************************************************** -->
+  <ProxyGroup name="representations">
+    <NewWidgetRepresentationProxy
+      class="vtk3DWidgetRepresentation"
+      name="MeshInspectorWidgetRepresentation">
+      <IntVectorProperty
+        command="SetEnabled"
+        default_values="1"
+        name="Enabled"
+        number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>Enable/Disable widget interaction.</Documentation>
+      </IntVectorProperty>
+      <SubProxy>
+        <Proxy name="Prop"
+               proxygroup="3d_widget_representations"
+               proxyname="MeshInspectorRepresentation"></Proxy>
+        <ExposedProperties>
+          <Property name="Input" />
+          <Property name="Ids" />
+          <Property name="DrawPlane" />
+          <Property name="DrawHandles" />
+          <Property name="DrawOutline" />
+          <Property name="ConstrainToWidgetBounds" />
+          <Property name="OutlineTranslation" />
+          <Property name="OriginInfo" />
+          <Property name="Origin" />
+          <Property name="NormalInfo" />
+          <Property name="Normal" />
+          <Property name="WidgetBounds" />
+          <Property name="Visibility" />
+          <Property name="PlaceFactor" />
+          <Property name="Reset" />
+          <Property name="SliceType"/>
+          <Property name="SliceColorArray" />
+          <Property name="SliceColorComponent" />
+          <Property name="SliceLookupTable" />
+          <Property name="SliceEdgeColor" />
+          <Property name="SliceEdgeVisibility" />
+          <Property name="AlwaysSnapToNearestAxis" />
+          <Property name="AlwaysSnapToNearestAxisInfo" />
+        </ExposedProperties>
+      </SubProxy>
+      <SubProxy>
+        <Proxy name="Widget"
+          proxygroup="3d_widgets"
+          proxyname="MeshInspectorWidget"></Proxy>
+      </SubProxy>
+      <PropertyGroup label="Mesh Inspection Plane">
+        <Property function="Origin" name="Origin" />
+        <Property function="Normal" name="Normal" />
+      </PropertyGroup>
+    </NewWidgetRepresentationProxy>
+  </ProxyGroup>
+  <!-- ****************************************************************** -->
+  <ProxyGroup name="3d_widget_representations">
+    <DisplaySizedImplicitPlaneRepresentationProxy
+      class="vtkMeshInspectorRepresentation"
+      name="MeshInspectorRepresentation">
+
+      <InputProperty
+        name="Input"
+        command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources" />
+          <Group name="filters" />
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkCompositeDataSet" />
+        </DataTypeDomain>
+        <InputArrayDomain
+          name="input_array"
+          optional="1"
+          />
+        <!-- Things we can add to InputArrayDomain
+          data_type="vtkCompositeDataSet"
+          attribute_type="point"
+          number_of_components="1"
+        -->
+        <Documentation>This property specifies the dataset to crinkle-slice.</Documentation>
+      </InputProperty>
+
+      <IntVectorProperty
+        name="Ids"
+        is_internal="1"
+        number_of_elements_per_command="4"
+        repeat_command="1"
+        command="AddId"
+        clean_command="ResetIds"
+        animateable="0">
+        <IntRangeDomain name="uuid" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="DrawPlane"
+        command="SetDrawPlane"
+        number_of_elements="1"
+        default_values="0"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="DrawHandles"
+        command="SetDrawHandles"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="ConstrainToWidgetBounds"
+        command="SetConstrainToWidgetBounds"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="DrawOutline"
+        command="SetDrawOutline"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="OutlineTranslation"
+        command="SetOutlineTranslation"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="AlwaysSnapToNearestAxis"
+        information_property="AlwaysSnapToNearestAxisInfo"
+        command="SetAlwaysSnapToNearestAxis"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="AlwaysSnapToNearestAxisInfo"
+        command="GetAlwaysSnapToNearestAxis"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0">
+        <SimpleIntInformationHelper />
+      </IntVectorProperty>
+
+      <Property command="Reset" name="Reset"></Property>
+
+      <StringVectorProperty
+        name="SliceType"
+        command="SetSliceType"
+        default_values="Flat"
+        is_internal="1"
+        number_of_elements="1"
+        animateable="0">
+        <StringListDomain name="slice_list">
+          <String value="Flat" />
+          <String value="Crinkle" />
+        </StringListDomain>
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="SliceColorArray"
+        label="Color By"
+        command="SetInputArrayToProcess"
+        number_of_elements="5"
+        element_types="int int int int str"
+        animateable="0"
+        >
+        <ArrayListDomain
+          name="array_list"
+          attribute_type="Scalars"
+          none_string="Solid Color"
+          >
+          <RequiredProperties>
+            <Property function="Input" name="Input" />
+          </RequiredProperties>
+        </ArrayListDomain>
+        <Hints>
+          <NoDefault />
+        </Hints>
+        <Documentation>This property specifies the name of the scalar array
+        to use for coloring the sliced input data.</Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+        name="SliceColorComponent"
+        command="SetSliceColorComponent"
+        number_of_elements="1"
+        default_values="0">
+        <IntRangeDomain name="array_component" Min="0"/>
+      </IntVectorProperty>
+
+      <ProxyProperty name="SliceLookupTable" command="SetSliceLookupTable" number_of_elements="1">
+        <Documentation>Set the lookup-table to use to map data array to colors.
+        Lookuptable is only used with MapScalars to ON.</Documentation>
+        <ProxyGroupDomain name="groups">
+          <Group name="lookup_tables" />
+        </ProxyGroupDomain>
+      </ProxyProperty>
+
+      <DoubleVectorProperty
+        name="SliceEdgeColor"
+        command="SetSliceEdgeColor"
+        number_of_elements="4"
+        default_values="0 0 0 1">
+        <DoubleRangeDomain name="range" Min="0" Max="1"/>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+        name="SliceEdgeVisibility"
+        command="SetSliceEdgeVisibility"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <DoubleVectorProperty
+        name="Origin"
+        information_property="OriginInfo"
+        command="SetOrigin"
+        number_of_elements="3"
+        default_values="0 0 0">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="OriginInfo"
+        command="GetOrigin"
+        information_only="1">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetNormal"
+                            default_values="1 0 0"
+                            information_property="NormalInfo"
+                            name="Normal"
+                            number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="GetNormal"
+                            information_only="1"
+                            name="NormalInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty argument_is_array="1"
+                            command="SetWidgetBounds"
+                            default_values="none"
+                            is_internal="1"
+                            name="WidgetBounds"
+                            number_of_elements="6">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetPlaceFactor"
+                            default_values="1.2"
+                            name="PlaceFactor"
+                            number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+    </DisplaySizedImplicitPlaneRepresentationProxy>
+  </ProxyGroup>
+  <!-- ****************************************************************** -->
+  <ProxyGroup name="3d_widgets">
+    <Proxy base_proxygroup="3d_widgets"
+      base_proxyname="WidgetBase"
+      class="vtkDisplaySizedImplicitPlaneWidget"
+      name="MeshInspectorWidget"/>
+  </ProxyGroup>
+</ServerManagerConfiguration>

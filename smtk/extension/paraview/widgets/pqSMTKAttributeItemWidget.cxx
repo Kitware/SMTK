@@ -35,6 +35,7 @@
 #include "pqPipelineSource.h"
 #include "pqServer.h"
 #include "pqSpherePropertyWidget.h"
+#include "pqView.h"
 #include "vtkPVXMLElement.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMProperty.h"
@@ -298,7 +299,11 @@ void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
   emit modified();
 }
 
-/// Create Qt widgets as required (may be called multiple times if Item is reconfigured).
+void pqSMTKAttributeItemWidget::renderViewEventually() const
+{
+  pqActiveObjects::instance().activeView()->render();
+}
+
 void pqSMTKAttributeItemWidget::updateItemData()
 {
   if (m_widget == nullptr)
@@ -351,7 +356,6 @@ void pqSMTKAttributeItemWidget::update3DWidgetVisibility(bool visible)
   }
 }
 
-/// Initialize Qt widgets used to represent our smtk::attribute::Item.
 void pqSMTKAttributeItemWidget::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->item();
@@ -365,10 +369,6 @@ void pqSMTKAttributeItemWidget::createWidget()
   this->updateItemData();
 }
 
-/**\brief Remove existing widgets in order to prepare for reconfiguration.
-  *
-  * If conditional children exist, this may get called after createWidget().
-  */
 void pqSMTKAttributeItemWidget::clearChildWidgets() {}
 
 /// Actually create widgets for whole of Item (label, editor, and conditional children).
