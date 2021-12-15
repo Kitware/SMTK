@@ -35,7 +35,9 @@ Please remove this comment.
         - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
 
     - Make a commit for each of these `release`-only changes:
-      - [ ] Assemble release notes into `doc/release/notes/smtk-MAJOR.MINOR.rst`.
+      - [ ] Assemble release notes into `doc/release/smtk-MAJOR.MINOR.rst`.
+        - [ ] Top of release notes should have `.. _release-notes-MAJOR.MINOR:` and a reference to the previous release's notes (See `doc/release/smtk-21.07.rst` or later for an example.)
+        - [ ] Add reference to new release notes to `doc/release/index.rst`. (This publishes release notes on read-the-docs.)
         - [ ] Update the ReadMe file to refer to the new release notes
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
         - [ ] `git rm` all of the individual release note files *except* `00-example.rst`.
