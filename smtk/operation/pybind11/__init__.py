@@ -116,3 +116,53 @@ def _registerModuleOperations(self, module):
 
 setattr(Manager, 'registerModuleOperations', _registerModuleOperations)
 del _registerModuleOperations
+
+# support for python tracing
+
+
+def configureAttribute(attr, config):
+    for key in config:
+        value = config[key]
+        if key == "associations":
+            assoc = attr.associations()
+            if len(value) == 0:
+                continue
+            if hasattr(assoc, 'isExtensible') and assoc.isExtensible() and assoc.numberOfValues() != len(value):
+                assoc.setNumberOfValues(len(value))
+            for i, val in enumerate(value):
+                if val is None:
+                    assoc.unset(i)
+                else:
+                    assoc.setValue(i, val)
+        if key == "items":
+            for itemCfg in config[key]:
+                # TODO this doesn't handle nesting
+                path = itemCfg.get("path") if itemCfg.get(
+                    "path") else itemCfg.get("name")
+                item = attr.itemAtPath(path)
+                value = itemCfg.get("value")
+                enabled = itemCfg.get("enable")
+                if not item:
+                    print("Unable to retrieve %s" % path)
+                    continue
+                # handles void items used as a boolean, too
+                if enabled is not None:
+                    item.setIsEnabled(enabled)
+                elif (value is not None and not item.isEnabled()):
+                    item.setIsEnabled(True)
+                # currently unused, but part of the spec?
+                if isinstance(value, dict):
+                    pass
+                elif isinstance(value, list):
+                    if hasattr(item, 'isExtensible') and item.isExtensible() and item.numberOfValues() != len(value):
+                        item.setNumberOfValues(len(value))
+                    for i, val in enumerate(value):
+                        if val is None:
+                            item.unset(i)
+                        else:
+                            item.setValue(i, val)
+                else:
+                    if value is None and "value" in itemCfg.keys():
+                        item.unset(0)
+                    elif value is not None:
+                        item.setValue(value)
