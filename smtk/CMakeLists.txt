@@ -206,6 +206,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     )
 
   set(SMTK_PYTHON_MODULE_SRCS
+    attribute_builder
     testing
     )
   foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})

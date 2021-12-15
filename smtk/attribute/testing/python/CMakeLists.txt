@@ -33,6 +33,7 @@ set(smtkAttributePythonDataTests
 set(smtkAttributePythonNewDataTests
   attributeItemByPath
   attributeQuery
+  configureAttributeTest
   extensibleGroupTest
   groupItemRotateTest
   referenceItemChildrenTest
