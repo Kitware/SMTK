@@ -295,34 +295,42 @@ class AttributeBuilder:
             if len(element.keys()) == 1:
                 name, value = element.popitem()
                 # print('name', name, 'value', value, type(value))
+            elif 'path' in element:
+                path = element.get('path')
+                item = parent.itemAtPath(path)
+                assert item is not None, 'parent {} has no item with path \"{}\"'.format(
+                    parent.name(), path)
+                value = element.get('value')
+                expression = element.get('expression')
             else:
                 name = element.get('name')
                 value = element.get('value')
                 expression = element.get('expression')
-            assert name is not None, 'no name found for element {}'.format(
-                element)
-            assert isinstance(
-                name, str), 'name element must be a string, not {}'.format(type(name))
+                assert name is not None, 'no name found for element {}'.format(
+                    element)
+                assert isinstance(
+                    name, str), 'name element must be a string, not {}'.format(type(name))
 
-            # Get the item
-            if index is not None:
-                assert parent.type() == smtk.attribute.Item.GroupType, 'index only valid for GroupItem'
-                item = parent.find(
-                    index, name, smtk.attribute.SearchStyle.IMMEDIATE)
-            elif hasattr(parent, 'findChild'):  # value item
-                item = parent.findChild(
-                    name, smtk.attribute.SearchStyle.IMMEDIATE_ACTIVE)
-            elif hasattr(parent, 'find'):  # attribute, group item, reference item
-                item = parent.find(name, smtk.attribute.SearchStyle.IMMEDIATE)
-                if item is None:
+                # Get the item
+                if index is not None:
+                    assert parent.type() == smtk.attribute.Item.GroupType, 'index only valid for GroupItem'
                     item = parent.find(
+                        index, name, smtk.attribute.SearchStyle.IMMEDIATE)
+                elif hasattr(parent, 'findChild'):  # value item
+                    item = parent.findChild(
                         name, smtk.attribute.SearchStyle.IMMEDIATE_ACTIVE)
-            else:
-                msg = 'item {} has no find() or findChild() method', format(item.name())
-                raise RuntimeError(msg)
+                elif hasattr(parent, 'find'):  # attribute, group item, reference item
+                    item = parent.find(
+                        name, smtk.attribute.SearchStyle.IMMEDIATE)
+                    if item is None:
+                        item = parent.find(
+                            name, smtk.attribute.SearchStyle.IMMEDIATE_ACTIVE)
+                else:
+                    msg = 'item {} has no find() or findChild() method', format(item.name())
+                    raise RuntimeError(msg)
 
-            assert item is not None, 'parent {} has no item with name \"{}\"'.format(
-                parent.name(), name)
+                assert item is not None, 'parent {} has no item with name \"{}\"'.format(
+                    parent.name(), name)
 
             # Set expression or value (expression takes precedence)
             if expression is not None:
@@ -337,7 +345,10 @@ class AttributeBuilder:
                     assert item.setNumberOfValues(len(value)), \
                         f'failed to set item {item.name()} number of values to {len(value)}'
                     for i in range(len(value)):
-                        item.setValue(i, value[i])
+                        if value[i] is None:
+                            item.unset(i)
+                        else:
+                            item.setValue(i, value[i])
                 else:
                     raise RuntimeError(
                         'Unrecognized value type {}'.format(type(value)))
