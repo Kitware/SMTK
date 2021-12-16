@@ -169,8 +169,12 @@ int main()
   // Lets do some path tests
   item = att->itemAtPath("a");
   smtkTest((item != nullptr), "Could not find using path: a");
+  item = att->itemAtPath("/a");
+  smtkTest((item != nullptr), "Could not find using path: /a");
   item = att->itemAtPath("a/a-a/a-a-b");
   smtkTest((item != nullptr), "Could not find using path: a/a-a/a-a-b");
+  item = att->itemAtPath("/a/a-a/a-a-b");
+  smtkTest((item != nullptr), "Could not find using path: /a/a-a/a-a-b");
   item = att->itemAtPath("a/a-a/a-a-b", "/", true);
   smtkTest((item == nullptr), "Could find using path: a/a-a/a-a-b when asking for active");
   item = att->itemAtPath("a/a-b/a-b-a", "/", true);

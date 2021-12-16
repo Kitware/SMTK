@@ -193,7 +193,17 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
 {
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
-  boost::split(tree, path, boost::is_any_of(seps));
+  if (path[0] == '/')
+  {
+    // Skip leading forward slash
+    std::string subpath = path.substr(1);
+    boost::split(tree, subpath, boost::is_any_of(seps));
+  }
+  else
+  {
+    boost::split(tree, path, boost::is_any_of(seps));
+  }
+
   if (tree.empty())
   {
     return nullptr;
@@ -222,6 +232,17 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
   boost::split(tree, path, boost::is_any_of(seps));
+  if (path[0] == '/')
+  {
+    // Skip leading forward slash
+    std::string subpath = path.substr(1);
+    boost::split(tree, subpath, boost::is_any_of(seps));
+  }
+  else
+  {
+    boost::split(tree, path, boost::is_any_of(seps));
+  }
+
   if (tree.empty())
   {
     return nullptr;

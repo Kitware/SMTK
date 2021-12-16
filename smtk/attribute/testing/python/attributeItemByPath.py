@@ -41,6 +41,14 @@ class TestAttributeItemByPath(smtk.testing.TestCase):
         self.assertEqual(itemInSimplePath.name(), 'Hydrostat',
                          'Got wrong attribute "{nm}".'.format(nm=itemInSimplePath.name()))
 
+    def testLeadingSlash(self):
+        att = self.resource.createAttribute('hydrostat')
+        itemWithLeadingSlash = att.itemAtPath('/Hydrostat', '/')
+        self.assertIsNotNone(itemWithLeadingSlash,
+                             'Could not find expected item.')
+        self.assertEqual(itemWithLeadingSlash.name(), 'Hydrostat',
+                         'Got wrong attribute "{nm}".'.format(nm=itemWithLeadingSlash.name()))
+
     def testItemInChildPath(self):
         att = self.resource.createAttribute('BasicTurbulenceModel')
         itemInChildren = att.itemAtPath('Method/prandtl', '/')
