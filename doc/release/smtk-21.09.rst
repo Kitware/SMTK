@@ -6,7 +6,6 @@ SMTK 21.09 Release Notes
 
 See also :ref:`release-notes-21.07` for previous changes.
 
-
 SMTK Resource and Component Changes
 ===================================
 
@@ -143,6 +142,11 @@ test and user guide for more details.
 
 Other SMTK Core Changes
 =======================
+
+Allow connecting to remote server using multi-servers
+-----------------------------------------------------
+
+Add support for connecting SMTK to remote server without initializing SMTK managers on the remote server. Added as part of 21.09.1.
 
 Using TypeContainers instead of ViewInfo
 ----------------------------------------
