@@ -213,6 +213,15 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
 #endif
     return;
   }
+
+  if (server->isRemote())
+  {
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
+    std::cout << "PV server is remote\n";
+#endif
+    return;
+  }
+
   pqObjectBuilder* builder = app->getObjectBuilder();
 
   // Set up the resource manager.
