@@ -15,6 +15,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -34,17 +35,20 @@ Signal::Result Signal::operateInternal()
   auto creIn = params->findComponent("created");
   auto expIn = params->findComponent("expunged");
   auto updateIn = params->findVoid("update");
+  auto categoriesModIn = params->findResource("categoriesModified");
   auto modOut = result->findComponent("modified");
   auto itemsOut = result->findString("items");
   auto creOut = result->findComponent("created");
   auto expOut = result->findComponent("expunged");
-  auto updateOut = params->findVoid("update");
+  auto updateOut = result->findVoid("update");
+  auto categoriesModOut = result->findResource("categoriesModified");
 
   // Copy the inputs to the output.
   creOut->setValues(creIn->begin(), creIn->end());
   modOut->setValues(modIn->begin(), modIn->end());
   itemsOut->setValues(itemsIn->begin(), itemsIn->end());
   expOut->setValues(expIn->begin(), expIn->end());
+  categoriesModOut->setValues(categoriesModIn->begin(), categoriesModIn->end());
   updateOut->setIsEnabled(updateIn->isEnabled());
 
   return result;

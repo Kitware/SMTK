@@ -10,10 +10,13 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/common/Managers.h"
 #include "smtk/model/Registrar.h"
@@ -90,8 +93,8 @@ std::string configString = R"(
             "attribute-sets": [
               {
                 "role": "simulation attribute",
-                "definitions": [
-                  "SimulationParameters"
+                "instances": [
+                  "simulationParameters"
                 ]
               }
             ]
@@ -167,6 +170,21 @@ void printTaskStates(smtk::task::Manager::Ptr taskManager, const std::string& me
     });
 }
 
+bool testStates(std::vector<smtk::task::Task::Ptr>& theTasks, smtk::task::State (&taskStates)[4])
+{
+  bool passed = true;
+  for (unsigned int i = 0; i < 4; i++)
+  {
+    if (theTasks[i]->state() != taskStates[i])
+    {
+      std::cerr << "Error: Task(" << theTasks[i]->title()
+                << ") has state :" << smtk::task::stateName(theTasks[i]->state())
+                << " should have been: " << smtk::task::stateName(taskStates[i]) << std::endl;
+      passed = false;
+    }
+  }
+  return passed;
+}
 } // anonymous namespace
 
 int TestTaskGroup(int, char*[])
@@ -201,56 +219,169 @@ int TestTaskGroup(int, char*[])
   auto attribUUIDStr = attrib->id().toString();
   auto modelUUIDStr = model->id().toString();
 
+  // Prep the attribute resource
+  auto def = attrib->createDefinition("Material");
+  auto assoc = def->createLocalAssociationRule();
+  assoc->setAcceptsEntries("smtk::model::Resource", "volume", true);
+  assoc->setNumberOfRequiredValues(1);
+  assoc->setIsExtensible(true);
+
+  def = attrib->createDefinition("SimulationParameters");
+  def->addItemDefinition<smtk::attribute::IntItemDefinition>("intVal");
+
+  attrib->finalizeDefinitions();
+  auto simAttribute = attrib->createAttribute("simulationParameters", def);
+
   auto config = nlohmann::json::parse(configString);
   std::cout << config.dump(2) << "\n";
   bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
   test(ok, "Failed to parse configuration.");
   test(taskManager->taskInstances().size() == 4, "Expected to deserialize 4 tasks.");
 
-  smtk::task::GatherResources::Ptr gatherResources;
-  smtk::task::FillOutAttributes::Ptr fillOutAttributes;
+  std::vector<smtk::task::Task::Ptr> theTasks(4);
+  std::vector<std::string> taskNames = {
+    "Load a model and attribute", "Prepare simulation", "Mark up model", "Set simulation parameters"
+  };
+  smtk::task::State taskStates[][4] = { { smtk::task::State::Completable,
+                                          smtk::task::State::Unavailable,
+                                          smtk::task::State::Unavailable,
+                                          smtk::task::State::Unavailable },
+                                        { smtk::task::State::Completed,
+                                          smtk::task::State::Incomplete,
+                                          smtk::task::State::Completable,
+                                          smtk::task::State::Incomplete },
+                                        { smtk::task::State::Completed,
+                                          smtk::task::State::Incomplete,
+                                          smtk::task::State::Incomplete,
+                                          smtk::task::State::Incomplete },
+                                        { smtk::task::State::Completed,
+                                          smtk::task::State::Incomplete,
+                                          smtk::task::State::Completable,
+                                          smtk::task::State::Incomplete },
+                                        { smtk::task::State::Completed,
+                                          smtk::task::State::Completable,
+                                          smtk::task::State::Completable,
+                                          smtk::task::State::Completable },
+                                        { smtk::task::State::Completed,
+                                          smtk::task::State::Irrelevant,
+                                          smtk::task::State::Irrelevant,
+                                          smtk::task::State::Irrelevant } };
+  bool hasErrors = false;
   taskManager->taskInstances().visit(
-    [&gatherResources, &fillOutAttributes](const smtk::task::Task::Ptr& task) {
-      if (!gatherResources)
+    [&theTasks, &taskNames, &hasErrors](const smtk::task::Task::Ptr& task) {
+      bool found = false;
+      for (unsigned int i = 0; (i < 4) || (!found); i++)
       {
-        gatherResources = std::dynamic_pointer_cast<smtk::task::GatherResources>(task);
+        if (task->title() == taskNames[i])
+        {
+          found = true;
+          theTasks[i] = task;
+        }
       }
-      if (!fillOutAttributes)
+      if (!found)
       {
-        fillOutAttributes = std::dynamic_pointer_cast<smtk::task::FillOutAttributes>(task);
+        std::cerr << "Found unexpected task: " << task->title() << std::endl;
+        hasErrors = true;
       }
       return smtk::common::Visit::Continue;
     });
 
+  // Did we find all of the tasks
+  for (unsigned int i = 0; i < 4; i++)
+  {
+    if (!theTasks[i])
+    {
+      std::cerr << "Could not find task: " << taskNames[i] << std::endl;
+      hasErrors = true;
+    }
+  }
+
   // Add components and signal to test FillOutAttributes.
   // First, the FillOutAttributes task is irrelevant
   printTaskStates(taskManager, "Incomplete resource gathering.");
-  gatherResources->markCompleted(true);
+  if (testStates(theTasks, taskStates[0]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
+
+  theTasks[0]->markCompleted(true);
 
   printTaskStates(taskManager, "Completed resource gathering.");
+  if (testStates(theTasks, taskStates[1]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
 
   auto volume1 = model->addVolume();
   auto volume2 = model->addVolume();
-  auto def = attrib->createDefinition("Material");
-  auto assoc = def->createLocalAssociationRule();
-  assoc->setAcceptsEntries("smtk::model::Resource", "volume", true);
-  assoc->setNumberOfRequiredValues(1);
-  assoc->setIsExtensible(true);
   auto material1 = attrib->createAttribute("CarbonFiber", "Material");
 
   // Signal the change
   auto signal = operationManager->create<smtk::attribute::Signal>();
   signal->parameters()->findComponent("created")->appendValue(material1);
   auto result = signal->operate();
-  // Now, the FillOutAttributes task is incomplete
+  // Now, the Markup Model task is incomplete
   printTaskStates(taskManager, "Added a material attribute.");
+  if (testStates(theTasks, taskStates[2]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
 
   material1->associate(volume1.component());
   signal->parameters()->findComponent("created")->setNumberOfValues(0);
   signal->parameters()->findComponent("modified")->appendValue(material1);
   result = signal->operate();
-  // Finally, the FillOutAttributes task is completable
+  // Now the Markup Model task is completable
   printTaskStates(taskManager, "Associated material to model.");
+  if (testStates(theTasks, taskStates[3]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
+
+  auto simItem = std::dynamic_pointer_cast<smtk::attribute::IntItem>(simAttribute->item(0));
+  simItem->setValue(1);
+  signal->parameters()->findComponent("modified")->setValue(simAttribute);
+  result = signal->operate();
+  // Now the Simulation Parameters and PrepareSimulation tasks are completable
+  printTaskStates(taskManager, "Setting Simulation Parameter to 1 .");
+  if (testStates(theTasks, taskStates[4]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
+
+  attrib->setActiveCategoriesEnabled(true);
+  signal->parameters()->findComponent("modified")->setNumberOfValues(0);
+  signal->parameters()->findResource("categoriesModified")->appendValue(attrib);
+  result = signal->operate();
+  printTaskStates(taskManager, "Turning Active Categories On .");
+  if (testStates(theTasks, taskStates[5]))
+  {
+    std::cerr << "Passed!\n";
+  }
+  else
+  {
+    hasErrors = true;
+  }
 
   std::string configString2;
   {
@@ -284,5 +415,9 @@ int TestTaskGroup(int, char*[])
     // test(configString2 == configString3, "Failed to match strings.");
   }
 
+  if (hasErrors)
+  {
+    return -1;
+  }
   return 0;
 }

@@ -84,60 +84,29 @@ class qtAttributeViewInternals
 public:
   ~qtAttributeViewInternals() { delete this->CurrentAtt; }
 
-  // Return a list of defs from the input that pass the advance read level check
-  QList<smtk::attribute::DefinitionPtr> removeAdvancedDefs(
-    smtk::extension::qtUIManager* uiManager,
-    const QList<smtk::attribute::DefinitionPtr>& defs) const
-  {
-    QList<smtk::attribute::DefinitionPtr> allVisibleDefs;
-    for (const auto& def : defs)
-    {
-      if (uiManager->passAdvancedCheck(def->advanceLevel()))
-      {
-        allVisibleDefs.append(def);
-      }
-    }
-    return allVisibleDefs;
-  }
-
   // Return a list of definitions based on the current settings
   // of the UI Manager and whether the View is to ignore
   // categories
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
-    const ResourcePtr& attResource,
     smtk::extension::qtUIManager* uiManager,
     bool ignoreCategories) const
   {
-    if (ignoreCategories)
-    {
-      return removeAdvancedDefs(uiManager, this->AllDefs);
-    }
-
-    if (!(attResource && attResource->activeCategoriesEnabled()))
-    {
-      // There are no active categories - return everything
-      return removeAdvancedDefs(uiManager, this->AllDefs);
-    }
-
-    if (attResource->activeCategories().size() == 1)
-    {
-      std::string theCategory = *(attResource->activeCategories().begin());
-      if (this->AttDefMap.keys().contains(theCategory.c_str()))
-      {
-        return removeAdvancedDefs(uiManager, this->AttDefMap[theCategory.c_str()]);
-      }
-      return removeAdvancedDefs(uiManager, this->AllDefs);
-    }
-
     QList<smtk::attribute::DefinitionPtr> defs;
+    bool includeAdvanceLevel = false;
+    int advLevel = 0;
+    if (uiManager)
+    {
+      includeAdvanceLevel = true;
+      advLevel = uiManager->advanceLevel();
+    }
     foreach (DefinitionPtr attDef, this->AllDefs)
     {
-      if (attResource->passActiveCategoryCheck(attDef->categories()))
+      if (attDef->isRelevant(!ignoreCategories, includeAdvanceLevel, advLevel))
       {
         defs.push_back(attDef);
       }
     }
-    return removeAdvancedDefs(uiManager, defs);
+    return defs;
   }
 
   QTableView* ListTable;
@@ -836,7 +805,7 @@ smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 
   foreach (
     attribute::DefinitionPtr attDef,
-    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories))
+    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
   {
     std::string txtDef = attDef->displayedTypeName();
     if (strDef == QString::fromUtf8(txtDef.c_str()))
@@ -1002,7 +971,7 @@ void qtAttributeView::onViewBy()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories);
+    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
 
   m_internals->AddAction->setEnabled(currentDefs.count() > 0);
 
@@ -1397,7 +1366,7 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
 bool qtAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    m_internals->getCurrentDefs(this->attributeResource(), this->uiManager(), m_ignoreCategories);
+    m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
   return currentDefs.isEmpty();
 }
 

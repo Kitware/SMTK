@@ -178,6 +178,29 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   return false;
 }
 
+bool Definition::isRelevant(
+  bool includeCategoryCheck,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
+{
+  if (includeCategoryCheck)
+  {
+    auto aResource = this->resource();
+    if (aResource && aResource->activeCategoriesEnabled())
+    {
+      if (!this->categories().passes(aResource->activeCategories()))
+      {
+        return false;
+      }
+    }
+  }
+  if (includeReadAccess)
+  {
+    return this->advanceLevel() <= readAccessLevel;
+  }
+  return true;
+}
+
 ConstReferenceItemDefinitionPtr Definition::associationRule() const
 {
   if (!m_acceptsRules)

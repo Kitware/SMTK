@@ -70,5 +70,18 @@ bool Instances::workflowEvent(const std::set<Task*>& workflows, WorkflowEvent ev
   return true;
 }
 
+std::set<smtk::task::Task::Ptr> Instances::findByTitle(const std::string& title) const
+{
+
+  std::set<smtk::task::Task::Ptr> foundTasks;
+  this->visit([&foundTasks, title](const std::shared_ptr<smtk::task::Task>& task) {
+    if (task->title() == title)
+    {
+      foundTasks.insert(task);
+    }
+    return smtk::common::Visit::Continue;
+  });
+  return foundTasks;
+}
 } // namespace task
 } // namespace smtk

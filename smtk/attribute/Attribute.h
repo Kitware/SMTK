@@ -331,7 +331,7 @@ public:
   bool isRelevant(
     bool includeCategories = true,
     bool includeReadAccess = false,
-    int readAccessLevel = 0) const;
+    unsigned int readAccessLevel = 0) const;
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;

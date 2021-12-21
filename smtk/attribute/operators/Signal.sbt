@@ -17,6 +17,9 @@
         <Component Name="modified" Extensible="true" NumberOfRequiredValues="0">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
+        <Resource  Name="categoriesModified" Extensible="true" NumberOfRequiredValues="0">
+          <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
+        </Resource>
         <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
         <String Name="source">
           <DefaultValue></DefaultValue>
@@ -35,6 +38,9 @@
         <ItemDefinitions>
           <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
           <Void Name="update"  Optional="True"/>
+          <Resource  Name="categoriesModified" Extensible="true" NumberOfRequiredValues="0">
+            <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
+          </Resource>
         </ItemDefinitions>
     </AttDef>
   </Definitions>

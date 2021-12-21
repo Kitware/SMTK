@@ -111,6 +111,18 @@ public:
 
   bool isA(smtk::attribute::ConstDefinitionPtr def) const;
 
+  ///\brief Returns true if the definition is relevant.
+  ///
+  /// If includeCatagories is true and the definition does not pass it's category checks with respects
+  /// to the resource's active category settings then return false,
+  /// If includeReadAccess is true, and if all of the item definitions in the attribute have their
+  ///  advanceLevel > readAccessLevel then return false.
+  /// Else return true.
+  bool isRelevant(
+    bool includeCategories = true,
+    bool includeReadAccess = false,
+    unsigned int readAccessLevel = 0) const;
+
   int version() const { return m_version; }
   void setVersion(int myVersion) { m_version = myVersion; }
 

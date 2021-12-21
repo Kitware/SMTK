@@ -62,6 +62,8 @@ public:
     std::string m_role;
     /// The definitions in matching resources whose attributes should be valid.
     std::set<std::string> m_definitions;
+    /// The explicit attribute instances in matching resources that need to be valid.
+    std::set<std::string> m_instances;
     /// Should all resources with a matching role be added?
     ///
     /// If false (default), then resources must be explicitly configured by UUID
@@ -115,6 +117,19 @@ protected:
   /// Check m_resourcesByRole to see if all requirements are met.
   State computeInternalState() const;
 
+  /// Determine if an attribute needs to be tested for its validity.  Returns true if the attribute was not already contained
+  /// in resourceAtts
+  static bool testValidity(
+    const smtk::attribute::AttributePtr& attribute,
+    ResourceAttributes& resourceAtts);
+
+  ///\brief Returns true if the task has relevant information in terms of its definitions and instances.
+  ///
+  ///  The task as relevant information if any of its definitions' or instances' isRelevant methods return true.  It will also
+  /// indicate if it found any of its required resources via the foundResources parameter.
+  bool hasRelevantInfomation(
+    const smtk::resource::ManagerPtr& resourceManager,
+    bool& foundResources) const;
   smtk::common::Managers::Ptr m_managers;
   smtk::operation::Observers::Key m_observer;
   std::vector<AttributeSet> m_attributeSets;

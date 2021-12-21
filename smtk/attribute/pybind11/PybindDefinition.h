@@ -60,6 +60,7 @@ inline PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attrib
     .def("setNotApplicableColor", (void (smtk::attribute::Definition::*)(double const *)) &smtk::attribute::Definition::setNotApplicableColor, py::arg("color"))
     .def("unsetNotApplicableColor", &smtk::attribute::Definition::unsetNotApplicableColor)
     .def("isNotApplicableColorSet", &smtk::attribute::Definition::isNotApplicableColorSet)
+    .def("isRelevant", &smtk::attribute::Definition::isRelevant, py::arg("includeCategoryCheck") = true, py::arg("includeReadAccess") = false, py::arg("readAccessLevel") = 0)
     .def("defaultColor", &smtk::attribute::Definition::defaultColor)
     .def("setDefaultColor", (void (smtk::attribute::Definition::*)(double, double, double, double)) &smtk::attribute::Definition::setDefaultColor, py::arg("r"), py::arg("g"), py::arg("b"), py::arg("alpha"))
     .def("setDefaultColor", (void (smtk::attribute::Definition::*)(double const *)) &smtk::attribute::Definition::setDefaultColor, py::arg("color"))

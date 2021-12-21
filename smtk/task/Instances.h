@@ -81,6 +81,9 @@ public:
   /// is true).
   bool workflowEvent(const std::set<Task*>& workflows, WorkflowEvent event, Task* subject);
 
+  // Returns the tasks with the given title
+  std::set<smtk::task::Task::Ptr> findByTitle(const std::string& title) const;
+
 protected:
   WorkflowObservers m_workflowObservers;
   bool m_workflowNotificationsPaused = false;
