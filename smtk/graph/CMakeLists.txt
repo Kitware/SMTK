@@ -2,13 +2,14 @@ set(graphOperations
 )
 
 set(graphSrcs
-  ResourceBase.cxx
   Component.cxx
+  NodeSet.cxx
 )
 
 set(graphHeaders
   ArcMap.h
   Component.h
+  NodeSet.h
   Resource.h
   ResourceBase.h
   TypeTraits.h

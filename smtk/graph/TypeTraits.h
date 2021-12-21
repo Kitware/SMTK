@@ -11,9 +11,12 @@
 #ifndef smtk_graph_TypeTraits_h
 #define smtk_graph_TypeTraits_h
 
+#include "smtk/graph/NodeSet.h"
+
 #include "smtk/common/TypeTraits.h"
 
 #include <functional>
+#include <set>
 #include <type_traits>
 
 namespace smtk
@@ -91,6 +94,30 @@ class accepts
 public:
   using type = decltype(testAccepts<Functor>(nullptr));
   static constexpr bool value = type::value;
+};
+
+namespace detail
+{
+template<typename Traits, typename = void>
+struct SelectNodesStorage
+{
+  using type = NodeSet;
+};
+
+template<typename Traits>
+struct SelectNodesStorage<Traits, smtk::common::void_t<typename Traits::NodeStorage>>
+{
+  using type = typename Traits::NodeStorage;
+};
+
+} // namespace detail
+
+template<typename Traits>
+struct GraphTraits
+{
+  using NodeTypes = typename Traits::NodeTypes;
+  using ArcTypes = typename Traits::ArcTypes;
+  using NodeStorage = typename detail::SelectNodesStorage<Traits>::type;
 };
 
 } // namespace graph

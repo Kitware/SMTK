@@ -34,30 +34,19 @@ class Component;
 class SMTKCORE_EXPORT ResourceBase
   : public smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>
 {
-protected:
-  struct SMTKCORE_EXPORT Compare
-  {
-    bool operator()(
-      const std::shared_ptr<smtk::resource::Component>& lhs,
-      const std::shared_ptr<smtk::resource::Component>& rhs) const;
-  };
-
 public:
   smtkTypeMacro(smtk::graph::ResourceBase);
   smtkSuperclassMacro(smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>);
-
-  using NodeSet = std::set<std::shared_ptr<smtk::resource::Component>, Compare>;
-
-  std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID&) const override;
-
-  void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const override;
-
-  const NodeSet& nodes() const { return m_nodes; }
 
   virtual const ArcMap& arcs() const = 0;
   virtual ArcMap& arcs() = 0;
 
 protected:
+  /// Erase all nodes that component corresponds to according to the NodeStorage
+  virtual bool eraseNode(const smtk::resource::ComponentPtr& component) = 0;
+  /// Add a node without checking if the node is a valid Graph type
+  virtual bool insertNode(const smtk::resource::ComponentPtr& component) = 0;
+
   ResourceBase(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)
   {
@@ -68,7 +57,7 @@ protected:
   {
   }
 
-  NodeSet m_nodes;
+  friend Component;
 };
 
 } // namespace graph

@@ -37,12 +37,10 @@ bool Component::setId(const smtk::common::UUID& uid)
 {
   if (auto resource = m_resource.lock())
   {
-    const_cast<ResourceBase::NodeSet&>(resource->nodes()).erase(this->shared_from_this());
+    resource->eraseNode(this->shared_from_this());
     smtk::common::UUID tmp = m_id;
     m_id = uid;
-    if (const_cast<ResourceBase::NodeSet&>(resource->nodes())
-          .insert(this->shared_from_this())
-          .second)
+    if (resource->insertNode(this->shared_from_this()))
     {
       return true;
     }
