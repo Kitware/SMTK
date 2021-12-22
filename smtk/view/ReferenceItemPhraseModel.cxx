@@ -69,13 +69,13 @@ void ReferenceItemPhraseModel::populateRoot()
       const smtk::operation::ManagerPtr& /*unused*/,
       const smtk::view::ManagerPtr& /*unused*/,
       const smtk::view::SelectionPtr &
-      /*unused*/) -> bool {
+      /*unused*/) -> smtk::common::Visit {
       if (rsrcMgr)
       {
         resourceManager = rsrcMgr;
-        return false;
+        return smtk::common::Visit::Halt;
       }
-      return true;
+      return smtk::common::Visit::Continue;
     });
 
   auto objSet = smtk::attribute::utility::associatableObjects(
