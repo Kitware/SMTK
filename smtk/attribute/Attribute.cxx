@@ -317,8 +317,10 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
   return !(m_associatedObjects && !m_associatedObjects->isValid(false));
 }
 
-bool Attribute::isRelevant(bool includeCategoryCheck, bool includeReadAccess, int readAccessLevel)
-  const
+bool Attribute::isRelevant(
+  bool includeCategoryCheck,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
 {
   if (includeCategoryCheck)
   {

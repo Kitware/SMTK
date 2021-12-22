@@ -20,19 +20,31 @@ namespace task
 
 void from_json(const nlohmann::json& j, FillOutAttributes::AttributeSet& attributeSet)
 {
-  if (j.contains("role"))
+  auto result = j.find("role");
+  if (result != j.end())
   {
-    j.at("role").get_to(attributeSet.m_role);
+    result->get_to(attributeSet.m_role);
   }
-  if (j.contains("definitions"))
+
+  result = j.find("definitions");
+  if (result != j.end())
   {
-    j.at("definitions").get_to(attributeSet.m_definitions);
+    result->get_to(attributeSet.m_definitions);
   }
-  attributeSet.m_autoconfigure =
-    (j.contains("auto-configure") ? j.at("auto-configure").get<bool>() : false);
-  if (j.contains("resource-attributes"))
+
+  result = j.find("instances");
+  if (result != j.end())
   {
-    j.at("resource-attributes").get_to(attributeSet.m_resources);
+    result->get_to(attributeSet.m_instances);
+  }
+
+  result = j.find("auto-configure");
+  attributeSet.m_autoconfigure = (result != j.end() ? result->get<bool>() : false);
+
+  result = j.find("resource-attributes");
+  if (result != j.end())
+  {
+    result->get_to(attributeSet.m_resources);
   }
 }
 
@@ -40,18 +52,21 @@ void to_json(nlohmann::json& j, const FillOutAttributes::AttributeSet& attribute
 {
   j = nlohmann::json{ { "role", attributeSet.m_role },
                       { "definitions", attributeSet.m_definitions },
+                      { "instances", attributeSet.m_instances },
                       { "resource-attributes", attributeSet.m_resources } };
 }
 
 void from_json(const nlohmann::json& j, FillOutAttributes::ResourceAttributes& resourceAttributes)
 {
-  if (j.contains("valid"))
+  auto result = j.find("valid");
+  if (result != j.end())
   {
-    j.at("valid").get_to(resourceAttributes);
+    result->get_to(resourceAttributes.m_valid);
   }
-  if (j.contains("invalid"))
+  result = j.find("invalid");
+  if (result != j.end())
   {
-    j.at("invalid").get_to(resourceAttributes);
+    result->get_to(resourceAttributes.m_invalid);
   }
 }
 

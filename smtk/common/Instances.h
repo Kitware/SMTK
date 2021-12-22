@@ -176,7 +176,7 @@ public:
   /// Iterate over the collection of instances, invoking a visitor on each.
   ///
   /// The return value indicates whether iteration was terminated early or not.
-  smtk::common::Visit visit(Visitor visitor)
+  smtk::common::Visit visit(Visitor visitor) const
   {
     for (const auto& instance : m_instances)
     {

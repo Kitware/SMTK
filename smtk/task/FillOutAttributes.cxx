@@ -19,6 +19,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -58,9 +60,10 @@ void FillOutAttributes::configure(const Configuration& config)
   auto& helper = json::Helper::instance();
   helper.setManagers(m_managers);
 
-  if (config.contains("attribute-sets"))
+  auto result = config.find("attribute-sets");
+  if (result != config.end())
   {
-    config.at("attribute-sets").get_to(m_attributeSets);
+    result->get_to(m_attributeSets);
   }
   if (m_managers)
   {
@@ -78,8 +81,15 @@ void FillOutAttributes::configure(const Configuration& config)
   }
   if (!m_attributeSets.empty())
   {
-    this->initializeResources();
-    this->internalStateChanged(this->computeInternalState());
+    if (!this->initializeResources())
+    {
+      // There were no resources found so the task is unavailable
+      this->internalStateChanged(State::Unavailable);
+    }
+    else
+    {
+      this->internalStateChanged(this->computeInternalState());
+    }
   }
 }
 
@@ -263,25 +273,47 @@ bool FillOutAttributes::updateResourceEntry(
     resource.findAttributes(definition, attributes);
     for (const auto& attribute : attributes)
     {
-      auto uid = attribute->id();
-      if (
-        (entry.m_invalid.find(uid) == entry.m_invalid.end()) &&
-        (entry.m_valid.find(uid) == entry.m_valid.end()))
-      {
-        // We've found a new attribute. Classify it.
-        changesMade = true;
-        if (attribute->isValid()) // TODO: accept predicate override for categories?
-        {
-          entry.m_valid.insert(uid);
-        }
-        else
-        {
-          entry.m_invalid.insert(uid);
-        }
-      }
+      changesMade |= testValidity(attribute, entry);
+    }
+  }
+  for (const auto& attName : predicate.m_instances)
+  {
+    auto attribute = resource.findAttribute(attName);
+    if (!attribute)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Can not find required Attribute: " << attName << " in Resource:" << resource.name());
+    }
+    else
+    {
+      changesMade |= testValidity(attribute, entry);
     }
   }
   return changesMade;
+}
+
+bool FillOutAttributes::testValidity(
+  const smtk::attribute::AttributePtr& attribute,
+  ResourceAttributes& entry)
+{
+  auto uid = attribute->id();
+  if (
+    (entry.m_invalid.find(uid) == entry.m_invalid.end()) &&
+    (entry.m_valid.find(uid) == entry.m_valid.end()))
+  {
+    // We've found a new attribute. Classify it.
+    if (attribute->isValid()) // TODO: accept predicate override for categories?
+    {
+      entry.m_valid.insert(uid);
+    }
+    else
+    {
+      entry.m_invalid.insert(uid);
+    }
+    return true;
+  }
+  return false;
 }
 
 int FillOutAttributes::update(
@@ -295,6 +327,11 @@ int FillOutAttributes::update(
   {
     case smtk::operation::EventType::DID_OPERATE:
     {
+      auto categoriesModified = result->findResource("categoriesModified");
+      if (categoriesModified && categoriesModified->numberOfValues())
+      {
+        predicatesUpdated = true; //categories have been changed
+      }
       auto mentionedResources = smtk::operation::extractResources(result);
 
       for (const auto& weakResource : mentionedResources)
@@ -340,27 +377,76 @@ int FillOutAttributes::update(
   return 0;
 }
 
+bool FillOutAttributes::hasRelevantInfomation(
+  const smtk::resource::ManagerPtr& resourceManager,
+  bool& foundResources) const
+{
+  // If all of the Task's definitions and instances are not relevant then neither is the task
+  auto resources = resourceManager->find<smtk::attribute::Resource>();
+  foundResources = false;
+  for (const auto& attributeSet : m_attributeSets)
+  {
+    for (const auto& resInfo : attributeSet.m_resources)
+    {
+      auto attResource =
+        std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceManager->get(resInfo.first));
+      if (!attResource)
+      {
+        continue; // Could not find the resource
+      }
+      foundResources = true;
+      for (const auto& defName : attributeSet.m_definitions)
+      {
+        auto def = attResource->findDefinition(defName);
+        // We want to check the definition for relevancy
+        if (def && def->isRelevant())
+        {
+          return true;
+        }
+      }
+      // Need to check the instances
+      for (const auto& attName : attributeSet.m_instances)
+      {
+        auto att = attResource->findAttribute(attName);
+        // We want to check the definition for relevancy
+        if (att && att->isRelevant())
+        {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
 State FillOutAttributes::computeInternalState() const
 {
-  State s = State::Completable;
-  bool empty = true;
+  std::cerr << "Computing new state\n";
+  auto resourceManager = m_managers->get<smtk::resource::Manager::Ptr>();
+  if (!resourceManager)
+  {
+    return this->internalState(); // Can not find a resource manager so we can't recompute state
+  }
+
+  bool foundResources;
+  if (!this->hasRelevantInfomation(resourceManager, foundResources))
+  {
+    if (foundResources)
+    {
+      return State::Irrelevant;
+    }
+    return State::Unavailable;
+  }
   for (const auto& predicate : m_attributeSets)
   {
     for (const auto& resourceEntry : predicate.m_resources)
     {
-      empty &= resourceEntry.second.m_valid.empty() && resourceEntry.second.m_invalid.empty();
       if (!resourceEntry.second.m_invalid.empty())
       {
-        s = State::Incomplete;
-        return s;
+        return State::Incomplete;
       }
     }
   }
-  if (empty)
-  {
-    s = State::Irrelevant;
-  }
-  return s;
+  return State::Completable;
 }
 
 } // namespace task

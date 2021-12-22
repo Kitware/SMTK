@@ -28,14 +28,9 @@ namespace adaptor
 class ResourceAndRole;
 }
 
-/**\brief FillOutAttributes is a task that is incomplete until specified
-  *       attributes are valid.
-  *
-  * This task accepts an input attribute resource (configured by a predecessor
-  * task or specified via a role) and observe an operation manager for operations.
-  * After each operation, attributes with a definition are validated.
-  * If all attributes identify are valid, the task becomes completable.
-  * Otherwise, the task will remain (or become) incomplete.
+/**\brief Creating a Task that requires an operation to be executed
+ * NOTE - this is just a place holder - as you can see this file and
+ * the corresponding Cxx file are copies of FillOutAttribute.
   */
 class SMTKCORE_EXPORT FillOutAttributes : public Task
 {
