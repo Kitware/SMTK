@@ -3,6 +3,7 @@ pyparsing==2.4.7
 Pygments==2.10.0
 actdiag==2.0.0
 blockdiag==2.0.1
+funcparserlib==0.3.6
 sphinxcontrib-actdiag==2.0.0
 sphinxcontrib-doxylink==1.8
 sphinx-rtd-theme==0.5.2
