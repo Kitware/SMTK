@@ -236,9 +236,15 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
   if (rsrcMgr)
   {
     std::weak_ptr<smtk::resource::Manager> weakResourceManager = rsrcMgr;
+    QPointer<pqSMTKAttributePanel> self(this);
     m_observer = rsrcMgr->observers().insert(
-      [this, weakResourceManager](
+      [this, weakResourceManager, self](
         const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
+        // Does the panel still exist?
+        if (self == nullptr)
+        {
+          return;
+        }
         auto rsrc = m_rsrc.lock();
         if (
           rsrc == nullptr ||
