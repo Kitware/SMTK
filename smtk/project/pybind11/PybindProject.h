@@ -41,8 +41,10 @@ inline PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Proje
     .def("operations", (smtk::project::OperationFactory & (smtk::project::Project::*)()) &
         smtk::project::Project::operations)
     .def("queryOperation", &smtk::project::Project::queryOperation, py::arg("arg0"))
-    .def("resources", (smtk::project::ResourceContainer const& (smtk::project::Project::*)() const) &smtk::project::Project::resources)
-    .def("resources", (smtk::project::ResourceContainer & (smtk::project::Project::*)()) &smtk::project::Project::resources)
+    .def("resources", (smtk::project::ResourceContainer const& (smtk::project::Project::*)() const) &smtk::project::Project::resources,
+        py::return_value_policy::reference_internal)
+    .def("resources", (smtk::project::ResourceContainer & (smtk::project::Project::*)()) &smtk::project::Project::resources,
+        py::return_value_policy::reference_internal)
     .def("setId", &smtk::project::Project::setId, py::arg("newId"))
     .def("setVersion", &smtk::project::Project::setVersion, py::arg("version"))
     .def("shared_from_this",

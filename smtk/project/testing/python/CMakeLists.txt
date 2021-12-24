@@ -1,4 +1,5 @@
 set(smtkProjectPythonTests
+  testBasicProject
   testProject
 )
 
