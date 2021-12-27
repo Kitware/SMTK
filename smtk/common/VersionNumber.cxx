@@ -19,12 +19,12 @@ namespace common
 
 /// Default constructor creates a nil VersionNumber (IsNull() == true).
 VersionNumber::VersionNumber()
-  : std::array<int, 3>{ -1, 0, 0 }
+  : std::array<int, 3>{ { -1, 0, 0 } }
 {
 }
 
 VersionNumber::VersionNumber(int major, int minor, int patch)
-  : std::array<int, 3>{ major, minor, patch }
+  : std::array<int, 3>{ { major, minor, patch } }
 {
 }
 
