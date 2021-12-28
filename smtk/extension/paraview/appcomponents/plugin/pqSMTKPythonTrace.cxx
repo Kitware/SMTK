@@ -124,7 +124,7 @@ std::string traceParams(itemT item, bool quoted)
   else if (item->numberOfValues() > 1)
   {
     // nothing special for extensible items - record a list
-    text << indent << "{ 'path': '" << quoteName(path) << enabled << ", 'value': [ " << itemVal(0);
+    text << indent << "{ 'path': " << quoteName(path) << enabled << ", 'value': [ " << itemVal(0);
     for (auto i = 1; i < item->numberOfValues(); ++i)
     {
       text << ", " << itemVal(i);
