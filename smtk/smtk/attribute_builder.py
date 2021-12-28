@@ -49,6 +49,10 @@ class AttributeBuilder:
         self.instanced_types = set()  # to prevent duplicating instances
         self.model_resource = None
         self.pedigree_lookup = dict()  # <face/volume.pedigree-id, smtk.model.Entity>
+
+        # Dictionary for resources for associations and reference items
+        # New API and syntax initially for build_attribute() method
+        self.resource_dict = dict()
         self.verbose = verbose
 
     def build_attributes(self, att_resource, spec, model_resource=None, verbose=None):
@@ -83,6 +87,16 @@ class AttributeBuilder:
 
         # Create/edit attributes per the specification
         self.process_spec(spec)
+
+    def build_attribute(self, att, spec, resource_dict=None):
+        """Public method for updating attribute based on input spec.
+
+        Input resource_dict, if provided, is used for all reference lookup.
+        Otherwise original/legacy logic is used.
+        """
+        if resource_dict is not None:
+            self.resource_dict = resource_dict
+        self._edit_attribute(att, spec)
 
     def process_spec(self, spec):
         """Creates and populates attributes based on the input specification.
@@ -163,9 +177,15 @@ class AttributeBuilder:
     def _associate_attribute(self, att, spec):
         """"""
         assert isinstance(spec, list), 'association spec is not a list'
+
+        # New syntax
+        if (isinstance(spec[0], dict)) and 'resource' in spec[0]:
+            ref_item = att.associations()
+            self._set_reference_item(ref_item, spec)
+            return
+
+        # Old syntax
         for element in spec:
-            assert isinstance(
-                element, dict), 'association element is not a dict'
             assert len(element.keys()
                        ) == 1, 'association element not a single key/value'
             key, value = element.popitem()
@@ -271,7 +291,7 @@ class AttributeBuilder:
                 continue
             elif key == 'items':
                 self._edit_items(att, value)
-            elif key == 'associate':
+            elif key in ['associate', 'associations']:
                 self._associate_attribute(att, value)
             else:
                 raise RuntimeError('Unrecognized spec key \"{}\"'.format(key))
@@ -478,6 +498,10 @@ class AttributeBuilder:
         Args:
             item: smtk.attribute.ReferenceItem
             target: one of
+              { 'resource': str } for resource
+              { 'resource': str, 'component': str } for component
+
+            Legacy syntax:
               model for model_resource
               [face, int, int, int] for model entities
               [volume, int, int, int] for model entities
@@ -495,7 +519,36 @@ class AttributeBuilder:
             assert item.setValue(i, att), 'failed to set reference value {} with attribute {}' \
                 .format(item.name(), att_name)
 
-        if target == 'model':
+        # New syntax uses list of dictionary instances to specify persistent object
+        # with resource identifier and optional component name
+        if isinstance(target, list):
+            num_values = len(target)
+            assert item.setNumberOfValues(num_values), \
+                'failed to set reference item {} number of values to {}'.format(
+                    item.name(), num_values)
+
+            for i, po_spec in enumerate(target):
+                res_key = po_spec.get('resource')
+                resource = self.resource_dict.get(res_key)
+                assert resource is not None, 'did not find resource with dictionary key {}'.format(
+                    res_key)
+
+                if 'component' in po_spec:
+                    comp_name = po_spec.get('component')
+                    filter = "*[string{{'name'='{}'}}]".format(comp_name)
+                    comp_set = resource.filter(filter)
+                    assert comp_set, 'component not found {}'.format(comp_name)
+                    persistent_object = comp_set.pop()
+                else:
+                    persistent_object = resource
+
+                was_set = item.setValue(i, persistent_object)
+                assert was_set, 'failed to set reference item {} value[{}] to {}'.format(
+                    item.name(), i, persistent_object.name())
+            return
+
+        # Legacy syntax
+        elif target == 'model':
             # Special case
             assert self.model_resource is not None, 'model resource required to set item {}'.format(
                 item.name())
