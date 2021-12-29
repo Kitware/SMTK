@@ -118,9 +118,21 @@ setattr(Manager, 'registerModuleOperations', _registerModuleOperations)
 del _registerModuleOperations
 
 # support for python tracing
+# import smtk.attribute_builder
 
 
 def configureAttribute(attr, config):
+    # builder = smtk.attribute_builder.AttributeBuilder()
+    # retrieve the resource list
+    resourceMap = {}
+    resources = config["resources"]
+    # allow resources to be passed as either a dict of tag -> resource pairs
+    # or a list, where the resource name is used as the tag.
+    if isinstance(resources, dict):
+        resourceMap = resources
+    else:
+        for rsrc in config["resources"]:
+            resourceMap[rsrc.name()] = rsrc
     for key in config:
         value = config[key]
         if key == "associations":
@@ -133,7 +145,17 @@ def configureAttribute(attr, config):
                 if val is None:
                     assoc.unset(i)
                 else:
-                    assoc.setValue(i, val)
+                    resource = resourceMap.get(val.get("resource"))
+                    if not resource:
+                        print("Unable retrieve resource for association: ",
+                              val.get("resource"))
+                        continue
+                    if val.get("component"):
+                        comp = next(iter(resource.filter(
+                            "* [string{{'name'='{0}'}}]".format(val.get("component")))))
+                        assoc.setValue(i, comp)
+                    else:
+                        assoc.setValue(i, resource)
         if key == "items":
             for itemCfg in config[key]:
                 # TODO this doesn't handle nesting
@@ -159,6 +181,19 @@ def configureAttribute(attr, config):
                     for i, val in enumerate(value):
                         if val is None:
                             item.unset(i)
+                        elif isinstance(val, dict):
+                            # reference item, like association
+                            resource = resourceMap.get(val.get("resource"))
+                            if not resource:
+                                print(
+                                    "Unable retrieve resource for refItem: ", val.get("resource"))
+                                continue
+                            if val.get("component"):
+                                comp = next(iter(resource.filter(
+                                    "* [string{{'name'='{0}'}}]".format(val.get("component")))))
+                                assoc.setValue(i, comp)
+                            else:
+                                assoc.setValue(i, resource)
                         else:
                             item.setValue(i, val)
                 else:

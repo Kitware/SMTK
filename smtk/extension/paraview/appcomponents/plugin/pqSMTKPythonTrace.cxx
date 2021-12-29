@@ -42,7 +42,7 @@ std::size_t replace_all(std::string& inout, std::string what, std::string with)
   return count;
 }
 
-/// handle names with embeded quote or newlines
+// handle names with embeded quote or newlines
 std::string quoteName(const std::string& name)
 {
   if (name.find('\'') != std::string::npos || name.find('\n') != std::string::npos)
@@ -60,24 +60,24 @@ std::string traceAssociations(const smtk::attribute::ReferenceItemPtr& assoc)
   std::string indent = "    ";
   if (assoc && assoc->isEnabled())
   {
-    std::size_t count = 0;
     for (auto entry = assoc->begin(); entry != assoc->end(); ++entry)
     {
+      // Each ReferenceItem is retrieved with a resource name and optional component name
       auto* resource = dynamic_cast<smtk::resource::Resource*>((*entry).get());
       if (resource)
       {
-        text << indent << "\"\"\" resource: " << quoteName(resource->name())
-             << " id: " << resource->id().toString() << " \"\"\"\n";
+        text << indent << "{ 'resource': " << quoteName(resource->name())
+             << " }, # id: " << resource->id().toString() << "\n";
       }
       else
       {
         auto* comp = dynamic_cast<smtk::resource::Component*>((*entry).get());
         if (comp)
         {
-          // resource = std::dynamic_pointer_cast<smtk::resource::Resource>(comp->resource());
-          text << indent
-               << "\"\"\" next(iter(resource.filter(\"* [string{'name'=" << quoteName(comp->name())
-               << "}]\"))) # id " << comp->id().toString() << " \"\"\"\n";
+          resource = dynamic_cast<smtk::resource::Resource*>(comp->resource().get());
+          text << indent << "{ 'resource': " << quoteName(resource->name())
+               << ", 'component': " << quoteName(comp->name()) << " }, # id "
+               << comp->id().toString() << "\n";
         }
       }
     }
@@ -85,6 +85,7 @@ std::string traceAssociations(const smtk::attribute::ReferenceItemPtr& assoc)
   return text.str();
 }
 
+// TODO add indices for group items
 std::string getPath(const smtk::attribute::Item* item)
 {
   std::string path = item->name();
@@ -96,6 +97,7 @@ std::string getPath(const smtk::attribute::Item* item)
   }
   return path;
 }
+
 // FileItem and ValueItem don't share a common base class, so template.
 template<class itemT>
 std::string traceParams(itemT item, bool quoted)
@@ -179,6 +181,7 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
   else if (m_showSetup)
   {
     m_showSetup = false;
+    // Besides imports, retrieves the managers, and a list of current resources.
     SM_SCOPED_TRACE(TraceText)
       .arg("import smtk.extension.paraview.appcomponents\n"
            "import smtk.attribute\n"
@@ -188,14 +191,16 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
            "behavior = smtk.extension.paraview.appcomponents.pqSMTKBehavior.instance()\n"
            "opMgr = behavior.activeWrapperOperationManager()\n"
            "rsrcMgr = behavior.activeWrapperResourceManager()\n"
-           "# resource = rsrcMgr.resources()[0]")
+           "resources = rsrcMgr.resources()")
       .arg("comment", "Retrieve managers");
   }
 
   // construct a string that contains python code to exectute the operation
+  // available resources are passed in, so they can be looked up by name.
   std::ostringstream text;
   text << "op = opMgr.createOperation('" << op.typeName() << "')\n";
   text << "configureAttribute(op.parameters(), {\n";
+  text << "  'resources': resources,\n";
   text << "  'associations': [\n";
   text << traceAssociations(op.parameters()->associations());
   text << "  ],\n";
