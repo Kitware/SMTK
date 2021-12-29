@@ -34,6 +34,7 @@ Basic yml format:
 import smtk
 import smtk.attribute
 import smtk.model
+import smtk.resource
 import smtk.view
 
 
@@ -88,8 +89,11 @@ class AttributeBuilder:
         # Create/edit attributes per the specification
         self.process_spec(spec)
 
-    def build_attribute(self, att, spec, resource_dict=None):
-        """Public method for updating attribute based on input spec.
+    def build_attribute(self,
+                        att: smtk.attribute.Attribute,
+                        spec: dict,
+                        resource_dict: [str, smtk.resource.Resource] = None) -> None:
+        """Updates attribute contents based on input spec.
 
         Input resource_dict, if provided, is used for all reference lookup.
         Otherwise original/legacy logic is used.
