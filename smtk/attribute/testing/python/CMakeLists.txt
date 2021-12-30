@@ -24,6 +24,10 @@ smtk_add_test_python(basicAttributeXMLWriterTestPy basicAttributeXMLWriterTest.p
 set_tests_properties(basicAttributeXMLWriterTestPy PROPERTIES SKIP_RETURN_CODE 125 LABELS "Attribute")
 smtk_add_test_python(definitionDefaultValueTestPy definitionDefaultValueTest.py dummy.sbt)
 
+set(vtk_tests)
+if (SMTK_ENABLE_VTK_SESSION)
+  list(APPEND vtk_tests buildAttributeTest)
+endif()
 
 # Tests that require SMTK_DATA_DIR
 set(smtkAttributePythonDataTests
@@ -39,6 +43,7 @@ set(smtkAttributePythonNewDataTests
   referenceItemIOTest
   valueItemRotateTest
   vectorExpressionTest
+  ${vtk_tests}
 )
 
 if (SMTK_DATA_DIR)

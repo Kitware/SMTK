@@ -24,3 +24,4 @@ and solver parameters.
    file-syntax.rst
    filtering-and-searching.rst
    evaluators.rst
+   attribute-builder.rst
