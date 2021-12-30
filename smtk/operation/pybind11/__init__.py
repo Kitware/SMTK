@@ -117,12 +117,17 @@ def _registerModuleOperations(self, module):
 setattr(Manager, 'registerModuleOperations', _registerModuleOperations)
 del _registerModuleOperations
 
-# support for python tracing
-# import smtk.attribute_builder
-
 
 def configureAttribute(attr, config):
-    # builder = smtk.attribute_builder.AttributeBuilder()
+    """Take a config dictionary and set items and associations in the
+    attribute accordingly.
+
+    Support replay of python traces - the trace records a call to this
+    method that sets op.parameters() using the method, so the operation
+    will replay with the settings the user applied.
+    """
+    from smtk.attribute_builder import AttributeBuilder
+    builder = AttributeBuilder()
     # retrieve the resource list
     resourceMap = {}
     resources = config["resources"]
@@ -133,71 +138,6 @@ def configureAttribute(attr, config):
     else:
         for rsrc in config["resources"]:
             resourceMap[rsrc.name()] = rsrc
-    for key in config:
-        value = config[key]
-        if key == "associations":
-            assoc = attr.associations()
-            if len(value) == 0:
-                continue
-            if hasattr(assoc, 'isExtensible') and assoc.isExtensible() and assoc.numberOfValues() != len(value):
-                assoc.setNumberOfValues(len(value))
-            for i, val in enumerate(value):
-                if val is None:
-                    assoc.unset(i)
-                else:
-                    resource = resourceMap.get(val.get("resource"))
-                    if not resource:
-                        print("Unable retrieve resource for association: ",
-                              val.get("resource"))
-                        continue
-                    if val.get("component"):
-                        comp = next(iter(resource.filter(
-                            "* [string{{'name'='{0}'}}]".format(val.get("component")))))
-                        assoc.setValue(i, comp)
-                    else:
-                        assoc.setValue(i, resource)
-        if key == "items":
-            for itemCfg in config[key]:
-                # TODO this doesn't handle nesting
-                path = itemCfg.get("path") if itemCfg.get(
-                    "path") else itemCfg.get("name")
-                item = attr.itemAtPath(path)
-                value = itemCfg.get("value")
-                enabled = itemCfg.get("enable")
-                if not item:
-                    print("Unable to retrieve %s" % path)
-                    continue
-                # handles void items used as a boolean, too
-                if enabled is not None:
-                    item.setIsEnabled(enabled)
-                elif (value is not None and not item.isEnabled()):
-                    item.setIsEnabled(True)
-                # currently unused, but part of the spec?
-                if isinstance(value, dict):
-                    pass
-                elif isinstance(value, list):
-                    if hasattr(item, 'isExtensible') and item.isExtensible() and item.numberOfValues() != len(value):
-                        item.setNumberOfValues(len(value))
-                    for i, val in enumerate(value):
-                        if val is None:
-                            item.unset(i)
-                        elif isinstance(val, dict):
-                            # reference item, like association
-                            resource = resourceMap.get(val.get("resource"))
-                            if not resource:
-                                print(
-                                    "Unable retrieve resource for refItem: ", val.get("resource"))
-                                continue
-                            if val.get("component"):
-                                comp = next(iter(resource.filter(
-                                    "* [string{{'name'='{0}'}}]".format(val.get("component")))))
-                                assoc.setValue(i, comp)
-                            else:
-                                assoc.setValue(i, resource)
-                        else:
-                            item.setValue(i, val)
-                else:
-                    if value is None and "value" in itemCfg.keys():
-                        item.unset(0)
-                    elif value is not None:
-                        item.setValue(value)
+    # build_attribute expects the resource map as an arg.
+    del(config["resources"])
+    builder.build_attribute(attr, config, resourceMap)
