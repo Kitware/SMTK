@@ -1,4 +1,4 @@
-.. _release-notes-21.09:
+.. _release-notes-21.10:
 
 =========================
 SMTK 21.10 Release Notes
