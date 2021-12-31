@@ -210,16 +210,42 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
   }
 
   it = tree.begin();
+  smtk::attribute::ConstItemPtr next;
   smtk::attribute::ConstItemPtr current = this->find(*it, IMMEDIATE);
   if (current)
   {
     SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
     for (++it; it != tree.end(); ++it)
     {
-      current = current->find(*it, style);
-      if (current == nullptr)
+      next = current->find(*it, style);
+      if (next == nullptr)
       {
+        // allow #0, #1 for subgroups
+        auto group = std::dynamic_pointer_cast<const smtk::attribute::GroupItem>(current);
+        if (group && (*it)[0] == '#')
+        {
+          try
+          {
+            int index = std::stoi((*it).substr(1));
+            if (index < 0 || index >= group->numberOfGroups())
+            {
+              break;
+            }
+            // go to next path substring.
+            ++it;
+            current = group->find(index, *it, style);
+          }
+          catch (...)
+          {
+            // not an int
+            break;
+          }
+        }
         break; // we couldn't find the next item in the path
+      }
+      else
+      {
+        current = next;
       }
     }
   }
@@ -229,40 +255,10 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
 smtk::attribute::ItemPtr
 Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly)
 {
-  std::vector<std::string> tree;
-  std::vector<std::string>::iterator it;
-  boost::split(tree, path, boost::is_any_of(seps));
-  if (path[0] == '/')
-  {
-    // Skip leading forward slash
-    std::string subpath = path.substr(1);
-    boost::split(tree, subpath, boost::is_any_of(seps));
-  }
-  else
-  {
-    boost::split(tree, path, boost::is_any_of(seps));
-  }
-
-  if (tree.empty())
-  {
-    return nullptr;
-  }
-
-  it = tree.begin();
-  smtk::attribute::ItemPtr current = this->find(*it, IMMEDIATE);
-  if (current)
-  {
-    SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
-    for (++it; it != tree.end(); ++it)
-    {
-      current = current->find(*it, style);
-      if (current == nullptr)
-      {
-        break; // we couldn't find the next item in the path
-      }
-    }
-  }
-  return current;
+  // use a const_cast to avoid duplicating code.
+  const auto& constSelf = *this;
+  return std::const_pointer_cast<smtk::attribute::Item>(
+    constSelf.itemAtPath(path, seps, activeOnly));
 }
 
 const smtk::attribute::Categories& Attribute::categories() const

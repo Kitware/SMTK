@@ -60,8 +60,20 @@ Item modifications are specified by a list of dictionary items. The fields for
 each dictionary item can include :py:attr:`path` (required),
 :py:attr:`enabled`, and :py:attr:`value`.
 
-* The :py:attr:`path` field specifies the path from the attribute to the item being specified. It uses the same syntax as the :py:meth:`smtk.attribute.Attribute.itemAt()` method, with forward slash as the separator and the :py:attr:activeOnly argument set to :py:const:false. (Starting the path with a forward slash is optional.)
+* The :py:attr:`path` field specifies the path from the attribute to the item being specified. It uses the same syntax as the :py:meth:`smtk.attribute.Attribute.itemAtPath()` method, with forward slash as the separator and the :py:attr:activeOnly argument set to :py:const:false. (Starting the path with a forward slash is optional.)
 
 * The :py:attr:`value` field is for setting the item value. This can be a single value or a list of values. The type (string, int, float) and number of values must be consistent with the item and its corresponding item-definition, of course. For :py:class:`ReferenceItem`, :py:class:`ComponentItem`, and :py:class:`ResourceItem`, the value is specified using the same syntax used in the :py:attr:`associations` list. If the value, or any of the values in a list, are :py:const:`None` the corresponding item value will be :py:attr:`unset`.
 
 * The :py:attr:`enabled` field is for setting the item's enabled state.
+
+* Extensible group items may have several sub-groups. The :py:attr:`count` field for a group item specifies the number of sub-groups. Items in a sub-group use `#N` in their path to specify which sub group they belong to. For example:
+
+.. code-block:: python
+
+{
+    'items': [
+        {'path': '/group-item', 'count': 2},
+        {'path': '/group-item/#0/subgroup-double', 'value': 73.73},
+        {'path': '/group-item/#1/subgroup-double', 'value': 83.83},
+    ]
+}

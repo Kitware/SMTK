@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
@@ -90,8 +91,15 @@ std::string getPath(const smtk::attribute::Item* item)
 {
   std::string path = item->name();
   auto owningItem = item->owningItem();
+  auto* groupItem = dynamic_cast<const smtk::attribute::GroupItem*>(owningItem.get());
+
   while (owningItem)
   {
+    if (groupItem)
+    {
+      // parent is a group item, add "#N" to indicate group index
+      path = "#" + std::to_string(item->subGroupPosition()) + "/" + path;
+    }
     path = owningItem->name() + "/" + path;
     owningItem = owningItem->owningItem();
   }
@@ -147,6 +155,21 @@ std::string traceVoid(const smtk::attribute::Item* item)
     text << indent << "{ 'path': " << quoteName(path)
          << ", 'enable': " << (item->isEnabled() ? "True" : "False") << " },\n";
   }
+  return text.str();
+}
+
+std::string traceGroup(const smtk::attribute::GroupItem* item)
+{
+  std::ostringstream text;
+  std::string indent = "    ";
+  std::string path = getPath(item);
+  std::string enabled;
+  if (item->isOptional() && item->isEnabled() != item->definition()->isEnabledByDefault())
+  {
+    enabled = ", 'enable': " + std::string(item->isEnabled() ? "True" : "False");
+  }
+  text << indent << "{ 'path': " << quoteName(path) << enabled
+       << ", 'count': " << item->numberOfGroups() << " },\n";
   return text.str();
 }
 
@@ -222,6 +245,8 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
       std::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(item);
     smtk::attribute::FileSystemItemPtr fileItem =
       std::dynamic_pointer_cast<smtk::attribute::FileSystemItem>(item);
+    smtk::attribute::GroupItemPtr groupItem =
+      std::dynamic_pointer_cast<smtk::attribute::GroupItem>(item);
     if (valueItem)
     {
       if (
@@ -247,6 +272,10 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
     else if (voidItem)
     {
       text << traceVoid(voidItem.get());
+    }
+    else if (groupItem)
+    {
+      text << traceGroup(groupItem.get());
     }
     else
     {

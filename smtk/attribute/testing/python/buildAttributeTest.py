@@ -58,7 +58,7 @@ SBT = """
             <Resource Name="smtk::resource::Resource" Filter="volume|face" />
           </Accepts>
         </Component>
-        <Group Name="group-item">
+        <Group Name="group-item" Extensible="true">
           <ItemDefinitions>
             <Double Name="subgroup-double" />
           </ItemDefinitions>
@@ -82,7 +82,9 @@ SPEC = {
             {'resource': 'model', 'component': 'casting'},
             {'resource': 'model', 'component': 'symmetry'},
         ]},
-        {PATH: '/group-item/subgroup-double', VALUE: 73.73},
+        {PATH: '/group-item', 'count': 2},
+        {PATH: '/group-item/#0/subgroup-double', VALUE: 73.73},
+        {PATH: '/group-item/#1/subgroup-double', VALUE: 83.83},
     ]
 }
 
@@ -183,6 +185,8 @@ class TestBuildAttribute(unittest.TestCase):
         group_item = att.findGroup('group-item')
         subgroup_item = group_item.find('subgroup-double')
         self.assertAlmostEqual(subgroup_item.value(), 73.73)
+        subgroup_item = group_item.find(1, 'subgroup-double')
+        self.assertAlmostEqual(subgroup_item.value(), 83.83)
 
 
 if __name__ == '__main__':
