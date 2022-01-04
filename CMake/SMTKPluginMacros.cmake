@@ -41,48 +41,35 @@ function (smtk_add_plugin name)
 
   string(TOLOWER "${_smtk_plugin__SKIP_DEPENDENCIES}" _smtk_plugin__SKIP_DEPENDENCIES)
 
+  set(_smtk_plugin_interfaces "")
   set(_smtk_plugin_extra_includes "")
   set(_smtk_plugin_initializers "")
   set(_smtk_plugin_sources "")
   string(REPLACE ";" "\n  , " _smtk_plugin_managers "${_smtk_plugin_MANAGERS}")
 
+  set(_smtk_plugin_registrars)
   if (DEFINED _smtk_plugin_REGISTRAR)
+    list(APPEND _smtk_plugin_registrars ${_smtk_plugin_REGISTRAR})
     if (NOT DEFINED _smtk_plugin_REGISTRAR_HEADER)
       string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
       set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
     endif ()
-
-    set(_smtk_plugin_autostart_name "${_smtk_plugin_name}")
-
-    set(_smtk_plugin_init_header
-      "${CMAKE_CURRENT_BINARY_DIR}/smtkPluginInitializer${_smtk_plugin_autostart_name}.h")
-    configure_file(
-      "${_smtk_cmake_dir}/smtkPluginInitializer.h.in"
-      "${_smtk_plugin_init_header}"
-      @ONLY)
-    list(APPEND _smtk_plugin_extra_includes "${_smtk_plugin_init_header}")
-
-    set(_smtk_plugin_init_impl
-      "${CMAKE_CURRENT_BINARY_DIR}/smtkPluginInitializer${_smtk_plugin_autostart_name}.cxx")
-    configure_file(
-      "${_smtk_cmake_dir}/smtkPluginInitializer.cxx.in"
-      "${_smtk_plugin_init_impl}"
-      @ONLY)
-    list(APPEND _smtk_plugin_initializers "smtk::plugin::init::${_smtk_plugin_autostart_name}")
-
-    list(APPEND _smtk_plugin_sources
-      "${_smtk_plugin_init_header}"
-      "${_smtk_plugin_init_impl}"
-    )
+    set_property(GLOBAL PROPERTY _smtk_plugin_registrar_header${_smtk_plugin_REGISTRAR} ${_smtk_plugin_REGISTRAR_HEADER})
   endif ()
   if (DEFINED _smtk_plugin_REGISTRARS)
-    # Additional registrars, must have a unique generated filename.
+    list(APPEND _smtk_plugin_registrars ${_smtk_plugin_REGISTRARS})
     foreach (_smtk_plugin_REGISTRAR IN LISTS _smtk_plugin_REGISTRARS)
       string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
-      string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")
       set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
+      set_property(GLOBAL PROPERTY "_smtk_plugin_registrar_header${_smtk_plugin_REGISTRAR}" ${_smtk_plugin_REGISTRAR_HEADER})
+    endforeach ()
+  endif ()
 
-      set(_smtk_plugin_autostart_name "${_smtk_plugin_header_name}")
+  foreach (_smtk_plugin_REGISTRAR IN LISTS _smtk_plugin_registrars)
+    string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")
+    get_property(_smtk_plugin_REGISTRAR_HEADER GLOBAL PROPERTY "_smtk_plugin_registrar_header${_smtk_plugin_REGISTRAR}")
+    set(_smtk_plugin_autostart_name "${_smtk_plugin_header_name}")
+    if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
       set(_smtk_plugin_init_header
         "${CMAKE_CURRENT_BINARY_DIR}/smtkPluginInitializer${_smtk_plugin_autostart_name}.h")
       configure_file(
@@ -103,8 +90,29 @@ function (smtk_add_plugin name)
         "${_smtk_plugin_init_header}"
         "${_smtk_plugin_init_impl}"
       )
-    endforeach ()
-  endif ()
+    else ()
+      configure_file(
+        "${_smtk_cmake_dir}/pqSMTKAutoStart.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
+        @ONLY)
+      configure_file(
+        "${_smtk_cmake_dir}/pqSMTKAutoStart.cxx.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+        @ONLY)
+      paraview_plugin_add_auto_start(
+        CLASS_NAME "pqSMTKAutoStart${_smtk_plugin_autostart_name}"
+        INTERFACES _smtk_plugin_autostart_interface
+        SOURCES _smtk_plugin_autostart_sources)
+      list(APPEND _smtk_plugin_interfaces ${_smtk_plugin_autostart_interface})
+      list(APPEND _smtk_plugin_sources
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/pqSMTKAutoStart${_smtk_plugin_autostart_name}.cxx"
+        ${_smtk_plugin_autostart_sources})
+    endif ()
+  endforeach ()
+  if (NOT "${_smtk_plugin_interfaces}" STREQUAL "")
+    list(PREPEND _smtk_plugin_interfaces "UI_INTERFACES")
+  endif()
   if (NOT "${_smtk_plugin_initializers}" STREQUAL "")
     list(PREPEND _smtk_plugin_initializers "INITIALIZERS")
   endif()
@@ -120,6 +128,7 @@ function (smtk_add_plugin name)
     SOURCES ${_smtk_plugin_sources}
     ${_smtk_plugin_extra_includes}
     ${_smtk_plugin_initializers}
+    ${_smtk_plugin_interfaces}
     ${_smtk_plugin_PARAVIEW_PLUGIN_ARGS})
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE
