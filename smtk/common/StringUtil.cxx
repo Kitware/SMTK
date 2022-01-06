@@ -15,6 +15,7 @@
 #include <cctype>
 #include <functional>
 #include <locale>
+#include <set>
 
 using namespace smtk::placeholders;
 
@@ -93,5 +94,27 @@ StringUtil::split(const std::string& s, const std::string& sep, bool omitEmpty, 
   return result;
 }
 
+bool StringUtil::toBoolean(const std::string& s, bool& value)
+{
+  const std::set<std::string> trueValues = { "1", "t", "true", "yes" };
+  const std::set<std::string> falseValues = { "0", "f", "false", "no" };
+
+  std::string temp = s;
+  StringUtil::lower(StringUtil::trim(temp));
+
+  auto it = trueValues.find(temp);
+  if (it != trueValues.end())
+  {
+    value = true;
+    return true;
+  }
+  it = falseValues.find(temp);
+  if (it != falseValues.end())
+  {
+    value = false;
+    return true;
+  }
+  return false;
+}
 } // namespace common
 } // namespace smtk

@@ -94,7 +94,7 @@ protected:
   virtual void processDefinitionInformation(pugi::xml_node& defNode);
   virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
   virtual void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def);
-  void processAttribute(pugi::xml_node& attNode);
+  virtual void processAttribute(pugi::xml_node& attNode);
   virtual void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
   virtual void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
   void processRefItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
