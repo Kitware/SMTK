@@ -107,7 +107,12 @@ public slots:
     */
   void setOutputOptional(int optionEnabled);
 
+  /**\brief Cause the active view (in which the widget appears) to re-render.
+    */
+  void renderViewEventually() const;
+
 protected slots:
+  /// Create Qt widgets as required (may be called multiple times if Item is reconfigured).
   void updateItemData() override;
   virtual void ignoreWidgetValues();
   virtual void acceptWidgetValues();
@@ -125,7 +130,12 @@ protected:
   /// want to inherit the default behavior.
   virtual void update3DWidgetVisibility(bool visible);
 
+  /// Initialize Qt widgets used to represent our smtk::attribute::Item.
   void createWidget() override;
+  /**\brief Remove existing widgets in order to prepare for reconfiguration.
+    *
+    * If conditional children exist, this may get called after createWidget().
+    */
   virtual void clearChildWidgets();
   virtual void updateUI();
   virtual void createEditor();

@@ -299,11 +299,6 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
       {
         // Add Data to the Cache Map
         this->SetCachedData(obj->id(), data, static_cast<SequenceType>(gen));
-        // only add image data to dim 3 list
-        if (dim == 3 && !vtkImageData::SafeDownCast(data))
-        {
-          return false;
-        }
         vtkResourceMultiBlockSource::SetDataObjectUUID(data->GetInformation(), obj->id());
         blocks[dim].push_back(data);
       }

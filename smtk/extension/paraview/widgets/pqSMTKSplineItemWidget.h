@@ -7,35 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_widgets_pqSMTKSphereItemWidget_h
-#define smtk_extension_paraview_widgets_pqSMTKSphereItemWidget_h
+#ifndef smtk_extension_paraview_widgets_pqSMTKSplineItemWidget_h
+#define smtk_extension_paraview_widgets_pqSMTKSplineItemWidget_h
 
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 
-/**\brief Display a 3-D sphere with draggable handles
-  *       for editing a GroupItem with 1 vector and 1 scalar.
-  *
-  * For now, this code assumes that the Group has 2 entries and they
-  * that its qtAttributeItemInfo entry specify a mapping to the
-  * Center and Radius of the sphere.
-  * In the future, other item types (such as 3 DoubleItem holding
-  * 3 points used to bound the sphere) may be supported.
+class vtkEventQtSlotConnect;
+
+/**\brief Display an editable planar spline in 3-D with draggable handles
+  *       for editing a GroupItem containing a number of DoubleItem points.
   */
-class pqSMTKSphereItemWidget : public pqSMTKAttributeItemWidget
+class SMTKPQWIDGETSEXT_EXPORT pqSMTKSplineItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:
-  pqSMTKSphereItemWidget(
+  pqSMTKSplineItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  ~pqSMTKSphereItemWidget() override;
+  ~pqSMTKSplineItemWidget() override;
 
-  static qtItem* createSphereItemWidget(const qtAttributeItemInfo& info);
+  static qtItem* createSplineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
 protected slots:
   void updateItemFromWidgetInternal() override;
-  void updateWidgetFromItemInternal() override;
 
 protected:
   /**\brief Starting with the widget's assigned item (which must
@@ -43,9 +38,11 @@ protected:
     *
     * If errors are encountered, this method returns false.
     */
-  bool fetchCenterAndRadiusItems(
-    smtk::attribute::DoubleItemPtr& centerItem,
-    smtk::attribute::DoubleItemPtr& radiusItem);
+  bool fetchPointsAndClosedItems(
+    smtk::attribute::DoubleItemPtr& pointsItem,
+    smtk::attribute::VoidItemPtr& closedItem);
+
+  vtkEventQtSlotConnect* m_handleConnection;
 };
 
-#endif // smtk_extension_paraview_widgets_pqSMTKSphereItemWidget_h
+#endif // smtk_extension_paraview_widgets_pqSMTKSplineItemWidget_h

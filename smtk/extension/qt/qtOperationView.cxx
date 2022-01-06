@@ -270,11 +270,6 @@ void qtOperationView::showAdvanceLevelOverlay(bool show)
   this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
-void qtOperationView::requestModelEntityAssociation()
-{
-  this->Internals->m_instancedView->requestModelEntityAssociation();
-}
-
 void qtOperationView::setInfoToBeDisplayed()
 {
   m_infoDialog->displayInfo(this->operation()->parameters());

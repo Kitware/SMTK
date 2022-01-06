@@ -2,8 +2,11 @@ NAME
   smtkPQWidgetsExt
 DEPENDS
   ParaView::pqCore
+  VTK::InteractionWidgets
+  VTK::RenderingCore
 PRIVATE_DEPENDS
   ParaView::pqApplicationComponents
   ParaView::pqComponents
+  ParaView::pqWidgets
   ParaView::VTKExtensionsExtraction
   smtkPVServerExt

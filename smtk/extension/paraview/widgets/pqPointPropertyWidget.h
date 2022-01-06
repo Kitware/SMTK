@@ -44,6 +44,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define pqPointPropertyWidget_h
 
 #include "pqInteractivePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
+
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS
+#define Q_OBJECT
+#endif
 
 class QCheckBox;
 class pqPointPickingHelper;
@@ -60,7 +69,7 @@ class pqPointPickingHelper;
 * \li \c Input: (optional) a vtkSMInputProperty that is used to get data
 * information for bounds when placing/resetting the widget.
 */
-class pqPointPropertyWidget : public pqInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqPointPropertyWidget : public pqInteractivePropertyWidget
 {
   Q_OBJECT
   typedef pqInteractivePropertyWidget Superclass;
@@ -101,7 +110,7 @@ protected:
   QCheckBox* m_control;
 
 private:
-  Q_DISABLE_COPY(pqPointPropertyWidget)
+  Q_DISABLE_COPY(pqPointPropertyWidget);
 };
 
 #endif

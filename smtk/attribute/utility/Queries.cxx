@@ -313,6 +313,33 @@ smtk::attribute::ResourcePtr findResourceContainingDefinition(
   // Couldn't find it
   return nullptr;
 }
+
+std::set<smtk::resource::ResourcePtr> extractResources(
+  const smtk::attribute::ReferenceItemPtr& item)
+{
+  std::set<smtk::resource::ResourcePtr> resourceSet;
+  for (std::size_t i = 0; i < item->numberOfValues(); i++)
+  {
+    // no need to look at items that cannot be resolved
+    if (item->value(i) == nullptr)
+    {
+      continue;
+    }
+
+    // ...access the associated resource.
+    smtk::resource::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::resource::Resource>(item->value(i));
+
+    // If the object is actually a component, access its associated resource.
+    if (resource == nullptr)
+    {
+      resource = std::dynamic_pointer_cast<smtk::resource::Component>(item->value(i))->resource();
+    }
+
+    resourceSet.insert(resource);
+  }
+  return resourceSet;
+}
 } // namespace utility
 } // namespace attribute
 } // namespace smtk

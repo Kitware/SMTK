@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/plugin/pqSMTKPlaneItemWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKPlaneItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
 #include "smtk/attribute/DoubleItem.h"
@@ -18,6 +18,7 @@
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 #include "pqDataRepresentation.h"
+#include "pqDisplaySizedImplicitPlanePropertyWidget.h"
 #include "pqImplicitPlanePropertyWidget.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
@@ -70,7 +71,7 @@ bool pqSMTKPlaneItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  widget = new pqImplicitPlanePropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  widget = new pqDisplaySizedImplicitPlanePropertyWidget(proxy, proxy->GetPropertyGroup(0));
 
   // II. Initialize the properties.
   // For now, since we want to map this to a vector of 6 doubles,
@@ -78,6 +79,8 @@ bool pqSMTKPlaneItemWidget::createProxyAndWidget(
   auto* widgetProxy = widget->widgetProxy();
   vtkSMPropertyHelper(widgetProxy, "Origin").Set(&(*originItem->begin()), 3);
   vtkSMPropertyHelper(widgetProxy, "Normal").Set(&(*normalItem->begin()), 3);
+  int drawOutline = 0;
+  vtkSMPropertyHelper(widgetProxy, "DrawOutline").Set(drawOutline, 0);
 
   // FIXME! Determine bounds properly from scene if requested by m_itemInfo.
   // For now, just initialize the box using the item's values if they are

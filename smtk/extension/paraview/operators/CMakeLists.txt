@@ -2,10 +2,14 @@ set(sources
   Registrar.cxx
   Registrar.h
   smtkAssignColorsView.cxx
-  smtkAssignColorsView.h)
+  smtkAssignColorsView.h
+  smtkMeshInspectorView.cxx
+  smtkMeshInspectorView.h
+)
 
 set(ui_files
-  smtkAssignColorsParameters.ui)
+  smtkAssignColorsParameters.ui
+)
 
 # for Qt methods
 set(CMAKE_AUTOMOC 1)
@@ -18,11 +22,15 @@ smtk_add_plugin(smtkPQOperationViewsPlugin
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
     UI_FILES ${ui_files}
-    SOURCES ${sources})
+    SOURCES ${sources}
+)
 target_link_libraries(smtkPQOperationViewsPlugin
   PRIVATE
+    smtkPQWidgetsExt
+    smtkPQComponentsExt
     smtkQtExt
     ParaView::pqComponents
-    VTK::jsoncpp)
+    VTK::jsoncpp
+)
 
 smtk_export_header(smtkPQOperationViewsPlugin Exports.h)

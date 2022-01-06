@@ -6,7 +6,8 @@ set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module")
+  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module"
+)
 vtk_module_scan(
   MODULE_FILES ${module_files}
   PROVIDES_MODULES vtk_modules

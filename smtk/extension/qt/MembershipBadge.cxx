@@ -17,6 +17,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/common/Color.h"
+#include "smtk/geometry/Geometry.h"
+#include "smtk/geometry/Resource.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -24,6 +26,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/operation/operators/SetProperty.h"
+#include "smtk/resource/Component.h"
 #include "smtk/view/Badge.h"
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/DescriptivePhrase.h"
@@ -63,9 +66,104 @@ MembershipBadge::MembershipBadge(
   {
     config.attribute("NonMemberIcon", m_iconOff);
   }
+  if (config.attribute("Filter"))
+  {
+    config.attribute("Filter", m_filter);
+  }
+  if (config.attribute("MembershipCriteria"))
+  {
+    std::string enumerant;
+    config.attribute("MembershipCriteria", enumerant);
+    m_criteria = membershipCriteriaEnum(enumerant);
+  }
 }
 
 MembershipBadge::~MembershipBadge() = default;
+
+bool MembershipBadge::appliesToPhrase(const DescriptivePhrase* phrase) const
+{
+  std::shared_ptr<smtk::resource::PersistentObject> object;
+  std::shared_ptr<smtk::resource::Component> component;
+  std::shared_ptr<smtk::resource::Resource> resource;
+  switch (m_criteria)
+  {
+    case MembershipCriteria::All:
+      return true;
+      break;
+
+    case MembershipCriteria::Components:
+      component = phrase->relatedComponent();
+      if (component && !m_filter.empty())
+      {
+        auto functor = component->resource()->queryOperation(m_filter);
+        if (functor)
+        {
+          return functor(*component);
+        }
+      }
+      return !!component;
+
+    case MembershipCriteria::ComponentsWithGeometry:
+      component = phrase->relatedComponent();
+      object = component;
+      break;
+
+    case MembershipCriteria::Resources:
+      resource = phrase->relatedResource();
+      // TODO: Handle m_filter once it is expanded to both resources and components
+      return !!resource;
+
+    case MembershipCriteria::ResourcesWithGeometry:
+      resource = phrase->relatedResource();
+      object = resource;
+      break;
+
+    case MembershipCriteria::Objects:
+      object = phrase->relatedObject();
+      // Filters only apply to components. If the object is a component, filter it:
+      component = std::dynamic_pointer_cast<smtk::resource::Component>(object);
+      if (component && !m_filter.empty())
+      {
+        auto functor = component->resource()->queryOperation(m_filter);
+        if (functor)
+        {
+          return functor(*component);
+        }
+      }
+      return !!object;
+
+    case MembershipCriteria::ObjectsWithGeometry:
+      object = phrase->relatedObject();
+      component = std::dynamic_pointer_cast<smtk::resource::Component>(object);
+      resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
+      break;
+  }
+  // Getting to here means we need to see if the object has renderable geometry.
+  if (component)
+  {
+    resource = component->resource();
+  }
+  auto geomResource = std::dynamic_pointer_cast<smtk::geometry::Resource>(resource);
+  if (!geomResource)
+  {
+    return false;
+  }
+  bool hasGeom = false;
+  geomResource->visitGeometry([&hasGeom,
+                               &object](std::unique_ptr<smtk::geometry::Geometry>& provider) {
+    bool objectHasGeom = (provider->generationNumber(object) != smtk::geometry::Geometry::Invalid);
+    hasGeom |= objectHasGeom;
+  });
+  // Now, if we are given a component query-filter, modulate the return value based on
+  // whether it matches the component (as well as whether geometry exists).
+  // TODO: Handle m_filter once it is expanded to both resources and components
+  if (hasGeom && component && !m_filter.empty())
+  {
+    auto functor = resource->queryOperation(m_filter);
+    hasGeom &= functor(*component);
+  }
+  return hasGeom;
+}
 
 std::string MembershipBadge::icon(
   const DescriptivePhrase* phrase,

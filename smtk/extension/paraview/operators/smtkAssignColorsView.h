@@ -40,7 +40,6 @@ public:
 
 public slots:
   void updateUI() override;
-  void requestModelEntityAssociation() override;
   void onShowCategory() override;
   /// This will be triggered by selecting different type
   /// of construction method in create-edge op.

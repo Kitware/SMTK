@@ -4,3 +4,12 @@ DESCRIPTION
   SMTK widgets for use in ParaView
 REQUIRES_MODULES
   ParaView::RemotingViews
+  ParaView::pqApplicationComponents
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonMath
+  VTK::CommonTransforms
+  VTK::InteractionWidgets
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2

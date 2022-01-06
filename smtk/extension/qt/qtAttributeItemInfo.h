@@ -50,7 +50,7 @@ public:
 
   /// @{
   /// \brief Methods to set and retrieve the item to be used by the generated qtItem
-  void setItem(smtk::attribute::ItemPtr& item) { m_item = item; }
+  void setItem(const smtk::attribute::ItemPtr& item) { m_item = item; }
   smtk::attribute::ItemPtr item() const { return m_item.lock(); }
   template<typename ItemType>
   std::shared_ptr<ItemType> itemAs() const

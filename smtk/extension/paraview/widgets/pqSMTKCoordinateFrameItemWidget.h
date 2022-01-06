@@ -7,37 +7,38 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_widgets_pqSMTKLineItemWidget_h
-#define smtk_extension_paraview_widgets_pqSMTKLineItemWidget_h
+#ifndef smtk_extension_paraview_widgets_pqSMTKCoordinateFrameItemWidget_h
+#define smtk_extension_paraview_widgets_pqSMTKCoordinateFrameItemWidget_h
 
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
-/**\brief Display a 3-D line with draggable handles for editing a GroupItem.
+/**\brief Display a 3-D plane with draggable handles for editing a GroupItem.
   *
-  * For now, this code assumes that the Group has 2 entries and
-  * their qtAttributeItemInfo entries specify a mapping to the
-  * endpoints of the line (named Point1 and Point2).
-  * In the future, other item types (such as defining a line by a
-  * a base point, direction, and optionally length) may be supported.
+  * For now, this code assumes that the Group has 2 entries and they
+  * that their qtAttributeItemInfo entries specify a mapping to the
+  * Origin and Normal of the plane.
+  * In the future, other item types (such as a DoubleItem holding
+  * 4 values used as linear polynomial coefficients) may be supported.
   *
   * Currently, there is no support to initialize the bounding box
-  * coordinates used to size the line widget;
+  * coordinates used to size the plane widget;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
   * In the future, flags in the qtAttributeItemInfo may be used to
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
-class pqSMTKLineItemWidget : public pqSMTKAttributeItemWidget
+class SMTKPQWIDGETSEXT_EXPORT pqSMTKCoordinateFrameItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:
-  pqSMTKLineItemWidget(
+  pqSMTKCoordinateFrameItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
-  ~pqSMTKLineItemWidget() override;
+  ~pqSMTKCoordinateFrameItemWidget() override;
 
-  static qtItem* createLineItemWidget(const qtAttributeItemInfo& info);
+  static qtItem* createCoordinateFrameItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
 protected slots:
@@ -49,9 +50,11 @@ protected:
     *
     * If errors are encountered, this method returns false.
     */
-  bool fetchEndpointItems(
-    smtk::attribute::DoubleItemPtr& endpt1,
-    smtk::attribute::DoubleItemPtr& endpt2);
+  bool fetchOriginAndAxisItems(
+    smtk::attribute::DoubleItemPtr& originItem,
+    smtk::attribute::DoubleItemPtr& xAxisItem,
+    smtk::attribute::DoubleItemPtr& yAxisItem,
+    smtk::attribute::DoubleItemPtr& zAxisItem);
 };
 
-#endif // smtk_extension_paraview_widgets_pqSMTKLineItemWidget_h
+#endif // smtk_extension_paraview_widgets_pqSMTKCoordinateFrameItemWidget_h

@@ -562,11 +562,6 @@ void smtkAssignColorsView::removeColors()
   this->requestOperation(this->Internals->CurrentOp);
 }
 
-void smtkAssignColorsView::requestModelEntityAssociation()
-{
-  this->updateUI();
-}
-
 void smtkAssignColorsView::setInfoToBeDisplayed()
 {
   m_infoDialog->displayInfo(this->configuration());
