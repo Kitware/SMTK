@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/extension/qt/qtReferenceItemEditor.h"
-#include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"

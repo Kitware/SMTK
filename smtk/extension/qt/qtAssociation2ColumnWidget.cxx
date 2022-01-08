@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/extension/qt/qtAssociation2ColumnWidget.h"
-#include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"

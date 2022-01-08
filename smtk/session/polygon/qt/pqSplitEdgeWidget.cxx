@@ -45,7 +45,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Operation.h"
@@ -197,8 +196,7 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 {
   if (this->View && m_edgeOp.lock() && start)
   {
-    // clear the selection first
-    // qtActiveObjects::instance().smtkSelectionManager()->clearAllSelections();
+    // Clear the selection first. This used qtActiveObjects in the past.
 
     int curSelMode = 0;
     vtkSMPropertyHelper(this->View->getRenderViewProxy(), "InteractionMode").Get(&curSelMode);
