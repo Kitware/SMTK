@@ -10,7 +10,6 @@
 
 #include "smtk/extension/qt/qtComponentAttributeView.h"
 
-#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtTableWidget.h"

@@ -2,7 +2,6 @@ find_package(Qt5 REQUIRED COMPONENTS Core Svg Widgets)
 
 # set up sources to build
 set(QAttrLibSrcs
-  qtActiveObjects.cxx
   qtAvailableOperations.cxx
   qtUIManager.cxx
   qtAttribute.cxx
@@ -77,7 +76,6 @@ set(QAttrLibUIs
 
 
 set(QAttrLibMocHeaders
-  qtActiveObjects.h
   qtAvailableOperations.h
   qtUIManager.h
   qtAssociationWidget.h

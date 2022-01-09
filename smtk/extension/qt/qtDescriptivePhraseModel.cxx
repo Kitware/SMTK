@@ -10,7 +10,6 @@
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
 #include "smtk/extension/qt/SVGIconEngine.h"
-#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/view/DescriptivePhrase.h"
