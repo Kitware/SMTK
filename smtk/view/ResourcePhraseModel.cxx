@@ -84,7 +84,7 @@ bool ResourcePhraseModel::setResourceFilters(
     }
     return acceptable;
   };
-  return setFilter(filter);
+  return this->setFilter(filter);
 }
 
 bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Resource&)> filter)
@@ -103,6 +103,7 @@ bool ResourcePhraseModel::setFilter(std::function<bool(const smtk::resource::Res
           return m_filter(*(phr->relatedResource()));
         }),
       children.end());
+    std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
     this->updateChildren(m_root, children, std::vector<int>());
   }
 
