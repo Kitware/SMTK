@@ -57,3 +57,15 @@ In ParaView, there are 3 types of objects that SMTK frequently interacts with:
   an instance of vtkSMKProxy (or its subclasses).
   Subclasses specific to SMTK exist to expose Qt signals and slots related to
   SMTK. If Qt is not required, then you should subclass vtkSMProxy instead.
+
+Inside the ``smtk/extension/paraview`` directory, the top-level of directories
+hold code placed in VTK modules (thus they have a ``vtk.module`` file).
+In directories with VTK modules, some subdirectories hold ParaView plugins
+(thus they have ``paraview.plugin`` files).
+VTK modules are libraries that export symbols; other libraries may depend on
+them and import their symbols.
+ParaView plugins may be *implemented* as libraries, but they do not expose
+symbols and on some platforms cannot be linked to.
+Therefore, whatever classes might be reused or referenced by other plugins
+should be placed in a VTK module; the ParaView plugins exist only to expose
+functionality from VTK modules in ParaView.

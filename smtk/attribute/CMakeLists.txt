@@ -202,7 +202,7 @@ foreach (operator ${attributeOperators})
   list(APPEND attributeHeaders operators/${operator}.h)
   list(APPEND _attributeDependencies ${headerName})
 endforeach()
-add_custom_target(attibuteGenHeaders DEPENDS ${_attributeDependencies})
+add_custom_target(attributeGenHeaders DEPENDS ${_attributeDependencies})
 # set(attributeDependencies ${_attributeDependencies} PARENT_SCOPE)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

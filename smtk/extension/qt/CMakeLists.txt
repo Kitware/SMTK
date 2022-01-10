@@ -16,6 +16,7 @@ set(QAttrLibSrcs
   qtComponentItem.cxx
   qtDescriptivePhraseDelegate.cxx
   qtDescriptivePhraseModel.cxx
+  qtDoubleClickButton.cxx
   qtGroupView.cxx
   qtAnalysisView.cxx
   qtAssociationView.cxx
@@ -23,8 +24,12 @@ set(QAttrLibSrcs
   qtAttributeView.cxx
   qtInstancedView.cxx
   qtComponentAttributeView.cxx
+  qtOperationAction.cxx
   qtOperationDialog.cxx
   qtOperationLauncher.cxx
+  qtOperationPalette.cxx
+  qtOperationTypeModel.cxx
+  qtOperationTypeView.cxx
   qtOperationView.cxx
   qtReferenceItem.cxx
   qtReferenceItemEditor.cxx
@@ -38,6 +43,7 @@ set(QAttrLibSrcs
   qtViewInfoDialog.cxx
   qtFileItem.cxx
   qtTableWidget.cxx
+  qtToolPaletteLayout.cxx
   qtColorButton.cxx
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
@@ -91,6 +97,7 @@ set(QAttrLibMocHeaders
   qtEmittingStringBuffer.h
   qtDescriptivePhraseDelegate.h
   qtDescriptivePhraseModel.h
+  qtDoubleClickButton.h
   qtGroupView.h
   qtAnalysisView.h
   qtAssociationView.h
@@ -98,8 +105,12 @@ set(QAttrLibMocHeaders
   qtInstancedView.h
   qtComponentAttributeView.h
   qtNotEditableDelegate.h
+  qtOperationAction.h
   qtOperationDialog.h
   qtOperationLauncher.h
+  qtOperationPalette.h
+  qtOperationTypeModel.h
+  qtOperationTypeView.h
   qtOperationView.h
   qtReferenceItem.h
   qtReferenceItemEditor.h
@@ -115,6 +126,7 @@ set(QAttrLibMocHeaders
   qtViewInfoDialog.h
   qtFileItem.h
   qtTableWidget.h
+  qtToolPaletteLayout.h
   qtColorButton.h
   qtLineEdit.h
   qtDoubleLineEdit.h

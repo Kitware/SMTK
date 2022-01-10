@@ -52,6 +52,8 @@ public:
   {
     return m_acceptsComponent(c);
   }
+  /// Return the user-facing label for the operation.
+  std::string label() const;
   /**\brief Return the ReferenceItemDefinition to use when finding available operations.
     *
     * While an operation is associated with an entire attribute resource, and

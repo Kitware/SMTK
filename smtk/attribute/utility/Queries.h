@@ -25,6 +25,18 @@ namespace attribute
 namespace utility
 {
 
+/**\brief Indicate whether an attribute has mandatory, optional, or no user-editable parameters.
+  *
+  * Depending on the function that returns this enumerant, these values may or may not take
+  * advance level and category information into account.
+  */
+enum class EditableParameters
+{
+  None,     //!< No parameters exist for the user to edit.
+  Optional, //!< Some editable parameters exist but have valid defaults.
+  Mandatory //!< Some editable parameters exist that have no valid default.
+};
+
 /// Filter out Resource Components that fail a ComponentItem's Uniqueness Criteria
 SMTKCORE_EXPORT
 std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
@@ -49,6 +61,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   smtk::resource::ManagerPtr& resourceManager,
   bool useAttributeAssociations = false,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
+
 /**\brief Get a set of objects that could be assigned based on a reference item definition.
   *
   * If ignoreResource is specified the corresponding resource will not participate in determining
@@ -65,6 +78,7 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
   smtk::attribute::ResourcePtr& attResource,
   smtk::resource::ManagerPtr& resManager,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
+
 /**\brief Find an Attribute Resource that contains an Attribute Definition type.
   *
   * If ignoreResource is specified the corresponding resource will not participate in determining
@@ -92,6 +106,29 @@ smtk::attribute::ResourcePtr findResourceContainingDefinition(
   */
 SMTKCORE_EXPORT
 std::set<smtk::resource::ResourcePtr> extractResources(const smtk::attribute::ReferenceItemPtr&);
+
+/**\brief Determine whether an attribute definition has editable parameters.
+  *
+  * This method does not yet take category or advance-level into account;
+  * instead, it simply iterates over associations and items to see whether
+  * they have valid defaults.
+  *
+  * When you provide an \a advanceLevel, any items with defaults that
+  * are marked equal or more advanced than the given level will not
+  * make the result Optional (i.e., advanced items with defaults
+  * are not editable by default).
+  *
+  * If \a includeAssociations is true, then they are taken into account
+  * (i.e., they will force the result to be Optional or Mandatory
+  * depending on whether the number of required associations is 0).
+  * By default, associations are not included in this calculation
+  * since the active selection is normal applied to associations.
+  */
+SMTKCORE_EXPORT
+EditableParameters userEditableParameters(
+  const std::shared_ptr<smtk::attribute::Definition>& definition,
+  int advanceLevel = 1,
+  bool includeAssociations = false);
 } // namespace utility
 } // namespace attribute
 } // namespace smtk

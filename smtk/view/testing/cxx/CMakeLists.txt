@@ -1,6 +1,7 @@
 set(unit_tests
   unitPhraseModel.cxx
   unitOperationIcon.cxx
+  unitOperationDecorator.cxx
 )
 
 set(unit_tests_which_require_data

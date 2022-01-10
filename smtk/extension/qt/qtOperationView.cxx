@@ -49,6 +49,7 @@ public:
   QPointer<QPushButton> m_doneButton;
   qtOperationLauncher* m_launcher;
   std::atomic<std::size_t> m_activeOperations;
+  bool m_launchOperationOnApply{ true };
 };
 
 bool qtOperationView::validateInformation(const smtk::view::Information& info)
@@ -81,6 +82,7 @@ qtOperationView::qtOperationView(const smtk::view::Information& info)
     this->Internals->m_instancedViewDef->copyContents(*view);
     // We need to remove the TopLevel attribute (if there is one)
     this->Internals->m_instancedViewDef->details().unsetAttribute("TopLevel");
+    view->details().attributeAsBool("LaunchOnApply", this->Internals->m_launchOperationOnApply);
     // The default top-level behavior is that filter by category and advance level is on by default.
     // For Operation View they need to be explicilty set to turn them on
     if (!view->details().attribute("FilterByAdvanceLevel"))
@@ -103,8 +105,6 @@ qtOperationView::qtOperationView(const smtk::view::Information& info)
     assert(launcher != nullptr);
     this->Internals->m_launcher = launcher->get();
   }
-
-  connect(this, &qtOperationView::operationExecuted, this, &qtOperationView::onOperationExecuted);
 }
 
 qtOperationView::~qtOperationView()
@@ -112,9 +112,24 @@ qtOperationView::~qtOperationView()
   delete this->Internals;
 }
 
+bool qtOperationView::runOperationOnApply() const
+{
+  return this->Internals->m_launchOperationOnApply;
+}
+
+void qtOperationView::setRunOperationOnApply(bool shouldLaunch)
+{
+  this->Internals->m_launchOperationOnApply = shouldLaunch;
+}
+
 QPointer<QPushButton> qtOperationView::applyButton() const
 {
   return this->Internals->m_applyButton;
+}
+
+QPointer<QPushButton> qtOperationView::doneButton() const
+{
+  return this->Internals->m_doneButton;
 }
 
 const smtk::operation::OperationPtr& qtOperationView::operation() const
@@ -280,14 +295,17 @@ void qtOperationView::onOperate()
   if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
     const auto& myOperation = this->operation();
-    shared_ptr<smtk::extension::ResultHandler> handler =
-      (*this->Internals->m_launcher)(myOperation);
+    if (this->Internals->m_launchOperationOnApply)
+    {
+      shared_ptr<smtk::extension::ResultHandler> handler =
+        (*this->Internals->m_launcher)(myOperation);
 
-    connect(
-      handler.get(),
-      &smtk::extension::ResultHandler::resultReady,
-      this,
-      &qtOperationView::operationExecuted);
+      connect(
+        handler.get(),
+        &smtk::extension::ResultHandler::resultReady,
+        this,
+        &qtOperationView::operationExecuted);
+    }
 
     emit this->operationRequested(myOperation);
     if (this->Internals->m_applyButton)
@@ -295,20 +313,5 @@ void qtOperationView::onOperate()
       this->Internals->m_applyButton->setEnabled(false);
     }
     m_applied = true;
-
-    if ((this->Internals->m_activeOperations)++ == 0)
-    {
-      QApplication::setOverrideCursor(Qt::BusyCursor);
-      QApplication::processEvents();
-    }
-  }
-}
-
-void qtOperationView::onOperationExecuted(const smtk::operation::Operation::Result& /*unused*/)
-{
-  if (--(this->Internals->m_activeOperations) == 0)
-  {
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
   }
 }

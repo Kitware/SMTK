@@ -118,6 +118,15 @@ set(modelHeaders
   utility/InterpolateField.h
 )
 
+set(icons
+  assign_colors
+)
+foreach(icon ${icons})
+  smtk_encode_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/icons/${icon}.svg" TYPE "_svg" TARGET_OUTPUT targetName)
+  list(APPEND smtkModelDependencies ${targetName})
+endforeach()
+
 foreach (operator ${modelOps})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
     HEADER_OUTPUT headerName)
@@ -125,7 +134,11 @@ foreach (operator ${modelOps})
   list(APPEND modelHeaders operators/${operator}.h)
   list(APPEND _modelDependencies ${headerName})
 endforeach()
-add_custom_target(modelGenHeaders DEPENDS ${_modelDependencies})
+add_custom_target(modelGenHeaders
+  DEPENDS
+    ${_modelDependencies}
+    ${smtkModelDependencies}
+)
 # set(modelDependencies ${_modelDependencies} PARENT_SCOPE)
 
 #install the headers

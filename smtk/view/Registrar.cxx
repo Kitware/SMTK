@@ -21,6 +21,7 @@
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/DefaultOperationIcon.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
+#include "smtk/view/LockedResourceBadge.h"
 #include "smtk/view/ObjectIconBadge.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/QueryFilterSubphraseGenerator.h"
@@ -46,7 +47,7 @@ using SubphraseGeneratorList = std::tuple<
   TwoLevelSubphraseGenerator,
   EmptySubphraseGenerator,
   QueryFilterSubphraseGenerator>;
-using BadgeList = std::tuple<AssociationBadge, ObjectIconBadge>;
+using BadgeList = std::tuple<AssociationBadge, LockedResourceBadge, ObjectIconBadge>;
 } // namespace
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)

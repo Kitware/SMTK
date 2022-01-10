@@ -630,6 +630,14 @@ void qtReferenceItem::updateUI()
   }
   this->synchronize(UpdateSource::GUI_FROM_ITEM);
 
+  // Add a vertical spacer the same height as buttons that are sometimes hidden.
+  m_widget->show();
+  entryLayout->addItem(new QSpacerItem(
+    0,
+    entryLayout->geometry().height() + entryLayout->spacing(),
+    QSizePolicy::Fixed,
+    QSizePolicy::Fixed));
+
   this->sneakilyHideButtons();
   this->updateSynopsisLabels();
 }

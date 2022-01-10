@@ -28,6 +28,12 @@
                 {
                   "Name": "Badge",
                   "Attributes": {
+                    "Type": "smtk::view::LockedResourceBadge"
+                  }
+                },
+                {
+                  "Name": "Badge",
+                  "Attributes": {
                     "Type": "smtk::extension::paraview::appcomponents::VisibilityBadge"
                   }
                 },

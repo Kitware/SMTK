@@ -29,13 +29,18 @@ set(plugin_files
   server/plugin/paraview.plugin)
 if (TARGET ParaView::pqApplicationComponents)
   list(APPEND plugin_files
-    appcomponents/plugin/paraview.plugin
+    appcomponents/plugin-legacy-operations/paraview.plugin
+    appcomponents/plugin-operations-panel/paraview.plugin
+    appcomponents/plugin-core/paraview.plugin
     model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
-    operators/paraview.plugin)
+    operators/paraview.plugin
+  )
 
   if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
-    list(APPEND plugin_files widgets/plugin/paraview.plugin)
+    list(APPEND plugin_files
+      widgets/plugin/paraview.plugin
+    )
   endif()
 endif ()
 

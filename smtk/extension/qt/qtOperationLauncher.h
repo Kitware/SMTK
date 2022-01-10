@@ -67,10 +67,23 @@ class SMTKQTEXT_EXPORT qtOperationLauncher : public QObject
 public:
   static constexpr const char* const type_name = "smtk::extension::qtOperationLauncher";
 
-  /* The primary execution method of this functor. This function returns a new ResultHandler
-   * for each operation.
-   */
+  /**\brief The primary execution method of this functor. This function returns a new ResultHandler
+    *       for each operation.
+    */
   std::shared_ptr<ResultHandler> operator()(const smtk::operation::Operation::Ptr& operation);
+
+  /// Return the number of operations launched whose results have not been processed yet.
+  int activeOperations() const { return m_operationCount; }
+
+  /**\brief Enable or disable switching to a busy-cursor when operations are running.
+    *
+    * The busy-cursor behavior is enabled (true) by default.
+    *
+    * The active-operation counter is always running, but whether it causes the
+    * application cursor to change is controlled by this method.
+    * The return value indicates whether the setting was changed.
+    */
+  static bool setBusyCursorBehavior(bool enabled);
 
 signals:
   /// Internal signal from the executing subthread to the primary thread
@@ -81,7 +94,19 @@ private:
   /// Internal method run on a subthread to invoke the operation.
   smtk::operation::Operation::Result run(smtk::operation::Operation::Ptr operation);
 
+  /// Internal method to update active operation count and busy-cursor (if enabled).
+  void decrementCount(smtk::operation::Operation::Result result);
+
   smtk::common::ThreadPool<smtk::operation::Operation::Result> m_threadPool;
+
+  /**\brief A count of the number of operations that have been launched but not produced results.
+    *
+    * This is used to change the default application cursor to a "spinner"
+    * when the count is non-zero.
+    */
+  std::atomic<int> m_operationCount{ 0 };
+  /// Whether the busy-cursor behavior is enabled (the default) or not.
+  static bool s_busyCursorEnabled;
 };
 
 namespace qt
@@ -89,7 +114,7 @@ namespace qt
 /// qtOperationLauncher has all of the Qt-integrated functionality we require;
 /// smtk's operation launchers are stored in std::maps, however, requiring that
 /// launchers support copy construction. We therefore wrap our Qt-enabled
-/// launcher in a more stl-complient wrapper.
+/// launcher in a more stl-compliant wrapper.
 class Launcher
 {
 public:

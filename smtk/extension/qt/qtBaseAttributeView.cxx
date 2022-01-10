@@ -77,7 +77,7 @@ public:
 
 bool qtBaseAttributeView::validateInformation(const smtk::view::Information& info)
 {
-  if (!qtBaseView::validateInformation(info))
+  if (!qtBaseView::validateInformation(info) || !info.contains<qtUIManager*>())
   {
     return false;
   }

@@ -20,6 +20,7 @@
 #include "smtk/extension/qt/qtComponentAttributeView.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
+#include "smtk/extension/qt/qtOperationPalette.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
@@ -42,6 +43,7 @@ typedef std::tuple<
   qtInstancedView,
   qtComponentAttributeView,
   qtOperationView,
+  qtOperationPalette,
   qtResourceBrowser,
   qtSelectorView,
   qtSimpleExpressionView>
@@ -59,6 +61,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtAttributeView>("Attribute");
   manager->viewWidgetFactory().addAlias<qtGroupView>("Group");
   manager->viewWidgetFactory().addAlias<qtInstancedView>("Instanced");
+  manager->viewWidgetFactory().addAlias<qtOperationPalette>("OperationPalette");
   manager->viewWidgetFactory().addAlias<qtOperationView>("Operation");
   manager->viewWidgetFactory().addAlias<qtSelectorView>("Selector");
   manager->viewWidgetFactory().addAlias<qtSimpleExpressionView>("SimpleExpression");

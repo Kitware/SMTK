@@ -50,7 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
 #define Q_DISABLE_COPY(x)
 #define Q_SLOTS
-#define Q_SIGNALS
+#define Q_SIGNALS public
 #define Q_OBJECT
 #endif
 

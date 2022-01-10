@@ -1,0 +1,9 @@
+NAME
+  smtkPQLegacyOperationsPlugin
+DESCRIPTION
+  A legacy panel showing SMTK operations and a parameter editor.
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  ParaView::VTKExtensionsExtraction
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt

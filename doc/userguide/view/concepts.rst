@@ -6,17 +6,19 @@ views and trees of descriptive phrases.
 
 :smtk:`View <smtk::view::Configuration>`
   instances are containers that hold information used to configure a view.
-  There are currently 2 types of views in SMTK:
-  * attribute views, which allow users to inspect and edit an entire attribute resource; and
+  There are currently 4 types of views in SMTK:
+  * attribute views, which allow users to inspect and edit an entire attribute resource;
+  * operation views, which are attribute views specifically for editing operation parameters;
   * phrase views, which allow users to inspect and edit any resource by interacting with
-    a tree of one-line summary information related to a resource or component.
+    a tree of one-line summary information related to a resource or component; and
+  * custom views, which may be subclasses of any of the above but are provided by a plugin.
 
 :smtk:`PhraseModel <smtk::view::PhraseModel>`
   instances represent a tree of descriptive phrases that together
   summarize information about resources and/or components.
   Each entry in the tree is a descriptive phrase that represents a
   single piece of information via a title string, an optional subtitle string,
-  and optionally a set of badge icons.
+  and optionally a set of :smtk:`badges <smtk::view::BadgeSet>`.
   Phrases may be queried for a related resource or component, what badges (if
   any) apply to the phrase, and — most importantly — a list of child phrases
   that provide further details.

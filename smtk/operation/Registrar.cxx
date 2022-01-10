@@ -22,6 +22,9 @@
 
 #include "smtk/plugin/Manager.h"
 
+#include "smtk/operation/import_python_operation_svg.h"
+#include "smtk/view/OperationIcons.h"
+
 #include <tuple>
 
 namespace smtk
@@ -71,6 +74,23 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->unregisterOperations<OperationList>();
+}
+
+void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
+{
+#if SMTK_PYTHON_ENABLED
+  auto& opIcons(viewManager->operationIcons());
+  opIcons.registerOperation<ImportPythonOperation>(
+    [](const std::string& /*unused*/) { return import_python_operation_svg; });
+#endif
+}
+
+void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
+{
+#if SMTK_PYTHON_ENABLED
+  auto& opIcons(viewManager->operationIcons());
+  opIcons.unregisterOperation<ImportPythonOperation>();
+#endif
 }
 } // namespace operation
 } // namespace smtk

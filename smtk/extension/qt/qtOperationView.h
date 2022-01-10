@@ -44,7 +44,13 @@ public:
 
   ~qtOperationView() override;
 
+  /// True when the view is configured to launch operations when the apply button is pressed.
+  bool runOperationOnApply() const;
+  /// Set whether the view should launch operations or allow external launchers to do so.
+  void setRunOperationOnApply(bool shouldLaunch);
+
   QPointer<QPushButton> applyButton() const;
+  QPointer<QPushButton> doneButton() const;
   const smtk::operation::OperationPtr& operation() const;
   void showInfoButton(bool visible = true);
 
@@ -65,10 +71,16 @@ public slots:
   virtual void onModifiedParameters();
   virtual void onModifiedParameter(qtItem* item);
   virtual void onOperate();
-  void onOperationExecuted(const smtk::operation::Operation::Result& result);
 
 signals:
+  /**\brief Signaled when the user presses the "Apply" button.
+    *
+    * Note that if runOperationOnApply() returns true, the operation
+    * will have been launched when this is emitted. Otherwise, this
+    * signal should be used by external agents to launch the operation.
+    */
   void operationRequested(const smtk::operation::OperationPtr& brOp);
+  /// Signaled when the user presses the "Done" button.
   void doneEditing();
 
   // Currently, the operation view is responsible for executing the operation.

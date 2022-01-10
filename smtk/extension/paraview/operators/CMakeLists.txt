@@ -26,6 +26,7 @@ smtk_add_plugin(smtkPQOperationViewsPlugin
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
+    REQUIRED_PLUGINS smtkPQComponentsPlugin
     UI_FILES ${ui_files}
     SOURCES ${sources}
 )
