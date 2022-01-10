@@ -20,12 +20,109 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
+namespace
+{
+template<typename T>
+void processProperties(T& object, xml_node& propertiesNode, Logger& logger)
+{
+  for (const xml_node& propNode : propertiesNode.children("Property"))
+  {
+    const xml_attribute propNameAtt = propNode.attribute("Name");
+    if (!propNameAtt)
+    {
+      smtkWarningMacro(logger, "Missing Name xml attribute in Property xml node.");
+      continue;
+    }
+    const xml_attribute propTypeAtt = propNode.attribute("Type");
+    if (!propTypeAtt)
+    {
+      smtkWarningMacro(logger, "Missing Type xml attribute in Property xml node.");
+      continue;
+    }
+
+    // Convert the type to lower case
+    std::string attVal = propTypeAtt.value();
+    std::string propType = smtk::common::StringUtil::lower(attVal);
+
+    std::string propName = propNameAtt.value();
+
+    if (propType == "int")
+    {
+      object->properties().template get<int>()[propName] = propNode.text().as_int();
+    }
+    else if (propType == "double")
+    {
+      object->properties().template get<double>()[propName] = propNode.text().as_double();
+    }
+    else if (propType == "string")
+    {
+      object->properties().template get<std::string>()[propName] = propNode.text().as_string();
+    }
+    else if (propType == "bool")
+    {
+      std::string sval = propNode.text().as_string();
+      bool bval;
+      if (smtk::common::StringUtil::toBoolean(sval, bval))
+      {
+        object->properties().template get<bool>()[propName] = bval;
+      }
+      else
+      {
+        smtkWarningMacro(
+          logger,
+          "Invalid Boolean Property Value:" << propNode.text().as_string() << " for Property: "
+                                            << propName << " of Object: " << object->name() << ".");
+      }
+    }
+    else
+    {
+      smtkWarningMacro(
+        logger,
+        "Unsupported Type:" << propTypeAtt.value()
+                            << " in Property xml node for Object: " << object->name() << ".");
+    }
+  }
+}
+}; // namespace
+
 XmlDocV5Parser::XmlDocV5Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV4Parser(myResource, logger)
 {
 }
 
 XmlDocV5Parser::~XmlDocV5Parser() = default;
+
+void XmlDocV5Parser::process(xml_node& rootNode)
+{
+  XmlDocV4Parser::process(rootNode);
+
+  xml_node propertiesNode = rootNode.child("Properties");
+  if (propertiesNode)
+  {
+    processProperties(m_resource, propertiesNode, m_logger);
+  }
+}
+
+void XmlDocV5Parser::processAttribute(pugi::xml_node& attNode)
+{
+  XmlDocV4Parser::processAttribute(attNode);
+
+  xml_node propertiesNode = attNode.child("Properties");
+  if (propertiesNode)
+  {
+    xml_attribute xatt = attNode.attribute("Name");
+    if (!xatt)
+    {
+      return;
+    }
+    std::string name = xatt.value();
+    auto att = m_resource->findAttribute(name);
+    if (att)
+    {
+      processProperties(att, propertiesNode, m_logger);
+    }
+  }
+}
 
 bool XmlDocV5Parser::canParse(pugi::xml_document& doc)
 {

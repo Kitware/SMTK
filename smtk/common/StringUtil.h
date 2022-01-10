@@ -32,6 +32,14 @@ public:
 
   static std::vector<std::string>
   split(const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
+
+  /**\brief Converts a string to a boolean
+   *
+   * If the string \p s can be converted to a boolean then the function returns true
+   * and \p value is set to the converted value.  The function will trim \p s and convert it
+   * to lower case.  The current acceptable values are: 1, t, true, yes, 0, f, false, no.
+   */
+  static bool toBoolean(const std::string& s, bool& value);
 };
 
 } // namespace common

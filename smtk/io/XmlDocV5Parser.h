@@ -28,6 +28,9 @@ public:
   XmlDocV5Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   ~XmlDocV5Parser() override;
 
+  using XmlDocV4Parser::process;
+  void process(pugi::xml_node& rootNode) override;
+  void processAttribute(pugi::xml_node& attNode) override;
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
 

@@ -106,6 +106,7 @@ set(unit_tests
 set(unit_tests_which_require_data
   unitAnalysisConfigurations.cxx
   unitConditionalGroup.cxx
+  unitXmlReaderProperties.cxx
   unitItemBlocks.cxx
   )
 
