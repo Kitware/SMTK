@@ -16,14 +16,15 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindpqSMTKBehavior.h"
-#include "PybindpqSMTKResourceRepresentation.h"
-#include "PybindpqSMTKResource.h"
-#include "PybindpqSMTKOperationPanel.h"
-#include "PybindpqSMTKResourcePanel.h"
-#include "PybindpqSMTKResourceBrowser.h"
-#include "PybindpqSMTKWrapper.h"
 #include "PybindpqSMTKAttributePanel.h"
+#include "PybindpqSMTKBehavior.h"
+#include "PybindpqSMTKOperationPanel.h"
+#include "PybindpqSMTKPythonTrace.h"
+#include "PybindpqSMTKResource.h"
+#include "PybindpqSMTKResourceBrowser.h"
+#include "PybindpqSMTKResourcePanel.h"
+#include "PybindpqSMTKResourceRepresentation.h"
+#include "PybindpqSMTKWrapper.h"
 
 #include <QObject>
 
@@ -43,4 +44,5 @@ PYBIND11_MODULE(_smtkPybindPQComponents, pqcomponents)
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< pqSMTKBehavior, QObject > pqSMTKBehavior = pybind11_init_pqSMTKBehavior(pqcomponents);
+  py::class_< pqSMTKPythonTrace > pqSMTKPythonTrace = pybind11_init_pqSMTKPythonTrace(pqcomponents);
 }

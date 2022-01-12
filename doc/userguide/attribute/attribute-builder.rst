@@ -66,14 +66,16 @@ each dictionary item can include :py:attr:`path` (required),
 
 * The :py:attr:`enabled` field is for setting the item's enabled state.
 
-* Extensible group items may have several sub-groups. The :py:attr:`count` field for a group item specifies the number of sub-groups. Items in a sub-group use `#N` in their path to specify which sub group they belong to. For example:
+* Extensible group items may have several sub-groups. The :py:attr:`count` field for a group item specifies the number of sub-groups. Items in a sub-group use integer index `N` in their path to specify which sub group they belong to. For example:
 
 .. code-block:: python
 
 {
     'items': [
         {'path': '/group-item', 'count': 2},
-        {'path': '/group-item/#0/subgroup-double', 'value': 73.73},
-        {'path': '/group-item/#1/subgroup-double', 'value': 83.83},
+        {'path': '/group-item/0/subgroup-double', 'value': 73.73},
+        {'path': '/group-item/1/subgroup-double', 'value': 83.83},
     ]
 }
+
+* If an item belonging to a group needs to have a name that is an integer, it should always be preceded by the sub-group index.

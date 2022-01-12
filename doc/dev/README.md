@@ -14,6 +14,8 @@ Main Tasks
 
 * [Develop SMTK](develop.md) - Contributors start here
 
+* [CI/CD](gitlab-ci.md) - Update, change or debug continuous integration and testing.
+
 Other Tasks
 -----------
 

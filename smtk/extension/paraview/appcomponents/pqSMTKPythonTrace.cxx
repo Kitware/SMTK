@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPythonTrace.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKPythonTrace.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItem.h"
@@ -86,19 +86,19 @@ std::string traceAssociations(const smtk::attribute::ReferenceItemPtr& assoc)
   return text.str();
 }
 
-// TODO add indices for group items
+// adds indices for group items
 std::string getPath(const smtk::attribute::Item* item)
 {
   std::string path = item->name();
   auto owningItem = item->owningItem();
-  auto* groupItem = dynamic_cast<const smtk::attribute::GroupItem*>(owningItem.get());
+  const auto* groupItem = dynamic_cast<const smtk::attribute::GroupItem*>(owningItem.get());
 
   while (owningItem)
   {
     if (groupItem)
     {
       // parent is a group item, add "#N" to indicate group index
-      path = "#" + std::to_string(item->subGroupPosition()) + "/" + path;
+      path = std::to_string(item->subGroupPosition()) + "/" + path;
     }
     path = owningItem->name() + "/" + path;
     owningItem = owningItem->owningItem();
@@ -192,10 +192,10 @@ std::string traceRef(const smtk::attribute::ReferenceItemPtr& item)
 
 } // namespace
 
-void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
+std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
 {
   if (dynamic_cast<const smtk::attribute::Signal*>(&op))
-    return;
+    return "";
 
   if (vtkSMTrace::GetActiveTracer() == nullptr)
   {
@@ -210,7 +210,6 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
            "import smtk.attribute\n"
            "import smtk.operation\n"
            "from smtk.operation import configureAttribute\n"
-           "import uuid\n"
            "behavior = smtk.extension.paraview.appcomponents.pqSMTKBehavior.instance()\n"
            "opMgr = behavior.activeWrapperOperationManager()\n"
            "rsrcMgr = behavior.activeWrapperResourceManager()\n"
@@ -289,4 +288,7 @@ void pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
   SM_SCOPED_TRACE(TraceText)
     .arg(text.str().c_str())
     .arg("comment", "Setup SMTK operation and parameters");
+
+  // return the operation trace to support testing.
+  return text.str();
 }

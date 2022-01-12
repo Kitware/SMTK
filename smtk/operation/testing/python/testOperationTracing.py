@@ -9,25 +9,44 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 # =============================================================================
-
 import os
-import sys
-import unittest
 
+import unittest
 import smtk
 import smtk.attribute
-import smtk.io
-import smtk.session.vtk
-import smtk.testing
-
 import smtk.attribute_builder
+import smtk.extension.paraview.appcomponents
+import smtk.io
+import smtk.operation
+import smtk.session.vtk
+import smtk.resource
+import smtk.testing
+import re
+from smtk.operation import configureAttribute
+from smtk.extension.paraview.appcomponents import pqSMTKPythonTrace
 
 OP_SUCCEEDED = int(smtk.operation.Operation.Outcome.SUCCEEDED)
 
 SBT = """
+<?xml version="1.0" encoding="utf-8" ?>
 <SMTK_AttributeResource Version="4">
   <Definitions>
-    <AttDef Type="Example">
+    <AttDef Type="operation" Label="operation" Abstract="True">
+      <ItemDefinitions>
+        <Int Name="debug level" Optional="True">
+          <DefaultValue>0</DefaultValue>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="result" Abstract="True">
+      <ItemDefinitions>
+        <Int Name="outcome" Label="outcome" Optional="False" NumberOfRequiredValues="1">
+        </Int>
+        <String Name="log" Optional="True" NumberOfRequiredValues="0" Extensible="True">
+        </String>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="TestOp" Label="My Test Operation" BaseType="operation">
       <AssociationsDef NumberOfRequiredValues="0" Extensible="true">
         <Accepts>
           <Resource Name="smtk::resource::Resource" />
@@ -65,6 +84,10 @@ SBT = """
         </Group>
       </ItemDefinitions>
     </AttDef>
+    <AttDef Type="result(test op)" BaseType="result">
+      <ItemDefinitions>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeResource>
 """
@@ -89,27 +112,36 @@ SPEC = {
 }
 
 
-class TestBuildAttribute(unittest.TestCase):
+class TestOp(smtk.operation.Operation):
 
-    def setUp(self):
-        pass
+    def __init__(self):
+        smtk.operation.Operation.__init__(self)
 
-    def tearDown(self):
-        pass
+    def name(self):
+        return "test op"
 
-    def import_attribute_template(self):
-        """Instantiates attribute resource"""
-        resource = smtk.attribute.Resource.New()
+    def operateInternal(self):
+        smtk.WarningMessage(self.log(), 'My string is \"%s\"' %
+                            self.parameters().findString('string-item').value())
 
-        # Load attribute template
+        # Return with success
+        result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
+        # result.findString('my string').setValue(
+        #     self.parameters().findString('my string').value())
+        return result
+
+    def createSpecification(self):
+        spec = smtk.attribute.Resource.New()
         reader = smtk.io.AttributeReader()
-        logger = smtk.io.Logger.instance()
-        # sbt_path = os.path.join(smtk.testing.DATA_DIR, 'example.sbt')
-        # err = reader.read(resource, sbt_path, logger)
-        err = reader.readContents(resource, SBT, logger)
-        self.assertFalse(err, 'error loading attribute template')
-        return resource
+        err = reader.readContents(spec, SBT, self.log())
 
+        if err:
+            print(self.log().convertToString())
+
+        return spec
+
+
+class TestOperationTracing(smtk.testing.TestCase):
     def import_model(self):
         """"""
         gen_path = os.path.join(smtk.testing.DATA_DIR,
@@ -124,69 +156,36 @@ class TestBuildAttribute(unittest.TestCase):
 
         return resource
 
-    def test_configure_attribute(self):
-        """"""
-        logger = smtk.io.Logger.instance()
-
-        # Load resources
-        att_resource = self.import_attribute_template()
+    def test_operation_tracing(self):
         model_resource = self.import_model()
 
-        # Create test attribute
-        defn = att_resource.findDefinition('Example')
-        self.assertIsNotNone(defn, 'failed to find Example definition')
-        att = att_resource.createAttribute('test', defn)
-        self.assertIsNotNone(att, 'failed to create test attribute')
+        op = TestOp.create(__name__, "TestOp", 1)
+        parameters = op.parameters()
 
-        # Create builder and apply config spec (dictionary)
         builder = smtk.attribute_builder.AttributeBuilder()
         resource_dict = dict(model=model_resource)
-        builder.build_attribute(att, SPEC, resource_dict=resource_dict)
+        SPEC['resources'] = resource_dict
+        # use the method that will be produced by python tracing.
+        configureAttribute(parameters, SPEC)
+        # check it did something.
+        assert(parameters.find('int-item').value() == 2)
 
-        # Write result (for debug)
-        writer = smtk.io.AttributeWriter()
-        filepath = os.path.join(smtk.testing.TEMP_DIR, 'config.sbi')
-        err = writer.write(att_resource, filepath, logger)
-        self.assertFalse(err, 'Error writing file {}'.format(filepath))
-        print('Wrote', filepath)
-
-        # Check
-        assocs = att.associations()
-        self.assertEqual(assocs.numberOfValues(), 1,
-                         'missing resource association')
-        self.assertTrue(att.isObjectAssociated(model_resource))
-
-        sitem = att.findString('string-item')
-        self.assertEqual(sitem.value(), 'xyzzy', 'failed to set string item')
-
-        ditem = att.findDouble('double-item')
-        self.assertAlmostEqual(ditem.value(0), 3.14159,
-                               'failed to set double item first value')
-        self.assertFalse(ditem.isSet(
-            1), 'failed to unset double item second value')
-        self.assertAlmostEqual(ditem.value(2), 2.71828,
-                               'failed to set double item third value')
-
-        iitem = att.findInt('int-item')
-        self.assertTrue(iitem.isEnabled(), 'failed to enable int-item')
-        self.assertEqual(iitem.value(), 2, 'failed to set int-item')
-
-        cond_item = iitem.find('conditional-double')
-        self.assertAlmostEqual(cond_item.value(), 42.42)
-
-        comp_item = att.findComponent('comp-item')
-        self.assertEqual(comp_item.numberOfValues(), 2,
-                         'wrong number of comp-item values, should be 2 found {}'.format(comp_item.numberOfValues()))
-        self.assertIsNotNone(comp_item.value(
-            0), 'first component item value not set')
-        self.assertIsNotNone(comp_item.value(
-            1), 'second component item value not set')
-
-        group_item = att.findGroup('group-item')
-        subgroup_item = group_item.find('subgroup-double')
-        self.assertAlmostEqual(subgroup_item.value(), 73.73)
-        subgroup_item = group_item.find(1, 'subgroup-double')
-        self.assertAlmostEqual(subgroup_item.value(), 83.83)
+        # now check that we are able to trace the operation
+        tracer = pqSMTKPythonTrace()
+        op_trace = tracer.traceOperation(op)
+        print("operation trace:\n", op_trace)
+        # non-default items should be traced.
+        assert(op_trace.find(
+            "'path': 'double-item', 'value': [ 3.1415899999999999, None, 2.71828 ]") > 0)
+        assert(op_trace.find(
+            "'path': 'int-item/conditional-double', 'value': 42.42") > 0)
+        assert(op_trace.find("'resource': 'filling1', 'component': 'casting'") > 0)
+        assert(op_trace.find("'resource': 'filling1', 'component': 'symmetry'") > 0)
+        assert(op_trace.find("'path': 'group-item', 'count': 2") > 0)
+        assert(op_trace.find(
+            "'path': 'group-item/0/subgroup-double', 'value': 73.73") > 0)
+        assert(op_trace.find(
+            "'path': 'group-item/1/subgroup-double', 'value': 83.829") > 0)
 
 
 if __name__ == '__main__':

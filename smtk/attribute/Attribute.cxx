@@ -217,35 +217,45 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
     SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
     for (++it; it != tree.end(); ++it)
     {
-      next = current->find(*it, style);
-      if (next == nullptr)
+      // allow integer indices for subgroups
+      auto group = std::dynamic_pointer_cast<const smtk::attribute::GroupItem>(current);
+      if (group)
       {
-        // allow #0, #1 for subgroups
-        auto group = std::dynamic_pointer_cast<const smtk::attribute::GroupItem>(current);
-        if (group && (*it)[0] == '#')
+        // see if this path element is an integer.
+        try
         {
-          try
+          size_t pos = 0;
+          int index = std::stoi(*it, &pos);
+          // we got an integer, but is it valid?
+          if (pos < (*it).size())
           {
-            int index = std::stoi((*it).substr(1));
-            if (index < 0 || index >= group->numberOfGroups())
-            {
-              break;
-            }
-            // go to next path substring.
-            ++it;
-            current = group->find(index, *it, style);
+            std::cout << "group int + stuff " << *it << std::endl;
+            // there's more stuff in the string, look up in sub-group 0
+            current = current->find(*it, style);
           }
-          catch (...)
+          if (index < 0 || index >= group->numberOfGroups())
           {
-            // not an int
+            std::cout << "group invalid index " << *it << std::endl;
             break;
           }
+          // go to next path substring.
+          ++it;
+          current = (it != tree.end() ? group->find(index, *it, style) : nullptr);
         }
-        break; // we couldn't find the next item in the path
+        catch (...)
+        {
+          // not an int, look up in sub-group 0
+          current = current->find(*it, style);
+        }
       }
       else
       {
-        current = next;
+        current = current->find(*it, style);
+      }
+      if (current == nullptr)
+      {
+        // we couldn't find the next item in the path
+        break;
       }
     }
   }
