@@ -229,16 +229,17 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
           // we got an integer, but is it valid?
           if (pos < (*it).size())
           {
-            std::cout << "group int + stuff " << *it << std::endl;
-            // there's more stuff in the string, look up in sub-group 0
-            current = current->find(*it, style);
+            // there's more stuff besides an int in the string, look up in sub-group 0
+            current = group->find(0, *it, style);
+            continue;
           }
           if (index < 0 || index >= group->numberOfGroups())
           {
-            std::cout << "group invalid index " << *it << std::endl;
+            // invalid index, return null
+            current = nullptr;
             break;
           }
-          // go to next path substring.
+          // go to next path substring, using the sub-group index
           ++it;
           current = (it != tree.end() ? group->find(index, *it, style) : nullptr);
         }

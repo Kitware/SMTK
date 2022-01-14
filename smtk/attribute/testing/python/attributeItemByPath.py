@@ -62,6 +62,14 @@ class TestAttributeItemByPath(smtk.testing.TestCase):
         self.assertIsNotNone(itemInGroup, 'Could not find expected item.')
         self.assertEqual(itemInGroup.name(), 'Velocity',
                          'Got wrong attribute "{nm}".'.format(nm=itemInGroup.name()))
+        # Test using the sub-group index as part of the path.
+        itemInGroup = att.itemAtPath('InitialConditions/0/Velocity', '/')
+        self.assertIsNotNone(itemInGroup, 'Could not find expected item.')
+        self.assertEqual(itemInGroup.name(), 'Velocity',
+                         'Got wrong attribute "{nm}".'.format(nm=itemInGroup.name()))
+        # Test invalid sub-group index.
+        itemInGroup = att.itemAtPath('InitialConditions/1/Velocity', '/')
+        self.assertIsNone(itemInGroup, 'Found unexpected item.')
 
     def testItemInDeepPath(self):
         att = self.resource.createAttribute('ppesolver')
