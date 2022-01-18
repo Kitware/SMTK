@@ -1281,7 +1281,7 @@
         </ProxyGroupDomain>
       </ProxyProperty>
       <IntVectorProperty command="SetMapScalars"
-                         default_values="0"
+                         default_values="1"
                          name="MapScalars"
                          number_of_elements="1">
         <BooleanDomain name="bool" />
@@ -1828,8 +1828,8 @@
         </Proxy>
         <ExposedProperties>
           <PropertyGroup label="Color Mode">
-            <Property name="ColorBy"
-                      panel_visibility="always" />
+            <Property name="ColorBy" label="Color by"
+                      panel_visibility="default" />
             <Property name="UseInternalAttributes"
                       label="Use Multi-Block Inspector attributes" />
           </PropertyGroup>
@@ -1839,34 +1839,28 @@
             <Property name="ColorArrayName" />
             <Property name="LookupTable" />
           </PropertyGroup>
-          <PropertyGroup>
+          <PropertyGroup panel_visibility="default" label="Scalar Mapping">
             <Property name="MapScalars"
-                      panel_visibility="always" />
+                      panel_visibility="default" />
             <Property name="InterpolateScalarsBeforeMapping"
-                      panel_visibility="always" />
+                      panel_visibility="default" />
           </PropertyGroup>
           <PropertyGroup label="Styling">
-            <Property name="Opacity"
-                      panel_visibility="default" />
-            <Property name="PointSize"
-                      panel_visibility="always"
+            <Property name="Opacity" panel_visibility="default" />
+            <Property name="PointSize" panel_visibility="default"
                       panel_visibility_default_for_representation="points" />
             <Property name="LineWidth"
-                      panel_visibility="always"
+                      panel_visibility="default"
                       panel_visibility_default_for_representation="wireframe" />
             <Property name="LineColor"
                       panel_visibility="always"
                       panel_visibility_default_for_representation="wireframe" />
             <Property name="SelectionRenderStyle"
                       panel_visibility="never"/>
-            <Property name="RenderLinesAsTubes"
-                      panel_visibility="never"/>
-            <Property name="RenderPointsAsSpheres"
-                      panel_visibility="never"/>
-            <Property name="EdgeVisibility"
-                      panel_visibility="never"/>
-            <Property name="VertexVisibility"
-                      panel_visibility="never"/>
+            <Property name="RenderLinesAsTubes" panel_visibility="default"/>
+            <Property name="RenderPointsAsSpheres" panel_visibility="default"/>
+            <Property name="EdgeVisibility" panel_visibility="never"/>
+            <Property name="VertexVisibility" panel_visibility="never"/>
          </PropertyGroup>
 
           <PropertyGroup label="Lighting">
