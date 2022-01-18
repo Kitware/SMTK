@@ -11,6 +11,8 @@
 #ifndef smtk_graph_TypeTraits_h
 #define smtk_graph_TypeTraits_h
 
+#include "smtk/common/TypeTraits.h"
+
 #include <functional>
 #include <type_traits>
 
@@ -90,6 +92,7 @@ public:
   using type = decltype(testAccepts<Functor>(nullptr));
   static constexpr bool value = type::value;
 };
+
 } // namespace graph
 } // namespace smtk
 

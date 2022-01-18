@@ -15,6 +15,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TypeMap.h"
+#include "smtk/common/TypeTraits.h"
 
 #include "smtk/geometry/Manager.h"
 #include "smtk/geometry/Resource.h"
@@ -35,6 +36,37 @@ namespace smtk
 {
 namespace graph
 {
+namespace detail
+{
+
+template<typename T, typename = void>
+struct has_initializer : std::false_type
+{
+};
+
+template<class T, class... Args>
+struct has_initializer<
+  T(Args...),
+  smtk::common::void_t<decltype(std::declval<T>().initialize(std::declval<Args>()...))>>
+  : std::true_type
+{
+};
+
+template<class T, class... Args>
+typename std::enable_if<detail::has_initializer<T(Args...)>::value>::type initialize(
+  T& t,
+  Args&&... args)
+{
+  t.initialize(std::forward<Args>(args)...);
+}
+
+template<class T, class... Args>
+typename std::enable_if<!detail::has_initializer<T(Args...)>::value>::type initialize(
+  T& t,
+  Args&&... args)
+{
+}
+} // namespace detail
 
 /// smtk::graph::Resource is defined by a GraphTraits type that defines the node
 /// types and arc types of a multipartite graph. The node types must all inherit
@@ -64,9 +96,11 @@ public:
     std::shared_ptr<NodeType>>::type
   create(T&&... parameters)
   {
-    std::shared_ptr<smtk::resource::Component> created(
-      new NodeType(this->shared_from_this(), std::forward<T>(parameters)...));
+    std::shared_ptr<smtk::resource::Component> created(new NodeType(this->shared_from_this()));
+
     auto node = std::static_pointer_cast<NodeType>(created);
+    detail::initialize(*node, std::forward<T>(parameters)...);
+
     add(node);
     return node;
   }

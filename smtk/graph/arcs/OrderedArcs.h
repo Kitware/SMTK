@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/WeakReferenceWrapper.h"
 
 #include "smtk/graph/TypeTraits.h"
 
@@ -35,14 +36,17 @@ class SMTK_ALWAYS_EXPORT OrderedArcs
 public:
   typedef from_type FromType;
   typedef to_type ToType;
-  typedef std::vector<std::reference_wrapper<const ToType>> Container;
+  typedef std::vector<smtk::WeakReferenceWrapper<ToType>> Container;
+
+  using iterator = typename Container::iterator;
+  using const_iterator = typename Container::const_iterator;
 
   /// Construct an OrderedArcs instance from a node of type FromType to multiple
   /// nodes of type ToType.
   template<typename... ToTypes, typename = CompatibleTypes<ToType, ToTypes...>>
-  OrderedArcs(const FromType& from, ToTypes const&... to)
+  OrderedArcs(const FromType& from, ToTypes&... to)
     : m_from(from)
-    , m_to({ std::ref(to)... })
+    , m_to({ smtk::weakRef(to)... })
   {
   }
 
@@ -58,7 +62,7 @@ public:
     m_to.reserve(std::distance(begin, end));
     for (Iterator it = begin; it != end; ++it)
     {
-      m_to.push_back(std::ref(*it));
+      m_to.push_back(smtk::weakRef(*it));
     }
   }
 
@@ -113,9 +117,37 @@ public:
     }
   };
 
+  void removeExpired() const
+  {
+    using iterator = typename Container::iterator;
+    Container* to_nodes = const_cast<Container*>(&m_to);
+    iterator end = to_nodes->end();
+    iterator new_end = to_nodes->begin();
+    while (new_end != end && !new_end->expired())
+    {
+      ++new_end;
+    }
+
+    if (new_end == end)
+    {
+      return;
+    }
+
+    iterator walker = new_end;
+    while (++walker != end)
+    {
+      if (!walker->expired())
+      {
+        *new_end = std::move(*walker);
+        ++new_end;
+      }
+    }
+    to_nodes->resize(std::distance(to_nodes->begin(), new_end));
+  }
+
 private:
   const FromType& m_from;
-  std::vector<std::reference_wrapper<const ToType>> m_to;
+  Container m_to;
 };
 } // namespace graph
 } // namespace smtk

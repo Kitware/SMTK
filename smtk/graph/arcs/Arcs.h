@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/WeakReferenceWrapper.h"
 
 #include "smtk/graph/ResourceBase.h"
 #include "smtk/graph/TypeTraits.h"
@@ -32,28 +33,17 @@ namespace graph
 template<typename from_type, typename to_type>
 class SMTK_ALWAYS_EXPORT Arcs
 {
-  struct HashByUUID
-  {
-    std::size_t operator()(const to_type& to) const { return to.id().hash(); }
-  };
-
-  struct EqualityByUUID
-  {
-    bool operator()(const to_type& lhs, const to_type& rhs) const { return lhs.id() == rhs.id(); }
-  };
-
 public:
   typedef from_type FromType;
   typedef to_type ToType;
-  typedef std::unordered_set<std::reference_wrapper<const ToType>, HashByUUID, EqualityByUUID>
-    Container;
+  typedef std::unordered_set<WeakReferenceWrapper<ToType>> Container;
 
   /// Construct an Arcs instance from a node of type FromType to multiple nodes
   /// of type ToType.
   template<typename... ToTypes, typename = CompatibleTypes<ToType, ToTypes...>>
-  Arcs(const FromType& from, ToTypes const&... to)
+  Arcs(const FromType& from, ToTypes&... to)
     : m_from(from)
-    , m_to({ std::ref(to)... })
+    , m_to({ smtk::weakRef(to)... })
   {
   }
 
@@ -69,7 +59,7 @@ public:
     m_to.reserve(std::distance(begin, end));
     for (Iterator it = begin; it != end; ++it)
     {
-      m_to.insert(std::ref(*it));
+      m_to.insert(smtk::weakRef(*it));
     }
   }
 
@@ -123,6 +113,22 @@ public:
         .contains(lhs.id());
     }
   };
+
+  void removeExpired() const
+  {
+    Container& to_nodes = const_cast<Container&>(m_to);
+    for (auto it = to_nodes.begin(); it != to_nodes.end();)
+    {
+      if (it->expired())
+      {
+        it = to_nodes.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+  }
 
 private:
   const FromType& m_from;
