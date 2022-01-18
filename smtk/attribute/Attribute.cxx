@@ -210,16 +210,53 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
   }
 
   it = tree.begin();
+  smtk::attribute::ConstItemPtr next;
   smtk::attribute::ConstItemPtr current = this->find(*it, IMMEDIATE);
   if (current)
   {
     SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
     for (++it; it != tree.end(); ++it)
     {
-      current = current->find(*it, style);
+      // allow integer indices for subgroups
+      auto group = std::dynamic_pointer_cast<const smtk::attribute::GroupItem>(current);
+      if (group)
+      {
+        // see if this path element is an integer.
+        try
+        {
+          size_t pos = 0;
+          int index = std::stoi(*it, &pos);
+          // we got an integer, but is it valid?
+          if (pos < (*it).size())
+          {
+            // there's more stuff besides an int in the string, look up in sub-group 0
+            current = group->find(0, *it, style);
+            continue;
+          }
+          if (index < 0 || index >= group->numberOfGroups())
+          {
+            // invalid index, return null
+            current = nullptr;
+            break;
+          }
+          // go to next path substring, using the sub-group index
+          ++it;
+          current = (it != tree.end() ? group->find(index, *it, style) : nullptr);
+        }
+        catch (...)
+        {
+          // not an int, look up in sub-group 0
+          current = current->find(*it, style);
+        }
+      }
+      else
+      {
+        current = current->find(*it, style);
+      }
       if (current == nullptr)
       {
-        break; // we couldn't find the next item in the path
+        // we couldn't find the next item in the path
+        break;
       }
     }
   }
@@ -229,40 +266,10 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
 smtk::attribute::ItemPtr
 Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly)
 {
-  std::vector<std::string> tree;
-  std::vector<std::string>::iterator it;
-  boost::split(tree, path, boost::is_any_of(seps));
-  if (path[0] == '/')
-  {
-    // Skip leading forward slash
-    std::string subpath = path.substr(1);
-    boost::split(tree, subpath, boost::is_any_of(seps));
-  }
-  else
-  {
-    boost::split(tree, path, boost::is_any_of(seps));
-  }
-
-  if (tree.empty())
-  {
-    return nullptr;
-  }
-
-  it = tree.begin();
-  smtk::attribute::ItemPtr current = this->find(*it, IMMEDIATE);
-  if (current)
-  {
-    SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
-    for (++it; it != tree.end(); ++it)
-    {
-      current = current->find(*it, style);
-      if (current == nullptr)
-      {
-        break; // we couldn't find the next item in the path
-      }
-    }
-  }
-  return current;
+  // use a const_cast to avoid duplicating code.
+  const auto& constSelf = *this;
+  return std::const_pointer_cast<smtk::attribute::Item>(
+    constSelf.itemAtPath(path, seps, activeOnly));
 }
 
 const smtk::attribute::Categories& Attribute::categories() const

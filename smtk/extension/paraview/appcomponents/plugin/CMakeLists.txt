@@ -108,8 +108,6 @@ set(rc_files
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND sources
-  pqSMTKPythonTrace.cxx
-  pqSMTKPythonTrace.h
   pqSMTKExportSimulationBehavior.cxx
   pqSMTKExportSimulationBehavior.h
   pqSMTKImportOperationBehavior.cxx

@@ -30,7 +30,7 @@
 #ifdef SMTK_PYTHON_ENABLED
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportOperationBehavior.h"
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPythonTrace.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKPythonTrace.h"
 #endif
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"

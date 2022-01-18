@@ -25,6 +25,12 @@ set(uiFiles
   resources/pqSMTKOperationPanel.ui
 )
 
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND classes
+    pqSMTKPythonTrace
+  )
+endif()
+
 foreach (iconFile ${iconFiles})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}"
     TYPE "_svg"

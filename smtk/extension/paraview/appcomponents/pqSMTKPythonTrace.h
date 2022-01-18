@@ -10,19 +10,23 @@
 #ifndef smtk_extension_paraview_appcomponents_pqPythonTrace_h
 #define smtk_extension_paraview_appcomponents_pqPythonTrace_h
 
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "smtk/PublicPointerDefs.h"
+
+#include <string>
 
 /**\brief Utility for adding operations to the python trace.
   *
   */
-class pqSMTKPythonTrace
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKPythonTrace
 {
 
 public:
   pqSMTKPythonTrace() = default;
   ~pqSMTKPythonTrace() = default;
 
-  void traceOperation(const smtk::operation::Operation& op);
+  std::string traceOperation(const smtk::operation::Operation& op);
 
 private:
   bool m_showSetup = true;

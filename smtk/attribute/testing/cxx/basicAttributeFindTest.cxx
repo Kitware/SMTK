@@ -60,6 +60,12 @@ int main()
   s_idef1->addConditionalItem("b-a-a", "b-a-a");
   s_idef1->addConditionalItem("b-a-b", "b-a-b");
   g_idef1->addItemDefinition<StringItemDefinitionPtr>("b-b-a");
+  // an item that starts with a potentially valid index.
+  g_idef->addItemDefinition<StringItemDefinitionPtr>("0 not index");
+  // item with a name like an integer
+  g_idef->addItemDefinition<StringItemDefinitionPtr>("3");
+  // test creating a second group
+  g_idef->setIsExtensible(true);
 
   // There was an issue with searching empty groups that caused a crash
   // Let add one to be make sure we don't regress.
@@ -179,9 +185,38 @@ int main()
   smtkTest((item == nullptr), "Could find using path: a/a-a/a-a-b when asking for active");
   item = att->itemAtPath("a/a-b/a-b-a", "/", true);
   smtkTest((item != nullptr), "Could not find using path: a/a-b/a-b-a when asking for active");
+  // for groups, test adding the index for the sub-group.
+  item = att->itemAtPath("b/b-b/b-b-a");
+  smtkTest((item != nullptr), "Could not find using path: b/b-b/b-b-a");
+  item = att->itemAtPath("b/0/b-b/0/b-b-a");
+  smtkTest((item != nullptr), "Could not find using path: b/0/b-b/0/b-b-a");
+  item = att->itemAtPath("b/1/b-b");
+  smtkTest((item == nullptr), "Found item using path: b/1/b-b");
+  item = att->itemAtPath("b/3");
+  smtkTest((item == nullptr), "Found item using path, should use index: b/3");
+  item = att->itemAtPath("b/0/3");
+  smtkTest((item != nullptr), "Could not find using path: b/0/3");
+  // with and without index
+  item = att->itemAtPath("b/0 not index");
+  smtkTest((item != nullptr), "Could not find using path: b/0 not index");
+  item = att->itemAtPath("b/0/0 not index");
+  smtkTest((item != nullptr), "Could not find using path: b/0/0 not index");
 
-  // Recurse through the children of a single item.
-  typedef smtk::attribute::StringItem MyItemType;
+  // create a second group
+  auto grp2 = att->findAs<GroupItem>("b");
+  smtkTest((grp2 != nullptr), "Could not find b");
+  grp2->appendGroup();
+  smtkTest(grp2->numberOfGroups() == 2, "Expect two groups");
+  auto str1 = grp2->findAs<StringItem>(1, "b-a");
+  smtkTest((str1 != nullptr), "Could not find newly added sub-group item");
+  str1->setValue("b-a-b");
+  // retrieve via path and check value
+  auto str2 = att->itemAtPathAs<StringItem>("b/1/b-a");
+  smtkTest((str2 != nullptr), "Could not find using path: b/1/b-a");
+  smtkTest((str2->value() == "b-a-b"), "Item value not set")
+
+    // Recurse through the children of a single item.
+    typedef smtk::attribute::StringItem MyItemType;
   std::vector<MyItemType::Ptr> myItems;
 
   struct RecursiveAccumulate

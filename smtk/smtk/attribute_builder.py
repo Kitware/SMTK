@@ -315,6 +315,7 @@ class AttributeBuilder:
                 element, dict), 'item element spec must be a dict, not {}'.format(type(element))
             expression = None
             value = None
+            count = None
             # Checkfor for name/value shortcut
             if len(element.keys()) == 1:
                 name, value = element.popitem()
@@ -326,10 +327,12 @@ class AttributeBuilder:
                     parent.name(), path)
                 value = element.get('value')
                 expression = element.get('expression')
+                count = element.get('count')
             else:
                 name = element.get('name')
                 value = element.get('value')
                 expression = element.get('expression')
+                count = element.get('count')
                 assert name is not None, 'no name found for element {}'.format(
                     element)
                 assert isinstance(
@@ -359,6 +362,10 @@ class AttributeBuilder:
             # Set expression or value (expression takes precedence)
             if expression is not None:
                 self._set_expression(item, expression)
+            elif count is not None and hasattr(item, 'setNumberOfGroups'):
+                # we could infer the number of groups, but this is very complex with paths
+                assert item.setNumberOfGroups(count), \
+                    f'failed to set item {item.name()} number of groups to {count}'
             elif value is not None and hasattr(item, 'setValue'):
                 # Apply value if specified
                 if self._is_reference_item(item):
