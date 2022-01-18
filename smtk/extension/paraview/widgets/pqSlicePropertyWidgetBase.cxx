@@ -322,7 +322,8 @@ void pqSlicePropertyWidgetBase::setView(pqView* view)
   this->Superclass::setView(view);
   if (view)
   {
-    pqDataRepresentation* representation = m_p->input->getRepresentation(view);
+    pqDataRepresentation* representation =
+      m_p->input ? m_p->input->getRepresentation(view) : nullptr;
     if (representation)
     {
       m_p->colorBy->setRepresentation(representation);

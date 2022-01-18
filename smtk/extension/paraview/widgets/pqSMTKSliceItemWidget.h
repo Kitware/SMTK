@@ -46,6 +46,8 @@ public slots:
 protected slots:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidgetInternal() override;
+  /// Retrieve values from the attribute system and update the ParaView proxy.
+  void updateWidgetFromItemInternal() override;
 
 protected:
   /**\brief Starting with the widget's assigned item (which must
