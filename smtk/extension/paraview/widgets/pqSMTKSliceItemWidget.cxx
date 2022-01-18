@@ -113,7 +113,10 @@ bool pqSMTKSliceItemWidget::createProxyAndWidget(
     widget = new pqSlicePropertyWidget(pipeline, proxy, proxy->GetPropertyGroup(0));
   }
   auto* widgetProxy = widget->widgetProxy();
-  vtkSMPropertyHelper(widgetProxy, "Input").Set(pipeline->getProxy());
+  if (pipeline)
+  {
+    vtkSMPropertyHelper(widgetProxy, "Input").Set(pipeline->getProxy());
+  }
   vtkSMPropertyHelper(widgetProxy, "Origin").Set(&(*originItem->begin()), 3);
   vtkSMPropertyHelper(widgetProxy, "Normal").Set(&(*normalItem->begin()), 3);
   int drawOutline = 0;
@@ -139,8 +142,24 @@ void pqSMTKSliceItemWidget::sliceInputsChanged()
   smtk::attribute::ReferenceItemPtr inputsItem;
   if (this->fetchOriginNormalAndInputsItems(originItem, normalItem, inputsItem))
   {
-    vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
-    vtkSMPropertyHelper idsHelper(widget, "Ids");
+    vtkSMNewWidgetRepresentationProxy* widgetProxy = m_p->m_pvwidget->widgetProxy();
+    // First, if we haven't set the input proxy (or we have but the first resource
+    // has changed), update the widget's input.
+    auto resourceSet = smtk::attribute::utility::extractResources(inputsItem);
+    if (!resourceSet.empty())
+    {
+      auto* behavior = pqSMTKBehavior::instance();
+      auto pipeline = behavior->getPVResource(*resourceSet.begin());
+      if (pipeline)
+      {
+        vtkSMPropertyHelper(widgetProxy, "Input").Set(pipeline->getProxy());
+        // We must immediately update the pipeline or the IDs will not get
+        // set properly below.
+        widgetProxy->UpdateVTKObjects();
+      }
+    }
+    // Now update the component IDs.
+    vtkSMPropertyHelper idsHelper(widgetProxy, "Ids");
     idsHelper.RemoveAllValues();
     for (std::size_t ii = 0; ii < inputsItem->numberOfValues(); ++ii)
     {
@@ -159,7 +178,7 @@ void pqSMTKSliceItemWidget::sliceInputsChanged()
         idsHelper.Append(data.data(), 4);
       }
     }
-    widget->UpdateVTKObjects();
+    widgetProxy->UpdateVTKObjects();
     this->renderViewEventually();
   }
 }
@@ -173,9 +192,9 @@ void pqSMTKSliceItemWidget::updateItemFromWidgetInternal()
   {
     return;
   }
-  vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
-  vtkSMPropertyHelper originHelper(widget, "Origin");
-  vtkSMPropertyHelper normalHelper(widget, "Normal");
+  vtkSMNewWidgetRepresentationProxy* widgetProxy = m_p->m_pvwidget->widgetProxy();
+  vtkSMPropertyHelper originHelper(widgetProxy, "Origin");
+  vtkSMPropertyHelper normalHelper(widgetProxy, "Normal");
   bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
@@ -189,6 +208,12 @@ void pqSMTKSliceItemWidget::updateItemFromWidgetInternal()
   {
     emit modified();
   }
+}
+
+void pqSMTKSliceItemWidget::updateWidgetFromItemInternal()
+{
+  this->sliceInputsChanged();
+  // TODO: Support updating the origin and normal yet.
 }
 
 bool pqSMTKSliceItemWidget::fetchOriginNormalAndInputsItems(
