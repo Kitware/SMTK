@@ -34,6 +34,11 @@ vtk_module_add_module(smtkPVServerExt
   HEADERS ${headers}
   HEADERS_SUBDIR "smtk/extension/paraview/server")
 
+if (ParaView_VERSION VERSION_LESS "5.10.0")
+  vtk_module_definitions(smtkPVServerExt
+    PRIVATE SMTK_PV_USE_CONFIG)
+endif ()
+
 vtk_module_link(smtkPVServerExt
   PUBLIC
     nlohmann_json)

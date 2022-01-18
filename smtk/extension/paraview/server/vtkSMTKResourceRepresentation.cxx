@@ -32,8 +32,11 @@
 
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
+#if defined(SMTK_PV_USE_CONFIG)
+#include <vtkPVConfig.h>
+#else
 #include <vtkPVVersion.h>
-
+#endif
 #include "vtkDataObjectTreeIterator.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKRepresentationStyleGenerator.h"
