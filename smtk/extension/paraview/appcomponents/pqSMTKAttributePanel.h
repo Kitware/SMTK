@@ -54,18 +54,24 @@ public slots:
   virtual bool displayPipelineSource(pqPipelineSource* psrc);
   /**\brief Populate the attribute panel with data from \a rsrc.
     *
-    * Look up \a rsrc's top-level view and call displayView() with it.
+    * If \a view is not specified, then \a rsrc's top-level view is used.
+    *  Note that displayView is used to render the appropriate view in the panel
     */
-  virtual bool displayResource(const smtk::attribute::ResourcePtr& rsrc);
+  virtual bool displayResource(
+    const smtk::attribute::ResourcePtr& rsrc,
+    smtk::view::ConfigurationPtr view = nullptr);
   /**\brief Populate the attribute panel with data from \a rsrc.
     *
-    * Look up \a rsrc's top-level view and call displayView() with it.
+    * If \a view is not specified, then \a rsrc's top-level view is used.
+    *  Note that displayView is used to render the appropriate view in the panel
     * This variant does more than displayResource() alone;
     * it will obtain the wrapper associated with the resource's manager
     * and use it for selection as displayPipelineSource() does before
     * calling the plain displayResource() variant.
     */
-  virtual bool displayResourceOnServer(const smtk::attribute::ResourcePtr& rsrc);
+  virtual bool displayResourceOnServer(
+    const smtk::attribute::ResourcePtr& rsrc,
+    smtk::view::ConfigurationPtr view = nullptr);
   /**\brief Populate the attribute panel with the given view.
     *
     * Note that the \a view should describe an attribute resource.
@@ -109,7 +115,9 @@ protected slots:
   virtual void displayActivePipelineSource(bool doDisplay);
 
 protected:
-  virtual bool displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc);
+  virtual bool displayResourceInternal(
+    const smtk::attribute::ResourcePtr& rsrc,
+    smtk::view::ConfigurationPtr view = nullptr);
   virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
   smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;

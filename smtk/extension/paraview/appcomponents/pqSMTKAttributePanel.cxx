@@ -132,7 +132,9 @@ void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
   m_rsrc = std::weak_ptr<smtk::resource::Resource>();
 }
 
-bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& rsrc)
+bool pqSMTKAttributePanel::displayResource(
+  const smtk::attribute::ResourcePtr& rsrc,
+  smtk::view::ConfigurationPtr view)
 {
   bool didDisplay = false;
 
@@ -147,7 +149,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
         previousResource->properties().erase<bool>("smtk.attribute_panel.display_hint");
       }
       resetPanel(rsrc->manager());
-      didDisplay = displayResourceInternal(rsrc);
+      didDisplay = displayResourceInternal(rsrc, view);
     }
     else if (rsrc->isPrivate() && rsrc == previousResource)
     {
@@ -164,7 +166,9 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   return didDisplay;
 }
 
-bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::ResourcePtr& rsrc)
+bool pqSMTKAttributePanel::displayResourceInternal(
+  const smtk::attribute::ResourcePtr& rsrc,
+  smtk::view::ConfigurationPtr view)
 {
   bool didDisplay = false;
 
@@ -222,16 +226,17 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
   // Fetch the current user preferences and update the UI manager with them.
   this->updateSettings();
 
-  smtk::view::ConfigurationPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
-  if (view)
+  // Was the view specified or are we using the Resource's TopLevel View?
+  smtk::view::ConfigurationPtr theView = view ? view : (rsrc ? rsrc->findTopLevelView() : nullptr);
+  if (theView)
   {
-    didDisplay = this->displayView(view);
+    didDisplay = this->displayView(theView);
     if (didDisplay)
     {
       rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
     }
   }
-  this->updateTitle(view);
+  this->updateTitle(theView);
   auto rsrcMgr = rsrc->manager();
   if (rsrcMgr)
   {
@@ -265,7 +270,9 @@ bool pqSMTKAttributePanel::displayResourceInternal(const smtk::attribute::Resour
   return didDisplay;
 }
 
-bool pqSMTKAttributePanel::displayResourceOnServer(const smtk::attribute::ResourcePtr& rsrc)
+bool pqSMTKAttributePanel::displayResourceOnServer(
+  const smtk::attribute::ResourcePtr& rsrc,
+  smtk::view::ConfigurationPtr view)
 {
   smtk::resource::ManagerPtr rsrcMgr;
   if (rsrc && (rsrcMgr = rsrc->manager()))
@@ -286,7 +293,7 @@ bool pqSMTKAttributePanel::displayResourceOnServer(const smtk::attribute::Resour
       m_opManager = nullptr;
       m_viewManager = nullptr;
     }
-    return this->displayResource(rsrc);
+    return this->displayResource(rsrc, view);
   }
   return false;
 }
