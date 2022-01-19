@@ -58,11 +58,13 @@ set(commonHeaders
   TypeMap.h
   TypeName.h
   TypeContainer.h
+  TypeTraits.h
   UUID.h
   UUIDGenerator.h
   VersionNumber.h
   VersionMacros.h
   Visit.h
+  WeakReferenceWrapper.h
   testing/cxx/helpers.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
