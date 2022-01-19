@@ -41,6 +41,8 @@ vtk_module_link(vtkSMTKOperationsExt
   PUBLIC
     smtkCore
     smtkIOVTK
+    VTK::FiltersGeometry
+    VTK::FiltersPoints
 )
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
