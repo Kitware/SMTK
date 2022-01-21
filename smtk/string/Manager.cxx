@@ -210,6 +210,24 @@ bool Manager::contains(Hash set, Hash h) const
   return (sit != m_sets.end() && sit->second.find(h) != sit->second.end());
 }
 
+bool Manager::verify(Hash& verified, Hash input) const
+{
+  auto mit = m_data.find(input);
+  if (mit != m_data.end())
+  {
+    verified = input;
+    return true;
+  }
+  auto te = m_translation.find(input);
+  if (te != m_translation.end())
+  {
+    verified = te->second;
+    return true;
+  }
+  verified = Invalid;
+  return false;
+}
+
 smtk::common::Visit Manager::visitMembers(Visitor visitor, Hash set)
 {
   if (!visitor)
@@ -316,6 +334,14 @@ void Manager::setData(
       m_observers(Event::Inserted, child, this->value(child), set.first);
     }
   }
+}
+
+void Manager::reset()
+{
+  m_writeLock.lock();
+  m_data.clear();
+  m_sets.clear();
+  m_writeLock.unlock();
 }
 
 std::pair<Hash, bool> Manager::computeInternal(const std::string& s) const
