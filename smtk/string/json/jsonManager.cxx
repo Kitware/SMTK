@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/string/json/jsonManager.h"
 
+#include <thread>
+
 namespace smtk
 {
 namespace string
@@ -52,25 +54,37 @@ void from_json(const json& j, std::shared_ptr<Manager>& m)
   {
     m = smtk::string::Manager::create();
   }
+  // NB: We do not call m->reset() here since people may
+  // wish to deserialize multiple files to the same manager.
   auto mit = j.find("members");
   if (mit != j.end())
   {
-    std::unordered_map<Hash, std::string> members;
-    std::unordered_map<Hash, std::unordered_set<Hash>> sets;
     for (const auto& element : mit->items())
     {
-      members[element.value().get<Hash>()] = element.key();
+      Hash oldHash = element.value().get<Hash>();
+      Hash newHash = m->manage(element.key());
+      if (newHash != oldHash)
+      {
+        std::lock_guard<std::mutex> writeLock(m->m_writeLock);
+        m->m_translation[oldHash] = newHash;
+      }
     }
     auto sit = j.find("sets");
     if (sit != j.end())
     {
       for (const auto& element : sit->items())
       {
-        Hash h = static_cast<Hash>(stoull(element.key(), nullptr));
-        sets[h] = element.value().get<std::unordered_set<Hash>>();
+        Hash oldSetHash = static_cast<Hash>(stoull(element.key(), nullptr));
+        auto it = m->m_translation.find(oldSetHash);
+        Hash newSetHash = it == m->m_translation.end() ? oldSetHash : it->second;
+        auto oldMembers = element.value().get<std::unordered_set<Hash>>();
+        for (const auto& oldMember : oldMembers)
+        {
+          it = m->m_translation.find(oldMember);
+          m->insert(newSetHash, it == m->m_translation.end() ? oldMember : it->second);
+        }
       }
     }
-    m->setData(members, sets);
   }
 }
 

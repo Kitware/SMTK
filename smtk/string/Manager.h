@@ -15,6 +15,9 @@
 #include "smtk/common/Observers.h"
 #include "smtk/common/Visit.h"
 
+#include "nlohmann/json.hpp"
+
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <string>
@@ -33,7 +36,7 @@ using Hash = std::size_t;
 ///
 /// The manager also provides a way to store sets of strings (named with a string that is
 /// itself hashed by the manager).
-class SMTKCORE_EXPORT Manager
+class SMTKCORE_EXPORT Manager : public std::enable_shared_from_this<Manager>
 {
 public:
   static std::shared_ptr<Manager> create();
@@ -96,12 +99,32 @@ public:
   bool remove(const std::string& set, Hash h);
   bool remove(Hash set, Hash h);
 
-  /// Return true if the \a set exists and contains hash \a h ; and false otherwise.
-  ///
-  /// If \a set is Invalid, then this returns true if the hash exists in \a m_data
-  /// and false otherwise.
+  /**\brief Return true if the \a set exists and contains hash \a h ; and false otherwise.
+    *
+    * If \a set is Invalid, then this returns true if the hash exists in \a m_data
+    * and false otherwise.
+    */
   bool contains(const std::string& set, Hash h) const;
   bool contains(Hash set, Hash h) const;
+  bool contains(Hash h) const { return this->contains(Invalid, h); }
+
+  /**\brief Verify a hash exists, possibly remapping it in the process.
+    *
+    * If \a input exists in the manager's table, then \a verified will
+    * be set to \a input.
+    * Otherwise, if \a input exists in the thread-local translation
+    * table (populated and valid only during deserialization), then
+    * \a verified will be set to the "destination hash" of \a input.
+    * In either of the above cases, this method returns true.
+    *
+    * Failing the above, \a verified will be set to Invalid and
+    * this method returns false.
+    * This method is used to deserialize Token instances after
+    * the Manager has been deserialized.
+    *
+    * \sa Token::fromHash
+    */
+  bool verify(Hash& verified, Hash input) const;
 
   /// Return true if the manager is empty (i.e., managing no hashes) and false otherwise.
   bool empty() const { return m_data.empty(); }
@@ -123,7 +146,15 @@ public:
     const std::unordered_map<Hash, std::string>& members,
     const std::unordered_map<Hash, std::unordered_set<Hash>>& sets);
 
+  /// Reset the manager to an empty state, clearing both members and sets.
+  void reset();
+
 protected:
+  /// This class is a friend so it can access the m_translation table.
+  friend class DeserializationContext;
+  /// This function is a friend so it can access m_translation.
+  friend void SMTKCORE_EXPORT from_json(const nlohmann::json&, std::shared_ptr<Manager>&);
+
   /// Same as compute() but does not lock (you must hold m_writeLock upon entry).
   std::pair<Hash, bool> computeInternal(const std::string& s) const;
   std::pair<Hash, bool> computeInternalAndInsert(const std::string& s);
@@ -132,6 +163,21 @@ protected:
   std::unordered_map<Hash, std::string> m_data;
   std::unordered_map<Hash, std::unordered_set<Hash>> m_sets;
   mutable std::mutex m_writeLock;
+
+  /**\brief A translation map for deserialization.
+    *
+    * This internal variable is checked when asked to retrieve a
+    * hash that does not exist in m_data. In this case, it may
+    * be a hash from a serialized string-manager on a different
+    * platform (with a different hash function). If it is, then
+    * an entry in this map will exist instructing the manager to
+    * return the destination hash instead of verifying the input
+    * hash (i.e., the Token will use the range of the map instead
+    * of the domain).
+    */
+  std::unordered_map<Hash, Hash> m_translation;
+  /// Record the "nesting depth" of deserializers.
+  std::atomic<int> m_translationDepth{ 0 };
 };
 
 /// A type-conversion operation to cast enumerants to strings.

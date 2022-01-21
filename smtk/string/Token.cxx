@@ -95,11 +95,7 @@ Manager& Token::manager()
 Token Token::fromHash(Hash h)
 {
   Token result;
-  if (s_manager->contains(Manager::Invalid, h))
-  {
-    result.m_id = h;
-  }
-  else
+  if (!s_manager->verify(result.m_id, h))
   {
     throw std::invalid_argument("Hash does not exist in database.");
   }

@@ -8,9 +8,68 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/string/Manager.h"
+#include "smtk/string/Token.h"
+#include "smtk/string/json/DeserializationContext.h"
 #include "smtk/string/json/jsonManager.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
+
+namespace
+{
+
+nlohmann::json macos_j = { { "members",
+                             { { "bar", 658648847097844546ull },
+                               { "baz", 9757387848695185804ull },
+                               { "fi", 2749016292479791930ull },
+                               { "foo", 910203208414753533ull },
+                               { "fooset", 8236028636527279968ull },
+                               { "freen", 7154221400802846797ull },
+                               { "frell", 1766362618067931620ull },
+                               { "fum", 18167382720993773629ull },
+                               { "norzum", 1729186881850210053ull },
+                               { "scudge", 5367496269129819745ull },
+                               { "unixy", 16938992535083846116ull },
+                               { "zot", 3844263971212322846ull } } },
+                           { "sets",
+                             { { "16938992535083846116",
+                                 { 1729186881850210053ull,
+                                   7154221400802846797ull,
+                                   1766362618067931620ull,
+                                   5367496269129819745ull } },
+                               { "8236028636527279968",
+                                 { 658648847097844546ull,
+                                   9757387848695185804ull,
+                                   18167382720993773629ull,
+                                   2749016292479791930ull,
+                                   910203208414753533ull } } } } };
+
+nlohmann::json linux_j = { { "members",
+                             { { "bar", 11474628671133349555ull },
+                               { "baz", 12938591777111562088ull },
+                               { "fi", 6845680313955517857ull },
+                               { "foo", 9631199822919835226ull },
+                               { "fooset", 13363299859382379885ull },
+                               { "freen", 9558901499448734506ull },
+                               { "frell", 18277526229368316227ull },
+                               { "fum", 537141906175861386ull },
+                               { "norzum", 18144275414061010597ull },
+                               { "scudge", 12649107848805567601ull },
+                               { "unixy", 10090871004579141420ull },
+                               { "zorg", 687289165850677745ull } } },
+                           { "sets",
+                             { { "10090871004579141420",
+                                 { 18144275414061010597ull,
+                                   18277526229368316227ull,
+                                   9558901499448734506ull,
+                                   12649107848805567601ull } },
+                               { "13363299859382379885",
+                                 { 12938591777111562088ull,
+                                   11474628671133349555ull,
+                                   537141906175861386ull,
+                                   6845680313955517857ull,
+                                   9631199822919835226ull } } } } };
+
+} // anonymous namespace
 
 int TestManager(int, char*[])
 {
@@ -150,7 +209,7 @@ int TestManager(int, char*[])
   ocount = 0;
 
   // Test JSON deserialization.
-  std::cout << "Resetting manager from JSON above\n";
+  std::cout << "Resetting manager via JSON assignment\n";
   manager = j;
 
   vcount = 0;
@@ -160,6 +219,67 @@ int TestManager(int, char*[])
 
   vcount = 0;
   didHalt = manager->visitSets(visitor);
+  std::cout << vcount << " sets\n";
+  test(vcount == 2, "Expected to deserialize 2 sets.");
+
+  // Test reset() and empty():
+  std::cout << "Resetting manager via reset()\n";
+  manager->reset();
+  test(manager->empty(), "Expected reset() to clear members and sets");
+
+  // Serializing/deserializing an empty manager should work:
+  j = manager;
+  std::cout << "Empty string manager:\n" << j.dump(2) << "\n\n";
+  manager = j;
+  test(manager->empty(), "Expected deserializing an empty manager to be empty.");
+
+  // Test deserialization from across platforms
+  // with different hash functions. We'll create 2
+  // nested DeserializationContext objects to
+  // read members+sets from json collected on different
+  // platforms and verify that Tokens deserialized
+  // from hash values in both are able to present
+  // the proper strings.
+  {
+    std::cout << "Testing Token deserialization translation\n";
+    DeserializationContext outerContext(Token::manager().shared_from_this(), macos_j);
+    Token t1 = Token::fromHash(macos_j["members"]["bar"].get<Hash>());
+    test(t1.data() == "bar", "Expected first outer token translation to work.");
+
+    {
+      DeserializationContext innerContext(Token::manager().shared_from_this(), linux_j);
+      Token t2 = Token::fromHash(linux_j["members"]["baz"].get<Hash>());
+      test(t2.data() == "baz", "Expected first inner token translation to work.");
+    }
+
+    // Verify that the translation table was not reset by destroying innerContext;
+    Token t3 = Token::fromHash(macos_j["members"]["foo"].get<Hash>());
+    test(t3.data() == "foo", "Expected last outer token translation to work.");
+    Token t4 = Token::fromHash(linux_j["members"]["fi"].get<Hash>());
+    test(t4.data() == "fi", "Expected last inner token translation to work.");
+  }
+
+  // Verify that the translation table has been cleared... at least one
+  // of the following token constructors should throw an exception.
+  bool didCleanUp = false;
+  try
+  {
+    Token t1 = Token::fromHash(macos_j["members"]["zot"].get<Hash>());
+    Token t2 = Token::fromHash(linux_j["members"]["zorg"].get<Hash>());
+  }
+  catch (std::invalid_argument& err)
+  {
+    didCleanUp = true;
+  }
+  test(didCleanUp, "Expected deserialization storage to be freed afterward.");
+
+  vcount = 0;
+  didHalt = Token::manager().visitMembers(visitor, Manager::Invalid);
+  std::cout << vcount << " members\n";
+  test(vcount == 13, "Expected to deserialize 13 members.");
+
+  vcount = 0;
+  didHalt = Token::manager().visitSets(visitor);
   std::cout << vcount << " sets\n";
   test(vcount == 2, "Expected to deserialize 2 sets.");
 
