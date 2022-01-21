@@ -37,17 +37,30 @@ bool Component::setId(const smtk::common::UUID& uid)
 {
   if (auto resource = m_resource.lock())
   {
-    resource->eraseNode(this->shared_from_this());
+    auto thisPtr = std::static_pointer_cast<Component>(this->shared_from_this());
+    auto count = resource->eraseNodes(thisPtr);
     smtk::common::UUID tmp = m_id;
     m_id = uid;
-    if (resource->insertNode(this->shared_from_this()))
+    // Not checking the count == 1 here. If more than one node was removed
+    // that is considered an intended property of the resource NodeContainer.
+    if (count > 0)
     {
-      return true;
+      if (resource->insertNode(thisPtr))
+      {
+        return true;
+      }
+      else
+      {
+        m_id = tmp;
+        return false;
+      }
     }
+    // Nothing was removed, so the id was successfully changed.
     else
     {
-      m_id = tmp;
-      return false;
+      // This Component does not belong the the resource, so remove the weak reference.
+      m_resource.reset();
+      return true;
     }
   }
 

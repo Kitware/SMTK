@@ -10,6 +10,8 @@
 
 #include "smtk/graph/NodeSet.h"
 
+#include "smtk/graph/Component.h"
+
 namespace smtk
 {
 namespace graph
@@ -61,12 +63,12 @@ NodeSet::NodeType NodeSet::find(const smtk::common::UUID& uuid) const
   return std::shared_ptr<smtk::resource::Component>();
 }
 
-bool NodeSet::eraseNode(const smtk::resource::ComponentPtr& node)
+std::size_t NodeSet::eraseNodes(const smtk::graph::ComponentPtr& node)
 {
-  return m_nodes.erase(node) > 0;
+  return m_nodes.erase(node);
 }
 
-bool NodeSet::insertNode(const smtk::resource::ComponentPtr& node)
+bool NodeSet::insertNode(const smtk::graph::ComponentPtr& node)
 {
   return m_nodes.insert(node).second;
 }

@@ -11,8 +11,10 @@
 #ifndef smtk_graph_NodeSet_h
 #define smtk_graph_NodeSet_h
 
-#include "smtk/resource/Component.h"
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 
+#include <functional>
 #include <memory>
 #include <set>
 
@@ -40,8 +42,8 @@ public:
   NodeType find(const smtk::common::UUID& /* uuid */) const;
 
 protected:
-  bool eraseNode(const smtk::resource::ComponentPtr& component);
-  bool insertNode(const smtk::resource::ComponentPtr& component);
+  std::size_t eraseNodes(const smtk::graph::ComponentPtr& node);
+  bool insertNode(const smtk::graph::ComponentPtr& node);
 
 private:
   Container m_nodes;

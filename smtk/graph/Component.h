@@ -16,7 +16,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/graph/ResourceBase.h"
-#include "smtk/graph/TypeTraits.h"
+#include "smtk/graph/detail/TypeTraits.h"
 
 #include <memory>
 #include <string>
@@ -142,13 +142,14 @@ public:
   // API::visit defined and return a container from get().
   template<typename ArcType, typename Visitor>
   typename std::enable_if<
-    !has_custom_visit<
+    !detail::has_custom_visit<
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
-        std::declval<const typename ArcType::FromType&>()))>::value &&
-      accepts<Visitor, const typename ArcType::ToType&>::value,
+      detail::is_container<
+        decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
+          std::declval<const typename ArcType::FromType&>()))>::value &&
+      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor) const
   {
@@ -167,11 +168,13 @@ public:
   // API::visit defined and return a container from get().
   template<typename ArcType, typename Visitor>
   typename std::enable_if<
-    !has_custom_visit<typename ArcType::template API<ArcType>, Visitor, typename ArcType::ToType&>::
-        value &&
-      is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
+    !detail::has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      typename ArcType::ToType&>::value &&
+      detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
-      accepts<Visitor, typename ArcType::ToType&>::value,
+      detail::accepts<Visitor, typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor)
   {
@@ -190,13 +193,14 @@ public:
   // API::visit defined and return a single node from get().
   template<typename ArcType, typename Visitor>
   typename std::enable_if<
-    !has_custom_visit<
+    !detail::has_custom_visit<
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      !is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
-        std::declval<const typename ArcType::FromType&>()))>::value &&
-      accepts<Visitor, const typename ArcType::ToType&>::value,
+      !detail::is_container<
+        decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
+          std::declval<const typename ArcType::FromType&>()))>::value &&
+      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor) const
   {
@@ -207,11 +211,13 @@ public:
   // API::visit defined and return a single node from get().
   template<typename ArcType, typename Visitor>
   typename std::enable_if<
-    !has_custom_visit<typename ArcType::template API<ArcType>, Visitor, typename ArcType::ToType&>::
-        value &&
-      !is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
+    !detail::has_custom_visit<
+      typename ArcType::template API<ArcType>,
+      Visitor,
+      typename ArcType::ToType&>::value &&
+      !detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
         std::declval<const typename ArcType::FromType&>()))>::value &&
-      accepts<Visitor, typename std::remove_const<typename ArcType::ToType&>::type>::value,
+      detail::accepts<Visitor, typename std::remove_const<typename ArcType::ToType&>::type>::value,
     bool>::type
   visit(const Visitor& visitor)
   {
@@ -222,11 +228,11 @@ public:
   // API::visit defined.
   template<typename ArcType, typename Visitor>
   auto visit(const Visitor& visitor) const -> typename std::enable_if<
-    has_custom_visit<
+    detail::has_custom_visit<
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      accepts<Visitor, const typename ArcType::ToType&>::value,
+      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
     decltype(std::declval<const typename ArcType::template API<ArcType>>()
                .visit(std::declval<const typename ArcType::FromType&>(), visitor))>::type
   {
@@ -237,11 +243,11 @@ public:
   // API::visit defined.
   template<typename ArcType, typename Visitor>
   auto visit(const Visitor& visitor) -> typename std::enable_if<
-    has_custom_visit<
+    detail::has_custom_visit<
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      accepts<Visitor, typename ArcType::ToType&>::value,
+      detail::accepts<Visitor, typename ArcType::ToType&>::value,
     decltype(std::declval<typename ArcType::template API<ArcType>>()
                .visit(std::declval<typename ArcType::FromType&>(), visitor))>::type
   {

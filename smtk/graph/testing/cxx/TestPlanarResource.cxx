@@ -70,7 +70,7 @@ class Face : public smtk::graph::Component
 public:
   Face(const std::shared_ptr<smtk::graph::ResourceBase>& resource);
 
-  template<typename... T, typename = smtk::graph::CompatibleTypes<Edge, T...>>
+  template<typename... T, typename = smtk::graph::detail::CompatibleTypes<Edge, T...>>
   void initialize(T&&... edges);
 
   // An example for data access.

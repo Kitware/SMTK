@@ -50,6 +50,13 @@ class Manager;
 class Resource;
 } // namespace geometry
 
+namespace graph
+{
+class Component;
+template<typename GraphTraits>
+class Resource;
+} // namespace graph
+
 namespace attribute
 {
 class Attribute;
@@ -321,6 +328,13 @@ typedef std::shared_ptr<const Manager> ConstManagerPtr;
 typedef std::shared_ptr<Resource> ResourcePtr;
 typedef std::shared_ptr<const Resource> ConstResourcePtr;
 } // namespace geometry
+
+namespace graph
+{
+typedef std::shared_ptr<Component> ComponentPtr;
+template<typename GraphTraits>
+using ResourcePtr = std::shared_ptr<Resource<GraphTraits>>;
+} // namespace graph
 
 namespace operation
 {

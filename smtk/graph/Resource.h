@@ -21,7 +21,7 @@
 #include "smtk/geometry/Resource.h"
 
 #include "smtk/graph/Component.h"
-
+#include "smtk/graph/NodeSet.h"
 #include "smtk/graph/filter/Grammar.h"
 
 #include "smtk/resource/filter/Filter.h"
@@ -69,19 +69,23 @@ typename std::enable_if<!detail::has_initializer<T(Args...)>::value>::type initi
 
 /// smtk::graph::Resource is defined by a Traits type that defines the node
 /// types and arc types of a multipartite graph. The node types must all inherit
-/// from smtk::resource::Component and comprise the elements of the resource.
+/// from smtk::graph::Component and comprise the elements of the resource.
 /// The arc types can be any type, and can represent a 1-to-1 or 1-to-many
 /// relationship between node types.
 template<typename Traits>
 class SMTK_ALWAYS_EXPORT Resource
   : public smtk::resource::DerivedFrom<Resource<Traits>, ResourceBase>
-  , public GraphTraits<Traits>::NodeStorage
+  , public detail::GraphTraits<Traits>::NodeContainer
 {
-  using NodeStorage = typename GraphTraits<Traits>::NodeStorage;
-  using NodeTypes = typename GraphTraits<Traits>::NodeTypes;
-  using ArcTypes = typename GraphTraits<Traits>::ArcTypes;
 
 public:
+  using NodeContainer = typename detail::GraphTraits<Traits>::NodeContainer;
+
+  template<typename NodeType>
+  using is_node = smtk::tuple_contains<NodeType, typename detail::GraphTraits<Traits>::NodeTypes>;
+  template<typename ArcType>
+  using is_arc = smtk::tuple_contains<ArcType, typename detail::GraphTraits<Traits>::ArcTypes>;
+
   smtkTypedefs(smtk::graph::Resource<Traits>);
 
   std::string typeName() const override
@@ -95,12 +99,10 @@ public:
 
   /// Create a node of type NodeType with additional constructor arguments.
   template<typename NodeType, typename... T>
-  typename std::enable_if<
-    smtk::tuple_contains<NodeType, typename Traits::NodeTypes>::value,
-    std::shared_ptr<NodeType>>::type
-  create(T&&... parameters)
+  typename std::enable_if<is_node<NodeType>::value, std::shared_ptr<NodeType>>::type create(
+    T&&... parameters)
   {
-    std::shared_ptr<smtk::resource::Component> created(new NodeType(this->shared_from_this()));
+    std::shared_ptr<smtk::graph::Component> created(new NodeType(this->shared_from_this()));
 
     auto node = std::static_pointer_cast<NodeType>(created);
     detail::initialize(*node, std::forward<T>(parameters)...);
@@ -112,27 +114,23 @@ public:
   /// Add a node of type NodeType to the resource. Return true if the insertion
   /// took place.
   template<typename NodeType>
-  typename std::enable_if<smtk::tuple_contains<NodeType, typename Traits::NodeTypes>::value, bool>::
-    type
-    add(const std::shared_ptr<NodeType>& node)
+  typename std::enable_if<is_node<NodeType>::value, bool>::type add(
+    const std::shared_ptr<NodeType>& node)
   {
-    return NodeStorage::insertNode(node);
+    return NodeContainer::insertNode(node);
   }
 
   /// Remove a node from the resource. Return true if the removal took place.
   template<typename NodeType>
-  typename std::enable_if<smtk::tuple_contains<NodeType, typename Traits::NodeTypes>::value, bool>::
-    type
-    remove(const std::shared_ptr<NodeType>& node)
+  typename std::enable_if<is_node<NodeType>::value, bool>::type remove(
+    const std::shared_ptr<NodeType>& node)
   {
-    return NodeStorage::eraseNode(node);
+    return NodeContainer::eraseNodes(node) > 0;
   }
 
   /// Create an arc of type ArcType with additional constructor arguments.
   template<typename ArcType, typename... T>
-  typename std::
-    enable_if<smtk::tuple_contains<ArcType, typename Traits::ArcTypes>::value, const ArcType&>::type
-    create(T&&... parameters)
+  typename std::enable_if<is_arc<ArcType>::value, const ArcType&>::type create(T&&... parameters)
   {
     ArcType arc(std::forward<T>(parameters)...);
 
@@ -144,9 +142,7 @@ public:
   /// Add an arc of type ArcType to the resource. Return true if the insertion
   /// took place.
   template<typename ArcType>
-  typename std::enable_if<smtk::tuple_contains<ArcType, typename Traits::ArcTypes>::value, bool>::
-    type
-    add(ArcType&& arc)
+  typename std::enable_if<is_arc<ArcType>::value, bool>::type add(ArcType&& arc)
   {
     smtk::common::UUID id = arc.from().id();
     return m_arcs.emplace<ArcType>(id, std::forward<ArcType>(arc));
@@ -154,9 +150,8 @@ public:
 
   /// Remove an arc from the resource. Return true if the removal took place.
   template<typename ArcType>
-  typename std::enable_if<smtk::tuple_contains<ArcType, typename Traits::ArcTypes>::value, bool>::
-    type
-    remove(const std::shared_ptr<ArcType>& arc)
+  typename std::enable_if<is_arc<ArcType>::value, bool>::type remove(
+    const std::shared_ptr<ArcType>& arc)
   {
     return m_arcs.erase<ArcType>(arc.from().id());
   }
@@ -175,33 +170,33 @@ public:
 
   std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID& uuid) const override
   {
-    return NodeStorage::find(uuid);
+    return NodeContainer::find(uuid);
   }
   void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const override
   {
-    NodeStorage::visit(v);
+    NodeContainer::visit(v);
   }
 
 protected:
-  bool eraseNode(const smtk::resource::ComponentPtr& component) override
+  std::size_t eraseNodes(const smtk::graph::ComponentPtr& node) override
   {
-    return NodeStorage::eraseNode(component);
+    return NodeContainer::eraseNodes(node) > 0;
   }
 
-  bool insertNode(const smtk::resource::ComponentPtr& component) override
+  bool insertNode(const smtk::graph::ComponentPtr& node) override
   {
-    return NodeStorage::insertNode(component);
+    return NodeContainer::insertNode(node);
   }
 
   Resource(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)
-    , m_arcs(identity<typename Traits::ArcTypes>())
+    , m_arcs(identity<typename detail::GraphTraits<Traits>::ArcTypes>())
   {
   }
 
   Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(uid, manager)
-    , m_arcs(identity<typename Traits::ArcTypes>())
+    , m_arcs(identity<typename detail::GraphTraits<Traits>::ArcTypes>())
   {
   }
 

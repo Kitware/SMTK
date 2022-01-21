@@ -18,7 +18,7 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/WeakReferenceWrapper.h"
 
-#include "smtk/graph/TypeTraits.h"
+#include "smtk/graph/detail/TypeTraits.h"
 
 namespace smtk
 {
@@ -43,7 +43,7 @@ public:
 
   /// Construct an OrderedArcs instance from a node of type FromType to multiple
   /// nodes of type ToType.
-  template<typename... ToTypes, typename = CompatibleTypes<ToType, ToTypes...>>
+  template<typename... ToTypes, typename = detail::CompatibleTypes<ToType, ToTypes...>>
   OrderedArcs(const FromType& from, ToTypes&... to)
     : m_from(from)
     , m_to({ smtk::weakRef(to)... })
@@ -55,7 +55,7 @@ public:
   template<typename Iterator>
   OrderedArcs(
     const FromType& from,
-    typename std::enable_if<is_iterable<Iterator>::type, const Iterator&>::type begin,
+    typename std::enable_if<detail::is_iterable<Iterator>::type, const Iterator&>::type begin,
     const Iterator& end)
     : m_from(from)
   {
@@ -71,7 +71,8 @@ public:
   template<typename Container>
   OrderedArcs(
     const FromType& from,
-    typename std::enable_if<is_container<Container>::type, const Container&>::type container)
+    typename std::enable_if<detail::is_container<Container>::type, const Container&>::type
+      container)
     : OrderedArcs(from, container.begin(), container.end())
   {
   }

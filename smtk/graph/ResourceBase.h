@@ -42,10 +42,24 @@ public:
   virtual ArcMap& arcs() = 0;
 
 protected:
-  /// Erase all nodes that component corresponds to according to the NodeStorage
-  virtual bool eraseNode(const smtk::resource::ComponentPtr& component) = 0;
-  /// Add a node without checking if the node is a valid Graph type
-  virtual bool insertNode(const smtk::resource::ComponentPtr& component) = 0;
+  /** Erase all of the nodes from the \a node storage without updating the arcs.
+   *  This is an internal method used for temporary removal, modification, and
+   *  re-insertion in cases where \a node data that is indexed must be changed.
+   *  In that case, arcs must not be modified.
+   *
+   * \return the number of nodes removed. Usually this is either 0 or 1, however the
+   * implementation may define removal of > 1 nodes based on criteria other than id
+   * or pointer address.
+   */
+  virtual std::size_t eraseNodes(const smtk::graph::ComponentPtr& node) = 0;
+
+  /** Unconditionally insert the given \a node into the container.
+   *  Does not check against NodeTypes to see whether the node type is
+   *  allowed; this is assumed to have already been done.
+   *
+   * \return whether or not the insertion was successful.
+   */
+  virtual bool insertNode(const smtk::graph::ComponentPtr& node) = 0;
 
   ResourceBase(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)

@@ -11,8 +11,6 @@
 #ifndef smtk_graph_TypeTraits_h
 #define smtk_graph_TypeTraits_h
 
-#include "smtk/graph/NodeSet.h"
-
 #include "smtk/common/TypeTraits.h"
 
 #include <functional>
@@ -22,6 +20,11 @@
 namespace smtk
 {
 namespace graph
+{
+
+class NodeSet;
+
+namespace detail
 {
 
 template<class...>
@@ -96,30 +99,27 @@ public:
   static constexpr bool value = type::value;
 };
 
-namespace detail
-{
 template<typename Traits, typename = void>
-struct SelectNodesStorage
+struct SelectNodeContainer
 {
   using type = NodeSet;
 };
 
 template<typename Traits>
-struct SelectNodesStorage<Traits, smtk::common::void_t<typename Traits::NodeStorage>>
+struct SelectNodeContainer<Traits, smtk::common::void_t<typename Traits::NodeContainer>>
 {
-  using type = typename Traits::NodeStorage;
+  using type = typename Traits::NodeContainer;
 };
-
-} // namespace detail
 
 template<typename Traits>
 struct GraphTraits
 {
   using NodeTypes = typename Traits::NodeTypes;
   using ArcTypes = typename Traits::ArcTypes;
-  using NodeStorage = typename detail::SelectNodesStorage<Traits>::type;
+  using NodeContainer = typename detail::SelectNodeContainer<Traits>::type;
 };
 
+} // namespace detail
 } // namespace graph
 } // namespace smtk
 
