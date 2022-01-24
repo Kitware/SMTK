@@ -34,30 +34,33 @@ class Component;
 class SMTKCORE_EXPORT ResourceBase
   : public smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>
 {
-protected:
-  struct SMTKCORE_EXPORT Compare
-  {
-    bool operator()(
-      const std::shared_ptr<smtk::resource::Component>& lhs,
-      const std::shared_ptr<smtk::resource::Component>& rhs) const;
-  };
-
 public:
   smtkTypeMacro(smtk::graph::ResourceBase);
   smtkSuperclassMacro(smtk::resource::DerivedFrom<ResourceBase, smtk::geometry::Resource>);
-
-  using NodeSet = std::set<std::shared_ptr<smtk::resource::Component>, Compare>;
-
-  std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID&) const override;
-
-  void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const override;
-
-  const NodeSet& nodes() const { return m_nodes; }
 
   virtual const ArcMap& arcs() const = 0;
   virtual ArcMap& arcs() = 0;
 
 protected:
+  /** Erase all of the nodes from the \a node storage without updating the arcs.
+   *  This is an internal method used for temporary removal, modification, and
+   *  re-insertion in cases where \a node data that is indexed must be changed.
+   *  In that case, arcs must not be modified.
+   *
+   * \return the number of nodes removed. Usually this is either 0 or 1, however the
+   * implementation may define removal of > 1 nodes based on criteria other than id
+   * or pointer address.
+   */
+  virtual std::size_t eraseNodes(const smtk::graph::ComponentPtr& node) = 0;
+
+  /** Unconditionally insert the given \a node into the container.
+   *  Does not check against NodeTypes to see whether the node type is
+   *  allowed; this is assumed to have already been done.
+   *
+   * \return whether or not the insertion was successful.
+   */
+  virtual bool insertNode(const smtk::graph::ComponentPtr& node) = 0;
+
   ResourceBase(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)
   {
@@ -68,7 +71,7 @@ protected:
   {
   }
 
-  NodeSet m_nodes;
+  friend Component;
 };
 
 } // namespace graph

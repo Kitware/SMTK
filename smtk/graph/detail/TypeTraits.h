@@ -14,11 +14,17 @@
 #include "smtk/common/TypeTraits.h"
 
 #include <functional>
+#include <set>
 #include <type_traits>
 
 namespace smtk
 {
 namespace graph
+{
+
+class NodeSet;
+
+namespace detail
 {
 
 template<class...>
@@ -93,6 +99,27 @@ public:
   static constexpr bool value = type::value;
 };
 
+template<typename Traits, typename = void>
+struct SelectNodeContainer
+{
+  using type = NodeSet;
+};
+
+template<typename Traits>
+struct SelectNodeContainer<Traits, smtk::common::void_t<typename Traits::NodeContainer>>
+{
+  using type = typename Traits::NodeContainer;
+};
+
+template<typename Traits>
+struct GraphTraits
+{
+  using NodeTypes = typename Traits::NodeTypes;
+  using ArcTypes = typename Traits::ArcTypes;
+  using NodeContainer = typename detail::SelectNodeContainer<Traits>::type;
+};
+
+} // namespace detail
 } // namespace graph
 } // namespace smtk
 

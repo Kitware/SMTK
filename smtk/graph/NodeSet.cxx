@@ -1,5 +1,4 @@
-//=============================================================================
-//
+//=========================================================================
 //  Copyright (c) Kitware, Inc.
 //  All rights reserved.
 //  See LICENSE.txt for details.
@@ -7,9 +6,9 @@
 //  This software is distributed WITHOUT ANY WARRANTY; without even
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
-//
-//=============================================================================
-#include "smtk/graph/ResourceBase.h"
+//=========================================================================
+
+#include "smtk/graph/NodeSet.h"
 
 #include "smtk/graph/Component.h"
 
@@ -17,18 +16,29 @@ namespace smtk
 {
 namespace graph
 {
-bool ResourceBase::Compare::operator()(
+
+bool NodeSet::Compare::operator()(
   const std::shared_ptr<smtk::resource::Component>& lhs,
   const std::shared_ptr<smtk::resource::Component>& rhs) const
 {
   return (!lhs ? true : (!rhs ? false : lhs->id() < rhs->id()));
 }
 
-std::shared_ptr<smtk::resource::Component> ResourceBase::find(
-  const smtk::common::UUID& compId) const
+const NodeSet::Container& NodeSet::nodes() const
 {
-  // Components are stored in a set, so we construct a dummy component to find
-  // the component we want.
+  return m_nodes;
+}
+
+void NodeSet::visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const
+{
+  for (const auto& node : m_nodes)
+  {
+    v(node);
+  }
+}
+
+NodeSet::NodeType NodeSet::find(const smtk::common::UUID& uuid) const
+{
   struct QueryKey : resource::Component
   {
     QueryKey(const smtk::common::UUID& id)
@@ -45,7 +55,7 @@ std::shared_ptr<smtk::resource::Component> ResourceBase::find(
     const smtk::common::UUID& m_id;
   };
 
-  auto it = m_nodes.find(std::make_shared<QueryKey>(compId));
+  auto it = m_nodes.find(std::make_shared<QueryKey>(uuid));
   if (it != m_nodes.end())
   {
     return *it;
@@ -53,12 +63,14 @@ std::shared_ptr<smtk::resource::Component> ResourceBase::find(
   return std::shared_ptr<smtk::resource::Component>();
 }
 
-void ResourceBase::visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const
+std::size_t NodeSet::eraseNodes(const smtk::graph::ComponentPtr& node)
 {
-  for (const auto& node : m_nodes)
-  {
-    v(node);
-  }
+  return m_nodes.erase(node);
+}
+
+bool NodeSet::insertNode(const smtk::graph::ComponentPtr& node)
+{
+  return m_nodes.insert(node).second;
 }
 
 } // namespace graph
