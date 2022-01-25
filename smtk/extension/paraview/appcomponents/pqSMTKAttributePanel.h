@@ -54,15 +54,18 @@ public slots:
   virtual bool displayPipelineSource(pqPipelineSource* psrc);
   /**\brief Populate the attribute panel with data from \a rsrc.
     *
-    * If \a view is not specified, then \a rsrc's top-level view is used.
+    * If \a view is not specified, then \a rsrc's top-level view is used and the
+    * \a advancedlevel is ignored.
     *  Note that displayView is used to render the appropriate view in the panel
     */
   virtual bool displayResource(
     const smtk::attribute::ResourcePtr& rsrc,
-    smtk::view::ConfigurationPtr view = nullptr);
+    smtk::view::ConfigurationPtr view = nullptr,
+    int advancedlevel = 0);
   /**\brief Populate the attribute panel with data from \a rsrc.
     *
-    * If \a view is not specified, then \a rsrc's top-level view is used.
+    * If \a view is not specified, then \a rsrc's top-level view is used and the
+    * \a advancedlevel is ignored.
     *  Note that displayView is used to render the appropriate view in the panel
     * This variant does more than displayResource() alone;
     * it will obtain the wrapper associated with the resource's manager
@@ -71,7 +74,8 @@ public slots:
     */
   virtual bool displayResourceOnServer(
     const smtk::attribute::ResourcePtr& rsrc,
-    smtk::view::ConfigurationPtr view = nullptr);
+    smtk::view::ConfigurationPtr view = nullptr,
+    int advancedlevel = 0);
   /**\brief Populate the attribute panel with the given view.
     *
     * Note that the \a view should describe an attribute resource.
@@ -117,7 +121,8 @@ protected slots:
 protected:
   virtual bool displayResourceInternal(
     const smtk::attribute::ResourcePtr& rsrc,
-    smtk::view::ConfigurationPtr view = nullptr);
+    smtk::view::ConfigurationPtr view = nullptr,
+    int advancedlevel = 0);
   virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
   smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
