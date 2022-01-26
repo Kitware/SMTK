@@ -134,7 +134,8 @@ void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 
 bool pqSMTKAttributePanel::displayResource(
   const smtk::attribute::ResourcePtr& rsrc,
-  smtk::view::ConfigurationPtr view)
+  smtk::view::ConfigurationPtr view,
+  int advancedlevel)
 {
   bool didDisplay = false;
 
@@ -149,7 +150,7 @@ bool pqSMTKAttributePanel::displayResource(
         previousResource->properties().erase<bool>("smtk.attribute_panel.display_hint");
       }
       resetPanel(rsrc->manager());
-      didDisplay = displayResourceInternal(rsrc, view);
+      didDisplay = displayResourceInternal(rsrc, view, advancedlevel);
     }
     else if (rsrc->isPrivate() && rsrc == previousResource)
     {
@@ -168,7 +169,8 @@ bool pqSMTKAttributePanel::displayResource(
 
 bool pqSMTKAttributePanel::displayResourceInternal(
   const smtk::attribute::ResourcePtr& rsrc,
-  smtk::view::ConfigurationPtr view)
+  smtk::view::ConfigurationPtr view,
+  int advancedlevel)
 {
   bool didDisplay = false;
 
@@ -234,6 +236,11 @@ bool pqSMTKAttributePanel::displayResourceInternal(
     if (didDisplay)
     {
       rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+      // If the view was specified then set the advance level as well
+      if (view)
+      {
+        m_attrUIMgr->setAdvanceLevel(advancedlevel);
+      }
     }
   }
   this->updateTitle(theView);
@@ -272,7 +279,8 @@ bool pqSMTKAttributePanel::displayResourceInternal(
 
 bool pqSMTKAttributePanel::displayResourceOnServer(
   const smtk::attribute::ResourcePtr& rsrc,
-  smtk::view::ConfigurationPtr view)
+  smtk::view::ConfigurationPtr view,
+  int advancedlevel)
 {
   smtk::resource::ManagerPtr rsrcMgr;
   if (rsrc && (rsrcMgr = rsrc->manager()))
@@ -293,7 +301,7 @@ bool pqSMTKAttributePanel::displayResourceOnServer(
       m_opManager = nullptr;
       m_viewManager = nullptr;
     }
-    return this->displayResource(rsrc, view);
+    return this->displayResource(rsrc, view, advancedlevel);
   }
   return false;
 }

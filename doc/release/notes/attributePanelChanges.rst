@@ -5,4 +5,4 @@ Closing a CMB application that has more than one attribute resource loaded would
 
 Added the ability to set the View and Attribute Resource
 --------------------------------------------------------
-Both displayResource and displayResourceOnServer methods now take in an optional view parameter.  If the view is set, then it will be used to display the resource, else the resource's top level view will be used.
+Both displayResource and displayResourceOnServer methods now take in optional view and advancedLevel parameters.  If the view is set, then it will be used to display the resource and the advance level in the UI Manager is set to advancedLevel, else the resource's top level view will be used and the advacedLevel is ignored.
