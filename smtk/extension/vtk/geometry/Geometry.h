@@ -21,6 +21,13 @@
 
 namespace smtk
 {
+namespace resource
+{
+namespace properties
+{
+struct CoordinateFrame;
+}
+} // namespace resource
 namespace extension
 {
 namespace vtk
@@ -76,6 +83,26 @@ public:
     vtkDataObject* data,
     const std::vector<double>& color,
     const std::string& name = "entity color");
+
+  /**\brief A convenience to add a field-data transform array the
+    *   representation will apply to the data before rendering.
+    *
+    * This method returns true if \a object has a CoordinateFrame
+    * property named "transform" or "smtk.geometry.transform" (because
+    * an array is added to \a data) and false otherwise.
+    *
+    * Note that if \a object has CoordinateFrame values at both
+    * names, "transform" is preferred since it is more likely
+    * to be directly specified by an end user.
+    *
+    * Note the \a outputArrayName is not the name of the property
+    * to examine, but the name to be assigned to an output
+    * VTK data-array (if any is created).
+    */
+  static bool addTransformArrayIfPresent(
+    vtkDataObject* data,
+    const std::shared_ptr<smtk::resource::PersistentObject>& object,
+    const std::string& outputArrayName = "transform");
 
 protected:
   Backend m_backend;

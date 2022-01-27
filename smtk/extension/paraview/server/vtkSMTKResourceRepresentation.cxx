@@ -304,7 +304,11 @@ int vtkSMTKResourceRepresentation::RequestData(
 
     // Get each block from the top level multi block
     auto* port = this->GetInternalOutputPort();
-    auto* mbds = vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+    auto* untransformed =
+      vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+    this->ApplyTransforms->SetInputDataObject(untransformed);
+    this->ApplyTransforms->Update();
+    auto* mbds = vtkMultiBlockDataSet::SafeDownCast(this->ApplyTransforms->GetOutputDataObject(0));
     this->CurrentData->ShallowCopy(mbds);
 
     vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
@@ -395,7 +399,7 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
   {
     auto* port = this->GetInternalOutputPort();
     vtkSmartPointer<vtkMultiBlockDataSet> mbds =
-      vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+      vtkMultiBlockDataSet::SafeDownCast(this->ApplyTransforms->GetOutputDataObject(0));
 
     vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
