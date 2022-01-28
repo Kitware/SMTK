@@ -7,31 +7,40 @@ set(headers
 set(classes
   Registrar
   pqConePropertyWidget
-  pqCrinklePropertyWidget
   pqPointPropertyWidget
-  pqSlicePropertyWidget
-  pqSlicePropertyWidgetBase
   pqSMTKAttributeItemWidget
   pqSMTKBoxItemWidget
-  pqSMTKCoordinateFrameItemWidget
   pqSMTKTransformWidget
   pqSMTKConeItemWidget
   pqSMTKInfiniteCylinderItemWidget
   pqSMTKLineItemWidget
-  pqSMTKPlaneItemWidget
   pqSMTKPointItemWidget
-  pqSMTKSliceItemWidget
   pqSMTKSphereItemWidget
   pqSMTKSplineItemWidget
   qtSimpleExpressionEvaluationView
-  vtkMeshInspectorRepresentation
 )
 
 set(ui_files
   resources/pqConePropertyWidget.ui
   resources/pqPointPropertyWidget.ui
-  resources/pqSlicePropertyWidgetBase.ui
 )
+
+if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10")
+  list(APPEND classes
+    pqCrinklePropertyWidget
+    pqSMTKCoordinateFrameItemWidget
+    pqSMTKPlaneItemWidget
+    pqSMTKSliceItemWidget
+    pqSlicePropertyWidget
+    pqSlicePropertyWidgetBase
+    vtkMeshInspectorRepresentation
+  )
+
+  list(APPEND ui_files
+    resources/pqSlicePropertyWidgetBase.ui
+  )
+endif ()
+
 set(CMAKE_AUTOUIC_SEARCH_PATHS
   "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
