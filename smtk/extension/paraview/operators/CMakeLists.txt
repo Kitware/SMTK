@@ -3,9 +3,14 @@ set(sources
   Registrar.h
   smtkAssignColorsView.cxx
   smtkAssignColorsView.h
-  smtkMeshInspectorView.cxx
-  smtkMeshInspectorView.h
 )
+
+if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+  list(APPEND sources
+    smtkMeshInspectorView.cxx
+    smtkMeshInspectorView.h
+)
+endif ()
 
 set(ui_files
   smtkAssignColorsParameters.ui
@@ -24,9 +29,18 @@ smtk_add_plugin(smtkPQOperationViewsPlugin
     UI_FILES ${ui_files}
     SOURCES ${sources}
 )
+
+set(widget_library)
+if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+  set(widget_library smtkPQWidgetsExt)
+else ()
+  target_compile_definitions(smtkPQOperationViewsPlugin
+    PRIVATE PARAVIEW_VERSION_59)
+endif ()
+
 target_link_libraries(smtkPQOperationViewsPlugin
   PRIVATE
-    smtkPQWidgetsExt
+    ${widget_library}
     smtkPQComponentsExt
     smtkQtExt
     ParaView::pqComponents
