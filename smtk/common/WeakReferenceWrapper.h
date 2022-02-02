@@ -16,27 +16,39 @@
 namespace smtk
 {
 
+/// Reference wrapper for handling weak references in a similar way as
+/// std::reference_wrapper.
+///
+/// Requirements for \a Type are it must be derived from
+/// std::enable_shared_from_this<Type>.
 template<class Type>
 class WeakReferenceWrapper
 {
   std::weak_ptr<Type> _weak_ptr;
   mutable Type* _cache = nullptr;
 
+  using U = typename std::remove_reference<typename std::remove_cv<Type>::type>::type;
+
 public:
   WeakReferenceWrapper() = default;
 
+  /// Copy Construct.
   WeakReferenceWrapper(const WeakReferenceWrapper& other)
     : _weak_ptr(other._weak_ptr)
-    , _cache(nullptr)
+    , _cache(other._cache)
   {
   }
 
+  /// Move Construct.
   WeakReferenceWrapper(WeakReferenceWrapper&& other) noexcept
     : _weak_ptr(std::move(other._weak_ptr))
     , _cache(other._cache)
   {
     other._cache = nullptr;
   }
+
+  /// Construct from a refernece.
+  WeakReferenceWrapper(Type&& ref) = delete;
 
   WeakReferenceWrapper(Type& ref)
   {
@@ -45,18 +57,21 @@ public:
     _cache = ptr.get();
   }
 
+  /// Construct from a weak pointer.
   WeakReferenceWrapper(std::weak_ptr<Type> ptr)
     : _weak_ptr(ptr)
     , _cache(nullptr)
   {
   }
 
+  /// Copy assignment.
   WeakReferenceWrapper& operator=(const WeakReferenceWrapper& other)
   {
     this->_weak_ptr = other._weak_ptr;
     return *this;
   }
 
+  /// Move assignment. This also handles assignment from weak_ptr and reference implicitly.
   WeakReferenceWrapper& operator=(WeakReferenceWrapper&& other) noexcept
   {
     this->_weak_ptr = std::move(other._weak_ptr);
@@ -65,6 +80,7 @@ public:
     return *this;
   }
 
+  /// The the referenced type. Throws an exception if the reference expired.
   Type& get() const
   {
     if (!_weak_ptr.expired())
@@ -81,9 +97,26 @@ public:
     }
   }
 
-  operator Type&() const { return this->get(); }
+  /// Implicit conversion to referenced type. Throws an exception if the reference expired.
+  operator Type&() const noexcept { return this->get(); }
 
+  /// Implicit conversion to bool
+  operator bool() const noexcept { return !this->expired(); }
+
+  /// Check if the reference is still valid
   bool expired() const { return _weak_ptr.expired(); }
+
+  /// Reset the refernece/make it expired
+  void reset() const
+  {
+    // Do not reset the _cache variable since it is used for the
+    // hash which must remain consistent. Comparison handles
+    // case where the hash is the same but one/both referneces are
+    // expired.
+    _weak_ptr.reset();
+  }
+
+  /// Compute a consistent hash of the reference
   size_t hash() const
   {
     // Set the cache
@@ -94,7 +127,9 @@ public:
     return *((size_t*)&_cache);
   }
 
-  bool operator==(const WeakReferenceWrapper& ref) const
+  /// Compare if references refernece the same data in memory
+  template<class U>
+  bool operator==(const WeakReferenceWrapper<U>& ref) const
   {
     // Expired references are all the same
     if (this->expired() && ref.expired())
@@ -113,15 +148,26 @@ public:
       return _cache == ref._cache;
     }
   }
+
+  template<class U>
+  friend class WeakReferenceWrapper;
 };
 
+/// Explicitly disable creating WeakReferenceWrappers from rvalues
 template<class Type>
 void weakRef(Type&&) = delete;
 
-template<class Type>
-WeakReferenceWrapper<Type> weakRef(Type& ref)
+/// Helper function for creating WeakReferenceWrappers from \a Type reference.
+template<class Type, class U = typename std::remove_reference<Type>::type>
+WeakReferenceWrapper<U> weakRef(Type& ref)
 {
-  return WeakReferenceWrapper<Type>(ref);
+  return WeakReferenceWrapper<U>(ref);
+}
+
+template<class Type, class U = typename std::remove_reference<Type>::type>
+WeakReferenceWrapper<U> weakCRef(Type& ref)
+{
+  return WeakReferenceWrapper<U>(ref);
 }
 
 } // namespace smtk

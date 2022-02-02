@@ -2,6 +2,8 @@
 # Tests
 ################################################################################
 set(unit_tests
+  TestInverseArcs.cxx
+  TestInverseOrderedArcs.cxx
   TestPlanarResource.cxx
   TestNodalResource.cxx
   TestNodalResourceFilter.cxx
