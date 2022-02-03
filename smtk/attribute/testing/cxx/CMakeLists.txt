@@ -92,6 +92,7 @@ set(unit_tests
   unitEvaluatorFactory.cxx
   unitEvaluatorManager.cxx
   unitExclusionCategories.cxx
+  unitGroupItem.cxx
   unitInfixExpressionEvaluator.cxx
   unitIsRelevant.cxx
   unitIsValid.cxx
