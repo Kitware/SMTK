@@ -16,9 +16,7 @@
 
 #include "smtk/graph/arcs/Arc.h"
 #include "smtk/graph/arcs/Arcs.h"
-#include "smtk/graph/arcs/Inverse.h"
 #include "smtk/graph/arcs/OrderedArcs.h"
-#include "smtk/graph/detail/TypeTraits.h"
 
 #include <fstream>
 #include <iostream>
@@ -52,9 +50,22 @@ static std::ofstream null_stream("dump.txt");
   }                                                                                                \
   throw_check ? null_stream : (failure_count++, std::cout << #expr << " did not throw.\n")
 
+#define FINISH_TEST()                                                                              \
+  null_stream.close();                                                                             \
+  std::cout << "\nSummary:\n";                                                                     \
+  if (failure_count)                                                                               \
+  {                                                                                                \
+    std::cout << "\tFailed " << failure_count << " out of " << check_count << " checks\n";         \
+  }                                                                                                \
+  else                                                                                             \
+  {                                                                                                \
+    std::cout << "\tPassed " << check_count << " checks\n";                                        \
+  }                                                                                                \
+  return failure_count ? 1 : 0
+
 namespace
 {
-/// A central graph node type, everything it is what things connect to, and
+/// A central graph node type, everything connects to it, and
 /// visa versa
 class Node : public smtk::graph::Component
 {
@@ -78,7 +89,8 @@ public:
 
 /// A type of thing that is connected to a node
 /// Each node may have many labels
-/// Each Label has information to distinguish it from other Labels
+/// Each label may have a single node
+/// Each Label has information that distinguishs it from other Labels
 class Label : public smtk::graph::Component
 {
   std::string m_info;
@@ -130,7 +142,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// Arc(LabeledNode) <=> Arcs(Labels)
+// Arcs(Labels) <=> Arc(LabeledNode)
 class Labels;
 class LabeledNode;
 
@@ -199,7 +211,9 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////
 
-struct LabeledTraits
+///////////////////////////////////////////////////////////////////////////////
+/// Graph Traits
+struct LabeledAndFlaggedNodeTraits
 {
   using NodeTypes = std::tuple<Node, Label, Flag>;
   using ArcTypes = std::tuple<
@@ -213,6 +227,7 @@ struct LabeledTraits
     OrderedOtherNodes,
     UnorderedOtherNodes>;
 };
+///////////////////////////////////////////////////////////////////////////////
 } // namespace
 
 /// Test inserting arc types that have inverses.
@@ -252,7 +267,7 @@ int TestInverseArcs(int argc, char* argv[])
     return 0;
   }
 
-  auto graph = smtk::graph::Resource<LabeledTraits>::create();
+  auto graph = smtk::graph::Resource<LabeledAndFlaggedNodeTraits>::create();
   // Create some nodes
   std::vector<std::shared_ptr<Node>> nodes(numNodes);
   int index = 0;
@@ -264,10 +279,11 @@ int TestInverseArcs(int argc, char* argv[])
     index++;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // Each node will get 3 labels, 2 normal labels and 1 flag
+  //
+  // \a toggle is used to test adding arcs in different orders
   bool toggle = true;
-  // Create two arcs per node.
-  // one created label->node (implies node->label)
-  // one created node->label (implies label->node)
   for (const auto& node : nodes)
   {
     std::stringstream label_str1;
@@ -285,12 +301,13 @@ int TestInverseArcs(int argc, char* argv[])
     {
       toggle = false;
       //////////////////////////////////////////////////////////////////////////
-      // Arc <=> Arc
+      // Arc -> Arc
       graph->connect<Flags>(*node, *flag);
       //////////////////////////////////////////////////////////////////////////
 
       //////////////////////////////////////////////////////////////////////////
-      // Arc <=> Arcs
+      // Arcs -> Arc
+      // Arc -> Arcs
       graph->connect<Labels>(*node, *label1);
       graph->connect<LabeledNode>(*label2, *node);
       //////////////////////////////////////////////////////////////////////////
@@ -299,34 +316,47 @@ int TestInverseArcs(int argc, char* argv[])
     {
       toggle = true;
       //////////////////////////////////////////////////////////////////////////
-      // Arc <=> Arc
+      // Arc -> Arc
       graph->connect<FlaggedNode>(*flag, *node);
       //////////////////////////////////////////////////////////////////////////
 
       //////////////////////////////////////////////////////////////////////////
-      // Arc <=> Arcs
+      // Arc -> Arcs
+      // Arcs -> Arc
       graph->connect<LabeledNode>(*label2, *node);
       graph->connect<Labels>(*node, *label1);
       //////////////////////////////////////////////////////////////////////////
     }
+    ////////////////////////////////////////////////////////////////////////////
+    // OrderedArcs -> Arc
     graph->connect<OrderedAllLabels>(*node, *label1, *label2, *flag);
+    ////////////////////////////////////////////////////////////////////////////
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Arcs <=> Arcs
-  // Arcs <=> OrderedArcs
+  // Arcs -> OrderedArcs fails with exception
   REQUIRE_THROW((graph->connect<UnorderedOtherNodes>(*nodes[0], *nodes[1])))
     << "Adding OrderedArcs implicitly should throw\n";
   REQUIRE_THROW(graph->arcs().at<UnorderedOtherNodes>(nodes[0]->id()));
   for (int i = 0; i < numNodes; ++i)
   {
+    ////////////////////////////////////////////////////////////////////////////
+    // OrderArcs -> Arcs
     graph->connect<OrderedOtherNodes>(
       *nodes[i], *nodes[(i + 1) % 4], *nodes[(i + 2) % 4], *nodes[(i + 3) % 4]);
     for (int j = i + 1; j < numNodes; ++j)
     {
+      //////////////////////////////////////////////////////////////////////////
+      // Arcs -> Arcs
       graph->connect<OtherNodes>(*nodes[i], *nodes[j]);
     }
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // Check the arcs and their inverses have been created
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   for (const auto& node : graph->nodes())
   {
@@ -467,16 +497,5 @@ int TestInverseArcs(int argc, char* argv[])
     }
   }
 
-  null_stream.close();
-  std::cout << "\nSummary:\n";
-  if (failure_count)
-  {
-    std::cout << "\tFailed " << failure_count << " out of " << check_count << " checks\n";
-  }
-  else
-  {
-    std::cout << "\tPassed " << check_count << " checks\n";
-  }
-
-  return failure_count ? 1 : 0;
+  FINISH_TEST();
 }

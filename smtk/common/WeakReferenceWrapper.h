@@ -98,7 +98,7 @@ public:
   }
 
   /// Implicit conversion to referenced type. Throws an exception if the reference expired.
-  operator Type&() const noexcept { return this->get(); }
+  operator Type&() const { return this->get(); }
 
   /// Implicit conversion to bool
   operator bool() const noexcept { return !this->expired(); }
