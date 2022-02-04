@@ -337,7 +337,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
 
   // Starting with version 5, this property must be explicitly present in the file.
-  if (version.major() < 5)
+  if (
+    (version.major() < 5) &&
+    !(resource->properties().contains<bool>("smtk.attribute_panel.display_hint")))
   {
     resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
   }

@@ -6,8 +6,12 @@ set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module"
 )
+
+if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+  list(APPEND module_files "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module")
+endif()
+
 vtk_module_scan(
   MODULE_FILES ${module_files}
   PROVIDES_MODULES vtk_modules
@@ -28,8 +32,11 @@ if (TARGET ParaView::pqApplicationComponents)
     appcomponents/plugin/paraview.plugin
     model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
-    operators/paraview.plugin
-    widgets/plugin/paraview.plugin)
+    operators/paraview.plugin)
+
+  if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+    list(APPEND plugin_files widgets/plugin/paraview.plugin)
+  endif()
 endif ()
 
 paraview_plugin_scan(
