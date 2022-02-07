@@ -23,6 +23,11 @@
         {
             "group": "master",
             "site": "gitlab-ci",
+            "buildname": "fedora33_paraview59_compat"
+        },
+        {
+            "group": "master",
+            "site": "gitlab-ci",
             "buildname": "fedora33_plain"
         },
         {
