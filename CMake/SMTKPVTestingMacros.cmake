@@ -1,3 +1,9 @@
+if (ParaView_VERSION VERSION_LESS 5.10)
+  set (PV_DR "-dr")
+else ()
+  set (PV_DR "--dr")
+endif ()
+
 function (_smtk_paraview_add_tests test_function)
   _paraview_add_tests("${test_function}"
     LOAD_PLUGINS smtkPQComponentsPlugin
@@ -44,7 +50,7 @@ function (smtk_add_client_tests)
         __paraview_args__
         __paraview_script__
         __paraview_client_args__
-        --dr
+        ${PV_DR}
         --exit
     ${ARGN})
 endfunction ()
@@ -66,7 +72,7 @@ function (smtk_add_client_server_tests)
         __paraview_args__
         __paraview_script__
         __paraview_client_args__
-        -dr
+        ${PV_DR}
         --exit
     ${ARGN})
 endfunction ()
@@ -91,7 +97,7 @@ function (smtk_add_client_server_render_tests)
         __paraview_args__
         __paraview_script__
         __paraview_client_args__
-        -dr
+        ${PV_DR}
         --exit
     ${ARGN})
 endfunction ()
