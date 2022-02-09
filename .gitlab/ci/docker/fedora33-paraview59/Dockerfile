@@ -1,4 +1,5 @@
-FROM fedora:35
+# This Fedora version cannot be bumped, ParaView 5.9 will not build with gcc >= 11
+FROM fedora:33
 MAINTAINER Ben Boeckel <ben.boeckel@kitware.com>
 
 COPY install_deps.sh /root/install_deps.sh
