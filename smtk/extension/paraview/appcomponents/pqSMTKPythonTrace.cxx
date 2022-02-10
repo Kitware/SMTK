@@ -45,13 +45,14 @@ std::size_t replace_all(std::string& inout, std::string what, std::string with)
 // handle names with embeded quote or newlines
 std::string quoteName(const std::string& name)
 {
+  std::string raw = name.find('\\') != std::string::npos ? "r" : "";
   if (name.find('\'') != std::string::npos || name.find('\n') != std::string::npos)
   {
     std::string repl = name;
     replace_all(repl, "'", "\\'");
-    return "'''" + repl + "'''";
+    return raw + "'''" + repl + "'''";
   }
-  return "'" + name + "'";
+  return raw + "'" + name + "'";
 }
 
 std::string traceAssociations(const smtk::attribute::ReferenceItemPtr& assoc)
