@@ -136,6 +136,12 @@ public:
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
   const smtk::attribute::Categories& categories() const { return m_categories; }
 
+  ///\brief Indicates if the Definition can inherit categories based on it's
+  /// parent Definition or its owning Attribute Definition.  The default is true.
+  bool isOkToInherit() const { return m_isOkToInherit; }
+
+  void setIsOkToInherit(bool isOkToInheritValue) { m_isOkToInherit = isOkToInheritValue; }
+
   ///\brief Returns the categories explicitly assigned to the Definition
   smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
   const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
@@ -438,6 +444,7 @@ protected:
   smtk::attribute::DefinitionPtr m_baseDefinition;
   std::string m_type;
   std::string m_label;
+  bool m_isOkToInherit;
   bool m_isNodal;
   attribute::Categories::Set m_localCategories;
   attribute::Categories m_categories;

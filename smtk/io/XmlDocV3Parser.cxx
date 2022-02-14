@@ -484,9 +484,17 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
   //Current Category Structure
   if (catInfoNode)
   {
+    catInfoNode.append_attribute("Inherit") = def->isOkToInherit();
     // Lets get the overall combination mode
     ccm = catInfoNode.attribute("Combination");
     auto& localCats = def->localCategories();
+    // Are we inheriting categories?
+    auto xatt = catInfoNode.attribute("Inherit");
+    if (xatt)
+    {
+      def->setIsOkToInherit(xatt.as_bool());
+    }
+
     if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
     {
       localCats.setCombinationMode(catMode);

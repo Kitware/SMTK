@@ -97,6 +97,9 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     j["CategoryInfo"]["ExcludeCategories"] = defPtr->localCategories().excludedCategoryNames();
   }
 
+  // Inheritance Option
+  j["CategoryInfo"]["Inherit"] = defPtr->isOkToInherit();
+
   // Save Color Information
   if (defPtr->isNotApplicableColorSet())
   {
@@ -240,6 +243,11 @@ SMTKCORE_EXPORT void from_json(
 
   if (catInfo != j.end())
   {
+    auto okToInherit = catInfo->find("Inherit");
+    if (okToInherit != catInfo->end())
+    {
+      defPtr->setIsOkToInherit(*okToInherit);
+    }
     attribute::Categories::Set& localCats = defPtr->localCategories();
     auto combineMode = catInfo->find("Combination");
     smtk::attribute::Categories::Set::CombinationMode cmode;

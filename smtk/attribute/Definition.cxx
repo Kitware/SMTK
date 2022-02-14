@@ -49,6 +49,7 @@ Definition::Definition(
   m_rootName = m_type;
   m_includeIndex = 0;
   m_prerequisiteUsageCount = 0;
+  m_isOkToInherit = true;
   if (myBaseDef)
   {
     m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
@@ -754,6 +755,12 @@ void Definition::applyCategories(smtk::attribute::Categories inherited)
   // First append the def's categories to those we have inherited
   // Note that we want to not modify the original list which is why
   // its passed by value
+
+  // Is the definition not suppose to inherit information categories?
+  if (!m_isOkToInherit)
+  {
+    inherited.reset();
+  }
   inherited.insert(m_localCategories);
 
   // Lets go to each item and process its categories
@@ -767,7 +774,7 @@ void Definition::applyCategories(smtk::attribute::Categories inherited)
   // base definition - note that we assume that the inherited set passed
   // in is contained within the base's categories
   m_categories.reset();
-  if (m_baseDefinition)
+  if (m_baseDefinition && m_isOkToInherit)
   {
     m_categories.insert(m_baseDefinition->m_categories);
   }
