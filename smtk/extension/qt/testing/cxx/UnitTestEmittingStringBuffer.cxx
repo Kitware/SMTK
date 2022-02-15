@@ -58,7 +58,7 @@ void TestEmittingStringBuffer::run()
   flushEventQueue();
   smtkDebugMacro(logger, "this is a Debug no = " << 1 << " DEBUG!");
   flushEventQueue();
-  logger.addRecord(smtk::io::Logger::INFO, "Sample Info String\n");
+  logger.addRecord(smtk::io::Logger::Info, "Sample Info String\n");
   flushEventQueue();
   emit finished();
 }

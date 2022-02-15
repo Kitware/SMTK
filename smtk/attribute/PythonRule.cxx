@@ -117,7 +117,7 @@ bool PythonRule::operator()(
     // function and the error and treat this rule as an all-pass filter.
     s << "\n\n" << e.what();
     smtk::io::Logger::instance().addRecord(
-      smtk::io::Logger::ERROR,
+      smtk::io::Logger::Error,
       "PythonRule for definition \"" + attribute->definition()->type() +
         "\" encountered an error:\n" + s.str());
     return true;

@@ -48,7 +48,7 @@ void Logger::addRecord(
   unsigned int line)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  if ((s == Logger::ERROR) || (s == Logger::FATAL))
+  if ((s == Logger::Error) || (s == Logger::Fatal))
   {
     m_hasErrors = true;
   }

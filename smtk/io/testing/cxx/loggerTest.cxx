@@ -21,7 +21,7 @@ int main()
   smtkErrorMacro(logger, "this is an error no = " << 45 << " ERROR!");
   smtkWarningMacro(logger, "this is a warning no = " << 10.1234 << " WARNING!");
   smtkDebugMacro(logger, "this is a Debug no = " << 1 << " DEBUG!");
-  logger.addRecord(smtk::io::Logger::INFO, "Sample Info String\n");
+  logger.addRecord(smtk::io::Logger::Info, "Sample Info String\n");
   std::size_t i, n = logger.numberOfRecords();
   if (n != 4)
   {

@@ -152,7 +152,7 @@ public:
       }
       catch(std::exception& e)
       {
-        this->log().addRecord(smtk::io::Logger::ERROR, e.what());
+        this->log().addRecord(smtk::io::Logger::Error, e.what());
         return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }

@@ -192,7 +192,7 @@ void qtInfixExpressionEditorRow::onEditBoxChanged(const QString& text)
     }
     else
     {
-      log.addRecord(smtk::io::Logger::ERROR, "Invalid evaluator");
+      log.addRecord(smtk::io::Logger::Error, "Invalid evaluator");
     }
 
     if (log.hasErrors())

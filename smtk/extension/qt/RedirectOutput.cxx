@@ -46,19 +46,19 @@ void RedirectOutputToQt(QObject* context, smtk::io::Logger& log)
       {
         switch (record.severity)
         {
-          case smtk::io::Logger::DEBUG:
+          case smtk::io::Logger::Debug:
             qCDebug(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
             break;
-          case smtk::io::Logger::INFO:
+          case smtk::io::Logger::Info:
             qCInfo(smtkCategory) << smtk::io::Logger::toString(record, false).c_str();
             break;
-          case smtk::io::Logger::WARNING:
+          case smtk::io::Logger::Warning:
             qCWarning(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
             break;
-          case smtk::io::Logger::ERROR:
+          case smtk::io::Logger::Error:
             qCCritical(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
             break;
-          case smtk::io::Logger::FATAL:
+          case smtk::io::Logger::Fatal:
           default:
             qFatal("%s", smtk::io::Logger::toString(record, true).c_str());
             break;
