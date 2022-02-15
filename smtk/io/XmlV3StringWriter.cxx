@@ -253,6 +253,7 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
   auto& localCats = def->localCategories();
   // Lets write out the category stuff
   xml_node catGroupNode, catInfoNode = definition.append_child("CategoryInfo");
+  catInfoNode.append_attribute("Inherit") = def->isOkToInherit();
   catInfoNode.append_attribute("Combination")
     .set_value(Categories::Set::combinationModeAsString(localCats.combinationMode()).c_str());
 

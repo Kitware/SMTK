@@ -225,6 +225,7 @@ bool testCategories(
   status = status && testAttriubute(attRes, "d", true, false);
   status = status && testAttriubute(attRes, "e", false, true);
   status = status && testAttriubute(attRes, "f", false, true);
+  status = status && testAttriubute(attRes, "g", false, true);
 
   attRes->setActiveCategoriesEnabled(false);
 
@@ -235,6 +236,7 @@ bool testCategories(
   status = status && testAttriubute(attRes, "d", true, false);
   status = status && testAttriubute(attRes, "e", true, true);
   status = status && testAttriubute(attRes, "f", true, true);
+  status = status && testAttriubute(attRes, "g", true, false);
 
   attRes->setActiveCategoriesEnabled(true);
 
@@ -281,6 +283,10 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   E->localCategories().insertInclusion("E");
   DefinitionPtr F = attRes->createDefinition("F");
   vItemDef = F->addItemDefinition<VoidItemDefinition>("v4");
+  DefinitionPtr G = attRes->createDefinition("G", A);
+  G->setIsOkToInherit(false);
+  vItemDef = G->addItemDefinition<VoidItemDefinition>("v5");
+  vItemDef->localCategories().insertInclusion("v5");
   attRes->finalizeDefinitions();
 
   attRes->createAttribute("a", "A");
@@ -289,6 +295,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   attRes->createAttribute("d", "D");
   attRes->createAttribute("e", "E");
   attRes->createAttribute("f", "F");
+  attRes->createAttribute("g", "G");
 
   std::set<std::string> cats;
   // Let set the resource's active categories to A which means
@@ -316,6 +323,7 @@ int unitCategories(int /*unused*/, char* /*unused*/[])
     { "D", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "v3" } },
     { "E", { "E" } },
     { "F", {} },
+    { "G", { "v5" } },
     { "g1", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } },
     { "g2", { "g2", "s3" } },
     { "s1", { "A", "g1", "s1", "s2", "v1", "ec1", "ec2" } },
@@ -325,7 +333,8 @@ int unitCategories(int /*unused*/, char* /*unused*/[])
     { "v2", { "A", "B", "v2" } },
     { "v3", { "A", "v3" } },
     { "v4", {} },
-    { "resource", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "B", "v2", "C", "v3", "E" } }
+    { "v5", { "v5" } },
+    { "resource", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "B", "v2", "C", "v3", "E", "v5" } }
   };
   smtkTest(
     testCategories(attRes, "First Pass - ", answers), "Failed checking Categories in First Pass");

@@ -311,7 +311,7 @@ See data/attribute/attribute_collection/ItemBlockTest.sbt and smtk/attribute/tes
 Definitions Section
 ---------------------------------
 This is an optional section that defines a set of attribute
-definitions used to generate attrubutes with a SMTK-based program.
+definitions used to generate attributes with a SMTK-based program.
 This section is created using the <Definitions> XML Element.
 See :ref:`the example XML <XMLExample>` for how to create a set
 of attribute definitions.
@@ -330,6 +330,10 @@ This element can contain the following children XML Elements:
 
    * - XML Child Element
      - Description
+
+   * - <CategoryInfo>
+     - Specifies the local category constraints specified on the
+       Definition
 
    * - <ItemDefinitions>
      - Defines the items contained within the attributes generated
@@ -463,6 +467,38 @@ Attributes that can be included in this XML Element.
        The format is "r, g, b" where r, g, and b are a value between 0
        and 1 inclusive.
        If not specified its value is 0, 0, 0.
+
+CategoryInfo Format
+^^^^^^^^^^^^^^^^^^^
+This subsection of an AttDef Element describes the local category constants imposed on the Definition.  All Item Definitions belonging to
+this Definition, as well as all Definitions derived from this, will inherit these constraints unless explicitly told not to.
+
+The category information is divided into two elements:
+
+* <Include> - represents the set of categories that will make this Definition relevant
+* <Exclude> - represents the set of categories that will make this Definition not relevant.
+
+The children of these elements include <Cat> elements whose values are category names.  These elements also include an XML attribute called **Combination** which can be set to *Any* or *All*.
+If set to *All*, all of the categories listed must be active in the owning attribute resource in order for the set to be considered *satisfied*.  If *Any* is specified, then only one of the categories need to be active in order for the set to be *satisfied*.
+
+The CategotyInfo Element itself can have the following XML Attributes:
+
+.. list-table:: XML Attributes for <CategoryInfo> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Combination
+     - String value representing how the Inclusion and Exclusion sets should be combined.
+
+       If set to *All*, then both the Inclusion set must be satisfied and the Exclusion set must not be *satisfied* in order for the Definition (and the Attributes it generates) to be relevant.  If it is set to *Any*, then either the Inclusion set is satisfied or the Exclusion set is not, in order for the Definition (and the Attributes it generates) to be relevant.
+
+   * - Inherit
+     - Boolean value that indicates if the Definition should inherit its Base Definition's categories.
+
 
 Item Definitions Format
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
