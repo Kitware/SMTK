@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
+#include "smtk/common/Deprecation.h"
 #include <functional>
 #include <iosfwd>
 #include <mutex>
@@ -104,11 +105,11 @@ public:
     Error,
     Fatal,
 
-    DEBUG = Debug,
-    INFO = Info,
-    WARNING = Warning,
-    ERROR = Error,
-    FATAL = Fatal
+    SMTK_DEPRECATED_IN_22_02("Use `Debug`") DEBUG = Debug,
+    SMTK_DEPRECATED_IN_22_02("Use `Info`") INFO = Info,
+    SMTK_DEPRECATED_IN_22_02("Use `Warning`") WARNING = Warning,
+    SMTK_DEPRECATED_IN_22_02("Use `Error`") ERROR = Error,
+    SMTK_DEPRECATED_IN_22_02("Use `Fatal`") FATAL = Fatal
   };
 
   struct Record
