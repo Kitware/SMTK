@@ -15,14 +15,6 @@
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "tao/pegtl.hpp"
-// PEGTL does not itself appear to do anything nasty, but
-// on Windows MSVC 2015, it includes something that defines
-// a macro named ERROR to be 0. This causes smtkErrorMacro()
-// to expand into garbage (because smtk::io::Logger::ERROR
-// gets expanded to smtk::io::Logger::0).
-#ifdef ERROR
-#undef ERROR
-#endif
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <memory>

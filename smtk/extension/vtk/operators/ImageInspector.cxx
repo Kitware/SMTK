@@ -32,14 +32,6 @@
 
 #include "smtk/extension/vtk/operators/ImageInspector_xml.h"
 
-// On Windows MSVC 2015+, something is included that defines
-// a macro named ERROR to be 0. This causes smtkErrorMacro()
-// to expand into garbage (because smtk::io::Logger::ERROR
-// gets expanded to smtk::io::Logger::0).
-#ifdef ERROR
-#undef ERROR
-#endif
-
 namespace smtk
 {
 namespace geometry
