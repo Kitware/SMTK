@@ -98,11 +98,17 @@ public:
 
   enum Severity
   {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
+    Debug,
+    Info,
+    Warning,
+    Error,
+    Fatal,
+
+    DEBUG = Debug,
+    INFO = Info,
+    WARNING = Warning,
+    ERROR = Error,
+    FATAL = Fatal
   };
 
   struct Record
