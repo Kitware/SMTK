@@ -564,7 +564,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
     if (val.isNull())
     {
       // This is a diagnostic Record. The user ideally shouldn't see this.
-      currentLog.addRecord(smtk::io::Logger::ERROR, "Couldn't get value.");
+      currentLog.addRecord(smtk::io::Logger::Error, "Couldn't get value.");
     }
 
     logs.push_back(currentLog);

@@ -54,6 +54,11 @@ inline PySharedPtrClass< smtk::io::Logger > pybind11_init_smtk_io_Logger(py::mod
     .def_readwrite("lineNumber", &smtk::io::Logger::Record::lineNumber)
     ;
   py::enum_<smtk::io::Logger::Severity>(instance, "Severity")
+    .value("Debug", smtk::io::Logger::Severity::Debug)
+    .value("Info", smtk::io::Logger::Severity::Info)
+    .value("Warning", smtk::io::Logger::Severity::Warning)
+    .value("Error", smtk::io::Logger::Severity::Error)
+    .value("Fatal", smtk::io::Logger::Severity::Fatal)
     .value("DEBUG", smtk::io::Logger::Severity::DEBUG)
     .value("INFO", smtk::io::Logger::Severity::INFO)
     .value("WARNING", smtk::io::Logger::Severity::WARNING)

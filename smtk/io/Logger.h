@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
+#include "smtk/common/Deprecation.h"
 #include <functional>
 #include <iosfwd>
 #include <mutex>
@@ -39,7 +40,7 @@
   {                                                                                                \
     std::stringstream s1;                                                                          \
     s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
-    (logger).addRecord(smtk::io::Logger::ERROR, s1.str(), __FILE__, __LINE__);                     \
+    (logger).addRecord(smtk::io::Logger::Error, s1.str(), __FILE__, __LINE__);                     \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as a warning message.
@@ -51,7 +52,7 @@
   {                                                                                                \
     std::stringstream s1;                                                                          \
     s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
-    (logger).addRecord(smtk::io::Logger::WARNING, s1.str(), __FILE__, __LINE__);                   \
+    (logger).addRecord(smtk::io::Logger::Warning, s1.str(), __FILE__, __LINE__);                   \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as a debug message.
@@ -63,7 +64,7 @@
   {                                                                                                \
     std::stringstream s1;                                                                          \
     s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
-    (logger).addRecord(smtk::io::Logger::DEBUG, s1.str(), __FILE__, __LINE__);                     \
+    (logger).addRecord(smtk::io::Logger::Debug, s1.str(), __FILE__, __LINE__);                     \
   } while (0)
 
 /**\brief Write the expression \a x to \a logger as an informational message.
@@ -78,7 +79,7 @@
   {                                                                                                \
     std::stringstream s1;                                                                          \
     s1 << x; /* NOLINT(bugprone-macro-parentheses) */                                              \
-    (logger).addRecord(smtk::io::Logger::INFO, s1.str());                                          \
+    (logger).addRecord(smtk::io::Logger::Info, s1.str());                                          \
   } while (0)
 
 namespace smtk
@@ -98,11 +99,17 @@ public:
 
   enum Severity
   {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
+    Debug,
+    Info,
+    Warning,
+    Error,
+    Fatal,
+
+    SMTK_DEPRECATED_IN_22_02("Use `Debug`") DEBUG = Debug,
+    SMTK_DEPRECATED_IN_22_02("Use `Info`") INFO = Info,
+    SMTK_DEPRECATED_IN_22_02("Use `Warning`") WARNING = Warning,
+    SMTK_DEPRECATED_IN_22_02("Use `Error`") ERROR = Error,
+    SMTK_DEPRECATED_IN_22_02("Use `Fatal`") FATAL = Fatal
   };
 
   struct Record

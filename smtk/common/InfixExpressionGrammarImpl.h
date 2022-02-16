@@ -24,14 +24,6 @@
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/abnf.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
-// PEGTL does not itself appear to do anything nasty, but
-// on Windows MSVC 2015, it includes something that defines
-// a macro named ERROR to be 0. This causes smtkErrorMacro()
-// to expand into garbage (because smtk::io::Logger::ERROR
-// gets expanded to smtk::io::Logger::0).
-#ifdef ERROR
-#undef ERROR
-#endif
 
 #ifdef ERROR_INVALID_FUNCTION
 #undef ERROR_INVALID_FUNCTION

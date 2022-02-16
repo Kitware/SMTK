@@ -64,7 +64,7 @@ public:
     catch (const std::invalid_argument&)
     {
       log.addRecord(
-        smtk::io::Logger::ERROR, "Text was not convertible to a floating-point representation.");
+        smtk::io::Logger::Error, "Text was not convertible to a floating-point representation.");
       return false;
     }
 

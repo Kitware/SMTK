@@ -67,35 +67,35 @@ smtk::io::Logger* OutputWindow::GetLogger() const
 
 void OutputWindow::DisplayText(const char* msg)
 {
-  this->Log->addRecord(smtk::io::Logger::INFO, std::string(msg));
+  this->Log->addRecord(smtk::io::Logger::Info, std::string(msg));
 }
 
 void OutputWindow::DisplayErrorText(const char* msg)
 {
   FormattedOutput out = this->ParseOutput(msg);
   this->Log->addRecord(
-    smtk::io::Logger::ERROR, std::get<2>(out), std::get<0>(out), std::get<1>(out));
+    smtk::io::Logger::Error, std::get<2>(out), std::get<0>(out), std::get<1>(out));
 }
 
 void OutputWindow::DisplayWarningText(const char* msg)
 {
   FormattedOutput out = this->ParseOutput(msg);
   this->Log->addRecord(
-    smtk::io::Logger::WARNING, std::get<2>(out), std::get<0>(out), std::get<1>(out));
+    smtk::io::Logger::Warning, std::get<2>(out), std::get<0>(out), std::get<1>(out));
 }
 
 void OutputWindow::DisplayGenericWarningText(const char* msg)
 {
   FormattedOutput out = this->ParseOutput(msg);
   this->Log->addRecord(
-    smtk::io::Logger::WARNING, std::get<2>(out), std::get<0>(out), std::get<1>(out));
+    smtk::io::Logger::Warning, std::get<2>(out), std::get<0>(out), std::get<1>(out));
 }
 
 void OutputWindow::DisplayDebugText(const char* msg)
 {
   FormattedOutput out = this->ParseOutput(msg);
   this->Log->addRecord(
-    smtk::io::Logger::DEBUG, std::get<2>(out), std::get<0>(out), std::get<1>(out));
+    smtk::io::Logger::Debug, std::get<2>(out), std::get<0>(out), std::get<1>(out));
 }
 
 std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(const char* msg) const
