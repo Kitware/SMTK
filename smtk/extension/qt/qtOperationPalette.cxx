@@ -20,6 +20,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/common/Managers.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
@@ -35,10 +37,21 @@ using namespace smtk::extension;
 
 qtOperationPalette::qtOperationPalette(const smtk::view::Information& info)
   : qtBaseView(info)
-  , m_model(new qtOperationTypeModel(info, this))
   , m_filter(new QSortFilterProxyModel(this))
   , m_subset(new QSortFilterProxyModel(this))
 {
+  if (info.contains<std::shared_ptr<smtk::common::Managers>>())
+  {
+    const auto& managers = info.get<std::shared_ptr<smtk::common::Managers>>();
+    if (managers->contains<QSharedPointer<qtOperationTypeModel>>())
+    {
+      m_model = managers->get<QSharedPointer<qtOperationTypeModel>>().get();
+    }
+  }
+  if (!m_model)
+  {
+    m_model = new qtOperationTypeModel(info, this);
+  }
   std::string subsetFilterRegex("[4-9]");
   std::string subsetSortColumn("TypeName");
   std::string filterSortColumn("Associability");
