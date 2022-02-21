@@ -10,15 +10,26 @@
 
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
+#include <QApplication>
+
 namespace smtk
 {
 namespace extension
 {
+
+bool qtOperationLauncher::s_busyCursorEnabled = true;
+
 std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
   const smtk::operation::Operation::Ptr& op)
 {
   // Create Result Handler
   std::shared_ptr<ResultHandler> handler = std::make_shared<ResultHandler>();
+
+  if (m_operationCount++ == 0 && s_busyCursorEnabled)
+  {
+    QApplication::setOverrideCursor(Qt::BusyCursor);
+    QApplication::processEvents();
+  }
 
 // To enable SINGLE_THREAD, set CMake variable SMTK_ENABLE_OPERATION_THREADS to OFF.
 #ifdef SINGLE_THREAD
@@ -84,6 +95,10 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
 
 #endif
 
+  // Watch for the result ourselves so we can track the number of active operations.
+  QObject::connect(
+    handler.get(), &ResultHandler::resultReady, this, &qtOperationLauncher::decrementCount);
+
   // Return the future associated with the promise created above.
   return handler;
 }
@@ -102,6 +117,16 @@ smtk::operation::Operation::Result qtOperationLauncher::run(
     QPrivateSignal());
 
   return result;
+}
+
+void qtOperationLauncher::decrementCount(smtk::operation::Operation::Result result)
+{
+  (void)result;
+  if (--m_operationCount == 0 && qtOperationLauncher::s_busyCursorEnabled)
+  {
+    QApplication::restoreOverrideCursor();
+    QApplication::processEvents();
+  }
 }
 
 ResultHandler::ResultHandler()

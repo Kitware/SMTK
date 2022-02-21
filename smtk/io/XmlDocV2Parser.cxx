@@ -28,6 +28,7 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Resource.h"
 #include "smtk/view/Configuration.h"
+#include "smtk/view/xml/xmlConfiguration.h"
 #include <algorithm>
 #include <iostream>
 
@@ -443,47 +444,13 @@ void XmlDocV2Parser::processViews(xml_node& root)
   xml_node child;
   for (child = views.first_child(); child; child = child.next_sibling())
   {
-    xml_attribute xatt;
-    std::string name, vtype, icon;
     smtk::view::ConfigurationPtr view;
-    xatt = child.attribute("Name");
-    if (xatt)
+    from_xml(child, view);
+    if (!view)
     {
-      name = xatt.value();
-    }
-    else
-    {
-      xatt = child.attribute("Title");
-      if (xatt)
-      {
-        name = xatt.value();
-      }
-      else
-      {
-        smtkErrorMacro(m_logger, "Could not find View's Name or Title - skipping it!");
-        continue;
-      }
-    }
-
-    xatt = child.attribute("Type");
-    if (xatt)
-    {
-      vtype = xatt.value();
-    }
-    else
-    {
-      smtkErrorMacro(m_logger, "Could not find View " << name << "'s Type - skipping it!");
+      smtkErrorMacro(m_logger, "Could not find View's Name/Title or Type - skipping it!");
       continue;
     }
-
-    view = smtk::view::Configuration::New(vtype, name);
-    xatt = child.attribute("Icon");
-    if (xatt)
-    {
-      icon = xatt.value();
-      view->setIconName(icon);
-    }
-    this->processViewComponent(view->details(), child, true);
     view->setIncludeIndex(m_includeIndex);
     m_resource->addView(view);
   }
@@ -494,33 +461,5 @@ void XmlDocV2Parser::processViewComponent(
   xml_node& node,
   bool isTopComp)
 {
-  // Add the attributes of the node to the component
-  xml_attribute xatt;
-  std::string name;
-
-  for (xatt = node.first_attribute(); xatt; xatt = xatt.next_attribute())
-  {
-    // If this is the top View comp then skip Title, Name and Type Attributes
-    name = xatt.name();
-    if (
-      isTopComp && ((name == "Name") || (name == "Title") || (name == "Type") || (name == "Icon")))
-    {
-      continue;
-    }
-    comp.setAttribute(name, xatt.value());
-  }
-  // if the node has text then save it in the component's contents
-  // else process the node's children
-  if (!node.text().empty())
-  {
-    comp.setContents(node.text().get());
-  }
-  else
-  {
-    xml_node child;
-    for (child = node.first_child(); child; child = child.next_sibling())
-    {
-      this->processViewComponent(comp.addChild(child.name()), child, false);
-    }
-  }
+  smtk::view::from_xml(node, comp, isTopComp);
 }

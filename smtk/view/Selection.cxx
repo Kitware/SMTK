@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/view/Selection.h"
 
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/resource/Component.h"
 
 namespace
@@ -209,7 +210,69 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
   }
 }
 
-/// Perform the action (IGNORING m_defaultAction!!!), returning true if it had an effect
+bool Selection::configureItem(
+  const std::shared_ptr<smtk::attribute::ReferenceItem>& item,
+  int value,
+  bool exactMatch,
+  bool clearItem) const
+{
+  bool didModify = false;
+  bool retainedMembers = false;
+  bool didInsert = false;
+  if (!item || (value == 0 && !exactMatch))
+  {
+    return didModify;
+  }
+
+  std::set<std::shared_ptr<smtk::resource::PersistentObject>> itemMembers;
+  item->as(itemMembers);
+
+  std::set<std::shared_ptr<smtk::resource::PersistentObject>> selectedObjects;
+  this->currentSelectionByValue(selectedObjects, value, exactMatch);
+
+  if (itemMembers == selectedObjects)
+  {
+    return didModify;
+  }
+
+  // We plan to make at least one change.
+  if (clearItem)
+  {
+    item->reset();
+    didModify = !itemMembers.empty();
+
+    if (item->isOptional())
+    {
+      item->setIsEnabled(false);
+    }
+  }
+  else
+  {
+    // Remove itemMembers from selectedObjects so we are left
+    // with a set item objects that must be inserted.
+    for (const auto& member : itemMembers)
+    {
+      selectedObjects.erase(member);
+    }
+    retainedMembers = !itemMembers.empty();
+  }
+  // TODO: This should reserve storage before appending, but
+  //       we don't know how many objects will be accepted so
+  //       it is not easy.
+  for (const auto& object : selectedObjects)
+  {
+    didInsert |= item->appendValue(object, /* allowDuplicates */ true);
+  }
+  didModify |= didInsert;
+
+  if (item->isOptional())
+  {
+    item->setIsEnabled(didInsert || retainedMembers);
+  }
+
+  return didModify;
+}
+
 bool Selection::performAction(
   smtk::resource::PersistentObject::Ptr obj,
   int value,

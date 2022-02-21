@@ -92,7 +92,7 @@ set(smtkCore_public_include_directories
   $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
   $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
-  )
+)
 
 set(smtkCore_public_link_libraries
   MOAB
@@ -100,14 +100,14 @@ set(smtkCore_public_link_libraries
   taocpp::pegtl
   Threads::Threads
   Boost::boost
-  )
+)
 
 set(smtkCore_private_link_libraries
   Boost::date_time
   Boost::filesystem
   Boost::system
   LibArchive::LibArchive
-  )
+)
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
   set_property(SOURCE common/PythonInterpreter.cxx APPEND PROPERTY COMPILE_DEFINITIONS
@@ -125,7 +125,12 @@ endif()
 add_library(smtkCore ${smtk_srcs})
 # dependencies on generated files from subdirectories
 add_dependencies(smtkCore
-  attibuteGenHeaders meshGenHeaders modelGenHeaders operationGenHeaders projectGenHeaders)
+  attributeGenHeaders
+  meshGenHeaders
+  modelGenHeaders
+  operationGenHeaders
+  projectGenHeaders
+)
 
 target_include_directories(smtkCore
   PUBLIC

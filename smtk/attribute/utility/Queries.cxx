@@ -12,10 +12,15 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/CustomItemDefinition.h"
+#include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/FileSystemItemDefinition.h"
+#include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -339,6 +344,137 @@ std::set<smtk::resource::ResourcePtr> extractResources(
     resourceSet.insert(resource);
   }
   return resourceSet;
+}
+
+namespace
+{
+bool hasValidDefault(const smtk::attribute::ItemDefinition& itemDef)
+{
+  if (itemDef.isOptional() && !itemDef.isEnabledByDefault())
+  {
+    return true;
+  }
+  // TODO: This only works for "core" item types.
+  // Once item types are extensible, Definition will need to be extended
+  // to provide a "hasDefault()" method.
+  if (const auto* valueItemDef = dynamic_cast<const ValueItemDefinition*>(&itemDef))
+  {
+    if (!valueItemDef->hasDefault())
+    {
+      return false;
+    }
+    for (const auto& childEntry : valueItemDef->childrenItemDefinitions())
+    {
+      if (!hasValidDefault(*childEntry.second))
+      {
+        return false;
+      }
+    }
+  }
+  else if (const auto* refItemDef = dynamic_cast<const ReferenceItemDefinition*>(&itemDef))
+  {
+    if (refItemDef->numberOfRequiredValues() > 0)
+    {
+      return false;
+    }
+    for (const auto& childEntry : refItemDef->childrenItemDefinitions())
+    {
+      if (!hasValidDefault(*childEntry.second))
+      {
+        return false;
+      }
+    }
+  }
+  else if (const auto* groupItemDef = dynamic_cast<const GroupItemDefinition*>(&itemDef))
+  {
+    if (groupItemDef->isConditional())
+    {
+      // TODO: Do we need to check whether any items are enabled by default?
+      // The default is for all items to be marked optional,
+      // so only if "no choice" is allowed will the default be valid:
+      return groupItemDef->minNumberOfChoices() == 0;
+    }
+    else if (groupItemDef->numberOfRequiredGroups() > 0)
+    {
+      std::size_t nn = groupItemDef->numberOfItemDefinitions();
+      for (std::size_t ii = 0; ii < nn; ++ii)
+      {
+        auto child = groupItemDef->itemDefinition(static_cast<int>(ii));
+        if (!hasValidDefault(*child))
+        {
+          return false;
+        }
+      }
+    }
+  }
+  else if (const auto* dateTimeItemDef = dynamic_cast<const DateTimeItemDefinition*>(&itemDef))
+  {
+    if (!dateTimeItemDef->hasDefault() && dateTimeItemDef->numberOfRequiredValues() > 0)
+    {
+      return false;
+    }
+  }
+  else if (const auto* fileSystemItemDef = dynamic_cast<const FileSystemItemDefinition*>(&itemDef))
+  {
+    if (!fileSystemItemDef->hasDefault() && fileSystemItemDef->numberOfRequiredValues() > 0)
+    {
+      return false;
+    }
+  }
+  else if (const auto* customItemDef = dynamic_cast<const CustomItemBaseDefinition*>(&itemDef))
+  {
+    static bool once = false;
+    if (!once)
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "No way to determine whether custom items have valid defaults. Assuming true.");
+    }
+  }
+  // else defaults are valid or item is a void item (which always has a valid default).
+  return true;
+}
+} // namespace
+
+EditableParameters userEditableParameters(
+  const std::shared_ptr<smtk::attribute::Definition>& definition,
+  int advanceLevel,
+  bool includeAssociations)
+{
+  EditableParameters result = EditableParameters::None;
+  if (!definition)
+  {
+    return result;
+  }
+
+  // First check associations
+  auto associationDef = definition->associationRule();
+  if (includeAssociations && associationDef)
+  {
+    if (!hasValidDefault(*associationDef))
+    {
+      result = EditableParameters::Mandatory;
+      return result;
+    }
+    result = EditableParameters::Optional;
+  }
+
+  // Check items
+  std::size_t nn = definition->numberOfItemDefinitions();
+  for (std::size_t ii = 0; ii < nn; ++ii)
+  {
+    auto itemDef = definition->itemDefinition(static_cast<int>(ii));
+    if (!hasValidDefault(*itemDef)) // recurses children as needed.
+    {
+      result = EditableParameters::Mandatory;
+      return result;
+    }
+    if (static_cast<int>(itemDef->advanceLevel()) < advanceLevel)
+    {
+      result = EditableParameters::Optional;
+    }
+  }
+  return result;
 }
 } // namespace utility
 } // namespace attribute

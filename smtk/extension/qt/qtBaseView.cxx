@@ -30,8 +30,7 @@ using namespace smtk::extension;
 
 bool qtBaseView::validateInformation(const smtk::view::Information& info)
 {
-  return info.contains<qtUIManager*>() && info.contains<smtk::view::ConfigurationPtr>() &&
-    info.contains<QWidget*>();
+  return info.contains<smtk::view::ConfigurationPtr>() && info.contains<QWidget*>();
 }
 
 qtBaseView::qtBaseView(const smtk::view::Information& info)
@@ -57,7 +56,8 @@ qtBaseView::~qtBaseView()
 void qtBaseView::makeTopLevel()
 {
   smtk::view::ConfigurationPtr view = this->configuration();
-  if (!view)
+  auto* uiMgr = this->uiManager();
+  if (!view || !uiMgr)
   {
     return;
   }
@@ -70,11 +70,11 @@ void qtBaseView::makeTopLevel()
     bool val;
     if (!view->details().child(pos).attributeAsBool("Bold", val))
     {
-      this->uiManager()->setAdvanceFontStyleBold(val);
+      uiMgr->setAdvanceFontStyleBold(val);
     }
     if (!view->details().child(pos).attributeAsBool("Italic", val))
     {
-      this->uiManager()->setAdvanceFontStyleItalic(val);
+      uiMgr->setAdvanceFontStyleItalic(val);
     }
   }
 
@@ -84,7 +84,7 @@ void qtBaseView::makeTopLevel()
     int l;
     if (view->details().child(pos).contentsAsInt(l))
     {
-      this->uiManager()->setMaxValueLabelLength(l);
+      uiMgr->setMaxValueLabelLength(l);
     }
   }
 
@@ -94,7 +94,7 @@ void qtBaseView::makeTopLevel()
     int l;
     if (view->details().child(pos).contentsAsInt(l))
     {
-      this->uiManager()->setMinValueLabelLength(l);
+      uiMgr->setMinValueLabelLength(l);
     }
   }
 }

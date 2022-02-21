@@ -1,0 +1,9 @@
+NAME
+  smtkPQOperationsPanelPlugin
+DESCRIPTION
+  An SMTK operation toolbox panel and a parameter-editor panel.
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  ParaView::VTKExtensionsExtraction
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt

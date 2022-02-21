@@ -13,6 +13,7 @@
 
 #include "smtk/resource/Component.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 
 #include <algorithm>
@@ -54,6 +55,18 @@ Metadata::Metadata(
   {
     m_primaryAssociation = rule;
   }
+}
+
+std::string Metadata::label() const
+{
+  std::string label = this->typeName();
+  auto spec = this->specification();
+  if (spec)
+  {
+    auto parameters = smtk::operation::extractParameters(spec, label);
+    label = parameters->definition()->label();
+  }
+  return label;
 }
 
 std::set<std::string> Metadata::groups() const

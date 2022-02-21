@@ -26,7 +26,16 @@ namespace smtk
 namespace operation
 {
 
-Manager::Manager() = default;
+Manager::Manager()
+  : m_metadataObservers([this](MetadataObserver& observer) {
+    const auto& allMetadata = m_metadata.get<IndexTag>();
+    for (const auto& metadata : allMetadata)
+    {
+      observer(metadata, true);
+    }
+  })
+{
+}
 
 Manager::~Manager() = default;
 

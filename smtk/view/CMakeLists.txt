@@ -10,10 +10,12 @@ set(viewSrcs
   EmptySubphraseGenerator.cxx
   Information.cxx
   json/jsonView.cxx
+  LockedResourceBadge.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
   ObjectIconBadge.cxx
   ObjectIcons.cxx
+  OperationDecorator.cxx
   OperationIcons.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
@@ -29,6 +31,7 @@ set(viewSrcs
   SVGIconConstructor.cxx
   TwoLevelSubphraseGenerator.cxx
   Configuration.cxx
+  xml/xmlConfiguration.cxx
 )
 
 set (jsonViewHeaders
@@ -46,10 +49,12 @@ set(viewHeaders
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
   Information.h
+  LockedResourceBadge.h
   Manager.h
   ObjectGroupPhraseContent.h
   ObjectIconBadge.h
   ObjectIcons.h
+  OperationDecorator.h
   OperationIcons.h
   PhraseListContent.h
   PhraseContent.h
@@ -73,6 +78,7 @@ set(viewHeaders
   ViewWidgetFactory.h
   Configuration.h
   ${jsonViewHeaders}
+  xml/xmlConfiguration.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
@@ -85,6 +91,7 @@ set(iconFiles
   icons/default_operation_opt.svg
   icons/edge.svg
   icons/face.svg
+  icons/lock_locked.svg
   icons/loop.svg
   icons/mesh.svg
   icons/meshResource.svg

@@ -57,14 +57,23 @@ set(operationHeaders
 set(operationXML
   Operation.xml
   Result.xml
-  )
+)
 
 set(operationOperators
   ReadResource
   RemoveResource
   SetProperty
   WriteResource
-  )
+)
+
+set(icons
+  import_python_operation
+)
+foreach(icon ${icons})
+  smtk_encode_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/icons/${icon}.svg" TYPE "_svg" TARGET_OUTPUT targetName)
+  list(APPEND smtkOperationDependencies ${targetName})
+endforeach()
 
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
   HEADER_OUTPUT headerName)
@@ -76,7 +85,11 @@ foreach (operator ${operationOperators})
   list(APPEND operationHeaders operators/${operator}.h)
   list(APPEND _operationDependencies ${headerName})
 endforeach()
-add_custom_target(operationGenHeaders DEPENDS ${_operationDependencies})
+add_custom_target(operationGenHeaders
+  DEPENDS
+    ${_operationDependencies}
+    ${smtkOperationDependencies}
+)
 # set(operationDependencies ${_operationDependencies} PARENT_SCOPE)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

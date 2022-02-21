@@ -7,13 +7,13 @@ Some notes about the plugins:
   for code that can be built without Qt and will reside — at least in part — on the server.
   Some client-side proxy classes (that do not use Qt) whose counterparts
   reside on the server are also included in this plugin.
-  This is where the model (and eventually mesh) sources and their representations reside.
+  This is where the resource representations reside.
   Note that the representations display the *SMTK* selection, not the *ParaView* selection,
   although the two selections are generally kept in sync.
   Besides dealing with SMTK selections in a consistent way,
   the model representation uses a glyph mapper to draw instance prototype geometry at all
   instance placement points.
-* the appcomponents plugin is dependent on the server plugin
+* the appcomponents plugins are dependent on the server plugin
   for the VTK-wrapped and CS-wrapped objects that it
   creates proxies for on the client.
   Many of the components in this plugin are ParaView "behaviors."

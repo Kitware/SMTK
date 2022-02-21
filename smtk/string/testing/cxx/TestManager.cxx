@@ -269,6 +269,7 @@ int TestManager(int, char*[])
   }
   catch (std::invalid_argument& err)
   {
+    (void)err;
     didCleanUp = true;
   }
   test(didCleanUp, "Expected deserialization storage to be freed afterward.");

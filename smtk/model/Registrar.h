@@ -14,6 +14,7 @@
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/view/Manager.h"
 
 namespace smtk
 {
@@ -27,6 +28,9 @@ public:
 
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
+
+  static void registerTo(const smtk::view::Manager::Ptr&);
+  static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
 } // namespace model
 } // namespace smtk

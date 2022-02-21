@@ -16,6 +16,8 @@ if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
   list(APPEND test_exclusions
     # VTK lighting seems to be wrong.
     "^RenderMesh$"
+    # QTest::qWaitForWindowActive fails on CI machines but works locally
+    "^UnitTestDoubleClickButton$"
     )
 endif ()
 

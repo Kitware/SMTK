@@ -76,7 +76,7 @@ public:
   OperationFilterSort workflowFilter() const { return m_workflowFilter; }
   void setWorkflowFilter(OperationFilterSort wf);
 
-  /// Return the observers associated with this phrase model.
+  /// Return the observers notified when the availableOperations() array changes.
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
 

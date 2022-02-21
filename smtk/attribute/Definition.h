@@ -276,7 +276,7 @@ public:
   // Tests to see if attributes based on this definition can be
   // associated with a persistent object - see the documentation
   // for AssociationResultType for details on return values.
-  // If a conflict is found, conflictAtt is set to the conflicting attibute
+  // If a conflict is found, conflictAtt is set to the conflicting attribute
   // If a prerequisite is missing, prerequisiteDef is set to the
   // missing requirement
   // NOTE - testing is completed once a problem has been detected.  There maybe be

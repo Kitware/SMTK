@@ -4,6 +4,8 @@ set(classes
   pqSMTKAttributePanel
   pqSMTKBehavior
   pqSMTKOperationPanel
+  pqSMTKOperationParameterPanel
+  pqSMTKOperationToolboxPanel
   pqSMTKPipelineSelectionBehavior
   pqSMTKRenderResourceBehavior
   pqSMTKResource
@@ -18,8 +20,8 @@ set(CMAKE_AUTOUIC 1)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 set(iconFiles
-  plugin/resources/pqEyeball.svg
-  plugin/resources/pqEyeballClosed.svg)
+  plugin-core/resources/pqEyeball.svg
+  plugin-core/resources/pqEyeballClosed.svg)
 
 set(uiFiles
   resources/pqSMTKOperationPanel.ui
@@ -50,6 +52,10 @@ vtk_module_link(smtkPQComponentsExt
     smtkQtExt
     Qt5::Widgets
 )
+if (ParaView_VERSION VERSION_LESS "5.10.0")
+  target_compile_definitions(smtkPQComponentsExt
+    PRIVATE PARAVIEW_VERSION_59)
+endif ()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

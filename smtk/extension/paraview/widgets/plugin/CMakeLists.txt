@@ -29,6 +29,7 @@ smtk_add_plugin(smtkPQWidgetsPlugin
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
+    REQUIRED_PLUGINS smtkPQComponentsPlugin
     UI_INTERFACES ${interfaces}
     SOURCES ${sources}
     SERVER_MANAGER_XML ${smxml_files}

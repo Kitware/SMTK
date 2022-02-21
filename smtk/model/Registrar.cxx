@@ -13,6 +13,8 @@
 
 #include "smtk/model/Resource.h"
 
+#include "smtk/view/OperationIcons.h"
+
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
 #include "smtk/model/operators/AssignColors.h"
@@ -29,6 +31,8 @@
 
 #include "smtk/operation/groups/DeleterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
+
+#include "smtk/model/assign_colors_svg.h"
 
 #include <tuple>
 
@@ -83,6 +87,19 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->unregisterResource<smtk::model::Resource>();
+}
+
+void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
+{
+  auto& opIcons(viewManager->operationIcons());
+  opIcons.registerOperation<AssignColors>(
+    [](const std::string& /*unused*/) { return assign_colors_svg; });
+}
+
+void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
+{
+  auto& opIcons(viewManager->operationIcons());
+  opIcons.unregisterOperation<AssignColors>();
 }
 } // namespace model
 } // namespace smtk

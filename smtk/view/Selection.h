@@ -104,6 +104,14 @@ namespace view
   * changes to the selection have no effect, it is possible
   * to get called when the selection is entirely replaced with
   * an identical selection.
+  *
+  * ## Convenience Functions
+  *
+  * Often, observers may wish to make use of an updated selection
+  * by applying it to an attribute ReferenceItem (and particularly
+  * when a ReferenceItem is an operation-parameter's associations).
+  * The selection provides the configureItem() method to support
+  * this use case.
   */
 class SMTKCORE_EXPORT Selection : smtkEnableSharedPtr(Selection)
 {
@@ -298,18 +306,19 @@ public:
   const SelectionMap& currentSelection() const { return m_selection; }
   /// Return the subset of selected elements that match the given selection value.
   template<typename T>
-  T& currentSelectionByValue(T& selection, int value, bool exactMatch = true);
+  T& currentSelectionByValue(T& selection, int value, bool exactMatch = true) const;
   template<typename T>
-  T& currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch = true);
+  T& currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch = true)
+    const;
 
   template<typename T>
-  T currentSelectionByValueAs(int value, bool exactMatch = true)
+  T currentSelectionByValueAs(int value, bool exactMatch = true) const
   {
     T result;
     return this->currentSelectionByValue(result, value, exactMatch);
   }
   template<typename T>
-  T currentSelectionByValueAs(const std::string& valueLabel, bool exactMatch = true)
+  T currentSelectionByValueAs(const std::string& valueLabel, bool exactMatch = true) const
   {
     T result;
     return this->currentSelectionByValue(result, valueLabel, exactMatch);
@@ -328,9 +337,45 @@ public:
   void setFilter(const SelectionFilter& fn, bool refilterSelection = true);
   //@}
 
+  /**\brief Convenience functions.
+    *
+    */
+  //@{
+  /**\brief Replace the reference item's membership with values from the selection.
+    *
+    * Objects in the currentSelection() are added to the item when
+    *
+    * + their value in the selection map matches the provided \a value
+    *   (exactly when \a exactMatch is true or has all of \a value's
+    *   bits set otherwise).
+    * + the object is accepted by the item (i.e., it matches one or more of the
+    *   filters returned by the item's acceptableEntries() method).
+    *
+    * By default, the \a item's pre-existing membership is cleared before the
+    * selection is added to the \a item. (This can be changed by passing
+    * false to \a clearItem.)
+    *
+    * If the \a item is optional, it will be disabled if no entries in the selection
+    * match and (if \a clearItem is false) there are no pre-existing entries
+    * retained. Otherwise, the \a item will be enabled. Note that if no values
+    * in the \a item are modified, no change will be made to the item's isEnabled()
+    * status.
+    *
+    * This method returns true if the item's membership was changed and false
+    * otherwise. If true, you may wish to run the smtk::attribute::Signal
+    * operation so that user interface components can be properly notified.
+    */
+  bool configureItem(
+    const std::shared_ptr<smtk::attribute::ReferenceItem>& item,
+    int value,
+    bool exactMatch = false,
+    bool clearItem = true) const;
+  //@}
+
 protected:
   Selection();
 
+  /// Perform the action (**ignoring** m_defaultAction!!!), returning true if it had an effect.
   bool performAction(
     smtk::resource::PersistentObjectPtr comp,
     int value,
@@ -350,7 +395,7 @@ protected:
 };
 
 template<typename T>
-T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
+T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch) const
 {
   if (exactMatch)
   {
@@ -385,6 +430,7 @@ T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
 
 template<typename T>
 T& Selection::currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch)
+  const
 {
   int val = this->selectionValueFromLabel(valueLabel);
   return this->currentSelectionByValue(selection, val, exactMatch);
