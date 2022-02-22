@@ -247,6 +247,10 @@ protected:
     */
   void removeChildren(const std::vector<int>& parentIdx, int childRange[2]);
 
+  /**\brief Set the Parent of a Descriptive Phrase */
+  void setPhraseParent(const DescriptivePhrasePtr& phrase, const DescriptivePhrasePtr& parent)
+    const;
+
   /// Called to deal with resources/components being removed as a result of an operation.
   virtual void handleExpunged(const smtk::resource::PersistentObjectSet& expungedObjects);
   /// Called to deal with resources/components marked as modified by the operation.

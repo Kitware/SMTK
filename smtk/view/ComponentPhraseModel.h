@@ -93,6 +93,10 @@ protected:
 
   virtual void processResource(const Resource::Ptr& rsrc, bool adding);
   virtual void populateRoot();
+  /**\brief creates a DescriptivePhrase for  a top-level Component (i.e. one whose parent is root).
+   * Returns null if comp would not be considered a top level phrase.
+   */
+  DescriptivePhrasePtr createTopPhrase(const smtk::resource::ComponentPtr& comp);
 
   smtk::view::DescriptivePhrasePtr m_root;
   std::set<

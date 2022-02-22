@@ -327,6 +327,7 @@ public:
 
 protected:
   friend class SubphraseGenerator;
+  friend class PhraseModel; // Needed to allow Models to set a Phrase's Parent
 
   DescriptivePhrase();
 
