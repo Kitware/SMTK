@@ -70,7 +70,8 @@ int printer(DescriptivePhrasePtr p, const std::vector<int>& idx)
       idxStr << " " << ii;
     }
     smtkTest(
-      p->at(idx) == p, "Index " << idxStr.str() << " passed to visitor did not produce phrase!");
+      p->at(idx) == p,
+      "Index " << idxStr.str() << " passed to visitor did not return the correct phrase!");
   }
   return indent > maxIndent ? 1 : 0;
 }

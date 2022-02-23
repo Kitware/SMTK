@@ -466,6 +466,13 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
   }
 }
 
+void PhraseModel::setPhraseParent(
+  const DescriptivePhrasePtr& phrase,
+  const DescriptivePhrasePtr& parent) const
+{
+  phrase->m_parent = parent;
+}
+
 void PhraseModel::handleModified(const smtk::resource::PersistentObjectSet& modifiedObjects)
 {
   if (this->root() == nullptr)

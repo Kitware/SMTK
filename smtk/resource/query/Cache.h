@@ -26,7 +26,7 @@ namespace resource
 namespace query
 {
 /// A base class for persistent data used in conjunction with Query types. Query
-/// Caches are separated from Query insteances to facilitate shared access to
+/// Caches are separated from Query instances to facilitate shared access to
 /// Cache data among multiple Queries.
 struct SMTKCORE_EXPORT Cache
 {

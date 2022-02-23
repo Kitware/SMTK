@@ -82,6 +82,31 @@ void ComponentPhraseModel::handleResourceEvent(
   }
 }
 
+DescriptivePhrasePtr ComponentPhraseModel::createTopPhrase(const smtk::resource::ComponentPtr& comp)
+{
+  if (comp == nullptr)
+  {
+    return nullptr;
+  }
+  auto resource = comp->resource();
+  if (resource == nullptr)
+  {
+    return nullptr;
+  }
+  for (const auto& filter : m_componentFilters)
+  {
+    if (resource->isOfType(filter.first))
+    {
+      auto query = resource->queryOperation(filter.second);
+      if (query(*comp))
+      {
+        return smtk::view::ComponentPhraseContent::createPhrase(comp);
+      }
+    }
+  }
+  return nullptr;
+}
+
 void ComponentPhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& createdObjects)
 {
   // TODO: Instead of looking for new resources (which perhaps we should leave to the
@@ -97,11 +122,70 @@ void ComponentPhraseModel::handleCreated(const smtk::resource::PersistentObjectS
     smtk::resource::ResourcePtr rsrc = comp->resource();
     this->processResource(rsrc, true);
   }
+  // We need to determine which components will be top-level and insert them
+  // into the root's subphrases.
 
-  // TODO: Instead of querying all resources in m_resources for a list of matching
-  //       components, we should simply add anything in res that passes our test
-  //       for matching components.
-  this->populateRoot();
+  // Create a vector of new top level phrases
+  DescriptivePhrases newTopLevelPhrases;
+  for (const auto& obj : createdObjects)
+  {
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
+    if (comp)
+    {
+      auto topPhrase = this->createTopPhrase(comp);
+      if (topPhrase)
+      {
+        this->setPhraseParent(topPhrase, m_root);
+        newTopLevelPhrases.push_back(topPhrase);
+      }
+    }
+  }
+  // Did we find top-level phrases?
+  if (!newTopLevelPhrases.empty())
+  {
+    // let's sort the phrases to be in the proper order
+    std::sort(newTopLevelPhrases.begin(), newTopLevelPhrases.end(), m_comparator);
+
+    // Now let's insert this ordered set into the root's ordered subphrases
+    auto& rootPhrases = m_root->subphrases();
+    auto rit = rootPhrases.begin();
+    auto nit = newTopLevelPhrases.begin();
+    std::vector<int> rootPath; // Which should be empty
+    std::vector<int> range(2);
+
+    while (nit != newTopLevelPhrases.end())
+    {
+      // Have we reached the end of the root's subphrases?
+      if (rit == rootPhrases.end())
+      {
+        // The remaining phrases need to be appended to the end
+        range[0] = static_cast<int>(rootPhrases.size());
+        range[1] = range[0] + (static_cast<int>(std::distance(nit, newTopLevelPhrases.end())) - 1);
+        this->trigger(m_root, PhraseModelEvent::ABOUT_TO_INSERT, rootPath, rootPath, range);
+        for (; nit != newTopLevelPhrases.end(); nit++)
+        {
+          rootPhrases.push_back(*nit);
+        }
+        this->trigger(m_root, PhraseModelEvent::INSERT_FINISHED, rootPath, rootPath, range);
+        break;
+      }
+      // Does the next new toplevel phrase go before the current subphrase in the root?
+      if (m_comparator(*nit, *rit))
+      {
+        range[0] = static_cast<int>(std::distance(rootPhrases.begin(), rit));
+        range[1] = range[0];
+        this->trigger(m_root, PhraseModelEvent::ABOUT_TO_INSERT, rootPath, rootPath, range);
+        rit = rootPhrases.insert(rit, *nit);
+        this->trigger(m_root, PhraseModelEvent::INSERT_FINISHED, rootPath, rootPath, range);
+        nit++;
+      }
+      // Move to the next subphrase in the root
+      else
+      {
+        rit++;
+      }
+    }
+  }
 
   // Finally, call our subclass method to deal with children of the root element
   this->PhraseModel::handleCreated(createdObjects);
