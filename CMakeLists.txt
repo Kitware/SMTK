@@ -453,7 +453,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 
   # Set up environment variables needed to import the python modules for tests.
-  if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
+  if (Python${SMTK_PYTHON_VERSION}_Interpreter_FOUND AND SMTK_ENABLE_TESTING)
     set(required_python_modules)
 
     # Add the path to the build tree's compiled modules, prioritizing it over
