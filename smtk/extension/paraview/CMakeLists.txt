@@ -29,6 +29,7 @@ set(plugin_files
   server/plugin/paraview.plugin)
 if (TARGET ParaView::pqApplicationComponents)
   list(APPEND plugin_files
+    appcomponents/plugin-panel-defaults/paraview.plugin
     appcomponents/plugin-legacy-operations/paraview.plugin
     appcomponents/plugin-operations-panel/paraview.plugin
     appcomponents/plugin-core/paraview.plugin

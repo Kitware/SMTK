@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationToolboxPanel.h"
 
+#include "smtk/extension/paraview/appcomponents/ApplicationConfiguration.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -16,8 +17,8 @@
 
 #include "smtk/operation/Operation.h"
 
-#include "smtk/view/AvailableOperations.h"
 #include "smtk/view/Configuration.h"
+#include "smtk/view/OperationDecorator.h"
 #include "smtk/view/Selection.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -103,6 +104,12 @@ pqSMTKOperationToolboxPanel::pqSMTKOperationToolboxPanel(QWidget* parent)
   {
     pqCore->registerManager("smtk operation toolbox", this);
   }
+
+  smtk::paraview::ApplicationConfiguration::notify(
+    [this](smtk::paraview::ApplicationConfiguration& configurator) {
+      auto viewInfo = configurator.panelConfiguration(this);
+      this->setConfiguration(viewInfo);
+    });
 }
 
 void pqSMTKOperationToolboxPanel::setDefaultOperations(
@@ -184,20 +191,41 @@ void pqSMTKOperationToolboxPanel::searchFocus()
   }
 }
 
-bool pqSMTKOperationToolboxPanel::setConfiguration(
-  const std::shared_ptr<smtk::view::Configuration>& config)
+bool pqSMTKOperationToolboxPanel::setConfiguration(const smtk::view::Information& info)
 {
+  if (!info.contains<std::shared_ptr<smtk::view::Configuration>>())
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "No view configuration provided.");
+    return false;
+  }
+  const auto& config = info.get<std::shared_ptr<smtk::view::Configuration>>();
   if (!config)
   {
+    smtkErrorMacro(smtk::io::Logger::instance(), "View configuration is empty.");
     return false;
   }
-  if (*config == *m_configuration)
+
+  bool needReconfigure = false;
+  if (!(*config == *m_configuration))
   {
-    return false;
+    m_configuration = config;
+    needReconfigure = true;
   }
-  m_configuration = config;
-  this->reconfigure();
-  return true;
+
+  if (info.contains<std::shared_ptr<smtk::view::OperationDecorator>>())
+  {
+    const auto& operationDecorator = info.get<std::shared_ptr<smtk::view::OperationDecorator>>();
+    if (operationDecorator && operationDecorator != s_defaultOperations)
+    {
+      s_defaultOperations = operationDecorator;
+      needReconfigure = true;
+    }
+  }
+  if (needReconfigure)
+  {
+    this->reconfigure();
+  }
+  return needReconfigure;
 }
 
 void pqSMTKOperationToolboxPanel::reconfigure()
@@ -205,6 +233,19 @@ void pqSMTKOperationToolboxPanel::reconfigure()
   if (!m_wrapper)
   {
     return;
+  }
+
+  if (m_view)
+  {
+    // Empty the existing view.
+    while (QWidget* w = this->widget()->findChild<QWidget*>())
+    {
+      delete w;
+    }
+    // delete m_view;
+    // delete m_uiMgr;
+    m_view = nullptr;
+    m_uiMgr = nullptr;
   }
 
   m_uiMgr = new smtk::extension::qtUIManager(

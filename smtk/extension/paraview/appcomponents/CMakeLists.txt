@@ -1,4 +1,5 @@
 set(classes
+  ApplicationConfiguration
   Registrar
   VisibilityBadge
   pqSMTKAttributePanel

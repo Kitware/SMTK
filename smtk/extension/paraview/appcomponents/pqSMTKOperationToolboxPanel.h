@@ -87,7 +87,7 @@ public Q_SLOTS:
     * the qtOperationPalette and the auto-run option in the qtOperationTypeModel.
     * The default allows all operations to be presented.
     */
-  virtual bool setConfiguration(const std::shared_ptr<smtk::view::Configuration>& config);
+  virtual bool setConfiguration(const smtk::view::Information& config);
 
 Q_SIGNALS:
   /**\brief Populate the operation editor panel with the given operation \a index.
