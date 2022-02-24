@@ -38,7 +38,7 @@ def _message(severity, logger, message):
 
 
 def _infoMessage(logger, message):
-    logger.addRecord(Logger.INFO, message)
+    logger.addRecord(Logger.Info, message)
 
 
 smtk.ErrorMessage = functools.partial(_message, Logger.ERROR)

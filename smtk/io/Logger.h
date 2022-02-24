@@ -114,7 +114,7 @@ public:
 
   struct Record
   {
-    Severity severity{ INFO };
+    Severity severity{ Info };
     std::string message;
     std::string fileName;
     unsigned int lineNumber{ 0 };

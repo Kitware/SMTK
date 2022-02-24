@@ -98,15 +98,15 @@ std::string Logger::severityAsString(Severity s)
 {
   switch (s)
   {
-    case DEBUG:
+    case Debug:
       return "DEBUG";
-    case INFO:
+    case Info:
       return "INFO";
-    case WARNING:
+    case Warning:
       return "WARNING";
-    case ERROR:
+    case Error:
       return "ERROR";
-    case FATAL:
+    case Fatal:
       return "FATAL";
     default:
       return "UNKNOWN";
