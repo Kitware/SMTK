@@ -17,9 +17,11 @@
 // We use either STL regex or Boost regex, depending on support. These flags
 // correspond to the equivalent logic used to determine the inclusion of Boost's
 // regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
+#define USE_BOOST_REGEX
+#if !defined(USE_BOOST_REGEX) &&                                                                   \
+  (defined(SMTK_CLANG) ||                                                                          \
+   (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                \
+   defined(SMTK_MSVC))
 #include <regex>
 using std::regex;
 using std::regex_match;
