@@ -35,7 +35,7 @@ set(_smtk_packages
   MOAB
   Qt5
   ParaView
-  Python${SMTK_PYTHON_VERSION}
+  Python3
   VTK
   Remus
   ZeroMQ # for Remus
@@ -48,12 +48,12 @@ set(Boost_find_package_vars
 set(LibArchive_find_package_vars
   LibArchive_INCLUDE_DIR
   LibArchive_LIBRARY)
-set(Python${SMTK_PYTHON_VERSION}_find_package_vars
-  Python${SMTK_PYTHON_VERSION}_EXECUTABLE
-  Python${SMTK_PYTHON_VERSION}_INCLUDE_DIR
-  Python${SMTK_PYTHON_VERSION}_LIBRARY
-  Python${SMTK_PYTHON_VERSION}_LIBRARY_DEBUG
-  Python${SMTK_PYTHON_VERSION}_LIBRARY_RELEASE)
+set(Python3_find_package_vars
+  Python3_EXECUTABLE
+  Python3_INCLUDE_DIR
+  Python3_LIBRARY
+  Python3_LIBRARY_DEBUG
+  Python3_LIBRARY_RELEASE)
 set(ZeroMQ_find_package_vars
   ZeroMQ_INCLUDE_DIR
   ZeroMQ_LIBRARY)

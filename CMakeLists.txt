@@ -401,24 +401,17 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(PYTHON_MODULE_EXTENSION ".so")
   endif()
 
-  set(SMTK_PYTHON_VERSION "2"
-    CACHE STRING "Major version of Python to use")
-  set_property(CACHE SMTK_PYTHON_VERSION
-    PROPERTY
-      STRINGS "2;3")
   if (SMTK_PYTHON_VERSION STREQUAL "2")
-    message(DEPRECATION
-      "Python2 support is deprecated and will be removed in a future release. "
-      "Please migrate to a supported version of Python.")
+    message(FATAL_ERROR
+      "Python2 is no longer supported.")
   endif ()
   if (SMTK_ENABLE_VTK_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
-    if (NOT SMTK_PYTHON_VERSION STREQUAL VTK_PYTHON_VERSION)
+    if (NOT VTK_PYTHON_VERSION STREQUAL "3")
       message(FATAL_ERROR
-        "SMTK (${SMTK_PYTHON_VERSION}) and VTK (${VTK_PYTHON_VERSION}) "
-        "must agree on a Python major version.")
+        "VTK must be compiled with Python3 support.")
     endif ()
   endif ()
-  find_package("Python${SMTK_PYTHON_VERSION}" REQUIRED
+  find_package(Python3 REQUIRED
     COMPONENTS Interpreter Development.Embed Development.Module)
 
   # Initialize SMTK_PYTHON_MODULEDIR.
@@ -429,7 +422,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
         execute_process(
           COMMAND
-          "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>"
+          "$<TARGET_FILE:Python3::Interpreter>"
           -c "import site; print(site.getsitepackages())[-1]"
           RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
           )
@@ -438,7 +431,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
           "bin/Lib/site-packages")
     else()
         set(SMTK_PYTHON_MODULEDIR
-          "${CMAKE_INSTALL_LIBDIR}/python${Python${SMTK_PYTHON_VERSION}_VERSION_MAJOR}.${Python${SMTK_PYTHON_VERSION}_VERSION_MINOR}/site-packages")
+          "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages")
     endif()
   endif()
 
@@ -453,7 +446,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 
   # Set up environment variables needed to import the python modules for tests.
-  if (Python${SMTK_PYTHON_VERSION}_Interpreter_FOUND AND SMTK_ENABLE_TESTING)
+  if (Python3_Interpreter_FOUND AND SMTK_ENABLE_TESTING)
     set(required_python_modules)
 
     # Add the path to the build tree's compiled modules, prioritizing it over
@@ -523,7 +516,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       endif ()
       add_test(
         NAME    "${name}"
-        COMMAND "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>" "${file}"
+        COMMAND "$<TARGET_FILE:Python3::Interpreter>" "${file}"
                 ${ARGN})
       set_tests_properties("${name}"
         PROPERTIES
