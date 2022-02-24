@@ -105,11 +105,23 @@ public:
     Error,
     Fatal,
 
+#ifdef _MSC_VER
+    /*
+     * MSVC doesn't have a way to deprecate enum variants other than through
+     * `#pragma`. Just let other platforms handle it.
+     */
+    DEBUG = Debug,
+    INFO = Info,
+    WARNING = Warning,
+    ERROR = Error,
+    FATAL = Fatal
+#else
     DEBUG SMTK_DEPRECATED_IN_22_02("Use `Debug`") = Debug,
     INFO SMTK_DEPRECATED_IN_22_02("Use `Info`") = Info,
     WARNING SMTK_DEPRECATED_IN_22_02("Use `Warning`") = Warning,
     ERROR SMTK_DEPRECATED_IN_22_02("Use `Error`") = Error,
     FATAL SMTK_DEPRECATED_IN_22_02("Use `Fatal`") = Fatal
+#endif
   };
 
   struct Record
