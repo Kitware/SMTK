@@ -105,11 +105,11 @@ public:
     Error,
     Fatal,
 
-    SMTK_DEPRECATED_IN_22_02("Use `Debug`") DEBUG = Debug,
-    SMTK_DEPRECATED_IN_22_02("Use `Info`") INFO = Info,
-    SMTK_DEPRECATED_IN_22_02("Use `Warning`") WARNING = Warning,
-    SMTK_DEPRECATED_IN_22_02("Use `Error`") ERROR = Error,
-    SMTK_DEPRECATED_IN_22_02("Use `Fatal`") FATAL = Fatal
+    DEBUG SMTK_DEPRECATED_IN_22_02("Use `Debug`") = Debug,
+    INFO SMTK_DEPRECATED_IN_22_02("Use `Info`") = Info,
+    WARNING SMTK_DEPRECATED_IN_22_02("Use `Warning`") = Warning,
+    ERROR SMTK_DEPRECATED_IN_22_02("Use `Error`") = Error,
+    FATAL SMTK_DEPRECATED_IN_22_02("Use `Fatal`") = Fatal
   };
 
   struct Record
