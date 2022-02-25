@@ -25,13 +25,13 @@
           FileFilters="[defined programatically]">
         </File>
         <Int Name="write-component" NumberOfRequiredValues="1">
-	  <DiscreteInfo DefaultIndex="0">
-	    <Value Enum="Entire Resource">0</Value>
+          <DiscreteInfo DefaultIndex="0">
+            <Value Enum="Entire Resource">0</Value>
             <Value Enum="Only Domain">1</Value>
             <Value Enum="Only Dirichlet">2</Value>
             <Value Enum="Only Neumann">3</Value>
           </DiscreteInfo>
-	</Int>
+        </Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

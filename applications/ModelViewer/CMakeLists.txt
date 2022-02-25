@@ -347,7 +347,7 @@ install(CODE
 
      set(\${default_embedded_path_var} \"\${path}\" PARENT_SCOPE)
 
-   endfunction(gp_item_default_embedded_path_override)
+   endfunction()
 
    # Becasue we use the above custom function to decide where libraries go, we
    # must also provide a custom function that verifies if an item is in the
@@ -365,7 +365,7 @@ install(CODE
        endif()
      endif()
 
-   endfunction(gp_resolved_file_type_override)
+   endfunction()
 
    # Change the access rights for objects copied into the bundle, so the fixup
    # logic can correctly fix them

@@ -92,26 +92,26 @@
           </ChildrenDefinitions>
 
           <DiscreteInfo DefaultIndex="0">
-	    <Structure>
+            <Structure>
               <Value Enum="Auxiliary Geometry">auxiliary geometry</Value>
-	      <Items>
-		<Item>auxiliary geometry</Item>
-		<Item>input filter</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>auxiliary geometry</Item>
+                <Item>input filter</Item>
+              </Items>
+            </Structure>
+            <Structure>
               <Value Enum="Input File">ptsfile</Value>
-	      <Items>
-	        <Item>ptsfile</Item>
-		<Item>input filter</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>ptsfile</Item>
+                <Item>input filter</Item>
+              </Items>
+            </Structure>
+            <Structure>
               <Value Enum="Interpolation Points">points</Value>
-	      <Items>
-	        <Item>points</Item>
-	      </Items>
-	    </Structure>
+              <Items>
+                <Item>points</Item>
+              </Items>
+            </Structure>
           </DiscreteInfo>
         </String>
 
@@ -179,18 +179,18 @@
           </ChildrenDefinitions>
 
           <DiscreteInfo DefaultIndex="0">
-	    <Structure>
+            <Structure>
               <Value Enum="Left Unchanged">left unchanged</Value>
-	    </Structure>
-	    <Structure>
+            </Structure>
+            <Structure>
               <Value Enum="Set to Value">set to value</Value>
-	      <Items>
-	        <Item>external point value</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>external point value</Item>
+              </Items>
+            </Structure>
+            <Structure>
               <Value Enum="Set to NaN">set to NaN</Value>
-	    </Structure>
+            </Structure>
           </DiscreteInfo>
 
         </String>
@@ -209,19 +209,19 @@
           </ChildrenDefinitions>
 
           <DiscreteInfo DefaultIndex="0">
-	    <Structure>
+            <Structure>
               <Value Enum="Radial Average">radial average</Value>
-	      <Items>
-		<Item>radius</Item>
-		<Item>external point values</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>radius</Item>
+                <Item>external point values</Item>
+              </Items>
+            </Structure>
+            <Structure>
               <Value Enum="Inverse Distance Weighting">inverse distance weighting</Value>
-	      <Items>
-	        <Item>power</Item>
-	      </Items>
-	    </Structure>
+              <Items>
+                <Item>power</Item>
+              </Items>
+            </Structure>
           </DiscreteInfo>
 
         </String>

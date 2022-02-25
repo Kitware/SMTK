@@ -107,4 +107,4 @@ function(smtk_test_plugin test_plugin_file_url)
 
   set_tests_properties(${test_name} PROPERTIES LABELS "Plugin")
 
-endfunction(smtk_test_plugin)
+endfunction()

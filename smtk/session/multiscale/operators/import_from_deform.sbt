@@ -36,7 +36,7 @@
         <File Name="pipeline-executable" Label="Dream3D Pipeline Executable" NumberOfValues="1" Optional="true" ShouldExist="true">
           <BriefDescription>Dream3D PipelineRunner executable</BriefDescription>
         </File>
-	<String Name="attribute" Label="Zoning Attribute">
+        <String Name="attribute" Label="Zoning Attribute">
       <BriefDescription>
         DEFORM attribute field over which the clustering algorithm is performed
       </BriefDescription>
@@ -52,7 +52,7 @@
             <Value Enum="Damage Factor">Damage Factor</Value>
           </DiscreteInfo>
           <BriefDescription>attribute to use for zoning</BriefDescription>
-	</String>
+        </String>
         <Group Name="stats" Label="Microscale Statistics Parameters"
                Extensible="true" NumberOfRequiredGroups="2" >
           <BriefDescription>Microscale statistics feature parameters
@@ -73,7 +73,7 @@
         <File Name="output-file" Label="Output Dream3D File" NumberOfRequiredValues="1" ShouldExist="false"
               FileFilters="DREAM3D data file (*.dream3d);;All files (*.*)">
           <BriefDescription>DREAM3D (xdmf) output file</BriefDescription>
-	</File>
+        </File>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

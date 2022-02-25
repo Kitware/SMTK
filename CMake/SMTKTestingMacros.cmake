@@ -60,15 +60,15 @@ function(smtk_unit_tests)
       if(SMTK_ut_LABEL)
         set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_ut_LABEL}")
       endif()
-    endforeach(test)
+    endforeach()
 
     foreach (test ${SMTK_ut_SOURCES_SERIAL})
       get_filename_component(tname ${test} NAME_WE)
       set_tests_properties(${tname} PROPERTIES RUN_SERIAL TRUE)
-    endforeach(test)
+    endforeach()
 
-  endif (SMTK_ENABLE_TESTING)
-endfunction(smtk_unit_tests)
+  endif ()
+endfunction()
 
 # Add tests for code that is expected to fail to build.
 #
@@ -134,5 +134,5 @@ function(smtk_build_failure_tests)
         endif()
       endforeach() # attempt
     endforeach() # source_idx
-  endif (SMTK_ENABLE_TESTING)
-endfunction(smtk_build_failure_tests)
+  endif ()
+endfunction()
