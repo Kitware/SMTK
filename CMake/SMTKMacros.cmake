@@ -16,8 +16,8 @@ function(smtk_get_kit_name kitvar)
   # Optional second argument to get dir_prefix.
   if (${ARGC} GREATER 1)
     set(${ARGV1} "${dir_prefix}" PARENT_SCOPE)
-  endif (${ARGC} GREATER 1)
-endfunction(smtk_get_kit_name)
+  endif ()
+endfunction()
 
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE. Also makes sure we install the headers
@@ -41,22 +41,22 @@ function(smtk_public_headers lib)
     endif ()
     install (FILES ${header} DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix}${suffix})
   endforeach ()
-endfunction(smtk_public_headers)
+endfunction()
 
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE.
 function(smtk_private_headers)
   smtk_get_kit_name(name dir_prefix)
-endfunction(smtk_private_headers)
+endfunction()
 
 # Optionally precompile headers to improve compilation speed.
 if(NOT SMTK_BUILD_PRECOMPILED_HEADERS OR ${CMAKE_VERSION} VERSION_LESS "3.16.0")
   function(smtk_precompile_headers)
-  endfunction(smtk_precompile_headers)
+  endfunction()
 else()
   function(smtk_precompile_headers)
     target_precompile_headers(${ARGN})
-  endfunction(smtk_precompile_headers)
+  endfunction()
 endif()
 
 # Declare a library as needed to be installed
@@ -74,14 +74,14 @@ function(smtk_install_library target)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-endfunction(smtk_install_library)
+endfunction()
 
 #generate an export header and create an install target for it
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
   generate_export_header(${target} EXPORT_FILE_NAME ${file})
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix})
-endfunction(smtk_export_header)
+endfunction()
 
 # Builds a source file and an executable that does nothing other than
 # compile the given header files.
@@ -95,9 +95,9 @@ function(smtk_prepend_string prefix result)
       set(newName "${prefix}/${name}")
     endif ()
     set(newNames ${newNames} ${newName})
-  endforeach (name)
+  endforeach ()
   set(${result} ${newNames} PARENT_SCOPE)
-endfunction(smtk_prepend_string)
+endfunction()
 
 include("${CMAKE_CURRENT_LIST_DIR}/SMTKOperationXML.cmake")
 
@@ -124,6 +124,6 @@ function(smtk_source_group source_dir)
   set(${source_dir}Srcs ${sources} PARENT_SCOPE)
   set(${source_dir}Headers ${headers} PARENT_SCOPE)
 
-endfunction(smtk_source_group)
+endfunction()
 
 set(_SMTKMacros_cmake_dir "${CMAKE_CURRENT_LIST_DIR}")

@@ -29,7 +29,7 @@ if(DOXYGEN_FOUND)
       DEPENDS ${smtk_BINARY_DIR}/doc/reference/smtk.tags
     )
   endif()
-endif(DOXYGEN_FOUND)
+endif()
 
 ## End-user Documentation
 #

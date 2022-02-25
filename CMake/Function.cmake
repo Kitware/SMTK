@@ -79,4 +79,4 @@ function(determineFunctionType found type ptype incType)
     set(${found} PARENT_SCOPE) # unsets ${found}
   endif()
 
-endfunction(determineFunctionType)
+endfunction()

@@ -228,4 +228,4 @@ endif()
 
 if(SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-endif(SMTK_ENABLE_TESTING)
+endif()
