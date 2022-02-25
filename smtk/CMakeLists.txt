@@ -222,9 +222,9 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     list(APPEND SMTK_PYTHON_MODULEFILES "smtk/${pyfile}.py")
   endforeach()
     install(
-	FILES ${SMTK_PYTHON_MODULEFILES}
-	DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
-	)
+      FILES ${SMTK_PYTHON_MODULEFILES}
+      DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
+      )
 
   # This variable needs to be set for vtk_module to find its python module
   # output dir

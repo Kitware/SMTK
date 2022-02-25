@@ -19,66 +19,66 @@ It is relatively simple to convert to the new design:
 
 * smtk::attribute::Resource::analyses() will now return a reference to the analyses object in the resource.  All analysis-based operations now go through it
 * To get all analyses - note that the return type is different!
-	* Old Method
-		* resource->analyses()
-	* New Method
-		* resource->analyses()
+  * Old Method
+    * resource->analyses()
+  * New Method
+    * resource->analyses()
 * To get the number of analyses
-	* Old Method
-		* resource->numberOfAnalyses()
-	* New Method
-		* resource->analyses().size()
+  * Old Method
+    * resource->numberOfAnalyses()
+  * New Method
+    * resource->analyses().size()
 * To create a new analysis
-	* Old Method
-		* resource->defineAnalysis(name, categories)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().create(name)
-		* a->setLocalCategories(categories)
+  * Old Method
+    * resource->defineAnalysis(name, categories)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().create(name)
+    * a->setLocalCategories(categories)
 * To set the parent of an analysis
-	* Old Method
-		* resource->setAnalysisParent(name, parentName)
-	* New Method (2 ways)
-		* Without getting the analysis object
-			* resource->analyses().setAnalysisParent(name, parentName)
-		* Through the analysis object
-			* Analyses::Analysis a = resource->analyses().find(name)
-			* Analyses::Analysis p = resource->analyses().find(parentName)
-			* a->setParent(p) <-- if a and p are not nullptr
+  * Old Method
+    * resource->setAnalysisParent(name, parentName)
+  * New Method (2 ways)
+    * Without getting the analysis object
+      * resource->analyses().setAnalysisParent(name, parentName)
+    * Through the analysis object
+      * Analyses::Analysis a = resource->analyses().find(name)
+      * Analyses::Analysis p = resource->analyses().find(parentName)
+      * a->setParent(p) <-- if a and p are not nullptr
 * To get the parent of an analysis
-	* Old Method
-		* resource->analysisParent(name)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().find(name)
-		* a->parent() <-- if a is not nullptr
+  * Old Method
+    * resource->analysisParent(name)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().find(name)
+    * a->parent() <-- if a is not nullptr
 * To get the children of an analysis
-	* Old Method
-		* resource->analysisChildren(name)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().find(name)
-		* a->children() <-- if a is not nullptr
+  * Old Method
+    * resource->analysisChildren(name)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().find(name)
+    * a->children() <-- if a is not nullptr
 * To get the local categories associated with an analysis
-	* Old Method
-		* resource->analysisCategories(name)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().find(name)
-		* a->localCategories() <-- if a is not nullptr
+  * Old Method
+    * resource->analysisCategories(name)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().find(name)
+    * a->localCategories() <-- if a is not nullptr
 * To get the all the categories associated with an analysis including those inherited from its parent analysis
-	* Old Method
-		* none
-	* New Method
-		* Analyses::Analysis a = resource->analyses().find(name)
-		* a->categories() <-- if a is not nullptr
+  * Old Method
+    * none
+  * New Method
+    * Analyses::Analysis a = resource->analyses().find(name)
+    * a->categories() <-- if a is not nullptr
 * To get the top level analyses (those without parents)
-	* Old Method
-		* resource->topLevelAnalyses(name)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().topLevel()
-		* a->children() <-- if a is not nullptr
+  * Old Method
+    * resource->topLevelAnalyses(name)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().topLevel()
+    * a->children() <-- if a is not nullptr
 * To build an Analysis Definition representing the analyses
-	* Old Method
-		* resource->buildAnalysesDefinition(typeName)
-	* New Method
-		* Analyses::Analysis a = resource->analyses().buildAnalysesDefinition(resource, typeName)
+  * Old Method
+    * resource->buildAnalysesDefinition(typeName)
+  * New Method
+    * Analyses::Analysis a = resource->analyses().buildAnalysesDefinition(resource, typeName)
 
 ### Exclusive Analyses
 With the above changes also comes a way to indicate if an analysis' children represent analyses that can be combined by selecting a subset of them or if exclusively if only should be selected.  You can also indicate if the top level analyses are suppose to be exclusive with respects to each other.

@@ -91,18 +91,18 @@
             </Component>
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
-	    <Structure>
+            <Structure>
             <Value Enum="snap to point">snap to point</Value>
-	      <Items>
-	        <Item>entity</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>entity</Item>
+              </Items>
+            </Structure>
+            <Structure>
             <Value Enum="snap to surface">snap to surface</Value>
-	      <Items>
-	        <Item>entity</Item>
-	      </Items>
-	    </Structure>
+              <Items>
+                <Item>entity</Item>
+              </Items>
+            </Structure>
           </DiscreteInfo>
         </String>
 

@@ -111,11 +111,11 @@ function(check_copyright filename)
     # header_line's items and cause the compare to fail.
     foreach (header_line IN LISTS header_lines)
       if (copyright_line)
-	     string(REGEX MATCH
-	            "^${comment_prefix}[ \t]*${copyright_line}[ \t]*$"
-	            match
-	            "${header_line}"
-              )
+        string(REGEX MATCH
+          "^${comment_prefix}[ \t]*${copyright_line}[ \t]*$"
+          match
+          "${header_line}"
+        )
       else()
         if (NOT header_line)
           set(match TRUE)
