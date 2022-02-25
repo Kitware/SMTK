@@ -28,6 +28,8 @@ Some notes about the plugins:
       specify what types of resource components they want to select.
       It then installs a filter onto an SMTK selection manager to force the selection to match
       the specification.
+  Besides behaviors, other user-interface
+  components include:
     * the :smtk:`pqSMTKResourcePanel` class adds a panel to ParaView that shows the resources
       and components available.
     * the :smtk:`pqSMTKColorByToolBar` class adds a tool bar to ParaView that allows users
@@ -43,3 +45,20 @@ Some notes about the plugins:
       once the event loop has started.
       Dock-widget panels in particular require approximately a ~1 second delay in order
       to be removed at application startup.
+    * the :smtk:`ApplicationConfiguration <smtk::paraview::ApplicationConfiguration>` class
+      defines a pure virtual interface that applications implement and expose in an
+      application-specific plugin in order to configure SMTK's user-interface components.
+      This is currently only used by the operation-toolbox panel but is likely to expand to
+      other components.
+* some extension directories create multiple paraview plugins.
+  This is done because the SMTK library containing the components
+  has a well-defined purpose, but not every application using SMTK
+  wishes to expose all of the components in the library.
+  Therefore, several ``plugin-`` subdirectories may exist and each
+  one exposes a different set of components from the library.
+  The appcomponents directory is an example of this:
+    * The ``plugin-core`` directory exposes the majority of user interface components;
+    * The ``plugin-legacy-operations`` directory exposes a panel for debugging operations;
+    * The ``plugin-operations-panel`` directory exposes two production-ready panels for
+      choosing operations and editing their parameters; and
+    * The ``plugin-panel-defaults`` directory exposes an application-configuration interface class.
