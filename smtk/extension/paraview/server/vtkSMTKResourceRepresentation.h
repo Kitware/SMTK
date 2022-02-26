@@ -19,6 +19,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
+#include "smtk/extension/vtk/filter/vtkApplyTransforms.h"
 #include "smtk/view/SelectionObserver.h"
 
 #include <array>
@@ -443,6 +444,7 @@ protected:
   bool UpdateColorBy = false;
   bool UseInternalAttributes = false;
 
+  vtkNew<vtkApplyTransforms> ApplyTransforms;
   vtkNew<vtkMultiBlockDataSet> CurrentData;
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;

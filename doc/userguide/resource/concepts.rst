@@ -44,12 +44,16 @@ In addition to these useful base classes,
   property can still be stored, but will not be persistent. Currently
   enabled types include long, double, std::string, and std::vectors of
   these three types.
+  As an example of how to extend the property system to handle
+  non-POD (non-Plain Old Data) types, see the
+  :smtk:`CoordinateFrame <smtk::resource::properties::CoordinateFrame>`
+  property and its JSON serializer.
 
-  Properties are stored separately from the objects they annotate, but
+  Properties are stored separately from the objects they annotate;
   each resource instance owns the properties instance that holds all
-  properties for the resource and its components. The
-  smtk::resource::Properties class is an abstract API provided on both
-  resources and components; on the resource, the properties subclass
+  properties for both itself and its components. The
+  :smtk:`smtk::resource::Properties` class is an abstract API provided
+  on both resources and components; on the resource, the properties subclass
   provides actual storage, while on components, the subclass asks its
   parent resource for the properties object to search for values.
 

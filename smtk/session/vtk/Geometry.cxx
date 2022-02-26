@@ -131,6 +131,7 @@ void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, C
     {
       Geometry::addColorArray(entry.m_geometry, ent->properties().at<std::vector<double>>("color"));
     }
+    Geometry::addTransformArrayIfPresent(entry.m_geometry, ent);
   }
   else
   {

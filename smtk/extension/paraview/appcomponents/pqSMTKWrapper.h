@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
-#define smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKWrapper_h
+#define smtk_extension_paraview_appcomponents_pqSMTKWrapper_h
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
 

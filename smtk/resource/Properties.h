@@ -17,6 +17,9 @@
 
 #include "smtk/common/json/jsonUUID.h"
 
+#include "smtk/resource/json/jsonPropertyCoordinateFrame.h"
+#include "smtk/resource/properties/CoordinateFrame.h"
+
 #include <algorithm>
 
 namespace smtk
@@ -409,8 +412,9 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
 
   typedef detail::Properties ResourcePropertiesData;
 
-  /// The default value types for all resources and components are int, double,
-  /// string, and vectors of these types.
+  /// The default value types for all resources and components are
+  /// + int, double, string, and vectors of these types;
+  /// + CoordinateFrame values plus maps from strings to CoordinateFrames.
   typedef std::tuple<
     Indexed<bool>,
     Indexed<int>,
@@ -421,7 +425,9 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
     Indexed<std::vector<int>>,
     Indexed<std::vector<long>>,
     Indexed<std::vector<double>>,
-    Indexed<std::vector<std::string>>>
+    Indexed<std::vector<std::string>>,
+    Indexed<smtk::resource::properties::CoordinateFrame>,
+    Indexed<std::map<std::string, smtk::resource::properties::CoordinateFrame>>>
     PropertyTypes;
 
 public:

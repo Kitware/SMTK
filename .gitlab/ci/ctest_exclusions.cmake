@@ -21,6 +21,13 @@ if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
     )
 endif ()
 
+if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "centos")
+  list(APPEND test_exclusions
+    # QTest::qWaitForWindowActive fails on CI machines but works locally
+    "^UnitTestDoubleClickButton$"
+    )
+endif ()
+
 string(REPLACE ";" "|" test_exclusions "${test_exclusions}")
 if (test_exclusions)
   set(test_exclusions "(${test_exclusions})")

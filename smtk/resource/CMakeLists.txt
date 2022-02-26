@@ -13,9 +13,11 @@ set(resourceSrcs
   ResourceLinks.cxx
   Surrogate.cxx
   json/jsonComponentLinkBase.cxx
+  json/jsonPropertyCoordinateFrame.cxx
   json/jsonResource.cxx
   json/jsonResourceLinkBase.cxx
   json/jsonSurrogate.cxx
+  properties/CoordinateFrame.cxx
   query/Factory.cxx
   query/Manager.cxx
   query/Query.cxx
@@ -55,9 +57,11 @@ set(resourceHeaders
   filter/String.h
   filter/Vector.h
   json/jsonComponentLinkBase.h
+  json/jsonPropertyCoordinateFrame.h
   json/jsonResource.h
   json/jsonResourceLinkBase.h
   json/jsonSurrogate.h
+  properties/CoordinateFrame.h
   query/BadTypeError.h
   query/Cache.h
   query/Container.h

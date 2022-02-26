@@ -24,14 +24,19 @@ actor to display because the data is unevenly distributed.
 
 This pattern simplifies the work the client must do,
 however it also means that server-side objects should rarely (if ever)
-(1) send signals to the client or
-(2) perform blocking operations based on their local data;
-the reason for this is that,
-(1) if every server process sent a signal when an action was performed, a large
-    number of servers would quickly overwhelm the client and
-(2) since each server process holds a different portion of the data,
-    not every server process would block at the same time which can lead to deadlocks
-    and race conditions.
+
+#. send signals to the client or
+#. perform blocking operations based on their local data;
+
+the reason for
+this is that,
+
+#. if every server process sent a signal when an action was performed, a large
+   number of servers would quickly overwhelm the client and
+#. since each server process holds a different portion of the data,
+   not every server process would block at the same time which can lead to deadlocks
+   and race conditions.
+
 So, although there are infrequent exceptions,
 be aware that ParaView takes great care to initiate all actions on the client,
 even when it seems that the server should do so.

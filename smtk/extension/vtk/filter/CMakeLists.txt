@@ -1,4 +1,5 @@
 set(classes
+  vtkApplyTransforms
   vtkCleanPolylines
   vtkDEMToMesh
   vtkExtractImageBlock

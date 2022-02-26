@@ -1,0 +1,8 @@
+NAME
+  smtkDefaultConfigurationPlugin
+DESCRIPTION
+  Omit this plugin when an application provides its own ApplicationConfiguration.
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt

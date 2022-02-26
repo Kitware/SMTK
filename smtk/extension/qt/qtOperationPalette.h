@@ -62,6 +62,12 @@ namespace extension
   * configured and may also include an "OperationDecorator"
   * configuration that provides overrides for the presentation
   * style of operations.
+  * Note that if an `smtk::common::Managers::Ptr` is included in
+  * the constructor's `smtk::view::Information` and it contains
+  * a `QSharedPointer<qtOperationTypeModel>`, that object will be
+  * used instead of constructing a model solely for the view.
+  * This allows applications to provide a single model for many
+  * purposes (toolbox, toolbars, menu actions, etc.).
   *
   * <View Type="qtOperationPalette"
   *   SearchBar="true"
