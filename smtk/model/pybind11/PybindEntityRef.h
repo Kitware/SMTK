@@ -52,6 +52,7 @@ inline py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(p
     .def("__lt__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator<)
     .def("deepcopy", (smtk::model::EntityRef & (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &)) &smtk::model::EntityRef::operator=)
     .def("__eq__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator==)
+    .def("__hash__", &smtk::model::EntityRef::hash)
     .def("addRawRelation", &smtk::model::EntityRef::addRawRelation, py::arg("ent"))
     .def("adjacentEntities", &smtk::model::EntityRef::adjacentEntities, py::arg("ofDimension"))
     .def("assignDefaultName", &smtk::model::EntityRef::assignDefaultName, py::arg("overwrite") = false)

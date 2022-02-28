@@ -419,7 +419,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     endif ()
   endif ()
   find_package("Python${SMTK_PYTHON_VERSION}" REQUIRED
-    COMPONENTS Interpreter)
+    COMPONENTS Interpreter Development.Embed Development.Module)
 
   # Initialize SMTK_PYTHON_MODULEDIR.
   # This stores the location where we'll install SMTK's Python modules.
