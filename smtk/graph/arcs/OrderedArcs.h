@@ -101,7 +101,7 @@ public:
 
   std::size_t count() const { return m_to.size(); }
 
-  // NOLINTBEGIN(misc-unconventional-assign-operator)
+  // NOLINTBEGIN(misc*)
   template<typename IterableContainer>
   typename std::enable_if<detail::is_iterable_container<IterableContainer>::value, OrderedArcs&>::
     type
@@ -115,7 +115,7 @@ public:
     }
     return *this;
   }
-  // NOLINTEND(misc-unconventional-assign-operator)
+  // NOLINTEND(misc*)
 
   OrderedArcs& operator=(ToType& to)
   {
@@ -137,8 +137,9 @@ public:
   }
 
   template<typename Iterator>
-  typename std::enable_if<detail::is_forward_iterable<Iterator>::value, bool>::type
-  insert(const Iterator& first, const Iterator& last, bool inverse = true)
+  typename std::enable_if<detail::is_forward_iterable<Iterator>::value, bool>::type insert(
+    const Iterator& first,
+    const Iterator& last)
   {
     bool success = true;
     for (Iterator it = first; it != last; ++it)

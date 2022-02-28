@@ -14,6 +14,9 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   # There is also an instance from a protected class in smtkQtExt.
   "warning: direct access in function .* to global weak symbol 'typeinfo "
 
+  # Clang-Tidy won't ignore this correctly
+  "warning.*operator=().*should return 'OrderedArcs.'"
+
   # Ignore warnings from CMake autogen code
   "autogen"
 
