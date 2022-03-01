@@ -41,7 +41,8 @@ Please remove this comment.
         - [ ] Update the ReadMe file to refer to the new release notes
         - [ ] If `PATCH` is greater than 0, add items to the end of this file.
         - [ ] `git rm` all of the individual release note files *except* `00-example.rst`.
-        - [ ] `git commit -m 'Compile release notes for VERSION' doc/release/smtk-MAJOR.MINOR.rst`
+        - [ ] Do a git add for  ReadMe,  index.rst, and smtk-MAJOR.MINOR.rst
+        - [ ] `git commit -m 'Compile release notes for VERSION'`
       - [ ] Update `version.txt` and tag the commit (tag this commit below)
         - [ ] `echo VERSION > version.txt`
         - [ ] Rebuild smtk to check for deprecation warnings
