@@ -125,10 +125,22 @@ public:
   int columnCount(const QModelIndex& parent) const override;
   QVariant data(const QModelIndex& index, int role) const override;
   QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+
+  /// Return the action for a particular operation-type.
   qtOperationAction* actionFor(const QModelIndex& index) const;
+  template<typename OperationType>
+  qtOperationAction* actionFor() const
+  {
+    return this->actionFor(this->findByTypeIndex<OperationType>());
+  }
 
   /// Return the index of the row with the given operation type-index.
   QModelIndex findByTypeIndex(smtk::operation::Operation::Index typeIndex) const;
+  template<typename OperationType>
+  QModelIndex findByTypeIndex() const
+  {
+    return this->findByTypeIndex(std::type_index(typeid(OperationType)).hash_code());
+  }
 
   /// Set/get the operation decorator used to override operation labels, tooltips, etc..
   void setDecorator(const std::shared_ptr<smtk::view::OperationDecorator>& decorator);

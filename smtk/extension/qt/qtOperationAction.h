@@ -43,6 +43,9 @@ class SMTKQTEXT_EXPORT qtOperationAction : public QWidgetAction
 {
   Q_OBJECT
 public:
+  /// A function that takes an operation action as its input.
+  using ActionFunctor = std::function<void(qtOperationAction*)>;
+
   qtOperationAction(
     const std::shared_ptr<smtk::operation::Manager>& operationManager,
     const std::shared_ptr<smtk::view::Manager>& viewManager,
@@ -55,10 +58,32 @@ public:
   /// The type-index of the operation.
   smtk::operation::Operation::Index operationIndex() const { return m_typeIndex; }
 
+  /// Set/get the style of button this action creates (whether to include text, icon, or both).
+  Qt::ToolButtonStyle buttonStyle() const { return m_style; }
+  void setButtonStyle(Qt::ToolButtonStyle style);
+
   static constexpr int longPress = 200; // milliseconds
+
+  /**\brief Force the style of widgets created by this icon to be distinct.
+    *
+    * Inside the \a functor you provide, the button style (i.e., whether
+    * to include text, an icon, or both) will be the specified \a style.
+    * This is used to force toolbar buttons to be distinct from toolbox
+    * buttons.
+    *
+    * The \a functor is passed a pointer to "this" so that you need not
+    * capture the action.
+    */
+  void forceStyle(Qt::ToolButtonStyle buttonStyle, ActionFunctor functor);
 
 protected Q_SLOTS:
   void parameterTimerElapsed();
+  /**\brief Called by QToolButton widgets attached to this action.
+    *
+    * If the operation has any editable parameters, this method will
+    * emit editParameters(). Otherwise, it will emit acceptDefaults().
+    */
+  void defaultAction();
 
 Q_SIGNALS:
   void acceptDefaults();
@@ -90,6 +115,10 @@ protected:
   smtk::attribute::utility::EditableParameters m_editableParameters;
   /// A timer used to detect long-presses/double-clicks of buttons.
   QTimer m_timer;
+  /// Setting that dictates how createWidget() decorates the button it creates.
+  Qt::ToolButtonStyle m_style{ Qt::ToolButtonTextBesideIcon };
+  /// Setting indicating whether to create a push-button or a tool-button.
+  bool m_toolButton{ false };
 };
 
 #endif // smtk_extension_qt_qtOperationAction_h
