@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-find_package(Qt5Test REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Test)
 
 set(unit_tests_headers
   qtPrintLog.h
