@@ -38,6 +38,7 @@ inline py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_in
     .def("__ne__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator!=)
     .def("deepcopy", (smtk::model::CellEntity & (smtk::model::CellEntity::*)(::smtk::model::CellEntity const &)) &smtk::model::CellEntity::operator=)
     .def("__eq__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator==)
+    .def("__hash__", &smtk::model::CellEntity::hash)
     .def("boundingCellUses", &smtk::model::CellEntity::boundingCellUses, py::arg("orientation"))
     .def("boundingCells", &smtk::model::CellEntity::boundingCells)
     .def("findShellEntitiesContainingCell", &smtk::model::CellEntity::findShellEntitiesContainingCell, py::arg("cell"))
