@@ -27,6 +27,10 @@
 #include <regex>
 #include <string>
 
+#define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
+#include "pugixml/src/pugixml.hpp"
+
 namespace smtk
 {
 namespace attribute
