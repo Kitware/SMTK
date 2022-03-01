@@ -32,7 +32,7 @@
 #include <QEvent>
 #include <QMouseEvent>
 #include <QPalette>
-// #include <QPushButton>
+#include <QToolButton>
 
 #include <algorithm>
 #include <iostream>
@@ -92,10 +92,15 @@ qtOperationAction::qtOperationAction(
 
 qtOperationAction::~qtOperationAction() = default;
 
+void qtOperationAction::setButtonStyle(Qt::ToolButtonStyle style)
+{
+  m_style = style;
+  m_toolButton = (style == Qt::ToolButtonIconOnly);
+}
+
 QWidget* qtOperationAction::createWidget(QWidget* parent)
 {
   const QIcon& icon = this->icon();
-  auto* w = new qtDoubleClickButton(parent);
   std::string buttonText = m_operationName;
   if (m_editableParameters == EditableParameters::Mandatory)
   {
@@ -105,31 +110,69 @@ QWidget* qtOperationAction::createWidget(QWidget* parent)
   {
     buttonText += "(...)";
   }
-  if (!icon.isNull())
+  if (m_toolButton)
   {
-    w->setIcon(icon);
-    w->setStyleSheet("text-align: left;");
-    // w->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    auto* w = new QToolButton(parent);
+    w->setToolButtonStyle(m_style);
+    if (!icon.isNull())
+    {
+      w->setIcon(icon);
+    }
+    if (!this->toolTip().isEmpty())
+    {
+      w->setToolTip(this->toolTip());
+    }
+    w->setText(buttonText.c_str());
+    w->setDefaultAction(this); // Provide a reference back to here.
+    w->setObjectName(buttonText.c_str());
+    w->setPopupMode(QToolButton::DelayedPopup);
+    w->setArrowType(Qt::NoArrow);
+    QObject::connect(w, &QToolButton::triggered, this, &qtOperationAction::defaultAction);
+    return w;
   }
-  if (!this->toolTip().isEmpty())
+  else
   {
-    w->setToolTip(this->toolTip());
+    auto* w = new qtDoubleClickButton(parent);
+    if (!icon.isNull() && m_style != Qt::ToolButtonTextOnly)
+    {
+      w->setIcon(icon);
+      // w->setToolButtonStyle(m_style);
+    }
+    w->setStyleSheet("text-align: left;"); // We want both icons and buttons left-justified
+    if (!this->toolTip().isEmpty())
+    {
+      w->setToolTip(this->toolTip());
+    }
+    if (m_style != Qt::ToolButtonIconOnly)
+    {
+      w->setText(buttonText.c_str());
+    }
+    else
+    {
+      // Icon-only buttons should be suitable for toolbars.
+      w->setFlat(true);
+    }
+    w->addAction(this); // Provide a reference back to here.
+    w->setObjectName(buttonText.c_str());
+    // w->installEventFilter(this);
+    QObject::connect(w, &qtDoubleClickButton::clicked, this, &qtOperationAction::editParameters);
+    QObject::connect(
+      w, &qtDoubleClickButton::doubleClicked, this, &qtOperationAction::acceptDefaults);
+    return w;
   }
-  w->setText(buttonText.c_str());
-  w->addAction(this); // Provide a reference back to here.
-  w->setObjectName(buttonText.c_str());
-  // w->installEventFilter(this);
-  QObject::connect(w, &qtDoubleClickButton::clicked, this, &qtOperationAction::editParameters);
-  QObject::connect(
-    w, &qtDoubleClickButton::doubleClicked, this, &qtOperationAction::acceptDefaults);
-  /*
-    */
-  return w;
 }
 
 void qtOperationAction::deleteWidget(QWidget* widget)
 {
   delete widget;
+}
+
+void qtOperationAction::forceStyle(Qt::ToolButtonStyle buttonStyle, ActionFunctor functor)
+{
+  Qt::ToolButtonStyle lastStyle = m_style;
+  this->setButtonStyle(buttonStyle);
+  functor(this);
+  this->setButtonStyle(lastStyle);
 }
 
 void qtOperationAction::parameterTimerElapsed()
@@ -139,6 +182,16 @@ void qtOperationAction::parameterTimerElapsed()
   {
     emit editParameters();
   }
+}
+
+void qtOperationAction::defaultAction()
+{
+  if (m_editableParameters == EditableParameters::None)
+  {
+    emit acceptDefaults();
+    return;
+  }
+  emit editParameters();
 }
 
 bool qtOperationAction::eventFilter(QObject* watched, QEvent* event)
