@@ -154,10 +154,18 @@ public:
   {
     return m_content ? m_content->relatedResource() : smtk::resource::ResourcePtr();
   }
+  virtual smtk::resource::Resource* relatedRawResource() const
+  {
+    return m_content ? m_content->relatedRawResource() : nullptr;
+  }
   /// Return the resource component related to this phrase (or nullptr if not well defined).
   virtual smtk::resource::ComponentPtr relatedComponent() const
   {
     return m_content ? m_content->relatedComponent() : smtk::resource::ComponentPtr();
+  }
+  virtual smtk::resource::Component* relatedRawComponent() const
+  {
+    return m_content ? m_content->relatedRawComponent() : nullptr;
   }
   /// A convenience function that returns the related component's UUID if one exists.
   virtual smtk::common::UUID relatedComponentId() const;

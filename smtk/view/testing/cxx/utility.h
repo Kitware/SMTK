@@ -22,7 +22,9 @@ PhraseModel::Ptr loadTestData(
   char* argv[],
   const ManagerPtr& viewManager,
   const Configuration& config,
-  std::vector<char*>& dataArgs);
+  std::vector<char*>& dataArgs,
+  smtk::resource::ManagerPtr& resourceManager,
+  smtk::operation::ManagerPtr& operationManager);
 }
 } // namespace smtk
 

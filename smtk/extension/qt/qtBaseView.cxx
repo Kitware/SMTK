@@ -13,7 +13,6 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/operation/Manager.h"
 

@@ -47,7 +47,9 @@ public:
 
   smtk::resource::PersistentObjectPtr relatedObject() const override;
   smtk::resource::ResourcePtr relatedResource() const override;
+  smtk::resource::Resource* relatedRawResource() const override { return m_rawResource; }
   smtk::resource::ComponentPtr relatedComponent() const override;
+  smtk::resource::Component* relatedRawComponent() const override { return m_rawComponent; }
 
   void setMutability(int whatsMutable);
 
@@ -62,6 +64,8 @@ protected:
   ComponentPhraseContent();
 
   std::weak_ptr<smtk::resource::Component> m_component;
+  smtk::resource::Component* m_rawComponent = nullptr;
+  smtk::resource::Resource* m_rawResource = nullptr;
   int m_mutability{ 0 };
 };
 

@@ -107,7 +107,6 @@ protected:
 
 private:
   SortingCompFunc m_comparator = smtk::view::DescriptivePhrase::compareByTypeThenTitle;
-  ;
 };
 } // namespace view
 } // namespace smtk

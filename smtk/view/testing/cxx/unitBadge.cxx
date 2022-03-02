@@ -19,14 +19,19 @@
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
+
+#include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/resource/Manager.h"
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/operation/groups/InternalGroup.h"
 #include "smtk/plugin/Registry.h"
 
 #include "smtk/view/json/jsonView.h"
@@ -151,13 +156,17 @@ int unitBadge(int argc, char* argv[])
                       } } } } } } } } } }
   };
   smtk::view::ConfigurationPtr viewConfig = j;
-  auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
+  smtk::resource::ManagerPtr resourceManager;
+  smtk::operation::ManagerPtr operationManager;
+
+  auto phraseModel =
+    loadTestData(argc, argv, viewManager, *viewConfig, dataArgs, resourceManager, operationManager);
   // BadgeSet& badgeSet(const_cast<BadgeSet&>(phraseModel->badges()));
   // badgeSet.configure(viewConfig, viewManager);
   auto resource = phraseModel->root()->subphrases()[0]->relatedResource();
-  auto resourceManager = resource->manager();
   auto registry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
   auto attRsrc = resourceManager->create<smtk::attribute::Resource>();
+  attRsrc->setName("Attribute Test Resource");
   auto defBC = attRsrc->createDefinition("BoundaryCondition");
   auto assoc = defBC->createLocalAssociationRule();
   assoc->setAcceptsEntries("smtk::model::Resource", "edge", true);
@@ -183,6 +192,19 @@ int unitBadge(int argc, char* argv[])
       }
     }
   }
+
+  // create a Signal operation that will let Observers know that an
+  // attribute was created, modified, or removed.
+  smtk::attribute::Registrar::registerTo(operationManager);
+  auto signalOp = operationManager->create<smtk::attribute::Signal>();
+  if (signalOp)
+  {
+    auto compsItem = signalOp->parameters()->findComponent("created");
+    compsItem->appendValue(attDBC);
+    compsItem->appendValue(attNBC);
+    signalOp->operate();
+  }
+
   int bcBadgeCounter = 0;
 
   smtk::view::BadgeSet& badgeSet = phraseModel->badges();
