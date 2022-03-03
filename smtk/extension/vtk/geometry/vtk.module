@@ -3,5 +3,6 @@ NAME
 DEPENDS
   VTK::CommonCore
   VTK::CommonDataModel
+  VTK::eigen
 PRIVATE_DEPENDS
   vtkSMTKModelExt
