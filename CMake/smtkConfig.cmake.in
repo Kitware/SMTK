@@ -172,17 +172,17 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
 endif ()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
-  find_package(Python@SMTK_PYTHON_VERSION@ ${_smtk_find_quietly}
+  find_package(Python3 ${_smtk_find_quietly}
     COMPONENTS Development Interpreter)
-  if (NOT Python@SMTK_PYTHON_VERSION@_FOUND)
+  if (NOT Python3_FOUND)
     list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
-      "Python@SMTK_PYTHON_VERSION@ dependency not found")
+      "Python3 dependency not found")
     set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
   endif ()
 
   # Set the interpreter up before `pybind11` uses the old Python modules to
   # find a different Python than we actually want.
-  set(PYTHON_EXECUTABLE "${Python@SMTK_PYTHON_VERSION@_EXECUTABLE}")
+  set(PYTHON_EXECUTABLE "${Python3_EXECUTABLE}")
 
   find_package(pybind11 ${_smtk_find_quietly})
   if (NOT pybind11_FOUND)

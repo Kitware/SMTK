@@ -113,14 +113,14 @@ if(APPLE)
   set(lib_dest_dir ${bundle}/Contents/Libraries)
   set(qtconf_dest_dir ${bundle}/Contents/Resources)
   set(exe_dest_dir ${bundle}/Contents/MacOS)
-  if (SMTK_ENABLE_PYTHON_WRAPPING AND Python${SMTK_PYTHON_VERSION}_FOUND)
+  if (SMTK_ENABLE_PYTHON_WRAPPING AND Python3_FOUND)
     list(APPEND ignore_items
       # When Python is enabled, the Python executables get added to the list of
       # dependencies to package. We don't need them, so we ignore them
       # explicitly.
       Python
-      python${Python${SMTK_PYTHON_VERSION}_VERSION_MAJOR}
-      python${Python${SMTK_PYTHON_VERSION}_VERSION_MAJOR}.${Python${SMTK_PYTHON_VERSION}_VERSION_MINOR}
+      python${Python3_VERSION_MAJOR}
+      python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}
       )
   endif()
 elseif(UNIX)
