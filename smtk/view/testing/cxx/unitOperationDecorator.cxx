@@ -44,7 +44,6 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
-#include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/SetProperty.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -89,7 +88,6 @@ void testInitializerListCtor()
       wrap<smtk::mesh::Subtract>(),
       wrap<smtk::mesh::Transform>(),
       wrap<smtk::mesh::UndoElevateMesh>(),
-      wrap<smtk::operation::ImportPythonOperation>(),
       wrap<smtk::operation::SetProperty>(),
       wrap<smtk::attribute::Associate>(),
       wrap<smtk::attribute::Dissociate>(),
@@ -103,7 +101,7 @@ void testInitializerListCtor()
   std::cout << "  " << bar.m_toolTip.c_str() << "\n  " << bar.m_buttonLabel.c_str() << "\n";
   test(foo.first, "Expected to find operation.");
   test(bar.m_label == "edit group", "Failed to override name.");
-  test(decorator.size() == 32, "Expected to register 32 operations.");
+  test(decorator.size() == 31, "Expected to register 31 operations.");
   decorator.dump();
 
   std::cout << std::type_index(typeid(smtk::operation::Operation)).hash_code()
@@ -130,7 +128,6 @@ void testConfigurationCtor()
     smtk::mesh::Subtract,
     smtk::mesh::Transform,
     smtk::mesh::UndoElevateMesh,
-    smtk::operation::ImportPythonOperation,
     smtk::operation::SetProperty,
     smtk::attribute::Associate,
     smtk::attribute::Dissociate,
