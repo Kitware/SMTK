@@ -597,7 +597,7 @@ void qtOperationTypeModel::updateSelectionAssociability(
       const auto& metadata(*metaIt);
       auto parameterDefinition =
         smtk::operation::extractParameterDefinition(metadata.specification(), metadata.typeName());
-      auto associations = parameterDefinition->associationRule();
+      auto associations = parameterDefinition ? parameterDefinition->associationRule() : nullptr;
       if (!associations)
       {
         item.m_associability = Associability::Unneeded;
