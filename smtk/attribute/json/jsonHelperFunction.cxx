@@ -65,6 +65,10 @@
 
 #include <string>
 
+#define PUGIXML_HEADER_ONLY
+// NOLINTNEXTLINE(bugprone-suspicious-include)
+#include "pugixml/src/pugixml.hpp"
+
 /**\brief Provide a way to serialize itemPtr
   */
 namespace
