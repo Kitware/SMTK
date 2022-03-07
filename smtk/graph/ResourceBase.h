@@ -71,6 +71,8 @@ protected:
   {
   }
 
+  ResourceBase(ResourceBase&&) noexcept = default;
+
   friend Component;
 };
 
