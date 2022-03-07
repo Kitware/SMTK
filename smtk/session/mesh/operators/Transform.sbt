@@ -8,7 +8,7 @@
         <Accepts><Resource Name="smtk::session::mesh::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
-        <Group Name="transform" NumberOfRequiredGropus="1">
+        <Group Name="transform" NumberOfRequiredGroups="1">
           <ItemDefinitions>
             <Double Name="scale" NumberOfRequiredValues="3">
               <BriefDescription>

@@ -12,7 +12,7 @@
         <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
-        <Group Name="transform" NumberOfRequiredGropus="1">
+        <Group Name="transform" NumberOfRequiredGroups="1">
           <ItemDefinitions>
             <Double Name="translate" NumberOfRequiredValues="3">
               <BriefDescription>Translate mesh? If so, specify a vector.</BriefDescription>
