@@ -215,6 +215,12 @@ bool ComponentPhraseContent::editStringValue(ContentType contentType, const std:
         {
           op->parameters()->findString("name")->setValue(val);
         }
+        else
+        {
+          op = opManager->create<smtk::operation::SetProperty>();
+          op->parameters()->findString("name")->setValue("name");
+          op->parameters()->findString("string value")->appendValue(val);
+        }
       }
       if (!op)
       {
