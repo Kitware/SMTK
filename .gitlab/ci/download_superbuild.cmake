@@ -8,10 +8,10 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20211111
+# 20220103 mac, 20220307 win
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2019")
-  set(file_item "61d3352a4acac99f428df8de")
-  set(file_hash "5c231a7fd85c0f97c97da1bb419e5133587709cb980024104262ac55e1db0d45dae34238f9de46f2f24b6dc859fea8cd3800f3365bf3e4a640a89d610658ddd5")
+  set(file_item "6227ad7c4acac99f42fb6751")
+  set(file_hash "b3cba0ad747e87919e86e033869cc5e19e021ffa8b2371e076bd3d6a9d2268047447b1a11f851d2b4f31c33cfac2104227bd6f17db8be0e877b59739658d52a7")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
   set(file_item "61d3352a4acac99f428df8da")
   set(file_hash "a980ab964024d2bf7561beb1fa01af1fdc3d5ee07249a0e50683e2f5386163d5290a58fc76fd9fd4d319028f73b062a0129f547b7890bde07dda19045ab8ff6a")
