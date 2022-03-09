@@ -8,16 +8,16 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20220103 mac, 20220307 win
+# 20220309 mac, 20220307 win
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2019")
   set(file_item "6227ad7c4acac99f42fb6751")
   set(file_hash "b3cba0ad747e87919e86e033869cc5e19e021ffa8b2371e076bd3d6a9d2268047447b1a11f851d2b4f31c33cfac2104227bd6f17db8be0e877b59739658d52a7")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_item "61d3352a4acac99f428df8da")
-  set(file_hash "a980ab964024d2bf7561beb1fa01af1fdc3d5ee07249a0e50683e2f5386163d5290a58fc76fd9fd4d319028f73b062a0129f547b7890bde07dda19045ab8ff6a")
+  set(file_item "6228c64d4acac99f420b29a1")
+  set(file_hash "43bb2399c61da42fa2db54e6af10dd9dddbfbc36e73f5ce7e015b1df7a54f9d9b35e717a5ae5b59fcfd2c36ed20436205f7209376ba1b1c5edb919139a3a67df")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_item "61d335294acac99f428df8d6")
-  set(file_hash "02b115a16f72f988a97ef489507b390505e5aaa9933463d610319d5a5b73bbae48b4f0465a772be0c7d180c5808611c63db5febb52e00afbcdc382c3e1e146c6")
+  set(file_item "6228c64d4acac99f420b299d")
+  set(file_hash "f11fef5f544abf6396c34fc3ab632d37765fc15e94b0a108d6439b13a621e328858bf1d4d3674a1c910417f95c9505a37ac4824ca3aec02258fd8797966b89b8")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")
