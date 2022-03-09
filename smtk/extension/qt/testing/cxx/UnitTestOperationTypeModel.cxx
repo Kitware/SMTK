@@ -63,7 +63,6 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
-#include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/SetProperty.h"
 
 #include "nlohmann/json.hpp"
@@ -160,7 +159,6 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
       wrap<smtk::mesh::Subtract>(),
       wrap<smtk::mesh::Transform>(),
       wrap<smtk::mesh::UndoElevateMesh>(),
-      wrap<smtk::operation::ImportPythonOperation>(),
       wrap<smtk::operation::SetProperty>(),
       wrap<smtk::attribute::Associate>(),
       wrap<smtk::attribute::Dissociate>(),
