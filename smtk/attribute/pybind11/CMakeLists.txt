@@ -3,7 +3,13 @@ set(module_path "attribute")
 set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
-pybind11_add_module(${library_name} PybindAttribute.cxx)
+pybind11_add_module(${library_name}
+  PybindAttributeModule1.cxx
+  PybindAttributeModule2.cxx
+  PybindAttributeModule3.cxx
+  PybindAttributeModule4.cxx
+  PybindAttribute.cxx
+)
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
