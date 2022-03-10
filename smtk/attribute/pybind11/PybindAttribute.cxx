@@ -21,56 +21,10 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindAnalyses.h"
-#include "PybindAttribute.h"
-#include "PybindCategories.h"
-#include "PybindComponentItem.h"
-#include "PybindComponentItemDefinition.h"
-#include "PybindDateTimeItem.h"
-#include "PybindDateTimeItemDefinition.h"
-#include "PybindDefinition.h"
-#include "PybindDirectoryItem.h"
-#include "PybindDirectoryItemDefinition.h"
-#include "PybindDoubleItem.h"
-#include "PybindDoubleItemDefinition.h"
-#include "PybindFileItem.h"
-#include "PybindFileItemDefinition.h"
-#include "PybindFileSystemItem.h"
-#include "PybindFileSystemItemDefinition.h"
-#include "PybindGroupItem.h"
-#include "PybindGroupItemDefinition.h"
-#include "PybindIntItem.h"
-#include "PybindIntItemDefinition.h"
-#include "PybindItem.h"
-#include "PybindItemDefinition.h"
-#include "PybindModelEntityItem.h"
-#include "PybindModelEntityItemDefinition.h"
-#include "PybindQueries.h"
-#include "PybindReferenceItem.h"
-#include "PybindReferenceItemDefinition.h"
-#include "PybindRegistrar.h"
-#include "PybindResourceItem.h"
-#include "PybindResourceItemDefinition.h"
-#include "PybindSearchStyle.h"
-#include "PybindStringItem.h"
-#include "PybindStringItemDefinition.h"
-#include "PybindTag.h"
-#include "PybindResource.h"
-#include "PybindValueItem.h"
-#include "PybindValueItemDefinition.h"
-#include "PybindValueItemDefinitionTemplate.h"
-#include "PybindValueItemTemplate.h"
-#include "PybindVoidItem.h"
-#include "PybindVoidItemDefinition.h"
-
-#include "PybindAssociate.h"
-#include "PybindDissociate.h"
-#include "PybindExport.h"
-#include "PybindImport.h"
-#include "PybindRead.h"
-#include "PybindWrite.h"
-
-PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
+void attributePart1(py::module& attribute);
+void attributePart2(py::module& attribute);
+void attributePart3(py::module& attribute);
+void attributePart4(py::module& attribute);
 
 PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 {
@@ -79,62 +33,8 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
   py::module::import("smtk.common");
   py::module::import("smtk.resource");
 
-  // The order of these function calls is important! It was determined by
-  // comparing the dependencies of each of the wrapped objects.
-  py::class_< smtk::attribute::Tag > smtk_attribute_Tag = pybind11_init_smtk_attribute_Tag(attribute);
-  py::class_< smtk::attribute::Analyses > smtk_attribute_Analyses = pybind11_init_smtk_attribute_Analyses(attribute);
-  pybind11_init_smtk_attribute_SearchStyle(attribute);
-  PySharedPtrClass< smtk::attribute::Attribute > smtk_attribute_Attribute = pybind11_init_smtk_attribute_Attribute(attribute);
-  PySharedPtrClass< smtk::attribute::Definition > smtk_attribute_Definition = pybind11_init_smtk_attribute_Definition(attribute);
-  PySharedPtrClass< smtk::attribute::Item > smtk_attribute_Item = pybind11_init_smtk_attribute_Item(attribute);
-  PySharedPtrClass< smtk::attribute::ItemDefinition > smtk_attribute_ItemDefinition = pybind11_init_smtk_attribute_ItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::FileSystemItem, smtk::attribute::Item > smtk_attribute_FileSystemItem = pybind11_init_smtk_attribute_FileSystemItem(attribute);
-  PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_FileSystemItemDefinition = pybind11_init_smtk_attribute_FileSystemItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > smtk_attribute_GroupItem = pybind11_init_smtk_attribute_GroupItem(attribute);
-  PySharedPtrClass< smtk::attribute::GroupItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_GroupItemDefinition = pybind11_init_smtk_attribute_GroupItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > smtk_attribute_ReferenceItem = pybind11_init_smtk_attribute_ReferenceItem(attribute);
-  PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ReferenceItemDefinition = pybind11_init_smtk_attribute_ReferenceItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::Resource> smtk_attribute_Resource = pybind11_init_smtk_attribute_Resource(attribute);
-  PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > smtk_attribute_ValueItem = pybind11_init_smtk_attribute_ValueItem(attribute);
-  PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ValueItemDefinition = pybind11_init_smtk_attribute_ValueItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::VoidItem, smtk::attribute::Item > smtk_attribute_VoidItem = pybind11_init_smtk_attribute_VoidItem(attribute);
-  PySharedPtrClass< smtk::attribute::VoidItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_VoidItemDefinition = pybind11_init_smtk_attribute_VoidItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::DirectoryItem, smtk::attribute::FileSystemItem > smtk_attribute_DirectoryItem = pybind11_init_smtk_attribute_DirectoryItem(attribute);
-  PySharedPtrClass< smtk::attribute::DirectoryItemDefinition, smtk::attribute::FileSystemItemDefinition > smtk_attribute_DirectoryItemDefinition = pybind11_init_smtk_attribute_DirectoryItemDefinition(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > smtk_attribute_ValueItemTemplate_double_ = pybind11_init_smtk_attribute_ValueItemTemplate_double_(attribute);
-  PySharedPtrClass< smtk::attribute::DoubleItem, smtk::attribute::ValueItemTemplate<double> > smtk_attribute_DoubleItem = pybind11_init_smtk_attribute_DoubleItem(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<double>, smtk::attribute::ValueItemDefinition > smtk_attribute_ValueItemDefinitionTemplate_double_ = pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_double_(attribute);
-  PySharedPtrClass< smtk::attribute::DoubleItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<double> > smtk_attribute_DoubleItemDefinition = pybind11_init_smtk_attribute_DoubleItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::FileItem, smtk::attribute::FileSystemItem > smtk_attribute_FileItem = pybind11_init_smtk_attribute_FileItem(attribute);
-  PySharedPtrClass< smtk::attribute::FileItemDefinition, smtk::attribute::FileSystemItemDefinition > smtk_attribute_FileItemDefinition = pybind11_init_smtk_attribute_FileItemDefinition(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > smtk_attribute_ValueItemTemplate_int_ = pybind11_init_smtk_attribute_ValueItemTemplate_int_(attribute);
-  PySharedPtrClass< smtk::attribute::IntItem, smtk::attribute::ValueItemTemplate<int> > smtk_attribute_IntItem = pybind11_init_smtk_attribute_IntItem(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<int>, smtk::attribute::ValueItemDefinition > smtk_attribute_ValueItemDefinitionTemplate_int_ = pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_int_(attribute);
-  PySharedPtrClass< smtk::attribute::IntItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<int> > smtk_attribute_IntItemDefinition = pybind11_init_smtk_attribute_IntItemDefinition(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::basic_string<char> >, smtk::attribute::ValueItem > smtk_attribute_ValueItemTemplate_string_ = pybind11_init_smtk_attribute_ValueItemTemplate_string_(attribute);
-  PySharedPtrClass< smtk::attribute::StringItem, smtk::attribute::ValueItemTemplate<std::basic_string<char> > > smtk_attribute_StringItem = pybind11_init_smtk_attribute_StringItem(attribute);
-  PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> >, smtk::attribute::ValueItemDefinition > smtk_attribute_ValueItemDefinitionTemplate_string_ = pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_string_(attribute);
-  PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> > > smtk_attribute_StringItemDefinition = pybind11_init_smtk_attribute_StringItemDefinition(attribute);
-
-  PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > smtk_attribute_DateTimeItem = pybind11_init_smtk_attribute_DateTimeItem(attribute);
-  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_DateTimeItemDefinition = pybind11_init_smtk_attribute_DateTimeItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::ReferenceItem > smtk_attribute_ResourceItem = pybind11_init_smtk_attribute_ResourceItem(attribute);
-  PySharedPtrClass< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > smtk_attribute_ResourceItemDefinition = pybind11_init_smtk_attribute_ResourceItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::ComponentItem, smtk::attribute::ReferenceItem > smtk_attribute_ComponentItem = pybind11_init_smtk_attribute_ComponentItem(attribute);
-  PySharedPtrClass< smtk::attribute::ComponentItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ComponentItemDefinition = pybind11_init_smtk_attribute_ComponentItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::ComponentItem > smtk_attribute_ModelEntityItem = pybind11_init_smtk_attribute_ModelEntityItem(attribute);
-  PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ComponentItemDefinition > smtk_attribute_ModelEntityItemDefinition = pybind11_init_smtk_attribute_ModelEntityItemDefinition(attribute);
-
-  py::class_< smtk::attribute::Categories > smtk_attribute_Categories = pybind11_init_smtk_attribute_Categories(attribute);
-  py::class_< smtk::attribute::Registrar > smtk_attribute_Registrar = pybind11_init_smtk_attribute_Registrar(attribute);
-
-  py::module::import("smtk.operation");
-
-  PySharedPtrClass< smtk::attribute::Associate, smtk::operation::XMLOperation > smtk_attribute_Associate = pybind11_init_smtk_attribute_Associate(attribute);
-  PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > smtk_attribute_Dissociate = pybind11_init_smtk_attribute_Dissociate(attribute);
-  PySharedPtrClass< smtk::attribute::Import, smtk::operation::XMLOperation > smtk_attribute_Import = pybind11_init_smtk_attribute_Import(attribute);
-  PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > smtk_attribute_Export = pybind11_init_smtk_attribute_Export(attribute);
-  PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > smtk_attribute_Read = pybind11_init_smtk_attribute_Read(attribute);
-  PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > smtk_attribute_Write = pybind11_init_smtk_attribute_Write(attribute);
-
+  attributePart1(attribute);
+  attributePart2(attribute);
+  attributePart3(attribute);
+  attributePart4(attribute);
 }
