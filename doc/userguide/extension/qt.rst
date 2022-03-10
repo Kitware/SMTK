@@ -1,3 +1,5 @@
+.. _smtk-qt-sys:
+
 Qt
 ==
 

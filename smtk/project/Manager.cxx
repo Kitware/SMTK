@@ -106,7 +106,8 @@ bool Manager::registerProject(
   return registerProject(Metadata(
     name,
     std::hash<std::string>{}(name),
-    [name](const smtk::common::UUID& id) -> ProjectPtr {
+    [name](
+      const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>&) -> ProjectPtr {
       ProjectPtr project = Project::create(name);
       project->setId(id);
       return project;
@@ -231,19 +232,23 @@ bool Manager::unregisterOperation(const smtk::operation::Operation::Index& index
   return false;
 }
 
-smtk::project::Project::Ptr Manager::create(const std::string& typeName)
+smtk::project::Project::Ptr Manager::create(
+  const std::string& typeName,
+  const std::shared_ptr<smtk::common::Managers>& m)
 {
   auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
-    return this->create(metadata->index());
+    return this->create(metadata->index(), m);
   }
 
   return smtk::project::Project::Ptr();
 }
 
-smtk::project::Project::Ptr Manager::create(const Project::Index& index)
+smtk::project::Project::Ptr Manager::create(
+  const Project::Index& index,
+  const std::shared_ptr<smtk::common::Managers>& m)
 {
   smtk::common::UUID uuid;
 
@@ -254,12 +259,13 @@ smtk::project::Project::Ptr Manager::create(const Project::Index& index)
     uuid = smtk::common::UUIDGenerator::instance().random();
   } while (m_projects.find(uuid) != m_projects.end());
 
-  return this->create(index, uuid);
+  return this->create(index, uuid, m);
 }
 
 smtk::project::Project::Ptr Manager::create(
   const std::string& typeName,
-  const smtk::common::UUID& id)
+  const smtk::common::UUID& id,
+  const std::shared_ptr<smtk::common::Managers>& m)
 {
   smtk::project::ProjectPtr project;
 
@@ -268,7 +274,7 @@ smtk::project::Project::Ptr Manager::create(
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the project with the appropriate UUID
-    project = metadata->create(id);
+    project = metadata->create(id, m);
     this->add(metadata->index(), project);
   }
 
@@ -277,7 +283,8 @@ smtk::project::Project::Ptr Manager::create(
 
 smtk::project::Project::Ptr Manager::create(
   const Project::Index& index,
-  const smtk::common::UUID& id)
+  const smtk::common::UUID& id,
+  const std::shared_ptr<smtk::common::Managers>& mm)
 {
   smtk::project::ProjectPtr project;
 
@@ -286,7 +293,7 @@ smtk::project::Project::Ptr Manager::create(
   if (metadata != m_metadata.get<IndexTag>().end())
   {
     // Create the project with the appropriate UUID
-    project = metadata->create(id);
+    project = metadata->create(id, mm);
     this->add(index, project);
   }
 

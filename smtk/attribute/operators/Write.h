@@ -33,7 +33,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKCORE_EXPORT bool write(const smtk::resource::ResourcePtr&);
+SMTKCORE_EXPORT bool write(
+  const smtk::resource::ResourcePtr&,
+  const std::shared_ptr<smtk::common::Managers>&);
 } // namespace attribute
 } // namespace smtk
 

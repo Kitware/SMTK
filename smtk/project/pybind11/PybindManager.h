@@ -32,10 +32,30 @@ inline PySharedPtrClass< smtk::project::Manager > pybind11_init_smtk_project_Man
     .def("add", (bool (smtk::project::Manager::*)(::smtk::project::Project::Index const &, ::smtk::project::ProjectPtr const &)) &smtk::project::Manager::add, py::arg("arg0"), py::arg("arg1"))
     .def("add", (bool (smtk::project::Manager::*)(::smtk::project::ProjectPtr const &)) &smtk::project::Manager::add, py::arg("arg0"))
     .def_static("create", (std::shared_ptr<smtk::project::Manager> (*)(::smtk::resource::ManagerPtr const &, ::smtk::operation::ManagerPtr const &)) &smtk::project::Manager::create, py::arg("resourceManager"), py::arg("operationManager"))
-    .def("createProject", (smtk::project::ProjectPtr (smtk::project::Manager::*)(::std::string const &)) &smtk::project::Manager::create, py::arg("arg0"))
-    .def("createProject", (smtk::project::ProjectPtr (smtk::project::Manager::*)(::smtk::project::Project::Index const &)) &smtk::project::Manager::create, py::arg("arg0"))
-    .def("createProject", (smtk::project::ProjectPtr (smtk::project::Manager::*)(::std::string const &, ::smtk::common::UUID const &)) &smtk::project::Manager::create, py::arg("arg0"), py::arg("arg1"))
-    .def("createProject", (smtk::project::ProjectPtr (smtk::project::Manager::*)(::smtk::project::Project::Index const &, ::smtk::common::UUID const &)) &smtk::project::Manager::create, py::arg("arg0"), py::arg("arg1"))
+    .def("createProject", [](smtk::project::Manager& manager, const std::string& projectType)
+      {
+        std::shared_ptr<smtk::common::Managers> empty;
+        return manager.create(projectType, empty);
+      }, py::arg("projectType")
+    )
+    .def("createProject", [](smtk::project::Manager& manager, const smtk::project::Project::Index& projectTypeIndex)
+      {
+        std::shared_ptr<smtk::common::Managers> empty;
+        return manager.create(projectTypeIndex, empty);
+      }, py::arg("projectTypeIndex")
+    )
+    .def("createProject", [](smtk::project::Manager& manager, const std::string& projectType, const smtk::common::UUID& uid)
+      {
+        std::shared_ptr<smtk::common::Managers> empty;
+        return manager.create(projectType, uid, empty);
+      }, py::arg("projectType"), py::arg("uuid")
+    )
+    .def("createProject", [](smtk::project::Manager& manager, const smtk::project::Project::Index& projectTypeIndex, const smtk::common::UUID& uid)
+      {
+        std::shared_ptr<smtk::common::Managers> empty;
+        return manager.create(projectTypeIndex, uid, empty);
+      }, py::arg("projectTypeIndex"), py::arg("uuid")
+    )
     .def("find", (std::set<std::shared_ptr<smtk::project::Project>, std::less<std::shared_ptr<smtk::project::Project> >, std::allocator<std::shared_ptr<smtk::project::Project> > > (smtk::project::Manager::*)(::std::string const &)) &smtk::project::Manager::find, py::arg("arg0"))
     .def("find", (std::set<std::shared_ptr<smtk::project::Project>, std::less<std::shared_ptr<smtk::project::Project> >, std::allocator<std::shared_ptr<smtk::project::Project> > > (smtk::project::Manager::*)(::smtk::project::Project::Index const &)) &smtk::project::Manager::find, py::arg("arg0"))
     .def("get", (smtk::project::ProjectPtr (smtk::project::Manager::*)(::smtk::common::UUID const &)) &smtk::project::Manager::get, py::arg("id"))

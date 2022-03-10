@@ -5,7 +5,7 @@ SMTK plugins are extensions of ParaView plugins that allow for the
 definition of SMTK managers and the automatic registration of
 components to these managers. They are created using the CMake
 function "add_smtk_plugin", which requires the developer to explicitly list
-a registration class "known as a Registrar" and a list of SMTK manager types
+a registration class known as a "Registrar" and a list of SMTK manager types
 to which the plugin registers. SMTK plugins can be introduced to a
 ParaView-based application in several ways. The consuming project can
 

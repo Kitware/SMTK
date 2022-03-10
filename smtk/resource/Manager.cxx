@@ -99,20 +99,24 @@ void Manager::clear()
   }
 }
 
-smtk::resource::ResourcePtr Manager::create(const std::string& typeName)
+smtk::resource::ResourcePtr Manager::create(
+  const std::string& typeName,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
-    return this->create(metadata->index());
+    return this->create(metadata->index(), managers);
   }
 
   return smtk::resource::ResourcePtr();
 }
 
-smtk::resource::ResourcePtr Manager::create(const Resource::Index& index)
+smtk::resource::ResourcePtr Manager::create(
+  const Resource::Index& index,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   smtk::common::UUID uuid;
 
@@ -126,21 +130,22 @@ smtk::resource::ResourcePtr Manager::create(const Resource::Index& index)
     } while (m_resources.find(uuid) != m_resources.end());
   }
 
-  return this->create(index, uuid);
+  return this->create(index, uuid, managers);
 }
 
 smtk::resource::ResourcePtr Manager::create(
   const std::string& typeName,
-  const smtk::common::UUID& uuid)
+  const smtk::common::UUID& uuid,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<NameTag>().find(typeName);
-  if (metadata != m_metadata.get<NameTag>().end())
+  if (metadata != m_metadata.get<NameTag>().end() && !!metadata->create)
   {
     // Create the resource using its index
-    resource = metadata->create(uuid);
+    resource = metadata->create(uuid, managers);
     this->add(metadata->index(), resource);
   }
 
@@ -149,16 +154,17 @@ smtk::resource::ResourcePtr Manager::create(
 
 smtk::resource::ResourcePtr Manager::create(
   const Resource::Index& index,
-  const smtk::common::UUID& uuid)
+  const smtk::common::UUID& uuid,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<IndexTag>().find(index);
-  if (metadata != m_metadata.get<IndexTag>().end())
+  if (metadata != m_metadata.get<IndexTag>().end() && !!metadata->create)
   {
     // Create the resource with the appropriate UUID
-    resource = metadata->create(uuid);
+    resource = metadata->create(uuid, managers);
     this->add(index, resource);
   }
 
@@ -324,16 +330,19 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   return values;
 }
 
-smtk::resource::ResourcePtr Manager::read(const std::string& typeName, const std::string& url)
+smtk::resource::ResourcePtr Manager::read(
+  const std::string& typeName,
+  const std::string& url,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<NameTag>().find(typeName);
-  if (metadata != m_metadata.get<NameTag>().end())
+  if (metadata != m_metadata.get<NameTag>().end() && !!metadata->read)
   {
     // Read in the resource using the provided url
-    resource = metadata->read(url);
+    resource = metadata->read(url, managers);
   }
   else
   {
@@ -359,7 +368,10 @@ smtk::resource::ResourcePtr Manager::read(const std::string& typeName, const std
   return resource;
 }
 
-smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const std::string& url)
+smtk::resource::ResourcePtr Manager::read(
+  const Resource::Index& index,
+  const std::string& url,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   smtk::resource::ResourcePtr resource;
 
@@ -368,7 +380,7 @@ smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const st
   if (metadata != m_metadata.get<IndexTag>().end())
   {
     // Read in the resource using the provided url
-    resource = metadata->read(url);
+    resource = metadata->read(url, managers);
   }
 
   if (resource)
@@ -386,14 +398,19 @@ smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const st
   return resource;
 }
 
-bool Manager::write(const smtk::resource::ResourcePtr& resource, const std::string& url)
+bool Manager::write(
+  const smtk::resource::ResourcePtr& resource,
+  const std::string& url,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   // Set the location of the resource to the input url and write
   resource->setLocation(url);
-  return this->write(resource);
+  return this->write(resource, managers);
 }
 
-bool Manager::write(const smtk::resource::ResourcePtr& resource)
+bool Manager::write(
+  const smtk::resource::ResourcePtr& resource,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
   if (!resource)
   {
@@ -402,10 +419,10 @@ bool Manager::write(const smtk::resource::ResourcePtr& resource)
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<IndexTag>().find(resource->index());
-  if (metadata != m_metadata.get<IndexTag>().end() && metadata->write != nullptr)
+  if (metadata != m_metadata.get<IndexTag>().end() && !!metadata->write)
   {
     // Write out the resource to its url
-    bool success = metadata->write(resource);
+    bool success = metadata->write(resource, managers);
 
     // If the write was successful, mark the resource as unmodified from its
     // persistent (i.e. on-disk) state

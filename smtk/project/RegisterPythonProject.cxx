@@ -20,6 +20,8 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/embed.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <functional>
+
 // We use either STL regex or Boost regex, depending on support. These flags
 // correspond to the equivalent logic used to determine the inclusion of Boost's
 // regex library.
@@ -47,7 +49,12 @@ bool importProject(
 {
   std::string typeName = moduleName + "." + projectName;
   smtk::project::Project::Index index = std::hash<std::string>{}(typeName);
-  auto create = std::bind(smtk::project::PyProject::create, moduleName, projectName, index);
+  auto create = [moduleName, projectName, index](
+                  const smtk::common::UUID& uid,
+                  const std::shared_ptr<smtk::common::Managers>& managers)
+    -> std::shared_ptr<smtk::project::Project> {
+    return smtk::project::PyProject::create(moduleName, projectName, index, uid, managers);
+  };
 
   return manager.registerProject(smtk::project::Metadata(typeName, index, create));
 }

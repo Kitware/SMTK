@@ -47,7 +47,17 @@ bool importResource(
 {
   std::string typeName = moduleName + "." + resourceName;
   smtk::resource::Resource::Index index = std::hash<std::string>{}(typeName);
-  auto create = std::bind(smtk::resource::PyResource::create, moduleName, resourceName, index);
+  auto create = [moduleName, resourceName, index](
+                  const smtk::common::UUID& uid,
+                  const std::shared_ptr<smtk::common::Managers>& managers) {
+    (void)managers;
+    auto resource = smtk::resource::PyResource::create(moduleName, resourceName, index);
+    if (resource)
+    {
+      resource->setId(uid);
+    }
+    return resource;
+  };
 
   return manager.registerResource(
     smtk::resource::Metadata(typeName, index, {}, create, nullptr, nullptr));

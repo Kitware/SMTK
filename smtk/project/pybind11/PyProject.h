@@ -91,7 +91,12 @@ public:
   ~PyProject() override = default;
 
   static std::shared_ptr<smtk::project::Project> create(
-    std::string modulename, std::string className, smtk::project::Project::Index index)
+    std::string modulename,
+    std::string className,
+    smtk::project::Project::Index index,
+    const smtk::common::UUID& uuid = smtk::common::UUID::null(),
+    const std::shared_ptr<smtk::common::Managers>& managers = nullptr
+    )
   {
     // Import the module containing our project
     pybind11::module module = pybind11::module::import(modulename.c_str());
@@ -109,6 +114,11 @@ public:
     obj.cast<std::shared_ptr<smtk::project::PyProject> >()->setTypeName(
       modulename + "." + className);
 
+    if (!uuid.isNull())
+    {
+      obj.cast<std::shared_ptr<smtk::project::PyProject> >()->setId(uuid);
+    }
+    (void) managers;
     return obj.cast<std::shared_ptr<smtk::project::Project> >();
   }
 

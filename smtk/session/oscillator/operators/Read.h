@@ -37,7 +37,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKOSCILLATORSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+SMTKOSCILLATORSESSION_EXPORT smtk::resource::ResourcePtr read(
+  const std::string&,
+  const std::shared_ptr<smtk::common::Managers>&);
 
 } // namespace oscillator
 } // namespace session

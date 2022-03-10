@@ -152,7 +152,7 @@ public:
     // though, so we need to manually set a python resource's index.
     obj.cast<std::shared_ptr<smtk::resource::PyResource> >()->setIndex(index);
 
-    // The precedent for python resource names is estabilished  to be the
+    // The precedent for python resource names is established to be the
     // modulename.className. We follow that convention here.
     obj.cast<std::shared_ptr<smtk::resource::PyResource> >()->setTypeName(
       modulename + "." + className);

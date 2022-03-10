@@ -36,7 +36,9 @@ protected:
   const char* xmlDescription() const override;
 };
 
-SMTKCORE_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+SMTKCORE_EXPORT smtk::resource::ResourcePtr read(
+  const std::string&,
+  const std::shared_ptr<smtk::common::Managers>&);
 } // namespace project
 } // namespace smtk
 

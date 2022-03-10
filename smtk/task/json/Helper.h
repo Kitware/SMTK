@@ -30,7 +30,7 @@ namespace json
 
 /// A helper for serializing task configurations.
 ///
-/// This is needed in order to serialized dependencies among tasks which
+/// This is needed in order to serialize dependencies among tasks which
 /// are stored as pointers that could, in theory, form a cycle.
 class SMTKCORE_EXPORT Helper
 {

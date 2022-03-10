@@ -12,6 +12,7 @@ set(resourceSrcs
   Resource.cxx
   ResourceLinks.cxx
   Surrogate.cxx
+  json/Helper.cxx
   json/jsonComponentLinkBase.cxx
   json/jsonPropertyCoordinateFrame.cxx
   json/jsonResource.cxx
@@ -56,6 +57,7 @@ set(resourceHeaders
   filter/Rules.h
   filter/String.h
   filter/Vector.h
+  json/Helper.h
   json/jsonComponentLinkBase.h
   json/jsonPropertyCoordinateFrame.h
   json/jsonResource.h

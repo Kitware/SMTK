@@ -110,17 +110,27 @@ public:
   }
 
   /// Construct a project identified by its typename, type index or class type.
-  ProjectPtr create(const std::string&);
-  ProjectPtr create(const Project::Index&);
+  ProjectPtr create(const std::string&, const std::shared_ptr<smtk::common::Managers>& = nullptr);
+  ProjectPtr create(
+    const Project::Index&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
   template<typename ProjectType>
-  smtk::shared_ptr<ProjectType> create();
+  smtk::shared_ptr<ProjectType> create(const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Construct a project with a given UUID identified by its typename, type
   /// index or class type.
-  ProjectPtr create(const std::string&, const smtk::common::UUID&);
-  ProjectPtr create(const Project::Index&, const smtk::common::UUID&);
+  ProjectPtr create(
+    const std::string&,
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
+  ProjectPtr create(
+    const Project::Index&,
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
   template<typename ProjectType>
-  smtk::shared_ptr<ProjectType> create(const smtk::common::UUID&);
+  smtk::shared_ptr<ProjectType> create(
+    const smtk::common::UUID&,
+    const std::shared_ptr<smtk::common::Managers>& = nullptr);
 
   /// Returns the project that relates to the given uuid.  If no association
   /// exists this will return a null pointer
@@ -268,7 +278,7 @@ bool Manager::registerProject(const std::string& version)
   return registerProject(Metadata(
     smtk::common::typeName<ProjectType>(),
     std::type_index(typeid(ProjectType)).hash_code(),
-    [](const smtk::common::UUID& id) {
+    [](const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>&) {
       Project::Ptr project = ProjectType::create();
       project->setId(id);
       return project;
@@ -309,17 +319,19 @@ bool Manager::unregisterOperation()
 }
 
 template<typename ProjectType>
-std::shared_ptr<ProjectType> Manager::create()
+std::shared_ptr<ProjectType> Manager::create(const std::shared_ptr<smtk::common::Managers>& m)
 {
   return std::static_pointer_cast<ProjectType>(
-    this->create(std::type_index(typeid(ProjectType)).hash_code()));
+    this->create(std::type_index(typeid(ProjectType)).hash_code(), m));
 }
 
 template<typename ProjectType>
-std::shared_ptr<ProjectType> Manager::create(const smtk::common::UUID& id)
+std::shared_ptr<ProjectType> Manager::create(
+  const smtk::common::UUID& id,
+  const std::shared_ptr<smtk::common::Managers>& m)
 {
   return std::static_pointer_cast<ProjectType>(
-    this->create(std::type_index(typeid(ProjectType)).hash_code(), id));
+    this->create(std::type_index(typeid(ProjectType)).hash_code(), id, m));
 }
 
 template<typename ProjectType>

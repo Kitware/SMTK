@@ -37,7 +37,9 @@ protected:
   void markModifiedResources(Result&) override;
 };
 
-SMTKVTKSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+SMTKVTKSESSION_EXPORT smtk::resource::ResourcePtr read(
+  const std::string&,
+  const std::shared_ptr<smtk::common::Managers>&);
 
 } // namespace vtk
 } // namespace session

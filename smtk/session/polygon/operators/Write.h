@@ -38,7 +38,9 @@ protected:
   const char* xmlDescription() const override;
 };
 
-SMTKPOLYGONSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
+SMTKPOLYGONSESSION_EXPORT bool write(
+  const smtk::resource::ResourcePtr&,
+  const std::shared_ptr<smtk::common::Managers>&);
 
 } // namespace polygon
 } // namespace session

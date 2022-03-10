@@ -82,11 +82,11 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
   {
     // Create an instance of smtk::project::Project
     auto project = projectManager->create<smtk::project::Project>();
-    smtkTest(projectManager->projects().size() == 1, "Project not added to manaager");
+    smtkTest(projectManager->projects().size() == 1, "Project not added to manager");
 
     // Create a resource
     auto myResource = resourceManager->create<MyResource>();
-    smtkTest(resourceManager->size() == 1, "Resource not added to manaager");
+    smtkTest(resourceManager->size() == 1, "Resource not added to manager");
 
     project->resources().registerResource<MyResource>();
 

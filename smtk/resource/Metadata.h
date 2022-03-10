@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/Managers.h"
 #include "smtk/common/UUID.h"
 #include "smtk/resource/MetadataObserver.h"
 #include "smtk/resource/Resource.h"
@@ -35,6 +36,9 @@ class Manager;
 /// within the manager. They may also provide functors for the creation and
 /// serialization/deserialization of the resource to/from disk (\a create,
 /// \a write and \a read, respectively).
+/// There are two variants of the read, write, and create methods: one takes a
+/// shared-pointer to an smtk::common::Managers instance and the other does not.
+/// The former is preferred.
 class Metadata
 {
   friend class Manager;
@@ -48,16 +52,32 @@ public:
     const std::string& typeName,
     Resource::Index index,
     std::set<Resource::Index> parentIndices,
-    std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor,
-    std::function<ResourcePtr(const std::string&)> readFunctor,
-    std::function<bool(const ResourcePtr&)> writeFunctor)
-    : create(createFunctor)
-    , read(readFunctor)
-    , write(writeFunctor)
-    , m_typeName(typeName)
+    std::function<
+      ResourcePtr(const smtk::common::UUID&, const std::shared_ptr<smtk::common::Managers>&)>
+      createFunctor = nullptr,
+    std::function<ResourcePtr(const std::string&, const std::shared_ptr<smtk::common::Managers>&)>
+      readFunctor = nullptr,
+    std::function<bool(const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)>
+      writeFunctor = nullptr)
+    : m_typeName(typeName)
     , m_index(index)
     , m_parentIndices(parentIndices)
   {
+    // Only assign functors if they are non-null.
+    // Otherwise, use the defaults which do nothing
+    // but can always be invoked safely.
+    if (createFunctor)
+    {
+      this->create = createFunctor;
+    }
+    if (readFunctor)
+    {
+      this->read = readFunctor;
+    }
+    if (writeFunctor)
+    {
+      this->write = writeFunctor;
+    }
   }
 
   const std::string& typeName() const { return m_typeName; }
@@ -70,13 +90,35 @@ public:
     return m_parentIndices.find(index) != m_parentIndices.end();
   }
 
-  std::function<ResourcePtr(const smtk::common::UUID&)> create = [](const smtk::common::UUID&) {
-    return ResourcePtr();
-  };
-  std::function<ResourcePtr(const std::string&)> read = [](const std::string&) {
-    return ResourcePtr();
-  };
-  std::function<bool(const ResourcePtr&)> write = [](const ResourcePtr&) { return false; };
+  /// A method that can be called to create a resource of the metadata's type.
+  ///
+  /// Provide a default method that returns a null pointer.
+  std::function<ResourcePtr(const smtk::common::UUID&, const shared_ptr<smtk::common::Managers>&)>
+    create =
+      [this](const smtk::common::UUID& uid, const shared_ptr<smtk::common::Managers>& managers) {
+        (void)uid;
+        (void)managers;
+        return ResourcePtr();
+      };
+  /// A method that can be called to read a resource of the metadata's type from a file.
+  ///
+  /// Provide a default that does nothing but return a null pointer.
+  std::function<ResourcePtr(const std::string&, const std::shared_ptr<smtk::common::Managers>&)>
+    read =
+      [this](const std::string& filename, const std::shared_ptr<smtk::common::Managers>& managers) {
+        (void)filename;
+        (void)managers;
+        return ResourcePtr();
+      };
+  /// A method that can be called to write a resource of the metadata's type.
+  ///
+  /// Provide a default that does nothing and always returns false.
+  std::function<bool(const ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)> write =
+    [this](const ResourcePtr& resource, const std::shared_ptr<smtk::common::Managers>& managers) {
+      (void)resource;
+      (void)managers;
+      return false;
+    };
 
 private:
   std::string m_typeName;

@@ -123,6 +123,11 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     }
     smtkInfoMacro(smtk::io::Logger::instance(), message.str());
   }
+  if (auto managers = m_managers.lock())
+  {
+    // Pass application's managers if available.
+    op->setManagers(managers);
+  }
 
   return op;
 }

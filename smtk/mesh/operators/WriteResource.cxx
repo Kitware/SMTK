@@ -210,8 +210,11 @@ void WriteResource::markModifiedResources(WriteResource::Result& /*unused*/)
   }
 }
 
-bool write(const smtk::resource::ResourcePtr& resource)
+bool write(
+  const smtk::resource::ResourcePtr& resource,
+  const std::shared_ptr<smtk::common::Managers>& managers)
 {
+  (void)managers;
   WriteResource::Ptr write = WriteResource::create();
   write->parameters()->associate(resource);
   WriteResource::Result result = write->operate();
