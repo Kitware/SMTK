@@ -12,7 +12,8 @@
 
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
-#include "smtk/common/TypeContainer.h"
+#include "smtk/common/Deprecation.h"
+#include "smtk/common/Managers.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -70,7 +71,11 @@ public:
   smtk::view::ManagerPtr GetViewManager() const;
 
   /// Return the client-side managers (mirrored on the server via this proxy).
+  SMTK_DEPRECATED_IN_22_03("Replaced with GetManagersPtr().")
   smtk::common::TypeContainer& GetManagers() const;
+
+  /// Return the client-side managers (mirrored on the server via this proxy).
+  smtk::common::Managers::Ptr GetManagersPtr() const;
 
   /// Call this to indicate which PV data has the active PV selection.
   void SetSelectedPortProxy(vtkSMSourceProxy* pxy);

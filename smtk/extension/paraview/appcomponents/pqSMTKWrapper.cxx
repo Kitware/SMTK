@@ -109,7 +109,17 @@ smtk::view::ManagerPtr pqSMTKWrapper::smtkViewManager() const
 smtk::common::TypeContainer& pqSMTKWrapper::smtkManagers() const
 {
   static smtk::common::TypeContainer nullContainer;
-  return this->smtkProxy() ? this->smtkProxy()->GetManagers() : nullContainer;
+  return this->smtkProxy() ? *this->smtkProxy()->GetManagersPtr() : nullContainer;
+}
+
+smtk::common::Managers::Ptr pqSMTKWrapper::smtkManagersPtr() const
+{
+  smtk::common::Managers::Ptr result;
+  if (auto* proxy = this->smtkProxy())
+  {
+    result = proxy->GetManagersPtr();
+  }
+  return result;
 }
 
 pqSMTKResource* pqSMTKWrapper::getPVResource(const smtk::resource::ResourcePtr& rsrc) const

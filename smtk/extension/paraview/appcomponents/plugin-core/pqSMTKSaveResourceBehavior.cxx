@@ -98,11 +98,14 @@ pqSaveResourceReaction::State pqSaveResourceReaction::saveResource(pqSMTKResourc
     return pqSaveResourceReaction::State::Aborted;
   }
 
+  auto* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(activeResource->getServer());
   if (smtk::resource::Manager::Ptr manager = resource->manager())
   {
+    std::shared_ptr<smtk::common::Managers> managers =
+      wrapper ? wrapper->smtkManagersPtr() : nullptr;
     // The resource manager returns true on success
-    return manager->write(resource) ? pqSaveResourceReaction::State::Succeeded
-                                    : pqSaveResourceReaction::State::Failed;
+    return manager->write(resource, managers) ? pqSaveResourceReaction::State::Succeeded
+                                              : pqSaveResourceReaction::State::Failed;
   }
   else
   {
@@ -208,10 +211,14 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(pqSMTKRes
       return pqSaveResourceReaction::State::Aborted;
     }
 
+    auto* wrapper =
+      pqSMTKBehavior::instance()->resourceManagerForServer(activeResource->getServer());
     if (smtk::resource::Manager::Ptr manager = resource->manager())
     {
-      return manager->write(resource, filename) ? pqSaveResourceReaction::State::Succeeded
-                                                : pqSaveResourceReaction::State::Failed;
+      std::shared_ptr<smtk::common::Managers> managers =
+        wrapper ? wrapper->smtkManagersPtr() : nullptr;
+      return manager->write(resource, filename, managers) ? pqSaveResourceReaction::State::Succeeded
+                                                          : pqSaveResourceReaction::State::Failed;
     }
     else
     {
