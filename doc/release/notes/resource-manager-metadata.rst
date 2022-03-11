@@ -18,3 +18,9 @@ have the managers object set (for use by operations).
 This is the preferred way for applications to pass information to operations.
 Using this method allows operations to be used in several applications
 with minimal dependencies on application-specific methods and structures.
+
+Finally, methods on the ``vtkSMSMTKWrapperProxy``, ``vtkSMTKWrapper``, and
+``pqSMTKWrapper`` classes that returned a ``TypeContainer&`` have been
+deprecated in favor of methods that return ``smtk::common::Managers::Ptr``
+so that operations can make use of the type-container's contents without
+copy-constructing a new Managers instance.
