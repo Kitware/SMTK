@@ -183,7 +183,7 @@ class AttributeBuilder:
         assert isinstance(spec, list), 'association spec is not a list'
 
         # New syntax
-        if (isinstance(spec[0], dict)) and 'resource' in spec[0]:
+        if len(spec) and (isinstance(spec[0], dict)) and 'resource' in spec[0]:
             ref_item = att.associations()
             self._set_reference_item(ref_item, spec)
             return

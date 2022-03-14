@@ -126,12 +126,12 @@ std::string traceParams(itemT item, bool quoted)
   {
     enabled = ", 'enable': " + std::string(item->isEnabled() ? "True" : "False");
   }
-  if (item->numberOfValues() == 1)
+  if (item->numberOfValues() == 1 && !item->isExtensible())
   {
     text << indent << "{ 'path': " << quoteName(path) << enabled << ", 'value': " << itemVal(0)
          << " },\n";
   }
-  else if (item->numberOfValues() > 1)
+  else if ((item->isExtensible() && item->numberOfValues() > 0) || item->numberOfValues() > 1)
   {
     // nothing special for extensible items - record a list
     text << indent << "{ 'path': " << quoteName(path) << enabled << ", 'value': [ " << itemVal(0);
@@ -212,8 +212,7 @@ std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& 
            "from smtk.operation import configureAttribute\n"
            "behavior = smtk.extension.paraview.appcomponents.pqSMTKBehavior.instance()\n"
            "opMgr = behavior.activeWrapperOperationManager()\n"
-           "rsrcMgr = behavior.activeWrapperResourceManager()\n"
-           "resources = rsrcMgr.resources()")
+           "rsrcMgr = behavior.activeWrapperResourceManager()")
       .arg("comment", "Retrieve managers");
   }
 
@@ -222,7 +221,7 @@ std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& 
   std::ostringstream text;
   text << "op = opMgr.createOperation('" << op.typeName() << "')\n";
   text << "configureAttribute(op.parameters(), {\n";
-  text << "  'resources': resources,\n";
+  text << "  'resourceManager': rsrcMgr,\n";
   text << "  'associations': [\n";
   text << traceAssociations(op.parameters()->associations());
   text << "  ],\n";
@@ -281,10 +280,11 @@ std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& 
       text << "# unhandled operation input: " << item->name() << std::endl;
     }
   }
-  text << "  ],\n";
-  text << "})\n";
-  text << "res = op.operate()\n";
-
+  text << "  ],\n"
+       << "})\n"
+       << "res = op.operate()\n"
+       // necessary after Import so pipeline source is available to retrieve.
+       << "smtk.extension.paraview.appcomponents.pqSMTKBehavior.processEvents()\n";
   SM_SCOPED_TRACE(TraceText)
     .arg(text.str().c_str())
     .arg("comment", "Setup SMTK operation and parameters");
