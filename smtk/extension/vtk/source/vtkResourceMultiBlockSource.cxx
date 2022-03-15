@@ -285,10 +285,12 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
     this->LastModified = lastModified;
   }
 
-  std::map<int, std::vector<vtkSmartPointer<vtkDataObject>>> blocks;
+  // Divide the geometry into 2 groups: images and non-images
+  std::map<int, std::vector<vtkSmartPointer<vtkDataObject>>> compBlocks;
+  std::vector<vtkSmartPointer<vtkDataObject>> imageBlocks;
   // smtk::extension::vtk::geometry::Backend source(&geometry);
   smtk::extension::vtk::geometry::Backend backend;
-  geometry.visit([this, &geometry, &blocks](
+  geometry.visit([this, &geometry, &compBlocks, &imageBlocks](
                    const smtk::resource::PersistentObject::Ptr& obj,
                    smtk::geometry::Geometry::GenerationNumber gen) {
     if (obj)
@@ -300,7 +302,15 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
         // Add Data to the Cache Map
         this->SetCachedData(obj->id(), data, static_cast<SequenceType>(gen));
         vtkResourceMultiBlockSource::SetDataObjectUUID(data->GetInformation(), obj->id());
-        blocks[dim].push_back(data);
+        // Lets see if this is a component or image object
+        if (vtkImageData::SafeDownCast(data))
+        {
+          imageBlocks.push_back(data);
+        }
+        else
+        {
+          compBlocks[dim].push_back(data);
+        }
       }
     }
     return false;
@@ -310,11 +320,12 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
   vtkNew<vtkMultiBlockDataSet> compPerDim;
   vtkNew<vtkMultiBlockDataSet> prototypes;
   vtkNew<vtkMultiBlockDataSet> instances;
-  compPerDim->SetNumberOfBlocks(3);
+  // We need 4 toplevel blocks for component data (dim = to 3)
+  compPerDim->SetNumberOfBlocks(4);
   output->SetBlock(BlockId::Components, compPerDim);
   output->SetBlock(BlockId::Prototypes, prototypes);
   output->SetBlock(BlockId::Instances, instances);
-  for (auto dit = blocks.begin(); dit != blocks.end(); ++dit)
+  for (auto dit = compBlocks.begin(); dit != compBlocks.end(); ++dit)
   {
     vtkNew<vtkMultiBlockDataSet> entries;
     entries->SetNumberOfBlocks(static_cast<int>(dit->second.size()));
@@ -331,14 +342,15 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
       // put unknown here
       compPerDim->SetBlock(2, entries);
     }
-    else if (dit->first < 3)
+    else
     {
       compPerDim->SetBlock(dit->first, entries);
     }
-    else
-    { // Handle volumetric (image) data separately.
-      output->SetBlock(BlockId::Images, entries);
-    }
+  }
+  // Add all of the image blocks
+  for (auto& imageBlock : imageBlocks)
+  { // Handle volumetric (image) data separately.
+    output->SetBlock(BlockId::Images, imageBlock);
   }
 
   return 1;
