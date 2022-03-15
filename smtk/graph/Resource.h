@@ -97,7 +97,17 @@ public:
   smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource<Traits>, ResourceBase>);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  /// Create a node of type NodeType with additional constructor arguments.
+  /**\brief Create a node of type \a NodeType with additional constructor arguments.
+    *
+    * Sometimes, it is necessary to have access to a shared pointer to the
+    * constructed node during initialization (especially if using the
+    * RAII (Resource Acquisition Is Initialization) idiom).
+    * Because shared pointers to objects cannot be used within that object's
+    * constructor, this method will invoke an initializer method on the node
+    * after the node is constructed (if one exists).
+    * The initializer must be a method of \a NodeType named \a initialize()
+    * whose arguments are a the \a parameters passed to this method.
+    */
   template<typename NodeType, typename... T>
   typename std::enable_if<is_node<NodeType>::value, std::shared_ptr<NodeType>>::type create(
     T&&... parameters)
