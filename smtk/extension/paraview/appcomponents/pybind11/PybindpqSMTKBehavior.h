@@ -15,6 +15,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
+#include "smtk/extension/vtk/pybind11/PybindVTKTypeCaster.h"
 
 #include "smtk/common/Managers.h"
 #include "smtk/operation/Manager.h"
@@ -40,8 +41,10 @@ inline py::class_< pqSMTKBehavior, QObject > pybind11_init_pqSMTKBehavior(py::mo
     .def("builtinOrActiveWrapper", &pqSMTKBehavior::builtinOrActiveWrapper)
     .def("createRepresentation", &pqSMTKBehavior::createRepresentation, py::arg("pipelinesource"), py::arg("view"))
     .def("getPVResource", &pqSMTKBehavior::getPVResource, py::arg("resource"))
+    .def("getPVResourceProxy", &pqSMTKBehavior::getPVResourceProxy, py::arg("resource"))
     .def("getPVResourceManager", &pqSMTKBehavior::getPVResourceManager, py::arg("resourceManager"))
     .def_static("instance", &pqSMTKBehavior::instance, py::arg("parent") = nullptr)
+    .def_static("processEvents", &pqSMTKBehavior::processEvents)
     .def("removingManagerFromServer", (void (pqSMTKBehavior::*)(::vtkSMSMTKWrapperProxy *, ::pqServer *)) &pqSMTKBehavior::removingManagerFromServer, py::arg("mgr"), py::arg("server"))
     .def("removingManagerFromServer", (void (pqSMTKBehavior::*)(::pqSMTKWrapper *, ::pqServer *)) &pqSMTKBehavior::removingManagerFromServer, py::arg("mgr"), py::arg("server"))
     .def("resourceManagerForServer", &pqSMTKBehavior::resourceManagerForServer, py::arg("server") = nullptr)

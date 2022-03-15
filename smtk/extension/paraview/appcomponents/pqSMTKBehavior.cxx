@@ -38,6 +38,7 @@
 #include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
 
+#include <QCoreApplication>
 #include <QObject>
 
 #define DEBUG_PQSMTKBEHAVIOR 0
@@ -189,6 +190,26 @@ QPointer<pqSMTKResource> pqSMTKBehavior::getPVResource(
     result = it->second;
   }
   return result;
+}
+
+vtkSMProxy* pqSMTKBehavior::getPVResourceProxy(const smtk::resource::ResourcePtr& rsrc) const
+{
+  auto pvSource = this->getPVResource(rsrc);
+  if (!pvSource)
+  {
+    pqSMTKBehavior::processEvents();
+    pvSource = this->getPVResource(rsrc);
+  }
+  if (pvSource)
+  {
+    return pvSource->getProxy();
+  }
+  return nullptr;
+}
+
+void pqSMTKBehavior::processEvents()
+{
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void pqSMTKBehavior::visitResourceManagersOnServers(

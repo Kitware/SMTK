@@ -130,14 +130,20 @@ def configureAttribute(attr, config):
     builder = AttributeBuilder()
     # retrieve the resource list
     resourceMap = {}
-    resources = config["resources"]
+    resources = config.get("resources")
+    rsrcMgr = config.get("resourceManager")
+    if (resources is None and rsrcMgr is not None):
+        resources = rsrcMgr.resources()
     # allow resources to be passed as either a dict of tag -> resource pairs
     # or a list, where the resource name is used as the tag.
     if isinstance(resources, dict):
         resourceMap = resources
     else:
-        for rsrc in config["resources"]:
+        for rsrc in resources:
             resourceMap[rsrc.name()] = rsrc
     # build_attribute expects the resource map as an arg.
-    del(config["resources"])
+    if config.get("resources") is not None:
+        del(config["resources"])
+    if config.get("resourceManager") is not None:
+        del(config["resourceManager"])
     builder.build_attribute(attr, config, resourceMap)

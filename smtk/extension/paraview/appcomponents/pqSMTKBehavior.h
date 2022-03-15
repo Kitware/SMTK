@@ -27,6 +27,7 @@ class pqSMTKResource;
 class pqSMTKWrapper;
 class pqView;
 class vtkSMSMTKWrapperProxy;
+class vtkSMProxy;
 
 class pqSMTKAppComponentsAutoStart;
 
@@ -76,6 +77,12 @@ public:
   /// Note that this is an O(N) operation (linear in the number of
   /// resources loaded across all servers).
   QPointer<pqSMTKResource> getPVResource(const smtk::resource::ResourcePtr& rsrc) const;
+
+  /// Return the vtkSMProxy for a given smtk::resource::ResourcePtr.
+  vtkSMProxy* getPVResourceProxy(const smtk::resource::ResourcePtr& rsrc) const;
+
+  /// process non-user QT events
+  static void processEvents();
 
   /**\brief Call a visitor function \a fn on each existing resource manager/server pair.
     *
