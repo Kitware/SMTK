@@ -149,6 +149,23 @@ public:
     return m_arcs.at<ArcType>(id);
   }
 
+  template<typename ArcType, typename... T>
+  typename std::enable_if<is_arc<ArcType>::value, const ArcType&>::type connect(T&&... parameters)
+  {
+    ArcType arc(std::forward<T>(parameters)...);
+
+    smtk::common::UUID id = arc.from().id();
+    if (m_arcs.contains<ArcType>(id))
+    {
+      m_arcs.at<ArcType>(id).insert(arc.to());
+    }
+    else
+    {
+      add(std::move(arc));
+    }
+    return m_arcs.at<ArcType>(id);
+  }
+
   /// Add an arc of type ArcType to the resource. Return true if the insertion
   /// took place.
   template<typename ArcType>

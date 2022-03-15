@@ -14,6 +14,7 @@
 #include "smtk/common/TypeTraits.h"
 
 #include <functional>
+#include <iterator>
 #include <set>
 #include <type_traits>
 
@@ -23,6 +24,33 @@ namespace graph
 {
 
 class NodeSet;
+
+template<typename FromType, typename ToType, typename InverseArc>
+class OrderedArcs;
+
+namespace detail
+{
+template<typename ArcType, typename = void>
+struct ArcInverse
+{
+  using type = void;
+};
+
+template<typename ArcType>
+struct ArcInverse<ArcType, smtk::common::void_t<typename ArcType::InverseArcType>>
+{
+  using type = typename ArcType::InverseArcType;
+};
+} // namespace detail
+
+// Public traits
+template<typename ArcType>
+struct ArcTraits
+{
+  using InverseArcType = typename detail::ArcInverse<ArcType>::type;
+  using FromType = typename smtk::common::remove_cvref<typename ArcType::FromType>::type;
+  using ToType = typename smtk::common::remove_cvref<typename ArcType::ToType>::type;
+};
 
 namespace detail
 {
@@ -72,6 +100,34 @@ public:
   static constexpr bool value = type::value;
 };
 
+template<typename T, typename = void>
+struct is_forward_iterable : public std::false_type
+{
+};
+
+template<typename T>
+struct is_forward_iterable<
+  T,
+  typename std::enable_if<std::is_base_of<
+    std::forward_iterator_tag,
+    typename std::iterator_traits<T>::iterator_category>::value>::type> : public std::true_type
+{
+};
+
+template<typename T, typename = void>
+struct is_iterable_container : public std::false_type
+{
+};
+
+template<typename T>
+struct is_iterable_container<
+  T,
+  typename std::enable_if<
+    is_forward_iterable<decltype(std::declval<T>().begin())>::value &&
+    is_forward_iterable<decltype(std::declval<T>().end())>::value>::type> : public std::true_type
+{
+};
+
 template<typename API, typename Functor, typename Input>
 class has_custom_visit
 {
@@ -117,6 +173,56 @@ struct GraphTraits
   using NodeTypes = typename Traits::NodeTypes;
   using ArcTypes = typename Traits::ArcTypes;
   using NodeContainer = typename detail::SelectNodeContainer<Traits>::type;
+};
+
+template<typename ArcType, typename = void>
+struct is_ordered_arcs : std::false_type
+{
+};
+
+template<typename ArcType>
+struct is_ordered_arcs<
+  ArcType,
+  typename std::enable_if<std::is_base_of<
+    OrderedArcs<typename ArcType::FromType, typename ArcType::ToType, ArcType>,
+    ArcType>::value>::type> : std::true_type
+{
+};
+
+template<typename ArcType, typename = void>
+struct has_inverse : std::false_type
+{
+};
+
+template<typename ArcType>
+struct has_inverse<
+  ArcType,
+  typename std::enable_if<!std::is_same<typename ArcInverse<ArcType>::type, void>::value>::type>
+  : std::true_type
+{
+};
+
+template<typename ArcType, typename OtherArcType, typename = void>
+struct is_inverse_pair : std::false_type
+{
+};
+
+template<typename ArcType, typename OtherArcType>
+struct is_inverse_pair<
+  ArcType,
+  OtherArcType,
+  typename std::enable_if<
+    // Inverse Arc Type should not be void
+    has_inverse<ArcType>::value &&      //
+    has_inverse<OtherArcType>::value && //
+    // To/From Types should match
+    std::is_same<typename ArcType::FromType, typename OtherArcType::ToType>::value && //
+    std::is_same<typename ArcType::ToType, typename OtherArcType::FromType>::value && //
+    // Inverse Arc Types should match (but apparently this is information that is not yet available
+    std::is_same<typename ArcInverse<ArcType>::type, OtherArcType>::value && //
+    std::is_same<ArcType, typename ArcInverse<OtherArcType>::type>::value    //
+    >::type> : std::true_type
+{
 };
 
 } // namespace detail

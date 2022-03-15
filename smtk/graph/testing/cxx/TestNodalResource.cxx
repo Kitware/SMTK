@@ -72,7 +72,7 @@ int TestNodalResource(int, char*[])
   std::cout << node2->id() << std::endl;
 
   // Access the second node using the first node's API.
-  std::cout << node1->get<test_nodal_resource::Arc>().id() << std::endl;
+  std::cout << node1->get<test_nodal_resource::Arc>().to().id() << std::endl;
 
   return 0;
 }

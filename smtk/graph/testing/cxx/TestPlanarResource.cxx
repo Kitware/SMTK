@@ -188,7 +188,7 @@ std::array<double, 2> Face::centroid() const
   for (const Edge& edge : this->get<Loop>())
   {
     // Similarly, we can acess each edge's vertices.
-    const Vertex& vertex = edge.get<Vertices>().at(0);
+    const Vertex& vertex = edge.get<Vertices>().to().at(0);
     c[0] += vertex.x();
     c[1] += vertex.y();
   }
@@ -197,7 +197,7 @@ std::array<double, 2> Face::centroid() const
     // We can perform all of the const calls we like on the arcs we can access,
     // since the method is marked const. To modify the arc information, the
     // containing method would need to be non-const.
-    coordinate /= this->get<Loop>().size();
+    coordinate /= this->get<Loop>().count();
   }
   return c;
 }

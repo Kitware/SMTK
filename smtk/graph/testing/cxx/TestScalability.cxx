@@ -151,10 +151,10 @@ int TestScalability(int argc, char* argv[])
   for (int ii = 0; ii < num_node; ii++)
   {
     resource->create<Adjacent>(*nodes[ii]);
-    auto& to = nodes[ii]->get<Adjacent>();
+    auto& adjacent = nodes[ii]->get<Adjacent>();
     for (int jj = 0; jj < degree_node; jj++)
     {
-      to.emplace_back(*nodes[(ii + jj + 1) % num_node]);
+      adjacent.insert_back(*nodes[(ii + jj + 1) % num_node]);
     }
   }
   timer.toc();

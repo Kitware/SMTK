@@ -146,16 +146,16 @@ public:
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      detail::is_container<
-        decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
-          std::declval<const typename ArcType::FromType&>()))>::value &&
+      detail::is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>()
+                                      .get(std::declval<const typename ArcType::FromType&>())
+                                      .to())>::value &&
       detail::accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor) const
   {
     typedef const typename ArcType::template API<ArcType> API;
     // NOLINTNEXTLINE(readability-use-anyofallof)
-    for (const auto& toType : API().get(*static_cast<const typename ArcType::FromType*>(this)))
+    for (const auto& toType : API().get(*static_cast<const typename ArcType::FromType*>(this)).to())
     {
       if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
       {
@@ -172,15 +172,16 @@ public:
       typename ArcType::template API<ArcType>,
       Visitor,
       typename ArcType::ToType&>::value &&
-      detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
-        std::declval<const typename ArcType::FromType&>()))>::value &&
+      detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>()
+                                      .get(std::declval<const typename ArcType::FromType&>())
+                                      .to())>::value &&
       detail::accepts<Visitor, typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor)
   {
     typedef typename ArcType::template API<ArcType> API;
     // NOLINTNEXTLINE(readability-use-anyofallof)
-    for (auto& toType : API().get(*static_cast<typename ArcType::FromType*>(this)))
+    for (auto& toType : API().get(*static_cast<typename ArcType::FromType*>(this)).to())
     {
       if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
       {
@@ -197,15 +198,15 @@ public:
       typename ArcType::template API<ArcType>,
       Visitor,
       const typename ArcType::ToType&>::value &&
-      !detail::is_container<
-        decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
-          std::declval<const typename ArcType::FromType&>()))>::value &&
+      !detail::is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>()
+                                       .get(std::declval<const typename ArcType::FromType&>())
+                                       .to())>::value &&
       detail::accepts<Visitor, const typename ArcType::ToType&>::value,
     bool>::type
   visit(const Visitor& visitor) const
   {
     typedef const typename ArcType::template API<ArcType> API;
-    return visitor(API().get(*static_cast<const typename ArcType::FromType*>(this)));
+    return visitor(API().get(*static_cast<const typename ArcType::FromType*>(this)).to());
   }
   // This overload handles non-const access to arcs that have no explicit
   // API::visit defined and return a single node from get().
@@ -215,14 +216,15 @@ public:
       typename ArcType::template API<ArcType>,
       Visitor,
       typename ArcType::ToType&>::value &&
-      !detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>().get(
-        std::declval<const typename ArcType::FromType&>()))>::value &&
+      !detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>()
+                                       .get(std::declval<const typename ArcType::FromType&>())
+                                       .to())>::value &&
       detail::accepts<Visitor, typename std::remove_const<typename ArcType::ToType&>::type>::value,
     bool>::type
   visit(const Visitor& visitor)
   {
     typedef typename ArcType::template API<ArcType> API;
-    return visitor(API().get(*static_cast<typename ArcType::FromType*>(this)));
+    return visitor(API().get(*static_cast<typename ArcType::FromType*>(this)).to());
   }
   // This overload handles const access to arcs that have an explicit
   // API::visit defined.

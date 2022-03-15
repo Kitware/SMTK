@@ -56,14 +56,14 @@ public:
     {
       smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>::self(lhs)
         .constVisited = true;
-      return visitor(this->get(lhs));
+      return visitor(this->get(lhs).to());
     }
 
     bool visit(const FromType& lhs, std::function<bool(Node&)> visitor)
     {
       smtk::graph::Arc<test_visit_arcs::Node, test_visit_arcs::Node>::API<SelfType>::self(lhs)
         .visited = true;
-      return visitor(this->get(lhs));
+      return visitor(this->get(lhs).to());
     }
   };
 
@@ -98,16 +98,16 @@ int TestVisitArcs(int, char*[])
   {
     const test_visit_arcs::Node& n = *node1;
     test(
-      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().to().id(),
       "Cannot access connected node via get() const");
   }
 
   // test non-const get
   {
     test_visit_arcs::Node& n = *node1;
-    n.get<test_visit_arcs::ArcWithoutVisit>().setId(smtk::common::UUID::random());
+    n.get<test_visit_arcs::ArcWithoutVisit>().to().setId(smtk::common::UUID::random());
     test(
-      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().id(),
+      node2->id() == n.get<test_visit_arcs::ArcWithoutVisit>().to().id(),
       "Cannot access connected node via get()");
   }
 
