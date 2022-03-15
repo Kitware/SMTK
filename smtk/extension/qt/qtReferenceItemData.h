@@ -30,6 +30,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QListView>
+#include <QPointer>
 #include <QPushButton>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -57,37 +58,44 @@ public:
   // SMTK view
   smtk::view::PhraseModelPtr m_phraseModel;
 
-  // Main widget contents
-  QGridLayout* m_grid;
-  QCheckBox* m_optional{ nullptr }; // Added if the item is optional to reflect IsEnabled().
-  QLabel* m_label;                  // The item's label (or name if no label).
-  QLabel* m_synopsis;               // A live summary of the item's entries and acceptability
-  QPushButton* m_copyFromSelection; // A button to copy the selection into the item's entries
-  QPushButton* m_copyToSelection;   // A button to copy the item's entries into the selection
-  QPushButton* m_clear;             // A button to clear the item's entries
-  QToolButton* m_editBtn;           // A button to show a popup used to edit the item's entries
-  QPushButton* m_linkSeln; // A button to link an app. selection to the item's entries permanently.
+  /// Main widget contents
+  QPointer<QGridLayout> m_grid;
+  /// Added if the item is optional to reflect IsEnabled().
+  QPointer<QCheckBox> m_optional{ nullptr };
+  /// The item's label (or name if no label).
+  QPointer<QLabel> m_label;
+  /// A live summary of the item's entries and acceptability
+  QPointer<QLabel> m_synopsis;
+  /// A button to copy the selection into the item's entries
+  QPointer<QPushButton> m_copyFromSelection;
+  /// A button to copy the item's entries into the selection
+  QPointer<QPushButton> m_copyToSelection;
+  /// A button to clear the item's entries
+  QPointer<QPushButton> m_clear;
+  /// A button to show a popup used to edit the item's entries
+  QPointer<QToolButton> m_editBtn;
+  /// A button to link an app. selection to the item's entries permanently.
+  QPointer<QPushButton> m_linkSeln;
 
-  // Popup widget contents
-  QDialog* m_popup;
-  QVBoxLayout* m_popupLayout;
-  QListView* m_popupList;
-  bool m_alreadyClosingPopup{
-    false
-  }; // Set when synchronizeAndHide() should **not** hide the QMenu.
+  /// Popup widget contents
+  QPointer<QDialog> m_popup;
+  QPointer<QVBoxLayout> m_popupLayout;
+  QPointer<QListView> m_popupList;
+  /// Set when synchronizeAndHide() should **not** hide the QMenu.
+  bool m_alreadyClosingPopup{ false };
 
   // Selection state of items shown in m_phraseModel, from the MembershipBadge
   // std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
   //   std::owner_less<std::weak_ptr<smtk::resource::PersistentObject> > >
   //   m_members;
 
-  // Link between Qt and SMTK
+  /// Link between Qt and SMTK
   smtk::extension::qtDescriptivePhraseModel* m_qtModel{ nullptr };
   smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate{ nullptr };
 
   smtk::view::PhraseModelObservers::Key m_modelObserverId;
 
-  // Icons used to show item membership
+  /// Icons used to show item membership
   std::string m_selectedIconURL;
   std::string m_unselectedIconURL;
 };
