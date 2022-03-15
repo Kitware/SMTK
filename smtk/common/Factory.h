@@ -45,49 +45,69 @@ template<typename... Args>
 using Inputs = std::tuple<Args...>;
 } // namespace factory
 
-/// A Factory is a class that constructs class instances that inherit from
-/// BaseType. A class can be created by keying off of its Type, it's Type Index
-/// or its Type Name. Additionally, several input signatures (InputTypes) of
-/// arbitrary length can be assigned to the Factory instance at compile-time.
-///
-/// Here is an example of its use:
-///
-/// class Base
-/// {
-/// public:
-///   Base() {...}
-///   Base(int i) {...}
-///   Base(double d, const std::string& s) {...}
-///
-///   virtual ~Base() {}
-/// };
-///
-/// class Derived1 : public Base {...};
-/// class Derived2 : public Base {...};
-///
-/// ...
-///
-/// Factory<Base, void, int, smtk::common::factory::Inputs<double, const std::string&> > factory;
-/// factory.registerType<Derived1>();
-/// factory.registerType<Derived2>();
-///
-/// // Create via type
-/// std::unique_ptr<Derived1> d_a = factory.create<Derived1>();
-///
-/// // Create via index
-/// std::unique_ptr<Base> d_b = factory.createFromIndex(typeid(Derived1).hash_code());
-///
-/// // Create via name
-/// std::unique_ptr<Base> d_c = factory.createFromName("Derived1");
-///
-/// // Create with arguments
-/// std::unique_ptr<Base> d_d = factory.createFromName("Derived1", 3.14, std::string("hello"));
-///
-/// // Create using convenience interface:
-/// std::unique_ptr<Base> d_e = factory.get<smtk::common::factory::Index>()
-///                              .create(typeid(Derived1).hash_code(), 14);
-///
-/// ...
+/**\brief A Factory is a class that constructs instances of registered classes
+  *       which all inherit a common \a BaseType.
+  *
+  * A class can be created by keying off of its type (as a template parameter),
+  * its type-index (an integer hash of its type name),
+  * or its type name. Additionally, instance constructors with several input
+  * signatures (InputTypes) of arbitrary length can be provided to the Factory
+  * instance at compile-time.
+  *
+  * The factory provides two sets of calls:
+  *
+  * + methods that begin with `create` return unique pointers to the instances they create.
+  * + methods that begin with `make` return shared pointers to the instances they create.
+  *
+  * The latter is sometimes necessary as some compilers are unable to properly convert
+  * unique pointers to shared pointers (i.e., when an explicit default deleter is used).
+  *
+  * Here is an example of its use:
+  *
+  * ```c++
+  * class Base
+  * {
+  * public:
+  *   Base() {...}
+  *   Base(int i) {...}
+  *   Base(double d, const std::string& s) {...}
+  *
+  *   virtual ~Base() {}
+  * };
+  *
+  * class Derived1 : public Base {...};
+  * class Derived2 : public Base {...};
+  *
+  * ...
+  *
+  * Factory<Base, void, int, smtk::common::factory::Inputs<double, const std::string&> > factory;
+  * factory.registerType<Derived1>();
+  * factory.registerType<Derived2>();
+  *
+  * // Create via type
+  * std::shared_ptr<Derived1> d_a = factory.make<Derived1>();
+  * //   – or –
+  * std::unique_ptr<Derived1> d_a = factory.create<Derived1>();
+  *
+  * // Create via index
+  * std::shared_ptr<Base> d_b = factory.makeFromIndex(typeid(Derived1).hash_code());
+  * //   – or –
+  * std::unique_ptr<Base> d_b = factory.createFromIndex(typeid(Derived1).hash_code());
+  *
+  * // Create via name
+  * std::shared_ptr<Base> d_c = factory.makeFromName("Derived1");
+  * //   – or –
+  * std::unique_ptr<Base> d_c = factory.createFromName("Derived1");
+  *
+  * // Create with arguments
+  * std::unique_ptr<Base> d_d = factory.createFromName("Derived1", 3.14, std::string("hello"));
+  *
+  * // Create using convenience interface:
+  * std::unique_ptr<Base> d_e = factory.get<smtk::common::factory::Index>()
+  *                              .create(typeid(Derived1).hash_code(), 14);
+  *
+  * ```
+  */
 template<typename BaseType, typename... InputTypes>
 class SMTK_ALWAYS_EXPORT Factory
 {
@@ -362,6 +382,34 @@ public:
   /// Create an instance of a Type using its type name.
   template<typename... Args>
   std::unique_ptr<BaseType> createFromIndex(const std::size_t& typeIndex, Args&&... args) const
+  {
+    return createFromIndex_<Args...>(typeIndex, std::forward<Args>(args)...);
+  }
+
+  /// Make a shared instance of a Type.
+  template<typename Type, typename... Args>
+  std::shared_ptr<Type> make(Args&&... args) const
+  {
+    return std::shared_ptr<Type>{ static_cast<Type*>(
+      this->createFromIndex_(typeid(Type).hash_code(), std::forward<Args>(args)...).release()) };
+  }
+
+  /// Make a shared instance of a Type using its type name.
+  template<typename... Args>
+  std::shared_ptr<BaseType> makeFromName(const std::string& typeName, Args&&... args) const
+  {
+    auto& byName = m_metadata.template get<ByName>();
+    auto search = byName.find(typeName);
+    if (search != byName.end())
+    {
+      return createFromIndex_(search->index(), std::forward<Args>(args)...);
+    }
+    return std::shared_ptr<BaseType>();
+  }
+
+  /// Create an instance of a Type using its type name.
+  template<typename... Args>
+  std::shared_ptr<BaseType> makeFromIndex(const std::size_t& typeIndex, Args&&... args) const
   {
     return createFromIndex_<Args...>(typeIndex, std::forward<Args>(args)...);
   }
