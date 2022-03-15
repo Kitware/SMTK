@@ -28,8 +28,10 @@ cmake -GNinja \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
     -DENABLE_smtkresourcemanagerstate:BOOL=OFF \
+    -DENABLE_occt:BOOL=ON \
     -DENABLE_paraview:BOOL=ON \
     -DENABLE_python3:BOOL=ON \
+    -DENABLE_pybind11:BOOL=ON \
     -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
     -DUSE_SYSTEM_qt5:BOOL=ON \
     -DENABLE_xmsmesher:BOOL=ON \
