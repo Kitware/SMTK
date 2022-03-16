@@ -14,10 +14,12 @@
 #include "vtkCompositeDataSetAlgorithm.h"
 #include "vtkNew.h"
 
+class vtkDataSetSurfaceFilter;
 class vtkTransform;
 class vtkTransformFilter;
 
-/**\brief Apply per-dataset transforms held in field data to the input collection.
+/**\brief Apply per-dataset transforms held in field data to the input collection as well
+ * as extract the boundary of volumetric datasets.
   *
   */
 class VTKSMTKFILTEREXT_EXPORT vtkApplyTransforms : public vtkCompositeDataSetAlgorithm
@@ -37,6 +39,7 @@ protected:
   int FillOutputPortInformation(int port, vtkInformation* info) override;
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
+  vtkNew<vtkDataSetSurfaceFilter> SurfaceFilter;
   vtkNew<vtkTransformFilter> TransformFilter;
   vtkNew<vtkTransform> Transform;
 };
