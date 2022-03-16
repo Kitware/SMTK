@@ -119,7 +119,7 @@ template<typename... T, typename>
 void Face::initialize(std::string name, int index, T&&... verts)
 {
   Node::initialize(name, index);
-  this->get<Loop>().insert({ verts... });
+  this->get<Loop>().insert(std::vector<std::reference_wrapper<Vertex>>{ { std::ref(*verts)... } });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
