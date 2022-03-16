@@ -259,7 +259,7 @@ int TestInverseArcs(int argc, char* argv[])
   int numNodes = 4;
   if (argc == 2)
   {
-    numNodes = std::stod(argv[1]);
+    numNodes = std::stoi(argv[1]);
   }
   else if (argc > 2)
   {
