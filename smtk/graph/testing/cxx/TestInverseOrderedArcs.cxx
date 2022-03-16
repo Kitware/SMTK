@@ -86,11 +86,13 @@ public:
 
 class Vertex : public Node
 {
+public:
   using Node::Node;
 };
 
 class Face : public Node
 {
+public:
   using Node::Node;
 
   template<typename... T, typename = smtk::graph::detail::CompatibleTypes<Vertex, T...>>
