@@ -423,6 +423,7 @@ bool hasValidDefault(const smtk::attribute::ItemDefinition& itemDef)
   }
   else if (const auto* customItemDef = dynamic_cast<const CustomItemBaseDefinition*>(&itemDef))
   {
+    (void)customItemDef;
     static bool once = false;
     if (!once)
     {

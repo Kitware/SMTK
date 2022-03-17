@@ -78,11 +78,13 @@ int TestToken(int, char*[])
 
   // Test construction from a hash.
   Token foo2 = Token::fromHash(foo.id());
+  (void)foo2;
 
   // Test that attempted construction from a non-existent hash throws.
   try
   {
     Token foo3 = Token::fromHash(5551212);
+    (void)foo3;
     test(false, "Expected to throw an exception for a non-existent hash.");
   }
   catch (std::invalid_argument& e)

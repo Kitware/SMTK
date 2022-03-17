@@ -54,6 +54,8 @@ public:
   /// Note that VersionNumber instances are initialized with a negative
   /// major version number that marks them as invalid.
   bool isValid() const;
+
+  VersionNumber& operator=(const VersionNumber&) = default;
 };
 
 SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& stream, const VersionNumber& uid);

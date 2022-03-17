@@ -3841,6 +3841,7 @@ UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visit
           }
         }
       // Now fall through and look for the use's relationship to a cell.
+      // fall through
       case USE_ENTITY:
         // Look for a relationship to a cell
         for (UUIDArray::const_iterator sit = it->second->relations().begin();

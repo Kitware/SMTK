@@ -63,7 +63,7 @@ typename std::enable_if<detail::has_initializer<T(Args...)>::value>::type initia
 template<class T, class... Args>
 typename std::enable_if<!detail::has_initializer<T(Args...)>::value>::type initialize(
   T& t,
-  Args&&... args)
+  Args&&... /* args */)
 {
   (void)t;
 }

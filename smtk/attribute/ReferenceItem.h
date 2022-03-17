@@ -360,7 +360,7 @@ public:
     */
   smtk::attribute::ItemPtr activeChildItem(std::size_t i) const
   {
-    if ((i < 0) || (static_cast<std::size_t>(i) >= m_activeChildrenItems.size()))
+    if (static_cast<std::size_t>(i) >= m_activeChildrenItems.size())
     {
       smtk::attribute::ItemPtr item;
       return item;

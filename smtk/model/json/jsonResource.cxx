@@ -113,7 +113,7 @@ void from_json(const json& j, ResourcePtr& mresource)
   {
     jmodels = j.at("models");
   }
-  catch (std::exception /*e*/)
+  catch (std::exception& /*e*/)
   {
     std::cerr << "Models does not exist in resource json object" << std::endl;
     return;
