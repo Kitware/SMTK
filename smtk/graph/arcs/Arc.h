@@ -90,7 +90,7 @@ public:
     {
       if (inverse)
       {
-        result.second = InverseHandler::insert(m_to, const_cast<FromType&>(m_from));
+        result.second = InverseHandler::insert(to, const_cast<FromType&>(m_from));
       }
 
       if (result.second)
