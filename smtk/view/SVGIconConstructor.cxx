@@ -104,6 +104,7 @@ std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& obj
 {
   if (const auto* resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
   {
+    (void)resource;
     return meshResource_svg;
   }
   else
@@ -116,6 +117,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
 {
   if (const auto* resource = dynamic_cast<const smtk::model::Resource*>(&object))
   {
+    (void)resource;
     return modelResource_svg;
   }
   else if (const auto* entity = dynamic_cast<const smtk::model::Entity*>(&object))
@@ -138,8 +140,10 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
           case smtk::model::VOLUME:
             return volume_svg;
           default:
+            return "";
             break;
         }
+        break;
       case smtk::model::USE_ENTITY:
       case smtk::model::SHELL_ENTITY:
       case smtk::model::GROUP_ENTITY:

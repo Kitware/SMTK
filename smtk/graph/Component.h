@@ -134,12 +134,15 @@ public:
     return API().get(*static_cast<const typename ArcType::FromType*>(this));
   }
 
-  /// While get() returns the nodes connected to this component via the input arc
-  /// type, visit() allows you to pass your calling code to each connected node
-  /// without having to return a reference to each node. Input lambdas return a
-  /// boolean value; when they return true, visitation is terminated early.
-  // This overload handles const access to arcs that have no explicit
-  // API::visit defined and return a container from get().
+  /**\brief Invoke a \a visitor on each node connected by a specific arc type.
+    *
+    * While get() returns the nodes connected to this component via the input arc
+    * type, visit() allows you to pass your calling code to each connected node
+    * without having to return a reference to each node. Input lambdas return a
+    * boolean value; when they return true, visitation is terminated early.
+    * This overload handles const access to arcs that have no explicit
+    * API::visit defined and return a container from get().
+    */
   template<typename ArcType, typename Visitor>
   typename std::enable_if<
     !detail::has_custom_visit<

@@ -15,6 +15,7 @@ set(graphHeaders
   detail/TypeTraits.h
   arcs/Arc.h
   arcs/Arcs.h
+  arcs/Inverse.h
   arcs/OrderedArcs.h
   filter/Grammar.h
   filter/TypeName.h

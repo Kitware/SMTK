@@ -233,7 +233,7 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
             current = group->find(0, *it, style);
             continue;
           }
-          if (index < 0 || index >= group->numberOfGroups())
+          if (index < 0 || index >= static_cast<int>(group->numberOfGroups()))
           {
             // invalid index, return null
             current = nullptr;

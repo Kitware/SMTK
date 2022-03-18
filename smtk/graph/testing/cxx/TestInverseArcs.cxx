@@ -395,7 +395,7 @@ int TestInverseArcs(int argc, char* argv[])
       }
 #endif
 
-      REQUIRE(n->get<OtherNodes>().count() == numNodes - 1)
+      REQUIRE(n->get<OtherNodes>().count() == static_cast<std::size_t>(numNodes - 1))
         << "  Count: " << n->get<OtherNodes>().count() << "\n";
 #if VERBOSE
       std::cout << "\tOther Nodes:\n";
@@ -405,7 +405,7 @@ int TestInverseArcs(int argc, char* argv[])
       }
 #endif
 
-      REQUIRE(n->get<OrderedOtherNodes>().count() == numNodes - 1)
+      REQUIRE(n->get<OrderedOtherNodes>().count() == static_cast<std::size_t>(numNodes - 1))
         << "  Count: " << n->get<OrderedOtherNodes>().count() << "\n";
       int prevIndex = n->index();
 #if VERBOSE
@@ -422,7 +422,7 @@ int TestInverseArcs(int argc, char* argv[])
 #endif
       }
 
-      REQUIRE(n->get<UnorderedOtherNodes>().count() == numNodes - 1)
+      REQUIRE(n->get<UnorderedOtherNodes>().count() == static_cast<std::size_t>(numNodes - 1))
         << "  Count: " << n->get<UnorderedOtherNodes>().count() << "\n";
 #if VERBOSE
       std::cout << "\tUnordered Nodes:\n";

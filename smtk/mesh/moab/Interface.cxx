@@ -1542,7 +1542,7 @@ std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
     {
       // then check if there are tagged instances under our handle
       ::moab::Range range;
-      ::moab::ErrorCode rval = rval =
+      ::moab::ErrorCode rval =
         m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, range);
       if (rval == ::moab::MB_SUCCESS && !range.empty())
       {
@@ -1908,7 +1908,7 @@ std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
     {
       // then check if there are tagged instances under our handle
       ::moab::Range range;
-      ::moab::ErrorCode rval = rval =
+      ::moab::ErrorCode rval =
         m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, range);
       if (rval == ::moab::MB_SUCCESS && !range.empty())
       {

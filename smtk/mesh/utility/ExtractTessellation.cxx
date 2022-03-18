@@ -381,14 +381,6 @@ void extractTessellationInternal(
       convertCellTypeFunction = detail::smtkToVTKCell;
     }
 
-    //determine the function pointer to use for the cell location conversion
-    std::size_t (*updateCellLocationFunction)(const std::size_t& location, int numPts) =
-      detail::smtkToSMTKLocation;
-    if (tess.m_useVTKConnectivity)
-    { //needs to check for vtk connectivity as that is how we deduce where the location is
-      updateCellLocationFunction = detail::smtkToVTKLocation;
-    }
-
     //Issue we haven't handled the VTK syst
     std::size_t index = 0;
     for (pc.initCellTraversal(); pc.fetchNextCell(ctype, numPts, pointIds);

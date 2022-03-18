@@ -134,7 +134,6 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
 
   std::string urlStr = auxGeom.url();
   bool isURLValid = true; // It can only be invalid if we have a way to test validity.
-  bool haveBBox;
   std::vector<double> bbox;
   if (!urlStr.empty())
   {
@@ -153,7 +152,6 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
     if (ext)
     {
       isURLValid = true;
-      haveBBox = true;
     }
     else
     { // We can at least test whether the file exists.
