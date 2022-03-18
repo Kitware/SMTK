@@ -27,6 +27,7 @@
 #include "smtk/resource/filter/Filter.h"
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <typeindex>
@@ -64,6 +65,7 @@ typename std::enable_if<!detail::has_initializer<T(Args...)>::value>::type initi
   T& t,
   Args&&... args)
 {
+  (void)t;
 }
 } // namespace detail
 
@@ -127,6 +129,11 @@ public:
   typename std::enable_if<is_node<NodeType>::value, bool>::type add(
     const std::shared_ptr<NodeType>& node)
   {
+    if (node->resource().get() != this)
+    {
+      throw std::invalid_argument(
+        "Cannot add nodes that reference a different (or null) resource.");
+    }
     return NodeContainer::insertNode(node);
   }
 

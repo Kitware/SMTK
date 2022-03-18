@@ -11,6 +11,8 @@
 #include "smtk/graph/Resource.h"
 #include "smtk/graph/arcs/Arc.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
+
 #include <iostream>
 
 /// A basic example that constructs two nodes and noe arc that connects them.
@@ -59,6 +61,19 @@ int TestNodalResource(int, char*[])
   // Construct two instances of our node through the resource's API.
   auto node1 = resource->create<test_nodal_resource::Node>();
   auto node2 = resource->create<test_nodal_resource::Node>();
+
+  // Verify that adding nodes that belong to a different resource cause an exception.
+  auto node3 = std::make_shared<test_nodal_resource::Node>(nullptr);
+  bool didThrow = false;
+  try
+  {
+    resource->add(node3);
+  }
+  catch (std::invalid_argument& /* ee */)
+  {
+    didThrow = true;
+  }
+  test(didThrow, "Adding an improper node should throw an exception.");
 
   std::cout << node1->typeName() << std::endl;
 
