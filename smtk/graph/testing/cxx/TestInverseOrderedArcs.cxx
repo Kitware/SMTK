@@ -22,7 +22,6 @@
 
 static int check_count = 0;
 static int failure_count = 0;
-static bool throw_check;
 
 #if !defined(WIN32)
 static std::ofstream null_stream("/dev/null");
@@ -34,19 +33,6 @@ static std::ofstream null_stream("dump.txt");
   check_count++;                                                                                   \
   (expr) ? null_stream                                                                             \
          : (failure_count++, std::cout << "Check failed.\n\tExpression: (" << #expr << ")\n")
-
-#define REQUIRE_THROW(expr)                                                                        \
-  check_count++;                                                                                   \
-  throw_check = false;                                                                             \
-  try                                                                                              \
-  {                                                                                                \
-    (expr);                                                                                        \
-  }                                                                                                \
-  catch (...)                                                                                      \
-  {                                                                                                \
-    throw_check = true;                                                                            \
-  }                                                                                                \
-  throw_check ? null_stream : (failure_count++, std::cout << #expr << " did not throw.\n")
 
 #define FINISH_TEST()                                                                              \
   null_stream.close();                                                                             \
