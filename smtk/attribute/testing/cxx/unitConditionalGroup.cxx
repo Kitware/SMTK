@@ -54,7 +54,8 @@ bool testGroupItem(
     gitem->item(i)->setIsEnabled(true);
     ++numEnabled;
     if (
-      ((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
+      ((numEnabled < static_cast<std::size_t>(minMax.first)) ||
+       ((minMax.second != 0) && (numEnabled > static_cast<std::size_t>(minMax.second)))) &&
       gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly satisfied its conditionals. Had "
@@ -63,7 +64,8 @@ bool testGroupItem(
       return false;
     }
     else if (
-      ((numEnabled >= minMax.first) && ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
+      ((numEnabled >= static_cast<std::size_t>(minMax.first)) &&
+       ((minMax.second != 0) && (numEnabled <= static_cast<std::size_t>(minMax.second)))) &&
       !gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly failed its conditionals. Had "
@@ -78,7 +80,8 @@ bool testGroupItem(
     gitem->item(i)->setIsEnabled(false);
     --numEnabled;
     if (
-      ((numEnabled < minMax.first) || ((minMax.second != 0) && (numEnabled > minMax.second))) &&
+      ((numEnabled < static_cast<std::size_t>(minMax.first)) ||
+       ((minMax.second != 0) && (numEnabled > static_cast<std::size_t>(minMax.second)))) &&
       gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly satisfied its conditionals. Had "
@@ -87,7 +90,8 @@ bool testGroupItem(
       return false;
     }
     else if (
-      ((numEnabled >= minMax.first) && ((minMax.second != 0) && (numEnabled <= minMax.second))) &&
+      ((numEnabled >= static_cast<std::size_t>(minMax.first)) &&
+       ((minMax.second != 0) && (numEnabled <= static_cast<std::size_t>(minMax.second)))) &&
       !gitem->conditionalsSatisfied())
     {
       std::cerr << "\n\tItem: " << gitem->name() << " incorrectly failed its conditionals. Had "
@@ -130,7 +134,6 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
 int unitConditionalGroup(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test configurations files
-  bool status = true;
   std::string attFile;
   attFile = SMTK_DATA_DIR;
   attFile += "/attribute/attribute_collection/choiceGroupExample.sbt";

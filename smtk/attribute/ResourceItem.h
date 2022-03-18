@@ -63,6 +63,7 @@ public:
   }
 
   /// Serialize the \a i-th value to a string.
+  std::string valueAsString() const override { return this->valueAsString(0); }
   std::string valueAsString(std::size_t i) const override;
 
 protected:

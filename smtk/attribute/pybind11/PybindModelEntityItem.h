@@ -32,9 +32,7 @@ inline PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::Comp
     .def("assign", &smtk::attribute::ModelEntityItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ModelEntityItem::begin)
     .def("end", &smtk::attribute::ModelEntityItem::end)
-    .def("find", (ptrdiff_t (smtk::attribute::ModelEntityItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ModelEntityItem::find, py::arg("entity"))
     .def("find", (ptrdiff_t (smtk::attribute::ModelEntityItem::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::ModelEntityItem::find, py::arg("entity"))
-    .def("contains", (bool (smtk::attribute::ModelEntityItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ModelEntityItem::contains, py::arg("entity"))
     .def("contains", (bool (smtk::attribute::ModelEntityItem::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::ModelEntityItem::contains, py::arg("entity"))
     .def("isExtensible", &smtk::attribute::ModelEntityItem::isExtensible)
     .def("isSet", &smtk::attribute::ModelEntityItem::isSet, py::arg("element") = 0)
@@ -48,8 +46,7 @@ inline PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::Comp
     .def("type", &smtk::attribute::ModelEntityItem::type)
     .def("unset", &smtk::attribute::ModelEntityItem::unset, py::arg("element") = 0)
     .def("value", &smtk::attribute::ModelEntityItem::value, py::arg("element") = 0)
-    .def("valueAsString", (std::string (smtk::attribute::ModelEntityItem::*)() const) &smtk::attribute::ModelEntityItem::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ModelEntityItem::*)(::size_t) const) &smtk::attribute::ModelEntityItem::valueAsString, py::arg("element"))
+    .def("valueAsString", (std::string (smtk::attribute::ModelEntityItem::*)(::size_t) const) &smtk::attribute::ModelEntityItem::valueAsString, py::arg("element") = 0)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(i);
       })

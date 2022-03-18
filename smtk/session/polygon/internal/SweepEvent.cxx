@@ -89,8 +89,8 @@ bool SweepEvent::RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, Fragme
         break;
       case SEGMENT_CROSS:
         if (
-          static_cast<const FragmentId>(it->m_frag[0]) == fragId0 &&
-          static_cast<const FragmentId>(it->m_frag[1]) == fragId1)
+          static_cast<FragmentId>(it->m_frag[0]) == fragId0 &&
+          static_cast<FragmentId>(it->m_frag[1]) == fragId1)
         {
           queue.erase(it);
           return true;
@@ -98,8 +98,8 @@ bool SweepEvent::RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, Fragme
         break;
       case SEGMENT_END:
         if (
-          static_cast<const FragmentId>(it->m_frag[0]) == fragId0 ||
-          static_cast<const FragmentId>(it->m_frag[0]) == fragId1)
+          static_cast<FragmentId>(it->m_frag[0]) == fragId0 ||
+          static_cast<FragmentId>(it->m_frag[0]) == fragId1)
         { // Terminate early... crossing event must come before either edge ends.
           return false;
         }

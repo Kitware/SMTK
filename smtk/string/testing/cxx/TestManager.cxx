@@ -266,6 +266,7 @@ int TestManager(int, char*[])
   {
     Token t1 = Token::fromHash(macos_j["members"]["zot"].get<Hash>());
     Token t2 = Token::fromHash(linux_j["members"]["zorg"].get<Hash>());
+    test(t1 != t2, "This should never be reached.");
   }
   catch (std::invalid_argument& err)
   {

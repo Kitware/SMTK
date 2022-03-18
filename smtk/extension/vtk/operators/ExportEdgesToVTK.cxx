@@ -72,10 +72,8 @@ void insertEdges(
       Vertices verts = edge.vertices();
       bool hasEndVert = !verts.empty();
       bool isFirstPoint = true;
-      vtkIdType firstPoint = -1;
       const Tessellation* tess = eit->hasTessellation();
       Tessellation::size_type i;
-      Tessellation::size_type n;
       const std::vector<double>& coords(tess->coords());
       std::vector<vtkIdType> vconn;
       vtkIdType pid;
@@ -98,7 +96,7 @@ void insertEdges(
         for (i = tess->begin(); i != tess->end(); i = tess->nextCellOffset(i))
         {
           std::vector<int> conn;
-          n = tess->vertexIdsOfCell(i, conn);
+          tess->vertexIdsOfCell(i, conn);
           for (std::vector<int>::iterator tpid = conn.begin(); tpid != conn.end(); ++tpid)
           {
             std::vector<int>::iterator nxt(tpid);
@@ -107,7 +105,6 @@ void insertEdges(
             if (isFirstPoint)
             {
               isFirstPoint = false;
-              firstPoint = pts->GetNumberOfPoints(); // we know this is next point ID.
               shouldAdd &= !hasEndVert;
             }
             if (shouldAdd)

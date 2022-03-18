@@ -29,7 +29,7 @@ inline PySharedPtrClass< smtk::session::vtk::Resource> pybind11_init_smtk_sessio
         return std::dynamic_pointer_cast<smtk::session::vtk::Resource>(i);
       })
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

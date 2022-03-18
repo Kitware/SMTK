@@ -124,7 +124,13 @@ public:
     {
       this->get();
     }
-    return *((size_t*)&_cache);
+    // Use this union to avoid strict-aliasing warnings about type-punned pointers:
+    union {
+      Type* const* cache_ptr;
+      const size_t* hash_ptr;
+    } data;
+    data.cache_ptr = &_cache;
+    return *data.hash_ptr;
   }
 
   /// Compare if references refernece the same data in memory

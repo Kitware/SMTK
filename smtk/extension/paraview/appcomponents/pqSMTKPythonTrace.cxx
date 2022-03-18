@@ -135,9 +135,9 @@ std::string traceParams(itemT item, bool quoted)
   {
     // nothing special for extensible items - record a list
     text << indent << "{ 'path': " << quoteName(path) << enabled << ", 'value': [ " << itemVal(0);
-    for (auto i = 1; i < item->numberOfValues(); ++i)
+    for (std::size_t ii = 1; ii < item->numberOfValues(); ++ii)
     {
-      text << ", " << itemVal(i);
+      text << ", " << itemVal(ii);
     }
     text << " ] },\n";
   }

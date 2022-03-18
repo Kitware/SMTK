@@ -290,7 +290,6 @@ bool ImportPPG::Internal::createVertices()
 
     // Update member data
     m_smtkVertexList.push_back(newVertex);
-    smtk::common::UUID uuid = newVertex.entity();
   }
   return true;
 }
@@ -480,7 +479,7 @@ std::size_t ImportPPG::Internal::findInnerLoop(
   // Uses the fact that faces are convex and don't intersect
   std::vector<double> bbox = faceRef.boundingBox();
   std::size_t index = outerIndex + 1;
-  for (int i = 0; i < outerPPGFace.innerLoopCount; ++i, ++index)
+  for (int i = 0; i < static_cast<int>(outerPPGFace.innerLoopCount); ++i, ++index)
   {
     // Get xmean, ymean
     const PPGFace& innerFace = m_ppgFaceList[index];

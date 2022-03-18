@@ -82,6 +82,8 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
   auto& opIcons(viewManager->operationIcons());
   opIcons.registerOperation<ImportPythonOperation>(
     [](const std::string& /*unused*/) { return import_python_operation_svg; });
+#else
+  (void)viewManager;
 #endif
 }
 
@@ -90,6 +92,8 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 #if SMTK_PYTHON_ENABLED
   auto& opIcons(viewManager->operationIcons());
   opIcons.unregisterOperation<ImportPythonOperation>();
+#else
+  (void)viewManager;
 #endif
 }
 } // namespace operation

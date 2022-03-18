@@ -146,7 +146,8 @@ int Import::taggedPolyData2PolygonModelEntities(
   // Next lets process the edges
   linesOffset = n;
   vtkCellArray* lines = pdata->GetLines();
-  vtkIdType currentEdgeTag, lastPointId, cellId;
+  vtkIdType currentEdgeTag, cellId;
+  vtkIdType lastPointId = -1;
   smtk::operation::Operation::Ptr edgeOp = CreateEdgeFromPoints::create();
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
@@ -226,7 +227,7 @@ int Import::basicPolyData2PolygonModelEntities(
   vtkIdType npts{ 0 };
   double pnt[3];
   int numEnts = 0;
-  vtkIdType n, i, j;
+  vtkIdType i, j;
   vtkCellArray* lines = pdata->GetLines();
   vtkIdType cellId;
   smtk::operation::Operation::Ptr edgeOp = CreateEdgeFromPoints::create();
@@ -235,7 +236,6 @@ int Import::basicPolyData2PolygonModelEntities(
   {
     return numEnts;
   }
-  n = lines->GetNumberOfCells();
 
   for (cellId = 0, lines->SetTraversalLocation(0); lines->GetNextCell(npts, pts); cellId++)
   {

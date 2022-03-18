@@ -126,7 +126,7 @@ void from_json(const json& j, smtk::session::polygon::internal::vertex::Ptr& ver
     bool haveFace = false;
     smtk::session::polygon::internal::Id edgeId;
     smtk::session::polygon::internal::Id faceId;
-    bool edgeOut;
+    bool edgeOut = false;
     try
     {
       std::string tmp = er->at("edge");

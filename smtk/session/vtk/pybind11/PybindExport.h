@@ -29,7 +29,7 @@ inline PySharedPtrClass< smtk::session::vtk::Export > pybind11_init_smtk_session
     .def("shared_from_this", (std::shared_ptr<smtk::session::vtk::Export> (smtk::session::vtk::Export::*)()) &smtk::session::vtk::Export::shared_from_this)
     ;
 
-  m.def("exportResource", (bool (*)(const smtk::resource::ResourcePtr)) &smtk::session::vtk::exportResource, "", py::arg("resource"));
+  m.def("exportResource", (bool (*)(const smtk::resource::ResourcePtr&)) &smtk::session::vtk::exportResource, "", py::arg("resource"));
 
   return instance;
 }

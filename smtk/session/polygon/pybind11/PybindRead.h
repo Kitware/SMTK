@@ -13,6 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "smtk/common/Managers.h"
+
 #include "smtk/session/polygon/operators/Read.h"
 
 namespace py = pybind11;
@@ -30,7 +32,7 @@ inline PySharedPtrClass< smtk::session::polygon::Read > pybind11_init_smtk_sessi
     .def("shared_from_this", (std::shared_ptr<smtk::session::polygon::Read> (smtk::session::polygon::Read::*)()) &smtk::session::polygon::Read::shared_from_this)
     ;
 
-  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &)) &smtk::session::polygon::read, "", py::arg("filePath"));
+  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &, const std::shared_ptr<smtk::common::Managers>&)) &smtk::session::polygon::read, "", py::arg("filePath"), py::arg("managers") = nullptr);
 
   return instance;
 }

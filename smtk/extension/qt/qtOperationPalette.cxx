@@ -37,8 +37,8 @@ using namespace smtk::extension;
 
 qtOperationPalette::qtOperationPalette(const smtk::view::Information& info)
   : qtBaseView(info)
-  , m_filter(new QSortFilterProxyModel(this))
   , m_subset(new QSortFilterProxyModel(this))
+  , m_filter(new QSortFilterProxyModel(this))
 {
   if (info.contains<std::shared_ptr<smtk::common::Managers>>())
   {

@@ -397,7 +397,6 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
   }
   else if (request_type == vtkPVView::REQUEST_RENDER())
   {
-    auto* port = this->GetInternalOutputPort();
     vtkSmartPointer<vtkMultiBlockDataSet> mbds =
       vtkMultiBlockDataSet::SafeDownCast(this->ApplyTransforms->GetOutputDataObject(0));
 

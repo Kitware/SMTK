@@ -126,7 +126,7 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
       })
     ;
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

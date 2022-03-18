@@ -11,6 +11,8 @@
 #include "smtk/io/mesh/MeshIOXMS.h"
 #include "smtk/io/mesh/MeshIO.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTypes.h"
 #include "smtk/mesh/core/DimensionTypes.h"
@@ -534,6 +536,10 @@ std::size_t computeNumberOfPoints(std::istream& stream)
   stream.clear();
   stream.seekg(0, std::istream::beg);
 
+  if (!fromComment && counter != nPts)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Unexpected number of points.");
+  }
   assert(fromComment || counter == nPts);
 
   return nPts;

@@ -13,6 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "smtk/common/Managers.h"
+
 #include "smtk/session/polygon/operators/Write.h"
 
 namespace py = pybind11;
@@ -30,7 +32,7 @@ inline PySharedPtrClass< smtk::session::polygon::Write > pybind11_init_smtk_sess
     .def("shared_from_this", (std::shared_ptr<smtk::session::polygon::Write> (smtk::session::polygon::Write::*)()) &smtk::session::polygon::Write::shared_from_this)
     ;
 
-  m.def("write", (bool (*)(const smtk::resource::ResourcePtr)) &smtk::session::polygon::write, "", py::arg("resource"));
+  m.def("write", (bool (*)(const smtk::resource::ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)) &smtk::session::polygon::write, "", py::arg("resource"), py::arg("managers") = nullptr);
 
   return instance;
 }

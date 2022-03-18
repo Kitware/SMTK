@@ -40,9 +40,8 @@ public:
   {
     Id m_edgeId;       // Should never be nullptr
     Id m_adjacentFace; // Face immediately CW of m_edgeId. May be nullptr.
-    bool m_edgeOut{
-      false
-    }; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
+    // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
+    bool m_edgeOut{ false };
 
     incident_edge_data(Id edgeId, bool isEdgeOut)
       : m_edgeId(edgeId)

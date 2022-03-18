@@ -95,6 +95,7 @@ struct Registrar
 
   static void unregisterFrom(const smtk::project::Manager::Ptr& projectManager)
   {
+    (void)projectManager;
     // projectManager->unregisterProject("MyProject");
   }
 };

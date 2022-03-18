@@ -90,9 +90,9 @@ qtItem* qtReferenceTree::createItemWidget(const qtAttributeItemInfo& info)
 }
 
 qtReferenceTreeData::qtReferenceTreeData()
-  : m_selectedIconURL(":/icons/display/selected.png")
+  : m_membershipCriteria{ qt::MembershipCriteria::ComponentsWithGeometry }
+  , m_selectedIconURL(":/icons/display/selected.png")
   , m_unselectedIconURL(":/icons/display/unselected.png")
-  , m_membershipCriteria{ qt::MembershipCriteria::ComponentsWithGeometry }
 {
 }
 
@@ -323,7 +323,7 @@ smtk::view::PhraseModelPtr qtReferenceTree::createPhraseModel() const
     if (bdi >= 0)
     {
       auto& bdc = pmc.child(bdi);
-      for (mbi = 0; mbi < bdc.numberOfChildren(); ++mbi)
+      for (mbi = 0; mbi < static_cast<int>(bdc.numberOfChildren()); ++mbi)
       {
         auto& badge = bdc.child(mbi);
         std::string badgeType;
@@ -767,9 +767,9 @@ void qtReferenceTree::checkRemovedComponents(
 {
   (void)phr;
   (void)dst;
+  bool didChange = false;
   if (evt == smtk::view::PhraseModelEvent::ABOUT_TO_REMOVE)
   {
-    bool didChange = false;
     auto itm = this->itemAs<smtk::attribute::ReferenceItem>();
     // If the application releases its hold on the attribute
     // resource being represented, then we may not have an item:
@@ -800,6 +800,7 @@ void qtReferenceTree::checkRemovedComponents(
       }
     }
   }
+  (void)didChange; // Return this?
 }
 
 bool qtReferenceTree::synchronize(UpdateSource src)
@@ -839,7 +840,7 @@ bool qtReferenceTree::synchronize(UpdateSource src)
       int idx = 0;
       for (const auto& member : this->members())
       {
-        if (member.second && idx < newItemMembers)
+        if (member.second && idx < static_cast<int>(newItemMembers))
         {
           auto entry = member.first.lock();
           // If the new entry is not identical to the existing value, set it.
@@ -862,7 +863,7 @@ bool qtReferenceTree::synchronize(UpdateSource src)
         }
       }
       // Now unset any entries that we cannot resize away.
-      for (; idx < newItemMembers; ++idx)
+      for (; idx < static_cast<int>(newItemMembers); ++idx)
       {
         if (item->isSet())
         {

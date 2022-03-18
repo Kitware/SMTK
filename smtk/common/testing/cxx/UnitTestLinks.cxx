@@ -79,7 +79,7 @@ void UnitTest()
   {
     modified = links.set<MyLinks::Right>(2, 6);
   }
-  catch (std::out_of_range outofrange)
+  catch (std::out_of_range& /*outofrange*/)
   {
     modified = false;
   }
@@ -255,7 +255,7 @@ void MoveOnlyTest()
   {
     modified = links.set<MyLinks::Right>(2, 6);
   }
-  catch (std::out_of_range outofrange)
+  catch (std::out_of_range& /*outofrange*/)
   {
     modified = false;
   }

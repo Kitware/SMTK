@@ -71,8 +71,7 @@ public:
     //verify the points ids are mapped properly
     for (int i = 0; i < numPts; ++i)
     {
-      test(
-        static_cast<const std::size_t>(m_conn[offset + i]) == m_points.find(this->pointIds()[i]));
+      test(static_cast<std::size_t>(m_conn[offset + i]) == m_points.find(this->pointIds()[i]));
     }
 
     m_currentIndex++;

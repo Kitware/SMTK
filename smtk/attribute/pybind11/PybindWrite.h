@@ -32,7 +32,7 @@ inline PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation >
     .def("shared_from_this", (std::shared_ptr<smtk::attribute::Write> (smtk::attribute::Write::*)()) &smtk::attribute::Write::shared_from_this)
     ;
 
-  m.def("write", (bool (*)(const smtk::resource::ResourcePtr)) &smtk::attribute::write, "", py::arg("resource"));
+  m.def("write", (bool (*)(const smtk::resource::ResourcePtr&, const std::shared_ptr<smtk::common::Managers>&)) &smtk::attribute::write, "", py::arg("resource"), py::arg("managers") = nullptr);
 
   return instance;
 }

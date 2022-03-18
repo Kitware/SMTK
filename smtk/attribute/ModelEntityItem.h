@@ -69,6 +69,8 @@ public:
 
   std::ptrdiff_t find(const smtk::model::EntityRef& entity) const;
 
+  using Superclass::valueAsString;
+
 protected:
   friend class Definition;
 

@@ -47,6 +47,7 @@
 
 #include <cmath>
 #include <deque>
+#include <limits>
 #include <map>
 #include <set>
 #include <vector>
@@ -184,8 +185,10 @@ CreateFaces::Result CreateFaces::operateInternal()
   // Create an event queue and populate it with events
   // for each segment of each edge in m_edgeMap.
   ModelEdgeMap::iterator modelEdgeIt;
-  internal::Coord xblo, xbhi;
-  internal::Coord yblo, ybhi;
+  internal::Coord xblo = std::numeric_limits<internal::Coord>::lowest();
+  internal::Coord xbhi = std::numeric_limits<internal::Coord>::lowest();
+  internal::Coord yblo = std::numeric_limits<internal::Coord>::lowest();
+  internal::Coord ybhi = std::numeric_limits<internal::Coord>::lowest();
   bool xybinit = false;
   SweepEventSet
     eventQueue; // (QE) sorted into a queue by point-x, point-y, event-type, and then event-specific data.
@@ -332,7 +335,7 @@ void CreateFaces::evaluateLoop(
     smtk::model::EdgeUses eus = oit->first.edgeUses();
     for (smtk::model::EdgeUses::iterator euit = eus.begin(); euit != eus.end(); ++euit)
     {
-      if (euit->orientation() == smtk::model::POSITIVE == oit->second)
+      if (euit->orientation() == smtk::model::POSITIVE && oit->second)
       { // This use is co-oriented with the loop. Does it have a face?
         smtk::model::FaceUse fu = euit->faceUse();
         if (fu.isValid() && fu.face().isValid())

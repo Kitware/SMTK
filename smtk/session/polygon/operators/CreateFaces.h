@@ -48,6 +48,7 @@ struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
     for (int i = 0; i < 2; ++i)
       m_visited[i] = other.m_visited[i];
   }
+  ModelEdgeInfo& operator=(const ModelEdgeInfo&) = default;
 
   int m_allowedOrientations{ 0 }; // 0: all, -1: only negative, +1: only positive
   bool m_visited

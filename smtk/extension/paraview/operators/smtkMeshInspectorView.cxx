@@ -150,11 +150,6 @@ public:
         attInstance->widget()->setObjectName("meshInspectorEditor");
         QVBoxLayout* parentlayout = static_cast<QVBoxLayout*>(pw->layout());
         parentlayout->insertWidget(0, attInstance->widget());
-
-        pqApplicationCore* paraViewApp = pqApplicationCore::instance();
-        pqServer* server = paraViewApp->getActiveServer();
-        pqObjectBuilder* builder = paraViewApp->getObjectBuilder();
-
 #if 1
         QPointer<pqSMTKSliceItemWidget> sliceItem;
         QPointer<qtReferenceTree> treeItem;
@@ -174,6 +169,9 @@ public:
             &pqSMTKSliceItemWidget::sliceInputsChanged);
         }
 #else
+        pqApplicationCore* paraViewApp = pqApplicationCore::instance();
+        pqServer* server = paraViewApp->getActiveServer();
+        pqObjectBuilder* builder = paraViewApp->getObjectBuilder();
         QPointer<pqSMTKSliceItemWidget> sliceItem;
         QPointer<qtReferenceTree> treeItem;
         if (this->fetchItems(sliceItem, treeItem, attInstance->items()))

@@ -26,7 +26,6 @@ const double double_epsilon = 1.e-10;
 int unitXmlReaderProperties(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test template
-  bool status = true;
   std::string attFile;
   attFile = SMTK_DATA_DIR;
   attFile += "/attribute/attribute_collection/propertiesExample.sbt";

@@ -52,7 +52,7 @@ inline PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::Referen
     .def("unset", &smtk::attribute::ResourceItem::unset, py::arg("i") = 0)
     .def("value", &smtk::attribute::ResourceItem::value, py::arg("i") = 0)
     .def("valueAsString", (std::string (smtk::attribute::ResourceItem::*)() const) &smtk::attribute::ResourceItem::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ResourceItem::*)(::size_t) const) &smtk::attribute::ResourceItem::valueAsString, py::arg("i"))
+    .def("valueAsString", (std::string (smtk::attribute::ResourceItem::*)(::size_t) const) &smtk::attribute::ResourceItem::valueAsString, py::arg("index"))
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(i);
       })

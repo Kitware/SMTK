@@ -26,12 +26,13 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QDockWidg
   smtk::view::Information result;
   if (const auto* toolbox = dynamic_cast<const pqSMTKOperationToolboxPanel*>(panel))
   {
+    (void)toolbox;
     nlohmann::json jsonConfig = {
       { "Name", "Operations" },
       { "Type", "qtOperationPalette" },
       { "Component",
         { { "Name", "Details" },
-          { "Attributes", { { "SearchBar", false }, { "Title", "Tools" } } },
+          { "Attributes", { { "SearchBar", true }, { "Title", "Tools" } } },
           { "Children",
             { { { "Name", "Model" }, { "Attributes", { { "Autorun", "true" } } } } } } } }
     };

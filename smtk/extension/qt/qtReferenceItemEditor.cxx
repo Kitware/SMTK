@@ -341,7 +341,6 @@ void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResour
   // Do we have to apply categories to this result?
   if (itemDef->enforcesCategories() && m_itemInfo.uiManager())
   {
-    auto* uiManager = m_itemInfo.uiManager();
     std::set<smtk::resource::PersistentObjectPtr> toBeRemoved;
     for (const auto& obj : objSet)
     {
