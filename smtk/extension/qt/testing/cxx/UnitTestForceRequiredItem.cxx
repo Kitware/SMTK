@@ -56,6 +56,7 @@ int UnitTestForceRequiredItem(int argc, char** const argv)
   smtk::io::AttributeReader sbtReader;
   smtk::io::Logger logger;
   bool err = sbtReader.readContents(attResource, templateString, logger);
+  test(!err, "Failed to read contents as an attribute resource.");
   assert(!err);
 
   // Create "test" attribute

@@ -120,7 +120,7 @@ inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resourc
     .def("eraseModel", &smtk::model::Resource::eraseModel, py::arg("entityref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("find", (smtk::resource::ComponentPtr (smtk::model::Resource::*)(const smtk::common::UUID&) const) &smtk::model::Resource::find)
     .def("queryOperation", &smtk::model::Resource::queryOperation)
-    .def("visit", (void (smtk::model::Resource::*)(std::function<void(const smtk::resource::ComponentPtr&)>) const) &smtk::model::Resource::visit)
+    .def("visit", (void (smtk::model::Resource::*)(std::function<void(const smtk::resource::ComponentPtr&)>&) const) &smtk::model::Resource::visit)
     .def("findArrangement", (smtk::model::Arrangement const * (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int) const) &smtk::model::Resource::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangement", (smtk::model::Arrangement * (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int)) &smtk::model::Resource::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangementInvolvingEntity", &smtk::model::Resource::findArrangementInvolvingEntity, py::arg("entityId"), py::arg("kind"), py::arg("involved"))
@@ -185,7 +185,6 @@ inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resourc
     .def("removeIntegerProperty", &smtk::model::Resource::removeIntegerProperty, py::arg("entity"), py::arg("propName"))
     .def("removeStringProperty", &smtk::model::Resource::removeStringProperty, py::arg("entity"), py::arg("propName"))
     .def("removeTessellation", &smtk::model::Resource::removeTessellation, py::arg("cellId"), py::arg("removeGen") = false)
-    .def("index", (std::type_index (smtk::model::Resource::*)() const) &smtk::model::Resource::index)
     .def("sessionData", &smtk::model::Resource::sessionData, py::arg("sessRef"))
     .def("sessionOwningEntity", &smtk::model::Resource::sessionOwningEntity, py::arg("uid"))
     .def("sessions", &smtk::model::Resource::sessions)
@@ -235,7 +234,7 @@ inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resourc
         return std::dynamic_pointer_cast<smtk::model::Resource>(i);
       })
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

@@ -53,7 +53,7 @@ inline py::class_< smtk::attribute::ComponentItemDefinition, smtk::attribute::Re
         return std::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(i);
       })
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

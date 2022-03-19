@@ -457,7 +457,6 @@ bool pmodel::demoteModelVertex(
   std::pair<Id, Id> adjacentFaces2;
   bool isFreeCell = true;
   SegmentSplitsT segs;
-  bool vertexSplitLoop = false;
   if (nie == 2)
   {
     // Look up the incident edges:
@@ -482,7 +481,6 @@ bool pmodel::demoteModelVertex(
     // Perform surgery as needed:
     if (e1 == e2)
     { // The same model edge is incident twice.
-      vertexSplitLoop = true;
       adjacentFaces1 = this->removeModelEdgeFromEndpoints(resource, ie1);
       isFreeCell = false; // well, it may be free, but we aren't changing it
     }
@@ -1262,8 +1260,6 @@ void preparePointsForBoost(
           yblo = pit->y();
         }
       }
-      internal::Point bdsLo = internal::Point(xblo, yblo);
-      internal::Point bdsHi = internal::Point(xbhi, ybhi);
       internal::Coord dx = xbhi;
       if (xblo < 0 && -xblo > dx)
       {
@@ -1456,7 +1452,7 @@ bool pmodel::tweakEdge(
 
   // See which model vertex (if any) matches the existing begin
   smtk::model::Vertices verts = edge.vertices();
-  bool isFirstVertStart;
+  bool isFirstVertStart = true;
   if (!verts.empty())
   {
     internal::vertex::Ptr firstVert =

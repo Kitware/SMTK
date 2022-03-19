@@ -60,10 +60,10 @@ Instance Instance::clonePlacements(I begin, I end, bool relate)
   bool hasScales = this->hasFloatProperty(Instance::scales);
   bool hasMasks = this->hasFloatProperty(Instance::masks);
   bool hasColors = this->hasFloatProperty(Instance::colors);
-  FloatList* tmpOrient;
-  FloatList* tmpScales;
-  FloatList* tmpColors;
-  FloatList* tmpMasks;
+  FloatList* tmpOrient = nullptr;
+  FloatList* tmpScales = nullptr;
+  FloatList* tmpColors = nullptr;
+  FloatList* tmpMasks = nullptr;
   if (hasOrientation)
   {
     orit = this->floatProperty(Instance::orientations).begin();

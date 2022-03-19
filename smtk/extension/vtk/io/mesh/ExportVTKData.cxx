@@ -130,19 +130,6 @@ bool ExportVTKData::operator()(
 namespace
 {
 
-// functions to shunt past data transfer if input and output types match
-void constructNewArrayIfNecessary(
-  vtkIdType*& /*unused*/,
-  vtkIdType*& /*unused*/,
-  std::int64_t /*unused*/)
-{
-}
-void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t /*unused*/)
-{
-  out = in;
-}
-void deleteOldArrayIfNecessary(vtkIdType*& /*unused*/, vtkIdType*& /*unused*/) {}
-
 // functions for allocation, transfer and deallocation when there is a type
 // mismatch
 template<typename T>

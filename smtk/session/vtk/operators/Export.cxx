@@ -153,16 +153,15 @@ void RewriteLabels(
       delta = spacing[i];
   for (vtkIdType p = 0; p < numPts; ++p)
   {
-    vtkVector3d ray;
     double dist;
     bool invitro;
     img->GetPoint(p, x.GetData());
+    vtkVector3d ray = x - scenter;
     if ((dist = (x - basept).Dot(normal)) < -delta) // Below the lower cutoff plane?
       lblp[p] = VOXEL_VOID;
     else if ((dist < delta) && (lblp[p] == 1)) // "On" the lower cutoff plane?
       lblp[p] = static_cast<unsigned char>(OUTLET);
-    else if (
-      (dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) < delta) // In or on the nose sphere?
+    else if ((dist = sqrt(ray.Dot(ray)) - sradius) < delta) // In or on the nose sphere?
     {
       invitro = den->GetTuple1(p) >= thresh;
       // In or on the nose sphere, anything marked "airway" must stay that way:

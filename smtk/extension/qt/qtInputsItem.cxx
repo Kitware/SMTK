@@ -556,7 +556,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
 
   std::vector<smtk::io::Logger> logs;
   QStringList valueStrings;
-  for (int i = 0; i < inputItem->numberOfValues(); ++i)
+  for (int i = 0; i < static_cast<int>(inputItem->numberOfValues()); ++i)
   {
     smtk::io::Logger currentLog;
     QVariant val =
@@ -573,7 +573,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
 
   // Collects logs with errors along with their item indices.
   std::vector<std::pair<int, smtk::io::Logger>> logsWithErrors;
-  for (int i = 0; i < logs.size(); ++i)
+  for (int i = 0; i < static_cast<int>(logs.size()); ++i)
   {
     if (logs[i].hasErrors())
       logsWithErrors.emplace_back(std::make_pair(i, std::move(logs[i])));
@@ -582,7 +582,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
   if (!logsWithErrors.empty())
   {
     QString toolTipText;
-    for (int i = 0; i < logsWithErrors.size(); ++i)
+    for (int i = 0; i < static_cast<int>(logsWithErrors.size()); ++i)
     {
       const smtk::io::Logger& currentLog = logsWithErrors[i].second;
       if (!currentLog.hasErrors())
@@ -600,7 +600,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
 
       toolTipText += currentMessage;
 
-      if (i < logsWithErrors.size() - 1)
+      if (i < static_cast<int>(logsWithErrors.size()) - 1)
         toolTipText += "\n\n";
     }
 

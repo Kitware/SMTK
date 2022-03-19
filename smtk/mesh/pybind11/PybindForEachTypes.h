@@ -65,7 +65,7 @@ inline PySharedPtrClass< smtk::mesh::MeshForEach > pybind11_init_smtk_mesh_MeshF
     .def_readwrite("m_resource", &smtk::mesh::MeshForEach::m_resource)
     ;
 
-  return std::move(instance);
+  return instance;
 }
 
 inline PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellForEach(py::module &m)
@@ -85,7 +85,7 @@ inline PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellF
     .def("pointIds", (void (smtk::mesh::CellForEach::*)(::smtk::mesh::Handle const *)) &smtk::mesh::CellForEach::pointIds, py::arg("ptIds"))
     .def("wantsCoordinates", &smtk::mesh::CellForEach::wantsCoordinates)
     ;
-  return std::move(instance);
+  return instance;
 }
 
 inline PySharedPtrClass< smtk::mesh::PointForEach > pybind11_init_smtk_mesh_PointForEach(py::module &m)
@@ -97,7 +97,7 @@ inline PySharedPtrClass< smtk::mesh::PointForEach > pybind11_init_smtk_mesh_Poin
     .def("forPoints", &smtk::mesh::PointForEach::forPoints, py::arg("pointIds"), py::arg("xyz"), py::arg("coordinatesModified"))
     .def_readwrite("m_resource", &smtk::mesh::PointForEach::m_resource)
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

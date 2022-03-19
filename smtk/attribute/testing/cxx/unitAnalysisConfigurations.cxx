@@ -34,7 +34,6 @@ bool testConfigiration(
   const std::string& configName,
   const std::vector<std::string>& vals)
 {
-  bool status = true;
   std::cerr << "Testing configuration: " << configName;
   auto config = attRes->findAttribute(configName);
   if (!config)
@@ -103,7 +102,7 @@ bool testItem(GroupItemPtr& groupItem, int index, const std::vector<std::string>
   }
   int nextLevel = index + 1;
   // Are we at the end?
-  if (nextLevel == vals.size())
+  if (nextLevel == static_cast<int>(vals.size()))
   {
     return true;
   }
@@ -154,7 +153,7 @@ bool testItem(StringItemPtr& item, int index, const std::vector<std::string>& va
   }
   int nextLevel = index + 1;
   // Are we at the end?
-  if (nextLevel == vals.size())
+  if (nextLevel == static_cast<int>(vals.size()))
   {
     return true;
   }

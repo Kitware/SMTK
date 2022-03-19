@@ -88,8 +88,10 @@ int TestActiveTask(int, char*[])
     }
 
     bool success = t1->markCompleted(true);
+    test(success, "Expected to be able to complete task.");
     test(count == 2, "Change in task state does not imply active task switch.");
     success = t1->markCompleted(false);
+    test(success, "Expected to be able to un-complete task.");
 
     // Now add a task and switch to it.
     std::shared_ptr<Task> t2 = taskManager->taskInstances().create<Task>(

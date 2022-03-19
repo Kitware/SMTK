@@ -59,7 +59,7 @@ inline py::class_< smtk::attribute::Analyses > pybind11_init_smtk_attribute_Anal
     .def("buildAnalysisItem", (void (smtk::attribute::Analyses::Analysis::*)(::smtk::attribute::GroupItemDefinitionPtr &) const) &smtk::attribute::Analyses::Analysis::buildAnalysisItem, py::arg("gitem"))
     .def("buildAnalysisItem", (void (smtk::attribute::Analyses::Analysis::*)(::smtk::attribute::StringItemDefinitionPtr &) const) &smtk::attribute::Analyses::Analysis::buildAnalysisItem, py::arg("sitem"))
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

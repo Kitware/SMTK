@@ -17,6 +17,8 @@
 
 #include "smtk/operation/XMLOperation.h"
 
+#include "smtk/common/Managers.h"
+
 namespace py = pybind11;
 
 inline PySharedPtrClass< smtk::session::mesh::Read, smtk::operation::XMLOperation > pybind11_init_smtk_session_mesh_Read(py::module &m)
@@ -32,7 +34,7 @@ inline PySharedPtrClass< smtk::session::mesh::Read, smtk::operation::XMLOperatio
     .def("shared_from_this", (std::shared_ptr<const smtk::session::mesh::Read> (smtk::session::mesh::Read::*)() const) &smtk::session::mesh::Read::shared_from_this)
     ;
 
-  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &)) &smtk::session::mesh::read, "", py::arg("filePath"));
+  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &, const std::shared_ptr<smtk::common::Managers>&)) &smtk::session::mesh::read, "", py::arg("filePath"), py::arg("managers") = nullptr);
 
   return instance;
 }

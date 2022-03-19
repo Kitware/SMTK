@@ -37,11 +37,11 @@ qtOperationTypeModel::Item::Item(
   const std::string& toolTip,
   int precedence)
   : m_index(typeIndex)
-  , m_typeName(typeName)
-  , m_label(label)
   , m_associability(associability)
   , m_editability(editability)
   , m_shortName(buttonLabel)
+  , m_typeName(typeName)
+  , m_label(label)
   , m_toolTip(toolTip)
   , m_precedence(precedence)
 {
@@ -263,7 +263,7 @@ QVariant qtOperationTypeModel::data(const QModelIndex& index, int role) const
 
   int row = index.row();
   int col = index.column();
-  if (row < 0 || row >= m_operations.size())
+  if (row < 0 || row >= static_cast<int>(m_operations.size()))
   {
     return value;
   }

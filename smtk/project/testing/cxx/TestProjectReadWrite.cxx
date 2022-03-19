@@ -51,6 +51,7 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
+#ifdef NDEBUG
 void cleanup(const std::string& file_path)
 {
   //first verify the file exists
@@ -61,6 +62,7 @@ void cleanup(const std::string& file_path)
     ::boost::filesystem::remove_all(path);
   }
 }
+#endif // NDEBUG
 } // namespace
 
 int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)

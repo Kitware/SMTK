@@ -396,14 +396,14 @@ void pqSMTKTransformWidget::setControlState(
     state.begin(), state.end(), state.begin(), [](unsigned char c) { return std::tolower(c); });
   if (state == "active")
   {
-    controlWidget->setChecked(Qt::Checked);
+    controlWidget->setCheckState(Qt::Checked);
   }
   else if (state == "visible")
   {
-    controlWidget->setChecked(Qt::PartiallyChecked);
+    controlWidget->setCheckState(Qt::PartiallyChecked);
   }
   else if (state == "inactive")
   {
-    controlWidget->setChecked(Qt::Unchecked);
+    controlWidget->setCheckState(Qt::Unchecked);
   }
 }

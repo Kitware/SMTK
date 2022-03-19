@@ -145,7 +145,6 @@ int qtToolPaletteLayout::doLayout(const QRect& rect, bool testOnly) const
   QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
   int x = effectiveRect.x();
   int y = effectiveRect.y();
-  int lineHeight = 0;
 
   // Determine number of columns and width of each.
   QLayoutItem* item;

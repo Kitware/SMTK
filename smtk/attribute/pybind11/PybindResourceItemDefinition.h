@@ -55,7 +55,7 @@ inline py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::Ref
         return std::dynamic_pointer_cast<smtk::attribute::ResourceItemDefinition>(i);
       })
     ;
-  return std::move(instance);
+  return instance;
 }
 
 #endif

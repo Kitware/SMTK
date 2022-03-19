@@ -31,7 +31,7 @@ inline py::class_< smtk::resource::PropertiesOfType<ValueType> > pybind11_init_s
     .def("insert", &smtk::resource::PropertiesOfType<ValueType>::insert, py::arg("name"), py::arg("value"))
     .def("contains", &smtk::resource::PropertiesOfType<ValueType>::contains, py::arg("name"))
     .def("erase", &smtk::resource::PropertiesOfType<ValueType>::erase, py::arg("name"))
-    .def("insert", (bool(smtk::resource::PropertiesOfType<ValueType>::*)(const std::string, const ValueType&))&smtk::resource::PropertiesOfType<ValueType>::insert, py::arg("name"), py::arg("value"))
+    .def("insert", (bool(smtk::resource::PropertiesOfType<ValueType>::*)(const std::string&, const ValueType&))&smtk::resource::PropertiesOfType<ValueType>::insert, py::arg("name"), py::arg("value"))
     .def("at", (ValueType& (smtk::resource::PropertiesOfType<ValueType>::*)(const std::string&))&smtk::resource::PropertiesOfType<ValueType>::at, py::arg("name"))
     .def("set", [](smtk::resource::PropertiesOfType<ValueType>& properties, const std::string& name, ValueType& value)
       {

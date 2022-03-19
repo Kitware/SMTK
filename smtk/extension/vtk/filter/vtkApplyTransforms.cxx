@@ -76,7 +76,6 @@ int vtkApplyTransforms::RequestData(
       // We need to copy global Id information if it exists.
       vtkPolyData* result = dynamic_cast<vtkPolyData*>(this->SurfaceFilter->GetOutputDataObject(0));
       auto* globalPointIds = grid->GetPointData()->GetGlobalIds();
-      auto* globalCellIds = grid->GetCellData()->GetGlobalIds();
 
       if (globalPointIds)
       {

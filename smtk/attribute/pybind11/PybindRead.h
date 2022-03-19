@@ -13,6 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "smtk/common/Managers.h"
 #include "smtk/attribute/operators/Read.h"
 
 #include "smtk/operation/XMLOperation.h"
@@ -32,7 +33,7 @@ inline PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > 
     .def("shared_from_this", (std::shared_ptr<smtk::attribute::Read> (smtk::attribute::Read::*)()) &smtk::attribute::Read::shared_from_this)
     ;
 
-  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &)) &smtk::attribute::read, "", py::arg("filePath"));
+  m.def("read", (smtk::resource::ResourcePtr (*)(::std::string const &, const std::shared_ptr<smtk::common::Managers>&)) &smtk::attribute::read, "", py::arg("filePath"), py::arg("managers") = nullptr);
 
 
   return instance;

@@ -188,7 +188,6 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
             << "\n";
 
   std::cout << "Row  Associability  Editability — TypeName — Label – Center – Index\n";
-  auto* opModel = paletteView->operationModel();
   auto* opView = paletteView->operationView();
   test(!!opView, "Expected a non-empty view.");
   QModelIndex assignColorsIndex;

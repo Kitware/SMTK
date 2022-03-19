@@ -691,7 +691,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
   std::map<internal::Point, std::set<smtk::model::EntityRef>> endpoints;
   std::list<internal::Segment> segs;
   internal::pmodel* pp = nullptr;
-  internal::pmodel* mod;
+  internal::pmodel* mod = nullptr;
   std::map<size_t, smtk::model::Edge> lkup;
   std::map<smtk::model::Edge, std::pair<size_t, size_t>> revlkup;
   // I. Prepare to intersect
