@@ -82,6 +82,7 @@ class SMTK_ALWAYS_EXPORT Resource
 
 public:
   using NodeContainer = typename detail::GraphTraits<Traits>::NodeContainer;
+  using TypeTraits = Traits;
 
   template<typename NodeType>
   using is_node = smtk::tuple_contains<NodeType, typename detail::GraphTraits<Traits>::NodeTypes>;
