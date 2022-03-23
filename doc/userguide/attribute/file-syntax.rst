@@ -748,9 +748,10 @@ inside those attributes should be presented to the user.
        in tabs), "Instanced" (a view that displays attribute instances
        specified by their names), "Attribute" (a view that displays all
        attributes sharing a common definition and usually allows users to
-       manage instances by adding and removing them), "ModelEntity" (a view
-       that shows model entities and lets users choose an attribute to
-       associate with each one, optionally creating instances as needed),
+       manage instances by adding and removing them), "Operator" (a view
+       that customizes how operation parameters are displayed), "ModelEntity"
+       (a view that shows model entities and lets users choose an attribute
+       to associate with each one, optionally creating instances as needed),
        "SimpleExpression", "Category", or "Selector".
        (Required)
 

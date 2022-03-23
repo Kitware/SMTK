@@ -10,13 +10,13 @@
 #ifndef smtk_extension_paraview_widgets_pqConePropertyWidget_h
 #define smtk_extension_paraview_widgets_pqConePropertyWidget_h
 
-#include "pqInteractivePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKInteractivePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
-class SMTKPQWIDGETSEXT_EXPORT pqConePropertyWidget : public pqInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqConePropertyWidget : public pqSMTKInteractivePropertyWidget
 {
   Q_OBJECT
-  using Superclass = pqInteractivePropertyWidget;
+  using Superclass = pqSMTKInteractivePropertyWidget;
 
 public:
   pqConePropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = nullptr);

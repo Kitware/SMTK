@@ -10,6 +10,7 @@
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
+#include "smtk/extension/paraview/widgets/pqSMTKInteractivePropertyWidget.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -47,6 +48,11 @@
 
 using namespace smtk::attribute;
 using qtItem = smtk::extension::qtItem;
+
+namespace
+{
+bool s_hideWidgetWhenInactive = true;
+}
 
 pqSMTKAttributeItemWidget::OverrideWhen pqSMTKAttributeItemWidget::OverrideWhenConvert(
   const std::string& str)
@@ -153,6 +159,16 @@ std::string pqSMTKAttributeItemWidget::GeometrySourceConvert(GeometrySource val)
   }
   return "Invalid";
 }
+
+void pqSMTKAttributeItemWidget::setHideWidgetWhenInactive(bool val)
+{
+  s_hideWidgetWhenInactive = val;
+};
+
+bool pqSMTKAttributeItemWidget::hideWidgetWhenInactive()
+{
+  return s_hideWidgetWhenInactive;
+};
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   const smtk::extension::qtAttributeItemInfo& info,
@@ -341,7 +357,17 @@ bool pqSMTKAttributeItemWidget::eventFilter(QObject* obj, QEvent* event)
     pqInteractivePropertyWidget* ww = this->propertyWidget();
     if (obj == ww && (isHide || isShow))
     {
-      this->update3DWidgetVisibility(isShow);
+      if (pqSMTKAttributeItemWidget::hideWidgetWhenInactive())
+      {
+        this->update3DWidgetVisibility(isShow);
+      }
+      else
+      {
+        if (ww->isWidgetVisible())
+        {
+          this->update3DWidgetVisibility(true);
+        }
+      }
     }
   }
   return this->qtItem::eventFilter(obj, event);
@@ -496,6 +522,13 @@ void pqSMTKAttributeItemWidget::createEditor()
   // we can give 3-d widgets the opportunity to hide themselves when the Qt
   // widget is hidden.
   pvwidget->installEventFilter(this);
+
+  // Set hide widget flag based on global static flag
+  auto* pvSMTKwidget = dynamic_cast<pqSMTKInteractivePropertyWidget*>(pvwidget);
+  if (pvSMTKwidget)
+  {
+    pvSMTKwidget->setHideWhenInactive(pqSMTKAttributeItemWidget::hideWidgetWhenInactive());
+  }
 
   editorLayout->addWidget(pvwidget);
   this->m_p->m_layout->addLayout(editorLayout, 0, 1);

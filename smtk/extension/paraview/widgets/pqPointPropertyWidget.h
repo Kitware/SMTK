@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef pqPointPropertyWidget_h
 #define pqPointPropertyWidget_h
 
-#include "pqInteractivePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKInteractivePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
 // VTK's wrapper parser does not properly handle Qt macros on macos.
@@ -69,10 +69,10 @@ class pqPointPickingHelper;
 * \li \c Input: (optional) a vtkSMInputProperty that is used to get data
 * information for bounds when placing/resetting the widget.
 */
-class SMTKPQWIDGETSEXT_EXPORT pqPointPropertyWidget : public pqInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqPointPropertyWidget : public pqSMTKInteractivePropertyWidget
 {
   Q_OBJECT
-  typedef pqInteractivePropertyWidget Superclass;
+  typedef pqSMTKInteractivePropertyWidget Superclass;
 
 public:
   pqPointPropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = nullptr);

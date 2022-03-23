@@ -27,7 +27,6 @@
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
-#include "pqInteractivePropertyWidget.h"
 #include "pqLinksModel.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"

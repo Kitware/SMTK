@@ -12,7 +12,7 @@
 #ifndef pqSlicePropertyWidgetBase_h
 #define pqSlicePropertyWidgetBase_h
 
-#include "pqInteractivePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKInteractivePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
 #include <QColor>
@@ -43,10 +43,10 @@ class pqSlicePropertyWidgetBaseP;
  * \li \c Input: (optional) a vtkSMInputProperty that is used to get data
  * information for bounds when placing/resetting the widget.
  */
-class SMTKPQWIDGETSEXT_EXPORT pqSlicePropertyWidgetBase : public pqInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqSlicePropertyWidgetBase : public pqSMTKInteractivePropertyWidget
 {
   Q_OBJECT
-  typedef pqInteractivePropertyWidget Superclass;
+  typedef pqSMTKInteractivePropertyWidget Superclass;
 
 public:
   /**\brief Create a widget for crinkle-slicing an \a input dataset.

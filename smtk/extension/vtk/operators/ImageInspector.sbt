@@ -45,6 +45,8 @@ Return key toggles unsliced component visibility.</BriefDescription>
             </Double>
           </ItemDefinitions>
         </Group>
+        <!-- Dummy input parameter not shown to user, so that ableToOperate() returns false. -->
+        <String Name="ensure gui" NumberOfRequiredValues="1" AdvanceLevel="1" />
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
