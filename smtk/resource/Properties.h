@@ -421,6 +421,7 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
     Indexed<long>,
     Indexed<double>,
     Indexed<std::string>,
+    Indexed<std::set<int>>,
     Indexed<std::vector<bool>>,
     Indexed<std::vector<int>>,
     Indexed<std::vector<long>>,
