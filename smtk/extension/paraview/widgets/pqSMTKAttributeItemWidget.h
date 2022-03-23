@@ -77,6 +77,10 @@ public:
   static GeometrySource GeometrySourceConvert(const std::string& str);
   static std::string GeometrySourceConvert(GeometrySource val);
 
+  /// Set visibility behavior of 3D widgets when Qt widget is inactive.
+  static void setHideWidgetWhenInactive(bool val);
+  static bool hideWidgetWhenInactive();
+
   pqSMTKAttributeItemWidget(
     const qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);

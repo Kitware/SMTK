@@ -2,6 +2,7 @@ set(headers
   pqPointPickingVisibilityHelper.h
   pqSlicePropertyWidgetBaseP.h
   pqSMTKAttributeItemWidgetP.h
+  pqSMTKInteractivePropertyWidget.h
 )
 
 set(classes
