@@ -21,3 +21,4 @@ a graph with tasks as nodes and dependencies as arcs.
    concepts.rst
    classes.rst
    adaptors.rst
+   io.rst

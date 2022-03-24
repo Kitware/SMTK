@@ -5,7 +5,8 @@
 ### Fedora
 
 .fedora33:
-    image: "kitware/cmb:ci-smtk-fedora33-20220307"
+    # Bump to catch pybind11 superbuild change and occt for contract test.
+    image: "kitware/cmb:ci-smtk-fedora33-20220321"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
