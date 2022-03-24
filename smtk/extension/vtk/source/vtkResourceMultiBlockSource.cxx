@@ -285,12 +285,12 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
     this->LastModified = lastModified;
   }
 
-  // Divide the geometry into 2 groups: images and non-images
+  // Images separated into fake dimension
+  const int IMAGE_DIM = 5;
   std::map<int, std::vector<vtkSmartPointer<vtkDataObject>>> compBlocks;
-  std::vector<vtkSmartPointer<vtkDataObject>> imageBlocks;
   // smtk::extension::vtk::geometry::Backend source(&geometry);
   smtk::extension::vtk::geometry::Backend backend;
-  geometry.visit([this, &geometry, &compBlocks, &imageBlocks](
+  geometry.visit([this, &geometry, &compBlocks, IMAGE_DIM](
                    const smtk::resource::PersistentObject::Ptr& obj,
                    smtk::geometry::Geometry::GenerationNumber gen) {
     if (obj)
@@ -305,7 +305,7 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
         // Lets see if this is a component or image object
         if (vtkImageData::SafeDownCast(data))
         {
-          imageBlocks.push_back(data);
+          compBlocks[IMAGE_DIM].push_back(data);
         }
         else
         {
@@ -342,15 +342,15 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
       // put unknown here
       compPerDim->SetBlock(2, entries);
     }
+    else if (dit->first == IMAGE_DIM)
+    {
+      // Add all of the image blocks
+      output->SetBlock(BlockId::Images, entries);
+    }
     else
     {
       compPerDim->SetBlock(dit->first, entries);
     }
-  }
-  // Add all of the image blocks
-  for (auto& imageBlock : imageBlocks)
-  { // Handle volumetric (image) data separately.
-    output->SetBlock(BlockId::Images, imageBlock);
   }
 
   return 1;
