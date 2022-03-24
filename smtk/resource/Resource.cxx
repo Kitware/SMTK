@@ -59,6 +59,11 @@ Resource::Resource(Resource&& rhs) noexcept
 
 Resource::~Resource() = default;
 
+Component* Resource::component(const smtk::common::UUID& compId) const
+{
+  return this->find(compId).get();
+}
+
 std::function<bool(const Component&)> Resource::queryOperation(
   const std::string& filterString) const
 {

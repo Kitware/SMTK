@@ -12,6 +12,10 @@
 #define smtk_graph_TypeTraits_h
 
 #include "smtk/common/TypeTraits.h"
+#include "smtk/common/Visit.h"
+
+#include "smtk/graph/ArcProperties.h"
+#include "smtk/graph/ExplicitArcs.h"
 
 #include <functional>
 #include <iterator>
@@ -25,52 +29,83 @@ namespace graph
 
 class NodeSet;
 
-template<typename FromType, typename ToType, typename InverseArc>
-class OrderedArcs;
-
 namespace detail
 {
-template<typename ArcType, typename = void>
-struct ArcInverse
+
+/// Provide no default arc storage.
+template<typename ArcTraits, typename Storage>
+struct SelectArcContainer;
+
+/**\brief Specialize explicit arc storage when unordered.
+  *
+  * Unless \a ArcTraits provides methods for accessing
+  * (and if, editable, manipulating) arcs – the graph resource will
+  * explicitly store arcs in a plural-arc container.
+  */
+template<typename ArcTraits>
+struct SelectArcContainer<
+  ArcTraits,
+  typename std::enable_if<
+    conjunction<
+      typename ArcProperties<ArcTraits>::isExplicit,
+      negation<typename ArcProperties<ArcTraits>::isOrdered>>::value,
+    ArcTraits>::type> : public ExplicitArcs<ArcTraits>
 {
-  using type = void;
+  static_assert(ArcProperties<ArcTraits>::isExplicit::value, R"(
+  Cannot use explicit arc storage for arcs that do not satisfy the explicit property.)");
+  static_assert(
+    !ArcProperties<ArcTraits>::isOrdered::value,
+    "Ordered explicit arcs aren't yet supported.");
+  using type = ExplicitArcs<ArcTraits>;
 };
 
-template<typename ArcType>
-struct ArcInverse<ArcType, smtk::common::void_t<typename ArcType::InverseArcType>>
+/**\brief Store arcs explicitly with a random-access ordering.
+  *
+  * If an arc's traits object provides accessors/manipulators
+  * required by its properties (i.e., directed/undirected,
+  * forward/bidirectionally-indexed, singular/plural, etc.),
+  * then use the storage as provided by the \a ArcTraits.
+  */
+template<typename ArcTraits>
+struct SelectArcContainer<
+  ArcTraits,
+  typename std::enable_if<
+    conjunction<
+      typename ArcProperties<ArcTraits>::isExplicit,
+      typename ArcProperties<ArcTraits>::isOrdered>::value,
+    ArcTraits>::type> : public ExplicitArcs<ArcTraits> // ExplicitOrderedArcs
 {
-  using type = typename ArcType::InverseArcType;
+  static_assert(ArcProperties<ArcTraits>::isExplicit::value, R"(
+  Cannot use explicit arc storage for arcs that do not satisfy the explicit property.)");
+  static_assert(
+    ArcProperties<ArcTraits>::isOrdered::value,
+    "Cannot use ordered storage for unordered arcs.");
+  using type = ExplicitArcs<ArcTraits>; // TODO: should be ExplicitOrderedArcs<ArcTraits>;
 };
+
+/**\brief Store arcs implicitly.
+  *
+  * If an arc's traits object provides accessors/manipulators
+  * required by its properties (i.e., directed/undirected,
+  * forward/bidirectionally-indexed, singular/plural, etc.),
+  * then use the storage as provided by the \a ArcTraits.
+  */
+template<typename ArcTraits>
+struct SelectArcContainer<
+  ArcTraits,
+  typename std::enable_if<ArcProperties<ArcTraits>::isImplicit::value, ArcTraits>::type>
+  : public ArcTraits
+{
+  static_assert(
+    ArcProperties<ArcTraits>::isImplicit::value,
+    "Cannot use implicit storage for this arc type.");
+  using type = ArcTraits;
+};
+
 } // namespace detail
 
-// Public traits
-template<typename ArcType>
-struct ArcTraits
-{
-  using InverseArcType = typename detail::ArcInverse<ArcType>::type;
-  using FromType = typename smtk::common::remove_cvref<typename ArcType::FromType>::type;
-  using ToType = typename smtk::common::remove_cvref<typename ArcType::ToType>::type;
-};
-
 namespace detail
 {
-
-template<class...>
-struct conjunction : std::true_type
-{
-};
-template<class B1>
-struct conjunction<B1> : B1
-{
-};
-template<class B1, class... Bn>
-struct conjunction<B1, Bn...> : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type
-{
-};
-
-template<typename T, typename... Ts>
-using CompatibleTypes =
-  typename std::enable_if<conjunction<std::is_convertible<Ts, T>...>::value>::type;
 
 template<typename Iterable>
 class is_iterable
@@ -155,12 +190,14 @@ public:
   static constexpr bool value = type::value;
 };
 
+/// Provide default node storage as a NodeSet.
 template<typename Traits, typename = void>
 struct SelectNodeContainer
 {
   using type = NodeSet;
 };
 
+/// If users provide a NodeContainer type-alias in the resource's type-traits, use it as storage.
 template<typename Traits>
 struct SelectNodeContainer<Traits, smtk::common::void_t<typename Traits::NodeContainer>>
 {
@@ -173,56 +210,6 @@ struct GraphTraits
   using NodeTypes = typename Traits::NodeTypes;
   using ArcTypes = typename Traits::ArcTypes;
   using NodeContainer = typename detail::SelectNodeContainer<Traits>::type;
-};
-
-template<typename ArcType, typename = void>
-struct is_ordered_arcs : std::false_type
-{
-};
-
-template<typename ArcType>
-struct is_ordered_arcs<
-  ArcType,
-  typename std::enable_if<std::is_base_of<
-    OrderedArcs<typename ArcType::FromType, typename ArcType::ToType, ArcType>,
-    ArcType>::value>::type> : std::true_type
-{
-};
-
-template<typename ArcType, typename = void>
-struct has_inverse : std::false_type
-{
-};
-
-template<typename ArcType>
-struct has_inverse<
-  ArcType,
-  typename std::enable_if<!std::is_same<typename ArcInverse<ArcType>::type, void>::value>::type>
-  : std::true_type
-{
-};
-
-template<typename ArcType, typename OtherArcType, typename = void>
-struct is_inverse_pair : std::false_type
-{
-};
-
-template<typename ArcType, typename OtherArcType>
-struct is_inverse_pair<
-  ArcType,
-  OtherArcType,
-  typename std::enable_if<
-    // Inverse Arc Type should not be void
-    has_inverse<ArcType>::value &&      //
-    has_inverse<OtherArcType>::value && //
-    // To/From Types should match
-    std::is_same<typename ArcType::FromType, typename OtherArcType::ToType>::value && //
-    std::is_same<typename ArcType::ToType, typename OtherArcType::FromType>::value && //
-    // Inverse Arc Types should match (but apparently this is information that is not yet available
-    std::is_same<typename ArcInverse<ArcType>::type, OtherArcType>::value && //
-    std::is_same<ArcType, typename ArcInverse<OtherArcType>::type>::value    //
-    >::type> : std::true_type
-{
 };
 
 } // namespace detail

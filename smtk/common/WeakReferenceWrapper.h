@@ -107,7 +107,7 @@ public:
   bool expired() const { return _weak_ptr.expired(); }
 
   /// Reset the refernece/make it expired
-  void reset() const
+  void reset()
   {
     // Do not reset the _cache variable since it is used for the
     // hash which must remain consistent. Comparison handles

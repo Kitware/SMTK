@@ -39,9 +39,8 @@ Helper& Helper::instance()
   return *(g_instanceStack.back());
 }
 
-Helper& Helper::pushInstance(smtk::resource::Resource* parent)
+Helper& Helper::pushInstance(const smtk::resource::Resource::Ptr& parent)
 {
-  (void)parent;
   std::shared_ptr<smtk::common::Managers> managers;
   if (!g_instanceStack.empty())
   {
@@ -50,6 +49,7 @@ Helper& Helper::pushInstance(smtk::resource::Resource* parent)
   g_instanceStack.emplace_back(new Helper);
   g_instanceStack.back()->setManagers(managers);
   g_instanceStack.back()->m_topLevel = false;
+  g_instanceStack.back()->m_parent = parent;
   return *(g_instanceStack.back());
 }
 

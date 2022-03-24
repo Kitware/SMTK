@@ -16,6 +16,7 @@
 
 #include "smtk/graph/ArcMap.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -40,6 +41,24 @@ public:
 
   virtual const ArcMap& arcs() const = 0;
   virtual ArcMap& arcs() = 0;
+
+  /// Perform a run-time check to validate that a node is acceptable to this resource.
+  virtual bool isNodeTypeAcceptable(const smtk::graph::ComponentPtr& node) = 0;
+
+  /**\brief Insert a node, checking that nodes of its type are allowed.
+    *
+    * This is used by JSON deserialization code and will eventually be used
+    * by python bindings to insert nodes whose type may not be known exactly
+    * at runtime (or whose owning resource type may not be available at runtime).
+    */
+  virtual bool addNode(const smtk::graph::ComponentPtr& node)
+  {
+    if (this->isNodeTypeAcceptable(node))
+    {
+      return this->insertNode(node);
+    }
+    return false;
+  }
 
 protected:
   /** Erase all of the nodes from the \a node storage without updating the arcs.

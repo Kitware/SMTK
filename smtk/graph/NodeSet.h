@@ -40,6 +40,7 @@ public:
 
   void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const;
   NodeType find(const smtk::common::UUID& /* uuid */) const;
+  smtk::resource::Component* component(const smtk::common::UUID& /* uuid */) const;
 
 protected:
   std::size_t eraseNodes(const smtk::graph::ComponentPtr& node);

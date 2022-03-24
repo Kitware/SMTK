@@ -46,6 +46,7 @@ set(unit_tests
   UnitTestTypeMap.cxx
   UnitTestTypeName.cxx
   UnitTestVersionNumber.cxx
+  UnitTestVisit.cxx
 )
 
 set(unit_tests_which_require_data

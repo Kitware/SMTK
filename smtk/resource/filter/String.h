@@ -75,7 +75,7 @@ struct Property<std::string>
   struct Grammar
     : pad<seq<TypeName,
               opt<braced<NameRepresentation,
-                         opt<pad<string<'='>, space>,
+                         opt<pad<TAO_PEGTL_ISTRING("="), space>,
                              sor<ValueRepresentation, ValueRegexRepresentation> > > > >,
           space> {};
 
@@ -133,7 +133,7 @@ struct Property<std::vector<std::string> >
   struct Grammar
     : pad<seq<TypeName,
               opt<braced<NameRepresentation,
-                         opt<pad<string<'='>, space>,
+                         opt<pad<TAO_PEGTL_ISTRING("="), space>,
                              sor<ValueRepresentation, ValueRegexRepresentation> > > > >,
           space> {};
 };

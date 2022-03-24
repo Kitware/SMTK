@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/graph/Component.h"
 #include "smtk/graph/Resource.h"
-#include "smtk/graph/arcs/Arc.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 

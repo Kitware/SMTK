@@ -129,8 +129,8 @@ function(smtk_build_failure_tests)
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
         set_tests_properties(${tname} PROPERTIES TIMEOUT 120 WILL_FAIL TRUE)
-        if(SMTK_ut_LABEL)
-          set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_ut_LABEL}")
+        if(SMTK_bft_LABEL)
+          set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_bft_LABEL}")
         endif()
       endforeach() # attempt
     endforeach() # source_idx

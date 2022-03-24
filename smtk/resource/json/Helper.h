@@ -53,7 +53,7 @@ public:
   ///
   /// The returned \a Helper will have the same managers as
   /// the previous (if any) helper.
-  static Helper& pushInstance(smtk::resource::Resource* parent);
+  static Helper& pushInstance(const smtk::resource::Resource::Ptr& parent);
 
   /// Pop a helper instance off the local thread's stack.
   static void popInstance();
@@ -81,12 +81,16 @@ public:
   /// Returns true if the helper is for deserializing top-level or child resources.
   bool topLevel() const { return m_topLevel; }
 
+  /// Return the resource currently being deserialized.
+  smtk::resource::Resource::Ptr resource() const { return m_parent; }
+
 protected:
   Helper();
   smtk::common::Managers::Ptr m_managers;
   /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
   /// was used to create this helper.
   bool m_topLevel = true;
+  smtk::resource::Resource::Ptr m_parent;
 };
 
 } // namespace json

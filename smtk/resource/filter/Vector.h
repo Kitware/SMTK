@@ -61,7 +61,7 @@ struct Property<std::vector<T> >
   /// The grammar for this type is a composition of the above elements.
   struct Grammar : pad<seq<TypeName,
                            opt<braced<NameRepresentation,
-                                      opt<pad<string<'='>, space>, ValueRepresentation> > > >,
+                                      opt<pad<TAO_PEGTL_ISTRING("="), space>, ValueRepresentation> > > >,
       space> {};
 };
 // clang-format on

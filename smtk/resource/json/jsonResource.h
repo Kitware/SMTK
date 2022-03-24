@@ -21,11 +21,8 @@ namespace smtk
 {
 namespace resource
 {
-using json = nlohmann::json;
-
-SMTKCORE_EXPORT void to_json(json&, const ResourcePtr&);
-
-SMTKCORE_EXPORT void from_json(const json&, ResourcePtr&);
+SMTKCORE_EXPORT void to_json(nlohmann::json&, const ResourcePtr&);
+SMTKCORE_EXPORT void from_json(const nlohmann::json&, ResourcePtr&);
 } // namespace resource
 } // namespace smtk
 

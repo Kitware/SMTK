@@ -10,7 +10,6 @@
 
 #include "smtk/graph/Component.h"
 #include "smtk/graph/Resource.h"
-#include "smtk/graph/arcs/OrderedArcs.h"
 
 #include <chrono>
 #include <iostream>
@@ -76,10 +75,12 @@ public:
   }
 };
 
-class Adjacent : public smtk::graph::OrderedArcs<Node, Node>
+class Adjacent
 {
 public:
-  using smtk::graph::OrderedArcs<Node, Node>::OrderedArcs;
+  using FromType = Node;
+  using ToType = Node;
+  using Directed = std::true_type;
 };
 
 struct AdjacencyTraits
@@ -150,11 +151,10 @@ int TestScalability(int argc, char* argv[])
   timer.tic();
   for (int ii = 0; ii < num_node; ii++)
   {
-    resource->create<Adjacent>(*nodes[ii]);
-    auto& adjacent = nodes[ii]->get<Adjacent>();
+    auto adjacentNodes = nodes[ii]->outgoing<Adjacent>();
     for (int jj = 0; jj < degree_node; jj++)
     {
-      adjacent.insert_back(*nodes[(ii + jj + 1) % num_node]);
+      adjacentNodes.connect(nodes[(ii + jj + 1) % num_node].get());
     }
   }
   timer.toc();
@@ -162,11 +162,11 @@ int TestScalability(int argc, char* argv[])
             << timer.units() << ")\n";
 
   timer.tic();
-  volatile bool nooptimize = false;
+  volatile smtk::common::Visit nooptimize = smtk::common::Visit::Continue;
   for (const auto& node : resource->nodes())
   {
-    std::dynamic_pointer_cast<Node>(node)->visit<Adjacent>(
-      [&](const Node & /* to */) -> bool { return nooptimize; });
+    std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
+      [&](const Node * /* to */) -> smtk::common::Visit { return nooptimize; });
   }
   timer.toc();
   std::cout << "Visited " << num_node * degree_node << " arc(s) in " << timer.elapsed() << "("
@@ -178,7 +178,8 @@ int TestScalability(int argc, char* argv[])
   int k = 0;
   for (int ii = 0; ii < num_node; ii += 2, k++)
   {
-    resource->remove(nodes[ii]);
+    nodes[ii]->outgoing<Adjacent>().disconnect(nullptr); // Remove all arcs attached to nodes[ii].
+    resource->remove(nodes[ii]);                         // Then remove nodes[ii].
   }
   timer.toc();
   std::cout << "Removed " << k << " node(s) in " << timer.elapsed() << "(" << timer.units()
@@ -191,10 +192,11 @@ int TestScalability(int argc, char* argv[])
   int narc = 0;
   for (const auto& node : resource->nodes())
   {
-    std::dynamic_pointer_cast<Node>(node)->visit<Adjacent>([&](const Node & /* to */) -> bool {
-      narc++;
-      return nooptimize;
-    });
+    std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
+      [&](const Node * /* to */) -> smtk::common::Visit {
+        narc++;
+        return nooptimize;
+      });
   }
   timer.toc();
   std::cout << "Visited " << narc << " arc(s) in " << timer.elapsed() << "(" << timer.units()
@@ -204,10 +206,11 @@ int TestScalability(int argc, char* argv[])
   narc = 0;
   for (const auto& node : resource->nodes())
   {
-    std::dynamic_pointer_cast<Node>(node)->visit<Adjacent>([&](const Node & /* to */) -> bool {
-      narc++;
-      return nooptimize;
-    });
+    std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
+      [&](const Node * /* to */) -> smtk::common::Visit {
+        narc++;
+        return nooptimize;
+      });
   }
   timer.toc();
   std::cout << "Visited " << narc << " arc(s) in " << timer.elapsed() << "(ms)\n";

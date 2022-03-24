@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/graph/Component.h"
 #include "smtk/graph/Resource.h"
-#include "smtk/graph/arcs/Arc.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -23,6 +22,7 @@ namespace test_nodal_resource
 class Node : public smtk::graph::Component
 {
 public:
+  smtkTypeMacro(test_nodal_resource::Node);
   template<typename... Args>
   Node(Args&&... args)
     : smtk::graph::Component::Component(std::forward<Args>(args)...)
@@ -30,15 +30,23 @@ public:
   }
 };
 
-/// Arc is a basic smtk::graph::Arc that connects from one node to another node.
-class Arc : public smtk::graph::Arc<Node, Node>
+class BadNode : public smtk::graph::Component
 {
 public:
+  smtkTypeMacro(test_nodal_resource::BadNode);
   template<typename... Args>
-  Arc(Args&&... args)
-    : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
+  BadNode(Args&&... args)
+    : smtk::graph::Component::Component(std::forward<Args>(args)...)
   {
   }
+};
+
+/// Arc is a basic smtk::graph::Arc that connects from one node to another node.
+struct Arc
+{
+  using FromType = Node;
+  using ToType = Node;
+  using Directed = std::false_type;
 };
 
 /// A description of the node types and arc types that comprise our test
@@ -75,19 +83,43 @@ int TestNodalResource(int, char*[])
   }
   test(didThrow, "Adding an improper node should throw an exception.");
 
+  // Verify that it is impossible to add a node of the wrong type at run time.
+  auto badNode = smtk::make_shared<test_nodal_resource::BadNode>(resource);
+  auto hiddenBadNode = std::dynamic_pointer_cast<smtk::graph::Component>(badNode);
+  test(!resource->addNode(hiddenBadNode), "Expecting adding a bad node to fail.");
+
   std::cout << node1->typeName() << std::endl;
 
+  test(!node2->outgoing<test_nodal_resource::Arc>().contains(node1.get()), "Arc should not exist.");
+
   // Construct an arc that connects our two node instance.
-  const auto& arc = resource->create<test_nodal_resource::Arc>(*node1, *node2);
+  const auto& arc = node1->outgoing<test_nodal_resource::Arc>().connect(node2.get());
   (void)arc;
 
   std::cout << smtk::common::typeName<test_nodal_resource::Arc>() << std::endl;
 
-  std::cout << node1->id() << std::endl;
-  std::cout << node2->id() << std::endl;
+  auto printNodes = [](const test_nodal_resource::Node* other) {
+    std::cout << "    connected to " << other->id() << std::endl;
+  };
+  std::cout << "node 1 " << node1->id() << std::endl;
+  node1->outgoing<test_nodal_resource::Arc>().visit(printNodes);
+  std::cout << "node 2 " << node2->id() << std::endl;
+  node2->outgoing<test_nodal_resource::Arc>().visit(printNodes);
 
-  // Access the second node using the first node's API.
-  std::cout << node1->get<test_nodal_resource::Arc>().to().id() << std::endl;
+  // Verify that, because the Arc class is marked as undirected,
+  // either endpoint sees the other node as attached.
+  test(
+    node2->outgoing<test_nodal_resource::Arc>().contains(node1.get()),
+    "Arc existence not tested properly.");
+  test(
+    node1->outgoing<test_nodal_resource::Arc>().contains(node2.get()),
+    "Arc existence not tested properly.");
+  test(
+    node2->incoming<test_nodal_resource::Arc>().contains(node1.get()),
+    "Arc existence not tested properly.");
+  test(
+    node1->incoming<test_nodal_resource::Arc>().contains(node2.get()),
+    "Arc existence not tested properly.");
 
   return 0;
 }
