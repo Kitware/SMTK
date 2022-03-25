@@ -84,7 +84,8 @@ set_property(TARGET TemplateEditor APPEND
 # ==============================================================================
 
 install(TARGETS TemplateEditor
-    RUNTIME DESTINATION bin
-    BUNDLE DESTINATION Applications      # Required for MACOSX_BUNDLE
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+  RUNTIME DESTINATION "bin" COMPONENT Runtime
+  BUNDLE DESTINATION "Applications" COMPONENT Runtime  # Required for MACOSX_BUNDLE
+  LIBRARY DESTINATION "lib" COMPONENT Runtime
+  ARCHIVE DESTINATION "lib" COMPONENT Development
+  )

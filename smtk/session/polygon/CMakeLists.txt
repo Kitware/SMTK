@@ -135,7 +135,10 @@ smtk_install_library(smtkPolygonSession)
 # Install the headers
 smtk_public_headers(smtkPolygonSession ${polygonHeaders})
 
-install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/polygon)
+install(FILES PointerDefs.h
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/polygon
+  COMPONENT Development
+  )
 
 if (SMTK_ENABLE_VTK_SUPPORT)
   set(module_files

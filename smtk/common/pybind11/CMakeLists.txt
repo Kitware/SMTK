@@ -17,7 +17,10 @@ set_target_properties(${library_name}
   )
 
 # Install library
-install(TARGETS ${library_name} DESTINATION "${install_path}")
+install(TARGETS ${library_name}
+  RUNTIME DESTINATION "${install_path}" COMPONENT Runtime
+  LIBRARY DESTINATION "${install_path}" COMPONENT Runtime
+  )
 
 # Create and install module __init__.py
 configure_file(
@@ -28,6 +31,7 @@ configure_file(
 install(
   FILES "${build_path}/__init__.py"
   DESTINATION "${install_path}"
+  COMPONENT Runtime
   )
 
 install(
@@ -35,4 +39,6 @@ install(
     PybindUUIDTypeCaster.h
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk/common/pybind11
+  COMPONENT
+    Development
 )

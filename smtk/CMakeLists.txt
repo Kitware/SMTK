@@ -219,6 +219,8 @@ install(
     Metaprogramming.h
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk
+  COMPONENT
+    Development
 )
 
 ################################################################################
@@ -233,6 +235,8 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
       PythonAutoInit.h
     DESTINATION
       include/smtk/${SMTK_VERSION}/smtk
+    COMPONENT
+      Development
     )
 
   set(SMTK_PYTHON_MODULE_SRCS
@@ -249,6 +253,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     install(
       FILES ${SMTK_PYTHON_MODULEFILES}
       DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
+      COMPONENT Runtime
       )
 
   # This variable needs to be set for vtk_module to find its python module

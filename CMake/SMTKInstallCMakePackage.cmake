@@ -76,14 +76,14 @@ foreach (smtk_cmake_file IN LISTS smtk_cmake_files_to_install)
   install(
     FILES       "${smtk_cmake_original_file}"
     DESTINATION "${smtk_cmake_destination}/${smtk_cmake_subdir}"
-    COMPONENT   "development")
+    COMPONENT   Development)
 endforeach ()
 
 install(
   FILES       "${smtk_cmake_build_dir}/smtkConfig.cmake"
               "${smtk_cmake_build_dir}/smtkConfigVersion.cmake"
   DESTINATION "${smtk_cmake_destination}"
-  COMPONENT   "development")
+  COMPONENT   Development)
 
 if (SMTK_ENABLE_VTK_SUPPORT)
   vtk_module_export_find_packages(

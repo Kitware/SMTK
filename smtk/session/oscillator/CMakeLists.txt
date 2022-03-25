@@ -91,6 +91,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   install(
     FILES ${oscillator_pymodulefiles}
     DESTINATION "${SMTK_PYTHON_MODULEDIR}/${relativedir}"
+    COMPONENT Runtime
     )
 
   # add_subdirectory(pybind11)

@@ -133,6 +133,7 @@ smtk_public_headers(smtkCore ${operationHeaders})
 install(
   FILES ${operationXML}
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/smtk/${SMTK_VERSION}/smtk/operation
+  COMPONENT Development
   )
 foreach (operation_xml IN LISTS operationXML)
   configure_file(
