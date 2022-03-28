@@ -472,7 +472,10 @@ void pqSMTKAttributeItemWidget::updateUI()
   this->m_p->m_label = label;
 
   this->createEditor();
-  this->m_p->m_layout->addLayout(labelLayout, 0, 0);
+  if (labelText != " " || dataObj->isOptional())
+  {
+    this->m_p->m_layout->addLayout(labelLayout, 0, 0);
+  }
 
   if (this->parentWidget() && this->parentWidget()->layout())
   {
