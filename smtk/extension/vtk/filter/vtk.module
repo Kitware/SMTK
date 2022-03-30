@@ -9,6 +9,7 @@ PRIVATE_DEPENDS
   VTK::CommonTransforms
   VTK::FiltersCore
   VTK::FiltersGeneral
+  VTK::FiltersGeometry
   VTK::IOLegacy
   VTK::IOXML
   VTK::ImagingCore
