@@ -166,6 +166,9 @@ public:
   // We incorporate the base class's method with a different access modifier
   using Operation::createBaseSpecification;
 
+  /// Avoid PyGILState_Check() failures by running on the main thread by default.
+  bool threadSafe() const override { return false; }
+
 private:
   Specification createSpecification() override
     { PYBIND11_OVERLOAD_PURE(Specification, Operation, createSpecification); }
