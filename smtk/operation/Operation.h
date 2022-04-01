@@ -77,6 +77,8 @@ public:
   friend Manager;
   friend ImportPythonOperation;
 
+  virtual ~Operation();
+
   // Index is a compile-time intrinsic of the derived operation; as such, it
   // cannot be set. It is virtual so that derived operations can assign their
   // own index (as is necessary for python operations that would otherwise all
@@ -109,37 +111,35 @@ public:
     const smtk::attribute::AttributePtr& changedAttribute = smtk::attribute::AttributePtr(),
     const smtk::attribute::ItemPtr& changedItem = smtk::attribute::ItemPtr());
 
-  // Check if the operation's attribute resource is valid. Derived operations
-  // may implement more task-specific checks to ensure that the operation is in
-  // a valid state.
+  /// Check if the operation's attribute resource is valid. Derived operations
+  /// may implement more task-specific checks to ensure that the operation is in
+  /// a valid state.
   virtual bool ableToOperate();
 
-  // Execute the operation, log its outcome and return its results. This method
-  // calls operateInternal() and handles additional bookkeeping.
+  /// Execute the operation, log its outcome and return its results. This method
+  /// calls operateInternal() and handles additional bookkeeping.
   Result operate();
 
-  // Retrieve the operation's logger. By default, we use the singleton logger.
-  // Derived classes can reimplement this method if an alternative logging
-  // system is needed.
+  /// Retrieve the operation's logger. By default, we use the singleton logger.
+  /// Derived classes can reimplement this method if an alternative logging
+  /// system is needed.
   virtual smtk::io::Logger& log() const;
 
-  // This accessor facilitates the lazy construction of the specification,
-  // allowing for derived implementations of its creation. More sophisticated
-  // operations may contain additional attributes as input parameters; they can
-  // be accessed through the specification.
+  /// This accessor facilitates the lazy construction of the specification,
+  /// allowing for derived implementations of its creation. More sophisticated
+  /// operations may contain additional attributes as input parameters; they can
+  /// be accessed through the specification.
   Specification specification();
 
-  // Access the operation's input parameters, constructing them if necessary.
-  // The parameters attribute is distinguished by its derivation from the
-  // "operation" attribute.
+  /// Access the operation's input parameters, constructing them if necessary.
+  /// The parameters attribute is distinguished by its derivation from the
+  /// "operation" attribute.
   Parameters parameters();
   Parameters parameters() const;
 
-  // Create an attribute representing this operation's result type. The result
-  // attribute is distinguished by its derivation from the "result" attribute.
+  /// Create an attribute representing this operation's result type. The result
+  /// attribute is distinguished by its derivation from the "result" attribute.
   Result createResult(Outcome);
-
-  virtual ~Operation();
 
   /// Operations that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
@@ -150,6 +150,9 @@ public:
   /// Operations may be passed application state in the form of a Managers type-container.
   void setManagers(const std::shared_ptr<smtk::common::Managers>& m) { m_managers = m; }
   std::shared_ptr<smtk::common::Managers> managers() const { return m_managers; }
+
+  /// Is this type of operation safe to launch in a thread?
+  virtual bool threadSafe() const { return true; }
 
 protected:
   Operation();
