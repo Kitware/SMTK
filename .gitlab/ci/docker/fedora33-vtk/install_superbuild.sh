@@ -28,8 +28,6 @@ cmake -GNinja \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
     -DENABLE_matplotlib:BOOL=ON \
-    -DENABLE_smtkprojectmanager:BOOL=OFF \
-    -DENABLE_smtkresourcemanagerstate:BOOL=OFF \
     -DENABLE_vtkonly:BOOL=ON \
     -DENABLE_python3:BOOL=ON \
     -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
