@@ -8,6 +8,7 @@ PRIVATE_DEPENDS
   VTK::CommonMisc
   VTK::CommonTransforms
   VTK::FiltersCore
+  VTK::FiltersGeometry
   VTK::FiltersGeneral
   VTK::IOLegacy
   VTK::IOXML
