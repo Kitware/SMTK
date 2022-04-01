@@ -27,12 +27,10 @@ cmake -GNinja \
     -DDEVELOPER_MODE_smtk:BOOL=ON \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
-    -DENABLE_smtkresourcemanagerstate:BOOL=OFF \
     -DENABLE_paraview:BOOL=ON \
     -Dparaview_SOURCE_SELECTION:STRING=for-slac \
     -DENABLE_python3:BOOL=ON \
     -DENABLE_pybind11:BOOL=ON \
-    -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
     -DUSE_SYSTEM_qt5:BOOL=ON \
     -DENABLE_xmsmesher:BOOL=ON \
     $sccache_settings \

@@ -27,10 +27,7 @@ cmake -GNinja \
     -DDEVELOPER_MODE_smtk:BOOL=ON \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
-    -DENABLE_smtkprojectmanager:BOOL=OFF \
-    -DENABLE_smtkresourcemanagerstate:BOOL=OFF \
     -DENABLE_python3:BOOL=ON \
-    -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
     -DUSE_SYSTEM_qt5:BOOL=ON \
     $sccache_settings \
     "-D__BUILDBOT_INSTALL_LOCATION:PATH=$SUPERBUILD_PREFIX" \
