@@ -25,7 +25,7 @@ void to_json(json& j, const ResourceContainer& resourceContainer, const ProjectP
 {
   // get the base path of the project
   std::string projectPath = project->location();
-  boost::filesystem::path basePath(projectPath);
+  boost::filesystem::path parentPath = boost::filesystem::path(projectPath).parent_path();
 
   j["types"] = resourceContainer.types();
   j["resources"] = json::array();
@@ -36,7 +36,7 @@ void to_json(json& j, const ResourceContainer& resourceContainer, const ProjectP
 
     // convert stored path (which may be an absolute path) to a relative path
     boost::filesystem::path filePath(path);
-    boost::filesystem::path newPath = boost::filesystem::relative(filePath, basePath.parent_path());
+    boost::filesystem::path newPath = boost::filesystem::relative(filePath, parentPath);
     jResource["location"] = newPath.string();
     j["resources"].push_back(jResource);
   }
@@ -53,7 +53,7 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
 
   // get the base path of the project
   std::string projectPath = project->location();
-  boost::filesystem::path basePath(projectPath);
+  boost::filesystem::path parentPath = boost::filesystem::path(projectPath).parent_path();
 
   for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
   {
@@ -61,7 +61,7 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
     boost::filesystem::path locationPath(location);
     if (!locationPath.is_absolute())
     {
-      locationPath = boost::filesystem::absolute(locationPath, basePath.parent_path());
+      locationPath = boost::filesystem::absolute(locationPath, parentPath);
     }
 
     smtk::resource::ResourcePtr resource =

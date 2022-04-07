@@ -41,10 +41,10 @@ void cleanup(const std::string& file_path)
 {
   //first verify the file exists
   ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
+  if (::boost::filesystem::exists(path))
   {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
+    ::boost::filesystem::remove_all(path);
   }
 }
 } // namespace
@@ -65,7 +65,8 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
     smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
   projectManager->registerProject("foo");
 
-  std::string projectLocation = write_root + "/empty-project.smtk";
+  std::string projectDirectory = write_root + "/empty-project";
+  std::string projectLocation = projectDirectory + "/empty-project.smtk";
 
   // Create empty project and write it to disk.
   {
@@ -102,7 +103,7 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
     smtkTest(project->clean(), "project is marked modified");
   }
 
-  cleanup(projectLocation);
+  cleanup(projectDirectory);
 
   return 0;
 }
