@@ -28,6 +28,7 @@ cmake -GNinja \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
     -DENABLE_occt:BOOL=ON \
+    -DUSE_SYSTEM_fontconfig:BOOL=ON \
     -DENABLE_paraview:BOOL=ON \
     -DENABLE_python3:BOOL=ON \
     -DENABLE_pybind11:BOOL=ON \
