@@ -98,8 +98,9 @@ Read::Result Read::operateInternal()
   project->setId(projectId);
   project->setLocation(filename);
 
-  // Get folder path - might be needed to load resources
-  boost::filesystem::path projectPath = projectFilePath.parent_path();
+  // manually reset the "location" string so that smtk::project::from_json() can properly translate
+  //   resource paths to being relative (rather than absolute)
+  j["location"] = filename;
 
   // Transcribe project data into the project
   smtk::project::from_json(j, project);

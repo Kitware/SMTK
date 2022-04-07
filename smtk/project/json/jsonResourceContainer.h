@@ -23,9 +23,9 @@ namespace project
 {
 using json = nlohmann::json;
 
-SMTKCORE_EXPORT void to_json(json&, const ResourceContainer&);
+SMTKCORE_EXPORT void to_json(json&, const ResourceContainer&, const ProjectPtr& project);
 
-SMTKCORE_EXPORT void from_json(const json&, ResourceContainer&);
+SMTKCORE_EXPORT void from_json(const json&, ResourceContainer&, const ProjectPtr& project);
 } // namespace project
 } // namespace smtk
 

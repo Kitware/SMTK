@@ -23,7 +23,7 @@ void to_json(json& j, const ProjectPtr& project)
 {
   smtk::resource::to_json(j, std::static_pointer_cast<smtk::resource::Resource>(project));
 
-  to_json(j["resources"], project->resources());
+  to_json(j["resources"], project->resources(), project);
   to_json(j["operations"], project->operations());
 
   j["conceptual_version"] = project->version();
@@ -39,7 +39,7 @@ void from_json(const json& j, ProjectPtr& project)
   smtk::resource::ResourcePtr tmp = std::static_pointer_cast<smtk::resource::Resource>(project);
   smtk::resource::from_json(j, tmp);
 
-  from_json(j["resources"], project->resources());
+  from_json(j["resources"], project->resources(), project);
   from_json(j["operations"], project->operations());
 
   project->setVersion(j["conceptual_version"]);
