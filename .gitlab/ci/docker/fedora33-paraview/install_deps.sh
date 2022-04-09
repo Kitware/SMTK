@@ -7,7 +7,7 @@ dnf install -y --setopt=install_weak_deps=False \
     zlib-devel libcurl-devel python-devel python-unversioned-command \
     freeglut-devel glew-devel graphviz-devel libpng-devel mesa-dri-drivers \
     libxcb libxcb-devel libXt-devel xcb-util xcb-util-devel mesa-libGL-devel \
-    libxkbcommon-devel diffutils hostname file fontconfig-devel
+    libxkbcommon-devel diffutils hostname file fontconfig-devel libXext-devel
 
 # Install development tools
 dnf install -y --setopt=install_weak_deps=False \
