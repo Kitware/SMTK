@@ -6,7 +6,7 @@
 
 .fedora33:
     # Bump to catch pybind11 superbuild change and occt for contract test.
-    image: "kitware/cmb:ci-smtk-fedora33-20220321"
+    image: "kitware/cmb:ci-smtk-fedora33-20220409"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -73,14 +73,14 @@
 
 .fedora33_paraview:
     extends: .fedora33_vtk_python3
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20220307"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20220409"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
 
 .fedora33_paraview59_compat:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20220307"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20220409"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview59_compat
