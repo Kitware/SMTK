@@ -235,7 +235,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
   QLineEdit* lineEdit = nullptr;
   QComboBox* fileExtCombo = nullptr;
   QFrame* frame = new QFrame(m_internals->Contents);
-  frame->setObjectName("fileBrowserContents");
+  frame->setObjectName(QString("frame%1").arg(elementIdx));
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QString defaultText;
   if (item.type() == smtk::attribute::Item::FileType)
@@ -248,6 +248,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
     if (this->showRecentFiles() && fDef.shouldExist() && !item.isExtensible())
     {
       fileCombo = new QComboBox(frame);
+      fileCombo->setObjectName(QString("fileCombo%1").arg(elementIdx));
       fileCombo->setEditable(true);
       fileTextWidget = fileCombo;
       lineEdit = fileCombo->lineEdit();
@@ -270,6 +271,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
       if (it != last && std::next(it) != last)
       {
         fileExtCombo = new QComboBox(frame);
+        fileExtCombo->setObjectName(QString("fileExtCombo%1").arg(elementIdx));
         fileExtCombo->setEditable(false);
         for (; it != last; ++it)
         {
@@ -289,6 +291,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
   if (fileCombo == nullptr)
   {
     lineEdit = new QLineEdit(frame);
+    lineEdit->setObjectName(QString("lineEdit%1").arg(elementIdx));
     fileTextWidget = lineEdit;
     // We need to be able to get the file ext combo from the line edit widget
     // and vice versa
@@ -326,6 +329,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   fileTextWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
+  fileBrowserButton->setObjectName(QString("fileBrowserButton%1").arg(elementIdx));
   fileBrowserButton->setMinimumHeight(fileTextWidget->height());
   fileBrowserButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QVariant vdata;
@@ -333,6 +337,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
   fileBrowserButton->setProperty("EditWidget", vdata);
 
   QHBoxLayout* layout = new QHBoxLayout(frame);
+  layout->setObjectName(QString("layout%1").arg(elementIdx));
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(fileTextWidget);
 
@@ -783,12 +788,15 @@ void qtFileItem::addInputEditor(
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QFrame* editFrame = new QFrame(m_internals->Contents);
+  editFrame->setObjectName(QString("editFrame%1").arg(i));
   QBoxLayout* editorLayout = new QHBoxLayout(editFrame);
+  editorLayout->setObjectName(QString("editorLayout%1").arg(i));
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
   if (item.isExtensible() && (i >= static_cast<int>(itemDef.numberOfRequiredValues())))
   {
     QToolButton* minusButton = new QToolButton(m_internals->Contents);
+    minusButton->setObjectName(QString("minusButton%1").arg(i));
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(12, 12));
     minusButton->setIcon(QIcon(iconName));
@@ -810,6 +818,7 @@ void qtFileItem::addInputEditor(
     {
       QString labelText = componentLabel.c_str();
       QLabel* label = new QLabel(labelText, editBox);
+      label->setObjectName(QString("label%1").arg(i));
       label->setSizePolicy(sizeFixedPolicy);
       editorLayout->addWidget(label);
     }
@@ -849,6 +858,7 @@ void qtFileItem::loadInputValues(
     {
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       m_internals->AddItemButton = new QToolButton(m_widget);
+      m_internals->AddItemButton->setObjectName("AddItemButton");
       QString iconName(":/icons/attribute/plus.png");
       m_internals->AddItemButton->setText("Add New Value");
       m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -883,6 +893,7 @@ void qtFileItem::updateUI()
   }
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  m_widget->setObjectName(item->name().c_str());
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
@@ -896,12 +907,14 @@ void qtFileItem::updateUI()
   {
     top = new QVBoxLayout(m_widget);
   }
+  top->setObjectName("top");
 
   top->setMargin(0);
   top->setSpacing(0);
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
+  labelLayout->setObjectName("labelLayout");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -912,6 +925,7 @@ void qtFileItem::updateUI()
   if (itemDef->isOptional())
   {
     m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    m_internals->OptionalCheck->setObjectName("OptionalCheck");
     m_internals->OptionalCheck->setChecked(item->localEnabledState());
     m_internals->OptionalCheck->setText(" ");
     m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -936,6 +950,7 @@ void qtFileItem::updateUI()
     labelText = item->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
+  label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
@@ -961,7 +976,9 @@ void qtFileItem::updateUI()
 
   // Create a frame to hold the item's contents
   m_internals->Contents = new QFrame(m_widget);
+  m_internals->Contents->setObjectName("Contents");
   m_internals->EntryLayout = new QVBoxLayout(m_internals->Contents);
+  m_internals->EntryLayout->setObjectName("EntryLayout");
   m_internals->EntryLayout->setMargin(0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);

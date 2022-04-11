@@ -676,6 +676,7 @@ void qtInputsItem::addInputEditor(int i)
   if (item->isDiscrete())
   {
     childLayout = new QVBoxLayout;
+    childLayout->setObjectName(QString("childLayout%1").arg(i));
     childLayout->setContentsMargins(12, 3, 3, 0);
     childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   }
@@ -688,11 +689,13 @@ void qtInputsItem::addInputEditor(int i)
   auto itemDef = item->definitionAs<ValueItemDefinition>();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
+  editorLayout->setObjectName(QString("editorLayout%1").arg(i));
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
   if (item->isExtensible())
   {
     QToolButton* minusButton = new QToolButton(m_widget);
+    minusButton->setObjectName(QString("minusButton%1").arg(i));
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(12, 12));
     minusButton->setIcon(QIcon(iconName));
@@ -765,6 +768,7 @@ void qtInputsItem::loadInputValues()
     {
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       m_internals->AddItemButton = new QToolButton(m_widget);
+      m_internals->AddItemButton->setObjectName(QString("AddItemButton"));
       QString iconName(":/icons/attribute/plus.png");
       m_internals->AddItemButton->setText("Add New Value");
       m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -795,7 +799,7 @@ QFrame* qtInputsItem::createLabelFrame(
   auto* labelFrame = new QFrame();
   labelFrame->setObjectName("labelFrame");
   QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
-  labelLayout->setObjectName("labelFrame");
+  labelLayout->setObjectName("labelLayout");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -807,7 +811,7 @@ QFrame* qtInputsItem::createLabelFrame(
   if (vitemDef->isOptional() && (m_internals->OptionalCheck == nullptr))
   {
     m_internals->OptionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    m_internals->OptionalCheck->setObjectName("optionBox");
+    m_internals->OptionalCheck->setObjectName("OptionalCheck");
     m_internals->OptionalCheck->setChecked(vitem->localEnabledState());
     m_internals->OptionalCheck->setText(" ");
     m_internals->OptionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -832,7 +836,7 @@ QFrame* qtInputsItem::createLabelFrame(
     labelText = vitem->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
-  label->setObjectName("labelText");
+  label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
@@ -937,10 +941,10 @@ void qtInputsItem::updateUI()
   m_internals->m_valuesFrame->setObjectName("valuesFrame");
 
   m_internals->EntryLayout = new QGridLayout(m_internals->m_valuesFrame);
+  m_internals->EntryLayout->setObjectName("EntryLayout");
   m_internals->EntryLayout->setMargin(0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  m_internals->EntryLayout->setObjectName("valuesLayout");
 
   this->loadInputValues();
   dataLayout->addWidget(m_internals->m_valuesFrame);
@@ -1137,6 +1141,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   if (item->isDiscrete())
   {
     auto* editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
+    editor->setObjectName(QString("editor%1").arg(elementIdx));
     QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     m_internals->DiscreteEditors.append(editor);
@@ -1147,9 +1152,8 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 
 QFrame* qtInputsItem::createExpressionRefFrame()
 {
-
   auto* frame = new QFrame();
-  frame->setObjectName("expressionFrame");
+  frame->setObjectName("frame");
   QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
   expressionLayout->setObjectName("expressionLayout");
   expressionLayout->setMargin(0);
@@ -1168,9 +1172,11 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   m_internals->m_expressionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
   m_internals->m_expressionEqualsLabel = new QLabel("=", frame);
+  m_internals->m_expressionEqualsLabel->setObjectName("expressionEqualsLabel");
   m_internals->m_expressionEqualsLabel->setVisible(false);
 
   m_internals->m_expressionResultLineEdit = new QLineEdit(frame);
+  m_internals->m_expressionResultLineEdit->setObjectName("expressionResultLineEdit");
   m_internals->m_expressionResultLineEdit->setVisible(false);
   m_internals->m_expressionResultLineEdit->setReadOnly(true);
 
@@ -1497,6 +1503,7 @@ QWidget* qtInputsItem::createDoubleWidget(
   if (option == "LineEdit")
   {
     auto* editBox = new qtDoubleLineEdit(pWidget);
+    editBox->setObjectName(QString("editBox%1").arg(elementIdx));
     editBox->setUseGlobalPrecisionAndNotation(false);
     std::string notation("Mixed");
     m_itemInfo.component().attribute("Notation", notation);
@@ -1510,6 +1517,7 @@ QWidget* qtInputsItem::createDoubleWidget(
     }
 
     qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
+    validator->setObjectName(QString("validator%1").arg(elementIdx));
 
     editBox->setValidator(validator);
     int widthValue = 100; // Default fixed width
@@ -1544,6 +1552,7 @@ QWidget* qtInputsItem::createDoubleWidget(
   if (option == "SpinBox")
   {
     QDoubleSpinBox* spinbox = new QDoubleSpinBox(pWidget);
+    spinbox->setObjectName(QString("spinbox%1").arg(elementIdx));
     spinbox->setMaximum(maxVal);
     spinbox->setMinimum(minVal);
     double step;
@@ -1625,7 +1634,9 @@ QWidget* qtInputsItem::createIntWidget(
   if (option == "LineEdit")
   {
     QLineEdit* editBox = new QLineEdit(pWidget);
+    editBox->setObjectName(QString("editBox%1").arg(elementIdx));
     qtIntValidator* validator = new qtIntValidator(this, elementIdx, editBox, pWidget);
+    validator->setObjectName(QString("validator%1").arg(elementIdx));
 
     editBox->setValidator(validator);
     int widthValue = 100; // Default fixed width
@@ -1646,6 +1657,7 @@ QWidget* qtInputsItem::createIntWidget(
   if (option == "SpinBox")
   {
     QSpinBox* spinbox = new QSpinBox(pWidget);
+    spinbox->setObjectName(QString("spinbox%1").arg(elementIdx));
     auto iitem = dynamic_pointer_cast<IntItem>(vitem);
     spinbox->setMaximum(maxVal);
     spinbox->setMinimum(minVal);
@@ -1715,6 +1727,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       if (sDef->isMultiline())
       {
         qtTextEdit* textEdit = new qtTextEdit(pWidget);
+        textEdit->setObjectName(QString("textEdit%1").arg(elementIdx));
         textEdit->setPlainText(valText);
         QObject::connect(textEdit, SIGNAL(textChanged()), this, SLOT(onTextEditChanged()));
         inputWidget = textEdit;
@@ -1722,6 +1735,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       else
       {
         QLineEdit* lineEdit = new QLineEdit(pWidget);
+        lineEdit->setObjectName(QString("lineEdit%1").arg(elementIdx));
         int widthValue = 0; // Default no fixed width
         m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
         if (widthValue > 0)
