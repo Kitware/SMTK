@@ -190,10 +190,10 @@ void testMultipleReferencesInParentExpression()
   smtk::attribute::ResourcePtr attRes = createResourceForTest();
   smtk::attribute::DefinitionPtr infixExpDef = attRes->findDefinition("infixExpression");
   smtk::attribute::AttributePtr expressionA = attRes->createAttribute("a", infixExpDef);
-  smtk::attribute::AttributePtr expressionB = attRes->createAttribute("b", infixExpDef);
-  smtk::attribute::AttributePtr expressionC = attRes->createAttribute("c", infixExpDef);
+  smtk::attribute::AttributePtr expressionB = attRes->createAttribute("b1", infixExpDef);
+  smtk::attribute::AttributePtr expressionC = attRes->createAttribute("c2", infixExpDef);
 
-  expressionA->findString("expression")->setValue("{b} + {c}");
+  expressionA->findString("expression")->setValue("{b1} - {c2}");
   expressionB->findString("expression")->setValue("1");
   expressionC->findString("expression")->setValue("1");
 
@@ -204,7 +204,7 @@ void testMultipleReferencesInParentExpression()
   smtkTest(
     infixEvaluator.evaluate(
       result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS),
-    "{b} + {c} should evaluate successfully.")
+    "{b1} - {c2} should evaluate successfully.")
     smtkTest(log.numberOfRecords() == 0, "Expected log to have no records.")
   //  smtkTest(infixEvaluator.getContext()->childExpressions.size() == 2,
   //           "Expected 2 child expressions")
@@ -212,6 +212,39 @@ void testMultipleReferencesInParentExpression()
   //           "Expected b to be a child for {b} + {c}")
   //  smtkTest(infixEvaluator.getContext()->childExpressions.count("c") == 1,
   //           "Expected b to be a child for {b} + {c}")
+}
+
+// test we can use "-" and "_" in names
+void testReferenceNames()
+{
+  smtk::attribute::ResourcePtr attRes = createResourceForTest();
+  smtk::attribute::DefinitionPtr infixExpDef = attRes->findDefinition("infixExpression");
+  smtk::attribute::AttributePtr expressionA = attRes->createAttribute("a", infixExpDef);
+  smtk::attribute::AttributePtr expressionB = attRes->createAttribute("b_", infixExpDef);
+  smtk::attribute::AttributePtr expressionC = attRes->createAttribute("C-dash2", infixExpDef);
+
+  expressionA->findString("expression")->setValue("{b_} - {C-dash2}");
+  expressionB->findString("expression")->setValue("1");
+  expressionC->findString("expression")->setValue("2");
+
+  smtk::attribute::InfixExpressionEvaluator infixEvaluator(expressionA);
+  smtk::attribute::Evaluator::ValueType result;
+  smtk::io::Logger log;
+
+  smtkTest(
+    infixEvaluator.evaluate(
+      result, log, 0, smtk::attribute::Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS),
+    "{b_} - {C-dash2} should evaluate successfully.")
+    smtkTest(log.numberOfRecords() == 0, "Expected log to have no records.")
+    //  smtkTest(infixEvaluator.getContext()->childExpressions.size() == 2,
+    //           "Expected 2 child expressions")
+    //  smtkTest(infixEvaluator.getContext()->childExpressions.count("b") == 1,
+    //           "Expected b to be a child for {b} + {c}")
+    //  smtkTest(infixEvaluator.getContext()->childExpressions.count("c") == 1,
+    //           "Expected b to be a child for {b} + {c}")
+    double computation = boost::get<double>(result);
+
+  smtkTest(computation == -1.0, "Incorrectly computed a.")
 }
 
 void testSetMultipleExpressionsOnSingleAttribute()
@@ -288,6 +321,7 @@ int unitInfixExpressionEvaluator(int /*argc*/, char** const /*argv*/)
   testCyclicReferenceExpressionFails();
   testReferencingNonexistentSubexressionFails();
   testMultipleReferencesInParentExpression();
+  testReferenceNames();
   testSetMultipleExpressionsOnSingleAttribute();
   testDoesEvaluate();
   testNumberOfEvaluatableElements();
