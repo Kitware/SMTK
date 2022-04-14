@@ -46,7 +46,7 @@ public:
   template<typename... Args>
   void emplace_back(Args&&... args)
   {
-    return m_data.emplace_back(std::forward<Args>(args)...);
+    m_data.emplace_back(std::forward<Args>(args)...);
   }
 
   Container::reference back() { return m_data.back(); }
