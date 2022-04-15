@@ -50,11 +50,11 @@ struct infix_operator
 {};
 
 struct symbol
-    : seq< abnf::ALPHA, star< ranges< 'a', 'z', 'A', 'Z', '0', '9', '-' > > >
+    : seq< abnf::ALPHA, star< sor< ranges< 'a', 'z', 'A', 'Z', '0', '9'>, one< '-', '_' > > > >
 {};
 
 struct function_name
-    : seq< abnf::ALPHA, star< ranges< 'a', 'z', 'A', 'Z', '0', '9', '-' > > >
+    : seq< abnf::ALPHA, star < sor< ranges< 'a', 'z', 'A', 'Z', '0', '9' >, one< '-', '_' > > > >
 {};
 
 // Rules for floating-point numbers are taken from
@@ -82,7 +82,7 @@ struct number
 struct expression;
 
 struct infix_function
-    : if_must< function_name, star< ignored >, one< '(' >, star< ignored>, expression, star< ignored>, one< ')'> >
+    : if_must< function_name, star< ignored >, one< '(' >, star< ignored >, expression, star< ignored >, one< ')' > >
 {};
 
 struct paren
@@ -94,15 +94,15 @@ struct subsymbol_reference
 {};
 
 struct atomic
-    : sor< number, paren, infix_function, subsymbol_reference>
+    : sor< number, paren, infix_function, subsymbol_reference >
 {};
 
 struct expression
-    : list< atomic, infix_operator, ignored>
+    : list< atomic, infix_operator, ignored >
 {};
 
 struct expression_grammar :
-    must< star< ignored>, expression, star< ignored>, eof>
+    must< star< ignored >, expression, star< ignored >, eof >
 {};
 
 // clang-format on
