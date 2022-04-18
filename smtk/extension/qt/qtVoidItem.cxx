@@ -77,9 +77,10 @@ void qtVoidItem::createWidget()
   {
     m_widget->setEnabled(false);
   }
-  new QVBoxLayout(m_widget);
-  m_widget->layout()->setMargin(0);
-  m_widget->layout()->setSpacing(0);
+  auto* vLayout = new QVBoxLayout(m_widget);
+  vLayout->setObjectName("vLayout");
+  vLayout->setMargin(0);
+  vLayout->setSpacing(0);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QString txtLabel = dataObj->label().c_str();
@@ -87,6 +88,7 @@ void qtVoidItem::createWidget()
   if (dataObj->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_widget);
+    optionalCheck->setObjectName("optionalCheck");
 
     // Check for "no_focus" user data
     auto udata = dataObj->userData("smtk.extensions.void_item.no_focus");
@@ -115,19 +117,20 @@ void qtVoidItem::createWidget()
   }
   else
   {
-    auto* l = new QLabel(m_widget);
-    l->setSizePolicy(sizeFixedPolicy);
+    auto* label = new QLabel(m_widget);
+    label->setObjectName("label");
+    label->setSizePolicy(sizeFixedPolicy);
     if (dataObj->advanceLevel() > 0)
     {
-      l->setFont(m_itemInfo.uiManager()->advancedFont());
+      label->setFont(m_itemInfo.uiManager()->advancedFont());
     }
     if (dataObj->definition()->briefDescription().length())
     {
-      l->setToolTip(dataObj->definition()->briefDescription().c_str());
+      label->setToolTip(dataObj->definition()->briefDescription().c_str());
     }
 
-    l->setText(txtLabel);
-    m_widget->layout()->addWidget(l);
+    label->setText(txtLabel);
+    m_widget->layout()->addWidget(label);
   }
 }
 

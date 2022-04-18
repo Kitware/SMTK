@@ -126,15 +126,17 @@ void qtGroupItem::createWidget()
   m_internals->m_mainFrame = new QFrame(m_itemInfo.parentWidget());
   m_internals->m_mainFrame->setObjectName("qtGroupItem");
   m_widget = m_internals->m_mainFrame;
+  m_widget->setObjectName(item->name().c_str());
   auto* mainLayout = new QVBoxLayout(m_widget);
+  mainLayout->setObjectName("mainLayout");
   mainLayout->setMargin(0);
   mainLayout->setSpacing(0);
   mainLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   m_internals->m_mainFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
   m_internals->m_titleFrame = new QFrame(m_internals->m_mainFrame);
-  mainLayout->addWidget(m_internals->m_titleFrame);
   m_internals->m_mainFrame->setObjectName("TitleFrame");
+  mainLayout->addWidget(m_internals->m_titleFrame);
   auto* titleLayout = new QHBoxLayout(m_internals->m_titleFrame);
   titleLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   titleLayout->setMargin(0);
@@ -166,6 +168,7 @@ void qtGroupItem::createWidget()
   m_internals->m_contentsFrame->setObjectName("Contents");
   mainLayout->addWidget(m_internals->m_contentsFrame);
   auto* contentsLayout = new QVBoxLayout(m_internals->m_contentsFrame);
+  contentsLayout->setObjectName("contentsLayout");
   contentsLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   // Lets indent the contents a bit to the right.
   contentsLayout->setContentsMargins(10, 0, 0, 0);
@@ -174,15 +177,17 @@ void qtGroupItem::createWidget()
 
   m_internals->ButtonsFrame = new QFrame(m_internals->m_contentsFrame);
   m_internals->ButtonsFrame->setObjectName("ButtonFrame");
-  new QHBoxLayout(m_internals->ButtonsFrame);
+  auto* hLayout = new QHBoxLayout(m_internals->ButtonsFrame);
+  hLayout->setObjectName("hLayout");
   contentsLayout->addWidget(m_internals->ButtonsFrame);
-  m_internals->ButtonsFrame->layout()->setMargin(0);
+  hLayout->setMargin(0);
 
   m_internals->ChildrensFrame = new QFrame(m_internals->m_contentsFrame);
   m_internals->ChildrensFrame->setObjectName("ChildrensFrame");
-  new QVBoxLayout(m_internals->ChildrensFrame);
+  auto* vLayout = new QVBoxLayout(m_internals->ChildrensFrame);
+  vLayout->setObjectName("vLayout");
   contentsLayout->addWidget(m_internals->ChildrensFrame);
-  m_internals->ChildrensFrame->layout()->setMargin(0);
+  vLayout->setMargin(0);
 
   if (this->isReadOnly())
   {
@@ -286,6 +291,7 @@ void qtGroupItem::updateItemData()
     if (!m_internals->AddItemButton)
     {
       m_internals->AddItemButton = new QToolButton(m_internals->ButtonsFrame);
+      m_internals->AddItemButton->setObjectName("AddItemButton");
       m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       QString iconName(":/icons/attribute/plus.png");
       std::string extensibleLabel = "Add Row";
@@ -379,7 +385,7 @@ void qtGroupItem::addSubGroup(int i)
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(m_internals->ChildrensFrame->layout());
   QFrame* subGroupFrame = new QFrame(m_internals->ChildrensFrame);
-  subGroupFrame->setObjectName("groupitemFrame");
+  subGroupFrame->setObjectName(QString("groupitemFrame%1").arg(i));
   QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
   {
@@ -400,6 +406,7 @@ void qtGroupItem::addSubGroup(int i)
   {
     subGroupString = QString::fromStdString(groupDef->subGroupLabel(i));
     QLabel* subGroupLabel = new QLabel(subGroupString, subGroupFrame);
+    subGroupLabel->setObjectName(QString("subGroupLabel%1").arg(i));
     subGroupLayout->addWidget(subGroupLabel);
   }
 
@@ -527,6 +534,7 @@ void qtGroupItem::addItemsToTable(int index)
   if (!m_internals->ItemsTable)
   {
     m_internals->ItemsTable = new qtTableWidget(m_internals->ChildrensFrame);
+    m_internals->ItemsTable->setObjectName(QString("ItemsTable%1").arg(index));
     m_internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_internals->ItemsTable->setColumnCount(1); // for minus button
@@ -618,6 +626,7 @@ void qtGroupItem::addItemsToTable(int index)
   if (added > 0)
   {
     minusButton = new QToolButton(m_internals->ChildrensFrame);
+    minusButton->setObjectName(QString("minusButton%1").arg(index));
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(16, 16));
     minusButton->setIcon(QIcon(iconName));

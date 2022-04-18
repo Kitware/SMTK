@@ -100,15 +100,19 @@ qtDateTimeItem::qtDateTimeItem(const qtAttributeItemInfo& info)
   if (def->useTimeZone())
   {
     this->Internals->TimeZoneDialog = new QDialog;
+    this->Internals->TimeZoneDialog->setObjectName("TimeZoneDialog");
     this->Internals->TimeZoneDialog->setSizeGripEnabled(true);
     QVBoxLayout* dialogLayout = new QVBoxLayout();
+    dialogLayout->setObjectName("dialogLayout");
     this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
+    this->Internals->TimeZoneWidget->setObjectName("TimeZoneWidget");
 
     dialogLayout->addWidget(this->Internals->TimeZoneWidget);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(
       QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
       Qt::Horizontal,
       this->Internals->TimeZoneDialog);
+    buttonBox->setObjectName("buttonBox");
     this->Internals->TimeZoneDialogAcceptButton = buttonBox->button(QDialogButtonBox::Ok);
     this->Internals->TimeZoneDialogAcceptButton->setEnabled(false);
 
@@ -186,9 +190,11 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   }
 
   QFrame* frame = new QFrame(m_itemInfo.parentWidget());
+  frame->setObjectName(QString("frame%1").arg(elementIdx));
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
 
   QDateTimeEdit* dtEdit = new QDateTimeEdit(qdatetime, frame);
+  dtEdit->setObjectName(QString("dtEdit%1").arg(elementIdx));
   this->Internals->ElementIndexMap.insert(dtEdit, elementIdx);
   dtEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   std::string format = def->displayFormat();
@@ -205,17 +211,20 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QHBoxLayout* layout = new QHBoxLayout(frame);
+  layout->setObjectName(QString("layout%1").arg(elementIdx));
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(dtEdit);
 
   if (def->useTimeZone())
   {
     this->Internals->TimeZoneButton = new QToolButton(frame);
+    this->Internals->TimeZoneButton->setObjectName(QString("TimeZoneButton%1").arg(elementIdx));
     this->Internals->TimeZoneButton->setSizePolicy(
       QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
     this->Internals->TimeZoneButton->setText(timeZoneText);
     this->Internals->TimeZoneButton->setPopupMode(QToolButton::MenuButtonPopup);
     this->Internals->TimeZoneMenu = new QMenu(this->Internals->TimeZoneButton);
+    this->Internals->TimeZoneMenu->setObjectName(QString("TimeZoneMenu%1").arg(elementIdx));
     this->Internals->TimeZoneMenu->addAction("Unset TimeZone", this, SLOT(onTimeZoneUnset()));
     this->Internals->TimeZoneMenu->addAction("UTC", this, SLOT(onTimeZoneUTC()));
     this->Internals->TimeZoneMenu->addAction("Select Region...", this, SLOT(onTimeZoneRegion()));
@@ -392,6 +401,7 @@ void qtDateTimeItem::updateUI()
     m_widget->setEnabled(false);
   }
   this->Internals->EntryLayout = new QGridLayout(m_widget);
+  this->Internals->EntryLayout->setObjectName("EntryLayout");
   this->Internals->EntryLayout->setMargin(0);
   this->Internals->EntryLayout->setSpacing(0);
   this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -399,6 +409,7 @@ void qtDateTimeItem::updateUI()
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
+  labelLayout->setObjectName("labelLayout");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -406,6 +417,7 @@ void qtDateTimeItem::updateUI()
   if (dataObj->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
+    optionalCheck->setObjectName("optionalCheck");
     optionalCheck->setChecked(dataObj->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -425,6 +437,7 @@ void qtDateTimeItem::updateUI()
     labelText = dataObj->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
+  label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
@@ -455,6 +468,7 @@ void qtDateTimeItem::updateUI()
   // we need this layout so that for items with conditionan children,
   // the label will line up at Top-left against the chilren's widgets.
   //  QVBoxLayout* vTLlayout = new QVBoxLayout;
+  //  vTLlayout->setObjectName("vTLlayout");
   //  vTLlayout->setMargin(0);
   //  vTLlayout->setSpacing(0);
   //  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -487,6 +501,7 @@ void qtDateTimeItem::addInputEditor(int i)
 
   QBoxLayout* childLayout = nullptr;
   childLayout = new QVBoxLayout;
+  childLayout->setObjectName(QString("childLayout%1").arg(i));
   childLayout->setContentsMargins(12, 3, 3, 0);
   childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -497,6 +512,7 @@ void qtDateTimeItem::addInputEditor(int i)
   }
 
   QBoxLayout* editorLayout = new QHBoxLayout;
+  editorLayout->setObjectName(QString("editorLayout%1").arg(i));
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
   editorLayout->addWidget(editBox);
