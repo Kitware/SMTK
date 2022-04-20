@@ -22,7 +22,7 @@ inline py::class_< pqSMTKPythonTrace > pybind11_init_pqSMTKPythonTrace(py::modul
   py::class_< pqSMTKPythonTrace > instance(m, "pqSMTKPythonTrace");
   instance
     .def(py::init<>())
-    .def("traceOperation", &pqSMTKPythonTrace::traceOperation, py::arg("op"))
+    .def("traceOperation", &pqSMTKPythonTrace::traceOperation, py::arg("op"), py::arg("testing") = false)
     ;
   return instance;
 }

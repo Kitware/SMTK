@@ -26,7 +26,8 @@ public:
   pqSMTKPythonTrace() = default;
   ~pqSMTKPythonTrace() = default;
 
-  std::string traceOperation(const smtk::operation::Operation& op);
+  /// testing = true produces output even if there's no active trace.
+  std::string traceOperation(const smtk::operation::Operation& op, bool testing = false);
 
 private:
   bool m_showSetup = true;
