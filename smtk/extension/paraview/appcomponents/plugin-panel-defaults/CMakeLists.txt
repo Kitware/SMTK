@@ -28,7 +28,4 @@ target_link_libraries(smtkDefaultConfigurationPlugin
     ParaView::pqCore
     ParaView::pqApplicationComponents
 )
-# XXX(smtk): SMTK headers are not ready for this.
-#target_compile_definitions(smtkDefaultConfigurationPlugin
-#  PRIVATE
-#    QT_NO_KEYWORDS)
+target_compile_definitions(smtkDefaultConfigurationPlugin PRIVATE QT_NO_KEYWORDS)

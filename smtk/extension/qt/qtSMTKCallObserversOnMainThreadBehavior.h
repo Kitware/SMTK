@@ -56,7 +56,7 @@ public:
    */
   void forceObserversToBeCalledOnMainThread(const smtk::common::Managers::Ptr& mgrs);
 
-signals:
+Q_SIGNALS:
   /**\brief Signal that a resource \a rsrc has been added or removed from the
    *        manager.
    */
@@ -75,9 +75,9 @@ protected:
   qtSMTKCallObserversOnMainThreadBehavior(QObject* parent = nullptr);
 
 private:
-  std::map<smtk::common::UUID, std::shared_ptr<smtk::resource::Resource> > m_activeResources;
-  std::map<smtk::common::UUID, std::shared_ptr<smtk::operation::Operation> > m_activeOperations;
-  std::map<smtk::common::UUID, std::shared_ptr<smtk::view::Selection> > m_activeSelection;
+  std::map<smtk::common::UUID, std::shared_ptr<smtk::resource::Resource>> m_activeResources;
+  std::map<smtk::common::UUID, std::shared_ptr<smtk::operation::Operation>> m_activeOperations;
+  std::map<smtk::common::UUID, std::shared_ptr<smtk::view::Selection>> m_activeSelection;
 
   // A mutex to make access to m_activeOperations thread-safe
   std::mutex m_activeOperationMutex;

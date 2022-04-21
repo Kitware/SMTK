@@ -78,7 +78,7 @@ public:
   void setEditMode(EditMode mode);
   //@}
 
-private slots:
+private Q_SLOTS:
   /**
    * Update the UI depending on the currently selected concrete ItemDef type.
    * The Dialog uses HandlerItemDef instances to customize and create ItemDefinition

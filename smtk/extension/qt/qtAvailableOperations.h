@@ -44,7 +44,7 @@ public:
   bool useLabels() const { return m_useLabels; }
   QListWidget* listWidget() const { return m_operationList; }
 
-signals:
+Q_SIGNALS:
   void tryOperation(const smtk::operation::Operation::Index& op);
   void editOperation(const smtk::operation::Operation::Index& op);
   void hoverOperation(const smtk::operation::Operation::Index& op);

@@ -169,7 +169,7 @@ Q_SIGNALS:
     *
     * This model has a WidgetAction column whose value is a qtOperationAction* (which
     * inherits QWidgetAction).
-    * That class emits two signals: one for editing an operation's parameters and
+    * That class emits two Q_SIGNALS: one for editing an operation's parameters and
     * another for running the operation with the default parameters.
     * The qtOperationTypeModel forwards these signals (from all of its actions)
     * to this signal, which observers can watch for *any* row's operation action to be

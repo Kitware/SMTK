@@ -198,7 +198,7 @@ void qtReferenceTree::setOutputOptional(int state)
   if (itm && (itm->localEnabledState() != optionalVal))
   {
     itm->setIsEnabled(optionalVal);
-    emit modified();
+    Q_EMIT modified();
   }
   m_p->m_editBtn->setEnabled(optionalVal);
 }
@@ -263,7 +263,7 @@ void qtReferenceTree::copyFromSelection()
         {
           this->linkHover(true);
         }
-        emit modified();
+        Q_EMIT modified();
       }
     }
   }
@@ -299,7 +299,7 @@ void qtReferenceTree::clearItem()
     {
       this->linkHover(true);
     }
-    emit modified();
+    Q_EMIT modified();
   }
 }
 
@@ -873,7 +873,7 @@ bool qtReferenceTree::synchronize(UpdateSource src)
       }
       if (didChange)
       {
-        emit modified();
+        Q_EMIT modified();
       }
     }
     break;

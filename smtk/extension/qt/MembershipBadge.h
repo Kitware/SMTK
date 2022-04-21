@@ -137,7 +137,7 @@ public:
 
   MembershipCriteria membershipCriteria() const { return m_criteria; }
 
-signals:
+Q_SIGNALS:
   void membershipChange(int val);
 
 protected:

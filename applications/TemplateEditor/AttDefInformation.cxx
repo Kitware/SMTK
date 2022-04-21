@@ -131,7 +131,7 @@ void AttDefInformation::onSaveAttDef()
   this->CurrentAttDef->setLabel(this->Ui->leLabel->text().toStdString());
   this->CurrentAttDef->setIsUnique(this->Ui->cbUnique->isChecked());
   this->CurrentAttDef->setIsAbstract(this->Ui->cbAbstract->isChecked());
-  emit collectionChanged(true);
+  Q_EMIT collectionChanged(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -154,7 +154,7 @@ void AttDefInformation::onAddItemDef()
     props.ParentIndex = parentIndex;
 
     this->OwnedItemDefModel->insert(props);
-    emit collectionChanged(true);
+    Q_EMIT collectionChanged(true);
   }
 }
 
@@ -163,7 +163,7 @@ void AttDefInformation::onRemoveItemDef()
 {
   QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
   this->OwnedItemDefModel->remove(sm->currentIndex(), this->CurrentAttDef);
-  emit collectionChanged(true);
+  Q_EMIT collectionChanged(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -190,6 +190,6 @@ void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
   if (dialog.exec() == QDialog::Accepted)
   {
     dialog.getItemDef(); /* updates ItemDef's properties */
-    emit collectionChanged(true);
+    Q_EMIT collectionChanged(true);
   }
 }

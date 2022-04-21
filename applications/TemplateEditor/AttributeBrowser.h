@@ -48,7 +48,7 @@ public:
   AttributeBrowser(const AttributeBrowser&) = delete;
   AttributeBrowser& operator=(const AttributeBrowser&) = delete;
 
-public slots:
+public Q_SLOTS:
   /**
    * Emits attDefChanged() with whatever the current selection is. Forcing
    * the emission of this signal can be useful to trigger a sequence of
@@ -56,11 +56,11 @@ public slots:
    */
   void emitAttDefChanged();
 
-signals:
+Q_SIGNALS:
   void attDefChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
   void resourceChanged(bool needsSaving);
 
-private slots:
+private Q_SLOTS:
   /**
    * Show add definition dialog.
    */

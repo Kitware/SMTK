@@ -112,7 +112,7 @@ public:
 
   void resetOperationSource();
 
-signals:
+Q_SIGNALS:
   void operationRequested(const smtk::operation::OperationPtr& brOp);
   void activateModel(const smtk::common::UUID& modelid);
 

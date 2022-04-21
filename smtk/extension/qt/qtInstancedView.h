@@ -47,12 +47,12 @@ public:
 
   bool isEmpty() const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void onShowCategory() override;
 
-signals:
+Q_SIGNALS:
   // emitted when an attribute is modified
   void itemModified(qtItem*);
 

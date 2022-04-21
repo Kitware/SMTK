@@ -63,14 +63,14 @@ public:
 
   bool isEmpty() const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void onShowCategory() override;
   void updateModelAssociation() override;
   void onAttributeChanged(int);
   void associationsChanged();
 
-signals:
+Q_SIGNALS:
   void attAssociationChanged();
 
 protected:

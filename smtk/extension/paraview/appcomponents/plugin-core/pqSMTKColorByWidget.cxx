@@ -146,11 +146,11 @@ void pqSMTKColorByWidget::setRepresentation(vtkSMProxy* proxy)
   {
     this->Internal->comboBox->addItem("Color Model By");
     this->Internal->comboBox->blockSignals(prev);
-    emit this->colorByFieldActive(true);
+    Q_EMIT this->colorByFieldActive(true);
     return;
   }
 
-  emit this->colorByFieldActive(false);
+  Q_EMIT this->colorByFieldActive(false);
   this->Internal->Domain = new pqComboBoxDomain(this->Internal->comboBox, smproperty);
   this->Internal->Links.addPropertyLink<PropertyLinksConnection>(
     this, "colorByText", SIGNAL(colorByTextChanged(const QString&)), proxy, smproperty);
@@ -176,11 +176,11 @@ void pqSMTKColorByWidget::comboBoxChanged(const QString& text)
   // pqSMTKColorByWidget::setColorByText() is called.
   bool wasField = (this->Internal->colorByText() == "Field");
   this->Internal->setColorByText(text);
-  emit this->colorByTextChanged(text);
+  Q_EMIT this->colorByTextChanged(text);
   bool fieldActive = (text == "Field");
   if (wasField ^ fieldActive)
   {
-    emit this->colorByFieldActive(fieldActive);
+    Q_EMIT this->colorByFieldActive(fieldActive);
   }
 }
 

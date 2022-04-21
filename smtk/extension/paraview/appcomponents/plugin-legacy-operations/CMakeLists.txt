@@ -34,3 +34,4 @@ target_link_libraries(smtkPQLegacyOperationsPlugin
     vtkSMTKSourceExt
     vtkSMTKOperationsExt
 )
+target_compile_definitions(smtkPQLegacyOperationsPlugin PRIVATE QT_NO_KEYWORDS)

@@ -122,7 +122,7 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy* widgetProxy)
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
   if (!smPolyEdgeOp)
     return false;
-  emit this->operationRequested(this->edgeOperation());
+  Q_EMIT this->operationRequested(this->edgeOperation());
   smPolyEdgeOp->Delete();
   return true;
 }
@@ -151,7 +151,7 @@ bool pqPolygonArc::editEdge(
   //   opSpec->associateEntity(edge);
   // }
 
-  // emit this->operationRequested(this->edgeOperation());
+  // Q_EMIT this->operationRequested(this->edgeOperation());
   smPolyEdgeOp->Delete();
   return true;
 }
@@ -274,7 +274,7 @@ void pqPolygonArc::resetOperationSource()
     if (model.isValid())
     {
       m_currentModelId = model.entity();
-      emit this->activateModel(model.entity());
+      Q_EMIT this->activateModel(model.entity());
       this->Source = pqActiveObjects::instance().activeSource();
       int blockIndex = this->getAssignedEdgeBlock();
       if (blockIndex < 0)

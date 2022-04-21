@@ -50,12 +50,12 @@ public:
 protected:
   int sync() override
   {
-    emit flush();
+    Q_EMIT flush();
     str("");
     return 0;
   }
 
-signals:
+Q_SIGNALS:
   void flush();
 };
 } // namespace extension

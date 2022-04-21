@@ -248,7 +248,7 @@ bool qtSelectorView::createChildren()
 
 void qtSelectorView::getChildView(const std::string& viewType, QList<qtBaseView*>& views)
 {
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     if (childView->configuration()->type() == viewType)
     {
@@ -296,7 +296,7 @@ const QList<qtBaseView*>& qtSelectorView::childViews() const
 
 void qtSelectorView::clearChildViews()
 {
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     delete childView;
   }
@@ -306,7 +306,7 @@ void qtSelectorView::clearChildViews()
 void qtSelectorView::updateUI()
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->updateUI();
   }
@@ -315,7 +315,7 @@ void qtSelectorView::updateUI()
 void qtSelectorView::onShowCategory()
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->onShowCategory();
   }
@@ -325,7 +325,7 @@ void qtSelectorView::onShowCategory()
 void qtSelectorView::showAdvanceLevelOverlay(bool show)
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -334,7 +334,7 @@ void qtSelectorView::showAdvanceLevelOverlay(bool show)
 
 void qtSelectorView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, m_internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->ChildViews)
   {
     auto* iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
@@ -364,7 +364,7 @@ void qtSelectorView::selectionChanged()
       m_internals->ChildViews.at(i)->widget()->setVisible(false);
     }
   }
-  emit qtBaseView::modified();
+  Q_EMIT qtBaseView::modified();
 }
 
 bool qtSelectorView::isValid() const

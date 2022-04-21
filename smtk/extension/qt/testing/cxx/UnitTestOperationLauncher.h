@@ -42,10 +42,10 @@ public:
 
   std::size_t numberOfReadFiles() const { return m_nReadFiles; }
 
-signals:
+Q_SIGNALS:
   void finished();
 
-public slots:
+public Q_SLOTS:
   void run();
 
 private:

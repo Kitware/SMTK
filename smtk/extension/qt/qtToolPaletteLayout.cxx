@@ -131,7 +131,7 @@ QSize qtToolPaletteLayout::minimumSize() const
 {
   QSize size;
   QLayoutItem* item;
-  foreach (item, m_itemList)
+  Q_FOREACH (item, m_itemList)
     size = size.expandedTo(item->minimumSize());
 
   size += QSize(2 * margin(), 2 * margin());
@@ -151,7 +151,7 @@ int qtToolPaletteLayout::doLayout(const QRect& rect, bool testOnly) const
   int maxWidth = 1;
   int maxHeight = 1;
   int numItems = 0;
-  foreach (item, m_itemList)
+  Q_FOREACH (item, m_itemList)
   {
     // TODO: We could factor in wid->style()->layoutSpacing(...)
     //       instead of relying on horizontal/verticalSpacing()
@@ -189,7 +189,7 @@ int qtToolPaletteLayout::doLayout(const QRect& rect, bool testOnly) const
   m_effectiveColumns = numCols;
 
   int ii = 0;
-  foreach (item, m_itemList)
+  Q_FOREACH (item, m_itemList)
   {
     QWidget* wid = item->widget();
     x = effectiveRect.x() + (maxWidth + hSpace) * (ii % numCols);

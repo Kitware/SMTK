@@ -95,7 +95,7 @@ public:
   virtual bool createProxyAndWidget(vtkSMProxy*& source, pqInteractivePropertyWidget*& widget) = 0;
   pqInteractivePropertyWidget* propertyWidget();
 
-public slots:
+public Q_SLOTS:
   virtual void updateItemFromWidget();
   virtual void updateWidgetFromItem();
 
@@ -115,7 +115,7 @@ public slots:
     */
   void renderViewEventually() const;
 
-protected slots:
+protected Q_SLOTS:
   /// Create Qt widgets as required (may be called multiple times if Item is reconfigured).
   void updateItemData() override;
   virtual void ignoreWidgetValues();

@@ -92,7 +92,7 @@ public:
     return this->ResetCursorPositionOnEditingFinished;
   }
 
-signals:
+Q_SIGNALS:
   /**
   * Unlike QLineEdit::editingFinished() which
   * gets fired whenever the widget looses focus irrespective of if the text
@@ -101,7 +101,7 @@ signals:
   */
   void textChangedAndEditingFinished();
 
-public slots:
+public Q_SLOTS:
   /**
   * Same as QLineEdit::setText() except that it reset the cursor position to
   * 0.  This is useful with the qtLineEdit is used for showing numbers were
@@ -119,7 +119,7 @@ public slots:
     this->ResetCursorPositionOnEditingFinished = val;
   }
 
-private slots:
+private Q_SLOTS:
   void onTextEdited();
   void onEditingFinished();
 

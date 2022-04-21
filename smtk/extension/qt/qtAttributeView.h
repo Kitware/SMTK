@@ -89,7 +89,7 @@ public:
     VIEWBY_Attribute = 0,
     VIEWBY_PROPERTY
   };
-public slots:
+public Q_SLOTS:
   void onViewBy();
   void onViewByWithDefinition(smtk::attribute::DefinitionPtr attDef);
   void updateUI() override;
@@ -109,7 +109,7 @@ public slots:
   void associationsChanged();
   void onItemChanged(qtItem* item);
 
-signals:
+Q_SIGNALS:
   void numOfAttributesChanged();
   void attColorChanged();
   void attAssociationChanged();

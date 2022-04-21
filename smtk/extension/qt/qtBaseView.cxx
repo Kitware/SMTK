@@ -50,7 +50,7 @@ qtBaseView::qtBaseView(const smtk::view::Information& info)
 
 qtBaseView::~qtBaseView()
 {
-  emit aboutToDestroy();
+  Q_EMIT aboutToDestroy();
 }
 
 void qtBaseView::makeTopLevel()

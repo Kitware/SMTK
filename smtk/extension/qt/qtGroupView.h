@@ -48,7 +48,7 @@ public:
   bool isValid() const override;
   const QIcon& alertIcon() const;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void updateModelAssociation() override;
@@ -61,7 +61,7 @@ protected:
   virtual void addTabEntry(qtBaseView*);
   virtual void addTileEntry(qtBaseView*);
 
-protected slots:
+protected Q_SLOTS:
   void updateCurrentTab(int);
 
 private:

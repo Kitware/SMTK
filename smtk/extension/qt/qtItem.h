@@ -18,6 +18,14 @@
 #include <QObject>
 #include <QPointer>
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 class qtItemInternals;
 
 namespace smtk
@@ -88,7 +96,7 @@ public:
   /// cleanup such as stop observing SMTK "signals".
   virtual void markForDeletion();
 
-public slots:
+public Q_SLOTS:
   // Controls whether the Selection Manager should be used for setting model
   // and mesh entity items - Note that this is just a hint and could be ignored
   // due to other criteria
@@ -98,13 +106,13 @@ public slots:
   /// attribute item
   virtual void updateItemData();
 
-signals:
+Q_SIGNALS:
   /// Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
   /// Signal indicates that the underlying item has been modified
   void modified();
 
-protected slots:
+protected Q_SLOTS:
   virtual void onAdvanceLevelChanged(int levelIdx);
   virtual void onChildWidgetSizeChanged() { ; }
 

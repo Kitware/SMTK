@@ -16,6 +16,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QDockWidget>
 
 class QAbstractItemModel;
@@ -54,7 +62,7 @@ public:
   /// specialized from qtResourceBrowser version.
   static const std::string getJSONConfiguration();
 
-protected slots:
+protected Q_SLOTS:
   virtual void searchTextChanged(const QString& searchText);
 
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);

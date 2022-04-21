@@ -45,13 +45,13 @@ public:
 
   /// Returns the point placer proxy.
   vtkSMProxy* pointPlacer() const;
-signals:
+Q_SIGNALS:
   /// Signal emitted when the representation proxy's "ClosedLoop" property
   /// is modified.
   void contourLoopClosed();
   void contourDone();
 
-public slots:
+public Q_SLOTS:
   void removeAllNodes();
   void checkContourLoopClosed();
 
@@ -76,7 +76,7 @@ public slots:
   // enable/disable the apply button of the widget
   void enableApplyButton(bool);
 
-protected slots:
+protected Q_SLOTS:
   void deleteAllNodes();
 
 private:

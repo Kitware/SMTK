@@ -43,9 +43,9 @@ void qtColorButton::setChosenColor(const QColor& color)
       this->Color = color;
       this->setIcon(this->renderColorSwatch(color));
 
-      emit this->chosenColorChanged(this->Color);
+      Q_EMIT this->chosenColorChanged(this->Color);
     }
-    emit this->validColorChosen(this->Color);
+    Q_EMIT this->validColorChosen(this->Color);
   }
 }
 

@@ -40,12 +40,12 @@ public:
   ~qtTableWidget() override;
 
   QModelIndexList getSelectedIndexes() const { return this->selectedIndexes(); }
-public slots:
+public Q_SLOTS:
 
-signals:
+Q_SIGNALS:
   void keyPressed(QKeyEvent*);
 
-protected slots:
+protected Q_SLOTS:
   void keyPressEvent(QKeyEvent*) override;
 };
 }; // namespace extension

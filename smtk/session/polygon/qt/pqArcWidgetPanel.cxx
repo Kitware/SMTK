@@ -103,7 +103,7 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
     if (arc)
       arc->resetOperationSource();
 
-    emit triggered(true);
+    Q_EMIT triggered(true);
   }
 }
 
@@ -202,7 +202,7 @@ void ArcPicker::onPickingFinished()
     this->View->setUseMultipleRepresentationSelection(false);
   }
   m_isActive = false;
-  emit this->pickFinished();
+  Q_EMIT this->pickFinished();
 }
 } // namespace Ui
 
@@ -268,7 +268,7 @@ void pqArcWidgetPanel::showEditWidget()
     this->ArcInfo.port->setSelectionInput(nullptr, 0);
   }
 
-  emit this->startArcEditing();
+  Q_EMIT this->startArcEditing();
 }
 
 void pqArcWidgetPanel::showPickWidget()
@@ -294,7 +294,7 @@ void pqArcWidgetPanel::pickWholeArc()
 
     this->Picker.doPick(this->View, this->Arc, this->ArcInfo);
     // clear all selections
-    emit this->startArcPicking();
+    Q_EMIT this->startArcPicking();
   }
   else
   {
@@ -449,7 +449,7 @@ void pqArcWidgetPanel::arcEditingFinished()
   //marks that we are finished editing this arc
   //update the server and close the widget
   this->resetWidget();
-  emit this->arcModificationfinished();
+  Q_EMIT this->arcModificationfinished();
 }
 
 void pqArcWidgetPanel::cancelEdit()
@@ -460,13 +460,13 @@ void pqArcWidgetPanel::cancelEdit()
 
   //now show the pick widget
   this->resetWidget();
-  emit this->arcModificationCacelled();
+  Q_EMIT this->arcModificationCacelled();
 }
 
 void pqArcWidgetPanel::saveEdit()
 {
   // modify/replace the edge with the arc from the arc widget
-  emit this->arcModified(this->ArcWidget, this->ArcInfo.EdgeId);
+  Q_EMIT this->arcModified(this->ArcWidget, this->ArcInfo.EdgeId);
 
   //hide the arc widget
   this->hideArcWidget();

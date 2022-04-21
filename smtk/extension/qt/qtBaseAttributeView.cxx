@@ -229,7 +229,7 @@ void qtBaseAttributeView::valueChanged(smtk::attribute::ItemPtr item)
   {
     topView->checkConfigurations(item);
   }
-  emit this->modified(item);
+  Q_EMIT this->modified(item);
   this->uiManager()->onViewUIModified(this, item);
 }
 

@@ -117,7 +117,7 @@ void pqSMTKSphereItemWidget::updateItemFromWidgetInternal()
   radiusItem->setValue(0, rv);
   if (didChange)
   {
-    emit modified();
+    Q_EMIT modified();
   }
 }
 

@@ -72,7 +72,7 @@ public:
 
   bool isEmpty() const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void onShowCategory() override;
   void showAdvanceLevelOverlay(bool show) override;
@@ -83,7 +83,7 @@ public slots:
   /**\brief slot called when the user selects a row of the table */
   void selectedRowChanged();
 
-signals:
+Q_SIGNALS:
 
 protected:
   void buildUI() override;

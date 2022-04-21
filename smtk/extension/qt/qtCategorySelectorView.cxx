@@ -146,7 +146,7 @@ bool qtCategorySelectorView::createChildren()
 
 void qtCategorySelectorView::getChildView(const std::string& viewType, QList<qtBaseView*>& views)
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     if (childView->configuration()->type() == viewType)
     {
@@ -194,7 +194,7 @@ const QList<qtBaseView*>& qtCategorySelectorView::childViews() const
 
 void qtCategorySelectorView::clearChildViews()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     delete childView;
   }
@@ -203,7 +203,7 @@ void qtCategorySelectorView::clearChildViews()
 
 void qtCategorySelectorView::updateUI()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     childView->updateUI();
   }
@@ -226,7 +226,7 @@ void qtCategorySelectorView::onShowCategory()
 
 void qtCategorySelectorView::showAdvanceLevelOverlay(bool show)
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -235,7 +235,7 @@ void qtCategorySelectorView::showAdvanceLevelOverlay(bool show)
 
 void qtCategorySelectorView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     auto* iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
@@ -247,7 +247,7 @@ void qtCategorySelectorView::updateModelAssociation()
 
 bool qtCategorySelectorView::isValid() const
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  Q_FOREACH (qtBaseView* childView, this->Internals->ChildViews)
   {
     if (childView->widget()->isVisible() && !childView->isValid())
     {

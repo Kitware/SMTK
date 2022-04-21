@@ -43,7 +43,7 @@ public:
   smtk::operation::Operation::Result waitForResult();
   std::shared_future<smtk::operation::Operation::Result>& future() { return m_future; }
 
-signals:
+Q_SIGNALS:
   /// Externally accessible signal on the primary thread containing the
   /// operation results.
   void resultReady(smtk::operation::Operation::Result result);
@@ -85,7 +85,7 @@ public:
     */
   static bool setBusyCursorBehavior(bool enabled);
 
-signals:
+Q_SIGNALS:
   /// Internal signal from the executing subthread to the primary thread
   /// indicating the completion of the operation.
   void operationHasResult(QString parametersName, QString resultName, QPrivateSignal);

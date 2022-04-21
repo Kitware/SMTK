@@ -307,7 +307,7 @@ void qtOperationView::onOperate()
         &qtOperationView::operationExecuted);
     }
 
-    emit this->operationRequested(myOperation);
+    Q_EMIT this->operationRequested(myOperation);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);

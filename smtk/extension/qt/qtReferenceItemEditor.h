@@ -61,7 +61,7 @@ public:
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
   smtk::resource::PersistentObjectPtr object(int index);
-public slots:
+public Q_SLOTS:
   void updateItemData() override;
   void highlightItem(int index);
   void selectItem(int index);
@@ -75,7 +75,7 @@ public slots:
   // Refreshes the active children (if any)
   virtual void updateContents();
 
-protected slots:
+protected Q_SLOTS:
   virtual void removeObservers();
   virtual void resetHover();
   virtual void highlightOnHoverChanged(bool);

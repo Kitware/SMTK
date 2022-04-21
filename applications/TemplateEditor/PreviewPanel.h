@@ -53,7 +53,7 @@ public:
   PreviewPanel(const PreviewPanel&) = delete;
   PreviewPanel& operator=(const PreviewPanel&) = delete;
 
-public slots:
+public Q_SLOTS:
   /**
    * This method should be connected to the signal that will trigger an
    * AttDef preview update. The model contained in the QModelIndex

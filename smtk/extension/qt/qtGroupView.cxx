@@ -143,7 +143,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
   }
   else
   {
-    foreach (qtBaseView* childView, m_ChildViews)
+    Q_FOREACH (qtBaseView* childView, m_ChildViews)
     {
       (childView->*mfunc)();
     }
@@ -355,7 +355,7 @@ bool qtGroupView::isValid() const
   // else we need to examine the children views
   if (m_internals->m_style == qtGroupViewInternals::TABBED)
   {
-    foreach (qtBaseView* childView, m_internals->m_TabbedViews)
+    Q_FOREACH (qtBaseView* childView, m_internals->m_TabbedViews)
     {
       if (!childView->isValid())
       {
@@ -364,7 +364,7 @@ bool qtGroupView::isValid() const
     }
     return true;
   }
-  foreach (qtBaseView* childView, m_internals->m_ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->m_ChildViews)
   {
     if (!childView->isValid())
     {
@@ -401,7 +401,7 @@ const QList<qtBaseView*>& qtGroupView::childViews() const
 
 void qtGroupView::clearChildViews()
 {
-  foreach (qtBaseView* childView, m_internals->m_ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->m_ChildViews)
   {
     delete childView;
   }
@@ -425,7 +425,7 @@ void qtGroupView::onShowCategory()
 
 void qtGroupView::showAdvanceLevelOverlay(bool show)
 {
-  foreach (qtBaseView* childView, m_internals->m_ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->m_ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -549,7 +549,7 @@ void qtGroupView::childModified()
       }
     }
   }
-  emit qtBaseView::modified();
+  Q_EMIT qtBaseView::modified();
 }
 void qtGroupView::addGroupBoxEntry(qtBaseView* child)
 {
@@ -595,7 +595,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
 
 void qtGroupView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, m_internals->m_ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->m_ChildViews)
   {
     auto* iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
@@ -607,7 +607,7 @@ void qtGroupView::updateModelAssociation()
 
 bool qtGroupView::isEmpty() const
 {
-  foreach (qtBaseView* childView, m_internals->m_ChildViews)
+  Q_FOREACH (qtBaseView* childView, m_internals->m_ChildViews)
   {
     if (!childView->isEmpty())
     {

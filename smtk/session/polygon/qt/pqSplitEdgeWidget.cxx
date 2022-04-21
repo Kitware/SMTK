@@ -87,7 +87,7 @@ void EdgePointPicker::doPick(pqRenderView* view)
   view->setUseMultipleRepresentationSelection(false);
 
   m_isActive = true;
-  emit triggered(true);
+  Q_EMIT triggered(true);
 }
 
 void EdgePointPicker::donePicking(pqRenderView* view)
@@ -97,7 +97,7 @@ void EdgePointPicker::donePicking(pqRenderView* view)
   this->InteractiveSelectButton->setChecked(false);
   this->InteractiveSelectButton->blockSignals(false);
   m_isActive = false;
-  emit triggered(false);
+  Q_EMIT triggered(false);
   //we want the connection to stop so remove the connection
   if (this->Selecter)
   {
@@ -226,12 +226,12 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
       SLOT(resetWidget()),
       Qt::UniqueConnection);
 
-    emit hideAllFaces(true); // hide faces before selection
+    Q_EMIT hideAllFaces(true); // hide faces before selection
     m_edgePointPicker->doPick(this->View);
   }
   else
   {
-    emit hideAllFaces(false); // restore faces visibility
+    Q_EMIT hideAllFaces(false); // restore faces visibility
     this->resetWidget();
   }
 }
@@ -296,7 +296,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     this->View->render();
     if (readytoOp)
     {
-      emit this->operationRequested(m_edgeOp.lock());
+      Q_EMIT this->operationRequested(m_edgeOp.lock());
       // keep picking mode. We need this to refresh the Selecter with new model geometry
       vtkPVRenderView* rv =
         vtkPVRenderView::SafeDownCast(this->View->getRenderViewProxy()->GetClientSideObject());

@@ -81,7 +81,7 @@ void AttributeBrowser::onAttDefSelectionChanged(
 {
   // Disable deletion if other definitions derive from current
   this->Ui->pbDelDefinition->setEnabled(!this->AttDefModel->hasDerivedTypes(current));
-  emit attDefChanged(current, previous);
+  Q_EMIT attDefChanged(current, previous);
 }
 
 //------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void AttributeBrowser::emitAttDefChanged()
 {
   auto* sm = this->Ui->viewDefinitions->selectionModel();
   const auto index = sm->currentIndex();
-  emit attDefChanged(index, index);
+  Q_EMIT attDefChanged(index, index);
 }
 
 //------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void AttributeBrowser::onAddDefinition()
   if (dialog.exec() == QDialog::Accepted)
   {
     this->AttDefModel->insert(dialog.getInputValues());
-    emit resourceChanged(true);
+    Q_EMIT resourceChanged(true);
   }
 }
 
@@ -113,7 +113,7 @@ void AttributeBrowser::onDeleteDefinition()
   auto attDefIndex = sm->currentIndex();
 
   this->AttDefModel->remove(attDefIndex);
-  emit resourceChanged(true);
+  Q_EMIT resourceChanged(true);
 }
 
 //------------------------------------------------------------------------------

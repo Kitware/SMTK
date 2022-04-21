@@ -66,7 +66,7 @@ public:
   //Returns true if the view does not contain any information to display
   bool isEmpty() const override;
   bool isValid() const override;
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void updateModelAssociation() override;

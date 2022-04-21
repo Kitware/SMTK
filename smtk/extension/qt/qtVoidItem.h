@@ -34,11 +34,11 @@ public:
   ~qtVoidItem() override;
   void setLabelVisible(bool) override;
 
-public slots:
+public Q_SLOTS:
   void setOutputOptional(int);
   void updateItemData() override;
 
-protected slots:
+protected Q_SLOTS:
 
 protected:
   void createWidget() override;

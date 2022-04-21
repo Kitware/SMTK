@@ -71,7 +71,7 @@ public:
   /// createBasicLayout to be called multiple times.
   void removeItems();
 
-signals:
+Q_SIGNALS:
   ///\brief Signal indicates that the underlying item has been modified
   void modified();
   void itemModified(qtItem*);
@@ -86,7 +86,7 @@ protected:
 
   QPointer<QWidget> m_widget;
 
-protected slots:
+protected Q_SLOTS:
   void onItemModified();
 
 private:

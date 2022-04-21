@@ -235,7 +235,7 @@ void qtGroupItem::setEnabledState(int state)
   if (enabled != item->localEnabledState())
   {
     item->setIsEnabled(enabled);
-    emit this->modified();
+    Q_EMIT this->modified();
     if (iview)
     {
       iview->valueChanged(item);
@@ -346,8 +346,8 @@ void qtGroupItem::onAddSubGroup()
     if (item->prependGroup())
     {
       this->addItemsToTable(0);
-      emit this->widgetSizeChanged();
-      emit this->modified();
+      Q_EMIT this->widgetSizeChanged();
+      Q_EMIT this->modified();
     }
   }
   else
@@ -363,8 +363,8 @@ void qtGroupItem::onAddSubGroup()
       {
         this->addSubGroup(subIdx);
       }
-      emit this->widgetSizeChanged();
-      emit this->modified();
+      Q_EMIT this->widgetSizeChanged();
+      Q_EMIT this->modified();
     }
   }
 }
@@ -470,7 +470,7 @@ void qtGroupItem::onRemoveSubGroup()
     return;
   }
 
-  foreach (qtItem* qi, m_internals->ExtensibleMap.value(minusButton))
+  Q_FOREACH (qtItem* qi, m_internals->ExtensibleMap.value(minusButton))
   {
     // We need to remove the child from our list
     this->removeChildItem(qi);
@@ -482,7 +482,7 @@ void qtGroupItem::onRemoveSubGroup()
   int rowIdx = -1, rmIdx = -1;
   // normally rowIdx is same as gIdx, but we need to find
   // explicitly since minusButton could be nullptr in MinusButtonIndices
-  foreach (QToolButton* tb, m_internals->MinusButtonIndices)
+  Q_FOREACH (QToolButton* tb, m_internals->MinusButtonIndices)
   {
     rowIdx = tb != nullptr ? rowIdx + 1 : rowIdx;
     if (tb == minusButton)
@@ -499,7 +499,7 @@ void qtGroupItem::onRemoveSubGroup()
   delete minusButton;
   this->calculateTableHeight();
   this->updateExtensibleState();
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 void qtGroupItem::updateExtensibleState()
@@ -515,7 +515,7 @@ void qtGroupItem::updateExtensibleState()
 
   bool minReached = (item->numberOfRequiredGroups() > 0) &&
     (item->numberOfRequiredGroups() == item->numberOfGroups());
-  foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
+  Q_FOREACH (QToolButton* tButton, m_internals->ExtensibleMap.keys())
   {
     tButton->setEnabled(!minReached);
   }
@@ -663,7 +663,7 @@ void qtGroupItem::onChildWidgetSizeChanged()
     // We need to resize the height of the cell incase the
     // child's height has changed
     m_internals->ItemsTable->resizeRowsToContents();
-    emit this->widgetSizeChanged();
+    Q_EMIT this->widgetSizeChanged();
   }
 }
 
@@ -671,7 +671,7 @@ void qtGroupItem::onChildWidgetSizeChanged()
 void qtGroupItem::onChildItemModified()
 {
   this->updateValidityStatus();
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 void qtGroupItem::updateValidityStatus()
@@ -739,7 +739,7 @@ void qtGroupItem::onImportFromFile()
     if (smtk::io::importFromCSV(*item, fname.toStdString(), logger, false, sep, comment))
     {
       this->updateItemData();
-      emit this->modified();
+      Q_EMIT this->modified();
     }
   }
   else if (format == "double")
@@ -747,7 +747,7 @@ void qtGroupItem::onImportFromFile()
     if (smtk::io::importFromDoubleFile(*item, fname.toStdString(), logger, false, sep, comment))
     {
       this->updateItemData();
-      emit this->modified();
+      Q_EMIT this->modified();
     }
   }
   else

@@ -854,13 +854,13 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
   }
   else
   {
-    emit this->fileItemCreated(fileItem);
+    Q_EMIT this->fileItemCreated(fileItem);
   }
 }
 
 void qtUIManager::onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem)
 {
-  emit this->modelEntityItemCreated(entItem);
+  Q_EMIT this->modelEntityItemCreated(entItem);
 }
 
 bool qtUIManager::updateTableItemCheckState(
@@ -983,12 +983,12 @@ void qtUIManager::onViewUIModified(
   smtk::extension::qtBaseView* bview,
   smtk::attribute::ItemPtr item)
 {
-  emit this->viewUIChanged(bview, item);
+  Q_EMIT this->viewUIChanged(bview, item);
 }
 
 void qtUIManager::onOperationFinished()
 {
-  emit this->refreshEntityItems();
+  Q_EMIT this->refreshEntityItems();
 }
 
 int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def, const QFont& font)
@@ -1031,7 +1031,7 @@ void qtUIManager::getItemsLongLabel(
   std::string& labelText)
 {
   bool hasOptionalItem = false;
-  foreach (smtk::attribute::ItemDefinitionPtr itDef, itemDefs)
+  Q_FOREACH (smtk::attribute::ItemDefinitionPtr itDef, itemDefs)
   {
     smtk::attribute::Item::Type itType = itDef->type();
     // GROUP and VOID type uses their own label length
@@ -1146,7 +1146,7 @@ void qtUIManager::setHighlightOnHover(bool val)
     return;
   }
   m_highlightOnHover = val;
-  emit highlightOnHoverChanged(val);
+  Q_EMIT highlightOnHoverChanged(val);
 }
 
 const smtk::view::Configuration::Component& qtUIManager::findStyle(

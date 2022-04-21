@@ -57,6 +57,7 @@ if (ParaView_VERSION VERSION_LESS "5.10.0")
   target_compile_definitions(smtkPQComponentsExt
     PRIVATE PARAVIEW_VERSION_59)
 endif ()
+vtk_module_definitions(smtkPQComponentsExt PRIVATE QT_NO_KEYWORDS)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

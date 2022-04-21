@@ -468,7 +468,7 @@ void qtOperationTypeModel::runOperationWithDefaults(
     }
     else
     {
-      emit this->editOperationParameters(typeIndex);
+      Q_EMIT this->editOperationParameters(typeIndex);
     }
   }
 }
@@ -488,7 +488,7 @@ void qtOperationTypeModel::runSendingOperation()
   auto* action = dynamic_cast<qtOperationAction*>(this->sender());
   if (action)
   {
-    emit this->runOperation(action->operationIndex());
+    Q_EMIT this->runOperation(action->operationIndex());
   }
 }
 

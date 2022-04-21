@@ -30,7 +30,7 @@ public:
   void startup();
   void shutdown();
 
-protected slots:
+protected Q_SLOTS:
   /// Called whenever a new client-server connection is made and SMTK is enabled on the server.
   ///
   /// This is used to observe operations

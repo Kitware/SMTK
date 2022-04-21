@@ -107,7 +107,7 @@ bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr co
   {
     if (spx->SetEntityVisibility(comp, visible))
     {
-      emit componentVisibilityChanged(comp, visible);
+      Q_EMIT componentVisibilityChanged(comp, visible);
       return true;
     }
   }

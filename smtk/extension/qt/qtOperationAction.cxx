@@ -180,7 +180,7 @@ void qtOperationAction::parameterTimerElapsed()
   m_timer.stop();
   if (m_editableParameters != EditableParameters::None)
   {
-    emit editParameters();
+    Q_EMIT editParameters();
   }
 }
 
@@ -188,10 +188,10 @@ void qtOperationAction::defaultAction()
 {
   if (m_editableParameters == EditableParameters::None)
   {
-    emit acceptDefaults();
+    Q_EMIT acceptDefaults();
     return;
   }
-  emit editParameters();
+  Q_EMIT editParameters();
 }
 
 bool qtOperationAction::eventFilter(QObject* watched, QEvent* event)
@@ -229,12 +229,12 @@ bool qtOperationAction::eventFilter(QObject* watched, QEvent* event)
         m_editableParameters == EditableParameters::None ||
         (m_editableParameters == EditableParameters::Optional && stoppedShort))
       {
-        emit acceptDefaults();
+        Q_EMIT acceptDefaults();
       }
       else if (
         !stoppedShort || (m_editableParameters == EditableParameters::Mandatory && stoppedShort))
       {
-        emit editParameters();
+        Q_EMIT editParameters();
       }
       return watched->eventFilter(watched, event);
     }

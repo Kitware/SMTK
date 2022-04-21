@@ -73,7 +73,7 @@ pqSMTKResource::pqSMTKResource(
         }
         if (!dynamic_cast<const smtk::attribute::Signal*>(&op))
         {
-          emit this->operationOccurred(QPrivateSignal());
+          Q_EMIT this->operationOccurred(QPrivateSignal());
         }
       }
       return 0;
@@ -183,6 +183,6 @@ void pqSMTKResource::synchronizeResource()
     {
       rsrcMgr->add(smtkRsrc);
     }
-    emit resourceModified(smtkRsrc);
+    Q_EMIT resourceModified(smtkRsrc);
   }
 }

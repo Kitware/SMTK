@@ -41,7 +41,7 @@ public:
     smtk::extension::qtDescriptivePhraseModel* qm,
     smtk::extension::qtDescriptivePhraseDelegate* qd);
 
-public slots:
+public Q_SLOTS:
   virtual void addGroup();
   virtual void addToGroup();
   virtual void removeFromGroup();

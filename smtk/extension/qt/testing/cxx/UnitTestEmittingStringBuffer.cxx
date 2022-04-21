@@ -60,7 +60,7 @@ void TestEmittingStringBuffer::run()
   flushEventQueue();
   logger.addRecord(smtk::io::Logger::Info, "Sample Info String\n");
   flushEventQueue();
-  emit finished();
+  Q_EMIT finished();
 }
 
 int UnitTestEmittingStringBuffer(int argc, char** const argv)

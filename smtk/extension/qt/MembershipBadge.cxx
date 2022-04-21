@@ -211,7 +211,7 @@ bool MembershipBadge::action(
       m_members.clear();
     }
     m_members[persistentObj] = newValue;
-    emit membershipChange(newValue);
+    Q_EMIT membershipChange(newValue);
     return true;
   }
 
@@ -244,7 +244,7 @@ bool MembershipBadge::action(
   {
     m_members[persistentObj] = newValue;
   }
-  emit membershipChange(newValue);
+  Q_EMIT membershipChange(newValue);
   return true;
 }
 } // namespace qt

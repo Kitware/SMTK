@@ -80,7 +80,7 @@ public:
 
   std::string controlState();
 
-public slots:
+public Q_SLOTS:
   /// Set the state of the controls (to one of: "active", "visible", "inactive").
   void setControlState(const std::string& state);
 
@@ -90,17 +90,17 @@ public slots:
   /// Show Qt controls for widget visibility and interactivity.
   void setControlVisibility(bool show);
 
-signals:
+Q_SIGNALS:
   /// The visibility (bit 0x01) or interactivity (bit 0x02) has changed.
   void controlStateChanged(const std::string& state);
 
-protected slots:
+protected Q_SLOTS:
   /**
   * Places the interactive widget using current data source information.
   */
   void placeWidget() override;
 
-private slots:
+private Q_SLOTS:
   void setWorldPosition(double x, double y, double z);
 
 protected:

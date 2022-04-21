@@ -48,7 +48,7 @@ public:
   static pqSMTKCallObserversOnMainThreadBehavior* instance(QObject* parent = nullptr);
   ~pqSMTKCallObserversOnMainThreadBehavior() override;
 
-signals:
+Q_SIGNALS:
   /**\brief Signal that a resource \a rsrc has been added or removed from the
    *        manager.
    */
@@ -66,7 +66,7 @@ signals:
 protected:
   pqSMTKCallObserversOnMainThreadBehavior(QObject* parent = nullptr);
 
-protected slots:
+protected Q_SLOTS:
   /**\brief Mutate the logic of the server's operation and resource Observers to
    *        be called on the main thread, rather than the thread from which the
    *        observation was requested.

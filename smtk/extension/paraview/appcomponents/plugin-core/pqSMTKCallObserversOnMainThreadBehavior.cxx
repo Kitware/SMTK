@@ -74,7 +74,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   wrapper->smtkResourceManager()->observers().overrideWith(
     [this](const smtk::resource::Resource& rsrc, smtk::resource::EventType event) -> int {
       m_activeResources[rsrc.id()] = const_cast<smtk::resource::Resource&>(rsrc).shared_from_this();
-      emit resourceEvent(
+      Q_EMIT resourceEvent(
         QString::fromStdString(rsrc.id().toString()), static_cast<int>(event), QPrivateSignal());
       return 0;
     });
@@ -112,7 +112,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       m_activeOperationMutex.lock();
       m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
       m_activeOperationMutex.unlock();
-      emit operationEvent(
+      Q_EMIT operationEvent(
         QString::fromStdString(id.toString()),
         static_cast<int>(event),
         result ? QString::fromStdString(result->name()) : QString(),
@@ -151,7 +151,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     [this](const std::string& str, smtk::view::Selection::Ptr selection) -> void {
       auto id = smtk::common::UUID::random();
       m_activeSelection[id] = selection;
-      emit selectionEvent(
+      Q_EMIT selectionEvent(
         QString::fromStdString(id.toString()), QString::fromStdString(str), QPrivateSignal());
     });
 

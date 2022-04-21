@@ -128,7 +128,7 @@ public:
   /// Return the search-bar widget (if configured) or null (otherwise).
   QLineEdit* searchTextWidget() const;
 
-public slots:
+public Q_SLOTS:
   ///\brief Have the view update its contents
   ///
   /// The public method slot is used to update the view's GUI based on its  contents

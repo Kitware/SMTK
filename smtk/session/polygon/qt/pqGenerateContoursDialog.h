@@ -45,10 +45,10 @@ public:
   int exec() override;
   void close();
 
-signals:
+Q_SIGNALS:
   void contoursAccepted(pqPipelineSource*);
 
-protected slots:
+protected Q_SLOTS:
   void generateContours();
   void onAccecptContours();
   void onCancel();

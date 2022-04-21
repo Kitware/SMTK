@@ -18,6 +18,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QDockWidget>
 
 class pqServer;
@@ -55,7 +63,7 @@ public:
 
   smtk::view::AvailableOperationsPtr availableOperations() const { return m_availableOperations; }
 
-public slots:
+public Q_SLOTS:
   /// Called when a new client-server connection is added.
   virtual void observeWrapper(pqSMTKWrapper*, pqServer*);
 
@@ -88,7 +96,7 @@ public slots:
     */
   virtual void cancelEditing();
 
-protected slots:
+protected Q_SLOTS:
   virtual void toggleFilterBySelection(bool);
   virtual void operationListClicked(QListWidgetItem* item);
   virtual void operationListDoubleClicked(QListWidgetItem* item);

@@ -481,7 +481,7 @@ void qtFileItem::updateItemValue(int elementIdx)
       return; // value hasn't changed
     }
     item->setValue(elementIdx, value);
-    emit this->modified();
+    Q_EMIT this->modified();
 
     if (comboBox && !this->isDirectory() && this->updateRecentValues(editBox->text().toStdString()))
     {
@@ -521,7 +521,7 @@ void qtFileItem::updateItemValue(int elementIdx)
     }
     item->unset(elementIdx);
     m_itemInfo.uiManager()->setWidgetColorToInvalid(editBox);
-    emit(modified());
+    Q_EMIT(modified());
   }
 }
 
@@ -600,7 +600,7 @@ bool qtFileItem::onLaunchFileBrowser()
   // If we are not using local file browser, just emit signal and return
   if (!m_internals->FileBrowser)
   {
-    return emit launchFileBrowser();
+    return Q_EMIT launchFileBrowser();
   }
 
   // If local file browser instantiated, get data from it
@@ -1009,7 +1009,7 @@ void qtFileItem::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    emit this->modified();
+    Q_EMIT this->modified();
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -1029,7 +1029,7 @@ void qtFileItem::onAddNewValue()
   if (item->setNumberOfValues(item->numberOfValues() + 1))
   {
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1, *item, *itemDef);
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 }
 
@@ -1062,7 +1062,7 @@ void qtFileItem::onRemoveValue()
   m_internals->MinusButtonIndices.removeAt(bindex);
 
   item->removeValue(eindex);
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 void qtFileItem::clearChildWidgets()

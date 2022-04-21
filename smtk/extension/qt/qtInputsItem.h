@@ -49,7 +49,7 @@ public:
   void forceUpdate();
   bool isFixedWidth() const override;
 
-public slots:
+public Q_SLOTS:
   void setOutputOptional(int);
   void onExpressionReferenceChanged();
   void onTextEditChanged();
@@ -61,7 +61,7 @@ public slots:
   void updateItemData() override;
   // void setUseSelectionManager(bool mode) override;
 
-protected slots:
+protected Q_SLOTS:
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   void displayExpressionWidget(bool checkstate);

@@ -101,7 +101,7 @@ namespace
 {
 QAction* findExitAction(QMenu* menu)
 {
-  foreach (QAction* action, menu->actions())
+  Q_FOREACH (QAction* action, menu->actions())
   {
     QString name = action->text().toLower();
     name.remove('&');
@@ -116,7 +116,7 @@ QAction* findExitAction(QMenu* menu)
 QAction* findHelpMenuAction(QMenuBar* menubar)
 {
   QList<QAction*> menuBarActions = menubar->actions();
-  foreach (QAction* existingMenuAction, menuBarActions)
+  Q_FOREACH (QAction* existingMenuAction, menuBarActions)
   {
     QString menuName = existingMenuAction->text().toLower();
     menuName.remove('&');
@@ -155,7 +155,7 @@ pqSMTKImportOperationBehavior::pqSMTKImportOperationBehavior(QObject* parent)
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
       QMenu* menu = nullptr;
-      foreach (QAction* existingMenuAction, menuBarActions)
+      Q_FOREACH (QAction* existingMenuAction, menuBarActions)
       {
         QString menuName = existingMenuAction->text();
         menuName.remove('&');

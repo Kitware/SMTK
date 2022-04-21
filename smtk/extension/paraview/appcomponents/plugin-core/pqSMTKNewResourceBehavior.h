@@ -64,7 +64,7 @@ public:
 
   void setNewMenu(QMenu*);
 
-public slots:
+public Q_SLOTS:
   void updateNewMenu();
 
 protected:

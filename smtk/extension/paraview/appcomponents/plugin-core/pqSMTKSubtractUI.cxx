@@ -47,7 +47,7 @@ static bool toggleMenuItem(QMenu* menu, bool hide)
 
 static QToolBar* findToolBar(QMainWindow* mainWindow, const QString& name)
 {
-  foreach (QToolBar* bar, mainWindow->findChildren<QToolBar*>())
+  Q_FOREACH (QToolBar* bar, mainWindow->findChildren<QToolBar*>())
   {
     if (bar->windowTitle() == name)
     {
@@ -83,7 +83,7 @@ static QAction* findAction(QToolBar* toolbar, const QString& name)
 {
   if (toolbar)
   {
-    foreach (QAction* act, toolbar->actions())
+    Q_FOREACH (QAction* act, toolbar->actions())
     {
       if (act->text() == name || act->objectName() == name)
       {
@@ -98,7 +98,7 @@ static QAction* findActionByName(QMainWindow* mainWindow, const QString& name)
 {
   if (mainWindow)
   {
-    foreach (QAction* act, mainWindow->findChildren<QAction*>())
+    Q_FOREACH (QAction* act, mainWindow->findChildren<QAction*>())
     {
       if (act->objectName() == name)
       {

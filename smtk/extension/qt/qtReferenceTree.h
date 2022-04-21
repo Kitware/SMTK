@@ -68,11 +68,11 @@ public:
   /// Return the phrase model controlling the tree's contents.
   std::shared_ptr<smtk::view::PhraseModel> phraseModel() const;
 
-public slots:
+public Q_SLOTS:
   void updateItemData() override;
   virtual void synchronizeMembers();
 
-protected slots:
+protected Q_SLOTS:
   void removeObservers();
 
   virtual void setOutputOptional(int state);

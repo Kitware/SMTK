@@ -78,7 +78,7 @@ public:
   /// Return the string that represents the configuration for browser components
   static const std::string& getJSONConfiguration() { return s_configurationJSON; }
 
-public slots:
+public Q_SLOTS:
   virtual void sendPanelSelectionToSMTK(
     const QItemSelection& selected,
     const QItemSelection& deselected);
@@ -87,7 +87,7 @@ public slots:
   virtual void addSource(smtk::common::TypeContainer& managers);
   virtual void removeSource(smtk::common::TypeContainer& managers);
 
-protected slots:
+protected Q_SLOTS:
   virtual void hoverRow(const QModelIndex& idx);
   virtual void resetHover();
 

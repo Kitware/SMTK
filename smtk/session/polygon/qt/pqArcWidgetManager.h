@@ -53,7 +53,7 @@ public:
   // cancel the op if it is the current edge op
   void cancelOperation(const smtk::operation::OperationPtr&);
 
-signals:
+Q_SIGNALS:
   void Busy();
   void Ready();
   void operationDone();
@@ -62,13 +62,13 @@ signals:
   void editingStarted();
   void startPicking();
 
-public slots:
+public Q_SLOTS:
   void updateActiveView(pqRenderView* view) { View = view; }
   void updateActiveServer(pqServer* server) { Server = server; }
   // Enables the apply button of the Arc Widget
   void enableApplyButton(bool);
 
-protected slots:
+protected Q_SLOTS:
   // called when a whole arc is done creating or modifying.
   void createEdge();
   // called when a sub arc modification is done

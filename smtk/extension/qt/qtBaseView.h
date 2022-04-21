@@ -26,6 +26,14 @@
 
 class QScrollArea;
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 namespace smtk
 {
 namespace extension
@@ -88,11 +96,11 @@ public:
   // Validates the view information to see if it is suitable for creating a qtBaseView instance
   static bool validateInformation(const smtk::view::Information& info);
 
-signals:
+Q_SIGNALS:
   void aboutToDestroy();
   void modified();
 
-public slots:
+public Q_SLOTS:
   ///\brief Have the view update its contents
   ///
   /// The public method slot is used to update the view's GUI based on its  contents

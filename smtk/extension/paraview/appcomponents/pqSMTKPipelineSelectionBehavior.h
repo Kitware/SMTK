@@ -16,6 +16,14 @@
 
 #include "smtk/view/SelectionObserver.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QObject>
 
 #include <string>
@@ -58,14 +66,14 @@ public:
   {
     return m_displayAttributeResourcesOnSelection;
   }
-public slots:
+public Q_SLOTS:
   /// Set whether selecting an attribute resource should cause that
   /// resource to appear in the attribute-editor panel (assuming it is not marked private).
   ///
   /// This is true by default.
   virtual void setDisplayAttributeResourcesOnSelection(bool shouldDisplay);
 
-protected slots:
+protected Q_SLOTS:
   virtual void onActiveSourceChanged(pqPipelineSource* source);
   virtual void observeSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   virtual void unobserveSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);

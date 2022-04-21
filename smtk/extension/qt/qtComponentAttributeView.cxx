@@ -160,7 +160,7 @@ public:
       return defs; // return an empty list
     }
 
-    foreach (DefinitionPtr attDef, this->AllDefs)
+    Q_FOREACH (DefinitionPtr attDef, this->AllDefs)
     {
       if (attResource->passActiveCategoryCheck(attDef->categories()))
       {
@@ -749,9 +749,9 @@ void qtComponentAttributeView::getAllDefinitions()
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
 #endif
-  foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
+  Q_FOREACH (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
   {
-    foreach (QString category, this->Internals->AttDefMap.keys())
+    Q_FOREACH (QString category, this->Internals->AttDefMap.keys())
     {
       if (
         adef->categories().passes(category.toStdString()) &&

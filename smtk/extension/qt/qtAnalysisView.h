@@ -63,7 +63,7 @@ public:
 
   bool isValid() const override;
 
-public slots:
+public Q_SLOTS:
   /// \brief Slot used to update the UI when Analysis Attribute changes
   void analysisAttributeChanged();
 

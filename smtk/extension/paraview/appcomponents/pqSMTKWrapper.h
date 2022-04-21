@@ -19,6 +19,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include "pqProxy.h"
 
 #include <functional>
@@ -88,7 +96,7 @@ public:
     */
   void visitResources(std::function<bool(pqSMTKResource*)> visitor) const;
 
-public slots:
+public Q_SLOTS:
   /// Called by pqSMTKBehavior to add resources as they are created.
   virtual void addResource(pqSMTKResource* rsrc);
   /// Called by pqSMTKBehavior to remove resources as they are destroyed.
