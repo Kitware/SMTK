@@ -148,6 +148,8 @@ public:
       return this->AllDefs;
     }
 
+    QList<smtk::attribute::DefinitionPtr> defs;
+
     if (attResource->activeCategories().size() == 1)
     {
       std::string theCategory = *(attResource->activeCategories().begin());
@@ -155,9 +157,9 @@ public:
       {
         return this->AttDefMap[theCategory.c_str()];
       }
-      return this->AllDefs;
+      return defs; // return an empty list
     }
-    QList<smtk::attribute::DefinitionPtr> defs;
+
     foreach (DefinitionPtr attDef, this->AllDefs)
     {
       if (attResource->passActiveCategoryCheck(attDef->categories()))
