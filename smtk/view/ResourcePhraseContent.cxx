@@ -58,6 +58,16 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
   {
     switch (contentType)
     {
+      case PhraseContent::EDITABLE_TITLE:
+      {
+        std::string name = resource->name();
+        if (name.empty())
+        {
+          return "New Resource";
+        }
+        return name;
+      }
+      break;
       case PhraseContent::TITLE:
       {
         std::string name = resource->name();

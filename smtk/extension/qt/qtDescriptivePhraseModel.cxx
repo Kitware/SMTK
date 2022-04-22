@@ -292,19 +292,36 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
     view::DescriptivePhrasePtr item = this->getItem(idx);
     if (item)
     {
+      view::PhraseContentPtr content = item->content();
       if (role == PhrasePtrRole)
       {
         QVariant result;
         result.setValue(item);
         return result;
       }
+      else if (role == EditableTitleTextRole)
+      {
+        if (content)
+        {
+          return QVariant(content->stringValue(view::PhraseContent::EDITABLE_TITLE).c_str());
+        }
+        return QVariant("");
+      }
       else if (role == TitleTextRole || role == Qt::DisplayRole)
       {
-        return QVariant(item->title().c_str());
+        if (content)
+        {
+          return QVariant(content->stringValue(view::PhraseContent::TITLE).c_str());
+        }
+        return QVariant("");
       }
       else if (role == SubtitleTextRole)
       {
-        return QVariant(item->subtitle().c_str());
+        if (content)
+        {
+          return QVariant(content->stringValue(view::PhraseContent::SUBTITLE).c_str());
+        }
+        return QVariant("");
       }
       else if (role == PhraseCleanRole)
       {

@@ -347,7 +347,7 @@ void qtDescriptivePhraseDelegate::setEditorData(QWidget* editor, const QModelInd
   QLineEdit* titleEditor = qobject_cast<QLineEdit*>(editor);
   if (titleEditor)
   {
-    titleEditor->setText(idx.data(qtDescriptivePhraseModel::TitleTextRole).toString());
+    titleEditor->setText(idx.data(qtDescriptivePhraseModel::EditableTitleTextRole).toString());
   }
 }
 

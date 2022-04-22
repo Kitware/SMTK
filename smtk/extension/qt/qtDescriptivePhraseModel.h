@@ -59,19 +59,21 @@ public:
   /// Enumeration of model-specific data roles.
   enum DataRoles
   {
-    TitleTextRole = Qt::UserRole + 100,    //!< Phrase title (usu. user-editable component name)
-    SubtitleTextRole = Qt::UserRole + 101, //!< Phrase subtitle (usu. type of phrase)
-    // PhraseIconRole_LightBG = Qt::UserRole + 102, //!< Phrase type icon on light background
-    // PhraseIconRole_DarkBG = Qt::UserRole + 103,  //!< Phrase type icon on dark background
-    // PhraseColorRole = Qt::UserRole + 104, //!< Phrase-specific color (e.g., component color)
-    // PhraseVisibilityRole = Qt::UserRole + 105, //!< Visibility of phrase's subject
-    PhraseCleanRole = Qt::UserRole + 106,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
-    PhraseLockRole = Qt::UserRole + 107,       //!< Is resource free (0) or locked (1)?
-    ModelActiveRole = Qt::UserRole + 108,      //!< Is resource the active resource?
-    TitleTextMutableRole = Qt::UserRole + 109, //!< Is the title editable?
-    // ColorMutableRole = Qt::UserRole + 110,       //!< Is the subject's color editable?
-    PhrasePtrRole = Qt::UserRole + 111, //!< Grab the whole descriptive phrase!
-    BadgesRole = Qt::UserRole + 112     //!< Grab the set of badges for this phrase.
+    TitleTextRole = Qt::UserRole + 100, //!< Phrase title (usu. current component name)
+    EditableTitleTextRole =
+      Qt::UserRole + 101,                  //!< Phrase title (usu. user-editable component name)
+    SubtitleTextRole = Qt::UserRole + 102, //!< Phrase subtitle (usu. type of phrase)
+    // PhraseIconRole_LightBG = Qt::UserRole + 103, //!< Phrase type icon on light background
+    // PhraseIconRole_DarkBG = Qt::UserRole + 104,  //!< Phrase type icon on dark background
+    // PhraseColorRole = Qt::UserRole + 105, //!< Phrase-specific color (e.g., component color)
+    // PhraseVisibilityRole = Qt::UserRole + 106, //!< Visibility of phrase's subject
+    PhraseCleanRole = Qt::UserRole + 107,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
+    PhraseLockRole = Qt::UserRole + 108,       //!< Is resource free (0) or locked (1)?
+    ModelActiveRole = Qt::UserRole + 109,      //!< Is resource the active resource?
+    TitleTextMutableRole = Qt::UserRole + 110, //!< Is the title editable?
+    // ColorMutableRole = Qt::UserRole + 111,       //!< Is the subject's color editable?
+    PhrasePtrRole = Qt::UserRole + 112, //!< Grab the whole descriptive phrase!
+    BadgesRole = Qt::UserRole + 113     //!< Grab the set of badges for this phrase.
   };
 
   void setPhraseModel(smtk::view::PhraseModelPtr model);
