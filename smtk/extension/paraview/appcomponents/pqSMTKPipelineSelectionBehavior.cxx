@@ -155,7 +155,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
               {
                 return;
               }
-              foreach (
+              Q_FOREACH (
                 pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
               {
                 panel = attrPanel;

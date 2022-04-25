@@ -124,7 +124,7 @@ public:
   void setColumnName(const std::string& name) { m_columnName = name; }
   const std::string& columnName() const { return m_columnName; }
 
-signals:
+Q_SIGNALS:
   void phraseTitleChanged(const QModelIndex&);
 
 protected:

@@ -64,7 +64,7 @@ public:
   static qtItem* createPointItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-protected slots:
+protected Q_SLOTS:
   void updateItemFromWidgetInternal() override;
   void updateWidgetFromItemInternal() override;
 

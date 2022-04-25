@@ -157,6 +157,6 @@ void qtVoidItem::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 }

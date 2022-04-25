@@ -23,10 +23,10 @@ public:
   {
   }
 
-signals:
+Q_SIGNALS:
   void finished();
 
-public slots:
+public Q_SLOTS:
   void run();
 };
 

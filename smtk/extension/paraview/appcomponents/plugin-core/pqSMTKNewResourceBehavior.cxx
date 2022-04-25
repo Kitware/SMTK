@@ -140,7 +140,7 @@ namespace
 {
 QAction* findSaveResourceAction(QMenu* menu)
 {
-  foreach (QAction* action, menu->actions())
+  Q_FOREACH (QAction* action, menu->actions())
   {
     if (action->text().contains("save resource", Qt::CaseInsensitive))
     {
@@ -228,7 +228,7 @@ QMenu* pqSMTKNewResourceBehavior::fileMenu()
   QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
   QMenu* menu = nullptr;
-  foreach (QAction* existingMenuAction, menuBarActions)
+  Q_FOREACH (QAction* existingMenuAction, menuBarActions)
   {
     QString menuName = existingMenuAction->text();
     menuName.remove('&');

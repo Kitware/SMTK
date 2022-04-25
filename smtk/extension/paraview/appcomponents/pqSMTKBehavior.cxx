@@ -163,7 +163,7 @@ void pqSMTKBehavior::addPQProxy(pqSMTKWrapper* rsrcMgr)
     it->second.second = rsrcMgr;
   }
 
-  emit addedManagerOnServer(rsrcMgr, server);
+  Q_EMIT addedManagerOnServer(rsrcMgr, server);
 }
 
 pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr mgr)
@@ -263,7 +263,7 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   // deleted until we explicitly delete it.
   rmpxy->GetSession()->Register(nullptr);
 
-  emit addedManagerOnServer(rmpxy, server);
+  Q_EMIT addedManagerOnServer(rmpxy, server);
 }
 
 void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
@@ -284,10 +284,10 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
   }
 
   // Notify listeners that the client-side managers are going away
-  emit removingManagerFromServer(entry->second.first, entry->first);
+  Q_EMIT removingManagerFromServer(entry->second.first, entry->first);
 
   // Notify listeners that the server-side managers are going away
-  emit removingManagerFromServer(entry->second.second, entry->first);
+  Q_EMIT removingManagerFromServer(entry->second.second, entry->first);
 
   // Decrease the shared pointer count to allow the wrapper to go out of scope.
   entry->second.first->GetSession()->UnRegister(nullptr);
@@ -409,7 +409,7 @@ bool pqSMTKBehavior::setPostProcessingMode(bool inPost)
     return false;
   }
   m_postProcessingMode = inPost;
-  emit postProcessingModeChanged(m_postProcessingMode);
+  Q_EMIT postProcessingModeChanged(m_postProcessingMode);
   return true;
 }
 

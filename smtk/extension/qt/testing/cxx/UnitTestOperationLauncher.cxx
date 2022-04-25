@@ -150,7 +150,7 @@ void TestOperationLauncher::run()
     result.wait();
   }
 
-  emit finished();
+  Q_EMIT finished();
 }
 
 int UnitTestOperationLauncher(int argc, char* argv[])

@@ -431,5 +431,5 @@ void qtDiscreteValueEditor::updateContents()
     }
   }
   this->Internals->m_inputItem->m_itemInfo.baseView()->childrenResized();
-  emit this->widgetSizeChanged();
+  Q_EMIT this->widgetSizeChanged();
 }

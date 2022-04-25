@@ -62,7 +62,7 @@ public:
   const QList<qtBaseView*>& childViews() const;
   bool isValid() const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void updateModelAssociation() override;

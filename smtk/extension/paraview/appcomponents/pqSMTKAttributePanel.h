@@ -20,6 +20,14 @@
 
 #include "pqPropertyLinks.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QDockWidget>
 
 class pqServer;
@@ -45,7 +53,7 @@ public:
 
   smtk::extension::qtUIManager* attributeUIManager() const { return m_attrUIMgr; }
 
-public slots:
+public Q_SLOTS:
   /**\brief Populate the attribute panel with data from \a psrc
     *
     * If \a psrc is an attribute source, then call displayResource()
@@ -98,7 +106,7 @@ public slots:
     */
   virtual void resetPanel(smtk::resource::ManagerPtr rsrcMgr);
 
-protected slots:
+protected Q_SLOTS:
   /**\brief Called when vtkSMTKSettings is modified, indicating user preferences have changed.
     *
     * The attribute panel listens for changes to the highlight-on-hover

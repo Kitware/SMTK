@@ -401,7 +401,7 @@ void VisibilityBadge::activeViewChanged(pqView* view)
   // Connect new representations, initialize visibility map..
   if (view)
   {
-    foreach (pqRepresentation* rep, view->getRepresentations())
+    Q_FOREACH (pqRepresentation* rep, view->getRepresentations())
     {
       this->representationAddedToActiveView(rep);
     }

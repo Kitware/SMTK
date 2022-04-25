@@ -37,13 +37,13 @@ public:
   ~qtDateTimeItem() override;
   void setLabelVisible(bool) override;
 
-public slots:
+public Q_SLOTS:
   void setOutputOptional(int);
   void updateItemData() override;
 
-signals:
+Q_SIGNALS:
 
-protected slots:
+protected Q_SLOTS:
   void onChildWidgetSizeChanged() override;
   /* virtual void onAddNewValue(); */
   /* virtual void onRemoveValue(); */

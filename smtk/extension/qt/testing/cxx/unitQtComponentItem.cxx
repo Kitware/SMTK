@@ -84,12 +84,12 @@ bool qtEventFilter::eventFilter(QObject* src, QEvent* event)
     {
       case Qt::Key_Escape:
       case Qt::Key_Cancel:
-        emit popDown();
+        Q_EMIT popDown();
         return true;
       case Qt::Key_Return:
       case Qt::Key_Enter:
       case Qt::Key_Space:
-        emit toggleItem();
+        Q_EMIT toggleItem();
         return true;
       case Qt::Key_R:
         if (keyEvent->modifiers() & (Qt::MetaModifier | Qt::AltModifier | Qt::ControlModifier))
@@ -101,12 +101,12 @@ bool qtEventFilter::eventFilter(QObject* src, QEvent* event)
         }
       // fall through.
       case Qt::Key_Clear:
-        emit reset();
+        Q_EMIT reset();
         return true;
       case Qt::Key_L:
         if (keyEvent->modifiers() & (Qt::MetaModifier | Qt::AltModifier | Qt::ControlModifier))
         {
-          emit toggleLink();
+          Q_EMIT toggleLink();
           return true;
         }
         break;

@@ -32,7 +32,7 @@ public:
   AttDefTreeView(const AttDefTreeView&) = delete;
   AttDefTreeView& operator=(const AttDefTreeView&) = delete;
 
-signals:
+Q_SIGNALS:
   void showDialog(const QModelIndex&);
 
 protected:
@@ -44,7 +44,7 @@ protected:
       case Qt::Key_Return:
       {
         auto* sm = QTreeView::selectionModel();
-        emit showDialog(sm->currentIndex());
+        Q_EMIT showDialog(sm->currentIndex());
       }
       break;
     }

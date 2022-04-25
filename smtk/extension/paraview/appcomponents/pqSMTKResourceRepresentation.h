@@ -18,6 +18,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceRepresentation : public pqPipelineRepresentation
 {
   Q_OBJECT
@@ -37,11 +45,11 @@ public:
   /// Change the visibility of the specified component. Returns true if changed, false otherwise.
   bool setVisibility(smtk::resource::ComponentPtr comp, bool visible);
 
-signals:
+Q_SIGNALS:
   /// Emitted from within setVisibility().
   void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
-protected slots:
+protected Q_SLOTS:
   /// Called when vtkSMTKSettings singleton is modified.
   ///
   /// Currently, this will update selection render-style (wireframe/solid).

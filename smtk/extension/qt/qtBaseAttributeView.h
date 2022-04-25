@@ -75,10 +75,10 @@ public:
   // Validates the view information to see if it is suitable for creating a qtAttributeBaseView instance
   static bool validateInformation(const smtk::view::Information& info);
 
-signals:
+Q_SIGNALS:
   void modified(smtk::attribute::ItemPtr);
 
-public slots:
+public Q_SLOTS:
 
   virtual void updateModelAssociation() { ; }
   virtual void valueChanged(smtk::attribute::ItemPtr);
@@ -97,7 +97,7 @@ public slots:
   SMTK_DEPRECATED_IN_21_12("No longer relevant or called.")
   virtual void requestModelEntityAssociation() { ; }
 
-protected slots:
+protected Q_SLOTS:
   virtual void onAdvanceLevelChanged(int levelIdx);
   void onConfigurationChanged(int levelIdx);
 

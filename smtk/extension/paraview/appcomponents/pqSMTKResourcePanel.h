@@ -17,6 +17,14 @@
 
 #include <QDockWidget>
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 class pqSMTKResourceBrowser;
 
 /**\brief A panel that displays SMTK resources available to the application/user.
@@ -37,7 +45,7 @@ public:
   /// Access the underlying resource browser.
   pqSMTKResourceBrowser* resourceBrowser() const { return m_browser; }
 
-protected slots:
+protected Q_SLOTS:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
 

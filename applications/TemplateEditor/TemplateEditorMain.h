@@ -48,7 +48,7 @@ public:
    */
   void load(char const* fileName);
 
-public slots:
+public Q_SLOTS:
   ///@{
   /**
    * Handlers for QAction signals to load, create new, save, etc.

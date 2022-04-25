@@ -41,12 +41,12 @@ public:
   // Returns continent/region or empty string
   QString selectedRegion() const;
 
-public slots:
+public Q_SLOTS:
 
-signals:
+Q_SIGNALS:
   void regionSelected(QString id);
 
-protected slots:
+protected Q_SLOTS:
   void onContinentChanged(const QItemSelection& selected, const QItemSelection& deselected);
   void onRegionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 

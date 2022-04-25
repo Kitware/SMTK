@@ -48,7 +48,7 @@ public:
   void setLabelVisible(bool) override;
   bool isFixedWidth() const override;
 
-public slots:
+public Q_SLOTS:
   // Updates the UI elements to reconcile any differences with the underlying
   // StringItem.
   void updateItemData() override;
@@ -76,7 +76,7 @@ protected:
 private:
   qtInfixExpressionEditorInternals* mp_internals;
 
-private slots:
+private Q_SLOTS:
   // Adds a new value to the StringItem and calls addInputEditor().
   void onAddNewValue();
   // Removes the value corresponding to the minus button which sent the signal.

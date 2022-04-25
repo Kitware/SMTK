@@ -533,7 +533,7 @@ void qtAssociation2ColumnWidget::onRemoveAssigned()
   QListWidgetItem* selItem = nullptr;
   QListWidget* theList = m_internals->CurrentList;
   QList<QListWidgetItem*> selItems = this->getSelectedItems(theList);
-  foreach (QListWidgetItem* item, selItems)
+  Q_FOREACH (QListWidgetItem* item, selItems)
   {
     auto currentItem = this->selectedObject(item);
     if (currentItem)
@@ -560,7 +560,7 @@ void qtAssociation2ColumnWidget::onRemoveAssigned()
   m_internals->AvailableList->blockSignals(false);
   if (selItem)
   {
-    emit this->attAssociationChanged();
+    Q_EMIT this->attAssociationChanged();
     // highlight selected item in AvailableList
     this->updateListItemSelectionAfterChange(selItems, m_internals->AvailableList);
     m_internals->CurrentList->setCurrentItem(nullptr);
@@ -582,7 +582,7 @@ void qtAssociation2ColumnWidget::onAddAvailable()
   QListWidgetItem* selItem = nullptr;
   QListWidget* theList = m_internals->AvailableList;
   QList<QListWidgetItem*> selItems = this->getSelectedItems(theList);
-  foreach (QListWidgetItem* item, selItems)
+  Q_FOREACH (QListWidgetItem* item, selItems)
   {
     auto currentItem = this->selectedObject(item);
     if (currentItem)
@@ -605,7 +605,7 @@ void qtAssociation2ColumnWidget::onAddAvailable()
   m_internals->AvailableList->blockSignals(false);
   if (selItem)
   {
-    emit this->attAssociationChanged();
+    Q_EMIT this->attAssociationChanged();
     // highlight selected item in CurrentList
     this->updateListItemSelectionAfterChange(selItems, m_internals->CurrentList);
     m_internals->AvailableList->setCurrentItem(nullptr);
@@ -639,10 +639,10 @@ void qtAssociation2ColumnWidget::updateListItemSelectionAfterChange(
   QListWidget* list)
 {
   list->blockSignals(true);
-  foreach (QListWidgetItem* item, selItems)
+  Q_FOREACH (QListWidgetItem* item, selItems)
   {
     QList<QListWidgetItem*> findList = list->findItems(item->text(), Qt::MatchExactly);
-    foreach (QListWidgetItem* findItem, findList)
+    Q_FOREACH (QListWidgetItem* findItem, findList)
     {
       findItem->setSelected(true);
     }
@@ -756,7 +756,7 @@ int qtAssociation2ColumnWidget::handleOperationEvent(
   if (needToRefresh)
   {
     this->refreshAssociations();
-    emit this->availableChanged();
+    Q_EMIT this->availableChanged();
   }
   return 0;
 }
@@ -769,7 +769,7 @@ int qtAssociation2ColumnWidget::handleResourceEvent(
   {
     // The simplest solution is just to refresh the widget
     this->refreshAssociations(resource.id());
-    emit this->availableChanged();
+    Q_EMIT this->availableChanged();
   }
   return 0;
 }

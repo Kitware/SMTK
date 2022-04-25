@@ -39,7 +39,7 @@ public:
 
   void setSelection(smtk::view::SelectionPtr selnMgr);
 
-protected slots:
+protected Q_SLOTS:
   virtual void onFilterChanged(QAction* a);
   virtual void startBlockSelectionInActiveView();
   virtual void filterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);

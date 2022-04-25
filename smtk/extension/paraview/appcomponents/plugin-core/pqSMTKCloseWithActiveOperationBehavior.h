@@ -33,7 +33,7 @@ public:
 
   static int showDialog(std::size_t numberOfActiveOperations);
 
-protected slots:
+protected Q_SLOTS:
   void trackActiveOperations(pqSMTKWrapper* wrapper, pqServer* server);
 
 protected:

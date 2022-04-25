@@ -14,6 +14,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QObject>
 
 #include <functional>
@@ -111,13 +119,13 @@ public:
    */
   bool postProcessingMode() const { return m_postProcessingMode; }
 
-public slots:
+public Q_SLOTS:
   /// Set whether post-processing mode is enabled (true) or disabled (false; default).
   ///
   /// The return value indicates whether the value changed.
   virtual bool setPostProcessingMode(bool inPost);
 
-signals:
+Q_SIGNALS:
   /// Called from within addManagerOnServer (in response to server becoming ready)
   void addedManagerOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   void addedManagerOnServer(pqSMTKWrapper* mgr, pqServer* server);
@@ -141,7 +149,7 @@ protected:
   Internal* m_p;
   bool m_postProcessingMode{ false };
 
-protected slots:
+protected Q_SLOTS:
   /// Called whenever a PV server becomes ready.
   virtual void addManagerOnServer(pqServer*);
   /// Called whenever a PV server is about to be disconnected.

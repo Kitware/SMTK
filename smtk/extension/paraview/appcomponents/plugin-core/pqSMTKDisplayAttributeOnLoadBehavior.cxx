@@ -146,7 +146,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
     {
       return;
     }
-    foreach (pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
+    Q_FOREACH (pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
     {
       panel = attrPanel;
       if (panel)

@@ -29,7 +29,7 @@ public:
   static qtItem* createSplineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-protected slots:
+protected Q_SLOTS:
   void updateItemFromWidgetInternal() override;
 
 protected:

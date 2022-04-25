@@ -16,6 +16,14 @@
 
 #include "smtk/resource/Resource.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 #include <QObject>
 
 /// This behavior is responsible for the connections between the
@@ -43,7 +51,7 @@ public:
   static pqSMTKRenderResourceBehavior* instance(QObject* parent = nullptr);
   ~pqSMTKRenderResourceBehavior() override;
 
-public slots:
+public Q_SLOTS:
   pqSMTKResource* createPipelineSource(const smtk::resource::Resource::Ptr&);
   void destroyPipelineSource(const smtk::resource::Resource::Ptr&);
   void renderPipelineSource(pqSMTKResource* source);

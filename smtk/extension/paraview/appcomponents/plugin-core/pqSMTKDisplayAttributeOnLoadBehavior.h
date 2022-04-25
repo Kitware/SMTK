@@ -45,7 +45,7 @@ public:
   /// This behavior is a singleton.
   static pqSMTKDisplayAttributeOnLoadBehavior* instance(QObject* parent = nullptr);
 
-protected slots:
+protected Q_SLOTS:
   virtual void observeResourcesOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   virtual void unobserveResourcesOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   virtual void handleResourceEvent(const smtk::resource::Resource&, smtk::resource::EventType);

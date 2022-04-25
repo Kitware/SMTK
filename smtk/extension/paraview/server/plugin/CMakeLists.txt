@@ -7,3 +7,4 @@ paraview_add_plugin(smtkPVServerExtPlugin
   REQUIRED_ON_CLIENT
   MODULES smtkPVServerExt
           ${smtk_vtk_modules})
+target_compile_definitions(smtkPVServerExtPlugin PRIVATE QT_NO_KEYWORDS)

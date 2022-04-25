@@ -51,7 +51,7 @@ public:
   void setAvailableLabel(const std::string& message);
   void setTitleLabel(const std::string& message);
 
-public slots:
+public Q_SLOTS:
   // Display the association information to a specific attribute
   void showEntityAssociation(smtk::attribute::AttributePtr theAtt) override;
   // Display the association information to a specific definition
@@ -63,7 +63,7 @@ public slots:
   virtual void refreshAssociations(
     const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
 
-protected slots:
+protected Q_SLOTS:
   virtual void onRemoveAssigned();
   virtual void onAddAvailable();
   virtual void removeObservers();

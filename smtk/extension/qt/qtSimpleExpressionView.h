@@ -77,7 +77,7 @@ public:
   smtk::attribute::AttributePtr getFunctionFromItem(QListWidgetItem* item);
   int getNumberOfComponents();
 
-public slots:
+public Q_SLOTS:
   void onFuncSelectionChanged(QListWidgetItem*, QListWidgetItem*);
   void onFuncValueChanged(QTableWidgetItem*);
   void onFuncNameChanged(QListWidgetItem*);
@@ -93,7 +93,7 @@ public slots:
   void updateUI() override;
   void onShowCategory() override;
 
-protected slots:
+protected Q_SLOTS:
 
 protected:
   void createWidget() override;

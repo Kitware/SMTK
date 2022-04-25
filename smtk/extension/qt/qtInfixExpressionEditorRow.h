@@ -51,11 +51,11 @@ public:
   QLineEdit* editBox() const;
   int itemElementIndex() const;
 
-public slots:
+public Q_SLOTS:
   // Evaluates the result of |text| and displays it in |mp_resultBox|.
   void onEditBoxChanged(const QString& text);
 
-signals:
+Q_SIGNALS:
   // Emitted from onEditBoxChanged().
   void editBoxChanged(const QString& text, int elementIndex);
 
@@ -72,7 +72,7 @@ private:
   // Sets the QPalette::base color of |mp_resultBox| with proper contrast.
   void setResultBoxColor(bool resultIsValid);
 
-private slots:
+private Q_SLOTS:
   // Shows a dialog containing instructions and reference on using infix
   // expressions.
   void onShowExpressionHelp();

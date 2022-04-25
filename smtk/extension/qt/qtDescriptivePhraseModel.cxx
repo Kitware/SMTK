@@ -486,7 +486,7 @@ void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
   nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
   this->beginInsertRows(qidx, 0, nrows);
   this->endInsertRows();
-  emit dataChanged(qidx, qidx);
+  Q_EMIT dataChanged(qidx, qidx);
 }
 
 Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
@@ -508,26 +508,26 @@ void qtDescriptivePhraseModel::updateObserver(
   switch (event)
   {
     case PhraseModelEvent::ABOUT_TO_INSERT:
-      emit this->beginInsertRows(this->indexFromPath(src), range[0], range[1]);
+      Q_EMIT this->beginInsertRows(this->indexFromPath(src), range[0], range[1]);
       break;
     case PhraseModelEvent::INSERT_FINISHED:
-      emit this->endInsertRows();
+      Q_EMIT this->endInsertRows();
       break;
     case PhraseModelEvent::ABOUT_TO_REMOVE:
-      emit this->beginRemoveRows(this->indexFromPath(src), range[0], range[1]);
+      Q_EMIT this->beginRemoveRows(this->indexFromPath(src), range[0], range[1]);
       break;
     case PhraseModelEvent::REMOVE_FINISHED:
-      emit this->endRemoveRows();
+      Q_EMIT this->endRemoveRows();
       break;
     case PhraseModelEvent::ABOUT_TO_MOVE:
-      emit this->beginMoveRows(
+      Q_EMIT this->beginMoveRows(
         this->indexFromPath(src), range[0], range[1], this->indexFromPath(dst), range[2]);
       break;
     case PhraseModelEvent::MOVE_FINISHED:
-      emit this->endMoveRows();
+      Q_EMIT this->endMoveRows();
       break;
     case PhraseModelEvent::PHRASE_MODIFIED:
-      emit this->dataChanged(this->indexFromPath(src), this->indexFromPath(dst));
+      Q_EMIT this->dataChanged(this->indexFromPath(src), this->indexFromPath(dst));
       break;
   }
 }

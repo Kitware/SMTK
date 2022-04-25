@@ -100,16 +100,16 @@ public:
   virtual void setInputValue(int i, const QString&);
   void updateItemValue(int i);
   void updateEditorValue(int i);
-public slots:
+public Q_SLOTS:
   virtual void onUpdateItemValue();
   void setOutputOptional(int);
   virtual bool onLaunchFileBrowser();
   void updateItemData() override;
 
-signals:
+Q_SIGNALS:
   bool launchFileBrowser();
 
-protected slots:
+protected Q_SLOTS:
   virtual void onAddNewValue();
   virtual void onRemoveValue();
 

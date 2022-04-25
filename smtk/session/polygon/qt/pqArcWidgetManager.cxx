@@ -97,10 +97,10 @@ int pqArcWidgetManager::create()
     this->ActiveWidget = nullptr;
   }
 
-  emit this->Busy();
+  Q_EMIT this->Busy();
   if (!this->Arc)
   {
-    emit this->Ready();
+    Q_EMIT this->Ready();
     return 0;
   }
   bool created = false;
@@ -133,10 +133,10 @@ int pqArcWidgetManager::edit()
 {
   delete this->ArcWidget;
 
-  emit this->Busy();
+  Q_EMIT this->Busy();
   if (!this->Arc)
   {
-    emit this->Ready();
+    Q_EMIT this->Ready();
     return 0;
   }
   if (!this->EditWidget)
@@ -178,7 +178,7 @@ void pqArcWidgetManager::cancelOperation(const smtk::operation::OperationPtr& op
   this->ActiveWidget = nullptr;
   delete this->EditWidget;
   this->EditWidget = nullptr;
-  emit this->operationCancelled();
+  Q_EMIT this->operationCancelled();
 }
 
 void pqArcWidgetManager::enableApplyButton(bool state)
@@ -216,15 +216,15 @@ void pqArcWidgetManager::createEdge()
   this->disableArcWidget();
   this->ActiveWidget = nullptr;
 
-  emit this->Ready();
-  emit this->operationDone();
+  Q_EMIT this->Ready();
+  Q_EMIT this->operationDone();
 }
 
 void pqArcWidgetManager::editingFinished()
 {
   this->ActiveWidget = nullptr;
-  emit this->Ready();
-  emit this->operationDone();
+  Q_EMIT this->Ready();
+  Q_EMIT this->operationDone();
 }
 
 void pqArcWidgetManager::updateEdge(qtArcWidget* subArcWidget, const smtk::common::UUID& edgeId)
@@ -265,7 +265,7 @@ void pqArcWidgetManager::updateEdge(qtArcWidget* subArcWidget, const smtk::commo
     vtkIdType arcIdsSize = arcIdsFromSplit->GetNumberOfTuples();
     if(arcIdsSize > 0)
       {
-      //convert this into a QList of vtkIdTypes so we can emit to the tree
+      //convert this into a QList of vtkIdTypes so we can Q_EMIT to the tree
       for(vtkIdType idx=0; idx < arcIdsSize; ++idx)
         {
         newArcIds.push_back(arcIdsFromSplit->GetValue(idx));
@@ -283,7 +283,7 @@ void pqArcWidgetManager::updateEdge(qtArcWidget* subArcWidget, const smtk::commo
     //it needs the signal so that the tree can split the arcset into arcs.
     //Also this is need to make all the arc representation rerender to fix
     //any old end nodes hanging around
-    emit this->ArcSplit2(this->Arc,newArcIds);
+    Q_EMIT this->ArcSplit2(this->Arc,newArcIds);
 */
   }
 }

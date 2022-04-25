@@ -25,5 +25,5 @@ qtTableWidget::~qtTableWidget() = default;
 
 void qtTableWidget::keyPressEvent(QKeyEvent* e)
 {
-  emit this->keyPressed(e);
+  Q_EMIT this->keyPressed(e);
 }

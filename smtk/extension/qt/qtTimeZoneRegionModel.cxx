@@ -91,7 +91,7 @@ void qtTimeZoneRegionModel::initialize()
     QStringList rawParts = line.split(',');
     // Strip quotes from each item
     parts.clear();
-    foreach (QString part, rawParts)
+    Q_FOREACH (QString part, rawParts)
     {
       int first = 1;
       int length = part.length() - 2;
@@ -323,7 +323,7 @@ QModelIndex qtTimeZoneRegionModel::findModelIndex(const QString& regionId) const
 
   // Find continent index by brute force
   int contRow = 0;
-  foreach (QString name, this->Internal->ContinentList)
+  Q_FOREACH (QString name, this->Internal->ContinentList)
   {
     if (name == continent)
     {

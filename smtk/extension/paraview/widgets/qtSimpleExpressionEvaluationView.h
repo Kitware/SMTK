@@ -28,7 +28,7 @@ public:
   qtSimpleExpressionEvaluationView(const smtk::view::Information& info);
   ~qtSimpleExpressionEvaluationView() override;
 
-public slots:
+public Q_SLOTS:
   void createFunctionWithExpression() override;
 
 protected:

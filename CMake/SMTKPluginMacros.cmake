@@ -133,4 +133,5 @@ function (smtk_add_plugin name)
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE
       smtkCore)
+  target_compile_definitions("${_smtk_plugin_name}" PRIVATE QT_NO_KEYWORDS)
 endfunction ()

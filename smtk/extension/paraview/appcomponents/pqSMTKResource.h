@@ -18,6 +18,14 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+// VTK's wrapper parser does not properly handle Qt macros on macos.
+#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
+#define Q_DISABLE_COPY(x)
+#define Q_SLOTS
+#define Q_SIGNALS protected
+#define Q_OBJECT
+#endif
+
 /**\brief A pqPipelineSource subclass for VTK algorithms that own SMTK resources.
   *
   * A single pqSMTKResource may hold **different** SMTK resources over its lifetime,
@@ -49,7 +57,7 @@ public:
   /// Drop the resource in preparation for server/application exit.
   void dropResource();
 
-signals:
+Q_SIGNALS:
   /// This is called when the pqSMTKResource is assigned a new smtk::resource::ResourcePtr.
   void resourceModified(smtk::resource::ResourcePtr);
 
@@ -57,7 +65,7 @@ signals:
   /// the primary thread that an operation has executed.
   void operationOccurred(QPrivateSignal);
 
-protected slots:
+protected Q_SLOTS:
   /**\brief Keep the pqSMTKResource and smtk::resource::Resource in sync.
     *
     * This is called when the ParaView pipeline source (vtkSMTKResourceSource) has had

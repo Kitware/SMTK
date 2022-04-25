@@ -44,7 +44,7 @@ public:
   /// specialized from qtResourceBrowser version.
   static const std::string getJSONConfiguration();
 
-protected slots:
+protected Q_SLOTS:
   virtual void searchTextChanged(const QString& searchText);
 
   virtual void sourceAdded(pqSMTKWrapper* mgr, pqServer* server);

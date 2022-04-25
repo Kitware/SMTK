@@ -64,7 +64,7 @@ public:
   // Validates the view information to see if it is suitable for creating a qtOperationView instance
   static bool validateInformation(const smtk::view::Information& info);
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void onShowCategory() override;
@@ -72,7 +72,7 @@ public slots:
   virtual void onModifiedParameter(qtItem* item);
   virtual void onOperate();
 
-signals:
+Q_SIGNALS:
   /**\brief Signaled when the user presses the "Apply" button.
     *
     * Note that if runOperationOnApply() returns true, the operation

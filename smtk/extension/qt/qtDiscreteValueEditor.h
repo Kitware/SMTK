@@ -36,17 +36,17 @@ public:
   bool useSelectionManger() const { return m_useSelectionManager; }
   void updateContents();
 
-public slots:
+public Q_SLOTS:
   void onInputValueChanged();
   virtual void updateItemData();
   // Indicates if it is possible use the Selection Manager
   // void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
-signals:
+Q_SIGNALS:
   /// /brief Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
 
-protected slots:
+protected Q_SLOTS:
 
 protected:
   virtual void createWidget();

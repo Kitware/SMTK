@@ -169,7 +169,7 @@ int qtInfixExpressionEditorRow::itemElementIndex() const
 
 void qtInfixExpressionEditorRow::onEditBoxChanged(const QString& text)
 {
-  emit this->editBoxChanged(text, itemElementIndex());
+  Q_EMIT this->editBoxChanged(text, itemElementIndex());
 
   if (text.isEmpty())
   {

@@ -217,7 +217,7 @@ void qtReferenceItem::setOutputOptional(int state)
   if (itm && (itm->localEnabledState() != optionalVal))
   {
     itm->setIsEnabled(optionalVal);
-    emit modified();
+    Q_EMIT modified();
   }
   m_p->m_editBtn->setEnabled(optionalVal);
   this->updateSynopsisLabels();
@@ -318,7 +318,7 @@ void qtReferenceItem::copyFromSelection()
       {
         this->updateSynopsisLabels();
         this->linkHover(true);
-        emit modified();
+        Q_EMIT modified();
       }
     }
   }
@@ -352,7 +352,7 @@ void qtReferenceItem::clearItem()
   {
     this->updateSynopsisLabels();
     this->linkHover(true);
-    emit modified();
+    Q_EMIT modified();
   }
 }
 
@@ -935,7 +935,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
           ++idx;
         }
       }
-      emit modified();
+      Q_EMIT modified();
     }
     break;
 

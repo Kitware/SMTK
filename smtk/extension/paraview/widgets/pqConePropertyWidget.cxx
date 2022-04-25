@@ -189,7 +189,7 @@ void pqConePropertyWidget::pickPoint1(double wx, double wy, double wz)
   vtkSMNewWidgetRepresentationProxy* wdgProxy = this->widgetProxy();
   vtkSMPropertyHelper(wdgProxy, "BottomPoint").Set(position, 3);
   wdgProxy->UpdateVTKObjects();
-  emit this->changeAvailable();
+  Q_EMIT this->changeAvailable();
   this->render();
 }
 
@@ -199,7 +199,7 @@ void pqConePropertyWidget::pickPoint2(double wx, double wy, double wz)
   vtkSMNewWidgetRepresentationProxy* wdgProxy = this->widgetProxy();
   vtkSMPropertyHelper(wdgProxy, "TopPoint").Set(position, 3);
   wdgProxy->UpdateVTKObjects();
-  emit this->changeAvailable();
+  Q_EMIT this->changeAvailable();
   this->render();
 }
 
@@ -224,7 +224,7 @@ void pqConePropertyWidget::setCylindrical(bool isCylinder)
     m_p->Ui.show3DWidget->setText("Show cone");
   }
   wdgProxy->UpdateVTKObjects();
-  emit this->changeAvailable();
+  Q_EMIT this->changeAvailable();
   this->render();
 }
 

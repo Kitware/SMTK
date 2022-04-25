@@ -40,7 +40,7 @@ public:
   static pqSMTKSubtractUI* instance(QObject* parent = nullptr);
   ~pqSMTKSubtractUI() override;
 
-public slots:
+public Q_SLOTS:
   /// Remove (or restore) a menu item (via its QAction) by its text name.
   /// This method is often easier but not robust when language translations are enabled.
   virtual void

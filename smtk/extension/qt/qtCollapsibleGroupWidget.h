@@ -38,7 +38,7 @@ public:
   void setName(const QString& newName);
   QString name() const;
 
-public slots:
+public Q_SLOTS:
   void open();
   void collapse();
 

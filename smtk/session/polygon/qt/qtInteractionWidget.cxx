@@ -111,7 +111,7 @@ void qtInteractionWidget::setEnableInteractivity(bool val)
   if (this->Interactivity != val)
   {
     this->Interactivity = val;
-    emit this->enableInteractivityChanged(this->Interactivity);
+    Q_EMIT this->enableInteractivityChanged(this->Interactivity);
   }
 }
 

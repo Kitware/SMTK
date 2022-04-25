@@ -39,7 +39,7 @@ public:
   AttDefInformation(const AttDefInformation&) = delete;
   AttDefInformation& operator=(const AttDefInformation&) = delete;
 
-public slots:
+public Q_SLOTS:
   /**
    * Handles signals from the view (QSelectionModel) displaying the attribute
    * definitions.
@@ -51,14 +51,14 @@ public slots:
    */
   void onSaveAttDef();
 
-signals:
+Q_SIGNALS:
   /**
    * Indicates to the parent widget that a change has been made in the attribute
    * collection (or any of its entities) so that the user is informed about it.
    */
   void collectionChanged(bool needsSaving);
 
-private slots:
+private Q_SLOTS:
   void showInheritedItemDetails(const QModelIndex& index);
   void showOwnedItemDetails(const QModelIndex& index);
 

@@ -185,7 +185,7 @@ void qtTimeZoneSelectWidget::onRegionChanged(
 
   QModelIndex index = selected[0].topLeft();
   qDebug() << "Selected region" << index.data();
-  emit this->regionSelected(index.data().toString());
+  Q_EMIT this->regionSelected(index.data().toString());
 }
 
 void qtTimeZoneSelectWidget::setContinent(const QModelIndex index)

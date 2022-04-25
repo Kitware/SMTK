@@ -143,7 +143,7 @@ void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
 
   if (didChange)
   {
-    emit modified();
+    Q_EMIT modified();
   }
 }
 

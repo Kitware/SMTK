@@ -29,7 +29,7 @@ public:
   static qtItem* createTransformWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-protected slots:
+protected Q_SLOTS:
   void resetWidget();
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidgetInternal() override;

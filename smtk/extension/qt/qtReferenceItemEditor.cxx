@@ -575,7 +575,7 @@ void qtReferenceItemEditor::selectItem(int index)
     {
       item->unset();
       this->updateContents();
-      emit this->modified();
+      Q_EMIT this->modified();
     }
   }
   // Are we dealing with the create new option
@@ -590,7 +590,7 @@ void qtReferenceItemEditor::selectItem(int index)
     {
       item->setValue(selectedObject);
       this->updateContents();
-      emit this->modified();
+      Q_EMIT this->modified();
     }
   }
 
@@ -711,7 +711,7 @@ void qtReferenceItemEditor::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 }
 
@@ -770,7 +770,7 @@ void qtReferenceItemEditor::updateContents()
   {
     // Nothing else to do but tell the outside world our size may have changed
     m_itemInfo.baseView()->childrenResized();
-    emit this->widgetSizeChanged();
+    Q_EMIT this->widgetSizeChanged();
   }
 
   m_internals->m_hintChildWidth = 0;
@@ -857,5 +857,5 @@ void qtReferenceItemEditor::updateContents()
   m_internals->m_mainLayout->addWidget(m_internals->m_childrenFrame);
 
   m_itemInfo.baseView()->childrenResized();
-  emit this->widgetSizeChanged();
+  Q_EMIT this->widgetSizeChanged();
 }

@@ -40,10 +40,10 @@ public:
   static qtItem* createSliceItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-public slots:
+public Q_SLOTS:
   void sliceInputsChanged();
 
-protected slots:
+protected Q_SLOTS:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidgetInternal() override;
   /// Retrieve values from the attribute system and update the ParaView proxy.

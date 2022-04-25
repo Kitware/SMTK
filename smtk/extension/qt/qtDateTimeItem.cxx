@@ -229,7 +229,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     this->Internals->TimeZoneMenu->addAction("UTC", this, SLOT(onTimeZoneUTC()));
     this->Internals->TimeZoneMenu->addAction("Select Region...", this, SLOT(onTimeZoneRegion()));
     // Set element index on all actions
-    foreach (QAction* action, this->Internals->TimeZoneMenu->actions())
+    Q_FOREACH (QAction* action, this->Internals->TimeZoneMenu->actions())
     {
       action->setData(elementIdx);
     }
@@ -255,7 +255,7 @@ void qtDateTimeItem::setOutputOptional(int state)
     return;
   }
   bool enable = state != 0;
-  foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+  Q_FOREACH (QWidget* cwidget, this->Internals->ChildrenMap.keys())
   {
     QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
     if (childLayout)
@@ -274,7 +274,7 @@ void qtDateTimeItem::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 }
 
@@ -551,7 +551,7 @@ void qtDateTimeItem::clearChildWidgets()
     return;
   }
 
-  foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+  Q_FOREACH (QWidget* cwidget, this->Internals->ChildrenMap.keys())
   {
     QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
     if (childLayout)
@@ -599,7 +599,7 @@ void qtDateTimeItem::updateBackground(QDateTimeEdit* dtEdit, bool valid)
 
 void qtDateTimeItem::updateTimeZoneMenu(QAction* selectedAction)
 {
-  foreach (QAction* action, this->Internals->TimeZoneMenu->actions())
+  Q_FOREACH (QAction* action, this->Internals->TimeZoneMenu->actions())
   {
     bool enabled = action != selectedAction;
     action->setEnabled(enabled);

@@ -44,7 +44,7 @@ public:
   static qtItem* createBoxItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-protected slots:
+protected Q_SLOTS:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.

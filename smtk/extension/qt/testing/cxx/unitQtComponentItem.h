@@ -21,7 +21,7 @@ public:
   qtEventFilter(QObject* parent = nullptr);
   ~qtEventFilter() override;
 
-signals:
+Q_SIGNALS:
   void reset();
   void toggleItem();
   void toggleLink();

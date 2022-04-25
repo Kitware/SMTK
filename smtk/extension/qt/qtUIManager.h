@@ -273,14 +273,14 @@ public:
 #define LINE_BREAKER_STRING "\r";
 #endif
 
-public slots:
+public Q_SLOTS:
   void onFileItemCreated(smtk::extension::qtFileItem*);
   void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
   void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
   void setAdvanceLevel(int b);
   void onOperationFinished();
 
-signals:
+Q_SIGNALS:
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);

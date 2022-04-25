@@ -38,14 +38,14 @@ public:
 
   bool displayItem(smtk::attribute::ItemPtr) const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void onShowCategory() override;
   /// This will be triggered by selecting different type
   /// of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
-protected slots:
+protected Q_SLOTS:
   virtual void requestOperation(const smtk::operation::OperationPtr& op);
 
   virtual void chooseDefaultColorAndApply();

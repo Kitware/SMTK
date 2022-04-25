@@ -103,7 +103,7 @@ void qtArcWidget::checkContourLoopClosed()
   if (loopClosed)
   {
     this->ModifyMode();
-    emit this->contourLoopClosed();
+    Q_EMIT this->contourLoopClosed();
   }
 }
 
@@ -170,7 +170,7 @@ void qtArcWidget::finishContour()
 {
   vtkSMNewWidgetRepresentationProxy* widget = this->widgetProxy();
   widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, nullptr);
-  emit this->contourDone();
+  Q_EMIT this->contourDone();
 }
 
 vtkSMProxy* qtArcWidget::pointPlacer() const

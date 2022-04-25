@@ -40,7 +40,7 @@ pqSMTKColorByToolBar::pqSMTKColorByToolBar(QWidget* parent)
   // Now, if we find a sibling toolbar named "Active Variable Controls" hook it
   // up so it's only shown when the Color By mode is "Field" (or the active
   // representation is not an SMTK model):
-  foreach (QToolBar* avctb, parent->findChildren<QToolBar*>())
+  Q_FOREACH (QToolBar* avctb, parent->findChildren<QToolBar*>())
   {
     if (avctb->windowTitle() == "Active Variable Controls")
     {

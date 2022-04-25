@@ -271,8 +271,8 @@ void qtAttribute::onItemModified()
   {
     return;
   }
-  emit this->itemModified(iobject);
-  emit this->modified();
+  Q_EMIT this->itemModified(iobject);
+  Q_EMIT this->modified();
 }
 
 bool qtAttribute::isEmpty() const

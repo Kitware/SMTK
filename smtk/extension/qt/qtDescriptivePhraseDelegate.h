@@ -46,7 +46,7 @@ public:
   bool highlightOnHover() const;
   bool visibilityMode() const;
 
-public slots:
+public Q_SLOTS:
   void setTitleFontSize(int tfs);
   void setSubtitleFontSize(int sfs);
   void setTitleFontWeight(int tfs);

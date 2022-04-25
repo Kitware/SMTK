@@ -29,7 +29,7 @@ public:
 
   ~qtPrintLog() override = default;
 
-public slots:
+public Q_SLOTS:
   void print()
   {
     std::cout << "Received: " << Log.convertToString(false) << std::endl;

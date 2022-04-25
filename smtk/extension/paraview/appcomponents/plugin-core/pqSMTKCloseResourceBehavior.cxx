@@ -174,7 +174,7 @@ namespace
 {
 QAction* findSaveStateAction(QMenu* menu)
 {
-  foreach (QAction* action, menu->actions())
+  Q_FOREACH (QAction* action, menu->actions())
   {
     if (action->text().contains("save state", Qt::CaseInsensitive))
     {
@@ -187,7 +187,7 @@ QAction* findSaveStateAction(QMenu* menu)
 QAction* findHelpMenuAction(QMenuBar* menubar)
 {
   QList<QAction*> menuBarActions = menubar->actions();
-  foreach (QAction* existingMenuAction, menuBarActions)
+  Q_FOREACH (QAction* existingMenuAction, menuBarActions)
   {
     QString menuName = existingMenuAction->text().toLower();
     menuName.remove('&');
@@ -228,7 +228,7 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
       QMenu* menu = nullptr;
-      foreach (QAction* existingMenuAction, menuBarActions)
+      Q_FOREACH (QAction* existingMenuAction, menuBarActions)
       {
         QString menuName = existingMenuAction->text();
         menuName.remove('&');

@@ -64,7 +64,7 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
     /// using QueuedConnection will allow the emit to happen after the current
     /// path of execution.
     QMetaObject::invokeMethod(
-      this, [handler, result]() { emit handler->resultReady(result); }, Qt::QueuedConnection);
+      this, [handler, result]() { Q_EMIT handler->resultReady(result); }, Qt::QueuedConnection);
   }
   else
   {
@@ -90,7 +90,7 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
         if (parametersName.toStdString() == operation->parameters()->name())
         {
           auto result = operation->specification()->findAttribute(resultName.toStdString());
-          emit handler->resultReady(result);
+          Q_EMIT handler->resultReady(result);
 
           // Remove this connection.
           QObject::disconnect(*connection);
@@ -117,7 +117,7 @@ smtk::operation::Operation::Result qtOperationLauncher::run(
 
   // Privately emit the name of the output result so the contents of this class
   // that reside on the original thread can access it.
-  emit operationHasResult(
+  Q_EMIT operationHasResult(
     QString::fromStdString(operation->parameters()->name()),
     QString::fromStdString(result->name()),
     QPrivateSignal());

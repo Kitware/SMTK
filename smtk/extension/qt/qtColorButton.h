@@ -31,13 +31,13 @@ public:
   /// get the color
   QColor chosenColor() const;
 
-signals:
+Q_SIGNALS:
   /// signal color changed
   void chosenColorChanged(const QColor&);
   /// signal color selected
   void validColorChosen(const QColor&);
 
-public slots:
+public Q_SLOTS:
   /// set the color
   virtual void setChosenColor(const QColor&);
 

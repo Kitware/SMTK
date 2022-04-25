@@ -41,7 +41,7 @@ public:
   static qtItem* createCoordinateFrameItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
-protected slots:
+protected Q_SLOTS:
   void updateItemFromWidgetInternal() override;
 
 protected:

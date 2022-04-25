@@ -98,7 +98,7 @@ public:
       includeAdvanceLevel = true;
       advLevel = uiManager->advanceLevel();
     }
-    foreach (DefinitionPtr attDef, this->AllDefs)
+    Q_FOREACH (DefinitionPtr attDef, this->AllDefs)
     {
       if (attDef->isRelevant(!ignoreCategories, includeAdvanceLevel, advLevel))
       {
@@ -644,7 +644,7 @@ void qtAttributeView::onListBoxSelectionChanged()
       m_internals->m_activeAttributeViewAttName, dataItem->id().toString());
     this->updateAssociationEnableState(dataItem);
     this->updateTableWithAttribute(dataItem);
-    emit attributeSelected(dataItem);
+    Q_EMIT attributeSelected(dataItem);
   }
   else
   {
@@ -802,7 +802,7 @@ smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 
   QString strDef = m_internals->DefsCombo->currentText();
 
-  foreach (
+  Q_FOREACH (
     attribute::DefinitionPtr attDef,
     m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
   {
@@ -849,8 +849,8 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     }
   }
   this->attributeCreated(newAtt);
-  emit this->numOfAttributesChanged();
-  emit qtBaseView::modified();
+  Q_EMIT this->numOfAttributesChanged();
+  Q_EMIT qtBaseView::modified();
 }
 
 void qtAttributeView::onCopySelected()
@@ -870,8 +870,8 @@ void qtAttributeView::onCopySelected()
     {
       m_internals->ListTable->selectRow(item->row());
     }
-    emit this->numOfAttributesChanged();
-    emit qtBaseView::modified();
+    Q_EMIT this->numOfAttributesChanged();
+    Q_EMIT qtBaseView::modified();
   }
 }
 
@@ -895,8 +895,8 @@ void qtAttributeView::onDeleteSelected()
       {
         m_internals->ListTableModel->removeRow(selItem->row());
         this->attributeRemoved(selObject);
-        emit this->numOfAttributesChanged();
-        emit qtBaseView::modified();
+        Q_EMIT this->numOfAttributesChanged();
+        Q_EMIT qtBaseView::modified();
       }
     }
     else
@@ -1014,7 +1014,7 @@ void qtAttributeView::onViewBy()
   else
   {
     m_internals->DefsCombo->clear();
-    foreach (attribute::DefinitionPtr attDef, currentDefs)
+    Q_FOREACH (attribute::DefinitionPtr attDef, currentDefs)
     {
       if (!attDef->isAbstract())
       {
@@ -1026,7 +1026,7 @@ void qtAttributeView::onViewBy()
     m_internals->DefsCombo->setCurrentIndex(0);
     m_internals->DefsCombo->setVisible(true);
   }
-  foreach (attribute::DefinitionPtr attDef, currentDefs)
+  Q_FOREACH (attribute::DefinitionPtr attDef, currentDefs)
   {
     this->onViewByWithDefinition(attDef);
   }
@@ -1291,9 +1291,9 @@ void qtAttributeView::getAllDefinitions()
       return a->displayedTypeName() < b->displayedTypeName();
     });
 
-  foreach (smtk::attribute::DefinitionPtr adef, m_internals->AllDefs)
+  Q_FOREACH (smtk::attribute::DefinitionPtr adef, m_internals->AllDefs)
   {
-    foreach (QString category, m_internals->AttDefMap.keys())
+    Q_FOREACH (QString category, m_internals->AttDefMap.keys())
     {
       if (
         adef->categories().passes(category.toStdString()) &&
@@ -1329,7 +1329,7 @@ void qtAttributeView::onListBoxClicked(const QModelIndex& index)
       bgBrush.setColor(color);
       item->setBackground(bgBrush);
       selAtt->setColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
-      emit this->attColorChanged();
+      Q_EMIT this->attColorChanged();
     }
     auto mappedCurrent =
       m_internals->ListTableProxyModel->mapToSource(m_internals->ListTable->currentIndex());
@@ -1377,9 +1377,9 @@ void qtAttributeView::associationsChanged()
   }
   this->updateAttributeStatus(m_internals->CurrentAtt->attribute().get());
   this->valueChanged(m_internals->CurrentAtt->attribute()->associations());
-  emit this->modified(m_internals->CurrentAtt->attribute()->associations());
-  emit this->attAssociationChanged();
-  emit qtBaseView::modified();
+  Q_EMIT this->modified(m_internals->CurrentAtt->attribute()->associations());
+  Q_EMIT this->attAssociationChanged();
+  Q_EMIT qtBaseView::modified();
   std::vector<std::string> items;
   items.emplace_back("_associations");
   this->attributeChanged(m_internals->CurrentAtt->attribute(), items);

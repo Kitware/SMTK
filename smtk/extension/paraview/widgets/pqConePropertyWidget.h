@@ -22,7 +22,7 @@ public:
   pqConePropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = nullptr);
   ~pqConePropertyWidget() override;
 
-public slots:
+public Q_SLOTS:
   void pick(double, double, double);
   void pickPoint1(double, double, double);
   void pickPoint2(double, double, double);
@@ -32,7 +32,7 @@ public slots:
   /// allows user control of whether the cone is a cylinder (when true).
   void setForceCylindrical(bool);
 
-protected slots:
+protected Q_SLOTS:
   void updateInformationLabels();
   void placeWidget() override;
 

@@ -45,7 +45,7 @@ public:
   /// Provides access to vtkSMNewWidgetRepresentationProxy used.
   vtkSMNewWidgetRepresentationProxy* widgetProxy() const;
 
-public slots:
+public Q_SLOTS:
   //@{
   /// Controls the visibility and interactivity of the vtkWidgetRepresentation
   /// in the view set using `setView`. Note, if no active view is set (or is of
@@ -56,7 +56,7 @@ public slots:
   void disableInteractivity() { this->setEnableInteractivity(false); }
   //@}
 
-signals:
+Q_SIGNALS:
   /// fired when interactivity state is changed.
   void enableInteractivityChanged(bool enabled);
 
@@ -69,7 +69,7 @@ signals:
   /// Notifies observers that the user is dragging the 3D widget
   void widgetInteraction();
 
-protected slots:
+protected Q_SLOTS:
   /// call to trigger a render.
   void render();
 

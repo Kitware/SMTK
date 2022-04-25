@@ -187,7 +187,7 @@ void pqPointPropertyWidget::setControlState(const std::string& data)
   {
     m_control->setCheckState(
       m_state == 0x00 ? Qt::Unchecked : (m_state == 0x01 ? Qt::PartiallyChecked : Qt::Checked));
-    emit controlStateChanged(this->controlState());
+    Q_EMIT controlStateChanged(this->controlState());
   }
 }
 
@@ -228,6 +228,6 @@ void pqPointPropertyWidget::setWorldPosition(double wx, double wy, double wz)
   double o[3] = { wx, wy, wz };
   vtkSMPropertyHelper(wdgProxy, "WorldPosition").Set(o, 3);
   wdgProxy->UpdateVTKObjects();
-  emit this->changeAvailable();
+  Q_EMIT this->changeAvailable();
   this->render();
 }

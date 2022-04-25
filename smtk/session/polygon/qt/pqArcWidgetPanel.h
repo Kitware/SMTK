@@ -50,16 +50,16 @@ class ArcPicker : public QAction
 public:
   ArcPicker(QObject* parent);
   ~ArcPicker() override;
-signals:
+Q_SIGNALS:
   //called by the selector when a valid selection is finished.
   void pickFinished();
   //emitted to allow selection to happen
   void triggered(bool);
 
-public slots:
+public Q_SLOTS:
   void doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& info);
 
-protected slots:
+protected Q_SLOTS:
   //saves the information returned from the selection.
   void selectedInfo(pqOutputPort* port);
   // picking arc end point finished
@@ -89,7 +89,7 @@ public:
   virtual void setArc(pqPolygonArc* arc);
   virtual void setArcManager(pqArcWidgetManager* arcManager) { this->ArcManager = arcManager; }
 
-signals:
+Q_SIGNALS:
   void arcModified(qtArcWidget*, const smtk::common::UUID& edgeid);
   void arcModificationfinished();
   void arcModificationCacelled();
@@ -98,7 +98,7 @@ signals:
 
   friend class pqArcWidgetManager;
 
-protected slots:
+protected Q_SLOTS:
   //shows the edit widget and hides the pick widget
   void showEditWidget();
 

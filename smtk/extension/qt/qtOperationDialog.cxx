@@ -222,7 +222,7 @@ qtOperationDialog::~qtOperationDialog()
 
 void qtOperationDialog::onOperationExecuted(const smtk::operation::Operation::Result& result)
 {
-  emit this->operationExecuted(result);
+  Q_EMIT this->operationExecuted(result);
   this->accept(); // closes the dialog
 }
 

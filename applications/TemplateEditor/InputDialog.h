@@ -39,7 +39,7 @@ public:
   InputDialog(const InputDialog&) = delete;
   InputDialog& operator=(const InputDialog&) = delete;
 
-protected slots:
+protected Q_SLOTS:
   void validate();
 
 protected:
@@ -47,7 +47,7 @@ protected:
 
   QDialogButtonBox* buttonBox();
 
-private slots:
+private Q_SLOTS:
   /**
  * The 'Apply' button is used by default to save changes (and exit the
  * dialog). This slot is used to accomplish that, since this button has

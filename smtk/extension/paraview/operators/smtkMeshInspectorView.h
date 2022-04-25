@@ -34,12 +34,12 @@ public:
 
   bool displayItem(smtk::attribute::ItemPtr) const override;
 
-public slots:
+public Q_SLOTS:
   void updateUI() override;
   void onShowCategory() override;
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
-protected slots:
+protected Q_SLOTS:
   virtual void requestOperation(const smtk::operation::OperationPtr& op);
 
   /// This slot is used to indicate that the underlying attribute

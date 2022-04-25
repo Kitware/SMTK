@@ -38,7 +38,7 @@ public:
   QToolButton* InteractiveSelectButton;
   bool m_isActive;
 
-signals:
+Q_SIGNALS:
   //emitted to allow selection to happen
   void triggered(bool);
 };
@@ -57,17 +57,17 @@ public:
   smtk::shared_ptr<smtk::operation::Operation> edgeOperation();
   bool isActive();
 
-signals:
+Q_SIGNALS:
   void operationRequested(const smtk::operation::OperationPtr& brOp);
   /// update face visbility before picking points
   /// hide all faces when picking then restore the visibility after picking
   void hideAllFaces(bool status);
 
-public slots:
+public Q_SLOTS:
   void resetWidget();
   void onSelectionModeChanged();
 
-protected slots:
+protected Q_SLOTS:
   void arcPointPicked(pqOutputPort*);
   void splitEdgeOperation(bool start);
 

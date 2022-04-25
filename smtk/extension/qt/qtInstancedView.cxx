@@ -41,7 +41,7 @@ public:
 
   ~qtInstancedViewInternals()
   {
-    foreach (qtAttribute* qatt, this->AttInstances)
+    Q_FOREACH (qtAttribute* qatt, this->AttInstances)
     {
       delete qatt;
     }
@@ -144,7 +144,7 @@ void qtInstancedView::updateUI()
   std::string attName, defName;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;
-  foreach (qtAttribute* qatt, this->Internals->AttInstances)
+  Q_FOREACH (qtAttribute* qatt, this->Internals->AttInstances)
   {
     delete qatt;
   }
@@ -259,7 +259,7 @@ void qtInstancedView::updateUI()
 
 void qtInstancedView::showAdvanceLevelOverlay(bool show)
 {
-  foreach (qtAttribute* att, this->Internals->AttInstances)
+  Q_FOREACH (qtAttribute* att, this->Internals->AttInstances)
   {
     if (att->widget())
     {
@@ -271,7 +271,7 @@ void qtInstancedView::showAdvanceLevelOverlay(bool show)
 
 bool qtInstancedView::isValid() const
 {
-  foreach (qtAttribute* att, this->Internals->AttInstances)
+  Q_FOREACH (qtAttribute* att, this->Internals->AttInstances)
   {
     if (!att->attribute()->isValid())
     {

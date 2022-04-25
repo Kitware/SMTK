@@ -70,12 +70,12 @@ public:
     QWidget* parentWidget = nullptr);
   ~qtOperationDialog() override;
 
-signals:
+Q_SIGNALS:
   void operationExecuted(const smtk::operation::Operation::Result& result);
 
-public slots:
+public Q_SLOTS:
 
-protected slots:
+protected Q_SLOTS:
   void onOperationExecuted(const smtk::operation::Operation::Result& result);
 
 protected:

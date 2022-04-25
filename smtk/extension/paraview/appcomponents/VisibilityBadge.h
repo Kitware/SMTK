@@ -71,7 +71,7 @@ public:
   void setPhraseVisibility(const DescriptivePhrase* phrase, int val);
   bool phraseVisibility(const DescriptivePhrase* phrase) const;
 
-protected slots:
+protected Q_SLOTS:
   /// handle the active view changing, change the visible icons.
   void activeViewChanged(pqView* view);
   void representationAddedToActiveView(pqRepresentation* rep);

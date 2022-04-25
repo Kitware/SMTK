@@ -32,7 +32,7 @@ public:
 protected:
   pqSMTKRegisterImportersBehavior(QObject* parent = nullptr);
 
-protected slots:
+protected Q_SLOTS:
   void constructImporters(pqSMTKWrapper* rsrcMgr, pqServer* server);
 
 private:

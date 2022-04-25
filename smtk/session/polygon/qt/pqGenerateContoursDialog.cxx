@@ -401,7 +401,7 @@ void pqGenerateContoursDialog::onAccecptContours()
   this->Progress->show();
   this->disableWhileProcessing();
 
-  emit this->contoursAccepted(this->CleanPolyLines);
+  Q_EMIT this->contoursAccepted(this->CleanPolyLines);
   this->MainDialog->done(QDialog::Accepted);
 
   delete this->Progress;

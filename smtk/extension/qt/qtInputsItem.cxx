@@ -260,7 +260,7 @@ void qtInputsItem::unsetValue(int elementIndex)
   if (item->isSet(elementIndex))
   {
     item->unset(elementIndex);
-    emit modified();
+    Q_EMIT modified();
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -282,7 +282,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   }
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
-    emit this->modified();
+    Q_EMIT this->modified();
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -296,7 +296,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 void qtInputsItem::forceUpdate()
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
-  emit this->modified();
+  Q_EMIT this->modified();
   auto* iview = m_itemInfo.baseView();
   if (iview)
   {
@@ -343,7 +343,7 @@ void qtInputsItem::updateItemData()
   if (valItem->isDiscrete())
   {
     // Ok we are dealing with discrete editors
-    foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
+    Q_FOREACH (QWidget* cwidget, m_internals->ChildrenMap.keys())
     {
       qtDiscreteValueEditor* editor = qobject_cast<qtDiscreteValueEditor*>(cwidget);
       if (editor != nullptr)
@@ -358,7 +358,7 @@ void qtInputsItem::updateItemData()
   auto doubleItem = m_itemInfo.itemAs<DoubleItem>();
   if (doubleItem != nullptr)
   {
-    foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
+    Q_FOREACH (QWidget* cwidget, m_internals->ChildrenMap.keys())
     {
       this->updateDoubleItemData(cwidget, doubleItem);
     }
@@ -368,7 +368,7 @@ void qtInputsItem::updateItemData()
   auto intItem = m_itemInfo.itemAs<IntItem>();
   if (intItem != nullptr)
   {
-    foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
+    Q_FOREACH (QWidget* cwidget, m_internals->ChildrenMap.keys())
     {
       this->updateIntItemData(cwidget, intItem);
     }
@@ -379,7 +379,7 @@ void qtInputsItem::updateItemData()
   auto stringItem = m_itemInfo.itemAs<StringItem>();
   if (stringItem != nullptr)
   {
-    foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
+    Q_FOREACH (QWidget* cwidget, m_internals->ChildrenMap.keys())
     {
       this->updateStringItemData(cwidget, stringItem);
     }
@@ -1000,7 +1000,7 @@ void qtInputsItem::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 }
 
@@ -1017,7 +1017,7 @@ void qtInputsItem::onAddNewValue()
     //      m_internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
   }
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 void qtInputsItem::onRemoveValue()
@@ -1068,7 +1068,7 @@ void qtInputsItem::onRemoveValue()
   }
   this->clearChildWidgets();
   this->loadInputValues();
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 void qtInputsItem::updateExtensibleState()
@@ -1084,7 +1084,7 @@ void qtInputsItem::updateExtensibleState()
 
   bool minReached = (item->numberOfRequiredValues() > 0) &&
     (item->numberOfRequiredValues() == item->numberOfValues());
-  foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
+  Q_FOREACH (QToolButton* tButton, m_internals->ExtensibleMap.keys())
   {
     tButton->setEnabled(!minReached);
   }
@@ -1101,7 +1101,7 @@ void qtInputsItem::clearChildWidgets()
   if (item->isExtensible())
   {
     //clear mapping
-    foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
+    Q_FOREACH (QToolButton* tButton, m_internals->ExtensibleMap.keys())
     {
       // will delete later from m_internals->ChildrenMap
       //      delete m_internals->ExtensibleMap.value(tButton).second;
@@ -1112,7 +1112,7 @@ void qtInputsItem::clearChildWidgets()
     m_internals->MinusButtonIndices.clear();
   }
 
-  foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
+  Q_FOREACH (QWidget* cwidget, m_internals->ChildrenMap.keys())
   {
     QLayout* childLayout = m_internals->ChildrenMap.value(cwidget);
     if (childLayout)
@@ -1280,7 +1280,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
           hideExpressionResultWidgets();
         }
 
-        emit this->modified();
+        Q_EMIT this->modified();
       }
     }
 
@@ -1288,7 +1288,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     if (inputitem->isExpression() && (setIndex == 0))
     {
       inputitem->setExpression(nullptr);
-      emit this->modified();
+      Q_EMIT this->modified();
     }
     m_internals->m_expressionCombo->setCurrentIndex(setIndex);
     m_internals->m_expressionCombo->blockSignals(false);
@@ -1312,7 +1312,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       // they are correct.
       this->clearChildWidgets();
       this->loadInputValues();
-      emit this->modified();
+      Q_EMIT this->modified();
     }
   }
 
@@ -1434,7 +1434,7 @@ void qtInputsItem::onExpressionReferenceChanged()
   {
     iview->valueChanged(inputitem->shared_from_this());
   }
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 QWidget* qtInputsItem::createDoubleWidget(
@@ -1699,7 +1699,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   if (!item->isSet(elementIdx) && item->hasDefault())
   {
     item->setToDefault(elementIdx);
-    emit this->modified();
+    Q_EMIT this->modified();
   }
 
   switch (item->type())
@@ -1867,7 +1867,7 @@ void qtInputsItem::doubleValueChanged(double newVal)
     {
       iview->valueChanged(ditem);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
   if (iview)
   {
@@ -1909,7 +1909,7 @@ void qtInputsItem::intValueChanged(int newVal)
     {
       iview->valueChanged(iitem);
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
   if (iview)
   {
@@ -2022,7 +2022,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
       iview->valueChanged(rawitem->shared_from_this());
     }
-    emit this->modified();
+    Q_EMIT this->modified();
   }
   if (iview)
   {
@@ -2035,7 +2035,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
 
 void qtInputsItem::onChildItemModified()
 {
-  emit this->modified();
+  Q_EMIT this->modified();
 }
 
 bool qtInputsItem::isFixedWidth() const

@@ -56,7 +56,7 @@ public:
       return this->AllDefs;
     }
     QList<smtk::attribute::DefinitionPtr> defs;
-    foreach (DefinitionPtr attDef, this->AllDefs)
+    Q_FOREACH (DefinitionPtr attDef, this->AllDefs)
     {
       if (attDef->categories().passes(attResource->activeCategories()))
       {
@@ -84,7 +84,7 @@ public:
         return (this->AllDefs.empty());
       }
       QList<smtk::attribute::DefinitionPtr> defs;
-      foreach (DefinitionPtr attDef, this->AllDefs)
+      Q_FOREACH (DefinitionPtr attDef, this->AllDefs)
       {
         if (attResource->passActiveCategoryCheck(attDef->categories()))
         {
@@ -220,7 +220,7 @@ void qtAssociationView::updateUI()
     this->Internals->getCurrentDefs(this->attributeResource());
   std::set<AttributePtr, Attribute::CompareByName> atts;
   // Get all of the attributes that match the list of definitions
-  foreach (attribute::DefinitionPtr attDef, currentDefs)
+  Q_FOREACH (attribute::DefinitionPtr attDef, currentDefs)
   {
     ResourcePtr attResource = attDef->resource();
     std::vector<smtk::attribute::AttributePtr> result;
@@ -315,9 +315,9 @@ void qtAssociationView::getAllDefinitions()
       return a->displayedTypeName() < b->displayedTypeName();
     });
 
-  foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
+  Q_FOREACH (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
   {
-    foreach (QString category, this->Internals->AttDefMap.keys())
+    Q_FOREACH (QString category, this->Internals->AttDefMap.keys())
     {
       if (
         adef->categories().passes(category.toStdString()) &&
@@ -351,7 +351,7 @@ void qtAssociationView::associationsChanged()
     return;
   }
 
-  emit this->modified(att->associations());
-  emit this->attAssociationChanged();
-  emit qtBaseView::modified();
+  Q_EMIT this->modified(att->associations());
+  Q_EMIT this->attAssociationChanged();
+  Q_EMIT qtBaseView::modified();
 }

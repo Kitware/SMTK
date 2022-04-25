@@ -58,7 +58,7 @@ public:
   void hideCancel();
   void showCancel();
 
-public slots:
+public Q_SLOTS:
   void attributeNameChanged();
 
 private:

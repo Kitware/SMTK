@@ -30,7 +30,7 @@ public:
   /// Let the panel display a custom view config, from json or xml.
   void setView(const smtk::view::ConfigurationPtr& view);
 
-protected slots:
+protected Q_SLOTS:
   virtual void sourceAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void sourceRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
