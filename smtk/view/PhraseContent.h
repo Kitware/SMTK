@@ -44,12 +44,13 @@ public:
   /// Accepted types of content
   enum ContentType
   {
-    TITLE = 0x01,      //!< The phrase's title.
-    SUBTITLE = 0x02,   //!< The phrase's subtitle.
-    COLOR = 0x04,      //!< A control for displaying/editing the color of the phrase's subject.
-    VISIBILITY = 0x08, //!< A control for displaying/editing the visibility of the phrase's subject.
-    ICON_LIGHTBG = 0x10, //!< The icon of the phrase's subject for light backgrounds.
-    ICON_DARKBG = 0x20,  //!< The icon of the phrase's subject for dark backgrounds.
+    TITLE = 0x01,          //!< The phrase's title.
+    EDITABLE_TITLE = 0x02, //!< The text used to edit the content's title.
+    SUBTITLE = 0x04,       //!< The phrase's subtitle.
+    COLOR = 0x08,          //!< A control for displaying/editing the color of the phrase's subject.
+    VISIBILITY = 0x10, //!< A control for displaying/editing the visibility of the phrase's subject.
+    ICON_LIGHTBG = 0x20, //!< The icon of the phrase's subject for light backgrounds.
+    ICON_DARKBG = 0x40,  //!< The icon of the phrase's subject for dark backgrounds.
     EVERYTHING = 0xff    //!< Every aspect of the phrase content.
   };
 

@@ -96,6 +96,7 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
     switch (contentType)
     {
       case PhraseContent::TITLE:
+      case PhraseContent::EDITABLE_TITLE:
       {
         return component->name();
       }
