@@ -63,6 +63,10 @@ std::string traceAssociations(const smtk::attribute::ReferenceItemPtr& assoc)
   {
     for (auto entry = assoc->begin(); entry != assoc->end(); ++entry)
     {
+      if (!entry.isSet())
+      {
+        continue;
+      }
       // Each ReferenceItem is retrieved with a resource name and optional component name
       auto* resource = dynamic_cast<smtk::resource::Resource*>((*entry).get());
       if (resource)
@@ -192,14 +196,15 @@ std::string traceRef(const smtk::attribute::ReferenceItemPtr& item)
 
 } // namespace
 
-std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op)
+std::string pqSMTKPythonTrace::traceOperation(const smtk::operation::Operation& op, bool testing)
 {
   if (dynamic_cast<const smtk::attribute::Signal*>(&op))
     return "";
 
-  if (vtkSMTrace::GetActiveTracer() == nullptr)
+  if (vtkSMTrace::GetActiveTracer() == nullptr && !testing)
   {
     m_showSetup = true;
+    return "";
   }
   else if (m_showSetup)
   {

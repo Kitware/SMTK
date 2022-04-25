@@ -172,7 +172,7 @@ class TestOperationTracing(smtk.testing.TestCase):
 
         # now check that we are able to trace the operation
         tracer = pqSMTKPythonTrace()
-        op_trace = tracer.traceOperation(op)
+        op_trace = tracer.traceOperation(op, testing=True)
         print("operation trace:\n", op_trace)
         # non-default items should be traced.
         assert(op_trace.find(
