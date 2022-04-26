@@ -71,7 +71,7 @@ public:
   smtk::view::ManagerPtr GetViewManager() const;
 
   /// Return the client-side managers (mirrored on the server via this proxy).
-  SMTK_DEPRECATED_IN_22_03("Replaced with GetManagersPtr().")
+  SMTK_DEPRECATED_IN_22_04("Replaced with GetManagersPtr().")
   smtk::common::TypeContainer& GetManagers() const;
 
   /// Return the client-side managers (mirrored on the server via this proxy).

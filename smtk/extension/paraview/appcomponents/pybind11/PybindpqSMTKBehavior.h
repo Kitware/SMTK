@@ -60,7 +60,7 @@ inline py::class_< pqSMTKBehavior, QObject > pybind11_init_pqSMTKBehavior(py::mo
     .def("activeWrapperSelection", [](pqSMTKBehavior& behavior)
       { return behavior.wrapperProxy()->GetSelection(); })
     .def("activeWrapperTaskManager", [](pqSMTKBehavior& behavior)
-      { return behavior.wrapperProxy()->GetManagers().get<smtk::task::Manager::Ptr>(); })
+      { return behavior.wrapperProxy()->GetManagersPtr()->get<smtk::task::Manager::Ptr>(); })
     .def("activeWrapperProjectManager", [](pqSMTKBehavior& behavior)
       { return behavior.wrapperProxy()->GetProjectManager(); })
     ;
