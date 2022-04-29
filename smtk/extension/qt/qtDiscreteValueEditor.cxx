@@ -18,6 +18,7 @@
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPalette>
 #include <QPointer>
 
 #include "smtk/attribute/ValueItem.h"
@@ -272,6 +273,25 @@ void qtDiscreteValueEditor::onInputValueChanged()
     comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
     comboBox->setPalette(comboboxPalette);
+
+#ifdef WIN32
+    // On Windows, all options in the QComboBox were being displayed in red (regardless of validity)
+    //   Iterating through each individual item isn't ideal, but it fixes the problem
+    QColor noProblemColor = comboBox->parentWidget()->palette().color(QPalette::WindowText);
+    QColor red = QColor(Qt::red);
+    comboBox->setItemData(0, red, Qt::ForegroundRole);
+    if (comboBox->count() > 0)
+    {
+      for (int i = 1; i < comboBox->count(); i++)
+      {
+        comboBox->setItemData(i, noProblemColor, Qt::ForegroundRole);
+      }
+      if (comboBox->currentIndex() != 0)
+      {
+        comboBox->setItemData(comboBox->currentIndex(), red, Qt::ForegroundRole);
+      }
+    }
+#endif
   }
   else
   {
