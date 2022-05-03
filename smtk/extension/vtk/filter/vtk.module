@@ -10,6 +10,7 @@ PRIVATE_DEPENDS
   VTK::FiltersCore
   VTK::FiltersGeometry
   VTK::FiltersGeneral
+  VTK::FiltersGeometry
   VTK::IOLegacy
   VTK::IOXML
   VTK::ImagingCore
