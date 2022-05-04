@@ -17,7 +17,7 @@
 
 #include <QDockWidget>
 
-#include "smtk/extension/paraview/appcomponents/fixWrap.h"
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 class pqSMTKResourceBrowser;
 

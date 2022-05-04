@@ -32,7 +32,7 @@ set(classes
 )
 
 set(headers
-  fixWrap.h
+  pqQtKeywordWrapping.h
 )
 
 set(CMAKE_AUTOMOC 1)

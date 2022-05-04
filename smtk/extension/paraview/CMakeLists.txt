@@ -33,6 +33,7 @@ if (TARGET ParaView::pqApplicationComponents)
     appcomponents/plugin-legacy-operations/paraview.plugin
     appcomponents/plugin-operations-panel/paraview.plugin
     appcomponents/plugin-core/paraview.plugin
+    appcomponents/plugin-gui/paraview.plugin
     model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
     operators/paraview.plugin

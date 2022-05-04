@@ -18,7 +18,7 @@
 
 #include "smtk/resource/Observer.h" // for EventType
 
-#include "smtk/extension/paraview/appcomponents/fixWrap.h"
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 #include <QObject>
 

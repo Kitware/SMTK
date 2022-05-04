@@ -12,7 +12,7 @@
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
 
-#include "smtk/extension/paraview/appcomponents/fixWrap.h"
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 #include <QObject>
 
