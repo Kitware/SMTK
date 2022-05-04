@@ -1,35 +1,4 @@
-set(sources
-  pqSMTKAppComponentsAutoStart.cxx
-  pqSMTKAppComponentsAutoStart.h
-  pqSMTKCallObserversOnMainThreadBehavior.cxx
-  pqSMTKCallObserversOnMainThreadBehavior.h
-  pqSMTKCloseResourceBehavior.cxx
-  pqSMTKCloseResourceBehavior.h
-  pqSMTKCloseWithActiveOperationBehavior.cxx
-  pqSMTKCloseWithActiveOperationBehavior.h
-  pqSMTKColorByToolBar.cxx
-  pqSMTKColorByToolBar.h
-  pqSMTKColorByWidget.cxx
-  pqSMTKColorByWidget.h
-  pqSMTKDisplayAttributeOnLoadBehavior.cxx
-  pqSMTKDisplayAttributeOnLoadBehavior.h
-  pqSMTKImportIntoResourceBehavior.cxx
-  pqSMTKImportIntoResourceBehavior.h
-  pqSMTKNewResourceBehavior.cxx
-  pqSMTKNewResourceBehavior.h
-  pqSMTKRegisterImportersBehavior.cxx
-  pqSMTKRegisterImportersBehavior.h
-  pqSMTKSaveOnCloseResourceBehavior.cxx
-  pqSMTKSaveOnCloseResourceBehavior.h
-  pqSMTKSaveResourceBehavior.cxx
-  pqSMTKSaveResourceBehavior.h
-  pqSMTKSelectionFilterBehavior.cxx
-  pqSMTKSelectionFilterBehavior.h
-  pqSMTKSubtractUI.cxx
-  pqSMTKSubtractUI.h
-
-  vtkSMTKEncodeSelection.cxx
-  vtkSMTKEncodeSelection.h)
+set(sources)
 
 paraview_plugin_add_auto_start(
   CLASS_NAME pqSMTKAppComponentsAutoStart
@@ -91,28 +60,28 @@ paraview_plugin_add_dock_window(
   SOURCES resource_dock_sources)
 
 set(ui_files
-  resources/pqSMTKColorByWidget.ui
-  resources/pqSMTKSelectionFilterBehavior.ui
+  # resources/pqSMTKColorByWidget.ui
+  # resources/pqSMTKSelectionFilterBehavior.ui
 )
 set(CMAKE_AUTOUIC_SEARCH_PATHS
   "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 set(rc_files
-  resources/pqSMTKCloseResourceBehavior.qrc
-  resources/pqSMTKSaveResourceBehavior.qrc
-  resources/pqSMTKSelectionFilterBehavior.qrc
+  # resources/pqSMTKCloseResourceBehavior.qrc
+  # resources/pqSMTKSaveResourceBehavior.qrc
+  # resources/pqSMTKSelectionFilterBehavior.qrc
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
-  list(APPEND sources
-    pqSMTKExportSimulationBehavior.cxx
-    pqSMTKExportSimulationBehavior.h
-    pqSMTKImportOperationBehavior.cxx
-    pqSMTKImportOperationBehavior.h
-  )
-  list(APPEND rc_files
-    resources/pqSMTKImportOperationBehavior.qrc
-  )
+  # list(APPEND sources
+  #   pqSMTKExportSimulationBehavior.cxx
+  #   pqSMTKExportSimulationBehavior.h
+  #   pqSMTKImportOperationBehavior.cxx
+  #   pqSMTKImportOperationBehavior.h
+  # )
+  # list(APPEND rc_files
+  #   resources/pqSMTKImportOperationBehavior.qrc
+  # )
 endif()
 
 set(interfaces
@@ -148,8 +117,8 @@ smtk_add_plugin(smtkPQComponentsPlugin
     VERSION "1.0"
     REQUIRED_ON_SERVER
     REQUIRED_ON_CLIENT
-    UI_FILES ${ui_files}
-    UI_RESOURCES ${rc_files}
+    # UI_FILES ${ui_files}
+    # UI_RESOURCES ${rc_files}
     UI_INTERFACES ${interfaces}
     SOURCES ${sources}
     MODULES smtkPQComponentsExt
