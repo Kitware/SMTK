@@ -125,6 +125,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     TARGETS smtkPolygonSession
     MODULES ${import_vtk_depends})
 endif ()
+target_compile_definitions(smtkPolygonSession PRIVATE QT_NO_KEYWORDS)
 
 smtk_export_header(smtkPolygonSession Exports.h)
 
