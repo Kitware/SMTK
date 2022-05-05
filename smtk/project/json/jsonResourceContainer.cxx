@@ -15,7 +15,17 @@
 
 #include "smtk/project/Project.h"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+
+namespace
+{
+void replaceWindowsSeparators(boost::filesystem::path& path)
+{
+  std::string pathString = boost::algorithm::replace_all_copy(path.string(), "\\", "/");
+  path = boost::filesystem::path(pathString);
+}
+} // namespace
 
 namespace smtk
 {
@@ -37,6 +47,7 @@ void to_json(json& j, const ResourceContainer& resourceContainer, const ProjectP
     // convert stored path (which may be an absolute path) to a relative path
     boost::filesystem::path filePath(path);
     boost::filesystem::path newPath = boost::filesystem::relative(filePath, parentPath);
+    replaceWindowsSeparators(newPath);
     jResource["location"] = newPath.string();
     j["resources"].push_back(jResource);
   }
@@ -63,6 +74,7 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
     {
       locationPath = boost::filesystem::absolute(locationPath, parentPath);
     }
+    replaceWindowsSeparators(locationPath);
 
     smtk::resource::ResourcePtr resource =
       manager->read(it->at("type").get<std::string>(), locationPath.string());
