@@ -697,7 +697,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin-core" \
-  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin-core/resources" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin-legacy-operations" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin-operations-panel" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents/plugin-panel-defaults" \
@@ -800,7 +800,7 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin-core" \
-  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin-core/resources" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/resources" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin-legacy-operations" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin-operations-panel" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents/plugin-panel-defaults" \

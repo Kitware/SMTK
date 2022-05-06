@@ -18,13 +18,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-// VTK's wrapper parser does not properly handle Qt macros on macos.
-#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
-#define Q_DISABLE_COPY(x)
-#define Q_SLOTS
-#define Q_SIGNALS protected
-#define Q_OBJECT
-#endif
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 /**\brief A pqPipelineSource subclass for VTK algorithms that own SMTK resources.
   *

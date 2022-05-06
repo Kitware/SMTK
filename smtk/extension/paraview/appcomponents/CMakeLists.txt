@@ -14,23 +14,56 @@ set(classes
   pqSMTKResourcePanel
   pqSMTKResourceRepresentation
   pqSMTKWrapper
+  pqSMTKAppComponentsAutoStart
+  pqSMTKCallObserversOnMainThreadBehavior
+  pqSMTKCloseResourceBehavior
+  pqSMTKCloseWithActiveOperationBehavior
+  pqSMTKColorByToolBar
+  pqSMTKColorByWidget
+  pqSMTKDisplayAttributeOnLoadBehavior
+  pqSMTKImportIntoResourceBehavior
+  pqSMTKNewResourceBehavior
+  pqSMTKRegisterImportersBehavior
+  pqSMTKSaveOnCloseResourceBehavior
+  pqSMTKSaveResourceBehavior
+  pqSMTKSelectionFilterBehavior
+  pqSMTKSubtractUI
+  vtkSMTKEncodeSelection
+)
+
+set(headers
+  pqQtKeywordWrapping.h
 )
 
 set(CMAKE_AUTOMOC 1)
 set(CMAKE_AUTOUIC 1)
+set(CMAKE_AUTORCC 1)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 set(iconFiles
-  plugin-core/resources/pqEyeball.svg
-  plugin-core/resources/pqEyeballClosed.svg)
+  resources/pqEyeball.svg
+  resources/pqEyeballClosed.svg)
 
 set(uiFiles
   resources/pqSMTKOperationPanel.ui
+  resources/pqSMTKColorByWidget.ui
+  resources/pqSMTKSelectionFilterBehavior.ui
+)
+
+set(rc_files
+  resources/pqSMTKCloseResourceBehavior.qrc
+  resources/pqSMTKSaveResourceBehavior.qrc
+  resources/pqSMTKSelectionFilterBehavior.qrc
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND classes
     pqSMTKPythonTrace
+    pqSMTKExportSimulationBehavior
+    pqSMTKImportOperationBehavior
+  )
+  list(APPEND rc_files
+    resources/pqSMTKImportOperationBehavior.qrc
   )
 endif()
 
@@ -44,8 +77,10 @@ add_custom_target("pvAppIconHeaders" DEPENDS ${iconDependencies})
 
 vtk_module_add_module(smtkPQComponentsExt
   CLASSES ${classes}
+  HEADERS ${headers}
   PRIVATE_HEADERS ${uiFiles}
-  HEADERS_SUBDIR "smtk/extension/paraview/appcomponents")
+  HEADERS_SUBDIR "smtk/extension/paraview/appcomponents"
+  SOURCES ${rc_files})
 add_dependencies(smtkPQComponentsExt "pvAppIconHeaders")
 vtk_module_link(smtkPQComponentsExt
   PUBLIC
