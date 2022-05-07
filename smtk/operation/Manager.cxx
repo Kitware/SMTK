@@ -152,6 +152,11 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
     // issue by accessing the parameters as they are created by the manager.
     auto parameters = op->parameters();
   }
+  if (auto managers = m_managers.lock())
+  {
+    // Pass application's managers if available.
+    op->setManagers(managers);
+  }
 
   return op;
 }
