@@ -26,6 +26,7 @@
 
 namespace smtk
 {
+/// A subsystem for efficiently representing strings as fixed-size tokens (hashes).
 namespace string
 {
 

@@ -22,10 +22,12 @@
 
 #include "smtk/graph/Component.h"
 #include "smtk/graph/NodeSet.h"
+#include "smtk/graph/evaluators/Dump.h"
 #include "smtk/graph/filter/Grammar.h"
 
 #include "smtk/resource/filter/Filter.h"
 
+#include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -34,6 +36,7 @@
 
 namespace smtk
 {
+/// Subsystem for modeling using nodes connected to one another by arcs.
 namespace graph
 {
 namespace detail
@@ -69,11 +72,14 @@ typename std::enable_if<!detail::has_initializer<T(Args...)>::value>::type initi
 }
 } // namespace detail
 
-/// smtk::graph::Resource is defined by a Traits type that defines the node
-/// types and arc types of a multipartite graph. The node types must all inherit
-/// from smtk::graph::Component and comprise the elements of the resource.
-/// The arc types can be any type, and can represent a 1-to-1 or 1-to-many
-/// relationship between node types.
+/**\brief A resource for conceptual modeling of geometric components.
+  *
+  * The smtk::graph::Resource is defined by a Traits type that defines the node
+  * types and arc types of a multipartite graph. The node types must all inherit
+  * from smtk::graph::Component and comprise the elements of the resource.
+  * The arc types can be any type, and can represent a 1-to-1 or 1-to-many
+  * relationship between node types.
+  */
 template<typename Traits>
 class SMTK_ALWAYS_EXPORT Resource
   : public smtk::resource::DerivedFrom<Resource<Traits>, ResourceBase>
@@ -91,6 +97,8 @@ public:
 
   smtkTypedefs(smtk::graph::Resource<Traits>);
 
+  /// Return the resource's type, which is used by the resource manager and
+  /// for persistent storage.
   std::string typeName() const override
   {
     return "smtk::graph::Resource<" + smtk::common::typeName<Traits>() + ">";
@@ -146,70 +154,96 @@ public:
     return NodeContainer::eraseNodes(node) > 0;
   }
 
-  /// Create an arc of type ArcType with additional constructor arguments.
-  template<typename ArcType, typename... T>
-  typename std::enable_if<is_arc<ArcType>::value, const ArcType&>::type create(T&&... parameters)
-  {
-    ArcType arc(std::forward<T>(parameters)...);
-
-    smtk::common::UUID id = arc.from().id();
-    add(std::move(arc));
-    return m_arcs.at<ArcType>(id);
-  }
-
-  template<typename ArcType, typename... T>
-  typename std::enable_if<is_arc<ArcType>::value, const ArcType&>::type connect(T&&... parameters)
-  {
-    ArcType arc(std::forward<T>(parameters)...);
-
-    smtk::common::UUID id = arc.from().id();
-    if (m_arcs.contains<ArcType>(id))
-    {
-      m_arcs.at<ArcType>(id).insert(arc.to());
-    }
-    else
-    {
-      add(std::move(arc));
-    }
-    return m_arcs.at<ArcType>(id);
-  }
-
-  /// Add an arc of type ArcType to the resource. Return true if the insertion
-  /// took place.
-  template<typename ArcType>
-  typename std::enable_if<is_arc<ArcType>::value, bool>::type add(ArcType&& arc)
-  {
-    smtk::common::UUID id = arc.from().id();
-    return m_arcs.emplace<ArcType>(id, std::forward<ArcType>(arc));
-  }
-
-  /// Remove an arc from the resource. Return true if the removal took place.
-  template<typename ArcType>
-  typename std::enable_if<is_arc<ArcType>::value, bool>::type remove(
-    const std::shared_ptr<ArcType>& arc)
-  {
-    return m_arcs.erase<ArcType>(arc.from().id());
-  }
-
   /// Access the arcs of the graph resource.
   const ArcMap& arcs() const override { return m_arcs; }
   ArcMap& arcs() override { return m_arcs; }
 
+  /// Return a functor that tests a node (component) against a string query.
   std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string& filterString) const override
   {
     return smtk::resource::filter::Filter<smtk::graph::filter::Grammar>(filterString);
   }
 
+  /// Copy construction of resources is disallowed.
   Resource(const Resource&) noexcept = delete;
 
+  /// Return a shared pointer to a node (component) given its UUID.
   std::shared_ptr<smtk::resource::Component> find(const smtk::common::UUID& uuid) const override
   {
     return NodeContainer::find(uuid);
   }
+
+  /// Return a raw pointer to a node (component) given its UUID.
+  smtk::resource::Component* component(const smtk::common::UUID& uuid) const override
+  {
+    return NodeContainer::component(uuid);
+  }
+
+  /// Visit all the components (nodes
   void visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const override
   {
     NodeContainer::visit(v);
+  }
+
+  /**\brief Invoke a \a Functor on each arc-type's implementation.
+    *
+    * The functor should have a templated parenthesis operator whose template
+    * parameter is the arc implementation object type, which determines the
+    * the functor's first argument type.
+    * This type varies for each ArcTraits type in TypeTraits::ArcTypes and
+    * will be `ArcImplementation<ArcTraits>*`.
+    *
+    * The following arguments the functor's parenthesis-operator takes are
+    * \a args forwarded from this method.
+    *
+    * This method allows you to traverse all types of arcs present in the
+    * resource for inspection or modification.
+    */
+  //@{
+  // const version
+  template<typename Functor, typename... Args>
+  void evaluateArcs(Args&&... args) const
+  {
+    Functor::begin(std::forward<Args>(args)...);
+    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
+      std::forward<Args>(args)...);
+    Functor::end(std::forward<Args>(args)...);
+  }
+
+  // non-const version
+  template<typename Functor, typename... Args>
+  void evaluateArcs(Args&&... args)
+  {
+    Functor::begin(std::forward<Args>(args)...);
+    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
+      std::forward<Args>(args)...);
+    Functor::end(std::forward<Args>(args)...);
+  }
+  //@}
+
+  /// Return the set of node types accepted by this resource.
+  const std::set<smtk::string::Token>& nodeTypes() const { return m_nodeTypes; }
+
+  /**\brief Dump the resource nodes and arcs to a file.
+    *
+    * This is a convenience method for debugging; its arguments are
+    * easy to pass to an interactive debugger. Internally, it calls
+    * evaluateArcs<evaluators::Dump>(...) to produce output.  See
+    * evaluators::Dump for more information.
+    */
+  void dump(const std::string& filename, const std::string& mimeType = "text/vnd.graphviz") const
+  {
+    std::ostream* stream = filename.empty() ? &std::cout : new std::ofstream(filename.c_str());
+    if (stream && stream->good())
+    {
+      evaluators::Dump dump(mimeType);
+      this->evaluateArcs<evaluators::Dump>(this, *stream, dump);
+    }
+    if (!filename.empty())
+    {
+      delete stream;
+    }
   }
 
 protected:
@@ -218,24 +252,61 @@ protected:
     return NodeContainer::eraseNodes(node) > 0;
   }
 
+  /// Insert a node without performing any type-safety checks.
   bool insertNode(const smtk::graph::ComponentPtr& node) override
   {
     return NodeContainer::insertNode(node);
+  }
+
+  /// Perform a run-time check to validate that a node is acceptable to this resource.
+  bool isNodeTypeAcceptable(const smtk::graph::ComponentPtr& node) override
+  {
+    smtk::string::Token typeToken = node->typeName();
+    return m_nodeTypes.find(typeToken) != m_nodeTypes.end();
+  }
+
+  /// A functor to create smtk::string::Tokens of accepted node types.
+  struct NodeTypeNames
+  {
+    NodeTypeNames(std::set<smtk::string::Token>& names)
+      : m_names(names)
+    {
+    }
+
+    template<typename T>
+    void evaluate(std::size_t ii)
+    {
+      (void)ii;
+      smtk::string::Token name = smtk::common::typeName<T>();
+      m_names.insert(name);
+    }
+
+    std::set<smtk::string::Token>& m_names;
+  };
+
+  void initializeResource()
+  {
+    // Cache a set of string tokens holding node types.
+    NodeTypeNames nodeTypeNames(m_nodeTypes);
+    smtk::tuple_evaluate<typename Traits::NodeTypes>(nodeTypeNames);
   }
 
   Resource(smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(manager)
     , m_arcs(identity<typename detail::GraphTraits<Traits>::ArcTypes>())
   {
+    this->initializeResource();
   }
 
   Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager = nullptr)
     : Superclass(uid, manager)
     , m_arcs(identity<typename detail::GraphTraits<Traits>::ArcTypes>())
   {
+    this->initializeResource();
   }
 
   ArcMap m_arcs;
+  std::set<smtk::string::Token> m_nodeTypes;
 };
 
 } // namespace graph

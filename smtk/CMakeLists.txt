@@ -192,6 +192,7 @@ install(
     SharedPtr.h
     SystemConfig.h
     TupleTraits.h
+    Metaprogramming.h
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk
 )

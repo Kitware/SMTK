@@ -21,6 +21,7 @@
 
 namespace smtk
 {
+/// A subsystem for attaching renderable geometry to components and resources.
 namespace geometry
 {
 

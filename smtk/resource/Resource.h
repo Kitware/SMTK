@@ -136,8 +136,23 @@ public:
   /// Resources that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
 
-  /// given a resource component's UUID, return the resource component.
+  /// Given a resource component's UUID, return the resource component.
   virtual ComponentPtr find(const smtk::common::UUID& compId) const = 0;
+
+  /// Given a component's UUID, return a raw pointer to the component.
+  virtual Component* component(const smtk::common::UUID& compId) const;
+
+  /**\brief A templated version of `component()` that casts its result to a type.
+    *
+    * This method performs a dynamic cast, so it may return nullptr even
+    * if there is a component with a matching \a uuid (in the case that it
+    * is of a different type than \a ComponentType).
+    */
+  template<typename ComponentType>
+  ComponentType* componentAs(const smtk::common::UUID& uuid) const
+  {
+    return dynamic_cast<ComponentType*>(this->component(uuid));
+  }
 
   /// given a std::string describing a query, return a functor for performing
   /// the query (accepts component as input, returns true if the component

@@ -63,6 +63,32 @@ NodeSet::NodeType NodeSet::find(const smtk::common::UUID& uuid) const
   return std::shared_ptr<smtk::resource::Component>();
 }
 
+smtk::resource::Component* NodeSet::component(const smtk::common::UUID& uuid) const
+{
+  struct QueryKey : resource::Component
+  {
+    QueryKey(const smtk::common::UUID& id)
+      : m_id(id)
+    {
+    }
+    const smtk::common::UUID& id() const final { return m_id; }
+    bool setId(const smtk::common::UUID&) final { return false; }
+    const smtk::resource::ResourcePtr resource() const final
+    {
+      return smtk::resource::ResourcePtr();
+    }
+
+    const smtk::common::UUID& m_id;
+  };
+
+  auto it = m_nodes.find(std::make_shared<QueryKey>(uuid));
+  if (it != m_nodes.end())
+  {
+    return it->get();
+  }
+  return nullptr;
+}
+
 std::size_t NodeSet::eraseNodes(const smtk::graph::ComponentPtr& node)
 {
   return m_nodes.erase(node);

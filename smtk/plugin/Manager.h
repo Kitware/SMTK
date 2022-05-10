@@ -23,6 +23,7 @@
 
 namespace smtk
 {
+/// A subsystem for extending the functionality of SMTK at run time.
 namespace plugin
 {
 namespace detail

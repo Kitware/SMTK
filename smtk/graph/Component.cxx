@@ -33,9 +33,37 @@ Component::Component(
 {
 }
 
+const smtk::resource::ResourcePtr Component::resource() const
+{
+  smtk::resource::ResourcePtr rsrc;
+  try
+  {
+    rsrc = m_resource.get().shared_from_this();
+  }
+  catch (std::bad_weak_ptr&)
+  {
+    rsrc = nullptr;
+  }
+  return rsrc;
+}
+
+smtk::resource::Resource* Component::parentResource() const
+{
+  smtk::resource::Resource* rsrc = nullptr;
+  try
+  {
+    rsrc = &m_resource.get();
+  }
+  catch (const std::bad_weak_ptr&)
+  {
+    rsrc = nullptr;
+  }
+  return rsrc;
+}
+
 bool Component::setId(const smtk::common::UUID& uid)
 {
-  if (auto resource = m_resource.lock())
+  if (auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource()))
   {
     auto thisPtr = std::static_pointer_cast<Component>(this->shared_from_this());
     auto count = resource->eraseNodes(thisPtr);
@@ -58,7 +86,7 @@ bool Component::setId(const smtk::common::UUID& uid)
     // Nothing was removed, so the id was successfully changed.
     else
     {
-      // This Component does not belong the the resource, so remove the weak reference.
+      // This Component does not belong to the resource, so remove the weak reference.
       m_resource.reset();
       return true;
     }
@@ -68,10 +96,5 @@ bool Component::setId(const smtk::common::UUID& uid)
   return true;
 }
 
-const smtk::resource::ResourcePtr Component::resource() const
-{
-  auto rsrc = m_resource.lock();
-  return rsrc;
-}
 } // namespace graph
 } // namespace smtk

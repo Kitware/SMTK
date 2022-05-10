@@ -7,18 +7,21 @@ set(graphSrcs
 )
 
 set(graphHeaders
+  ArcImplementation.h
+  ArcProperties.h
   ArcMap.h
   Component.h
+  ExplicitArcs.h
   NodeSet.h
   Resource.h
   ResourceBase.h
   detail/TypeTraits.h
-  arcs/Arc.h
-  arcs/Arcs.h
-  arcs/Inverse.h
-  arcs/OrderedArcs.h
+  evaluators/Dump.h
   filter/Grammar.h
   filter/TypeName.h
+  json/ArcSerializer.h
+  json/ArcDeserializer.h
+  json/jsonResource.h
 )
 
 foreach(operation ${graphOperations})

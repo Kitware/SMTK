@@ -11,14 +11,18 @@
 #ifndef smtk_graph_Component_h
 #define smtk_graph_Component_h
 
+#include "smtk/common/WeakReferenceWrapper.h"
 #include "smtk/resource/Component.h"
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/graph/ArcMap.h"
 #include "smtk/graph/ResourceBase.h"
 #include "smtk/graph/detail/TypeTraits.h"
 
 #include <memory>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <typeindex>
@@ -68,6 +72,7 @@ public:
 
   /// Access the containing resource.
   const smtk::resource::ResourcePtr resource() const override;
+  smtk::resource::Resource* parentResource() const override;
 
   /// Access the component's id.
   const smtk::common::UUID& id() const override { return m_id; }
@@ -75,190 +80,157 @@ public:
   /// Set the component's id.
   bool setId(const smtk::common::UUID& uid) override;
 
-  /// Check if this node has any arcs of type ArcType.
-  template<typename ArcType>
-  bool contains() const
-  {
-    typedef const typename ArcType::template API<ArcType> API;
-    return API().contains(*static_cast<const typename ArcType::FromType*>(this));
-  }
-
-  /// Set the node (or nodes) associated with this ArcType. If there is a
-  /// preexisting value associated with this ArcType, it is replaced. Return true
-  /// on success.
-  ///
-  /// NOTE: This method cannot be guarded by compile-time checks, so it is
-  ///       instead allowed to fail at runtime. For compile-time checking, prefer
-  ///       smtk::graph::Resource's API for creating ArcTypes.
-  template<typename ArcType, typename... Args>
-  bool set(Args&&... args)
-  {
-    // Since this method exists in the base Component class, we must check RTTI
-    // to ensure the node type is appropriate for the ArcType's LHS.
-    if (!dynamic_cast<typename ArcType::FromType*>(this))
-    {
-      return false;
-    }
-
-    auto resource = std::static_pointer_cast<smtk::graph::ResourceBase>(this->resource());
-
-    auto& arcs = resource->arcs();
-    if (arcs.containsType<ArcType>())
-    {
-      arcs.erase<ArcType>(this->id());
-      arcs.emplace<ArcType>(
-        this->id(),
-        ArcType(static_cast<typename ArcType::FromType&>(*this), std::forward<Args>(args)...));
-      return true;
-    }
-    return false;
-  }
-
-  /// The get() method returns the node (or nodes) connected to this node via
-  /// the input arc type. The return type of this method is determined by the API
-  /// of ArcType.
-  // This overload handles const access to nodes
-  template<typename ArcType>
-  auto get() const -> decltype(std::declval<const typename ArcType::template API<ArcType>>().get(
-    std::declval<const typename ArcType::FromType&>()))
-  {
-    typedef const typename ArcType::template API<ArcType> API;
-    return API().get(*static_cast<const typename ArcType::FromType*>(this));
-  }
-  // This overload handles non-const access to nodes
-  template<typename ArcType>
-  auto get() -> decltype(std::declval<typename ArcType::template API<ArcType>>().get(
-    std::declval<const typename ArcType::FromType&>()))
-  {
-    typedef typename ArcType::template API<ArcType> API;
-    return API().get(*static_cast<const typename ArcType::FromType*>(this));
-  }
-
-  /**\brief Invoke a \a visitor on each node connected by a specific arc type.
+  /**\brief Return an endpoint-interface object for arcs of \a ArcType
+    *       outgoing from this node.
     *
-    * While get() returns the nodes connected to this component via the input arc
-    * type, visit() allows you to pass your calling code to each connected node
-    * without having to return a reference to each node. Input lambdas return a
-    * boolean value; when they return true, visitation is terminated early.
-    * This overload handles const access to arcs that have no explicit
-    * API::visit defined and return a container from get().
+    * These methods will throw a `std::logic_error` if \a ArcType arcs
+    * may not originate from nodes of this type.
+    *
+    * It would be preferable to prevent compilation, but the base
+    * graph-component class can not have access to the resource's
+    * traits object.
     */
-  template<typename ArcType, typename Visitor>
-  typename std::enable_if<
-    !detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      const typename ArcType::ToType&>::value &&
-      detail::is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>()
-                                      .get(std::declval<const typename ArcType::FromType&>())
-                                      .to())>::value &&
-      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
-    bool>::type
-  visit(const Visitor& visitor) const
+  //@{
+  template<typename ArcType>
+  ArcEndpointInterface<ArcType, ConstArc, OutgoingArc> outgoing() const
   {
-    typedef const typename ArcType::template API<ArcType> API;
-    // NOLINTNEXTLINE(readability-use-anyofallof)
-    for (const auto& toType : API().get(*static_cast<const typename ArcType::FromType*>(this)).to())
+    // const version
+    if (const auto* self = dynamic_cast<const typename ArcType::FromType*>(this))
     {
-      if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
+      auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+      if (resource)
       {
-        return true;
+        const auto& arcs = resource->arcs();
+        auto* arcsOfType = arcs.at<ArcType>();
+        if (arcsOfType)
+        {
+          return arcsOfType->outgoing(self);
+        }
+        throw std::logic_error("No arcs of the requested type are allowed.");
       }
+      throw std::logic_error("Component has no parent resource.");
     }
-    return false;
-  }
-  // This overload handles non-const access to arcs that have no explicit
-  // API::visit defined and return a container from get().
-  template<typename ArcType, typename Visitor>
-  typename std::enable_if<
-    !detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      typename ArcType::ToType&>::value &&
-      detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>()
-                                      .get(std::declval<const typename ArcType::FromType&>())
-                                      .to())>::value &&
-      detail::accepts<Visitor, typename ArcType::ToType&>::value,
-    bool>::type
-  visit(const Visitor& visitor)
-  {
-    typedef typename ArcType::template API<ArcType> API;
-    // NOLINTNEXTLINE(readability-use-anyofallof)
-    for (auto& toType : API().get(*static_cast<typename ArcType::FromType*>(this)).to())
+    else
     {
-      if (detail::TestValid<detail::remove_cvref_t<decltype(toType)>>()(toType) && visitor(toType))
-      {
-        return true;
-      }
+      std::ostringstream msg;
+      msg << "This component is not the proper type (" << this->typeName()
+          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>()
+          << ").";
+      throw std::logic_error(
+        msg.str()); // "This component is not the proper type for the arc's endpoint.");
     }
-    return false;
+    ArcEndpointInterface<ArcType, ConstArc, OutgoingArc> dummy;
+    return dummy;
   }
-  // This overload handles const access to arcs that have no explicit
-  // API::visit defined and return a single node from get().
-  template<typename ArcType, typename Visitor>
-  typename std::enable_if<
-    !detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      const typename ArcType::ToType&>::value &&
-      !detail::is_container<decltype(std::declval<const typename ArcType::template API<ArcType>>()
-                                       .get(std::declval<const typename ArcType::FromType&>())
-                                       .to())>::value &&
-      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
-    bool>::type
-  visit(const Visitor& visitor) const
+
+  template<typename ArcType>
+  ArcEndpointInterface<ArcType, NonConstArc, OutgoingArc> outgoing()
   {
-    typedef const typename ArcType::template API<ArcType> API;
-    return visitor(API().get(*static_cast<const typename ArcType::FromType*>(this)).to());
+    // non-const version
+    if (auto* self = dynamic_cast<typename ArcType::FromType*>(this))
+    {
+      auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+      if (resource)
+      {
+        auto& arcs = resource->arcs();
+        auto* arcsOfType = arcs.at<ArcType>();
+        if (arcsOfType)
+        {
+          return arcsOfType->outgoing(self);
+        }
+        throw std::logic_error("No arcs of the requested type are allowed.");
+      }
+      throw std::logic_error("Component has no parent resource.");
+    }
+    else
+    {
+      std::ostringstream msg;
+      msg << "This component is not the proper type (" << this->typeName()
+          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>()
+          << ").";
+      throw std::logic_error(
+        msg.str()); // "This component is not the proper type for the arc's endpoint.");
+    }
+    ArcEndpointInterface<ArcType, NonConstArc, OutgoingArc> dummy;
+    return dummy;
   }
-  // This overload handles non-const access to arcs that have no explicit
-  // API::visit defined and return a single node from get().
-  template<typename ArcType, typename Visitor>
-  typename std::enable_if<
-    !detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      typename ArcType::ToType&>::value &&
-      !detail::is_container<decltype(std::declval<typename ArcType::template API<ArcType>>()
-                                       .get(std::declval<const typename ArcType::FromType&>())
-                                       .to())>::value &&
-      detail::accepts<Visitor, typename std::remove_const<typename ArcType::ToType&>::type>::value,
-    bool>::type
-  visit(const Visitor& visitor)
+  //@}
+
+  /**\brief Return an endpoint-interface object for arcs of \a ArcType
+    *       incoming to this node.
+    *
+    * These methods will throw a `std::logic_error` if \a ArcType arcs
+    * may not arrive into nodes of this type.
+    *
+    * It would be preferable to prevent compilation, but the base
+    * graph-component class can not have access to the resource's
+    * traits object.
+    */
+  //@{
+  template<typename ArcType>
+  ArcEndpointInterface<ArcType, ConstArc, IncomingArc> incoming() const
   {
-    typedef typename ArcType::template API<ArcType> API;
-    return visitor(API().get(*static_cast<typename ArcType::FromType*>(this)).to());
+    // const version
+    if (const auto* self = dynamic_cast<const typename ArcType::ToType*>(this))
+    {
+      auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+      if (resource)
+      {
+        const auto& arcs = resource->arcs();
+        auto* arcsOfType = arcs.at<ArcType>();
+        if (arcsOfType)
+        {
+          return arcsOfType->incoming(self);
+        }
+        throw std::logic_error("No arcs of the requested type are allowed.");
+      }
+      throw std::logic_error("Component has no parent resource.");
+    }
+    else
+    {
+      std::ostringstream msg;
+      msg << "This component is not the proper type (" << this->typeName()
+          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>()
+          << ").";
+      throw std::logic_error(
+        msg.str()); // "This component is not the proper type for the arc's endpoint.");
+    }
+    ArcEndpointInterface<ArcType, ConstArc, IncomingArc> dummy;
+    return dummy;
   }
-  // This overload handles const access to arcs that have an explicit
-  // API::visit defined.
-  template<typename ArcType, typename Visitor>
-  auto visit(const Visitor& visitor) const -> typename std::enable_if<
-    detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      const typename ArcType::ToType&>::value &&
-      detail::accepts<Visitor, const typename ArcType::ToType&>::value,
-    decltype(std::declval<const typename ArcType::template API<ArcType>>()
-               .visit(std::declval<const typename ArcType::FromType&>(), visitor))>::type
+
+  template<typename ArcType>
+  ArcEndpointInterface<ArcType, NonConstArc, IncomingArc> incoming()
   {
-    typedef const typename ArcType::template API<ArcType> API;
-    return API().visit(*static_cast<const typename ArcType::FromType*>(this), visitor);
+    // non-const version
+    if (auto* self = dynamic_cast<typename ArcType::ToType*>(this))
+    {
+      auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+      if (resource)
+      {
+        auto& arcs = resource->arcs();
+        auto* arcsOfType = arcs.at<ArcType>();
+        if (arcsOfType)
+        {
+          return arcsOfType->incoming(self);
+        }
+        throw std::logic_error("No arcs of the requested type are allowed.");
+      }
+      throw std::logic_error("Component has no parent resource.");
+    }
+    else
+    {
+      std::ostringstream msg;
+      msg << "This component is not the proper type (" << this->typeName()
+          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>()
+          << ").";
+      throw std::logic_error(
+        msg.str()); // "This component is not the proper type for the arc's endpoint.");
+    }
+    ArcEndpointInterface<ArcType, NonConstArc, IncomingArc> dummy;
+    return dummy;
   }
-  // This overload handles non-const access to arcs that have an explicit
-  // API::visit defined.
-  template<typename ArcType, typename Visitor>
-  auto visit(const Visitor& visitor) -> typename std::enable_if<
-    detail::has_custom_visit<
-      typename ArcType::template API<ArcType>,
-      Visitor,
-      const typename ArcType::ToType&>::value &&
-      detail::accepts<Visitor, typename ArcType::ToType&>::value,
-    decltype(std::declval<typename ArcType::template API<ArcType>>()
-               .visit(std::declval<typename ArcType::FromType&>(), visitor))>::type
-  {
-    typedef typename ArcType::template API<ArcType> API;
-    return API().visit(*static_cast<const typename ArcType::FromType*>(this), visitor);
-  }
+  //@}
 
 protected:
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&);
@@ -267,7 +239,7 @@ protected:
 
   virtual void createDependentArcs() {}
 
-  std::weak_ptr<smtk::graph::ResourceBase> m_resource;
+  smtk::WeakReferenceWrapper<smtk::graph::ResourceBase> m_resource;
   smtk::common::UUID m_id;
 };
 } // namespace graph

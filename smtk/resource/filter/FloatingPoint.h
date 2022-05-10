@@ -96,7 +96,7 @@ struct Property<double>
   /// The grammar for this type is a composition of the above elements.
   struct Grammar : pad<seq<TypeName,
                            opt<braced<NameRepresentation,
-                                      opt<pad<string<'='>, space>, ValueRepresentation> > > >,
+                                      opt<pad<TAO_PEGTL_ISTRING("="), space>, ValueRepresentation> > > >,
       space> {};
 
   /// Convert a string into a value of this type.

@@ -7,15 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/resource/json/jsonResource.h"
+#include "smtk/graph/json/jsonResource.h"
 
-#include "smtk/resource/json/jsonResourceLinkBase.h"
-
-#include "smtk/common/json/jsonLinks.h"
-#include "smtk/common/json/jsonTypeMap.h"
 #include "smtk/common/json/jsonUUID.h"
 
-using nlohmann::json;
+#include "smtk/graph/json/ArcDeserializer.h"
+#include "smtk/graph/json/ArcSerializer.h"
+
 // Define how resources are serialized.
 namespace smtk
 {
@@ -33,6 +31,16 @@ void to_json(json& j, const ResourcePtr& resource)
   {
     j["name"] = resource->name();
   }
+
+  // Only include arcs if 1 or more arc containers request it.
+  json arcData;
+  resource->evaluateArcs<ArcSerializer>(arcData);
+  if (!arcData.empty())
+  {
+    j["arcs"] = arcData;
+  }
+
+  // TODO: Only include nodes if requested by the node container.
 }
 
 void from_json(const json& j, ResourcePtr& resource)
@@ -40,7 +48,7 @@ void from_json(const json& j, ResourcePtr& resource)
   // For backwards compatibility, do not require "id" json item.
   if (j.find("id") != j.end())
   {
-    resource->setId(j.at("id").get<smtk::common::UUID>());
+    resource->setId(j.at("id"));
   }
 
   // For backwards compatibility, do not require "location" json item.
@@ -67,6 +75,14 @@ void from_json(const json& j, ResourcePtr& resource)
   {
     resource->setName(j.at("name"));
   }
+
+#if 0
+  // If any arcs have been serialized, deserialize them.
+  if (j.find("arcs") != j.end())
+  {
+    resource->evaluateArcs<ArcDeserializer>(j.at("arcs"));
+  }
+#endif
 }
 } // namespace resource
 } // namespace smtk

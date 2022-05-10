@@ -1,15 +1,16 @@
 Filtering and Searching
 =======================
 
-It is possible to ask the resource to filter its components using a
-string that specifies some search criteria (i.e., a filter). The
+It is possible to ask the resource to identify some nodes using a
+string that specifies search criteria (i.e., a filter). The
 default implementation provided by
 `smtk::graph::Resource::queryOperation` allows users to filter
-components based on their component type name and the existence and
-values of properties.  For example, a geometric model of a motor will
-have many model faces that might each be marked with properties to
-indicate which are bearing surfaces, which are fastener or alignment
-surfaces, which surfaces will be in contact with coolant or fuel, etc.
+nodes based on their component type-name as well as the existence and
+values of properties attached to them.  For example, a geometric
+model of a motor will have many model faces that might each be
+marked with properties to indicate which are bearing surfaces,
+which are fastener or alignment surfaces, which surfaces will be
+in contact with coolant or fuel, etc.
 
 In order to allow user interface components to only show relevant
 model entities, the resource's :smtk:`queryOperation

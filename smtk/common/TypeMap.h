@@ -42,6 +42,9 @@ public:
 
   virtual void to_json(nlohmann::json&) const {}
   virtual void from_json(const nlohmann::json&) {}
+
+  virtual void clear() {}
+  virtual std::size_t size() { return 0; }
 };
 
 template<typename KeyType>
@@ -101,6 +104,9 @@ public:
   /// Access the class's underlying data.
   std::unordered_map<KeyType, Type>& data() { return m_data; }
   const std::unordered_map<KeyType, Type>& data() const { return m_data; }
+
+  std::size_t size() override { return m_data.size(); }
+  void clear() override { m_data.clear(); }
 
   void to_json(nlohmann::json& j) const override { return to_json<Type>(j); }
 
