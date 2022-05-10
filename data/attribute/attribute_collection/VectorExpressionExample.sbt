@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:77db9ed344acd9a90f3ef60ae502e3fc6243bdcee03ff438c57531f733c3656e
-size 930
+<SMTK_AttributeResource Version="4">
+  <Definitions>
+    <AttDef Type="vector-function">
+      <ItemDefinitions>
+        <Group Name="tabular-data" Extensible="true" NumberOfRequiredGroups="2">
+          <ItemDefinitions>
+            <Double Name="X" NumberOfRequiredValues="1"></Double>
+            <Double Name="Value" NumberOfRequiredValues="3"></Double>
+          </ItemDefinitions>
+        </Group>
+      </ItemDefinitions>
+    </AttDef>
+
+    <AttDef Type="boundary-condition">
+      <ItemDefinitions>
+        <Double Name="velocity" NumberOfRequiredValues="3">
+          <ExpressionType>vector-function</ExpressionType>
+        </Double>
+      </ItemDefinitions>
+    </AttDef>
+
+   </Definitions>
+  <Views>
+    <View Type="Attribute" Title="VectorItemTest" TopLevel="true">
+      <AttributeTypes>
+        <Att Type="boundary-condition">
+        </Att>
+      </AttributeTypes>
+    </View>
+  </Views>
+</SMTK_AttributeResource>

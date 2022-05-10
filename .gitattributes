@@ -20,4 +20,5 @@ thirdparty/**  -format.clang-format -format.autopep8
 doc/**/*.png    lfs
 
 data/**         lfs -format.autopep8
+data/**/*.sbt  -lfs
 data/**/*.md   -lfs

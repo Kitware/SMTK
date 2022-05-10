@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:855845c1fd72c486c9ec60efad6a0f0d2110ff014732ed51ff1e672a13a659ba
-size 1016
+<?xml version="1.0"?>
+<!--Created by XmlV4StringWriter-->
+<SMTK_AttributeResource Version="4">
+  <!--**********  Attribute Definitions ***********-->
+  <Associations />
+  <Definitions>
+    <AttDef Type="doubleFunc" Association="None"/>
+    <AttDef Type="A" Label="A" BaseType="" Unique="false">
+      <ItemDefinitions>
+        <Double Name="d0" Label="Optional Double" Optional="true">
+        </Double>
+        <Double Name="d1" Label="Expression Double">
+          <ExpressionType>doubleFunc</ExpressionType>
+        </Double>
+      </ItemDefinitions>
+    </AttDef>
+   </Definitions>
+  <!--**********  Attribute Instances ***********-->
+  <Views>
+    <View Type="Instanced" Title="DoubleItemTest" Label="Simple Double Item Test" TopLevel="true">
+      <InstancedAttributes>
+        <Att Type="A" Name="doubleTestAttribute">
+          <ItemViews>
+            <View Item="d1" ExpressionOnly="true"/>
+          </ItemViews>
+        </Att>
+      </InstancedAttributes>
+    </View>
+  </Views>
+</SMTK_AttributeResource>

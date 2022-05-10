@@ -1,3 +1,28 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:38dedbf7c79e8a2e35b74db719437cbd5e2d5a087ca60617948416908863ccc1
-size 838
+<?xml version="1.0"?>
+<SMTK_AttributeResource Version="4">
+  <Definitions>
+    <AttDef Type="Example">
+      <ItemDefinitions>
+        <String Name="String Item">
+          <DefaultValue>Any printable text</DefaultValue>
+        </String>
+        <Double Name="Double Item">
+          <DefaultValue>3.14159</DefaultValue>
+        </Double>
+        <Double Name="Advanced (Double) Item" AdvanceLevel="1">
+          <DefaultValue>2.71828</DefaultValue>
+        </Double>
+        <Int Name="Integer Item">
+          <DefaultValue>42</DefaultValue>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+  <Views>
+    <View Type="Attribute" Title="Example" TopLevel="true" FilterByCategory="false">
+      <AttributeTypes>
+        <Att Type="Example" />
+      </AttributeTypes>
+    </View>
+  </Views>
+</SMTK_AttributeResource>
