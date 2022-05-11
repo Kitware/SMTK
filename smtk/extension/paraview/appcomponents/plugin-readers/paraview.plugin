@@ -1,0 +1,9 @@
+NAME
+  smtkPQReadersPlugin
+DESCRIPTION
+  SMTK readers and importers for ParaView
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  ParaView::VTKExtensionsExtraction
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt
