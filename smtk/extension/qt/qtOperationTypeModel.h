@@ -142,6 +142,12 @@ public:
     return this->findByTypeIndex(std::type_index(typeid(OperationType)).hash_code());
   }
 
+  /// Return the type-index of an operation given its type-name.
+  ///
+  /// This is a convenience for tests that must use the operation's
+  /// type-name since the type-index can vary across platforms.
+  smtk::operation::Operation::Index typeIndexFromTypeName(const std::string& typeName) const;
+
   /// Set/get the operation decorator used to override operation labels, tooltips, etc..
   void setDecorator(const std::shared_ptr<smtk::view::OperationDecorator>& decorator);
   std::shared_ptr<smtk::view::OperationDecorator> decorator() const;
@@ -162,6 +168,9 @@ public Q_SLOTS:
   /// Run the provided operation using a launcher.
   virtual void runOperationWithParameters(
     const std::shared_ptr<smtk::operation::Operation>& operation) const;
+
+  /// Request that parameters for the operation be shown to the user for editing.
+  virtual void requestOperationParameterEdits(smtk::operation::Operation::Index typeIndex) const;
 
 Q_SIGNALS:
   //@{

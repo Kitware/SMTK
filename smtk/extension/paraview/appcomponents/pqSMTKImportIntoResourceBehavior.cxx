@@ -239,25 +239,11 @@ pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* pare
 
       if (menu)
       {
-        // We want to defer the creation of the menu actions as much as possible
-        // so the File menu will already be populated by the time we add our
-        // custom actions. If our actions are inserted first, there is no way to
-        // control where in the list of actions they go, and they end up awkwardly
-        // sitting at the top of the menu. By using a single-shot connection to
-        // load our actions, we ensure that extant Save methods are in place; we
-        // key off of their location to make the menu look better.
-        QMetaObject::Connection* connection = new QMetaObject::Connection;
-        *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
-          QAction* saveAction = findSaveAction(menu);
+        QAction* saveAction = findSaveAction(menu);
 
-          menu->insertAction(saveAction, importIntoResourceAction);
-          menu->insertSeparator(saveAction);
-          menu->insertSeparator(importIntoResourceAction);
-
-          // Remove this connection.
-          QObject::disconnect(*connection);
-          delete connection;
-        });
+        menu->insertSeparator(saveAction);
+        menu->insertAction(saveAction, importIntoResourceAction);
+        menu->insertSeparator(saveAction);
       }
       else
       {

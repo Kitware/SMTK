@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<pqevents>
+  <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Operations" command="editOperationParameters" arguments="(2605828208547706834,smtk::markup::Import)" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::markup::Import0/filename/Contents/editFrame0/frame0/lineEdit0" command="set_string" arguments="/stage/data/cmb/aeva/open-knee/stl/oks003_FMB_AGS_LVTIT.stl" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/OpViewApplyButton" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/propertiesDock/propertiesPanel/Accept" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/cameraToolbar/actionResetCamera" command="activate" arguments="" />
+</pqevents>

@@ -167,6 +167,15 @@ public:
   virtual void visitSources(SourceVisitor visitor);
   /// Invoke the visitor function on each source that has been added to the model.
   virtual void visitSources(SourceVisitorFunction visitor);
+  /**\brief The priority used for observing operation results.
+    *
+    * Since other application UI elements may need to observe operations
+    * and modify the phrase model (e.g., to change the selection or
+    * expand/collapse subtrees), this class uses a priority that is higher
+    * than the default. Your application can then ensure its observer(s)
+    * run at a lower priority if it needs phrases updated before it runs.
+    */
+  static smtk::operation::Observers::Priority operationObserverPriority();
   ///@}
 
   /// Return the root phrase of the hierarchy.
@@ -309,28 +318,13 @@ protected:
     Source() = default;
 
     [[deprecated("PhraseModel::Source::Source now accepts managers held in a const "
-                 "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)
-      : m_rsrcHandle(std::move(rh))
-      , m_operHandle(std::move(oh))
-      , m_selnHandle(std::move(sh))
-    {
-      m_managers.insert(rm);
-      m_managers.insert(om);
-      m_managers.insert(vm);
-      m_managers.insert(sn);
-    }
+                 "smtk::common::TypeContainer&")]] Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm, smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh, smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh);
 
     Source(
       const smtk::common::TypeContainer& managers,
       smtk::resource::Observers::Key&& rh,
       smtk::operation::Observers::Key&& oh,
-      smtk::view::SelectionObservers::Key&& sh)
-      : m_managers(managers)
-      , m_rsrcHandle(std::move(rh))
-      , m_operHandle(std::move(oh))
-      , m_selnHandle(std::move(sh))
-    {
-    }
+      smtk::view::SelectionObservers::Key&& sh);
   };
   std::list<Source> m_sources;
 

@@ -35,18 +35,42 @@ struct TypeName
   /// Syntax for the property name regex.
   struct Regex : smtk::resource::filter::Regex<smtk::graph::Component> {};
 
+  /// Accept an empty filter (containing zero or more spaces) to indicate only resources,
+  /// not components, should match. If you use this in a "sor<>" grammar, it must be last
+  /// so it is only matched when all else fails.
+  struct EmptyNameIsResource : star<space> {};
+
+  /// Accept "any" or "*" as special component types that match any typename.
+  struct AnyOrStar : sor<TAO_PEGTL_ISTRING("*"),TAO_PEGTL_ISTRING("any")> {};
+
   /// The grammar for this type can refer to property names either by the
   /// explicit name or by a regex that matches a name.
-  struct Representation : sor<pad<smtk::resource::filter::quoted<Name>, space>,
-                              pad<smtk::resource::filter::slashed<Regex>, space> > {};
+  struct Representation : sor<pad<AnyOrStar, space>,
+                              pad<smtk::resource::filter::quoted<Name>, space>,
+                              pad<smtk::resource::filter::slashed<Regex>, space>,
+                              EmptyNameIsResource> {};
 
   /// The grammar for this type is a composition of the above elements.
   struct Grammar : pad<Representation, space> {};
 
-  class Rule : public smtk::resource::filter::Rule
+  /// A rule that only accepts resources (not components).
+  class OnlyMatchResource : public smtk::resource::filter::Rule
   {
   public:
-    ~Rule() override = default;
+    ~OnlyMatchResource() override = default;
+
+    bool operator()(const smtk::resource::PersistentObject& object) const override
+    {
+      return !!dynamic_cast<const smtk::graph::ResourceBase*>(&object);
+    }
+
+  };
+
+  /// A rule that only accepts exact type-name matches.
+  class Exact : public smtk::resource::filter::Rule
+  {
+  public:
+    ~Exact() override = default;
 
     bool operator()(const smtk::resource::PersistentObject& object) const override
     {
@@ -56,6 +80,7 @@ struct TypeName
     std::string value;
   };
 
+  /// A rule that accepts regex type-name matches.
   class RegexRule : public smtk::resource::filter::Rule
   {
   public:
@@ -82,14 +107,25 @@ namespace filter
 {
 /// Actions related to parsing rules for this type.
 template<>
+struct Action<smtk::graph::filter::TypeName::EmptyNameIsResource>
+{
+  template<typename Input>
+  static void apply(const Input& input, Rules& rules)
+  {
+    (void)input;
+    rules.emplace_back(new smtk::graph::filter::TypeName::OnlyMatchResource());
+  }
+};
+
+template<>
 struct Action<smtk::graph::filter::TypeName::Name>
 {
   template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
-    rules.emplace_back(new smtk::graph::filter::TypeName::Rule());
+    rules.emplace_back(new smtk::graph::filter::TypeName::Exact());
     std::unique_ptr<Rule>& rule = rules.data().back();
-    static_cast<smtk::graph::filter::TypeName::Rule*>(rule.get())->value = input.string();
+    static_cast<smtk::graph::filter::TypeName::Exact*>(rule.get())->value = input.string();
   }
 };
 

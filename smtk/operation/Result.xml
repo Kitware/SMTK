@@ -12,5 +12,15 @@
         <Void Name="removeAssociations" Optional="True" IsEnabledByDefault="false"/>
       </ChildrenDefinitions>
     </Resource>
+    <Component Name="hints" NumberOfRequiredValues="0" Extensible="1" HoldReference="0">
+      <!--
+        This is an ordered list of hints for applications to act upon as they observe the
+        operation's completion. Order is significant since some hints are not commutative.
+      -->
+      <Accepts>
+        <!-- Anything with "hint" as its base type can be added. -->
+        <Resource Name="smtk::attribute::Resource" Filter="attribute[type='hint']"/>
+      </Accepts>
+    </Component>
   </ItemDefinitions>
 </AttDef>

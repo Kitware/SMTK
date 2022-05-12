@@ -72,6 +72,7 @@ protected:
   {
   }
 
+  // NOLINTNEXTLINE(modernize-use-equals-delete)
   DerivedFrom(DerivedFrom&& rhs) noexcept = default;
 };
 

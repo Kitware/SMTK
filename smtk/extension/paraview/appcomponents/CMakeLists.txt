@@ -18,18 +18,25 @@ set(classes
   pqSMTKAppComponentsAutoStart
   pqSMTKCallObserversOnMainThreadBehavior
   pqSMTKCloseResourceBehavior
+  pqSMTKGroupComponentsBehavior
+  pqSMTKGroupingAutoStart
   pqSMTKCloseWithActiveOperationBehavior
   pqSMTKColorByToolBar
   pqSMTKColorByWidget
   pqSMTKDisplayAttributeOnLoadBehavior
   pqSMTKImportIntoResourceBehavior
   pqSMTKNewResourceBehavior
+  pqSMTKOperationHintsBehavior
   pqSMTKRegisterImportersBehavior
   pqSMTKSaveOnCloseResourceBehavior
   pqSMTKSaveResourceBehavior
   pqSMTKSelectionFilterBehavior
   pqSMTKSubtractUI
   vtkSMTKEncodeSelection
+
+  # For testing
+  pqToolboxEventTranslator
+  pqToolboxEventPlayer
 )
 
 set(headers

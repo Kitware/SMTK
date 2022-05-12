@@ -71,6 +71,13 @@ public:
     */
   virtual Resource* parentResource() const { return this->resource().get(); }
 
+  /// This variant of parentResource casts the result to the given \a ResourceType.
+  template<typename ResourceType>
+  ResourceType* parentResourceAs() const
+  {
+    return dynamic_cast<ResourceType*>(this->parentResource());
+  }
+
   /// Return the links that connect this component to external resources/components.
   Links& links() override { return m_links; }
   const Links& links() const override { return m_links; }

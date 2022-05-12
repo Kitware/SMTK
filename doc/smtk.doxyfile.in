@@ -675,6 +675,11 @@ WARN_LOGFILE           =
 
 INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk" \
+  "@smtk_SOURCE_DIR@/smtk/markup" \
+  "@smtk_SOURCE_DIR@/smtk/markup/arcs" \
+  "@smtk_SOURCE_DIR@/smtk/markup/json" \
+  "@smtk_SOURCE_DIR@/smtk/markup/queries" \
+  "@smtk_SOURCE_DIR@/smtk/markup/operators" \
   "@smtk_SOURCE_DIR@/smtk/mesh" \
   "@smtk_SOURCE_DIR@/smtk/mesh/core" \
   "@smtk_SOURCE_DIR@/smtk/mesh/core/queries" \
@@ -781,6 +786,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/session/oscillator/plugin" \
   \
   "@smtk_BINARY_DIR@/smtk" \
+  "@smtk_BINARY_DIR@/smtk/markup" \
   "@smtk_BINARY_DIR@/smtk/mesh" \
   "@smtk_BINARY_DIR@/smtk/mesh/core" \
   "@smtk_BINARY_DIR@/smtk/mesh/core/queries" \

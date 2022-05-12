@@ -18,6 +18,8 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TypeName.h"
 
+#include "smtk/string/Token.h"
+
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -71,6 +73,8 @@ public:
     }
   };
 
+  using KeyType = smtk::string::Hash;
+
   /// Construct an empty TypeContainer.
   TypeContainer() = default;
 
@@ -101,11 +105,21 @@ public:
 
   virtual ~TypeContainer();
 
+  /// Return the ID used to index a given \a Type.
+  template<typename Type>
+  KeyType keyId() const
+  {
+    (void)this; // Prevent clang-tidy from complaining this could be class-static.
+    std::string keyName = smtk::common::typeName<Type>();
+    KeyType value = smtk::string::Token(keyName).id();
+    return value;
+  }
+
   /// Check if a Type is present in the TypeContainer.
   template<typename Type>
   bool contains() const
   {
-    return (m_container.find(typeid(Type).hash_code()) != m_container.end());
+    return (m_container.find(this->keyId<Type>()) != m_container.end());
   }
 
   /// Insert a Type instance into the TypeContainer.
@@ -115,7 +129,7 @@ public:
   {
     return m_container
       .emplace(std::make_pair(
-        typeid(Type).hash_code(),
+        this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
         std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))))
 #else
@@ -141,7 +155,7 @@ public:
   {
     return m_container
       .emplace(std::make_pair(
-        typeid(Type).hash_code(),
+        this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
         std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))))
 #else
@@ -155,7 +169,7 @@ public:
   template<typename Type>
   const Type& get() const
   {
-    auto search = m_container.find(typeid(Type).hash_code());
+    auto search = m_container.find(this->keyId<Type>());
     if (search == m_container.end())
     {
       throw BadTypeError(smtk::common::typeName<Type>());
@@ -169,12 +183,12 @@ public:
   template<typename Type>
   typename std::enable_if<std::is_default_constructible<Type>::value, Type&>::type get() noexcept
   {
-    auto search = m_container.find(typeid(Type).hash_code());
+    auto search = m_container.find(this->keyId<Type>());
     if (search == m_container.end())
     {
       search = m_container
                  .emplace(std::make_pair(
-                   typeid(Type).hash_code(),
+                   this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
                    std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())))
 #else
@@ -191,7 +205,7 @@ public:
   template<typename Type>
   typename std::enable_if<!std::is_default_constructible<Type>::value, Type&>::type get()
   {
-    auto search = m_container.find(typeid(Type).hash_code());
+    auto search = m_container.find(this->keyId<Type>());
     if (search == m_container.end())
     {
       throw BadTypeError(smtk::common::typeName<Type>());
@@ -200,17 +214,44 @@ public:
     return *(static_cast<WrapperFor<Type>*>(search->second.get()))->value;
   }
 
+  /// Remove a specific type of object from the container.
   template<typename Type>
   bool erase()
   {
-    return m_container.erase(typeid(Type).hash_code()) > 0;
+    return m_container.erase(this->keyId<Type>()) > 0;
   }
 
+  /// Return true if the container holds no objects and false otherwise.
   bool empty() const noexcept { return m_container.empty(); }
 
+  /// Return the nubmer of objects held by the container.
   std::size_t size() const noexcept { return m_container.size(); }
 
+  /// Erase all objects held by the container.
   void clear() noexcept { m_container.clear(); }
+
+  /// Return a set of keys corresponding to the values in the container.
+  ///
+  /// There is no run-time method to extract the values given just a key
+  /// since the type is unknown; however, this does make it possible for
+  /// the python layer to invoke a function adapter for specific types of
+  /// objects held in the container to be fetched.
+  std::set<smtk::string::Token> keys() const
+  {
+    std::set<smtk::string::Token> result;
+    for (const auto& entry : m_container)
+    {
+      try
+      {
+        result.insert(smtk::string::Token::fromHash(entry.first));
+      }
+      catch (std::invalid_argument&)
+      {
+        // Ignore entries with no matching string.
+      }
+    }
+    return result;
+  }
 
 private:
   template<typename Arg, typename... Args>

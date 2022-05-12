@@ -1,85 +1,62 @@
 # set up sources to build
-set(viewSrcs
-  AssociationBadge.cxx
-  AvailableOperations.cxx
-  BaseView.cxx
-  BadgeSet.cxx
-  ComponentPhraseContent.cxx
-  ComponentPhraseModel.cxx
-  DescriptivePhrase.cxx
-  EmptySubphraseGenerator.cxx
-  Information.cxx
-  json/jsonView.cxx
-  LockedResourceBadge.cxx
-  Manager.cxx
-  ObjectGroupPhraseContent.cxx
-  ObjectIconBadge.cxx
-  ObjectIcons.cxx
-  OperationDecorator.cxx
-  OperationIcons.cxx
-  PhraseListContent.cxx
-  PhraseModel.cxx
-  PhraseModelFactory.cxx
-  QueryFilterSubphraseGenerator.cxx
-  ReferenceItemPhraseModel.cxx
-  Registrar.cxx
-  ResourcePhraseContent.cxx
-  ResourcePhraseModel.cxx
-  Selection.cxx
-  SelectionPhraseModel.cxx
-  SubphraseGenerator.cxx
-  SVGIconConstructor.cxx
-  TwoLevelSubphraseGenerator.cxx
-  Configuration.cxx
-  xml/xmlConfiguration.cxx
+set(viewClasses
+  AssociationBadge
+  AvailableOperations
+  BaseView
+  BadgeSet
+  ComponentPhraseContent
+  ComponentPhraseModel
+  DescriptivePhrase
+  EmptySubphraseGenerator
+  Information
+  LockedResourceBadge
+  Manager
+  NameManager
+  NodeGroupPhraseContent
+  ObjectGroupPhraseContent
+  ObjectIconBadge
+  ObjectIcons
+  OperationDecorator
+  OperationIcons
+  PhraseListContent
+  PhraseModel
+  PhraseModelFactory
+  QueryFilterSubphraseGenerator
+  ReferenceItemPhraseModel
+  Registrar
+  ResourcePhraseContent
+  ResourcePhraseModel
+  Selection
+  SelectionPhraseModel
+  SubphraseGenerator
+  SVGIconConstructor
+  TwoLevelSubphraseGenerator
+  Configuration
+
+  # Serialization
+  json/jsonView
+  json/jsonNameManager
+  xml/xmlConfiguration
 )
 
-set (jsonViewHeaders
-  json/jsonView.h
-  )
+set(viewSrcs)
+
 set(viewHeaders
-  AssociationBadge.h
-  AvailableOperations.h
   Badge.h
   BadgeFactory.h
-  BadgeSet.h
-  BaseView.h
-  ComponentPhraseContent.h
-  ComponentPhraseModel.h
-  DescriptivePhrase.h
-  EmptySubphraseGenerator.h
-  Information.h
-  LockedResourceBadge.h
-  Manager.h
-  ObjectGroupPhraseContent.h
-  ObjectIconBadge.h
-  ObjectIcons.h
-  OperationDecorator.h
-  OperationIcons.h
-  PhraseListContent.h
   PhraseContent.h
-  PhraseModel.h
-  PhraseModelFactory.h
   PhraseModelObserver.h
-  QueryFilterSubphraseGenerator.h
-  ReferenceItemPhraseModel.h
-  Registrar.h
-  ResourcePhraseContent.h
-  ResourcePhraseModel.h
-  Selection.h
   SelectionAction.h
   SelectionObserver.h
-  SelectionPhraseModel.h
-  SubphraseGenerator.h
   SubphraseGeneratorFactory.h
   SubphraseGenerator.txx
-  SVGIconConstructor.h
-  TwoLevelSubphraseGenerator.h
   ViewWidgetFactory.h
-  Configuration.h
-  ${jsonViewHeaders}
-  xml/xmlConfiguration.h
 )
+
+foreach(class ${viewClasses})
+  list(APPEND viewHeaders ${class}.h)
+  list(APPEND viewSrcs ${class}.cxx)
+endforeach()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

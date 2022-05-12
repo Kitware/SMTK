@@ -94,6 +94,21 @@ StringUtil::split(const std::string& s, const std::string& sep, bool omitEmpty, 
   return result;
 }
 
+std::size_t StringUtil::replaceAll(
+  std::string& source,
+  const std::string& search,
+  const std::string& replacement)
+{
+  std::size_t count = 0;
+  for (std::string::size_type pos = 0;
+       std::string::npos != (pos = source.find(search.data(), pos, search.length()));
+       pos += replacement.length(), ++count)
+  {
+    source.replace(pos, search.length(), replacement.data(), replacement.length());
+  }
+  return count;
+}
+
 bool StringUtil::toBoolean(const std::string& s, bool& value)
 {
   const std::set<std::string> trueValues = { "1", "t", "true", "yes" };

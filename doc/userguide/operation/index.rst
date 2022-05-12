@@ -11,3 +11,4 @@ components are encapsulated within *operators*.
    :maxdepth: 3
 
    operators.rst
+   support.rst

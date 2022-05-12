@@ -102,10 +102,35 @@ bool Paths::directoryExists(const std::string& path)
   return false;
 }
 
+/// Create a directory (and all its containing directories as needed).
+///
+/// Returns true if the directory pre-existed or was successfully
+/// created and false if it could not be created (e.g., due to
+/// permissions, a full filesystem, or a plain file whose name
+/// matches a directory in the \a path).
+bool Paths::createDirectory(const std::string& path)
+{
+  if (Paths::fileExists(path))
+  {
+    return true;
+  }
+  return boost::filesystem::create_directories(path);
+}
+
 /// Is the given path a file?
 bool Paths::fileExists(const std::string& path)
 {
   return boost::filesystem::exists(path.c_str());
+}
+
+/// Is the path relative (i.e., not absolute)?
+///
+/// Note that on Windows a path requires a drive
+/// letter to be absolute, so more paths than you may
+/// expect will be reported as relative.
+bool Paths::isRelative(const std::string& path)
+{
+  return boost::filesystem::path(path).is_relative();
 }
 
 /// Filter the input \a src, returning the subset of paths that are existing directories.

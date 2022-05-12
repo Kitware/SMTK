@@ -17,6 +17,10 @@ endforeach()
 #install the headers
 smtk_public_headers(smtkCore ${stringHeaders})
 
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  add_subdirectory(pybind11)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()

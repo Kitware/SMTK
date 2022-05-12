@@ -229,7 +229,7 @@ public:
     auto it = m_data.find(smtk::common::typeName<Type>());
     if (it == m_data.end())
     {
-      throw std::domain_error("No emtru with given type");
+      throw std::domain_error("No entry with given type");
     }
 
     return static_cast<const TypeMapEntry<KeyType, Type>&>(*it->second);

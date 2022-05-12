@@ -27,6 +27,8 @@ namespace resource
 namespace json
 {
 
+smtk::common::ThreadPool<> Helper::m_threadPool;
+
 Helper::Helper() = default;
 Helper::~Helper() = default;
 
@@ -34,7 +36,7 @@ Helper& Helper::instance()
 {
   if (g_instanceStack.empty())
   {
-    g_instanceStack.emplace_back(new Helper);
+    g_instanceStack.emplace_back(std::unique_ptr<Helper>(new Helper));
   }
   return *(g_instanceStack.back());
 }

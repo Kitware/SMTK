@@ -97,6 +97,7 @@ option(SMTK_INSTALL_TESTING_DATA "Install Testing Data" OFF)
 cmake_dependent_option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF
   SMTK_ENABLE_TESTING OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
+
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
 # is off so that people building relocatable bundles (such as
@@ -142,6 +143,10 @@ mark_as_advanced(SMTK_BUILD_PRECOMPILED_HEADERS)
 
 option(SMTK_ENABLE_GDAL_SUPPORT "Include I/O for GDAL. This requires ParaView/VTK built with GDAL."
   OFF)
+
+cmake_dependent_option(SMTK_ENABLE_MARKUP
+  "Build the markup annotation library" ON
+  SMTK_ENABLE_VTK_SUPPORT OFF)
 
 option(SMTK_USE_BOOST_REGEX "Use Boost::Regex instead of STL" OFF)
 mark_as_advanced(SMTK_USE_BOOST_REGEX)

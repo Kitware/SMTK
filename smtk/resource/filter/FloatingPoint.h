@@ -53,8 +53,8 @@ struct Property<double>
                     > {};
     struct e : one< 'e', 'E' > {};
     struct p : one< 'p', 'P' > {};
-    struct exponent : seq< plus_minus, plus< digit > > {};
-    struct decimal : seq< number< digit >, opt< e, exponent > > {};
+    struct exponent : seq< plus_minus, plus< tao::pegtl::digit > > {};
+    struct decimal : seq< number< tao::pegtl::digit >, opt< e, exponent > > {};
     struct hexadecimal : seq< one< '0' >, one< 'x', 'X' >, number< xdigit >,
                               opt< p, exponent > > {};
     struct value : seq< plus_minus, sor< hexadecimal, decimal, inf, nan > > {};

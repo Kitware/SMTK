@@ -222,33 +222,19 @@ pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
 
       if (menu)
       {
-        // We want to defer the creation of the menu actions as much as possible
-        // so the File menu will already be populated by the time we add our
-        // custom actions. If our actions are inserted first, there is no way to
-        // control where in the list of actions they go, and they end up awkwardly
-        // sitting at the top of the menu. By using a single-shot connection to
-        // load our actions, we ensure that extant actions are in place; we
-        // key off of their locations to make the menu look better.
-        QMetaObject::Connection* connection = new QMetaObject::Connection;
-        *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
-          QAction* exitAction = findExitAction(menu);
+        QAction* exitAction = findExitAction(menu);
 
-          if (exitAction == nullptr)
-          {
-            menu->addSeparator();
-          }
+        if (exitAction == nullptr)
+        {
+          menu->addSeparator();
+        }
 
-          menu->insertAction(exitAction, exportSimulationAction);
+        menu->insertAction(exitAction, exportSimulationAction);
 
-          if (exitAction != nullptr)
-          {
-            menu->insertSeparator(exitAction);
-          }
-
-          // Remove this connection.
-          QObject::disconnect(*connection);
-          delete connection;
-        });
+        if (exitAction != nullptr)
+        {
+          menu->insertSeparator(exitAction);
+        }
       }
       else
       {

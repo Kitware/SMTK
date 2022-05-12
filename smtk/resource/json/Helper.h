@@ -13,10 +13,13 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/common/Managers.h"
+#include "smtk/common/ThreadPool.h"
 #include "smtk/common/TypeName.h"
 
 #include <exception>
+#include <future>
 #include <string>
+#include <vector>
 
 namespace smtk
 {
@@ -38,6 +41,9 @@ public:
 
   /// Destructor is public, but you shouldn't use it.
   ~Helper();
+  /// Copy construction and assignment are disallowed.
+  Helper(const Helper&) = delete;
+  void operator=(const Helper&) = delete;
 
   /// Return the helper "singleton".
   ///
@@ -84,6 +90,24 @@ public:
   /// Return the resource currently being deserialized.
   smtk::resource::Resource::Ptr resource() const { return m_parent; }
 
+  /// Return the resource currently being deserialized, cast to a
+  /// shared pointer to a \a ResourceType . This will return null if
+  /// the current resource does not inherit \a ResourceType.
+  template<typename ResourceType>
+  std::shared_ptr<ResourceType> resourceAs() const
+  {
+    return std::dynamic_pointer_cast<ResourceType>(m_parent);
+  }
+
+  /// Return a thread pool for readers to use.
+  ///
+  /// This is intended to offload I/O for external data to
+  /// background threads that can be joined before the read
+  /// operation completes.
+  static smtk::common::ThreadPool<>& threadPool() { return m_threadPool; }
+
+  std::vector<std::future<void>>& futures() { return m_futures; }
+
 protected:
   Helper();
   smtk::common::Managers::Ptr m_managers;
@@ -91,6 +115,8 @@ protected:
   /// was used to create this helper.
   bool m_topLevel = true;
   smtk::resource::Resource::Ptr m_parent;
+  std::vector<std::future<void>> m_futures;
+  static smtk::common::ThreadPool<> m_threadPool;
 };
 
 } // namespace json

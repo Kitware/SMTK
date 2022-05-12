@@ -45,8 +45,8 @@ struct NodeSerializer
     //       for large number of components.
     //       Furthermore, this query includes nodes that are subclasses of
     //       the requested class, which must then be rejected below.
-    auto nodes =
-      m_resource->template filterAs<std::unordered_set<std::shared_ptr<NodeType>>>(nodeType);
+    auto nodes = m_resource->template filterAs<std::unordered_set<std::shared_ptr<NodeType>>>(
+      "'" + nodeType + "'");
     for (const auto& node : nodes)
     {
       if (node->typeName() != nodeType)

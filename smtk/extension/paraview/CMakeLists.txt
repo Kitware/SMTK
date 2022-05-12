@@ -15,6 +15,11 @@ if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
     "${CMAKE_CURRENT_SOURCE_DIR}/operators/vtk.module"
   )
 endif()
+if (SMTK_MARKUP_SUPPORT_ENABLED)
+  list(APPEND module_files
+    "${CMAKE_CURRENT_SOURCE_DIR}/markup/vtk.module"
+  )
+endif()
 
 vtk_module_scan(
   MODULE_FILES ${module_files}
@@ -37,10 +42,11 @@ if (TARGET ParaView::pqApplicationComponents)
     appcomponents/plugin-legacy-operations/paraview.plugin
     appcomponents/plugin-operations-panel/paraview.plugin
     appcomponents/plugin-core/paraview.plugin
+    appcomponents/plugin-grouping/paraview.plugin
     appcomponents/plugin-gui/paraview.plugin
     appcomponents/plugin-readers/paraview.plugin
-    model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
+    model/plugin/paraview.plugin
     project/plugin-core/paraview.plugin
     project/plugin-gui/paraview.plugin
   )
@@ -49,6 +55,11 @@ if (TARGET ParaView::pqApplicationComponents)
     list(APPEND plugin_files
       widgets/plugin/paraview.plugin
       operators/plugin/paraview.plugin
+    )
+  endif()
+  if (SMTK_MARKUP_SUPPORT_ENABLED)
+    list(APPEND plugin_files
+      markup/plugin/paraview.plugin
     )
   endif()
 endif ()

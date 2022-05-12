@@ -1,0 +1,46 @@
+/*
+ * CSS for smtk.markup dumps in Graphviz format.
+ * These rules help make the SVG output of dot more legible.
+ *
+ * Usage:
+ * 1. Run `./bin/markup_dump file.smtk > file.dot` to generate a
+ *    graph layout of the nodes in `file.smtk`.
+ * 2. Edit file.dot and add a `stylesheet="markup.css"` line just
+ *    after the start of the graph.
+ * 3. Run `dot -Tsvg file.dot > file.svg` and examine its output.
+ */
+
+/* The ">polygon" variants apply to graphs using polygonal node shapes
+ * while the ">ellipse" variants apply to the default graph node shape.
+ */
+.smtk__markup__Box>polygon { fill: deepskyblue; stroke: deepskyblue; }
+.smtk__markup__Box>ellipse { fill: deepskyblue; stroke: deepskyblue; }
+.smtk__markup__Sphere>polygon { fill: deepskyblue; stroke: deepskyblue; }
+.smtk__markup__Sphere>ellipse { fill: deepskyblue; stroke: deepskyblue; }
+
+.smtk__markup__Field>polygon { fill: #ffaaaa; stroke: #ffaaaa; }
+.smtk__markup__Field>ellipse { fill: #ffaaaa; stroke: #ffaaaa; }
+
+.smtk__markup__Group>polygon { fill: palegreen; stroke: palegreen; }
+.smtk__markup__Group>ellipse { fill: palegreen; stroke: palegreen; }
+
+.smtk__markup__ImageData>polygon { fill: #cccccc; stroke: #cccccc; }
+.smtk__markup__ImageData>ellipse { fill: #cccccc; stroke: #cccccc; }
+.smtk__markup__UnstructuredData>polygon { fill: #cccccc; stroke: #cccccc; }
+.smtk__markup__UnstructuredData>ellipse { fill: #cccccc; stroke: #cccccc; }
+
+.smtk__markup__URL>polygon { fill: #ffffaa; stroke: #ffffaa; }
+.smtk__markup__URL>ellipse { fill: #ffffaa; stroke: #ffffaa; }
+
+.smtk__markup__arcs__BoundariesToShapes>path       { stroke-width: 3pt; stroke: #555555; }
+.smtk__markup__arcs__BoundariesToShapes>polygon    { stroke-width: 1pt; stroke: #555555; fill: #555555; }
+.smtk__markup__arcs__FieldsToShapes>path           { stroke-width: 3pt; stroke: #ffaaaa; }
+.smtk__markup__arcs__FieldsToShapes>polygon        { stroke-width: 1pt; stroke: #ffaaaa; fill: #ffaaaa; }
+.smtk__markup__arcs__GroupsToMembers>path          { stroke-width: 3pt; stroke: palegreen; }
+.smtk__markup__arcs__GroupsToMembers>polygon       { stroke-width: 1pt; stroke: palegreen; fill: palegreen; }
+.smtk__markup__arcs__LabelsToSubjects>path         { stroke-width: 3pt; stroke: #ffffaa; }
+.smtk__markup__arcs__LabelsToSubjects>polygon      { stroke-width: 1pt; stroke: #ffffaa; fill: #ffffaa; }
+.smtk__markup__arcs__ReferencesToPrimaries>path    { stroke-width: 3pt; stroke: #eaeaea; }
+.smtk__markup__arcs__ReferencesToPrimaries>polygon { stroke-width: 1pt; stroke: #eaeaea; fill: #eaeaea; }
+.smtk__markup__arcs__URLsToData>path               { stroke-width: 3pt; stroke: #ffffaa; }
+.smtk__markup__arcs__URLsToData>polygon            { stroke-width: 1pt; stroke: #ffffaa; fill: #ffffaa; }

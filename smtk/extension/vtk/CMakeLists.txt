@@ -5,7 +5,13 @@ set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/operators/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/source/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module")
+  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module"
+)
+if (SMTK_MARKUP_SUPPORT_ENABLED)
+  list(APPEND module_files
+    "${CMAKE_CURRENT_SOURCE_DIR}/markup/vtk.module"
+  )
+endif()
 vtk_module_scan(
   MODULE_FILES ${module_files}
   PROVIDES_MODULES vtk_modules
@@ -28,7 +34,9 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     vtkSMTKGeometryExt
     vtkSMTKOperationsExt
     vtkSMTKSourceExt
-    vtkSMTKWidgetsExt)
+    vtkSMTKWidgetsExt
+    # vtkSMTKMarkupExt doesn't have anything in need of wrapping yet.
+  )
   set(vtk_modules_to_wrap)
   foreach (vtk_python_wrappable_module IN LISTS vtk_python_wrappable_modules)
     if (TARGET "${vtk_python_wrappable_module}")

@@ -73,6 +73,7 @@ ReadResource::Result ReadResource::operateInternal()
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
+  auto hints = result->findReference("hints");
   for (auto fileIt = fileItem->begin(); fileIt != fileItem->end(); ++fileIt)
   {
     std::string filename = *fileIt;
@@ -175,6 +176,15 @@ ReadResource::Result ReadResource::operateInternal()
 
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
     created->appendValue(resource);
+
+    // Reference hints from the internal reader's results to our results:
+    if (auto readHints = readOperationResult->findReference("hints"))
+    {
+      for (const auto& hint : *readHints)
+      {
+        hints->appendValue(hint);
+      }
+    }
   }
 
   return result;

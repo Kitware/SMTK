@@ -176,18 +176,11 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       // sitting at the top of the menu. By using a single-shot connection to
       // load our actions, we ensure that extant Save methods are in place; we
       // key off of their location to make the menu look better.
-      QMetaObject::Connection* connection = new QMetaObject::Connection;
-      *connection = QObject::connect(fileMenu, &QMenu::aboutToShow, [this, connection, fileMenu]() {
-        QAction* saveAction = findSaveResourceAction(fileMenu);
+      QAction* saveAction = findSaveResourceAction(fileMenu);
 
-        this->setNewMenu(qobject_cast<QMenu*>(
-          fileMenu->insertMenu(saveAction, new QMenu("New Resource"))->parent()));
-        this->updateNewMenu();
-
-        // Remove this connection.
-        QObject::disconnect(*connection);
-        delete connection;
-      });
+      this->setNewMenu(qobject_cast<QMenu*>(
+        fileMenu->insertMenu(saveAction, new QMenu("New Resource"))->parent()));
+      this->updateNewMenu();
 
       pqActiveObjects* activeObjects = &pqActiveObjects::instance();
       QObject::connect(

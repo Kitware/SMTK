@@ -127,6 +127,7 @@ add_library(smtkCore ${smtk_srcs})
 # dependencies on generated files from subdirectories
 add_dependencies(smtkCore
   attributeGenHeaders
+  graphGenHeaders
   meshGenHeaders
   modelGenHeaders
   operationGenHeaders
@@ -250,6 +251,21 @@ endif()
 # Add libraries that extend other projects to have support for SMTK.
 # For example extension/vtk allows you to show smtk models in VTK.
 ################################################################################
+
+## Markup library
+set(SMTK_MARKUP_SUPPORT_ENABLED "False")
+if ((SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT) AND SMTK_ENABLE_MARKUP)
+  if (TARGET VTK::FiltersParallelDIY2)
+    if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+      set(SMTK_MARKUP_SUPPORT_ENABLED "True")
+      add_subdirectory(markup)
+    else()
+      message("Markup requires ParaView 5.10.0+. Skipping.")
+    endif()
+  else()
+    message("Markup requires VTK build with FiltersParallelDIY2. Skipping.")
+  endif()
+endif()
 add_subdirectory(extension)
 
 ################################################################################

@@ -14,8 +14,10 @@
 #include "smtk/CoreExports.h"
 #include "smtk/common/TypeMap.h"
 #include "smtk/common/UUID.h"
+#include "smtk/string/Token.h"
 
 #include "smtk/common/json/jsonUUID.h"
+#include "smtk/string/json/jsonToken.h"
 
 #include "smtk/resource/json/jsonPropertyCoordinateFrame.h"
 #include "smtk/resource/properties/CoordinateFrame.h"
@@ -44,7 +46,7 @@ class SMTKCORE_EXPORT PropertiesBase
 public:
   virtual ~PropertiesBase() = default;
 
-  virtual void eraseId(const smtk::common::UUID&) = 0;
+  virtual std::size_t eraseId(const smtk::common::UUID&) = 0;
 };
 
 template<typename Type>
@@ -67,12 +69,14 @@ class PropertiesOfType<std::unordered_map<smtk::common::UUID, Type>>
   }
 
 public:
-  void eraseId(const smtk::common::UUID& id) override
+  std::size_t eraseId(const smtk::common::UUID& id) override
   {
+    std::size_t count = 0;
     for (auto& pair : this->data())
     {
-      pair.second.erase(id);
+      count += pair.second.erase(id);
     }
+    return count;
   }
 };
 
@@ -99,19 +103,21 @@ public:
     insertPropertyTypes<List>();
   }
 
-  void eraseId(const smtk::common::UUID& id)
+  std::size_t eraseId(const smtk::common::UUID& id)
   {
+    std::size_t count = 0;
     auto& map = this->data();
     for (auto& pair : map)
     {
-      dynamic_cast<PropertiesBase*>(pair.second)->eraseId(id);
+      count += dynamic_cast<PropertiesBase*>(pair.second)->eraseId(id);
     }
+    return count;
   }
 
   template<typename Type>
-  void eraseIdForType(const smtk::common::UUID& id)
+  std::size_t eraseIdForType(const smtk::common::UUID& id)
   {
-    dynamic_cast<PropertiesBase&>(this->get<Type>()).eraseId(id);
+    return dynamic_cast<PropertiesBase&>(this->get<Type>()).eraseId(id);
   }
 
   // TODO: Putting the following two methods in the public API breaks RAII.
@@ -291,6 +297,15 @@ public:
     return true;
   }
 
+  /// Remove all properties of this type corresponding to our ID.
+  ///
+  /// The returned value is the number of removed property entries.
+  std::size_t clear()
+  {
+    std::size_t count = m_properties.eraseId(m_id);
+    return count;
+  }
+
   std::set<std::string> keys() const
   {
     std::set<std::string> keys;
@@ -395,10 +410,104 @@ public:
         properties().get<Indexed<Type>>()));
   }
 
+  /// Remove all properties this object manages.
+  virtual std::size_t clear() = 0;
+
 private:
   virtual const smtk::common::UUID& id() const = 0;
   virtual smtk::common::TypeMapBase<std::string>& properties() = 0;
   virtual const smtk::common::TypeMapBase<std::string>& properties() const = 0;
+
+  struct EraseProperties
+  {
+    template<typename Data>
+    void operator()(Data propertiesOfType, const smtk::common::UUID& uid, std::size_t& count)
+    {
+      std::cout << "Erase " << uid << " from " << propertiesOfType.keys().size() << "\n";
+      count += propertiesOfType.clear();
+    }
+  };
+
+  /**\brief Invoke a \a Functor (which accepts \a args) on each property type in the \a Tuple.
+    *
+    * For each property type, the functor is passed the input arguments (which it may
+    * modify).
+    */
+  //@{
+  template<typename Tuple, typename Functor, typename... Args>
+  void invoke(Args&&... args) const
+  {
+    smtk::resource::Properties::invokeFunctors<0, Tuple, Functor>(std::forward<Args>(args)...);
+  }
+
+  template<typename Tuple, typename Functor, typename... Args>
+  void invoke(Args&&... args)
+  {
+    smtk::resource::Properties::invokeFunctors<0, Tuple, Functor>(std::forward<Args>(args)...);
+  }
+  //@}
+
+  // const version
+  template<typename Entry, typename Functor, typename... Args>
+  void invokeFunctor(Args&&... args) const
+  {
+    Functor f;
+    f(std::forward<Args>(args)...);
+  }
+
+  // non-const version
+  template<typename Entry, typename Functor, typename... Args>
+  void invokeFunctor(Args&&... args)
+  {
+    Functor f;
+    f(std::forward<Args>(args)...);
+  }
+
+  // const versions
+  template<std::size_t I, typename Tuple, typename Functor, typename... Args>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
+    Args&&... args) const
+  {
+    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
+      // First argument is always PropertiesOfType<tuple_element<I, Tuple>>:
+      this->template get<typename std::tuple_element<I, Tuple>::type>(),
+      // Subsequent arguments are whatever is passed in:
+      std::forward<Args>(args)...);
+    smtk::resource::Properties::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
+  }
+
+  // non-const version
+  template<std::size_t I, typename Tuple, typename Functor, typename... Args>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
+    Args&&... args)
+  {
+    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
+      // First argument is always PropertiesOfType<tuple_element<I, Tuple>>:
+      this->template get<typename std::tuple_element<I, Tuple>::type>(),
+      // Subsequent arguments are whatever is passed in:
+      std::forward<Args>(args)...);
+    smtk::resource::Properties::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
+  }
+
+  // This only needs a const version.
+  template<std::size_t I, typename Tuple, typename Functor, typename... Args>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type invokeFunctors(
+    Args&&...) const
+  {
+  }
+
+protected:
+  /// This is a method subclasses may call from their implementation of clear()
+  /// in order to iterate over all acceptable property types and remove a UUID
+  /// from the map.
+  template<typename PropertyTypeTuple>
+  std::size_t clearInternal(const smtk::common::UUID& uid)
+  {
+    std::size_t count = 0;
+    // auto& propertiesByTypeThenId = this->properties();
+    this->invoke<PropertyTypeTuple, EraseProperties>(uid, count);
+    return count;
+  }
 };
 
 namespace detail
@@ -412,8 +521,10 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
 
   typedef detail::Properties ResourcePropertiesData;
 
+public:
   /// The default value types for all resources and components are
   /// + int, double, string, and vectors of these types;
+  /// + string tokens (integer hashes into a map producing strings) and sets of string tokens;
   /// + CoordinateFrame values plus maps from strings to CoordinateFrames.
   typedef std::tuple<
     Indexed<bool>,
@@ -421,6 +532,8 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
     Indexed<long>,
     Indexed<double>,
     Indexed<std::string>,
+    Indexed<smtk::string::Token>,
+    Indexed<std::set<smtk::string::Token>>,
     Indexed<std::set<int>>,
     Indexed<std::vector<bool>>,
     Indexed<std::vector<int>>,
@@ -431,7 +544,6 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
     Indexed<std::map<std::string, smtk::resource::properties::CoordinateFrame>>>
     PropertyTypes;
 
-public:
   ResourcePropertiesData& data() { return m_data; }
   const ResourcePropertiesData& data() const { return m_data; }
 
@@ -442,6 +554,13 @@ public:
   void insertPropertyType()
   {
     m_data.insertPropertyType<Indexed<Type>>();
+  }
+
+  // Remove all properties on the resource
+  std::size_t clear() override
+  {
+    std::size_t count = this->clearInternal<PropertyTypes>(this->id());
+    return count;
   }
 
 private:
@@ -460,6 +579,15 @@ private:
 /// component's resource.
 class SMTKCORE_EXPORT ComponentProperties : public smtk::resource::Properties
 {
+public:
+  // Remove all properties on the resource
+  std::size_t clear() override
+  {
+    std::size_t count = this->clearInternal<ResourceProperties::PropertyTypes>(this->id());
+    return count;
+  }
+
+protected:
   friend Component;
 
   ComponentProperties(const Component* component);

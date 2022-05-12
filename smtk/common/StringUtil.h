@@ -33,6 +33,13 @@ public:
   static std::vector<std::string>
   split(const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
 
+  /// Perform in-place replacement of \a search with \a replacement.
+  ///
+  /// The returned integer is the number of occurrences of \a search in \a source
+  /// that were replaced with \a replacement.
+  static std::size_t
+  replaceAll(std::string& source, const std::string& search, const std::string& replacement);
+
   /**\brief Converts a string to a boolean
    *
    * If the string \p s can be converted to a boolean then the function returns true

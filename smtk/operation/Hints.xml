@@ -1,0 +1,66 @@
+<AttDef Type="hint" Abstract="True">
+  <BriefDescription>A base attribute for operation result hints.</BriefDescription>
+</AttDef>
+
+<AttDef Type="focus hint" BaseType="hint" Abstract="True">
+  <BriefDescription>
+    Hints whose associations are objects the application should focus upon.
+  </BriefDescription>
+  <AssociationsDef NumberOfRequiredValues="1" Extensible="true">
+    <BriefDescription>The objects to focus on.</BriefDescription>
+    <!-- Note that child attribute definitions are allowed to narrow association rules. -->
+    <Accepts>
+      <!-- Any component -->
+      <Resource Name="smtk::resource::Resource" Filter="*"/>
+      <!-- Any resource -->
+      <Resource Name="smtk::resource::Resource"/>
+    </Accepts>
+  </AssociationsDef>
+</AttDef>
+
+<AttDef Type="render focus hint" BaseType="focus hint">
+  <BriefDescription>Specify objects that the active view should zoom to.</BriefDescription>
+</AttDef>
+
+<AttDef Type="browser scroll hint" BaseType="focus hint">
+  <BriefDescription>Specify one object that the resource browser should scroll to.</BriefDescription>
+</AttDef>
+
+<AttDef Type="browser expand hint" BaseType="focus hint">
+  <BriefDescription>Specify objects that the resource browser should expand to show.</BriefDescription>
+</AttDef>
+
+<AttDef Type="selection hint" BaseType="focus hint">
+  <BriefDescription>Specify how the selection should be modified by an operation.</BriefDescription>
+  <ItemDefinitions>
+    <Int Name="action" NumberOfRequiredValues="1">
+      <DetailedDescription>
+        One of the smtk::view::SelectionAction enumerants specifying how the objects
+        listed in the parent "selectionHint" item should be applied to the application's
+        selection at the end of the operation.
+      </DetailedDescription>
+      <!-- Note that SelectionAction::Default == 6 -->
+      <DefaultValue>6</DefaultValue>
+    </Int>
+    <Int Name="value" NumberOfRequiredValues="1">
+      <DetailedDescription>
+        The value to add or remove to the associated components in the selection.
+        Typically, "1" is the primary selection of an application and "2" is for
+        hovered/highlighted items. The default is 1
+      </DetailedDescription>
+      <DefaultValue>1</DefaultValue>
+    </Int>
+    <Void Name="bitwise" Optional="true" IsEnabledByDefault="false">
+      <BriefDescription>
+        Should the "value" item be treated as a bit vector (true/enabled)
+        which flips the provided bits to match? or as an integer
+        (false/disabled) which overwrites the previous mapped value?
+      </BriefDescription>
+    </Void>
+    <Void Name="ephemeral" Optional="true" IsEnabledByDefault="false">
+      <BriefDescription>
+        Should the associated components be deleted upon removal from the selection?
+      </BriefDescription>
+    </Void>
+  </ItemDefinitions>
+</AttDef>

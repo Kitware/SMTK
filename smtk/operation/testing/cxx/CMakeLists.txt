@@ -1,6 +1,7 @@
 set(unit_tests
   TestAsyncOperation.cxx
   TestAvailableOperations.cxx
+  TestHints.cxx
   TestMutexedOperation.cxx
   unitOperation.cxx
   unitNamingGroup.cxx
@@ -14,6 +15,10 @@ set(unit_tests_which_require_data
   TestRemoveResourceAssociations.cxx
   TestRemoveResourceProject.cxx
 )
+
+# TestHints requires include directives to be processed by smtk_encode_file:
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/TestHints.sbt" HEADER_OUTPUT testHeaders)
+add_custom_target(testHeadersTarget DEPENDS ${testHeaders})
 
 find_package(Threads REQUIRED)
 set(extra_libs)
@@ -29,4 +34,7 @@ smtk_unit_tests(
   LIBRARIES smtkCore
     ${Boost_LIBRARIES}
     ${extra_libs}
+)
+add_dependencies(UnitTests_smtk_operation_testing_cxx
+  testHeadersTarget
 )

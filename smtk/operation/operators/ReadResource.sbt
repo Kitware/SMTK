@@ -21,6 +21,7 @@
     </AttDef>
 
     <!-- Result -->
+    <include href="smtk/operation/Hints.xml"/>
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(read resource)" BaseType="result">
       <ItemDefinitions>
