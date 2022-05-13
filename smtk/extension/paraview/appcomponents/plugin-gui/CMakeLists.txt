@@ -10,23 +10,6 @@ paraview_plugin_add_toolbar(
   INTERFACES toolbar_interfaces
   SOURCES toolbar_sources)
 
-# paraview_plugin_add_proxy(
-#   NAME pqServerManagerModel
-#   INTERFACES proxy_interfaces
-#   SOURCES proxy_sources
-#   PROXY_TYPE pqSMTKResourceResourceReader
-#     CLASS_NAME pqSMTKResource
-#     XML_GROUP sources
-#     XML_NAME SMTKResourceReader
-#   PROXY_TYPE pqSMTKResourceCreator
-#     CLASS_NAME pqSMTKResource
-#     XML_GROUP sources
-#     XML_NAME SMTKResourceCreator
-#   PROXY_TYPE pqSMTKResourceImporter
-#     CLASS_NAME pqSMTKResource
-#     XML_GROUP sources
-#     XML_NAME_REGEX SMTKResourceImporter.*)
-
 paraview_plugin_add_dock_window(
   CLASS_NAME pqSMTKAttributePanel
   DOCK_AREA Left

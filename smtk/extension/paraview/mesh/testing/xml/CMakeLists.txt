@@ -22,6 +22,7 @@ smtk_add_client_tests(
     smtkPVServerExtPlugin
     smtkPQComponentsPlugin
     smtkPQGuiComponentsPlugin
+    smtkPQReadersPlugin
     smtkPVMeshExtPlugin
   PLUGIN_PATHS
     $<TARGET_FILE_DIR:smtkAttributePlugin>/..
@@ -34,6 +35,7 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkPVMeshExtPlugin>/..
     $<TARGET_FILE_DIR:smtkPQComponentsPlugin>/..
     $<TARGET_FILE_DIR:smtkPQGuiComponentsPlugin>/..
+    $<TARGET_FILE_DIR:smtkPQReadersPlugin>/..
     $<TARGET_FILE_DIR:smtkPVServerExtPlugin>/..
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/mesh

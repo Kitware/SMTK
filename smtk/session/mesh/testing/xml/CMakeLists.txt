@@ -20,6 +20,7 @@ smtk_add_client_tests(
     smtkPVServerExtPlugin
     smtkPQComponentsPlugin
     smtkPQGuiComponentsPlugin
+    smtkPQReadersPlugin
     smtkPQOperationsPanelPlugin
   PLUGIN_PATHS
     $<TARGET_FILE_DIR:smtkResourcePlugin>/..
@@ -30,6 +31,7 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkMeshSessionPlugin>/..
     $<TARGET_FILE_DIR:smtkPQComponentsPlugin>/..
     $<TARGET_FILE_DIR:smtkPQGuiComponentsPlugin>/..
+    $<TARGET_FILE_DIR:smtkPQReadersPlugin>/..
     $<TARGET_FILE_DIR:smtkPQOperationsPanelPlugin>/..
     $<TARGET_FILE_DIR:smtkPVServerExtPlugin>/..
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
