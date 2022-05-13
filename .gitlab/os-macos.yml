@@ -46,7 +46,7 @@
         - cmb
         - macos
         - shell
-        - xcode-12.4
+        - xcode-13.1
         - nonconcurrent
 
 .macos_arm64_builder_tags:
@@ -54,7 +54,7 @@
         - cmb
         - macos-arm64
         - shell
-        - xcode-12.4
+        - xcode-13.1
         - nonconcurrent
 
 ## macOS-specific scripts
