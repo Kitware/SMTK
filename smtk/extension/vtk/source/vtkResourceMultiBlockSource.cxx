@@ -336,6 +336,14 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(
       vtkResourceMultiBlockSource::SetDataObjectUUID(
         entries->GetMetaData(bb),
         vtkResourceMultiBlockSource::GetDataObjectUUID((*iit)->GetInformation()));
+      if (const auto* dataName = (*iit)->GetInformation()->Get(vtkCompositeDataSet::NAME()))
+      {
+        std::string compName(dataName);
+        if (!compName.empty())
+        {
+          entries->GetMetaData(bb)->Set(vtkCompositeDataSet::NAME(), compName.c_str());
+        }
+      }
     }
     if (dit->first == -1)
     {
