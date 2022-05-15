@@ -12,6 +12,7 @@
 #define smtk_extension_qtDescriptivePhraseDelegate_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/view/Selection.h"
 
 #include <QStyledItemDelegate>
 
@@ -34,6 +35,7 @@ class SMTKQTEXT_EXPORT qtDescriptivePhraseDelegate : public QStyledItemDelegate
   Q_PROPERTY(int textVerticalPad READ textVerticalPad WRITE setTextVerticalPad)
   Q_PROPERTY(bool drawSubtitle READ drawSubtitle WRITE setDrawSubtitle)
   Q_PROPERTY(bool visibilityMode READ visibilityMode WRITE setVisibilityMode)
+  Q_PROPERTY(std::shared_ptr<smtk::view::Selection> selection READ selection WRITE setSelection)
 public:
   qtDescriptivePhraseDelegate(QWidget* parent = nullptr);
 
@@ -45,6 +47,7 @@ public:
   bool drawSubtitle() const;
   bool highlightOnHover() const;
   bool visibilityMode() const;
+  std::shared_ptr<smtk::view::Selection> selection() const;
 
 public Q_SLOTS:
   void setTitleFontSize(int tfs);
@@ -55,6 +58,7 @@ public Q_SLOTS:
   void setDrawSubtitle(bool includeSubtitle);
   void setVisibilityMode(bool allEditsChangeVisibility);
   void setHighlightOnHover(bool highlightOnMouseover);
+  void setSelection(const std::shared_ptr<smtk::view::Selection>& seln);
 
 public:
   QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
@@ -96,6 +100,7 @@ protected:
   bool m_drawSubtitle{ true };
   bool m_visibilityMode{ false };
   bool m_highlightOnHover{ false };
+  std::weak_ptr<smtk::view::Selection> m_selection;
 };
 
 } // namespace extension

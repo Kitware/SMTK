@@ -13,6 +13,11 @@
 
 #include <QItemSelection>
 
+namespace // anonymous
+{
+QItemSelection s_dummy;
+}
+
 namespace smtk
 {
 namespace extension
@@ -23,7 +28,10 @@ qtBadgeActionToggle::qtBadgeActionToggle(QItemSelection& phrases)
 {
 }
 
-qtBadgeActionToggle::~qtBadgeActionToggle() = default;
+qtBadgeActionToggle::qtBadgeActionToggle()
+  : m_phrases(s_dummy)
+{
+}
 
 void qtBadgeActionToggle::visitRelatedPhrases(PhraseVisitor visitor) const
 {

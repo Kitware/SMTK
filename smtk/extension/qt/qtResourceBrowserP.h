@@ -41,7 +41,9 @@ public:
     const smtk::view::PhraseModelPtr& phraseModel,
     const std::string& viewName,
     QAbstractItemModel* qmodel,
-    QWidget* parent);
+    QWidget* parent,
+    const std::shared_ptr<smtk::view::Selection>& selection =
+      std::shared_ptr<smtk::view::Selection>());
 
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
   void setDescriptivePhraseModel(QAbstractItemModel* qmodel);

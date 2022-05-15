@@ -73,6 +73,7 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
   smtk::view::PhraseModelPtr phraseModel;
   std::string modelViewType;
   QAbstractItemModel* qtPhraseModel = nullptr;
+  smtk::view::SelectionPtr selection;
   const auto& view = this->configuration();
   if (view)
   {
@@ -81,8 +82,9 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
     smtk::view::ManagerPtr manager = this->uiManager()->viewManager();
     phraseModel = manager->phraseModelFactory().createFromConfiguration(view.get());
     qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
+    selection = this->uiManager()->selection();
   }
-  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, this->parentWidget());
+  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, this->parentWidget(), selection);
   this->Widget = m_p->m_container;
 }
 
