@@ -168,7 +168,7 @@ void qtDescriptivePhraseDelegate::paint(
   }
   else
   {
-    background = option.palette.color(QPalette::Background);
+    background = option.palette.color(QPalette::Window);
   }
   if (setBackground)
   {

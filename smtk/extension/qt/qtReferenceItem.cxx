@@ -49,7 +49,7 @@ void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->setText(txt);
   lbl->setAutoFillBackground(!ok);
   QPalette pal = lbl->palette();
-  pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
+  pal.setColor(QPalette::Window, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
   lbl->setPalette(pal);
   lbl->update();
 }
