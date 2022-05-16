@@ -7,6 +7,7 @@ set(QAttrLibSrcs
   qtAttribute.cxx
   qtAttributeEditorDialog.cxx
   qtAttributeItemInfo.cxx
+  qtBadgeActionSelectionToggle.cxx
   qtBadgeActionToggle.cxx
   qtBaseAttributeView.cxx
   qtBaseView.cxx

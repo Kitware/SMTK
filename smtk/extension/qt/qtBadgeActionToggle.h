@@ -32,9 +32,12 @@ class SMTKQTEXT_EXPORT qtBadgeActionToggle : public smtk::view::BadgeActionToggl
 {
 public:
   qtBadgeActionToggle(QItemSelection& phrases);
-  virtual ~qtBadgeActionToggle();
+  virtual ~qtBadgeActionToggle() = default;
 
   void visitRelatedPhrases(PhraseVisitor visitor) const override;
+
+protected:
+  qtBadgeActionToggle();
 
   QItemSelection& m_phrases;
 };

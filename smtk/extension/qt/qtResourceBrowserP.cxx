@@ -50,7 +50,8 @@ void qtResourceBrowser::Internal::setup(
   const smtk::view::PhraseModelPtr& phraseModel,
   const std::string& viewName,
   QAbstractItemModel* qmodel,
-  QWidget* parent)
+  QWidget* parent,
+  const std::shared_ptr<smtk::view::Selection>& selection)
 {
   m_self = self;
   if (m_container)
@@ -107,6 +108,7 @@ void qtResourceBrowser::Internal::setup(
   m_delegate->setTextVerticalPad(6);
   m_delegate->setTitleFontWeight(1);
   m_delegate->setDrawSubtitle(false);
+  m_delegate->setSelection(selection); // Used for badge actions
 
   m_view->setModel(m_model);
   m_view->setItemDelegate(m_delegate);

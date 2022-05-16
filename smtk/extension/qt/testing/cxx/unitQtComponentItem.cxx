@@ -265,14 +265,14 @@ int unitQtComponentItem(int argc, char* argv[])
     plbl->setText(label.str().c_str());
     plbl->setAutoFillBackground(!ok);
     QPalette pal = plbl->palette();
-    pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
+    pal.setColor(QPalette::Window, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     plbl->setPalette(pal);
     plbl->update();
 
     dlbl->setText(label.str().c_str());
     dlbl->setAutoFillBackground(!ok);
     QPalette dpal = dlbl->palette();
-    dpal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
+    dpal.setColor(QPalette::Window, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     dlbl->setPalette(dpal);
     dlbl->update();
     // pbtn->setStyleSheet(ok ? origStyle : invalidStyle);

@@ -10,8 +10,12 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 
 #include "smtk/extension/qt/SVGIconEngine.h"
+#include "smtk/extension/qt/qtBadgeActionSelectionToggle.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
+
+#include "smtk/view/PhraseModel.h"
+#include "smtk/view/Selection.h"
 
 #include <QAbstractProxyModel>
 #include <QApplication>
@@ -95,6 +99,11 @@ bool qtDescriptivePhraseDelegate::visibilityMode() const
   return m_visibilityMode;
 }
 
+std::shared_ptr<smtk::view::Selection> qtDescriptivePhraseDelegate::selection() const
+{
+  return m_selection.lock();
+}
+
 void qtDescriptivePhraseDelegate::setVisibilityMode(bool allEditsChangeVisibility)
 {
   m_visibilityMode = allEditsChangeVisibility;
@@ -108,6 +117,11 @@ bool qtDescriptivePhraseDelegate::highlightOnHover() const
 void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 {
   m_highlightOnHover = highlightOnHover;
+}
+
+void qtDescriptivePhraseDelegate::setSelection(const std::shared_ptr<smtk::view::Selection>& seln)
+{
+  m_selection = seln;
 }
 
 QSize qtDescriptivePhraseDelegate::sizeHint(
@@ -168,7 +182,7 @@ void qtDescriptivePhraseDelegate::paint(
   }
   else
   {
-    background = option.palette.color(QPalette::Background);
+    background = option.palette.color(QPalette::Window);
   }
   if (setBackground)
   {
@@ -440,7 +454,39 @@ bool qtDescriptivePhraseDelegate::editorEvent(
 
   if (badgeIndex >= 0)
   {
-    badges[badgeIndex]->action(phrase.get(), smtk::view::BadgeActionToggle());
+    auto seln = m_selection.lock();
+    std::shared_ptr<smtk::view::BadgeActionToggle> action;
+    if (seln)
+    {
+      for (; mod && !dynamic_cast<qtDescriptivePhraseModel*>(mod);)
+      {
+        if (auto* proxy = dynamic_cast<QAbstractProxyModel*>(mod))
+        {
+          mod = proxy->sourceModel();
+        }
+      }
+      if (mod)
+      {
+        int selnValue = seln->selectionValueFromLabel("selected");
+        auto phraseModel = dynamic_cast<qtDescriptivePhraseModel*>(mod)->phraseModel();
+        action = std::make_shared<qtBadgeActionSelectionToggle>(phraseModel, seln, "selected");
+        // Now, add the phrase's object to the selection so it will be processed, because
+        // when an action is present, it is assumed to contain the phrase's subject.
+        std::set<smtk::resource::PersistentObject::Ptr> subjects;
+        subjects.insert(phrase->relatedObject());
+        seln->modifySelection(
+          subjects,
+          "descriptive phrase delegate",
+          selnValue,
+          smtk::view::SelectionAction::UNFILTERED_ADD,
+          /* bitwise */ true);
+      }
+    }
+    else
+    {
+      action = std::make_shared<smtk::view::BadgeActionToggle>();
+    }
+    badges[badgeIndex]->action(phrase.get(), *action);
   }
 
   return res;
