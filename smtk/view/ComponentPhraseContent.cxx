@@ -48,6 +48,16 @@ ComponentPhraseContent::Ptr ComponentPhraseContent::setup(
   int mutability)
 {
   m_component = component;
+  m_rawComponent = component.get();
+  // Fetch the raw resource if we have one
+  if (m_rawComponent)
+  {
+    m_rawResource = m_rawComponent->resource().get();
+  }
+  else
+  {
+    m_rawResource = nullptr;
+  }
   m_mutability = mutability;
   return shared_from_this();
 }
@@ -91,7 +101,7 @@ bool ComponentPhraseContent::editable(ContentType contentType) const
 
 std::string ComponentPhraseContent::stringValue(ContentType contentType) const
 {
-  if (auto component = m_component.lock())
+  if (auto* component = m_rawComponent)
   {
     switch (contentType)
     {

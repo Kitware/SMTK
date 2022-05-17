@@ -194,9 +194,22 @@ bool Entity::setEntityFlags(BitFlags flags)
   return allowed;
 }
 
+smtk::model::Resource* Entity::rawModelResource() const
+{
+  if (m_resource.expired())
+  {
+    m_rawResource = nullptr;
+  }
+  else if (m_rawResource == nullptr)
+  {
+    m_rawResource = m_resource.lock().get();
+  }
+  return m_rawResource;
+}
+
 std::string Entity::name() const
 {
-  auto mr = this->modelResource();
+  auto* mr = this->rawModelResource();
   if (mr)
   {
     return mr->name(m_id);

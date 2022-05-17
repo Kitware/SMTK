@@ -54,6 +54,12 @@ void testUpdateChildren(smtk::view::PhraseModel::Ptr phraseModel)
   test(phrModelSummary.size() > 3, "Expected phrases describing the resource's model.");
   std::cout << "summ " << phrModelSummary[3]->title() << "\n";
   DescriptivePhrases phrFaces = phrModelSummary[3]->subphrases();
+  std::cout << "Number of Subphrases in " << phrModelSummary[3]->title() << " is "
+            << phrFaces.size() << std::endl;
+  for (const auto& phrase : phrFaces)
+  {
+    std::cout << "\t" << phrase->title() << std::endl;
+  }
   std::cout << "Removing 3 entries from " << phrModelSummary[3]->title() << "\n";
   phrFaces.erase(phrFaces.begin() + 2, phrFaces.begin() + 5);
   std::vector<int> idx;
@@ -102,7 +108,10 @@ int unitDescriptivePhrase(int argc, char* argv[])
                              { "Attributes", { { "Type", "default" } } } } } } } } } } } };
   auto viewManager = smtk::view::Manager::create();
   smtk::view::ConfigurationPtr viewConfig = j;
-  auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
+  smtk::resource::ManagerPtr resourceManager;
+  smtk::operation::ManagerPtr operationManager;
+  auto phraseModel =
+    loadTestData(argc, argv, viewManager, *viewConfig, dataArgs, resourceManager, operationManager);
   test(
     phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");

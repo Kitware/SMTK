@@ -176,6 +176,7 @@ public:
 protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);
+  smtk::model::Resource* rawModelResource() const;
 
   BitFlags m_entityFlags{ INVALID };
   smtk::common::UUIDArray m_relations;
@@ -183,6 +184,7 @@ protected:
   KindsToArrangements m_arrangements;
   int m_firstInvalid{ -1 };
   smtk::common::UUID m_id;
+  mutable smtk::model::Resource* m_rawResource = nullptr;
 };
 
 /// An abbreviation for the record type used by maps of Entity records.

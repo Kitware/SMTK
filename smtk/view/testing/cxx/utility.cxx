@@ -43,7 +43,9 @@ PhraseModel::Ptr loadTestData(
   char* argv[],
   const ManagerPtr& viewManager,
   const Configuration& viewConfig,
-  std::vector<char*>& dataArgs)
+  std::vector<char*>& dataArgs,
+  smtk::resource::ManagerPtr& rsrcMgr,
+  smtk::operation::ManagerPtr& operMgr)
 {
   if (argc < 2)
   {
@@ -60,8 +62,8 @@ PhraseModel::Ptr loadTestData(
     argc = 2;
     argv = &dataArgs[0];
   }
-  auto rsrcMgr = smtk::resource::Manager::create();
-  auto operMgr = smtk::operation::Manager::create();
+  rsrcMgr = smtk::resource::Manager::create();
+  operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
   auto polygonRegistry =

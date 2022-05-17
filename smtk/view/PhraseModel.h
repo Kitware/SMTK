@@ -15,6 +15,7 @@
 #include "smtk/SharedFromThis.h"
 
 #include "smtk/common/Deprecation.h"
+#include "smtk/common/ThreadPool.h"
 #include "smtk/common/TypeContainer.h"
 #include "smtk/common/Visit.h"
 
@@ -220,6 +221,8 @@ public:
   /// Return the map between persistent object IDs and Descriptive Phrases
   const UUIDsToPhrasesMap uuidPhraseMap() const { return m_objectMap; }
 
+  smtk::common::ThreadPool<DescriptivePhrases>& threadPool() { return m_pool; }
+
 protected:
   PhraseModel();
   PhraseModel(const Configuration* config, Manager* manager);
@@ -337,6 +340,11 @@ protected:
   int m_mutableAspects{ PhraseContent::EVERYTHING };
 
   WeakManagerPtr m_manager;
+
+  // Indicates we are in the process of updating children phrases
+  bool m_updatingChildren = false;
+
+  smtk::common::ThreadPool<DescriptivePhrases> m_pool;
 };
 } // namespace view
 } // namespace smtk

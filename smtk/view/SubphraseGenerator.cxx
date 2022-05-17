@@ -786,8 +786,8 @@ void SubphraseGenerator::componentsOfResource(
         result.push_back(ComponentPhraseContent::createPhrase(component, mutability, src));
       };
     rsrc->visit(visitor);
-    std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTitle);
   }
+  std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTitle);
 }
 
 bool SubphraseGenerator::resourceHasChildren(const smtk::resource::ResourcePtr& rsrc) const
@@ -943,9 +943,18 @@ void SubphraseGenerator::childrenOfModelEntity(
 
   auto ref = entity->referenceAs<smtk::model::EntityRef>();
   // Any entity may have instances
-  this->instancesOfModelEntity(src, ref, result);
+  // TODO:  There is a performance issue when dealing with instances
+  // which needs to be addressed.  Since instances are not currently a
+  // high priority, this was commented out for the time being.
+  //this->instancesOfModelEntity(src, ref, result);
   // Any entity may have associated attributes
   // this->attributesOfModelEntity(src, ref, result);
+
+  // Sort the result
+  if (!result.empty())
+  {
+    std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTypeThenTitle);
+  }
 }
 
 void SubphraseGenerator::freeSubmodelsOfModel(

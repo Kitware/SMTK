@@ -27,6 +27,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include <thread>
+
 namespace smtk
 {
 namespace view
@@ -400,7 +402,7 @@ int PhraseModel::handleOperationEvent(
     smtk::resource::PersistentObjectSet createdObjects;
     for (auto createdIt = createdItem->begin(); createdIt != createdItem->end(); createdIt++)
     {
-      if (createdIt.isSet())
+      if (createdIt.isSet() && (m_objectMap.find((*createdIt)->id()) == m_objectMap.end()))
       {
         createdObjects.insert(*createdIt);
       }
@@ -558,7 +560,14 @@ void PhraseModel::updateChildren(
     smtkErrorMacro(smtk::io::Logger::instance(), "Null phrase list.");
     return;
   }
+  // Are we in a recursive call to updateChildren?
+  if (m_updatingChildren)
+  {
+    src->subphrases() = next;
+    return;
+  }
 
+  m_updatingChildren = true;
   std::map<DescriptivePhrasePtr, int> lkup;
   std::map<int, DescriptivePhrasePtr> insert;
   int ii = 0;
@@ -652,9 +661,24 @@ void PhraseModel::updateChildren(
       batch.push_back(ep1->second);
       insertRange[1] = ii;
     }
-
     this->trigger(src, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
     orig.insert(orig.begin() + insertRange[0], batch.begin(), batch.end());
+    // Let's create the phrases for all new descendants
+    std::vector<std::future<DescriptivePhrases>> results;
+    for (const auto& newPhrase : batch)
+    {
+      results.push_back(m_pool([=] { return newPhrase->subphrases(); }));
+    }
+
+    while (!results.empty())
+    {
+      auto newChildPhrases = results.back().get();
+      results.pop_back();
+      for (const auto& newChildPhrase : newChildPhrases)
+      {
+        results.push_back(m_pool([=] { return newChildPhrase->subphrases(); }));
+      }
+    }
     this->trigger(src, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
     batch.clear();
 
@@ -745,6 +769,7 @@ void PhraseModel::updateChildren(
       }
     }
   }
+  m_updatingChildren = false;
 }
 
 void PhraseModel::triggerDataChanged()

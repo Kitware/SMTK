@@ -336,7 +336,7 @@ protected:
     int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
-      DescriptivePhrase::compareByTypeThenTitle);
+      nullptr);
 
 #if 0
   /**\brief Property phrases.

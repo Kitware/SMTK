@@ -71,8 +71,16 @@ public:
 
   /// Return the resource related to this phrase (or nullptr if not well defined).
   virtual smtk::resource::ResourcePtr relatedResource() const { return nullptr; }
+  virtual smtk::resource::Resource* relatedRawResource() const
+  {
+    return this->relatedResource().get();
+  }
   /// Return the resource component related to this phrase (or nullptr if not well defined).
   virtual smtk::resource::ComponentPtr relatedComponent() const { return nullptr; }
+  virtual smtk::resource::Component* relatedRawComponent() const
+  {
+    return this->relatedComponent().get();
+  }
   /// Return the persistent object related to this phrase (or nullptr if not well defined).
   ///
   /// This method simply calls relatedComponent() and relatedResource() under the hood, but

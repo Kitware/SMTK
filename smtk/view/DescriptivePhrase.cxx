@@ -405,8 +405,8 @@ bool DescriptivePhrase::compareByTypeThenTitle(
   }
 
   // II. Sort by related resource, so that things in the same file appear together
-  smtk::resource::ResourcePtr rpa = a->relatedResource();
-  smtk::resource::ResourcePtr rpb = b->relatedResource();
+  smtk::resource::Resource* rpa = a->relatedRawResource();
+  smtk::resource::Resource* rpb = b->relatedRawResource();
   if (rpa != rpb)
   {
     if (rpa && rpb)
@@ -434,8 +434,8 @@ bool DescriptivePhrase::compareByTypeThenTitle(
   }
 
   // III. Sort by component type (if component is present)
-  smtk::resource::ComponentPtr cpa = a->relatedComponent();
-  smtk::resource::ComponentPtr cpb = b->relatedComponent();
+  smtk::resource::Component* cpa = a->relatedRawComponent();
+  smtk::resource::Component* cpb = b->relatedRawComponent();
   if (cpa != cpb)
   {
     if (cpa && cpb)
