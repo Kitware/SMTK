@@ -529,7 +529,6 @@ void qtGroupItem::addItemsToTable(int index)
     return;
   }
 
-  std::size_t j, m = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(m_internals->ChildrensFrame->layout());
   if (!m_internals->ItemsTable)
   {
@@ -557,6 +556,7 @@ void qtGroupItem::addItemsToTable(int index)
   // properly expand to fill the area provided.  Setting the last column to
   // stretch seems to fix this.
   bool stretchLastColumn = true;
+  std::size_t j, m = item->numberOfItemsPerGroup();
   for (j = 0; j < m; j++)
   {
     auto citem = item->item(index, static_cast<int>(j));

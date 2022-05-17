@@ -677,7 +677,6 @@ void qtInputsItem::addInputEditor(int i)
   {
     childLayout = new QVBoxLayout;
     childLayout->setObjectName(QString("childLayout%1").arg(i));
-    childLayout->setContentsMargins(12, 3, 3, 0);
     childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   }
 
@@ -725,23 +724,27 @@ void qtInputsItem::addInputEditor(int i)
   editorLayout->addWidget(editBox);
 
   // always going vertical for discrete and extensible items
-  if (m_internals->VectorItemOrient == Qt::Vertical || item->isDiscrete() || item->isExtensible())
+  if (m_internals->VectorItemOrient == Qt::Vertical || item->isExtensible())
   {
-    int row = item->isDiscrete() ? 2 * i : i;
     // The "Add New Value" button is in first row, so take that into account
-    row = item->isExtensible() ? row + 1 : row;
+    int row = item->isExtensible() ? i + 1 : i;
     m_internals->EntryLayout->addLayout(editorLayout, row, 1);
     // there could be conditional children, so we need another layout
     // so that the combobox will stay TOP-left when there are multiple
     // combo boxes.
     if (item->isDiscrete() && childLayout)
     {
-      m_internals->EntryLayout->addLayout(childLayout, row + 1, 0, 1, 2);
+      m_internals->EntryLayout->addLayout(childLayout, row, 2);
     }
   }
   else // going horizontal
   {
-    m_internals->EntryLayout->addLayout(editorLayout, 0, i + 1);
+    int column = 2 * i;
+    m_internals->EntryLayout->addLayout(editorLayout, 0, column + 1);
+    if (item->isDiscrete() && childLayout)
+    {
+      m_internals->EntryLayout->addLayout(childLayout, 0, column + 2);
+    }
   }
 
   m_internals->ChildrenMap[editBox] = childLayout;
