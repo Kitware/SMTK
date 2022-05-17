@@ -18,7 +18,7 @@ set(_smtk_cmake_dir "${CMAKE_CURRENT_LIST_DIR}")
 function (smtk_add_plugin name)
   set(_smtk_plugin_name "${name}")
   cmake_parse_arguments(_smtk_plugin
-    "_SKIP_DEPENDENCIES"
+    "_SKIP_DEPENDENCIES;ALLOW_QT_KEYWORDS"
     "REGISTRAR;REGISTRAR_HEADER"
     "MANAGERS;REGISTRARS;PARAVIEW_PLUGIN_ARGS"
     ${ARGN})
@@ -133,5 +133,8 @@ function (smtk_add_plugin name)
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE
       smtkCore)
-  target_compile_definitions("${_smtk_plugin_name}" PRIVATE QT_NO_KEYWORDS)
+  # only enforce QT_NO_KEYWORDS if the option is not set.
+  if (NOT _smtk_plugin_ALLOW_QT_KEYWORDS)
+    target_compile_definitions("${_smtk_plugin_name}" PRIVATE QT_NO_KEYWORDS)
+  endif()
 endfunction ()
