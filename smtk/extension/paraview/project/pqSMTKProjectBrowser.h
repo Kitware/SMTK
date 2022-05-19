@@ -7,8 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_project_plugin_pqSMTKProjectBrowser_h
-#define smtk_project_plugin_pqSMTKProjectBrowser_h
+#ifndef smtk_extension_paraview_project_pqSMTKProjectBrowser_h
+#define smtk_extension_paraview_project_pqSMTKProjectBrowser_h
+
+#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h"
 
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
@@ -28,7 +30,7 @@ class pqView;
 
 /**\brief A widget that displays SMTK projects available to the application/user.
   */
-class pqSMTKProjectBrowser : public smtk::extension::qtResourceBrowser
+class SMTKPQPROJECTEXT_EXPORT pqSMTKProjectBrowser : public smtk::extension::qtResourceBrowser
 {
   Q_OBJECT
   typedef smtk::extension::qtResourceBrowser Superclass;

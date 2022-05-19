@@ -5,6 +5,7 @@ set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/appcomponents/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
+  "${CMAKE_CURRENT_SOURCE_DIR}/project/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
 )
 
@@ -38,6 +39,7 @@ if (TARGET ParaView::pqApplicationComponents)
     model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
     operators/paraview.plugin
+    project/plugin/paraview.plugin
   )
 
   if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")

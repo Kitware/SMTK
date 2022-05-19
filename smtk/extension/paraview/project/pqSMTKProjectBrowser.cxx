@@ -7,9 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/plugin/pqSMTKProjectBrowser.h"
+#include "smtk/extension/paraview/project/pqSMTKProjectBrowser.h"
 
-#include "smtk/project/plugin/ProjectPanelConfiguration_json.h"
+#include "smtk/extension/paraview/project/ProjectPanelConfiguration_json.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"

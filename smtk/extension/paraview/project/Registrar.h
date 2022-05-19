@@ -7,8 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_project_plugin_Registrar_h
-#define smtk_project_plugin_Registrar_h
+#ifndef smtk_extension_paraview_project_Registrar_h
+#define smtk_extension_paraview_project_Registrar_h
+
+#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h"
 
 #include "smtk/project/Manager.h"
 #include "smtk/project/Registrar.h"
@@ -21,11 +23,13 @@
 
 namespace smtk
 {
+namespace extension
+{
+namespace paraview
+{
 namespace project
 {
-namespace plugin
-{
-class Registrar
+class SMTKPQPROJECTEXT_EXPORT Registrar
 {
 public:
   using Dependencies = std::tuple<smtk::project::Registrar>;
@@ -36,8 +40,8 @@ public:
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
-} // namespace plugin
 } // namespace project
+} // namespace paraview
+} // namespace extension
 } // namespace smtk
-
 #endif
