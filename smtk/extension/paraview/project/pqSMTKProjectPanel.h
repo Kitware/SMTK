@@ -7,18 +7,20 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_project_plugin_pqSMTKProjectPanel_h
-#define smtk_project_plugin_pqSMTKProjectPanel_h
+#ifndef smtk_extension_paraview_project_pqSMTKProjectPanel_h
+#define smtk_extension_paraview_project_pqSMTKProjectPanel_h
 
+#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h"
+
+#include "smtk/extension/paraview/project/pqSMTKProjectBrowser.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/project/plugin/pqSMTKProjectBrowser.h"
 
 #include <QDockWidget>
 
 /**\brief A panel that displays SMTK projects available to the application/user.
   *
   */
-class pqSMTKProjectPanel : public QDockWidget
+class SMTKPQPROJECTEXT_EXPORT pqSMTKProjectPanel : public QDockWidget
 {
   Q_OBJECT
   typedef QDockWidget Superclass;

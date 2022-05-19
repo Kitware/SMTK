@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/plugin/AutoStart.h"
+#include "smtk/extension/paraview/project/pqSMTKProjectAutoStart.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
+#include "smtk/extension/paraview/project/pqSMTKProjectMenu.h"
 #include "smtk/project/Project.h"
-#include "smtk/project/plugin/pqSMTKProjectMenu.h"
 #include "smtk/view/ResourcePhraseModel.h"
 
 #include "pqApplicationCore.h"
@@ -51,16 +51,15 @@ void setView()
 }
 } // namespace
 
-AutoStart::AutoStart(QObject* parent)
+pqSMTKProjectAutoStart::pqSMTKProjectAutoStart(QObject* parent)
   : Superclass(parent)
 {
 }
 
-AutoStart::~AutoStart() = default;
+pqSMTKProjectAutoStart::~pqSMTKProjectAutoStart() = default;
 
-void AutoStart::startup()
+void pqSMTKProjectAutoStart::startup()
 {
-#ifdef ENABLE_PROJECT_UI
   auto* projectMenuMgr = pqSMTKProjectMenu::instance(this);
 
   auto* pqCore = pqApplicationCore::instance();
@@ -72,10 +71,9 @@ void AutoStart::startup()
   // Since the loading order of smtk plugins is indeterminate, a spinning
   // function call is used here to set up the custom view.
   QTimer::singleShot(10, []() { setView(); });
-#endif
 }
 
-void AutoStart::shutdown()
+void pqSMTKProjectAutoStart::shutdown()
 {
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)

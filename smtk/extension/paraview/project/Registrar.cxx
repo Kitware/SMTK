@@ -9,15 +9,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/project/plugin/Registrar.h"
+#include "smtk/extension/paraview/project/Registrar.h"
 
-#include "smtk/project/plugin/pqSMTKProjectBrowser.h"
+#include "smtk/extension/paraview/project/pqSMTKProjectBrowser.h"
 
 namespace smtk
 {
-namespace project
+namespace extension
 {
-namespace plugin
+namespace paraview
+{
+namespace project
 {
 void Registrar::registerTo(const smtk::project::Manager::Ptr& projectManager)
 {
@@ -32,18 +34,15 @@ void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   (void)viewManager;
-#ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().registerType<pqSMTKProjectBrowser>();
-#endif
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   (void)viewManager;
-#ifdef ENABLE_PROJECT_UI
   viewManager->viewWidgetFactory().unregisterType<pqSMTKProjectBrowser>();
-#endif
 }
-} // namespace plugin
 } // namespace project
+} // namespace paraview
+} // namespace extension
 } // namespace smtk

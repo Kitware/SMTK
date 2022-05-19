@@ -10,16 +10,20 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKProjectMenu_h
 #define smtk_extension_paraview_appcomponents_pqSMTKProjectMenu_h
 
+#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
+
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 #include <QObject>
 
 class QMenu;
 
 /// A reaction for creating a new SMTK Project.
-class pqNewProjectReaction : public pqReaction
+class SMTKPQPROJECTEXT_EXPORT pqNewProjectReaction : public pqReaction
 {
   Q_OBJECT
   typedef pqReaction Superclass;
@@ -47,7 +51,7 @@ private:
 /// modal dialog with the create operation's parameters. These parameters are
 /// then serialized to a json string, and a server-side operation is created and
 /// executed using the deserialized parameters.
-class pqSMTKProjectMenu : public QObject
+class SMTKPQPROJECTEXT_EXPORT pqSMTKProjectMenu : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
