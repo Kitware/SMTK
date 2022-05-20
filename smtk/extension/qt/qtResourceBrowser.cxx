@@ -75,6 +75,7 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
   QAbstractItemModel* qtPhraseModel = nullptr;
   smtk::view::SelectionPtr selection;
   const auto& view = this->configuration();
+  bool searchBar = false;
   if (view)
   {
     // empty Widget attribute is OK, will use default.
@@ -83,8 +84,10 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
     phraseModel = manager->phraseModelFactory().createFromConfiguration(view.get());
     qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
     selection = this->uiManager()->selection();
+    searchBar = view->details().attributeAsBool("SearchBar");
   }
-  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, this->parentWidget(), selection);
+  m_p->setup(
+    this, phraseModel, modelViewType, qtPhraseModel, this->parentWidget(), selection, searchBar);
   this->Widget = m_p->m_container;
 }
 
@@ -102,6 +105,7 @@ QTreeView* qtResourceBrowser::createDefaultView(QWidget* parent)
   view->setDragDropMode(QAbstractItemView::DragDrop);
   view->setSelectionMode(QAbstractItemView::ExtendedSelection);
   view->setSortingEnabled(true);
+  view->sortByColumn(0, Qt::AscendingOrder);
 
   return view;
 }

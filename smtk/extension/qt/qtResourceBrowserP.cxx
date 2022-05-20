@@ -18,7 +18,9 @@
 #include "smtk/io/Logger.h"
 
 #include <QAbstractProxyModel>
+#include <QLineEdit>
 #include <QMetaObject>
+#include <QSortFilterProxyModel>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -51,7 +53,8 @@ void qtResourceBrowser::Internal::setup(
   const std::string& viewName,
   QAbstractItemModel* qmodel,
   QWidget* parent,
-  const std::shared_ptr<smtk::view::Selection>& selection)
+  const std::shared_ptr<smtk::view::Selection>& selection,
+  bool searchBar)
 {
   m_self = self;
   if (m_container)
@@ -80,6 +83,25 @@ void qtResourceBrowser::Internal::setup(
   m_container->setObjectName("qtResourceBrowser");
   m_layout = new QVBoxLayout(m_container);
   m_layout->setObjectName("m_layout");
+  // Always use for sorting, but not always for search (filtering)
+  m_filter = new QSortFilterProxyModel(m_container);
+  m_filter->setFilterCaseSensitivity(Qt::CaseInsensitive);
+  m_filter->setSortCaseSensitivity(Qt::CaseInsensitive);
+  // so we can see parents if children are matched.
+  m_filter->setRecursiveFilteringEnabled(true);
+
+  if (searchBar)
+  {
+    m_search = new QLineEdit(m_container);
+    m_search->setObjectName("Search");
+    m_search->setPlaceholderText("Search");
+    auto* controlLayout = new QHBoxLayout();
+    controlLayout->setObjectName("controlLayout");
+    m_layout->addItem(controlLayout);
+    controlLayout->addWidget(m_search);
+    QObject::connect(
+      m_search, &QLineEdit::textChanged, m_filter, &QSortFilterProxyModel::setFilterWildcard);
+  }
 
   m_view = ctor(parent);
 
@@ -111,7 +133,8 @@ void qtResourceBrowser::Internal::setup(
   m_delegate->setDrawSubtitle(false);
   m_delegate->setSelection(selection); // Used for badge actions
 
-  m_view->setModel(m_model);
+  m_filter->setSourceModel(m_model);
+  m_view->setModel(m_filter);
   m_view->setItemDelegate(m_delegate);
   m_view->setMouseTracking(true); // Needed to receive hover events.
   // Connect signals
@@ -141,7 +164,15 @@ qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() 
 void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
 {
   m_model = qmodel;
-  m_view->setModel(m_model);
+  if (m_filter)
+  {
+    m_filter->setSourceModel(m_model);
+    m_view->setModel(m_filter);
+  }
+  else
+  {
+    m_view->setModel(m_model);
+  }
   QObject::connect(
     m_view->selectionModel(),
     SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),

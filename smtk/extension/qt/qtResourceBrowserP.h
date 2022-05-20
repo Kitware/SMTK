@@ -19,6 +19,8 @@
 
 class QAbstractItemModel;
 class QAbstractItemView;
+class QLineEdit;
+class QSortFilterProxyModel;
 class QTreeView;
 class QVBoxLayout;
 
@@ -43,7 +45,8 @@ public:
     QAbstractItemModel* qmodel,
     QWidget* parent,
     const std::shared_ptr<smtk::view::Selection>& selection =
-      std::shared_ptr<smtk::view::Selection>());
+      std::shared_ptr<smtk::view::Selection>(),
+    bool searchBar = false);
 
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
   void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
@@ -66,6 +69,10 @@ public:
   std::string m_viewName;
   std::string m_resourceTreeType; // "default" or specific type.
   int m_resourceTreeStyle{ -1 };  // Which default subphrase generator should be used?
+  /// A proxy model for users to search by name.
+  QPointer<QSortFilterProxyModel> m_filter;
+  /// An optional search bar for users.
+  QPointer<QLineEdit> m_search;
 
   // Set to true when inside sendSMTKSelectionToPanel.
   // Used to avoid updating the SMTK selection from the panel while
