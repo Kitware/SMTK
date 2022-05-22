@@ -4,6 +4,7 @@ set(classes
 )
 
 set(vtkGeomOperations
+  DataSetInfoInspector
   ExportEdgesToVTK
   MeshInspector
   ImageInspector
@@ -39,6 +40,7 @@ vtk_module_add_module(vtkSMTKOperationsExt
 add_dependencies(vtkSMTKOperationsExt vtkGeomOpGenHeaders ${vtkGeomOpIcons})
 vtk_module_link(vtkSMTKOperationsExt
   PUBLIC
+    vtkSMTKGeometryExt
     smtkCore
     smtkIOVTK
     VTK::FiltersGeometry
