@@ -116,5 +116,48 @@ bool StringUtil::toBoolean(const std::string& s, bool& value)
   }
   return false;
 }
+
+bool StringUtil::mixedAlphanumericComparator(const std::string& aa, const std::string& bb)
+{
+  if (aa.empty() && bb.empty())
+  {
+    return false;
+  }
+
+  if (aa.empty())
+  {
+    return true;
+  }
+
+  if (bb.empty())
+  {
+    return false;
+  }
+
+  std::string::size_type minlen = aa.size() < bb.size() ? aa.size() : bb.size();
+  std::string::size_type i;
+  for (i = 0; i < minlen; ++i)
+    if (aa[i] != bb[i])
+      break; // Stop at the first difference between aa and bb.
+
+  // Shorter strings are less than longer versions with the same start:
+  if (i == minlen)
+    return aa.size() < bb.size();
+
+  // Both aa & bb have some character present and different.
+  bool da = isdigit(aa[i]) != 0;
+  bool db = isdigit(bb[i]) != 0;
+  if (da && !db)
+    return true; // digits come before other things
+  if (!da && db)
+    return false; // non-digits come after digits
+  if (!da && !db)
+    return aa[i] < bb[i];
+  // Now, both aa and bb differ with some numeric value.
+  // Convert to numbers and compare the numbers.
+  double na = atof(aa.substr(i).c_str());
+  double nb = atof(bb.substr(i).c_str());
+  return na < nb;
+}
 } // namespace common
 } // namespace smtk

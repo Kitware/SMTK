@@ -19,6 +19,8 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
 
+#include "smtk/common/StringUtil.h"
+
 #include <algorithm>
 
 using smtk::resource::ComponentPtr;
@@ -471,45 +473,7 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
   std::string ta(a->title());
   std::string tb(b->title());
 
-  if (ta.empty() && tb.empty())
-  {
-    return false;
-  }
-
-  if (ta.empty())
-  {
-    return true;
-  }
-
-  if (tb.empty())
-  {
-    return false;
-  }
-
-  std::string::size_type minlen = ta.size() < tb.size() ? ta.size() : tb.size();
-  std::string::size_type i;
-  for (i = 0; i < minlen; ++i)
-    if (ta[i] != tb[i])
-      break; // Stop at the first difference between ta and tb.
-
-  // Shorter strings are less than longer versions with the same start:
-  if (i == minlen)
-    return ta.size() < tb.size();
-
-  // Both ta & tb have some character present and different.
-  bool da = isdigit(ta[i]) != 0;
-  bool db = isdigit(tb[i]) != 0;
-  if (da && !db)
-    return true; // digits come before other things
-  if (!da && db)
-    return false; // non-digits come after digits
-  if (!da && !db)
-    return ta[i] < tb[i];
-  // Now, both ta and tb differ with some numeric value.
-  // Convert to a number and compare the numbers.
-  double na = atof(ta.substr(i).c_str());
-  double nb = atof(tb.substr(i).c_str());
-  return na < nb;
+  return smtk::common::StringUtil::mixedAlphanumericComparator(ta, tb);
 }
 
 bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const

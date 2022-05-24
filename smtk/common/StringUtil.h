@@ -40,6 +40,9 @@ public:
    * to lower case.  The current acceptable values are: 1, t, true, yes, 0, f, false, no.
    */
   static bool toBoolean(const std::string& s, bool& value);
+
+  /// A comparator for strings that sorts mixed numeric substrings properly.
+  static bool mixedAlphanumericComparator(const std::string& aa, const std::string& bb);
 };
 
 } // namespace common
