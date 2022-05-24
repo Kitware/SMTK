@@ -372,6 +372,9 @@ void XmlV2StringWriter::generateXml()
     root.append_attribute("ID").set_value(uuidName.c_str());
   }
 
+  // Add the separator used to make unique attribute names
+  root.append_attribute("NameSeparator").set_value(m_resource->defaultNameSeparator().c_str());
+
   Analyses& analyses = m_resource->analyses();
   if (m_resource->numberOfCategories() || (m_includeAnalyses && analyses.size()))
   {

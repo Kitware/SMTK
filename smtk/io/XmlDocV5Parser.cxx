@@ -94,6 +94,14 @@ XmlDocV5Parser::~XmlDocV5Parser() = default;
 
 void XmlDocV5Parser::process(xml_node& rootNode)
 {
+  pugi::xml_attribute xatt = rootNode.attribute("NameSeparator");
+
+  if (xatt)
+  {
+    std::string nameSep = xatt.value();
+    m_resource->setDefaultNameSeparator(nameSep);
+  }
+
   XmlDocV4Parser::process(rootNode);
 
   xml_node propertiesNode = rootNode.child("Properties");

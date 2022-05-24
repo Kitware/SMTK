@@ -45,6 +45,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   // Set the version to 5.0
   j["version"] = "5.0";
   j["IsPrivate"] = res->isPrivate();
+  j["NameSeparator"] = res->defaultNameSeparator();
   // Write out the active category information
   if (!res->activeCategories().empty())
   {
@@ -354,8 +355,15 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   bool isPrivateValue = isPrivateResult != j.end() ? isPrivateResult->get<bool>() : true;
   res->setIsPrivate(isPrivateValue);
 
+  // Set the default name separator if specified
+  auto result = j.find("NameSeparator");
+  if (result != j.end())
+  {
+    res->setDefaultNameSeparator(*result);
+  }
+
   // Process Analysis Info
-  auto result = j.find("Analyses");
+  result = j.find("Analyses");
   if (result != j.end())
   {
     smtk::attribute::Analyses& analyses = res->analyses();

@@ -87,6 +87,7 @@ set(unit_tests
   unitComponentItemConstraints.cxx
   unitCustomItem.cxx
   unitDateTimeItem.cxx
+  unitDefaultNameSeparatorTest.cxx
   unitDefinitionTags.cxx
   unitDoubleItem.cxx
   unitEvaluatorFactory.cxx
