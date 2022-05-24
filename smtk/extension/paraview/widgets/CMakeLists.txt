@@ -70,6 +70,9 @@ vtk_module_link(smtkPQWidgetsExt
     ParaView::pqApplicationComponents
     ParaView::pqComponents
     ParaView::pqWidgets
+    ParaView::VTKExtensionsExtraction
+    ParaView::VTKExtensionsFiltersGeneral
+    ParaView::VTKExtensionsFiltersRendering
     VTK::CommonCore
     VTK::CommonDataModel
     VTK::CommonExecutionModel
