@@ -110,6 +110,16 @@ public:
   void setIsPrivate(bool isPrivateValue) { m_isPrivate = isPrivateValue; }
   bool isPrivate() const { return m_isPrivate; };
 
+  /**\brief Get the separator used for new Attributes whose names are not unique
+   */
+  const std::string& defaultNameSeparator() const;
+  /**\brief Reset the separator used for new Attributes whose names are not unique to to the default which is '-'.
+   */
+  void resetDefaultNameSeparator();
+  /**\brief Set the separator used for new Attributes whose names are not unique
+   */
+  bool setDefaultNameSeparator(const std::string& separator);
+
   smtk::attribute::AttributePtr createAttribute(const std::string& name, const std::string& type);
   smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
   smtk::attribute::AttributePtr createAttribute(const std::string& type);
@@ -413,6 +423,8 @@ protected:
   bool m_isPrivate = false;
 
   EvaluatorFactory m_evaluatorFactory;
+
+  std::string m_defaultAttNameSeparator = "-";
 
 private:
   mutable std::mutex m_mutex;

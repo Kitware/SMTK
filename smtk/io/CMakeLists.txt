@@ -16,6 +16,7 @@ set(ioSrcs
   XmlV2StringWriter.cxx
   XmlV3StringWriter.cxx
   XmlV4StringWriter.cxx
+  XmlV5StringWriter.cxx
 )
 
 set(ioHeaders
@@ -36,6 +37,7 @@ set(ioHeaders
   XmlV2StringWriter.h
   XmlV3StringWriter.h
   XmlV4StringWriter.h
+  XmlV5StringWriter.h
 )
 
 # mesh-related I/O

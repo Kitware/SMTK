@@ -447,7 +447,7 @@ std::string Resource::createUniqueName(const std::string& type) const
 {
   int i = 0;
   std::string base = type, newName;
-  base.append("-");
+  base.append(m_defaultAttNameSeparator);
   while (true)
   {
     std::ostringstream n;
@@ -1128,4 +1128,26 @@ bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories& cats) 
     return true;
   }
   return cats.passes(m_activeCategories);
+}
+
+const std::string& Resource::defaultNameSeparator() const
+{
+  return m_defaultAttNameSeparator;
+}
+
+void Resource::resetDefaultNameSeparator()
+{
+  m_defaultAttNameSeparator = "-";
+}
+
+bool Resource::setDefaultNameSeparator(const std::string& separator)
+{
+  bool isValid = !separator.empty();
+
+  if (isValid)
+  {
+    m_defaultAttNameSeparator = separator;
+  }
+
+  return isValid;
 }

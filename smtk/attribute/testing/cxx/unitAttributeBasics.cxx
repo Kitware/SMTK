@@ -101,6 +101,24 @@ int unitAttributeBasics(int /*unused*/, char* /*unused*/[])
   smtkTest(!att->appliesToInteriorNodes(), "Should not applied to interior node.");
   smtkTest(att->resource() == resptr, "Should be this resource.");
 
+  // Test support for the ability to modify which separator the Resource uses for
+  // default attribute names
+  auto newTestDef = resptr->createDefinition("newTestDef");
+
+  resptr->setDefaultNameSeparator("_");
+  std::string sep = resptr->defaultNameSeparator();
+  smtkTest(sep == "_", "Default att name separator should be '_'");
+
+  auto newAtt = resptr->createAttribute(newTestDef);
+  smtkTest(newAtt->name() == "newTestDef_0", "Should be using separator '_' for default att name");
+
+  resptr->resetDefaultNameSeparator();
+  sep = resptr->defaultNameSeparator();
+  smtkTest(sep == "-", "Default att name separator should be '-'");
+
+  auto newAtt2 = resptr->createAttribute(newTestDef);
+  smtkTest(newAtt2->name() == "newTestDef-0", "Should be using separator '-' for default att name");
+
   // Lets test the UserData Interface
   auto data = smtk::simulation::UserDataInt::New();
   auto dataI = std::dynamic_pointer_cast<smtk::simulation::UserDataInt>(data);
