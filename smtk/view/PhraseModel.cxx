@@ -900,9 +900,7 @@ void PhraseModel::trigger(
   // Check to see if phrases we just inserted have pre-existing children. If so, trigger them.
   if (event == PhraseModelEvent::INSERT_FINISHED && phr && phr->areSubphrasesBuilt())
   {
-    std::vector<int> range(2);
     DescriptivePhrases& children(phr->subphrases());
-    range[0] = 0;
     for (int ci = arg[0]; ci <= arg[1]; ++ci)
     {
       // If the child is null then skip it
@@ -936,17 +934,6 @@ void PhraseModel::trigger(
       {
         continue;
       }
-      range[1] = static_cast<int>(children[ci]->subphrases().size());
-      // Qt expects range to be closed, not half-open like the STL.
-      // But it is possible to have subphrases built but be empty (size() == 0), so:
-      if (range[1] == 0)
-      {
-        continue;
-      }
-      --range[1];
-      std::vector<int> cpath = children[ci]->index();
-      this->trigger(children[ci], PhraseModelEvent::ABOUT_TO_INSERT, cpath, cpath, range);
-      this->trigger(children[ci], PhraseModelEvent::INSERT_FINISHED, cpath, cpath, range);
     }
   }
 }
