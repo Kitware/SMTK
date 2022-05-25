@@ -15,6 +15,7 @@
 #define smtk_extension_qtCollapsibleGroupWidget_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/view/Configuration.h"
 #include <QWidget>
 
 class QFrame;
@@ -29,7 +30,7 @@ class SMTKQTEXT_EXPORT qtCollapsibleGroupWidget : public QWidget
   Q_OBJECT
 
 public:
-  qtCollapsibleGroupWidget(QWidget* parent);
+  qtCollapsibleGroupWidget(QWidget* parent, smtk::view::ConfigurationPtr viewConfig = nullptr);
   ~qtCollapsibleGroupWidget() override;
 
   QLayout* contentsLayout() const;
@@ -43,7 +44,10 @@ public Q_SLOTS:
   void collapse();
 
 protected:
+  void updateViewStateRecord(bool state);
+
   qtCollapsibleGroupWidgetInternals* m_internals;
+  smtk::view::ConfigurationPtr m_viewConfig;
 
 private:
 };

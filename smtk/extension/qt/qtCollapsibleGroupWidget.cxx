@@ -21,8 +21,11 @@ public:
   qtCollapsibleGroupWidgetInternals() = default;
 };
 
-qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)
+qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(
+  QWidget* p,
+  smtk::view::ConfigurationPtr viewConfig)
   : QWidget(p)
+  , m_viewConfig(viewConfig)
 {
   m_internals = new qtCollapsibleGroupWidgetInternals;
   m_internals->setupUi(this);
@@ -30,11 +33,23 @@ qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)
                 "QCheckBox::indicator:unchecked {image: url(:/icons/attribute/caret-right.svg);} "
                 "QCheckBox::indicator:checked {image: url(:/icons/attribute/caret-down.svg);} ");
   m_internals->VisibilityControl->setStyleSheet(style);
+  connect(m_internals->VisibilityControl, &QCheckBox::toggled, [this](bool checked) {
+    this->updateViewStateRecord(checked);
+  });
 }
 
 qtCollapsibleGroupWidget::~qtCollapsibleGroupWidget()
 {
   delete m_internals;
+}
+
+void qtCollapsibleGroupWidget::updateViewStateRecord(bool state)
+{
+  if (m_viewConfig)
+  {
+    std::string stateString = state ? "true" : "false";
+    m_viewConfig->details().setAttribute("Open", stateString);
+  }
 }
 
 QFrame* qtCollapsibleGroupWidget::contents() const
