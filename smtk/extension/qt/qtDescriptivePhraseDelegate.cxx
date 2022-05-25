@@ -10,13 +10,14 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 
 #include "smtk/extension/qt/SVGIconEngine.h"
-#include "smtk/extension/qt/qtBadgeActionSelectionToggle.h"
+#include "smtk/extension/qt/qtBadgeActionToggle.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/Selection.h"
 
+#include <QAbstractItemView>
 #include <QAbstractProxyModel>
 #include <QApplication>
 #include <QLineEdit>
@@ -384,7 +385,60 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-int determineAction(
+bool qtDescriptivePhraseDelegate::processBadgeClick(
+  QMouseEvent* mouseClickEvent,
+  QAbstractItemView* view)
+{
+  // Look up the item index (row) where the click occurred so we can identify
+  // which badges it contains and whether the mouse was over one when clicked:
+  auto idx = view->indexAt(mouseClickEvent->pos());
+  if (idx.isValid())
+  {
+    static QStyleOptionViewItem option;
+    // FIXME: The following block exists because we are not allowed to
+    //        call QAbstractItemView::viewOptions() – it is protected.
+    //        Until Qt provides access, it's unclear there's a solution
+    //        unless you are willing to subclass the item view (which
+    //        limits how the model can be displayed).
+    {
+      option.initFrom(view);
+      int pm = view->style()->pixelMetric(QStyle::PM_SmallIconSize, nullptr, view);
+      option.decorationSize = QSize(pm, pm);
+      auto buddy = view->model()->buddy(idx);
+      option.rect = view->visualRect(buddy);
+    }
+
+    auto badges = qvariant_cast<smtk::view::BadgeSet::BadgeList>(
+      idx.data(qtDescriptivePhraseModel::BadgesRole));
+    auto phrase =
+      idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+    int badgeIndex =
+      qtDescriptivePhraseDelegate::pickBadge(mouseClickEvent->pos(), option, badges, phrase.get());
+
+    if (badgeIndex >= 0 && mouseClickEvent->type() == QEvent::MouseButtonPress)
+    {
+      auto* qselnModel = view->selectionModel();
+      if (qselnModel->isSelected(idx))
+      {
+        // The item whose badge was clicked is selected, so toggle
+        // all the selected items' badges.
+        auto qseln = qselnModel->selection();
+        badges[badgeIndex]->action(phrase.get(), smtk::extension::qtBadgeActionToggle(qseln));
+      }
+      else
+      {
+        // The item whose badge was clicked is *not* selected, so
+        // toggle only that item.
+        badges[badgeIndex]->action(phrase.get(), smtk::view::BadgeActionToggle());
+      }
+      // Indicate the caller should consume the event so the view's selection remains unchanged:
+      return true;
+    }
+  }
+  return false;
+}
+
+int qtDescriptivePhraseDelegate::pickBadge(
   const QPoint& pPos,
   const QStyleOptionViewItem& option,
   const smtk::view::BadgeSet::BadgeList& badges,
@@ -429,67 +483,5 @@ int determineAction(
   return badgeIndex;
 }
 
-bool qtDescriptivePhraseDelegate::editorEvent(
-  QEvent* evt,
-  QAbstractItemModel* mod,
-  const QStyleOptionViewItem& option,
-  const QModelIndex& idx)
-{
-  bool res = this->QStyledItemDelegate::editorEvent(evt, mod, option, idx);
-  if (evt->type() != QEvent::MouseButtonPress)
-  {
-    return res;
-  }
-  QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
-  if (!e || e->button() != Qt::LeftButton)
-  {
-    return res;
-  }
-
-  auto badges =
-    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
-  auto phrase =
-    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
-  int badgeIndex = determineAction(e->pos(), option, badges, phrase.get());
-
-  if (badgeIndex >= 0)
-  {
-    auto seln = m_selection.lock();
-    std::shared_ptr<smtk::view::BadgeActionToggle> action;
-    if (seln)
-    {
-      for (; mod && !dynamic_cast<qtDescriptivePhraseModel*>(mod);)
-      {
-        if (auto* proxy = dynamic_cast<QAbstractProxyModel*>(mod))
-        {
-          mod = proxy->sourceModel();
-        }
-      }
-      if (mod)
-      {
-        int selnValue = seln->selectionValueFromLabel("selected");
-        auto phraseModel = dynamic_cast<qtDescriptivePhraseModel*>(mod)->phraseModel();
-        action = std::make_shared<qtBadgeActionSelectionToggle>(phraseModel, seln, "selected");
-        // Now, add the phrase's object to the selection so it will be processed, because
-        // when an action is present, it is assumed to contain the phrase's subject.
-        std::set<smtk::resource::PersistentObject::Ptr> subjects;
-        subjects.insert(phrase->relatedObject());
-        seln->modifySelection(
-          subjects,
-          "descriptive phrase delegate",
-          selnValue,
-          smtk::view::SelectionAction::UNFILTERED_ADD,
-          /* bitwise */ true);
-      }
-    }
-    else
-    {
-      action = std::make_shared<smtk::view::BadgeActionToggle>();
-    }
-    badges[badgeIndex]->action(phrase.get(), *action);
-  }
-
-  return res;
-}
 } // namespace extension
 } // namespace smtk

@@ -612,6 +612,7 @@ void qtReferenceItem::updateUI()
   m_p->m_popupList->setItemDelegate(m_p->m_qtDelegate);
   m_p->m_popupLayout->addWidget(m_p->m_popupList);
   m_p->m_popup->installEventFilter(this);
+  m_p->m_popupList->viewport()->installEventFilter(this);
   m_p->m_popupList->setModel(m_p->m_qtModel);
   m_p->m_popupList->setSelectionMode(
     multiselect ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
@@ -819,6 +820,17 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
       break;
       default:
         break;
+    }
+  }
+  else if (
+    event->type() == QEvent::MouseButtonPress && m_p->m_popupList->isVisible() &&
+    src == m_p->m_popupList->viewport())
+  {
+    if (qtDescriptivePhraseDelegate::processBadgeClick(
+          static_cast<QMouseEvent*>(event), m_p->m_popupList))
+    {
+      // Consume the click to prevent m_p->m_popupList's selection from changing:
+      return true;
     }
   }
   return false; // QObject::eventFilter(src, event);

@@ -12,6 +12,7 @@
 #define smtk_extension_qtDescriptivePhraseDelegate_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/view/BadgeSet.h"
 #include "smtk/view/Selection.h"
 
 #include <QStyledItemDelegate>
@@ -79,18 +80,29 @@ public:
   void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)
     const override;
 
-  // return which icon the Point position is on
-  // 'visible', 'color', or empty string;
-  // std::string determineAction(
-  //   const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option) const;
+  /**\brief If the given \a mouseClickEvent occurred over a badge,
+    *       invoke its action and return true.
+    *
+    * The \a mouseClickEvent must be a QEvent::MouseButtonPress sent to the
+    * viewport of the \a view (a QAbstractItemView such as a QTreeView).
+    * Thus, this method will be called from an event filter installed on
+    * \a view->viewport().
+    * If this method returns true, your event filter should consume the
+    * event by returning true.
+    *
+    * Internally, this method will call pickBadge().
+    */
+  static bool processBadgeClick(QMouseEvent* mouseClickEvent, QAbstractItemView* view);
+
+  /// Return the index of the badge underneath \a pPos (or -1 if none).
+  static int pickBadge(
+    const QPoint& pPos,
+    const QStyleOptionViewItem& option,
+    const smtk::view::BadgeSet::BadgeList& badges,
+    const smtk::view::DescriptivePhrase* phrase);
 
 protected:
   bool eventFilter(QObject* editor, QEvent* event) override;
-  bool editorEvent(
-    QEvent* event,
-    QAbstractItemModel* model,
-    const QStyleOptionViewItem& option,
-    const QModelIndex& index) override;
 
   int m_titleFontSize{ 14 };
   int m_subtitleFontSize{ 10 };

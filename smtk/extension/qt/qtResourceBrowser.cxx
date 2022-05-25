@@ -487,6 +487,16 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
       }
     }
   }
+  else if (
+    evnt->type() == QEvent::MouseButtonPress && m_p->m_view->isVisible() &&
+    obj == m_p->m_view->viewport())
+  {
+    if (qtDescriptivePhraseDelegate::processBadgeClick(
+          static_cast<QMouseEvent*>(evnt), m_p->m_view))
+    {
+      return true;
+    }
+  }
   if (obj == m_p->m_view && evnt->type() == QEvent::Leave)
   {
     this->resetHover();

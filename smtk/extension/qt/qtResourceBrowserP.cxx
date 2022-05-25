@@ -85,6 +85,7 @@ void qtResourceBrowser::Internal::setup(
 
   m_layout->addWidget(m_view);
   m_view->installEventFilter(self);
+  m_view->viewport()->installEventFilter(self);
   m_viewName = viewName;
 
   // Keep or create a QAbstractItemModel subclass (which had better be
