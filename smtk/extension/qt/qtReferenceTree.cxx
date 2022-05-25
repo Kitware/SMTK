@@ -35,6 +35,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QWidgetAction>
 
@@ -614,6 +615,7 @@ void qtReferenceTree::updateUI()
   m_p->m_view = new QTreeView(); // was m_p->m_popup
   m_p->m_view->setItemDelegate(m_p->m_qtDelegate);
   m_p->m_view->installEventFilter(this); // was m_p->m_popup
+  m_p->m_view->viewport()->installEventFilter(this);
   m_p->m_view->setModel(m_p->m_qtModel);
   m_p->m_view->setSelectionMode(
     multiselect ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
@@ -726,6 +728,16 @@ bool qtReferenceTree::eventFilter(QObject* src, QEvent* event)
       break;
       default:
         break;
+    }
+  }
+  else if (
+    (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress) &&
+    m_p->m_view && m_p->m_view->isVisible() && src == m_p->m_view->viewport())
+  {
+    if (qtDescriptivePhraseDelegate::processBadgeClick(
+          static_cast<QMouseEvent*>(event), m_p->m_view))
+    {
+      return true;
     }
   }
   return false; // QObject::eventFilter(src, event);

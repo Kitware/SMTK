@@ -1,24 +1,37 @@
 Qt subsystem: badge click actions
 ---------------------------------
 
-The :smtk:`smtk::extension::qtDescriptivePhraseDelegate` class now
-provides an action to badges when they are clicked.
-Previously, when a user clicked a badge no information
-on the current selection was passed to the badge.
-This was because the delegate does not have access to
-the view (and thus the Qt selection) in the method that
-responds to clicks on badge icons.
-Our solution is to provide a subclassed action (named
-:smtk:`smtk::extension::qtBadgeActionSelectionToggle`), which
-uses the SMTK selection rather than the Qt selection.
+Previously, the :smtk:`smtk::extension::qtDescriptivePhraseDelegate`
+generated badge clicks inside its ``editorEvent()`` method.
+However, that method is not provided with access to the view in
+which the click occurred and thus could not access the view's
+QSelectionModel.
+Now, each widget that uses the descriptive-phrase delegate
+(:smtk:`smtk::extension::qtResourceBrowser`,
+:smtk:`smtk::extension::qtReferenceItem`,
+:smtk:`smtk::extension::qtReferenceTree`) installs an
+event filter on its view's viewport-widget and passes
+mouse clicks to ``qtDescriptivePhraseDelegate::processBadgeClick()``.
 
+User-facing changes
+~~~~~~~~~~~~~~~~~~~
+
+Users will now see that:
+
++ clicks on badges in the widgets above will not change the Qt
+  selection as they did previously,
++ clicking on the badge of a selected item in the widgets above
+  will act upon all the selected items, and
++ clicking on the badge of an unselected item in the widgets above
+  will only act on that item.
+
+This behavior should be significantly more intuitive than before.
 
 Developer notes
 ~~~~~~~~~~~~~~~
 
-Note that badges may wish to test casting their action to
-a qtBadgeActionSelectionToggle and call its method to visit
-related objects rather than the parent-class's method to
-visit related phrases; this is more representative of the
-information available and is more efficient since otherwise
-phrases that reference each selected object must be looked up.
+If you use qtDescriptivePhraseDelegate in any of your own
+classes, you cannot rely on it to handle badge clicks itself;
+instead you must install an event filter on your view-widget's
+viewport (not the view widget itself) and pass mouse clicks
+to the delegate along with the view widget.

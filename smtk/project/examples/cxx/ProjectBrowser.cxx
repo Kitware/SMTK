@@ -65,4 +65,9 @@ void ProjectBrowser::setup(
   m_p->qmodel = qmodel;
   m_p->modelTree->setModel(m_p->qmodel);
   m_p->qdelegate = qdelegate;
+  // NB: If we want the ProjectBrowser widget to handle badge
+  //     clicks, we would need to install an event filter
+  //     on m_p->modelTree->viewport() and call
+  //     qtDescriptivePhraseDelegate::processBadgeClick on
+  //     mouse button-press events from the event filter.
 }
