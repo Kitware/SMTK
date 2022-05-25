@@ -345,6 +345,16 @@ public:
   vtkCompositeDataDisplayAttributes* GetEntityMapperDisplayAttributes();
   vtkCompositeDataDisplayAttributes* GetSelectedEntityMapperDisplayAttributes();
 
+  /**\brief Fetch the representation's actors.
+    *
+    * These are used to configure pickers so that only geometry
+    * associated with an SMTK resource can be picked.
+    */
+  vtkSmartPointer<vtkActor> GetEntitiesActor() { return this->Entities; }
+  vtkSmartPointer<vtkActor> GetSelectedEntitiesActor() { return this->SelectedEntities; }
+  vtkSmartPointer<vtkActor> GetGlyphEntitiesActor() { return this->GlyphEntities; }
+  vtkSmartPointer<vtkActor> GetSelectedGlyphEntitiesActor() { return this->SelectedGlyphEntities; }
+
 protected:
   vtkSMTKResourceRepresentation();
   ~vtkSMTKResourceRepresentation() override;
