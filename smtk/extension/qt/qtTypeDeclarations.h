@@ -13,6 +13,7 @@
 // #include "smtk/extension/qt/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/resource/PersistentObject.h"
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/DescriptivePhrase.h"
@@ -24,5 +25,6 @@
 Q_DECLARE_METATYPE(smtk::resource::PersistentObject::Ptr)
 Q_DECLARE_METATYPE(smtk::view::BadgeSet::BadgeList)
 Q_DECLARE_METATYPE(smtk::view::DescriptivePhrase::Ptr)
+Q_DECLARE_METATYPE(smtk::attribute::DefinitionPtr)
 
 #endif // smtk_extension_qtTypeDeclarations_h

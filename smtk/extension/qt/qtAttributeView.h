@@ -13,6 +13,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
@@ -108,6 +109,7 @@ public Q_SLOTS:
   void showAdvanceLevelOverlay(bool show) override;
   void associationsChanged();
   void onItemChanged(qtItem* item);
+  void onDefinitionChanged(int);
 
 Q_SIGNALS:
   void numOfAttributesChanged();
@@ -115,6 +117,7 @@ Q_SIGNALS:
   void attAssociationChanged();
   // signal to indicate that a different attribute has been selected
   void attributeSelected(smtk::attribute::AttributePtr att);
+  void definitionSelected(smtk::attribute::DefinitionPtr def);
 
 protected:
   void createWidget() override;
