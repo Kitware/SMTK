@@ -292,9 +292,13 @@ protected:
     const std::vector<int>& dst,
     const std::vector<int>& refs);
 
-  /**\brief the Descriptive Phrase and its descendants from the Persistent Object / Phrases Map
+  /**\brief Remove the Descriptive Phrase and its descendants from the Persistent Object / Phrases Map
    */
   void removeFromMap(const DescriptivePhrasePtr& phr);
+
+  /**\brief Insert the Descriptive Phrase and its descendants into the Persistent Object / Phrases Map
+   */
+  void insertIntoMap(const DescriptivePhrasePtr& phrase);
 
   struct Source
   {

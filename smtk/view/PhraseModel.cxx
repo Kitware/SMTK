@@ -908,33 +908,49 @@ void PhraseModel::trigger(
       {
         continue;
       }
-
-      // Do we need to update the object map?
-      smtk::resource::PersistentObjectPtr obj = children[ci]->relatedObject();
-      if (obj)
-      {
-        auto it = m_objectMap.find(obj->id());
-        if (it == m_objectMap.end())
-        {
-          // OK this is the first descriptive phrase that uses this object
-          std::set<
-            std::weak_ptr<smtk::view::DescriptivePhrase>,
-            std::owner_less<std::weak_ptr<smtk::view::DescriptivePhrase>>>
-            phrases;
-          phrases.insert(children[ci]);
-          m_objectMap.insert({ { obj->id(), phrases } });
-        }
-        else
-        {
-          it->second.insert(children[ci]);
-        }
-      }
-      // Do we need to deal with its children?
-      if (!children[ci]->areSubphrasesBuilt())
-      {
-        continue;
-      }
+      this->insertIntoMap(children[ci]);
     }
+  }
+}
+
+void PhraseModel::insertIntoMap(const DescriptivePhrasePtr& phrase)
+{
+  bool needToCheckChildren = true;
+  // Does this phrase have a persistent object we need to insert into the map?
+  smtk::resource::PersistentObjectPtr obj = phrase->relatedObject();
+  if (obj)
+  {
+    auto it = m_objectMap.find(obj->id());
+    if (it == m_objectMap.end())
+    {
+      // OK this is the first descriptive phrase that uses this object
+      std::set<
+        std::weak_ptr<smtk::view::DescriptivePhrase>,
+        std::owner_less<std::weak_ptr<smtk::view::DescriptivePhrase>>>
+        phrases;
+      phrases.insert(phrase);
+      m_objectMap.insert({ { obj->id(), phrases } });
+    }
+    else
+    {
+      // In this case we know the object already existed in the map so
+      // try to insert it and see if the insertion was successful (else
+      // it was already in the list of phrases for the object)
+      auto result = it->second.insert(phrase);
+      needToCheckChildren = result.second;
+    }
+  }
+
+  // Do we need to deal with its children?
+  if (!(needToCheckChildren && phrase->areSubphrasesBuilt()))
+  {
+    return;
+  }
+
+  DescriptivePhrases& children(phrase->subphrases());
+  for (DescriptivePhrasePtr& child : children)
+  {
+    this->insertIntoMap(child);
   }
 }
 } // namespace view
