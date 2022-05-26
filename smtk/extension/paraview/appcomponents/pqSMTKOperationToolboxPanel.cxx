@@ -64,12 +64,8 @@ pqSMTKOperationToolboxPanel::pqSMTKOperationToolboxPanel(QWidget* parent)
   : Superclass(parent)
 {
   this->setWindowTitle("Toolbox");
-  if (!this->widget())
-  {
-    this->setWidget(new QWidget);
-  }
   QVBoxLayout* layout = new QVBoxLayout();
-  this->widget()->setLayout(layout);
+  this->setLayout(layout);
 
   // Default configuration.
   nlohmann::json jsonConfig = {
@@ -160,7 +156,7 @@ void pqSMTKOperationToolboxPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqSer
   if (m_view)
   {
     // Empty the existing view.
-    while (QWidget* w = this->widget()->findChild<QWidget*>())
+    while (QWidget* w = this->findChild<QWidget*>())
     {
       delete w;
     }
@@ -238,7 +234,7 @@ void pqSMTKOperationToolboxPanel::reconfigure()
   if (m_view)
   {
     // Empty the existing view.
-    while (QWidget* w = this->widget()->findChild<QWidget*>())
+    while (QWidget* w = this->findChild<QWidget*>())
     {
       delete w;
     }
@@ -268,9 +264,10 @@ void pqSMTKOperationToolboxPanel::reconfigure()
     managers->insert_or_assign(s_defaultOperations);
   }
   smtk::view::Information viewInfo;
-  this->widget()->setToolTip("Click an operation to edit its parameters.\n"
-                             "Double-click an operation to run it with default parameters.");
-  viewInfo.insert(this->widget());
+  this->setToolTip("Click an operation to edit its parameters.\n"
+                   "Double-click an operation to run it with default parameters.");
+  QWidget* ww = this;
+  viewInfo.insert(ww);
   viewInfo.insert(m_configuration);
   viewInfo.insert(managers);
   viewInfo.insert(m_uiMgr.data());
@@ -282,9 +279,9 @@ void pqSMTKOperationToolboxPanel::reconfigure()
     if (!m_findOperationShortcut)
     {
       m_findOperationShortcut = pqKeySequences::instance().addModalShortcut(
-        QKeySequence(Qt::CTRL + Qt::Key_Space), nullptr, this->widget());
+        QKeySequence(Qt::CTRL + Qt::Key_Space), nullptr, this);
       // Make the shortcut application-wide:
-      m_findOperationShortcut->setContextWidget(this->widget(), Qt::ApplicationShortcut);
+      m_findOperationShortcut->setContextWidget(this, Qt::ApplicationShortcut);
     }
     QObject::connect(
       m_findOperationShortcut,

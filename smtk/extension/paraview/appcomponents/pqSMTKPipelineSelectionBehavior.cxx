@@ -10,6 +10,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKAttributeDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -149,24 +150,24 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
               // Find the attribute panel. For now, only deal with one;
               // it doesn't make sense to switch multiple panels to display
               // the same attribute anyway.
-              pqSMTKAttributePanel* panel = nullptr;
+              // pqSMTKDockBase* dock = nullptr;
               QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
               if (!mainWindow)
               {
                 return;
               }
               Q_FOREACH (
-                pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
+                pqSMTKAttributeDock* dock, mainWindow->findChildren<pqSMTKAttributeDock*>())
               {
-                panel = attrPanel;
-                if (panel)
+                if (dock)
                 {
-                  break;
+                  pqSMTKAttributePanel* panel = qobject_cast<pqSMTKAttributePanel*>(dock->widget());
+                  if (panel)
+                  {
+                    panel->displayPipelineSource(rsrcSrc);
+                    break;
+                  }
                 }
-              }
-              if (panel)
-              {
-                panel->displayResource(attrResource);
               }
             }
           }

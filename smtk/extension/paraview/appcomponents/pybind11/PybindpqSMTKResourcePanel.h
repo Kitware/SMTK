@@ -17,9 +17,9 @@
 
 namespace py = pybind11;
 
-inline py::class_< pqSMTKResourcePanel, QDockWidget > pybind11_init_pqSMTKResourcePanel(py::module &m)
+inline py::class_< pqSMTKResourcePanel, QWidget > pybind11_init_pqSMTKResourcePanel(py::module &m)
 {
-  py::class_< pqSMTKResourcePanel, QDockWidget > instance(m, "pqSMTKResourcePanel");
+  py::class_< pqSMTKResourcePanel, QWidget > instance(m, "pqSMTKResourcePanel");
   instance
     .def(py::init<::QWidget *>())
     .def("resourceBrowser", &pqSMTKResourcePanel::resourceBrowser)

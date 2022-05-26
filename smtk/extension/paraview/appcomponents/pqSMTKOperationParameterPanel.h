@@ -20,18 +20,12 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include <QDockWidget>
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
+
 #include <QPointer>
+#include <QWidget>
 
 class QTabWidget;
-
-// VTK's wrapper parser does not properly handle Qt macros on macos.
-#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
-#define Q_DISABLE_COPY(x)
-#define Q_SLOTS
-#define Q_SIGNALS public
-#define Q_OBJECT
-#endif
 
 class pqModalShortcut;
 class pqPipelineSource;
@@ -40,20 +34,24 @@ class pqServer;
 class pqSMTKWrapper;
 
 class QListWidgetItem;
+class QVBoxLayout;
 
 /**\brief A panel that displays available operations in a "toolbox".
   *
   * The panel emits signals when users request an operation be
   * (a) immediately run or (b) run after editing parameters.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationParameterPanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationParameterPanel : public QWidget
 {
   Q_OBJECT
-  typedef QDockWidget Superclass;
+  typedef QWidget Superclass;
 
 public:
   pqSMTKOperationParameterPanel(QWidget* parent = nullptr);
   ~pqSMTKOperationParameterPanel() override;
+
+Q_SIGNALS:
+  void titleChanged(QString title);
 
 public Q_SLOTS:
   /// Called when a new client-server connection is added.
@@ -114,6 +112,7 @@ protected:
     QPointer<smtk::extension::qtBaseView> m_view;
   };
   QPointer<QTabWidget> m_tabs;
+  QPointer<QVBoxLayout> m_layout;
   pqSMTKWrapper* m_wrapper{ nullptr }; // NB: This ties us to a single pqServer (the active one).
   std::multimap<smtk::operation::Operation::Index, TabData> m_views;
   int m_selectionValue{ 1 }; // What int/bits in the selection map should be tied to associations?

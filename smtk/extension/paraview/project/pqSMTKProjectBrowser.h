@@ -16,8 +16,6 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include <QDockWidget>
-
 class QAbstractItemModel;
 class QItemSelection;
 

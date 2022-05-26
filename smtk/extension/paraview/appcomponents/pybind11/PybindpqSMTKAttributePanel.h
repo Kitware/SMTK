@@ -17,9 +17,9 @@
 
 namespace py = pybind11;
 
-inline py::class_< pqSMTKAttributePanel, QDockWidget > pybind11_init_pqSMTKAttributePanel(py::module &m)
+inline py::class_< pqSMTKAttributePanel, QWidget > pybind11_init_pqSMTKAttributePanel(py::module &m)
 {
-  py::class_< pqSMTKAttributePanel, QDockWidget > instance(m, "pqSMTKAttributePanel");
+  py::class_< pqSMTKAttributePanel, QWidget > instance(m, "pqSMTKAttributePanel");
   instance
     .def(py::init<::QWidget *>())
     .def("attributeUIManager", &pqSMTKAttributePanel::attributeUIManager)

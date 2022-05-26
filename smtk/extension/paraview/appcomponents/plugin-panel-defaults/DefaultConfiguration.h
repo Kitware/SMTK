@@ -34,7 +34,7 @@ public:
   /**\brief Provide configuration information for panels.
     *
     */
-  smtk::view::Information panelConfiguration(const QDockWidget* panel) override;
+  smtk::view::Information panelConfiguration(const QWidget* panel) override;
 };
 
 #endif // smtk_extension_paraview_appcomponents_DefaultConfiguration_h

@@ -2,12 +2,12 @@ set(sources)
 set(interfaces)
 
 paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKOperationToolboxPanel
+  CLASS_NAME pqSMTKOperationToolboxDock
   DOCK_AREA Left
   INTERFACES operation_toolbox_dock_interfaces
   SOURCES operation_toolbox_dock_sources)
 paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKOperationParameterPanel
+  CLASS_NAME pqSMTKOperationParameterDock
   DOCK_AREA Left
   INTERFACES operation_parameter_dock_interfaces
   SOURCES operation_parameter_dock_sources)

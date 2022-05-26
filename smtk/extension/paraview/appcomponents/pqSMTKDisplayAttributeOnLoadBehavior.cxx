@@ -10,6 +10,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKDisplayAttributeOnLoadBehavior.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKAttributeDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -146,12 +147,15 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
     {
       return;
     }
-    Q_FOREACH (pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
+    Q_FOREACH (pqSMTKAttributeDock* dock, mainWindow->findChildren<pqSMTKAttributeDock*>())
     {
-      panel = attrPanel;
-      if (panel)
+      if (dock)
       {
-        break;
+        panel = qobject_cast<pqSMTKAttributePanel*>(dock->widget());
+        if (panel)
+        {
+          break;
+        }
       }
     }
     if (!panel)

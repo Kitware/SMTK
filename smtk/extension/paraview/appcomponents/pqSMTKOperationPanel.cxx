@@ -60,11 +60,9 @@ public:
 
   void setup(::pqSMTKOperationPanel* panel)
   {
-    QWidget* ww = new QWidget(panel);
-    panel->setObjectName("OperationPanel");
+    this->setupUi(panel);
+    panel->setObjectName("pqSMTKOperationPanel");
     panel->setWindowTitle("Operations");
-    panel->setWidget(ww);
-    this->setupUi(ww);
     this->OperationEditor->setLayout(new QVBoxLayout(this->OperationEditor));
     this->OperationList->setOperationSource(panel->availableOperations());
 

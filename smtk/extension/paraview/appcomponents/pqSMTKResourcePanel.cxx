@@ -21,6 +21,8 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/json/jsonView.h"
 
+#include <QVBoxLayout>
+
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   : Superclass(parent)
 {
@@ -28,6 +30,7 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
   smtk::view::ConfigurationPtr config = j[0];
   this->setView(config);
+  this->setObjectName("pqSMTKResourcePanel");
 
   auto* smtkBehavior = pqSMTKBehavior::instance();
   // Now listen for future connections.
@@ -104,8 +107,19 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
   std::string title;
   m_view->details().attribute("Title", title);
-  this->setWindowTitle(title.empty() ? "Resources" : title.c_str());
-  this->setWidget(m_browser->widget());
+  if (title.empty())
+  {
+    title = "Resources";
+  }
+  this->setWindowTitle(title.c_str());
+  Q_EMIT titleChanged(title.c_str());
+  if (!m_layout)
+  {
+    m_layout = new QVBoxLayout;
+    m_layout->setObjectName("Layout");
+    this->setLayout(m_layout);
+  }
+  m_layout->addWidget(m_browser->widget());
 }
 
 void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
