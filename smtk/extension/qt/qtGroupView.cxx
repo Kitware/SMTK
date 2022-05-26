@@ -141,6 +141,24 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     tabWidget->blockSignals(false);
     tabWidget->setCurrentIndex(m_currentTabSelected);
   }
+  else if (m_style == qtGroupViewInternals::GROUP_BOX)
+  {
+    int i, size = m_ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto* child = m_ChildViews.at(i);
+      QString childName = child->configuration()->name().c_str();
+      (child->*mfunc)();
+
+      qtCollapsibleGroupWidget* collapsibleWidget =
+        dynamic_cast<qtCollapsibleGroupWidget*>(child->widget()->parent()->parent());
+
+      if (collapsibleWidget)
+      {
+        collapsibleWidget->setVisible(!child->isEmpty());
+      }
+    }
+  }
   else
   {
     Q_FOREACH (qtBaseView* childView, m_ChildViews)
@@ -559,11 +577,23 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
     return;
   }
   QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
-  smtk::extension::qtCollapsibleGroupWidget* gw = new qtCollapsibleGroupWidget(frame);
+  smtk::extension::qtCollapsibleGroupWidget* gw =
+    new qtCollapsibleGroupWidget(frame, child->configuration());
   this->Widget->layout()->addWidget(gw);
   gw->setName(child->configuration()->label().c_str());
   gw->contentsLayout()->addWidget(child->widget());
-  gw->collapse();
+  bool open = false; // incase the Att was not set
+  child->configuration()->details().attributeAsBool("Open", open);
+
+  if (open)
+  {
+    gw->open();
+  }
+  else
+  {
+    gw->collapse();
+  }
+  gw->setVisible(!child->isEmpty());
 }
 
 void qtGroupView::addTileEntry(qtBaseView* child)
