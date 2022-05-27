@@ -61,6 +61,7 @@ readability-*,\
 -readability-convert-member-functions-to-static,\
 -readability-else-after-return,\
 -readability-function-cognitive-complexity,\
+-readability-identifier-length,\
 -readability-implicit-bool-conversion,\
 -readability-inconsistent-declaration-parameter-name,\
 -readability-isolate-declaration,\
