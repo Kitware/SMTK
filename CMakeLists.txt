@@ -181,7 +181,9 @@ if (SMTK_ENABLE_TESTING)
       string(APPEND local_url_prefix "/")
     endif()
     list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
-      "${local_url_prefix}${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
+      # Example
+      # "${local_url_prefix}${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake"
+      )
   endif()
   # -- contract-example --
 
