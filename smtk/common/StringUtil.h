@@ -40,6 +40,19 @@ public:
    * to lower case.  The current acceptable values are: 1, t, true, yes, 0, f, false, no.
    */
   static bool toBoolean(const std::string& s, bool& value);
+
+  /**\brief A comparator for strings that sorts mixed numeric substrings properly.
+    *
+    * Compare two strings character by character until the first mismatch
+    * or one runs out of characters. Upon a mismatch, if both characters
+    * have digits, convert to floating-point numbers and choose the return
+    * value on whether \a aa's number is less than \a bb (true). Otherwise,
+    * the return value is true if \a aa's next character evaluates to less
+    * than \a bb's next character.
+    *
+    * \sa DescriptivePhrase::compareByTitle
+    */
+  static bool mixedAlphanumericComparator(const std::string& aa, const std::string& bb);
 };
 
 } // namespace common

@@ -9,6 +9,8 @@ if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
   list(APPEND sources
     smtkMeshInspectorView.cxx
     smtkMeshInspectorView.h
+    smtkDataSetInfoInspectorView.h
+    smtkDataSetInfoInspectorView.cxx
 )
 endif ()
 
@@ -42,6 +44,7 @@ endif ()
 target_link_libraries(smtkPQOperationViewsPlugin
   PRIVATE
     ${widget_library}
+    vtkSMTKOperationsExt
     smtkPQComponentsExt
     smtkQtExt
     ParaView::pqComponents

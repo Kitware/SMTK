@@ -3,6 +3,7 @@ NAME
 DESCRIPTION
   SMTK operation views for ParaView
 REQUIRES_MODULES
+  vtkSMTKOperationsExt
   smtkPQComponentsExt
   smtkPQWidgetsExt
   ParaView::pqComponents

@@ -16,6 +16,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/view/Manager.h"
 
+#include "smtk/extension/vtk/operators/DataSetInfoInspector.h"
 #include "smtk/extension/vtk/operators/ImageInspector.h"
 #include "smtk/extension/vtk/operators/MeshInspector.h"
 
@@ -34,7 +35,8 @@ namespace operators
 {
 namespace
 {
-using GeometryOperations = std::tuple<geometry::ImageInspector, geometry::MeshInspector>;
+using GeometryOperations =
+  std::tuple<geometry::DataSetInfoInspector, geometry::ImageInspector, geometry::MeshInspector>;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& manager)
