@@ -48,9 +48,6 @@ include(CMake/SMTKSanitize.cmake)
 # Include mechanism for determining function and bind support
 include(Function)
 
-# Include mechanism for determining how to specialize hash<X>()
-include(FindHashFunctor)
-
 # Set up rpaths in the install so that libraries all reference each other using
 # their current location.
 if (APPLE)
@@ -549,21 +546,6 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Function.h
-  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/smtk)
-
-################################################################################
-# Determine hash<X> specialization
-################################################################################
-find_hash_functor(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
-if (NOT SMTK_HASH_H)
-  message(FATAL_ERROR "Failed to find a header which provides std::hash<> (or equivalent).")
-endif ()
-configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/HashFunctor.h.in
-  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
-  @ONLY)
-
-install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
   DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/smtk)
 
 ################################################################################
