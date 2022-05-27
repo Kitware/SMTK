@@ -11,7 +11,6 @@
 #define smtk_common_UUID_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/HashFunctor.h"
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/CompilerInformation.h"
@@ -94,10 +93,10 @@ SMTKCORE_EXPORT std::istream& operator>>(std::istream& stream, UUID& uid);
 } // namespace common
 } // namespace smtk
 
-SMTK_HASH_NS_BEGIN
+namespace std
+{
 
-#if SMTK_HASH_SPECIALIZATION == 1
-// Specialize hash<UUID> functor
+// Specialize std::hash<UUID> functor
 template<>
 struct hash<smtk::common::UUID>
 {
@@ -113,35 +112,7 @@ struct hash<smtk::common::UUID>
     return hash;
   }
 };
-#else
-// Specialize hash typecast operators
-template<>
-inline size_t hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
-{
-  size_t hash;
-  // Use the last sizeof(size_t) bytes as the hash since UUIDs
-  // put their version number in the 4 LSBs of the 8th byte, which
-  // causes collisions when sizeof(size_t) == 8.
-  // This will need to be revisited if we switch to node-based
-  // UUIDs, but for random UUIDs it works well.
-  memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
-  return hash;
-}
 
-template<>
-inline size_t hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
-{
-  size_t hash;
-  // Use the last sizeof(size_t) bytes as the hash since UUIDs
-  // put their version number in the 4 LSBs of the 8th byte, which
-  // causes collisions when sizeof(size_t) == 8.
-  // This will need to be revisited if we switch to node-based
-  // UUIDs, but for random UUIDs it works well.
-  memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
-  return hash;
-}
-#endif // SMTK_HASH_SPECIALIZATION
-
-SMTK_HASH_NS_END
+} // namespace std
 
 #endif // smtk_common_UUID_h
