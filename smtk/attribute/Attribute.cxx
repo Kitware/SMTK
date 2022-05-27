@@ -80,7 +80,7 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
 Attribute::~Attribute()
 {
   m_aboutToBeDeleted = true;
-  // Detatch the association item
+  // Detach the association item
   if (m_associatedObjects)
   {
     m_associatedObjects->detachOwningAttribute();
@@ -102,7 +102,7 @@ void Attribute::build()
 }
 void Attribute::removeAllItems()
 {
-  // we need to detatch all items owned by this attribute
+  // we need to detach all items owned by this attribute
   std::size_t i, n = m_items.size();
   for (i = 0; i < n; i++)
   {
@@ -876,6 +876,30 @@ void Attribute::forceDisassociate(smtk::resource::PersistentObjectPtr obj)
     m_associatedObjects->removeValue(idx);
   }
 }
+
+std::string smtk::attribute::Attribute::itemPath(const ItemPtr& item, const std::string& seps) const
+{
+  std::string result;
+
+  // Make sure this item actually belongs to this attribute. Otherwise the resulting
+  // path will be incorrect.
+  if (item->attribute()->id() == id())
+  {
+    auto parent = item->owningItem();
+
+    while (parent != nullptr)
+    {
+      result.insert(0, parent->name().append(seps));
+      parent = parent->owningItem();
+    }
+
+    //Finally append the child item's name
+    result.append(item->name());
+  }
+
+  return result;
+}
+
 /**\brief Return the item with the given \a inName, searching in the given \a style.
   *
   * The search style dictates whether children of conditional items are included

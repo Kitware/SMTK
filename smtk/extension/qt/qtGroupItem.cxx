@@ -445,7 +445,10 @@ void qtGroupItem::addSubGroup(int i)
       this->addChildItem(childItem);
       subGroupLayout->addWidget(childItem->widget());
       itemList.push_back(childItem);
-      connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
+
+      // Make unique to prevent this connection from being made more than once upon updating the gui.
+      connect(
+        childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()), Qt::UniqueConnection);
     }
   }
   this->calculateTableHeight();
@@ -611,7 +614,12 @@ void qtGroupItem::addItemsToTable(int index)
         SLOT(onChildWidgetSizeChanged()),
         Qt::QueuedConnection);
       added++;
-      connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
+      connect(
+        childItem,
+        SIGNAL(modified()),
+        this,
+        SLOT(onChildItemModified()),
+        static_cast<Qt::ConnectionType>(Qt::AutoConnection | Qt::UniqueConnection));
     }
   }
   // Check to see if the last column is not fixed width and set the  table to stretch
@@ -671,7 +679,14 @@ void qtGroupItem::onChildWidgetSizeChanged()
 void qtGroupItem::onChildItemModified()
 {
   this->updateValidityStatus();
-  Q_EMIT this->modified();
+  //Get the qtItem that sent the signal
+  qtItem* item = qobject_cast<qtItem*>(this->sender());
+
+  if (item != nullptr)
+  {
+    Q_EMIT this->childModified(item);
+    Q_EMIT this->modified();
+  }
 }
 
 void qtGroupItem::updateValidityStatus()

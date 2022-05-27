@@ -111,6 +111,10 @@ Q_SIGNALS:
   void widgetSizeChanged();
   /// Signal indicates that the underlying item has been modified
   void modified();
+  /// <summary>
+  /// Signal indicates that the child from the underlying item has been modified
+  /// </summary>
+  void childModified(qtItem* item);
 
 protected Q_SLOTS:
   virtual void onAdvanceLevelChanged(int levelIdx);
