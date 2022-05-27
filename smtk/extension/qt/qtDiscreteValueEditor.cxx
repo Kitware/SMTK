@@ -368,10 +368,9 @@ void qtDiscreteValueEditor::updateContents()
     this->Internals->m_childrenFrame = new QFrame(this);
     this->Internals->m_childrenFrame->setObjectName("ChildItemsFrame");
     QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    QVBoxLayout* clayout = new QVBoxLayout(this->Internals->m_childrenFrame);
-    clayout->setMargin(3);
+    QHBoxLayout* clayout = new QHBoxLayout(this->Internals->m_childrenFrame);
+    clayout->setMargin(0);
     this->Internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
-    this->Internals->m_childrenFrame->setFrameShape(QFrame::Box);
 
     QList<smtk::attribute::ItemDefinitionPtr> activeChildDefs;
     std::size_t i, m = item->numberOfActiveChildrenItems();
