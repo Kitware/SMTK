@@ -224,12 +224,20 @@ void testExampleResource()
   //
   // Test explicit arcs:
   //
+  // Test node(), front(), and empty() when an arc does not exist.
+  ::test(aa->outgoing<ExplicitArc>().empty(), "Expected no arcs leaving aa.");
+  ::test(!aa->outgoing<ExplicitArc>().front(), "Expected a null front() arc.");
+  ::test(!aa->outgoing<ExplicitArc>().node(), "Expected a null node().");
   auto* exa = resource->arcs().at<ExplicitArc>();
   std::cout << "    Explicit arc object " << exa << " directed? "
             << (exa ? (exa->isDirected() ? "Y" : "N") : "null") << " mutable? "
             << (exa ? (exa->isMutable() ? "Y" : "N") : "null") << "\n";
   // Test that connecting arcs works:
   exa->connect(aa.get(), bb.get());
+  // Test node(), front(), and empty() when an arc exists.
+  ::test(!aa->outgoing<ExplicitArc>().empty(), "Expected an arc leaving aa.");
+  ::test(aa->outgoing<ExplicitArc>().front() == bb.get(), "Expected front() to return bb.");
+  ::test(aa->outgoing<ExplicitArc>().node() == bb.get(), "Expected node() to return bb.");
   // Test forward traversal (from the component to comment(s)):
   ::test(
     exa->outVisitor(aa.get(), commentVisitor) == smtk::common::Visited::All,
@@ -377,6 +385,15 @@ void testExampleResource()
     bb->incoming<ExplicitArc>().maxDegree() ==
       smtk::graph::ArcImplementation<ExplicitArc>::MaxInDegree,
     "Bad explicit arc incoming max-degree");
+
+  // Test node(), front(), and empty() when an arc exists.
+  const auto* front = bb->incoming<InvertibleImplicitArc>().front();
+  const auto* fnode = bb->incoming<InvertibleImplicitArc>().node();
+  std::cout << "Incoming bb (InvertibleImplicitArc) " << fnode << " ("
+            << (fnode ? fnode->name() : "null") << ")\n";
+  ::test(!bb->incoming<InvertibleImplicitArc>().empty(), "Expected an arc arriving at bb.");
+  ::test(front == aa.get() || front == cc.get(), "Expected front() to return aa or cc.");
+  ::test(fnode == aa.get() || fnode == cc.get(), "Expected node() to return aa or cc.");
 }
 
 // This tests a different explicit arc with non-castable node types for

@@ -732,7 +732,9 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/io" \
   "@smtk_SOURCE_DIR@/smtk/io/mesh" \
   "@smtk_SOURCE_DIR@/smtk/graph" \
-  "@smtk_SOURCE_DIR@/smtk/graph/arcs" \
+  "@smtk_SOURCE_DIR@/smtk/graph/detail" \
+  "@smtk_SOURCE_DIR@/smtk/graph/evaluators" \
+  "@smtk_SOURCE_DIR@/smtk/graph/filter" \
   "@smtk_SOURCE_DIR@/smtk/plugin" \
   "@smtk_SOURCE_DIR@/smtk/simulation" \
   "@smtk_SOURCE_DIR@/smtk/project" \
@@ -835,7 +837,9 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/io" \
   "@smtk_BINARY_DIR@/smtk/io/mesh" \
   "@smtk_BINARY_DIR@/smtk/graph" \
-  "@smtk_BINARY_DIR@/smtk/graph/arcs" \
+  "@smtk_BINARY_DIR@/smtk/graph/detail" \
+  "@smtk_BINARY_DIR@/smtk/graph/evaluators" \
+  "@smtk_BINARY_DIR@/smtk/graph/filter" \
   "@smtk_BINARY_DIR@/smtk/plugin" \
   "@smtk_BINARY_DIR@/smtk/simulation" \
   "@smtk_BINARY_DIR@/smtk/project" \

@@ -42,8 +42,11 @@ class ArcImplementation;
 template<typename TraitsType, typename Const, typename Outgoing>
 class ArcEndpointInterface;
 
-/**\brief A wrapper around arc type-traits classes that provides missing API.
+/**\brief A wrapper around arc type-traits classes that provides API.
   *
+  * Arc traits may not provide implementations for all methods (or indeed, any at
+  * all in the case of explicit arcs). This class either forwards calls to the
+  * traits object or provides implementations for methods itself.
   */
 template<typename ArcTraits>
 class ArcImplementation
@@ -51,16 +54,32 @@ class ArcImplementation
 public:
   using Traits = ArcTraits; // Allow classes to inspect our input parameter.
 
-  using FromType = typename ArcTraits::FromType;
-  using ToType = typename ArcTraits::ToType;
+  /// If "truthy," this arc is considered directed rather than undirected.
   using Directed = typename ArcTraits::Directed;
+  /// The type of node that these arcs originate from.
+  using FromType = typename ArcTraits::FromType;
+  /// The type of node that these arcs point to.
+  using ToType = typename ArcTraits::ToType;
+  /// If "truthy," this arc will report incoming/outgoing nodes in a (user-specified) order.
   using Ordered = typename ArcProperties<ArcTraits>::isOrdered;
+  /**\brief If "truthy," methods that edit arcs may sometimes return true.
+    *
+    * If "falsey," methods for editing arcs will always return false.
+    * This type can be used to optimize at compile time (by omitting
+    * code that tests the return value of methods like connect, disconnect,
+    * erase, clear, etc.).
+    */
   using Mutable = typename ArcProperties<ArcTraits>::isMutable;
+  /// If "truthy," arc endpoint connections are explicitly stored by SMTK.
   using Explicit = typename ArcProperties<ArcTraits>::isExplicit;
 
+  /// The minimum out-degree of a FromType node. This is not enforced.
   static constexpr std::size_t MinOutDegree = minOutDegree<ArcTraits>(unconstrained());
+  /// The minimum in-degree of a ToType node. This is not enforced.
   static constexpr std::size_t MinInDegree = minInDegree<ArcTraits>(unconstrained());
+  /// The maximum out-degree of a FromType node. This is enforced.
   static constexpr std::size_t MaxOutDegree = maxOutDegree<ArcTraits>(unconstrained());
+  /// The maximum in-degree of a ToType node. This is enforced.
   static constexpr std::size_t MaxInDegree = maxInDegree<ArcTraits>(unconstrained());
   static_assert(
     Directed::value || !std::is_same<FromType, ToType>::value ||
@@ -84,7 +103,7 @@ public:
   /**\brief Test whether an arc from \a from to \a to exists.
     *
     */
-  //@{
+  ///@{
   template<
     typename U = typename ArcProperties<Traits>::template hasContains<
       detail::SelectArcContainer<Traits, Traits>>>
@@ -118,12 +137,18 @@ public:
     bool result = m_data.contains(from, to);
     return result;
   };
-  //@}
+  ///@}
 
   /**\brief Visit all nodes which have outgoing arcs of this type.
     *
+    * If the traits object does not provide its own implementation,
+    * the ArcImplementation will simply visit all nodes of type
+    * FromType and invoke the visitor on each.
+    *
+    * The intent is for traits objects to provide a fast method that
+    * only visits nodes which have outgoing arcs of this type.
     */
-  //@{
+  ///@{
   template<
     typename U = typename ArcProperties<Traits>::template hasOutNodeVisitor<
       detail::SelectArcContainer<Traits, Traits>>,
@@ -166,12 +191,18 @@ public:
     smtk::common::Visited result = m_data.visitAllOutgoingNodes(rsrc, ff);
     return result;
   };
-  //@}
+  ///@}
 
   /**\brief Visit all nodes which have incoming arcs of this type.
     *
+    * If the traits object does not provide its own implementation,
+    * the ArcImplementation will simply visit all nodes of type
+    * ToType and invoke the visitor on each.
+    *
+    * The intent is for traits objects to provide a fast method that
+    * only visits nodes which have incoming arcs of this type.
     */
-  //@{
+  ///@{
   template<
     typename U = typename ArcProperties<Traits>::template hasInNodeVisitor<
       detail::SelectArcContainer<Traits, Traits>>,
@@ -214,7 +245,7 @@ public:
     smtk::common::Visited result = m_data.visitAllIncomingNodes(rsrc, ff);
     return result;
   };
-  //@}
+  ///@}
 
   /**\brief Insert an arc from \a from to \a to,
     *       optionally ordered by \a beforeFrom and \a beforeTo.
@@ -225,7 +256,7 @@ public:
     * If the arc is not ordered, then \a beforeFrom and \a beforeTo
     * are ignored.
     */
-  //@{
+  ///@{
   template<typename U = Mutable>
   typename std::enable_if<!U::value, bool>::type connect(
     const FromType* from,
@@ -250,12 +281,12 @@ public:
     bool result = m_data.connect(from, to, beforeFrom, beforeTo);
     return result;
   }
-  //@}
+  ///@}
 
   /**\brief Remove an arc from \a from to \a to.
     *
     */
-  //@{
+  ///@{
   template<typename U = Mutable>
   typename std::enable_if<!U::value, bool>::type disconnect(const FromType* from, const ToType* to)
   {
@@ -270,7 +301,7 @@ public:
     bool result = m_data.disconnect(from, to);
     return result;
   }
-  //@}
+  ///@}
 
   /// Visit nodes attached via outgoing arcs.
   template<typename Functor>
@@ -281,7 +312,7 @@ public:
 
   /**\brief Compute the out-degree of the node.
     */
-  //@{
+  ///@{
   template<
     typename U = typename ArcProperties<Traits>::template hasOutDegree<
       detail::SelectArcContainer<Traits, Traits>>,
@@ -336,11 +367,11 @@ public:
     std::size_t result = m_data.outDegree(from);
     return result;
   };
-  //@}
+  ///@}
 
   /**\brief Compute the in-degree of the node.
     */
-  //@{
+  ///@{
   template<
     typename U = typename ArcProperties<Traits>::template hasInDegree<
       detail::SelectArcContainer<Traits, Traits>>,
@@ -393,7 +424,7 @@ public:
     std::size_t result = m_data.inDegree(to);
     return result;
   };
-  //@}
+  ///@}
 
 protected:
   // Only implement inVisitor for ArcTraits that are bidirectional.
@@ -406,7 +437,12 @@ protected:
   }
 
 public:
-  /// Visit nodes attached via incoming arcs.
+  /**\brief Visit nodes attached via incoming arcs.
+    *
+    * This method will only be provided for
+    * + explicit arc-traits which do **not** include a truthy ForwardIndexOnly type-alias; and
+    * + implicit arc-traits which provide an inVisitor method.
+    */
   template<typename Functor>
   smtk::common::Visited inVisitor(const ToType* to, Functor visitor) const
   {
@@ -574,12 +610,45 @@ public:
     return ContainsEndpoint<Outgoing::value>()(this, node);
   }
 
-  /// Return the number of arcs of this type that terminate at this endpoint.
+  /**\brief Return the number of arcs of this type that terminate at this endpoint.
+    *
+    * The variant named size() exists so the endpoint behaves like an STL container.
+    */
+  ///@{
   std::size_t degree() const
   {
     std::size_t dd = Degree<Outgoing::value>()(this);
     return dd;
   }
+  std::size_t size() const { return this->degree(); }
+  ///@}
+
+  /// Return whether this endpoint has zero arcs.
+  bool empty() const { return this->size() == 0; }
+
+  /**\brief Return the first destination endpoint.
+    *
+    * This is a convenience method, generally intended
+    * for the case when maxDegree() == 1.
+    *
+    * If no arcs exist, this will return a null pointer.
+    *
+    * This *may* eventually return a reference to a pointer
+    * to allow users to replace the destination node with another,
+    * but currently it returns only a value.
+    */
+  const OtherType* node() const
+  {
+    const OtherType* result = nullptr;
+    this->visit([&result](const OtherType* node) {
+      result = node;
+      return result ? smtk::common::Visit::Halt : smtk::common::Visit::Continue;
+    });
+    return result;
+  }
+
+  /// STL-container synonym for node():
+  const OtherType* front() const { return this->node(); }
 
   /// Edit methods (only enabled for non-const interfaces).
   ///@{
@@ -694,6 +763,8 @@ public:
   bool disconnect(const std::shared_ptr<OtherType>& other) { return this->disconnect(other.get()); }
   /// A convenience version of erase() that accepts shared pointers.
   bool erase(const std::shared_ptr<OtherType>& other) { return this->erase(other.get()); }
+
+  ///@}
 
   /// Use connect and disconnect to edit all attached arcs until they match \a destNodes.
   /// Return true if modified and false otherwise.
