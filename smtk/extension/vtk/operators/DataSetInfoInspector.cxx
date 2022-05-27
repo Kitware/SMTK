@@ -39,6 +39,8 @@
 
 #include "smtk/extension/vtk/operators/DataSetInfoInspector_xml.h"
 
+#include <array>
+
 namespace smtk
 {
 namespace geometry
@@ -65,6 +67,7 @@ struct DataSetInfo
     }
     if (auto* dataset = vtkDataSet::SafeDownCast(data))
     {
+      dataset->GetBounds(this->bounds.data());
       auto* it = dataset->NewCellIterator();
       for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextCell())
       {
@@ -86,6 +89,7 @@ struct DataSetInfo
   vtkIdType numberOfPoints;
   std::vector<ArrayInfo> arraySummaries;
   std::array<vtkIdType, VTK_NUMBER_OF_CELL_TYPES> cellCounts;
+  std::array<double, 6> bounds;
 };
 
 // Given the associated components, fetch their renderable geometry and summarize it.
@@ -131,6 +135,8 @@ void prepareResult(DataSetInfoInspector::Result& result, std::set<DataSetInfo>& 
   for (const auto& summary : summaries)
   {
     info->findAs<ComponentItem>(ii, "component")->setValue(summary.component);
+    auto boundsItem = info->findAs<DoubleItem>(ii, "bounds");
+    boundsItem->setValues(summary.bounds.data(), summary.bounds.data() + 6);
     info->findAs<IntItem>(ii, "point count")->setValue(summary.numberOfPoints);
     int jj = 0;
     for (const auto& count : summary.cellCounts)

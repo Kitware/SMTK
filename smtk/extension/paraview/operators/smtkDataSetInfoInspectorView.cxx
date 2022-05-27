@@ -334,12 +334,18 @@ void nonEmptyCounters(
     }
   };
 
+  bool haveBounds = false;
   std::set<std::size_t> nonZeroCounts;
   std::map<std::string, std::size_t, Comparator> sortedComponents;
   for (std::size_t ii = 0; ii < datasets->numberOfGroups(); ++ii)
   {
     auto name = datasets->findAs<smtk::attribute::ComponentItem>(ii, "component")->value()->name();
     sortedComponents[name] = ii;
+    if (!haveBounds)
+    {
+      auto boundsItem = datasets->findAs<smtk::attribute::DoubleItem>(ii, "bounds");
+      haveBounds = boundsItem->isSet();
+    }
     for (std::size_t jj = 0; jj < datasets->numberOfItemsPerGroup(); ++jj)
     {
       if (auto item = std::dynamic_pointer_cast<smtk::attribute::IntItem>(datasets->item(ii, jj)))
@@ -356,6 +362,12 @@ void nonEmptyCounters(
   for (const auto& entry : sortedComponents)
   {
     compIndices.push_back(entry.second);
+  }
+  if (haveBounds)
+  {
+    infoNames.push_back("Δx");
+    infoNames.push_back("Δy");
+    infoNames.push_back("Δz");
   }
   for (const auto& index : nonZeroCounts)
   {
@@ -388,14 +400,52 @@ void smtkDataSetInfoInspectorView::updateInfoTable(const smtk::attribute::Attrib
   nonEmptyCounters(datasets, compIndices, itemIndices, infoNames);
   m_p->m_summaryTable->clear();
   m_p->m_summaryTable->setColumnCount(static_cast<int>(compIndices.size()));
-  m_p->m_summaryTable->setRowCount(static_cast<int>(itemIndices.size()));
+  m_p->m_summaryTable->setRowCount(static_cast<int>(infoNames.size()));
   QStringList componentNames;
   int column = 0;
   for (const auto& compIndex : compIndices)
   {
     componentNames.push_back(QString::fromStdString(
       datasets->findAs<smtk::attribute::ComponentItem>(compIndex, "component")->value()->name()));
+    auto boundsItem = datasets->findAs<smtk::attribute::DoubleItem>(compIndex, "bounds");
     int row = 0;
+    if (boundsItem && boundsItem->isSet())
+    {
+      auto* itemWidget =
+        new QTableWidgetItem(tr("%1 (%2 → %3)")
+                               .arg(
+                                 QString::number(boundsItem->value(1) - boundsItem->value(0)),
+                                 QString::number(boundsItem->value(0)),
+                                 QString::number(boundsItem->value(1))));
+      itemWidget->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+      m_p->m_summaryTable->setItem(row, column, itemWidget);
+      ++row;
+
+      itemWidget =
+        new QTableWidgetItem(tr("%1 (%2 → %3)")
+                               .arg(
+                                 QString::number(boundsItem->value(3) - boundsItem->value(2)),
+                                 QString::number(boundsItem->value(2)),
+                                 QString::number(boundsItem->value(3))));
+      itemWidget->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+      m_p->m_summaryTable->setItem(row, column, itemWidget);
+      ++row;
+
+      itemWidget =
+        new QTableWidgetItem(tr("%1 (%2 → %3)")
+                               .arg(
+                                 QString::number(boundsItem->value(5) - boundsItem->value(4)),
+                                 QString::number(boundsItem->value(4)),
+                                 QString::number(boundsItem->value(5))));
+      itemWidget->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+      m_p->m_summaryTable->setItem(row, column, itemWidget);
+      ++row;
+    }
+    else if (infoNames[0] == "Δx")
+    {
+      // This component doesn't have bounds, but some other one does.
+      row += 3;
+    }
     for (const auto& itemIndex : itemIndices)
     {
       auto countItem =
