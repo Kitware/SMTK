@@ -459,7 +459,7 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
   else if ((graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer())))
   {
     bboxOut.resize(6);
-    dataset->GetBounds(&bboxOut[0]);
+    graph->GetBounds(&bboxOut[0]);
     if (bboxOut[0] <= bboxOut[1])
     {
       aux.setBoundingBox(&bboxOut[0]);
