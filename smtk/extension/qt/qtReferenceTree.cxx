@@ -502,6 +502,7 @@ void qtReferenceTree::updateUI()
   {
     delete m_widget;
   }
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
   m_widget->setObjectName("ReferenceTreeFrame");
@@ -514,9 +515,6 @@ void qtReferenceTree::updateUI()
   m_p->m_grid->setMargin(0);
   m_p->m_grid->setSpacing(0);
   m_p->m_grid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  QSizePolicy sizeStretchyXPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
   // Create a layout for the item's checkbox (if it is optional) and its label.
   QHBoxLayout* labelLayout = new QHBoxLayout();
@@ -626,7 +624,10 @@ void qtReferenceTree::updateUI()
   entryLayout->addItem(headerLayout);
   entryLayout->addWidget(m_p->m_view);
 
-  m_p->m_grid->addLayout(labelLayout, 0, 0);
+  if (labelText != " ")
+  {
+    m_p->m_grid->addLayout(labelLayout, 0, 0);
+  }
   m_p->m_grid->addLayout(entryLayout, 0, 1);
 
   if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
