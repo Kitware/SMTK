@@ -443,10 +443,7 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
   std::vector<double>& bboxOut,
   vtkSmartPointer<vtkDataObject> dataobj)
 {
-  vtkDataSet* dataset;
-  vtkGraph* graph;
-  vtkCompositeDataSet* tree;
-  if ((dataset = dynamic_cast<vtkDataSet*>(dataobj.GetPointer())))
+  if (auto* dataset = dynamic_cast<vtkDataSet*>(dataobj.GetPointer()))
   {
     bboxOut.resize(6);
     dataset->GetBounds(&bboxOut[0]);
@@ -456,7 +453,7 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
     }
     return true;
   }
-  else if ((graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer())))
+  else if (auto* graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer()))
   {
     bboxOut.resize(6);
     graph->GetBounds(&bboxOut[0]);
@@ -466,23 +463,21 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
     }
     return true;
   }
-  else if ((tree = dynamic_cast<vtkCompositeDataSet*>(dataobj.GetPointer())))
+  else if (auto* tree = dynamic_cast<vtkCompositeDataSet*>(dataobj.GetPointer()))
   {
     auto* it = tree->NewIterator();
     it->SkipEmptyNodesOn();
     vtkBoundingBox bbox;
     bboxOut.resize(6);
-    vtkDataSet* dset;
-    vtkGraph* grph;
     for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
     {
       vtkDataObject* dobj = it->GetCurrentDataObject();
-      if ((dset = dynamic_cast<vtkDataSet*>(dobj)))
+      if (auto* dset = dynamic_cast<vtkDataSet*>(dobj))
       {
         dset->GetBounds(&bboxOut[0]);
         bbox.AddBounds(&bboxOut[0]);
       }
-      else if ((grph = dynamic_cast<vtkGraph*>(dobj)))
+      else if (auto* grph = dynamic_cast<vtkGraph*>(dobj))
       {
         grph->GetBounds(&bboxOut[0]);
         bbox.AddBounds(&bboxOut[0]);
