@@ -333,7 +333,7 @@ void qtInfixExpressionEditor::updateUI()
   }
 
   qtBaseAttributeView* baseView = m_itemInfo.baseView();
-  if (!baseView && !baseView->displayItem(theItem))
+  if (!baseView || !baseView->displayItem(theItem))
   {
     return;
   }
