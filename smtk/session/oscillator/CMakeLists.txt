@@ -43,6 +43,7 @@ target_link_libraries(smtkOscillatorSession
     smtkCore
   PRIVATE
     ${__dependencies}
+    Boost::boost
 )
 smtk_export_header(smtkOscillatorSession Exports.h)
 smtk_install_library(smtkOscillatorSession)
