@@ -81,9 +81,6 @@ pqPointPropertyWidget::pqPointPropertyWidget(
   vtkSMPropertyGroup* smgroup,
   QWidget* parentObject)
   : Superclass("representations", "HandleWidgetRepresentation", smproxy, smgroup, parentObject)
-  , m_state(0)
-  , m_surfacePickHelper(nullptr)
-  , m_pointPickHelper(nullptr)
 {
   Ui::PointPropertyWidget ui;
   ui.setupUi(this);

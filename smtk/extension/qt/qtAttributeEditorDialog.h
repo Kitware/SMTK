@@ -65,7 +65,7 @@ private:
   const smtk::attribute::AttributePtr& m_attribute;
   QPointer<smtk::extension::qtUIManager> m_uiManager;
   Ui::qtAttributeEditorWidget* m_widget;
-  smtk::extension::qtAttribute* m_qtAttribute;
+  smtk::extension::qtAttribute* m_qtAttribute{ nullptr };
   std::unique_ptr<qtInstancedView> m_instancedView;
   smtk::view::ConfigurationPtr m_instancedViewDef;
 };

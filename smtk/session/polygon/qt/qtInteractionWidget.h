@@ -87,7 +87,7 @@ private:
   Q_DISABLE_COPY(qtInteractionWidget);
   QPointer<pqView> View;
   vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> WidgetProxy;
-  bool Interactivity;
+  bool Interactivity{ false };
   vtkNew<vtkEventQtSlotConnect> VTKConnect;
 };
 

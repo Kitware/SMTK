@@ -36,7 +36,6 @@ class SubdivideMesh : public smtk::mesh::MeshForEach
 public:
   SubdivideMesh(const std::vector<std::size_t>& order)
     : m_order(order)
-    , m_index(0)
   {
   }
 
@@ -51,7 +50,7 @@ public:
 
 private:
   const std::vector<std::size_t>& m_order;
-  std::size_t m_index;
+  std::size_t m_index{ 0 };
 };
 
 class ValidateCells : public smtk::mesh::CellForEach
@@ -66,7 +65,6 @@ public:
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_cellRange(cellRange)
-    , m_index(0)
   {
   }
 
@@ -94,7 +92,7 @@ public:
   const std::vector<smtk::mesh::Domain>& m_domains;
   const std::int64_t* m_domainAssignments;
   const smtk::mesh::HandleRange m_cellRange;
-  std::size_t m_index;
+  std::size_t m_index{ 0 };
 };
 
 class ValidatePoints : public smtk::mesh::PointForEach
@@ -109,7 +107,6 @@ public:
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_pointRange(pointRange)
-    , m_index(0)
   {
   }
 
@@ -139,7 +136,7 @@ public:
   const std::vector<smtk::mesh::Domain>& m_domains;
   const std::int64_t* m_domainAssignments;
   const smtk::mesh::HandleRange m_pointRange;
-  std::size_t m_index;
+  std::size_t m_index{ 0 };
 };
 
 void verify_extract_domain()

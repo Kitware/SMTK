@@ -104,9 +104,9 @@ private Q_SLOTS:
   void setWorldPosition(double x, double y, double z);
 
 protected:
-  int m_state;
-  pqPointPickingHelper* m_surfacePickHelper;
-  pqPointPickingHelper* m_pointPickHelper;
+  int m_state{ 0 };
+  pqPointPickingHelper* m_surfacePickHelper{ nullptr };
+  pqPointPickingHelper* m_pointPickHelper{ nullptr };
   QCheckBox* m_control;
 
 private:

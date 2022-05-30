@@ -142,7 +142,7 @@ protected:
   std::string m_type;
   std::string m_iconName;
   Component m_details;
-  std::size_t m_includeIndex;
+  std::size_t m_includeIndex{ 0 };
 };
 
 /// Print component information to a stream (for debugging).

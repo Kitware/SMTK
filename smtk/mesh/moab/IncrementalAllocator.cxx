@@ -38,7 +38,6 @@ namespace moab
 
 IncrementalAllocator::IncrementalAllocator(::moab::Interface* interface)
   : BufferedCellAllocator(interface)
-  , m_index(0)
 {
 }
 

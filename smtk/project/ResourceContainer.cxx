@@ -66,7 +66,6 @@ ResourceContainer::ResourceContainer(
   const std::weak_ptr<smtk::resource::Manager>& manager)
   : m_project(project)
   , m_manager(manager)
-  , m_undefinedRoleCounter(0)
 {
   // NOTE: When modifying this constructor, do not use the project parameter
   // or m_project field! The parent Project is still in construction and is in

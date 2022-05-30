@@ -53,7 +53,6 @@ qtBaseView* qtAnalysisView::createViewWidget(const smtk::view::Information& info
 
 qtAnalysisView::qtAnalysisView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
-  , m_qtAnalysisAttribute(nullptr)
 {
   // Analysis Views don't use categories
   this->setIgnoreCategories(true);

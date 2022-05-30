@@ -27,8 +27,8 @@ class VerifyCells : public smtk::mesh::CellForEach
   const std::vector<std::int64_t>& m_locations;
   const std::vector<unsigned char>& m_types;
 
-  std::size_t m_currentIndex;
-  std::int64_t m_currentLocation;
+  std::size_t m_currentIndex{ 0 };
+  std::int64_t m_currentLocation{ 0 };
 
   bool m_is_vtk;
 
@@ -43,8 +43,6 @@ public:
     , m_conn(conn)
     , m_locations(locations)
     , m_types(types)
-    , m_currentIndex(0)
-    , m_currentLocation(0)
     , m_is_vtk(is_vtk_conn)
   {
   }
@@ -88,13 +86,12 @@ template<typename T>
 class VerifyPoints : public smtk::mesh::PointForEach
 {
   const std::vector<T>& m_points;
-  std::size_t m_currentIndex;
+  std::size_t m_currentIndex{ 0 };
 
 public:
   VerifyPoints(const std::vector<T>& points)
     : smtk::mesh::PointForEach()
     , m_points(points)
-    , m_currentIndex(0)
   {
   }
 

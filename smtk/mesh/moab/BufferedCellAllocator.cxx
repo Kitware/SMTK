@@ -33,10 +33,6 @@ namespace moab
 
 BufferedCellAllocator::BufferedCellAllocator(::moab::Interface* interface)
   : Allocator(interface)
-  , m_firstCoordinate(0)
-  , m_nCoordinates(0)
-  , m_activeCellType(smtk::mesh::CellType_MAX)
-  , m_nCoords(0)
   , m_cells()
 {
 }

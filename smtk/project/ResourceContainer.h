@@ -178,7 +178,7 @@ private:
   std::weak_ptr<smtk::resource::Manager> m_manager;
   std::set<std::string> m_types;
   Container m_resources;
-  int m_undefinedRoleCounter;
+  int m_undefinedRoleCounter{ 0 };
 };
 
 template<typename ResourceType>

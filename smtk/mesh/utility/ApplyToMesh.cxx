@@ -160,13 +160,12 @@ class ScalarPointField : public smtk::mesh::PointForEach
 private:
   const std::function<double(std::array<double, 3>)>& m_mapping;
   std::vector<double> m_data;
-  std::size_t m_counter;
+  std::size_t m_counter{ 0 };
 
 public:
   ScalarPointField(const std::function<double(std::array<double, 3>)>& mapping, std::size_t nPoints)
     : m_mapping(mapping)
     , m_data(nPoints)
-    , m_counter(0)
   {
   }
 
@@ -211,14 +210,13 @@ class ScalarCellField : public smtk::mesh::CellForEach
 private:
   const std::function<double(std::array<double, 3>)>& m_mapping;
   std::vector<double> m_data;
-  std::size_t m_counter;
+  std::size_t m_counter{ 0 };
 
 public:
   ScalarCellField(const std::function<double(std::array<double, 3>)>& mapping, std::size_t nCells)
     : smtk::mesh::CellForEach(true)
     , m_mapping(mapping)
     , m_data(nCells)
-    , m_counter(0)
   {
   }
 
@@ -261,7 +259,7 @@ class VectorPointField : public smtk::mesh::PointForEach
 private:
   const std::function<std::array<double, 3>(std::array<double, 3>)>& m_mapping;
   std::vector<double> m_data;
-  std::size_t m_counter;
+  std::size_t m_counter{ 0 };
 
 public:
   VectorPointField(
@@ -269,7 +267,6 @@ public:
     std::size_t nPoints)
     : m_mapping(mapping)
     , m_data(3 * nPoints)
-    , m_counter(0)
   {
   }
 
@@ -317,7 +314,7 @@ class VectorCellField : public smtk::mesh::CellForEach
 private:
   const std::function<std::array<double, 3>(std::array<double, 3>)>& m_mapping;
   std::vector<double> m_data;
-  std::size_t m_counter;
+  std::size_t m_counter{ 0 };
 
 public:
   VectorCellField(
@@ -326,7 +323,6 @@ public:
     : smtk::mesh::CellForEach(true)
     , m_mapping(mapping)
     , m_data(3 * nCells)
-    , m_counter(0)
   {
   }
 

@@ -52,8 +52,8 @@ private:
   std::vector<int> ConnectivityArraysLengths;
   std::vector<int> ConnectivityVertsPerCell;
   std::vector<smtk::mesh::CellType> ConnectivityTypePerCell;
-  std::size_t NumberOfCells;
-  std::size_t NumberOfVerts;
+  std::size_t NumberOfCells{ 0 };
+  std::size_t NumberOfVerts{ 0 };
 
   //moab vertices don't have connectivity so we create our own
   std::vector<smtk::mesh::Handle> VertConnectivityStorage;

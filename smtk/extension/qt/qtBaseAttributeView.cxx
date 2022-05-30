@@ -110,7 +110,6 @@ bool qtBaseAttributeView::validateInformation(const smtk::view::Information& inf
 
 qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   : qtBaseView(info)
-  , m_topLevelCanCreateConfigurations(false)
 {
   this->Internals = new qtBaseAttributeViewInternals;
   m_ScrollArea = nullptr;

@@ -113,13 +113,13 @@ private:
   smtk::operation::Observers::Key m_operationObserverKey;
   smtk::resource::Observers::Key m_resourceObserverKey;
   smtk::attribute::WeakDefinitionPtr m_creationDef;
-  bool m_okToCreate;
+  bool m_okToCreate{ false };
   // Should the source of possible values be restricted to those associated
   // to the Item's Attribute
-  bool m_useAssociations;
+  bool m_useAssociations{ false };
   std::map<int, smtk::resource::WeakPersistentObjectPtr> m_mappedObjects;
   // This is used to indicate that the current value is not considered valid
-  bool m_currentValueIsInvalid = false;
+  bool m_currentValueIsInvalid{ false };
 }; // class
 }; // namespace extension
 }; // namespace smtk

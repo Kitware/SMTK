@@ -357,13 +357,10 @@ class CountPoints : public smtk::mesh::PointForEach
 {
   //keep a physical count of number of ponts so that we can verify we
   //don't iterate over a point more than once
-  int numPointsIteratedOver;
+  int numPointsIteratedOver{ 0 };
 
 public:
-  CountPoints(smtk::mesh::ResourcePtr /*unused*/)
-    : numPointsIteratedOver(0)
-  {
-  }
+  CountPoints(smtk::mesh::ResourcePtr /*unused*/) {}
 
   void forPoints(
     const smtk::mesh::HandleRange& pointIds,

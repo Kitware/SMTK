@@ -72,7 +72,6 @@ qtBaseView* qtOperationView::createViewWidget(const smtk::view::Information& inf
 
 qtOperationView::qtOperationView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
-  , m_applied(false)
 {
   this->Internals = new qtOperationViewInternals;
   // We need to create a new View for the internal instanced View

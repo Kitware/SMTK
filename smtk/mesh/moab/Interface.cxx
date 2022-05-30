@@ -615,11 +615,10 @@ namespace
 class GetCoords : public smtk::mesh::PointForEach
 {
 public:
-  std::size_t xyz_index;
+  std::size_t xyz_index{ 0 };
   float* m_xyz;
   GetCoords(float* xyz)
-    : xyz_index(0)
-    , m_xyz(xyz)
+    : m_xyz(xyz)
   {
   }
 
@@ -670,11 +669,10 @@ namespace
 class SetCoords : public smtk::mesh::PointForEach
 {
 public:
-  std::size_t xyz_index;
+  std::size_t xyz_index{ 0 };
   const float* const m_xyz;
   SetCoords(const float* const xyz)
-    : xyz_index(0)
-    , m_xyz(xyz)
+    : m_xyz(xyz)
   {
   }
 

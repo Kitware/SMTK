@@ -57,9 +57,6 @@ namespace pqSplitEdgeWidgetInternals
 {
 EdgePointPicker::EdgePointPicker(QObject* p)
   : QAction(p)
-  , Selecter(nullptr)
-  , InteractiveSelectButton(nullptr)
-  , m_isActive(false)
 {
   this->setCheckable(true);
 }

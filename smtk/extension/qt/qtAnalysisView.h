@@ -82,7 +82,7 @@ protected:
 
 private:
   smtk::attribute::AttributePtr m_analysisAttribute; ///< Analysis Attribute used by the View
-  smtk::extension::qtAttribute* m_qtAnalysisAttribute;
+  smtk::extension::qtAttribute* m_qtAnalysisAttribute{ nullptr };
 };
 } // namespace extension
 } // namespace smtk

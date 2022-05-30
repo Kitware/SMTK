@@ -41,7 +41,6 @@ pqSMTKConeItemWidget::pqSMTKConeItemWidget(
   const smtk::extension::qtAttributeItemInfo& info,
   Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
-  , m_forceCylinder(false)
 {
   this->createWidget();
 }

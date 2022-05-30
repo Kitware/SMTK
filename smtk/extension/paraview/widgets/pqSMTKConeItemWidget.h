@@ -90,7 +90,7 @@ protected:
     */
   bool fetchConeItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items);
 
-  bool m_forceCylinder;
+  bool m_forceCylinder{ false };
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKConeItemWidget_h

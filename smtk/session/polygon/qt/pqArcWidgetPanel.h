@@ -69,11 +69,11 @@ protected Q_SLOTS:
     vtkPVSelectionInformation* selInfo);
 
 private:
-  PickInfo* Info;
-  pqPolygonArc* Arc;
-  pqRenderView* View;
-  pqRenderViewSelectionReaction* Selecter;
-  bool m_isActive;
+  PickInfo* Info{ nullptr };
+  pqPolygonArc* Arc{ nullptr };
+  pqRenderView* View{ nullptr };
+  pqRenderViewSelectionReaction* Selecter{ nullptr };
+  bool m_isActive{ false };
 };
 } // namespace Ui
 

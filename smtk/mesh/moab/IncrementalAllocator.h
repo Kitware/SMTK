@@ -77,7 +77,7 @@ protected:
   void initialize();
 
 private:
-  std::size_t m_index;
+  std::size_t m_index{ 0 };
   std::vector<std::vector<double*>> m_coordinateMemories;
 };
 } // namespace moab

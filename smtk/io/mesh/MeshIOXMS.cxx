@@ -169,13 +169,12 @@ class WriteCellsPerRegion
 {
   smtk::mesh::PointSet m_PointSet;
   std::ostream& m_Stream;
-  int m_CellId;
+  int m_CellId{ 1 }; //2dm/3dm requires id values to start at 1
 
 public:
   WriteCellsPerRegion(const smtk::mesh::PointSet& ps, std::ostream& stream)
     : m_PointSet(ps)
     , m_Stream(stream)
-    , m_CellId(1) //2dm/3dm requires id values to start at 1
   {
   }
 

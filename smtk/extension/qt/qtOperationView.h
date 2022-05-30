@@ -98,7 +98,7 @@ Q_SIGNALS:
 protected:
   void createWidget() override;
   void setInfoToBeDisplayed() override;
-  bool m_applied;              // indicates if the current settings have been applied
+  bool m_applied{ false };     // indicates if the current settings have been applied
   bool m_disableApply{ true }; // disable the Apply button until an item is modified?
 
 private:

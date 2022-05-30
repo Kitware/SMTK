@@ -185,13 +185,13 @@ protected:
 
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
-  bool m_reportAsError;
+  bool m_reportAsError{ true };
   smtk::attribute::ResourcePtr m_resource;
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;
   std::vector<AttRefInfo> m_attRefInfo;
   std::string m_defaultCategory;
   smtk::io::Logger& m_logger;
-  std::size_t m_includeIndex;
+  std::size_t m_includeIndex{ 0 };
   std::map<std::string, std::map<std::string, pugi::xml_node>> m_itemDefintionBlocks;
 
 private:

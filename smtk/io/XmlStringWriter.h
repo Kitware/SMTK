@@ -36,16 +36,6 @@ class SMTKCORE_EXPORT XmlStringWriter
 public:
   XmlStringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger)
     : m_resource(resource)
-    , m_includeAnalyses(true)
-    , m_includeAdvanceLevels(true)
-    , m_includeAttributeAssociations(true)
-    , m_includeDefinitions(true)
-    , m_includeEvaluators(true)
-    , m_includeInstances(true)
-    , m_includeResourceAssociations(true)
-    , m_includeUniqueRoles(true)
-    , m_includeViews(true)
-    , m_useDirectoryInfo(false)
     , m_logger(logger)
   {
   }
@@ -117,17 +107,17 @@ public:
 
 protected:
   smtk::attribute::ResourcePtr m_resource;
-  bool m_includeAnalyses;
-  bool m_includeAdvanceLevels;
-  bool m_includeAttributeAssociations;
-  bool m_includeDefinitions;
-  bool m_includeEvaluators;
-  bool m_includeInstances;
-  bool m_includeResourceAssociations;
-  bool m_includeResourceID;
-  bool m_includeUniqueRoles;
-  bool m_includeViews;
-  bool m_useDirectoryInfo;
+  bool m_includeAnalyses{ true };
+  bool m_includeAdvanceLevels{ true };
+  bool m_includeAttributeAssociations{ true };
+  bool m_includeDefinitions{ true };
+  bool m_includeEvaluators{ true };
+  bool m_includeInstances{ true };
+  bool m_includeResourceAssociations{ true };
+  bool m_includeResourceID{ true };
+  bool m_includeUniqueRoles{ true };
+  bool m_includeViews{ true };
+  bool m_useDirectoryInfo{ false };
   std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
   std::set<smtk::attribute::DefinitionPtr> m_excludedDefs;
 

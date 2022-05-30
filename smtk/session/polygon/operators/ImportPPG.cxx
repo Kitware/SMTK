@@ -103,7 +103,7 @@ struct PPGFace
   std::size_t userId;
   std::vector<std::size_t> vertexIds; // from input
   LoopType loopType;
-  std::size_t innerLoopCount;
+  std::size_t innerLoopCount{ 0 };
   std::vector<smtk::model::EntityPtr> edges;
   double center[2];
 
@@ -114,7 +114,6 @@ struct PPGFace
     double centerCoords[2])
     : userId(inputId)
     , loopType(lt)
-    , innerLoopCount(0)
   {
     vertexIds = std::move(inputVertexIds);
     center[0] = centerCoords[0];
@@ -161,7 +160,6 @@ class ImportPPG::Internal
 public:
   Internal(smtk::io::Logger& logger)
     : m_log(logger)
-    , m_holeCount(0)
     , m_outerLoopIndex(INVALID_INDEX)
   {
   }
@@ -209,7 +207,7 @@ protected:
   smtk::io::Logger& m_log;
   std::vector<PPGFace> m_ppgFaceList;
   std::vector<PPGVertex> m_ppgVertexList;
-  unsigned int m_holeCount;
+  unsigned int m_holeCount{ 0 };
   std::size_t m_outerLoopIndex; // used parsing input to store current outer edge loop
 
   // List of smtk vertices
