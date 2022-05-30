@@ -124,7 +124,7 @@ std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersS
     for (auto* i = std::strtok(&suffixes[0], " "); i != nullptr; i = std::strtok(nullptr, " "))
     {
       // If all entries are accepted, there is no need to aggregate.
-      if (std::string(i) == "*.*")
+      if (!strcmp(i, "*.*"))
       {
         return "(*.*)";
       }
