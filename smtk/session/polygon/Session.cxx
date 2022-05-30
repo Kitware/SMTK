@@ -38,7 +38,6 @@
 
 #include <cstring> // for strcmp
 
-using smtk::model::EntityRef;
 using namespace smtk::common;
 
 namespace smtk

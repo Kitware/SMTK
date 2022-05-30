@@ -23,7 +23,6 @@
 #include "smtk/model/operators/SetInstancePrototype_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::ComponentItem;
 
 namespace smtk
 {
