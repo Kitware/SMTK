@@ -119,8 +119,8 @@ public:
 
     Key(Key&& key) noexcept
       : InternalKey(std::move(key))
+      , m_observers(std::move(key.m_observers))
     {
-      m_observers = key.m_observers;
       if (m_observers)
       {
         std::unique_lock<std::mutex> lock(m_observers->m_mutex);
