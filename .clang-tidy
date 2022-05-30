@@ -3,6 +3,7 @@ Checks: "-*,\
 boost-*,\
 bugprone-*,\
 -bugprone-branch-clone,\
+-bugprone-easily-swappable-parameters,\
 -bugprone-exception-escape,\
 -bugprone-inaccurate-erase,\
 -bugprone-incorrect-roundings,\
