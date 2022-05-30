@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef smtk_extension_paraview_representation_vtkSMTKResourceRepresentation_h
 #define smtk_extension_paraview_representation_vtkSMTKResourceRepresentation_h
-#include <unordered_map>
 
 #include <vtkProperty.h> // for VTK_POINTS etc.
 #include <vtkSmartPointer.h>

@@ -31,7 +31,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/session/polygon/internal/Model.h"

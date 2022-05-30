@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/model/operators/CloseModel.h"
 
-#include "smtk/model/Session.h"
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"

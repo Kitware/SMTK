@@ -17,7 +17,6 @@
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
 #include "smtk/resource/Component.h"
 
