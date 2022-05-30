@@ -20,9 +20,6 @@ namespace moab
 
 MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface)
   : mbImpl(iface)
-  , mbMergeTag()
-  , deadEnts()
-  , mergedToVertices()
 {
 }
 

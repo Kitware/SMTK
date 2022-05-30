@@ -160,13 +160,13 @@ protected:
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;
-  std::size_t m_numberOfRequiredGroups;
-  std::size_t m_maxNumberOfGroups;
-  bool m_isExtensible;
-  bool m_useCommonLabel;
-  bool m_isConditional;
-  unsigned int m_maxNumberOfChoices;
-  unsigned int m_minNumberOfChoices;
+  std::size_t m_numberOfRequiredGroups = 1;
+  std::size_t m_maxNumberOfGroups = 0;
+  bool m_isExtensible = false;
+  bool m_useCommonLabel = false;
+  bool m_isConditional = false;
+  unsigned int m_maxNumberOfChoices = 0;
+  unsigned int m_minNumberOfChoices = 0;
 
 private:
 };

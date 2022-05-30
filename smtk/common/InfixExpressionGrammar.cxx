@@ -22,8 +22,7 @@ namespace common
 {
 
 InfixExpressionGrammar::InfixExpressionGrammar()
-  : m_functions(InfixFunctions())
-  , m_subsymbolVisitor([](const std::string&) { return std::make_pair(std::nan(""), false); })
+  : m_subsymbolVisitor([](const std::string&) { return std::make_pair(std::nan(""), false); })
 {
 }
 

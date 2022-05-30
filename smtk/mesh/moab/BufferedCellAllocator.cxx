@@ -33,7 +33,6 @@ namespace moab
 
 BufferedCellAllocator::BufferedCellAllocator(::moab::Interface* interface)
   : Allocator(interface)
-  , m_cells()
 {
 }
 

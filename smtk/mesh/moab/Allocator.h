@@ -65,7 +65,7 @@ protected:
 
 private:
   //holds a reference to the real moab interface
-  ::moab::ReadUtilIface* m_rface;
+  ::moab::ReadUtilIface* m_rface = nullptr;
 };
 } // namespace moab
 } // namespace mesh

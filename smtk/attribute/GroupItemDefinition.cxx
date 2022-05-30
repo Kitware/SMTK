@@ -19,13 +19,6 @@ using namespace smtk::attribute;
 
 GroupItemDefinition::GroupItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
-  , m_numberOfRequiredGroups(1)
-  , m_maxNumberOfGroups(0)
-  , m_isExtensible(false)
-  , m_useCommonLabel(false)
-  , m_isConditional(false)
-  , m_maxNumberOfChoices(0)
-  , m_minNumberOfChoices(0)
 {
 }
 
