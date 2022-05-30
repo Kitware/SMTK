@@ -243,7 +243,7 @@ void Instance::divideMapInternal(
     }
   }
   std::vector<int> storage;
-  std::vector<int>* trueSubset = (merge && !output.empty() ? &output[0] : &storage);
+  std::vector<int>* trueSubset = (merge && !output.empty() ? output.data() : &storage);
   if (clone.isClone())
   {
     if (clonesIncluded)

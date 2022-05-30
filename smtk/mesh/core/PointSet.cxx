@@ -112,7 +112,7 @@ bool PointSet::get(std::vector<double>& xyz) const
   xyz.resize(size * 3);
 
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->getCoordinates(m_points, &xyz[0]);
+  return iface->getCoordinates(m_points, xyz.data());
 }
 
 bool PointSet::get(float* xyz) const
@@ -127,7 +127,7 @@ bool PointSet::get(std::vector<float>& xyz) const
   xyz.resize(size * 3);
 
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->getCoordinates(m_points, &xyz[0]);
+  return iface->getCoordinates(m_points, xyz.data());
 }
 
 bool PointSet::set(const double* const xyz) const
@@ -144,7 +144,7 @@ bool PointSet::set(const std::vector<double>& xyz) const
   }
 
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->setCoordinates(m_points, &xyz[0]);
+  return iface->setCoordinates(m_points, xyz.data());
 }
 
 bool PointSet::set(const float* const xyz)
@@ -161,7 +161,7 @@ bool PointSet::set(const std::vector<float>& xyz)
   }
 
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->setCoordinates(m_points, &xyz[0]);
+  return iface->setCoordinates(m_points, xyz.data());
 }
 
 /**\brief Get the parent resource that this meshset belongs to.

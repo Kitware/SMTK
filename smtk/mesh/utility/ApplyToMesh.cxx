@@ -52,9 +52,9 @@ public:
          i != smtk::mesh::rangeElementsEnd(pointIds);
          ++i, offset += 3)
     {
-      std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
+      std::copy(xyz.data() + offset, xyz.data() + offset + 3, x.data());
       f_x = m_mapping(x);
-      std::copy(std::begin(f_x), std::end(f_x), &xyz[offset]);
+      std::copy(std::begin(f_x), std::end(f_x), xyz.data() + offset);
     }
     coordinatesModified = true; //mark we are going to modify the points
   }
@@ -85,12 +85,12 @@ public:
          i != smtk::mesh::rangeElementsEnd(pointIds);
          ++i, offset += 3)
     {
-      std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
+      std::copy(xyz.data() + offset, xyz.data() + offset + 3, x.data());
 
-      std::copy(std::begin(x), std::end(x), &m_data[offset]);
+      std::copy(std::begin(x), std::end(x), m_data.data() + offset);
 
       f_x = m_mapping(x);
-      std::copy(std::begin(f_x), std::end(f_x), &xyz[offset]);
+      std::copy(std::begin(f_x), std::end(f_x), xyz.data() + offset);
     }
     coordinatesModified = true; //mark we are going to modify the points
   }
@@ -127,7 +127,7 @@ bool applyWarp(
   {
     StoreAndWarpPoints warp(f, ms.points().size());
     smtk::mesh::for_each(ms.points(), warp);
-    return ms.createPointField("_prior", 3, smtk::mesh::FieldType::Double, &warp.data()[0])
+    return ms.createPointField("_prior", 3, smtk::mesh::FieldType::Double, warp.data().data())
       .isValid();
   }
   else
@@ -148,7 +148,7 @@ bool undoWarp(smtk::mesh::MeshSet& ms)
 
   UndoWarpPoints undoWarp;
   undoWarp.data().resize(pointfield.size() * pointfield.dimension());
-  pointfield.get(&undoWarp.data()[0]);
+  pointfield.get(undoWarp.data().data());
   smtk::mesh::for_each(ms.points(), undoWarp);
   return ms.removePointField(pointfield);
 }
@@ -199,7 +199,7 @@ bool applyScalarPointField(
 {
   ScalarPointField scalarPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), scalarPointField);
-  return ms.createPointField(name, 1, smtk::mesh::FieldType::Double, &scalarPointField.data()[0])
+  return ms.createPointField(name, 1, smtk::mesh::FieldType::Double, scalarPointField.data().data())
     .isValid();
 }
 
@@ -248,7 +248,7 @@ bool applyScalarCellField(
 {
   ScalarCellField scalarCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), scalarCellField);
-  return ms.createCellField(name, 1, smtk::mesh::FieldType::Double, &scalarCellField.data()[0])
+  return ms.createCellField(name, 1, smtk::mesh::FieldType::Double, scalarCellField.data().data())
     .isValid();
 }
 
@@ -285,9 +285,9 @@ public:
          i != smtk::mesh::rangeElementsEnd(pointIds);
          ++i, xyzCounter += 3)
     {
-      std::copy(&xyz[xyzCounter], &xyz[xyzCounter] + 3, &x[0]);
+      std::copy(xyz.data() + xyzCounter, xyz.data() + xyzCounter + 3, x.data());
       f_x = m_mapping(x);
-      std::copy(std::begin(f_x), std::end(f_x), &m_data[m_counter]);
+      std::copy(std::begin(f_x), std::end(f_x), m_data.data() + m_counter);
       m_counter += 3;
     }
   }
@@ -303,7 +303,7 @@ bool applyVectorPointField(
 {
   VectorPointField vectorPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), vectorPointField);
-  return ms.createPointField(name, 3, smtk::mesh::FieldType::Double, &vectorPointField.data()[0])
+  return ms.createPointField(name, 3, smtk::mesh::FieldType::Double, vectorPointField.data().data())
     .isValid();
 }
 
@@ -341,7 +341,7 @@ public:
       x[i] /= nPts;
     }
     f_x = m_mapping(x);
-    std::copy(std::begin(f_x), std::end(f_x), &m_data[m_counter]);
+    std::copy(std::begin(f_x), std::end(f_x), m_data.data() + m_counter);
     m_counter += 3;
   }
 
@@ -356,7 +356,7 @@ bool applyVectorCellField(
 {
   VectorCellField vectorCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), vectorCellField);
-  return ms.createCellField(name, 3, smtk::mesh::FieldType::Double, &vectorCellField.data()[0])
+  return ms.createCellField(name, 3, smtk::mesh::FieldType::Double, vectorCellField.data().data())
     .isValid();
 }
 } // namespace utility

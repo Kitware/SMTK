@@ -515,7 +515,7 @@ smtk::mesh::CellField MeshSet::createCellField(
   else
   {
     std::vector<double> tmp(this->cells().size() * dimension, 0.);
-    success = iface->createCellField(m_range, name, dimension, type, &tmp[0]);
+    success = iface->createCellField(m_range, name, dimension, type, tmp.data());
   }
   return success ? CellField(*this, name) : CellField();
 }
@@ -580,7 +580,7 @@ smtk::mesh::PointField MeshSet::createPointField(
   else
   {
     std::vector<double> tmp(this->points().size() * dimension, 0.);
-    success = iface->createPointField(m_range, name, dimension, type, &tmp[0]);
+    success = iface->createPointField(m_range, name, dimension, type, tmp.data());
   }
   return success ? PointField(*this, name) : PointField();
 }

@@ -126,7 +126,7 @@ void insertEdges(
         //std::cout << edge.name() << ": " << vconn.size() << "\n";
         if (!vconn.empty())
         {
-          lines->InsertNextCell(static_cast<vtkIdType>(vconn.size()), &vconn[0]);
+          lines->InsertNextCell(static_cast<vtkIdType>(vconn.size()), vconn.data());
         }
       }
       else

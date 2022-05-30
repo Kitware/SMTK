@@ -328,7 +328,7 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
     conn.push_back(conn[0]); // repeat initial point instead of adding a duplicate.
   }
   lines->Reset();
-  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), &conn[0]);
+  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), conn.data());
   polydata->Modified();
 }
 
@@ -426,7 +426,7 @@ void Geometry::updateFace(
         polyModel->liftPoint(ipt, smtkPt);
         triConn[2] = points->InsertNextPoint(smtkPt);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
-        polys->InsertNextCell(3, &triConn[0]);
+        polys->InsertNextCell(3, triConn.data());
       }
       //std::cout << "\n";
       //faceRec.setColor(1., 1., 1., 1.);

@@ -54,7 +54,7 @@ int unitUnsetValueError(int argc, char* argv[])
     dataArgs.push_back(strdup(testFile.c_str()));
     dataArgs.push_back(nullptr);
     argc = 2;
-    argv = &dataArgs[0];
+    argv = dataArgs.data();
   }
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();

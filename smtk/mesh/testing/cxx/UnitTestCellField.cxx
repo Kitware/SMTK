@@ -67,7 +67,7 @@ void verify_partial_cellfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+  mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
 
   std::vector<double> fieldValuesForCellField1(one.cells().size() * 2);
   for (std::size_t i = 0; i < fieldValuesForCellField1.size(); i++)
@@ -75,7 +75,7 @@ void verify_partial_cellfields()
     fieldValuesForCellField1[i] = static_cast<double>(i);
   }
   one.createCellField(
-    "field data for set 1", 2, smtk::mesh::FieldType::Double, &fieldValuesForCellField1[0]);
+    "field data for set 1", 2, smtk::mesh::FieldType::Double, fieldValuesForCellField1.data());
 
   std::vector<double> fieldValuesForCellField2(two.cells().size() * 3);
   for (std::size_t i = 0; i < fieldValuesForCellField2.size(); i++)
@@ -83,7 +83,7 @@ void verify_partial_cellfields()
     fieldValuesForCellField2[i] = static_cast<double>(i);
   }
   two.createCellField(
-    "field data for set 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
+    "field data for set 2", 3, smtk::mesh::FieldType::Double, fieldValuesForCellField2.data());
 
   {
     std::set<smtk::mesh::CellField> cellfields = mesh.cellFields();
@@ -92,7 +92,7 @@ void verify_partial_cellfields()
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << " "
                 << cellfield.size() << std::endl;
       std::vector<double> retrievedFieldValues(cellfield.size() * cellfield.dimension(), -1.);
-      cellfield.get(&retrievedFieldValues[0]);
+      cellfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         test(fieldValues[i] == retrievedFieldValues[i]);
@@ -108,7 +108,7 @@ void verify_partial_cellfields()
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << std::endl;
       cellfieldnames.push_back(cellfield.name());
       std::vector<double> retrievedFieldValues(one.cells().size() * cellfield.dimension(), -1.);
-      cellfield.get(&retrievedFieldValues[0]);
+      cellfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         test(fieldValuesForCellField1[i] == retrievedFieldValues[i]);
@@ -154,7 +154,8 @@ void verify_duplicate_cellfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  auto cf = mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+  auto cf =
+    mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
   test(cf.isValid());
 
   // Try to construct a cell field with the same dimension and name for a subset
@@ -177,7 +178,7 @@ void verify_duplicate_cellfields()
       std::cout << "\"" << cellfield.name() << "\" " << cellfield.dimension() << " "
                 << cellfield.size() << std::endl;
       std::vector<double> retrievedFieldValues(cellfield.size() * cellfield.dimension(), -1.);
-      cellfield.get(&retrievedFieldValues[0]);
+      cellfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         if (i < fieldValuesForCellField1.size())
@@ -324,7 +325,7 @@ void verify_cellfield_persistency()
     {
       fieldValues[i] = static_cast<double>(i);
     }
-    one.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+    one.createCellField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
 
     //write out the mesh.
     smtk::io::WriteMesh write;
@@ -350,7 +351,7 @@ void verify_cellfield_persistency()
 
       smtk::mesh::CellField cellfield = *two.cellFields().begin();
       std::vector<double> retrievedFieldValues(cellfield.size() * cellfield.dimension(), 0.);
-      cellfield.get(&retrievedFieldValues[0]);
+      cellfield.get(retrievedFieldValues.data());
 
       test(retrievedFieldValues.size() == fieldValues.size());
 

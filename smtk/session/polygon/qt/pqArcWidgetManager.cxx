@@ -336,7 +336,7 @@ pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
       points.push_back(pointPos[2]);
     }
     vtkSMPropertyHelper(widgetProxy, "NodePositions")
-      .Set(&points[0], static_cast<unsigned int>(points.size()));
+      .Set(points.data(), static_cast<unsigned int>(points.size()));
   }
   else
   {

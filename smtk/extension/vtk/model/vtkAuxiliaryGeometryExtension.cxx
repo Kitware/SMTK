@@ -446,20 +446,20 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
   if (auto* dataset = dynamic_cast<vtkDataSet*>(dataobj.GetPointer()))
   {
     bboxOut.resize(6);
-    dataset->GetBounds(&bboxOut[0]);
+    dataset->GetBounds(bboxOut.data());
     if (bboxOut[0] <= bboxOut[1])
     {
-      aux.setBoundingBox(&bboxOut[0]);
+      aux.setBoundingBox(bboxOut.data());
     }
     return true;
   }
   else if (auto* graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer()))
   {
     bboxOut.resize(6);
-    graph->GetBounds(&bboxOut[0]);
+    graph->GetBounds(bboxOut.data());
     if (bboxOut[0] <= bboxOut[1])
     {
-      aux.setBoundingBox(&bboxOut[0]);
+      aux.setBoundingBox(bboxOut.data());
     }
     return true;
   }
@@ -474,20 +474,20 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(
       vtkDataObject* dobj = it->GetCurrentDataObject();
       if (auto* dset = dynamic_cast<vtkDataSet*>(dobj))
       {
-        dset->GetBounds(&bboxOut[0]);
-        bbox.AddBounds(&bboxOut[0]);
+        dset->GetBounds(bboxOut.data());
+        bbox.AddBounds(bboxOut.data());
       }
       else if (auto* grph = dynamic_cast<vtkGraph*>(dobj))
       {
-        grph->GetBounds(&bboxOut[0]);
-        bbox.AddBounds(&bboxOut[0]);
+        grph->GetBounds(bboxOut.data());
+        bbox.AddBounds(bboxOut.data());
       }
     }
     it->Delete();
     if (bbox.IsValid())
     {
-      bbox.GetBounds(&bboxOut[0]);
-      aux.setBoundingBox(&bboxOut[0]);
+      bbox.GetBounds(bboxOut.data());
+      aux.setBoundingBox(bboxOut.data());
     }
     return true;
   }

@@ -40,7 +40,7 @@ double* Vertex::coordinates() const
     {
       if (!tessRec->second.coords().empty())
       {
-        return &tessRec->second.coords()[0];
+        return tessRec->second.coords().data();
       }
     }
   }

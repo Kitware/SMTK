@@ -61,7 +61,7 @@ int UnitTestExtractCanonicalIndices(int /*unused*/, char* /*unused*/[])
     std::vector<std::int64_t> canonicalIndices(numberOfCells);
 
     smtk::mesh::utility::PreAllocatedCanonicalIndices indices(
-      &referenceCellIndices[0], &canonicalIndices[0]);
+      referenceCellIndices.data(), canonicalIndices.data());
 
     smtk::mesh::utility::extractCanonicalIndices(meshes[i], meshes[0], indices);
 

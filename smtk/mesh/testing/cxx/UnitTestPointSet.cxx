@@ -164,14 +164,14 @@ void verify_get(const smtk::mesh::ResourcePtr& mr)
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<double> coords(numCoords);
-  all_points.get(&coords[0]);
+  all_points.get(coords.data());
 
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
     smtk::mesh::CellSet cells = mr->cells(cellType);
 
-    test(cells.points().get(&coords[0]) != cells.is_empty());
+    test(cells.points().get(coords.data()) != cells.is_empty());
   }
 }
 
@@ -185,14 +185,14 @@ void verify_float_get(const smtk::mesh::ResourcePtr& mr)
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<float> coords(numCoords);
-  all_points.get(&coords[0]);
+  all_points.get(coords.data());
 
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
     smtk::mesh::CellSet cells = mr->cells(cellType);
 
-    test(cells.points().get(&coords[0]) != cells.is_empty());
+    test(cells.points().get(coords.data()) != cells.is_empty());
   }
 }
 
@@ -206,7 +206,7 @@ void verify_set(const smtk::mesh::ResourcePtr& mr)
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<double> coords(numCoords);
-  all_points.get(&coords[0]); //now test the double* interface
+  all_points.get(coords.data()); //now test the double* interface
 
   //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
   std::vector<double> original_y(all_points.size());
@@ -241,7 +241,7 @@ void verify_float_set(const smtk::mesh::ResourcePtr& mr)
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<float> coords(numCoords);
-  all_points.get(&coords[0]); //now test the double* interface
+  all_points.get(coords.data()); //now test the float* interface
 
   //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
   std::vector<float> original_y(all_points.size());

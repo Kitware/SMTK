@@ -742,7 +742,7 @@ void qtSimpleExpressionView::onAddValue()
   double zero = 0.;
   std::vector<double> vals(numVals, zero);
   //  this->uiManager()->updateArrayDataValue(dataItem, item);
-  this->addNewValue(&vals[0], numVals);
+  this->addNewValue(vals.data(), numVals);
   this->clearFuncExpression();
 }
 

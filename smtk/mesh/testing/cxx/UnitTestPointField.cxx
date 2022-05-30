@@ -66,7 +66,7 @@ void verify_partial_pointfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+  mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
 
   std::vector<double> fieldValuesForPointField1(one.points().size() * 2);
   for (std::size_t i = 0; i < fieldValuesForPointField1.size(); i++)
@@ -91,7 +91,7 @@ void verify_partial_pointfields()
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << " "
                 << pointfield.size() << std::endl;
       std::vector<double> retrievedFieldValues(pointfield.size() * pointfield.dimension(), -1.);
-      pointfield.get(&retrievedFieldValues[0]);
+      pointfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         test(fieldValues[i] == retrievedFieldValues[i]);
@@ -107,7 +107,7 @@ void verify_partial_pointfields()
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << std::endl;
       pointfieldnames.push_back(pointfield.name());
       std::vector<double> retrievedFieldValues(one.points().size() * pointfield.dimension(), -1.);
-      pointfield.get(&retrievedFieldValues[0]);
+      pointfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         test(fieldValuesForPointField1[i] == retrievedFieldValues[i]);
@@ -153,7 +153,8 @@ void verify_duplicate_pointfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  auto cf = mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+  auto cf =
+    mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
   test(cf.isValid());
 
   // Try to construct a point field with the same dimension and name for a
@@ -176,7 +177,7 @@ void verify_duplicate_pointfields()
       std::cout << "\"" << pointfield.name() << "\" " << pointfield.dimension() << " "
                 << pointfield.size() << std::endl;
       std::vector<double> retrievedFieldValues(pointfield.size() * pointfield.dimension(), -1.);
-      pointfield.get(&retrievedFieldValues[0]);
+      pointfield.get(retrievedFieldValues.data());
       for (std::size_t i = 0; i < retrievedFieldValues.size(); i++)
       {
         if (i < fieldValuesForPointField1.size())
@@ -316,7 +317,7 @@ void verify_pointfield_persistency()
     {
       fieldValues[i] = static_cast<double>(i);
     }
-    one.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
+    one.createPointField("field data", 1, smtk::mesh::FieldType::Double, fieldValues.data());
 
     //write out the mesh.
     smtk::io::WriteMesh write;
@@ -342,7 +343,7 @@ void verify_pointfield_persistency()
 
       smtk::mesh::PointField pointfield = *two.pointFields().begin();
       std::vector<double> retrievedFieldValues(pointfield.size() * pointfield.dimension(), 0.);
-      pointfield.get(&retrievedFieldValues[0]);
+      pointfield.get(retrievedFieldValues.data());
 
       test(retrievedFieldValues.size() == fieldValues.size());
 

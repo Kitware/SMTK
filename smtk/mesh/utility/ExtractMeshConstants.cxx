@@ -66,7 +66,7 @@ void MeshConstants::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::Poi
   numberOfPoints = ps.size();
   m_pointData.resize(numberOfPoints);
 
-  PreAllocatedMeshConstants field(&m_cellData[0], &m_pointData[0]);
+  PreAllocatedMeshConstants field(m_cellData.data(), m_pointData.data());
 
   extractMeshConstants<QueryTag>(ms, ps, field);
 }

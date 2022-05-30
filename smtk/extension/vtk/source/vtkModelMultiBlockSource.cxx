@@ -237,31 +237,31 @@ static void AddEntityTessToPolyData(
     {
       case TESS_VERTEX:
         have_verts = true;
-        verts->InsertNextCell(1, &vtk_conn[0]);
+        verts->InsertNextCell(1, vtk_conn.data());
         break;
       case TESS_TRIANGLE:
         have_polys = true;
-        polys->InsertNextCell(3, &vtk_conn[0]);
+        polys->InsertNextCell(3, vtk_conn.data());
         break;
       case TESS_QUAD:
         have_polys = true;
-        polys->InsertNextCell(4, &vtk_conn[0]);
+        polys->InsertNextCell(4, vtk_conn.data());
         break;
       case TESS_POLYVERTEX:
         have_verts = true;
-        verts->InsertNextCell(num_verts, &vtk_conn[0]);
+        verts->InsertNextCell(num_verts, vtk_conn.data());
         break;
       case TESS_POLYLINE:
         have_lines = true;
-        lines->InsertNextCell(num_verts, &vtk_conn[0]);
+        lines->InsertNextCell(num_verts, vtk_conn.data());
         break;
       case TESS_POLYGON:
         have_polys = true;
-        polys->InsertNextCell(num_verts, &vtk_conn[0]);
+        polys->InsertNextCell(num_verts, vtk_conn.data());
         break;
       case TESS_TRIANGLE_STRIP:
         have_strip = true;
-        strip->InsertNextCell(num_verts, &vtk_conn[0]);
+        strip->InsertNextCell(num_verts, vtk_conn.data());
         break;
       default:
         std::cerr << "Invalid cell shape " << cell_shape << " at offset " << off << ". Skipping.\n";

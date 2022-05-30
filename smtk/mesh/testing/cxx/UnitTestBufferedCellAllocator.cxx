@@ -101,7 +101,7 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   }
 
   // Add a cell using the cell type and connectivity
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(allocator->addCell(cellType, connectivity.data(), nVerticesPerCell));
 
   // Finalize the addition of cells
   test(allocator->flush());
@@ -147,7 +147,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   {
     connectivity[i] = static_cast<int>(i);
   }
-  test(!allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(!allocator->addCell(cellType, connectivity.data(), nVerticesPerCell));
   test(!allocator->isValid());
 
   // Reserve the coordinates (should succeed)
@@ -165,7 +165,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
 
   // Add a cell before defining vertices (should succeed but not add anything
   // until the allocator is flushed)
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(allocator->addCell(cellType, connectivity.data(), nVerticesPerCell));
   test(allocator->cells().empty());
 
   // fill the vertices and remember the connectivity (should succeed)
@@ -241,7 +241,7 @@ void verify_moab_buffered_cell_allocator_cells()
       connectivity[i] = static_cast<int>(pointCounter);
       pointCounter++;
     }
-    test(allocator->addCell(smtk::mesh::CellType(cellType), &connectivity[0], nVerticesPerCell));
+    test(allocator->addCell(smtk::mesh::CellType(cellType), connectivity.data(), nVerticesPerCell));
   }
 
   test(allocator->flush());

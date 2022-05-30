@@ -109,8 +109,8 @@ void PythonInterpreter::initialize()
   // Python 3.3 switched to wchar_t.
   static std::vector<wchar_t> loc;
   loc.resize(pythonLibraryLocation.size() + 1);
-  mbstowcs(&loc[0], pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
-  Py_SetProgramName(&loc[0]);
+  mbstowcs(loc.data(), pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
+  Py_SetProgramName(loc.data());
 #else
   Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
 #endif

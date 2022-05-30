@@ -187,7 +187,7 @@ void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::Resour
   std::vector<std::int64_t> conn(connectivityLength);
   std::vector<float> fpoints(numberOfPoints * 3);
 
-  smtk::mesh::utility::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
+  smtk::mesh::utility::PreAllocatedTessellation ftess(conn.data(), fpoints.data());
 
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);
@@ -217,7 +217,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(
   std::vector<std::int64_t> locations(numberOfCells);
   std::vector<unsigned char> types(numberOfCells);
 
-  smtk::mesh::utility::PreAllocatedTessellation tess(&conn[0], &locations[0], &types[0]);
+  smtk::mesh::utility::PreAllocatedTessellation tess(conn.data(), locations.data(), types.data());
 
   //extract in releation to the points of all the meshes
   smtk::mesh::utility::extractTessellation(eRef, mr, mr->points(), tess);

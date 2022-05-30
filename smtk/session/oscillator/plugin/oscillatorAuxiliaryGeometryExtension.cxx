@@ -140,9 +140,9 @@ oscillatorAuxiliaryGeometryExtension::generateOscillatorSourceRepresentation(
   }
   else
   {
-    ellipsoidSource->SetScale(&radius[0]);
+    ellipsoidSource->SetScale(radius.data());
   }
-  ellipsoidSource->SetCenter(&center[0]);
+  ellipsoidSource->SetCenter(center.data());
   ellipsoidSource->Update();
   auto geom = vtkSmartPointer<vtkPolyData>::New();
   geom->ShallowCopy(ellipsoidSource->GetOutputDataObject(0));

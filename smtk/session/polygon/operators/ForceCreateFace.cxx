@@ -295,9 +295,9 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
       //std::cout << "\n";
     }
     std::vector<double> bbox(6);
-    smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
-    smtkTess->getBoundingBox(&bbox[0]);
-    modelFace.setBoundingBox(&bbox[0]);
+    smtk::model::Tessellation::invalidBoundingBox(bbox.data());
+    smtkTess->getBoundingBox(bbox.data());
+    modelFace.setBoundingBox(bbox.data());
   }
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
