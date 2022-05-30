@@ -131,10 +131,11 @@ public:
       .emplace(std::make_pair(
         this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))))
+        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))
 #else
-        std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))))
+        std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))
 #endif
+          ))
       .second;
   }
 
@@ -157,11 +158,12 @@ public:
       .emplace(std::make_pair(
         this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))))
+        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))
 #else
         std::unique_ptr<Wrapper>(
-          new WrapperFor<Type>(std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))))
+          new WrapperFor<Type>(std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))
 #endif
+          ))
       .second;
   }
 
@@ -190,10 +192,11 @@ public:
                  .emplace(std::make_pair(
                    this->keyId<Type>(),
 #ifdef SMTK_HAVE_CXX_14
-                   std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())))
+                   std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())
 #else
-                   std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type)))))
+                   std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type)))
 #endif
+                     ))
                  .first;
     }
 
