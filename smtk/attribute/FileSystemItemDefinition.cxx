@@ -18,8 +18,6 @@ using namespace smtk::attribute;
 
 FileSystemItemDefinition::FileSystemItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
-  , m_defaultValue(std::string())
-  , m_valueLabels(std::vector<std::string>())
 {
 }
 
