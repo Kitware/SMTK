@@ -45,10 +45,7 @@ qtItem::qtItem(const qtAttributeItemInfo& info)
 qtItem::~qtItem()
 {
   this->clearChildItems();
-  if (m_widget)
-  {
-    delete m_widget;
-  }
+  delete m_widget;
   delete this->Internals;
 }
 

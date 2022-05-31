@@ -50,11 +50,7 @@ class smtkAssignColorsViewInternals : public Ui::AssignColorsParameters
 public:
   smtkAssignColorsViewInternals() = default;
 
-  ~smtkAssignColorsViewInternals()
-  {
-    if (CurrentAtt)
-      delete CurrentAtt;
-  }
+  ~smtkAssignColorsViewInternals() { delete CurrentAtt; }
 
   qtAttribute* createAttUI(smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
   {
@@ -364,10 +360,7 @@ void smtkAssignColorsView::updateUI()
     return;
   }
 
-  if (this->Internals->CurrentAtt)
-  {
-    delete this->Internals->CurrentAtt;
-  }
+  delete this->Internals->CurrentAtt;
 
   int i = view->details().findChild("AttributeTypes");
   if (i < 0)

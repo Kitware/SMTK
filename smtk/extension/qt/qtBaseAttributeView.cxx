@@ -58,10 +58,7 @@ public:
     this->deleteWidget(this->AdvLevelEditButton);
     this->deleteWidget(this->AdvLevelLabel);
     this->deleteWidget(this->m_configurationCombo);
-    if (this->TopLevelLayout)
-    {
-      delete this->TopLevelLayout;
-    }
+    delete this->TopLevelLayout;
   }
 
   QPointer<QComboBox> AdvLevelCombo;
