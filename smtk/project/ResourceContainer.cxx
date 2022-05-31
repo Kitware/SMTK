@@ -435,8 +435,6 @@ bool ResourceContainer::remove(const smtk::resource::ResourcePtr& resource)
   auto resourceIt = resources.find(resource->id());
   if (resourceIt != resources.end())
   {
-    smtk::resource::Resource::Ptr rsrc = *resourceIt;
-
     // Remove it from the project's set of resources
     m_resources.erase(resourceIt);
     return true;
