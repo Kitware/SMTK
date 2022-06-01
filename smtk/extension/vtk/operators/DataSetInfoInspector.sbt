@@ -37,6 +37,9 @@ Return key toggles component visibility.</BriefDescription>
           <ItemDefinitions>
             <Component Name="component" NumberOfRequiredValues="1"/>
             <Int Name="point count" Label="#(points)" Extensible="yes"/>
+            <Double Name="bounds" NumberOfRequiredValues="6">
+              <!-- <DefaultValue>nan</DefaultValue> -->
+            </Double>
             <!-- An item to hold the count of each type of cell -->
             <Int Name="vtkEmptyCell count" Label="#(empty cells)" NumberOfRequiredValues="1"/>
             <Int Name="vtkVertex count" Label="#(vertices)" NumberOfRequiredValues="1"/>

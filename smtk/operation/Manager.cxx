@@ -123,10 +123,13 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     }
     smtkInfoMacro(smtk::io::Logger::instance(), message.str());
   }
-  if (auto managers = m_managers.lock())
+  if (op)
   {
-    // Pass application's managers if available.
-    op->setManagers(managers);
+    if (auto managers = m_managers.lock())
+    {
+      // Pass application's managers if available.
+      op->setManagers(managers);
+    }
   }
 
   return op;
@@ -152,10 +155,13 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
     // issue by accessing the parameters as they are created by the manager.
     auto parameters = op->parameters();
   }
-  if (auto managers = m_managers.lock())
+  if (op)
   {
-    // Pass application's managers if available.
-    op->setManagers(managers);
+    if (auto managers = m_managers.lock())
+    {
+      // Pass application's managers if available.
+      op->setManagers(managers);
+    }
   }
 
   return op;
