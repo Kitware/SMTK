@@ -185,14 +185,18 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
   }
 
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
-  if (row >= 0 && row < static_cast<int>(subphrases.size()))
+  // Only attempt to return a valid index if the subphrases are currently built
+  if (ownerPhrase->areSubphrasesBuilt())
   {
-    view::DescriptivePhrasePtr entry = subphrases[row];
-    if (entry)
+    view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
+    if (row >= 0 && row < static_cast<int>(subphrases.size()))
     {
-      this->P->ptrs[entry->phraseId()] = entry;
-      return this->createIndex(row, column, entry->phraseId());
+      view::DescriptivePhrasePtr entry = subphrases[row];
+      if (entry)
+      {
+        this->P->ptrs[entry->phraseId()] = entry;
+        return this->createIndex(row, column, entry->phraseId());
+      }
     }
   }
 
@@ -247,12 +251,14 @@ bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
 /// The number of rows in the table "underneath" \a owner.
 int qtDescriptivePhraseModel::rowCount(const QModelIndex& owner) const
 {
+  int count = 0;
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  if (!ownerPhrase)
+  // Only attempt to fetch the subphrases if they are currently built
+  if (ownerPhrase && ownerPhrase->areSubphrasesBuilt())
   {
-    return 0;
+    count = static_cast<int>(ownerPhrase->subphrases().size());
   }
-  return static_cast<int>(ownerPhrase->subphrases().size());
+  return count;
 }
 
 /// Return something to display in the table header.
