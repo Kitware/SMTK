@@ -366,11 +366,8 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
   // This search is O(m*n) where m = number of phrases in tree and n = number of
   // objects created.
   localRoot->visitChildren([&](DescriptivePhrasePtr parent, std::vector<int>& parentPath) -> int {
-    // Terminate early if this phrase has not been expanded by user.
-    if (!parent->areSubphrasesBuilt())
-    {
-      return 0;
-    }
+    // Make sure the parent's subphrases are built
+    parent->subphrases();
 
     smtk::resource::ResourcePtr rsrc;
     smtk::resource::ComponentPtr comp;
