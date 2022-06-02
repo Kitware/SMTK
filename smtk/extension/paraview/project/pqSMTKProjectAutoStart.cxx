@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/paraview/project/pqSMTKProjectAutoStart.h"
 
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
 #include "smtk/extension/paraview/project/pqSMTKProjectMenu.h"
 #include "smtk/project/Project.h"
@@ -29,12 +30,15 @@ void setView()
     QMainWindow* mainWindow = dynamic_cast<QMainWindow*>(w);
     if (mainWindow)
     {
-      pqSMTKResourcePanel* dock = mainWindow->findChild<pqSMTKResourcePanel*>();
+      pqSMTKResourceDock* dock = mainWindow->findChild<pqSMTKResourceDock*>();
+      pqSMTKResourcePanel* panel =
+        dock ? qobject_cast<pqSMTKResourcePanel*>(dock->widget()) : nullptr;
       // If the dock is not there, just try it again.
-      if (dock)
+      if (panel)
       {
+
         auto phraseModel = std::dynamic_pointer_cast<smtk::view::ResourcePhraseModel>(
-          dock->resourceBrowser()->phraseModel());
+          panel->resourceBrowser()->phraseModel());
         if (phraseModel)
         {
           phraseModel->setFilter([](const smtk::resource::Resource& resource) {

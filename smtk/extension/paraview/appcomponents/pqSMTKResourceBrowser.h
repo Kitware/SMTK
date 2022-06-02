@@ -18,8 +18,6 @@
 
 #include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
-#include <QDockWidget>
-
 class QAbstractItemModel;
 class QItemSelection;
 

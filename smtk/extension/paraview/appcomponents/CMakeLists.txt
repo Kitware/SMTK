@@ -4,6 +4,7 @@ set(classes
   VisibilityBadge
   pqSMTKAttributePanel
   pqSMTKBehavior
+  pqSMTKDock
   pqSMTKOperationPanel
   pqSMTKOperationParameterPanel
   pqSMTKOperationToolboxPanel
@@ -33,6 +34,11 @@ set(classes
 
 set(headers
   pqQtKeywordWrapping.h
+  pqSMTKAttributeDock.h
+  pqSMTKOperationDock.h
+  pqSMTKOperationParameterDock.h
+  pqSMTKOperationToolboxDock.h
+  pqSMTKResourceDock.h
 )
 
 set(CMAKE_AUTOMOC 1)

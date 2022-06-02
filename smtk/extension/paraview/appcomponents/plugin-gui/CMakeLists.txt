@@ -11,12 +11,12 @@ paraview_plugin_add_toolbar(
   SOURCES toolbar_sources)
 
 paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKAttributePanel
+  CLASS_NAME pqSMTKAttributeDock
   DOCK_AREA Left
   INTERFACES attribute_dock_interfaces
   SOURCES attribute_dock_sources)
 paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKResourcePanel
+  CLASS_NAME pqSMTKResourceDock
   DOCK_AREA Left
   INTERFACES resource_dock_interfaces
   SOURCES resource_dock_sources)

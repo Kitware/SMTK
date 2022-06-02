@@ -18,6 +18,8 @@
 
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 
+#include "smtk/extension/qt/qtBaseView.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
@@ -47,12 +49,9 @@
 pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
 {
-  this->setObjectName("attributeEditor");
+  this->setObjectName("pqSMTKAttributePanel");
   this->updateTitle();
-  QWidget* w = new QWidget(this);
-  w->setObjectName("attributePanel");
-  this->setWidget(w);
-  w->setLayout(new QVBoxLayout);
+  this->setLayout(new QVBoxLayout);
   auto* behavior = pqSMTKBehavior::instance();
   QObject::connect(
     behavior,
@@ -122,7 +121,7 @@ void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
     m_propertyLinks.clear();
     delete m_attrUIMgr;
     m_attrUIMgr = nullptr;
-    while (QWidget* w = this->widget()->findChild<QWidget*>())
+    while (QWidget* w = this->findChild<QWidget*>())
     {
       delete w;
     }
@@ -319,7 +318,11 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     smtkErrorMacro(smtk::io::Logger::instance(), "View passed but no resource indicated.");
     return false;
   }
-  auto* qview = m_attrUIMgr->setSMTKView(view, this->widget());
+  auto* qview = m_attrUIMgr->setSMTKView(view, this);
+  if (qview)
+  {
+    this->layout()->addWidget(qview->widget());
+  }
   return qview != nullptr;
 }
 
@@ -385,4 +388,5 @@ void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
     }
   }
   this->setWindowTitle(panelName.c_str());
+  Q_EMIT titleChanged(panelName.c_str());
 }

@@ -104,8 +104,16 @@ void pqSMTKProjectPanel::sourceAdded(pqSMTKWrapper* wrapper, pqServer* server)
   m_browser->widget()->setObjectName("pqSMTKProjectBrowser");
   std::string title;
   m_view->details().attribute("Title", title);
-  this->setWindowTitle(title.empty() ? "Projects" : title.c_str());
-  this->setWidget(m_browser->widget());
+  if (title.empty())
+  {
+    title = "Projects";
+  }
+  this->setWindowTitle(title.c_str());
+  Q_EMIT titleChanged(title.c_str());
+  m_layout = new QVBoxLayout;
+  m_layout->setObjectName("Layout");
+  this->setLayout(m_layout);
+  m_layout->addWidget(m_browser->widget());
 }
 
 void pqSMTKProjectPanel::sourceRemoved(pqSMTKWrapper* mgr, pqServer* server)

@@ -20,7 +20,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
-#include <QDockWidget>
+#include <QWidget>
 
 class pqServer;
 class pqPipelineSource;
@@ -44,10 +44,10 @@ class QListWidgetItem;
   * This panel will create a new SMTK attribute UI manager each time the
   * operation to be displayed is switched for a different resource.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationPanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationPanel : public QWidget
 {
   Q_OBJECT
-  typedef QDockWidget Superclass;
+  typedef QWidget Superclass;
 
 public:
   pqSMTKOperationPanel(QWidget* parent = nullptr);
@@ -56,6 +56,9 @@ public:
   smtk::extension::qtUIManager* attributeUIManager() const { return m_attrUIMgr; }
 
   smtk::view::AvailableOperationsPtr availableOperations() const { return m_availableOperations; }
+
+Q_SIGNALS:
+  void titleChanged(QString title);
 
 public Q_SLOTS:
   /// Called when a new client-server connection is added.

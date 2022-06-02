@@ -1,5 +1,5 @@
 paraview_plugin_add_dock_window(
-  CLASS_NAME pqSMTKProjectPanel
+  CLASS_NAME pqSMTKProjectDock
   DOCK_AREA Left
   INTERFACES dock_interfaces
   SOURCES dock_sources)

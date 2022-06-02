@@ -19,7 +19,7 @@
 #include <functional>
 #include <vector>
 
-class QDockWidget;
+class QWidget;
 
 namespace smtk
 {
@@ -57,7 +57,7 @@ public:
     * Applications should dynamic-cast the \a panel to each of the panel types that
     * it supports and return view information.
     */
-  virtual smtk::view::Information panelConfiguration(const QDockWidget* panel) = 0;
+  virtual smtk::view::Information panelConfiguration(const QWidget* panel) = 0;
 
 protected:
   /// A "slot" to be invoked when an interface implementation is available.

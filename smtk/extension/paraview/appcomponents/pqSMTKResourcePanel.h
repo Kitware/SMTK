@@ -15,19 +15,21 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include <QDockWidget>
+#include <QPointer>
+#include <QWidget>
 
 #include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
 class pqSMTKResourceBrowser;
+class QVBoxLayout;
 
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QWidget
 {
   Q_OBJECT
-  typedef QDockWidget Superclass;
+  typedef QWidget Superclass;
 
 public:
   pqSMTKResourcePanel(QWidget* parent = nullptr);
@@ -39,6 +41,9 @@ public:
   /// Access the underlying resource browser.
   pqSMTKResourceBrowser* resourceBrowser() const { return m_browser; }
 
+Q_SIGNALS:
+  void titleChanged(QString title);
+
 protected Q_SLOTS:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
@@ -47,6 +52,8 @@ protected:
   pqSMTKResourceBrowser* m_browser{ nullptr };
   smtk::view::ConfigurationPtr m_view;
   smtk::extension::qtUIManager* m_viewUIMgr{ nullptr };
+  /// The central widget's layout.
+  QPointer<QVBoxLayout> m_layout;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h

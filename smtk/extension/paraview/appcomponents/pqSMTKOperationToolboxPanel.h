@@ -19,16 +19,10 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include <QDockWidget>
-#include <QPointer>
+#include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
-// VTK's wrapper parser does not properly handle Qt macros on macos.
-#if defined(__VTK_WRAP__) && !defined(Q_SLOTS)
-#define Q_DISABLE_COPY(x)
-#define Q_SLOTS
-#define Q_SIGNALS public
-#define Q_OBJECT
-#endif
+#include <QPointer>
+#include <QWidget>
 
 class pqModalShortcut;
 class pqPipelineSource;
@@ -51,10 +45,10 @@ class OperationDecorator;
   * The panel emits signals when users request an operation be
   * (a) immediately run or (b) run after editing parameters.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationToolboxPanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKOperationToolboxPanel : public QWidget
 {
   Q_OBJECT
-  typedef QDockWidget Superclass;
+  typedef QWidget Superclass;
 
 public:
   pqSMTKOperationToolboxPanel(QWidget* parent = nullptr);
@@ -66,6 +60,9 @@ public:
 
   /// Return the toolbox view this dock-widget displays:
   QPointer<smtk::extension::qtOperationPalette> toolbox() const { return m_view; }
+
+Q_SIGNALS:
+  void titleChanged(QString title);
 
 public Q_SLOTS:
   /// Called when a new client-server connection is added.

@@ -22,7 +22,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
-#include <QDockWidget>
+#include <QWidget>
 
 class pqServer;
 class pqPipelineSource;
@@ -36,16 +36,19 @@ class pqPipelineSource;
   * This panel will create a new SMTK attribute UI manager each time the
   * resource to be displayed is switched for a different resource.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKAttributePanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKAttributePanel : public QWidget
 {
   Q_OBJECT
-  typedef QDockWidget Superclass;
+  typedef QWidget Superclass;
 
 public:
   pqSMTKAttributePanel(QWidget* parent = nullptr);
   ~pqSMTKAttributePanel() override;
 
   smtk::extension::qtUIManager* attributeUIManager() const { return m_attrUIMgr; }
+
+Q_SIGNALS:
+  void titleChanged(QString title);
 
 public Q_SLOTS:
   /**\brief Populate the attribute panel with data from \a psrc

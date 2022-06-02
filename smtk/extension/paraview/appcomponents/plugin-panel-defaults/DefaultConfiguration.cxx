@@ -21,7 +21,7 @@ DefaultConfiguration::DefaultConfiguration(QObject* parent)
 {
 }
 
-smtk::view::Information DefaultConfiguration::panelConfiguration(const QDockWidget* panel)
+smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* panel)
 {
   smtk::view::Information result;
   if (const auto* toolbox = dynamic_cast<const pqSMTKOperationToolboxPanel*>(panel))

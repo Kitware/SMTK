@@ -80,12 +80,15 @@ pqSMTKOperationParameterPanel::pqSMTKOperationParameterPanel(QWidget* parent)
     m_tabs->setTabsClosable(true);
     m_tabs->setMovable(true);
     m_tabs->setUsesScrollButtons(true);
-    this->setWidget(m_tabs);
+    m_layout = new QVBoxLayout;
+    m_layout->setObjectName("Layout");
+    this->setLayout(m_layout);
+    m_layout->addWidget(m_tabs);
     QObject::connect(
       m_tabs, &QTabWidget::tabCloseRequested, this, &pqSMTKOperationParameterPanel::cancelEditing);
   }
   QVBoxLayout* layout = new QVBoxLayout();
-  this->widget()->setLayout(layout);
+  m_tabs->setLayout(layout);
 
   auto* behavior = pqSMTKBehavior::instance();
   QObject::connect(
