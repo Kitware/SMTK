@@ -37,7 +37,7 @@ DoubleClickButtonTester::DoubleClickButtonTester()
 {
   m_window->setCentralWidget(m_widget);
   QObject::connect(
-    m_button, &qtDoubleClickButton::clicked, this, &DoubleClickButtonTester::singleClicked);
+    m_button, &qtDoubleClickButton::singleClicked, this, &DoubleClickButtonTester::singleClicked);
   QObject::connect(
     m_button, &qtDoubleClickButton::doubleClicked, this, &DoubleClickButtonTester::doubleClicked);
   m_widget->setLayout(m_layout);
