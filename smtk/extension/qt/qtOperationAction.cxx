@@ -155,7 +155,8 @@ QWidget* qtOperationAction::createWidget(QWidget* parent)
     w->addAction(this); // Provide a reference back to here.
     w->setObjectName(buttonText.c_str());
     // w->installEventFilter(this);
-    QObject::connect(w, &qtDoubleClickButton::clicked, this, &qtOperationAction::editParameters);
+    QObject::connect(
+      w, &qtDoubleClickButton::singleClicked, this, &qtOperationAction::editParameters);
     QObject::connect(
       w, &qtDoubleClickButton::doubleClicked, this, &qtOperationAction::acceptDefaults);
     return w;

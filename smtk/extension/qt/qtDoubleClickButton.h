@@ -36,7 +36,7 @@ public:
   static constexpr int timeout = 200; // milliseconds
 
 Q_SIGNALS:
-  void clicked();
+  void singleClicked();
   void doubleClicked();
 
 protected Q_SLOTS:

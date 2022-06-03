@@ -54,5 +54,5 @@ void qtDoubleClickButton::configure()
   // that may eventually fire *our* clicked() signal.
   QObject::connect(this, &Superclass::clicked, this, &qtDoubleClickButton::startTimer);
   // If the timer fires before more clicks, it was a single-click.
-  QObject::connect(&m_timer, &QTimer::timeout, this, &qtDoubleClickButton::clicked);
+  QObject::connect(&m_timer, &QTimer::timeout, this, &qtDoubleClickButton::singleClicked);
 }
