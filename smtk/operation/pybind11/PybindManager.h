@@ -45,10 +45,12 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
     .def("metadataObservers", (smtk::operation::Metadata::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::metadataObservers)
     .def("observers", (smtk::operation::Observers & (smtk::operation::Manager::*)()) &smtk::operation::Manager::observers, pybind11::return_value_policy::reference_internal)
     .def("observers", (smtk::operation::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::observers, pybind11::return_value_policy::reference_internal)
+    .def("registered", (bool (smtk::operation::Manager::*)(const std::string&) const) &smtk::operation::Manager::registered, py::arg("typeName"))
     .def("registerResourceManager", &smtk::operation::Manager::registerResourceManager, py::arg("arg0"))
     .def("registerOperation", [](smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName){
         return smtk::operation::ImportPythonOperation::importOperation(manager, moduleName, opName);
       })
+    .def("unregisterOperation", (bool (smtk::operation::Manager::*)(const std::string&)) &smtk::operation::Manager::unregisterOperation, py::arg("typeName"))
     ;
   return instance;
 }
