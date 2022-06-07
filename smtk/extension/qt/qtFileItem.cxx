@@ -625,8 +625,11 @@ bool qtFileItem::onLaunchFileBrowser()
   }
   m_internals->FileBrowser->setFileMode(mode);
   m_internals->FileBrowser->setWindowTitle(title);
-  QStringList name_filters = filters.split(";;");
-  m_internals->FileBrowser->setNameFilters(name_filters);
+  if (!filters.isEmpty())
+  {
+    QStringList name_filters = filters.split(";;");
+    m_internals->FileBrowser->setNameFilters(name_filters);
+  }
   // This is needed for Macs since mode alone is not enough to allow the user to
   // chose a non-existent file
   if (mode == QFileDialog::AnyFile)
