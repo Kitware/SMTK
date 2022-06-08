@@ -155,6 +155,10 @@ void qtGroupItem::createWidget()
 
   m_internals->m_titleLabel = new QLabel(title, m_internals->m_titleFrame);
   m_internals->m_titleLabel->setObjectName("Title");
+  if (title.trimmed().isEmpty())
+  {
+    this->setLabelVisible(false);
+  }
   titleLayout->addWidget(m_internals->m_titleLabel);
 
   m_internals->m_alertLabel = new QLabel(m_internals->m_titleFrame);

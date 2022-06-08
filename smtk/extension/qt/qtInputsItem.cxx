@@ -829,15 +829,7 @@ QFrame* qtInputsItem::createLabelFrame(
     }
   }
 
-  QString labelText;
-  if (!vitem->label().empty())
-  {
-    labelText = vitem->label().c_str();
-  }
-  else
-  {
-    labelText = vitem->name().c_str();
-  }
+  QString labelText = vitem->label().c_str();
   QLabel* label = new QLabel(labelText, m_widget);
   label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
@@ -884,6 +876,10 @@ QFrame* qtInputsItem::createLabelFrame(
   }
   labelLayout->addWidget(label);
   m_internals->theLabel = label;
+  if (label->text().trimmed().isEmpty())
+  {
+    this->setLabelVisible(false);
+  }
   if (vitem->allowsExpressions())
   {
     m_internals->m_expressionButton = new QToolButton(m_widget);

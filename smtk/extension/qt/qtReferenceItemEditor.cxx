@@ -238,15 +238,7 @@ void qtReferenceItemEditor::createWidget()
   }
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
 
-  QString labelText;
-  if (!item->label().empty())
-  {
-    labelText = item->label().c_str();
-  }
-  else
-  {
-    labelText = item->name().c_str();
-  }
+  QString labelText = item->label().c_str();
   QLabel* label = new QLabel(labelText, comboFrame);
   label->setSizePolicy(sizeFixedPolicy);
   auto* iview = m_itemInfo.baseView();
@@ -272,6 +264,12 @@ void qtReferenceItemEditor::createWidget()
     label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
+
+  if (label->text().trimmed().isEmpty())
+  {
+    label->setVisible(false);
+  }
+
   m_internals->m_theLabel = label;
   m_internals->m_comboBox = new QComboBox(comboFrame);
   m_internals->m_comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
