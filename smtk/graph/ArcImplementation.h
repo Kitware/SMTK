@@ -13,6 +13,7 @@
 
 #include "smtk/common/Visit.h"
 #include "smtk/graph/detail/TypeTraits.h"
+#include "smtk/resource/Component.h"
 #include "smtk/string/Token.h"
 
 namespace smtk

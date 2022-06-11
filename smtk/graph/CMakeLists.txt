@@ -4,6 +4,7 @@ set(graphOperations
 set(graphSrcs
   Component.cxx
   NodeSet.cxx
+  evaluators/Dump.cxx
 )
 
 set(graphHeaders
