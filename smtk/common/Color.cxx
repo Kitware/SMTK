@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/common/Color.h"
 
+#include <array>
 #include <cctype>
 #include <cmath>
 #include <cstdio>
@@ -90,6 +91,32 @@ bool Color::stringToFloatRGBA(double* rgba, const std::string& colorSpec, double
   }
 
   return ok;
+}
+
+std::string Color::floatRGBAToString(const double* rgba)
+{
+  std::array<int, 4> rgba_;
+  for (int i = 0; i < 4; i++)
+  {
+    rgba_[i] = int(255 * rgba[i]);
+  }
+
+  char hexcol[10];
+  snprintf(hexcol, sizeof hexcol, "#%02x%02x%02x%02x", rgba_[0], rgba_[1], rgba_[2], rgba_[3]);
+  return std::string(hexcol);
+}
+
+std::string Color::floatRGBAToString(const float* rgba)
+{
+  std::array<int, 4> rgba_;
+  for (int i = 0; i < 4; i++)
+  {
+    rgba_[i] = int(255 * rgba[i]);
+  }
+
+  char hexcol[10];
+  snprintf(hexcol, sizeof hexcol, "#%02x%02x%02x%02x", rgba_[0], rgba_[1], rgba_[2], rgba_[3]);
+  return std::string(hexcol);
 }
 
 std::string Color::floatRGBToString(const double* rgb)
