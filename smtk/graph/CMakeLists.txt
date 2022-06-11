@@ -12,6 +12,7 @@ set(graphHeaders
   ArcMap.h
   Component.h
   ExplicitArcs.h
+  NodeProperties.h
   NodeSet.h
   Resource.h
   ResourceBase.h
