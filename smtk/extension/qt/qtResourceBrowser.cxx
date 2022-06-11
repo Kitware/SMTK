@@ -445,7 +445,10 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
             if (!op)
             {
               auto index = deleters.matchingOperation(*object);
-              op = operationManager->create(index);
+              if (index)
+              {
+                op = operationManager->create(index);
+              }
             }
             if (op && op->parameters()->associate(object))
             {
