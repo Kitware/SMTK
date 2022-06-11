@@ -360,83 +360,82 @@ void pqSMTKSelectionFilterBehavior::installFilter()
     if (modelFlags)
     {
       auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);
-      if (!modelEnt)
+      if (modelEnt)
       {
-        return false;
-      }
-      auto entBits = modelEnt->entityFlags();
-      // Is the entity of an acceptable type?
-      if ((modelFlags & smtk::model::MODEL_ENTITY) == smtk::model::MODEL_ENTITY)
-      {
-        smtk::model::EntityRef eref(modelEnt->modelResource(), modelEnt->id());
-        smtk::model::Model model = eref.owningModel();
-        smtk::model::EntityPtr suggestion;
-        if (model.isValid(&suggestion))
+        auto entBits = modelEnt->entityFlags();
+        // Is the entity of an acceptable type?
+        if ((modelFlags & smtk::model::MODEL_ENTITY) == smtk::model::MODEL_ENTITY)
         {
-          suggestions.insert(std::make_pair(suggestion, value));
-        }
-      }
-      else if ((modelFlags & smtk::model::VOLUME) == smtk::model::VOLUME)
-      {
-        smtk::model::CellEntity cell(modelEnt->modelResource(), modelEnt->id());
-        smtk::model::Volumes vv;
-        if (cell.isValid())
-        {
-          switch (cell.dimension())
+          smtk::model::EntityRef eref(modelEnt->modelResource(), modelEnt->id());
+          smtk::model::Model model = eref.owningModel();
+          smtk::model::EntityPtr suggestion;
+          if (model.isValid(&suggestion))
           {
-            case 0:
+            suggestions.insert(std::make_pair(suggestion, value));
+          }
+        }
+        else if ((modelFlags & smtk::model::VOLUME) == smtk::model::VOLUME)
+        {
+          smtk::model::CellEntity cell(modelEnt->modelResource(), modelEnt->id());
+          smtk::model::Volumes vv;
+          if (cell.isValid())
+          {
+            switch (cell.dimension())
             {
-              smtk::model::Edges edges = cell.as<smtk::model::Vertex>().edges();
-              for (const auto& edge : edges)
+              case 0:
               {
-                smtk::model::Faces faces = edge.faces();
+                smtk::model::Edges edges = cell.as<smtk::model::Vertex>().edges();
+                for (const auto& edge : edges)
+                {
+                  smtk::model::Faces faces = edge.faces();
+                  for (const auto& face : faces)
+                  {
+                    smtk::model::Volumes tmp = face.volumes();
+                    vv.insert(vv.end(), tmp.begin(), tmp.end());
+                  }
+                }
+              }
+              break;
+              case 1:
+              {
+                smtk::model::Faces faces = cell.as<smtk::model::Edge>().faces();
                 for (const auto& face : faces)
                 {
                   smtk::model::Volumes tmp = face.volumes();
                   vv.insert(vv.end(), tmp.begin(), tmp.end());
                 }
               }
+              break;
+              case 2:
+                vv = cell.as<smtk::model::Face>().volumes();
+                break;
+              case 3:
+                vv.push_back(cell.as<smtk::model::Volume>());
+                break;
+              default:
+                break;
             }
-            break;
-            case 1:
-            {
-              smtk::model::Faces faces = cell.as<smtk::model::Edge>().faces();
-              for (const auto& face : faces)
-              {
-                smtk::model::Volumes tmp = face.volumes();
-                vv.insert(vv.end(), tmp.begin(), tmp.end());
-              }
-            }
-            break;
-            case 2:
-              vv = cell.as<smtk::model::Face>().volumes();
-              break;
-            case 3:
-              vv.push_back(cell.as<smtk::model::Volume>());
-              break;
-            default:
-              break;
           }
-        }
-        smtk::model::EntityPtr suggestion;
-        for (const auto& vc : vv)
-        {
-          if (vc.isValid(&suggestion))
+          smtk::model::EntityPtr suggestion;
+          for (const auto& vc : vv)
           {
-            suggestions.insert(std::make_pair(suggestion, value));
+            if (vc.isValid(&suggestion))
+            {
+              suggestions.insert(std::make_pair(suggestion, value));
+            }
           }
         }
-      }
-      else if ((entBits & smtk::model::ENTITY_MASK) & (modelFlags & smtk::model::ENTITY_MASK))
-      {
-        // Ensure the dimension is acceptable, too:
-        return (entBits & smtk::model::AUX_GEOM_ENTITY) ||
-          (entBits & smtk::model::INSTANCE_ENTITY) ||
-          ((entBits & smtk::model::ANY_DIMENSION) & (modelFlags & smtk::model::ANY_DIMENSION));
-      }
-      else
-      {
-        return false;
+        else if ((entBits & smtk::model::ENTITY_MASK) & (modelFlags & smtk::model::ENTITY_MASK))
+        {
+          // Ensure the dimension is acceptable, too:
+          return (entBits & smtk::model::AUX_GEOM_ENTITY) ||
+            (entBits & smtk::model::INSTANCE_ENTITY) ||
+            ((entBits & smtk::model::ANY_DIMENSION) & (modelFlags & smtk::model::ANY_DIMENSION));
+        }
+        else
+        {
+          return false;
+        }
       }
     }
     return true; // If no filtering is requested, allow everything
