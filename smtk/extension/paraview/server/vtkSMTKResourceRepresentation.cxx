@@ -78,12 +78,38 @@ void SetAttributeBlockColorToEntity(
   const smtk::common::UUID& uuid,
   const smtk::resource::ResourcePtr& res)
 {
+  // Fetch the color from \a block's field-data (preferred) or
+  // the component's "color" property.
   std::vector<double> color = { { 1., 1., 1., 1. } };
-
-  auto component = res->find(uuid);
-  if (component != nullptr && component->properties().contains<std::vector<double>>("color"))
+  bool haveColor = false;
+  if (block)
   {
-    color = component->properties().at<std::vector<double>>("color");
+    auto* fieldData = block->GetFieldData();
+    int idx;
+    auto* colorArray = fieldData->GetArray("entity color", idx);
+    if (
+      colorArray && colorArray->GetNumberOfComponents() == 4 && colorArray->GetNumberOfTuples() > 0)
+    {
+      haveColor = true;
+      colorArray->GetTuple(0, color.data());
+      // If colorArray is integer-valued, normalize to [0,1]:
+      if (colorArray->GetDataType() < VTK_FLOAT)
+      {
+        for (int ii = 0; ii < 4; ++ii)
+        {
+          color[ii] /= 255.0;
+        }
+      }
+    }
+  }
+
+  if (!haveColor)
+  {
+    auto component = res->find(uuid);
+    if (!!component && component->properties().contains<std::vector<double>>("color"))
+    {
+      color = component->properties().at<std::vector<double>>("color");
+    }
   }
 
   atts->SetBlockColor(block, color.data());

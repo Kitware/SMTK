@@ -113,7 +113,7 @@ void Geometry::addColorArray(
   colorArray->SetName(arrayName.c_str());
   for (int i = 0; i < 4; ++i)
   {
-    colorArray->FillComponent(i, rgba[i]);
+    colorArray->FillComponent(i, rgba[i] * 255.0);
   }
   data->GetFieldData()->AddArray(colorArray.GetPointer());
 }

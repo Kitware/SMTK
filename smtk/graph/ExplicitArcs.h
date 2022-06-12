@@ -11,6 +11,7 @@
 #ifndef smtk_graph_ExplicitArcs_h
 #define smtk_graph_ExplicitArcs_h
 
+#include "smtk/common/UUID.h"
 #include "smtk/common/Visit.h"
 #include "smtk/graph/ArcProperties.h"
 #include "smtk/string/Token.h"

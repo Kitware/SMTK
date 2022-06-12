@@ -4,6 +4,7 @@ set(graphOperations
 set(graphSrcs
   Component.cxx
   NodeSet.cxx
+  evaluators/Dump.cxx
 )
 
 set(graphHeaders
@@ -12,6 +13,7 @@ set(graphHeaders
   ArcMap.h
   Component.h
   ExplicitArcs.h
+  NodeProperties.h
   NodeSet.h
   Resource.h
   ResourceBase.h

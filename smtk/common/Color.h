@@ -37,6 +37,8 @@ public:
     rgba.resize(4);
     return Color::stringToFloatRGBA(&rgba[0], colorSpec, defaultAlpha);
   }
+  static std::string floatRGBAToString(const double* rgb);
+  static std::string floatRGBAToString(const float* rgb);
   static std::string floatRGBToString(const double* rgb);
   static std::string floatRGBToString(const float* rgb);
   static double floatRGBToLightness(const double* rgb);

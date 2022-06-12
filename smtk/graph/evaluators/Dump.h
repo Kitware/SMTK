@@ -15,8 +15,12 @@
 
 #include "smtk/string/Token.h"
 
+#include "smtk/common/Color.h"
+
 #include "nlohmann/json.hpp"
 
+#include <array>
+#include <memory>
 #include <set>
 #include <sstream>
 
@@ -32,7 +36,7 @@ using json = nlohmann::json;
   *
   * The only valid values for \a mimeType are "text/vnd.graphviz" or "text/plain".
   */
-struct Dump
+struct SMTKCORE_EXPORT Dump
 {
   Dump()
     : m_mimeType("text/vnd.graphviz")
@@ -60,6 +64,16 @@ struct Dump
   {
   }
 
+  void setArcColor(const smtk::string::Token& arcType, const std::array<double, 4>& color)
+  {
+    m_arcColors[arcType] = color;
+  }
+
+  static void setBackground(const std::array<double, 4>& bgcolor)
+  {
+    s_backgroundColor = std::unique_ptr<std::array<double, 4>>(new std::array<double, 4>(bgcolor));
+  }
+
   template<typename ResourcePtr>
   static void begin(ResourcePtr resource, std::ostream& stream, const Dump& self)
   {
@@ -70,6 +84,11 @@ struct Dump
     if (self.m_mimeType == "text/vnd.graphviz")
     {
       stream << "digraph \"" << resource->name() << "\" {\n\n";
+      if (s_backgroundColor)
+      {
+        stream << "  bgcolor=\""
+               << smtk::common::Color::floatRGBAToString(s_backgroundColor->data()) << "\"\n";
+      };
       if (self.m_includeNodes)
       {
         std::function<void(const std::shared_ptr<smtk::resource::Component>&)> dumpNodes =
@@ -123,6 +142,12 @@ struct Dump
       if (!ArcTraits::Directed::value)
       {
         stream << "    edge [dir=\"none\"]\n";
+      }
+      auto colorIt = m_arcColors.find(arcType);
+      if (colorIt != m_arcColors.end())
+      {
+        stream << "    edge [color=\""
+               << smtk::common::Color::floatRGBAToString(colorIt->second.data()) << "\"]\n";
       }
     }
     arcs->visitAllOutgoingNodes(
@@ -180,6 +205,8 @@ struct Dump
   std::set<smtk::string::Token> m_includeArcs;
   std::set<smtk::string::Token> m_excludeArcs;
   bool m_includeNodes = true;
+  std::map<smtk::string::Token, std::array<double, 4>> m_arcColors;
+  static std::unique_ptr<std::array<double, 4>> s_backgroundColor;
 };
 
 } // namespace evaluators
