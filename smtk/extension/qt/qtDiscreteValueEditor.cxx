@@ -369,10 +369,21 @@ void qtDiscreteValueEditor::updateContents()
     this->Internals->m_childrenFrame = new QFrame(this);
     this->Internals->m_childrenFrame->setObjectName("ChildItemsFrame");
     QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    QHBoxLayout* clayout = new QHBoxLayout(this->Internals->m_childrenFrame);
-    this->Internals->m_parentLayout->setAlignment(Qt::AlignTop);
-    clayout->setAlignment(Qt::AlignTop);
-    clayout->setMargin(0);
+
+    QBoxLayout* clayout = nullptr;
+    if (qobject_cast<QHBoxLayout*>(this->Internals->m_parentLayout))
+    {
+      clayout = new QHBoxLayout(this->Internals->m_childrenFrame);
+      this->Internals->m_parentLayout->setAlignment(Qt::AlignTop);
+      clayout->setAlignment(Qt::AlignTop);
+      clayout->setContentsMargins(0, 0, 0, 0);
+    }
+    else
+    {
+      clayout = new QVBoxLayout(this->Internals->m_childrenFrame);
+    }
+
+    clayout->setObjectName("activeChildLayout");
     this->Internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
 
     QList<smtk::attribute::ItemDefinitionPtr> activeChildDefs;

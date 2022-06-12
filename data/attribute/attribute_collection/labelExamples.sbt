@@ -49,8 +49,8 @@
             <Double Name="pi"><DefaultValue>3.14159</DefaultValue></Double>
           </ItemDefinitions>
         </Group>
-        <Void Name="OptionalItem" Label=" " Optional="true" IsEnabledByDefault="false" />
-        <Void Name="VoidItem" Label=" " Optional="false" />
+        <Void Name="OptionalItem" Optional="true" IsEnabledByDefault="false" />
+        <Void Name="VoidItem" Optional="false" />
       </ItemDefinitions>
     </Block>
   </ItemBlocks>
@@ -149,7 +149,7 @@
           </DiscreteInfo>
         </String>
 
-<!--         <String Name="Optional Item">
+        <String Name="Optional Item">
           <ChildrenDefinitions>
             <Block Name="Unlabeled" />
           </ChildrenDefinitions>
@@ -176,7 +176,7 @@
             </Structure>
           </DiscreteInfo>
         </String>
- -->
+
         <String Name="Select" Label="Select (default layout)">
           <ChildrenDefinitions>
             <Block Name="Unlabeled" />
@@ -233,7 +233,7 @@
                 <Item>GroupItem</Item>
               </Items>
             </Structure>
-<!--             <Structure>
+            <Structure>
               <Value>Optional Item</Value>
               <Items>
                 <Item>OptionalItem</Item>
@@ -244,7 +244,7 @@
               <Items>
                 <Item>VoidItem</Item>
               </Items>
-            </Structure> -->
+            </Structure>
           </DiscreteInfo>
         </String>
 

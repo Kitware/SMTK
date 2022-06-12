@@ -246,6 +246,14 @@ qtInputsItem::qtInputsItem(const qtAttributeItemInfo& info)
   // See if we are suppose to override it
   m_itemInfo.component().attributeAsInt("EditPrecision", m_internals->m_editPrecision);
 
+  // Check for "Layout" ItemView
+  std::string layout;
+  bool found = info.component().attribute("Layout", layout);
+  if (found && layout == "Vertical")
+  {
+    m_internals->VectorItemOrient = Qt::Vertical;
+  }
+
   this->createWidget();
 }
 
@@ -675,7 +683,16 @@ void qtInputsItem::addInputEditor(int i)
   QBoxLayout* childLayout = nullptr;
   if (item->isDiscrete())
   {
-    childLayout = new QVBoxLayout;
+    if (m_internals->VectorItemOrient == Qt::Vertical)
+    {
+      childLayout = new QVBoxLayout;
+    }
+    else
+    {
+      childLayout = new QHBoxLayout;
+      childLayout->setContentsMargins(4, 0, 0, 0);
+    }
+
     childLayout->setObjectName(QString("childLayout%1").arg(i));
     childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   }
@@ -734,7 +751,9 @@ void qtInputsItem::addInputEditor(int i)
     // combo boxes.
     if (item->isDiscrete() && childLayout)
     {
-      m_internals->EntryLayout->addLayout(childLayout, row, 2);
+      int row = m_internals->VectorItemOrient == Qt::Vertical ? 2 : 1;
+      int col = m_internals->VectorItemOrient == Qt::Vertical ? 1 : 2;
+      m_internals->EntryLayout->addLayout(childLayout, row, col);
     }
   }
   else // going horizontal
