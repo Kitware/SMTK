@@ -32,10 +32,10 @@ using namespace smtk::extension;
 class qtDiscreteValueEditorInternals
 {
 public:
-  qtDiscreteValueEditorInternals(qtInputsItem* item, int elementIdx, QLayout* childLayout)
+  qtDiscreteValueEditorInternals(qtInputsItem* item, int elementIdx, QLayout* parentLayout)
     : m_inputItem(item)
     , m_elementIndex(elementIdx)
-    , m_childrenLayout(childLayout)
+    , m_parentLayout(parentLayout)
   {
     m_hintChildWidth = 0;
     m_hintChildHeight = 0;
@@ -47,7 +47,7 @@ public:
   QPointer<QFrame> m_childrenFrame;
 
   QList<smtk::extension::qtItem*> m_childItems;
-  QPointer<QLayout> m_childrenLayout;
+  QPointer<QLayout> m_parentLayout;
   int m_hintChildWidth;
   int m_hintChildHeight;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
@@ -65,11 +65,11 @@ public:
 qtDiscreteValueEditor::qtDiscreteValueEditor(
   qtInputsItem* item,
   int elementIdx,
-  QLayout* childLayout)
+  QLayout* parentLayout)
   : QWidget(item->widget())
   , m_useSelectionManager(false)
 {
-  this->Internals = new qtDiscreteValueEditorInternals(item, elementIdx, childLayout);
+  this->Internals = new qtDiscreteValueEditorInternals(item, elementIdx, parentLayout);
   if (item != nullptr)
   {
     item->m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
@@ -353,9 +353,9 @@ void qtDiscreteValueEditor::updateContents()
   this->Internals->m_hintChildHeight = 0;
   if (this->Internals->m_childrenFrame)
   {
-    if (this->Internals->m_childrenLayout)
+    if (this->Internals->m_parentLayout)
     {
-      this->Internals->m_childrenLayout->removeWidget(this->Internals->m_childrenFrame);
+      this->Internals->m_parentLayout->removeWidget(this->Internals->m_childrenFrame);
     }
     else
     {
@@ -443,9 +443,9 @@ void qtDiscreteValueEditor::updateContents()
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
     this->Internals->m_hintChildHeight = this->Internals->m_childrenFrame->height();
     this->Internals->m_childrenFrame->setVisible(hasVisibleChildren);
-    if (this->Internals->m_childrenLayout)
+    if (this->Internals->m_parentLayout)
     {
-      this->Internals->m_childrenLayout->addWidget(this->Internals->m_childrenFrame);
+      this->Internals->m_parentLayout->addWidget(this->Internals->m_childrenFrame);
     }
     else
     {
