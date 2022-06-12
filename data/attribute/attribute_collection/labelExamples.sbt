@@ -261,8 +261,8 @@
                 <Item>ReferenceItem</Item>
                 <Item>DateTime</Item>
                 <Item>FileItem</Item>
-<!--                 <Item>GroupItem</Item>
- -->                <Item>OptionalItem</Item>
+                <Item>GroupItem</Item>
+                <Item>OptionalItem</Item>
                 <Item>VoidItem</Item>
               </Items>
             </Structure>

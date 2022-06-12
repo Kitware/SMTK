@@ -98,6 +98,7 @@ void qtDiscreteValueEditor::createWidget()
   this->Internals->clearChildItems();
   QBoxLayout* wlayout = new QVBoxLayout(this);
   wlayout->setMargin(0);
+  wlayout->setAlignment(Qt::AlignTop);
   if (!item || !item->isDiscrete())
   {
     return;
@@ -369,6 +370,8 @@ void qtDiscreteValueEditor::updateContents()
     this->Internals->m_childrenFrame->setObjectName("ChildItemsFrame");
     QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     QHBoxLayout* clayout = new QHBoxLayout(this->Internals->m_childrenFrame);
+    this->Internals->m_parentLayout->setAlignment(Qt::AlignTop);
+    clayout->setAlignment(Qt::AlignTop);
     clayout->setMargin(0);
     this->Internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
 
