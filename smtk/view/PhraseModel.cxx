@@ -545,6 +545,10 @@ void PhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& creat
     auto& children = parent->subphrases();
     children.insert(children.begin() + path.back(), batch.begin(), batch.end());
     this->trigger(parent, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
+    for (const auto& childPhrase : batch)
+    {
+      childPhrase->subphrases(); // make sure the children subphrases are built
+    }
   }
 }
 
