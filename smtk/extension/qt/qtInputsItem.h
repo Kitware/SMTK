@@ -108,6 +108,9 @@ protected:
   // background.
   void showExpressionResultWidgets(bool success, const QString& text, const QString& tooltip);
 
+  /** \brief Determines (horizontal/vertical) orientation for values or children items. */
+  Qt::Orientation getOrientation(const qtAttributeItemInfo& info);
+
 private:
   qtInputsItemInternals* m_internals;
 }; // class

@@ -51,6 +51,7 @@
 #include "smtk/attribute/ValueItemTemplate.h"
 
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/StringUtil.h"
 
 #include <cmath>
 
@@ -203,6 +204,16 @@ class qtInputsItemInternals
 public:
   QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;
+
+  // VectorItemOrient stores the layout orientation (horizontal or vertical) for either
+  // item values or children items. Defaults are:
+  // 1.  Ordinary value items => values layout is horizontal
+  // 2.  Extensible values => values layout is vertical
+  // 3a. Discrete items with active children => children item layout is vertical EXCEPT:
+  // 3b. Discrete item with each value assigned 0 or 1 child item with empty label =>
+  //      children item layout is horizontal
+  // Cases 1, 3a, 3b can by overridden with an ItemView attribute Layout="Horizontal"
+  // or Layout="Vertical"
   Qt::Orientation VectorItemOrient;
 
   // for discrete items that with potential child widget
@@ -241,18 +252,10 @@ qtInputsItem::qtInputsItem(const qtAttributeItemInfo& info)
 {
   m_internals = new qtInputsItemInternals;
   m_isLeafItem = true;
-  m_internals->VectorItemOrient = Qt::Horizontal;
+  m_internals->VectorItemOrient = this->getOrientation(info);
   m_internals->m_editPrecision = 0; // Use full precision by default
   // See if we are suppose to override it
   m_itemInfo.component().attributeAsInt("EditPrecision", m_internals->m_editPrecision);
-
-  // Check for "Layout" ItemView
-  std::string layout;
-  bool found = info.component().attribute("Layout", layout);
-  if (found && layout == "Vertical")
-  {
-    m_internals->VectorItemOrient = Qt::Vertical;
-  }
 
   this->createWidget();
 }
@@ -2076,4 +2079,78 @@ bool qtInputsItem::isFixedWidth() const
   // If the item has an explicit FixedWidth Attribute set to something
   // larger than 0 then its fixed width
   return (widthValue > 0);
+}
+
+Qt::Orientation qtInputsItem::getOrientation(const qtAttributeItemInfo& info)
+{
+  // Carries out logic listed above for setting internals member VectorItemOrient.
+  auto valueItem = info.itemAs<smtk::attribute::ValueItem>();
+  if (valueItem == nullptr) // safety first
+  {
+    return Qt::Horizontal;
+  }
+
+  // Extensible items are *always* vertical (cannot override)
+  if (valueItem->isExtensible())
+  {
+    return Qt::Vertical;
+  }
+
+  // Check for "Layout" ItemView
+  std::string layout;
+  bool hasLayoutSpec = info.component().attribute("Layout", layout);
+  if (hasLayoutSpec && layout == "Horizontal")
+  {
+    return Qt::Horizontal;
+  }
+  else if (hasLayoutSpec && layout == "Vertical")
+  {
+    return Qt::Vertical;
+  }
+
+  // For non-discrete item, default layout is horizontal
+  if (!valueItem->isDiscrete())
+  {
+    return Qt::Horizontal;
+  }
+
+  // For discrete items, use horizontal layout (only) if
+  //  * All children items have "blank" label (whitespace)
+  //  * All discrete values have 0 or 1 child item
+
+  // Check all children items for blank label.
+  auto valueItemDef = std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(
+    info.item()->definition());
+  const std::map<std::string, smtk::attribute::ItemDefinitionPtr>& childrenDefs =
+    valueItemDef->childrenItemDefinitions();
+  auto defIter = childrenDefs.begin();
+  for (; defIter != childrenDefs.end(); ++defIter)
+  {
+    auto childDef = defIter->second;
+    std::string label = childDef->label();
+    std::string trimmed = smtk::common::StringUtil::trim(label);
+    if (!trimmed.empty())
+    {
+      return Qt::Vertical;
+    }
+  } // for (defIter)
+
+  // Next check if all discrete values have 0 or 1 child item.
+  // If more than 1, use vertical layout.
+  std::string ename;
+  std::vector<std::string> childItems;
+  std::size_t numValues = valueItemDef->numberOfDiscreteValues();
+  for (std::size_t i = 0; i < numValues; ++i)
+  {
+    ename = valueItemDef->discreteEnum(i);
+    childItems = valueItemDef->conditionalItems(ename);
+    if (childItems.size() > 1)
+    {
+      return Qt::Vertical;
+    }
+  } // for (i)
+
+  // If we reach this point, with all values having 0 or 1 child item with no label,
+  // use horizontal layout
+  return Qt::Horizontal;
 }
