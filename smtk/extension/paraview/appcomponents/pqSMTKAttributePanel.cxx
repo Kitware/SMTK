@@ -50,8 +50,9 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
 {
   this->setObjectName("pqSMTKAttributePanel");
-  this->updateTitle();
   this->setLayout(new QVBoxLayout);
+  this->layout()->setObjectName("pqSMTKAttributePanel_layout");
+  this->updateTitle();
   auto* behavior = pqSMTKBehavior::instance();
   QObject::connect(
     behavior,
@@ -319,10 +320,6 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     return false;
   }
   auto* qview = m_attrUIMgr->setSMTKView(view, this);
-  if (qview)
-  {
-    this->layout()->addWidget(qview->widget());
-  }
   return qview != nullptr;
 }
 
