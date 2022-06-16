@@ -129,7 +129,7 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
   return widget != nullptr;
 }
 
-void pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -140,7 +140,7 @@ void pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   bool didChange = false;
@@ -312,13 +312,10 @@ void pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
       break;
   }
 
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
-void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -329,7 +326,7 @@ void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   if (control)
@@ -423,6 +420,7 @@ void pqSMTKBoxItemWidget::updateWidgetFromItemInternal()
     }
     break;
   }
+  return true; // TODO: determine whether values changed to avoid unnecessary renders.
 }
 
 bool pqSMTKBoxItemWidget::fetchBoxItems(

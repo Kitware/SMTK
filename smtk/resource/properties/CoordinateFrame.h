@@ -48,7 +48,29 @@ public:
   CoordinateFrame() = default;
 
   /// Construct CoordinateFrame object from a given GroupItem.
-  CoordinateFrame(smtk::attribute::ConstGroupItemPtr& groupItem);
+  CoordinateFrame(
+    const smtk::attribute::ConstGroupItemPtr& groupItem,
+    const std::string& originName = "Origin",
+    const std::string& xAxisName = "XAxis",
+    const std::string& yAxisName = "YAxis",
+    const std::string& zAxisName = "ZAxis",
+    const std::string& parentName = "Parent");
+  CoordinateFrame(
+    const smtk::attribute::GroupItemPtr& groupItem,
+    const std::string& originName = "Origin",
+    const std::string& xAxisName = "XAxis",
+    const std::string& yAxisName = "YAxis",
+    const std::string& zAxisName = "ZAxis",
+    const std::string& parentName = "Parent");
+
+protected:
+  bool initializeFrom(
+    const smtk::attribute::GroupItem* groupItem,
+    const std::string& originName,
+    const std::string& xAxisName,
+    const std::string& yAxisName,
+    const std::string& zAxisName,
+    const std::string& parentName);
 };
 
 } // namespace properties

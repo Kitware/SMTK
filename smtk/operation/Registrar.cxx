@@ -14,6 +14,8 @@
 #ifdef SMTK_PYTHON_ENABLED
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #endif
+#include "smtk/operation/operators/CoordinateTransform.h"
+#include "smtk/operation/operators/EditProperties.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/RemoveResource.h"
@@ -22,6 +24,7 @@
 
 #include "smtk/plugin/Manager.h"
 
+#include "smtk/operation/edit_properties_svg.h"
 #include "smtk/operation/import_python_operation_svg.h"
 #include "smtk/view/OperationIcons.h"
 
@@ -34,6 +37,8 @@ namespace operation
 namespace
 {
 typedef std::tuple<
+  CoordinateTransform,
+  EditProperties,
 #ifdef SMTK_PYTHON_ENABLED
   ImportPythonOperation,
 #endif
@@ -78,22 +83,21 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-#if SMTK_PYTHON_ENABLED
   auto& opIcons(viewManager->operationIcons());
+  opIcons.registerOperation<EditProperties>(
+    [](const std::string& /*unused*/) { return edit_properties_svg; });
+#if SMTK_PYTHON_ENABLED
   opIcons.registerOperation<ImportPythonOperation>(
     [](const std::string& /*unused*/) { return import_python_operation_svg; });
-#else
-  (void)viewManager;
 #endif
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-#if SMTK_PYTHON_ENABLED
   auto& opIcons(viewManager->operationIcons());
+  opIcons.unregisterOperation<EditProperties>();
+#if SMTK_PYTHON_ENABLED
   opIcons.unregisterOperation<ImportPythonOperation>();
-#else
-  (void)viewManager;
 #endif
 }
 } // namespace operation

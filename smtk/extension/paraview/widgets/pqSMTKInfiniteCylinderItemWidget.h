@@ -43,9 +43,9 @@ public:
 
 protected Q_SLOTS:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-  void updateItemFromWidgetInternal() override;
+  bool updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
-  void updateWidgetFromItemInternal() override;
+  bool updateWidgetFromItemInternal() override;
 
 protected:
   /// Describe how an attribute's items specify a bounding box.

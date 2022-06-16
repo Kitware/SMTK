@@ -13,6 +13,18 @@
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
+#include <QFrame>
+#include <QPointer>
+#include <QVBoxLayout>
+
+namespace smtk
+{
+namespace extension
+{
+class qtReferenceItemEditor;
+}
+} // namespace smtk
+
 /**\brief Display a 3-D plane with draggable handles for editing a GroupItem.
   *
   * For now, this code assumes that the Group has 2 entries and they
@@ -33,6 +45,8 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKCoordinateFrameItemWidget : public pqSMTKAtt
 {
   Q_OBJECT
 public:
+  using Superclass = pqSMTKAttributeItemWidget;
+
   pqSMTKCoordinateFrameItemWidget(
     const smtk::extension::qtAttributeItemInfo& info,
     Qt::Orientation orient = Qt::Horizontal);
@@ -42,7 +56,9 @@ public:
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
 protected Q_SLOTS:
-  void updateItemFromWidgetInternal() override;
+  bool updateItemFromWidgetInternal() override;
+  bool updateWidgetFromItemInternal() override;
+  void onParentModified();
 
 protected:
   /**\brief Starting with the widget's assigned item (which must
@@ -55,6 +71,14 @@ protected:
     smtk::attribute::DoubleItemPtr& xAxisItem,
     smtk::attribute::DoubleItemPtr& yAxisItem,
     smtk::attribute::DoubleItemPtr& zAxisItem);
+
+  bool fetchParentItem(smtk::attribute::ReferenceItemPtr& parentItem);
+
+  void updateUI() override;
+
+  QPointer<QFrame> m_childrenContainer;
+  QPointer<QVBoxLayout> m_childrenLayout;
+  QPointer<smtk::extension::qtReferenceItemEditor> m_parentItemWidget;
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKCoordinateFrameItemWidget_h

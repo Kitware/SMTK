@@ -132,7 +132,7 @@ qtReferenceItem::~qtReferenceItem()
 void qtReferenceItem::markForDeletion()
 {
   this->removeObservers();
-  qtItem::markForDeletion();
+  this->qtItem::markForDeletion();
 }
 
 void qtReferenceItem::removeObservers()
@@ -393,11 +393,11 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
   auto phraseModel =
     m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
       phraseModelConfig.get());
-  phraseModel->addSource(m_itemInfo.uiManager()->managers());
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
     m_itemInfo.item()->definition());
   std::static_pointer_cast<smtk::view::ReferenceItemPhraseModel>(phraseModel)
     ->setReferenceItem(refItem);
+  phraseModel->addSource(m_itemInfo.uiManager()->managers());
   return phraseModel;
 }
 

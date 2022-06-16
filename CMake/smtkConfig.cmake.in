@@ -73,6 +73,13 @@ if (NOT LibArchive_FOUND)
   set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
 endif ()
 
+find_package(Eigen3 ${_smtk_find_quietly})
+if (NOT Eigen3_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "Eigen3 dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
 find_package(nlohmann_json ${_smtk_find_quietly})
 if (NOT nlohmann_json_FOUND)
   list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"

@@ -97,7 +97,7 @@ bool pqSMTKConeItemWidget::createProxyAndWidget(
   return widget != nullptr;
 }
 
-void pqSMTKConeItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKConeItemWidget::updateItemFromWidgetInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -107,7 +107,7 @@ void pqSMTKConeItemWidget::updateItemFromWidgetInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   // Values held by widget
@@ -171,13 +171,10 @@ void pqSMTKConeItemWidget::updateItemFromWidgetInternal()
       break;
   }
 
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
-void pqSMTKConeItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKConeItemWidget::updateWidgetFromItemInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -187,7 +184,7 @@ void pqSMTKConeItemWidget::updateWidgetFromItemInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   // Unlike updateItemFromWidget, we don't care if we cause ParaView an unnecessary update;
@@ -217,6 +214,7 @@ void pqSMTKConeItemWidget::updateWidgetFromItemInternal()
     }
     break;
   }
+  return true; // TODO: determine whether values were changed to avoid unnecessary renders.
 }
 
 bool pqSMTKConeItemWidget::setForceCylindrical(bool isCylinder)

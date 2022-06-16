@@ -91,13 +91,13 @@ bool pqSMTKPlaneItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKPlaneItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKPlaneItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr originItem;
   smtk::attribute::DoubleItemPtr normalItem;
   if (!fetchOriginAndNormalItems(originItem, normalItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
@@ -112,10 +112,31 @@ void pqSMTKPlaneItemWidget::updateItemFromWidgetInternal()
     originItem->setValue(i, ov);
     normalItem->setValue(i, nv);
   }
-  if (didChange)
+  return didChange;
+}
+
+bool pqSMTKPlaneItemWidget::updateWidgetFromItemInternal()
+{
+  smtk::attribute::DoubleItemPtr originItem;
+  smtk::attribute::DoubleItemPtr normalItem;
+  if (!fetchOriginAndNormalItems(originItem, normalItem))
   {
-    Q_EMIT modified();
+    return false;
   }
+  vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
+  vtkSMPropertyHelper originHelper(widget, "Origin");
+  vtkSMPropertyHelper normalHelper(widget, "Normal");
+  bool didChange = false;
+  for (int i = 0; i < 3; ++i)
+  {
+    double ov = originItem->value(i);
+    didChange |= (originHelper.GetAsDouble(i) != ov);
+    originHelper.Set(i, ov);
+    double nv = normalItem->value(i);
+    didChange |= (normalHelper.GetAsDouble(i) != nv);
+    normalHelper.Set(i, nv);
+  }
+  return didChange;
 }
 
 bool pqSMTKPlaneItemWidget::fetchOriginAndNormalItems(

@@ -26,14 +26,46 @@ namespace resource
 namespace properties
 {
 
-/// Construct CoordinateFrame object from a given GroupItem
-CoordinateFrame::CoordinateFrame(smtk::attribute::ConstGroupItemPtr& groupItem)
+CoordinateFrame::CoordinateFrame(
+  const smtk::attribute::ConstGroupItemPtr& groupItem,
+  const std::string& originName,
+  const std::string& xAxisName,
+  const std::string& yAxisName,
+  const std::string& zAxisName,
+  const std::string& parentName)
 {
-  auto originItemPtr = groupItem->findAs<DoubleItem>("Origin");
-  auto xAxisItemPtr = groupItem->findAs<DoubleItem>("XAxis");
-  auto yAxisItemPtr = groupItem->findAs<DoubleItem>("YAxis");
-  auto zAxisItemPtr = groupItem->findAs<DoubleItem>("ZAxis");
-  auto parentItemPtr = groupItem->findAs<ReferenceItem>("Parent");
+  this->initializeFrom(groupItem.get(), originName, xAxisName, yAxisName, zAxisName, parentName);
+}
+
+CoordinateFrame::CoordinateFrame(
+  const smtk::attribute::GroupItemPtr& groupItem,
+  const std::string& originName,
+  const std::string& xAxisName,
+  const std::string& yAxisName,
+  const std::string& zAxisName,
+  const std::string& parentName)
+{
+  this->initializeFrom(groupItem.get(), originName, xAxisName, yAxisName, zAxisName, parentName);
+}
+
+bool CoordinateFrame::initializeFrom(
+  const smtk::attribute::GroupItem* groupItem,
+  const std::string& originName,
+  const std::string& xAxisName,
+  const std::string& yAxisName,
+  const std::string& zAxisName,
+  const std::string& parentName)
+{
+  auto originItemPtr = groupItem->findAs<DoubleItem>(originName);
+  auto xAxisItemPtr = groupItem->findAs<DoubleItem>(xAxisName);
+  auto yAxisItemPtr = groupItem->findAs<DoubleItem>(yAxisName);
+  auto zAxisItemPtr = groupItem->findAs<DoubleItem>(zAxisName);
+  auto parentItemPtr = groupItem->findAs<ReferenceItem>(parentName);
+
+  if (!originItemPtr || !xAxisItemPtr || !yAxisItemPtr || !zAxisItemPtr)
+  {
+    return false;
+  }
 
   for (std::size_t i = 0; i < 3; ++i)
   {
@@ -55,10 +87,12 @@ CoordinateFrame::CoordinateFrame(smtk::attribute::ConstGroupItemPtr& groupItem)
     }
   }
 
-  if (parentItemPtr && parentItemPtr->numberOfValues() == 1)
+  if (parentItemPtr && parentItemPtr->numberOfValues() == 1 && parentItemPtr->isSet())
   {
     this->parent = parentItemPtr->valueAs<PersistentObject>()->id();
   }
+
+  return true;
 }
 
 } // namespace properties

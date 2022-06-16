@@ -65,8 +65,8 @@ public:
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
 protected Q_SLOTS:
-  void updateItemFromWidgetInternal() override;
-  void updateWidgetFromItemInternal() override;
+  bool updateItemFromWidgetInternal() override;
+  bool updateWidgetFromItemInternal() override;
 
 protected:
   /// SMTK attribute items to which the widget's values are bound.
