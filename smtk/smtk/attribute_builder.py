@@ -173,6 +173,7 @@ class AttributeBuilder:
             return
 
         self._post_message('Generating instanced attributes')
+        self.att_resource = att_resource
         self._recursive_create_instanced_atts(att_resource, top_view.details())
         instanced_count = len(att_resource.attributes())
         self._post_message(
@@ -231,16 +232,23 @@ class AttributeBuilder:
                 ent = model_resource.findEntity(uuid)
                 self.pedigree_lookup[key] = ent
 
-    def _create_attribute(self, att_type, att_name=None):
+    def _create_attribute(self, att_type, att_name=None, exists_ok=False):
         """"""
-        self._post_message(
-            'Create attribute type \"{}\", name \"{}\"'.format(att_type, att_name))
-        # Make sure name not already used
+        # Check if name already used
         if att_name is not None:
             att = self.att_resource.findAttribute(att_name)
-            assert att is None, 'attribute name {} already used'.format(
-                att_name)
+            if att is not None:
+                if exists_ok:
+                    message = 'Return existing attribute type \"{}\", name \"{}\"'.format(
+                        att_type, att_name)
+                    self._post_message(message)
+                    return att
+                else:
+                    assert False, 'attribute name {} already used'.format(
+                        att_name)
 
+        self._post_message(
+            'Create attribute type \"{}\", name \"{}\"'.format(att_type, att_name))
         defn = self.att_resource.findDefinition(att_type)
         assert defn is not None, 'missing att definition {}'.format(att_type)
 
@@ -274,7 +282,7 @@ class AttributeBuilder:
             att_comp = atts_comp.child(i)
             att_name = att_comp.attributes().get('Name')
             att_type = att_comp.attributes().get('Type')
-            self._create_attribute(att_type, att_name)
+            self._create_attribute(att_type, att_name, exists_ok=True)
 
     def _create_selector_view_att(self, att_resource, view):
         """Create attribute specified in selector view."""
