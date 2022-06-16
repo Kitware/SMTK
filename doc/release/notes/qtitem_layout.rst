@@ -23,5 +23,5 @@ from vertical-center to top, for aesthetic reasons.
     (a) horizontal, if each discrete value is assigned no child items or a
     single child item having a blank string for its label; otherwise
     (b) vertical. The discrete item layout can be overridden by an item
-    view, either `<View Layout="Horizontalal">` or
+    view, either `<View Layout="Horizontal">` or
     `<View Layout="Vertical">`.
