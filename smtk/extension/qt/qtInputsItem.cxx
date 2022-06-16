@@ -20,20 +20,25 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
 
+#include <QAction>
+#include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QDoubleValidator>
+#include <QEvent>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPointer>
 #include <QSizePolicy>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
@@ -1716,13 +1721,6 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   QVariant vdata(elementIdx);
   QString tooltip;
 
-  // If the item is not set but has a default lets use it
-  if (!item->isSet(elementIdx) && item->hasDefault())
-  {
-    item->setToDefault(elementIdx);
-    Q_EMIT this->modified();
-  }
-
   switch (item->type())
   {
     case smtk::attribute::Item::DoubleType:
@@ -1812,19 +1810,154 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   {
     inputWidget->setToolTip(tooltip);
   }
-  if (QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
+  QPointer<qtInputsItem> self(this);
+  if (QLineEdit* const lineEdit = qobject_cast<QLineEdit*>(inputWidget))
   {
     QObject::connect(
-      editBox,
+      lineEdit,
       SIGNAL(textChanged(const QString&)),
       this,
       SLOT(onLineEditChanged()),
       Qt::QueuedConnection);
     QObject::connect(
-      editBox, SIGNAL(editingFinished()), this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
+      lineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
+    lineEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(
+      lineEdit, &QLineEdit::customContextMenuRequested, this, [self, elementIdx](const QPoint& pt) {
+        if (!self)
+        {
+          return;
+        }
+        self->showContextMenu(pt, elementIdx);
+      });
+  }
+  else if (QTextEdit* const textEdit = qobject_cast<QTextEdit*>(inputWidget))
+  {
+    textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(
+      textEdit, &QTextEdit::customContextMenuRequested, this, [self, elementIdx](const QPoint& pt) {
+        if (!self)
+        {
+          return;
+        }
+        self->showContextMenu(pt, elementIdx);
+      });
+  }
+  else if (auto* const spinbox = qobject_cast<QAbstractSpinBox*>(inputWidget))
+  {
+    // spin boxes don't provide their context menus - so we add an action after it's shown
+    spinbox->installEventFilter(this);
   }
 
   return inputWidget;
+}
+
+void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
+{
+  QLineEdit* const lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
+  QTextEdit* const textEdit = qobject_cast<QTextEdit*>(QObject::sender());
+  auto item = this->m_itemInfo.itemAs<ValueItem>();
+  if (!(textEdit || lineEdit) || !item)
+  {
+    return;
+  }
+  QMenu* menu =
+    (lineEdit ? lineEdit->createStandardContextMenu() : textEdit->createStandardContextMenu());
+  auto* resetDefault = new QAction("Reset to Default");
+  if (item->hasDefault())
+  {
+    QPointer<qtInputsItem> self(this);
+    QObject::connect(
+      resetDefault, &QAction::triggered, this, [self, elementIdx, lineEdit, textEdit]() {
+        if (!self)
+        {
+          return;
+        }
+        auto item = self->m_itemInfo.itemAs<ValueItem>();
+        if (item)
+        {
+          item->setToDefault(elementIdx);
+          if (lineEdit)
+          {
+            lineEdit->setText(item->valueAsString(elementIdx).c_str());
+          }
+          else if (textEdit)
+          {
+            textEdit->setText(item->valueAsString(elementIdx).c_str());
+          }
+          Q_EMIT self->modified();
+        }
+      });
+  }
+  else
+  {
+    resetDefault->setEnabled(false);
+  }
+  menu->addAction(resetDefault);
+  menu->exec(lineEdit ? lineEdit->mapToGlobal(pt) : textEdit->mapToGlobal(pt));
+  delete menu;
+}
+
+bool qtInputsItem::eventFilter(QObject* filterObj, QEvent* ev)
+{
+  auto* spinbox = qobject_cast<QAbstractSpinBox*>(filterObj);
+  if (ev->type() == QEvent::ContextMenu && spinbox)
+  {
+    int elementIdx = spinbox->property("ElementIndex").toInt();
+    QPointer<qtInputsItem> self(this);
+    // we want the default context menu, we just add something to it.
+    QTimer::singleShot(0, this, [self, this, elementIdx, spinbox]() {
+      if (!self)
+      {
+        return;
+      }
+      // find the menu that was just displayed by name.
+      for (QWidget* w : QApplication::topLevelWidgets())
+      {
+        auto* contextMenu = qobject_cast<QMenu*>(w);
+        if (contextMenu && w->objectName() == "qt_edit_menu")
+        {
+          // create a reset to default action and append to the end.
+          auto* resetDefault = new QAction("Reset to Default");
+          auto item = self->m_itemInfo.itemAs<ValueItem>();
+          if (item && item->hasDefault())
+          {
+            QObject::connect(
+              resetDefault, &QAction::triggered, this, [self, elementIdx, spinbox]() {
+                if (!self)
+                {
+                  return;
+                }
+                auto item = self->m_itemInfo.itemAs<IntItem>();
+                auto* intBox = qobject_cast<QSpinBox*>(spinbox);
+                if (item && intBox)
+                {
+                  item->setToDefault(elementIdx);
+                  intBox->setValue(item->value(elementIdx));
+                  Q_EMIT self->modified();
+                  return;
+                }
+                auto ditem = self->m_itemInfo.itemAs<DoubleItem>();
+                auto* dblBox = qobject_cast<QDoubleSpinBox*>(spinbox);
+                if (ditem && dblBox)
+                {
+                  ditem->setToDefault(elementIdx);
+                  dblBox->setValue(ditem->value(elementIdx));
+                  Q_EMIT self->modified();
+                  return;
+                }
+              });
+          }
+          else
+          {
+            resetDefault->setEnabled(false);
+          }
+          contextMenu->addAction(resetDefault);
+        }
+      }
+    });
+  }
+  return QObject::eventFilter(filterObj, ev);
 }
 
 void qtInputsItem::onTextEditChanged()

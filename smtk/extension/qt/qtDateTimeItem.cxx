@@ -22,6 +22,7 @@
 #include "smtk/common/TimeZone.h"
 
 #include <QAction>
+#include <QApplication>
 #include <QCheckBox>
 #include <QDate>
 #include <QDateTime>
@@ -29,6 +30,7 @@
 #include <QDebug>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QEvent>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -40,6 +42,7 @@
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QTime>
+#include <QTimer>
 #include <QToolButton>
 #include <QWidget>
 
@@ -215,6 +218,10 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(dtEdit);
 
+  // add "Reset to Default" to context menu
+  // QDateTimeEdit don't provide their context menus - so we add an action after it's shown
+  dtEdit->installEventFilter(this);
+
   if (def->useTimeZone())
   {
     this->Internals->TimeZoneButton = new QToolButton(frame);
@@ -245,6 +252,57 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   layout->setAlignment(Qt::AlignLeft);
   this->updateBackground(dtEdit, item->isValid());
   return frame;
+}
+
+bool qtDateTimeItem::eventFilter(QObject* filterObj, QEvent* ev)
+{
+  auto* dtEdit = qobject_cast<QDateTimeEdit*>(filterObj);
+  if (ev->type() == QEvent::ContextMenu && dtEdit)
+  {
+    int elementIdx = this->Internals->ElementIndexMap.value(dtEdit);
+    QPointer<qtDateTimeItem> self(this);
+    // we want the default context menu, we just add something to it.
+    QTimer::singleShot(0, this, [this, self, elementIdx, dtEdit]() {
+      if (!self)
+      {
+        return;
+      }
+      // find the menu that was just displayed by name.
+      for (QWidget* w : QApplication::topLevelWidgets())
+      {
+        auto* contextMenu = qobject_cast<QMenu*>(w);
+        if (contextMenu && w->objectName() == "qt_edit_menu")
+        {
+          auto* resetDefault = new QAction("Reset to Default");
+          auto item = self->m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
+          if (item && item->hasDefault())
+          {
+            QObject::connect(resetDefault, &QAction::triggered, this, [self, elementIdx, dtEdit]() {
+              if (!self)
+              {
+                return;
+              }
+              auto item = self->m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
+              if (item && dtEdit)
+              {
+                item->setToDefault(elementIdx);
+                // do we really have to re-create the widget?
+                self->clearChildWidgets();
+                self->updateItemData();
+                return;
+              }
+            });
+          }
+          else
+          {
+            resetDefault->setEnabled(false);
+          }
+          contextMenu->addAction(resetDefault);
+        }
+      }
+    });
+  }
+  return QObject::eventFilter(filterObj, ev);
 }
 
 void qtDateTimeItem::setOutputOptional(int state)
@@ -392,6 +450,11 @@ void qtDateTimeItem::updateUI()
   if (iview && !iview->displayItem(dataObj))
   {
     return;
+  }
+
+  if (m_widget)
+  {
+    delete m_widget;
   }
 
   m_widget = new QFrame(m_itemInfo.parentWidget());

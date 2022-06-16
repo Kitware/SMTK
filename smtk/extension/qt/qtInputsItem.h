@@ -24,6 +24,7 @@ class QBoxLayout;
 class QFrame;
 class QLayout;
 class QLineEdit;
+class QPoint;
 
 namespace smtk
 {
@@ -48,6 +49,7 @@ public:
   /// Used mainly by helper classes like qtDiscreteValueEditor
   void forceUpdate();
   bool isFixedWidth() const override;
+  bool eventFilter(QObject* filterObj, QEvent* ev) override;
 
 public Q_SLOTS:
   void setOutputOptional(int);
@@ -60,6 +62,7 @@ public Q_SLOTS:
   void intValueChanged(int newVal);
   void updateItemData() override;
   // void setUseSelectionManager(bool mode) override;
+  void showContextMenu(const QPoint& pt, int elementIdx);
 
 protected Q_SLOTS:
   virtual void onAddNewValue();

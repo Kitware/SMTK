@@ -12,6 +12,7 @@
 
 #include "smtk/extension/qt/qtInputsItem.h"
 
+#include <QAction>
 #include <QComboBox>
 #include <QFont>
 #include <QFontMetrics>
@@ -167,6 +168,32 @@ void qtDiscreteValueEditor::createWidget()
       }
     },
     Qt::QueuedConnection);
+  // Add a context menu
+  auto* resetDefault = new QAction("Reset to Default", combo);
+  if (item->hasDefault())
+  {
+    QObject::connect(resetDefault, &QAction::triggered, this, [guardedObject, combo]() {
+      if (!guardedObject)
+      {
+        return;
+      }
+      auto item = guardedObject->Internals->m_inputItem->itemAs<attribute::ValueItem>();
+      if (item)
+      {
+        int elementIdx = guardedObject->Internals->m_elementIndex;
+        item->setToDefault(elementIdx);
+        guardedObject->updateItemData();
+        guardedObject->updateContents();
+      }
+    });
+  }
+  else
+  {
+    resetDefault->setEnabled(false);
+  }
+  combo->addAction(resetDefault);
+  combo->setContextMenuPolicy(Qt::ActionsContextMenu);
+
   wlayout->addWidget(combo);
   this->Internals->m_combo = combo;
   this->updateItemData();
@@ -208,10 +235,6 @@ void qtDiscreteValueEditor::updateItemData()
       Internals->m_childItems.at(i)->updateItemData();
     }
     return;
-  }
-  if (setIndex < 0 && itemDef->hasDefault())
-  {
-    setIndex = itemDef->defaultDiscreteIndex();
   }
   // We need to find the correct Item in the combo box
   int i, numItems = combo->count();

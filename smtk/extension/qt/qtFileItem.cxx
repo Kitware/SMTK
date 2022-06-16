@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleValidator>
@@ -22,6 +23,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMenu>
 #include <QPointer>
 #include <QPushButton>
 #include <QSizePolicy>
@@ -393,7 +395,54 @@ QWidget* qtFileItem::createFileBrowseWidget(
 
   QObject::connect(fileBrowserButton, SIGNAL(clicked()), this, SLOT(onLaunchFileBrowser()));
 
+  // add custom context menu item for reset to default
+  lineEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+  QPointer<qtFileItem> self(this);
+  QObject::connect(
+    lineEdit, &QLineEdit::customContextMenuRequested, this, [self, elementIdx](const QPoint& pt) {
+      if (!self)
+      {
+        return;
+      }
+      self->showContextMenu(pt, elementIdx);
+    });
+
   return frame;
+}
+
+void qtFileItem::showContextMenu(const QPoint& pt, int elementIdx)
+{
+  QLineEdit* const lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
+  auto item = this->m_itemInfo.itemAs<FileSystemItem>();
+  if (!lineEdit || !item)
+  {
+    return;
+  }
+  QMenu* menu = lineEdit->createStandardContextMenu();
+  auto* resetDefault = new QAction("Reset to Default");
+  if (item->hasDefault())
+  {
+    QPointer<qtFileItem> self(this);
+    QObject::connect(resetDefault, &QAction::triggered, this, [self, elementIdx, lineEdit]() {
+      if (!self)
+      {
+        return;
+      }
+      auto item = self->m_itemInfo.itemAs<FileSystemItem>();
+      if (item)
+      {
+        item->setToDefault(elementIdx);
+        self->updateEditorValue(elementIdx);
+      }
+    });
+  }
+  else
+  {
+    resetDefault->setEnabled(false);
+  }
+  menu->addAction(resetDefault);
+  menu->exec(lineEdit->mapToGlobal(pt));
+  delete menu;
 }
 
 void qtFileItem::onUpdateItemValue()
