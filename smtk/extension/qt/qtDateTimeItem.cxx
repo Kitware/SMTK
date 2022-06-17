@@ -427,15 +427,7 @@ void qtDateTimeItem::updateUI()
   }
   auto itemDef = dataObj->definitionAs<DateTimeItemDefinition>();
 
-  QString labelText;
-  if (!dataObj->label().empty())
-  {
-    labelText = dataObj->label().c_str();
-  }
-  else
-  {
-    labelText = dataObj->name().c_str();
-  }
+  QString labelText = dataObj->label().c_str();
   QLabel* label = new QLabel(labelText, m_widget);
   label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
@@ -462,6 +454,11 @@ void qtDateTimeItem::updateUI()
   }
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
+
+  if (label->text().trimmed().isEmpty())
+  {
+    this->setLabelVisible(false);
+  }
 
   this->loadInputValues();
 

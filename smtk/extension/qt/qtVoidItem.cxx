@@ -56,7 +56,7 @@ void qtVoidItem::setLabelVisible(bool visible)
     return;
   }
 
-  QString txtLabel = dataObj->label().empty() ? dataObj->name().c_str() : dataObj->label().c_str();
+  QString txtLabel = dataObj->label().c_str();
 
   this->Internals->optionalCheck->setText(visible ? txtLabel : "");
 }
@@ -84,6 +84,7 @@ void qtVoidItem::createWidget()
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QString txtLabel = dataObj->label().c_str();
+  bool labelIsBlank = txtLabel.trimmed().isEmpty();
   // If the item is optional then use a check-box else use a label
   if (dataObj->isOptional())
   {
@@ -112,10 +113,15 @@ void qtVoidItem::createWidget()
     optionalCheck->setText(txtLabel);
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     this->Internals->optionalCheck = optionalCheck;
+    if (labelIsBlank)
+    {
+      this->setLabelVisible(false);
+    }
+
     m_widget->layout()->addWidget(this->Internals->optionalCheck);
     this->updateItemData();
   }
-  else
+  else if (!labelIsBlank)
   {
     auto* label = new QLabel(m_widget);
     label->setObjectName("label");

@@ -209,21 +209,21 @@ void qtReferenceItemEditor::createWidget()
   m_internals->m_mainLayout = new QVBoxLayout(m_widget);
   m_internals->m_mainLayout->setMargin(0);
   m_internals->m_mainLayout->setSpacing(0);
-  m_internals->m_mainLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  m_internals->m_mainLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QFrame* comboFrame = new QFrame(m_widget);
   comboFrame->setObjectName("Combo Frame");
   QHBoxLayout* entryLayout = new QHBoxLayout(comboFrame);
   entryLayout->setMargin(0);
   entryLayout->setSpacing(0);
-  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
-  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
   if (item->isOptional())
   {
@@ -238,15 +238,7 @@ void qtReferenceItemEditor::createWidget()
   }
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
 
-  QString labelText;
-  if (!item->label().empty())
-  {
-    labelText = item->label().c_str();
-  }
-  else
-  {
-    labelText = item->name().c_str();
-  }
+  QString labelText = item->label().c_str();
   QLabel* label = new QLabel(labelText, comboFrame);
   label->setSizePolicy(sizeFixedPolicy);
   auto* iview = m_itemInfo.baseView();
@@ -255,7 +247,7 @@ void qtReferenceItemEditor::createWidget()
     label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
-  label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   //  qtOverlayFilter *filter = new qtOverlayFilter(this);
   //  label->installEventFilter(filter);
@@ -272,6 +264,12 @@ void qtReferenceItemEditor::createWidget()
     label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
+
+  if (label->text().trimmed().isEmpty())
+  {
+    label->setVisible(false);
+  }
+
   m_internals->m_theLabel = label;
   m_internals->m_comboBox = new QComboBox(comboFrame);
   m_internals->m_comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);

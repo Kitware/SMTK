@@ -943,15 +943,7 @@ void qtFileItem::updateUI()
     }
   }
 
-  QString labelText;
-  if (!item->label().empty())
-  {
-    labelText = item->label().c_str();
-  }
-  else
-  {
-    labelText = item->name().c_str();
-  }
+  QString labelText = item->label().c_str();
   QLabel* label = new QLabel(labelText, m_widget);
   label->setObjectName("label");
   label->setSizePolicy(sizeFixedPolicy);
@@ -975,6 +967,12 @@ void qtFileItem::updateUI()
   }
   labelLayout->addWidget(label);
   m_internals->theLabel = label;
+
+  if (label->text().trimmed().isEmpty())
+  {
+    this->setLabelVisible(false);
+  }
+
   top->addLayout(labelLayout);
 
   // Create a frame to hold the item's contents
