@@ -48,6 +48,7 @@ struct BasicTraits
 
 int TestNodalResourceFilter(int, char*[])
 {
+  smtk::io::Logger::instance().setFlushToStdout(true);
   auto resource = smtk::graph::Resource<test_nodal_resource_filter::BasicTraits>::create();
 
   std::cout << resource->typeName() << std::endl;

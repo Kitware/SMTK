@@ -25,7 +25,7 @@ namespace filter
 /// The Grammar for smtk::graph builds upon the default Grammar for
 /// smtk::resource with the addition of filtering by component type name.
 struct SMTKCORE_EXPORT Grammar
-  : seq<smtk::graph::filter::TypeName::Grammar, smtk::resource::filter::Grammar>
+  : must<smtk::graph::filter::TypeName::Grammar, smtk::resource::filter::Grammar, eof>
 {
 };
 } // namespace filter
