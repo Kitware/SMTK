@@ -101,7 +101,8 @@ bool ComponentPhraseContent::editable(ContentType contentType) const
 
 std::string ComponentPhraseContent::stringValue(ContentType contentType) const
 {
-  if (auto* component = m_rawComponent)
+  auto* component = m_rawComponent;
+  if (!m_component.expired() && component)
   {
     switch (contentType)
     {
