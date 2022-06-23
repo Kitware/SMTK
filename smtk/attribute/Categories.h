@@ -14,8 +14,12 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows
 
+#include "smtk/common/Deprecation.h"
+
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace smtk
 {
@@ -30,37 +34,42 @@ namespace attribute
 class SMTKCORE_EXPORT Categories
 {
 public:
+  enum class CombinationMode
+  {
+    Or = 0, //!< Represents logical Or
+    Any SMTK_DEPRECATED_IN_22_07("Please use Or") = 0,
+    And = 1, //!< Represents logical And
+    All SMTK_DEPRECATED_IN_22_07("Please use And") = 1,
+    LocalOnly = 3 //!< Indicates no further processing of Category Set Pairs is required
+  };
+
   ///\brief Categories::Set represents a single category constraint used by the Categories class.
   ///
   /// A Set consists of two sets of category names representing the categories that should exist
   /// (inclusion) and the categories that should not exist (exclusion).  Each set also has a
-  /// combination mode associated with it.  For example if the inclusion mode is Any then the inclusion set's
+  /// combination mode associated with it.  For example if the inclusion mode is Or then the inclusion set's
   /// constraint is satisfied if any of its categories names exists in a input set of category names.
-  /// Else the inclusion mode is All, then all of the inclusion set's names must exist in the input set.
-  /// In the case of the exclusion set , the result is the complement.  So exclusion mode = Any means the
-  /// exclusion test fails if any of the excluded names are in the input while All means that only if all
+  /// Else the inclusion mode is And, then all of the inclusion set's names must exist in the input set.
+  /// In the case of the exclusion set , the result is the complement.  So exclusion mode = Or means the
+  /// exclusion test fails if any of the excluded names are in the input while And means that only if all
   /// of the names in the exclusion set are in the input will the test fail.
   ///
   /// There is also a top level combination mode that determines how the inclusion and exclusion results are
-  /// combined.  If the top mode is All then both the inclusion and exclusion checks must pass while Any means
+  /// combined.  If the top mode is And then both the inclusion and exclusion checks must pass while Or means
   /// only one of the checks need to pass.
   ///
   /// Special notes:
-  /// If the top combination mode is All and the inclusion set is empty, then the passes check will always fail.
-  /// If the top combination mode is Any and the exclusion set is empty, then the passes check will always succeed.
+  /// If the top combination mode is And and the inclusion set is empty, then the passes check will always fail.
+  /// If the top combination mode is Or and the exclusion set is empty, then the passes check will always succeed.
   class SMTKCORE_EXPORT Set
   {
   public:
-    enum class CombinationMode
-    {
-      Any = 0, //!< Check passes if any of the set's categories are found
-      All = 1  //!< Check passes if all of the set's categories are found
-    };
+    using CombinationMode = Categories::CombinationMode;
     Set() = default;
     ///@{
     ///\brief Set/Get the how the sets of included and excluded categories are combined
     Set::CombinationMode combinationMode() const { return m_combinationMode; }
-    void setCombinationMode(const Set::CombinationMode& newMode) { m_combinationMode = newMode; }
+    bool setCombinationMode(const Set::CombinationMode& newMode);
     ///@}
     ///@{
     ///\brief Set/Get the CombinationMode associated with the included categories.
@@ -102,19 +111,24 @@ public:
       m_includedCategories.clear();
       m_excludedCategories.clear();
     }
-    ///\brief Returns true if both the inclusion and exclusion sets are empty.
-    bool empty() const { return m_includedCategories.empty() && m_excludedCategories.empty(); }
+    ///\brief Returns true if both the inclusion and exclusion sets are empty and the combination
+    /// mode is set to And since this would represent a set that matches nothing
+    bool empty() const
+    {
+      return m_includedCategories.empty() && m_excludedCategories.empty() &&
+        (m_combinationMode == CombinationMode::And);
+    }
     ///\brief Returns the number of category names in the inclusion set.
     std::size_t inclusionSize() const { return m_includedCategories.size(); }
     ///\brief Returns the number of category names in the exclusion set.
     std::size_t exclusionSize() const { return m_excludedCategories.size(); }
     ///@{
-    ///\brief  Return true if the input set of categories satifies the Set's
+    ///\brief  Return true if the input set of categories satisfies the Set's
     /// constraints.
     ///
     /// If the input set is empty then the method will return true.  Else if
-    /// the instance's mode is Any then at least one of its category names must be in the
-    /// input set.  If the mode is All then all of the instance's names must be in the input set.
+    /// the instance's mode is Or then at least one of its category names must be in the
+    /// input set.  If the mode is And then all of the instance's names must be in the input set.
     bool passes(const std::set<std::string>& cats) const;
     bool passes(const std::string& cat) const;
     ///@}
@@ -122,16 +136,40 @@ public:
       const std::set<std::string>& cats,
       const std::set<std::string>& testSet,
       Set::CombinationMode comboMode);
-    ///\brief Comparison operator needed to create a set of Categories::Sets
-    bool operator<(const Set& rhs) const;
+
+    SMTK_DEPRECATED_IN_22_07(
+      "Replaced by Categories::combinationModeAsString(CombinationMode mode).")
     static std::string combinationModeAsString(Set::CombinationMode mode);
+    SMTK_DEPRECATED_IN_22_07("Replaced by Categories::combinationModeFromString(const std::string& "
+                             "val, CombinationMode& mode).")
     static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
+    ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
+    int compare(const Set& rhs) const;
+    std::string convertToString(const std::string& prefix = "") const;
 
   private:
-    Set::CombinationMode m_includeMode{ CombinationMode::Any },
-      m_excludeMode{ CombinationMode::Any }, m_combinationMode{ CombinationMode::All };
+    Set::CombinationMode m_includeMode{ Set::CombinationMode::Or },
+      m_excludeMode{ Set::CombinationMode::Or }, m_combinationMode{ Set::CombinationMode::And };
     std::set<std::string> m_includedCategories, m_excludedCategories;
   };
+
+  class SMTKCORE_EXPORT Stack
+  {
+  public:
+    bool append(CombinationMode mode, const Set& categorySet);
+    void clear() { m_stack.clear(); }
+    bool passes(const std::set<std::string>& cats) const;
+    bool passes(const std::string& cat) const;
+    std::string convertToString(const std::string& prefix = "") const;
+    std::set<std::string> categoryNames() const;
+    bool empty() const { return m_stack.empty(); }
+    ///\brief Comparison operator needed to create a set of Categories::Stacks
+    bool operator<(const Stack& rhs) const;
+
+  protected:
+    std::vector<std::pair<CombinationMode, Set>> m_stack;
+  };
+
   Categories() = default;
   ///@{
   /// \brief Returns true if atleast one of its sets passes its check
@@ -141,22 +179,31 @@ public:
   ///@{
   ///\brief Insert either a Categories::Set or the sets of another Categories instance into
   /// this instance.
-  void insert(const Set& set);
+  SMTK_DEPRECATED_IN_22_07("Replaced by Categories::insert(const Stack&).")
+  bool insert(const Set& set);
+  bool insert(const Stack& stack);
   void insert(const Categories& cats);
   ///@}
-  ///\brief Remove all sets from this instance.
-  void reset() { m_sets.clear(); }
-  ///\brief Return the number of sets in this instance.
-  std::size_t size() const { return m_sets.size(); }
+  ///\brief Remove all stacks from this instance.
+  void reset() { m_stacks.clear(); }
+  ///\brief Return the number of stacks in this instance.
+  std::size_t size() const { return m_stacks.size(); }
   ///\brief Return the sets contained in this instance.
-  const std::set<Set>& sets() const { return m_sets; }
-  ///\brief Return a set of all category names refrenced in all of te instance's sets.
+  SMTK_DEPRECATED_IN_22_07("Replaced by Categories::stacks().")
+  const std::set<Set> sets() const { return std::set<Set>(); }
+  ///\brief Return the stacks contained in this instance.
+  const std::set<Stack>& stacks() const { return m_stacks; }
+  ///\brief Return a set of all category names referenced in all of the instance's stacks.
   std::set<std::string> categoryNames() const;
+  ///\brief produce a formatted string representing the Categories' information.
+  std::string convertToString() const;
   ///\brief Print to cerr the current contents of the instance.
   void print() const;
+  static std::string combinationModeAsString(Set::CombinationMode mode);
+  static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
 
 private:
-  std::set<Set> m_sets;
+  std::set<Stack> m_stacks;
 };
 } // namespace attribute
 } // namespace smtk

@@ -37,13 +37,12 @@ namespace attribute
 {
 using json = nlohmann::json;
 
-/// \brief Provide a way to serialize an attribute::Resource. The current version is 4.0 but
-/// but can also read in a resource in version 3.0 format.
+/// \brief Provide a way to serialize an attribute::Resource. The current version is 6.0 but
+/// but can also read in a resource from version 3.0 format or later.
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 {
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
-  // Set the version to 5.0
-  j["version"] = "5.0";
+  j["version"] = "6.0";
   j["IsPrivate"] = res->isPrivate();
   j["NameSeparator"] = res->defaultNameSeparator();
   // Write out the active category information
@@ -177,7 +176,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   }
   j["Definitions"] = defsObj;
 
-  // Process Exceptions and Prerequistics
+  // Process Exceptions and Prerequisites
   std::vector<smtk::attribute::DefinitionPtr> defs;
   res->definitions(defs, true);
   for (const auto& def : defs)
@@ -202,7 +201,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
         excsObj.push_back(types);
       }
     }
-    // Now the prerequistics
+    // Now the prerequisites
     auto prerequisitesTypes = def->prerequisiteTypeNames();
     if (!prerequisitesTypes.empty())
     {

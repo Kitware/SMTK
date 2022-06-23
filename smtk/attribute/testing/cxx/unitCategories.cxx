@@ -249,9 +249,11 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   A->localCategories().insertInclusion("A");
   GroupItemDefinitionPtr gItemDef0 = A->addItemDefinition<GroupItemDefinition>("g1");
   gItemDef0->localCategories().insertInclusion("g1");
+  gItemDef0->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   // Lets create a Discrete String Item with Enums having category and advance level info
   // assigned to some of them
   StringItemDefinitionPtr sItemDef0 = gItemDef0->addItemDefinition<StringItemDefinition>("s1");
+  sItemDef0->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   sItemDef0->localCategories().insertInclusion("s1");
   sItemDef0->addDiscreteValue("a", "e1");
   sItemDef0->addDiscreteValue("b", "e2");
@@ -262,31 +264,40 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef0->setEnumAdvanceLevel("e3", 10);
   StringItemDefinitionPtr sItemDef1 = sItemDef0->addItemDefinition<StringItemDefinition>("s2");
   sItemDef1->localCategories().insertInclusion("s2");
-  sItemDef1->setIsOkToInherit(false);
+  sItemDef1->setCategoryInheritanceMode(Categories::CombinationMode::LocalOnly);
   VoidItemDefinitionPtr vItemDef = sItemDef1->addItemDefinition<VoidItemDefinition>("v1");
   vItemDef->localCategories().insertInclusion("v1");
+  vItemDef->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   GroupItemDefinitionPtr gItemDef1 = gItemDef0->addItemDefinition<GroupItemDefinition>("g2");
   gItemDef1->localCategories().insertInclusion("g2");
-  gItemDef1->setIsOkToInherit(false);
-  sItemDef0 = gItemDef1->addItemDefinition<StringItemDefinition>("s3");
-  sItemDef0->localCategories().insertInclusion("s3");
+  gItemDef1->setCategoryInheritanceMode(Categories::CombinationMode::LocalOnly);
+  StringItemDefinitionPtr sItemDef3 = gItemDef1->addItemDefinition<StringItemDefinition>("s3");
+  sItemDef3->localCategories().insertInclusion("s3");
   DefinitionPtr B = attRes->createDefinition("B", A);
   B->localCategories().insertInclusion("B");
+  B->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   vItemDef = B->addItemDefinition<VoidItemDefinition>("v2");
   vItemDef->localCategories().insertInclusion("v2");
+  vItemDef->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   DefinitionPtr C = attRes->createDefinition("C", A);
   C->localCategories().insertInclusion("C");
+  C->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   DefinitionPtr D = attRes->createDefinition("D", A);
+  D->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   vItemDef = D->addItemDefinition<VoidItemDefinition>("v3");
   vItemDef->localCategories().insertInclusion("v3");
+  vItemDef->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   DefinitionPtr E = attRes->createDefinition("E");
   E->localCategories().insertInclusion("E");
+  E->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   DefinitionPtr F = attRes->createDefinition("F");
   vItemDef = F->addItemDefinition<VoidItemDefinition>("v4");
+  F->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   DefinitionPtr G = attRes->createDefinition("G", A);
-  G->setIsOkToInherit(false);
+  G->setCategoryInheritanceMode(Categories::CombinationMode::LocalOnly);
   vItemDef = G->addItemDefinition<VoidItemDefinition>("v5");
   vItemDef->localCategories().insertInclusion("v5");
+  vItemDef->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   attRes->finalizeDefinitions();
 
   attRes->createAttribute("a", "A");
@@ -326,7 +337,7 @@ int unitCategories(int /*unused*/, char* /*unused*/[])
     { "G", { "v5" } },
     { "g1", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } },
     { "g2", { "g2", "s3" } },
-    { "s1", { "A", "g1", "s1", "s2", "v1", "ec1", "ec2" } },
+    { "s1", { "A", "g1", "s1", "s2", "v1" } },
     { "s2", { "s2", "v1" } },
     { "s3", { "g2", "s3" } },
     { "v1", { "s2", "v1" } },

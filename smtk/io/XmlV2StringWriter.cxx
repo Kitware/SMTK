@@ -127,14 +127,14 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
           xml_node catInfoNode = snode.append_child("CategoryInfo");
           xml_node catGroupNode;
           catInfoNode.append_attribute("Combination")
-            .set_value(Categories::Set::combinationModeAsString(cats.combinationMode()).c_str());
+            .set_value(Categories::combinationModeAsString(cats.combinationMode()).c_str());
 
           // Inclusion Categories
           if (!cats.includedCategoryNames().empty())
           {
             catGroupNode = catInfoNode.append_child("Include");
             catGroupNode.append_attribute("Combination")
-              .set_value(Categories::Set::combinationModeAsString(cats.inclusionMode()).c_str());
+              .set_value(Categories::combinationModeAsString(cats.inclusionMode()).c_str());
             for (const auto& str : cats.includedCategoryNames())
             {
               catGroupNode.append_child("Cat").text().set(str.c_str());
@@ -145,7 +145,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
           {
             catGroupNode = catInfoNode.append_child("Exclude");
             catGroupNode.append_attribute("Combination")
-              .set_value(Categories::Set::combinationModeAsString(cats.exclusionMode()).c_str());
+              .set_value(Categories::combinationModeAsString(cats.exclusionMode()).c_str());
             for (const auto& str : cats.excludedCategoryNames())
             {
               catGroupNode.append_child("Cat").text().set(str.c_str());
@@ -718,16 +718,17 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   // Lets write out the category stuff
   auto& localCats = idef->localCategories();
   catInfoNode = node.append_child("CategoryInfo");
-  catInfoNode.append_attribute("Inherit") = idef->isOkToInherit();
+  catInfoNode.append_attribute("InheritanceMode")
+    .set_value(Categories::combinationModeAsString(idef->categoryInheritanceMode()).c_str());
   catInfoNode.append_attribute("Combination")
-    .set_value(Categories::Set::combinationModeAsString(localCats.combinationMode()).c_str());
+    .set_value(Categories::combinationModeAsString(localCats.combinationMode()).c_str());
 
   // Inclusion Categories
   if (!localCats.includedCategoryNames().empty())
   {
     catGroupNode = catInfoNode.append_child("Include");
     catGroupNode.append_attribute("Combination")
-      .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
+      .set_value(Categories::combinationModeAsString(localCats.inclusionMode()).c_str());
     for (const auto& str : localCats.includedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
@@ -738,7 +739,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   {
     catGroupNode = catInfoNode.append_child("Exclude");
     catGroupNode.append_attribute("Combination")
-      .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
+      .set_value(Categories::combinationModeAsString(localCats.exclusionMode()).c_str());
     for (const auto& str : localCats.excludedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());

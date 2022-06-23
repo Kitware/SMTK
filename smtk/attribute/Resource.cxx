@@ -486,7 +486,7 @@ void Resource::finalizeDefinitions()
   // We need to process the definitions that don't have
   // a base definition
   std::vector<DefinitionPtr> baseDefs;
-  smtk::attribute::Categories initialCats;
+  smtk::attribute::Categories::Stack initialCats;
   this->findBaseDefinitions(baseDefs);
   // Lets apply their categories and their item definitions' categories
   for (auto& def : baseDefs)

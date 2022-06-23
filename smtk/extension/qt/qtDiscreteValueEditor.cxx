@@ -126,29 +126,21 @@ void qtDiscreteValueEditor::createWidget()
   //   settings
   combo->addItem("Please Select", -1);
   combo->setItemData(0, QColor(Qt::red), Qt::ForegroundRole);
-  for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
+  std::string defaultEnum;
+  if (itemDef->hasDefault())
   {
-    std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
-    // Check its categories and advance level if appropriate
-    const auto& cats = itemDef->enumCategories(enumText);
-    if (!cats.empty() && attResource && !attResource->passActiveCategoryCheck(cats))
+    defaultEnum = itemDef->discreteEnum(itemDef->defaultDiscreteIndex());
+  }
+
+  std::vector<std::string> validEnums = item->relevantEnums(true, true, uiManager->advanceLevel());
+  for (size_t i = 0; i < validEnums.size(); i++)
+  {
+    if ((!defaultEnum.empty()) && (validEnums[i] == defaultEnum))
     {
-      // enum failed category check
-      continue;
+      tooltip = "Default: " + QString(validEnums[i].c_str());
+      validEnums[i] += " (Default)";
     }
-    if (
-      itemDef->hasEnumAdvanceLevel(enumText) && (uiManager != nullptr) &&
-      !uiManager->passAdvancedCheck(itemDef->enumAdvanceLevel(enumText)))
-    {
-      // enum failed advance level check
-      continue;
-    }
-    if (itemDef->hasDefault() && static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
-    {
-      tooltip = "Default: " + QString(enumText.c_str());
-      enumText += " (Default)";
-    }
-    combo->addItem(enumText.c_str(), (int)i);
+    combo->addItem(validEnums[i].c_str(), (int)i);
   }
 
   if (!tooltip.isEmpty())

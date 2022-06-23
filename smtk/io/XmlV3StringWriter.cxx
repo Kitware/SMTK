@@ -253,16 +253,17 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
   auto& localCats = def->localCategories();
   // Lets write out the category stuff
   xml_node catGroupNode, catInfoNode = definition.append_child("CategoryInfo");
-  catInfoNode.append_attribute("Inherit") = def->isOkToInherit();
+  catInfoNode.append_attribute("InheritanceMode")
+    .set_value(Categories::combinationModeAsString(def->categoryInheritanceMode()).c_str());
   catInfoNode.append_attribute("Combination")
-    .set_value(Categories::Set::combinationModeAsString(localCats.combinationMode()).c_str());
+    .set_value(Categories::combinationModeAsString(localCats.combinationMode()).c_str());
 
   // Inclusion Categories
   if (!localCats.includedCategoryNames().empty())
   {
     catGroupNode = catInfoNode.append_child("Include");
     catGroupNode.append_attribute("Combination")
-      .set_value(Categories::Set::combinationModeAsString(localCats.inclusionMode()).c_str());
+      .set_value(Categories::combinationModeAsString(localCats.inclusionMode()).c_str());
     for (const auto& str : localCats.includedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());
@@ -273,7 +274,7 @@ void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, Definiti
   {
     catGroupNode = catInfoNode.append_child("Exclude");
     catGroupNode.append_attribute("Combination")
-      .set_value(Categories::Set::combinationModeAsString(localCats.exclusionMode()).c_str());
+      .set_value(Categories::combinationModeAsString(localCats.exclusionMode()).c_str());
     for (const auto& str : localCats.excludedCategoryNames())
     {
       catGroupNode.append_child("Cat").text().set(str.c_str());

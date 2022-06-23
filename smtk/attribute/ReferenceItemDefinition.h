@@ -254,7 +254,7 @@ protected:
   bool checkCategories(const smtk::resource::Component* comp) const;
 
   void applyCategories(
-    const smtk::attribute::Categories& inheritedFromParent,
+    const smtk::attribute::Categories::Stack& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
 
   bool m_useCommonLabel;

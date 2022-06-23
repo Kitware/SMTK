@@ -238,16 +238,15 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
 }
 
 void ValueItemDefinition::applyCategories(
-  const smtk::attribute::Categories& inheritedFromParent,
+  const smtk::attribute::Categories::Stack& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
   // Lets first determine the set of categories this item definition could inherit
   m_categories.reset();
-  m_categories.insert(m_localCategories);
-  if (m_isOkToInherit)
-  {
-    m_categories.insert(inheritedFromParent);
-  }
+  Categories::Stack myCats = inheritedFromParent;
+  myCats.append(m_combinationMode, m_localCategories);
+  // Lets insert the combination of this Item's categories with those that were inherited
+  m_categories.insert(myCats);
 
   smtk::attribute::Categories myChildrenCats;
 
@@ -255,21 +254,18 @@ void ValueItemDefinition::applyCategories(
   // this item def will inherit from its children based on their local categories
   for (auto& i : m_itemDefs)
   {
-    i.second->applyCategories(m_categories, myChildrenCats);
+    i.second->applyCategories(myCats, myChildrenCats);
   }
 
-  //Lets add the categories associated with its enums
-  for (const auto& enumCatInfo : m_valueToCategoryAssociations)
-  {
-    m_categories.insert(enumCatInfo.second);
-  }
+  // NOTE - concerning category information associated with enums - We assume that this
+  // information is used by the UI to show the user what values are available based on the
+  // active categories but they DO NOT effect the Item's validity or relevance.
 
   // Add the children categories to this one
   m_categories.insert(myChildrenCats);
   // update the set of categories being inherited by the owning item/attribute
   // definition
-  inheritedToParent.insert(m_localCategories);
-  inheritedToParent.insert(myChildrenCats);
+  inheritedToParent.insert(m_categories);
 }
 
 void ValueItemDefinition::applyAdvanceLevels(
@@ -475,4 +471,45 @@ bool ValueItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
   }
   m_itemDefs[cdef->name()] = cdef;
   return true;
+}
+
+std::vector<std::string> ValueItemDefinition::relevantEnums(
+  bool includeCategories,
+  const std::set<std::string>& testCategories,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
+{
+  std::vector<std::string> result;
+  if (!(includeCategories || includeReadAccess))
+  {
+    return m_discreteValueEnums;
+  }
+
+  if (includeCategories)
+  {
+    for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
+    {
+      const auto& cats = this->enumCategories(m_discreteValueEnums[i]);
+      if (cats.empty() || cats.passes(testCategories))
+      {
+        if (
+          (!includeReadAccess) ||
+          (this->enumAdvanceLevel(m_discreteValueEnums[i]) <= readAccessLevel))
+        {
+          result.push_back(m_discreteValueEnums[i]);
+        }
+      }
+    }
+  }
+  else
+  {
+    for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
+    {
+      if (this->enumAdvanceLevel(m_discreteValueEnums[i]) <= readAccessLevel)
+      {
+        result.push_back(m_discreteValueEnums[i]);
+      }
+    }
+  }
+  return result;
 }

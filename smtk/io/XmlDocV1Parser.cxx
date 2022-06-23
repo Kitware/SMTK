@@ -970,11 +970,91 @@ void XmlDocV1Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
   def->setLocalAssociationRule(assocDef);
 }
 
+void XmlDocV1Parser::processCategories(
+  xml_node& node,
+  Categories::Set& catSet,
+  Categories::CombinationMode& inheritanceMode)
+{
+  attribute::Categories::Set::CombinationMode catMode;
+  xml_node child;
+
+  // The default inheritance mode is Or
+  inheritanceMode = Categories::CombinationMode::Or;
+
+  // Check for old style
+  xml_attribute xatt = node.attribute("OkToInheritCategories");
+  if (xatt && !xatt.as_bool())
+  {
+    inheritanceMode = Categories::CombinationMode::LocalOnly;
+  }
+  xatt = node.attribute("CategoryCheckMode");
+  if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+  {
+    catSet.setInclusionMode(catMode);
+  }
+
+  // This is old style
+  xml_node catNodes = node.child("Categories");
+  // This is the new format
+  xml_node catInfoNode = node.child("CategoryInfo");
+  if (catInfoNode)
+  {
+    // Are we inheriting categories?
+    xatt = catInfoNode.attribute("Inherit");
+    if (xatt && !xatt.as_bool())
+    {
+      inheritanceMode = Categories::CombinationMode::LocalOnly;
+    }
+
+    // Lets get the overall combination mode
+    xatt = catInfoNode.attribute("Combination");
+    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    {
+      catSet.setCombinationMode(catMode);
+    }
+    // Get the Include set (if one exists)
+    xml_node catGroup;
+    catGroup = catInfoNode.child("Include");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      xatt = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+      {
+        catSet.setInclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        catSet.insertInclusion(child.text().get());
+      }
+    }
+    catGroup = catInfoNode.child("Exclude");
+    if (catGroup)
+    {
+      // Lets get the include combination mode
+      xatt = catGroup.attribute("Combination");
+      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+      {
+        catSet.setExclusionMode(catMode);
+      }
+      for (child = catGroup.first_child(); child; child = child.next_sibling())
+      {
+        catSet.insertExclusion(child.text().get());
+      }
+    }
+  }
+  else if (catNodes) // Deprecated Format
+  {
+    for (child = catNodes.first_child(); child; child = child.next_sibling())
+    {
+      catSet.insertInclusion(child.text().get());
+    }
+  }
+}
 void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
 {
   xml_attribute xatt;
-  xml_node catNodes, child;
-  attribute::Categories::Set::CombinationMode catMode;
+  xml_node child;
   xatt = node.attribute("Label");
   if (xatt)
   {
@@ -991,18 +1071,21 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
     idef->setIsOptional(xatt.as_bool());
     idef->setIsEnabledByDefault(node.attribute("IsEnabledByDefault").as_bool());
   }
-  // This is the old format for categories
-  xatt = node.attribute("OkToInheritCategories");
-  if (xatt)
+
+  // Process Category Information
+  Categories::CombinationMode inheritanceMode;
+  this->processCategories(node, idef->localCategories(), inheritanceMode);
+  idef->setCategoryInheritanceMode(inheritanceMode);
+  // If the definition's local categories are empty and is not a group definition
+  // and there is a default category defined - then use it
+  if (
+    idef->localCategories().empty() &&
+    !(m_defaultCategory.empty() ||
+      smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef)))
   {
-    idef->setIsOkToInherit(xatt.as_bool());
+    idef->localCategories().insertInclusion(m_defaultCategory);
   }
-  // This is the old format for categories
-  xatt = node.attribute("CategoryCheckMode");
-  if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-  {
-    idef->localCategories().setInclusionMode(catMode);
-  }
+
   // If using AdvanceLevel then we are setting
   // both read and write
   xatt = node.attribute("AdvanceLevel");
@@ -1035,70 +1118,6 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
   if (child)
   {
     idef->setDetailedDescription(child.text().get());
-  }
-
-  // This is the old format for categories
-  catNodes = node.child("Categories");
-  // This is the new format
-  xml_node catInfoNode = node.child("CategoryInfo");
-  if (catInfoNode)
-  {
-    auto& localCats = idef->localCategories();
-    // Are we inheriting categories?
-    xatt = catInfoNode.attribute("Inherit");
-    if (xatt)
-    {
-      idef->setIsOkToInherit(xatt.as_bool());
-    }
-
-    // Lets get the overall combination mode
-    xatt = catInfoNode.attribute("Combination");
-    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-    {
-      localCats.setCombinationMode(catMode);
-    }
-    // Get the Include set (if one exists)
-    xml_node catGroup;
-    catGroup = catInfoNode.child("Include");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        localCats.setInclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        localCats.insertInclusion(child.text().get());
-      }
-    }
-    catGroup = catInfoNode.child("Exclude");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        localCats.setExclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        localCats.insertExclusion(child.text().get());
-      }
-    }
-  }
-  else if (catNodes) // Deprecated Format
-  {
-    for (child = catNodes.first_child(); child; child = child.next_sibling())
-    {
-      idef->localCategories().insertInclusion(child.text().get());
-    }
-  }
-  else if (
-    !m_defaultCategory.empty() && !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
-  { // group item definitions don't get categories
-    idef->localCategories().insertInclusion(m_defaultCategory);
   }
 }
 
@@ -2643,7 +2662,7 @@ bool XmlDocV1Parser::getCategoryComboMode(
   if (xmlAtt)
   {
     std::string val = xmlAtt.value();
-    if (smtk::attribute::Categories::Set::combinationModeFromString(val, mode))
+    if (smtk::attribute::Categories::combinationModeFromString(val, mode))
     {
       return true;
     }

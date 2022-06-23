@@ -184,10 +184,17 @@ public:
   bool addConditionalItem(const std::string& enumValue, const std::string& itemName);
   std::vector<std::string> conditionalItems(const std::string& enumValue) const;
 
+  ///\brief Return the enum strings that pass a set of categories and/or specified advance read access level.
+  std::vector<std::string> relevantEnums(
+    bool includeCategories,
+    const std::set<std::string>& testCategories,
+    bool includeReadAccess,
+    unsigned int readAccessLevel) const;
+
 protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
   void applyCategories(
-    const smtk::attribute::Categories& inheritedFromParent,
+    const smtk::attribute::Categories::Stack& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,

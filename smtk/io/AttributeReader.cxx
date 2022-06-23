@@ -15,6 +15,7 @@
 #include "smtk/io/XmlDocV3Parser.h"
 #include "smtk/io/XmlDocV4Parser.h"
 #include "smtk/io/XmlDocV5Parser.h"
+#include "smtk/io/XmlDocV6Parser.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -117,19 +118,14 @@ void AttributeReaderInternals::print(smtk::attribute::ResourcePtr resource)
 // Returns the attribute resource root node in a pugi doc
 pugi::xml_node AttributeReaderInternals::getRootNode(pugi::xml_document& doc)
 {
-  if (XmlDocV1Parser::canParse(doc))
+  if (XmlDocV6Parser::canParse(doc))
   {
-    return XmlDocV1Parser::getRootNode(doc);
+    return XmlDocV6Parser::getRootNode(doc);
   }
 
-  if (XmlDocV2Parser::canParse(doc))
+  if (XmlDocV5Parser::canParse(doc))
   {
-    return XmlDocV2Parser::getRootNode(doc);
-  }
-
-  if (XmlDocV3Parser::canParse(doc))
-  {
-    return XmlDocV3Parser::getRootNode(doc);
+    return XmlDocV5Parser::getRootNode(doc);
   }
 
   if (XmlDocV4Parser::canParse(doc))
@@ -137,9 +133,19 @@ pugi::xml_node AttributeReaderInternals::getRootNode(pugi::xml_document& doc)
     return XmlDocV4Parser::getRootNode(doc);
   }
 
-  if (XmlDocV5Parser::canParse(doc))
+  if (XmlDocV3Parser::canParse(doc))
   {
-    return XmlDocV5Parser::getRootNode(doc);
+    return XmlDocV3Parser::getRootNode(doc);
+  }
+
+  if (XmlDocV2Parser::canParse(doc))
+  {
+    return XmlDocV2Parser::getRootNode(doc);
+  }
+
+  if (XmlDocV1Parser::canParse(doc))
+  {
+    return XmlDocV1Parser::getRootNode(doc);
   }
 
   pugi::xml_node temp; // no node found
@@ -152,7 +158,7 @@ std::string AttributeReaderInternals::getDirectory(
   const std::string& fname,
   const std::vector<std::string>& spaths)
 {
-  // Are we dealing with an absoulte path
+  // Are we dealing with an absolute path
   path p(fname);
   if (!p.root_path().empty())
   {
@@ -273,23 +279,16 @@ void AttributeReaderInternals::parseXml(
   }
 
   // Lets see if any of the parsers can process the node
-  if (XmlDocV1Parser::canParse(root))
+  if (XmlDocV6Parser::canParse(root))
   {
-    XmlDocV1Parser theReader(resource, logger);
+    XmlDocV6Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
   }
-  else if (XmlDocV2Parser::canParse(root))
+  else if (XmlDocV5Parser::canParse(root))
   {
-    XmlDocV2Parser theReader(resource, logger);
-    theReader.setIncludeFileIndex(m_currentFileIndex);
-    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
-  }
-  else if (XmlDocV3Parser::canParse(root))
-  {
-    XmlDocV3Parser theReader(resource, logger);
+    XmlDocV5Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
@@ -301,9 +300,23 @@ void AttributeReaderInternals::parseXml(
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
   }
-  else if (XmlDocV5Parser::canParse(root))
+  else if (XmlDocV3Parser::canParse(root))
   {
-    XmlDocV5Parser theReader(resource, logger);
+    XmlDocV3Parser theReader(resource, logger);
+    theReader.setIncludeFileIndex(m_currentFileIndex);
+    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
+    theReader.process(root);
+  }
+  else if (XmlDocV2Parser::canParse(root))
+  {
+    XmlDocV2Parser theReader(resource, logger);
+    theReader.setIncludeFileIndex(m_currentFileIndex);
+    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
+    theReader.process(root);
+  }
+  else if (XmlDocV1Parser::canParse(root))
+  {
+    XmlDocV1Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
