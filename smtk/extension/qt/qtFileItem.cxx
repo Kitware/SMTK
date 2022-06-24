@@ -351,10 +351,8 @@ QWidget* qtFileItem::createFileBrowseWidget(
   std::string valText = item.valueAsString(elementIdx);
   if (fileCombo)
   {
-    if (this->updateRecentValues(valText))
-    {
-      this->updateFileComboLists();
-    }
+    this->updateRecentValues(valText);
+    this->updateFileComboLists();
     fileCombo->setCurrentIndex(fileCombo->findText(valText.c_str()));
   }
   else
