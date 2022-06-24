@@ -39,7 +39,8 @@ if (TARGET ParaView::pqApplicationComponents)
     model/plugin/paraview.plugin
     mesh/plugin/paraview.plugin
     operators/paraview.plugin
-    project/plugin/paraview.plugin
+    project/plugin-core/paraview.plugin
+    project/plugin-gui/paraview.plugin
   )
 
   if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
