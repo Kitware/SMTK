@@ -463,7 +463,7 @@ smtk::resource::PersistentObjectPtr ReferenceItem::value(std::size_t i) const
     return nullptr;
 
   auto result = boost::apply_visitor(access_reference(), (*m_cache)[i]);
-  if (result == nullptr)
+  if (result == nullptr && i < m_keys.size())
   {
     result = this->value(m_keys[i]);
     assignToCache(i, result);
