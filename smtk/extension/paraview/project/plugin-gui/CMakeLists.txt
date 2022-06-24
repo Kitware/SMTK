@@ -20,18 +20,11 @@ set(interfaces
     ${dock_interfaces}
   )
 
-smtk_add_plugin(smtkPQProjectPlugin
-  REGISTRAR smtk::extension::paraview::project::Registrar
-  MANAGERS
-    smtk::common::Managers
-    smtk::operation::Manager
-    smtk::project::Manager
-    smtk::resource::Manager
-    smtk::view::Manager
-  PARAVIEW_PLUGIN_ARGS
-    VERSION "1.0"
-    UI_INTERFACES ${interfaces}
-    SOURCES ${sources}
+paraview_add_plugin(smtkPQProjectPlugin
+  VERSION "1.0"
+  REQUIRED_PLUGINS smtkProjectPlugin
+  UI_INTERFACES ${interfaces}
+  SOURCES ${sources}
 )
 
 target_link_libraries(smtkPQProjectPlugin
@@ -42,3 +35,4 @@ target_link_libraries(smtkPQProjectPlugin
     smtkPQProjectExt
     smtkPVServerExt
 )
+target_compile_definitions(smtkPQProjectPlugin PRIVATE QT_NO_KEYWORDS)
