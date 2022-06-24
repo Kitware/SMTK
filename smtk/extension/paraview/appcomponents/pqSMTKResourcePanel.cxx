@@ -11,6 +11,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
+#include "smtk/extension/paraview/appcomponents/ApplicationConfiguration.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
@@ -26,11 +27,30 @@
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   : Superclass(parent)
 {
-  // Parse a json representation of our default config, save it.
-  nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
-  smtk::view::ConfigurationPtr config = j[0];
-  this->setView(config);
   this->setObjectName("pqSMTKResourcePanel");
+
+  // Either we get the application's configuration or we use a default
+  // until the application's configuration plugin is loaded.
+  bool immediatelyConfigured = false;
+  smtk::paraview::ApplicationConfiguration::notify(
+    [this, &immediatelyConfigured](smtk::paraview::ApplicationConfiguration& configurator) {
+      auto viewInfo = configurator.panelConfiguration(this);
+      // Extract just the view configuration.
+      auto viewConfig = viewInfo.get<smtk::view::ConfigurationPtr>();
+      if (viewConfig)
+      {
+        this->setView(viewConfig);
+        immediatelyConfigured = true;
+      }
+    });
+  if (!immediatelyConfigured)
+  {
+    // Parse a json representation of our default config, and use it
+    // since the application can't immediately configure us.
+    nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
+    smtk::view::ConfigurationPtr config = j[0];
+    this->setView(config);
+  }
 
   auto* smtkBehavior = pqSMTKBehavior::instance();
   // Now listen for future connections.

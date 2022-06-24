@@ -27,7 +27,7 @@ QMetaObject::Connection g_trackerConnection;
 std::vector<ApplicationConfiguration::ConfigurationObserver>
   ApplicationConfiguration::s_uiComponents;
 
-void ApplicationConfiguration::notify(ConfigurationObserver observer)
+bool ApplicationConfiguration::notify(ConfigurationObserver observer)
 {
   // Queue the observer in the list of UI components to be initialized.
   s_uiComponents.push_back(observer);
@@ -43,7 +43,7 @@ void ApplicationConfiguration::notify(ConfigurationObserver observer)
       {
         if (ApplicationConfiguration::found(dynamic_cast<QObject*>(iface)))
         {
-          return;
+          return true;
         }
       }
     }
@@ -56,6 +56,7 @@ void ApplicationConfiguration::notify(ConfigurationObserver observer)
         });
     }
   }
+  return false;
 }
 
 bool ApplicationConfiguration::found(QObject* iface)

@@ -49,8 +49,12 @@ public:
     * or later upon the `pqInterfaceTracker::interfaceRegistered()` signal.)
     * Once found, the observer is invoked so it can configure components as needed by
     * calling methods on the interface.
+    *
+    * This method returns true if the configuration instance was invoked immediately
+    * and false if a signal is queued to fire should a configuration instance be
+    * registered later.
     */
-  static void notify(ConfigurationObserver observer);
+  static bool notify(ConfigurationObserver observer);
 
   /**\brief Method for applications to provide configuration information for panels.
     *
