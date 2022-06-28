@@ -105,6 +105,7 @@ public Q_SLOTS:
   void setOutputOptional(int);
   virtual bool onLaunchFileBrowser();
   void updateItemData() override;
+  void showContextMenu(const QPoint& pt, int elementIdx);
 
 Q_SIGNALS:
   bool launchFileBrowser();

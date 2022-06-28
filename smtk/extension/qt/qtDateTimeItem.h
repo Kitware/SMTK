@@ -36,6 +36,7 @@ public:
   qtDateTimeItem(const qtAttributeItemInfo& info);
   ~qtDateTimeItem() override;
   void setLabelVisible(bool) override;
+  bool eventFilter(QObject* filterObj, QEvent* ev) override;
 
 public Q_SLOTS:
   void setOutputOptional(int);

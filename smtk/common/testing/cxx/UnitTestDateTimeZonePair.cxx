@@ -37,6 +37,26 @@ void verifyNotSet()
   test(!tzIn1.isSet(), "Failed to show timezone as not set");
 }
 
+void verifyParsers()
+{
+  std::cout << "verifyParsers()" << std::endl;
+  // Using DateTime::deserialize():
+  sc::DateTimeZonePair dtzInvalid;
+  dtzInvalid.deserialize("");
+  test(!dtzInvalid.dateTime().isSet(), "Failed to detect empty (invalid) iso string");
+  test(!dtzInvalid.deserialize("20160231"), "failed to detect invalid json");
+
+  // Other forms are tested in UnitTestDateTime
+  sc::DateTimeZonePair dtzValid;
+  test(
+    !!dtzValid.deserialize(
+      "{\"datetime\":\"20220620T000000\",\"timezone-region\":\"America/New_York\"}"),
+    "Failed to deserialize valid json DateTimeZonePair");
+  test(
+    !!dtzValid.dateTime().isSet() && !!dtzValid.timeZone().isSet(),
+    "Failed to return true for isSet()");
+}
+
 void verifyNoTimeZone()
 {
   std::cout << "verifyNoTimeZone()" << std::endl;
@@ -197,6 +217,7 @@ void verifyPosixTimeZone()
 int UnitTestDateTimeZonePair(int /*unused*/, char** const /*unused*/)
 {
   verifyNotSet();
+  verifyParsers();
   verifyTimeZoneOnly();
   verifyNoTimeZone();
   verifyUTC();

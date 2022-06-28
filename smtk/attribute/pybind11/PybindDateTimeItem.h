@@ -30,6 +30,7 @@ inline PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > 
     .def("isSet", &smtk::attribute::DateTimeItem::isSet, py::arg("element") = 0)
     .def("isUsingDefault", (bool (smtk::attribute::DateTimeItem::*)(::std::size_t) const) &smtk::attribute::DateTimeItem::isUsingDefault, py::arg("elementIndex"))
     .def("isUsingDefault", (bool (smtk::attribute::DateTimeItem::*)() const) &smtk::attribute::DateTimeItem::isUsingDefault)
+    .def("hasDefault", &smtk::attribute::DateTimeItem::hasDefault)
     .def("numberOfRequiredValues", &smtk::attribute::DateTimeItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::DateTimeItem::numberOfValues)
     .def("reset", &smtk::attribute::DateTimeItem::reset)

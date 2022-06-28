@@ -167,6 +167,17 @@ bool DateTimeItem::isUsingDefault() const
   return true;
 }
 
+bool DateTimeItem::hasDefault() const
+{
+  const DateTimeItemDefinition* def =
+    static_cast<const DateTimeItemDefinition*>(m_definition.get());
+  if (!def)
+  {
+    return false;
+  }
+  return def->hasDefault();
+}
+
 bool DateTimeItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem

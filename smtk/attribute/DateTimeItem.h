@@ -49,6 +49,7 @@ public:
   virtual bool isUsingDefault(std::size_t elementIndex) const;
   // This method tests all of the values of the items w/r the default value
   virtual bool isUsingDefault() const;
+  bool hasDefault() const;
   virtual bool isSet(std::size_t element = 0) const
   {
     return m_isSet.size() > element ? m_isSet[element] : false;

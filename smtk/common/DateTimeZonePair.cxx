@@ -11,6 +11,7 @@
 #include "smtk/common/DateTimeZonePair.h"
 #include "nlohmann/json.hpp"
 #include <cstdio> // for snprintf()
+#include <exception>
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #define snprintf(buf, cnt, fmt, ...) _snprintf_s(buf, cnt, cnt, fmt, __VA_ARGS__)
@@ -76,7 +77,19 @@ std::string DateTimeZonePair::serialize() const
 
 bool DateTimeZonePair::deserialize(const std::string& content)
 {
-  nlohmann::json inputJson = nlohmann::json::parse(content);
+  nlohmann::json inputJson;
+  try
+  {
+    inputJson = nlohmann::json::parse(content);
+  }
+  catch (...)
+  {
+    std::cerr << "Not valid json for DateTimeZonePair object: " << content << std::endl;
+    std::cerr << "  Follow the form: "
+                 "{\"datetime\":\"20220620T000000\",\"timezone-region\":\"America/New_York\"}"
+              << std::endl;
+    return false;
+  }
   if (inputJson.type() != nlohmann::json::value_t::object)
   {
     std::cerr << "Missing or invalid DateTimeZonePair object: " << content << std::endl;
