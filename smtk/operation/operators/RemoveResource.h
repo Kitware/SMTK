@@ -10,7 +10,7 @@
 #ifndef smtk_model_operation_RemoveResource_h
 #define smtk_model_operation_RemoveResource_h
 
-#include "smtk/operation/ResourceManagerOperation.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -21,12 +21,16 @@ namespace operation
 /// still exist in memory for as long as the operation result is held.
 /// Additionally, any other classes that hold a shared pointer to the resource
 /// will keep the resource in memory.
-class SMTKCORE_EXPORT RemoveResource : public ResourceManagerOperation
+class SMTKCORE_EXPORT RemoveResource : public XMLOperation
 {
 public:
   smtkTypeMacro(smtk::operation::RemoveResource);
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::ResourceManagerOperation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
+
+  /// Linked resources and attribute resources need this to
+  /// run on the main thread to update the UI properly.
+  bool threadSafe() const override { return false; }
 
 protected:
   RemoveResource();

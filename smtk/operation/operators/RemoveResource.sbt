@@ -6,17 +6,22 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="remove resource" Label="Remove" BaseType="operation">
-      <BriefDecscription>
+      <BriefDescription>
         Remove one or more SMTK resources
-      </BriefDecscription>
-      <DetailedDecscription>
+      </BriefDescription>
+      <DetailedDescription>
         Remove resources from its associated resource manager.
-      </DetailedDecscription>
+      </DetailedDescription>
       <AssociationsDef LockType="Write" HoldReference="true"
                        OnlyResources="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
+        <Void Name="removeAssociations" Label="Remove Associations" Optional="True" IsEnabledByDefault="false">
+          <BriefDescription>
+            Remove any associations to removed resources, clearing any reference items refering to removed resources.
+          </BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
 

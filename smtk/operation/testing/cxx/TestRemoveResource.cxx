@@ -70,9 +70,6 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
   // Initialize smtk managers
   auto operationOpRegistry =
     smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
-  {
-    operationManager->registerResourceManager(resourceManager);
-  }
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).

@@ -637,7 +637,7 @@ bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(
 
     // If the selected item is a component, ask its resource for the footprint.
     auto component = std::dynamic_pointer_cast<smtk::resource::Component>(item.first);
-    if (component)
+    if (component && component->resource())
     {
       if (component->resource()->queries().contains<smtk::geometry::SelectionFootprint>())
       {

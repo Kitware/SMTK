@@ -762,13 +762,13 @@ int qtAssociation2ColumnWidget::handleOperationEvent(
 }
 
 int qtAssociation2ColumnWidget::handleResourceEvent(
-  const smtk::resource::Resource& resource,
+  const smtk::resource::Resource& /*resource*/,
   smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::REMOVED)
   {
     // The simplest solution is just to refresh the widget
-    this->refreshAssociations(resource.id());
+    this->refreshAssociations();
     Q_EMIT this->availableChanged();
   }
   return 0;

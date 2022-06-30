@@ -6,14 +6,14 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write resource" Label="Write" BaseType="operation">
-      <BriefDecscription>
+      <BriefDescription>
         Write one or more SMTK resources to disk
-      </BriefDecscription>
-      <DetailedDecscription>
+      </BriefDescription>
+      <DetailedDescription>
         Write resources in SMTK's native JSON format.
         Resources are written to their existing location unless
         the "filename" item is enabled and set to a valid value.
-      </DetailedDecscription>
+      </DetailedDescription>
       <AssociationsDef LockType="Read" OnlyResources="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>

@@ -6,9 +6,9 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="create resource" Label="Create" BaseType="operation">
-      <BriefDecscription>
+      <BriefDescription>
         Create one or more SMTK resources
-      </BriefDecscription>
+      </BriefDescription>
       <ItemDefinitions>
         <String Name="type" Label="Resource Type" NumberOfRequiredValues="1" Extensible="true">
           <BriefDescription>The unique name of the resource to create.</BriefDescription>

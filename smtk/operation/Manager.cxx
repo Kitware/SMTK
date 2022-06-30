@@ -208,6 +208,11 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
       // For each resource item found...
       for (auto& resourceItem : resourceItems)
       {
+        if (resourceItem->name() == "resourcesToExpunge")
+        {
+          // Skip this item since these are resources explicitly being removed from management.
+          continue;
+        }
         // ...for each resource in a resource item...
         for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
         {

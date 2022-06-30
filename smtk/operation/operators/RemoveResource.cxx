@@ -15,7 +15,9 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -58,34 +60,32 @@ RemoveResource::Result RemoveResource::operateInternal()
 
   // Access the associated resources.
   auto params = this->parameters();
-  auto resourceItem = this->parameters()->associations();
+  auto assoc = this->parameters()->associations();
+  bool removeLinks = this->parameters()->findVoid("removeAssociations")->isEnabled();
 
   // Construct a result object and access its resource item.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  auto resourceItem = result->findResource("resourcesToExpunge");
+  result->findAs<smtk::attribute::VoidItem>("removeAssociations", smtk::attribute::RECURSIVE)
+    ->setIsEnabled(removeLinks);
 
   // For each resource...
-  for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+  for (std::size_t i = 0; i < assoc->numberOfValues(); i++)
   {
     // ...access the resource...
-    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value(i));
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(assoc->value(i));
 
-    // ...remove it from the manager...
-    bool removed = resourceManager->remove(resource);
-    if (removed)
+    // append to the to-be-expunged list. smtk::operation::Operation takes care of removal.
+    if (resource)
     {
-      // ...and add it to the result.
-      // TODO: the "expunged" item in the result should accept resources.
-
-      resourceManager->visit([&resource](smtk::resource::Resource& rsrc) {
-        rsrc.links().removeAllLinksTo(resource);
-        return smtk::common::Processing::CONTINUE;
-      });
-    }
-    else
-    {
-      // If the resource was not removed, change the result status to failure.
-      result->findInt("outcome")->setValue(
-        static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
+      resourceItem->appendValue(resource);
+      if (removeLinks)
+      {
+        this->resourceManager()->visit([&resource](smtk::resource::Resource& rsrc) {
+          rsrc.links().removeAllLinksTo(resource);
+          return smtk::common::Processing::CONTINUE;
+        });
+      }
     }
   }
 

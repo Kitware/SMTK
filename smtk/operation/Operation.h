@@ -154,6 +154,9 @@ public:
   /// Is this type of operation safe to launch in a thread?
   virtual bool threadSafe() const { return true; }
 
+  /// retrieve the resource manager, if available.
+  smtk::resource::ManagerPtr resourceManager();
+
 protected:
   Operation();
 
@@ -169,6 +172,9 @@ protected:
   // By default, all resources used as inputs with Write LockTypes and all
   // resources referenced in the result are marked dirty.
   virtual void markModifiedResources(Result&);
+
+  // Remove resources from the resource manager.
+  virtual bool unmanageResources(Result&);
 
   // Append an output summary string to the output result. Derived classes can
   // reimplement this method to send custom summary strings to the logger.

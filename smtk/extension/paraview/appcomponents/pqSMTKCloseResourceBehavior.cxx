@@ -35,8 +35,10 @@
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/groups/CreatorGroup.h"
+#include "smtk/operation/operators/RemoveResource.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/resource/Manager.h"
@@ -135,22 +137,27 @@ void pqCloseResourceReaction::closeResource()
 
   if (ret != QMessageBox::Cancel)
   {
-    // Remove it from its manager
-    if (smtk::resource::Manager::Ptr manager = resource->manager())
+    // Remove it from its manager. Use an operation to avoid observer conflicts.
+    pqServer* server = pqActiveObjects::instance().activeServer();
+    pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+    if (server && wrapper)
     {
-      manager->remove(resource);
-    }
+      smtk::operation::RemoveResource::Ptr removeOp =
+        wrapper->smtkOperationManager()->create<smtk::operation::RemoveResource>();
 
-    // Remove project instance from project manager
-    auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
-    if (project)
-    {
-      pqServer* server = pqActiveObjects::instance().activeServer();
-      pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
-      auto projectManager = wrapper->smtkProjectManager();
-      projectManager->remove(project);
-    }
+      removeOp->parameters()->associate(resource);
 
+      smtk::operation::Operation::Result removeOpResult = removeOp->operate();
+      if (
+        removeOpResult->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "RemoveResource operation failed while closing a resource");
+        // resource is still managed (belongs to a project), avoid debug exception below.
+        ret = QMessageBox::Cancel;
+      }
+    }
     // Remove it from the active selection
     {
       smtk::view::Selection::SelectionMap& selections =
@@ -163,7 +170,7 @@ void pqCloseResourceReaction::closeResource()
 // If we are not holding the last reference to the resource, then there is a
 // memory leak.
 #ifndef NDEBUG
-  if (resource && resource.use_count() != 1)
+  if (ret != QMessageBox::Cancel && resource && resource.use_count() != 1)
   {
     throw UnreleasedMemoryError(resource->name(), resource->typeName(), resource.use_count());
   }
