@@ -155,9 +155,11 @@ class AttributeBuilder:
         if att is not None:
             return att
 
-        # Get definition and build attribute
-        defn_name = view_atts.get('AnalysisAttributeType')
-        defn = att_resource.analyses().buildAnalysesDefinition(att_resource, defn_name)
+        # Get analysis definition and attribute
+        defn_type = view_atts.get('AnalysisAttributeType')
+        defn = att_resource.findDefinition(defn_type)
+        if defn is None:
+            defn = att_resource.analyses().buildAnalysesDefinition(att_resource, defn_type)
         att = att_resource.createAttribute(att_name, defn)
         return att
 
