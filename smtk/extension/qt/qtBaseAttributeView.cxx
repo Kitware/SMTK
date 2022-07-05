@@ -241,7 +241,7 @@ void signalAttribute(
   const smtk::attribute::AttributePtr& attr,
   const char* itemName,
   std::vector<std::string> items,
-  const std::string& source = "")
+  const std::string& source)
 {
   if (attr && uiManager && itemName && itemName[0])
   {
