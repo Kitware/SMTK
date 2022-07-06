@@ -26,12 +26,12 @@ inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Ca
     .def("passes", (bool (smtk::attribute::Categories::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::passes, py::arg("categories"))
     .def("passes", (bool (smtk::attribute::Categories::*)(const ::std::string&) const) &smtk::attribute::Categories::passes, py::arg("category"))
     .def("insert", (void (smtk::attribute::Categories::*)(const smtk::attribute::Categories&)) &smtk::attribute::Categories::insert, py::arg("categories"))
-    .def("insert", (void (smtk::attribute::Categories::*)(const smtk::attribute::Categories::Set&)) &smtk::attribute::Categories::insert, py::arg("categorySet"))
+    .def("insert", (bool (smtk::attribute::Categories::*)(const smtk::attribute::Categories::Set&)) &smtk::attribute::Categories::insert, py::arg("categorySet"))
     .def("reset", &smtk::attribute::Categories::reset)
     .def("size", &smtk::attribute::Categories::size)
     // NOTE that the Python form of this method is returning a copy since Python
     // doesn't support const references
-    .def("sets", &smtk::attribute::Categories::sets)
+    .def("stacks", &smtk::attribute::Categories::stacks)
     .def("categoryNames", &smtk::attribute::Categories::categoryNames)
     ;
   py::class_< smtk::attribute::Categories::Set >(instance, "Set")
@@ -62,9 +62,22 @@ inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Ca
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::Set::passes, py::arg("categories"))
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::string&) const) &smtk::attribute::Categories::Set::passes, py::arg("category"))
     ;
-  py::enum_<smtk::attribute::Categories::Set::CombinationMode>(instance, "CombinationMode")
-    .value("Any", smtk::attribute::Categories::Set::CombinationMode::Any)
-    .value("All", smtk::attribute::Categories::Set::CombinationMode::All)
+  py::class_< smtk::attribute::Categories::Stack >(instance, "Stack")
+    .def(py::init<>())
+    .def("deepcopy", (smtk::attribute::Categories::Stack & (smtk::attribute::Categories::Stack::*)(::smtk::attribute::Categories::Stack const &)) &smtk::attribute::Categories::Stack::operator=)
+
+    .def("append", &smtk::attribute::Categories::Stack::append)
+    .def("clear", &smtk::attribute::Categories::Stack::clear)
+    .def("empty", &smtk::attribute::Categories::Stack::empty)
+    .def("passes", (bool (smtk::attribute::Categories::Stack::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::Stack::passes, py::arg("categories"))
+    .def("passes", (bool (smtk::attribute::Categories::Stack::*)(const ::std::string&) const) &smtk::attribute::Categories::Stack::passes, py::arg("category"))
+    ;
+  py::enum_<smtk::attribute::Categories::CombinationMode>(instance, "CombinationMode")
+    .value("Any", smtk::attribute::Categories::CombinationMode::Or)
+    .value("All", smtk::attribute::Categories::CombinationMode::And)
+    .value("Or", smtk::attribute::Categories::CombinationMode::Or)
+    .value("And", smtk::attribute::Categories::CombinationMode::And)
+    .value("LocalOnly", smtk::attribute::Categories::CombinationMode::LocalOnly)
     .export_values();
   return instance;
 }

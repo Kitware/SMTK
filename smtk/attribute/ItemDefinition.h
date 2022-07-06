@@ -103,10 +103,20 @@ public:
   }
 
   ///\brief Indicates if the Definition can inherit categories based on it's
-  /// parent Definition or its owning Attribute Definition.  The default is true.
-  bool isOkToInherit() const { return m_isOkToInherit; }
+  /// owning ItemDefinition or its owning Attribute Definition.  The default is true.
+  ///@{
+  SMTK_DEPRECATED_IN_22_07("Replaced by ItemDefinition::categoryInheritanceMode.")
+  bool isOkToInherit() const;
+  SMTK_DEPRECATED_IN_22_07("Replaced by ItemDefinition::setCategoryInheritanceMode.")
+  void setIsOkToInherit(bool isOkToInheritValue);
+  ///@}
 
-  void setIsOkToInherit(bool isOkToInheritValue) { m_isOkToInherit = isOkToInheritValue; }
+  ///\brief Determines how the Definition should combine its local category Set with the
+  /// category constraints being inherited from it's owning Attribute or Item Definition
+  ///@{
+  Categories::CombinationMode categoryInheritanceMode() const { return m_combinationMode; }
+  void setCategoryInheritanceMode(Categories::CombinationMode mode) { m_combinationMode = mode; }
+  ///@}
 
   //Get the item definition's advance level:
   //if mode is 1 then the write access level is returned;
@@ -120,7 +130,7 @@ public:
     return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
   }
   void setLocalAdvanceLevel(int mode, unsigned int level);
-  // Convinence Method that sets both read and write to the same value
+  // Convenience Method that sets both read and write to the same value
   void setLocalAdvanceLevel(unsigned int level);
 
   // unsetAdvanceLevel causes the item to return its
@@ -168,7 +178,7 @@ protected:
   ItemDefinition(const std::string& myname);
   void copyTo(ItemDefinitionPtr def) const;
   virtual void applyCategories(
-    const smtk::attribute::Categories& inheritedFromParent,
+    const smtk::attribute::Categories::Stack& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent);
   virtual void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
@@ -176,7 +186,6 @@ protected:
   int m_version;
   bool m_isOptional;
   bool m_isEnabledByDefault;
-  bool m_isOkToInherit;
   std::string m_label;
   attribute::Categories::Set m_localCategories;
   attribute::Categories m_categories;
@@ -186,6 +195,7 @@ protected:
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
   attribute::Tags m_tags;
+  Categories::CombinationMode m_combinationMode;
 
 private:
   // constant value that should never be changed

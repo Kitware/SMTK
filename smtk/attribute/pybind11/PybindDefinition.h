@@ -42,9 +42,9 @@ inline PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attrib
     .def("isAbstract", &smtk::attribute::Definition::isAbstract)
     .def("setIsAbstract", &smtk::attribute::Definition::setIsAbstract, py::arg("isAbstractValue"))
     // NOTE that the Python form of this method is returning a copy since Python
-    // doesn't support const references - oly non-const method of localCategories supported
-    .def("isOkToInherit", &smtk::attribute::Definition::isOkToInherit)
-    .def("setIsOkToInherit", &smtk::attribute::Definition::setIsOkToInherit, py::arg("isOkToInheritCategoriesValue"))
+    // doesn't support const references - only non-const method of localCategories supported
+    .def("categoryInheritanceMode", &smtk::attribute::Definition::categoryInheritanceMode)
+    .def("setCategoryInheritanceMode", &smtk::attribute::Definition::setCategoryInheritanceMode, py::arg("categoryInheritanceModeValue"))
     .def("categories", &smtk::attribute::Definition::categories)
     .def("localCategories", (smtk::attribute::Categories::Set& (smtk::attribute::Definition::*)()) &smtk::attribute::Definition::localCategories)
     .def("setLocalCategories", &smtk::attribute::Definition::setLocalCategories, py::arg("catSet"))

@@ -21,25 +21,38 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   m_hasLocalAdvanceLevelInfo[0] = m_hasLocalAdvanceLevelInfo[1] = false;
   m_isOptional = false;
   m_isEnabledByDefault = false;
-  m_isOkToInherit = true;
+  m_combinationMode = Categories::CombinationMode::And;
 }
 
 ItemDefinition::~ItemDefinition() = default;
 
+bool ItemDefinition::isOkToInherit() const
+{
+  return m_combinationMode != Categories::CombinationMode::LocalOnly;
+}
+
+void ItemDefinition::setIsOkToInherit(bool isOkToInheritValue)
+{
+  if (isOkToInheritValue)
+  {
+    m_combinationMode = Categories::CombinationMode::Or;
+  }
+  else
+  {
+    m_combinationMode = Categories::CombinationMode::LocalOnly;
+  }
+}
+
 void ItemDefinition::applyCategories(
-  const smtk::attribute::Categories& inheritedFromParent,
+  const smtk::attribute::Categories::Stack& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
-  // The item's definition's categories are it's local categories and (if its ok to inherit
-  // categories from it's owning item definition/attribute definition) those inherited
-  // from its parent
+  Categories::Stack myCats = inheritedFromParent;
+  myCats.append(m_combinationMode, m_localCategories);
+
   m_categories.reset();
-  m_categories.insert(m_localCategories);
-  if (m_isOkToInherit)
-  {
-    m_categories.insert(inheritedFromParent);
-  }
-  inheritedToParent.insert(m_localCategories);
+  m_categories.insert(myCats);
+  inheritedToParent.insert(m_categories);
 }
 
 void ItemDefinition::setLocalAdvanceLevel(int mode, unsigned int level)
@@ -86,7 +99,7 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
   def->setVersion(m_version);
   def->setIsOptional(m_isOptional);
   def->setIsEnabledByDefault(m_isEnabledByDefault);
-  def->setIsOkToInherit(m_isOkToInherit);
+  def->setCategoryInheritanceMode(m_combinationMode);
   def->localCategories() = m_localCategories;
 
   if (m_hasLocalAdvanceLevelInfo[0])

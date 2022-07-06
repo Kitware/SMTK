@@ -70,15 +70,15 @@ bool testCategories(
 void setupAttributeResource(attribute::ResourcePtr& attRes)
 {
   // So we are going to create a bunch of items that will test out the various combinations
-  // of (a op1 b) op2 !(c op3 d) - where opx is either all or any.  The items will be as follows:
-  // 0: all all all
-  // 1: all all any
-  // 2: all any all
-  // 3: all any any
-  // 4: any all all
-  // 5: any all any
-  // 6: any any all
-  // 7: any any any
+  // of (a op1 b) op2 !(c op3 d) - where opx is either And or Or.  The items will be as follows:
+  // 0: And And And
+  // 1: And And Or
+  // 2: And Or And
+  // 3: And Or Or
+  // 4: Or And And
+  // 5: Or And Or
+  // 6: Or Or And
+  // 7: Or Or Or
 
   DefinitionPtr A = attRes->createDefinition("A");
   Categories::Set testCats;
@@ -88,51 +88,51 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   testCats.insertExclusion("d");
 
   StringItemDefinitionPtr sItemDef = A->addItemDefinition<StringItemDefinition>("s0");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::All);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::All);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::All);
+  testCats.setInclusionMode(Categories::CombinationMode::And);
+  testCats.setCombinationMode(Categories::CombinationMode::And);
+  testCats.setExclusionMode(Categories::CombinationMode::And);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s1");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::All);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::All);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::Any);
+  testCats.setInclusionMode(Categories::CombinationMode::And);
+  testCats.setCombinationMode(Categories::CombinationMode::And);
+  testCats.setExclusionMode(Categories::CombinationMode::Or);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s2");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::All);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::Any);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::All);
+  testCats.setInclusionMode(Categories::CombinationMode::And);
+  testCats.setCombinationMode(Categories::CombinationMode::Or);
+  testCats.setExclusionMode(Categories::CombinationMode::And);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s3");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::All);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::Any);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::Any);
+  testCats.setInclusionMode(Categories::CombinationMode::And);
+  testCats.setCombinationMode(Categories::CombinationMode::Or);
+  testCats.setExclusionMode(Categories::CombinationMode::Or);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s4");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::Any);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::All);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::All);
+  testCats.setInclusionMode(Categories::CombinationMode::Or);
+  testCats.setCombinationMode(Categories::CombinationMode::And);
+  testCats.setExclusionMode(Categories::CombinationMode::And);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s5");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::Any);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::All);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::Any);
+  testCats.setInclusionMode(Categories::CombinationMode::Or);
+  testCats.setCombinationMode(Categories::CombinationMode::And);
+  testCats.setExclusionMode(Categories::CombinationMode::Or);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s6");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::Any);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::Any);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::All);
+  testCats.setInclusionMode(Categories::CombinationMode::Or);
+  testCats.setCombinationMode(Categories::CombinationMode::Or);
+  testCats.setExclusionMode(Categories::CombinationMode::And);
   sItemDef->localCategories() = testCats;
 
   sItemDef = A->addItemDefinition<StringItemDefinition>("s7");
-  testCats.setInclusionMode(Categories::Set::CombinationMode::Any);
-  testCats.setCombinationMode(Categories::Set::CombinationMode::Any);
-  testCats.setExclusionMode(Categories::Set::CombinationMode::Any);
+  testCats.setInclusionMode(Categories::CombinationMode::Or);
+  testCats.setCombinationMode(Categories::CombinationMode::Or);
+  testCats.setExclusionMode(Categories::CombinationMode::Or);
   sItemDef->localCategories() = testCats;
   attRes->finalizeDefinitions();
 }

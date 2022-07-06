@@ -469,75 +469,13 @@ void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
 
 void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
 {
-  Categories::Set::CombinationMode catMode;
-  //need to process Categories and Tags added in V3
-  this->XmlDocV2Parser::processDefinition(defNode, def);
-  //This is the old style of category information
-  xml_attribute ccm = defNode.attribute("CategoryCheckMode");
-  if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
-  {
-    def->localCategories().setInclusionMode(catMode);
-  }
-  xml_node catNodes = defNode.child("Categories");
-  xml_node catInfoNode = defNode.child("CategoryInfo");
-  xml_node child;
-  //Current Category Structure
-  if (catInfoNode)
-  {
-    catInfoNode.append_attribute("Inherit") = def->isOkToInherit();
-    // Lets get the overall combination mode
-    ccm = catInfoNode.attribute("Combination");
-    auto& localCats = def->localCategories();
-    // Are we inheriting categories?
-    auto xatt = catInfoNode.attribute("Inherit");
-    if (xatt)
-    {
-      def->setIsOkToInherit(xatt.as_bool());
-    }
 
-    if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
-    {
-      localCats.setCombinationMode(catMode);
-    }
-    // Get the Include set (if one exists)
-    xml_node catGroup;
-    catGroup = catInfoNode.child("Include");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      ccm = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
-      {
-        localCats.setInclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        localCats.insertInclusion(child.text().get());
-      }
-    }
-    catGroup = catInfoNode.child("Exclude");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      ccm = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(ccm, catMode))
-      {
-        localCats.setExclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        localCats.insertExclusion(child.text().get());
-      }
-    }
-  }
-  //Old Style
-  else if (catNodes)
-  {
-    for (xml_node child = catNodes.first_child(); child; child = child.next_sibling())
-    {
-      def->localCategories().insertInclusion(child.text().get());
-    }
-  }
+  this->XmlDocV2Parser::processDefinition(defNode, def);
+
+  // Process Category Information for the Definition
+  Categories::CombinationMode inheritanceMode;
+  this->processCategories(defNode, def->localCategories(), inheritanceMode);
+  def->setCategoryInheritanceMode(inheritanceMode);
 
   xml_node tagsNode = defNode.child("Tags");
   if (tagsNode)

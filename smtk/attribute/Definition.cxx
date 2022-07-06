@@ -49,7 +49,7 @@ Definition::Definition(
   m_rootName = m_type;
   m_includeIndex = 0;
   m_prerequisiteUsageCount = 0;
-  m_isOkToInherit = true;
+  m_combinationMode = Categories::CombinationMode::And;
   if (myBaseDef)
   {
     m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
@@ -749,19 +749,38 @@ std::set<AttributePtr> Definition::attributes(
   return atts;
 }
 
-void Definition::applyCategories(smtk::attribute::Categories inherited)
+bool Definition::isOkToInherit() const
+{
+  return m_combinationMode != Categories::CombinationMode::LocalOnly;
+}
+
+void Definition::setIsOkToInherit(bool isOkToInheritValue)
+{
+  if (isOkToInheritValue)
+  {
+    m_combinationMode = Categories::CombinationMode::Or;
+  }
+  else
+  {
+    m_combinationMode = Categories::CombinationMode::LocalOnly;
+  }
+}
+
+void Definition::applyCategories(smtk::attribute::Categories::Stack inherited)
 {
   smtk::attribute::Categories inheritedFromItems;
-  // First append the def's categories to those we have inherited
-  // Note that we want to not modify the original list which is why
-  // its passed by value
+  m_categories.reset();
 
-  // Is the definition not suppose to inherit information categories?
-  if (!m_isOkToInherit)
+  // First append the definition's local category info to
+  // what we are inheriting. Note that we want to not modify the original list which is why
+  // its passed by value
+  inherited.append(m_combinationMode, m_localCategories);
+
+  // Next append the def's categories to those we have inherited (if we are not only considering local Only)
+  if (m_baseDefinition && (m_combinationMode != Categories::CombinationMode::LocalOnly))
   {
-    inherited.reset();
+    m_categories.insert(m_baseDefinition->m_categories);
   }
-  inherited.insert(m_localCategories);
 
   // Lets go to each item and process its categories
   for (auto& item : m_itemDefs)
@@ -773,14 +792,10 @@ void Definition::applyCategories(smtk::attribute::Categories inherited)
   // We start with all of the categories associated with the def's
   // base definition - note that we assume that the inherited set passed
   // in is contained within the base's categories
-  m_categories.reset();
-  if (m_baseDefinition && m_isOkToInherit)
+  if (m_baseDefinition && (m_combinationMode != Categories::CombinationMode::LocalOnly))
   {
-    m_categories.insert(m_baseDefinition->m_categories);
   }
-
-  // Next we add all local categories
-  m_categories.insert(m_localCategories);
+  m_categories.insert(inherited);
 
   // We need to add all of the categories that were locally defined
   // on the items contained within the definition

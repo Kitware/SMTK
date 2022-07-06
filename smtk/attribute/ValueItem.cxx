@@ -606,3 +606,27 @@ smtk::attribute::ConstItemPtr ValueItem::findChild(const std::string& cname, Sea
 {
   return this->findInternal(cname, style);
 }
+
+std::vector<std::string> ValueItem::relevantEnums(
+  bool includeCategories,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
+{
+  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+  std::set<std::string> dummy;
+  if (includeCategories)
+  {
+    // See if we can get the active categories of the related Resource, else ignore categories
+    auto myAttribute = this->attribute();
+    if (myAttribute)
+    {
+      auto aResource = myAttribute->attributeResource();
+      if (aResource && aResource->activeCategoriesEnabled())
+      {
+        return def->relevantEnums(
+          true, aResource->activeCategories(), includeReadAccess, readAccessLevel);
+      }
+    }
+  }
+  return def->relevantEnums(false, dummy, includeReadAccess, readAccessLevel);
+}

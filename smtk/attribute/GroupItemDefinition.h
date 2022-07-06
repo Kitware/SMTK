@@ -152,7 +152,7 @@ public:
 protected:
   GroupItemDefinition(const std::string& myname);
   void applyCategories(
-    const smtk::attribute::Categories& inheritedFromParent,
+    const smtk::attribute::Categories::Stack& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,

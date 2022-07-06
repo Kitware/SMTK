@@ -74,6 +74,11 @@ public:
   bool setDiscreteIndex(int value) { return this->setDiscreteIndex(0, value); }
   // Returns true if value is a valid index - else it returns false
   bool setDiscreteIndex(std::size_t elementIndex, int value);
+
+  ///\brief Return the enum strings that pass the Resource's active categories and/or specified advance read access level.
+  std::vector<std::string>
+  relevantEnums(bool includeCategories, bool includeReadAccess, unsigned int readAccessLevel) const;
+
   /// Release the item's dependency on its parent attribute's Resource.
   void detachOwningResource() override;
   // Reset returns the item to its initial state.

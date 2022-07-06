@@ -138,9 +138,19 @@ public:
 
   ///\brief Indicates if the Definition can inherit categories based on it's
   /// parent Definition or its owning Attribute Definition.  The default is true.
-  bool isOkToInherit() const { return m_isOkToInherit; }
+  ///@{
+  SMTK_DEPRECATED_IN_22_07("Replaced by Definition::categoryInheritanceMode.")
+  bool isOkToInherit() const;
+  SMTK_DEPRECATED_IN_22_07("Replaced by Definition::setCategoryInheritanceMode.")
+  void setIsOkToInherit(bool isOkToInheritValue);
+  ///@}
 
-  void setIsOkToInherit(bool isOkToInheritValue) { m_isOkToInherit = isOkToInheritValue; }
+  ///\brief Determines how the Definition should combine its local category Set with the
+  /// category constraints being inherited from it's Base Definition (if one exists)
+  ///@{
+  Categories::CombinationMode categoryInheritanceMode() const { return m_combinationMode; }
+  void setCategoryInheritanceMode(Categories::CombinationMode mode) { m_combinationMode = mode; }
+  ///@}
 
   ///\brief Returns the categories explicitly assigned to the Definition
   smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
@@ -425,7 +435,7 @@ protected:
 
   ///\brief apply the local categories of the definition and its items.
   /// inherited is an initial set passed down from the definition's base.
-  void applyCategories(smtk::attribute::Categories inherited);
+  void applyCategories(smtk::attribute::Categories::Stack inherited);
 
   // This method updates derived definitions when this
   // definition's items have been changed
@@ -444,7 +454,6 @@ protected:
   smtk::attribute::DefinitionPtr m_baseDefinition;
   std::string m_type;
   std::string m_label;
-  bool m_isOkToInherit;
   bool m_isNodal;
   attribute::Categories::Set m_localCategories;
   attribute::Categories m_categories;
@@ -473,6 +482,7 @@ protected:
   std::string m_rootName;
   Tags m_tags;
   std::size_t m_includeIndex;
+  Categories::CombinationMode m_combinationMode;
 
 private:
   // These colors are returned for base definitions w/o set colors

@@ -81,25 +81,22 @@ void GroupItemDefinition::buildGroup(GroupItem* groupItem, int subGroupPosition)
 }
 
 void GroupItemDefinition::applyCategories(
-  const smtk::attribute::Categories& inheritedFromParent,
+  const smtk::attribute::Categories::Stack& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
+  Categories::Stack myCats = inheritedFromParent;
+
+  myCats.append(m_combinationMode, m_localCategories);
   m_categories.reset();
-  m_categories.insert(m_localCategories);
-  if (m_isOkToInherit)
-  {
-    m_categories.insert(inheritedFromParent);
-  }
 
   smtk::attribute::Categories myChildrenCats;
   for (auto& item : m_itemDefs)
   {
-    item->applyCategories(m_categories, myChildrenCats);
+    item->applyCategories(myCats, myChildrenCats);
   }
 
   m_categories.insert(myChildrenCats);
-  inheritedToParent.insert(m_localCategories);
-  inheritedToParent.insert(myChildrenCats);
+  inheritedToParent.insert(m_categories);
 }
 
 void GroupItemDefinition::applyAdvanceLevels(

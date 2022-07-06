@@ -406,16 +406,14 @@ const std::vector<std::string>& ReferenceItemDefinition::conditionalItems(std::s
 }
 
 void ReferenceItemDefinition::applyCategories(
-  const smtk::attribute::Categories& inheritedFromParent,
+  const smtk::attribute::Categories::Stack& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)
 {
+  Categories::Stack myCats = inheritedFromParent;
+  myCats.append(m_combinationMode, m_localCategories);
   // Lets first determine the set of categories this item definition could inherit
   m_categories.reset();
-  m_categories.insert(m_localCategories);
-  if (m_isOkToInherit)
-  {
-    m_categories.insert(inheritedFromParent);
-  }
+  m_categories.insert(myCats);
 
   smtk::attribute::Categories myChildrenCats;
 
@@ -423,15 +421,14 @@ void ReferenceItemDefinition::applyCategories(
   // this item def will inherit from its children based on their local categories
   for (auto& i : m_itemDefs)
   {
-    i.second->applyCategories(m_categories, myChildrenCats);
+    i.second->applyCategories(myCats, myChildrenCats);
   }
 
   // Add the children categories to this one
   m_categories.insert(myChildrenCats);
   // update the set of categories being inherited by the owning item/attribute
   // definition
-  inheritedToParent.insert(m_localCategories);
-  inheritedToParent.insert(myChildrenCats);
+  inheritedToParent.insert(m_categories);
 }
 
 bool ReferenceItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
