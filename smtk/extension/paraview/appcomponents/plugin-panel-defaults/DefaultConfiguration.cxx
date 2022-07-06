@@ -10,6 +10,8 @@
 #include "smtk/extension/paraview/appcomponents/plugin-panel-defaults/DefaultConfiguration.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationToolboxPanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Information.h"
 #include "smtk/view/json/jsonView.h"
@@ -36,6 +38,14 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
           { "Children",
             { { { "Name", "Model" }, { "Attributes", { { "Autorun", "true" } } } } } } } }
     };
+    std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
+    result.insert_or_assign(viewConfig);
+  }
+  else if (const auto* browser = dynamic_cast<const pqSMTKResourcePanel*>(panel))
+  {
+    (void)browser;
+    // Use the default JSON configuration for the resource-browser panel.
+    auto jsonConfig = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration())[0];
     std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
     result.insert_or_assign(viewConfig);
   }

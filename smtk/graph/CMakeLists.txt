@@ -23,6 +23,8 @@ set(graphHeaders
   filter/TypeName.h
   json/ArcSerializer.h
   json/ArcDeserializer.h
+  json/NodeSerializer.h
+  json/NodeDeserializer.h
   json/jsonResource.h
 )
 

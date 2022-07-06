@@ -36,14 +36,16 @@ void setView()
       // If the dock is not there, just try it again.
       if (panel)
       {
-
-        auto phraseModel = std::dynamic_pointer_cast<smtk::view::ResourcePhraseModel>(
-          panel->resourceBrowser()->phraseModel());
-        if (phraseModel)
+        if (auto* browser = panel->resourceBrowser())
         {
-          phraseModel->setFilter([](const smtk::resource::Resource& resource) {
-            return !resource.isOfType(smtk::common::typeName<smtk::project::Project>());
-          });
+          auto phraseModel =
+            std::dynamic_pointer_cast<smtk::view::ResourcePhraseModel>(browser->phraseModel());
+          if (phraseModel)
+          {
+            phraseModel->setFilter([](const smtk::resource::Resource& resource) {
+              return !resource.isOfType(smtk::common::typeName<smtk::project::Project>());
+            });
+          }
         }
       }
       else
