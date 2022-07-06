@@ -10,8 +10,24 @@
 
 #include "smtk/extension/qt/qtInputsItem.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/ValueItemTemplate.h"
+#include "smtk/attribute/operators/Signal.h"
 #include "smtk/attribute/utility/Queries.h"
+
+#include "smtk/common/CompilerInformation.h"
+#include "smtk/common/StringUtil.h"
+
 #include "smtk/extension/qt/qtAttributeEditorDialog.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
@@ -42,21 +58,6 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
-
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/DoubleItemDefinition.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/Resource.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/attribute/ValueItemTemplate.h"
-
-#include "smtk/common/CompilerInformation.h"
-#include "smtk/common/StringUtil.h"
 
 #include <cmath>
 
@@ -1394,6 +1395,12 @@ void qtInputsItem::onExpressionReferenceChanged()
       // to the list of expression names and set the item to use it
       inputitem->setExpression(newAtt);
       itemsInComboBox.append(newAtt->name().c_str());
+
+      // Signal that a new attribute was created - since this instance is not
+      // observing the Operation Manager we don't need to set the source parameter
+      auto signalOp = this->uiManager()->operationManager()->create<smtk::attribute::Signal>();
+      signalOp->parameters()->findComponent("created")->appendValue(newAtt);
+      signalOp->operate();
     }
     for (int index = 2; index < m_internals->m_expressionCombo->count(); index++)
     {
@@ -1968,7 +1975,7 @@ void qtInputsItem::onTextEditChanged()
 void qtInputsItem::onLineEditChanged()
 {
   // Here we only handle changes when this is invoked from setText()
-  // which is normally used programatically, and the setText() will have
+  // which is normally used programmatically, and the setText() will have
   // modified flag reset to false;
   QLineEdit* const editBox = qobject_cast<QLineEdit*>(QObject::sender());
   if (!editBox)
