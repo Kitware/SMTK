@@ -180,7 +180,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   vItemDef->setLocalAdvanceLevel(2);
   auto gItemDef = A->addItemDefinition<GroupItemDefinition>("g3");
   // let make sure this group has no categories
-  gItemDef->setIsOkToInherit(false);
+  gItemDef->setCategoryInheritanceMode(Categories::CombinationMode::LocalOnly);
   vItemDef = gItemDef->addItemDefinition<VoidItemDefinition>("g0i0");
   attRes->finalizeDefinitions();
 

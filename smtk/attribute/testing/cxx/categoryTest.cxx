@@ -80,18 +80,8 @@ int main()
     // Lets see what categories the attribute definitions think they are
     if (expDef->categories().size())
     {
-      const smtk::attribute::Categories& categories = expDef->categories();
       std::cout << "ERROR: ExpDef's categories: ";
-      int i = 0;
-      for (const auto& catSet : categories.sets())
-      {
-        std::cout << "Category Set: " << i++ << " = ";
-        for (const auto& catName : catSet.includedCategoryNames())
-        {
-          std::cout << "\"" << catName << "\" ";
-        }
-        std::cout << std::endl;
-      }
+      std::cout << expDef->categories().convertToString() << std::endl;
     }
     else
     {
@@ -99,18 +89,8 @@ int main()
     }
     if (def2->categories().size())
     {
-      const smtk::attribute::Categories& categories = def2->categories();
       std::cout << "Def2's categories: ";
-      int i = 0;
-      for (const auto& catSet : categories.sets())
-      {
-        std::cout << "Category Set: " << i++ << " = ";
-        for (const auto& catName : catSet.includedCategoryNames())
-        {
-          std::cout << "\"" << catName << "\" ";
-        }
-        std::cout << std::endl;
-      }
+      std::cout << def2->categories().convertToString() << std::endl;
     }
     else
     {

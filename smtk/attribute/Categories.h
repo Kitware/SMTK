@@ -36,11 +36,22 @@ class SMTKCORE_EXPORT Categories
 public:
   enum class CombinationMode
   {
-    Or = 0, //!< Represents logical Or
-    Any SMTK_DEPRECATED_IN_22_07("Please use Or") = 0,
-    And = 1, //!< Represents logical And
-    All SMTK_DEPRECATED_IN_22_07("Please use And") = 1,
-    LocalOnly = 3 //!< Indicates no further processing of Category Set Pairs is required
+    Or = 0,        //!< Represents logical Or
+    And = 1,       //!< Represents logical And
+    LocalOnly = 2, //!< Indicates no further processing of Category Set Pairs is required
+
+#ifdef _MSC_VER
+    /*
+     * MSVC doesn't have a way to deprecate enum variants other than through
+     * `#pragma`. Just let other platforms handle it.
+     */
+    Any = Or,
+    All = And
+#else
+    Any SMTK_DEPRECATED_IN_22_07("Please use Or") = Or,
+    All SMTK_DEPRECATED_IN_22_07("Please use And") = And
+#endif
+
   };
 
   ///\brief Categories::Set represents a single category constraint used by the Categories class.
