@@ -525,6 +525,11 @@ void VisibilityBadge::componentVisibilityChanged(smtk::resource::ComponentPtr co
 {
   // The visibility should change for every row displaying the same \a comp:
   m_visibleThings[comp->id()] = visible;
+  auto* model = this->phraseModel();
+  if (model)
+  {
+    model->triggerDataChangedFor(comp);
+  }
 }
 } // namespace appcomponents
 } // namespace paraview
