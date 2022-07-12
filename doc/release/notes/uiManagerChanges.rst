@@ -14,3 +14,8 @@ Added the following methods:
 
 qtUIManager::setReadOnly(bool val)
 bool qtUIManager::isReadOnly() const
+
+Changes to qtUIManager's Error Reporting
+----------------------------------------
+
+Replaced uses of cerr with Logger in qtUIManager

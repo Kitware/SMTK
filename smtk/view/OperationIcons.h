@@ -88,7 +88,7 @@ public:
     return m_functors.erase(index) > 0;
   }
 
-  /// Construct an icon idenfified by the operation it represents.
+  /// Construct an icon identified by the operation it represents.
   /// SecondaryColor is a background or nearby color that the icon must contrast with.
   template<typename OperationType>
   std::string createIcon(const std::string& secondaryColor) const

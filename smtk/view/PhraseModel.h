@@ -224,7 +224,7 @@ public:
   BadgeSet& badges() { return m_badges; }
 
   /// Return the map between persistent object IDs and Descriptive Phrases
-  const UUIDsToPhrasesMap uuidPhraseMap() const { return m_objectMap; }
+  const UUIDsToPhrasesMap& uuidPhraseMap() const { return m_objectMap; }
 
   smtk::common::ThreadPool<DescriptivePhrases>& threadPool() { return m_pool; }
 
@@ -314,6 +314,13 @@ protected:
     const std::vector<int>& dst,
     const std::vector<int>& refs);
 
+  /// This is an utility called by triggerDataChanged() that repeatedly calls trigger
+  /// for every phrase that has children (in order to effect a redraw of the entire
+  /// model, but without rows being inserted/removed/repositioned).
+  ///
+  /// This is undesirable, but Qt provides no other documented method to achieve the effect.
+  void recursiveTrigger(DescriptivePhrasePtr phr, std::vector<int>& tl, std::vector<int>& br);
+
   /**\brief Remove the Descriptive Phrase and its descendants from the Persistent Object / Phrases Map
    */
   void removeFromMap(const DescriptivePhrasePtr& phr);
@@ -356,6 +363,8 @@ protected:
   bool m_updatingChildren = false;
 
   smtk::common::ThreadPool<DescriptivePhrases> m_pool;
+
+  std::atomic<bool> m_pending{ false }; // Is there a pending m_contentObserver timer?
 };
 } // namespace view
 } // namespace smtk

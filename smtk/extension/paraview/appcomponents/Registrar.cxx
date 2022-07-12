@@ -11,6 +11,8 @@
 //=============================================================================
 #include "smtk/extension/paraview/appcomponents/Registrar.h"
 
+#include "smtk/extension/paraview/appcomponents/GeometricVisibilityBadge.h"
+#include "smtk/extension/paraview/appcomponents/HierarchicalVisibilityBadge.h"
 #include "smtk/extension/paraview/appcomponents/VisibilityBadge.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
@@ -26,7 +28,8 @@ namespace appcomponents
 namespace
 {
 using ViewWidgetList = std::tuple<pqSMTKResourceBrowser>;
-using BadgeList = std::tuple<VisibilityBadge>;
+using BadgeList =
+  std::tuple<VisibilityBadge, GeometricVisibilityBadge, HierarchicalVisibilityBadge>;
 } // namespace
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)

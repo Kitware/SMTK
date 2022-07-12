@@ -1,6 +1,8 @@
 set(classes
   ApplicationConfiguration
   Registrar
+  GeometricVisibilityBadge
+  HierarchicalVisibilityBadge
   VisibilityBadge
   pqSMTKAttributePanel
   pqSMTKBehavior

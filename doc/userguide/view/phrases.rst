@@ -89,3 +89,44 @@ The returned array of badges will be ordered consistently.
 Each badge has an SVG string to use as an icon, an optional tool tip,
 and an "action" method used to perform some task when users click on
 the badge.
+
+The table below summarizes badges available.
+Note that many of these are only available in ParaView-based applications.
+
+.. list-table:: Badges provided by SMTK
+   :widths: 15 30
+   :header-rows: 1
+
+   * - Badge
+     - Description
+
+   * - :smtk:`LockedResourceBadge <smtk::view::LockedResourceBadge>`
+     - Appears next to resources that are write-locked (usually because
+       an operation is modifying the resource in the background).
+
+   * - :smtk:`TypeAndColorBadge <smtk::extension::qt::TypeAndColorBadge>`
+     - Appears next to any phrase with a related resource or component.
+       Its icon is selected by looking up the related object's type in
+       the :smtk:`smtk::view::ObjectIcons` dictionary.
+       The icon is colored by the object's "color" property.
+
+   * - :smtk:`GeometricVisibilityBadge <smtk::extension::paraview::appcomponents::GeometricVisibilityBadge>`
+     - Appears next to any phrase whose component or resource has renderable geometry,
+       allowing the user to show or blank the object. This badge switches between
+       2 icons that indicate whether the object is currrently visible or blanked.
+
+   * - :smtk:`HierarchicalVisibilityBadge <smtk::extension::paraview::appcomponents::HierarchicalVisibilityBadge>`
+     - Appears next to any phrase with children. This badge has 3 icons that
+       reflect whether all of the children, some of the children, or none of the
+       children are visible. Clicking on the badge will traverse all the children
+       in the phrase hierarchy and toggle their visible to off or on (depending on
+       the current badge state).
+
+       **Note:**  You should also use ``:smtk:GeometricVisibilityBadge`` in conjunction with this badge, otherwise the visibility state will not be properly maintained.
+
+When you list badges in a phrase-model's configuration, the order in which they
+appear determines the left-to-right order in which badges are placed next to
+phrases in the resource panel. Not every badge will appear next to every phrase
+in the resource panel; only phrases the badge considers applicable will show it.
+However, the order in which applicable badges are shown will always match the
+order in the configuration.

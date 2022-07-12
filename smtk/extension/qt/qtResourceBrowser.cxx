@@ -403,6 +403,7 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
       // index's current state).
       auto selected = m_p->m_view->selectionModel()->selection();
       smtk::view::DescriptivePhrase::Ptr phrase;
+      //TODO - NEED TO CHANGE THIS TO NE CONFIGURABLE
       qt::VisibilityBadge* badge = nullptr;
       for (auto idx : selected.indexes())
       {
