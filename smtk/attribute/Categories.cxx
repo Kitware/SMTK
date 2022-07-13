@@ -180,7 +180,7 @@ bool Categories::Stack::passes(const std::set<std::string>& cats) const
         return true;
       }
     }
-    else if ((it->first == CombinationMode::All) || (it->first == CombinationMode::LocalOnly))
+    else if ((it->first == CombinationMode::And) || (it->first == CombinationMode::LocalOnly))
     {
       return false;
     }

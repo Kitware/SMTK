@@ -26,7 +26,6 @@ inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Ca
     .def("passes", (bool (smtk::attribute::Categories::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::passes, py::arg("categories"))
     .def("passes", (bool (smtk::attribute::Categories::*)(const ::std::string&) const) &smtk::attribute::Categories::passes, py::arg("category"))
     .def("insert", (void (smtk::attribute::Categories::*)(const smtk::attribute::Categories&)) &smtk::attribute::Categories::insert, py::arg("categories"))
-    .def("insert", (bool (smtk::attribute::Categories::*)(const smtk::attribute::Categories::Set&)) &smtk::attribute::Categories::insert, py::arg("categorySet"))
     .def("reset", &smtk::attribute::Categories::reset)
     .def("size", &smtk::attribute::Categories::size)
     // NOTE that the Python form of this method is returning a copy since Python
