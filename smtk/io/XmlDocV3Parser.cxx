@@ -382,10 +382,10 @@ void XmlDocV3Parser::processExclusion(xml_node& excludeNode)
     }
     else
     {
-      smtkWarningMacro(m_logger, "Cannot find exclusion definiion: " << tname);
+      smtkWarningMacro(m_logger, "Cannot find exclusion definition: " << tname);
     }
   }
-  // We need atleast 2 definitions to exclude
+  // We need at least 2 definitions to exclude
   size_t i, j, n = defs.size();
   if (n < 2)
   {

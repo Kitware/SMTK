@@ -184,7 +184,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
       }
       // First grab the associated enum
       std::string v = idef->discreteEnum(i);
-      // Check to see if teh enum has an explicit advance level
+      // Check to see if the enum has an explicit advance level
       xatt = vnode.attribute("AdvanceLevel");
       if (xatt)
       {

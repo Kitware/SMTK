@@ -89,11 +89,11 @@ int unitAttributeBasics(int /*unused*/, char* /*unused*/[])
   smtkTest(att->associatedModelEntityIds().empty(), "Should not have associated entity IDs.");
   smtkTest(!att->associatedObjects(), "Should not have associated components.");
 
-  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");
+  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundary node.");
   att->setAppliesToBoundaryNodes(true);
-  smtkTest(att->appliesToBoundaryNodes(), "Should be applied to boundry node.");
+  smtkTest(att->appliesToBoundaryNodes(), "Should be applied to boundary node.");
   att->setAppliesToBoundaryNodes(false);
-  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");
+  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundary node.");
   smtkTest(!att->appliesToInteriorNodes(), "Should not be applied to interior node.");
   att->setAppliesToInteriorNodes(true);
   smtkTest(att->appliesToInteriorNodes(), "Should be applied to interior node.");
