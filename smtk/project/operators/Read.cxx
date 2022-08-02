@@ -36,6 +36,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/system/error_code.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <fstream>
+#include <string>
+
 namespace smtk
 {
 namespace project

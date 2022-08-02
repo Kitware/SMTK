@@ -31,6 +31,7 @@
 
 #include "smtk/project/Write_xml.h"
 
+#include <fstream>
 #include <iostream>
 
 SMTK_THIRDPARTY_PRE_INCLUDE
