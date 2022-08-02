@@ -41,12 +41,6 @@
     <Role ID="0"/>
   </UniqueRoles>
 
-  <Configurations AnalysisAttributeType="Analysis">
-    <Config Name="Heat Transfer Only" AdvanceWriteLevel="5">
-      <Analysis Type="Heat Transfer"/>
-    </Config>
-  </Configurations>
-
   <Definitions>
     <!-- Numerics-->
     <AttDef Type="numerics" Label="Numerics" BaseType="" Version="0" Unique="true">
@@ -221,14 +215,26 @@ moving-enclosure radiation is enabled</BriefDescription>
     </AttDef>
   </Definitions>
 
+  <Styles>
+    <Att Type="numerics">
+      <Style  Name="foo">
+        <ItemViews>
+            <View Item="velocity-group" Type="Default" InsertMode="Append"/>
+            <View Item="dt_init" Type="Default" Precision="4" EditPrecision="10"/>
+            <View Item="dt_max" Type="Default" Precision="8" EditPrecision="10" Notation="Fixed"/>
+            <View Item="dt_min" Type="Default" Precision="8" EditPrecision="8" Notation="Fixed"/>
+        </ItemViews>
+      </Style>
+    </Att>
+  </Styles>
+
  <!-- View specifications -->
   <Views>
     <View Type="Group" Title="TopLevel" TopLevel="true" TabPosition="North"
-      FilterByAdvanceLevel="true" UseConfigurations="true" ConfigurationType="Analysis"
-      ConfigurationLabel="My Configurations:">
+      FilterByAdvanceLevel="true">
       <Views>
-        <View Title="Test" />
         <View Title="Configurations" />
+        <View Title="Test" />
       </Views>
     </View>
 
@@ -254,6 +260,7 @@ moving-enclosure radiation is enabled</BriefDescription>
         </Att>
         <Att Name="outputs-att" Type="outputs" />
         <Att Name="simulation-control-att" Type="simulation-control" />
+        <Att Name="numerics-att with style!" Type="numerics" Style="foo"/>
       </InstancedAttributes>
     </View>
 

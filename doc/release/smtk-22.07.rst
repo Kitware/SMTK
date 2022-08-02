@@ -81,7 +81,7 @@ change the value back to the default, if one is specified. If
 no default is specified, the menu entry is disabled.
 
 Int, Double, String, File, and DateTime items are all supported,
-including spinbox and multi-line views. Resource items can't have
+including spinbox and multi-line views. Reference, Component, and Resource items can't have
 a default specified.
 
 As a result, `qtInputItem` no longer set themselves back to the

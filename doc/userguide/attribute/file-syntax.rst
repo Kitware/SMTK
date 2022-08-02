@@ -19,6 +19,13 @@ Attributes that can be included in this XML Element.
 
        Current value is 6 (latest version)
 
+   * - DisplayHint
+     - Boolean value that indicates if the Attribute Resource should be automatically
+       displayed in an Attribute Editor when loaded into memory.
+
+       (Optional - default is false which means the Resource will not automatically be
+       displayed)
+
 This element can contain the following optional children XML Elements:
 
 - Includes : used for including additional attribute files (see `Includes Section`_)
@@ -401,7 +408,20 @@ Each Config Element consists of a nested group of Analysis Elements.  Each Analy
    * - Type
      - String value representing an analysis type.
 
+Unique Roles Section
+--------------------
+There are use cases where the developer would like to enforce a constraint among ComponentItems such that each item cannot point to the same resource component. In order to provide this functionality, we have introduced the concept of unique roles.  Roles in this context refers to the roles defined in the resource links architecture and that are referenced in ReferenceItemDefinition.  If the role specified in either a Reference or Component Item Definition is include in this section, it is considered **unique**.
 
+Here is an example of an Unique Role Section
+
+.. code-block:: xml
+
+  <UniqueRoles>
+    <Role ID="10"/>
+    <Role ID="0"/>
+  </UniqueRoles>
+
+In this case roles 10 and 0 are considered to be unique.
 
 Item Blocks Section
 ---------------------------------
@@ -720,7 +740,7 @@ The CategotyInfo Element itself can have the following XML Attributes:
 
 AssociationsDef Format
 ~~~~~~~~~~~~~~~~~~~~~~
-The format is an extension of the `Reference Item Format`_. When dealing with Model Resource Components you can use a **MembershipMask** XML Element to indicate the type of Model Resource Component that can be associated.
+The format is an extension of the `Reference Item Based Definitions`_. When dealing with Model Resource Components you can use a **MembershipMask** XML Element to indicate the type of Model Resource Component that can be associated.
 
 .. code-block:: xml
 
@@ -741,6 +761,14 @@ Attributes that can be included in this XML Element in addition to those support
 
    * - OnlyResources
      - Boolean value indicating that the association is only to Resources. (Optional).
+
+   * - <ReferenceLabels>
+     - Defines the labels that should be displayed
+       next to the Item's values.
+       This element should only be specified if the Item is either **Extensible** or has **NumberOfRequiredValues** > 1.
+
+       See `Specifying Labels`_.
+       (Optional)
 
 Exclusions Format
 ^^^^^^^^^^^^^^^^^
@@ -1225,11 +1253,11 @@ Structured Discrete Value Form
 """"""""""""""""""""""""""""""
 The Structure Element contains a Value element along with optional category and required Item Definitions.
 
-.. list-table:: XML Attributes for <Structure> Element
+.. list-table:: XML Children Elements for <Structure> Element
    :widths: 10 40
    :header-rows: 1
 
-   * - XML Attribute
+   * - XML Child Element
      - Description
 
    * - <Value>
@@ -1300,7 +1328,7 @@ a group.  It can also be used to define a set of choices that the user needs to 
        **Note** - this is only used if **IsConditional** is *true*.
 
 
-.. list-table:: XML Attributes for <Group> Element
+.. list-table:: XML Children Elements for <Group> Element
    :widths: 10 40
    :header-rows: 1
 
@@ -1341,70 +1369,231 @@ It produces the following in ModelBuilder:
    :width: 90%
 
 
+Reference Item Based Definitions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Reference Item Definition creates Items that can refer to other SMTK Persistent Objects such as Resources and Resource Components.  It makes use of the queries functionally provided by the various resources.  Component and Resource Item Definitions are derived from
+Reference Item Definition and therefore have many of the same XML attributes and children components in common.
+
+
+.. list-table:: Common XML Attributes for Reference Item Based Definitions
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - NumberOfRequiredValues
+     - Integer value representing the minimum number of values the Item should have.
+       (Optional - if not specified assumed to be 1)
+
+   * - Extensible
+     - Boolean value indicating that the Item's number of values can be extended past **NumberOfRequiredValues**.
+       (Optional - if not specified assumed to be *false*)
+
+   * - MaxNumberOfValues
+     - Integer value representing the maximum number of values the Item can have.  A value of 0 means there is no
+       maximum limit.
+       (Optional - if not specified assumed to be 0)
+
+       **Note** - this is only used if **Extensible** is *true*.
+
+   * - EnforceCategories
+     - Boolean value indicating if the reference item's validity check should also
+       check to see if the item is pointing to an Attribute that would be considered
+       relevant based on the active categories
+
+   * - HoldReference
+     - Boolean value that indicates whether the item should be forcing the Persistent Object
+       to be kept in memory.
+       (Optional: Default is false)
+
+       **Note** - this is currently used for Operation Parameters to make sure
+       removed Resources and/or Components are kept in memory after the operation runs.
+
+   * - LockType
+     - String value that indicates whether the resource being referred to should
+       be locked.  Acceptable values are : DoNotLock, Read or Write
+       (Optional)
+
+       **Note** - this is currently used for Operation Parameters only!
+
+   * - Role
+     - Integer value that sets the Role of the links used by the Reference Item.
+       The main use for setting the Role is to use an Unique Role.  See `Unique Roles Section`_.
+
+.. list-table:: Common XML Children Elements for Reference Item Based Definitions
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - <Accepts>
+     - Defines the set of acceptance rules. In order for a SMTK Persistent Object to
+       be referenced by this item, it must pass at least one of these rules (if any have been
+       specified).  These are represented by a set of **Resource** Elements.
+
+       See `Resource Query Format`_.
+       (Optional)
+
+   * - <Rejects>
+     - Defines the set of rejection rules. In order for a SMTK Persistent Object to
+       be referenced by this item, it must not pass any of these rules (if any have been
+       specified).  These are represented by a set of **Resource** Elements.
+
+       See `Resource Query Format`_.
+       (Optional)
+
+   * - <ComponentLabels>
+     - Defines the labels that should be displayed
+       next to the Item's values.
+       This element should only be specified if the Item is either **Extensible** or has **NumberOfRequiredGroups** > 1.
+
+       See `Specifying Labels`_.
+       (Optional)
+
+   * - <ChildrenDefinitions>
+     - Defines the items contained within the reference item generated
+       by this Item Definition (Optional).
+
+       See `Item Definitions Format`_.
+
+   * - <ConditionalInfo>
+     - Defines which of the children items should be considered active based on
+       the type of Persistent Object the Item is referencing.
+
+       See `Specifying Conditional Information for Reference Items`_.
+       (Optional)
+
+Resource Query Format
+~~~~~~~~~~~~~~~~~~~~~
+This is represented by a <Resource> Element and represents a query that can be used
+by ReferenceItems and Attribute Associations.
+
+.. list-table:: XML Attributes for <Resource> Element for Resource Queries
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Name
+     - String value that represents a Resource Type Name.  For example
+       smtk::attribute::Resource.  These names are typically defined in the
+       Resource class's *smtkTypeMacro*.
+
+   * - Filter
+     - String value representing a query that is valid for Resources referred by
+       the above **Name** XML attribute.
+
+       (Optional - if not specified, the Item is referencing Resources not Resource Components)
+
+Component Item Definition
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Component Items can reference a Resource Component and includes all of the structure for Reference Item Based Definitions.
+
+.. list-table:: XML Children Elements for <Component> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - <ComponentLabels>
+     - Defines the labels that should be displayed
+       next to the Item's values.
+       This element should only be specified if the Item is either **Extensible** or has **NumberOfRequiredValues** > 1.
+
+       See `Specifying Labels`_.
+       (Optional)
+
+
+Resource Item Definition
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Resource Items can reference a Resource and includes all of the structure for Reference Item Based Definitions.
+
+.. list-table:: XML Children Elements for <Resource> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - <ResourceLabels>
+     - Defines the labels that should be displayed
+       next to the Item's values.
+       This element should only be specified if the Item is either **Extensible** or has **NumberOfRequiredValues** > 1.
+
+       See `Specifying Labels`_.
+       (Optional)
+
+
+Specifying Conditional Information for Reference Items
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Provides the ability to activate the Item's children items based on what the Item
+is currently pointed to.  In the following example, the Item is pointing to a *LiquidMaterial* the Item will have 2 active children named initialTemp and initialFlow, but if it is pointing to a *SolidMaterial* it will only have 1 active child named initialTemp.
+
+.. code-block:: xml
+
+  <ConditionalInfo>
+    <Condition Resource="smtk::attribute::Resource" Component="attribute[type='SolidMaterial']">
+      <Items>
+        <Item>initialTemp</Item>
+      </Items>
+    </Condition>
+    <Condition Component="attribute[type='LiquidMaterial']">
+      <Items>
+        <Item>initialTemp</Item>
+        <Item>initialFlow</Item>
+      </Items>
+    </Condition>
+  </ConditionalInfo>
+
+.. list-table:: XML Attributes for <Condition> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Resource
+     - String value that represents a Resource Type Name.  For example
+       smtk::attribute::Resource.  These names are typically defined in the
+       Resource class's *smtkTypeMacro*.
+
+       (Optional - if not specified, it assumes that *Component*'s  query string
+       is applicable to all Resource Components that passes the Item's Accept/Reject
+       conditions.)
+
+   * - Component
+     - String value representing a Resource Component query that is valid for Resources
+       referred by the above **Resource** XML attribute if specified or for Resources
+       that passes the Item's Accept/Reject conditions if it is not specified.
+
+       (Optional - if not specified, the Item is referencing Resources and not Resource Components)
+
+**Note** - that at least one of the **Resource** or **Component** XML Attribute must be
+specified.
+
+.. list-table:: XML Children Elements for <Condition> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Child Element
+     - Description
+
+   * - <Items>
+     - Represents the Children Items that are associated with this discrete value.
+       These names should be defined in the Item's **ChildrenDefinitions** element.
+
 Attribute Section <Attributes>
 ------------------------------
 .. todo::
 
    Describe attributes and how they are serialized
 
-
-
-XML attributes
-^^^^^^^^^^^^^^^^^^^^^^^
-
-Children elements
-~~~~~~~~~~~~~~~~~
-
-Attribute Properties
-""""""""""""""""""""
-
-The Attribute node can contain a **Properties** node that has the same format as the Properties node for the Resource.
-
-File Item  <File>
-"""""""""""""""""""""""""""
-.. todo::
-
-   Describe file items and how they are serialized
-
-Group Item  <Group>
-"""""""""""""""""""""""""""""
-.. todo::
-
-   Describe group items and how they are serialized
-
-Integer Item  <Int>
-"""""""""""""""""""""""""""""
-.. todo::
-
-   Describe integer items and how they are serialized
-
-String Item  <String>
-"""""""""""""""""""""""""""""""
-.. todo::
-
-   Describe string items and how they are serialized
-
-Ref Item  <Ref>
-"""""""""""""""""""""""""
-.. todo::
-
-   Describe attribute reference items and how they are serialized
-
-Model Entity Item  <Model>
-""""""""""""""""""""""""""""""""""""""""""
-
-A :smtk:`ModelEntityItem`, which appears in XML as a <Model> is an
-item belonging to an attribute stored as a UUID that refers to an
-SMTK model entity.
-These model entities may be regions, faces, edges, vertices, or even
-higher-level conceptual entities such as models, groups, or instances (used
-in modeling scene graphs and assemblies).
-
-Void Item Definition <Void>
-"""""""""""""""""""""""""""
-.. todo::
-
-   Describe "void" items and how they are serialized
 
 Views Section <Views>
 ---------------------
@@ -1429,24 +1618,18 @@ inside those attributes should be presented to the user.
      - Description
 
    * - Type
-     - An enumeration that specifies what information the view should
-       present and dictates the children XML elements it must or may contain.
-       Acceptable values include: "Group" (a view that groups child views
-       in tabs), "Instanced" (a view that displays attribute instances
-       specified by their names), "Attribute" (a view that displays all
-       attributes sharing a common definition and usually allows users to
-       manage instances by adding and removing them), "Operator" (a view
-       that customizes how operation parameters are displayed), "ModelEntity"
-       (a view that shows model entities and lets users choose an attribute
-       to associate with each one, optionally creating instances as needed),
-       "SimpleExpression", "Category", or "Selector".
-       (Required)
+     - A string that specifies the View's type and should match the
+       View class name or alias that was used to register the View
+       implementation with the view::Manager
 
    * - Title
-     - A string that summarizes the view to a user.
-       When a view is tabbed inside another, the title string
-       serves as the label for the tab.
-       (Required)
+     - A string that represents the name of the View
+
+   * - Label
+     - A string that is used in place of the View's title
+       when it is displayed in the UI.
+
+       (Optional - if not specified, the View's title is used.)
 
    * - TopLevel
      - Boolean value indicating whether the view is the root view
@@ -1454,27 +1637,330 @@ inside those attributes should be presented to the user.
        false or omitted) the view is a child that may be included
        by the toplevel view.
 
+       (Optional - assumes it is not a top-level view if not specified.)
 
-.. todo::
 
-   Describe root views and how they are serialized
+Analysis View
+^^^^^^^^^^^^^
 
-View configuration
-^^^^^^^^^^^^^^^^^^
+.. list-table:: Alias and Type name for Analysis Views
+   :widths: 10 40
+   :header-rows: 1
 
-Each view Type above may need configuration information
-specified by child XML elements of the <View>.
-The sections below define those child element types:
-the first section covers how a view chooses what attributes
-to show while the second section covers ways to customize
-how those attributes' items are presented.
+   * - Alias
+     - Type Name
 
-Attribute selection
-~~~~~~~~~~~~~~~~~~~
+   * - Analysis
+     - smtk::extension::qtAnalysisView
 
-.. todo::
 
-   Describe <InstancedAttributes>, <Attributes>, ... elements here.
+An Analysis View represents the analysis structure defined in an Attribute Resource.  The View will set an Attribute Resource's *Active Categories* based on the choices the user has made in the View.  The View will generate both an Attribute Definition and Attribute based on the XML attributes if needed.
+
+.. code-block:: xml
+
+   <View Type="Analysis" Title="Configurations" AnalysisAttributeName="analysis" AnalysisAttributeType="analysis">
+    </View>
+
+.. list-table::  XML Attributes for Analysis Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - AnalysisAttributeName
+     - A string that defines the name of the Attribute representing the Analysis.
+
+       *Note* - this name should be unique within the Attribute Resource
+
+   * - AnalysisAttributeType
+     - A string that defines the type name of the Attribute Definition representing the Analysis structure.
+
+       *Note* - this type name  should be unique within the Attribute Resource
+
+Here in an example UI of an Analysis View.
+
+  .. findfigure:: analysisViewExample.*
+   :align: center
+   :width: 90%
+
+Associations View
+^^^^^^^^^^^^^^^^^
+
+.. list-table:: Alias and Type name for Associations Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - Alias
+     - Type Name
+
+   * - Associations
+     - smtk::extension::qtAssociationView
+
+
+An Associations View allows users to change an Attribute's associations but does not allow the user to change the Attribute's values.
+
+.. code-block:: xml
+
+    <View Type="Associations" Title="Materials Associations">
+      <AttributeTypes>
+        <Att Type="Material">
+        </Att>
+      </AttributeTypes>
+    </View>
+
+The XML Element should have one child element called <AttributeTypes>.  The <AttributeTypes> element is composed of a set of <Att> Elements.  Each <Att> must contain an XML Attribute named **Type** which refers to an Attribute Definition type name.
+
+The View will provide a drop-down list of all smtk::attribute::Attributes that are of (or derived from) one of the specified Attribute Definition types.
+
+
+Here in an example UI of an Associations View.
+
+  .. findfigure:: associatioViewExample.*
+   :align: center
+   :width: 90%
+
+Attribute View
+^^^^^^^^^^^^^^^^^
+
+.. list-table:: Alias and Type name for Associations Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - Alias
+     - Type Name
+
+   * - Attribute
+     - smtk::extension::qtAttributeViewView
+
+
+An Attribute View allows users to create, modify, and delete smtk::attribute::Attributes.
+
+.. code-block:: xml
+
+    <View Type="Attribute" Title="Materials">
+      <AttributeTypes>
+        <Att Type="Material"/>
+      </AttributeTypes>
+    </View>
+
+.. list-table:: XML Attributes specifically for Attribute View Elements
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - DisableNameField
+     - A boolean that indicates the user should not be able to edit the names of Attributes
+
+       (Optional - default is *false*)
+
+   * - DisableTopButtons
+     - A boolean that indicates the top buttons (*New*, *Copy*, and *Delete*) should be disabled thereby preventing the user from creating or deleting Attributes.
+
+       (Optional - default is *false*)
+
+   * - HideAssociations
+     - A boolean that indicates if the View GUI should not display association information.
+
+       (Optional - default is *false*)
+
+   * - RequireAllAssociated
+     - A boolean that indicates if all Resource/Resource Components that can be associated to a specific type of Attribute should have an Attribute of that type associated with it in order to be considered *valid*.
+
+       (Optional - default is *false*)
+
+   * - AvailableLabel
+     - A string that is used to indicate the Resources/Components that could be associated with the Attribute.
+
+       (Optional - default is *Available*)
+
+   * - CurrentLabel
+     - A string that is used to indicate the Resources/Components that are currently associated with the Attribute.
+
+       (Optional - default is *Current*)
+
+   * - AssociationTitle
+     - A string that is the title of the widget used deal with the Attribute's association information.
+
+       (Optional - default is *Model Boundary and Attribute Associations*)
+
+   * - DisplaySearchBox
+     - A boolean that indicates if the user should be able to search Attributes by name.
+
+       (Optional - default is *true*)
+
+   * - SearchBoxText
+     - A string that is used in the search box to indicate what the box is for.
+
+       (Optional - default is *Search attributes...*)
+
+   * - AttributeNameRegex
+     - A string that is used to determine if the name the user entered for an Attribute is valid.
+
+       (Optional - default is there is no constraint on the name of an Attribute)
+
+The XML Element should have one child element called <AttributeTypes>.  The <AttributeTypes> element is composed of a set of <Att> Elements.  Each <Att> must contain an XML Attribute named **Type** which refers to an Attribute Definition type name.
+
+The View will provide a drop-down list of all non-abstract smtk::attribute::Definitions that are specified (or derived from) the types mentions in the <AttributeTypes> Element.  When
+the user selects one of the Definitions, it will display all of the existing Attributes that
+match the type in the list view.
+
+When an attribute is selected from the list, the view also displays editing fields for the items contained by the attribute, and an Association  widget for assigning the attribute to resource components. (The associations widget is only displayed if the corresponding Attribute Definition includes associations and the **HideAssociations** option is not set to *true*.)
+
+
+Here in an example UI of an Attribute View.
+
+  .. findfigure:: attributeViewExample.*
+   :align: center
+   :width: 90%
+
+Group View
+^^^^^^^^^^
+
+.. list-table:: Alias and Type name for Group Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - Alias
+     - Type Name
+
+   * - Group
+     - smtk::extension::qtGroupView
+
+
+A Group View represents a collection of other Views.  This collection
+is laid out based on the **Style** attribute.  The supported styles are:
+
+* tiled - each child view is displayed vertically in the Group View's Frame.
+* tabbed - each child view is displayed in its own separate tab.
+* groupbox - each child view is displayed vertically within its own collapsible Frame.
+
+.. code-block:: xml
+
+  <View Type="Group" Name="TopLevel" FilterByAdvanceLevel="true" TabPosition="North" TopLevel="true">
+    <Views>
+      <View Title="Set Analysis" />
+      <View Title="Materials" />
+      <View Title="Boundary Conditions" />
+    </Views>
+  </View>
+
+Here is an example of a Group View with Style set to *Tabbed*.
+
+  .. findfigure:: tabbedViewExample.*
+   :align: center
+   :width: 90%
+
+Here is the same Group View with Style set to *Tiled*.
+
+  .. findfigure:: tiledViewExample.*
+   :align: center
+   :width: 90%
+
+Finally, here is the same Group View with Style set to *GroupBox*.  In this case
+one of the children is opened and other is closed.
+
+  .. findfigure:: groupBoxViewExample.*
+   :align: center
+   :width: 90%
+
+
+
+.. list-table::  XML Attributes for Group Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Style
+     - A string that indicates the style to be used to display the View's children Views.
+
+       (Optional and Case Insensitive - default is *tabbed*)
+
+   * - ActiveTab
+     - A string that corresponds to a child view name.  If set and Style is tabbed, then
+       the corresponding tab will be displayed.
+
+       (Optional)
+
+   * - TabPosition
+     - A string that corresponds to which side the tabs of a tabbed Group View should be
+       displayed (*north*, *south*, *east*, or *west*).
+
+       (Optional and Case Insensitive - default is *north*)
+
+This XML element consists of a single child element called <Views>.  The <Views> element contains a list of <View> XML Elements.
+
+.. list-table::  XML Attributes for <View>
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Title
+     - String value that refers to an existing View that will be displayed as a child to this one.
+
+   * - Open
+     - A boolean that indicates if the groupbox for that child view should be open or closed.
+
+       (Optional - default is closed)
+
+Instance View
+^^^^^^^^^^^^^
+
+.. list-table:: Alias and Type name for Instance Views
+   :widths: 10 40
+   :header-rows: 1
+
+   * - Alias
+     - Type Name
+
+   * - Instance
+     - smtk::extension::qtInstanceView
+
+
+An Instance View will display a set of an Attributes for the user to edit.
+
+.. code-block:: xml
+
+    <View Type="Instanced" Title="General">
+      <InstancedAttributes>
+        <Att Name="numerics-att" Type="numerics"/>
+        <Att Name="outputs-att" Type="outputs" />
+        <Att Name="simulation-control-att" Type="simulation-control" />
+      </InstancedAttributes>
+    </View>
+
+The XML Element should have one child element called <InstancedAttributes>.  The <InstancedAttributes> element is composed of a set of <Att> Elements.
+
+.. list-table::  XML Attributes for <Att> Elements
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Name
+     - A string that indicates the name of the Attribute.
+
+   * - Type
+     - A string that indicates the type of the Attribute.
+
+   * - Style
+     - A string that indicates the *Style* to be used to display the Attribute.
+
+       (Optional)
+
+Here in an example UI of an Associations View.
+
+  .. findfigure:: instanceViewExample.*
+   :align: center
+   :width: 90%
+
 
 Item Views
 ~~~~~~~~~~

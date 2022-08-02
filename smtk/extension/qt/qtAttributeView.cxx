@@ -1238,7 +1238,7 @@ void qtAttributeView::getAllDefinitions()
   smtk::attribute::DefinitionPtr attDef;
   bool flag;
 
-  // The view should have a single internal component called InstancedAttributes
+  // The view should have a single internal component called AttributeTypes
   if (
     (view->details().numberOfChildren() != 1) ||
     (view->details().child(0).name() != "AttributeTypes"))
