@@ -30,6 +30,8 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
+#include <fstream>
+
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>

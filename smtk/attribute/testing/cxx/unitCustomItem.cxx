@@ -43,6 +43,7 @@
 #include "smtk/io/Logger.h"
 
 #include <complex>
+#include <fstream>
 #include <iostream>
 #include <utility>
 
