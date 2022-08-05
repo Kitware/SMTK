@@ -134,6 +134,7 @@ void qtDiscreteValueEditor::createWidget()
   }
 
   std::vector<std::string> validEnums = item->relevantEnums(true, true, uiManager->advanceLevel());
+  std::size_t enumIndex;
   for (size_t i = 0; i < validEnums.size(); i++)
   {
     if ((!defaultEnum.empty()) && (validEnums[i] == defaultEnum))
@@ -141,7 +142,8 @@ void qtDiscreteValueEditor::createWidget()
       tooltip = "Default: " + QString(validEnums[i].c_str());
       validEnums[i] += " (Default)";
     }
-    combo->addItem(validEnums[i].c_str(), (int)i);
+    itemDef->getEnumIndex(validEnums[i], enumIndex);
+    combo->addItem(validEnums[i].c_str(), static_cast<int>(enumIndex));
   }
 
   if (!tooltip.isEmpty())
