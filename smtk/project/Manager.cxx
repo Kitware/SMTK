@@ -62,9 +62,9 @@ Manager::Manager(
   , m_resourceManager(resourceManager)
   , m_operationManager(operationManager)
 {
-  // Define a metadata observer that appends the assignment of the resource
+  // Define a metadata observer that appends the assignment of the project
   // manager to the create functor for operations that inherit from
-  // ResourceManagerOperation.
+  // smtk::project::Operation.
   auto operationMetadataObserver = [&, this](const smtk::operation::Metadata& md, bool adding) {
     if (!adding)
       return;

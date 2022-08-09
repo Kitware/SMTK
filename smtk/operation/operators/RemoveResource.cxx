@@ -49,7 +49,7 @@ bool RemoveResource::ableToOperate()
 RemoveResource::Result RemoveResource::operateInternal()
 {
   // Access the resource manager (provided by the operation manager that created
-  // this operation, since we inherit from ResourceManagerOperation).
+  // this operation
   auto resourceManager = this->resourceManager();
 
   // If there is not resource manager, return with failure.

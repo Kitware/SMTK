@@ -25,6 +25,12 @@ namespace operation
 /// manager assigned to them upon creation. Otherwise, the resource manager must
 /// be set manually.
 /// Functionality has been absorbed by smtk::operation::Operation
+// SMTK_DEPRECATED_IN_22_07("Functionality has been absorbed by smtk::operation::Operation. Replace "
+//                          "with smtk::operation::XMLOperation")
+// Can't apply deprecation macro to `using`, alternative:
+#pragma message(                                                                                   \
+  "ResourceManagerOperation deprecated! Functionality has been absorbed by smtk::operation::Operation. Replace with smtk::operation::XMLOperation")
+
 using ResourceManagerOperation = smtk::operation::XMLOperation;
 } // namespace operation
 } // namespace smtk
