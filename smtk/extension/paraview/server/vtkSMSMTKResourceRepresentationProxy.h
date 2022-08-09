@@ -16,8 +16,11 @@
 #ifndef smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 #define smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 
-#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" //needed for exports
+#include "smtk/common/UUID.h"                                     // needed for visibility API
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" // needed for exports
 #include "vtkSMPVRepresentationProxy.h"
+
+#include <map> // for visibility API
 
 class vtkSMTKResourceRepresentation;
 
@@ -34,6 +37,8 @@ public:
     delete;
 
   vtkSMProxy* GetResourceRepresentationSubProxy();
+
+  void GetComponentVisibilities(std::map<smtk::common::UUID, int>& visibilities);
 
 protected:
   vtkSMSMTKResourceRepresentationProxy();

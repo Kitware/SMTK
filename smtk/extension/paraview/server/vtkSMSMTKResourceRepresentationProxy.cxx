@@ -11,6 +11,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 
 #include "vtkClientServerStream.h"
+#include "vtkCompositeRepresentation.h"
 #include "vtkObjectFactory.h"
 #include "vtkPVExtractSelection.h"
 #include "vtkPVXMLElement.h"
@@ -33,4 +34,20 @@ void vtkSMSMTKResourceRepresentationProxy::PrintSelf(ostream& os, vtkIndent inde
 vtkSMProxy* vtkSMSMTKResourceRepresentationProxy::GetResourceRepresentationSubProxy()
 {
   return this->GetSubProxy("SMTKResourceRepresentation");
+}
+
+void vtkSMSMTKResourceRepresentationProxy::GetComponentVisibilities(
+  std::map<smtk::common::UUID, int>& visibilities)
+{
+  // This method should really use client-server JSON RPC (in vtkSMTKWrapperProxy)
+  // to send/receive the visibility map instead of "peeking under the covers" and
+  // asking the server-side object directly.
+  auto* mpr = this->GetClientSideObject(); // TODO: Remove the need for me.
+  auto* cmp = vtkCompositeRepresentation::SafeDownCast(mpr);
+  auto* spx =
+    cmp ? vtkSMTKResourceRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
+  if (spx)
+  {
+    spx->GetEntityVisibilities(visibilities);
+  }
 }

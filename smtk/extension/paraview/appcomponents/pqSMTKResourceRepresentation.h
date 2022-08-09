@@ -39,6 +39,9 @@ public:
   /// Change the visibility of the specified component. Returns true if changed, false otherwise.
   bool setVisibility(smtk::resource::ComponentPtr comp, bool visible);
 
+  /// Populate the \a visibilities map with per-component visibility information.
+  void allVisibilities(std::map<smtk::common::UUID, int>& visibilities) const;
+
 Q_SIGNALS:
   /// Emitted from within setVisibility().
   void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);

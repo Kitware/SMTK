@@ -114,6 +114,20 @@ bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr co
   return false;
 }
 
+void pqSMTKResourceRepresentation::allVisibilities(
+  std::map<smtk::common::UUID, int>& visibilities) const
+{
+  auto* pxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(this->getProxy());
+  if (pxy)
+  {
+    pxy->GetComponentVisibilities(visibilities);
+  }
+  else
+  {
+    visibilities.clear();
+  }
+}
+
 void pqSMTKResourceRepresentation::updateSettings()
 {
   auto* settings = vtkSMTKSettings::GetInstance();
