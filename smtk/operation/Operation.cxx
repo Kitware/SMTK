@@ -18,10 +18,14 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
-
+#include "smtk/attribute/VoidItem.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
+#include "smtk/resource/Manager.h"
 
 #include "smtk/operation/Operation_xml.h"
 
@@ -238,6 +242,15 @@ Operation::Result Operation::operate()
     manager->observers()(*this, EventType::DID_OPERATE, result);
   }
 
+  // Un-manage any resources marked for removal before releasing locks.
+  bool removed = this->unmanageResources(result);
+  if (!removed)
+  {
+    smtkErrorMacro(this->log(), "Failed to remove resources marked for removal.");
+    result->findInt("outcome")->setValue(
+      static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
+  }
+
   // Unlock the resources.
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
@@ -380,6 +393,106 @@ void Operation::markModifiedResources(Operation::Result& result)
   }
 }
 
+namespace
+{
+bool removeResource(
+  const smtk::resource::ResourcePtr& resource,
+  const smtk::resource::ManagerPtr& resourceManager,
+  bool shouldRemoveLinks)
+{
+  // we need to remove links before removing the resource, otherwise
+  // the resource will just load again.
+  if (shouldRemoveLinks)
+  {
+    resourceManager->visit([&resource](smtk::resource::Resource& rsrc) {
+      rsrc.links().removeAllLinksTo(resource);
+      return smtk::common::Processing::CONTINUE;
+    });
+  }
+  // resource manager observers should see the resource as ready to close.
+  resource->setClean(true);
+  bool removed = resourceManager->remove(resource);
+  return removed;
+}
+} // namespace
+bool Operation::unmanageResources(Operation::Result& result)
+{
+  auto item = result->findResource("resourcesToExpunge");
+  auto removeLinksItem =
+    result->findAs<smtk::attribute::VoidItem>("removeAssociations", smtk::attribute::RECURSIVE);
+  // Access the resource manager (provided by the operation manager that created
+  // this operation, if any)
+  auto resourceManager = this->resourceManager();
+  if (!item || !resourceManager)
+  {
+    return true;
+  }
+
+  bool ret = true;
+  for (std::size_t i = 0; i < item->numberOfValues(); i++)
+  {
+    // no need to look at items that cannot be resolved
+    if (item->value(i) == nullptr)
+    {
+      continue;
+    }
+
+    // ...access the associated resource.
+    smtk::resource::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::resource::Resource>(item->value(i));
+    if (resource)
+    {
+      bool shouldRemoveLinks = removeLinksItem ? removeLinksItem->isEnabled() : false;
+      bool shouldRemove = true;
+      auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
+      if (project)
+      {
+        // We were given a project. Close it and all its resources.
+        for (const auto& rsrc : project->resources())
+        {
+          ret &= removeResource(rsrc, resourceManager, true);
+        }
+      }
+      else if (this->managers())
+      {
+        // see if this resource is part of a project. If so, don't remove.
+        if (auto projectManager = this->managers()->get<smtk::project::Manager::Ptr>())
+        {
+          for (const auto& project : projectManager->projects())
+          {
+            if (project->resources().get(resource->id()))
+            {
+              shouldRemove = false;
+              smtkErrorMacro(
+                this->log(),
+                "Resource belongs to a project, unable to remove: " << resource->name());
+              ret = false;
+              break;
+            }
+          }
+        }
+      }
+      if (shouldRemove)
+      {
+        bool rmvRet = removeResource(resource, resourceManager, shouldRemoveLinks);
+        // projects should be removed from their manager.
+        if (project && this->managers())
+        {
+          if (auto projectManager = this->managers()->get<smtk::project::Manager::Ptr>())
+          {
+            ret &= projectManager->remove(project);
+          }
+        }
+        else
+        {
+          ret &= rmvRet;
+        }
+      }
+    }
+  }
+  return ret;
+}
+
 void Operation::generateSummary(Operation::Result& result)
 {
   std::stringstream s;
@@ -420,6 +533,23 @@ Operation::Specification Operation::createBaseSpecification() const
   smtk::io::AttributeReader reader;
   reader.readContents(spec, Operation_xml, this->log());
   return spec;
+}
+
+smtk::resource::ManagerPtr Operation::resourceManager()
+{
+
+  if (auto mgr = manager())
+  {
+    if (auto mgrs = mgr->managers())
+    {
+      if (mgrs->contains<smtk::resource::Manager::Ptr>())
+      {
+        return mgrs->get<smtk::resource::Manager::Ptr>();
+      }
+    }
+  }
+
+  return smtk::resource::ManagerPtr();
 }
 
 bool Operation::restoreTrace(const std::string& trace)

@@ -24,15 +24,8 @@ namespace operation
 /// manager that has a resource manager registered to it will have the resource
 /// manager assigned to them upon creation. Otherwise, the resource manager must
 /// be set manually.
-class SMTKCORE_EXPORT ResourceManagerOperation : public smtk::operation::XMLOperation
-{
-public:
-  smtkTypeMacro(ResourceManagerOperation);
-  smtkSharedFromThisMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::XMLOperation);
-
-  smtk::resource::ManagerPtr resourceManager();
-};
+/// Functionality has been absorbed by smtk::operation::Operation
+using ResourceManagerOperation = smtk::operation::XMLOperation;
 } // namespace operation
 } // namespace smtk
 

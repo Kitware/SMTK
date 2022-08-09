@@ -6,12 +6,12 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="read resource" Label="Read" BaseType="operation">
-      <BriefDecscription>
+      <BriefDescription>
         Load one or more SMTK resources from disk
-      </BriefDecscription>
-      <DetailedDecscription>
+      </BriefDescription>
+      <DetailedDescription>
         Load resources saved in SMTK's native JSON format.
-      </DetailedDecscription>
+      </DetailedDescription>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" Extensible="true"
           FileFilters="SMTK Resource (*.smtk)" Label="SMTK Resource File Name " ShouldExist="true">

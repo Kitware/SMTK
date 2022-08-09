@@ -6,7 +6,6 @@ set(operationSrcs
   Metadata.cxx
   Operation.cxx
   Registrar.cxx
-  ResourceManagerOperation.cxx
   SpecificationOps.cxx
   XMLOperation.cxx
 

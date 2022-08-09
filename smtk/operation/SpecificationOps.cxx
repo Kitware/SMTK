@@ -222,6 +222,11 @@ extractResources(Operation::Result result)
   // For each item found...
   for (auto& item : items)
   {
+    if (item->name() == "resourcesToExpunge")
+    {
+      // Skip this item since these are resources explicitly being removed from management.
+      continue;
+    }
     // Extract the resources and lock types.
     auto resourceItem = std::static_pointer_cast<smtk::attribute::ReferenceItem>(item);
     resourcesFromItem(resourcesAndLockTypes, resourceItem);
