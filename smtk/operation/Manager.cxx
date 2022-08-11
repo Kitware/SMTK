@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/ResourceManagerOperation.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"

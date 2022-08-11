@@ -10,7 +10,7 @@
 #ifndef smtk_attribute_operators_Import_h
 #define smtk_attribute_operators_Import_h
 
-#include "smtk/operation/ResourceManagerOperation.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace attribute
 
 /**\brief Import an attribute resource.
   */
-class SMTKCORE_EXPORT Import : public smtk::operation::ResourceManagerOperation
+class SMTKCORE_EXPORT Import : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(smtk::attribute::Import);
   smtkCreateMacro(Import);
   smtkSharedFromThisMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::ResourceManagerOperation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;
