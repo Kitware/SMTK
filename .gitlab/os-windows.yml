@@ -27,29 +27,29 @@
         # from GitLab-CI by default (it runs as a Windows service).
         QT_OPENGL: desktop
 
-.windows_vs2019:
+.windows_vs2022:
     extends: .windows_build
 
     variables:
-        VCVARSALL: "${VS160COMNTOOLS}\\..\\..\\VC\\Auxiliary\\Build\\vcvarsall.bat"
+        VCVARSALL: "${VS170COMNTOOLS}\\..\\..\\VC\\Auxiliary\\Build\\vcvarsall.bat"
         VCVARSPLATFORM: "x64"
-        VCVARSVERSION: "14.26"
+        VCVARSVERSION: "14.32.31326"
 
-.windows_vs2019_ninja:
-    extends: .windows_vs2019
+.windows_vs2022_ninja:
+    extends: .windows_vs2022
 
     variables:
-        CMAKE_CONFIGURATION: windows_vs2019_ninja
+        CMAKE_CONFIGURATION: windows_vs2022_ninja
 
 ## Tags
 
 .windows_builder_tags:
     tags:
         - cmb # Since this is a bare runner, pin to a project.
-        - msvc-19.26
+        - msvc-19.32
         - nonconcurrent
         - shell
-        - vs2019
+        - vs2022
         - windows
 
 ## Windows-specific scripts
