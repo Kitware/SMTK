@@ -12,3 +12,5 @@ Three files that have been used to model simple casting problems with Truchas
 These files are used at SLAC in conjunction with ACE3P simulation.
 
 * gun-1fourth.gen: Quarter section of an RF gun, 1 element block & 5 side sets
+
+* pillbox4.gen: Quarter section of single-cell cavity, 1 element block & 3 side sets
