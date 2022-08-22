@@ -8,7 +8,7 @@ set("5.15.2-0-202011130602qttools-Windows-Windows_10-MSVC2015-Windows-Windows_10
 set("5.15.2-0-202011130602qtxmlpatterns-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z_hash" f6ae775677ce96a28ab6df8e6cee138e9fcb69e45e4d6485b6d8a26e1de857dc)
 
 # There's a filename conflict here.
-if (msvc_year STREQUAL "2019")
+if (msvc_year STREQUAL "2019" OR msvc_year STREQUAL "2022")
   set("5.15.2-0-202011130602d3dcompiler_47-x64.7z_hash" 0dc63ca9bb91cb204d479356edb89b30e3599f1c0bce469b1dd5a339134f25e2)
   set("5.15.2-0-202011130602opengl32sw-64-mesa_12_0_rc2.7z_hash" 4e43bc46665f31e12e528f01105310b07d3b8c0ff914668e3b77969d672fcc14)
 elseif (msvc_year STREQUAL "2015")

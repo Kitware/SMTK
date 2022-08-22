@@ -1,0 +1,4 @@
+Continuous integration
+----------------------
+
+SMTK uses MSVC 2022 to test merge requests rather than MSVC 2019.

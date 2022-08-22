@@ -262,22 +262,22 @@ macos-x86_64:test:
 
 ## Build and test
 
-windows-vs2019-ninja:build:
+windows-vs2022-ninja:build:
     extends:
-        - .windows_vs2019_ninja
+        - .windows_vs2022_ninja
         - .cmake_build_windows
         - .cmake_build_artifacts
         - .windows_builder_tags
         - .run_automatically
 
-windows-vs2019-ninja:test:
+windows-vs2022-ninja:test:
     extends:
-        - .windows_vs2019_ninja
+        - .windows_vs2022_ninja
         - .cmake_test_windows
         - .cmake_test_artifacts
         - .windows_builder_tags
         - .run_dependent
     dependencies:
-        - windows-vs2019-ninja:build
+        - windows-vs2022-ninja:build
     needs:
-        - windows-vs2019-ninja:build
+        - windows-vs2022-ninja:build
