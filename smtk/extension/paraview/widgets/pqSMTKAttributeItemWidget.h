@@ -36,6 +36,8 @@ public:
   using qtItem = smtk::extension::qtItem;
   using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
+  void markForDeletion() override;
+
   /**\brief Specify when the widget may override values in the item.
     *
     */

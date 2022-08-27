@@ -160,6 +160,12 @@ std::string pqSMTKAttributeItemWidget::GeometrySourceConvert(GeometrySource val)
   return "Invalid";
 }
 
+void pqSMTKAttributeItemWidget::markForDeletion()
+{
+  this->renderViewEventually();
+  this->qtItem::markForDeletion();
+}
+
 void pqSMTKAttributeItemWidget::setHideWidgetWhenInactive(bool val)
 {
   s_hideWidgetWhenInactive = val;
