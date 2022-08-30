@@ -1,3 +1,15 @@
+.. _release-notes-22.08:
+
+=========================
+SMTK 22.08 Release Notes
+=========================
+
+See also :ref:`release-notes-22.07` for previous changes.
+
+
+SMTK Operation Changes
+======================
+
 Remove Resources via Operation
 ------------------------------
 
@@ -13,5 +25,16 @@ prevent re-loading.
 
 Any operations that remove resources should switch to this new pattern.
 
-The `ResourceManagerOperation` sub-class is now redundant, so it is now
-an alias of `XMLOperation`.
+Deprecate `ResourceManagerOperation`
+------------------------------------
+
+The `ResourceManagerOperation` sub-class is now redundant,
+replace any occurrences with `XMLOperation`.
+
+SMTK Software Process Changes
+=============================
+
+Continuous integration
+----------------------
+
+SMTK uses MSVC 2022 to test merge requests rather than MSVC 2019.
