@@ -21,6 +21,8 @@
 #include "smtk/extension/qt/qtInfixExpressionEditor.h"
 #include "smtk/extension/qt/qtIntItem.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtReferenceItem.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
 #include "smtk/extension/qt/qtReferenceTree.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtResourceItem.h"
@@ -179,6 +181,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtGroupItem", qtGroupItem::createItemWidget);
   this->registerItemConstructor("qtIntItem", qtIntItem::createItemWidget);
   this->registerItemConstructor("qtReferenceItem", qtReferenceItem::createItemWidget);
+  this->registerItemConstructor("qtReferenceItemEditor", qtReferenceItemEditor::createItemWidget);
   this->registerItemConstructor("qtReferenceTree", qtReferenceTree::createItemWidget);
   this->registerItemConstructor("qtResourceItem", qtResourceItem::createItemWidget);
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
