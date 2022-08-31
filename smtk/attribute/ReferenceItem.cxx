@@ -338,9 +338,9 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
     return false; // The number of values requested is too large.
 
   // Are we introducing any unset values?
-  if ((currentSize < newSize) && (m_nextUnsetPos > (currentSize + 1)))
+  if ((currentSize < newSize) && (m_nextUnsetPos > currentSize))
   {
-    m_nextUnsetPos = currentSize + 1;
+    m_nextUnsetPos = currentSize;
   }
   m_keys.resize(newSize);
   m_cache->resize(newSize);
