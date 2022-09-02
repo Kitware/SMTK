@@ -168,13 +168,16 @@ int vtkConeFrustum::RequestData(
 
   vtkNew<vtkDoubleArray> nrm; // point normals
   nrm->SetNumberOfComponents(3);
+  nrm->SetName("normals");
   nrm->Allocate(2 * this->Resolution);
 
   vtkNew<vtkDoubleArray> botNrm; // point normals
+  botNrm->SetName("normals");
   botNrm->SetNumberOfComponents(3);
   botNrm->Allocate(this->Resolution + 1);
 
   vtkNew<vtkDoubleArray> topNrm; // point normals
+  topNrm->SetName("normals");
   topNrm->SetNumberOfComponents(3);
   topNrm->Allocate(this->Resolution + 1);
 
