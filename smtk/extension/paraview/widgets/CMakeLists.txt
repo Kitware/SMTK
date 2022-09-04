@@ -62,11 +62,11 @@ vtk_module_link(smtkPQWidgetsExt
   PUBLIC
     smtkCore
     smtkQtExt
+    ParaView::RemotingViews
   PRIVATE
     smtkPQComponentsExt
     vtkSMTKSourceExt
     vtkSMTKWidgetsExt
-    ParaView::RemotingViews
     ParaView::pqApplicationComponents
     ParaView::pqComponents
     ParaView::pqWidgets

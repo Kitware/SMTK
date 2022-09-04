@@ -13,6 +13,7 @@
 
 #include "smtk/extension/paraview/operators/smtkAssignColorsView.h"
 #ifndef PARAVIEW_VERSION_59
+#include "smtk/extension/paraview/operators/smtkCoordinateTransformView.h"
 #include "smtk/extension/paraview/operators/smtkDataSetInfoInspectorView.h"
 #include "smtk/extension/paraview/operators/smtkEditPropertiesView.h"
 #include "smtk/extension/paraview/operators/smtkMeshInspectorView.h"
@@ -34,6 +35,7 @@ using ViewWidgetList = std::tuple<smtkAssignColorsView>;
 #else
 using ViewWidgetList = std::tuple<
   smtkAssignColorsView,
+  smtkCoordinateTransformView,
   smtkDataSetInfoInspectorView,
   smtkEditPropertiesView,
   smtkMeshInspectorView>;

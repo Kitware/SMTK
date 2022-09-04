@@ -1,6 +1,7 @@
 NAME
-  smtkPQWidgetsExt
+  smtkPQOperationViewsExt
 DEPENDS
+  smtkPQWidgetsExt
   ParaView::pqCore
   ParaView::RemotingViews
   VTK::InteractionWidgets

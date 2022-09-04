@@ -18,14 +18,40 @@ namespace smtk
 namespace operation
 {
 
-/// Set (or remove) an attribute value on a set of entities. The string, integer,
-/// and floating-point values are all optional. Any combination may be specified.
-/// All that are specified are set; those unspecified are removed.
-///
-/// Note that the current corresponding UI only allows for the creation of scalars,
-/// so the SBT file does not have the string, int, and double items extensible, but the
-/// operation itself will support them once the UI is modified.  All that needs to be
-/// done is to add the extensibility property to those items.
+/**\brief Set (or remove) a coordinate transform on components.
+  *
+  * The coordinate transform is specified as a pair of coordinate frames:
+  * one indicating a starting location and orientation (usually this is
+  * placed on or inside the object to be transformed) and one indicating
+  * the destination location and orientation.
+  *
+  * The transform will translate the origin of the "from" coordinate-frame
+  * onto the "to" coordinate-frame's origin and rotate the "from" axes to
+  * align with the "to" axes.
+  *
+  * Note that the transform is not applied to the component's geometry
+  * by this operation. Instead, the transform is applied when rendering
+  * but otherwise leaves the geometric data unmodified.
+  *
+  * The resulting transform is itself stored as a coordinate frame, with
+  * a property named "smtk.geometry.transform".
+  * In addition to the computed transform, the component will also have
+  * coordinate-frame properties name "smtk.geometry.transform.from.frame"
+  * and "smtk.geometry.transform.to.frame" set, so that the operation can
+  * serve as an editor.
+  *
+  * Finally, provenance information may be set as additional string
+  * properties named:
+  * + "smtk.geometry.transform.from.id"
+  * + "smtk.geometry.transform.to.id" – the UUID of a component
+  *   with a coordinate-frame property used as the "from" or "to"
+  *   frame, respectively.
+  * + "smtk.geometry.transform.from.name"
+  * + "smtk.geometry.transform.to.name" – either the name of
+  *   a coordinate-frame property on the "from.id" (or "to.id",
+  *   respectively) above or user-provided text describing the
+  *   coordinate frame used to generate the transform.
+  */
 class SMTKCORE_EXPORT CoordinateTransform : public XMLOperation
 {
 public:

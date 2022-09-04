@@ -37,11 +37,11 @@ smtk_add_plugin(smtkPQWidgetsPlugin
 )
 target_link_libraries(smtkPQWidgetsPlugin
   PRIVATE
+    vtkSMTKWidgetsExt
+    smtkQtExt
+    smtkPQWidgetsExt
     ParaView::pqApplicationComponents
     ParaView::RemotingViews
-    smtkPQWidgetsExt
-    smtkQtExt
-    vtkSMTKWidgetsExt
     VTK::CommonCore
     VTK::CommonDataModel
     VTK::CommonExecutionModel

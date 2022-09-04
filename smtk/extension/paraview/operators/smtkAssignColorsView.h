@@ -11,7 +11,7 @@
 #ifndef smtkAssignColorsView_h
 #define smtkAssignColorsView_h
 
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/extension/paraview/operators/smtkPQOperationViewsExtModule.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
@@ -20,7 +20,7 @@ class QIcon;
 class smtkAssignColorsViewInternals;
 
 /// UI component for assigning colors to entities
-class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkAssignColorsView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkAssignColorsView
   : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT

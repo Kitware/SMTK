@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>smtkCoordinateTransformView</class>
+ <widget class="QWidget" name="smtkCoordinateTransformView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>334</width>
+    <height>440</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Edit transform</string>
+  </property>
+  <property name="toolTip">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit a coordinate transform.&lt;/p&gt;&lt;p&gt;A coordinate transform moves and orients the associated object(s) by starting at the &amp;quot;From&amp;quot; coordinate frame, translating to the &amp;quot;To&amp;quot; coordinate frame, and rotating so the matching axes are aligned.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QWidget" name="m_referenceItemContainer" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::TabFocus</enum>
+      </property>
+      <property name="toolTip">
+       <string>Select the object(s) you wish to transform.</string>
+      </property>
+     </widget>
+     <widget class="QTreeWidget" name="m_frameTree">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::ActionsContextMenu</enum>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a frame to preview its location and orientation.&lt;/p&gt;&lt;p&gt;Right-click on a frame to select the frame for use as a source or destination of the transform.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <column>
+       <property name="text">
+        <string>Landmarks</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QTabWidget" name="m_fromToFrameTab">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select &amp;quot;From&amp;quot; to choose/edit the source coordinate&lt;br/&gt;frame of the transform or &amp;quot;To&amp;quot; for the destination frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="From">
+       <attribute name="title">
+        <string>From</string>
+       </attribute>
+       <attribute name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose a coordinate frame from the list above or enter your own to serve as the source coordinate frame of the transform. The transform will translate and rotate this frame to make it match the &quot;to&quot; frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="m_fromFrameObject">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This label shows which object the &amp;quot;from&amp;quot; frame annotates. If you edit a coordinate frame from a landmark above, a new landmark will be added to one of the objects being transformed to hold your edits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="m_fromFrameName">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter a name for the frame here.&lt;/p&gt;&lt;p&gt;When you select a frame above, that name will be used until the coordinate frame is edited – at which point a placeholder name will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="placeholderText">
+             <string>Notes</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="m_fromFrame" native="true">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="To">
+       <attribute name="title">
+        <string>To</string>
+       </attribute>
+       <attribute name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose a coordinate frame from the list above or enter your own to serve as the destination coordinate frame of the transform. The transform will translate and rotate the &quot;from&quot; frame to make it match this frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="m_toFrameObject">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This label shows which object the &amp;quot;to&amp;quot; frame annotates. If you edit a coordinate frame from a landmark above, a new landmark will be added to one of the objects being transformed to hold your edits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="m_toFrameName">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter a name for the frame here.&lt;/p&gt;&lt;p&gt;When you select a frame above, that name will be used until the coordinate frame is edited – at which point a placeholder name will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="placeholderText">
+             <string>Notes</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="m_toFrame" native="true">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QHBoxLayout" name="m_applyLayout">
+       <item>
+        <widget class="QToolButton" name="m_utilityMenuButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="popupMode">
+          <enum>QToolButton::MenuButtonPopup</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_applyButton">
+         <property name="toolTip">
+          <string>Click apply to make the transform permanent.</string>
+         </property>
+         <property name="text">
+          <string>Apply</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+  <action name="m_actionLivePreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Live preview</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle live previews of the transform. Previews only begin once both &quot;From&quot; and &quot;To&quot; frames have been selected.</string>
+   </property>
+  </action>
+  <action name="m_actionUseLandmarkAsFrom">
+   <property name="text">
+    <string>Use landmark as &quot;from&quot; coordinates.</string>
+   </property>
+   <property name="toolTip">
+    <string>Use the landmark selected as the coordinate system from which the associated objects will be transformed.</string>
+   </property>
+  </action>
+  <action name="m_actionUseLandmarkAsTo">
+   <property name="text">
+    <string>Use landmark as &quot;to&quot; coordinates.</string>
+   </property>
+   <property name="toolTip">
+    <string>Use the selected landmark as the coordinate system to which the associated objects will be transformed.</string>
+   </property>
+  </action>
+  <action name="m_actionRemoveTransform">
+   <property name="text">
+    <string>Remove transform</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove any pre-existing transforms from the selected objects.</string>
+   </property>
+  </action>
+ </widget>
+ <tabstops>
+  <tabstop>m_referenceItemContainer</tabstop>
+  <tabstop>m_frameTree</tabstop>
+  <tabstop>m_fromToFrameTab</tabstop>
+  <tabstop>m_fromFrameName</tabstop>
+  <tabstop>m_fromFrame</tabstop>
+  <tabstop>m_toFrameName</tabstop>
+  <tabstop>m_toFrame</tabstop>
+  <tabstop>m_utilityMenuButton</tabstop>
+  <tabstop>m_applyButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
