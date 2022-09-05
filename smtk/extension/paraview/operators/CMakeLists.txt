@@ -11,11 +11,14 @@ if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
     smtkMeshInspectorView.h
     smtkDataSetInfoInspectorView.h
     smtkDataSetInfoInspectorView.cxx
+    smtkEditPropertiesView.cxx
+    smtkEditPropertiesView.h
 )
 endif ()
 
 set(ui_files
   smtkAssignColorsParameters.ui
+  smtkEditPropertiesView.ui
 )
 
 # for Qt methods

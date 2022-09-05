@@ -54,9 +54,9 @@ public:
 
 protected Q_SLOTS:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-  void updateItemFromWidgetInternal() override;
+  bool updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
-  void updateWidgetFromItemInternal() override;
+  bool updateWidgetFromItemInternal() override;
 
 public Q_SLOTS:
   /**\brief Change the user interface so that only cylinders are accepted (when passed true).

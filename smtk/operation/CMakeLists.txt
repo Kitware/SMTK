@@ -59,6 +59,8 @@ set(operationXML
 )
 
 set(operationOperators
+  CoordinateTransform
+  EditProperties
   ReadResource
   RemoveResource
   SetProperty
@@ -67,6 +69,7 @@ set(operationOperators
 
 set(icons
   import_python_operation
+  edit_properties
 )
 foreach(icon ${icons})
   smtk_encode_file(

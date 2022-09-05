@@ -41,7 +41,8 @@ public:
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
 
 protected Q_SLOTS:
-  void updateItemFromWidgetInternal() override;
+  bool updateItemFromWidgetInternal() override;
+  bool updateWidgetFromItemInternal() override;
 
 protected:
   /**\brief Starting with the widget's assigned item (which must

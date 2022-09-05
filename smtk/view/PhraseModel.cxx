@@ -204,8 +204,8 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
                                   this->handleResourceEvent(rsrc, event);
                                   return 0;
                                 },
-                                0,    // assign a neutral priority
-                                true, // observeImmediately
+                                0,     // assign a neutral priority
+                                false, // observeImmediately
                                 description.str() + "Update phrases when resources change.")
                             : smtk::resource::Observers::Key();
   auto operHandle = operMgr
@@ -226,6 +226,18 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
                          : smtk::view::SelectionObservers::Key();
   m_sources.emplace_back(
     managers, std::move(rsrcHandle), std::move(operHandle), std::move(selnHandle));
+  // Now, we did not immediately invoke the resource-manager observer above – because
+  // if we had, m_sources would be empty when the observer was invoked and would leave
+  // some phrase models unable to populate their root phrase (e.g., ReferenceItemPhraseModel
+  // which visits sources inside populateRoot()). Iterate over resources and invoke the
+  // observer now.
+  if (rsrcMgr)
+  {
+    rsrcMgr->visit([&](smtk::resource::Resource& rsrc) {
+      this->handleResourceEvent(rsrc, smtk::resource::EventType::ADDED);
+      return smtk::common::Processing::CONTINUE;
+    });
+  }
   return true;
 }
 

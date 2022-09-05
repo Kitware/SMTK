@@ -36,6 +36,8 @@ public:
   using qtItem = smtk::extension::qtItem;
   using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
+  void markForDeletion() override;
+
   /**\brief Specify when the widget may override values in the item.
     *
     */
@@ -120,8 +122,10 @@ protected Q_SLOTS:
   void updateItemData() override;
   virtual void ignoreWidgetValues();
   virtual void acceptWidgetValues();
-  virtual void updateItemFromWidgetInternal() = 0;
-  virtual void updateWidgetFromItemInternal() {}
+  /// Update smtk::attribute::Item(s) from widget, returning true if changes were made.
+  virtual bool updateItemFromWidgetInternal() = 0;
+  /// Update proxy properties from smtk::attribute::Item(s), returning true if changes were made.
+  virtual bool updateWidgetFromItemInternal() = 0;
 
 protected:
   /// An event filter that watches for the associated Qt widget to be hidden

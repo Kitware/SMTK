@@ -10,8 +10,12 @@
 #include "smtk/extension/paraview/widgets/pqSMTKCoordinateFrameItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
+#include "smtk/extension/qt/qtBaseAttributeView.h"
+#include "smtk/extension/qt/qtReferenceItemEditor.h"
+
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -92,7 +96,7 @@ bool pqSMTKCoordinateFrameItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKCoordinateFrameItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKCoordinateFrameItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr originItem;
   smtk::attribute::DoubleItemPtr xAxisItem;
@@ -100,7 +104,7 @@ void pqSMTKCoordinateFrameItemWidget::updateItemFromWidgetInternal()
   smtk::attribute::DoubleItemPtr zAxisItem;
   if (!fetchOriginAndAxisItems(originItem, xAxisItem, yAxisItem, zAxisItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
@@ -122,9 +126,67 @@ void pqSMTKCoordinateFrameItemWidget::updateItemFromWidgetInternal()
     yAxisItem->setValue(i, yv);
     zAxisItem->setValue(i, zv);
   }
-  if (didChange)
+  return didChange;
+}
+
+bool pqSMTKCoordinateFrameItemWidget::updateWidgetFromItemInternal()
+{
+  smtk::attribute::DoubleItemPtr originItem;
+  smtk::attribute::DoubleItemPtr xAxisItem;
+  smtk::attribute::DoubleItemPtr yAxisItem;
+  smtk::attribute::DoubleItemPtr zAxisItem;
+  if (!fetchOriginAndAxisItems(originItem, xAxisItem, yAxisItem, zAxisItem))
   {
-    Q_EMIT modified();
+    return false;
+  }
+  vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
+  vtkSMPropertyHelper originHelper(widget, "Origin");
+  vtkSMPropertyHelper xAxisHelper(widget, "XAxis");
+  vtkSMPropertyHelper yAxisHelper(widget, "YAxis");
+  vtkSMPropertyHelper zAxisHelper(widget, "ZAxis");
+
+  bool didChange = false;
+  for (int i = 0; i < 3; ++i)
+  {
+    double ov = originItem->value(i);
+    didChange |= (originHelper.GetAsDouble(i) != ov);
+    originHelper.Set(i, ov);
+    double xv = xAxisItem->value(i);
+    didChange |= (xAxisHelper.GetAsDouble(i) != xv);
+    xAxisHelper.Set(i, xv);
+    double yv = yAxisItem->value(i);
+    didChange |= (yAxisHelper.GetAsDouble(i) != yv);
+    yAxisHelper.Set(i, yv);
+    double zv = zAxisItem->value(i);
+    didChange |= (zAxisHelper.GetAsDouble(i) != zv);
+    zAxisHelper.Set(i, zv);
+  }
+
+  smtk::attribute::ReferenceItemPtr parentItem;
+  if (this->fetchParentItem(parentItem) && m_parentItemWidget)
+  {
+    m_parentItemWidget->updateItemData(); // Update combo-box entries/selection
+    m_parentItemWidget->updateContents(); // Update any children items
+  }
+  return didChange;
+}
+
+void pqSMTKCoordinateFrameItemWidget::onParentModified()
+{
+  // TODO
+  // If we render the frame in the parent's coordinate system:
+  //   If the frame's parent has a transform and we didn't have one
+  //   before (or vice-versa, we had one but now do not), we need to re-render.
+  //   If the frame's parent has changed and the transform is different,
+  //   we need to re-render.
+  // If we don't render the frame in the paren't coordinate system:
+  //   Then we do not need a re-render for ourselves but we might
+  //   need to emit modified() in order for things that rely on us
+  //   to update.
+  if (m_parentItemWidget)
+  {
+    Q_EMIT this->childModified(m_parentItemWidget);
+    Q_EMIT this->modified();
   }
 }
 
@@ -134,10 +196,11 @@ bool pqSMTKCoordinateFrameItemWidget::fetchOriginAndAxisItems(
   smtk::attribute::DoubleItemPtr& yAxisItem,
   smtk::attribute::DoubleItemPtr& zAxisItem)
 {
+  // Do not insist the parent item be present, so only 4 items in the group are needed.
   auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
   if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 4)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Expected a group item with 1 group of 4 items.");
+    smtkErrorMacro(smtk::io::Logger::instance(), "Expected a group item with 1 group of 4+ items.");
     return false;
   }
   std::string originItemName;
@@ -189,4 +252,78 @@ bool pqSMTKCoordinateFrameItemWidget::fetchOriginAndAxisItems(
     return false;
   }
   return true;
+}
+
+bool pqSMTKCoordinateFrameItemWidget::fetchParentItem(smtk::attribute::ReferenceItemPtr& parentItem)
+{
+  std::string parentItemName;
+  bool requireParent = true;
+  if (!m_itemInfo.component().attribute("Parent", parentItemName))
+  {
+    parentItemName = "Parent";
+    requireParent = false;
+  }
+  // If the parent exists, the origin and x,y,z-axes must also exist, so we need 5 items.
+  auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
+  if (!groupItem || groupItem->numberOfGroups() < 1 || groupItem->numberOfItemsPerGroup() < 5)
+  {
+    // Not having a parent is not an error unless the user has provided a name for the parent item.
+    if (requireParent)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Expected a group item with 1 group of 5+ items.");
+    }
+    return false;
+  }
+
+  parentItem = groupItem->findAs<smtk::attribute::ReferenceItem>(parentItemName);
+  if (!parentItem)
+  {
+    if (requireParent)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Could not find a ReferenceItem for the parent named \"" << parentItemName << "\".");
+      return false;
+    }
+  }
+  return !!parentItem;
+}
+
+void pqSMTKCoordinateFrameItemWidget::updateUI()
+{
+  this->Superclass::updateUI();
+
+  // This widget treats the coordinate-frame parent (ReferenceItem)
+  // as a "child" item for the sake of user interface sanity.
+  auto dataObj = this->item();
+  auto* iview = m_itemInfo.baseView();
+  if (iview && !iview->displayItem(dataObj))
+  {
+    return;
+  }
+
+  smtk::attribute::ReferenceItemPtr parentItem;
+  if (!this->fetchParentItem(parentItem))
+  {
+    return;
+  }
+
+  smtk::view::Configuration::Component comp; // lets create a default style (an empty component)
+  qtAttributeItemInfo info(parentItem, comp, m_widget, m_itemInfo.baseView());
+  m_parentItemWidget =
+    qobject_cast<smtk::extension::qtReferenceItemEditor*>(m_itemInfo.uiManager()->createItem(info));
+  if (m_parentItemWidget)
+  {
+    this->addChildItem(m_parentItemWidget);
+    this->m_p->m_layout->addWidget(m_parentItemWidget->widget(), 1, 1);
+
+    // Make unique to prevent this connection from being made more than once upon updating the gui.
+    connect(
+      m_parentItemWidget,
+      &smtk::extension::qtReferenceItemEditor::modified,
+      this,
+      &pqSMTKCoordinateFrameItemWidget::onParentModified,
+      Qt::UniqueConnection);
+  }
 }

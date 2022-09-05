@@ -160,6 +160,12 @@ std::string pqSMTKAttributeItemWidget::GeometrySourceConvert(GeometrySource val)
   return "Invalid";
 }
 
+void pqSMTKAttributeItemWidget::markForDeletion()
+{
+  this->renderViewEventually();
+  this->qtItem::markForDeletion();
+}
+
 void pqSMTKAttributeItemWidget::setHideWidgetWhenInactive(bool val)
 {
   s_hideWidgetWhenInactive = val;
@@ -269,8 +275,10 @@ void pqSMTKAttributeItemWidget::updateItemFromWidget()
   if (m_p->m_state == Internal::State::Idle)
   {
     m_p->m_state = Internal::State::UpdatingFromAttribute;
-    this->updateItemFromWidgetInternal();
-    Q_EMIT this->modified();
+    if (this->updateItemFromWidgetInternal())
+    {
+      Q_EMIT this->modified();
+    }
     m_p->m_state = Internal::State::Idle;
   }
 }
@@ -280,7 +288,10 @@ void pqSMTKAttributeItemWidget::updateWidgetFromItem()
   if (m_p->m_state == Internal::State::Idle)
   {
     m_p->m_state = Internal::State::UpdatingFromUI;
-    this->updateWidgetFromItemInternal();
+    if (this->updateWidgetFromItemInternal())
+    {
+      this->renderViewEventually();
+    }
 
     // Only return to idle after event queue is processed
     // since the "modified()" signal's connected slots must

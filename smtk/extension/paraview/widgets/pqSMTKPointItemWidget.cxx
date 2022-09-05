@@ -100,14 +100,14 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKPointItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKPointItemWidget::updateItemFromWidgetInternal()
 {
   ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;
   smtk::attribute::StringItemPtr controlItem;
   if (!fetchPointItems(binding, pointItem, controlItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
@@ -133,30 +133,34 @@ void pqSMTKPointItemWidget::updateItemFromWidgetInternal()
     }
   }
 
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
-void pqSMTKPointItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKPointItemWidget::updateWidgetFromItemInternal()
 {
   ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;
   smtk::attribute::StringItemPtr controlItem;
   if (!fetchPointItems(binding, pointItem, controlItem))
   {
-    return;
+    return false;
   }
 
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   auto* pw = dynamic_cast<pqPointPropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper pointHelper(widget, "WorldPosition");
-  pointHelper.Set(&(*pointItem->begin()), 3);
+  bool didChange = false;
+  for (int i = 0; i < 3; ++i)
+  {
+    double pv = pointItem->value(i);
+    didChange |= (pointHelper.GetAsDouble(i) != pv);
+    pointHelper.Set(i, pv);
+  }
   if (binding == ItemBindings::PointCoordsAndControl && pw)
   {
     pw->setControlState(controlItem->value());
   }
+  return didChange;
 }
 
 bool pqSMTKPointItemWidget::fetchPointItems(

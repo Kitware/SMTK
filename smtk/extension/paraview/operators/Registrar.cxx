@@ -12,6 +12,7 @@
 #include "smtk/extension/paraview/operators/Registrar.h"
 
 #include "smtk/extension/paraview/operators/smtkAssignColorsView.h"
+#include "smtk/extension/paraview/operators/smtkEditPropertiesView.h"
 #ifndef PARAVIEW_VERSION_59
 #include "smtk/extension/paraview/operators/smtkDataSetInfoInspectorView.h"
 #include "smtk/extension/paraview/operators/smtkMeshInspectorView.h"
@@ -29,10 +30,13 @@ namespace operators
 namespace
 {
 #ifdef PARAVIEW_VERSION_59
-using ViewWidgetList = std::tuple<smtkAssignColorsView>;
+using ViewWidgetList = std::tuple<smtkAssignColorsView, smtkEditPropertiesView>;
 #else
-using ViewWidgetList =
-  std::tuple<smtkAssignColorsView, smtkDataSetInfoInspectorView, smtkMeshInspectorView>;
+using ViewWidgetList = std::tuple<
+  smtkAssignColorsView,
+  smtkDataSetInfoInspectorView,
+  smtkEditPropertiesView,
+  smtkMeshInspectorView>;
 #endif
 } // namespace
 

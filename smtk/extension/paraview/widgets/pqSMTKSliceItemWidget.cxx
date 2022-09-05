@@ -183,14 +183,14 @@ void pqSMTKSliceItemWidget::sliceInputsChanged()
   }
 }
 
-void pqSMTKSliceItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKSliceItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr originItem;
   smtk::attribute::DoubleItemPtr normalItem;
   smtk::attribute::ReferenceItemPtr inputsItem;
   if (!fetchOriginNormalAndInputsItems(originItem, normalItem, inputsItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widgetProxy = m_p->m_pvwidget->widgetProxy();
   vtkSMPropertyHelper originHelper(widgetProxy, "Origin");
@@ -204,16 +204,14 @@ void pqSMTKSliceItemWidget::updateItemFromWidgetInternal()
     originItem->setValue(i, ov);
     normalItem->setValue(i, nv);
   }
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
-void pqSMTKSliceItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKSliceItemWidget::updateWidgetFromItemInternal()
 {
   this->sliceInputsChanged();
   // TODO: Support updating the origin and normal yet.
+  return false; // TODO: sliceInputsChanged() calls renderViewEvenutally() itself but shouldn't
 }
 
 bool pqSMTKSliceItemWidget::fetchOriginNormalAndInputsItems(

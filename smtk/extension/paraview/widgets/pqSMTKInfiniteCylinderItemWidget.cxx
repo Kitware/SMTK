@@ -87,7 +87,7 @@ bool pqSMTKInfiniteCylinderItemWidget::createProxyAndWidget(
   return widget != nullptr;
 }
 
-void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -97,7 +97,7 @@ void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   // Values held by widget
@@ -141,13 +141,10 @@ void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
       break;
   }
 
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
-void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -157,7 +154,7 @@ void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
-    return;
+    return false;
   }
 
   // Unlike updateItemFromWidget, we don't care if we cause ParaView an unnecessary update;
@@ -183,6 +180,7 @@ void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
     }
     break;
   }
+  return true; // TODO: determine whether changes were made to avoid unnecessary renders.
 }
 
 bool pqSMTKInfiniteCylinderItemWidget::fetchCylinderItems(

@@ -88,13 +88,13 @@ bool pqSMTKSphereItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSphereItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKSphereItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem;
   smtk::attribute::DoubleItemPtr radiusItem;
   if (!fetchCenterAndRadiusItems(centerItem, radiusItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
@@ -115,20 +115,17 @@ void pqSMTKSphereItemWidget::updateItemFromWidgetInternal()
   double rv = radiusHelper.GetAsDouble(0);
   didChange |= (radiusItem->value(0) != rv);
   radiusItem->setValue(0, rv);
-  if (didChange)
-  {
-    Q_EMIT modified();
-  }
+  return didChange;
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSphereItemWidget::updateWidgetFromItemInternal()
+bool pqSMTKSphereItemWidget::updateWidgetFromItemInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem;
   smtk::attribute::DoubleItemPtr radiusItem;
   if (!fetchCenterAndRadiusItems(centerItem, radiusItem))
   {
-    return;
+    return false;
   }
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
@@ -145,6 +142,7 @@ void pqSMTKSphereItemWidget::updateWidgetFromItemInternal()
   double rv = radiusItem->value(0);
   didChange |= (radiusHelper.GetAsDouble(0) != rv);
   radiusHelper.Set(rv);
+  return didChange;
 }
 
 bool pqSMTKSphereItemWidget::fetchCenterAndRadiusItems(

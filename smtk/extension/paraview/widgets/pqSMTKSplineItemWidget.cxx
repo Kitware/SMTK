@@ -131,20 +131,22 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
+bool pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr pointsItem;
   smtk::attribute::VoidItemPtr closedItem;
   if (!fetchPointsAndClosedItems(pointsItem, closedItem))
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Could not update item from changes via widget.");
-    return;
+    return false;
   }
 
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
 
   bool didChange = false;
   vtkSMPropertyHelper pointsHelper(widget, "HandlePositions");
+  vtkSMPropertyHelper closedHelper(widget, "Closed");
+
   auto pointsArray = pointsHelper.GetArray<double>();
   if (!pointsItem->setValues(pointsArray.begin(), pointsArray.end()))
   {
@@ -160,15 +162,57 @@ void pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
     didChange |= (pointsItem->value(ii) != pointsArray[ii]);
   }
 
-  vtkSMPropertyHelper closedHelper(widget, "Closed");
   bool closed = !!closedHelper.GetAsInt();
   didChange |= (closedItem->isEnabled() != closed);
   closedItem->setIsEnabled(closed);
 
+  return didChange;
+}
+
+bool pqSMTKSplineItemWidget::updateWidgetFromItemInternal()
+{
+  smtk::attribute::DoubleItemPtr pointsItem;
+  smtk::attribute::VoidItemPtr closedItem;
+  if (!fetchPointsAndClosedItems(pointsItem, closedItem))
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Could not update item from changes via widget.");
+    return false;
+  }
+
+  vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
+  vtkSMPropertyHelper pointsHelper(widget, "HandlePositions");
+  vtkSMPropertyHelper closedHelper(widget, "Closed");
+
+  bool didChange = false;
+  if (pointsItem->numberOfValues() != pointsHelper.GetNumberOfElements())
+  {
+    pointsHelper.SetNumberOfElements(static_cast<unsigned int>(pointsItem->numberOfValues()));
+    pointsHelper.Set(
+      &(*pointsItem->begin()), static_cast<unsigned int>(pointsItem->numberOfValues()));
+    didChange = true;
+  }
+  else
+  {
+    for (std::size_t ii = 0; ii < pointsItem->numberOfValues(); ++ii)
+    {
+      didChange |=
+        (pointsItem->value(ii) != pointsHelper.GetAs<double>(static_cast<unsigned int>(ii)));
+    }
+    if (didChange)
+    {
+      pointsHelper.Set(
+        &(*pointsItem->begin()), static_cast<unsigned int>(pointsItem->numberOfValues()));
+    }
+  }
+
+  bool closed = !!closedHelper.GetAsInt();
+  didChange |= (closedItem->isEnabled() != closed);
   if (didChange)
   {
-    Q_EMIT modified();
+    closedHelper.Set(closedItem->isEnabled());
   }
+
+  return didChange;
 }
 
 bool pqSMTKSplineItemWidget::fetchPointsAndClosedItems(

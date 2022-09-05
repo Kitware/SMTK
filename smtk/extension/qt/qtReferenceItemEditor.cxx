@@ -228,6 +228,7 @@ void qtReferenceItemEditor::createWidget()
   if (item->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(comboFrame);
+    optionalCheck->setObjectName("OptionalCheck");
     optionalCheck->setChecked(item->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -240,6 +241,7 @@ void qtReferenceItemEditor::createWidget()
 
   QString labelText = item->label().c_str();
   QLabel* label = new QLabel(labelText, comboFrame);
+  label->setObjectName("ReferenceItemLabel");
   label->setSizePolicy(sizeFixedPolicy);
   auto* iview = m_itemInfo.baseView();
   if (iview)

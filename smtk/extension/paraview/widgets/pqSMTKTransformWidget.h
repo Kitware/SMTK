@@ -32,9 +32,9 @@ public:
 protected Q_SLOTS:
   void resetWidget();
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-  void updateItemFromWidgetInternal() override;
+  bool updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
-  void updateWidgetFromItemInternal() override;
+  bool updateWidgetFromItemInternal() override;
 
 protected:
   bool fetchTransformItems(
