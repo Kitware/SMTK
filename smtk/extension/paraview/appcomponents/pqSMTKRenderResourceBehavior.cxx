@@ -142,6 +142,7 @@ pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
   vtkSMPropertyHelper(source->getProxy(), "ResourceId").Set(resource->id().toString().c_str());
 
   this->renderPipelineSource(source);
+  Q_EMIT this->pipelineSourceCreated(resource, source);
 
   return source;
 }
@@ -153,6 +154,8 @@ void pqSMTKRenderResourceBehavior::destroyPipelineSource(
 
   if (source != nullptr)
   {
+    Q_EMIT this->aboutToDestroyPipelineSource(resource, source);
+
     pqApplicationCore* core = pqApplicationCore::instance();
     pqObjectBuilder* builder = core->getObjectBuilder();
     builder->destroy(source);

@@ -45,6 +45,14 @@ public:
   static pqSMTKRenderResourceBehavior* instance(QObject* parent = nullptr);
   ~pqSMTKRenderResourceBehavior() override;
 
+Q_SIGNALS:
+  void pipelineSourceCreated(
+    smtk::resource::Resource::Ptr smtkResource,
+    pqSMTKResource* pipelineSource);
+  void aboutToDestroyPipelineSource(
+    smtk::resource::Resource::Ptr smtkResource,
+    pqSMTKResource* pipelineSource);
+
 public Q_SLOTS:
   pqSMTKResource* createPipelineSource(const smtk::resource::Resource::Ptr&);
   void destroyPipelineSource(const smtk::resource::Resource::Ptr&);
