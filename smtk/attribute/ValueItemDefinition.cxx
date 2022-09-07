@@ -311,6 +311,7 @@ void ValueItemDefinition::copyTo(
 
   if (this->allowsExpressions())
   {
+
     // Set expression definition (if possible)
     smtk::attribute::DefinitionPtr exp = info.ToResource.findDefinition(m_expressionType);
     if (exp)
@@ -319,8 +320,18 @@ void ValueItemDefinition::copyTo(
     }
     else
     {
-      std::cout << "Adding definition \"" << m_expressionType << "\" to copy-expression queue"
-                << std::endl;
+      // In this case we have yet to find the Expression Definition.
+      // Lets copy the reference Item Definition Information at least.  This would be useful
+      // if the Expression Definition does not exists in the Source Attribute Resource.  For example
+      // a workflow could be storing all of the Expressions in their Attribute Resource.
+      def->m_expressionType = m_expressionType;
+      m_expressionDefinition->copyTo(def->m_expressionDefinition, info);
+
+      // In the case that the Expression Definition exists in the source Attribute Resource,
+      // Lets queue it up so that this Item Definition's Expression Definition can be set once
+      // it has been copied.
+      std::cout << "Adding expression definition \"" << m_expressionType
+                << "\" to copy-expression queue" << std::endl;
 
       info.UnresolvedExpItems.push(std::make_pair(m_expressionType, def));
     }

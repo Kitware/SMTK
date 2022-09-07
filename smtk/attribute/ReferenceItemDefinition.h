@@ -39,6 +39,9 @@ namespace attribute
   */
 class SMTKCORE_EXPORT ReferenceItemDefinition : public ItemDefinition
 {
+
+  friend class ValueItemDefinition; // So that ValueItemDefinitions can copy expressions
+
 public:
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
 
