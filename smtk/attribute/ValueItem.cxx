@@ -421,7 +421,8 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
       // we need to clear all of the values
       this->reset();
     }
-    else
+    // If the expression is contained in the same resource as the item, then find it or create a copy of it
+    else if (sourceValueItem->attribute()->resource() == sourceValueItem->expression()->resource())
     {
       std::string nameStr = sourceValueItem->expression()->name();
       AttributePtr att = resource->findAttribute(nameStr);
@@ -437,6 +438,12 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
         }
       }
       this->setExpression(att);
+    }
+    else
+    {
+      // The source expression is located in a different resource than the source Item's attribute
+      // so simply assign it
+      this->setExpression(sourceValueItem->expression());
     }
   }
   else

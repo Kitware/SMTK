@@ -646,7 +646,7 @@ void Resource::setAdvanceLevelColor(int level, const double* l_color)
   }
 }
 
-// Copies attribute defintion into this Resource
+// Copies attribute definition into this Resource
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains ValueItem instances, might have to
 // copy additional definitions for expressions.
@@ -655,7 +655,7 @@ smtk::attribute::DefinitionPtr Resource::copyDefinition(
   unsigned int /*options*/)
 {
   // Returns defintion
-  smtk::attribute::DefinitionPtr newDef = smtk::attribute::DefinitionPtr();
+  smtk::attribute::DefinitionPtr newDef;
 
   // Call internal copy method
   smtk::attribute::ItemDefinition::CopyInfo info(shared_from_this());
@@ -666,40 +666,43 @@ smtk::attribute::DefinitionPtr Resource::copyDefinition(
     // Process exp items second
     while (!info.UnresolvedExpItems.empty())
     {
-      // Check if type has been created (copied) already
+      // Check if the expression type has been created (copied) already
       std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
         info.UnresolvedExpItems.front();
       std::string type = frontDef.first;
-      smtk::attribute::DefinitionPtr def = this->findDefinition(type);
-      if (def)
+      smtk::attribute::DefinitionPtr expDef = this->findDefinition(type);
+
+      if (!expDef)
+      {
+        // Lets see if we can copy the Definition from the source to this Resource
+        smtk::attribute::DefinitionPtr sourceExpDef = sourceDef->resource()->findDefinition(type);
+        // Definition missing only if source Resource is invalid, but check anyway
+
+        if (sourceExpDef)
+        {
+          // Attempt to Copy definition
+          std::cout << "Copying \"" << type << "\" definition" << std::endl;
+          expDef = this->copyDefinition(sourceExpDef);
+          if (!expDef)
+          {
+            std::cerr << "ERROR: Unable to copy expression definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+          }
+        }
+        else
+        {
+          std::cout << "Unable to find source expression definition " << type
+                    << " -- assuming it is external to the Resource" << std::endl;
+        }
+      }
+      if (expDef)
       {
         smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
         smtk::attribute::ValueItemDefinitionPtr valItemDef =
           smtk::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(nextItemDef);
-        valItemDef->setExpressionDefinition(def);
-        info.UnresolvedExpItems.pop();
+        valItemDef->setExpressionDefinition(expDef);
       }
-      else
-      {
-        // Need to copy definition, first find it in the input Resource
-        std::cout << "Copying \"" << type << "\" definition" << std::endl;
-        smtk::attribute::DefinitionPtr nextDef = sourceDef->resource()->findDefinition(type);
-        // Definition missing only if source Resource is invalid, but check anyway
-        if (!nextDef)
-        {
-          std::cerr << "ERROR: Unable to find source definition " << type
-                    << " -- copy operation incomplete" << std::endl;
-          return newDef;
-        }
-
-        // Copy definition
-        if (!this->copyDefinitionImpl(nextDef, info))
-        {
-          std::cerr << "ERROR: Unable to copy definition " << type
-                    << " -- copy operation incomplete" << std::endl;
-          return newDef;
-        }
-      }
+      info.UnresolvedExpItems.pop();
     } // while (expressions)
   }   // if (this->copyDefinition())
 
