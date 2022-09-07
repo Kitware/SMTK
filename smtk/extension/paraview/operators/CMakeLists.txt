@@ -5,6 +5,10 @@ set(sources
   smtkAssignColorsView.h
 )
 
+set(ui_files
+  smtkAssignColorsParameters.ui
+)
+
 if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
   list(APPEND sources
     smtkMeshInspectorView.cxx
@@ -13,13 +17,11 @@ if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
     smtkDataSetInfoInspectorView.cxx
     smtkEditPropertiesView.cxx
     smtkEditPropertiesView.h
-)
+  )
+  list(APPEND ui_files
+    smtkEditPropertiesView.ui
+  )
 endif ()
-
-set(ui_files
-  smtkAssignColorsParameters.ui
-  smtkEditPropertiesView.ui
-)
 
 # for Qt methods
 set(CMAKE_AUTOMOC 1)
