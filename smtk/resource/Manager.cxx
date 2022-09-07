@@ -591,5 +591,20 @@ smtk::common::Termination Manager::visit(const ResourceVisitor& visitor) const
   }
   return smtk::common::Termination::NORMAL;
 }
+
+PersistentObjectPtr Manager::search(const smtk::common::UUID& uid) const
+{
+  PersistentObjectPtr result;
+  this->visit([&result, &uid](const Resource& rsrc) {
+    if (rsrc.id() == uid)
+    {
+      result = const_cast<Resource*>(&rsrc)->shared_from_this();
+      return smtk::common::Processing::STOP;
+    }
+    result = rsrc.find(uid);
+    return result ? smtk::common::Processing::STOP : smtk::common::Processing::CONTINUE;
+  });
+  return result;
+}
 } // namespace resource
 } // namespace smtk
