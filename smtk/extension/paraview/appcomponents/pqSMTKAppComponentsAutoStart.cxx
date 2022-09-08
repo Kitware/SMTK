@@ -159,6 +159,18 @@ void pqSMTKAppComponentsAutoStart::startup()
       behavior->addManagerOnServer(server);
     }
   }
+
+  // Connect pipeline source created/destroyed signals to pqSMTKBehavior
+  QObject::connect(
+    renderResourceBehavior,
+    &pqSMTKRenderResourceBehavior::pipelineSourceCreated,
+    behavior,
+    &pqSMTKBehavior::pipelineSourceCreated);
+  QObject::connect(
+    renderResourceBehavior,
+    &pqSMTKRenderResourceBehavior::aboutToDestroyPipelineSource,
+    behavior,
+    &pqSMTKBehavior::aboutToDestroyPipelineSource);
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()

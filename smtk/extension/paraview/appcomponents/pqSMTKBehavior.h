@@ -128,6 +128,14 @@ Q_SIGNALS:
   void removingManagerFromServer(pqSMTKWrapper* mgr, pqServer* server);
   /// Called from within setPostProcessingMode.
   void postProcessingModeChanged(bool isPostProcessing);
+  /// Connected in pqSMTKAppComponentsAutoStart::startup()
+  void pipelineSourceCreated(
+    smtk::resource::ResourcePtr smtkResource,
+    pqSMTKResource* pipelineSource);
+  /// Connected in pqSMTKAppComponentsAutoStart::startup()
+  void aboutToDestroyPipelineSource(
+    smtk::resource::ResourcePtr smtkResource,
+    pqSMTKResource* pipelineSource);
 
 protected:
   pqSMTKBehavior(QObject* parent = nullptr);
