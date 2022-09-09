@@ -87,6 +87,47 @@ void SetAttributeBlockColorToEntity(
   {
     color = component->properties().at<std::vector<double>>("color");
     haveColor = true;
+    switch (color.size())
+    {
+      case 0:
+      {
+        // Treat a missing value as the default white.
+        static const std::vector<double> white{ { 1., 1., 1., 1. } };
+        color = white;
+      }
+      break;
+      case 1:
+      {
+        // Treat a single value as a greyscale by copying it to RGB (not alpha):
+        for (std::size_t ii = 1; ii < 3; ++ii)
+        {
+          color.push_back(color[0]);
+        }
+      }
+      break;
+      case 2:
+      {
+        // Treat two values as a greyscale plus opacity:
+        double alpha = color[1];
+        color.resize(4);
+        for (std::size_t ii = 1; ii < 3; ++ii)
+        {
+          color[ii] = color[0];
+        }
+        color[3] = alpha;
+      }
+      break;
+      default:
+        break;
+    }
+    // Add an opacity if none was specified (defaults to fully opaque):
+    // NB: This should *not* be in the "switch" so
+    // that greyscale above can have alpha added. (It applies to
+    // when color.size() == 1 or 3.)
+    if (color.size() == 3)
+    {
+      color.push_back(1.0); // Make opaque by default.
+    }
   }
 
   if (block && !haveColor)
