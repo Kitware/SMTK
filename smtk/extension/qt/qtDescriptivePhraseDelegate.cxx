@@ -415,7 +415,10 @@ bool qtDescriptivePhraseDelegate::processBadgeClick(
     int badgeIndex =
       qtDescriptivePhraseDelegate::pickBadge(mouseClickEvent->pos(), option, badges, phrase.get());
 
-    if (badgeIndex >= 0 && mouseClickEvent->type() == QEvent::MouseButtonPress)
+    if (
+      badgeIndex >= 0 &&
+      ((mouseClickEvent->type() == QEvent::MouseButtonPress) ||
+       (mouseClickEvent->type() == QEvent::MouseButtonDblClick)))
     {
       auto* qselnModel = view->selectionModel();
       if (qselnModel->isSelected(idx))
