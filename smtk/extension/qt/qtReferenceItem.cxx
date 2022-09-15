@@ -69,7 +69,7 @@ nlohmann::json defaultConfiguration = {
                   { "Children",
                     { { { "Name", "Badge" },
                         { "Attributes",
-                          { { "Default", true },
+                          { { "Default", false },
                             { "Type",
                               "smtk::extension::qt::MembershipBadge" } } } } } } } } } } } } } }
 };
@@ -823,8 +823,9 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     }
   }
   else if (
-    event->type() == QEvent::MouseButtonPress && m_p->m_popupList->isVisible() &&
-    src == m_p->m_popupList->viewport())
+    ((event->type() == QEvent::MouseButtonPress) ||
+     (event->type() == QEvent::MouseButtonDblClick)) &&
+    m_p->m_popupList->isVisible() && src == m_p->m_popupList->viewport())
   {
     if (qtDescriptivePhraseDelegate::processBadgeClick(
           static_cast<QMouseEvent*>(event), m_p->m_popupList))

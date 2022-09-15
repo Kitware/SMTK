@@ -495,8 +495,8 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
     }
   }
   else if (
-    evnt->type() == QEvent::MouseButtonPress && m_p->m_view->isVisible() &&
-    obj == m_p->m_view->viewport())
+    ((evnt->type() == QEvent::MouseButtonPress) || (evnt->type() == QEvent::MouseButtonDblClick)) &&
+    m_p->m_view->isVisible() && obj == m_p->m_view->viewport())
   {
     if (qtDescriptivePhraseDelegate::processBadgeClick(
           static_cast<QMouseEvent*>(evnt), m_p->m_view))
