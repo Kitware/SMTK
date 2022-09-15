@@ -328,6 +328,48 @@ ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specific
   return resourcesAndLockTypes;
 }
 
+std::unique_ptr<smtk::resource::ScopedLockSetGuard> lockResources(
+  const ResourceAccessMap& resourcesAndLockTypes,
+  bool nonBlocking)
+{
+  std::set<std::shared_ptr<smtk::resource::Resource>> readOnlyResources;
+  std::set<std::shared_ptr<smtk::resource::Resource>> readWriteResources;
+  // Keep a set of all resources' shared pointers around so they stay
+  // in memory while we obtain locks.
+  std::set<smtk::resource::Resource::Ptr> resources;
+  for (const auto& entry : resourcesAndLockTypes)
+  {
+    auto resource = entry.first.lock();
+    if (resource)
+    {
+      switch (entry.second)
+      {
+        case smtk::resource::LockType::Read:
+          readOnlyResources.insert(resource);
+          resources.insert(resource);
+          break;
+        case smtk::resource::LockType::Write:
+          readWriteResources.insert(resource);
+          resources.insert(resource);
+          break;
+        default:
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Unknown lock type " << static_cast<int>(entry.second)
+                                 << " encountered. Not locking resource " << resource->id()
+                                 << " named \"" << resource->name() << "\".");
+        }
+        break;
+      }
+    }
+  }
+  std::unique_ptr<smtk::resource::ScopedLockSetGuard> result = nonBlocking
+    ? smtk::resource::ScopedLockSetGuard::Try(readOnlyResources, readWriteResources)
+    : smtk::resource::ScopedLockSetGuard::Block(readOnlyResources, readWriteResources);
+  return result;
+}
+
 ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification)
 {
   // If we are passed a bad specification, then its associated operation can

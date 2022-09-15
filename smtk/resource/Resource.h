@@ -39,9 +39,14 @@ namespace resource
 /// Operations need the ability to lock and unlock resources, but no additional
 /// access privilege is required. We therefore use the PassKey pattern to grant
 /// Operation access to a resource's lock.
+/// Outside of operations, if you need to acquire a lock you must use a
+/// smtk::resource::ScopedLockSetGuard to ensure that locks are freed. Do
+/// not ever use the "new" operator to construct a ScopedLockSetGuard, as
+/// leaking it could cause deadlocks.
 class Key
 {
   friend class operation::Operation;
+  friend class smtk::resource::ScopedLockSetGuard;
   Key() = default;
 };
 

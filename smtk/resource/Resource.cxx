@@ -57,7 +57,37 @@ Resource::Resource(Resource&& rhs) noexcept
 {
 }
 
-Resource::~Resource() = default;
+Resource::~Resource()
+{
+  // The normal way resources are removed (when they are held by a
+  // manager) is for an operation to insert the resource into its
+  // result's "resourcesToExpunge" item, which holds a shared reference
+  // to it. Since the result is returned to the caller of the operation's
+  // operate() method after the lock has been freed, this should be the
+  // last shared pointer referencing the resource and no lock should be
+  // held for the resource when the result goes out of scope.
+  //
+  // Thus, if you see this error, it is likely you are trying to remove
+  // the resource from a resource::Manager yourself – rather than letting
+  // the base Operation class do it for your – or are dropping
+  // shared ownership of an unmanaged resource while it is locked (which
+  // you should avoid by releasing the lock before dropping the shared
+  // pointer).
+  //
+  // Why this is important: if a resource is destroyed while the lock is
+  // held, subtle errors may accumulate making it difficult to identify
+  // the point when using the resource became unsafe. This helps by
+  // warning at a point when using the resource becomes unsafe.
+  if (m_lock.state() != LockType::Unlocked)
+  {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Deleting locked resource " << this << " " << this->id()
+                                  << ". Perhaps your operation needs to report this resource "
+                                     "in the \"resourcesToExpunge\" item so it outlives lock "
+                                     "removal?");
+  }
+}
 
 Component* Resource::component(const smtk::common::UUID& compId) const
 {
