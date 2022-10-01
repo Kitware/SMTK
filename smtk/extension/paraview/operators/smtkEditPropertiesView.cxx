@@ -357,6 +357,35 @@ public:
     if (erase)
     {
       removeItem->setIsEnabled(true);
+
+      // We still need to set values here or the operation will be
+      // unable to proceed because the parameters will be considered
+      // invalid.
+      switch (attributeType)
+      {
+        default:
+        case 0:
+        {
+          auto stringItem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(
+            typeItem->find("string value", smtk::attribute::SearchStyle::IMMEDIATE));
+          stringItem->setValue("");
+          break;
+        }
+        case 1:
+        {
+          auto doubleItem = std::dynamic_pointer_cast<smtk::attribute::DoubleItem>(
+            typeItem->find("float value", smtk::attribute::SearchStyle::IMMEDIATE));
+          doubleItem->setValue(0.0);
+          break;
+        }
+        case 2:
+        {
+          auto intItem = std::dynamic_pointer_cast<smtk::attribute::IntItem>(
+            typeItem->find("integer value", smtk::attribute::SearchStyle::IMMEDIATE));
+          intItem->setValue(0);
+          break;
+        }
+      }
     }
     else
     {
