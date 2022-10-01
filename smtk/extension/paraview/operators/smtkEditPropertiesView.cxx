@@ -50,6 +50,7 @@
 #include <QScrollArea>
 #include <QSpacerItem>
 #include <QTableWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 
 // On Windows MSVC 2015+, something is included that defines
@@ -108,7 +109,17 @@ public:
     if (!tmp.empty())
     {
       m_objects = tmp;
-      this->updateProperties();
+      // If m_setUp is false, wait for event processing to resume
+      // before updating the table as the widgets have not been
+      // constructed yet.
+      if (m_setUp)
+      {
+        this->updateProperties();
+      }
+      else
+      {
+        QTimer::singleShot(0, [this]() { this->updateProperties(); });
+      }
     }
   }
 
@@ -346,6 +357,35 @@ public:
     if (erase)
     {
       removeItem->setIsEnabled(true);
+
+      // We still need to set values here or the operation will be
+      // unable to proceed because the parameters will be considered
+      // invalid.
+      switch (attributeType)
+      {
+        default:
+        case 0:
+        {
+          auto stringItem = std::dynamic_pointer_cast<smtk::attribute::StringItem>(
+            typeItem->find("string value", smtk::attribute::SearchStyle::IMMEDIATE));
+          stringItem->setValue("");
+          break;
+        }
+        case 1:
+        {
+          auto doubleItem = std::dynamic_pointer_cast<smtk::attribute::DoubleItem>(
+            typeItem->find("float value", smtk::attribute::SearchStyle::IMMEDIATE));
+          doubleItem->setValue(0.0);
+          break;
+        }
+        case 2:
+        {
+          auto intItem = std::dynamic_pointer_cast<smtk::attribute::IntItem>(
+            typeItem->find("integer value", smtk::attribute::SearchStyle::IMMEDIATE));
+          intItem->setValue(0);
+          break;
+        }
+      }
     }
     else
     {
@@ -446,6 +486,7 @@ public:
   std::set<std::shared_ptr<smtk::resource::PersistentObject>> m_objects;
   pqSMTKCoordinateFrameItemWidget* m_frameWidget{ nullptr };
   smtk::attribute::GroupItemPtr m_widgetCoordinateFrameGroupItem{ nullptr };
+  QVBoxLayout* m_frameWidgetContainerLayout{ nullptr };
 };
 
 smtkEditPropertiesView::smtkEditPropertiesView(const smtk::view::Information& info)
@@ -523,13 +564,15 @@ void smtkEditPropertiesView::createWidget()
   auto* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);
-  this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+  this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
   m_p->m_editorLayout = new QHBoxLayout;
   this->updateUI();
 
   auto* wtmp = new QWidget;
+  wtmp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
   m_p->setupUi(wtmp);
+  m_p->m_frameWidgetContainerLayout = new QVBoxLayout(m_p->m_frameWidgetContainer);
   m_p->m_setUp = true;
   layout->addWidget(wtmp);
 
@@ -665,15 +708,20 @@ void smtkEditPropertiesView::propertyTypeChanged(int index)
   }
   else
   {
+    if (m_p->m_frameWidget)
+    {
+      m_p->m_frameWidget->markForDeletion();
+    }
     m_p->m_propertyValuesLabel->setVisible(false);
     m_p->m_attributeValuesEdit->setVisible(false);
     qtAttributeItemInfo info(
       m_p->m_widgetCoordinateFrameGroupItem,
       this->m_viewInfo.configuration()->details(),
-      this->Widget,
+      m_p->m_frameWidgetContainer,
       this);
     m_p->m_frameWidget = dynamic_cast<pqSMTKCoordinateFrameItemWidget*>(
       pqSMTKCoordinateFrameItemWidget::createCoordinateFrameItemWidget(info));
+    m_p->m_frameWidgetContainerLayout->addWidget(m_p->m_frameWidget->widget());
   }
 }
 

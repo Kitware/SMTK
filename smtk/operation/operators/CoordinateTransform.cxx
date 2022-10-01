@@ -57,6 +57,27 @@ bool CoordinateTransform::removeTransform(
       {
         frameProps.erase("smtk.geometry.transform");
         modified = true;
+        // Erase these, too (they will also exist if you use this operation to set the transform):
+        frameProps.erase("smtk.geometry.transform.from.frame");
+        frameProps.erase("smtk.geometry.transform.to.frame");
+      }
+
+      // Also remove provenance properties for transform, if set:
+      auto stringProps = source->properties().get<std::string>();
+      names = stringProps.keys();
+      if (names.find("smtk.geometry.transform.from.name") != names.end())
+      {
+        stringProps.erase("smtk.geometry.transform.from.name");
+        // "from.id" *may* exist if "from.name" is set.
+        stringProps.erase("smtk.geometry.transform.from.id");
+        modified = true;
+      }
+      if (names.find("smtk.geometry.transform.to.name") != names.end())
+      {
+        stringProps.erase("smtk.geometry.transform.to.name");
+        // "to.id" *may* exist if "to.name" is set.
+        stringProps.erase("smtk.geometry.transform.to.id");
+        modified = true;
       }
       if (modified)
       {
@@ -166,20 +187,87 @@ CoordinateTransform::Result CoordinateTransform::operateInternal()
     ;
 #endif
 
+  auto fromFrameProvenance =
+    this->parameters()->itemAtPathAs<smtk::attribute::GroupItem>("/from/0/landmark");
+  bool haveFromProvenance = false;
+  std::string fromLandmarkName;
+  std::string fromLandmarkId;
+  smtk::resource::properties::CoordinateFrame fromLandmarkFrame;
+  if (fromFrameProvenance->isEnabled())
+  {
+    smtk::resource::PersistentObject::Ptr obj;
+    fromLandmarkName =
+      fromFrameProvenance->findAs<smtk::attribute::StringItem>("property name")->value();
+    auto objItem = fromFrameProvenance->findAs<smtk::attribute::ReferenceItem>("object");
+    if (objItem->numberOfValues() > 0 && objItem->isSet())
+    {
+      obj = objItem->value();
+    }
+    fromLandmarkId = obj->id().toString();
+    fromLandmarkFrame =
+      obj->properties().at<smtk::resource::properties::CoordinateFrame>(fromLandmarkName);
+    haveFromProvenance = (!fromLandmarkName.empty() && !fromLandmarkId.empty());
+  }
+
+  auto toFrameProvenance =
+    this->parameters()->itemAtPathAs<smtk::attribute::GroupItem>("/to/0/landmark");
+  bool haveToProvenance = false;
+  std::string toLandmarkName;
+  std::string toLandmarkId;
+  smtk::resource::properties::CoordinateFrame toLandmarkFrame;
+  if (toFrameProvenance->isEnabled())
+  {
+    smtk::resource::PersistentObject::Ptr obj;
+    toLandmarkName =
+      toFrameProvenance->findAs<smtk::attribute::StringItem>("property name")->value();
+    auto objItem = toFrameProvenance->findAs<smtk::attribute::ReferenceItem>("object");
+    if (objItem->numberOfValues() > 0 && objItem->isSet())
+    {
+      obj = objItem->value();
+    }
+    toLandmarkId = obj->id().toString();
+    toLandmarkFrame =
+      obj->properties().at<smtk::resource::properties::CoordinateFrame>(toLandmarkName);
+    haveToProvenance = (!toLandmarkName.empty() && !toLandmarkId.empty());
+  }
+
   this->removeTransform(associations, result);
   smtk::attribute::ComponentItemPtr modifiedItem = result->findComponent("modified");
   for (smtk::resource::PersistentObjectPtr association : *associations)
   {
     if (auto component = std::dynamic_pointer_cast<Component>(association))
     {
-      component->properties().insert("transform", transform);
+      component->properties().insert("smtk.geometry.transform", transform);
+      component->properties().insert("smtk.geometry.transform.from.frame", fromFrame);
+      component->properties().insert("smtk.geometry.transform.to.frame", toFrame);
+      if (haveFromProvenance)
+      {
+        component->properties().insert("smtk.geometry.transform.from.name", fromLandmarkName);
+        if (fromLandmarkId.empty())
+        {
+          component->properties().erase<std::string>("smtk.geometry.transform.from.id");
+        }
+        else
+        {
+          component->properties().insert("smtk.geometry.transform.from.id", fromLandmarkId);
+        }
+      }
+      if (haveToProvenance)
+      {
+        component->properties().insert("smtk.geometry.transform.to.name", toLandmarkName);
+        if (toLandmarkId.empty())
+        {
+          component->properties().erase<std::string>("smtk.geometry.transform.to.id");
+        }
+        else
+        {
+          component->properties().insert("smtk.geometry.transform.to.id", toLandmarkId);
+        }
+      }
       MarkGeometry().markModified(component);
       modifiedItem->appendValue(component);
     }
   }
-
-  // TODO: Record where the coordinate frames came from (if they were named properties
-  //       of any component... this is not information the parameters provide yet).
 
   return result;
 }

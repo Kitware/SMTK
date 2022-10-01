@@ -11,7 +11,7 @@
 #ifndef smtkDataSetInfoInspectorView_h
 #define smtkDataSetInfoInspectorView_h
 
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/extension/paraview/operators/smtkPQOperationViewsExtModule.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
@@ -19,7 +19,7 @@ class QColor;
 class QIcon;
 
 /// UI component for assigning colors to entities
-class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkDataSetInfoInspectorView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkDataSetInfoInspectorView
   : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT

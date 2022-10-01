@@ -772,6 +772,19 @@ void ReferenceItem::unset(std::size_t i)
   m_activeChildrenItems.clear();
 }
 
+std::size_t ReferenceItem::numberOfSetValues() const
+{
+  std::size_t result = 0;
+  for (const auto& entry : m_keys)
+  {
+    if (!entry.first.isNull())
+    {
+      ++result;
+    }
+  }
+  return result;
+}
+
 bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 {
   // Cast input pointer to ReferenceItem

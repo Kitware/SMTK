@@ -10,11 +10,11 @@
 #ifndef smtk_paraview_operators_EditPropertiesView_h
 #define smtk_paraview_operators_EditPropertiesView_h
 
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/extension/paraview/operators/smtkPQOperationViewsExtModule.h"
 #include "smtk/extension/qt/qtOperationView.h"
 
 /// User interface for editing properties of components
-class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkEditPropertiesView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkEditPropertiesView
   : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT;

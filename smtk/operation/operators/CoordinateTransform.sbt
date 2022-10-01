@@ -24,6 +24,27 @@
           <Accepts><Resource Name="smtk::resource::Resource" Filter="*"/></Accepts>
           <BriefDescription>Reference to the parent component.</BriefDescription>
         </Reference>
+        <Group Name="landmark" Label=" " Optional="true" IsEnabledByDefault="false">
+          <BriefDescription>
+            Record information about the coordinate frame for provenance.
+          </BriefDescription>
+          <DetailedDescription>
+            If this frame was taken from a landmark, this records the landmark's object and property-name.
+            If this frame was user-edited, the object will have no values and property name will be a
+            note entered by the user to store with this frame.
+          </DetailedDescription>
+          <ItemDefinitions>
+            <Reference Name="object"
+              NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1" HoldReferences="true" LockType="Read">
+              <Accepts><Resource Name="smtk::resource::Resource" Filter="*"/></Accepts>
+              <BriefDescription>The object owning the CoordinateFrame property matching this frame (if any).</BriefDescription>
+            </Reference>
+            <String Name="property name" NumberOfRequiredValues="1">
+              <BriefDescription>The name of the CoordinateFrame property matching this frame or
+                a user-provided note describing the frame (if no object is set).</BriefDescription>
+            </String>
+          </ItemDefinitions>
+        </Group>
       </ItemDefinitions>
     </Block>
   </ItemBlocks>
@@ -32,7 +53,7 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="coordinate transform" BaseType="operation">
-      <AssociationsDef Name="source" NumberOfRequiredValues="1" Extensible="true">
+      <AssociationsDef Name="source" Label=" " NumberOfRequiredValues="1" Extensible="true">
         <Accepts><Resource Name="smtk::resource::Resource" Filter="*"/></Accepts>
       </AssociationsDef>
       <BriefDescription>Set (or remove) a coordinate transform on input component(s).</BriefDescription>
@@ -41,12 +62,12 @@
         component(s) into world coordinates.
       </DetailedDescription>
       <ItemDefinitions>
-        <Group Name="from">
+        <Group Name="from" Label=" ">
           <ItemDefinitions>
             <Block Name="CoordinateFrameItems"/>
           </ItemDefinitions>
         </Group>
-        <Group Name="to">
+        <Group Name="to" Label=" ">
           <ItemDefinitions>
             <Block Name="CoordinateFrameItems"/>
           </ItemDefinitions>
@@ -79,6 +100,27 @@
       <AttributeTypes>
         <Att Type="coordinate transform" Name="coordinate transform">
           <ItemViews>
+            <View Path="/source" Type="qtReferenceTree"
+              DrawSubtitle="false"
+              VisibilityMode="true"
+              TextVerticalPad="6"
+              TitleFontWeight="1"
+              HighlightOnHover="false"
+              >
+              <PhraseModel Type="smtk::view::ResourcePhraseModel">
+                <SubphraseGenerator Type="smtk::view::SubphraseGenerator"/>
+                <Badges>
+                  <Badge
+                    Type="smtk::extension::qt::MembershipBadge"
+                    MembershipCriteria="ComponentsWithGeometry"
+                    Filter="any"
+                    Default="false"/>
+                  <Badge
+                    Type="smtk::extension::paraview::appcomponents::VisibilityBadge"
+                    Default="false"/>
+                </Badges>
+              </PhraseModel>
+            </View>
             <View Item="from" Type="CoordinateFrame"
               Origin="origin" XAxis="x axis" YAxis="y axis" ZAxis="z axis" Parent="parent" ShowControls="true"/>
             <View Item="to" Type="CoordinateFrame"

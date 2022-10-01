@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>273</width>
-    <height>323</height>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="topSplit">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QLabel" name="m_editorLabel">
@@ -92,24 +92,21 @@ you will be able to inspect and edit their freeform properties.&lt;/p&gt;&lt;/bo
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="bottomSplit">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="m_propertyNameLabel">
-           <property name="text">
-            <string>Name</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="m_attributeNameEdit"/>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="m_propertyTypeLabel">
            <property name="text">
             <string>Type</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="m_propertyValuesLabel">
+           <property name="text">
+            <string>Value(s)</string>
            </property>
           </widget>
          </item>
@@ -137,15 +134,28 @@ you will be able to inspect and edit their freeform properties.&lt;/p&gt;&lt;/bo
            </item>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="m_propertyValuesLabel">
-           <property name="text">
-            <string>Value(s)</string>
-           </property>
-          </widget>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="m_attributeNameEdit"/>
          </item>
          <item row="2" column="1">
           <widget class="QLineEdit" name="m_attributeValuesEdit"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_propertyNameLabel">
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QWidget" name="m_frameWidgetContainer" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

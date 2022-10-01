@@ -11,7 +11,7 @@
 #ifndef smtkMeshInspectorView_h
 #define smtkMeshInspectorView_h
 
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/extension/paraview/operators/smtkPQOperationViewsExtModule.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
@@ -19,8 +19,7 @@ class QColor;
 class QIcon;
 
 /// UI component for assigning colors to entities
-class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkMeshInspectorView
-  : public smtk::extension::qtOperationView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkMeshInspectorView : public smtk::extension::qtOperationView
 {
   Q_OBJECT
 

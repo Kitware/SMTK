@@ -298,6 +298,8 @@ public:
   virtual bool isSet(std::size_t i = 0) const;
   /// Force the \a i-th value of the item to be invalid.
   virtual void unset(std::size_t i = 0);
+  /// Return the number of non-null values in the item.
+  virtual std::size_t numberOfSetValues() const;
   /**\brief Assigns contents to be same as source item
     *
     * Assigns this item to be equivalent to another.

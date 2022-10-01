@@ -1,22 +1,19 @@
-set(sources
-  Registrar.cxx
-  Registrar.h
-  smtkAssignColorsView.cxx
-  smtkAssignColorsView.h
+set(classes
+  Registrar
+  smtkAssignColorsView
 )
+set(sources)
 
 set(ui_files
   smtkAssignColorsParameters.ui
 )
 
 if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
-  list(APPEND sources
-    smtkMeshInspectorView.cxx
-    smtkMeshInspectorView.h
-    smtkDataSetInfoInspectorView.h
-    smtkDataSetInfoInspectorView.cxx
-    smtkEditPropertiesView.cxx
-    smtkEditPropertiesView.h
+  list(APPEND classes
+    smtkMeshInspectorView
+    smtkCoordinateTransformView
+    smtkDataSetInfoInspectorView
+    smtkEditPropertiesView
   )
   list(APPEND ui_files
     smtkEditPropertiesView.ui
@@ -25,28 +22,27 @@ endif ()
 
 # for Qt methods
 set(CMAKE_AUTOMOC 1)
-
-smtk_add_plugin(smtkPQOperationViewsPlugin
-  REGISTRAR
-    smtk::extension::paraview::operators::Registrar
-  MANAGERS
-    smtk::view::Manager
-  PARAVIEW_PLUGIN_ARGS
-    VERSION "1.0"
-    REQUIRED_PLUGINS smtkPQComponentsPlugin
-    UI_FILES ${ui_files}
-    SOURCES ${sources}
-)
+set(CMAKE_AUTOUIC 1)
 
 set(widget_library)
 if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
   set(widget_library smtkPQWidgetsExt)
 else ()
-  target_compile_definitions(smtkPQOperationViewsPlugin
+  target_compile_definitions(smtkPQOperationViewsExt
     PRIVATE PARAVIEW_VERSION_59)
 endif ()
 
-target_link_libraries(smtkPQOperationViewsPlugin
+vtk_module_add_module(smtkPQOperationViewsExt
+  CLASSES ${classes}
+  HEADERS_SUBDIR "smtk/extension/paraview/operators"
+  SOURCES ${ui_files} ${rc_files}
+)
+
+vtk_module_link(smtkPQOperationViewsExt
+  PUBLIC
+    smtkCore
+    smtkQtExt
+    ParaView::RemotingViews
   PRIVATE
     ${widget_library}
     vtkSMTKOperationsExt
@@ -54,6 +50,26 @@ target_link_libraries(smtkPQOperationViewsPlugin
     smtkQtExt
     ParaView::pqComponents
     VTK::jsoncpp
+    smtkPQComponentsExt
+    vtkSMTKSourceExt
+    vtkSMTKWidgetsExt
+    ParaView::pqApplicationComponents
+    ParaView::pqComponents
+    ParaView::pqWidgets
+    ParaView::VTKExtensionsExtraction
+    ParaView::VTKExtensionsFiltersGeneral
+    ParaView::VTKExtensionsFiltersRendering
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::CommonExecutionModel
+    VTK::CommonMath
+    VTK::CommonTransforms
+    VTK::InteractionWidgets
+    VTK::RenderingCore
+    VTK::RenderingOpenGL2
 )
 
-smtk_export_header(smtkPQOperationViewsPlugin Exports.h)
+vtk_module_definitions(smtkPQOperationViewsExt
+  PRIVATE
+    QT_NO_KEYWORDS
+)

@@ -11,7 +11,7 @@
 #define smtk_extension_paraview_operators_Registrar_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/extension/paraview/operators/smtkPQOperationViewsExtModule.h"
 #include "smtk/view/Manager.h"
 
 namespace smtk
@@ -23,7 +23,7 @@ namespace paraview
 namespace operators
 {
 
-class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT Registrar
+class SMTKPQOPERATIONVIEWSEXT_EXPORT Registrar
 {
 public:
   static void registerTo(const smtk::view::Manager::Ptr&);

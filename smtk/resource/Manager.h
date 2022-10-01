@@ -261,6 +261,21 @@ public:
     return m_resources.size();
   }
 
+  /// Search all managed resources for an object with the given UUID.
+  ///
+  /// If a null value is returned, no object has the \a uid or the object
+  /// is unmanaged.
+  ///
+  /// This is a potentially expensive operation; avoid using it if possible.
+  /// It is typically O(m*log(n)), where \a m is the number of resources held
+  /// by the manager and \a n is number of components held by each resource.
+  /// This method visits each resource held by the manager (hence the linear
+  /// complexity in the number of resources).
+  /// If the UUID corresponds to the resource's ID, the resource is returned.
+  /// Otherwise, the resource is asked to return the matching object;
+  /// the first non-null result is returned.
+  PersistentObjectPtr search(const smtk::common::UUID& uid) const;
+
   /// Return the map of metadata.
   MetadataContainer& metadata() { return m_metadata; }
 
