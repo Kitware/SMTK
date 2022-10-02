@@ -85,3 +85,49 @@ The example below imports an SimBuilder Template (SBT) file.
    :start-after: # ++ 4 ++
    :end-before: # -- 4 --
    :linenos:
+
+
+.. _smtk-python-plugin:
+
+Python plugins in modelbuilder
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Because of the complex mechanics of the different python environments,
+modelbuilder provides a simple way to register operations that should
+be automatically available each time you run (rather than requiring
+you to manually click on the "File→Import Operation…" menu each time).
+
+Instead, once you have your Python operation defined in a module file,
+you can tell modelbuilder to treat it as a plugin, which can be set to
+auto-load on startup.
+To do this, we'll add a few lines of code to the bottom of your module
+like so:
+
+.. code-block:: python
+
+   import smtk.operation
+
+   class CustomOperation(smtk.operation.Operation):
+       # Define your operation methods here as usual...
+
+   if __name__ != '__main__':
+       from contextlib import suppress
+       with suppress(ModuleNotFoundError):
+           import smtk.extension.paraview.appcomponents as app
+           app.importPythonOperation(__name__, 'CustomOperation')
+
+
+In the example above, you will already have defined the ``CustomOperation``
+class and only need to add the ``if``-block at the bottom.
+If your module has multiple operations, you can call ``app.importPythonOperation()``
+as many times as you like.
+
+Once you have added this to your python module, click on
+the "Tools→Manage Plugins…" menu item in modelbuilder.
+When the dialog appears, click on "Load New" and select
+your module. It should load and immediately register your
+new operation. If you want the operation to be available
+each time you start modelbuilder, just click on the "Auto-load"
+option in the plugin manager and exit modelbuilder;
+the setting will be saved and your module will be imported
+on subsequent runs.
