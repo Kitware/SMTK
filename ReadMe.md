@@ -8,7 +8,7 @@ The [Simulation Model Toolkit (SMTK)][SMTK] is an open-source, multi-platform to
 The project
 has grown through collaborative efforts between [Kitware Inc.][Kitware],
  and various other
-government and commercial institutions, and acedemic partners.
+government and commercial institutions, and academic partners.
 
 [CMB]: http://www.ComputationalModelBuilder.org
 [SMTK]: http://www.computationalmodelbuilder.org/smtk/
