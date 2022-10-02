@@ -88,7 +88,7 @@ qtOperationTypeModel::qtOperationTypeModel(const smtk::view::Information& info, 
         m_operationManager, config->details().child(modelConfigIdx).child(decoratorConfigIdx));
     }
   }
-  m_operationManager->metadataObservers().insert(
+  m_modelObserverKey = m_operationManager->metadataObservers().insert(
     [this](const smtk::operation::Metadata& metadata, bool adding) {
       this->metadataUpdate(metadata, adding);
     },
