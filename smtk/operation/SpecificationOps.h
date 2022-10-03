@@ -83,6 +83,19 @@ ResourceAccessMap extractResourcesAndLockTypes(Operation::Parameters parameters)
 SMTKCORE_EXPORT
 ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification);
 
+/// Obtain locks for all resources in a ResourceAccessMap.
+///
+/// If \a nonBlocking is false (the default), this method will block until all the
+/// \a resources are locked and will never return a null pointer. This may result
+/// in a deadlock if you are not careful.
+///
+/// If \a nonBlocking is true (the default is false), then always return immediately.
+/// In this case, the return value may be a null pointer (indicating that at least one
+/// of the \a resources could not be locked without blocking).
+std::unique_ptr<smtk::resource::ScopedLockSetGuard> lockResources(
+  const ResourceAccessMap& resourcesAndLockTypes,
+  bool nonBlocking = false);
+
 /// Construct a vector of all of the resource component definitions referenced
 /// in the specification.
 SMTKCORE_EXPORT
