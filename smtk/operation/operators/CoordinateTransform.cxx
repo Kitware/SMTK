@@ -192,7 +192,6 @@ CoordinateTransform::Result CoordinateTransform::operateInternal()
   bool haveFromProvenance = false;
   std::string fromLandmarkName;
   std::string fromLandmarkId;
-  smtk::resource::properties::CoordinateFrame fromLandmarkFrame;
   if (fromFrameProvenance->isEnabled())
   {
     smtk::resource::PersistentObject::Ptr obj;
@@ -202,11 +201,12 @@ CoordinateTransform::Result CoordinateTransform::operateInternal()
     if (objItem->numberOfValues() > 0 && objItem->isSet())
     {
       obj = objItem->value();
+      if (obj)
+      {
+        fromLandmarkId = obj->id().toString();
+      }
     }
-    fromLandmarkId = obj->id().toString();
-    fromLandmarkFrame =
-      obj->properties().at<smtk::resource::properties::CoordinateFrame>(fromLandmarkName);
-    haveFromProvenance = (!fromLandmarkName.empty() && !fromLandmarkId.empty());
+    haveFromProvenance = !fromLandmarkName.empty();
   }
 
   auto toFrameProvenance =
@@ -214,7 +214,6 @@ CoordinateTransform::Result CoordinateTransform::operateInternal()
   bool haveToProvenance = false;
   std::string toLandmarkName;
   std::string toLandmarkId;
-  smtk::resource::properties::CoordinateFrame toLandmarkFrame;
   if (toFrameProvenance->isEnabled())
   {
     smtk::resource::PersistentObject::Ptr obj;
@@ -224,11 +223,12 @@ CoordinateTransform::Result CoordinateTransform::operateInternal()
     if (objItem->numberOfValues() > 0 && objItem->isSet())
     {
       obj = objItem->value();
+      if (obj)
+      {
+        toLandmarkId = obj->id().toString();
+      }
     }
-    toLandmarkId = obj->id().toString();
-    toLandmarkFrame =
-      obj->properties().at<smtk::resource::properties::CoordinateFrame>(toLandmarkName);
-    haveToProvenance = (!toLandmarkName.empty() && !toLandmarkId.empty());
+    haveToProvenance = !toLandmarkName.empty();
   }
 
   this->removeTransform(associations, result);
