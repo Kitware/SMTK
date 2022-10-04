@@ -49,6 +49,7 @@ inline py::class_< pqSMTKBehavior, QObject > pybind11_init_pqSMTKBehavior(py::mo
     .def("removingManagerFromServer", (void (pqSMTKBehavior::*)(::pqSMTKWrapper *, ::pqServer *)) &pqSMTKBehavior::removingManagerFromServer, py::arg("mgr"), py::arg("server"))
     .def("resourceManagerForServer", &pqSMTKBehavior::resourceManagerForServer, py::arg("server") = nullptr)
     .def("visitResourceManagersOnServers", &pqSMTKBehavior::visitResourceManagersOnServers, py::arg("fn"))
+    .def_static("importPythonOperationsForModule", &pqSMTKBehavior::importPythonOperationsForModule, py::arg("moduleName"), py::arg("operationName"))
     .def("wrapperProxy", [](pqSMTKBehavior& behavior)
       { return behavior.wrapperProxy(); })// &pqSMTKBehavior::wrapperProxy, py::arg("server") = nullptr)
     .def("activeWrapperResourceManager", [](pqSMTKBehavior& behavior)

@@ -88,7 +88,7 @@ qtOperationTypeModel::qtOperationTypeModel(const smtk::view::Information& info, 
         m_operationManager, config->details().child(modelConfigIdx).child(decoratorConfigIdx));
     }
   }
-  m_operationManager->metadataObservers().insert(
+  m_modelObserverKey = m_operationManager->metadataObservers().insert(
     [this](const smtk::operation::Metadata& metadata, bool adding) {
       this->metadataUpdate(metadata, adding);
     },
@@ -516,7 +516,16 @@ void qtOperationTypeModel::metadataUpdate(const smtk::operation::Metadata& metad
       metaOverride = m_operationDecorator->at(metadata.index());
       if (!metaOverride.first)
       {
-        return; // Skip operations not whitelisted.
+        // Ignore operations that aren't whitelisted, except for Python ops.
+        // Python operations always have a dot(.) in their name between
+        // the module name and class name. We want to let these operations
+        // into the application even if they are not whitelisted because
+        // users should be able to write/import scripts without knowing enough
+        // C++ to write their own operation decorator.
+        if (metadata.typeName().find('.') == std::string::npos)
+        {
+          return; // Skip operations not whitelisted other than python operation.
+        }
       }
     }
   }

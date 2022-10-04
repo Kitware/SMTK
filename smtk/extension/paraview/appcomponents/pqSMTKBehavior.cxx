@@ -19,6 +19,7 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
 
 // Client side
 #include "pqActiveObjects.h"
@@ -400,6 +401,28 @@ pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
     }
   }
   return builtin;
+}
+
+void pqSMTKBehavior::importPythonOperationsForModule(
+  const std::string& moduleName,
+  const std::string& operationName)
+{
+#ifdef SMTK_PYTHON_ENABLED
+  QTimer::singleShot(0, [moduleName, operationName]() {
+    auto* behavior = pqSMTKBehavior::instance();
+    auto* wrapper = behavior->builtinOrActiveWrapper();
+    auto opMgr = wrapper->smtkOperationManager();
+    smtk::operation::ImportPythonOperation::importOperation(*opMgr, moduleName, operationName);
+  });
+#else
+  static bool once = false;
+  if (!once)
+  {
+    once = true;
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Python is not enabled; no operation will be imported.");
+  }
+#endif
 }
 
 bool pqSMTKBehavior::setPostProcessingMode(bool inPost)

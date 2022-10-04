@@ -113,6 +113,17 @@ public:
    */
   bool postProcessingMode() const { return m_postProcessingMode; }
 
+  /**\brief Register operations from the named module after the event loop starts.
+    *
+    * ParaView loads plugins (including python plugins) before a
+    * server connection is established. This method queues a function
+    * to run after the event loop starts to register Python operations
+    * to the active server's operation manager.
+    */
+  static void importPythonOperationsForModule(
+    const std::string& moduleName,
+    const std::string& operationName);
+
 public Q_SLOTS:
   /// Set whether post-processing mode is enabled (true) or disabled (false; default).
   ///
