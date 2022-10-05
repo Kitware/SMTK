@@ -14,7 +14,7 @@
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Rule.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -63,7 +63,7 @@ struct TypeName
 
     bool operator()(const smtk::resource::PersistentObject& object) const override
     {
-      return std::regex_match(object.typeName(), std::regex(value));
+      return smtk::regex_match(object.typeName(), smtk::regex(value));
     }
 
     std::string value;

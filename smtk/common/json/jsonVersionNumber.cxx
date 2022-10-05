@@ -9,7 +9,6 @@
 //=========================================================================
 #include "jsonVersionNumber.h"
 
-#include <regex>
 #include <string>
 
 using json = nlohmann::json;

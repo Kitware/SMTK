@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/project/view/IconConstructor.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -21,9 +21,9 @@ std::string IconConstructor::operator()(const std::string& secondaryColor) const
 {
   std::string fill = "gray";
 
-  std::string svg = std::regex_replace(
-    std::regex_replace(this->svg(), std::regex(m_defaultColor), fill),
-    std::regex(m_secondaryColor),
+  std::string svg = smtk::regex_replace(
+    smtk::regex_replace(this->svg(), smtk::regex(m_defaultColor), fill),
+    smtk::regex(m_secondaryColor),
     secondaryColor);
 
   return svg;

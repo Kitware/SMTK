@@ -143,6 +143,9 @@ mark_as_advanced(SMTK_BUILD_PRECOMPILED_HEADERS)
 option(SMTK_ENABLE_GDAL_SUPPORT "Include I/O for GDAL. This requires ParaView/VTK built with GDAL."
   OFF)
 
+option(SMTK_USE_BOOST_REGEX "Use Boost::Regex instead of STL" OFF)
+mark_as_advanced(SMTK_USE_BOOST_REGEX)
+
 # SMTK_BUILD_DOCUMENTATION is an enumerated option:
 # never  == No documentation, and no documentation tools are required.
 # manual == Only build when requested; documentation tools (doxygen and
@@ -284,9 +287,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND
     CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
 #we definitely need regex support
-  list(APPEND required_boost_components regex)
+  set(SMTK_USE_BOOST_REGEX ON)
 else()
 #we may need regex support, but rather than try-compile let's just use boost
+  set(SMTK_USE_BOOST_REGEX ON)
+endif()
+
+# If SMTK wants/needs to use Boost::regex then add it to the list
+if(SMTK_USE_BOOST_REGEX)
+# we want regex support, we don't care if the compiler provides it or not
   list(APPEND required_boost_components regex)
 endif()
 

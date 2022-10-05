@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/common/VersionNumber.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 #include <sstream>
 
 namespace smtk
@@ -34,11 +34,11 @@ VersionNumber::VersionNumber(const VersionNumber& other) = default;
 /// Construct a VersionNumber from a text string in either major.minor or major.minor.patch format.
 VersionNumber::VersionNumber(const std::string& txt)
 {
-  const std::regex versionRegex("([0-9]+)\\.([0-9]+)\\.?([0-9]+)?");
-  std::smatch versionMatch;
+  const smtk::regex versionRegex("([0-9]+)\\.([0-9]+)\\.?([0-9]+)?");
+  smtk::smatch versionMatch;
   if (!txt.empty())
   {
-    if (std::regex_match(txt, versionMatch, versionRegex))
+    if (smtk::regex_match(txt, versionMatch, versionRegex))
     {
       for (std::size_t ii = 1; ii < versionMatch.size() && ii < 4; ++ii)
       {

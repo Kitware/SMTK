@@ -43,13 +43,13 @@
 
 #include "smtk/extension/qt/qtResourceBrowserP.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 const std::string pqSMTKResourceBrowser::getJSONConfiguration()
 {
   // we want to use the base config, but use our type instead of qtResourceBrowser.
   std::string baseConfig = smtk::extension::qtResourceBrowser::getJSONConfiguration();
-  return std::regex_replace(baseConfig, std::regex("qtResourceBrowser"), "pqSMTKResourceBrowser");
+  return smtk::regex_replace(baseConfig, smtk::regex("qtResourceBrowser"), "pqSMTKResourceBrowser");
 }
 
 smtk::extension::qtBaseView* pqSMTKResourceBrowser::createViewWidget(

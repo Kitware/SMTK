@@ -16,26 +16,13 @@
 #include "smtk/project/Metadata.h"
 #include "smtk/project/pybind11/PyProject.h"
 
+#include "smtk/Regex.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/embed.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <functional>
-
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::sregex_token_iterator;
-#endif
 
 #include <iostream>
 #include <string>
@@ -86,8 +73,8 @@ std::vector<std::string> importProjectsFromModule(
   // As per the above python snippet, the output is a string of all of the
   // project names defined in the input file, separated by ";;". We parse this
   // string to loop over each python project.
-  regex re(";;");
-  sregex_token_iterator first{ projectNames.begin(), projectNames.end(), re, -1 }, last;
+  smtk::regex re(";;");
+  smtk::sregex_token_iterator first{ projectNames.begin(), projectNames.end(), re, -1 }, last;
 
   std::vector<std::string> typeNames;
 

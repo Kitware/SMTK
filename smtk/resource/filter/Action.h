@@ -13,12 +13,13 @@
 #include "smtk/resource/filter/Property.h"
 #include "smtk/resource/filter/Rules.h"
 
+#include "smtk/Regex.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "tao/pegtl.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <memory>
-#include <regex>
 
 namespace smtk
 {
@@ -84,13 +85,13 @@ struct RegexAction
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
-    std::regex regex(input.string());
+    smtk::regex regex(input.string());
     static_cast<RuleFor<Type>*>(rule.get())->acceptableKeys =
       [regex](const PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       for (const auto& key : object.properties().get<Type>().keys())
       {
-        if (std::regex_match(key, regex))
+        if (smtk::regex_match(key, regex))
         {
           returnValue.push_back(key);
         }
@@ -125,9 +126,9 @@ struct ValueRegexAction
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
-    std::regex regex(input.string());
+    smtk::regex regex(input.string());
     static_cast<RuleFor<Type>*>(rule.get())->acceptableValue = [regex](const Type& val) -> bool {
-      return std::regex_match(val, regex);
+      return smtk::regex_match(val, regex);
     };
   }
 };

@@ -13,7 +13,8 @@
 
 #include "smtk/common/Color.h"
 
-#include <regex>
+#include "smtk/Regex.h"
+
 #include <string>
 
 #include "smtk/view/icons/default_operation_opt_svg.h"
@@ -31,7 +32,7 @@ inline std::string SMTKCORE_EXPORT DefaultOperationIcon(const std::string& secon
     smtk::common::Color::stringToFloatRGBA(rgba.data(), secondaryColor) &&
     smtk::common::Color::floatRGBToLightness(rgba.data()) > 0.5)
   {
-    svg = std::regex_replace(svg, std::regex("stroke=\"#000"), "stroke=\"#fff");
+    svg = smtk::regex_replace(svg, smtk::regex("stroke=\"#000"), "stroke=\"#fff");
   }
   return svg;
 }

@@ -13,23 +13,7 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/Paths.h"
 
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
+#include "smtk/Regex.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -62,11 +46,11 @@ smtk::mesh::PointCloud PointCloudFromCSV::operator()(const std::string& fileName
     throw std::invalid_argument("File cannot be read.");
   }
   std::string line;
-  regex re(",");
+  smtk::regex re(",");
   while (std::getline(infile, line))
   {
     // Passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+    smtk::sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
 
     // We are looking for (x, y, z, value), but we will also accept
     // (x, y, value). So, we must have at least 3 components.

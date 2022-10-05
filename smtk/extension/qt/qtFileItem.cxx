@@ -38,28 +38,11 @@
 #include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
 
+#include "smtk/Regex.h"
+
 #include <cassert>
 
 //#include "pqApplicationCore.h"
-
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::regex_replace;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -152,7 +135,7 @@ QString extractFileTypeName(const std::string& fileTypeDescription)
   std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of('('));
 
   // Trim leading and trailing whitespace, remove multiple spaces.
-  name = regex_replace(name, regex("^ +| +$|( ) +"), "$1");
+  name = smtk::regex_replace(name, smtk::regex("^ +| +$|( ) +"), "$1");
 
   return QString::fromStdString(name);
 }
@@ -268,8 +251,8 @@ QWidget* qtFileItem::createFileBrowseWidget(
     if (this->showExtensions() && !fDef.shouldExist())
     {
       std::string filters = fDef.getFileFilters();
-      regex re(";;");
-      sregex_token_iterator it(filters.begin(), filters.end(), re, -1), last;
+      smtk::regex re(";;");
+      smtk::sregex_token_iterator it(filters.begin(), filters.end(), re, -1), last;
       if (it != last && std::next(it) != last)
       {
         fileExtCombo = new QComboBox(frame);

@@ -34,7 +34,7 @@
 #include "smtk/view/icons/vertex_svg.h"
 #include "smtk/view/icons/volume_svg.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 #include <vector>
 
 #include <fstream>
@@ -68,9 +68,9 @@ std::string SVGIconConstructor::operator()(
     }
   }
 
-  std::string svg = std::regex_replace(
-    std::regex_replace(this->svg(object), std::regex(m_defaultColor), fill),
-    std::regex(m_secondaryColor),
+  std::string svg = smtk::regex_replace(
+    smtk::regex_replace(this->svg(object), smtk::regex(m_defaultColor), fill),
+    smtk::regex(m_secondaryColor),
     secondaryColor);
 
   return svg;
