@@ -180,8 +180,11 @@ void pqSMTKOperationToolboxPanel::searchFocus()
   {
     if (auto* searchTextWidget = m_view->searchTextWidget())
     {
-      this->activateWindow();
-      this->raise();
+      if (auto* pw = qobject_cast<QWidget*>(this->parent()))
+      {
+        pw->activateWindow();
+        pw->raise();
+      }
       searchTextWidget->setFocus(Qt::ShortcutFocusReason);
     }
   }
