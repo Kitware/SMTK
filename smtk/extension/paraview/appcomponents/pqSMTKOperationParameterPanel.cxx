@@ -393,7 +393,16 @@ void pqSMTKOperationParameterPanel::editOperationParameters(
     m_tabs->setCurrentWidget(opTab->m_tab);
   }
 
-  this->raise();
+  if (opTab)
+  {
+    if (auto* pw = qobject_cast<QWidget*>(this->parent()))
+    {
+      pw->show();
+      pw->raise();
+    }
+    opTab->m_tab->show();
+    opTab->m_tab->raise();
+  }
 }
 
 void pqSMTKOperationParameterPanel::cancelEditing(int tabIndex)
