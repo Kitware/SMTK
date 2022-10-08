@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/string/Manager.h"
+#include "smtk/string/Token.h"
 
 #include <algorithm>
 #include <array>
@@ -346,7 +347,7 @@ void Manager::reset()
 
 std::pair<Hash, bool> Manager::computeInternal(const std::string& s) const
 {
-  std::pair<Hash, bool> result{ std::hash<std::string>{}(s), false };
+  std::pair<Hash, bool> result{ smtk::string::Token::stringHash(s.data(), s.size()), false };
   while (true)
   {
     auto it = m_data.find(result.first);

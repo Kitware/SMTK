@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/string/json/jsonManager.h"
 
+#include "smtk/io/Logger.h"
+
 #include <thread>
 
 namespace smtk
@@ -20,6 +22,10 @@ void to_json(json& j, const std::shared_ptr<Manager>& m)
 {
   json::object_t members;
   json::object_t sets;
+
+  // Record the size (in bytes) of hashes on this platform.
+  // This will be 4 or 8 (32 or 64 bits).
+  j["hash_size"] = sizeof(std::size_t);
 
   m->visitMembers([&members, &m](Hash h) {
     // We store the "inverse" of the string-manager's map because
@@ -53,6 +59,23 @@ void from_json(const json& j, std::shared_ptr<Manager>& m)
   if (!m.get() || j.is_null())
   {
     m = smtk::string::Manager::create();
+  }
+  // Warn if we have 64-bit hash codes on a 32-bit machine:
+  auto sit = j.find("hash_size");
+  if (sit != j.end())
+  {
+    auto jsonSize = sit->get<std::size_t>();
+    if (jsonSize > sizeof(std::size_t))
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Deserializing " << (jsonSize * 8)
+                         << "-bit hash codes "
+                            "on a "
+                         << (sizeof(std::size_t) * 8)
+                         << "-bit platform "
+                            "will likely not work. Expect downstream failures.");
+    }
   }
   // NB: We do not call m->reset() here since people may
   // wish to deserialize multiple files to the same manager.

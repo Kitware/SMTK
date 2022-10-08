@@ -10,6 +10,7 @@
 #ifndef smtk_string_Token_h
 #define smtk_string_Token_h
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/string/Manager.h"
 
 namespace smtk
@@ -33,6 +34,12 @@ public:
   Token(const char* data = nullptr, std::size_t size = std::string::npos);
   /// Construct a token from a std::string.
   Token(const std::string& data);
+  /// Construct a token given its hash value.
+  /// NOTE: This will NOT insert a string into the manager as other constructors do.
+  inline constexpr Token(Hash tokenId) noexcept
+    : m_id(tokenId)
+  {
+  }
 
   /// Return the token's ID (usually its hash but possibly not in the case of collisions).
   Hash id() const { return m_id; }
@@ -53,17 +60,78 @@ public:
   /// Return the database of strings and their tokens (hashes).
   static Manager& manager();
 
-  /// Construct a token from a hash value.
-  ///
-  /// This method exists for deserialization.
-  /// You should avoid using it in other circumstances.
-  /// It will throw an exception if the hash does not exist in the manager.
+protected:
+  // ----
+  // Adapted from https://notes.underscorediscovery.com/constexpr-fnv1a/index.html
+  // which declared the source as public domain or equivalent. Retrieved on 2022-07-22.
+  // See also https://gist.github.com/ruby0x1/81308642d0325fd386237cfa3b44785c .
+  static constexpr uint32_t hash32a_const = 0x811c9dc5;
+  static constexpr uint32_t hash32b_const = 0x1000193;
+  static constexpr uint64_t hash64a_const = 0xcbf29ce484222325;
+  static constexpr uint64_t hash64b_const = 0x100000001b3;
+
+  // Compute a 32-bit hash of a string.
+  // Unlike the original, this version handles embedded null characters so that
+  // unicode multi-byte sequences can be hashed.
+  template<typename T>
+  inline static constexpr typename std::enable_if<sizeof(T) == 4, T>::type
+  hash_fnv1a_const(const char* str, std::size_t size, T value) noexcept
+  {
+    return (!str || size <= 0)
+      ? value
+      : hash_fnv1a_const<T>(&str[1], size - 1, (value ^ uint32_t(str[0])) * hash32b_const);
+  }
+
+  template<typename T>
+  inline static constexpr typename std::enable_if<sizeof(T) == 4, std::size_t>::type
+  hash_fnv1a_seed()
+  {
+    return hash32a_const;
+  }
+
+  // Compute a 64-bit hash of a string.
+  template<typename T>
+  inline static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type
+  hash_fnv1a_const(const char* str, std::size_t size, uint64_t value) noexcept
+  {
+    return (!str || size <= 0)
+      ? value
+      : hash_fnv1a_const<T>(&str[1], size - 1, (value ^ uint64_t(str[0])) * hash64b_const);
+  }
+
+  template<typename T>
+  inline static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type
+  hash_fnv1a_seed()
+  {
+    return hash64a_const;
+  }
+
+public:
+  /// Return the hash of a string
+  /// This is used internally but also by the ""_token() literal operator
+  inline static constexpr Hash stringHash(const char* data, std::size_t size) noexcept
+  {
+    return Token::hash_fnv1a_const<std::size_t>(data, size, Token::hash_fnv1a_seed<std::size_t>());
+  }
+
+  /// Construct a token given only its hash.
+  /// This variant checks that the string manager holds data for the hash and
+  /// will throw an exception if it does not.
   static Token fromHash(Hash h);
 
 protected:
   Hash m_id;
   static std::shared_ptr<Manager> s_manager;
 };
+
+SMTK_DEPRECATED_IN_22_10("Moving to smtk::string::literals namespace.")
+inline Token operator""_token(const char* data, std::size_t size)
+{
+  return Token{ data, size };
+}
+
+namespace literals
+{
 
 /// Construct a token from a string literal, like so:
 ///
@@ -76,6 +144,12 @@ inline Token operator""_token(const char* data, std::size_t size)
   return Token{ data, size };
 }
 
+inline constexpr Hash operator""_hash(const char* data, std::size_t size)
+{
+  return Token::stringHash(data, size);
+}
+
+} // namespace literals
 } // namespace string
 } // namespace smtk
 
