@@ -7,62 +7,65 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/operators/AssignColors.h"
+#include "smtk/operation/operators/AssignColors.h"
 
-#include "smtk/model/EntityRef.h"
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Properties.h"
+#include "smtk/resource/Resource.h"
 
 #include "smtk/common/Color.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/model/AssignColors_xml.h"
+#include "smtk/operation/AssignColors_xml.h"
 
 #include <cstddef> // for size_t
 
 using smtk::attribute::DoubleItem;
 using smtk::attribute::StringItem;
 using smtk::resource::PersistentObjectPtr;
+using FloatList = std::vector<double>;
 
 namespace smtk
 {
-namespace model
+namespace operation
 {
 
 AssignColors::Result AssignColors::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  auto entities = associations->as<EntityRefArray>([](PersistentObjectPtr obj) {
-    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
-  });
-  EntityRefArray modified;
+  auto entities = associations->as<std::set<PersistentObjectPtr>>();
+
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  std::set<smtk::resource::PersistentObject::Ptr> modified;
+  // auto modified = result->findComponent("result");
 
   // I. Set opacities
   DoubleItem::Ptr opacitySpec = this->parameters()->findDouble("opacity");
   double opacity = opacitySpec->isEnabled() ? opacitySpec->value() : -1.0;
   if (opacity >= 0.0)
   {
-    for (auto entity : entities)
+    for (const auto& entity : entities)
     {
       bool skip = false;
       // If we are setting the opacity on an entity with no
       // existing color, assign it to be white by default:
       FloatList color{ 1., 1., 1., opacity };
-      if (entity.hasColor())
+      if (entity->properties().contains<FloatList>("color"))
       {
-        color = entity.color();
+        color = entity->properties().at<FloatList>("color");
         skip = (color[3] == opacity);
         color[3] = opacity;
       }
       if (!skip)
       {
-        entity.setColor(color);
-        modified.push_back(entity);
+        entity->properties().get<FloatList>()["color"] = color;
+        modified.insert(entity);
       }
     }
   }
@@ -102,40 +105,39 @@ AssignColors::Result AssignColors::operateInternal()
   {
     size_t cc = 0;
     numColors = colors.size();
-    for (auto ent : entities)
+    for (const auto& entity : entities)
     {
-      if (ent.isValid())
+      if (entity)
       {
-        ent.setColor(colors[cc % numColors]);
-        // TODO: Only mark modified if color changed; pre-existing color may have been identical.
-        modified.push_back(ent);
+        entity->properties().get<FloatList>()["color"] = colors[cc % numColors];
+        modified.insert(entity);
         ++cc;
       }
     }
   }
   else if (colorSpec->isEnabled())
-  { // remove (or at least invalidate) colors instead
-    for (auto ent : entities)
+  { // remove
+    for (const auto& entity : entities)
     {
-      // TODO: It would be nice to call ent.RemoveFloatProperty("color")
-      //       here, but doing so does not remove the colors on the client.
-      // TODO: Add support for remove color assigned by entity list. For now if
-      // user assign color by entityListPhrase, there is no way to remove it
-      // (unless manually set it to white).
-      if (ent.isValid())
+      if (entity && entity->properties().contains<FloatList>("color"))
       {
-        ent.setColor(0, 0, 0, -1);
-        modified.push_back(ent);
+        entity->properties().erase<FloatList>("color");
+        modified.insert(entity);
       }
     }
   }
 
-  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-
-  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
-  for (auto& m : modified)
+  auto modifiedItem = result->findComponent("modified");
+  for (const auto& mm : modified)
   {
-    modifiedItem->appendValue(m.component());
+    if (auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(mm))
+    {
+      modifiedItem->appendValue(comp);
+    }
+    else if (auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(mm))
+    {
+      // TODO
+    }
   }
 
   return result;
@@ -146,5 +148,5 @@ const char* AssignColors::xmlDescription() const
   return AssignColors_xml;
 }
 
-} //namespace model
+} //namespace operation
 } // namespace smtk

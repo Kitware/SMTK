@@ -2,7 +2,6 @@
 set(modelOps
   AddAuxiliaryGeometry
   AddImage
-  AssignColors
   CloseModel
   CompositeAuxiliaryGeometry
   CreateInstances
@@ -118,9 +117,7 @@ set(modelHeaders
   utility/InterpolateField.h
 )
 
-set(icons
-  assign_colors
-)
+set(icons)
 foreach(icon ${icons})
   smtk_encode_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/icons/${icon}.svg" TYPE "_svg" TARGET_OUTPUT targetName)

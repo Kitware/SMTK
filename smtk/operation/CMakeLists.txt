@@ -59,6 +59,7 @@ set(operationXML
 )
 
 set(operationOperators
+  AssignColors
   CoordinateTransform
   EditProperties
   ReadResource
@@ -68,6 +69,7 @@ set(operationOperators
 )
 
 set(icons
+  assign_colors
   import_python_operation
   edit_properties
 )

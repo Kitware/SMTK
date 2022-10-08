@@ -391,7 +391,7 @@ void smtkAssignColorsView::updateUI()
       if (optype == "assign colors")
       {
         //defName = optype;
-        defName = "smtk::model::AssignColors";
+        defName = "smtk::operation::AssignColors";
         break;
       }
     }

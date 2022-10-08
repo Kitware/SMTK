@@ -7,20 +7,20 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_model_AssignColors_h
-#define smtk_model_AssignColors_h
+#ifndef smtk_operation_AssignColors_h
+#define smtk_operation_AssignColors_h
 
 #include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
-namespace model
+namespace operation
 {
 
 class SMTKCORE_EXPORT AssignColors : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::model::AssignColors);
+  smtkTypeMacro(smtk::operation::AssignColors);
   smtkCreateMacro(AssignColors);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
@@ -30,7 +30,7 @@ protected:
   const char* xmlDescription() const override;
 };
 
-} //namespace model
+} //namespace operation
 } // namespace smtk
 
-#endif // smtk_model_AssignColors_h
+#endif // smtk_operation_AssignColors_h
