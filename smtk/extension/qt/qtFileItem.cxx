@@ -667,7 +667,10 @@ bool qtFileItem::onLaunchFileBrowser()
   {
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     filters = fItemDef->getFileFilters().c_str();
-    mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
+    mode =
+      (fItemDef->shouldExist()
+         ? (fItemDef->isExtensible() ? QFileDialog::ExistingFiles : QFileDialog::ExistingFile)
+         : QFileDialog::AnyFile);
     title = "Select File";
   }
   m_internals->FileBrowser->setFileMode(mode);
@@ -714,8 +717,34 @@ bool qtFileItem::onLaunchFileBrowser()
 
   QStringList files = m_internals->FileBrowser->selectedFiles();
   m_internals->m_nameFilter = m_internals->FileBrowser->selectedNameFilter().toStdString();
-  this->setInputValue(valueIndex, files[0]);
-  return true;
+  if (!files.empty())
+  {
+    // Set the existing value
+    this->setInputValue(valueIndex, files[0]);
+    // Now add values for all the remaining files selected.
+    if (item->isExtensible() && files.size() > 1)
+    {
+      std::size_t numberOfValues = valueIndex + static_cast<std::size_t>(files.size());
+      if (item->setNumberOfValues(numberOfValues))
+      {
+        for (int ii = 1; ii < files.size(); ++ii)
+        {
+          this->addInputEditor(
+            ii + valueIndex, *item, *item->definitionAs<FileSystemItemDefinition>());
+          this->setInputValue(valueIndex + ii, files[ii]);
+        }
+        Q_EMIT(modified());
+      }
+      else
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not extend the item to hold all " << files.size() << " selected files.");
+      }
+    }
+    return true;
+  }
+  return false;
 }
 
 void qtFileItem::updateFileComboLists()
