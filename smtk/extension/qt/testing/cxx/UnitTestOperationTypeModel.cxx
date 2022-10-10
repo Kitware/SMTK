@@ -54,7 +54,6 @@
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
-#include "smtk/model/operators/AssignColors.h"
 #include "smtk/model/operators/CompositeAuxiliaryGeometry.h"
 #include "smtk/model/operators/CreateInstances.h"
 #include "smtk/model/operators/Delete.h"
@@ -63,6 +62,7 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
+#include "smtk/operation/operators/AssignColors.h"
 #include "smtk/operation/operators/SetProperty.h"
 
 #include "nlohmann/json.hpp"
@@ -132,7 +132,7 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
   std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
   //NOLINTNEXTLINE(modernize-make-shared)
   auto opDecor = std::shared_ptr<smtk::view::OperationDecorator>(new OperationDecorator(
-    { wrap<smtk::model::AssignColors>(
+    { wrap<smtk::operation::AssignColors>(
         "a color chooser", "Assign lots of colors at once", {}, "a color\nchooser"),
       wrap<smtk::model::Delete>(),
       wrap<smtk::model::EntityGroupOperation>("edit group", "Edit groups", {}, "edit\ngroup"),
@@ -220,7 +220,7 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
               << " – x " << opRect.center().x() << " y " << opRect.center().y() << " – "
               << opRowFromRect << "\n";
 
-    if (opTypeName == "smtk::model::AssignColors")
+    if (opTypeName == "smtk::operation::AssignColors")
     {
       assignColorsIndex = model->index(ii, 0);
     }

@@ -17,7 +17,6 @@
 
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
-#include "smtk/model/operators/AssignColors.h"
 #include "smtk/model/operators/CloseModel.h"
 #include "smtk/model/operators/CreateInstances.h"
 #include "smtk/model/operators/Delete.h"
@@ -32,8 +31,6 @@
 #include "smtk/operation/groups/DeleterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
 
-#include "smtk/model/assign_colors_svg.h"
-
 #include <tuple>
 
 namespace smtk
@@ -45,7 +42,6 @@ namespace
 typedef std::tuple<
   AddAuxiliaryGeometry,
   AddImage,
-  AssignColors,
   CloseModel,
   CreateInstances,
   Delete,
@@ -89,17 +85,5 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
   resourceManager->unregisterResource<smtk::model::Resource>();
 }
 
-void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
-{
-  auto& opIcons(viewManager->operationIcons());
-  opIcons.registerOperation<AssignColors>(
-    [](const std::string& /*unused*/) { return assign_colors_svg; });
-}
-
-void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
-{
-  auto& opIcons(viewManager->operationIcons());
-  opIcons.unregisterOperation<AssignColors>();
-}
 } // namespace model
 } // namespace smtk

@@ -35,7 +35,6 @@
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
-#include "smtk/model/operators/AssignColors.h"
 #include "smtk/model/operators/CompositeAuxiliaryGeometry.h"
 #include "smtk/model/operators/CreateInstances.h"
 #include "smtk/model/operators/Delete.h"
@@ -44,6 +43,7 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
+#include "smtk/operation/operators/AssignColors.h"
 #include "smtk/operation/operators/SetProperty.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -62,7 +62,7 @@ void testInitializerListCtor()
   using namespace smtk::view;
 
   OperationDecorator decorator(
-    { wrap<smtk::model::AssignColors>(),
+    { wrap<smtk::operation::AssignColors>(),
       wrap<smtk::model::Delete>(),
       wrap<smtk::model::EntityGroupOperation>("edit group", "Edit groups", {}, "edit\ngroup"),
       wrap<smtk::model::GroupAuxiliaryGeometry>(),
@@ -114,7 +114,7 @@ void testConfigurationCtor()
 {
   // Operations we'll register with an operation manager:
   using OperationList = std::tuple<
-    smtk::model::AssignColors,
+    smtk::operation::AssignColors,
     smtk::mesh::Export,
     smtk::mesh::ExtractAdjacency,
     smtk::mesh::ExtractByDihedralAngle,
@@ -142,7 +142,7 @@ void testConfigurationCtor()
   <View Name="Test" Type="Model" Autorun="true">
     <OperationDecorator>
       <Operation TypeRegex="smtk::mesh::.*"/>
-      <Operation Type="smtk::model::AssignColors">
+      <Operation Type="smtk::operation::AssignColors">
         <Label>choose a color</Label>
         <ButtonLabel>choose color</ButtonLabel>
         <Tooltip>Choose color(s) for all selected components.</Tooltip>
@@ -165,7 +165,7 @@ void testConfigurationCtor()
 
   // Test that our override took effect.
   {
-    const auto& entry = decorator.at<smtk::model::AssignColors>();
+    const auto& entry = decorator.at<smtk::operation::AssignColors>();
     test(entry.first, "Expected to find assign-colors operation.");
     test(entry.second.get().m_label == "choose a color", "Expected an overridden label.");
     test(entry.second.get().m_buttonLabel == "choose color", "Expected an overridden button.");

@@ -45,7 +45,7 @@ namespace view
   *     <!-- Overrides are allowed for operations like so: -->
   *     <Operation Type="smtk::geometry::MeshInspector"/>
   *     <Operation Type="smtk::geometry::ImageInspector"/>
-  *     <Operation Type="smtk::model::AssignColors">
+  *     <Operation Type="smtk::operation::AssignColors">
   *       <Overrides>
   *         <Label>choose a color</Label>
   *         <ButtonLabel>choose\ncolor</Label>

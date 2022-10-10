@@ -4,9 +4,12 @@
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="assign colors" Label="Model Entities - Assign Colors" BaseType="operation">
+    <AttDef Type="assign colors" Label="Assign Colors" BaseType="operation">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
-        <Accepts><Resource Name="smtk::model::Resource" Filter="model|group|cell|anydim"/></Accepts>
+        <Accepts>
+          <Resource Name="smtk::resource::Resource" Filter="*"/>
+          <Resource Name="smtk::resource::Resource"/>
+        </Accepts>
       </AssociationsDef>
       <BriefDescription>
         Assign one or more colors to one or more entities using a color palette.
