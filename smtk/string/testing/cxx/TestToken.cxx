@@ -17,7 +17,7 @@
 
 int TestToken(int, char*[])
 {
-  using namespace smtk::string;
+  using namespace smtk::string::literals; // for ""_token
   using json = nlohmann::json;
 
   // Test that construction from a std::string works.
@@ -32,15 +32,16 @@ int TestToken(int, char*[])
   auto bar = "bar"_token;
   auto oof = "foo"_token;
 
-  std::cout << bad.data() << " "
+  std::cout << "Testing comparison operators for:\n";
+  std::cout << "  " << bad.data() << " "
             << "0x" << std::hex << bad.id() << std::dec << "\n";
-  std::cout << tmp.data() << " "
+  std::cout << "  " << tmp.data() << " "
             << "0x" << std::hex << tmp.id() << std::dec << "\n";
-  std::cout << foo.data() << " "
+  std::cout << "  " << foo.data() << " "
             << "0x" << std::hex << foo.id() << std::dec << "\n";
-  std::cout << oof.data() << " "
+  std::cout << "  " << oof.data() << " "
             << "0x" << std::hex << oof.id() << std::dec << "\n";
-  std::cout << bar.data() << " "
+  std::cout << "  " << bar.data() << " "
             << "0x" << std::hex << bar.id() << std::dec << "\n";
 
   // Test comparison operators
@@ -77,13 +78,13 @@ int TestToken(int, char*[])
   test(set.size() == 5, "Expected set to have 5 members.");
 
   // Test construction from a hash.
-  Token foo2 = Token::fromHash(foo.id());
+  smtk::string::Token foo2 = smtk::string::Token::fromHash(foo.id());
   (void)foo2;
 
   // Test that attempted construction from a non-existent hash throws.
   try
   {
-    Token foo3 = Token::fromHash(5551212);
+    smtk::string::Token foo3 = smtk::string::Token::fromHash(5551212);
     (void)foo3;
     test(false, "Expected to throw an exception for a non-existent hash.");
   }
@@ -98,6 +99,42 @@ int TestToken(int, char*[])
   json j = foo;
   bar = j;
   test(bar.data() == foo.data(), "Expected JSON assignment to work.");
+
+  // Test constexpr-ness (i.e., that tokens can be used in switch statements).
+  // Really, the test here is at compile time; it ensures that no one
+  // breaks anything constexpr as needed for the switch() use-case:
+  std::cout << "Testing switch statement with hash cases: ";
+  bool ok = false;
+  switch (foo.id())
+  {
+    case "foo"_hash:
+      ok = true;
+      break;
+    case "bar"_hash:
+      ok = false;
+      break;
+    default:
+      ok = false;
+      break;
+  }
+  std::cout << (ok ? "pass" : "fail") << "\n";
+  test(ok, "Expected switch statement to work.");
+
+  // Test that set<Token> works as expected (with slow alphanumeric sorting).
+  std::cout << "Testing slow alphanumeric sorting for set<Token>:\n";
+  std::set<smtk::string::Token> candies;
+  std::vector<std::string> expected{
+    { "gumdrop", "mike&ike", "pixie_stick", "tootsie_roll", "twinkie" }
+  };
+  // Insert in reverse order just to be sure sorting occurs:
+  candies.insert(expected.rbegin(), expected.rend());
+  auto expectedCandy = expected.begin();
+  for (const auto& candy : candies)
+  {
+    std::cout << "  " << std::hex << candy.id() << std::dec << ":  " << candy.data() << "\n";
+    test(candy.data() == *expectedCandy, "Unexpected order for sorted tokens.");
+    ++expectedCandy;
+  }
 
   return 0;
 }
