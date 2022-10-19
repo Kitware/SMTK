@@ -33,6 +33,8 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/SymbolDependencyStorage.h"
 
+#include "smtk/string/Token.h"
+
 #include "smtk/view/Configuration.h"
 
 #include <map>
@@ -378,6 +380,22 @@ public:
 
   std::mutex& mutex() const { return m_mutex; }
 
+  /// Set/get the "type" of a resource's template.
+  ///
+  /// A resource template-type is not required, but if present it can be used to
+  /// register updaters for migrating from an old template to a newer version.
+  virtual bool setTemplateType(const smtk::string::Token& templateType);
+  const smtk::string::Token& templateType() const { return m_templateType; }
+
+  /// Set/get the version of the template this instance of the resource is based upon.
+  ///
+  /// If non-zero, this number indicates the version number of the
+  /// template (i.e., SBT file) the definitions in the current resource
+  /// are drawn from. It is used during the update process to determine
+  /// which updaters are applicable.
+  virtual bool setTemplateVersion(std::size_t templateVersion);
+  std::size_t templateVersion() const { return m_templateVersion; }
+
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
   Resource(smtk::resource::ManagerPtr manager = nullptr);
@@ -425,6 +443,9 @@ protected:
   EvaluatorFactory m_evaluatorFactory;
 
   std::string m_defaultAttNameSeparator = "-";
+
+  smtk::string::Token m_templateType;
+  std::size_t m_templateVersion = 0;
 
 private:
   mutable std::mutex m_mutex;

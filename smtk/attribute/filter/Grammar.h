@@ -42,7 +42,7 @@ struct SMTKCORE_EXPORT Grammar
             smtk::resource::filter::Property<std::vector<std::string>>::Grammar,
             AttributeTypeSpec::Grammar>,
           space>,
-        string<','>>>>>
+        TAO_PEGTL_ISTRING(",")>>>>
 {
 };
 } // namespace filter
