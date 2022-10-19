@@ -133,6 +133,7 @@ set(attributeHeaders
   SymbolDependencyStorage.h
   Tag.h
   UnsetValueError.h
+  UpdateManager.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -141,6 +142,9 @@ set(attributeHeaders
   VoidItemDefinition.h
   filter/Attribute.h
   filter/Grammar.h
+  update/AttributeUpdateFactory.h
+  update/ItemUpdateFactory.h
+  update/ResourceUpdateFactory.h
   utility/Queries.h
 )
 

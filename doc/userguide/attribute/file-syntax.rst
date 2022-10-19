@@ -23,8 +23,17 @@ Attributes that can be included in this XML Element.
      - Boolean value that indicates if the Attribute Resource should be automatically
        displayed in an Attribute Editor when loaded into memory.
 
-       (Optional - default is false which means the Resource will not automatically be
+       (Optional – default is false which means the Resource will not automatically be
        displayed)
+
+   * - TemplateType
+     - A string providing a name for the workflow this attribute describes.
+
+       (Optional – the default is an empty string.)
+
+   * - TemplateVersion
+     - An integer describing the version number of the schema for this attribute
+       resource. The default value is 0.
 
 This element can contain the following optional children XML Elements:
 

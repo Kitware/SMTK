@@ -91,6 +91,8 @@ inline PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute
     .def("setDefaultNameSeparator", &smtk::attribute::Resource::setDefaultNameSeparator, py::arg("separator"))
     .def("uniqueRoles", &smtk::attribute::Resource::uniqueRoles)
     .def("finalizeDefinitions", &smtk::attribute::Resource::finalizeDefinitions)
+    .def("templateType", [](smtk::attribute::Resource& rsrc) { return rsrc.templateType().data(); })
+    .def("templateVersion", &smtk::attribute::Resource::templateVersion)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::Resource::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::Resource::views)
     .def("styles", &smtk::attribute::Resource::styles)

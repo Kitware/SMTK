@@ -97,6 +97,7 @@ set(unit_tests
   unitInfixExpressionEvaluator.cxx
   unitIsRelevant.cxx
   unitIsValid.cxx
+  unitItemUpdater.cxx
   unitJsonItemDefinitions.cxx
   unitOptionalItems.cxx
   unitPassCategories.cxx

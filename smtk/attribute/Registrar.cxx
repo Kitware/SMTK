@@ -15,6 +15,7 @@
 #include "smtk/attribute/InfixExpressionEvaluator.h"
 #include "smtk/attribute/ItemDefinitionManager.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/UpdateManager.h"
 
 #include "smtk/attribute/operators/Associate.h"
 #include "smtk/attribute/operators/Dissociate.h"
@@ -47,6 +48,7 @@ typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> O
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
+  managers->insert(smtk::attribute::UpdateManager::create());
   managers->insert(smtk::attribute::ItemDefinitionManager::create());
   managers->insert(smtk::attribute::AssociationRuleManager::create());
   managers->insert(smtk::attribute::EvaluatorManager::create());
