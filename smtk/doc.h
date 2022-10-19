@@ -38,7 +38,12 @@ namespace smtk
   */
 namespace common
 {
+/**\brief Classes to aid developers in migrating user content through schema upgrades.
+ */
+namespace update
+{
 }
+} // namespace common
 
 /**\brief A common base class for resources (data stored in files) and tools to manage them.
   *

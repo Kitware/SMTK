@@ -45,6 +45,7 @@ set(unit_tests
   UnitTestTypeContainer.cxx
   UnitTestTypeMap.cxx
   UnitTestTypeName.cxx
+  UnitTestUpdateFactory.cxx
   UnitTestVersionNumber.cxx
   UnitTestVisit.cxx
 )

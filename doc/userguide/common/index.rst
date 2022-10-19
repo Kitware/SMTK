@@ -17,3 +17,4 @@ patterns are defined in SMTK's `common` directory.
    threadpool.rst
    typecontainer.rst
    typemap.rst
+   updaters.rst
