@@ -29,7 +29,6 @@ inline PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::Comp
     .def(py::init<::smtk::attribute::ModelEntityItem const &>())
     .def("deepcopy", (smtk::attribute::ModelEntityItem & (smtk::attribute::ModelEntityItem::*)(::smtk::attribute::ModelEntityItem const &)) &smtk::attribute::ModelEntityItem::operator=)
     .def("appendValue", (bool (smtk::attribute::ModelEntityItem::*)(const smtk::model::EntityRef&)) &smtk::attribute::ModelEntityItem::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::ModelEntityItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ModelEntityItem::begin)
     .def("end", &smtk::attribute::ModelEntityItem::end)
     .def("find", (ptrdiff_t (smtk::attribute::ModelEntityItem::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::ModelEntityItem::find, py::arg("entity"))

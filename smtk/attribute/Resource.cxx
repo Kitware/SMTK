@@ -20,6 +20,7 @@
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/queries/SelectionFootprint.h"
 
+#include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
@@ -258,6 +259,12 @@ smtk::attribute::AttributePtr Resource::createAttribute(
   smtk::attribute::DefinitionPtr def,
   const smtk::common::UUID& id)
 {
+  // Lets verify that the id is not already in use
+  if (this->findAttribute(id) != nullptr)
+  {
+    return smtk::attribute::AttributePtr();
+  }
+
   // Lets make sure the definition is valid
   if ((def == nullptr) || (def->resource() != shared_from_this()) || def->isAbstract())
   {
@@ -532,7 +539,7 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
     return smtk::attribute::ConstDefinitionPtr();
   }
   // If there is no base definition then we know this
-  // definiiton must be the most common unique base class
+  // definition must be the most common unique base class
   else if (!attDef->baseDefinition().get())
   {
     return attDef;
@@ -798,44 +805,71 @@ bool Resource::copyDefinitionImpl(
   return true;
 }
 
-// Copies attribute into this Resource
-// Returns smart pointer (will be empty if operation unsuccessful)
-// If definition contains ExpressionType instances, might also
-// copy additional attributes from the source attribute Resource.
 smtk::attribute::AttributePtr Resource::copyAttribute(
-  const smtk::attribute::AttributePtr sourceAtt,
-  const bool& copyModelAssocs,
-  const unsigned int& itemCopyOptions)
+  const smtk::attribute::AttributePtr& sourceAtt,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   smtk::attribute::AttributePtr newAtt;
   smtk::attribute::DefinitionPtr newDef;
   // Are we copying the attribute to the same attribute Resource?
-  bool sameResource = (shared_from_this() == sourceAtt->attributeResource());
+  bool sameResource = (this == sourceAtt->attributeResource().get());
   std::string newName;
   if (sameResource)
   {
+    // If we have been told to set the UUID to the same as the original
+    // attribute report failed since we can't do it if they are in the same Resource
+    if (options.copyOptions.copyUUID())
+    {
+      smtkErrorMacro(
+        logger,
+        "Can not set source attribute: "
+          << sourceAtt->name() << "'s UUID because copy would exist in the same resource.");
+      return newAtt;
+    }
     newName = this->createUniqueName(sourceAtt->definition()->type());
     newDef = sourceAtt->definition();
   }
   else
   {
     // Copying into a new Resource
-    // First do we need tp copy its definition?
+    // If we are copying the attribute's UUID we need to verify that one
+    // doesn't already exist
+    if (options.copyOptions.copyUUID() && (this->findAttribute(sourceAtt->id()) != nullptr))
+    {
+      smtkErrorMacro(
+        logger,
+        "Can not set source attribute: "
+          << sourceAtt->name() << "'s UUID because the target resource already "
+          << "contains an attribute (" << this->findAttribute(sourceAtt->id())->name()
+          << ") with the same UUID.");
+      return newAtt;
+    }
+
+    // Does the Definition exist in the new resource?
     newDef = this->findDefinition(sourceAtt->definition()->type());
     if (!newDef)
     {
+      // Are we allowed to copy the Definition?
+      if (!options.copyOptions.copyDefinition())
+      {
+        smtkErrorMacro(
+          logger,
+          "Source attribute: "
+            << sourceAtt->name() << "'s Definition: " << sourceAtt->definition()->type()
+            << " does not exist this resource and Definition Copy Option was not specified.");
+        return newAtt;
+      }
+
       newDef = this->copyDefinition(sourceAtt->definition());
       if (!newDef)
       {
-        std::cerr << "ERROR: Could not copy Definition: " << sourceAtt->definition()->type()
-                  << " needed to create Attribute: " << sourceAtt->name() << "\n";
+        smtkErrorMacro(
+          logger,
+          "Could not copy Definition: " << sourceAtt->definition()->type()
+                                        << " needed to create Attribute: " << sourceAtt->name());
         return newAtt;
       }
-    }
-    else
-    {
-      //TODO Should make sure the definition we found matches the structure of the definition
-      // used by the Source Attribute if they don't then error out
     }
 
     std::string name = sourceAtt->name();
@@ -848,42 +882,66 @@ smtk::attribute::AttributePtr Resource::copyAttribute(
       newName = name;
     }
   }
-  newAtt = this->createAttribute(newName, newDef);
-  // Copy properties
-  if (sourceAtt->isColorSet())
+  if (options.copyOptions.copyUUID())
   {
-    newAtt->setColor(sourceAtt->color());
+    newAtt = this->createAttribute(newName, newDef, sourceAtt->id());
   }
-  newAtt->setAppliesToBoundaryNodes(sourceAtt->appliesToBoundaryNodes());
-  newAtt->setAppliesToInteriorNodes(sourceAtt->appliesToInteriorNodes());
-  // Copy/update items
-  for (std::size_t i = 0; i < sourceAtt->numberOfItems(); ++i)
+  else
   {
-    smtk::attribute::ConstItemPtr sourceItem =
-      smtk::const_pointer_cast<const Item>(sourceAtt->item(static_cast<int>(i)));
-    smtk::attribute::ItemPtr newItem = newAtt->item(static_cast<int>(i));
-    if (!newItem->assign(sourceItem, itemCopyOptions))
-    {
-      std::cerr << "ERROR:Could not copy Attribute: " << sourceAtt->name() << "\n";
-      this->removeAttribute(newAtt);
-      newAtt.reset();
-      return newAtt;
-    }
-  }
-  // Copy model associations if requested and the attribute is not Unique
-  // with respects to the model entitiy
-  if (copyModelAssocs && !(sameResource && sourceAtt->definition()->isUnique()))
-  {
-    smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
-    smtk::common::UUIDs::const_iterator it;
-    for (it = uuidSet.begin(); it != uuidSet.end(); it++)
-    {
-      newAtt->associateEntity(*it);
-    }
+    newAtt = this->createAttribute(newName, newDef);
   }
 
-  // TODO what about m_userData?
+  if (!newAtt)
+  {
+    smtkErrorMacro(
+      logger, "Could not create Attribute: " << sourceAtt->name() << "'from the attribute source.");
+    this->removeAttribute(newAtt);
+    newAtt.reset();
+    return newAtt;
+  }
+
+  if (!newAtt->assign(sourceAtt, options, logger))
+  {
+    // There was a problem assigning the attribute information to the copy
+    smtkErrorMacro(
+      logger,
+      "Could not assign Attribute: " << sourceAtt->name() << "'s information to attribute copy.");
+    this->removeAttribute(newAtt);
+    newAtt.reset();
+  }
   return newAtt;
+}
+
+smtk::attribute::AttributePtr Resource::copyAttribute(
+  const smtk::attribute::AttributePtr& att,
+  const CopyAssignmentOptions& options)
+{
+  return this->copyAttribute(att, options, smtk::io::Logger::instance());
+}
+
+// Copies attribute into this Resource
+// Returns smart pointer (will be empty if operation unsuccessful)
+// If definition contains ExpressionType instances, might also
+// copy additional attributes from the source attribute Resource.
+smtk::attribute::AttributePtr Resource::copyAttribute(
+  const smtk::attribute::AttributePtr sourceAtt,
+  const bool& copyModelAssocs,
+  const unsigned int& itemCopyOptions)
+{
+  CopyAssignmentOptions options;
+
+  // Lets convert the old style items options to the new version
+  Item::mapOldAssignmentOptions(options, itemCopyOptions);
+
+  // By default we copy definitions
+  options.copyOptions.setCopyDefinition(true);
+
+  if (copyModelAssocs)
+  {
+    options.attributeOptions.setCopyAssociations(true);
+  }
+
+  return this->copyAttribute(sourceAtt, options);
 }
 
 void Resource::addView(smtk::view::ConfigurationPtr v)

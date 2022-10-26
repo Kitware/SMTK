@@ -23,7 +23,6 @@ inline PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribut
   PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_int_");
   instance
     .def("appendValue", &smtk::attribute::ValueItemTemplate<int>::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::ValueItemTemplate<int>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<int>::begin)
     .def("concreteDefinition", &smtk::attribute::ValueItemTemplate<int>::concreteDefinition)
     .def("defaultValue", &smtk::attribute::ValueItemTemplate<int>::defaultValue)
@@ -52,7 +51,6 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attrib
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_double_");
   instance
     .def("appendValue", &smtk::attribute::ValueItemTemplate<double>::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::ValueItemTemplate<double>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<double>::begin)
     .def("concreteDefinition", &smtk::attribute::ValueItemTemplate<double>::concreteDefinition)
     .def("defaultValue", &smtk::attribute::ValueItemTemplate<double>::defaultValue)
@@ -81,7 +79,6 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::a
   PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_string_");
   instance
     .def("appendValue", &smtk::attribute::ValueItemTemplate<std::string>::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::ValueItemTemplate<std::string>::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ValueItemTemplate<std::string>::begin)
     .def("concreteDefinition", &smtk::attribute::ValueItemTemplate<std::string>::concreteDefinition)
     .def("defaultValue", &smtk::attribute::ValueItemTemplate<std::string>::defaultValue)

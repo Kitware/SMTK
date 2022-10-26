@@ -10,6 +10,8 @@
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+
+#include "smtk/io/Logger.h"
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -479,7 +481,10 @@ GroupItem::find(std::size_t element, const std::string& inName, SearchStyle styl
   return nullptr;
 }
 
-bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool GroupItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
   // Cast input pointer to GroupItem
@@ -488,26 +493,76 @@ bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   if (!sourceGroupItem)
   {
+    smtkErrorMacro(logger, "Source Item: " << this->name() << " is not a GroupItem");
     return false; // Source is not a group item
   }
 
   // Update children (items)
   this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
-  for (std::size_t i = 0; i < sourceGroupItem->numberOfGroups(); ++i)
+
+  // Were we able to allocate enough space to fit all of the source's values?
+  std::size_t myNumVals, sourceNumVals, numVals;
+  myNumVals = this->numberOfGroups();
+  sourceNumVals = sourceGroupItem->numberOfGroups();
+  if (myNumVals < sourceNumVals)
+  {
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
+    {
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "GroupItem: " << this->name() << "'s number of values (" << myNumVals
+                      << ") is smaller than source Item's number of values (" << sourceNumVals
+                      << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "GroupItem: " << this->name() << "'s number of groups (" << myNumVals
+                      << ") can not hold source GroupItem's number of groups (" << sourceNumVals
+                      << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+  else
+  {
+    numVals = sourceNumVals;
+  }
+
+  for (std::size_t i = 0; i < numVals; ++i)
   {
     for (std::size_t j = 0; j < sourceGroupItem->numberOfItemsPerGroup(); ++j)
     {
       ConstItemPtr sourceChildItem =
         smtk::const_pointer_cast<const Item>(sourceGroupItem->item(i, j));
-      ItemPtr childItem = this->item(i, j);
-      if (!childItem->assign(sourceChildItem, options))
+      auto childItem = this->find(i, sourceChildItem->name());
+
+      if (childItem == nullptr)
       {
-        std::cerr << "ERROR:Failed to assign child item: " << this->item(i, j)->name() << "\n";
+        // Are missing items allowed?
+        if (!options.itemOptions.ignoreMissingChildren())
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not find Child Item: " << sourceChildItem->name()
+                                          << " in GroupItem: " << this->name()
+                                          << " and IGNORE MISSING CHILDREN option was not set");
+          return false;
+        }
+        continue;
+      }
+      if (!childItem->assign(sourceChildItem, options, logger))
+      {
+        smtkErrorMacro(
+          logger,
+          "Could not assign GroupItem: " << this->name() << "'s Child Item: " << childItem->name());
         return false;
       }
     }
   }
-  return Item::assign(sourceItem, options);
+  return Item::assign(sourceItem, options, logger);
 }
 
 bool GroupItem::hasRelevantChildren(

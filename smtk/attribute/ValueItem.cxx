@@ -395,7 +395,10 @@ void ValueItem::updateActiveChildrenItems()
   }
 }
 
-bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool ValueItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
   // Cast input pointer to ValueItem
@@ -404,6 +407,7 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   if (!sourceValueItem)
   {
+    smtkErrorMacro(logger, "Source Item: " << name() << " is not a ValueItem");
     return false; //Source is not a value item!
   }
 
@@ -412,10 +416,41 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
+  // Were we able to allocate enough space to fit all of the source's values?
+  std::size_t myNumVals, sourceNumVals, numVals;
+  myNumVals = this->numberOfValues();
+  sourceNumVals = sourceValueItem->numberOfValues();
+  if (myNumVals < sourceNumVals)
+  {
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
+    {
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "ValueItem: " << this->name() << "'s number of values (" << myNumVals
+                      << ") is smaller than source Item's number of values (" << sourceNumVals
+                      << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "ValueItem: " << name() << "'s number of values (" << myNumVals
+                      << ") can not hold source ValueItem's number of values (" << sourceNumVals
+                      << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+  else
+  {
+    numVals = sourceNumVals;
+  }
+
   // Are we dealing with Expressions?
   if (sourceValueItem->isExpression())
   {
-    if (options & Item::IGNORE_EXPRESSIONS)
+    if (options.itemOptions.ignoreExpressions())
     {
       // OK we are not to copy the expression so instead
       // we need to clear all of the values
@@ -428,29 +463,83 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
       AttributePtr att = resource->findAttribute(nameStr);
       if (!att)
       {
-        att = resource->copyAttribute(
-          sourceValueItem->expression(), (options & Item::COPY_MODEL_ASSOCIATIONS) != 0, options);
-        if (att == nullptr)
+        // Are we allowed to create new attributes?
+        if (!options.itemOptions.disableCopyAttributes())
         {
-          std::cerr << "ERROR: Could not copy Attribute:" << sourceValueItem->expression()->name()
-                    << " used as an expression by item: " << sourceItem->name() << "\n";
-          return false; // Something went wrong!
+          att = resource->copyAttribute(sourceValueItem->expression(), options, logger);
+          if (att == nullptr)
+          {
+            smtkErrorMacro(
+              logger,
+              "Could not copy Attribute:" << sourceValueItem->expression()->name()
+                                          << " used as an expression by item: "
+                                          << sourceItem->name());
+            return false;
+          }
+        }
+        else
+        {
+          smtkWarningMacro(
+            logger,
+            "Could not assign Attribute:" << sourceValueItem->expression()->name()
+                                          << " used as an expression by item: "
+                                          << sourceItem->name()
+                                          << " because it is in the same resource as the source "
+                                             "item and disableCopyAttributes option was set");
+        }
+        if (!this->setExpression(att))
+        {
+          if (options.itemOptions.allowPartialValues())
+          {
+            smtkInfoMacro(
+              logger,
+              "Could not assign Expression:" << att->name()
+                                             << " to ValueItem: " << sourceItem->name());
+            this->setExpression(nullptr);
+          }
+          else
+          {
+            smtkErrorMacro(
+              logger,
+              "Could not assign Expression:"
+                << att->name() << " to ValueItem: " << sourceItem->name()
+                << " and allowPartialValues options was not specified.");
+            return false;
+          }
         }
       }
-      this->setExpression(att);
     }
     else
     {
       // The source expression is located in a different resource than the source Item's attribute
       // so simply assign it
-      this->setExpression(sourceValueItem->expression());
+      if (!this->setExpression(sourceValueItem->expression()))
+      {
+        if (options.itemOptions.allowPartialValues())
+        {
+          smtkInfoMacro(
+            logger,
+            "Could not assign Expression:" << sourceValueItem->expression()->name()
+                                           << " to ValueItem: " << sourceItem->name());
+          this->setExpression(nullptr);
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not assign Expression:" << sourceValueItem->expression()->name()
+                                           << " to ValueItem: " << sourceItem->name()
+                                           << " and allowPartialValues options was not specified.");
+          return false;
+        }
+      }
     }
   }
   else
   {
     // Update values for discrete values - note that the derived classes
     // will take care of the non-discrete values.
-    for (std::size_t i = 0; i < sourceValueItem->numberOfValues(); ++i)
+    for (std::size_t i = 0; i < numVals; ++i)
     {
       if (!sourceValueItem->isSet(i))
       {
@@ -458,7 +547,26 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
       }
       else if (sourceValueItem->isDiscrete())
       {
-        this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
+        if (!this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i)))
+        {
+          if (options.itemOptions.allowPartialValues())
+          {
+            smtkInfoMacro(
+              logger,
+              "Could not assign Discrete Index:" << sourceValueItem->discreteIndex(i)
+                                                 << " to ValueItem: " << sourceItem->name());
+            this->unset(i);
+          }
+          else
+          {
+            smtkErrorMacro(
+              logger,
+              "Could not assign Discrete Index:"
+                << sourceValueItem->discreteIndex(i) << " to ValueItem: " << sourceItem->name()
+                << " and allowPartialValues options was not specified.");
+            return false;
+          }
+        }
       }
     } // for
   }
@@ -473,18 +581,27 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     newIter = m_childrenItems.find(sourceIter->first);
     if (newIter == m_childrenItems.end())
     {
-      std::cerr << "ERROR:Could not find child item \"" << sourceIter->first << "\" -- cannot copy"
-                << std::endl;
+      // Are missing items allowed?
+      if (!options.itemOptions.ignoreMissingChildren())
+      {
+        smtkErrorMacro(
+          logger,
+          "Could not find Child Item: " << sourceIter->first << " in ValueItem: " << this->name()
+                                        << " and ignoreMissingChildren option was not set");
+        return false;
+      }
       continue;
     }
     ItemPtr newChild = newIter->second;
     if (!newChild->assign(sourceChild, options))
     {
-      std::cerr << "ERROR:Could not properly assign child item: " << newChild->name() << "\n";
+      smtkErrorMacro(
+        logger,
+        "Could not assign ValueItem: " << this->name() << "'s Child Item: " << newChild->name());
       return false;
     }
   }
-  return Item::assign(sourceItem, options);
+  return Item::assign(sourceItem, options, logger);
 }
 
 smtk::attribute::ItemPtr ValueItem::findInternal(const std::string& childName, SearchStyle style)

@@ -83,8 +83,12 @@ public:
   bool appendValues(I vbegin, I vend);
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  // Returns true if success and false if a problem occured.  Does not use options.
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  // Returns true if success and false if a problem occurred.  Does not currently support any options directly.
+  using Item::assign;
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
 
 protected:
   FileSystemItem(Attribute* owningAttribute, int itemPosition);

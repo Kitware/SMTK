@@ -30,8 +30,11 @@ Item::Type DoubleItem::type() const
   return DoubleType;
 }
 
-bool DoubleItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool DoubleItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
-  return ValueItemTemplate<double>::assign(sourceItem, options);
+  return ValueItemTemplate<double>::assign(sourceItem, options, logger);
 }

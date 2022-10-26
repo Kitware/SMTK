@@ -26,6 +26,8 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 
@@ -1079,4 +1081,109 @@ const smtk::attribute::Attribute::GuardedLinks Attribute::guardedLinks() const
 smtk::attribute::Attribute::GuardedLinks Attribute::guardedLinks()
 {
   return GuardedLinks(this->attributeResource()->mutex(), this->links());
+}
+
+bool Attribute::assign(const AttributePtr& sourceAtt, const CopyAssignmentOptions& options)
+{
+  return this->assign(sourceAtt, options, smtk::io::Logger::instance());
+}
+
+bool Attribute::assign(
+  const AttributePtr& sourceAtt,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
+{
+  // Copy properties
+  if (sourceAtt->isColorSet())
+  {
+    this->setColor(sourceAtt->color());
+  }
+  this->setAppliesToBoundaryNodes(sourceAtt->appliesToBoundaryNodes());
+  this->setAppliesToInteriorNodes(sourceAtt->appliesToInteriorNodes());
+  // Update items
+  for (std::size_t i = 0; i < sourceAtt->numberOfItems(); ++i)
+  {
+    smtk::attribute::ConstItemPtr sourceItem =
+      smtk::const_pointer_cast<const Item>(sourceAtt->item(static_cast<int>(i)));
+
+    // Find the item in this attribute
+    smtk::attribute::ItemPtr myItem = this->find(sourceItem->name(), IMMEDIATE);
+    // If the item can't be found, see if missing items are permitted
+    if (!myItem)
+    {
+      if (!options.attributeOptions.ignoreMissingItems())
+      {
+        smtkErrorMacro(
+          logger,
+          "Could not find required Item: " << sourceItem->name()
+                                           << " in Attribute: " << this->name());
+        return false;
+      }
+      continue;
+    }
+
+    if (!myItem->assign(sourceItem, options))
+    {
+      smtkErrorMacro(
+        logger,
+        "Could not assign Item: " << sourceItem->name()
+                                  << "'s information in  Attribute: " << this->name());
+      return false;
+    }
+  }
+  // Do we need to copy the association information?
+  if (!options.attributeOptions.copyAssociations())
+  {
+    return true;
+  }
+
+  // Do we have associations?
+  if (!m_associatedObjects)
+  {
+    return true;
+  }
+
+  // Trivial Check concerning Uniqueness
+  if ((this->resource() == sourceAtt->resource()) && this->definition()->isUnique())
+  {
+    // Associations can not be copied
+    // If we were told it was ok to only partially copy associations (or the source has none)
+    // return success else return failure
+
+    if (sourceAtt->m_associatedObjects->numberOfSetValues())
+    {
+      if (options.attributeOptions.allowPartialAssociations())
+      {
+        return true;
+      }
+      else
+      {
+        smtkErrorMacro(
+          logger,
+          "Could not copy association information for Attribute: "
+            << this->name()
+            << " since both copy and source are in the same resource, their Definitions are marked "
+               "\"Unique\" and "
+            << "allowPartialAssociations option was not specified");
+        return false;
+      }
+    }
+    // There are no values to copy
+    return true;
+  }
+
+  // Assign the association information
+  CopyAssignmentOptions assocOptions = options;
+  if (options.attributeOptions.allowPartialAssociations())
+  {
+    assocOptions.itemOptions.setAllowPartialValues(true);
+  }
+  if (options.attributeOptions.doNotValidateAssociations())
+  {
+    assocOptions.itemOptions.setDoNotValidateReferenceInfo(true);
+  }
+
+  return m_associatedObjects->assign(sourceAtt->m_associatedObjects, assocOptions, logger);
+
+  // TODO what about m_userData and Properties?
 }

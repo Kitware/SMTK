@@ -136,7 +136,7 @@ if __name__ == '__main__':
     test_resource.copyAttribute(second_concrete, True, int(options))
     expected_deftypes = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
-        'PolyLinearFunction'
+        'PolyLinearFunction', 'FirstConcrete'
     ]
     for def_type in expected_deftypes:
         defn = test_resource.findDefinition(def_type)
@@ -144,16 +144,8 @@ if __name__ == '__main__':
             logging.error('Expected %s definition, found None' % def_type)
             err_count += 1
 
-    not_expected_deftypes = [
-        'FirstConcrete'
-    ]
-    for def_type in not_expected_deftypes:
-        defn = test_resource.findDefinition(def_type)
-        if defn is not None:
-            logging.error('Unexpected %s definition found' % def_type)
-            err_count += 1
-
-    expected_atttypes = ['SecondConcrete', 'PolyLinearFunction']
+    expected_atttypes = ['SecondConcrete',
+                         'PolyLinearFunction', 'FirstConcrete']
     for att_type in expected_atttypes:
         att_list = test_resource.findAttributes(att_type)
         if len(att_list) != 1:

@@ -127,12 +127,18 @@ public:
     return m_activeChildrenItems[static_cast<std::size_t>(i)];
   }
 
+  using Item::assign;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  // Returns true if success and false if a problem occured.  By default, an attribute being used by this
-  // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
-  // When an expression attribute is copied, its model associations are by default not.
-  // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  // Returns true if success and false if a problem occurred.  By default, an attribute being used by this
+  // to represent an expression will be copied if needed.  Use itemOptions.setIgnoreExpressions option to prevent this.
+  // In the case that the item uses an expression attribute that is in the same resource as the item, the attribute will
+  // also be copied (as well as its definition).  Use itemOptions.setDisableCopyAttributes(true) if copying the expression
+  // attribute should not happen and copyOptions.copyDefiniiton(true) if you want the Definition to be copied.
+  // Use attributeOptions.setCopyAssociations(true) if you want them copied as well.These options are defined in CopyAssigmentOptions.h .
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
 
   /// @{
   /// \brief Search the item's children - Deprecated! Please use Item::find

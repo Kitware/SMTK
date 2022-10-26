@@ -162,12 +162,16 @@ public:
   const_iterator end() const;
   ///@}
 
+  using Item::assign;
   /// \brief Assigns this item to be equivalent to another.
   ///
   /// Options are processed by derived item classes
   /// Returns true if success and false if a problem occurred - options are use when copying sub-items.
-  /// See Items.h for a description of these options.
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  /// See CopyAssigmentOptions.h for a description of these options.
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
 
   ///\brief Returns true if the group item has relevant children.
   bool hasRelevantChildren(

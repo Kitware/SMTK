@@ -82,12 +82,18 @@ public:
   bool isUsingDefault() const override;
   DataT defaultValue() const;
   const std::vector<DataT>& defaultValues() const;
+
+  using Item::assign;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  // Returns true if success and false if a problem occured.  By default, an attribute being used by this
-  // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
-  // When an expression attribute is copied, its model associations are by default not.
-  // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  // Returns true if success and false if a problem occurred.  By default, an attribute being used by this
+  // to represent an expression will be copied if needed.  Use itemOptions.setIgnoreExpressions option to prevent this
+  // When an expression attribute is copied, its  associations are by default not.
+  // Use attributeOptions.setCopyAssociations option if you want them copied as well.These options are defined in CopyAssigmentOptions.h .
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
+
   shared_ptr<const DefType> concreteDefinition() const
   {
     return dynamic_pointer_cast<const DefType>(this->definition());
@@ -620,10 +626,11 @@ bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPo
 
 template<typename DataT>
 bool ValueItemTemplate<DataT>::assign(
-  smtk::attribute::ConstItemPtr& sourceItem,
-  unsigned int options)
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
-  if (!ValueItem::assign(sourceItem, options))
+  if (!ValueItem::assign(sourceItem, options, logger))
   {
     return false;
   }
@@ -633,18 +640,72 @@ bool ValueItemTemplate<DataT>::assign(
 
   if (!sourceValueItemTemplate)
   {
+    smtkErrorMacro(logger, "Source Item: " << name() << " is not a ValueItemTemplate");
     return false; // Source is not the right type of item
   }
   // If the item is discrete or an expression there is nothing to be done
-  if (!(sourceValueItemTemplate->isExpression() || sourceValueItemTemplate->isDiscrete()))
+  if (sourceValueItemTemplate->isExpression() || sourceValueItemTemplate->isDiscrete())
   {
-    // Update values
-    this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
-    for (std::size_t i = 0; i < sourceValueItemTemplate->numberOfValues(); ++i)
+    return true;
+  }
+
+  // Update values
+  this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
+
+  // Were we able to allocate enough space to fit all of the source's values?
+  std::size_t myNumVals, sourceNumVals, numVals;
+  myNumVals = this->numberOfValues();
+  sourceNumVals = sourceValueItemTemplate->numberOfValues();
+  if (myNumVals < sourceNumVals)
+  {
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
     {
-      if (sourceValueItemTemplate->isSet(i))
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "ValueItem: " << this->name() << "'s number of values (" << myNumVals
+                      << ") is smaller than source Item's number of values (" << sourceNumVals
+                      << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "ValueItem: " << name() << "'s number of values (" << myNumVals
+                      << ") can not hold source ValueItem's number of values (" << sourceNumVals
+                      << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+  else
+  {
+    numVals = sourceNumVals;
+  }
+
+  for (std::size_t i = 0; i < numVals; ++i)
+  {
+    if (sourceValueItemTemplate->isSet(i))
+    {
+      if (!this->setValue(i, sourceValueItemTemplate->value(i)))
       {
-        this->setValue(i, sourceValueItemTemplate->value(i));
+        if (options.itemOptions.allowPartialValues())
+        {
+          smtkInfoMacro(
+            logger,
+            "Could not assign Value:" << sourceValueItemTemplate->value(i)
+                                      << " to ValueItem: " << sourceItem->name());
+          this->unset(i);
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not assign Value:" << sourceValueItemTemplate->value(i)
+                                      << " to ValueItem: " << sourceItem->name()
+                                      << " and allowPartialValues options was not specified.");
+          return false;
+        }
       }
     }
   }

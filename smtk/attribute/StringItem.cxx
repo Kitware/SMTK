@@ -30,10 +30,13 @@ Item::Type StringItem::type() const
   return StringType;
 }
 
-bool StringItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool StringItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
-  return ValueItemTemplate<std::string>::assign(sourceItem, options);
+  return ValueItemTemplate<std::string>::assign(sourceItem, options, logger);
 }
 
 bool StringItem::isSecure() const

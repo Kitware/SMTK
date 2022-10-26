@@ -11,6 +11,8 @@
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 
+#include "smtk/io/Logger.h"
+
 namespace sc = smtk::common;
 namespace smtk
 {
@@ -178,22 +180,78 @@ bool DateTimeItem::hasDefault() const
   return def->hasDefault();
 }
 
-bool DateTimeItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool DateTimeItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
   ConstDateTimeItemPtr sourceDateTimeItem =
     smtk::dynamic_pointer_cast<const DateTimeItem>(sourceItem);
   if (!sourceDateTimeItem)
   {
+    smtkErrorMacro(logger, "Source Item: " << name() << " is not a DateTimeItem");
     return false; // Source is not a DateTimeItem!
   }
 
-  this->setNumberOfValues(sourceDateTimeItem->numberOfValues());
-  for (std::size_t i = 0; i < sourceDateTimeItem->numberOfValues(); ++i)
+  std::size_t numVals, myNumVals, sourceNumVals;
+  myNumVals = this->numberOfValues();
+  sourceNumVals = sourceDateTimeItem->numberOfValues();
+  // Lets initially assumes we can fit all of the source's values
+  numVals = sourceNumVals;
+
+  if (myNumVals == sourceNumVals)
+  {
+    m_isSet = sourceDateTimeItem->m_isSet;
+    m_values = sourceDateTimeItem->m_values;
+  }
+  else if (myNumVals < sourceNumVals)
+  {
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
+    {
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "Item: " << this->name() << "'s number of values (" << myNumVals
+                 << ") is smaller than source Item's number of values (" << sourceNumVals
+                 << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "Item: " << this->name() << "'s number of values (" << myNumVals
+                 << ") can not hold source Item's number of values (" << sourceNumVals
+                 << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+
+  for (std::size_t i = 0; i < numVals; ++i)
   {
     if (sourceDateTimeItem->isSet(i))
     {
-      this->setValue(i, sourceDateTimeItem->value(i));
+      if (!this->setValue(i, sourceDateTimeItem->value(i)))
+      {
+        if (options.itemOptions.allowPartialValues())
+        {
+          smtkInfoMacro(
+            logger,
+            "Could not assign Value:" << sourceDateTimeItem->value(i).serialize()
+                                      << " to DateTimeItem: " << sourceItem->name());
+          this->unset(i);
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not assign Value:" << sourceDateTimeItem->value(i).serialize()
+                                      << " to DateTimeItem: " << sourceItem->name()
+                                      << " and allowPartialValues options was not specified.");
+          return false;
+        }
+      }
     }
     else
     {
@@ -201,7 +259,7 @@ bool DateTimeItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     }
   }
 
-  return Item::assign(sourceItem, options);
+  return Item::assign(sourceItem, options, logger);
 }
 
 bool DateTimeItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)

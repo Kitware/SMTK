@@ -8,14 +8,16 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind___smtk_attribute_Item_h
-#define pybind___smtk_attribute_Item_h
+#ifndef pybind_smtk_attribute_Item_h
+#define pybind_smtk_attribute_Item_h
 
 #include <pybind11/pybind11.h>
 
 #include "smtk/attribute/Item.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/CopyAssignmentOptions.h"
+#include "smtk/io/Logger.h"
 #include "smtk/simulation/UserData.h"
 
 namespace py = pybind11;
@@ -61,7 +63,18 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("reset", &smtk::attribute::Item::reset)
     .def("detachOwningAttribute", &smtk::attribute::Item::detachOwningAttribute)
     .def("detachOwningItem", &smtk::attribute::Item::detachOwningItem)
-    .def("assign", &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("options") = 0)
+    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, const smtk::attribute::CopyAssignmentOptions&)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("options") = smtk::attribute::CopyAssignmentOptions())
+    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, const smtk::attribute::CopyAssignmentOptions&, smtk::io::Logger&)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("options"), py::arg("logger"))
+    .def("assign", [](smtk::attribute::Item& item, const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options)
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "Item::assign(const smtk::attribute::ConstItemPtr&, unsigned int)"
+        << " has been deprecated.  The replacement is Item::assign(const smtk::attribute::ConstItemPtr&, const CopyAssignmentOptions&)");
+      smtk::attribute::CopyAssignmentOptions opts;
+      smtk::attribute::Item::mapOldAssignmentOptions(opts, options);
+      return item.assign(sourceItem, opts);
+    }, py::arg("sourceItem"), py::arg("options"))
+
+    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, unsigned int)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("oldOptions"))
     .def_static("type2String", &smtk::attribute::Item::type2String, py::arg("t"))
     .def_static("string2Type", &smtk::attribute::Item::string2Type, py::arg("s"))
     ;

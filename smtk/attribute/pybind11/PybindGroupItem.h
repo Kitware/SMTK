@@ -26,7 +26,6 @@ inline PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pyb
     .def(py::init<::smtk::attribute::GroupItem const &>())
     .def("deepcopy", (smtk::attribute::GroupItem & (smtk::attribute::GroupItem::*)(::smtk::attribute::GroupItem const &)) &smtk::attribute::GroupItem::operator=)
     .def("appendGroup", &smtk::attribute::GroupItem::appendGroup)
-    .def("assign", &smtk::attribute::GroupItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::GroupItem::begin)
     .def("conditionalsSatisfied", &smtk::attribute::GroupItem::conditionalsSatisfied, py::arg("useActiveCategories") = true)
     .def("end", &smtk::attribute::GroupItem::end)

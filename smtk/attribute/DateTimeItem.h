@@ -15,6 +15,7 @@
 #define smtk_attribute_DateTimeItem_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/common/DateTimeZonePair.h"
 #include <vector>
@@ -62,8 +63,12 @@ public:
   }
 
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.
-  // The options are defined in Item.h. Returns true if success and false if a problem occured.
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  // The options are defined in CopyAssignmentOptions.h. Returns true if success and false if a problem occurred.
+  using Item::assign;
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
 
 protected:
   DateTimeItem(Attribute* owningAttribute, int itemPosition);

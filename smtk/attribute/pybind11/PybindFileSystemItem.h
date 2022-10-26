@@ -25,7 +25,6 @@ inline PySharedPtrClass< smtk::attribute::FileSystemItem, smtk::attribute::Item 
   instance
     .def("deepcopy", (smtk::attribute::FileSystemItem & (smtk::attribute::FileSystemItem::*)(::smtk::attribute::FileSystemItem const &)) &smtk::attribute::FileSystemItem::operator=)
     .def("appendValue", &smtk::attribute::FileSystemItem::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::FileSystemItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::FileSystemItem::begin)
     .def("defaultValue", &smtk::attribute::FileSystemItem::defaultValue)
     .def("end", &smtk::attribute::FileSystemItem::end)

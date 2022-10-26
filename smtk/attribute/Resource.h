@@ -11,6 +11,7 @@
 #ifndef smtk_attribute_Resource_h
 #define smtk_attribute_Resource_h
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/Factory.h"
 #include "smtk/common/UUID.h"
 
@@ -25,6 +26,7 @@
 #include "smtk/attribute/Analyses.h"
 #include "smtk/attribute/AssociationRules.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/attribute/Evaluator.h"
@@ -43,6 +45,12 @@
 
 namespace smtk
 {
+
+namespace io
+{
+class Logger;
+};
+
 namespace attribute
 {
 class Attribute;
@@ -74,14 +82,6 @@ public:
 
   // typedef referring to the parent resource.
   typedef smtk::geometry::Resource ParentResource;
-
-  enum CopyOptions
-  {
-    COPY_ASSOCIATIONS =
-      0x00000001, //!< Should associations and model-entity items be copied if models match?
-    FORCE_COPY_ASSOCIATIONS =
-      0x00000003 //!< Should associations and model-entity items *always* be copied?
-  };
 
   // Associations and references to other resources and components are managed
   // internally using smtk::resource::Links. The concepts of association and
@@ -294,14 +294,29 @@ public:
   smtk::attribute::DefinitionPtr copyDefinition(
     smtk::attribute::DefinitionPtr def,
     unsigned int options = 0);
-  // Copies attribute from another Resource
-  // Note: that if the attribute is unique (meaning only 1 attribute of this type can be asociated
-  // to a model entity, the copyModelAssociations flag is ignored since it would violate this constraint.
-  // In terms of options - these are item assignment options - see Item.h for documentation.
+  // Copies an attribute.
+  SMTK_DEPRECATED_IN_22_10(
+    "Replaced by copyAttribute(const AttributePtr&, const AttributeCopyOptions&, const "
+    "ItemAssignmentOptions&, smtk::io::Logger&).")
   smtk::attribute::AttributePtr copyAttribute(
     smtk::attribute::AttributePtr att,
-    const bool& copyModelAssociations = false,
+    const bool& copyModelAssocs,
     const unsigned int& options = 0);
+
+  ///\brief  Copies attribute.
+  ///
+  /// Will create a copy of an attribute.  Note that the source attribute can belong to
+  /// a different attribute resource.  The logger will contain any information including warnings
+  /// or errors encountered in the copying/assignment process.  If errors occur that prevent the copy process
+  /// from successfully completing, no attribute will be created.  - see CopyAssignmentOptions.h for attribute and item assignment/copy options.
+  smtk::attribute::AttributePtr copyAttribute(
+    const smtk::attribute::AttributePtr& att,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger);
+
+  smtk::attribute::AttributePtr copyAttribute(
+    const smtk::attribute::AttributePtr& att,
+    const CopyAssignmentOptions& options = CopyAssignmentOptions());
 
   //Get a list of all definitions in the Resource
   void definitions(std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList = false)
