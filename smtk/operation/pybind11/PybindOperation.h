@@ -12,6 +12,7 @@
 #define pybind_smtk_operation_Operation_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 
 #include "smtk/operation/pybind11/PyOperation.h"
 
@@ -34,6 +35,8 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("index", &smtk::operation::Operation::index)
     .def("ableToOperate", &smtk::operation::Operation::ableToOperate)
     .def("operate", (smtk::operation::Operation::Result (smtk::operation::Operation::*)()) &smtk::operation::Operation::operate)
+    .def("safeOperate", (smtk::operation::Operation::Outcome (smtk::operation::Operation::*)()) &smtk::operation::Operation::safeOperate)
+    .def("safeOperate", (smtk::operation::Operation::Outcome (smtk::operation::Operation::*)(smtk::operation::Handler)) &smtk::operation::Operation::safeOperate)
     .def("log", &smtk::operation::Operation::log, pybind11::return_value_policy::reference)
     .def("specification", &smtk::operation::Operation::specification)
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))

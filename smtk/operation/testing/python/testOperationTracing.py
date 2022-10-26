@@ -143,17 +143,23 @@ class TestOp(smtk.operation.Operation):
 
 class TestOperationTracing(smtk.testing.TestCase):
     def import_model(self):
-        """"""
+        """Import a model resource to test operation tracing."""
         gen_path = os.path.join(smtk.testing.DATA_DIR,
                                 'model/3d/genesis/filling1.gen')
         import_op = smtk.session.vtk.Import.create()
         import_op.parameters().findFile('filename').setValue(gen_path)
-        result = import_op.operate()
-        outcome = result.findInt('outcome').value()
-        self.assertEqual(outcome, OP_SUCCEEDED,
-                         'Failed to import model file {}'.format(gen_path))
-        resource = smtk.model.Resource.CastTo(result.find('resource').value())
+        # Demonstrate/test use of safeOperate() instead of operate():
+        resource = None
 
+        def handler(op, result):
+            nonlocal resource
+            resource = smtk.model.Resource.CastTo(
+                result.find('resource').value())
+        outcome = import_op.safeOperate(handler)
+        print('Outcome = ', outcome)
+        self.assertEqual(outcome, smtk.operation.Operation.Outcome.SUCCEEDED,
+                         'Failed to import model file {}'.format(gen_path))
+        print('Resource is ', resource)
         return resource
 
     def test_operation_tracing(self):
@@ -168,23 +174,23 @@ class TestOperationTracing(smtk.testing.TestCase):
         # use the method that will be produced by python tracing.
         configureAttribute(parameters, SPEC)
         # check it did something.
-        assert(parameters.find('int-item').value() == 2)
+        assert (parameters.find('int-item').value() == 2)
 
         # now check that we are able to trace the operation
         tracer = pqSMTKPythonTrace()
         op_trace = tracer.traceOperation(op, testing=True)
         print("operation trace:\n", op_trace)
         # non-default items should be traced.
-        assert(op_trace.find(
+        assert (op_trace.find(
             "'path': 'double-item', 'value': [ 3.1415899999999999, None, 2.71828 ]") > 0)
-        assert(op_trace.find(
+        assert (op_trace.find(
             "'path': 'int-item/conditional-double', 'value': 42.42") > 0)
-        assert(op_trace.find("'resource': 'filling1', 'component': 'casting'") > 0)
-        assert(op_trace.find("'resource': 'filling1', 'component': 'symmetry'") > 0)
-        assert(op_trace.find("'path': 'group-item', 'count': 2") > 0)
-        assert(op_trace.find(
+        assert (op_trace.find("'resource': 'filling1', 'component': 'casting'") > 0)
+        assert (op_trace.find("'resource': 'filling1', 'component': 'symmetry'") > 0)
+        assert (op_trace.find("'path': 'group-item', 'count': 2") > 0)
+        assert (op_trace.find(
             "'path': 'group-item/0/subgroup-double', 'value': 73.73") > 0)
-        assert(op_trace.find(
+        assert (op_trace.find(
             "'path': 'group-item/1/subgroup-double', 'value': 83.829") > 0)
 
 

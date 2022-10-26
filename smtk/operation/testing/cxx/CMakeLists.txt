@@ -7,6 +7,7 @@ set(unit_tests
   TestOperationGroup.cxx
   TestOperationLauncher.cxx
   TestRemoveResource.cxx
+  TestSafeBlockingInvocation.cxx
   TestThreadSafeLazyEvaluation.cxx
 )
 set(unit_tests_which_require_data

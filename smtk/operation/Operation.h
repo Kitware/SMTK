@@ -14,6 +14,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include <functional>
 #include <string>
 #include <typeindex>
 #include <utility>
@@ -33,6 +34,9 @@ namespace operation
 {
 class ImportPythonOperation;
 class Manager;
+class Operation;
+
+using Handler = std::function<void(Operation&, const std::shared_ptr<smtk::attribute::Attribute>&)>;
 
 /// Operation is a base class for all SMTK operations. SMTK operations are
 /// essentially functors that operate on SMTK resources and resource components.
@@ -119,6 +123,33 @@ public:
   /// Execute the operation, log its outcome and return its results. This method
   /// calls operateInternal() and handles additional bookkeeping.
   Result operate();
+
+  /// Execute the operation in an asynchronous environment. This method does not
+  /// return until the operation is complete, but because it does not return a
+  /// result, only observers can process the operation. This prevents simultaneous,
+  /// unguarded access to results as observers are invoked before resource locks
+  /// are released.
+  ///
+  /// If you pass a \a handler to safeOperate, it will be invoked after other
+  /// observers have run but before resource locks have been released (thus
+  /// preventing deadlocks or unguarded access to the result).
+  ///
+  /// Unlike Operation::operate(), this method removes its Result from the specification
+  /// before returning.
+  ///
+  /// This method will eventually replace Operation::operate().
+  Outcome safeOperate();
+  Outcome safeOperate(Handler handler);
+
+  /// Release the operation \a result returned by `operate()`.
+  /// Note that if you do not release the result, it will eventually
+  /// be released when the operation itself is destroyed.
+  ///
+  /// This removes the Result (an smtk::attribute::Attribute) from the operation's
+  /// resource; anyone holding the shared pointer to the result will keep the
+  /// attribute in memory but will experience inconsistent behavior since its items
+  /// are removed as part of releasing it from control by the attribute::Resource.
+  virtual bool releaseResult(Result& result);
 
   /// Retrieve the operation's logger. By default, we use the singleton logger.
   /// Derived classes can reimplement this method if an alternative logging

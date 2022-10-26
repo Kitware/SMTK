@@ -263,6 +263,41 @@ Operation::Result Operation::operate()
   return result;
 }
 
+Operation::Outcome Operation::safeOperate()
+{
+  Handler dummy = [](const Operation&, Operation::Result) {};
+  Outcome outcome = this->safeOperate(dummy);
+  return outcome;
+}
+
+Operation::Outcome Operation::safeOperate(Handler handler)
+{
+  Outcome outcome = Outcome::UNKNOWN;
+  auto result = this->operate();
+  if (result)
+  {
+    outcome = static_cast<Outcome>(result->findInt("outcome")->value());
+    if (handler)
+    {
+      handler(*this, result);
+    }
+    if (m_specification)
+    {
+      m_specification->removeAttribute(result);
+    }
+  }
+  return outcome;
+}
+
+bool Operation::releaseResult(Result& result)
+{
+  if (!m_specification)
+  {
+    return false;
+  }
+  return m_specification->removeAttribute(result);
+}
+
 smtk::io::Logger& Operation::log() const
 {
   return smtk::io::Logger::instance();
