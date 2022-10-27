@@ -1,6 +1,7 @@
 [submodule "thirdparty/delaunay"]
 	path = thirdparty/delaunay
-	url = https://github.com/tjcorona/Delaunay.git
+	url = https://gitlab.kitware.com/cmb/delaunay.git
+	branch = for/smtk
 [submodule "data/simulation-workflows"]
 	path = data/simulation-workflows
 	url = https://gitlab.kitware.com/cmb/simulation-workflows.git
