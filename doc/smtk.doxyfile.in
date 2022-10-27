@@ -739,6 +739,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/simulation" \
   "@smtk_SOURCE_DIR@/smtk/project" \
   "@smtk_SOURCE_DIR@/smtk/common" \
+  "@smtk_SOURCE_DIR@/smtk/common/update" \
   "@smtk_SOURCE_DIR@/smtk/task" \
   "@smtk_SOURCE_DIR@/smtk/task/adaptor" \
   "@smtk_SOURCE_DIR@/smtk/task/json" \

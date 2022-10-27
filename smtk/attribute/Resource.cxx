@@ -1106,6 +1106,26 @@ smtk::attribute::Resource::GuardedLinks Resource::guardedLinks()
   return GuardedLinks(this->mutex(), this->links());
 }
 
+bool Resource::setTemplateType(const smtk::string::Token& templateType)
+{
+  if (m_templateType == templateType)
+  {
+    return false;
+  }
+  m_templateType = templateType;
+  return true;
+}
+
+bool Resource::setTemplateVersion(std::size_t templateVersion)
+{
+  if (m_templateVersion == templateVersion || templateVersion == 0)
+  {
+    return false;
+  }
+  m_templateVersion = templateVersion;
+  return true;
+}
+
 void Resource::setActiveCategoriesEnabled(bool mode)
 {
   m_activeCategoriesEnabled = mode;

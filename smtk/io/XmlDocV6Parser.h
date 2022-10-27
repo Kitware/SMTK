@@ -31,6 +31,9 @@ public:
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
 
+  using XmlDocV5Parser::process;
+  void process(pugi::xml_node& rootNode) override;
+
 protected:
   void processCategories(
     pugi::xml_node& node,

@@ -66,6 +66,29 @@ bool XmlDocV6Parser::canParse(pugi::xml_node& node)
   return versionNum == 6;
 }
 
+void XmlDocV6Parser::process(pugi::xml_node& rootNode)
+{
+  pugi::xml_attribute xatt;
+
+  xatt = rootNode.attribute("TemplateType");
+  if (xatt)
+  {
+    smtk::string::Token templateType = xatt.value();
+    m_resource->setTemplateType(templateType);
+  }
+
+  unsigned long long tmp = 0;
+  xatt = rootNode.attribute("TemplateVersion");
+  if (xatt)
+  {
+    tmp = xatt.as_ullong(tmp);
+  }
+  std::size_t templateVersion = static_cast<std::size_t>(tmp);
+  m_resource->setTemplateVersion(templateVersion);
+
+  XmlDocV5Parser::process(rootNode);
+}
+
 void XmlDocV6Parser::processCategories(
   xml_node& node,
   Categories::Set& catSet,

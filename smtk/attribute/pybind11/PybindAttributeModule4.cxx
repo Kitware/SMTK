@@ -14,10 +14,11 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/pybind11.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/Resource.h"
+#include "smtk/attribute/UpdateManager.h"
 
 #include <utility>
 
@@ -31,6 +32,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindExport.h"
 #include "PybindImport.h"
 #include "PybindRead.h"
+#include "PybindUpdateManager.h"
 #include "PybindWrite.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -47,4 +49,5 @@ void attributePart4(py::module& attribute)
   PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > smtk_attribute_Export = pybind11_init_smtk_attribute_Export(attribute);
   PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > smtk_attribute_Read = pybind11_init_smtk_attribute_Read(attribute);
   PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > smtk_attribute_Write = pybind11_init_smtk_attribute_Write(attribute);
+  PySharedPtrClass< smtk::attribute::UpdateManager> smtk_attribute_UpdateManager = pybind11_init_smtk_attribute_UpdateManager(attribute);
 }

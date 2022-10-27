@@ -152,7 +152,7 @@ struct grammar_for
         typename property_traits<property>::name,
         opt<braced<
           sor<name_property, name_property_regex>,
-          opt<pad<string<'='>, space>, typename property_traits<property>::sequence>>>>,
+          opt<pad<TAO_PEGTL_ISTRING("="), space>, typename property_traits<property>::sequence>>>>,
       space>
 {
 };

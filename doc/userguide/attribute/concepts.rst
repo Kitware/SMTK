@@ -252,3 +252,18 @@ When SMTK generates a user interface for the attribute above,
 the "construction method" value is represented as a tabbed
 widget with 1 tab for each of the "Structure" sections above.
 The default tab will be "2 points".
+
+
+Migration to newer schema
+-------------------------
+
+Over time, the schema used by an attribute resource may need to be
+modified to fix issues or add features.
+SMTK provides some support to aid you in migrating existing attribute
+resources from an old schema to a new one while retaining as much
+user-provided information as possible.
+This is intended to be accomplished by copying attribute instances and
+other information from the existing resource into a new resource whose
+definitions are from a newer schema.
+See the ``itemUpdater`` test for an example how to register
+functions or python scripts to help with this process.

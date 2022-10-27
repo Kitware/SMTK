@@ -67,6 +67,8 @@ set(commonHeaders
   WeakReferenceWrapper.h
   testing/cxx/helpers.h
 
+  update/Factory.h
+
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
 

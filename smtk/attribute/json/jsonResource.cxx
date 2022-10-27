@@ -45,6 +45,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   j["version"] = "6.0";
   j["IsPrivate"] = res->isPrivate();
   j["NameSeparator"] = res->defaultNameSeparator();
+  if (res->templateType().id() && !res->templateType().data().empty())
+  {
+    j["TemplateType"] = res->templateType().data();
+    j["TemplateVersion"] = res->templateVersion();
+  }
   // Write out the active category information
   if (!res->activeCategories().empty())
   {
@@ -346,6 +351,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     !(resource->properties().contains<bool>("smtk.attribute_panel.display_hint")))
   {
     resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+  }
+
+  auto jtt = j.find("TemplateType");
+  if (jtt != j.end())
+  {
+    res->setTemplateType(jtt->get<std::string>());
+    auto jtv = j.find("TemplateVersion");
+    if (jtv != j.end())
+    {
+      res->setTemplateVersion(jtv->get<std::size_t>());
+    }
   }
 
   // Set Private State

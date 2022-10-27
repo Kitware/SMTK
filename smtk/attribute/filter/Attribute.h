@@ -51,7 +51,7 @@ struct AttributeTypeSpec
         seq<
           TAO_PEGTL_ISTRING("type"),
           star<space>,
-          string<'='>,
+          TAO_PEGTL_ISTRING("="),
           star<space>,
           sor<
             pad<smtk::resource::filter::quoted<TypeName>, space>,
