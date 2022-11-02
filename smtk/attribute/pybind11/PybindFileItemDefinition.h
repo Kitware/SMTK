@@ -12,6 +12,7 @@
 #define pybind_smtk_attribute_FileItemDefinition_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/attribute/FileItemDefinition.h"
 
@@ -33,6 +34,13 @@ inline PySharedPtrClass< smtk::attribute::FileItemDefinition, smtk::attribute::F
     .def("createCopy", &smtk::attribute::FileItemDefinition::createCopy, py::arg("info"))
     .def("getFileFilters", &smtk::attribute::FileItemDefinition::getFileFilters)
     .def("setFileFilters", &smtk::attribute::FileItemDefinition::setFileFilters, py::arg("filters"))
+    .def("getSummarizedFileFilters", &smtk::attribute::FileItemDefinition::getSummarizedFileFilters)
+    .def_static("aggregateFileFilters", [](const std::string& filters)
+      {
+        int count;
+        auto agg = smtk::attribute::FileItemDefinition::aggregateFileFilters(filters, count);
+        return std::make_pair(agg, count);
+      })
     .def("type", &smtk::attribute::FileItemDefinition::type)
     .def_static("ToItemDefinition", [](const std::shared_ptr<smtk::attribute::FileItemDefinition> d) {
         return std::dynamic_pointer_cast<smtk::attribute::ItemDefinition>(d);

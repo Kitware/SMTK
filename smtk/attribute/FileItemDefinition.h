@@ -52,10 +52,29 @@ public:
   void setFileFilters(const std::string& filters) { m_fileFilters = filters; }
   //@}
 
+  //@{
+  /// The same as getFileFilters() but with an "All supported types" as the first entry.
+  ///
+  /// This is useful on many platforms as otherwise users must select a file type
+  /// before being shown available files of that type.
+  ///
+  /// Example: If the file filters are set to `Ext1 (*.ex1);;Ext2 (*.ex2)`, then this
+  /// method returns `All supported types (*.ex1 *.ex2);;Ext1 (*.ex1);;Ext2( *.ex2)`.
+  ///
+  /// If getFileFilters() returns an empty string, then so does this method.
+  std::string getSummarizedFileFilters() const;
+  //@}
+
+  //@{
   /// Combine individual file filters into a single filter entry. For example:
   /// "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3)" -> "(*.ex1 *.ex2 *.ex3)"
   /// "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3);;All (*.*)" -> "(*.*)"
+  ///
+  /// The variant which accepts a reference to an integer returns the number
+  /// of file extensions found (or 0 if `*.*` is present).
   static std::string aggregateFileFilters(const std::string&);
+  static std::string aggregateFileFilters(const std::string&, int&);
+  //@}
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
