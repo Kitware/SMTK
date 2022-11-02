@@ -666,11 +666,16 @@ bool qtFileItem::onLaunchFileBrowser()
   else
   {
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
-    filters = fItemDef->getFileFilters().c_str();
-    mode =
-      (fItemDef->shouldExist()
-         ? (fItemDef->isExtensible() ? QFileDialog::ExistingFiles : QFileDialog::ExistingFile)
-         : QFileDialog::AnyFile);
+    if (fItemDef->shouldExist())
+    {
+      filters = fItemDef->getSummarizedFileFilters().c_str();
+      mode = (fItemDef->isExtensible() ? QFileDialog::ExistingFiles : QFileDialog::ExistingFile);
+    }
+    else
+    {
+      filters = fItemDef->getFileFilters().c_str();
+      mode = QFileDialog::AnyFile;
+    }
     title = "Select File";
   }
   m_internals->FileBrowser->setFileMode(mode);

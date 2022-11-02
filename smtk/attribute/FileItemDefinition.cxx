@@ -95,8 +95,35 @@ int FileItemDefinition::filterId(const std::string& val) const
   return -1;
 }
 
+std::string FileItemDefinition::getSummarizedFileFilters() const
+{
+  std::string summary;
+  if (m_fileFilters.empty())
+  {
+    return summary;
+  }
+  int filterCount;
+  auto agg = FileItemDefinition::aggregateFileFilters(m_fileFilters, filterCount);
+  if (filterCount > 1)
+  {
+    summary = "All supported types " + agg + ";;" + m_fileFilters;
+  }
+  else
+  {
+    summary = m_fileFilters;
+  }
+  return summary;
+}
+
 std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersStr)
 {
+  int dummyCount;
+  return FileItemDefinition::aggregateFileFilters(filtersStr, dummyCount);
+}
+
+std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersStr, int& count)
+{
+  count = 0;
   // Condense multiple file filters into a single expression
   regex re(";;");
   sregex_token_iterator it(filtersStr.begin(), filtersStr.end(), re, -1), last;
@@ -140,6 +167,7 @@ std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersS
       s << " ";
     }
     s << filter;
+    ++count;
   }
   s << ")";
 
