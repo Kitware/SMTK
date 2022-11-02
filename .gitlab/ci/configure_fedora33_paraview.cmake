@@ -1,4 +1,5 @@
 set(SMTK_PLUGIN_CONTRACT_FILE_URLS
+  "https://gitlab.kitware.com/cmb/plugins/openfoam-windtunnel/-/raw/master/cmake/openfoam-windtunnel.cmake"
   "https://gitlab.kitware.com/cmb/plugins/opencascade-session/-/raw/master/cmake/opencascade-smtk-contract.cmake"
   "https://gitlab.kitware.com/cmb/plugins/adh-extensions/-/raw/master/CMake/adh-extensions.cmake"
   "https://gitlab.kitware.com/cmb/plugins/rgg-session/-/raw/master/CMake/rgg-session.cmake"
