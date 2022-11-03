@@ -18,7 +18,7 @@
 #include "smtk/resource/filter/Property.h"
 #include "smtk/resource/filter/Rules.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -101,7 +101,7 @@ public:
   bool operator()(const smtk::resource::PersistentObject& object) const override
   {
     // Generate the Regex based on the string
-    std::regex regex(m_typeRegex);
+    smtk::regex regex(m_typeRegex);
     const auto* attribute = dynamic_cast<const smtk::attribute::Attribute*>(&object);
     if (attribute)
     {
@@ -109,7 +109,7 @@ public:
       for (smtk::attribute::DefinitionPtr def = attribute->definition(); def != nullptr;
            def = def->baseDefinition())
       {
-        if (std::regex_match(def->type(), regex))
+        if (smtk::regex_match(def->type(), regex))
         {
           return true;
         }

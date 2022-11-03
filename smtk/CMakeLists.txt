@@ -179,6 +179,12 @@ if (APPLE)
   mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
+if (SMTK_USE_BOOST_REGEX)
+  target_link_libraries(smtkCore
+    LINK_PUBLIC Boost::regex)
+  target_compile_definitions(smtkCore PUBLIC USE_BOOST_REGEX)
+endif ()
+
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkCore)
 

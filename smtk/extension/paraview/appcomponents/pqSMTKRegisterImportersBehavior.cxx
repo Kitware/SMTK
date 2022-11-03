@@ -17,6 +17,8 @@
 
 #include "smtk/operation/groups/ImporterGroup.h"
 
+#include "smtk/Regex.h"
+
 // Client side
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -26,25 +28,6 @@
 #include "vtkSMSessionProxyManager.h"
 
 #include <functional>
-
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::regex_replace;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
 
 namespace
 {
@@ -63,8 +46,8 @@ void extensionsAndDescriptionsFromFileFilters(
   const std::string& fileFilters,
   std::vector<std::pair<std::string, std::string>>& extensionsAndDescriptions)
 {
-  regex re(";;");
-  sregex_token_iterator it(fileFilters.begin(), fileFilters.end(), re, -1), last;
+  smtk::regex re(";;");
+  smtk::sregex_token_iterator it(fileFilters.begin(), fileFilters.end(), re, -1), last;
   for (; it != last; ++it)
   {
     std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of('('));
@@ -72,8 +55,8 @@ void extensionsAndDescriptionsFromFileFilters(
     std::string description = it->str().substr(0, begin);
     std::string extensions = it->str().substr(begin + 1, end - begin - 1);
 
-    extensions = regex_replace(extensions, regex("[ ]{0,}\\*."), " ");
-    extensions = regex_replace(extensions, regex("[ ]{0,}\\*"), "");
+    extensions = smtk::regex_replace(extensions, smtk::regex("[ ]{0,}\\*."), " ");
+    extensions = smtk::regex_replace(extensions, smtk::regex("[ ]{0,}\\*"), "");
     if (extensions.empty())
     {
       continue;

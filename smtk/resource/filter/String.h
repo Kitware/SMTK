@@ -13,7 +13,7 @@
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Property.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -156,7 +156,7 @@ struct Action<Property<std::vector<std::string>>::Value>
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::vector<std::string> value;
-    std::regex re(",");
+    smtk::regex re(",");
     std::string in = input.string();
     std::sregex_token_iterator it(in.begin(), in.end(), re, -1), last;
     for (int id = 0; it != last; ++it, ++id)
@@ -193,9 +193,9 @@ struct Action<Property<std::vector<std::string>>::ValueRegex>
   static void apply(const Input& input, Rules& rules)
   {
     std::unique_ptr<Rule>& rule = rules.data().back();
-    std::vector<std::regex> regex;
+    std::vector<smtk::regex> regex;
 
-    std::regex re(",");
+    smtk::regex re(",");
     std::sregex_token_iterator it(input.string().begin(), input.string().end(), re, -1), last;
     for (int id = 0; it != last; ++it, ++id)
     {
@@ -213,7 +213,7 @@ struct Action<Property<std::vector<std::string>>::ValueRegex>
       }
       for (std::size_t i = 0; i < regex.size(); ++i)
       {
-        if (!std::regex_match(val[i], regex[i]))
+        if (!smtk::regex_match(val[i], regex[i]))
         {
           return false;
         }

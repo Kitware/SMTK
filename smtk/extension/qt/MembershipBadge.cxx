@@ -35,7 +35,7 @@
 #include "smtk/view/icons/selected_svg.h"
 #include "smtk/view/icons/unselected_svg.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -178,7 +178,7 @@ std::string MembershipBadge::icon(
   }
   float lightness = smtk::common::Color::floatRGBToLightness(background.data());
   const std::string& icon = member ? m_iconOn : m_iconOff;
-  return lightness >= 0.5 ? icon : std::regex_replace(icon, std::regex("black"), "white");
+  return lightness >= 0.5 ? icon : smtk::regex_replace(icon, smtk::regex("black"), "white");
 }
 
 bool MembershipBadge::action(

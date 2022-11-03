@@ -26,24 +26,7 @@
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
 
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::regex_search;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
+#include "smtk/Regex.h"
 
 #include <algorithm>
 #include <cctype>
@@ -1309,8 +1292,8 @@ bool CheckPropStringValues(const StringList& propValues, const LimitingClause& c
     if (*rit)
     {
       // This is a regex, test it.
-      regex match(*sit);
-      if (!std::regex_search(*vit, match))
+      smtk::regex match(*sit);
+      if (!smtk::regex_search(*vit, match))
       {
         return false;
       }
@@ -1396,12 +1379,12 @@ Entity::QueryFunctor limitedQueryFunctor(
         }
         else
         {
-          regex re(clause.m_propName);
+          smtk::regex re(clause.m_propName);
           std::set<std::string> keys = stringProperties.keys();
           return std::any_of(
             keys.begin(), keys.end(), [&re, &stringProperties, &clause](const std::string& key) {
               // A matching property name with matching values
-              return regex_search(key, re) &&
+              return smtk::regex_search(key, re) &&
                 CheckPropStringValues(stringProperties.at(key), clause);
             });
         }

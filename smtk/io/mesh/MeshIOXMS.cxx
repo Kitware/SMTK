@@ -24,29 +24,13 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/Regex.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #define BOOST_FILESYSTEM_VERSION 3
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
-
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
 
 #include <fstream>
 #include <iomanip>
@@ -507,7 +491,7 @@ std::size_t computeNumberOfPoints(std::istream& stream)
   std::size_t counter = 0;
   bool fromComment = false;
 
-  regex re("\\s+");
+  smtk::regex re("\\s+");
 
   std::string line;
   while (std::getline(stream, line))
@@ -517,7 +501,7 @@ std::size_t computeNumberOfPoints(std::istream& stream)
     // could just count nodes instead of depending on comment strings).
 
     // passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 };
+    smtk::sregex_token_iterator first{ line.begin(), line.end(), re, -1 };
     if (*first == "#NNODE")
     {
       fromComment = true;
@@ -553,14 +537,14 @@ bool readPoints(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr
 
   bcAllocator->reserveNumberOfCoordinates(nPts);
 
-  regex re("\\s+");
+  smtk::regex re("\\s+");
 
   std::size_t index;
   double xyz[3];
   while (std::getline(stream, line))
   {
     // passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+    smtk::sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
     if (*first == "ND")
     {
       // ensure that the file format is at least as long as we expect
@@ -657,7 +641,7 @@ bool readCells(
   const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
   smtk::mesh::ResourcePtr& meshResource)
 {
-  regex re("\\s+");
+  smtk::regex re("\\s+");
 
   std::string line;
   std::vector<long long int> connectivity;
@@ -668,7 +652,7 @@ bool readCells(
   while (std::getline(stream, line))
   {
     // passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+    smtk::sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
     if (std::string(*first)[0] == 'E')
     {
       smtk::mesh::CellType type = to_CellType(*first);
@@ -687,7 +671,7 @@ bool readCells(
 
       // ensure that the file format is at least as long as we expect
       // (E#X <index> <conn_1> <conn_2> ... <conn_n> <group>)
-      typedef std::iterator_traits<sregex_token_iterator>::difference_type diff_type;
+      typedef std::iterator_traits<smtk::sregex_token_iterator>::difference_type diff_type;
       if (std::distance(first, last) < static_cast<diff_type>(nVerticesPerCell + 3))
       {
         std::cout << "ERROR: cell type \"" << *first << "\" should have at least "

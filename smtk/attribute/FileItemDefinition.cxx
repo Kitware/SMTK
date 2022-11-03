@@ -14,28 +14,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#define USE_BOOST_REGEX
-#if !defined(USE_BOOST_REGEX) &&                                                                   \
-  (defined(SMTK_CLANG) ||                                                                          \
-   (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                \
-   defined(SMTK_MSVC))
-#include <regex>
-using std::regex;
-using std::regex_match;
-using std::regex_replace;
-using std::regex_search;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
+#include "smtk/Regex.h"
 
 #include <sstream>
 

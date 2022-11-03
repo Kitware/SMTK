@@ -47,8 +47,6 @@
 
 #include "smtk/extension/qt/qtResourceBrowserP.h"
 
-#include <regex>
-
 namespace
 {
 const std::string defaultConfigurationJSON = ProjectPanelConfiguration_json;

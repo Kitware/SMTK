@@ -24,7 +24,6 @@
 #include "smtk/CoreExports.h"
 
 #include <queue>
-#include <regex>
 #include <string>
 
 #define PUGIXML_HEADER_ONLY

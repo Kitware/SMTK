@@ -15,8 +15,6 @@
 #include "smtk/resource/filter/Property.h"
 #include "smtk/resource/filter/Vector.h"
 
-#include <regex>
-
 namespace smtk
 {
 namespace resource

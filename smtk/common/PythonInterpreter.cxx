@@ -17,24 +17,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::sregex_token_iterator;
-#endif
-
 #include <boost/dll.hpp>
 
 #ifdef _WIN32
@@ -52,6 +34,8 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "smtk/common/Environment.h"
 #include "smtk/common/Paths.h"
+
+#include "smtk/Regex.h"
 
 #include <cstdlib>
 #include <sstream>
@@ -179,8 +163,8 @@ std::vector<std::string> PythonInterpreter::pythonPath()
 
   std::vector<std::string> paths;
 
-  regex re(",");
-  sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
+  smtk::regex re(",");
+  smtk::sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
   for (; it != last; ++it)
   {
     paths.push_back(it->str());
@@ -199,8 +183,8 @@ bool PythonInterpreter::addToPythonPath(const std::string& path_list, std::strin
   // Iterate over <path_list> with breaks at <separator> and add each path to
   // the embedded python's PYTHONPATH.
   pybind11::module sys = pybind11::module::import("sys");
-  regex re(separator);
-  sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
+  smtk::regex re(separator);
+  smtk::sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
   for (; it != last; ++it)
   {
     sys.attr("path").attr("insert")(0, it->str().c_str());

@@ -25,7 +25,7 @@
 
 #include "smtk/common/Color.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -163,7 +163,7 @@ std::string AssociationBadge::icon(const DescriptivePhrase*, const std::array<fl
 
   if (smtk::common::Color::floatRGBToLightness(background.data()) < 0.5)
   {
-    icon = std::regex_replace(icon, std::regex("ff2a2a"), "ffaaaa");
+    icon = smtk::regex_replace(icon, smtk::regex("ff2a2a"), "ffaaaa");
   }
   return icon;
 }

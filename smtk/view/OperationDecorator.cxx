@@ -15,7 +15,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include <regex>
+#include "smtk/Regex.h"
 
 namespace smtk
 {
@@ -95,11 +95,11 @@ OperationDecorator::OperationDecorator(
         }
         else
         {
-          std::regex pattern(typeRegex);
-          std::smatch match;
+          smtk::regex pattern(typeRegex);
+          smtk::smatch match;
           for (const auto& metadataEntry : typeNames)
           {
-            if (std::regex_search(metadataEntry.typeName(), match, pattern))
+            if (smtk::regex_search(metadataEntry.typeName(), match, pattern))
             {
               Entry entry(entryTemplate);
               entry.m_index = metadataEntry.index();
