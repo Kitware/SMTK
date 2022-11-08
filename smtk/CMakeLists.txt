@@ -195,6 +195,7 @@ install(
   FILES
     AutoInit.h
     PublicPointerDefs.h
+    Regex.h
     SharedFromThis.h
     SharedPtr.h
     SystemConfig.h
