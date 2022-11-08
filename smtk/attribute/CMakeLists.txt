@@ -93,6 +93,7 @@ set(attributeHeaders
   Categories.h
   ComponentItem.h
   ComponentItemDefinition.h
+  CopyAssignmentOptions.h
   CustomItem.h
   CustomItemDefinition.h
   Definition.h
@@ -157,6 +158,7 @@ set(attributeSrcs
   Categories.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
+  CopyAssignmentOptions.cxx
   DateTimeItem.cxx
   DateTimeItemDefinition.cxx
   Definition.cxx

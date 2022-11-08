@@ -14,6 +14,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
+
 #include <iostream>
 using namespace smtk::attribute;
 using namespace smtk;
@@ -270,16 +271,52 @@ unsigned int Item::advanceLevel(int mode) const
   return level;
 }
 
-bool Item::assign(ConstItemPtr& sourceItem, unsigned int /*unused*/)
+void Item::mapOldAssignmentOptions(CopyAssignmentOptions& options, unsigned int oldStyleOptions)
+{
+  // By default we always copy Definitions if needed
+  options.copyOptions.setCopyDefinition(true);
+  if (oldStyleOptions & Item::IGNORE_EXPRESSIONS)
+  {
+    options.itemOptions.setIgnoreExpressions(true);
+  }
+  if (oldStyleOptions & Item::IGNORE_RESOURCE_COMPONENTS)
+  {
+    options.itemOptions.setIgnoreReferenceValues(true);
+  }
+  if (oldStyleOptions & Item::COPY_MODEL_ASSOCIATIONS)
+  {
+    options.attributeOptions.setCopyAssociations(true);
+  }
+}
+
+bool Item::assign(const ConstItemPtr& sourceItem, unsigned int oldOptions)
+{
+  CopyAssignmentOptions options;
+  Item::mapOldAssignmentOptions(options, oldOptions);
+  return this->assign(sourceItem, options);
+}
+
+bool Item::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options)
+{
+  return this->assign(sourceItem, options, smtk::io::Logger::instance());
+}
+
+bool Item::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions&,
+  smtk::io::Logger&)
 {
   // Assigns my contents to be same as sourceItem
-  m_isEnabled = sourceItem->isEnabled();
+  m_isEnabled = sourceItem->m_isEnabled;
+  m_isIgnored = sourceItem->m_isIgnored;
+  m_forceRequired = sourceItem->m_forceRequired;
+
   for (unsigned i = 0; i < 2; ++i)
   {
-    if (sourceItem->hasLocalAdvanceLevelInfo(i))
-    {
-      this->setLocalAdvanceLevel(i, sourceItem->localAdvanceLevel(i));
-    }
+    m_hasLocalAdvanceLevelInfo[i] = sourceItem->m_hasLocalAdvanceLevelInfo[i];
+    m_localAdvanceLevel[i] = sourceItem->m_localAdvanceLevel[i];
   } // for
   return true;
 }

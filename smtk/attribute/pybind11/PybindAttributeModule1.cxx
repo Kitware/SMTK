@@ -23,6 +23,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAnalyses.h"
 #include "PybindAttribute.h"
+#include "PybindCopyAssignmentOptions.h"
 #include "PybindDefinition.h"
 #include "PybindFileItem.h"
 #include "PybindFileItemDefinition.h"
@@ -57,6 +58,10 @@ void attributePart1(py::module& attribute)
   py::class_< smtk::attribute::Tag > smtk_attribute_Tag = pybind11_init_smtk_attribute_Tag(attribute);
   py::class_< smtk::attribute::Analyses > smtk_attribute_Analyses = pybind11_init_smtk_attribute_Analyses(attribute);
   pybind11_init_smtk_attribute_SearchStyle(attribute);
+  py::class_< smtk::attribute::AttributeCopyOptions > smtk_attribute_AttributeCopyOptions = pybind11_init_smtk_attribute_AttributeCopyOptions(attribute);
+  py::class_< smtk::attribute::AttributeAssignmentOptions > smtk_attribute_AttributeAssignmentOptions = pybind11_init_smtk_attribute_AttributeAssignmentOptions(attribute);
+  py::class_< smtk::attribute::ItemAssignmentOptions > smtk_attribute_ItemAssignmentOptions = pybind11_init_smtk_attribute_ItemAssignmentOptions(attribute);
+  py::class_< smtk::attribute::CopyAssignmentOptions > smtk_attribute_CopyAssignmentOptions = pybind11_init_smtk_attribute_CopyAssignmentOptions(attribute);
   PySharedPtrClass< smtk::attribute::Attribute > smtk_attribute_Attribute = pybind11_init_smtk_attribute_Attribute(attribute);
   PySharedPtrClass< smtk::attribute::Definition > smtk_attribute_Definition = pybind11_init_smtk_attribute_Definition(attribute);
   PySharedPtrClass< smtk::attribute::Item > smtk_attribute_Item = pybind11_init_smtk_attribute_Item(attribute);

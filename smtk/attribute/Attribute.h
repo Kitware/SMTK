@@ -18,6 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/resource/Component.h"
 
+#include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/ValueItem.h"
@@ -31,6 +32,11 @@
 
 namespace smtk
 {
+namespace io
+{
+class Logger;
+};
+
 namespace attribute
 {
 class Evaluator;
@@ -276,6 +282,15 @@ public:
   disassociate(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse = true);
   /// Disassociate attribute from an object.  Returns true if successful.
   bool disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
+
+  bool assign(
+    const AttributePtr& sourceAtt,
+    const CopyAssignmentOptions& options = CopyAssignmentOptions());
+
+  bool assign(
+    const AttributePtr& sourceAtt,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger);
 
   /**
   * @brief Sever dependencies between items and the owning resource.

@@ -785,18 +785,22 @@ std::size_t ReferenceItem::numberOfSetValues() const
   return result;
 }
 
-bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool ReferenceItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Cast input pointer to ReferenceItem
   auto sourceReferenceItem = smtk::dynamic_pointer_cast<const ReferenceItem>(sourceItem);
   if (!sourceReferenceItem)
   {
+    smtkErrorMacro(logger, "Source Item: " << name() << " is not a ReferenceItem");
     return false; // Source is not a model entity item
   }
-  // Are we supposed to assign the model enity values?
-  if (options & Item::IGNORE_RESOURCE_COMPONENTS)
+  // Are we supposed to assign the model entity values?
+  if (options.itemOptions.ignoreReferenceValues())
   {
-    return Item::assign(sourceItem, options);
+    return Item::assign(sourceItem, options, logger);
   }
 
   // Update children items
@@ -808,34 +812,147 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     auto newIter = m_childrenItems.find(sourceIter->first);
     if (newIter == m_childrenItems.end())
     {
-      std::cerr << "ERROR:Could not find child item \"" << sourceIter->first << "\" -- cannot copy"
-                << std::endl;
+      // Are missing items allowed?
+      if (!options.itemOptions.ignoreMissingChildren())
+      {
+        smtkErrorMacro(
+          logger,
+          "Could not find Child Item: " << sourceIter->first
+                                        << " in ReferenceItem: " << this->name()
+                                        << " and ignoreMissingChildren option was not set");
+        return false;
+      }
       continue;
     }
     ItemPtr newChild = newIter->second;
-    if (!newChild->assign(sourceChild, options))
+    if (!newChild->assign(sourceChild, options, logger))
     {
-      std::cerr << "ERROR:Could not properly assign child item: " << newChild->name() << "\n";
+      smtkErrorMacro(
+        logger,
+        "Could not assign ReferenceItem: " << this->name()
+                                           << "'s Child Item: " << newChild->name());
       return false;
     }
   }
 
   // Update values
-  // Only set values if both att resources are using the same model
   this->setNumberOfValues(sourceReferenceItem->numberOfValues());
-  for (std::size_t i = 0; i < sourceReferenceItem->numberOfValues(); ++i)
+
+  // Were we able to allocate enough space to fit all of the source's values?
+  std::size_t myNumVals, sourceNumVals, numVals;
+  myNumVals = this->numberOfValues();
+  sourceNumVals = sourceReferenceItem->numberOfValues();
+  if (myNumVals < sourceNumVals)
+  {
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
+    {
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "ReferenceItem: " << this->name() << "'s number of values (" << myNumVals
+                          << ") is smaller than source Item's number of values (" << sourceNumVals
+                          << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "ReferenceItem: " << name() << "'s number of values (" << myNumVals
+                          << ") can not hold source ReferenceItem's number of values ("
+                          << sourceNumVals << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+  else
+  {
+    numVals = sourceNumVals;
+  }
+
+  // Get reference to attribute resource
+  auto resource = this->attribute()->attributeResource();
+  auto sourceResource = sourceReferenceItem->attribute()->attributeResource();
+
+  for (std::size_t i = 0; i < numVals; ++i)
   {
     if (sourceReferenceItem->isSet(i))
     {
       auto val = sourceReferenceItem->value(i);
-      this->setValue(i, val);
+
+      // If the value is contained in the same resource as the item, then find it or create a copy of it
+      // Are we dealing with a Resource or Component?
+      auto valRes = std::dynamic_pointer_cast<smtk::resource::Resource>(val);
+      auto valComp = std::dynamic_pointer_cast<smtk::resource::Component>(val);
+      if (valRes)
+      {
+        // Is the resource the source resource?
+        if (valRes == sourceResource)
+        {
+          val = resource; // replace the value with the resource that owns this item
+        }
+      }
+      else if (valComp && (valComp->resource() == sourceResource))
+      {
+        // if this case, val is an attribute which resides in the same resource as the source
+        // item - we need to find it corresponding attribute in this resource and
+        // if doesn't exist, see if we can copy it
+        AttributePtr sourceAttVal = std::dynamic_pointer_cast<Attribute>(val);
+        AttributePtr att = resource->findAttribute(sourceAttVal->name());
+        if (!att)
+        {
+          // Are we allowed to create new attributes?
+          if (!options.itemOptions.disableCopyAttributes())
+          {
+            att = resource->copyAttribute(sourceAttVal, options, logger);
+            if (att == nullptr)
+            {
+              smtkErrorMacro(
+                logger,
+                "Could not create Attribute:" << val->name()
+                                              << " used by ReferenceItem: " << sourceItem->name());
+              return false;
+            }
+          }
+          else
+          {
+            smtkWarningMacro(
+              logger,
+              "Could not assign Attribute:"
+                << val->name() << " to ReferenceItem: " << sourceItem->name()
+                << " because it is in the same resource as the source item "
+                << "and disableCopyAttributes option was set");
+          }
+        }
+        val = att;
+      }
+
+      if (!this->setValue(i, val))
+      {
+        // Was partial values option specified
+        if (options.itemOptions.allowPartialValues())
+        {
+          smtkInfoMacro(
+            logger,
+            "Could not assign PersistentObject:" << val->name()
+                                                 << " to ReferenceItem: " << sourceItem->name());
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not assign PersistentObject:"
+              << val->name() << " to ReferenceItem: " << sourceItem->name()
+              << " and allowPartialValues options was not specified.");
+          return false;
+        }
+      }
     }
     else
     {
       this->unset(i);
     }
   }
-  return Item::assign(sourceItem, options);
+  return Item::assign(sourceItem, options, logger);
 }
 
 bool ReferenceItem::isExtensible() const

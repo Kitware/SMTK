@@ -303,9 +303,13 @@ public:
   /**\brief Assigns contents to be same as source item
     *
     * Assigns this item to be equivalent to another.
-    * Returns true if success and false if a problem occured.
+    * Returns true if success and false if a problem occurred.
     */
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
+  using Item::assign;
+  bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger) override;
 
   /// A convenience method returning whether the item's definition is extensible.
   bool isExtensible() const;

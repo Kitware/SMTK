@@ -18,6 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/attribute/Categories.h"
+#include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/SearchStyle.h"
 #include <algorithm>
 #include <map>
@@ -27,6 +28,12 @@
 
 namespace smtk
 {
+
+namespace io
+{
+class Logger;
+};
+
 namespace attribute
 {
 class ItemDefinition;
@@ -62,6 +69,9 @@ public:
     NUMBER_OF_TYPES
   };
 
+  /// \brief Deprecated Assignment Options
+  ///
+  ///  You should use the CopyAssignmentOptions class instead!
   enum AssignmentOptions
   {
     IGNORE_EXPRESSIONS = 0x001,         //!< Don't assign source value item's expressions
@@ -239,7 +249,19 @@ public:
 
   /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
   /// Returns true if success and false if a problem occurred
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  SMTK_DEPRECATED_IN_22_10("Replaced by assign(ConstItemPtr&, const ItemAssignmentOptions&).")
+  virtual bool assign(const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options);
+
+  // Assigns this item to be equivalent to another. Options are processed by derived item classes.
+  // The options are defined in Item.h. Returns true if success and false if a problem occurred.
+  virtual bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options = CopyAssignmentOptions());
+
+  virtual bool assign(
+    const smtk::attribute::ConstItemPtr& sourceItem,
+    const CopyAssignmentOptions& options,
+    smtk::io::Logger& logger);
 
   ///@{
   /// \brief Controls if an item should be ignored.
@@ -255,6 +277,7 @@ public:
 
   static std::string type2String(Item::Type t);
   static Item::Type string2Type(const std::string& s);
+  static void mapOldAssignmentOptions(CopyAssignmentOptions& options, unsigned int oldStyleOptions);
 
 protected:
   Item(Attribute* owningAttribute, int itemPosition);

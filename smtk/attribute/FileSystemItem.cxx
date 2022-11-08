@@ -11,6 +11,7 @@
 #include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
+#include "smtk/io/Logger.h"
 #include <cassert>
 #include <cstdio>
 #include <iostream>
@@ -356,24 +357,78 @@ void FileSystemItem::reset()
   }
 }
 
-bool FileSystemItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool FileSystemItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
 
-  smtk::shared_ptr<const FileSystemItem> sourceDirItem =
+  smtk::shared_ptr<const FileSystemItem> sourceFSItem =
     smtk::dynamic_pointer_cast<const FileSystemItem>(sourceItem);
 
-  if (!sourceDirItem)
+  if (!sourceFSItem)
   {
-    return false; // Source is not a directory item!
+    smtkErrorMacro(logger, "Source Item: " << name() << " is not a FileSytemItem");
+    return false;
   }
 
-  this->setNumberOfValues(sourceDirItem->numberOfValues());
-  for (std::size_t i = 0; i < sourceDirItem->numberOfValues(); ++i)
+  this->setNumberOfValues(sourceFSItem->numberOfValues());
+  // Were we able to allocate enough space to fit all of the source's values?
+  std::size_t myNumVals, sourceNumVals, numVals;
+  myNumVals = this->numberOfValues();
+  sourceNumVals = sourceFSItem->numberOfValues();
+  if (myNumVals < sourceNumVals)
   {
-    if (sourceDirItem->isSet(i))
+    // Ok so the source has more values than we can deal with - was partial copying permitted?
+    if (options.itemOptions.allowPartialValues())
     {
-      this->setValue(i, sourceDirItem->value(i));
+      numVals = myNumVals;
+      smtkInfoMacro(
+        logger,
+        "Item: " << this->name() << "'s number of values (" << myNumVals
+                 << ") is smaller than source Item's number of values (" << sourceNumVals
+                 << ") - will partially copy the values");
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger,
+        "FileSytemItem: " << name() << "'s number of values (" << myNumVals
+                          << ") can not hold source FileSytemItem's number of values ("
+                          << sourceNumVals << ") and Partial Copying was not permitted");
+      return false;
+    }
+  }
+  else
+  {
+    numVals = sourceNumVals;
+  }
+
+  for (std::size_t i = 0; i < numVals; ++i)
+  {
+    if (sourceFSItem->isSet(i))
+    {
+      if (!this->setValue(i, sourceFSItem->value(i)))
+      {
+        if (options.itemOptions.allowPartialValues())
+        {
+          smtkInfoMacro(
+            logger,
+            "Could not assign Value:" << sourceFSItem->value(i)
+                                      << " to DateTimeItem: " << sourceItem->name());
+          this->unset(i);
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger,
+            "Could not assign Value:" << sourceFSItem->value(i)
+                                      << " to DateTimeItem: " << sourceItem->name()
+                                      << " and allowPartialValues options was not specified.");
+          return false;
+        }
+      }
     }
     else
     {
@@ -381,5 +436,5 @@ bool FileSystemItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     }
   }
 
-  return Item::assign(sourceItem, options);
+  return Item::assign(sourceItem, options, logger);
 }

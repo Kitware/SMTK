@@ -30,8 +30,11 @@ Item::Type IntItem::type() const
   return IntType;
 }
 
-bool IntItem::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool IntItem::assign(
+  const smtk::attribute::ConstItemPtr& sourceItem,
+  const CopyAssignmentOptions& options,
+  smtk::io::Logger& logger)
 {
   // Assigns my contents to be same as sourceItem
-  return ValueItemTemplate<int>::assign(sourceItem, options);
+  return ValueItemTemplate<int>::assign(sourceItem, options, logger);
 }

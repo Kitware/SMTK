@@ -16,6 +16,7 @@
 
 #include "smtk/attribute/Attribute.h"
 
+#include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -31,6 +32,7 @@
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/io/Logger.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 #include "smtk/simulation/UserData.h"
@@ -47,6 +49,8 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
     .def_static("New", (smtk::attribute::AttributePtr (*)(::std::string const &, const ::smtk::attribute::DefinitionPtr&, ::smtk::common::UUID const &)) &smtk::attribute::Attribute::New, py::arg("myName"), py::arg("myDefinition"), py::arg("myId"))
     .def("appliesToBoundaryNodes", &smtk::attribute::Attribute::appliesToBoundaryNodes)
     .def("appliesToInteriorNodes", &smtk::attribute::Attribute::appliesToInteriorNodes)
+    .def("assign", (bool (smtk::attribute::Attribute::*)(const ::smtk::attribute::AttributePtr &, const smtk::attribute::CopyAssignmentOptions&)) &smtk::attribute::Attribute::assign, py::arg("sourceAttribute"), py::arg("options"))
+    .def("assign", (bool (smtk::attribute::Attribute::*)(const ::smtk::attribute::AttributePtr &, const smtk::attribute::CopyAssignmentOptions&, smtk::io::Logger&)) &smtk::attribute::Attribute::assign, py::arg("sourceAttribute"), py::arg("options"), py::arg("logger"))
     .def("associatedObjects", (smtk::attribute::ReferenceItemPtr (smtk::attribute::Attribute::*)()) &smtk::attribute::Attribute::associatedObjects)
     .def("associate", &smtk::attribute::Attribute::associate)
     .def("associateEntity", (bool (smtk::attribute::Attribute::*)(::smtk::common::UUID const &)) &smtk::attribute::Attribute::associateEntity, py::arg("entity"))

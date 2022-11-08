@@ -28,7 +28,6 @@ inline PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pyb
     .def("deepcopy", (smtk::attribute::ValueItem & (smtk::attribute::ValueItem::*)(::smtk::attribute::ValueItem const &)) &smtk::attribute::ValueItem::operator=)
     .def("_activeChildItem", &smtk::attribute::ValueItem::activeChildItem, py::arg("i"))
     .def("allowsExpressions", &smtk::attribute::ValueItem::allowsExpressions)
-    .def("assign", &smtk::attribute::ValueItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("childrenItems", &smtk::attribute::ValueItem::childrenItems)
     .def("discreteIndex", &smtk::attribute::ValueItem::discreteIndex, py::arg("elementIndex") = 0)
     .def("expression", &smtk::attribute::ValueItem::expression)

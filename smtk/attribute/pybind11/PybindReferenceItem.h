@@ -25,7 +25,6 @@ inline PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item >
     .def("deepcopy", (smtk::attribute::ReferenceItem & (smtk::attribute::ReferenceItem::*)(::smtk::attribute::ReferenceItem const &)) &smtk::attribute::ReferenceItem::operator=)
     .def("_activeChildItem", &smtk::attribute::ReferenceItem::activeChildItem, py::arg("i"))
     .def("appendValue", &smtk::attribute::ReferenceItem::appendValue, py::arg("val"), py::arg("allowDuplicates") = true)
-    .def("assign", &smtk::attribute::ReferenceItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ReferenceItem::begin)
     .def("childrenItems", &smtk::attribute::ReferenceItem::childrenItems)
     .def("contains", (bool (smtk::attribute::ReferenceItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ReferenceItem::contains, py::arg("compId"))
