@@ -19,6 +19,7 @@
 
 #include "nlohmann/json.hpp"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <set>
@@ -74,13 +75,18 @@ struct SMTKCORE_EXPORT Dump
     s_backgroundColor = std::unique_ptr<std::array<double, 4>>(new std::array<double, 4>(bgcolor));
   }
 
-  template<typename ResourcePtr>
-  static void begin(ResourcePtr resource, std::ostream& stream, const Dump& self)
+  template<typename ResourceType>
+  static void begin(const ResourceType* resource, std::ostream& stream, const Dump& self)
   {
     if (!resource)
     {
       return;
     }
+    std::function<void(const std::shared_ptr<smtk::resource::Component>&)> mapNodes =
+      [&stream, &self](const smtk::resource::ComponentPtr& comp) {
+        int nodeLabel = self.m_nextNodeId++;
+        self.m_nodeMap[comp->id()] = nodeLabel;
+      };
     if (self.m_mimeType == "text/vnd.graphviz")
     {
       stream << "digraph \"" << resource->name() << "\" {\n\n";
@@ -92,13 +98,22 @@ struct SMTKCORE_EXPORT Dump
       if (self.m_includeNodes)
       {
         std::function<void(const std::shared_ptr<smtk::resource::Component>&)> dumpNodes =
-          [&stream](const smtk::resource::ComponentPtr& comp) {
-            int nodeLabel = static_cast<int>(comp->id().begin()[0]);
-            stream << "  " << nodeLabel << " [class=\"" << comp->typeName() << "\", label=\""
+          [&stream, &self](const smtk::resource::ComponentPtr& comp) {
+            int nodeLabel = self.m_nextNodeId++;
+            self.m_nodeMap[comp->id()] = nodeLabel;
+            // To make a valid CSS class name from a namespace-qualified C++ name,
+            // replace colons with underscores:
+            std::string nodeClass = comp->typeName();
+            std::replace(nodeClass.begin(), nodeClass.end(), ':', '_');
+            stream << "  " << nodeLabel << " [class=\"" << nodeClass << "\", label=\""
                    << comp->name() << "\"]\n";
           };
         resource->visit(dumpNodes);
         stream << "\n";
+      }
+      else
+      {
+        resource->visit(mapNodes);
       }
     }
     else // self.m_mimeType == "text/plain"
@@ -107,9 +122,11 @@ struct SMTKCORE_EXPORT Dump
       {
         stream << "---\nNodes of " << resource->name() << "\n";
         std::function<void(const std::shared_ptr<smtk::resource::Component>&)> dumpNodes =
-          [&stream](const smtk::resource::ComponentPtr& comp) {
-            stream << "  " << comp.get() << " type " << comp->typeName() << " name " << comp->name()
-                   << "\n";
+          [&stream, &self](const smtk::resource::ComponentPtr& comp) {
+            int nodeLabel = self.m_nextNodeId++;
+            self.m_nodeMap[comp->id()] = nodeLabel;
+            stream << "  " << nodeLabel << ": " << comp.get() << " type " << comp->typeName()
+                   << " name " << comp->name() << "\n";
           };
         resource->visit(dumpNodes);
       }
@@ -117,9 +134,12 @@ struct SMTKCORE_EXPORT Dump
     }
   }
 
-  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourcePtr>
-  void operator()(const Impl* arcs, ResourcePtr resource, std::ostream& stream, const Dump& self)
-    const
+  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
+  void operator()(
+    const Impl* arcs,
+    const ResourceType* resource,
+    std::ostream& stream,
+    const Dump& self) const
   {
     std::string arcType = smtk::common::typeName<ArcTraits>();
     smtk::string::Token arcToken(arcType);
@@ -138,21 +158,27 @@ struct SMTKCORE_EXPORT Dump
     }
     else
     {
+      // To make a valid CSS class name from a namespace-qualified C++ name,
+      // replace colons with underscores:
+      std::string arcClass = arcType;
+      std::replace(arcClass.begin(), arcClass.end(), ':', '_');
       stream << "  subgraph \"" << arcType << "\" {\n";
+      stream << "    edge [class=\"" << arcClass << "\"";
       if (!ArcTraits::Directed::value)
       {
-        stream << "    edge [dir=\"none\"]\n";
+        stream << " dir=\"none\"";
       }
-      auto colorIt = m_arcColors.find(arcType);
-      if (colorIt != m_arcColors.end())
+      auto colorIt = self.m_arcColors.find(arcType);
+      if (colorIt != self.m_arcColors.end())
       {
-        stream << "    edge [color=\""
-               << smtk::common::Color::floatRGBAToString(colorIt->second.data()) << "\"]\n";
+        stream << " color=\"" << smtk::common::Color::floatRGBAToString(colorIt->second.data())
+               << "\"";
       }
+      stream << "]\n";
     }
     arcs->visitAllOutgoingNodes(
       resource, [&stream, &self](const typename ArcTraits::FromType* node) {
-        int fromLabel = static_cast<int>(node->id().begin()[0]);
+        int fromLabel = self.m_nodeMap[node->id()];
         std::size_t arcCount = 0;
         std::ostringstream line;
         if (self.m_mimeType != "text/vnd.graphviz")
@@ -162,14 +188,14 @@ struct SMTKCORE_EXPORT Dump
         node->template outgoing<ArcTraits>().visit(
           [&fromLabel, &line, &arcCount, &stream, &self](const typename ArcTraits::ToType* other) {
             ++arcCount;
+            int toLabel = self.m_nodeMap[other->id()];
             if (self.m_mimeType == "text/vnd.graphviz")
             {
-              int toLabel = static_cast<int>(other->id().begin()[0]);
               stream << "    " << fromLabel << " -> " << toLabel << "\n";
             }
             else
             {
-              line << " " << other;
+              line << " " << toLabel;
             }
           });
         if (arcCount > 0 && self.m_mimeType != "text/vnd.graphviz")
@@ -184,8 +210,8 @@ struct SMTKCORE_EXPORT Dump
     stream << "\n";
   }
 
-  template<typename ResourcePtr>
-  static void end(ResourcePtr resource, std::ostream& stream, const Dump& self)
+  template<typename ResourceType>
+  static void end(const ResourceType* resource, std::ostream& stream, const Dump& self)
   {
     if (!resource)
     {
@@ -206,6 +232,8 @@ struct SMTKCORE_EXPORT Dump
   std::set<smtk::string::Token> m_excludeArcs;
   bool m_includeNodes = true;
   std::map<smtk::string::Token, std::array<double, 4>> m_arcColors;
+  mutable std::map<smtk::common::UUID, int> m_nodeMap;
+  mutable int m_nextNodeId = 1;
   static std::unique_ptr<std::array<double, 4>> s_backgroundColor;
 };
 

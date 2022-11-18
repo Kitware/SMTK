@@ -50,7 +50,7 @@ struct Property<long>
   struct NameRepresentation : sor<pad<quoted<Name>, space>, pad<slashed<Regex>, space> > {};
 
   /// The PEGTL pattern to match when extracting the property value.
-  struct ValueDescription : plus<digit> {};
+  struct ValueDescription : plus<tao::pegtl::digit> {};
 
   /// The actual type that invokes an action. This must be different from the
   /// pattern definition, so composing grammar rules can refer to the latter

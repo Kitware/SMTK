@@ -57,6 +57,8 @@ public:
   std::string name() const { return m_operationName; }
   /// The type-index of the operation.
   smtk::operation::Operation::Index operationIndex() const { return m_typeIndex; }
+  /// The model to which the type-index of this action applies.
+  QPointer<qtOperationTypeModel> operationModel() const { return m_model; }
 
   /// Set/get the style of button this action creates (whether to include text, icon, or both).
   Qt::ToolButtonStyle buttonStyle() const { return m_style; }

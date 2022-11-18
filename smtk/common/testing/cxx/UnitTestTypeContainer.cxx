@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/common/CompilerInformation.h" // for expectedKeys
 #include "smtk/common/TypeContainer.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -89,6 +90,25 @@ int UnitTestTypeContainer(int /*unused*/, char** const /*unused*/)
   test(
     typeContainer3.get<Bar>().value == 2,
     "Variadic constructed container should behave like the original.");
+
+  {
+    using namespace smtk::string::literals;
+    std::cout << "Type container now holds:\n";
+    for (const auto& token : typeContainer.keys())
+    {
+      std::cout << "  " << token.data() << " (" << token.id() << ")\n";
+    }
+    std::set<smtk::string::Token> expectedKeys{
+#ifndef SMTK_MSVC
+      { "float"_token, "(anonymous namespace)::Foo"_token, "(anonymous namespace)::Bar"_token }
+#else
+      { "float"_token,
+        "struct `anonymous namespace'::Foo"_token,
+        "struct `anonymous namespace'::Bar"_token }
+#endif
+    };
+    test(typeContainer.keys() == expectedKeys, "Container keys were improperly reported.");
+  }
 
   return 0;
 }

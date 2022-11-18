@@ -399,8 +399,9 @@ int vtkResourceMultiBlockSource::RequestData(
   const auto& geom = geometryResource->geometry(vtk);
   if (!geom)
   {
-    vtkErrorMacro("Input resource does not have geometry");
-    return 0;
+    // Missing geometry is acceptable.
+    // vtkErrorMacro("Input resource does not have geometry");
+    return 1;
   }
 
   const auto& properGeom = dynamic_cast<const smtk::extension::vtk::geometry::Geometry&>(*geom);

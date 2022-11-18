@@ -1,0 +1,7 @@
+NAME
+  smtkMarkupPlugin
+DESCRIPTION
+  Register the markup resource with ParaView applications.
+REQUIRES_MODULES
+  smtkMarkup
+  vtkSMTKMarkupExt

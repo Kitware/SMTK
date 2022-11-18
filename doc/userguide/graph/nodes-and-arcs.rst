@@ -209,6 +209,12 @@ to avoid explicitly storing arcs in the resource.
        A value of 0 (the default) means there is no constraint.
        This is not currently enforced or validated.
 
+   * - ``smtk::graph::OwnershipSemantics Semantics``
+     - Whether one arc endpoint should prevent the other endpoint from removal.
+       A value of None (the default) means neither endpoint owns the other.
+       The Delete operation uses this to prevent deletions of nodes being
+       "possesively referenced" by other nodes.
+
    * - ``template<typename Functor> smtk::common::Visited outVisitor(const FromType* node, Functor ff) const``
      - A method (usually templated on ``Functor`` type) that invokes the
        given functor with each destination (``ToType*``) connected to the given

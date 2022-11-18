@@ -13,6 +13,7 @@
 
 #include "smtk/Metaprogramming.h"
 #include "smtk/common/Visit.h"
+#include "smtk/graph/OwnershipSemantics.h"
 #include "smtk/string/Token.h"
 
 #include <functional>
@@ -278,6 +279,40 @@ public:
       negation<typename ArcTraits::Directed>>::type;
     static constexpr bool value = type::value;
   };
+
+protected:
+  template<class T, class = void>
+  struct hasSemantics : std::false_type
+  {
+    inline constexpr OwnershipSemantics operator()() const { return OwnershipSemantics::None; }
+  };
+  template<class T>
+  struct hasSemantics<T, type_sink_t<decltype(T::semantics)>> : std::true_type
+  {
+    inline constexpr OwnershipSemantics operator()() const { return T::semantics; }
+  };
+
+public:
+  /**\brief Check whether the traits object provides ownership semantics and return them.
+    *
+    * Ownership semantics indicate whether one arc endpoint should keep the other
+    * endpoint from being removed from the resource unless both are removed.
+    * If an ArcTraits type provides no semantics, then this returns OwnershipSemantics::None.
+    *
+    * For example, an arc connecting a Group node to its Member nodes might be
+    * marked ToNodeOwnsFromNode, indicating that the Group node (i.e., ArcTraits::FromType)
+    * should not be removed without also removing all of its Member nodes (ArcTraits::ToType).
+    * However, any Member node could be removed without a problem (assuming no other owning arcs
+    * exist).
+    *
+    * Similarly, if the arc was marked with FromNodeOwnsToNode, then Member nodes could not
+    * be deleted unless the Group node was also deleted; but the Group node could be
+    * deleted even when it has arcs to Member nodes.
+    */
+  inline static constexpr OwnershipSemantics ownershipSemantics()
+  {
+    return hasSemantics<ArcTraits>()();
+  }
 };
 
 /// Return the maximum out-degree of an arc type (or unconstrained() if unspecified).

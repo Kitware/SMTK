@@ -18,12 +18,15 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKDisplayAttributeOnLoadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportIntoResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKNewResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKOperationHintsBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRegisterImportersBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/appcomponents/pqToolboxEventPlayer.h"
+#include "smtk/extension/paraview/appcomponents/pqToolboxEventTranslator.h"
 #include "smtk/extension/paraview/appcomponents/vtkSMTKEncodeSelection.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
@@ -36,7 +39,10 @@
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 
 #include "pqApplicationCore.h"
+#include "pqCoreUtilities.h"
 #include "pqObjectBuilder.h"
+#include "pqPVApplicationCore.h"
+#include "pqTestUtility.h"
 
 #include "vtkObjectFactory.h"
 #include "vtkVersion.h"
@@ -114,6 +120,9 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto* rsrcImportIntoMgr = pqSMTKImportIntoResourceBehavior::instance(this);
   auto* registerImportersBehavior = pqSMTKRegisterImportersBehavior::instance(this);
 
+  auto* mainWindow = pqCoreUtilities::mainWidget();
+  auto* operationHints = pqSMTKOperationHintsBehavior::instance(mainWindow);
+
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
@@ -141,6 +150,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk register importers", registerImportersBehavior);
     pqCore->registerManager("smtk pipeline selection sync", pipelineSync);
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
+    pqCore->registerManager("operation hints", operationHints);
 
     QObject::connect(
       behavior,
@@ -171,6 +181,13 @@ void pqSMTKAppComponentsAutoStart::startup()
     &pqSMTKRenderResourceBehavior::aboutToDestroyPipelineSource,
     behavior,
     &pqSMTKBehavior::aboutToDestroyPipelineSource);
+
+  // Add an event translator for the toolbox panel (which will not
+  // be present unless its plugin is loaded).
+  pqPVApplicationCore::instance()->testUtility()->eventTranslator()->addWidgetEventTranslator(
+    new pqToolboxEventTranslator(this));
+  pqPVApplicationCore::instance()->testUtility()->eventPlayer()->addWidgetEventPlayer(
+    new pqToolboxEventPlayer(this));
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()

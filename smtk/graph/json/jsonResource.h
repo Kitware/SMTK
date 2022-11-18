@@ -56,7 +56,7 @@ void to_json(json& j, const std::shared_ptr<Resource<Traits>>& resource)
 
   // Only include arcs if 1 or more arc containers serialize 1 or more arcs.
   json arcData;
-  resource->template evaluateArcs<ArcSerializer>(resource, arcData);
+  resource->template evaluateArcs<ArcSerializer>(arcData);
   if (!arcData.empty())
   {
     j["arcs"] = arcData;
@@ -127,7 +127,7 @@ void from_json(const json& j, std::shared_ptr<Resource<Traits>>& resource)
   // If any arcs have been serialized, deserialize them.
   if (j.find("arcs") != j.end())
   {
-    resource->template evaluateArcs<ArcDeserializer>(resource, j.at("arcs"));
+    resource->template evaluateArcs<ArcDeserializer>(j.at("arcs"));
   }
 }
 

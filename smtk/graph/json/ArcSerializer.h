@@ -23,13 +23,13 @@ using json = nlohmann::json;
 
 struct ArcSerializer
 {
-  template<typename ResourcePtr>
-  static void begin(ResourcePtr, json&)
+  template<typename ResourceType>
+  static void begin(const ResourceType*, json&)
   {
   }
 
-  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourcePtr>
-  void operator()(const Impl* arcs, ResourcePtr resource, json& jj) const
+  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
+  void operator()(const Impl* arcs, const ResourceType* resource, json& jj) const
   {
     if (!arcs || !arcs->isExplicit())
     {
@@ -53,8 +53,8 @@ struct ArcSerializer
     }
   }
 
-  template<typename ResourcePtr>
-  static void end(ResourcePtr, json&)
+  template<typename ResourceType>
+  static void end(const ResourceType*, json&)
   {
   }
 };

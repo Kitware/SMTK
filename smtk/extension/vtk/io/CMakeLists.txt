@@ -1,24 +1,25 @@
-set(srcs
-  ImportAsVTKData.cxx
-  RedirectOutput.cxx
-  vtkLIDARPtsWriter.cxx # For terrain extraction
-  mesh/ExportVTKData.cxx
-  mesh/ImportVTKData.cxx
-  mesh/MeshIOVTK.cxx
-  mesh/PointCloudFromVTKFile.cxx
-  mesh/StructuredGridFromVTKFile.cxx
-  )
+set(srcs)
+set(headers)
 
-set(headers
-  ImportAsVTKData.h
-  RedirectOutput.h
-  vtkLIDARPtsWriter.h # For terrain extraction
-  mesh/ExportVTKData.h
-  mesh/ImportVTKData.h
-  mesh/MeshIOVTK.h
-  mesh/PointCloudFromVTKFile.h
-  mesh/StructuredGridFromVTKFile.h
-  )
+set(classes
+  ImportAsVTKData
+  RedirectOutput
+  mesh/ExportVTKData
+  mesh/ImportVTKData
+  mesh/MeshIOVTK
+  mesh/PointCloudFromVTKFile
+  mesh/StructuredGridFromVTKFile
+  vtkLIDARPtsWriter # For terrain extraction
+  vtkMedHelper
+  vtkMedReader
+  vtkMedWriter
+  vtkSideSetsToScalars
+)
+
+foreach(class ${classes})
+  list(APPEND headers ${class}.h)
+  list(APPEND srcs ${class}.cxx)
+endforeach()
 
 add_library(smtkIOVTK ${srcs})
 

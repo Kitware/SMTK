@@ -60,7 +60,7 @@ Read::Result Read::operateInternal()
   }
 
   // Configure the JSON helper with managers passed to us.
-  auto helper = smtk::resource::json::Helper::instance();
+  auto& helper = smtk::resource::json::Helper::instance();
   helper.clear();
   helper.setManagers(this->managers());
 

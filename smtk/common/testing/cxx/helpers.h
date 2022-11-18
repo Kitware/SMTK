@@ -10,9 +10,36 @@
 #ifndef smtk_common_testing_cxx_helpers_h
 #define smtk_common_testing_cxx_helpers_h
 
+#include <array>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#if !defined(_WIN32) && !defined(WIN32)
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+
+/**\brief A function to generate a filename for testing.
+  *
+  * mkstemp is cumbersome and tmpnam is deprecated.
+  */
+inline std::string generateFilename(const std::string& prefix, const std::string& suffix)
+{
+#if !defined(_WIN32) && !defined(WIN32)
+  std::array<char, 7> filenameTemplate{ 'X', 'X', 'X', 'X', 'X', 'X', '\0' };
+  close(mkstemp(filenameTemplate.data()));
+  std::remove(filenameTemplate.data());
+#else
+  std::array<char, 11> filenameTemplate{ 's', 'm', 't', 'k', 'X', 'X', 'X', 'X', 'X', 'X', '\0' };
+  _mktemp_s(filenameTemplate.data(), 11);
+#endif
+  std::ostringstream filename;
+  filename << prefix << filenameTemplate.data() << suffix;
+  return filename.str();
+}
 
 /**\brief A function for unit tests that behaves like assert.
   *
@@ -43,7 +70,7 @@ inline int test(int condition, const std::string& explanation = std::string())
   {                                                                                                \
     std::ostringstream explanation;                                                                \
     explanation << msg; /* NOLINT(bugprone-macro-parentheses) */                                   \
-    test(condition, explanation.str());                                                            \
+    ::test(condition, explanation.str());                                                          \
   }
 
 #endif

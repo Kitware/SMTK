@@ -13,6 +13,7 @@
 #include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseListContent.h"
 
 #include "smtk/operation/Manager.h"

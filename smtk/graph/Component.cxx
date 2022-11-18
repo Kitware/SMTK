@@ -96,5 +96,15 @@ bool Component::setId(const smtk::common::UUID& uid)
   return true;
 }
 
+bool Component::disconnect(bool onlyExplicit)
+{
+  auto* resource = this->parentResourceAs<smtk::graph::ResourceBase>();
+  if (!resource)
+  {
+    return false;
+  }
+  return resource->disconnect(this, onlyExplicit);
+}
+
 } // namespace graph
 } // namespace smtk

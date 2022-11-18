@@ -11,6 +11,7 @@
 #ifndef smtk_graph_ArcImplementation_h
 #define smtk_graph_ArcImplementation_h
 
+#include "smtk/common/TypeName.h"
 #include "smtk/common/Visit.h"
 #include "smtk/graph/detail/TypeTraits.h"
 #include "smtk/resource/Component.h"
@@ -100,6 +101,9 @@ public:
 
   /// Return whether arcs of this type are explicit.
   bool isExplicit() const { return Explicit::value; }
+
+  /// Return the type of arc this class implements.
+  std::string typeName() const { return smtk::common::typeName<ArcTraits>(); }
 
   /**\brief Test whether an arc from \a from to \a to exists.
     *
@@ -704,7 +708,8 @@ protected:
   {
     bool operator()(SelfEndpoint* self, const OtherType* other) const
     {
-      return self->m_arcs->disconnect(self->m_endpoint, other);
+      bool didDisconnect = self->m_arcs->disconnect(self->m_endpoint, other);
+      return didDisconnect;
     }
   };
 
@@ -713,7 +718,8 @@ protected:
   {
     bool operator()(SelfEndpoint* self, const OtherType* other) const
     {
-      return self->m_arcs->disconnect(other, self->m_endpoint);
+      bool didDisconnect = self->m_arcs->disconnect(other, self->m_endpoint);
+      return didDisconnect;
     }
   };
 

@@ -288,7 +288,13 @@ int MutabilityOfComponent(const T& comp)
   {
     return attrMutability;
   }
-  return 0;
+
+  // We really should see if NamingGroup(operationManager).matchingOperation(comp) is non-zero.
+  // However, fetching an operation manager would be really expensive to do for many phrases
+  // because we would have to do shared-ptr locking on the phrase model and operation manager.
+  // Currently, all the sessions we know about support renaming components but not all support
+  // coloring objects, so avoid this overhead for graph-based models:
+  return static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
 }
 
 template<typename T>

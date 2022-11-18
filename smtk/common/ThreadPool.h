@@ -11,9 +11,8 @@
 #ifndef smtk_common_ThreadPool_h
 #define smtk_common_ThreadPool_h
 
-#include "smtk/CoreExports.h"
-
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/io/Logger.h"
 
 #include <atomic>
 #include <condition_variable>
@@ -164,8 +163,16 @@ void ThreadPool<ReturnType>::exec()
       task = std::move(m_queue.front());
       m_queue.pop();
     }
-    // Execute the task.
-    task();
+    try
+    {
+      // Execute the task.
+      task();
+    }
+    catch (...)
+    {
+      // At least let the user know something went wrong.
+      smtkErrorMacro(smtk::io::Logger::instance(), "Uncaught thread task exception.");
+    }
   }
 }
 } // namespace common

@@ -167,14 +167,21 @@ void pqCloseResourceReaction::closeResource()
     }
   }
 
-// If we are not holding the last reference to the resource, then there is a
-// memory leak.
-#ifndef NDEBUG
+  // For debugging, print the use count of the resource to indicate
+  // how many shared pointers are referencing it. This will generally
+  // be 1 just before the resource is released, but since this now
+  // happens on a different thread it may be 2 at the time this
+  // message is printed. Larger numbers indicate problems with
+  // code holding on to the resource beyond its expected life.
   if (ret != QMessageBox::Cancel && resource && resource.use_count() != 1)
   {
-    throw UnreleasedMemoryError(resource->name(), resource->typeName(), resource.use_count());
+    smtkInfoMacro(
+      smtk::io::Logger::instance(),
+      "Unexpected use count (" << resource.use_count() << ") "
+                               << "for resource " << resource << " (" << resource->name() << ", "
+                               << resource->typeName() << ", " << resource->location()
+                               << ") being released.");
   }
-#endif
 }
 
 namespace
@@ -248,25 +255,11 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
 
       if (menu)
       {
-        // We want to defer the creation of the menu actions as much as possible
-        // so the File menu will already be populated by the time we add our
-        // custom actions. If our actions are inserted first, there is no way to
-        // control where in the list of actions they go, and they end up awkwardly
-        // sitting at the top of the menu. By using a single-shot connection to
-        // load our actions, we ensure that extant Save methods are in place; we
-        // key off of their location to make the menu look better.
-        QMetaObject::Connection* connection = new QMetaObject::Connection;
-        *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
-          QAction* saveAction = findSaveStateAction(menu);
+        QAction* insertBeforeAction = findSaveStateAction(menu);
 
-          menu->insertSeparator(saveAction);
-          menu->insertAction(saveAction, closeResourceAction);
-          menu->insertSeparator(closeResourceAction);
-
-          // Remove this connection.
-          QObject::disconnect(*connection);
-          delete connection;
-        });
+        menu->insertSeparator(insertBeforeAction);
+        menu->insertAction(insertBeforeAction, closeResourceAction);
+        menu->insertSeparator(insertBeforeAction);
       }
       else
       {

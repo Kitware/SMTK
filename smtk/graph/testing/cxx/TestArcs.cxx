@@ -46,7 +46,7 @@ void to_json(json& j, const Thingy* thingy)
 template<typename NodeType>
 void from_json(const json& j, std::shared_ptr<NodeType>& node)
 {
-  auto helper = smtk::resource::json::Helper::instance();
+  auto& helper = smtk::resource::json::Helper::instance();
   auto resource = std::dynamic_pointer_cast<smtk::graph::ResourceBase>(helper.resource());
   if (resource)
   {
@@ -70,13 +70,14 @@ void from_json(const json& j, std::shared_ptr<NodeType>& node)
 
 struct PrintArcInfo
 {
-  static void begin()
+  template<typename ResourceType>
+  static void begin(const ResourceType*)
   {
     std::cout << "  Arc type                  Implicit Explicit Mutable  Bidir   Directed\n"
                  "  ---------------------------------------------------------------------\n";
   }
-  template<typename T>
-  void operator()(T* arcData)
+  template<typename T, typename ResourceType>
+  void operator()(T* arcData, const ResourceType*)
   {
     (void)arcData;
     using Traits = typename T::Traits;
@@ -101,7 +102,8 @@ struct PrintArcInfo
               << "       From: " << smtk::common::typeName<typename Traits::FromType>() << "\n"
               << "       To:   " << smtk::common::typeName<typename Traits::ToType>() << "\n";
   }
-  static void end()
+  template<typename ResourceType>
+  static void end(const ResourceType*)
   {
     std::cout << "  ---------------------------------------------------------------------\n";
   }
@@ -326,13 +328,13 @@ void testExampleResource()
     iima->inVisitor(bb.get(), componentVisitor1) == smtk::common::Visited::All,
     "Expected an implicit component.");
   ::test(
-    InvertibleImplicitArc::inVisitorCount() == 2, "Expected count of inVisitor calls to increase.");
+    InvertibleImplicitArc::inVisitorCount() == 1, "Expected count of inVisitor calls to increase.");
 
   ::test(
     iima->inVisitor(cc.get(), componentVisitor2) == smtk::common::Visited::All,
     "Expected an implicit component.");
   ::test(
-    InvertibleImplicitArc::inVisitorCount() == 4,
+    InvertibleImplicitArc::inVisitorCount() == 2,
     "Expected count of inVisitor calls to increase again.");
   ::test(
     aa->outgoing<InvertibleImplicitArc>().contains(bb.get()),
@@ -470,13 +472,13 @@ void testExample2Resource()
 
 struct DegreeDumper
 {
-  template<typename ResourcePtr>
-  static void begin(ResourcePtr)
+  template<typename ResourceType>
+  static void begin(const ResourceType*)
   {
   }
 
-  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourcePtr>
-  void operator()(const Impl* arcs, ResourcePtr resource) const
+  template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
+  void operator()(const Impl* arcs, const ResourceType* resource) const
   {
     std::string arcType = smtk::common::typeName<ArcTraits>();
     smtk::string::Token arcToken(arcType);
@@ -492,8 +494,8 @@ struct DegreeDumper
     });
   }
 
-  template<typename ResourcePtr>
-  static void end(ResourcePtr)
+  template<typename ResourceType>
+  static void end(const ResourceType*)
   {
   }
 };
@@ -560,7 +562,7 @@ void testExplicitArcsVariations()
   ::test(!b2->outgoing<DirectedDistinctArc>().connect(c0), "Expected not to connect b2→c0 twice.");
 
   // Dump out-degree and in-degree of all connected nodes for each arc type:
-  resource->evaluateArcs<DegreeDumper>(resource);
+  resource->evaluateArcs<DegreeDumper>();
 
   // Now verify that the degrees match the graph above.
   ::test(a0->outgoing<UndirectedSelfArc>().degree() == 1, "Expected a0's out-degree to be 1.");
@@ -691,14 +693,14 @@ void testDump()
   aaArcs.connect(cc.get());
 
   resource->dump("", "text/plain");
-  // resource->evaluateArcs<evaluators::Dump>(resource, std::cout, evaluators::Dump("text/plain"));
+  // resource->evaluateArcs<evaluators::Dump>(std::cout, evaluators::Dump("text/plain"));
 
   evaluators::Dump dot(
     "text/vnd.graphviz",
     /* whitelist */ {},
     /* blacklist */
     { smtk::common::typeName<ImplicitArc>(), smtk::common::typeName<InvertibleImplicitArc>() });
-  resource->evaluateArcs<evaluators::Dump>(resource, std::cout, dot);
+  resource->evaluateArcs<evaluators::Dump>(std::cout, dot);
 }
 
 // Test that node typenames are iterable.

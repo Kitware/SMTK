@@ -14,6 +14,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/Visit.h"
 #include "smtk/graph/ArcProperties.h"
+#include "smtk/resource/Component.h"
 #include "smtk/string/Token.h"
 
 #include <unordered_map>
@@ -450,12 +451,71 @@ public:
   template<bool MM = Mutable::value>
   typename std::enable_if<MM, bool>::type disconnect(const FromType* from, const ToType* to)
   {
-    if (!from)
+    if (!from && !to)
     {
       throw std::domain_error("Cannot disconnect null nodes.");
     }
-    auto it = m_forward.find(from);
     bool didDisconnect = false;
+    if (!from)
+    {
+      // We are removing all arcs to "to".
+      // First handle forward arcs to "to".
+      auto it = m_reverse.find(to);
+      if (it != m_reverse.end())
+      {
+        didDisconnect = true;
+        if (BidirIndex::value)
+        {
+          for (const auto& other : it->second)
+          {
+            // Remove "to" from all of the forward map's range.
+            m_forward[other].erase(to);
+            if (m_forward[other].empty())
+            {
+              m_forward.erase(other);
+            }
+          }
+        }
+        // Remove "to" from the reverse map's domain.
+        m_reverse.erase(it);
+      }
+      if (std::is_base_of<FromType, ToType>::value && BidirIndex::value)
+      {
+        auto fit = m_forward.find(reinterpret_cast<const FromType*>(to));
+        if (fit != m_forward.end())
+        {
+          didDisconnect = true;
+          for (const auto& other : fit->second)
+          {
+            // Remove "to" from all of the reverse map's range.
+            m_reverse[reinterpret_cast<const ToType*>(other)].erase(
+              reinterpret_cast<const FromType*>(to));
+            if (m_reverse[reinterpret_cast<const ToType*>(other)].empty())
+            {
+              m_reverse.erase(reinterpret_cast<const ToType*>(other));
+            }
+          }
+          // Remove "to" from the forward map's domain.
+          m_forward.erase(fit);
+        }
+      }
+      else if (!BidirIndex::value)
+      {
+        // We do not have a reverse index. Iterate over the entire set of arcs
+        // and look for "to"
+        for (auto& entry : m_forward)
+        {
+          auto fit = entry.second.find(to);
+          if (fit != entry.second.end())
+          {
+            didDisconnect = true;
+            entry.second.erase(fit);
+          }
+        }
+      }
+      return didDisconnect;
+    }
+    auto it = m_forward.find(from);
     if (!to)
     {
       // We are removing all arcs to/from "from".
@@ -478,24 +538,41 @@ public:
         // Remove "from" from the forward map's domain.
         m_forward.erase(it);
       }
-      if (std::is_same<FromType, ToType>::value && BidirIndex::value)
+      if (std::is_base_of<ToType, FromType>::value)
       {
-        auto rit = m_reverse.find(reinterpret_cast<const ToType*>(from));
-        if (rit != m_reverse.end())
+        if (BidirIndex::value)
         {
-          didDisconnect = true;
-          for (const auto& other : rit->second)
+          auto rit = m_reverse.find(reinterpret_cast<const ToType*>(from));
+          if (rit != m_reverse.end())
           {
-            // Remove "from" from all of the forward map's range.
-            m_forward[reinterpret_cast<const FromType*>(other)].erase(
-              reinterpret_cast<const ToType*>(from));
-            if (m_forward[reinterpret_cast<const FromType*>(other)].empty())
+            didDisconnect = true;
+            for (const auto& other : rit->second)
             {
-              m_forward.erase(reinterpret_cast<const FromType*>(other));
+              // Remove "from" from all of the forward map's range.
+              m_forward[reinterpret_cast<const FromType*>(other)].erase(
+                reinterpret_cast<const ToType*>(from));
+              if (m_forward[reinterpret_cast<const FromType*>(other)].empty())
+              {
+                m_forward.erase(reinterpret_cast<const FromType*>(other));
+              }
+            }
+            // Remove "from" from the reverse map's domain.
+            m_reverse.erase(rit);
+          }
+        }
+        else
+        {
+          // Ensure from node is not used as the "other" endpoint
+          // of an arc by slowly iterating over all arcs.
+          for (auto& entry : m_forward)
+          {
+            auto fit = entry.second.find(reinterpret_cast<const ToType*>(from));
+            if (fit != entry.second.end())
+            {
+              didDisconnect = true;
+              entry.second.erase(fit);
             }
           }
-          // Remove "from" from the reverse map's domain.
-          m_reverse.erase(rit);
         }
       }
       return didDisconnect;

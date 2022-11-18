@@ -15,7 +15,11 @@
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TypeContainer.h"
+#include "smtk/common/TypeName.h"
 #include "smtk/graph/ArcImplementation.h"
+#include "smtk/string/Token.h"
+
+#include <set>
 
 namespace smtk
 {
@@ -106,12 +110,19 @@ public:
   }
   //@}
 
+  /// Return the type-names of the arc types accepted by this ArcMap instance.
+  const std::set<smtk::string::Token>& types() const { return m_types; }
+
 protected:
   template<typename Type>
   void insertArcImplementation()
   {
     ArcImplementation<Type> arcObject;
-    this->insert(arcObject);
+    if (this->insert(arcObject))
+    {
+      smtk::string::Token arcTypeName = smtk::common::typeName<Type>();
+      m_types.insert(arcTypeName);
+    }
   }
 
   // const version
@@ -177,6 +188,8 @@ private:
     Args&&...) const
   {
   }
+
+  std::set<smtk::string::Token> m_types;
 };
 
 } // namespace graph

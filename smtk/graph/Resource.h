@@ -22,7 +22,9 @@
 
 #include "smtk/graph/Component.h"
 #include "smtk/graph/NodeSet.h"
+#include "smtk/graph/evaluators/DeleteArcs.h"
 #include "smtk/graph/evaluators/Dump.h"
+#include "smtk/graph/evaluators/InsertUntypedArc.h"
 #include "smtk/graph/filter/Grammar.h"
 
 #include "smtk/resource/filter/Filter.h"
@@ -205,25 +207,99 @@ public:
   template<typename Functor, typename... Args>
   void evaluateArcs(Args&&... args) const
   {
-    Functor::begin(std::forward<Args>(args)...);
+    Functor::begin(this, std::forward<Args>(args)...);
     m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
-      std::forward<Args>(args)...);
-    Functor::end(std::forward<Args>(args)...);
+      this, std::forward<Args>(args)...);
+    Functor::end(this, std::forward<Args>(args)...);
   }
 
   // non-const version
   template<typename Functor, typename... Args>
   void evaluateArcs(Args&&... args)
   {
-    Functor::begin(std::forward<Args>(args)...);
+    Functor::begin(this, std::forward<Args>(args)...);
     m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
-      std::forward<Args>(args)...);
-    Functor::end(std::forward<Args>(args)...);
+      this, std::forward<Args>(args)...);
+    Functor::end(this, std::forward<Args>(args)...);
   }
   //@}
 
   /// Return the set of node types accepted by this resource.
-  const std::set<smtk::string::Token>& nodeTypes() const { return m_nodeTypes; }
+  const std::set<smtk::string::Token>& nodeTypes() const override { return m_nodeTypes; }
+
+  /// Return the set of arc types accepted by this resource.
+  const std::set<smtk::string::Token>& arcTypes() const override { return m_arcs.types(); }
+
+protected:
+  /// A functor to create smtk::string::Tokens of accepted node types.
+  template<typename ResourceType>
+  struct CreateNodeOfType
+  {
+    CreateNodeOfType(ResourceType* self, smtk::string::Token typeName)
+      : m_self(self)
+      , m_typeName(typeName)
+    {
+      if (!m_self || m_typeName.data().empty())
+      {
+        throw std::invalid_argument("Invalid resource or empty node type-name.");
+      }
+    }
+
+    template<typename T>
+    void evaluate(std::size_t ii)
+    {
+      (void)ii;
+      smtk::string::Token typeName = smtk::common::typeName<T>();
+      if (typeName == m_typeName && !m_node)
+      {
+        m_node = m_self->template create<T>();
+      }
+    }
+
+    const std::shared_ptr<Component>& createdNode() const { return m_node; }
+
+    ResourceType* m_self;
+    std::shared_ptr<Component> m_node;
+    smtk::string::Token m_typeName;
+  };
+
+public:
+  /// Implement the generic (untyped) graph API for inserting nodes.
+  Component* createNodeOfType(smtk::string::Token nodeTypeName) override
+  {
+    if (m_nodeTypes.find(nodeTypeName) == m_nodeTypes.end())
+    {
+      return nullptr;
+    }
+    CreateNodeOfType<SelfType> creator(this, nodeTypeName);
+    smtk::tuple_evaluate<typename Traits::NodeTypes>(creator);
+    return creator.createdNode().get();
+  }
+
+  /// Implement the generic (untyped) graph API for inserting arcs.
+  ///
+  /// The \a from and \a to nodes are checked to ensure they are owned by
+  /// this resource and the proper type for this resource. This method returns
+  /// true if the arc was inserted and false if it already existed or was
+  /// inappropriate.
+  ///
+  /// This method is considered "untyped" because the types of both the
+  /// endpoint nodes and arc are unknown at compile-time. Type safety is
+  /// ensured by run-time checks.
+  bool connect(Component* from, Component* to, smtk::string::Token arcType) override
+  {
+    bool result = false;
+    this->evaluateArcs<evaluators::InsertUntypedArc>(from, to, arcType, result);
+    return result;
+  }
+
+  /// Remove all arcs (or only explicit arcs) from the given \a node.
+  bool disconnect(Component* node, bool explicitOnly) override
+  {
+    bool removedAnArc = false;
+    this->evaluateArcs<evaluators::DeleteArcs>(node, explicitOnly, removedAnArc);
+    return removedAnArc;
+  }
 
   /**\brief Dump the resource nodes and arcs to a file.
     *
@@ -232,13 +308,14 @@ public:
     * evaluateArcs<evaluators::Dump>(...) to produce output.  See
     * evaluators::Dump for more information.
     */
-  void dump(const std::string& filename, const std::string& mimeType = "text/vnd.graphviz") const
+  void dump(const std::string& filename, const std::string& mimeType = "text/vnd.graphviz")
+    const override
   {
     std::ostream* stream = filename.empty() ? &std::cout : new std::ofstream(filename.c_str());
     if (stream && stream->good())
     {
       evaluators::Dump dump(mimeType);
-      this->evaluateArcs<evaluators::Dump>(this, *stream, dump);
+      this->evaluateArcs<evaluators::Dump>(*stream, dump);
     }
     if (!filename.empty())
     {
@@ -307,6 +384,7 @@ protected:
 
   ArcMap m_arcs;
   std::set<smtk::string::Token> m_nodeTypes;
+  std::set<smtk::string::Token> m_arcTypes;
 };
 
 } // namespace graph

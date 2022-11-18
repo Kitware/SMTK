@@ -11,12 +11,14 @@ set(operationSrcs
 
   groups/CreatorGroup.cxx
   groups/DeleterGroup.cxx
+  groups/GroupingGroup.cxx
   groups/ImporterGroup.cxx
   groups/InternalGroup.cxx
   groups/ExporterGroup.cxx
   groups/NamingGroup.cxx
   groups/ReaderGroup.cxx
   groups/ResourceIOGroup.cxx
+  groups/UngroupingGroup.cxx
   groups/WriterGroup.cxx
 
   operators/ImportResource.cxx
@@ -40,12 +42,14 @@ set(operationHeaders
 
   groups/CreatorGroup.h
   groups/DeleterGroup.h
+  groups/GroupingGroup.h
   groups/ImporterGroup.h
   groups/InternalGroup.h
   groups/ExporterGroup.h
   groups/NamingGroup.h
   groups/ReaderGroup.h
   groups/ResourceIOGroup.h
+  groups/UngroupingGroup.h
   groups/WriterGroup.h
 
   operators/ImportResource.h
@@ -54,6 +58,7 @@ set(operationHeaders
 )
 
 set(operationXML
+  Hints.xml
   Operation.xml
   Result.xml
 )

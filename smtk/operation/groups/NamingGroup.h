@@ -49,7 +49,7 @@ public:
 
   using Group::unregisterOperation;
 
-  /// Given an object return an operation that can delete it.
+  /// Given an object return an operation that can assign a name to it.
   Operation::Index matchingOperation(const smtk::resource::PersistentObject& obj) const;
 };
 

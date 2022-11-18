@@ -9,16 +9,18 @@
 //=========================================================================
 #include "smtk/operation/operators/AssignColors.h"
 
-#include "smtk/resource/Component.h"
-#include "smtk/resource/Properties.h"
-#include "smtk/resource/Resource.h"
-
-#include "smtk/common/Color.h"
+#include "smtk/operation/Hints.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/StringItem.h"
+
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Properties.h"
+#include "smtk/resource/Resource.h"
+
+#include "smtk/common/Color.h"
 
 #include "smtk/io/Logger.h"
 
@@ -139,6 +141,15 @@ AssignColors::Result AssignColors::operateInternal()
       // TODO
     }
   }
+
+  // Add a hint to reset the selection so the assigned colors get shown.
+  // If run from the operation parameter-editor, the same components can
+  // be recolored without the selection being affected.
+  smtk::operation::addSelectionHint(
+    result,
+    std::set<smtk::resource::Component::Ptr>{},
+    smtk::view::SelectionAction::UNFILTERED_REPLACE,
+    1);
 
   return result;
 }

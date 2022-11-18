@@ -166,6 +166,16 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
   return op;
 }
 
+Operation::Index Manager::registeredTypeIndex(const std::string& typeName) const
+{
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata == m_metadata.get<NameTag>().end())
+  {
+    return 0;
+  }
+  return metadata->index();
+}
+
 bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManager)
 {
   // Only allow one resource manager to manage created resources.

@@ -45,6 +45,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Hints.xml"/>
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(assign colors)" BaseType="result"/>
   </Definitions>

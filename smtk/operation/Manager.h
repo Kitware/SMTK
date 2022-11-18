@@ -105,6 +105,11 @@ public:
   template<typename OperationType>
   smtk::shared_ptr<OperationType> create();
 
+  /// Return an operation's type index given its type name.
+  ///
+  /// If the \a typeName is not registered, this will return 0.
+  Operation::Index registeredTypeIndex(const std::string& typeName) const;
+
   // We expose the underlying containers for metadata; this means of access
   // should not be necessary for most use cases.
 

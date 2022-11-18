@@ -25,15 +25,15 @@ using json = nlohmann::json;
 
 struct ArcDeserializer
 {
-  template<typename ResourcePtr>
-  static void begin(ResourcePtr, const json&)
+  template<typename ResourceType>
+  static void begin(ResourceType*, const json&)
   {
   }
 
-  template<typename ResourcePtr, typename Impl, bool Mutable>
+  template<typename ResourceType, typename Impl, bool Mutable>
   struct TrueDeserializer
   {
-    void operator()(Impl* arcs, ResourcePtr resource, const json& jj) const
+    void operator()(Impl* arcs, ResourceType* resource, const json& jj) const
     {
       (void)arcs;
       (void)resource;
@@ -42,10 +42,10 @@ struct ArcDeserializer
     }
   };
 
-  template<typename ResourcePtr, typename Impl>
-  struct TrueDeserializer<ResourcePtr, Impl, true>
+  template<typename ResourceType, typename Impl>
+  struct TrueDeserializer<ResourceType, Impl, true>
   {
-    void operator()(Impl* arcs, ResourcePtr resource, const json& jj) const
+    void operator()(Impl* arcs, ResourceType* resource, const json& jj) const
     {
       if (!arcs)
       {
@@ -93,16 +93,16 @@ struct ArcDeserializer
     }
   };
 
-  template<typename ResourcePtr, typename Impl>
-  void operator()(Impl* arcs, ResourcePtr resource, const json& jj) const
+  template<typename ResourceType, typename Impl>
+  void operator()(Impl* arcs, ResourceType* resource, const json& jj) const
   {
     // Dispatch to different handlers based on mutability of the arc type.
-    TrueDeserializer<ResourcePtr, Impl, ArcProperties<typename Impl::Traits>::isMutable::value>()(
+    TrueDeserializer<ResourceType, Impl, ArcProperties<typename Impl::Traits>::isMutable::value>()(
       arcs, resource, jj);
   }
 
-  template<typename ResourcePtr>
-  static void end(ResourcePtr, const json&)
+  template<typename ResourceType>
+  static void end(const ResourceType*, const json&)
   {
   }
 };

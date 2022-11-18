@@ -1,0 +1,17 @@
+NAME
+  smtkPVMarkupExt
+DEPENDS
+  ParaView::RemotingViews
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+  VTK::RenderingCore
+PRIVATE_DEPENDS
+  ParaView::RemotingApplication
+  ParaView::RemotingServerManager
+  VTK::CommonDataModel
+  VTK::CommonMath
+  VTK::CommonTransforms
+  VTK::RenderingOpenGL2
+  smtkPVServerExt
+  vtkSMTKSourceExt
+  vtkSMTKMarkupExt

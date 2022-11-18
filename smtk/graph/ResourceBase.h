@@ -42,6 +42,12 @@ public:
   virtual const ArcMap& arcs() const = 0;
   virtual ArcMap& arcs() = 0;
 
+  /// Return a set of string-tokens holding the type-names of all accepted node types.
+  virtual const std::set<smtk::string::Token>& nodeTypes() const = 0;
+
+  /// Return a set of string-tokens holding the type-names of all accepted arc types.
+  virtual const std::set<smtk::string::Token>& arcTypes() const = 0;
+
   /// Perform a run-time check to validate that a node is acceptable to this resource.
   virtual bool isNodeTypeAcceptable(const smtk::graph::ComponentPtr& node) = 0;
 
@@ -59,6 +65,41 @@ public:
     }
     return false;
   }
+
+  /**\brief Create a node given its type-name (and add it to the resource).
+    *
+    * This method is pure virtual because it needs a Traits object
+    * to map the type-name to an actual type.
+    */
+  virtual Component* createNodeOfType(smtk::string::Token typeName) = 0;
+
+  /**\brief Connect two nodes with a given type of arc.
+    *
+    * This method is pure virtual because it needs a Traits
+    * object to determine validity. It exists to make python
+    * bindings for graph resources (and python-defined graph
+    * resources) possible.
+    */
+  virtual bool connect(Component* from, Component* to, smtk::string::Token arcType) = 0;
+
+  /**\brief Disconnect all arcs from the given node.
+    *
+    * This method is pure virtual because it needs a Traits
+    * object to iterate over all arc types for the node.
+    *
+    * The return value indicates whether any arcs were removed.
+    */
+  virtual bool disconnect(Component* node, bool explicitOnly = false) = 0;
+
+  /**\brief Dump nodes and arcs to a file.
+    *
+    * If you pass an empty \a filename, then this method will dump to the console.
+    *
+    * By default, this will dump in the graphviz "dot" language, however "text/plain" is
+    * another accepted \a mimeType.
+    */
+  virtual void dump(const std::string& filename, const std::string& mimeType = "text/vnd.graphviz")
+    const = 0;
 
 protected:
   /** Erase all of the nodes from the \a node storage without updating the arcs.

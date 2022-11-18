@@ -69,6 +69,7 @@ class SMTKCORE_EXPORT Component : public smtk::resource::Component
 public:
   smtkTypeMacro(smtk::graph::Component);
   smtkSuperclassMacro(smtk::resource::Component);
+  ~Component() override = default; // Ensure this class is polymorphic for pybind11 downcasting.
 
   /// Access the containing resource.
   const smtk::resource::ResourcePtr resource() const override;
@@ -106,7 +107,10 @@ public:
         {
           return arcsOfType->outgoing(self);
         }
-        throw std::logic_error("No arcs of the requested type are allowed.");
+        std::ostringstream errorMessage;
+        errorMessage << "No arcs of the requested type (" << smtk::common::typeName<ArcType>()
+                     << ", " << typeid(ArcType).hash_code() << ") are allowed.";
+        throw std::logic_error(errorMessage.str());
       }
       throw std::logic_error("Component has no parent resource.");
     }
@@ -138,7 +142,10 @@ public:
         {
           return arcsOfType->outgoing(self);
         }
-        throw std::logic_error("No arcs of the requested type are allowed.");
+        std::ostringstream errorMessage;
+        errorMessage << "No arcs of the requested type (" << smtk::common::typeName<ArcType>()
+                     << ", " << typeid(ArcType).hash_code() << ") are allowed.";
+        throw std::logic_error(errorMessage.str());
       }
       throw std::logic_error("Component has no parent resource.");
     }
@@ -182,7 +189,10 @@ public:
         {
           return arcsOfType->incoming(self);
         }
-        throw std::logic_error("No arcs of the requested type are allowed.");
+        std::ostringstream errorMessage;
+        errorMessage << "No arcs of the requested type (" << smtk::common::typeName<ArcType>()
+                     << ", " << typeid(ArcType).hash_code() << ") are allowed.";
+        throw std::logic_error(errorMessage.str());
       }
       throw std::logic_error("Component has no parent resource.");
     }
@@ -214,7 +224,11 @@ public:
         {
           return arcsOfType->incoming(self);
         }
-        throw std::logic_error("No arcs of the requested type are allowed.");
+        std::ostringstream errorMessage;
+        errorMessage << "No arcs of the requested type (" << smtk::common::typeName<ArcType>()
+                     << " id " << typeid(ArcType).hash_code() << ", " << typeid(ArcType).hash_code()
+                     << ") are allowed.";
+        throw std::logic_error(errorMessage.str());
       }
       throw std::logic_error("Component has no parent resource.");
     }
@@ -231,6 +245,16 @@ public:
     return dummy;
   }
   //@}
+
+  /**\brief Remove all (editable) arcs from this node.
+    *
+    * Note that implicit arcs which do not provide a disconnect method
+    * will not be removed.
+    *
+    * This method is used by the Delete operation to ensure that
+    * nodes do not leave dangling references to removed nodes.
+    */
+  bool disconnect(bool onlyExplicit = false);
 
 protected:
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&);

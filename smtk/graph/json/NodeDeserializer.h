@@ -12,6 +12,8 @@
 
 #include "smtk/graph/NodeProperties.h"
 
+// #include "smtk/resource/json/Helper.h"
+
 #include "smtk/io/Logger.h"
 
 #include "nlohmann/json.hpp"
@@ -52,6 +54,7 @@ struct NodeDeserializer
     {
       return;
     }
+    // auto helper = smtk::resource::json::Helper::instance();
     const json& jNodesOfType(*it);
     for (const auto& jNode : jNodesOfType)
     {
@@ -60,6 +63,7 @@ struct NodeDeserializer
       {
         m_resource->add(node);
       }
+      // or alternately, m_resource->template create<NodeType>(jNode, helper);
     }
   }
 

@@ -402,6 +402,19 @@ QModelIndex qtOperationTypeModel::findByTypeIndex(smtk::operation::Operation::In
   return this->index(static_cast<int>(row), 0);
 }
 
+smtk::operation::Operation::Index qtOperationTypeModel::typeIndexFromTypeName(
+  const std::string& typeName) const
+{
+  smtk::operation::Operation::Index typeIndex = 0;
+  if (!m_operationManager)
+  {
+    return typeIndex;
+  }
+
+  typeIndex = m_operationManager->registeredTypeIndex(typeName);
+  return typeIndex;
+}
+
 void qtOperationTypeModel::setDecorator(
   const std::shared_ptr<smtk::view::OperationDecorator>& decorator)
 {
@@ -480,6 +493,12 @@ void qtOperationTypeModel::runOperationWithParameters(
   {
     auto resultPromise = (*m_launcher)(operation);
   }
+}
+
+void qtOperationTypeModel::requestOperationParameterEdits(
+  smtk::operation::Operation::Index typeIndex) const
+{
+  Q_EMIT this->editOperationParameters(typeIndex);
 }
 
 void qtOperationTypeModel::runSendingOperation()

@@ -135,8 +135,9 @@ public:
     smtk::common::VisitorFunctor<Functor> visitor(ff);
     // Implicitly generate fully connected graph (except for self-connections
     // which are impossible given the FromType and ToType):
-    std::string filter = ToType::type_name;
+    std::string filter = "'" + std::string(ToType::type_name) + "'";
     auto others = resource->filterAs<std::set<std::shared_ptr<ToType>>>(filter);
+    std::cout << "Filter <" << filter << "> produced " << others.size() << " hits\n";
     for (const auto& other : others)
     {
       ++s_outVisitorCount;
@@ -190,8 +191,9 @@ public:
     }
     smtk::common::VisitorFunctor<Functor> visitor(ff);
     // Implicitly generate fully connected graph except for self-connections:
-    std::string filter = FromType::type_name;
+    std::string filter = "'" + std::string(FromType::type_name) + "'";
     auto others = resource->filterAs<std::set<std::shared_ptr<FromType>>>(filter);
+    std::cout << "Filter <" << filter << "> produced " << others.size() << " hits\n";
     for (const auto& other : others)
     {
       if (other && other.get() != comment)

@@ -1,0 +1,9 @@
+NAME
+  smtkPQGroupingPlugin
+DESCRIPTION
+  SMTK grouping behavior for ParaView
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  ParaView::VTKExtensionsExtraction
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt

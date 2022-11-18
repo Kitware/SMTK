@@ -67,6 +67,36 @@ void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
 }
 } // namespace
 
+PhraseModel::Source::Source(
+  smtk::resource::ManagerPtr rm,
+  smtk::operation::ManagerPtr om,
+  smtk::view::ManagerPtr vm,
+  smtk::view::SelectionPtr sn,
+  smtk::resource::Observers::Key&& rh,
+  smtk::operation::Observers::Key&& oh,
+  smtk::view::SelectionObservers::Key&& sh)
+  : m_rsrcHandle(std::move(rh))
+  , m_operHandle(std::move(oh))
+  , m_selnHandle(std::move(sh))
+{
+  m_managers.insert(rm);
+  m_managers.insert(om);
+  m_managers.insert(vm);
+  m_managers.insert(sn);
+}
+
+PhraseModel::Source::Source(
+  const smtk::common::TypeContainer& managers,
+  smtk::resource::Observers::Key&& rh,
+  smtk::operation::Observers::Key&& oh,
+  smtk::view::SelectionObservers::Key&& sh)
+  : m_managers(managers)
+  , m_rsrcHandle(std::move(rh))
+  , m_operHandle(std::move(oh))
+  , m_selnHandle(std::move(sh))
+{
+}
+
 // Returns the operation manager - right now it assumes the first source
 // TODO: figure out the proper behavior when there is more
 // than one source
@@ -214,6 +244,8 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
           this->handleOperationEvent(op, event, res);
           return 0;
         },
+        PhraseModel::operationObserverPriority(),
+        /*initialize*/ true,
         description.str() + "Update phrases based on operation results.")
     : smtk::operation::Observers::Key();
   auto selnHandle = seln ? seln->observers().insert(
@@ -338,6 +370,11 @@ void PhraseModel::visitSources(SourceVisitorFunction visitor)
       break;
     }
   }
+}
+
+smtk::operation::Observers::Priority PhraseModel::operationObserverPriority()
+{
+  return std::numeric_limits<smtk::operation::Observers::Priority>::lowest() + 1024;
 }
 
 DescriptivePhrasePtr PhraseModel::root() const
