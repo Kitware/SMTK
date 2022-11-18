@@ -108,6 +108,17 @@ struct SMTKMARKUP_EXPORT SelectionFootprint
                 stopRecursingAtGeometry);
             });
         }
+        else if (auto* oid = dynamic_cast<OntologyIdentifier*>(node))
+        {
+          oid->subjects().visit([this, &hasFootprint, &geom, &footprint, &stopRecursingAtGeometry](
+                                  const smtk::markup::Component* individual) {
+            hasFootprint |= this->addComponentFootprint(
+              const_cast<smtk::markup::Component*>(individual),
+              footprint,
+              geom,
+              stopRecursingAtGeometry);
+          });
+        }
       }
     }
     return hasFootprint;
