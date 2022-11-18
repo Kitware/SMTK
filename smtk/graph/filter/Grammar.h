@@ -29,7 +29,7 @@ struct SMTKCORE_EXPORT Grammar
       sor<
         seq<smtk::graph::filter::TypeName::Grammar, smtk::resource::filter::Grammar>,
         smtk::graph::filter::TypeName::Grammar>,
-      eof>
+      tao::pegtl::eof>
 {
 };
 } // namespace filter
