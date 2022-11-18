@@ -55,6 +55,13 @@ smtk::view::DescriptivePhrases SubphraseGenerator::subphrases(
           result.push_back(
             ComponentPhraseContent::createPhrase(label->shared_from_this(), mutability, parent));
         });
+      // All components may be named individuals in an ontology.
+      baseComp->incoming<arcs::OntologyIdentifiersToIndividuals>().visit(
+        [&result, &parent, &mutability](const OntologyIdentifier* constOid) {
+          auto* oid = const_cast<OntologyIdentifier*>(constOid);
+          result.push_back(
+            ComponentPhraseContent::createPhrase(oid->shared_from_this(), mutability, parent));
+        });
       if (auto* group = dynamic_cast<Group*>(baseComp))
       {
         // Groups have members underneath them
@@ -147,6 +154,16 @@ bool SubphraseGenerator::hasChildren(const smtk::view::DescriptivePhrase& parent
       baseComp->incoming<arcs::LabelsToSubjects>().visit(
         [&result, &parent](const Label* constLabel) {
           if (constLabel)
+          {
+            result = true;
+            return smtk::common::Visit::Halt;
+          }
+          return smtk::common::Visit::Continue;
+        });
+      // All components have ontology identifiers underneath them.
+      baseComp->incoming<arcs::OntologyIdentifiersToIndividuals>().visit(
+        [&result, &parent](const OntologyIdentifier* constOid) {
+          if (constOid)
           {
             result = true;
             return smtk::common::Visit::Halt;
@@ -252,6 +269,15 @@ smtk::resource::PersistentObjectSet SubphraseGenerator::parentObjects(
         result.insert(parent->shared_from_this());
       });
     }
+    else if (auto* oid = dynamic_cast<OntologyIdentifier*>(obj.get()))
+    {
+      // Ontology IDs appear underneath their named individuals.
+      oid->outgoing<arcs::OntologyIdentifiersToIndividuals>().visit(
+        [&result](const Component* constIndividual) {
+          auto* individual = const_cast<Component*>(constIndividual);
+          result.insert(individual->shared_from_this());
+        });
+    }
     // Any baseComp may appear under zero or more Groups.
     baseComp->incoming<arcs::GroupsToMembers>().visit([&result](const Group* constParent) {
       auto* parent = const_cast<Group*>(constParent);
@@ -342,41 +368,62 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
       continue;
     }
     auto resourceIt = compTypes.find(resource);
-    if (resourceIt == compTypes.end())
+    if (resourceIt != compTypes.end())
     {
-      continue;
+      std::string quotedTypeName = "'" + comp->typeName() + "'";
+      auto compTypeIt = resourceIt->second.find(quotedTypeName);
+      if (compTypeIt != resourceIt->second.end())
+      {
+        objectPath =
+          this->indexOfObjectInParent(object, compTypeIt->second.phrase, compTypeIt->second.path);
+        resultingPhrases.insert(std::make_pair(
+          objectPath,
+          ComponentPhraseContent::createPhrase(comp, phraseMutability, compTypeIt->second.phrase)));
+      }
     }
-    std::string quotedTypeName = "'" + comp->typeName() + "'";
-    auto compTypeIt = resourceIt->second.find(quotedTypeName);
-    if (compTypeIt == resourceIt->second.end())
-    {
-      continue;
-    }
-    objectPath =
-      this->indexOfObjectInParent(object, compTypeIt->second.phrase, compTypeIt->second.path);
-    resultingPhrases.insert(std::make_pair(
-      objectPath,
-      ComponentPhraseContent::createPhrase(comp, phraseMutability, compTypeIt->second.phrase)));
 
     // Now, in addition to the object's entry under its proper NodeGroupPhraseContent,
     // we need to consider when an object must also appear as the child of another
     // object. Examples: labels are children of the component they annotate; any
     // components may be of a group.
-    comp->incoming<arcs::LabelsToSubjects>().visit([&](const Label* parent) {
-      for (const auto& weakPhrase : phrasesForObject[parent->id()])
-      {
-        if (auto parentPhrase = weakPhrase.lock())
+    if (auto label = std::dynamic_pointer_cast<smtk::markup::Label>(comp))
+    {
+      label->subjects().visit([&](const Component* constParent) {
+        for (const auto& weakPhrase : phrasesForObject[constParent->id()])
         {
-          objectPath = this->indexOfObjectInParent(comp, parentPhrase, parentPhrase->index());
-          if (!objectPath.empty())
+          if (auto parentPhrase = weakPhrase.lock())
           {
-            resultingPhrases.insert(std::make_pair(
-              objectPath,
-              ComponentPhraseContent::createPhrase(comp, phraseMutability, parentPhrase)));
+            objectPath = this->indexOfObjectInParent(comp, parentPhrase, parentPhrase->index());
+            if (!objectPath.empty())
+            {
+              resultingPhrases.insert(std::make_pair(
+                objectPath,
+                ComponentPhraseContent::createPhrase(comp, phraseMutability, parentPhrase)));
+            }
           }
         }
-      }
-    });
+      });
+    }
+    // If an ontology ID was created, add it under each individual marked with it.
+    if (auto oid = std::dynamic_pointer_cast<smtk::markup::OntologyIdentifier>(comp))
+    {
+      oid->subjects().visit([&](const Component* constParent) {
+        for (const auto& weakPhrase : phrasesForObject[constParent->id()])
+        {
+          if (auto parentPhrase = weakPhrase.lock())
+          {
+            objectPath = this->indexOfObjectInParent(comp, parentPhrase, parentPhrase->index());
+            if (!objectPath.empty())
+            {
+              resultingPhrases.insert(std::make_pair(
+                objectPath,
+                ComponentPhraseContent::createPhrase(comp, phraseMutability, parentPhrase)));
+            }
+          }
+        }
+      });
+    }
+    // Add members as children of groups.
     comp->incoming<arcs::GroupsToMembers>().visit([&](const Group* parent) {
       for (const auto& weakPhrase : phrasesForObject[parent->id()])
       {
@@ -392,8 +439,6 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
         }
       }
     });
-    // TODO: Add shape as a child to any relevant groups/styles.
-    //       This should follow the pattern used for cusps above.
   }
 }
 
