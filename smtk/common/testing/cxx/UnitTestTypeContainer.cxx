@@ -99,13 +99,7 @@ int UnitTestTypeContainer(int /*unused*/, char** const /*unused*/)
       std::cout << "  " << token.data() << " (" << token.id() << ")\n";
     }
     std::set<smtk::string::Token> expectedKeys{
-#ifndef SMTK_MSVC
       { "float"_token, "(anonymous namespace)::Foo"_token, "(anonymous namespace)::Bar"_token }
-#else
-      { "float"_token,
-        "struct `anonymous namespace'::Foo"_token,
-        "struct `anonymous namespace'::Bar"_token }
-#endif
     };
     test(typeContainer.keys() == expectedKeys, "Container keys were improperly reported.");
   }

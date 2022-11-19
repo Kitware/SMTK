@@ -81,11 +81,21 @@ struct name
 #ifdef SMTK_MSVC
     // MSVC's implementation of type_name refers to classes as "class foo". To
     // maintain parity with other compilers, we strip the preceding "class "
-    // away.
+    // away. We do the same for "struct ".
     std::string pretty_name = boost::typeindex::type_id<Type>().pretty_name();
     if (pretty_name.substr(0, 6) == "class ")
     {
-      return pretty_name.substr(6);
+      pretty_name = pretty_name.substr(6);
+    }
+    else if (pretty_name.substr(0, 7) == "struct ")
+    {
+      pretty_name = pretty_name.substr(7);
+    }
+    // MSVC also uses "`anonymous namespace'" instead of "(anonymous namespace)".
+    // Make that match as well.
+    if (pretty_name.substr(0, 21) == "`anonymous namespace'")
+    {
+      pretty_name = "(anonymous namespace)" + pretty_name.substr(21);
     }
     return pretty_name;
 #else
