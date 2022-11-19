@@ -103,6 +103,9 @@ struct SMTKMARKUP_EXPORT OntologyIdentifiersToIndividuals
   using FromType = OntologyIdentifier;
   using ToType = Component;
   using Directed = std::true_type;
+  /// An ontology identifier cannot be deleted if it has any named individuals attached.
+  static constexpr graph::OwnershipSemantics semantics =
+    graph::OwnershipSemantics::ToNodeOwnsFromNode;
 };
 
 /// Arcs connecting an ontology identifier to other identifiers derivde from it.

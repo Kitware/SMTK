@@ -19,8 +19,10 @@
 #include "vtkDataObject.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDataSetReader.h"
+#include "vtkImageData.h"
 #include "vtkNew.h"
 #include "vtkPolyDataReader.h"
+#include "vtkUnstructuredGrid.h"
 #include "vtkUnstructuredGridReader.h"
 #include "vtkXMLImageDataReader.h"
 
@@ -30,6 +32,65 @@ namespace smtk
 {
 namespace markup
 {
+
+namespace
+{
+
+int maxDimension(vtkSmartPointer<vtkDataObject> data)
+{
+  int result = -1;
+  auto* dset = vtkDataSet::SafeDownCast(data);
+  if (!dset)
+  {
+    return result;
+  }
+
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 2, 0)
+  // This is stupid. In VTK 9.2+, we are not allowed to call the
+  // vtkDataSet::GetCellTypes() method on unstructured grids without
+  // a warning but polydata and other subclasses of dataset provide
+  // no alternative API. vtkDataSet should provide a new API common
+  // to *all* subclasses if the unstructured-grid implementation is
+  // deprecated.
+  if (auto* ugrid = vtkUnstructuredGrid::SafeDownCast(dset))
+  {
+    auto* cellTypes = ugrid->GetDistinctCellTypesArray();
+    for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTuples(); ++ii)
+    {
+      int cellType = cellTypes->GetTuple1(ii);
+      int dim = vtkCellTypes::GetDimension(cellType);
+      if (dim > result)
+      {
+        result = dim;
+      }
+    }
+    return result;
+  }
+#endif
+  if (auto* image = vtkImageData::SafeDownCast(dset))
+  {
+    result = image->GetDataDimension();
+  }
+  else // NOLINT(readability-misleading-indentation)
+  {
+    // Use deprecated API.
+    vtkNew<vtkCellTypes> cellTypes;
+    dset->GetCellTypes(cellTypes);
+    for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTypes(); ++ii)
+    {
+      int cellType = cellTypes->GetCellType(ii);
+      int dim = cellTypes->GetDimension(cellType);
+      if (dim > result)
+      {
+        result = dim;
+      }
+    }
+  }
+
+  return result;
+}
+
+} // anonymous namespace
 
 UnstructuredData::~UnstructuredData() = default;
 
@@ -200,6 +261,7 @@ bool UnstructuredData::setShapeData(vtkSmartPointer<vtkDataObject> mesh, ShapeOp
   }
 
   m_mesh = mesh;
+  this->properties().get<long>()["dimension"] = maxDimension(m_mesh);
   didChange = true;
 
   return didChange;

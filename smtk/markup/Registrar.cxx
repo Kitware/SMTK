@@ -15,9 +15,11 @@
 #include "smtk/markup/operators/CreateAnalyticShape.h"
 #include "smtk/markup/operators/CreateGroup.h"
 #include "smtk/markup/operators/Delete.h"
+#include "smtk/markup/operators/DumpGraph.h"
 #include "smtk/markup/operators/Import.h"
 #include "smtk/markup/operators/Read.h"
 #include "smtk/markup/operators/SetName.h"
+#include "smtk/markup/operators/TagIndividual.h"
 #include "smtk/markup/operators/Ungroup.h"
 #include "smtk/markup/operators/Write.h"
 
@@ -43,8 +45,18 @@ namespace markup
 
 namespace
 {
-using OperationList = std::
-  tuple<Create, CreateAnalyticShape, CreateGroup, Delete, Import, Read, SetName, Ungroup, Write>;
+using OperationList = std::tuple<
+  Create,
+  CreateAnalyticShape,
+  CreateGroup,
+  Delete,
+  DumpGraph,
+  Import,
+  Read,
+  SetName,
+  TagIndividual,
+  Ungroup,
+  Write>;
 
 using SubphraseGeneratorList = std::tuple<smtk::markup::SubphraseGenerator>;
 } // anonymous namespace

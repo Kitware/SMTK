@@ -67,9 +67,11 @@ bool Component::setName(const std::string& name)
   {
     // We are not allowed to set our name directly since
     // our owning resource has indexed us by name.
+    this->properties().get<std::string>()["name"] = name;
     return owner->modifyComponent(*this, ModifyName(name));
   }
   m_name = name;
+  this->properties().get<std::string>()["name"] = name;
   return true;
 }
 

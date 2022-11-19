@@ -13,9 +13,11 @@ set(operations
   CreateAnalyticShape
   CreateGroup
   Delete
+  DumpGraph
   Import
   Read
   SetName
+  TagIndividual
   Ungroup
   Write
 )
