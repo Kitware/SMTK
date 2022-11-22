@@ -1,6 +1,7 @@
 NAME
-  smtkPVMarkupExt
+  smtkPQMarkupExt
 DEPENDS
+  vtkSMTKMarkupExt
   ParaView::RemotingViews
   VTK::CommonCore
   VTK::CommonExecutionModel

@@ -11,7 +11,7 @@
 #define smtk_extension_paraview_markup_Registrar_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/markup/smtkPVMarkupExtModule.h"
+#include "smtk/extension/paraview/markup/smtkPQMarkupExtModule.h"
 
 #include "smtk/extension/vtk/markup/Registrar.h"
 #include "smtk/markup/Registrar.h"
@@ -29,7 +29,7 @@ namespace paraview
 namespace markup
 {
 
-class SMTKPVMARKUPEXT_EXPORT Registrar
+class SMTKPQMARKUPEXT_EXPORT Registrar
 {
 public:
   using Dependencies = std::tuple<operation::Registrar, markup::Registrar, vtk::markup::Registrar>;

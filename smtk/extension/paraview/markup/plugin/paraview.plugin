@@ -1,7 +1,7 @@
 NAME
-  smtkPVMarkupExtPlugin
+  smtkPQMarkupPlugin
 DESCRIPTION
-  Server-side SMTK extension for ParaView that exposes base model operations.
+  SMTK extension for ParaView that exposes markup operations.
 REQUIRES_MODULES
   VTK::CommonCore
   VTK::CommonDataModel
@@ -11,5 +11,5 @@ REQUIRES_MODULES
   VTK::RenderingCore
   VTK::RenderingOpenGL2
   vtkSMTKMarkupExt
-  smtkPVMarkupExt
+  smtkPQMarkupExt
   smtkPVServerExt

@@ -64,15 +64,15 @@ endfunction()
 
 function(encodeStringAsCVariable rawString encodedVarName stringOut includeDirectories)
 
-  expandXMLString(${rawString} expandedString "${includeDirectories}")
+  if ("${includeDirectories}" STREQUAL "")
+    set(expandedString "${${rawString}}")
+  else()
+    expandXMLString(${rawString} expandedString "${includeDirectories}")
+  endif()
 
-  string(REPLACE "\\" "\\\\" str1 "${expandedString}")
-  string(REPLACE "\"" "\\\"" str2 "${str1}")
-  string(REPLACE "\n" "\\n" str3 "${str2}")
-  string(CONFIGURE
-    "\nstatic const char ${encodedVarName}[] = \"${str3}\";\n\n"
-    escaped ESCAPE_QUOTES)
-  set(${stringOut} "${escaped}" PARENT_SCOPE)
+  # Use a C++11 raw string literal with an unlikely guard word to prevent
+  # the need for escaping quotes.
+  set(${stringOut} "static const char ${encodedVarName}[] = R\"v0g0nPoetry(${expandedString})v0g0nPoetry\";\n" PARENT_SCOPE)
 
 endfunction()
 

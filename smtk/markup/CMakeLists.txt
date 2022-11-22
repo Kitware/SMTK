@@ -7,6 +7,7 @@ set(headers
   arcs/ReferencesToPrimaries.txx
   detail/DumpColors.h
   queries/SelectionFootprint.h
+  testing/cxx/helpers.h
 )
 set(operations
   Create
@@ -84,6 +85,10 @@ list(APPEND classes
   detail/NodeContainer
 
   json/jsonResource
+
+  # Ontology import
+  ontology/Source
+  ontology/OwlRdfSource
 )
 
 # NB: Keep the next two foreach loops in order!

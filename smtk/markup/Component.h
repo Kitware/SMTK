@@ -44,6 +44,7 @@ namespace arcs
 {
 struct GroupsToMembers;
 struct LabelsToSubjects;
+struct OntologyIdentifiersToIndividuals;
 struct URLsToImportedData;
 } // namespace arcs
 
@@ -99,6 +100,17 @@ public:
   ArcEndpointInterface<arcs::URLsToImportedData, NonConstArc, IncomingArc> importedFrom();
   //@}
 
+  /**\brief Return the container of ontology identifiers this component realizes.
+    *
+    * Any component may be marked as a member of an ontology class;
+    * return the set of classes (ontology identifiers) this component belongs to.
+    */
+  //@{
+  ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, ConstArc, IncomingArc>
+  ontologyClasses() const;
+  ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, NonConstArc, IncomingArc>
+  ontologyClasses();
+  //@}
 protected:
   /// A functor for changing the name of a component.
   struct ModifyName;

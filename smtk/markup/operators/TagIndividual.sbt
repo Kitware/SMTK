@@ -11,24 +11,36 @@
         All associated target objects are connected with arcs to the ontology identifier, which
         is created as needed along with the ontology.
       </DetailedDescription>
-      <AssociationsDef Name="targets" NumberOfRequiredValues="1" Extensible="true">
+      <AssociationsDef Name="targets" Label=" " NumberOfRequiredValues="1" Extensible="true">
         <BriefDescription>The input components to be tagged.</BriefDescription>
         <Accepts><Resource Name="smtk::markup::Resource" Filter="*"/></Accepts>
       </AssociationsDef>
 
       <ItemDefinitions>
 
-        <String Name="ontology" NumberOfRequiredValues="1">
-          <BriefDescription>A name for the ontology node to use or create.</BriefDescription>
-        </String>
+        <Group Name="tagsToAdd" Label=" " NumberOfRequiredGroups="0" Extensible="true">
+          <BriefDescription>Specify ontology identifiers to find/create and connect to associated nodes.</BriefDescription>
+          <ItemDefinitions>
 
-        <String Name="name" NumberOfRequiredValues="1">
-          <BriefDescription>A name for the ontology identifier node to use or create.</BriefDescription>
-        </String>
+            <String Name="name" Label=" " NumberOfRequiredValues="1">
+              <BriefDescription>A name for the ontology identifier node to use or create.</BriefDescription>
+            </String>
 
-        <String Name="url" NumberOfRequiredValues="1">
-          <BriefDescription>The canonical URL for the ontology class identifier.</BriefDescription>
-        </String>
+            <String Name="ontology" NumberOfRequiredValues="1">
+              <BriefDescription>A name for the ontology node to use or create.</BriefDescription>
+            </String>
+
+            <String Name="url" NumberOfRequiredValues="1">
+              <BriefDescription>The canonical URL for the ontology class identifier.</BriefDescription>
+            </String>
+
+          </ItemDefinitions>
+        </Group>
+
+        <Component Name="tagsToRemove" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
+          <BriefDescription>Specify ontology identifiers to disconnect from associated nodes.</BriefDescription>
+          <Accepts><Resource Name="smtk::markup::Resource" Filter="'smtk::markup::OntologyIdentifier'"/></Accepts>
+        </Component>
 
       </ItemDefinitions>
     </AttDef>
@@ -44,7 +56,7 @@
           <ItemViews>
             <View Path="/targets" Type="qtReferenceTree">
               <PhraseModel Type="smtk::view::ResourcePhraseModel">
-                <SubphraseGenerator Type="smtk::view::SubphraseGenerator"/>
+                <SubphraseGenerator Type="smtk::markup::SubphraseGenerator"/>
                 <Badges>
                   <Badge
                     Type="smtk::extension::qt::MembershipBadge"
@@ -57,6 +69,16 @@
                 </Badges>
               </PhraseModel>
             </View>
+            <!--
+              Note that if the OntologyModel attribute below is "default" then
+              the first ontology registered is used. Since generally an application
+              will deal with a single ontology, this avoids the need to subclass
+              this operation just to choose a particular ontology by name.
+            -->
+            <View Path="/tagsToAdd" Type="qtOntologyItem"
+              OntologyItem="ontology" IdentifierItem="name" UrlItem="url"
+              RemovePath="/tagsToRemove" OntologyModel="default"
+              />
           </ItemViews>
         </Att>
       </InstancedAttributes>
