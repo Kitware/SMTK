@@ -218,6 +218,10 @@ void qtReferenceItem::setOutputOptional(int state)
   {
     itm->setIsEnabled(optionalVal);
     Q_EMIT modified();
+    if (auto* iview = m_itemInfo.baseView())
+    {
+      iview->valueChanged(itm);
+    }
   }
   m_p->m_editBtn->setEnabled(optionalVal);
   this->updateSynopsisLabels();
@@ -319,6 +323,10 @@ void qtReferenceItem::copyFromSelection()
         this->updateSynopsisLabels();
         this->linkHover(true);
         Q_EMIT modified();
+        if (auto* iview = m_itemInfo.baseView())
+        {
+          iview->valueChanged(m_itemInfo.item());
+        }
       }
     }
   }
@@ -353,6 +361,10 @@ void qtReferenceItem::clearItem()
     this->updateSynopsisLabels();
     this->linkHover(true);
     Q_EMIT modified();
+    if (auto* iview = m_itemInfo.baseView())
+    {
+      iview->valueChanged(m_itemInfo.item());
+    }
   }
 }
 
@@ -949,6 +961,10 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         }
       }
       Q_EMIT modified();
+      if (auto* iview = m_itemInfo.baseView())
+      {
+        iview->valueChanged(m_itemInfo.item());
+      }
     }
     break;
 
