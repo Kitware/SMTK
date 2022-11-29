@@ -49,6 +49,12 @@ public:
   /// Set whether the view should launch operations or allow external launchers to do so.
   void setRunOperationOnApply(bool shouldLaunch);
 
+  /// True when the apply button should be disabled after each run of the operation until
+  /// a parameter is modified. This is true by default but some custom item views may
+  /// turn this feature off.
+  bool disableApplyAfterRun() const { return m_disableApply; }
+  void setDisableApplyAfterRun(bool shouldDisable) { m_disableApply = shouldDisable; }
+
   QPointer<QPushButton> applyButton() const;
   QPointer<QPushButton> doneButton() const;
   const smtk::operation::OperationPtr& operation() const;
@@ -92,7 +98,8 @@ Q_SIGNALS:
 protected:
   void createWidget() override;
   void setInfoToBeDisplayed() override;
-  bool m_applied; // indicates if the current settings have been applied
+  bool m_applied;              // indicates if the current settings have been applied
+  bool m_disableApply{ true }; // disable the Apply button until an item is modified?
 
 private:
   qtOperationViewInternals* Internals;
