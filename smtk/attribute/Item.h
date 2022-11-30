@@ -249,7 +249,7 @@ public:
 
   /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
   /// Returns true if success and false if a problem occurred
-  SMTK_DEPRECATED_IN_22_10("Replaced by assign(ConstItemPtr&, const ItemAssignmentOptions&).")
+  SMTK_DEPRECATED_IN_22_11("Replaced by assign(ConstItemPtr&, const ItemAssignmentOptions&).")
   virtual bool assign(const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options);
 
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.

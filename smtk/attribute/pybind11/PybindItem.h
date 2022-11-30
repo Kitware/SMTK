@@ -72,9 +72,8 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
       smtk::attribute::CopyAssignmentOptions opts;
       smtk::attribute::Item::mapOldAssignmentOptions(opts, options);
       return item.assign(sourceItem, opts);
-    }, py::arg("sourceItem"), py::arg("options"))
+    }, py::arg("sourceItem"), py::arg("oldOptions"))
 
-    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, unsigned int)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("oldOptions"))
     .def_static("type2String", &smtk::attribute::Item::type2String, py::arg("t"))
     .def_static("string2Type", &smtk::attribute::Item::string2Type, py::arg("s"))
     ;

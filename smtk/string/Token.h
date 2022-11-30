@@ -124,7 +124,7 @@ protected:
   static std::shared_ptr<Manager> s_manager;
 };
 
-SMTK_DEPRECATED_IN_22_10("Moving to smtk::string::literals namespace.")
+SMTK_DEPRECATED_IN_22_11("Moving to smtk::string::literals namespace.")
 inline Token operator""_token(const char* data, std::size_t size)
 {
   return Token{ data, size };
