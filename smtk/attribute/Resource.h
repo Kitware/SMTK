@@ -297,7 +297,7 @@ public:
     smtk::attribute::DefinitionPtr def,
     unsigned int options = 0);
   // Copies an attribute.
-  SMTK_DEPRECATED_IN_22_10(
+  SMTK_DEPRECATED_IN_22_11(
     "Replaced by copyAttribute(const AttributePtr&, const AttributeCopyOptions&, const "
     "ItemAssignmentOptions&, smtk::io::Logger&).")
   smtk::attribute::AttributePtr copyAttribute(

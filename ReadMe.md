@@ -62,7 +62,7 @@ See [CONTRIBUTING.md][] for instructions to contribute.
 
 Latest Release Notes
 ====================
-Can be found [here](doc/release/smtk-22.08.rst).
+Can be found [here](doc/release/smtk-22.11.rst).
 
 License
 =======
