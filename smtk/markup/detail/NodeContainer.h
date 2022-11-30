@@ -90,6 +90,33 @@ public:
   smtk::resource::ComponentPtr find(const smtk::common::UUID& uuid) const;
   smtk::resource::Component* component(const smtk::common::UUID& uuid) const;
 
+  /// Find a node with the given name (and a type matching the result container's type).
+  ///
+  /// The \a ContainerType must have a `value_type` type-alias;
+  /// only components that can be dynamically cast to this type
+  /// will be included in search results.
+  /// This method returns a container since many components may
+  /// share the same name.
+  ///
+  /// Currently, \a ContainerType must hold raw pointers to nodes
+  /// rather than weak or shared pointers to nodes. This may
+  /// change in future versions.
+  template<typename ContainerType>
+  ContainerType findByName(const std::string& nodeName)
+  {
+    ContainerType result;
+    const auto& nameIndexed = m_nodes.get<NameTag>();
+    auto range = nameIndexed.equal_range(nodeName);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      if (auto* node = dynamic_cast<typename ContainerType::value_type>(it->get()))
+      {
+        result.insert(result.end(), node);
+      }
+    }
+    return result;
+  }
+
   std::size_t erase(const smtk::common::UUID& uuid) { return this->eraseNodes(this->find(uuid)); }
 
 protected:
