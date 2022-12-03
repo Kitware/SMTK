@@ -48,6 +48,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <QtGlobal> // for version check macro
 
 #include <cassert>
 
@@ -584,7 +585,15 @@ void qtOntologyItem::updateUI()
     this,
     &qtOntologyItem::modelEntryHighlighted);
   // Clear label text when the user enters a non-match
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   QObject::connect(m_p->m_name, &QComboBox::textActivated, this, &qtOntologyItem::textActivated);
+#else
+  QObject::connect(
+    m_p->m_name,
+    QOverload<const QString&>::of(&QComboBox::activated),
+    this,
+    &qtOntologyItem::textActivated);
+#endif
 #if 1
   // Clear label text when the user enters a non-match
   QObject::connect(
