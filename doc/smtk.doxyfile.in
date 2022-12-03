@@ -679,6 +679,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/markup/arcs" \
   "@smtk_SOURCE_DIR@/smtk/markup/json" \
   "@smtk_SOURCE_DIR@/smtk/markup/queries" \
+  "@smtk_SOURCE_DIR@/smtk/markup/ontology" \
   "@smtk_SOURCE_DIR@/smtk/markup/operators" \
   "@smtk_SOURCE_DIR@/smtk/mesh" \
   "@smtk_SOURCE_DIR@/smtk/mesh/core" \

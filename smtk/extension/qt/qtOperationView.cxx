@@ -28,6 +28,7 @@
 #include <QPointer>
 #include <QPushButton>
 #include <QTableWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <memory>
 
@@ -205,6 +206,9 @@ void qtOperationView::createWidget()
   smtk::view::Information v = m_viewInfo;
   v.insert_or_assign<smtk::view::ConfigurationPtr>(this->Internals->m_instancedViewDef);
   v.insert_or_assign<QWidget*>(this->Widget);
+  v.insert_or_assign<qtOperationView*>(this);
+  v.insert_or_assign<smtk::operation::Operation::Ptr>(this->operation());
+  v.insert_or_assign<smtk::operation::Manager::Ptr>(this->operation()->manager());
 
   qtInstancedView* iview = dynamic_cast<qtInstancedView*>(qtInstancedView::createViewWidget(v));
   this->Internals->m_instancedView.reset(iview);
@@ -308,10 +312,16 @@ void qtOperationView::onOperate()
     }
 
     Q_EMIT this->operationRequested(myOperation);
-    if (this->Internals->m_applyButton)
+    if (this->Internals->m_applyButton && m_disableApply)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);
     }
     m_applied = true;
+    if (!m_disableApply)
+    {
+      // Rate-limit running the operation to about 10 Hz to
+      // prevent accidental multiple-presses of the Apply button.
+      QTimer::singleShot(100 /*ms*/, this, &qtOperationView::onModifiedParameters);
+    }
   }
 }

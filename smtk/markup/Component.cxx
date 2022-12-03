@@ -106,5 +106,17 @@ ArcEndpointInterface<arcs::URLsToImportedData, NonConstArc, IncomingArc> Compone
   return this->incoming<arcs::URLsToImportedData>();
 }
 
+ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, ConstArc, IncomingArc>
+Component::ontologyClasses() const
+{
+  return this->incoming<arcs::OntologyIdentifiersToIndividuals>();
+}
+
+ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, NonConstArc, IncomingArc>
+Component::ontologyClasses()
+{
+  return this->incoming<arcs::OntologyIdentifiersToIndividuals>();
+}
+
 } // namespace markup
 } // namespace smtk

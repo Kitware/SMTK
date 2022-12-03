@@ -99,9 +99,24 @@ std::string testCreateAndWrite()
   }
   test(nn == 2, "Expected to create 2 components.");
 
+  // Test filtering by node type.
   components = resource->filter("'smtk::markup::Label'");
   nn = components.size();
   std::cout << "Found " << nn << " labels\n";
+
+  // Test finding by node name (and type).
+  auto labelsNamedFoo = resource->findByName<std::set<Label*>>("foo");
+  std::cout << "Found " << labelsNamedFoo.size() << " labels named \"foo\".\n";
+  auto groupsNamedFoo = resource->findByName<std::set<Group*>>("foo");
+  std::cout << "Found " << groupsNamedFoo.size() << " groups named \"foo\".\n";
+  auto labelsNamedBarf = resource->findByName<std::vector<Label*>>("barf");
+  std::cout << "Found " << labelsNamedBarf.size() << " labels named \"barf\".\n";
+  auto groupsNamedBarf = resource->findByName<std::vector<Group*>>("barf");
+  std::cout << "Found " << groupsNamedBarf.size() << " groups named \"barf\".\n";
+  test(labelsNamedFoo.size() == 1, "Expected 1 label named \"foo\".");
+  test(groupsNamedFoo.empty(), "Expected no group named \"foo\".");
+  test(labelsNamedBarf.empty(), "Expected no label named \"barf\".");
+  test(groupsNamedBarf.size() == 1, "Expected 1 group named \"barf\".");
 
   auto anotherLabel = resource->createNode<Label>(
     R"({"name": "This is a really long descriptive label with no purpose."})"_json);

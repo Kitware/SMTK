@@ -31,6 +31,9 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   # Warnings from the delaunay submodule.
   "thirdparty/delaunay"
 
+  # Warnings from pugi.
+  "thirdparty/pugixml/src"
+
   # Warnings from sccache that we don't care about.
   "sccache: warning: The server looks like it shut down unexpectedly, compiling locally instead"
 )

@@ -25,7 +25,7 @@ smtk_add_client_tests(
     smtkGeometryPlugin
     smtkViewPlugin
     smtkPVServerExtPlugin
-    smtkPVMarkupExtPlugin
+    smtkPQMarkupExtPlugin
     smtkPQComponentsPlugin
     smtkPQGuiComponentsPlugin
     smtkPQOperationsPanelPlugin
@@ -44,7 +44,7 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkPQOperationViewsPlugin>/..
     $<TARGET_FILE_DIR:smtkPQReadersPlugin>/..
     $<TARGET_FILE_DIR:smtkPVServerExtPlugin>/..
-    $<TARGET_FILE_DIR:smtkPVMarkupExtPlugin>/..
+    $<TARGET_FILE_DIR:smtkPQMarkupExtPlugin>/..
     $<TARGET_FILE_DIR:smtkPQWidgetsPlugin>/..
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/widgets

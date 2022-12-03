@@ -74,6 +74,9 @@ public:
 
   qtUIManager* uiManager() const { return m_viewInfo.get<qtUIManager*>(); }
 
+  /// Return the view's specification (its configuration plus environment information).
+  const smtk::view::Information& information() const { return m_viewInfo; }
+
   virtual int advanceLevel() const { return 0; }
   virtual bool categoryEnabled() const { return false; }
   virtual std::string currentCategory() const { return ""; }
