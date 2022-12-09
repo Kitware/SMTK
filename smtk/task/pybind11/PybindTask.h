@@ -23,13 +23,14 @@ inline PySharedPtrClass< smtk::task::Task > pybind11_init_smtk_task_Task(py::mod
 {
   PySharedPtrClass< smtk::task::Task > instance(m, "Task");
   instance
-    .def(py::init<>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::std::shared_ptr<smtk::common::Managers> const &>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::task::Task::PassedDependencies const &, ::std::shared_ptr<smtk::common::Managers> const &>())
     .def("typeName", &smtk::task::Task::typeName)
     .def_static("create", (std::shared_ptr<smtk::task::Task> (*)()) &smtk::task::Task::create)
     .def_static("create", (std::shared_ptr<smtk::task::Task> (*)(::std::shared_ptr<smtk::task::Task> &)) &smtk::task::Task::create, py::arg("ref"))
-    .def("configure", &smtk::task::Task::configure, py::arg("config"))
+    .def("configure", [](smtk::task::Task& task, const std::string& jsonConfig)
+      {
+        auto config = nlohmann::json::parse(jsonConfig);
+        task.configure(config);
+      })
     .def("title", &smtk::task::Task::title)
     .def("setTitle", &smtk::task::Task::setTitle, py::arg("title"))
     .def("state", &smtk::task::Task::state)
