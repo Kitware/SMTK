@@ -24,10 +24,11 @@ inline PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > pybin
 {
   PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > instance(m, "FillOutAttributes");
   instance
-    .def(py::init<>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::common::Managers::Ptr const &>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::task::Task::PassedDependencies const &, ::smtk::common::Managers::Ptr const &>())
-    .def("configure", &smtk::task::FillOutAttributes::configure, py::arg("config"))
+    .def("configure", [](smtk::task::Task& task, const std::string& jsonConfig)
+      {
+        auto config = nlohmann::json::parse(jsonConfig);
+        task.configure(config);
+      }, py::arg("config"))
     .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)()) &smtk::task::FillOutAttributes::create)
     .def_static("create", (std::shared_ptr<smtk::task::FillOutAttributes> (*)(::std::shared_ptr<smtk::task::FillOutAttributes> &)) &smtk::task::FillOutAttributes::create, py::arg("ref"))
     .def("typeName", &smtk::task::FillOutAttributes::typeName)

@@ -23,10 +23,11 @@ inline PySharedPtrClass< smtk::task::GatherResources, smtk::task::Task > pybind1
 {
   PySharedPtrClass< smtk::task::GatherResources, smtk::task::Task > instance(m, "GatherResources");
   instance
-    .def(py::init<>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::common::Managers::Ptr const &>())
-    .def(py::init<::smtk::task::Task::Configuration const &, ::smtk::task::Task::PassedDependencies const &, ::smtk::common::Managers::Ptr const &>())
-    .def("configure", &smtk::task::GatherResources::configure, py::arg("config"))
+    .def("configure", [](smtk::task::Task& task, const std::string& jsonConfig)
+      {
+        auto config = nlohmann::json::parse(jsonConfig);
+        task.configure(config);
+      }, py::arg("config"))
     .def_static("create", (std::shared_ptr<smtk::task::GatherResources> (*)()) &smtk::task::GatherResources::create)
     .def_static("create", (std::shared_ptr<smtk::task::GatherResources> (*)(::std::shared_ptr<smtk::task::GatherResources> &)) &smtk::task::GatherResources::create, py::arg("ref"))
     .def("typeName", &smtk::task::GatherResources::typeName)
