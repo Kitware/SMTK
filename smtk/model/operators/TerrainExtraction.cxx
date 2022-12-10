@@ -18,7 +18,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/model/TerrainExtraction_xml.h"
+#include "smtk/model/operators/TerrainExtraction_xml.h"
 
 namespace smtk
 {

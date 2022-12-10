@@ -13,7 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 
-#include "smtk/model/AddImage_xml.h"
+#include "smtk/model/operators/AddImage_xml.h"
 
 namespace smtk
 {

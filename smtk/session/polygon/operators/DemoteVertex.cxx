@@ -26,7 +26,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/DemoteVertex_xml.h"
+#include "smtk/session/polygon/operators/DemoteVertex_xml.h"
 
 namespace smtk
 {

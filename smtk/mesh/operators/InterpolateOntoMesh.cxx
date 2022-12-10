@@ -19,12 +19,12 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/mesh/InterpolateOntoMesh_xml.h"
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/mesh/operators/InterpolateOntoMesh_xml.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"

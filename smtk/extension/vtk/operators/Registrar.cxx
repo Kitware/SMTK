@@ -22,8 +22,8 @@
 
 #include "smtk/plugin/Manager.h"
 
-#include "smtk/extension/vtk/operators/image_inspector_svg.h"
-#include "smtk/extension/vtk/operators/mesh_inspector_svg.h"
+#include "smtk/extension/vtk/operators/icons/image_inspector_svg.h"
+#include "smtk/extension/vtk/operators/icons/mesh_inspector_svg.h"
 
 namespace smtk
 {

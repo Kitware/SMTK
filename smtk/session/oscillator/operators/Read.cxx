@@ -10,8 +10,8 @@
 
 #include "smtk/session/oscillator/operators/Read.h"
 
-#include "smtk/session/oscillator/Read_xml.h"
 #include "smtk/session/oscillator/Resource.h"
+#include "smtk/session/oscillator/operators/Read_xml.h"
 
 #include "smtk/model/Model.h"
 #include "smtk/model/Volume.h"

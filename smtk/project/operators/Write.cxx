@@ -29,7 +29,7 @@
 
 #include "smtk/project/json/jsonProject.h"
 
-#include "smtk/project/Write_xml.h"
+#include "smtk/project/operators/Write_xml.h"
 
 #include <fstream>
 #include <iostream>

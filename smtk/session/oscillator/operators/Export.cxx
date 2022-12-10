@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/session/oscillator/operators/Export.h"
 
-#include "smtk/session/oscillator/Export_xml.h"
 #include "smtk/session/oscillator/Resource.h"
 #include "smtk/session/oscillator/SimulationAttribute.h"
+#include "smtk/session/oscillator/operators/Export_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

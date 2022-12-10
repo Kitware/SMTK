@@ -22,10 +22,10 @@
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/Write_xml.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/mesh/operators/Write_xml.h"
 
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"

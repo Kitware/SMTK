@@ -44,12 +44,12 @@ set(iconFiles
   view/icons/project.svg
 )
 
-include(EncodeStringFunctions)
-
 foreach (iconFile ${iconFiles})
-  get_filename_component(genFileBase "${iconFile}" NAME_WE)
-  set(genFile "${CMAKE_CURRENT_BINARY_DIR}/view/icons/${genFileBase}_svg.h")
-  configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}"
+    TYPE "_svg"
+    HEADER_OUTPUT iconHeaderFile
+  )
+  list(APPEND projectHeaders ${iconHeaderFile})
 endforeach ()
 
 set(projectOperators
@@ -60,16 +60,19 @@ set(projectOperators
   Read
   Remove
   Write
-  )
+)
 
 foreach (operator ${projectOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  HEADER_OUTPUT headerName)
+    HEADER_OUTPUT headerName
+    TARGET_OUTPUT headerTarget
+  )
   list(APPEND projectSrcs operators/${operator}.cxx)
   list(APPEND projectHeaders operators/${operator}.h)
-  list(APPEND _projectDependencies ${headerName})
+  list(APPEND projectHeaders ${headerName})
+  list(APPEND projectDependencies ${headerTarget})
 endforeach ()
-add_custom_target(projectGenHeaders DEPENDS ${_projectDependencies})
+add_custom_target(projectGenHeaders DEPENDS ${_projectDependencies} ${projectHeaders})
 set(projectDependencies ${_projectDependencies} PARENT_SCOPE)
 
 # Install the headers

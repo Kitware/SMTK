@@ -19,7 +19,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/operation/SetProperty_xml.h"
+#include "smtk/operation/operators/SetProperty_xml.h"
 
 using namespace smtk::model;
 using smtk::attribute::DoubleItem;

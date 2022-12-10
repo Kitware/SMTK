@@ -38,7 +38,7 @@
 #include "smtk/session/polygon/operators/CreateModel.h"
 #include "smtk/session/polygon/operators/Delete.h"
 
-#include "smtk/session/polygon/ImportPPG_xml.h"
+#include "smtk/session/polygon/operators/ImportPPG_xml.h"
 
 #include <algorithm>
 #include <fstream>

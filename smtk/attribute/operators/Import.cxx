@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Import.h"
 
-#include "smtk/attribute/Import_xml.h"
+#include "smtk/attribute/operators/Import_xml.h"
 
 #include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/attribute/Attribute.h"

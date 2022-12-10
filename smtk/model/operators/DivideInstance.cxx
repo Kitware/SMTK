@@ -22,7 +22,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/DivideInstance_xml.h"
+#include "smtk/model/operators/DivideInstance_xml.h"
 
 using namespace smtk::model;
 

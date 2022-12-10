@@ -20,7 +20,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/Subtract_xml.h"
+#include "smtk/mesh/operators/Subtract_xml.h"
 
 namespace smtk
 {

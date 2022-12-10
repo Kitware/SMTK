@@ -11,9 +11,9 @@
 #include "smtk/markup/operators/CreateAnalyticShape.h"
 
 #include "smtk/markup/Box.h"
-#include "smtk/markup/CreateAnalyticShape_xml.h"
 #include "smtk/markup/Resource.h"
 #include "smtk/markup/Sphere.h"
+#include "smtk/markup/operators/CreateAnalyticShape_xml.h"
 
 #include "smtk/operation/MarkGeometry.h"
 

@@ -19,7 +19,7 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/properties/CoordinateFrame.h"
 
-#include "smtk/operation/CoordinateTransform_xml.h"
+#include "smtk/operation/operators/CoordinateTransform_xml.h"
 
 #include "Eigen/Core"
 #include "Eigen/Dense"

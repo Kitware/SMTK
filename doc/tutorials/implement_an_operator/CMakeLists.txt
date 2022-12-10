@@ -15,7 +15,7 @@ find_package(smtk)
 # add as a dependency so this file gets generated during the build.
 smtk_encode_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/implement_an_operator.xml"
-  TARGET_OUTPUT targetName
+  HEADER_OUTPUT headerName
 )
 
 # Make sure we can include the resulting file:
@@ -25,8 +25,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include(CTest)
 enable_testing()
 
-add_executable(implement_an_operator implement_an_operator.cxx)
-add_dependencies(implement_an_operator ${targetName})
+add_executable(implement_an_operator implement_an_operator.cxx ${headerName})
 target_link_libraries(implement_an_operator smtkCore smtkCoreModelTesting)
 add_test(NAME tut-implement_an_operator COMMAND implement_an_operator)
 set_tests_properties(tut-implement_an_operator PROPERTIES SKIP_RETURN_CODE 125)

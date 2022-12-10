@@ -37,7 +37,7 @@
 
 #include "smtk/common/Paths.h"
 
-#include "smtk/session/polygon/Import_xml.h"
+#include "smtk/session/polygon/operators/Import_xml.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"

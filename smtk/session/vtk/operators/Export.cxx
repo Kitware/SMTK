@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/session/vtk/operators/Export.h"
 
-#include "smtk/session/vtk/Export_xml.h"
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/Session.h"
+#include "smtk/session/vtk/operators/Export_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"

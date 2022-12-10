@@ -23,7 +23,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/Transform_xml.h"
+#include "smtk/mesh/operators/Transform_xml.h"
 
 #include <cmath>
 

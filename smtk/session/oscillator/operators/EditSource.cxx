@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/session/oscillator/operators/EditSource.h"
 
-#include "smtk/session/oscillator/EditSource_xml.h"
 #include "smtk/session/oscillator/Resource.h"
+#include "smtk/session/oscillator/operators/EditSource_xml.h"
 
 #include "smtk/session/mesh/operators/CreateUniformGrid.h"
 

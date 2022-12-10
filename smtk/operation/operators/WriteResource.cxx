@@ -21,8 +21,8 @@
 #include "smtk/resource/Metadata.h"
 
 #include "smtk/operation/Group.h"
-#include "smtk/operation/WriteResource_xml.h"
 #include "smtk/operation/groups/WriterGroup.h"
+#include "smtk/operation/operators/WriteResource_xml.h"
 
 #include "nlohmann/json.hpp"
 

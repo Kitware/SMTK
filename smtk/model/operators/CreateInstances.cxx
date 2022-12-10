@@ -26,7 +26,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/model/CreateInstances_xml.h"
+#include "smtk/model/operators/CreateInstances_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"

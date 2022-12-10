@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Dissociate.h"
 
-#include "smtk/attribute/Dissociate_xml.h"
+#include "smtk/attribute/operators/Dissociate_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"

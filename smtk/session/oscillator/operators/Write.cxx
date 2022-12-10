@@ -11,7 +11,7 @@
 #include "smtk/session/oscillator/operators/Write.h"
 
 #include "smtk/session/oscillator/Resource.h"
-#include "smtk/session/oscillator/Write_xml.h"
+#include "smtk/session/oscillator/operators/Write_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"

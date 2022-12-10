@@ -2,6 +2,7 @@
 # replace them with the contents of the file being included.
 function(expandXMLString rawString expandedString includeDirectories)
 
+  message(WARNING "expandXMLString deprecated; please use smtk_encode_file() if possible.")
   set(includedFiles)
   # First, grab all of the xml elements describing included files
   string(REGEX MATCHALL "<include[^/]* href=\"[^\"]+\"[^/]*/>" includes ${${rawString}})
@@ -64,6 +65,7 @@ endfunction()
 
 function(encodeStringAsCVariable rawString encodedVarName stringOut includeDirectories)
 
+  message(WARNING "encodeStringAsCVariable deprecated; please use smtk_encode_file() if possible.")
   if ("${includeDirectories}" STREQUAL "")
     set(expandedString "${${rawString}}")
   else()
@@ -76,8 +78,56 @@ function(encodeStringAsCVariable rawString encodedVarName stringOut includeDirec
 
 endfunction()
 
+
+function(encodeStringAsCPPFunction rawString encodedFuncName stringOut includeDirectories)
+
+  message(WARNING "encodeStringAsCPPFunction is deprecated; please use smtk_encode_file() if possible.")
+  if ("${includeDirectories}" STREQUAL "")
+    set(expandedString "${${rawString}}")
+  else()
+    expandXMLString(${rawString} expandedString "${includeDirectories}")
+  endif()
+
+  # Use a C++11 raw string literal with an unlikely guard word to prevent
+  # the need for escaping quotes.
+  # On windows systems, break the literal into many small
+  # pieces as required by their sucky compiler. This is why a function,
+  # rather than a variable, is generated – since the compiler does not
+  # allow a string literal larger than 64kiB.
+  set(tempFunc
+    "#include <string>\n\nnamespace {\ninline const std::string& ${encodedFuncName}()\n{\n  static std::string result;\n")
+  string(LENGTH ${expandedString} expStrLen)
+  set(piece 0)
+  set(pieceLen 65535)
+  while (${expStrLen} GREATER 0)
+    math(EXPR pieceStart "${piece} * ${pieceLen}")
+    if (${expStrLen} GREATER ${pieceLen})
+      string(SUBSTRING "${expandedString}" ${pieceStart} ${pieceLen} "pieceText")
+      math(EXPR expStrLen "${expStrLen} - ${pieceLen}")
+    else()
+      string(SUBSTRING "${expandedString}" ${pieceStart} ${expStrLen} "pieceText")
+      set(expStrLen 0)
+    endif()
+
+    string(APPEND tempFunc
+      "  static const char ${encodedFuncName}_${piece}[] = R\"v0g0nPoetry(${pieceText})v0g0nPoetry\";\n")
+    math(EXPR piece "${piece}+1")
+  endwhile()
+  string(APPEND tempFunc "  if (result.empty())\n  {\n")
+  set(ii 0)
+  while (${ii} LESS ${piece})
+    string(APPEND tempFunc "    result += std::string(${encodedFuncName}_${ii}, sizeof(${encodedFuncName}_${ii}) - 1);\n")
+    math(EXPR ii "${ii} + 1")
+  endwhile()
+  string(APPEND tempFunc "  }\n  return result;\n}\n}")
+
+  set(${stringOut} "${tempFunc}" PARENT_SCOPE)
+
+endfunction()
+
 function(configureStringAsCVariable rawString dstFileName encodedVarName includeDirectories)
 
+  message(WARNING "configureStringAsCVariable is deprecated; please use smtk_encode_file() if possible.")
   encodeStringAsCVariable(${rawString} ${encodedVarName} encodedContents "${includeDirectories}")
   if (EXISTS ${dstFileName})
     file(READ ${dstFileName} already)
@@ -90,6 +140,7 @@ endfunction()
 
 function(configureFileAsCVariable srcFileName dstFileName encodedVarName includeDirectories)
 
+  message(WARNING "configureFileAsCVariable is deprecated; please use smtk_encode_file() if possible.")
   if (EXISTS ${srcFileName})
     file(READ ${srcFileName} fileContents)
     configureStringAsCVariable(fileContents ${dstFileName} ${encodedVarName} "${includeDirectories}")
@@ -117,6 +168,7 @@ endfunction()
 
 function(encodeStringAsPyVariable rawString encodedVarName stringOut includeDirectories)
 
+  message(WARNING "encodeStringAsPyVariable is deprecated; please use smtk_encode_file() if possible.")
   expandXMLString(${rawString} expandedString "${includeDirectories}")
 
   string(CONFIGURE "\ndescription = '''\n${expandedString}\n'''\n" pyString)
@@ -126,6 +178,7 @@ endfunction()
 
 function(configureStringAsPyVariable rawString dstFileName encodedVarName includeDirectories)
 
+    message(WARNING "configureStringAsPyVariable is deprecated; please use smtk_encode_file() if possible.")
     encodeStringAsPyVariable(${rawString} ${encodedVarName} encodedContents "${includeDirectories}")
     if (EXISTS ${dstFileName})
       file(READ ${dstFileName} already)
@@ -138,6 +191,7 @@ endfunction()
 
 function(configureFileAsPyVariable srcFileName dstFileName encodedVarName includeDirectories)
 
+  message(WARNING "configureFileAsPyVariable is deprecated; please use smtk_encode_file() if possible.")
   if (EXISTS ${srcFileName})
     file(READ ${srcFileName} fileContents)
     configureStringAsPyVariable(fileContents ${dstFileName} ${encodedVarName} "${includeDirectories}")

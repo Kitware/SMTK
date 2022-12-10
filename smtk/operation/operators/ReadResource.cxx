@@ -23,8 +23,8 @@
 #include "smtk/resource/Metadata.h"
 
 #include "smtk/operation/Group.h"
-#include "smtk/operation/ReadResource_xml.h"
 #include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/operators/ReadResource_xml.h"
 
 #include "nlohmann/json.hpp"
 

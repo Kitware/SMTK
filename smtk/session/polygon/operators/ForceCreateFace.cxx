@@ -39,7 +39,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/ForceCreateFace_xml.h"
+#include "smtk/session/polygon/operators/ForceCreateFace_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/polygon/polygon.hpp"

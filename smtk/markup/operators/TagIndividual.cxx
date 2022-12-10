@@ -23,7 +23,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/markup/TagIndividual_xml.h"
+#include "smtk/markup/operators/TagIndividual_xml.h"
 
 // On Windows MSVC 2015+, something is included that defines
 // a macro named ERROR to be 0. This causes smtkErrorMacro()

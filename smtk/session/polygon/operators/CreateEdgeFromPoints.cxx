@@ -27,7 +27,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/CreateEdgeFromPoints_xml.h"
+#include "smtk/session/polygon/operators/CreateEdgeFromPoints_xml.h"
 
 using smtk::common::UUID;
 

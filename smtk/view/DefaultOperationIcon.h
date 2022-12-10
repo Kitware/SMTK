@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "smtk/view/icons/default_operation_opt_svg.h"
+#include "smtk/view/icons/default_operation_opt_cpp.h"
 
 namespace smtk
 {
@@ -26,7 +26,7 @@ namespace view
 
 inline std::string SMTKCORE_EXPORT DefaultOperationIcon(const std::string& secondaryColor)
 {
-  std::string svg = default_operation_opt_svg;
+  std::string svg = default_operation_opt_svg();
   std::array<double, 4> rgba;
   if (
     smtk::common::Color::stringToFloatRGBA(rgba.data(), secondaryColor) &&

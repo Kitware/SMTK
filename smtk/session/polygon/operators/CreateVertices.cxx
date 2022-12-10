@@ -25,7 +25,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/CreateVertices_xml.h"
+#include "smtk/session/polygon/operators/CreateVertices_xml.h"
 
 namespace smtk
 {

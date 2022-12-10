@@ -37,7 +37,7 @@
 
 #include "smtk/resource/Manager.h"
 
-#include "smtk/session/mesh/Import_xml.h"
+#include "smtk/session/mesh/operators/Import_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

@@ -76,6 +76,13 @@ function(smtk_install_library target)
   )
 endfunction()
 
+# Declare a target (library or executable) as needing installation.
+# Usage:
+#   smtk_install_target(target)
+function(smtk_install_target target)
+  smtk_install_library(${target})
+endfunction()
+
 #generate an export header and create an install target for it
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)

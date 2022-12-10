@@ -25,7 +25,7 @@
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Resource.h"
 
-#include "smtk/mesh/Read_xml.h"
+#include "smtk/mesh/operators/Read_xml.h"
 
 #include "smtk/common/CompilerInformation.h"
 

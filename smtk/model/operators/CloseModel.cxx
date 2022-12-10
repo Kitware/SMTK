@@ -26,7 +26,7 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/model/CloseModel_xml.h"
+#include "smtk/model/operators/CloseModel_xml.h"
 
 using namespace smtk::model;
 

@@ -16,7 +16,7 @@
 
 #include "smtk/common/Color.h"
 
-#include "smtk/view/icons/lock_locked_svg.h"
+#include "smtk/view/icons/lock_locked_cpp.h"
 
 #include "smtk/Regex.h"
 
@@ -104,7 +104,7 @@ std::string LockedResourceBadge::icon(
     return icon;
   }
   float lightness = smtk::common::Color::floatRGBToLightness(background.data());
-  icon = lock_locked_svg;
+  icon = lock_locked_svg();
   icon = smtk::regex_replace(icon, smtk::regex("#ff7f2a"), lightness < 0.5 ? "#bebebe" : "#2a2a2a");
   return icon;
 }

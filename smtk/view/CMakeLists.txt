@@ -81,14 +81,19 @@ set(iconFiles
   icons/unselected.svg
 )
 
-include(EncodeStringFunctions)
-
+set(_viewDependencies)
 foreach (iconFile ${iconFiles})
   get_filename_component(genFileBase "${iconFile}" NAME_WE)
-  set(genFile "${CMAKE_CURRENT_BINARY_DIR}/icons/${genFileBase}_svg.h")
-  configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
+  smtk_encode_file(${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}
+    TYPE "_cpp" NAME "${genFileBase}_svg"
+    HEADER_OUTPUT genFile
+    TARGET_OUTPUT genTarget
+  )
   list(APPEND viewHeaders ${genFile})
+  list(APPEND _viewDependencies ${genTarget})
 endforeach()
+add_custom_target(viewGenHeaders DEPENDS ${_viewDependencies})
+set(viewDependencies ${_viewDependencies} PARENT_SCOPE)
 
 #install the headers
 smtk_public_headers(smtkCore ${viewHeaders})

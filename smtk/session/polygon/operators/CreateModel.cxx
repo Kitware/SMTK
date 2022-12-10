@@ -22,7 +22,7 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/CreateModel_xml.h"
+#include "smtk/session/polygon/operators/CreateModel_xml.h"
 
 namespace smtk
 {

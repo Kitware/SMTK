@@ -10,8 +10,8 @@
 
 #include "smtk/markup/operators/Read.h"
 
-#include "smtk/markup/Read_xml.h"
 #include "smtk/markup/Resource.h"
+#include "smtk/markup/operators/Read_xml.h"
 
 #include "smtk/operation/Hints.h"
 

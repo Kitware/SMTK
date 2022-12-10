@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/io/Logger.h"
 
-#include "smtk/graph/Delete_xml.h"
 #include "smtk/graph/operators/Delete.h"
+#include "smtk/graph/operators/Delete_xml.h"
 
 #include "smtk/graph/Component.h"
 #include "smtk/graph/Resource.h"

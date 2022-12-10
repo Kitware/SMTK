@@ -29,7 +29,7 @@
 
 #include "smtk/project/json/jsonProject.h"
 
-#include "smtk/project/Read_xml.h"
+#include "smtk/project/operators/Read_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"

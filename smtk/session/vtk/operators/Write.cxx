@@ -18,9 +18,9 @@
 
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/Session.h"
-#include "smtk/session/vtk/Write_xml.h"
 #include "smtk/session/vtk/json/jsonResource.h"
 #include "smtk/session/vtk/operators/Export.h"
+#include "smtk/session/vtk/operators/Write_xml.h"
 
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 

@@ -29,7 +29,7 @@
 #include "smtk/model/Resource.txx"
 #include "smtk/model/ShellEntity.txx"
 
-#include "smtk/model/Delete_xml.h"
+#include "smtk/model/operators/Delete_xml.h"
 
 #define MAX_WARNINGS 50
 

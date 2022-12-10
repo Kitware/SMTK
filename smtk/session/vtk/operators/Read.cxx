@@ -17,10 +17,10 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/vtk/Read_xml.h"
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/json/jsonResource.h"
 #include "smtk/session/vtk/operators/Import.h"
+#include "smtk/session/vtk/operators/Read_xml.h"
 
 #include "smtk/common/Paths.h"
 

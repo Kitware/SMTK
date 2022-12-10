@@ -10,8 +10,8 @@
 
 #include "smtk/markup/operators/CreateGroup.h"
 
-#include "smtk/markup/CreateGroup_xml.h"
 #include "smtk/markup/Group.h"
+#include "smtk/markup/operators/CreateGroup_xml.h"
 
 #include "smtk/view/NameManager.h"
 

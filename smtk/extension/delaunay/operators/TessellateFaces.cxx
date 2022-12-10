@@ -32,7 +32,7 @@
 #include "Shape/PolygonUtilities.hh"
 #include "Validation/IsValidPolygon.hh"
 
-#include "smtk/extension/delaunay/TessellateFaces_xml.h"
+#include "smtk/extension/delaunay/operators/TessellateFaces_xml.h"
 
 #include <algorithm>
 

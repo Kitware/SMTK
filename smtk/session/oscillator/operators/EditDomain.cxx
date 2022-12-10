@@ -32,7 +32,7 @@
 
 #include "smtk/mesh/utility/Create.h"
 
-#include "smtk/session/oscillator/EditDomain_xml.h"
+#include "smtk/session/oscillator/operators/EditDomain_xml.h"
 
 namespace smtk
 {

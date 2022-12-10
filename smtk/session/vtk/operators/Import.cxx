@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/session/vtk/operators/Import.h"
 
-#include "smtk/session/vtk/Import_xml.h"
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/Session.h"
+#include "smtk/session/vtk/operators/Import_xml.h"
 
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 

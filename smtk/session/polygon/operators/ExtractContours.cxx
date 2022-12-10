@@ -30,7 +30,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/ExtractContours_xml.h"
+#include "smtk/session/polygon/operators/ExtractContours_xml.h"
 
 #include <limits>
 #include <sstream>

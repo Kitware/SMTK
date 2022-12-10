@@ -27,7 +27,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/model/AddAuxiliaryGeometry_xml.h"
+#include "smtk/model/operators/AddAuxiliaryGeometry_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"

@@ -19,7 +19,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/MergeCoincidentPoints_xml.h"
+#include "smtk/mesh/operators/MergeCoincidentPoints_xml.h"
 
 namespace smtk
 {

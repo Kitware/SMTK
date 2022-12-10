@@ -19,7 +19,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/mesh/PrintMeshInformation_xml.h"
+#include "smtk/mesh/operators/PrintMeshInformation_xml.h"
 
 namespace smtk
 {

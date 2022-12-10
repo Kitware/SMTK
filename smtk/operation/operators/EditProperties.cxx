@@ -19,7 +19,7 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/properties/CoordinateFrame.h"
 
-#include "smtk/operation/EditProperties_xml.h"
+#include "smtk/operation/operators/EditProperties_xml.h"
 
 using smtk::attribute::DoubleItem;
 using smtk::attribute::GroupItem;

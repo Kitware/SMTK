@@ -22,7 +22,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/MergeInstances_xml.h"
+#include "smtk/model/operators/MergeInstances_xml.h"
 
 #include <algorithm>
 

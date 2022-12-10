@@ -18,11 +18,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/GenerateHotStartData_xml.h"
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/operators/GenerateHotStartData_xml.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"

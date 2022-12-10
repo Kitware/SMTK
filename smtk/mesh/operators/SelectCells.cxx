@@ -18,10 +18,10 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/SelectCells_xml.h"
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/mesh/operators/SelectCells_xml.h"
 #include "smtk/mesh/resource/Selection.h"
 
 #include "smtk/operation/MarkGeometry.h"

@@ -27,7 +27,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/CleanGeometry_xml.h"
+#include "smtk/session/polygon/operators/CleanGeometry_xml.h"
 
 namespace smtk
 {

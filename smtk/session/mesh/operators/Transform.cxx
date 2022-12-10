@@ -25,7 +25,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/mesh/Transform_xml.h"
+#include "smtk/session/mesh/operators/Transform_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

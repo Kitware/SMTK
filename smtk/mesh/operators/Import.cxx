@@ -26,7 +26,7 @@
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Resource.h"
 
-#include "smtk/mesh/Import_xml.h"
+#include "smtk/mesh/operators/Import_xml.h"
 
 namespace
 {

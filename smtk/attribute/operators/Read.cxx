@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Read.h"
 
-#include "smtk/attribute/Read_xml.h"
+#include "smtk/attribute/operators/Read_xml.h"
 
 #include "smtk/attribute/AssociationRuleManager.h"
 #include "smtk/attribute/Attribute.h"

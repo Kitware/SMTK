@@ -32,8 +32,8 @@
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/Manager.h"
 
-#include "smtk/view/icons/selected_svg.h"
-#include "smtk/view/icons/unselected_svg.h"
+#include "smtk/view/icons/selected_cpp.h"
+#include "smtk/view/icons/unselected_cpp.h"
 
 #include "smtk/Regex.h"
 
@@ -45,16 +45,16 @@ namespace qt
 {
 
 MembershipBadge::MembershipBadge()
-  : m_iconOn(selected_svg)
-  , m_iconOff(unselected_svg)
+  : m_iconOn(selected_svg())
+  , m_iconOff(unselected_svg())
 {
 }
 
 MembershipBadge::MembershipBadge(
   smtk::view::BadgeSet& parent,
   const smtk::view::Configuration::Component& config)
-  : m_iconOn(selected_svg)
-  , m_iconOff(unselected_svg)
+  : m_iconOn(selected_svg())
+  , m_iconOff(unselected_svg())
   , m_parent(&parent)
 {
   config.attributeAsBool("SingleSelect", m_singleSelect);

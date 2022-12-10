@@ -15,10 +15,10 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/mesh/UndoElevateMesh_xml.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/operators/UndoElevateMesh_xml.h"
 #include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/operation/MarkGeometry.h"

@@ -24,7 +24,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/ExtractByDihedralAngle_xml.h"
+#include "smtk/mesh/operators/ExtractByDihedralAngle_xml.h"
 
 #include <cmath>
 
