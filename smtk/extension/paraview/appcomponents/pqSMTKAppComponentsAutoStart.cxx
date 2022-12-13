@@ -13,17 +13,13 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKCallObserversOnMainThreadBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKCloseWithActiveOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKDisplayAttributeOnLoadBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKImportIntoResourceBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKNewResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationHintsBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRegisterImportersBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/paraview/appcomponents/pqToolboxEventPlayer.h"
 #include "smtk/extension/paraview/appcomponents/pqToolboxEventTranslator.h"
@@ -31,8 +27,6 @@
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #ifdef SMTK_PYTHON_ENABLED
-#include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKPythonTrace.h"
 #endif
 
@@ -101,23 +95,9 @@ void pqSMTKAppComponentsAutoStart::startup()
 
   auto* behavior = pqSMTKBehavior::instance(this);
   auto* renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
-  auto* closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
   auto* callObserversOnMainThread = pqSMTKCallObserversOnMainThreadBehavior::instance(this);
-#ifdef SMTK_PYTHON_ENABLED
-  auto* rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
-  auto* rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
-#endif
   auto* pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
   auto* displayOnLoad = pqSMTKDisplayAttributeOnLoadBehavior::instance(this);
-
-  // The "New Resource" menu item keys off of the "Save Resource" menu item,
-  // so the order of initialization for the following two global statics is
-  // important!
-  //
-  // TODO: There must be a better way to do this.
-  auto* rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
-  auto* rsrcNewMgr = pqSMTKNewResourceBehavior::instance(this);
-  auto* rsrcImportIntoMgr = pqSMTKImportIntoResourceBehavior::instance(this);
   auto* registerImportersBehavior = pqSMTKRegisterImportersBehavior::instance(this);
 
   auto* mainWindow = pqCoreUtilities::mainWidget();
@@ -139,14 +119,6 @@ void pqSMTKAppComponentsAutoStart::startup()
       pqCore->registerManager("smtk close with active operation", closeWithActiveOperationBehavior);
     }
     pqCore->registerManager("call observers on main thread", callObserversOnMainThread);
-    pqCore->registerManager("smtk close resource", closeResourceBehavior);
-#ifdef SMTK_PYTHON_ENABLED
-    pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
-    pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
-#endif
-    pqCore->registerManager("smtk save resource", rsrcSaveMgr);
-    pqCore->registerManager("smtk new resource", rsrcNewMgr);
-    pqCore->registerManager("smtk import into resource", rsrcImportIntoMgr);
     pqCore->registerManager("smtk register importers", registerImportersBehavior);
     pqCore->registerManager("smtk pipeline selection sync", pipelineSync);
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
@@ -203,14 +175,6 @@ void pqSMTKAppComponentsAutoStart::shutdown()
       pqCore->unRegisterManager("smtk close with active operation");
     }
     pqCore->unRegisterManager("call observers on main thread");
-    pqCore->unRegisterManager("smtk close resource");
-#ifdef SMTK_PYTHON_ENABLED
-    pqCore->unRegisterManager("smtk import operation");
-    pqCore->unRegisterManager("smtk export simulation");
-#endif
-    pqCore->unRegisterManager("smtk save resource");
-    pqCore->unRegisterManager("smtk new resource");
-    pqCore->unRegisterManager("smtk import into resource");
     pqCore->unRegisterManager("smtk register importers");
     pqCore->unRegisterManager("smtk pipeline selection sync");
     pqCore->unRegisterManager("smtk display attribute on load");

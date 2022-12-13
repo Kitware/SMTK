@@ -353,7 +353,11 @@ pqSMTKNewResourceBehavior::~pqSMTKNewResourceBehavior()
     pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
     if (wrapper != nullptr)
     {
-      wrapper->smtkOperationManager()->groupObservers().erase(m_key);
+      auto opMgr = wrapper->smtkOperationManager();
+      if (opMgr)
+      {
+        opMgr->groupObservers().erase(m_key);
+      }
     }
 
     g_instance = nullptr;

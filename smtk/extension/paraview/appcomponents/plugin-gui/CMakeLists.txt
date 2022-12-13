@@ -1,5 +1,10 @@
 set(sources)
 
+paraview_plugin_add_auto_start(
+  CLASS_NAME pqSMTKGuiAppComponentsAutoStart
+  INTERFACES auto_start_interfaces
+  SOURCES auto_start_sources)
+
 paraview_plugin_add_action_group(
   CLASS_NAME pqSMTKSelectionFilterBehavior
   GROUP_NAME "ToolBar/SMTK Selection Filters"
@@ -22,6 +27,7 @@ paraview_plugin_add_dock_window(
   SOURCES resource_dock_sources)
 
 set(interfaces
+    ${auto_start_interfaces}
   ${action_group_interfaces}
   ${toolbar_interfaces}
   ${proxy_interfaces}
@@ -29,6 +35,7 @@ set(interfaces
   ${resource_dock_interfaces}
 )
 list(APPEND sources
+  ${auto_start_sources}
   ${action_group_sources}
   ${toolbar_sources}
   ${proxy_sources}
