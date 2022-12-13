@@ -12,6 +12,10 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include "smtk/extension/vtk/geometry/Backend.h"
+
+#include "smtk/geometry/Resource.h"
+
 #include "smtk/resource/Manager.h"
 
 #include "pqActiveObjects.h"
@@ -74,7 +78,16 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
           case smtk::resource::EventType::ADDED:
             QTimer::singleShot(0, this, [this, &resource]() {
               auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
-              this->createPipelineSource(rsrc);
+              // Only add pipeline sources for geometry resources...
+              if (auto geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc))
+              {
+                // ... that also provide geometry for the VTK backend:
+                smtk::extension::vtk::geometry::Backend vtk;
+                if (geomRsrc->geometry(vtk))
+                {
+                  this->createPipelineSource(rsrc);
+                }
+              }
             });
             break;
           default:
