@@ -777,8 +777,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/qt" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/internal" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/vtk" \
-  "@smtk_SOURCE_DIR@/smtk/session/multiscale" \
-  "@smtk_SOURCE_DIR@/smtk/session/multiscale/operators" \
   "@smtk_SOURCE_DIR@/smtk/session/vtk" \
   "@smtk_SOURCE_DIR@/smtk/session/vtk/operators" \
   "@smtk_SOURCE_DIR@/smtk/session/vtk/plugin" \
@@ -883,8 +881,6 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/session/polygon/qt" \
   "@smtk_BINARY_DIR@/smtk/session/polygon/internal" \
   "@smtk_BINARY_DIR@/smtk/session/polygon/vtk" \
-  "@smtk_BINARY_DIR@/smtk/session/multiscale" \
-  "@smtk_BINARY_DIR@/smtk/session/multiscale/operators" \
   "@smtk_BINARY_DIR@/smtk/session/vtk" \
   "@smtk_BINARY_DIR@/smtk/session/vtk/operators" \
   "@smtk_BINARY_DIR@/smtk/session/vtk/plugin" \

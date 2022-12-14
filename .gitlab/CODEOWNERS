@@ -8,24 +8,23 @@ conda/                   john.tourtellott@kitware.com
 doc/tutorials/           david.thompson@kitware.com
 doc/userguide/           david.thompson@kitware.com
 smtk/attribute/          bob.obara@kitware.com
-smtk/common/             david.thompson@kitware.com tj.corona@kitware.com
+smtk/common/             david.thompson@kitware.com
 smtk/extension/paraview/ david.thompson@kitware.com
 smtk/extension/qt/       bob.obara@kitware.com
-smtk/extension/vtk/      david.thompson@kitware.com tj.corona@kitware.com
-smtk/graph/              tj.corona@kitware.com david.thompson@kitware.com
+smtk/extension/vtk/      david.thompson@kitware.com
+smtk/graph/              david.thompson@kitware.com
 smtk/io/                 bob.obara@kitware.com
-smtk/mesh/               tj.corona@kitware.com
+smtk/mesh/               david.thompson@kitware.com
 smtk/model/              david.thompson@kitware.com
-smtk/operation/          tj.corona@kitware.com
-smtk/plugin/             tj.corona@kitware.com
+smtk/operation/          david.thompson@kitware.com
+smtk/plugin/             david.thompson@kitware.com
 smtk/project/            john.tourtellott@kitware.com
-smtk/pybind11/           tj.corona@kitware.com
-smtk/resource/           tj.corona@kitware.com
-smtk/session/multiscale/ tj.corona@kitware.com
+smtk/pybind11/           david.thompson@kitware.com
+smtk/resource/           david.thompson@kitware.com bob.obara@kitware.com
 smtk/session/oscillator/ david.thompson@kitware.com
 smtk/session/polygon/    david.thompson@kitware.com
 smtk/session/vtk/        david.thompson@kitware.com
 smtk/simulation/         john.tourtellott@kitware.com
-smtk/smtk/               tj.corona@kitware.com david.thompson@kitware.com
+smtk/smtk/               david.thompson@kitware.com
 smtk/view/               david.thompson@kitware.com
 utilities/               ben.boeckel@kitware.com
