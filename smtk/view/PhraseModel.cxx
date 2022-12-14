@@ -593,6 +593,8 @@ void PhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& creat
     this->trigger(parent, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
     auto& children = parent->subphrases();
     children.insert(children.begin() + path.back(), batch.begin(), batch.end());
+    std::sort(
+      children.begin(), children.end(), smtk::view::DescriptivePhrase::compareByTypeThenTitle);
     this->trigger(parent, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
     for (const auto& childPhrase : batch)
     {
