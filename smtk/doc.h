@@ -198,12 +198,6 @@ namespace discrete
 namespace mesh
 {
 }
-/**\brief A session for multiscale.
-  *
-  */
-namespace multiscale
-{
-}
 /**\brief A session for gaussian oscillators in a volume.
   *
   */

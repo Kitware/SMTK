@@ -14,8 +14,6 @@ _sessions = []
 
 if @SMTK_MESH_SESSION_ENABLED@:
   _sessions.append("mesh")
-if @SMTK_MULTISCALE_SESSION_ENABLED@:
-  _sessions.append("multiscale")
 if @SMTK_POLYGON_SESSION_ENABLED@:
   _sessions.append("polygon")
 if @SMTK_VTK_SESSION_ENABLED@:
