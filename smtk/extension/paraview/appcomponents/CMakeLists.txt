@@ -81,12 +81,17 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 foreach (iconFile ${iconFiles})
+  get_filename_component(genFileBase "${iconFile}" NAME_WE)
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}"
-    TYPE "_svg"
-    HEADER_OUTPUT iconSvgHeader)
-  list(APPEND iconDependencies ${iconSvgHeader})
+    TYPE "_cpp" NAME "${genFileBase}_svg"
+    HEADER_OUTPUT iconSvgHeader
+    TARGET_OUTPUT iconTarget
+  )
+  list(APPEND pvAppHeaders ${iconSvgHeader})
+  list(APPEND pvAppDependencies ${iconTarget})
 endforeach()
-add_custom_target("pvAppIconHeaders" DEPENDS ${iconDependencies})
+add_custom_target("pvAppIconHeaders" DEPENDS ${pvAppDependencies})
+set(pvAppDependencies ${_viewDependencies} PARENT_SCOPE)
 
 vtk_module_add_module(smtkPQComponentsExt
   CLASSES ${classes}

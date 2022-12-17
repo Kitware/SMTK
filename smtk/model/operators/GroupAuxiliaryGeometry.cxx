@@ -23,7 +23,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/GroupAuxiliaryGeometry_xml.h"
+#include "smtk/model/operators/GroupAuxiliaryGeometry_xml.h"
 
 using namespace smtk::model;
 

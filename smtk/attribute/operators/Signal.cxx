@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Signal.h"
 
-#include "smtk/attribute/Signal_xml.h"
+#include "smtk/attribute/operators/Signal_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

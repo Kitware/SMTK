@@ -24,8 +24,8 @@
 
 #include "smtk/session/mesh/Resource.h"
 
-#include "smtk/session/mesh/Read_xml.h"
 #include "smtk/session/mesh/operators/Import.h"
+#include "smtk/session/mesh/operators/Read_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"

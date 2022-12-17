@@ -26,7 +26,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/EntityGroupOperation_xml.h"
+#include "smtk/model/operators/EntityGroupOperation_xml.h"
 
 using namespace smtk::model;
 

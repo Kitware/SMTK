@@ -25,7 +25,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/SplitEdge_xml.h"
+#include "smtk/session/polygon/operators/SplitEdge_xml.h"
 
 namespace smtk
 {

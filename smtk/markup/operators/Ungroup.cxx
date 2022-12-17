@@ -20,7 +20,7 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/markup/Ungroup_xml.h"
+#include "smtk/markup/operators/Ungroup_xml.h"
 
 using namespace smtk::model;
 

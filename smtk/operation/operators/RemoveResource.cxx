@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/operation/operators/RemoveResource.h"
 
-#include "smtk/operation/RemoveResource_xml.h"
+#include "smtk/operation/operators/RemoveResource_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

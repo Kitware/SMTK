@@ -24,7 +24,7 @@
 
 #include "smtk/model/Model.h"
 
-#include "smtk/session/oscillator/CreateModel_xml.h"
+#include "smtk/session/oscillator/operators/CreateModel_xml.h"
 using namespace smtk::model;
 
 namespace smtk

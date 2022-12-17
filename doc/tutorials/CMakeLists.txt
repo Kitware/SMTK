@@ -10,6 +10,7 @@ endif ()
 # find smtk and its dependent packages
 set(build_options
   -Dsmtk_DIR:PATH=${CMAKE_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}
+  -DEigen3_DIR:PATH=${Eigen3_DIR}
 )
 
 if(NOT WIN32)

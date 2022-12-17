@@ -132,6 +132,7 @@ add_dependencies(smtkCore
   modelGenHeaders
   operationGenHeaders
   projectGenHeaders
+  viewGenHeaders
 )
 
 target_include_directories(smtkCore

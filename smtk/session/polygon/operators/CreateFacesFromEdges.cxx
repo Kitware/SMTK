@@ -37,7 +37,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/CreateFacesFromEdges_xml.h"
+#include "smtk/session/polygon/operators/CreateFacesFromEdges_xml.h"
 
 #include <deque>
 #include <map>

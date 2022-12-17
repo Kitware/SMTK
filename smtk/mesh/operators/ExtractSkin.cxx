@@ -22,7 +22,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/ExtractSkin_xml.h"
+#include "smtk/mesh/operators/ExtractSkin_xml.h"
 
 namespace smtk
 {

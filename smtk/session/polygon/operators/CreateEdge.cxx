@@ -26,7 +26,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/CreateEdge_xml.h"
+#include "smtk/session/polygon/operators/CreateEdge_xml.h"
 
 using smtk::common::UUID;
 

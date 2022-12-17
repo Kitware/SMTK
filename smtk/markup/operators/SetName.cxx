@@ -11,7 +11,7 @@
 #include "smtk/markup/operators/SetName.h"
 
 #include "smtk/markup/Resource.h"
-#include "smtk/markup/SetName_xml.h"
+#include "smtk/markup/operators/SetName_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

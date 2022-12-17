@@ -22,8 +22,8 @@
 #include "smtk/geometry/queries/SelectionFootprint.h"
 #include "smtk/resource/query/BadTypeError.h"
 
-#include "smtk/extension/paraview/appcomponents/pqEyeballClosed_svg.h"
-#include "smtk/extension/paraview/appcomponents/pqEyeball_svg.h"
+#include "smtk/extension/paraview/appcomponents/resources/pqEyeballClosed_cpp.h"
+#include "smtk/extension/paraview/appcomponents/resources/pqEyeball_cpp.h"
 
 #include "smtk/common/Color.h"
 #include "smtk/mesh/core/Component.h"
@@ -211,16 +211,16 @@ int UpdateVisibilityForFootprint(
 }
 
 VisibilityBadge::VisibilityBadge()
-  : m_icon(pqEyeball_svg)
-  , m_iconClosed(pqEyeballClosed_svg)
+  : m_icon(pqEyeball_svg())
+  , m_iconClosed(pqEyeballClosed_svg())
 {
 }
 
 VisibilityBadge::VisibilityBadge(
   smtk::view::BadgeSet& parent,
   const smtk::view::Configuration::Component&)
-  : m_icon(pqEyeball_svg)
-  , m_iconClosed(pqEyeballClosed_svg)
+  : m_icon(pqEyeball_svg())
+  , m_iconClosed(pqEyeballClosed_svg())
   , m_parent(&parent)
 {
   // Reset eyeball icons when the active view changes:

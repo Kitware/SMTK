@@ -25,9 +25,9 @@
 
 #include "smtk/plugin/Manager.h"
 
-#include "smtk/operation/assign_colors_svg.h"
-#include "smtk/operation/edit_properties_svg.h"
-#include "smtk/operation/import_python_operation_svg.h"
+#include "smtk/operation/icons/assign_colors_svg.h"
+#include "smtk/operation/icons/edit_properties_svg.h"
+#include "smtk/operation/icons/import_python_operation_svg.h"
 #include "smtk/view/OperationIcons.h"
 
 #include <tuple>

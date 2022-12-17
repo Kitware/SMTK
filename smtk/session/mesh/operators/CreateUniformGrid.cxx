@@ -16,9 +16,9 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/mesh/CreateUniformGrid_xml.h"
 #include "smtk/session/mesh/Resource.h"
 #include "smtk/session/mesh/Session.h"
+#include "smtk/session/mesh/operators/CreateUniformGrid_xml.h"
 
 #include "smtk/common/UUID.h"
 

@@ -25,7 +25,7 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/Create_xml.h"
+#include "smtk/project/operators/Create_xml.h"
 
 #include <sstream>
 

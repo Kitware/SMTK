@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Export.h"
 
-#include "smtk/attribute/Export_xml.h"
+#include "smtk/attribute/operators/Export_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"

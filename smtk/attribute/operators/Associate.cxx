@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/operators/Associate.h"
 
-#include "smtk/attribute/Associate_xml.h"
+#include "smtk/attribute/operators/Associate_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"

@@ -22,7 +22,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/ExtractAdjacency_xml.h"
+#include "smtk/mesh/operators/ExtractAdjacency_xml.h"
 
 namespace smtk
 {

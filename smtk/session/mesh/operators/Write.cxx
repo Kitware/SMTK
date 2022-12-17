@@ -21,8 +21,8 @@
 #include "smtk/common/Paths.h"
 
 #include "smtk/session/mesh/Resource.h"
-#include "smtk/session/mesh/Write_xml.h"
 #include "smtk/session/mesh/operators/Export.h"
+#include "smtk/session/mesh/operators/Write_xml.h"
 
 #include "smtk/model/json/jsonResource.h"
 

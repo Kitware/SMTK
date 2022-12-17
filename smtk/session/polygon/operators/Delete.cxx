@@ -34,7 +34,7 @@
 
 #include "smtk/model/Resource.txx"
 
-#include "smtk/session/polygon/Delete_xml.h"
+#include "smtk/session/polygon/operators/Delete_xml.h"
 
 #define MAX_WARNINGS 50
 

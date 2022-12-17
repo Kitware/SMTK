@@ -13,8 +13,8 @@
 // #include "smtk/session/aeva/Predicates.h"
 #include "smtk/markup/operators/Import.h"
 
-#include "smtk/markup/Import_xml.h"
 #include "smtk/markup/Resource.h"
+#include "smtk/markup/operators/Import_xml.h"
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 

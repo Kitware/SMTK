@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.20)
 
 #If the user/superbuild hasn't explicitly stated what c++ standard to use
 #require C++11
@@ -399,6 +399,12 @@ endif()
 if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
 endif()
+
+################################################################################
+# Build utility executables
+################################################################################
+
+add_subdirectory(utilities)
 
 ################################################################################
 # Build third party libraries

@@ -25,7 +25,7 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
 
-#include "smtk/session/mesh/Print_xml.h"
+#include "smtk/session/mesh/operators/Print_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

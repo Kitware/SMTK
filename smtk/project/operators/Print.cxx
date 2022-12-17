@@ -18,7 +18,7 @@
 #include "smtk/project/Project.h"
 #include "smtk/project/ResourceContainer.h"
 
-#include "smtk/project/Print_xml.h"
+#include "smtk/project/operators/Print_xml.h"
 
 namespace smtk
 {

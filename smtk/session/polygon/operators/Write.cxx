@@ -17,7 +17,7 @@
 #include "smtk/session/polygon/Resource.h"
 #include "smtk/session/polygon/SessionIOJSON.h"
 
-#include "smtk/session/polygon/Write_xml.h"
+#include "smtk/session/polygon/operators/Write_xml.h"
 
 using namespace smtk::model;
 

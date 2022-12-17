@@ -28,8 +28,8 @@
 
 #include "smtk/mesh/core/Resource.h"
 
-#include "smtk/mesh/ReadResource_xml.h"
 #include "smtk/mesh/operators/Read.h"
+#include "smtk/mesh/operators/ReadResource_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"

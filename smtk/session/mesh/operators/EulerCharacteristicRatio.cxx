@@ -22,7 +22,7 @@
 
 #include "smtk/model/Model.h"
 
-#include "smtk/session/mesh/EulerCharacteristicRatio_xml.h"
+#include "smtk/session/mesh/operators/EulerCharacteristicRatio_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

@@ -10,8 +10,8 @@
 
 #include "smtk/markup/operators/Create.h"
 
-#include "smtk/markup/Create_xml.h"
 #include "smtk/markup/Resource.h"
+#include "smtk/markup/operators/Create_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

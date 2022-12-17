@@ -21,7 +21,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/mesh/DeleteMesh_xml.h"
+#include "smtk/mesh/operators/DeleteMesh_xml.h"
 
 namespace smtk
 {

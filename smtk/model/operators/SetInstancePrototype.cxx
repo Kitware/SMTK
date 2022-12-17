@@ -20,7 +20,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/SetInstancePrototype_xml.h"
+#include "smtk/model/operators/SetInstancePrototype_xml.h"
 
 using namespace smtk::model;
 using smtk::attribute::ComponentItem;

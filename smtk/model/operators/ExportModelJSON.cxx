@@ -20,7 +20,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/model/ExportModelJSON_xml.h"
+#include "smtk/model/operators/ExportModelJSON_xml.h"
 
 #include <fstream>
 

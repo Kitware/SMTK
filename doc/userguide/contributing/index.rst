@@ -21,6 +21,7 @@ and provides guidelines for how to match the SMTK style.
    :maxdepth: 3
 
    organization.rst
+   data.rst
    extending.rst
    exposing.rst
    style.rst

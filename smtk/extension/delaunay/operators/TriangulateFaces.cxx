@@ -33,7 +33,7 @@
 #include "Shape/PolygonUtilities.hh"
 #include "Validation/IsValidPolygon.hh"
 
-#include "smtk/extension/delaunay/TriangulateFaces_xml.h"
+#include "smtk/extension/delaunay/operators/TriangulateFaces_xml.h"
 
 #include <algorithm>
 

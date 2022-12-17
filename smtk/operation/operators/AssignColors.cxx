@@ -24,7 +24,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/operation/AssignColors_xml.h"
+#include "smtk/operation/operators/AssignColors_xml.h"
 
 #include <cstddef> // for size_t
 

@@ -26,7 +26,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/session/polygon/TweakEdge_xml.h"
+#include "smtk/session/polygon/operators/TweakEdge_xml.h"
 
 namespace smtk
 {

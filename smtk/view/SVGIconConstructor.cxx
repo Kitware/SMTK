@@ -21,18 +21,18 @@
 
 #include "smtk/resource/PersistentObject.h"
 
-#include "smtk/view/icons/attributeResource_svg.h"
-#include "smtk/view/icons/attribute_svg.h"
-#include "smtk/view/icons/edge_svg.h"
-#include "smtk/view/icons/face_svg.h"
-#include "smtk/view/icons/loop_svg.h"
-#include "smtk/view/icons/meshResource_svg.h"
-#include "smtk/view/icons/mesh_svg.h"
-#include "smtk/view/icons/modelResource_svg.h"
-#include "smtk/view/icons/model_svg.h"
-#include "smtk/view/icons/resource_svg.h"
-#include "smtk/view/icons/vertex_svg.h"
-#include "smtk/view/icons/volume_svg.h"
+#include "smtk/view/icons/attributeResource_cpp.h"
+#include "smtk/view/icons/attribute_cpp.h"
+#include "smtk/view/icons/edge_cpp.h"
+#include "smtk/view/icons/face_cpp.h"
+#include "smtk/view/icons/loop_cpp.h"
+#include "smtk/view/icons/meshResource_cpp.h"
+#include "smtk/view/icons/mesh_cpp.h"
+#include "smtk/view/icons/modelResource_cpp.h"
+#include "smtk/view/icons/model_cpp.h"
+#include "smtk/view/icons/resource_cpp.h"
+#include "smtk/view/icons/vertex_cpp.h"
+#include "smtk/view/icons/volume_cpp.h"
 
 #include "smtk/Regex.h"
 #include <vector>
@@ -85,18 +85,18 @@ std::string DefaultIconConstructor::operator()(
 
 std::string ResourceIconConstructor::svg(const smtk::resource::PersistentObject&) const
 {
-  return resource_svg;
+  return resource_svg();
 }
 
 std::string AttributeIconConstructor::svg(const smtk::resource::PersistentObject& object) const
 {
   if (dynamic_cast<const smtk::attribute::Resource*>(&object) != nullptr)
   {
-    return attributeResource_svg;
+    return attributeResource_svg();
   }
   else
   {
-    return attribute_svg;
+    return attribute_svg();
   }
 }
 
@@ -105,11 +105,11 @@ std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& obj
   if (const auto* resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
   {
     (void)resource;
-    return meshResource_svg;
+    return meshResource_svg();
   }
   else
   {
-    return mesh_svg;
+    return mesh_svg();
   }
 }
 
@@ -118,7 +118,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
   if (const auto* resource = dynamic_cast<const smtk::model::Resource*>(&object))
   {
     (void)resource;
-    return modelResource_svg;
+    return modelResource_svg();
   }
   else if (const auto* entity = dynamic_cast<const smtk::model::Entity*>(&object))
   {
@@ -130,15 +130,15 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
         switch (flags & smtk::model::ANY_ENTITY)
         {
           case smtk::model::VERTEX:
-            return vertex_svg;
+            return vertex_svg();
           case smtk::model::EDGE:
-            return edge_svg;
+            return edge_svg();
           case smtk::model::SHELL_1D:
-            return loop_svg;
+            return loop_svg();
           case smtk::model::FACE:
-            return face_svg;
+            return face_svg();
           case smtk::model::VOLUME:
-            return volume_svg;
+            return volume_svg();
           default:
             return "";
             break;
@@ -148,7 +148,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
       case smtk::model::SHELL_ENTITY:
       case smtk::model::GROUP_ENTITY:
       case smtk::model::MODEL_ENTITY:
-        return model_svg;
+        return model_svg();
       case smtk::model::INSTANCE_ENTITY:
       case smtk::model::AUX_GEOM_ENTITY:
       case smtk::model::SESSION:
@@ -158,7 +158,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
   }
   else
   {
-    return model_svg;
+    return model_svg();
   }
 }
 } // namespace view

@@ -33,7 +33,7 @@
 #include "smtk/mesh/interpolation/StructuredGrid.h"
 #include "smtk/mesh/interpolation/StructuredGridGenerator.h"
 
-#include "smtk/mesh/ElevateMesh_xml.h"
+#include "smtk/mesh/operators/ElevateMesh_xml.h"
 #include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"

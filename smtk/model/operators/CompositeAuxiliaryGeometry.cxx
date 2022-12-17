@@ -24,7 +24,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/CompositeAuxiliaryGeometry_xml.h"
+#include "smtk/model/operators/CompositeAuxiliaryGeometry_xml.h"
 
 namespace smtk
 {

@@ -35,8 +35,10 @@ With that in mind:
   * cJSON — used to serialize geometric model information
   * pugiXML — used to serialize attribute resources
 
-* utilities — scripts to aid in the development of SMTK
-
+* utilities — scripts to aid in the development of SMTK.
+  * encode – a C++ utility used to encode a file's contents into a C++ function,
+    a C++ string literal, or a Python block-quote in order to embed it into a
+    plugin or module.
 
 Inside :file:`smtk/`, subdirectories, there are :file:`testing/` directories that
 hold :file:`python/` and :file:`cxx/` directories for Python and C++ tests, respectively.

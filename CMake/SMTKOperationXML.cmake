@@ -1,32 +1,68 @@
-set(_smtk_operation_xml_script_file "${CMAKE_CURRENT_LIST_FILE}")
+#[=======================================================================[.rst:
+smtk_encode_file
+----------------
 
+This function adds a custom command that generates a C++ header or Python
+source-file which encodes the contents of a file (``<xml>``) from your
+source directory. This is used frequently for operation sim-builder
+template (SBT) files, icon (SVG) files, and other data you wish to
+include in packages. By encoding the file, there is no need to rely on
+code to search for it on the filesystem; it is either compiled into a
+library (C++) or included as part of a python module (which uses Python's
+utilities for importing the data rather than requiring you to find it).
 
-include("${CMAKE_CURRENT_LIST_DIR}/EncodeStringFunctions.cmake")
+Because this function is frequently used to encode SMTK operation SBT
+files, it provides a utility to replace XML ``<include href="…"/>``
+directives with the contents of the referenced file.
+Query paths for included files are passed to this macro with the
+flag ``INCLUDE_DIRS``.
 
-# Given a filename (opSpecs) containing an XML description of an
-# operation, configure C++ or Python source that encodes the XML as a string.
-# Includes in the xml that resolve to accessible files are replaced by
-# the injection of the included file's contents. Query paths for included
-# files are passed to this macro with the flag INCLUDE_DIRS.
-# The resulting files are placed in the current binary directory.
-# smtk_operation_xml(
-#   <xml>
-#   INCLUDE_DIRS <path_to_include_directories>
-#   EXT "py" (optional, defaults to "h" and C++, use "py" for python)
-#   TYPE "_json" (optional, defaults to "_xml", appended to file and var name)
-#   HEADER_OUTPUT (optional, filled in with full path of generated header)
-#   )
-# The caller must add the filename in HEADER_OUTPUT to a custom_target, if
-# the generated file is in a subdirectory (see https://gitlab.kitware.com/cmake/community/-/wikis/FAQ#how-can-i-add-a-dependency-to-a-source-file-which-is-generated-in-a-subdirectory).
-#
-# TARGET_OUTPUT can be used to generate a custom_target directly, but
-# it is not recommended because it causes long paths and extra targets
-# for make and VS projects on windows.
-#
-# use of add_custom_command() borrowed from vtkEncodeString.cmake
-function(smtk_encode_file inOpSpecs)
-  set(options "PYTHON")
-  set(oneValueArgs "TYPE;HEADER_OUTPUT;TARGET_OUTPUT")
+By default, the output header or python files are placed in the binary
+directory that corresponds to their source path, but with the input
+content type (e.g., ``_xml``, ``_json``, ``_svg``) appended and the
+appropriate extension (``.h`` or ``.py``).
+If you wish to override this, pass an output filename to
+the ``DESTINATION`` option.
+
+.. code-block:: cmake
+
+   smtk_encode_file(
+     <xml>
+     INCLUDE_DIRS <path_to_include_directories>
+     EXT "py" (optional: defaults to "h" and C++; use "py" for python)
+     NAME "var" (optional: the name of the generated string literal or function)
+     TYPE "_json" (optional: defaults to "_xml", appended to file and var name)
+     HEADER_OUTPUT var (optional: filled in with full path of generated header)
+     DESTINATION var (optional: specify output relative to current build dir)
+   )
+
+Note that if you use ``smtk_encode_file()`` in a subdirectory relative to
+the target which compiles its output, you must add the ``DESTINATION`` (if
+specified) or the value returned in ``HEADER_OUTPUT`` to a custom_target
+(see `this FAQ`_ for details on why).
+
+.. _this FAQ: https://gitlab.kitware.com/cmake/community/-/wikis/FAQ#how-can-i-add-a-dependency-to-a-source-file-which-is-generated-in-a-subdirectory
+
+``TARGET_OUTPUT`` can be used to generate a custom_target directly, but
+it is not recommended because it causes long paths and extra targets
+for make and VS projects on windows.
+
+Note that if you are using ``smtk_encode_file`` external to SMTK, you do
+not need to include ``${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR}``
+in ``INCLUDE_DIRS`` as it is automatically added; this allows your
+external projects to reference the operation, result, and hint attribute
+definitions that SMTK provides.
+
+Currently, the following ``TYPE`` options are recognized:
+``_py``, ``_json``, ``_svg``, ``_xml``, and ``_cpp``.
+The ``cpp`` option does not indicate the input-file's content format
+but rather that the output file should be an inline, anonymous-namespaced
+C++ function. This option exists for large files (more than 16kiB), for which
+MSVC compilers cannot produce a string-literal.
+#]=======================================================================]
+function(smtk_encode_file inFile)
+  set(options "PYTHON;DEBUG")
+  set(oneValueArgs "TYPE;HEADER_OUTPUT;TARGET_OUTPUT;NAME;DESTINATION")
   set(multiValueArgs INCLUDE_DIRS)
   cmake_parse_arguments(_SMTK_op "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if (_SMTK_op_UNPARSED_ARGUMENTS)
@@ -45,25 +81,68 @@ function(smtk_encode_file inOpSpecs)
   endif()
   list(APPEND _SMTK_op_INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
   if (smtk_PREFIX_PATH)
-    list(APPEND _SMTK_op_INCLUDE_DIRS ${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR})
+    list(APPEND _SMTK_op_INCLUDE_DIRS "${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR}")
   endif ()
 
-  get_filename_component(_genFileBase "${inOpSpecs}" NAME_WE)
-  set(_genFile "${CMAKE_CURRENT_BINARY_DIR}/${_genFileBase}${inType}.${inExt}")
+  get_filename_component(_genFileBase "${inFile}" NAME_WE)
+  cmake_path(RELATIVE_PATH inFile OUTPUT_VARIABLE relInFile) # Relative to current source dir.
+  if ("${relInFile}" STREQUAL "")
+    set(relInFile "${inFile}")
+  endif()
+  get_filename_component(_genFileDir "${relInFile}" DIRECTORY)
+  if ("${_genFileDir}" STREQUAL "")
+    set(_genFile "${CMAKE_CURRENT_BINARY_DIR}/${_genFileBase}${inType}.${inExt}")
+  else()
+    set(_genFile "${CMAKE_CURRENT_BINARY_DIR}/${_genFileDir}/${_genFileBase}${inType}.${inExt}")
+  endif()
+
+  if (DEFINED _SMTK_op_DESTINATION)
+    cmake_path(
+      ABSOLUTE_PATH _SMTK_op_DESTINATION
+      BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    set(_genFile "${_SMTK_op_DESTINATION}")
+  endif()
+
+  # Strip any leading underscore from the file "type" as smtk_encode_file
+  # will add it back.
+  if (${inType} MATCHES "_.*")
+    string(LENGTH "${inType}" _inLen)
+    string(SUBSTRING "${inType}" 1 ${_inLen} inTypeWithoutUnderscore)
+  else()
+    set(inTypeWithoutUnderscore "${inType}")
+  endif()
+
+  # If asked to debug, pass that to the executable
+  if (_SMTK_op_DEBUG)
+    set(inDebug "DEBUG")
+  endif()
+
+  if (_SMTK_op_PYTHON)
+    set(inTypeWithoutUnderscore "py")
+  endif()
+
+  # If a literal/function name was provided, pass it along
+  if (_SMTK_op_NAME)
+    set(_nameArgs "NAME;${_SMTK_op_NAME}")
+  endif()
 
   add_custom_command(
-    OUTPUT  ${_genFile}
-    DEPENDS "${_smtk_operation_xml_script_file}"
-            "${inOpSpecs}"
-    COMMAND "${CMAKE_COMMAND}"
-            "-DgenFileBase=${_genFileBase}"
-            "-DgenFile=${_genFile}"
-            "-Dinclude_dirs=\"${_SMTK_op_INCLUDE_DIRS}\""
-            "-DopSpec=${inOpSpecs}"
-            "-Dtype=${inType}"
-            "-Dext=${inExt}"
-            "-D_smtk_operation_xml_run=ON"
-            -P "${_smtk_operation_xml_script_file}")
+    OUTPUT  "${_genFile}"
+    MAIN_DEPENDENCY "${inFile}"
+    DEPENDS
+      smtk_encode_file
+      "${inFile}"
+    COMMAND smtk_encode_file
+    ARGS
+      HEADER_OUTPUT "${_genFile}"
+      INCLUDE_DIRS "\"${_SMTK_op_INCLUDE_DIRS}\""
+      TYPE "${inTypeWithoutUnderscore}"
+      EXT "${inExt}"
+      ${_nameArgs}
+      ${inDebug}
+      "${inFile}"
+  )
   set_source_files_properties(${_genFile} PROPERTIES GENERATED ON)
 
   if (DEFINED _SMTK_op_HEADER_OUTPUT)
@@ -86,56 +165,3 @@ function(smtk_encode_file inOpSpecs)
   endif ()
 
 endfunction()
-
-# the old implementation, warn users to update to new.
-function(smtk_operation_xml opSpecs genFiles)
-  message(DEPRECATION "smtk_operation_xml() is deprecated, please update to smtk_encode_file()")
-  set(options)
-  set(oneValueArgs)
-  set(multiValueArgs INCLUDE_DIRS)
-  cmake_parse_arguments(SMTK_op "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  list(APPEND SMTK_op_INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
-  if (smtk_PREFIX_PATH)
-    list(APPEND SMTK_op_INCLUDE_DIRS ${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR})
-  endif ()
-  foreach (opSpec ${opSpecs})
-    get_filename_component(genFileBase "${opSpec}" NAME_WE)
-    set(genFile "${CMAKE_CURRENT_BINARY_DIR}/${genFileBase}_xml.h")
-    configureFileAsCVariable("${opSpec}" "${genFile}" "${genFileBase}_xml" "${SMTK_op_INCLUDE_DIRS}")
-    set(${genFiles} ${${genFiles}} "${genFile}" PARENT_SCOPE)
-  endforeach()
-endfunction()
-
-# the old implementation, should be replaced when the new one works.
-# users always call configure_file on our result - needs to be folded in.
-function(smtk_pyoperation_xml opSpecs genFiles)
-  set(options "")
-  set(oneValueArgs "TYPE")
-  set(multiValueArgs INCLUDE_DIRS)
-  cmake_parse_arguments(_SMTK_op "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-  set(ext "py")
-  set(type "_xml")
-  if (DEFINED _SMTK_op_TYPE)
-    set(type ${_SMTK_op_TYPE})
-  endif()
-  list(APPEND _SMTK_op_INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
-  if (smtk_PREFIX_PATH)
-    list(APPEND _SMTK_op_INCLUDE_DIRS ${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR})
-  endif ()
-  foreach (opSpec ${opSpecs})
-    get_filename_component(genFileBase "${opSpec}" NAME_WE)
-    set(genFile "${CMAKE_CURRENT_BINARY_DIR}/${genFileBase}${type}.${ext}")
-    configureFileAsPyVariable("${opSpec}" "${genFile}" "${genFileBase}${type}" "${_SMTK_op_INCLUDE_DIRS}")
-    set(${genFiles} ${${genFiles}} "${genFile}" PARENT_SCOPE)
-  endforeach()
-endfunction()
-
-
-
-if (_smtk_operation_xml_run AND CMAKE_SCRIPT_MODE_FILE)
-  if (ext STREQUAL "py")
-    configureFileAsPyVariable("${opSpec}" "${genFile}" "${genFileBase}${type}" "${include_dirs}")
-  else ()
-    configureFileAsCVariable("${opSpec}" "${genFile}" "${genFileBase}${type}" "${include_dirs}")
-  endif()
-endif()

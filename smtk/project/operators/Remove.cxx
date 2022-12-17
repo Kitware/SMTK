@@ -24,7 +24,7 @@
 
 #include "smtk/project/Manager.h"
 
-#include "smtk/project/Remove_xml.h"
+#include "smtk/project/operators/Remove_xml.h"
 
 #include <sstream>
 

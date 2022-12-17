@@ -43,7 +43,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/CreateFaces_xml.h"
+#include "smtk/session/polygon/operators/CreateFaces_xml.h"
 
 #include <cmath>
 #include <deque>

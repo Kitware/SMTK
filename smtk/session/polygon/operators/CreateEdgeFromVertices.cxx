@@ -25,7 +25,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/CreateEdgeFromVertices_xml.h"
+#include "smtk/session/polygon/operators/CreateEdgeFromVertices_xml.h"
 
 namespace smtk
 {

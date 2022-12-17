@@ -11,7 +11,7 @@
 #include "smtk/markup/operators/Write.h"
 
 #include "smtk/markup/Resource.h"
-#include "smtk/markup/Write_xml.h"
+#include "smtk/markup/operators/Write_xml.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"

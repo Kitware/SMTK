@@ -20,8 +20,8 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/Paths.h"
 
-#include "smtk/mesh/WriteResource_xml.h"
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/mesh/operators/WriteResource_xml.h"
 
 #include "smtk/mesh/operators/Write.h"
 

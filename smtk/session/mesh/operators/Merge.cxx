@@ -27,7 +27,7 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
 
-#include "smtk/session/mesh/Merge_xml.h"
+#include "smtk/session/mesh/operators/Merge_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

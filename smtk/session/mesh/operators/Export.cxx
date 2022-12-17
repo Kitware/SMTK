@@ -21,7 +21,7 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/session/mesh/Export_xml.h"
+#include "smtk/session/mesh/operators/Export_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;

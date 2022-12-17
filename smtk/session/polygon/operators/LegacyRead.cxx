@@ -20,7 +20,7 @@
 
 #include "smtk/operation/MarkGeometry.h"
 
-#include "smtk/session/polygon/LegacyRead_xml.h"
+#include "smtk/session/polygon/operators/LegacyRead_xml.h"
 
 using namespace smtk::model;
 
