@@ -245,9 +245,11 @@ XmlDocV3Parser::XmlDocV3Parser(ResourcePtr myResource, smtk::io::Logger& logger)
 
 XmlDocV3Parser::~XmlDocV3Parser() = default;
 
-void XmlDocV3Parser::process(pugi::xml_node& rootNode)
+void XmlDocV3Parser::process(
+  pugi::xml_node& rootNode,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
 {
-  XmlDocV2Parser::process(rootNode);
+  XmlDocV2Parser::process(rootNode, globalItemBlocks);
 
   auto configurationsNode = rootNode.child("Configurations");
   if (configurationsNode)

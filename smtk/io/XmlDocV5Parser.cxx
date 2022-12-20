@@ -92,7 +92,9 @@ XmlDocV5Parser::XmlDocV5Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 
 XmlDocV5Parser::~XmlDocV5Parser() = default;
 
-void XmlDocV5Parser::process(xml_node& rootNode)
+void XmlDocV5Parser::process(
+  xml_node& rootNode,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
 {
   pugi::xml_attribute xatt = rootNode.attribute("NameSeparator");
 
@@ -102,7 +104,7 @@ void XmlDocV5Parser::process(xml_node& rootNode)
     m_resource->setDefaultNameSeparator(nameSep);
   }
 
-  XmlDocV4Parser::process(rootNode);
+  XmlDocV4Parser::process(rootNode, globalItemBlocks);
 
   xml_node propertiesNode = rootNode.child("Properties");
   if (propertiesNode)

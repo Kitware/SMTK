@@ -80,13 +80,26 @@ public:
       // Are we referencing an Item Definition Block
       if (nodeName == "Block")
       {
-        auto it = parser->m_itemDefintionBlocks.find(itemName);
-        if (it == parser->m_itemDefintionBlocks.end())
+        // See if a namespace was specified else assume the global namespace ""
+        xatt = node.attribute("Namespace");
+        std::string itemNamespace = (xatt) ? xatt.value() : "";
+
+        auto nsit = parser->m_itemDefintionBlocks.find(itemNamespace);
+        if (nsit == parser->m_itemDefintionBlocks.end())
         {
           smtkErrorMacro(
             parser->m_logger,
-            "Can not find Item Block: " << itemName << " referenced in " << attType << ": "
-                                        << defName);
+            "Can not find Item Block Namespace: " << itemNamespace << " referenced in " << attType
+                                                  << ": " << defName);
+          continue;
+        }
+        auto it = nsit->second.find(itemName);
+        if (it == nsit->second.end())
+        {
+          smtkErrorMacro(
+            parser->m_logger,
+            "Can not find Item Block Name: " << itemName << "in Namespace: " << itemNamespace
+                                             << " referenced in " << attType << ": " << defName);
           continue;
         }
         // Make sure we are not already parsing a block of the same name

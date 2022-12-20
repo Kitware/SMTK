@@ -475,12 +475,61 @@ Category constraints are inherited as usual and that Blocks can call other block
         <String Name="str2"/>
       </ItemDefinitions>
     </AttDef>
+    <AttDef Type="Type3">
+      <Categories>
+        <Cat>Heat Transfer</Cat>
+      </Categories>
+      <ItemDefinitions>
+        <Block Name="B1" Namespace="globals2"/> <!-- An example of referring to an Item Block that is defined in namespace *globals2* -->
+        <String Name="str2"/>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 
 See data/attribute/attribute_collection/ItemBlockTest.sbt and smtk/attribute/testing/cxx/unitItemBlocks.cxx for examples.
 
-**Note** - An Item Block can currently only be used in the XML file that is defined.
+The Item Block functionality has been extended so that an Item Block can be exported in one file and consumed in another using the **Export** XML attribute.  In order to
+better organize  Item Blocks, we have also introduced the concept of a *namespace* that behaves similar to namespaces in C++.  A namespace scopes an
+Item Block and therefore must also be used when referring to an Item Block.
 
+**Note** Namespaces are only used w/r Item Blocks and they can not be nested.
+
+.. list-table:: XML Attributes for <ItemBlocks> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Namespace
+     - String value representing the default namespace to which all of its Item Blocks belong to. (Optional)
+
+       **Note** that if not specified SMTK assumes that the default namespace is the global namespace represented by ""
+
+.. list-table:: XML Attributes for <ItemBlock> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Name
+     - String value representing the name of the ItemBlock.
+       (Required)
+
+   * - Namespace
+     - String value representing the  namespace that the Item Block belongs to.
+       (Optional)
+
+       **Note** If not specified it will use the default namespace specified in the **ItemBlocks** node.
+
+   * - Export
+     - Boolean indicating that the ItemBlock should be made available to template files that include this one.
+       (Optional)
+
+       **Note** If not specified SMTK assumes that the value is *false* meaning that the ItemBlock is file-scope only
 
 Definitions Section
 ---------------------------------

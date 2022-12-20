@@ -41,9 +41,11 @@ void XmlDocV4Parser::process(xml_document& doc)
   this->processHints(amnode);
 }
 
-void XmlDocV4Parser::process(xml_node& rootNode)
+void XmlDocV4Parser::process(
+  xml_node& rootNode,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
 {
-  XmlDocV3Parser::process(rootNode);
+  XmlDocV3Parser::process(rootNode, globalItemBlocks);
 
   xml_node evaluatorsNode = rootNode.child("Evaluators");
   if (evaluatorsNode)

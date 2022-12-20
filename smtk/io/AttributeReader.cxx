@@ -77,6 +77,7 @@ public:
   void print(smtk::attribute::ResourcePtr resource);
   smtk::attribute::DirectoryInfo m_dirInfo;
   std::size_t m_currentFileIndex;
+  std::map<std::string, std::map<std::string, std::string>> m_globalItemBlocks;
 };
 }; // namespace io
 }; // namespace smtk
@@ -284,42 +285,42 @@ void AttributeReaderInternals::parseXml(
     XmlDocV6Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else if (XmlDocV5Parser::canParse(root))
   {
     XmlDocV5Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else if (XmlDocV4Parser::canParse(root))
   {
     XmlDocV4Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else if (XmlDocV3Parser::canParse(root))
   {
     XmlDocV3Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else if (XmlDocV2Parser::canParse(root))
   {
     XmlDocV2Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else if (XmlDocV1Parser::canParse(root))
   {
     XmlDocV1Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root);
+    theReader.process(root, m_globalItemBlocks);
   }
   else
   {
@@ -359,7 +360,7 @@ void AttributeReaderInternals::readAttributes(
   }
   if (this->scanIncludes(root, myFileInfo, includeStack, activeIncludes, spaths, logger))
   {
-    smtkErrorMacro(logger, "Problem occured traversing includes!");
+    smtkErrorMacro(logger, "Problem occurred traversing includes!");
     return;
   }
   // We want the toplevel file to be at the start of the vector.  This way all  information not

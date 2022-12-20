@@ -29,7 +29,9 @@ public:
   ~XmlDocV5Parser() override;
 
   using XmlDocV4Parser::process;
-  void process(pugi::xml_node& rootNode) override;
+  void process(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
   void processAttribute(pugi::xml_node& attNode) override;
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);

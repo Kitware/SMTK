@@ -32,7 +32,9 @@ public:
   static bool canParse(pugi::xml_document& doc);
 
   using XmlDocV5Parser::process;
-  void process(pugi::xml_node& rootNode) override;
+  void process(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
 
 protected:
   void processCategories(
