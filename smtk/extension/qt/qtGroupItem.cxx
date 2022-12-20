@@ -258,6 +258,12 @@ void qtGroupItem::updateItemData()
     m_internals->m_titleCheckbox->setVisible(true);
     m_internals->m_titleCheckbox->setChecked(item->localEnabledState());
     m_internals->m_titleCheckbox->blockSignals(false);
+    // Make sure we have the contents frame visibility properly set
+    auto* iview = m_itemInfo.baseView();
+    bool enforceCategories = (iview) ? (!iview->ignoreCategories()) : true;
+    m_internals->m_contentsFrame->setVisible(
+      item->localEnabledState() &&
+      item->hasRelevantChildren(enforceCategories, true, this->uiManager()->advanceLevel()));
   }
   else
   {
