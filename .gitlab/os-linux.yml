@@ -92,20 +92,20 @@
         - build
         - cmb
         - docker
-        - linux
+        - linux-x86_64
 
 .linux_test_tags:
     tags:
         - cmb
         - docker
-        - linux
+        - linux-x86_64
         - x11
 
 .linux_test_priv_tags:
     tags:
         - cmb
         - docker
-        - linux
+        - linux-x86_64
         - privileged
         - x11
 
