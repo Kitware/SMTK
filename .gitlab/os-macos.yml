@@ -44,7 +44,7 @@
 .macos_builder_tags:
     tags:
         - cmb
-        - macos
+        - macos-x86_64
         - shell
         - xcode-13.1
         - nonconcurrent
