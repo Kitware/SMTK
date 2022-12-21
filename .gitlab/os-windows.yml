@@ -50,7 +50,7 @@
         - nonconcurrent
         - shell
         - vs2022
-        - windows
+        - windows-x86_64
 
 ## Windows-specific scripts
 
