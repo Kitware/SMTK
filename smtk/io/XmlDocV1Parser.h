@@ -67,6 +67,9 @@ public:
   virtual ~XmlDocV1Parser();
   virtual void process(pugi::xml_document& doc);
   virtual void process(pugi::xml_node& rootNode);
+  virtual void process(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks);
 
   // This function has no implementation!
   static void convertStringToXML(std::string& str);
@@ -164,7 +167,9 @@ protected:
   virtual smtk::common::UUID getAttributeID(pugi::xml_node& attNode);
 
   // For processing item definition blocks
-  void processItemDefinitionBlocks(pugi::xml_node& rootNode);
+  void processItemDefinitionBlocks(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks);
 
   // For processing the child item definition block for attribute
   // definitions
@@ -187,7 +192,7 @@ protected:
   std::string m_defaultCategory;
   smtk::io::Logger& m_logger;
   std::size_t m_includeIndex;
-  std::map<std::string, pugi::xml_node> m_itemDefintionBlocks;
+  std::map<std::string, std::map<std::string, pugi::xml_node>> m_itemDefintionBlocks;
 
 private:
 };

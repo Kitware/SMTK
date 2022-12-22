@@ -27,8 +27,11 @@ class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
 public:
   XmlDocV3Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   ~XmlDocV3Parser() override;
+  using XmlDocV1Parser::process;
   void process(pugi::xml_document& doc) override;
-  void process(pugi::xml_node& rootNode) override;
+  void process(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
 
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);

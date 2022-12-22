@@ -543,6 +543,15 @@ void XmlDocV1Parser::process(pugi::xml_document& doc)
 
 void XmlDocV1Parser::process(pugi::xml_node& amnode)
 {
+  std::map<std::string, std::map<std::string, std::string>>
+    globalItemBlocks; // There are no global item blocks being passed in
+  this->process(amnode, globalItemBlocks);
+}
+
+void XmlDocV1Parser::process(
+  pugi::xml_node& amnode,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+{
   // Lets get the UUID of the resource if there is one
   auto idAtt = amnode.attribute("ID");
   if (idAtt)
@@ -660,7 +669,7 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
     }
   }
 
-  this->processItemDefinitionBlocks(amnode);
+  this->processItemDefinitionBlocks(amnode, globalItemBlocks);
   this->processAssociationRules(amnode);
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
@@ -706,38 +715,127 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
   this->processHints(amnode);
 }
 
-void XmlDocV1Parser::processItemDefinitionBlocks(xml_node& root)
+void XmlDocV1Parser::processItemDefinitionBlocks(
+  xml_node& root,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
 {
+  std::size_t numGlobalBlocks = 0;
   xml_node child, node = root.child("ItemBlocks");
-  if (node)
+  if (!node)
   {
-    for (child = node.first_child(); child; child = child.next_sibling())
+    // if we don't have any global items blocks we can just return
+    // else we need to create an ItemBlocks node to store the global blocks
+    if (globalItemBlocks.empty())
     {
-      xml_attribute xatt;
-      std::string blockName;
-      xatt = child.attribute("Name");
-      if (xatt)
+      return;
+    }
+    node = root.append_child("ItemBlocks");
+  }
+
+  xml_attribute xnsatt = node.attribute("Namespace");
+  std::string itemBlocksNamespace = (xnsatt) ? xnsatt.value() : "";
+  // Lets insert the global item blocks into the doc's item blocks node
+  for (const auto& namespaceMap : globalItemBlocks)
+  {
+    for (const auto& itemBlockDef : namespaceMap.second)
+    {
+      xml_document tempDoc;
+      if (tempDoc.load_buffer(itemBlockDef.second.c_str(), itemBlockDef.second.size()))
       {
-        blockName = xatt.value();
+        xml_node globalDef = tempDoc.first_child(); // There should only be one node
+        if (globalDef)
+        {
+          node.prepend_copy(globalDef);
+          numGlobalBlocks++;
+        }
+        else
+        {
+          smtkErrorMacro(
+            m_logger,
+            "Could not insert global Item Block: "
+              << namespaceMap.first << "::" << itemBlockDef.first << " into local item block map");
+        }
       }
       else
       {
-        smtkErrorMacro(m_logger, "Item Block is Missing Name attribute");
-        continue;
-      }
-      xml_node items = child.first_child();
-      if (items)
-      {
-        m_itemDefintionBlocks[blockName] = items;
-      }
-      else
-      {
-        smtkErrorMacro(m_logger, "Item Block: " << blockName << " is missing ItemDefinition node");
-        continue;
+        smtkErrorMacro(
+          m_logger,
+          "Could not de-serialize global Item Block: "
+            << namespaceMap.first << "::" << itemBlockDef.first << " into local item block map");
       }
     }
   }
+  for (child = node.first_child(); child; child = child.next_sibling())
+  {
+    xml_attribute xatt;
+    std::string blockName;
+    std::string blockNamespace;
+    bool hasExplicitNamespace;
+    xatt = child.attribute("Name");
+    if (xatt)
+    {
+      blockName = xatt.value();
+    }
+    else
+    {
+      smtkErrorMacro(m_logger, "Item Block is Missing Name attribute");
+      continue;
+    }
+    // See if the item block has an explicit namespace set.  If it does not
+    // it will inherit the namespace specified at the ItemBlocks node.  If that
+    // node does not have one set, then we assume it is the global namespace represented by ""
+
+    xatt = child.attribute("Namespace");
+    if (xatt)
+    {
+      blockNamespace = xatt.value();
+      hasExplicitNamespace = true;
+    }
+    else
+    {
+      blockNamespace = itemBlocksNamespace;
+      hasExplicitNamespace = false;
+    }
+    xml_node items = child.first_child();
+    if (items)
+    {
+      m_itemDefintionBlocks[blockNamespace][blockName] = items;
+      // Are we no longer processing item blocks that were passed in?
+      if (!numGlobalBlocks)
+      {
+        // Is the block marked for export?
+        xatt = child.attribute("Export");
+        if (xatt && xatt.as_bool())
+        {
+          // In order to retain its proper namespace association
+          // the block must have an explicit namespace attribute
+          // associated with it
+          if (!hasExplicitNamespace)
+          {
+            // Add the namespace it inherited from the itemblocks node
+            child.append_attribute("Namespace").set_value(itemBlocksNamespace.c_str());
+          }
+          // serialize the node and add it to the global map
+          std::stringstream temp;
+          child.print(temp);
+
+          globalItemBlocks[blockNamespace][blockName] = temp.str();
+        }
+      }
+    }
+    else
+    {
+      smtkErrorMacro(m_logger, "Item Block: " << blockName << " is missing ItemDefinition node");
+      continue;
+    }
+    // If this is an item block that we got from the global dictionary then decrement the count
+    if (numGlobalBlocks)
+    {
+      numGlobalBlocks--;
+    }
+  }
 }
+
 void XmlDocV1Parser::processDefinitionInformation(xml_node& root)
 {
   xml_node child, node = root.child("Definitions");

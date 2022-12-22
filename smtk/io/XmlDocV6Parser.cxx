@@ -66,7 +66,9 @@ bool XmlDocV6Parser::canParse(pugi::xml_node& node)
   return versionNum == 6;
 }
 
-void XmlDocV6Parser::process(pugi::xml_node& rootNode)
+void XmlDocV6Parser::process(
+  pugi::xml_node& rootNode,
+  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
 {
   pugi::xml_attribute xatt;
 
@@ -86,7 +88,7 @@ void XmlDocV6Parser::process(pugi::xml_node& rootNode)
   std::size_t templateVersion = static_cast<std::size_t>(tmp);
   m_resource->setTemplateVersion(templateVersion);
 
-  XmlDocV5Parser::process(rootNode);
+  XmlDocV5Parser::process(rootNode, globalItemBlocks);
 }
 
 void XmlDocV6Parser::processCategories(

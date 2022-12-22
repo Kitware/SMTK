@@ -20,6 +20,83 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
+// Test the Definition to see that it has the proper structure that was generated using ItemBlocks.  One of the the ItemDefinitions (indicated by testItemPos), will have
+// its categories tested which should also be the same as the Attribute Definition itself
+bool testDef(
+  attribute::ResourcePtr& attRes,
+  const std::string& attName,
+  const std::vector<std::string>& itemNames,
+  const std::vector<std::string>& passCategories,
+  const std::string& failedCategory,
+  int testItemPos)
+{
+  bool status = true;
+  DefinitionPtr attDef = attRes->findDefinition(attName);
+  if (attDef == nullptr)
+  {
+    std::cerr << "Could not find Definition: " << attName << "\n";
+    status = false;
+  }
+  else
+  {
+    // attDef check to see if the attribute passed its categories
+    for (const auto& cat : passCategories)
+    {
+      if (!attDef->categories().passes(cat))
+      {
+        std::cerr << attName << " does not pass " << cat << "\n";
+        status = false;
+      }
+    }
+    if (attDef->categories().passes(failedCategory))
+    {
+      std::cerr << attName << " should not have passed " << failedCategory << "\n";
+      status = false;
+    }
+
+    if (attDef->numberOfItemDefinitions() != itemNames.size())
+    {
+      std::cerr << attName << " does not contain the correct items"
+                << " found: ";
+      int numIDefs = (int)attDef->numberOfItemDefinitions();
+      for (int i = 0; i < numIDefs; ++i)
+      {
+        std::cerr << "\"" << attDef->itemDefinition(i)->name() << "\" ";
+      }
+      return false;
+    }
+
+    int numItems = (int)itemNames.size();
+    for (int i = 0; i < numItems; i++)
+    {
+      auto item = attDef->itemDefinition(i);
+      if (item->name() != itemNames[i])
+      {
+        std::cerr << attName << "[" << i << "] should be " << itemNames[i]
+                  << " - found: " << item->name() << std::endl;
+        status = false;
+      }
+      if (i == testItemPos)
+      {
+        for (const auto& cat : passCategories)
+        {
+          if (!item->categories().passes(cat))
+          {
+            std::cerr << item->name() << " does not pass " << cat << "\n";
+            status = false;
+          }
+        }
+        if (item->categories().passes(failedCategory))
+        {
+          std::cerr << item->name() << " should not have passed " << failedCategory << "\n";
+          status = false;
+        }
+      }
+    }
+  }
+  return status;
+}
+
 int unitItemBlocks(int /*unused*/, char* /*unused*/[])
 {
   // Read in the test configurations files
@@ -36,147 +113,24 @@ int unitItemBlocks(int /*unused*/, char* /*unused*/[])
     std::cerr << "Errors Generated when reading SBT file :\n" << logger.convertToString();
   }
 
-  DefinitionPtr t1 = attRes->findDefinition("Type1");
-  if (t1 == nullptr)
-  {
-    std::cerr << "Could not find Definition Type1\n";
-    status = false;
-  }
-  else
-  {
-    // t1 should be of categories Solid Mechanics or Fluid Flow but not Heat Transfer
-    if (!t1->categories().passes("Solid Mechanics"))
-    {
-      std::cerr << "Type1 does not pass Solid Mechanics\n";
-      status = false;
-    }
-    if (!t1->categories().passes("Fluid Flow"))
-    {
-      std::cerr << "Type1 does not pass Fluid Flow\n";
-      status = false;
-    }
-    if (t1->categories().passes("Heat Transfer"))
-    {
-      std::cerr << "Type1 should not have passed Heat Transfer\n";
-      status = false;
-    }
-    if (t1->numberOfItemDefinitions() != 4)
-    {
-      std::cerr << "Type1 does not contain the correct items"
-                << " found: ";
-      int numIDefs = (int)t1->numberOfItemDefinitions();
-      for (int i = 0; i < numIDefs; ++i)
-      {
-        std::cerr << "\"" << t1->itemDefinition(i)->name() << "\" ";
-      }
-      status = false;
-    }
-    else
-    {
-      auto item = t1->itemDefinition(0);
-      if (item->name() != "foo")
-      {
-        std::cerr << "Type1[0] should be foo - found: " << item->name() << std::endl;
-        status = false;
-      }
-      item = t1->itemDefinition(1);
-      if (item->name() != "s1")
-      {
-        std::cerr << "Type1[1] should be s1 - found: " << item->name() << std::endl;
-        status = false;
-      }
-      else if (!item->categories().passes("Solid Mechanics"))
-      {
-        std::cerr << "Type1[1] did not pass Solid Mechanics\n";
-        status = false;
-      }
-      else if (!item->categories().passes("Fluid Flow"))
-      {
-        std::cerr << "Type1[1] did not pass Fluid Flow\n";
-        status = false;
-      }
-      item = t1->itemDefinition(2);
-      if (item->name() != "i1")
-      {
-        std::cerr << "Type1[2] should be i1 - found: " << item->name() << std::endl;
-        status = false;
-      }
-      item = t1->itemDefinition(3);
-      if (item->name() != "bar")
-      {
-        std::cerr << "Type1[3] should be bar - found: " << item->name() << std::endl;
-        status = false;
-      }
-    }
-  }
+  std::vector<std::vector<std::string>> itemNames = { { "foo", "s1", "i1", "bar" },
+                                                      { "s1", "i1", "str2" },
+                                                      { "s1-globals2", "i1-globals2", "str2" },
+                                                      { "s3-globals2", "i3-globals2", "str2" },
+                                                      { "s2-globals1", "i2-globals1", "str2" },
+                                                      { "s4-globals2", "i4-globals2", "str2" } };
+  std::vector<std::vector<std::string>> passCats = {
+    { "Solid Mechanics", "Fluid Flow" },    { "Solid Mechanics", "Heat Transfer" },
+    { "Solid Mechanics", "Heat Transfer" }, { "Solid Mechanics", "Heat Transfer" },
+    { "Solid Mechanics", "Heat Transfer" }, { "Solid Mechanics", "Heat Transfer" }
+  };
 
-  DefinitionPtr t2 = attRes->findDefinition("Type2");
-  if (t2 == nullptr)
-  {
-    std::cerr << "Could not find Definition Type2\n";
-    status = false;
-  }
-  else
-  {
-    // t2 should be of categories Heat Transfer or Fluid Flow but not Solid Mechanics
-    if (!t2->categories().passes("Solid Mechanics"))
-    {
-      std::cerr << "Type2 does not pass Solid Mechanics\n";
-      status = false;
-    }
-    if (t2->categories().passes("Fluid Flow"))
-    {
-      std::cerr << "Type2 should not have passed Fluid Flow\n";
-      status = false;
-    }
-    if (!t2->categories().passes("Heat Transfer"))
-    {
-      std::cerr << "Type2 does not pass Solid Mechanics\n";
-      status = false;
-    }
-    if (t2->numberOfItemDefinitions() != 3)
-    {
-      std::cerr << "Type1 does not contain the correct items"
-                << " found: ";
-      int numIDefs = (int)t2->numberOfItemDefinitions();
-      for (int i = 0; i < numIDefs; ++i)
-      {
-        std::cerr << "\"" << t2->itemDefinition(i)->name() << "\" ";
-      }
-      status = false;
-    }
-    else
-    {
-      auto item = t2->itemDefinition(0);
-      if (item->name() != "s1")
-      {
-        std::cerr << "Type2[0] should be s1 - found: " << item->name() << std::endl;
-        status = false;
-      }
-      else if (!item->categories().passes("Heat Transfer"))
-      {
-        std::cerr << "Type2[0] did not pass Heat Transfer\n";
-        status = false;
-      }
-      else if (!item->categories().passes("Solid Mechanics"))
-      {
-        std::cerr << "Type2[0] did not pass Solid Mechanics\n";
-        status = false;
-      }
-      item = t2->itemDefinition(1);
-      if (item->name() != "i1")
-      {
-        std::cerr << "Type2[1] should be i1 - found: " << item->name() << std::endl;
-        status = false;
-      }
-      item = t2->itemDefinition(2);
-      if (item->name() != "str2")
-      {
-        std::cerr << "Type2[2] should be str2 - found: " << item->name() << std::endl;
-        status = false;
-      }
-    }
-  }
+  status = status && testDef(attRes, "Type0", itemNames[0], passCats[0], "Heat Transfer", 1);
+  status = status && testDef(attRes, "Type1", itemNames[1], passCats[1], "Fluid Flow", 0);
+  status = status && testDef(attRes, "Type2", itemNames[2], passCats[2], "Fluid Flow", 0);
+  status = status && testDef(attRes, "Type3", itemNames[3], passCats[3], "Fluid Flow", 0);
+  status = status && testDef(attRes, "Type4", itemNames[4], passCats[4], "Fluid Flow", 0);
+  status = status && testDef(attRes, "Type5", itemNames[5], passCats[5], "Fluid Flow", 0);
 
   if (status)
   {
