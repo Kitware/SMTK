@@ -35,62 +35,59 @@ bool testDef(
   if (attDef == nullptr)
   {
     std::cerr << "Could not find Definition: " << attName << "\n";
-    status = false;
+    return false;
   }
-  else
+  // attDef check to see if the attribute passed its categories
+  for (const auto& cat : passCategories)
   {
-    // attDef check to see if the attribute passed its categories
-    for (const auto& cat : passCategories)
+    if (!attDef->categories().passes(cat))
     {
-      if (!attDef->categories().passes(cat))
-      {
-        std::cerr << attName << " does not pass " << cat << "\n";
-        status = false;
-      }
-    }
-    if (attDef->categories().passes(failedCategory))
-    {
-      std::cerr << attName << " should not have passed " << failedCategory << "\n";
+      std::cerr << attName << " does not pass " << cat << "\n";
       status = false;
     }
+  }
+  if (attDef->categories().passes(failedCategory))
+  {
+    std::cerr << attName << " should not have passed " << failedCategory << "\n";
+    status = false;
+  }
 
-    if (attDef->numberOfItemDefinitions() != itemNames.size())
+  if (attDef->numberOfItemDefinitions() != itemNames.size())
+  {
+    std::cerr << attName << " does not contain the correct items"
+              << " found: ";
+    int numIDefs = (int)attDef->numberOfItemDefinitions();
+    for (int i = 0; i < numIDefs; ++i)
     {
-      std::cerr << attName << " does not contain the correct items"
-                << " found: ";
-      int numIDefs = (int)attDef->numberOfItemDefinitions();
-      for (int i = 0; i < numIDefs; ++i)
-      {
-        std::cerr << "\"" << attDef->itemDefinition(i)->name() << "\" ";
-      }
-      return false;
+      std::cerr << "\"" << attDef->itemDefinition(i)->name() << "\" ";
     }
+    return false;
+  }
 
-    int numItems = (int)itemNames.size();
-    for (int i = 0; i < numItems; i++)
+  int numItems = (int)itemNames.size();
+  for (int i = 0; i < numItems; i++)
+  {
+    auto item = attDef->itemDefinition(i);
+    if (item->name() != itemNames[i])
     {
-      auto item = attDef->itemDefinition(i);
-      if (item->name() != itemNames[i])
+      std::cerr << attName << "[" << i << "] should be " << itemNames[i]
+                << " - found: " << item->name() << std::endl;
+      status = false;
+    }
+    if (i == testItemPos)
+    {
+      for (const auto& cat : passCategories)
       {
-        std::cerr << attName << "[" << i << "] should be " << itemNames[i]
-                  << " - found: " << item->name() << std::endl;
-        status = false;
-      }
-      if (i == testItemPos)
-      {
-        for (const auto& cat : passCategories)
+        if (!item->categories().passes(cat))
         {
-          if (!item->categories().passes(cat))
-          {
-            std::cerr << item->name() << " does not pass " << cat << "\n";
-            status = false;
-          }
-        }
-        if (item->categories().passes(failedCategory))
-        {
-          std::cerr << item->name() << " should not have passed " << failedCategory << "\n";
+          std::cerr << item->name() << " does not pass " << cat << "\n";
           status = false;
         }
+      }
+      if (item->categories().passes(failedCategory))
+      {
+        std::cerr << item->name() << " should not have passed " << failedCategory << "\n";
+        status = false;
       }
     }
   }
