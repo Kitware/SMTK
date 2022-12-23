@@ -11,6 +11,9 @@ git clone --recursive https://gitlab.kitware.com/cmb/cmb-superbuild.git "$workdi
 git -C "$workdir" checkout "$superbuild_ref"
 git -C "$workdir" submodule update --recursive --init
 export GIT_CEILING_DIRECTORIES="$workdir"
+cd $workdir
+./.gitlab/ci/cmake.sh
+export PATH=${workdir}/.gitlab/cmake/bin:$PATH
 mkdir -p "$workdir/build"
 cd "$workdir/build"
 
