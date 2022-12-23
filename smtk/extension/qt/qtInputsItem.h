@@ -51,6 +51,9 @@ public:
   bool isFixedWidth() const override;
   bool eventFilter(QObject* filterObj, QEvent* ev) override;
 
+  QWidget* lastEditor() const override;
+  void setPreviousEditor(QWidget*) override;
+
 public Q_SLOTS:
   void setOutputOptional(int);
   void onExpressionReferenceChanged();

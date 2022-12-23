@@ -96,6 +96,11 @@ public:
   /// cleanup such as stop observing SMTK "signals".
   virtual void markForDeletion();
 
+  /** \brief Returns editor widget, used when setting tab order */
+  virtual QWidget* lastEditor() const { return nullptr; } // future: make pure virtual?
+  /** \brief Sets previous widget for tabbing order */
+  virtual void setPreviousEditor(QWidget* w) {} // future: make pure virtual?
+
 public Q_SLOTS:
   // Controls whether the Selection Manager should be used for setting model
   // and mesh entity items - Note that this is just a hint and could be ignored

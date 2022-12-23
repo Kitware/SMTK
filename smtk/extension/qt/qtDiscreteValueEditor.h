@@ -35,6 +35,7 @@ public:
   ~qtDiscreteValueEditor() override;
   bool useSelectionManger() const { return m_useSelectionManager; }
   void updateContents();
+  QWidget* widget() const; // the internal editing widget (QComboBox)
 
 public Q_SLOTS:
   void onInputValueChanged();

@@ -241,7 +241,31 @@ public:
   QPointer<QLineEdit> m_expressionResultLineEdit;
   QString m_lastExpression;
   int m_editPrecision;
+
+  QList<QWidget*> m_editors;
 };
+
+QWidget* qtInputsItem::lastEditor() const
+{
+  if (m_internals->m_editors.isEmpty())
+  {
+    return nullptr;
+  }
+  return m_internals->m_editors.last();
+}
+
+void qtInputsItem::setPreviousEditor(QWidget* editor)
+{
+  QWidget* previousEd = editor;
+  for (QWidget* ed : m_internals->m_editors)
+  {
+    if (ed != nullptr) // needed?
+    {
+      QWidget::setTabOrder(previousEd, ed);
+    }
+    previousEd = ed;
+  }
+}
 
 qtItem* qtInputsItem::createItemWidget(const qtAttributeItemInfo& info)
 {
@@ -939,6 +963,7 @@ void qtInputsItem::updateUI()
   {
     return;
   }
+  m_internals->m_editors.clear();
 
   m_widget = new QFrame(this->parentWidget());
   m_widget->setObjectName(dataObj->name().c_str());
@@ -1164,6 +1189,11 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   {
     return nullptr;
   }
+  // m_internals->m_editors.reserve(elementIdx + 1);
+  while (m_internals->m_editors.count() <= elementIdx)
+  {
+    m_internals->m_editors << nullptr;
+  }
 
   if (item->isDiscrete())
   {
@@ -1172,9 +1202,13 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     m_internals->DiscreteEditors.append(editor);
+    m_internals->m_editors[elementIdx] = editor->widget();
     return editor;
   }
-  return this->createEditBox(elementIdx, m_widget);
+
+  QWidget* editorWidget = this->createEditBox(elementIdx, m_widget);
+  m_internals->m_editors[elementIdx] = editorWidget;
+  return editorWidget;
 }
 
 QFrame* qtInputsItem::createExpressionRefFrame()
@@ -1684,6 +1718,7 @@ QWidget* qtInputsItem::createIntWidget(
     {
       editBox->setText(vitem->valueAsString(elementIdx).c_str());
     }
+
     return editBox;
   }
 
@@ -1710,6 +1745,7 @@ QWidget* qtInputsItem::createIntWidget(
       spinbox->setValue(iitem->value(elementIdx));
     }
     connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intValueChanged(int)));
+
     return spinbox;
   }
   return nullptr;

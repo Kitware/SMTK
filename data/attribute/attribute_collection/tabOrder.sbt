@@ -2,11 +2,11 @@
 <SMTK_AttributeResource Version="4">
 
   <Definitions>
-    <AttDef Type="SingleInts">
+    <AttDef Type="ExtensibleGroup">
       <ItemDefinitions>
         <Int Name="Before1"><DefaultValue>1</DefaultValue></Int>
-        <Int Name="Before2"><DefaultValue>2</DefaultValue></Int>
-        <Group Name="SingleInts" Extensible="true">
+        <Double Name="Before2"><DefaultValue>3.14159</DefaultValue></Double>
+        <Group Name="ExtensibleGroup" Extensible="true">
           <ItemDefinitions>
             <Int Name="First"><DefaultValue>1</DefaultValue></Int>
             <Int Name="Second">
@@ -16,10 +16,17 @@
                 <Value Enum="Three">3</Value>
               </DiscreteInfo>
             </Int>
-            <Int Name="Third"><DefaultValue>3</DefaultValue></Int>
+            <Double Name="Third" NumberOfRequiredValues="2">
+              <ComponentLabels>
+                <Label>Label1</Label>
+                <Label>Label2</Label>
+              </ComponentLabels>
+              <DefaultValue>3.33,6.66</DefaultValue>
+            </Double>
+            <String Name="text"><DefaultValue>Fourth</DefaultValue></String>
           </ItemDefinitions>
         </Group>
-        <Int Name="After1"><DefaultValue>1</DefaultValue></Int>
+        <String Name="After1"><DefaultValue>String data</DefaultValue></String>
         <Int Name="After2"><DefaultValue>2</DefaultValue></Int>
       </ItemDefinitions>
     </AttDef>
@@ -36,13 +43,13 @@
           FilterByAdvanceLevel="false" FilterByCategory="false"
           UseScrollingContainer="false">
       <Views>
-        <View Title="SingleInts" />
+        <View Title="ExtensibleGroup" />
       </Views>
     </View>
 
-    <View Type="Instanced" Title="SingleInts" Label="Single Ints">
+    <View Type="Instanced" Title="ExtensibleGroup" Label="Extensible Group">
       <InstancedAttributes>
-        <Att Type="SingleInts" Name="SingleInts" />
+        <Att Type="ExtensibleGroup" Name="ExtensibleGroup" />
       </InstancedAttributes>
     </View>
 

@@ -33,6 +33,7 @@ public:
   qtGroupItem(const qtAttributeItemInfo& info);
   ~qtGroupItem() override;
   void setLabelVisible(bool) override;
+  QWidget* lastEditor() const override;
 
 public Q_SLOTS:
   void updateItemData() override;

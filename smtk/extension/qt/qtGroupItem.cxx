@@ -25,6 +25,7 @@
 
 #include <QCheckBox>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QFileDialog>
 #include <QHeaderView>
 #include <QLabel>
@@ -54,6 +55,8 @@ public:
   QPointer<QLabel> m_titleLabel;
   QPointer<QLabel> m_alertLabel;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
+  QWidget* m_previousEditor = nullptr;
+  qtItem* m_lastItem = nullptr;
 };
 
 qtItem* qtGroupItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -102,6 +105,11 @@ void qtGroupItem::setLabelVisible(bool visible)
   }
 
   m_internals->m_titleFrame->setVisible(visible);
+}
+
+QWidget* qtGroupItem::lastEditor() const
+{
+  return m_internals->m_lastItem ? m_internals->m_lastItem->lastEditor() : nullptr;
 }
 
 void qtGroupItem::createWidget()
@@ -542,6 +550,23 @@ void qtGroupItem::addItemsToTable(int index)
     return;
   }
 
+  QWidget* previousEditor = nullptr;
+  if (index == 0)
+  {
+    previousEditor = m_internals->m_previousEditor;
+  }
+  else if (index == m_internals->ItemsTable->rowCount())
+  {
+    previousEditor = m_internals->m_lastItem->lastEditor();
+  }
+  else
+  {
+    qCritical() << "Internal Error: Unable to add items in middle of table"
+                << "index" << index << "rowCount" << m_internals->ItemsTable->rowCount() << __FILE__
+                << "line" << __LINE__;
+    return;
+  }
+
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(m_internals->ChildrensFrame->layout());
   if (!m_internals->ItemsTable)
   {
@@ -618,6 +643,10 @@ void qtGroupItem::addItemsToTable(int index)
       childItem->setLabelVisible(false);
       m_internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
       itemList.push_back(childItem);
+
+      childItem->setPreviousEditor(previousEditor);
+      previousEditor = childItem->lastEditor();
+
       connect(
         childItem,
         SIGNAL(widgetSizeChanged()),
@@ -631,8 +660,14 @@ void qtGroupItem::addItemsToTable(int index)
         this,
         SLOT(onChildItemModified()),
         static_cast<Qt::ConnectionType>(Qt::AutoConnection | Qt::UniqueConnection));
-    }
+    } // if (childItem)
+  }   // for (j)
+
+  if (!itemList.isEmpty() && index == (m_internals->ItemsTable->rowCount() - 1))
+  {
+    m_internals->m_lastItem = itemList.last();
   }
+
   // Check to see if the last column is not fixed width and set the  table to stretch
   // the last column if that is the case
   if (!(itemList.isEmpty() || itemList.back()->isFixedWidth()))
@@ -653,6 +688,11 @@ void qtGroupItem::addItemsToTable(int index)
     minusButton->setToolTip("Remove Row");
     //QVariant vdata(static_cast<int>(i));
     //minusButton->setProperty("SubgroupIndex", vdata);
+
+    // Set focus policy to click only.
+    // Qt "tab" logic still traverses the buttons; reason unknown.
+    minusButton->setFocusPolicy(Qt::ClickFocus);
+
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveSubGroup()));
     m_internals->ItemsTable->setCellWidget(index, 0, minusButton);
 

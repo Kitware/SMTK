@@ -86,6 +86,11 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
   delete this->Internals;
 }
 
+QWidget* qtDiscreteValueEditor::widget() const
+{
+  return this->Internals->m_combo;
+}
+
 void qtDiscreteValueEditor::createWidget()
 {
   smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
