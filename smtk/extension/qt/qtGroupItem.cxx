@@ -555,6 +555,7 @@ void qtGroupItem::addItemsToTable(int index)
       0, QHeaderView::ResizeToContents);
     m_internals->ItemsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     frameLayout->addWidget(m_internals->ItemsTable);
+    m_internals->ItemsTable->setTabKeyNavigation(false);
   }
 
   m_internals->ItemsTable->blockSignals(true);
