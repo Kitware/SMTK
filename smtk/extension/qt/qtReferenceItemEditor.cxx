@@ -480,6 +480,19 @@ smtk::resource::PersistentObjectPtr qtReferenceItemEditor::object(int index)
   return selectedObj;
 }
 
+QWidget* qtReferenceItemEditor::lastEditor() const
+{
+  return m_internals->m_comboBox;
+}
+
+void qtReferenceItemEditor::setPreviousEditor(QWidget* widget)
+{
+  if (m_internals->m_comboBox != nullptr)
+  {
+    QWidget::setTabOrder(widget, m_internals->m_comboBox);
+  }
+}
+
 void qtReferenceItemEditor::highlightItem(int index)
 {
   // Are we dealing with the create new option

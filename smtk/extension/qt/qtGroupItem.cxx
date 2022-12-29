@@ -574,13 +574,16 @@ void qtGroupItem::addItemsToTable(int index)
     m_internals->ItemsTable->setObjectName(QString("ItemsTable%1").arg(index));
     m_internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    // Disable interaction with QTableWidget items
+    m_internals->ItemsTable->setSelectionMode(QAbstractItemView::NoSelection);
+    m_internals->ItemsTable->setTabKeyNavigation(false);
+
     m_internals->ItemsTable->setColumnCount(1); // for minus button
     m_internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
     m_internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
       0, QHeaderView::ResizeToContents);
     m_internals->ItemsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     frameLayout->addWidget(m_internals->ItemsTable);
-    m_internals->ItemsTable->setTabKeyNavigation(false);
   }
 
   m_internals->ItemsTable->blockSignals(true);

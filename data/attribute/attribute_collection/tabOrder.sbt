@@ -2,11 +2,11 @@
 <SMTK_AttributeResource Version="4">
 
   <Definitions>
-    <AttDef Type="ExtensibleGroup">
+    <AttDef Type="InputsItems">
       <ItemDefinitions>
         <Int Name="Before1"><DefaultValue>1</DefaultValue></Int>
         <Double Name="Before2"><DefaultValue>3.14159</DefaultValue></Double>
-        <Group Name="ExtensibleGroup" Extensible="true">
+        <Group Name="InputsItems" Extensible="true">
           <ItemDefinitions>
             <Int Name="First"><DefaultValue>1</DefaultValue></Int>
             <Int Name="Second">
@@ -31,6 +31,31 @@
       </ItemDefinitions>
     </AttDef>
 
+    <AttDef Type="ReferenceItems">
+      <ItemDefinitions>
+        <Int Name="Before1"><DefaultValue>1</DefaultValue></Int>
+        <Group Name="ReferenceItems" Extensible="true">
+          <ItemDefinitions>
+            <Int Name="First"><DefaultValue>1</DefaultValue></Int>
+            <Component Name="Component">
+              <Accepts>
+                <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Example']" />
+                <Resource Name="smtk::attribute::Resource" Filter="attribute[type='InputsItems']" />
+                <Resource Name="smtk::attribute::Resource" Filter="attribute[type='ReferenceItems']" />
+              </Accepts>
+            </Component>
+            <Resource Name="Resource">
+              <Accepts>
+                <Resource Name="smtk::attribute::Resource" />
+              </Accepts>
+            </Resource>
+            <String Name="text"><DefaultValue>string item</DefaultValue></String>
+          </ItemDefinitions>
+        </Group>
+        <String Name="After1"><DefaultValue>String data</DefaultValue></String>
+      </ItemDefinitions>
+    </AttDef>
+
     <AttDef Type="Example" />
    </Definitions>
 
@@ -43,13 +68,20 @@
           FilterByAdvanceLevel="false" FilterByCategory="false"
           UseScrollingContainer="false">
       <Views>
-        <View Title="ExtensibleGroup" />
+        <View Title="InputsItems" />
+        <View Title="ReferenceItems" />
       </Views>
     </View>
 
-    <View Type="Instanced" Title="ExtensibleGroup" Label="Extensible Group">
+    <View Type="Instanced" Title="InputsItems" Label="Inputs Items">
       <InstancedAttributes>
-        <Att Type="ExtensibleGroup" Name="ExtensibleGroup" />
+        <Att Type="InputsItems" Name="InputsItems" />
+      </InstancedAttributes>
+    </View>
+
+    <View Type="Instanced" Title="ReferenceItems" Label="Reference Items">
+      <InstancedAttributes>
+        <Att Type="ReferenceItems" Name="ReferenceItems" />
       </InstancedAttributes>
     </View>
 

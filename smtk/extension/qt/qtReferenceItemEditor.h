@@ -61,6 +61,9 @@ public:
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
   smtk::resource::PersistentObjectPtr object(int index);
+
+  QWidget* lastEditor() const override;
+  void setPreviousEditor(QWidget*) override;
 public Q_SLOTS:
   void updateItemData() override;
   void highlightItem(int index);

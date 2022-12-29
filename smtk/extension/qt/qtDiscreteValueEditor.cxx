@@ -86,7 +86,7 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
   delete this->Internals;
 }
 
-QWidget* qtDiscreteValueEditor::widget() const
+QWidget* qtDiscreteValueEditor::editingWidget() const
 {
   return this->Internals->m_combo;
 }

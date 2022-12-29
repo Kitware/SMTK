@@ -1202,7 +1202,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     m_internals->DiscreteEditors.append(editor);
-    m_internals->m_editors[elementIdx] = editor->widget();
+    m_internals->m_editors[elementIdx] = editor->editingWidget();
     return editor;
   }
 
