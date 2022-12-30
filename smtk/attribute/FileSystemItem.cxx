@@ -165,11 +165,11 @@ std::string FileSystemItem::valueAsString(std::size_t element, const std::string
   assert(m_values.size() > element);
   if (!format.empty())
   {
-    sprintf(dummy, format.c_str(), m_values[element].c_str());
+    snprintf(dummy, 300, format.c_str(), m_values[element].c_str());
   }
   else
   {
-    sprintf(dummy, "%s", m_values[element].c_str());
+    snprintf(dummy, 300, "%s", m_values[element].c_str());
   }
   return dummy;
 }

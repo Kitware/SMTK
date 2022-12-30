@@ -20,6 +20,7 @@
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/SearchStyle.h"
+#include "smtk/common/Deprecation.h"
 #include <algorithm>
 #include <map>
 #include <queue>

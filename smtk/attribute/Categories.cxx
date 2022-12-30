@@ -16,16 +16,6 @@
 
 using namespace smtk::attribute;
 
-std::string Categories::Set::combinationModeAsString(const CombinationMode mode)
-{
-  return Categories::combinationModeAsString(mode);
-}
-
-bool Categories::Set::combinationModeFromString(const std::string& val, CombinationMode& mode)
-{
-  return Categories::combinationModeFromString(val, mode);
-}
-
 bool Categories::Set::setCombinationMode(const Set::CombinationMode& newMode)
 {
   if (newMode != Set::CombinationMode::LocalOnly)
@@ -262,19 +252,6 @@ bool Categories::combinationModeFromString(const std::string& val, CombinationMo
   if (val == "LocalOnly")
   {
     mode = CombinationMode::LocalOnly;
-    return true;
-  }
-  return false;
-}
-
-bool Categories::insert(const Set& set)
-{
-  // if the set is not empty, add it
-  if (!set.empty())
-  {
-    Stack newStack;
-    newStack.append(CombinationMode::LocalOnly, set);
-    m_stacks.insert(newStack);
     return true;
   }
   return false;

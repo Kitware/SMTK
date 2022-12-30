@@ -102,18 +102,6 @@ smtk::view::ManagerPtr vtkSMSMTKWrapperProxy::GetViewManager() const
   return wrapper ? wrapper->GetViewManager() : nullptr;
 }
 
-smtk::common::TypeContainer& vtkSMSMTKWrapperProxy::GetManagers() const
-{
-  // TODO: This should just "return this->Managers;" (i.e., the proxy should hold
-  //       a "client adaptation" of the server's managers) but we are getting things
-  //       working in built-in mode first, so just directly fetch the version
-  //       on the server and return it.
-  static smtk::common::TypeContainer nullContainer;
-  auto* self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
-  auto* wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
-  return wrapper ? *wrapper->GetManagersPtr() : nullContainer;
-}
-
 smtk::common::Managers::Ptr vtkSMSMTKWrapperProxy::GetManagersPtr() const
 {
   // TODO: This should just "return this->Managers;" (i.e., the proxy should hold

@@ -102,15 +102,6 @@ public:
     m_localCategories = catSet;
   }
 
-  ///\brief Indicates if the Definition can inherit categories based on it's
-  /// owning ItemDefinition or its owning Attribute Definition.  The default is true.
-  ///@{
-  SMTK_DEPRECATED_IN_22_07("Replaced by ItemDefinition::categoryInheritanceMode.")
-  bool isOkToInherit() const;
-  SMTK_DEPRECATED_IN_22_07("Replaced by ItemDefinition::setCategoryInheritanceMode.")
-  void setIsOkToInherit(bool isOkToInheritValue);
-  ///@}
-
   ///\brief Determines how the Definition should combine its local category Set with the
   /// category constraints being inherited from it's owning Attribute or Item Definition
   ///@{

@@ -109,11 +109,6 @@ public:
     return this->Managers->get<smtk::view::SelectionPtr>();
   }
 
-  SMTK_DEPRECATED_IN_22_04("Replaced by GetManagersPtr().")
-  const smtk::common::TypeContainer& GetManagers() const { return *this->Managers; }
-  SMTK_DEPRECATED_IN_22_04("Replaced by GetManagersPtr().")
-  smtk::common::TypeContainer& GetManagers() { return *this->Managers; }
-
   smtk::common::Managers::ConstPtr GetManagersPtr() const { return this->Managers; }
   smtk::common::Managers::Ptr GetManagersPtr() { return this->Managers; }
 

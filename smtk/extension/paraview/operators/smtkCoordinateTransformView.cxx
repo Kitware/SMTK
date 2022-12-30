@@ -904,11 +904,6 @@ void smtkCoordinateTransformView::updateUI()
   smtk::attribute::AttributePtr att = m_p->m_currentOp->parameters();
 }
 
-void smtkCoordinateTransformView::requestModelEntityAssociation()
-{
-  this->updateUI();
-}
-
 void smtkCoordinateTransformView::valueChanged(smtk::attribute::ItemPtr valItem)
 {
   (void)valItem;

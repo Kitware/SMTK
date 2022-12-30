@@ -161,10 +161,6 @@ public:
   virtual bool removeSource(const smtk::common::TypeContainer& managers);
   /// Stop listening for changes from all sources.
   virtual bool resetSources();
-  /// Invoke the visitor on each source that has been added to the model.
-  SMTK_DEPRECATED_IN_21_12("This is the older style visitor which returns true to continue and "
-                           "false to halt instead of using the smtk::common::Visit enums")
-  virtual void visitSources(SourceVisitor visitor);
   /// Invoke the visitor function on each source that has been added to the model.
   virtual void visitSources(SourceVisitorFunction visitor);
   /**\brief The priority used for observing operation results.

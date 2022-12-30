@@ -36,7 +36,6 @@ set(operationHeaders
   Observer.h
   Operation.h
   Registrar.h
-  ResourceManagerOperation.h
   SpecificationOps.h
   XMLOperation.h
 

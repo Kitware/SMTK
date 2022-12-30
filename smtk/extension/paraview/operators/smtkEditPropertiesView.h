@@ -33,7 +33,6 @@ public:
 
 public Q_SLOTS: // NOLINT(readability-redundant-access-specifiers)
   void updateUI() override;
-  void requestModelEntityAssociation() override;
   void onShowCategory() override;
   /// This will be triggered by selecting different type
   /// of construction method in create-edge op.

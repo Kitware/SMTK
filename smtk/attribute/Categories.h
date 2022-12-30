@@ -14,8 +14,6 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows
 
-#include "smtk/common/Deprecation.h"
-
 #include <set>
 #include <string>
 #include <utility>
@@ -39,19 +37,6 @@ public:
     Or = 0,        //!< Represents logical Or
     And = 1,       //!< Represents logical And
     LocalOnly = 2, //!< Indicates no further processing of Category Set Pairs is required
-
-#ifdef _MSC_VER
-    /*
-     * MSVC doesn't have a way to deprecate enum variants other than through
-     * `#pragma`. Just let other platforms handle it.
-     */
-    Any = Or,
-    All = And
-#else
-    Any SMTK_DEPRECATED_IN_22_07("Please use Or") = Or,
-    All SMTK_DEPRECATED_IN_22_07("Please use And") = And
-#endif
-
   };
 
   ///\brief Categories::Set represents a single category constraint used by the Categories class.
@@ -148,12 +133,6 @@ public:
       const std::set<std::string>& testSet,
       Set::CombinationMode comboMode);
 
-    SMTK_DEPRECATED_IN_22_07(
-      "Replaced by Categories::combinationModeAsString(CombinationMode mode).")
-    static std::string combinationModeAsString(Set::CombinationMode mode);
-    SMTK_DEPRECATED_IN_22_07("Replaced by Categories::combinationModeFromString(const std::string& "
-                             "val, CombinationMode& mode).")
-    static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
     ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
     int compare(const Set& rhs) const;
     std::string convertToString(const std::string& prefix = "") const;
@@ -190,8 +169,6 @@ public:
   ///@{
   ///\brief Insert either a Categories::Set or the sets of another Categories instance into
   /// this instance.
-  SMTK_DEPRECATED_IN_22_07("Replaced by Categories::insert(const Stack&).")
-  bool insert(const Set& set);
   bool insert(const Stack& stack);
   void insert(const Categories& cats);
   ///@}
@@ -200,8 +177,6 @@ public:
   ///\brief Return the number of stacks in this instance.
   std::size_t size() const { return m_stacks.size(); }
   ///\brief Return the sets contained in this instance.
-  SMTK_DEPRECATED_IN_22_07("Replaced by Categories::stacks().")
-  const std::set<Set> sets() const { return std::set<Set>(); }
   ///\brief Return the stacks contained in this instance.
   const std::set<Stack>& stacks() const { return m_stacks; }
   ///\brief Return a set of all category names referenced in all of the instance's stacks.

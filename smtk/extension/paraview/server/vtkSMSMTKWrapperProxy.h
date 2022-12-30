@@ -12,7 +12,6 @@
 
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
-#include "smtk/common/Deprecation.h"
 #include "smtk/common/Managers.h"
 
 #include "smtk/resource/Manager.h"
@@ -69,10 +68,6 @@ public:
 
   /// Return the client-side view manager (mirrored on the server via this proxy).
   smtk::view::ManagerPtr GetViewManager() const;
-
-  /// Return the client-side managers (mirrored on the server via this proxy).
-  SMTK_DEPRECATED_IN_22_04("Replaced with GetManagersPtr().")
-  smtk::common::TypeContainer& GetManagers() const;
 
   /// Return the client-side managers (mirrored on the server via this proxy).
   smtk::common::Managers::Ptr GetManagersPtr() const;

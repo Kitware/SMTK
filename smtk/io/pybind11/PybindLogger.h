@@ -59,11 +59,6 @@ inline PySharedPtrClass< smtk::io::Logger > pybind11_init_smtk_io_Logger(py::mod
     .value("Warning", smtk::io::Logger::Severity::Warning)
     .value("Error", smtk::io::Logger::Severity::Error)
     .value("Fatal", smtk::io::Logger::Severity::Fatal)
-    .value("DEBUG", smtk::io::Logger::Severity::DEBUG)
-    .value("INFO", smtk::io::Logger::Severity::INFO)
-    .value("WARNING", smtk::io::Logger::Severity::WARNING)
-    .value("ERROR", smtk::io::Logger::Severity::ERROR)
-    .value("FATAL", smtk::io::Logger::Severity::FATAL)
     .export_values();
   return instance;
 }
