@@ -749,23 +749,6 @@ std::set<AttributePtr> Definition::attributes(
   return atts;
 }
 
-bool Definition::isOkToInherit() const
-{
-  return m_combinationMode != Categories::CombinationMode::LocalOnly;
-}
-
-void Definition::setIsOkToInherit(bool isOkToInheritValue)
-{
-  if (isOkToInheritValue)
-  {
-    m_combinationMode = Categories::CombinationMode::Or;
-  }
-  else
-  {
-    m_combinationMode = Categories::CombinationMode::LocalOnly;
-  }
-}
-
 void Definition::applyCategories(smtk::attribute::Categories::Stack inherited)
 {
   smtk::attribute::Categories inheritedFromItems;

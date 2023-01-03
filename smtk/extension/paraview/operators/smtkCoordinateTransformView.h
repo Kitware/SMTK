@@ -50,7 +50,6 @@ public:
 
 public Q_SLOTS: // NOLINT(readability-redundant-access-specifiers)
   void updateUI() override;
-  void requestModelEntityAssociation() override;
   void onShowCategory() override;
   void valueChanged(smtk::attribute::ItemPtr valItem) override;
   /// This slot is triggered by the "remove transform" action.

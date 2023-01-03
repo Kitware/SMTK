@@ -26,23 +26,6 @@ ItemDefinition::ItemDefinition(const std::string& myName)
 
 ItemDefinition::~ItemDefinition() = default;
 
-bool ItemDefinition::isOkToInherit() const
-{
-  return m_combinationMode != Categories::CombinationMode::LocalOnly;
-}
-
-void ItemDefinition::setIsOkToInherit(bool isOkToInheritValue)
-{
-  if (isOkToInheritValue)
-  {
-    m_combinationMode = Categories::CombinationMode::Or;
-  }
-  else
-  {
-    m_combinationMode = Categories::CombinationMode::LocalOnly;
-  }
-}
-
 void ItemDefinition::applyCategories(
   const smtk::attribute::Categories::Stack& inheritedFromParent,
   smtk::attribute::Categories& inheritedToParent)

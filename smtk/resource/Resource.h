@@ -13,7 +13,6 @@
 
 #include "smtk/CoreExports.h"
 
-#include "smtk/common/Deprecation.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Component.h"
@@ -167,21 +166,11 @@ public:
   /// visit all components in a resource.
   virtual void visit(std::function<void(const ComponentPtr&)>& v) const = 0;
 
-  /// Given a a std::string describing a query, return a set of components that
-  /// satisfy the query criteria.
-  SMTK_DEPRECATED_IN_21_11("Replaced by Resource::filter().")
-  ComponentSet find(const std::string& queryString) const { return this->filter(queryString); }
   ComponentSet filter(const std::string& queryString) const;
 
   /// given a a std::string describing a query and a type of container, return a
   /// set of components that satisfy both.  Note that since this uses a dynamic
   /// pointer cast this can be slower than other find methods.
-  template<typename Collection>
-  SMTK_DEPRECATED_IN_21_11("Replaced by Resource::filterAs().")
-  Collection findAs(const std::string& queryString) const
-  {
-    return this->filterAs<Collection>(queryString);
-  }
   template<typename Collection>
   Collection filterAs(const std::string& queryString) const;
 

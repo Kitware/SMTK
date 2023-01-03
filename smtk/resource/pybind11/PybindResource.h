@@ -120,26 +120,7 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("visit", &smtk::resource::Resource::visit, py::arg("v"))
     .def_readonly_static("type_index", &smtk::resource::Resource::type_index)
     .def_readonly_static("type_name", &smtk::resource::Resource::type_name)
-
-    // SMTK_DEPRECATED_IN_21_09("Replaced by Resource.filter")
-    .def("find", (smtk::resource::ComponentSet (smtk::resource::Resource::*)(const std::string&) const) &smtk::resource::Resource::filter)
     ;
-  /*
-  py::class_< smtk::resource::Resource::SetId >(instance, "SetId")
-    .def(py::init<::smtk::resource::Resource::SetId const &>())
-    .def(py::init<::smtk::common::UUID const &>())
-    .def("__call__", (void (smtk::resource::Resource::SetId::*)(::smtk::resource::ResourcePtr &) const) &smtk::resource::Resource::SetId::operator())
-    .def("id", &smtk::resource::Resource::SetId::id)
-    .def_readwrite("m_id", &smtk::resource::Resource::SetId::m_id)
-    ;
-  py::class_< smtk::resource::Resource::SetLocation >(instance, "SetLocation")
-    .def(py::init<::smtk::resource::Resource::SetLocation const &>())
-    .def(py::init<::std::string const &>())
-    .def("__call__", (void (smtk::resource::Resource::SetLocation::*)(::smtk::resource::ResourcePtr &) const) &smtk::resource::Resource::SetLocation::operator())
-    .def("location", &smtk::resource::Resource::SetLocation::location)
-    .def_readwrite("m_url", &smtk::resource::Resource::SetLocation::m_url)
-    ;
-    */
   return instance;
 }
 

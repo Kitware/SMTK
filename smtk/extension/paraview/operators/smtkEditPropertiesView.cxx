@@ -735,11 +735,6 @@ void smtkEditPropertiesView::valueChanged(smtk::attribute::ItemPtr valItem)
   this->requestOperation(m_p->m_currentOp);
 }
 
-void smtkEditPropertiesView::requestModelEntityAssociation()
-{
-  this->updateUI();
-}
-
 void smtkEditPropertiesView::setInfoToBeDisplayed()
 {
   m_infoDialog->displayInfo(this->configuration());

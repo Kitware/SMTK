@@ -136,15 +136,6 @@ public:
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
   const smtk::attribute::Categories& categories() const { return m_categories; }
 
-  ///\brief Indicates if the Definition can inherit categories based on it's
-  /// parent Definition or its owning Attribute Definition.  The default is true.
-  ///@{
-  SMTK_DEPRECATED_IN_22_07("Replaced by Definition::categoryInheritanceMode.")
-  bool isOkToInherit() const;
-  SMTK_DEPRECATED_IN_22_07("Replaced by Definition::setCategoryInheritanceMode.")
-  void setIsOkToInherit(bool isOkToInheritValue);
-  ///@}
-
   ///\brief Determines how the Definition should combine its local category Set with the
   /// category constraints being inherited from it's Base Definition (if one exists)
   ///@{

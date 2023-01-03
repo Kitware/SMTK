@@ -40,14 +40,14 @@ class TestAttributeQuery(smtk.testing.TestCase):
         att = self.resource.createAttribute('ppesolver')
 
     def testQueryAny(self):
-        attrs = self.resource.find('any')
+        attrs = self.resource.filter('any')
         for aa in attrs:
             print('Found %s of type %s' % (aa.name(), aa.type()))
         self.assertEqual(
             len(attrs), 4, 'Expected 4 attributes, got %d.' % len(attrs))
 
     def testQueryByDefinition(self):
-        attrs = self.resource.find("attribute[type='hydrostat']")
+        attrs = self.resource.filter("attribute[type='hydrostat']")
         self.assertEqual(
             len(attrs), 1, 'Expected 1 attributes, got %d.' % len(attrs))
         attr = attrs.pop()

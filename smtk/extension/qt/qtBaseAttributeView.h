@@ -94,9 +94,6 @@ public Q_SLOTS:
   void enableShowBy(int /* enable */) override;
   void onInfo() override;
 
-  SMTK_DEPRECATED_IN_21_12("No longer relevant or called.")
-  virtual void requestModelEntityAssociation() { ; }
-
 protected Q_SLOTS:
   virtual void onAdvanceLevelChanged(int levelIdx);
   void onConfigurationChanged(int levelIdx);

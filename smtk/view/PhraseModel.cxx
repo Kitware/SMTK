@@ -321,29 +321,6 @@ bool PhraseModel::resetSources()
   return removedAny;
 }
 
-void PhraseModel::visitSources(SourceVisitor visitor)
-{
-  for (const auto& src : m_sources)
-  {
-    if (!visitor(
-          (src.m_managers.contains<smtk::resource::ManagerPtr>()
-             ? src.m_managers.get<smtk::resource::ManagerPtr>()
-             : smtk::resource::ManagerPtr()),
-          (src.m_managers.contains<smtk::operation::ManagerPtr>()
-             ? src.m_managers.get<smtk::operation::ManagerPtr>()
-             : smtk::operation::ManagerPtr()),
-          (src.m_managers.contains<smtk::view::ManagerPtr>()
-             ? src.m_managers.get<smtk::view::ManagerPtr>()
-             : smtk::view::ManagerPtr()),
-          (src.m_managers.contains<smtk::view::SelectionPtr>()
-             ? src.m_managers.get<smtk::view::SelectionPtr>()
-             : smtk::view::SelectionPtr())))
-    {
-      break;
-    }
-  }
-}
-
 void PhraseModel::visitSources(SourceVisitorFunction visitor)
 {
   if (!visitor)

@@ -41,9 +41,9 @@ def _infoMessage(logger, message):
     logger.addRecord(Logger.Info, message)
 
 
-smtk.ErrorMessage = functools.partial(_message, Logger.ERROR)
-smtk.WarningMessage = functools.partial(_message, Logger.WARNING)
-smtk.DebugMessage = functools.partial(_message, Logger.DEBUG)
+smtk.ErrorMessage = functools.partial(_message, Logger.Error)
+smtk.WarningMessage = functools.partial(_message, Logger.Warning)
+smtk.DebugMessage = functools.partial(_message, Logger.Debug)
 smtk.InfoMessage = _infoMessage
 
 # For backward compatibility with simulation workflow export
