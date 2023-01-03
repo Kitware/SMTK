@@ -619,6 +619,14 @@ void qtGroupItem::addItemsToTable(int index)
     }
     if (childItem)
     {
+      // If item uses expressions, listen for editing widget changes
+      auto valueItem = std::dynamic_pointer_cast<smtk::attribute::ValueItem>(citem);
+      if (valueItem && valueItem->allowsExpressions())
+      {
+        QObject::connect(
+          childItem, &qtItem::editingWidgetChanged, this, &qtGroupItem::updateTabOrder);
+      }
+
       this->addChildItem(childItem);
       if (added == 0)
       {
@@ -826,5 +834,16 @@ void qtGroupItem::onImportFromFile()
   if (logger.numberOfRecords())
   {
     QMessageBox::warning(m_widget, tr("GroupItem Import Log)"), logger.convertToString().c_str());
+  }
+}
+
+void qtGroupItem::updateTabOrder()
+{
+  // Brute force iterate over all qtItem instances
+  QWidget* previousEditor = m_internals->m_previousEditor;
+  Q_FOREACH (qtItem* item, m_childItems)
+  {
+    item->setPreviousEditor(previousEditor);
+    previousEditor = item->lastEditor();
   }
 }

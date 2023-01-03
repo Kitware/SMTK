@@ -56,6 +56,39 @@
       </ItemDefinitions>
     </AttDef>
 
+    <AttDef Type="ExpressionItems">
+      <ItemDefinitions>
+        <Int Name="Before1"><DefaultValue>1</DefaultValue></Int>
+<!--         <Group Name="FixedGroup">
+          <ItemDefinitions>
+            <Int Name="First"><DefaultValue>1</DefaultValue></Int>
+            <Double Name="Expression">
+              <DefaultValue>2.71828</DefaultValue>
+              <ExpressionType>Example</ExpressionType>
+            </Double>
+            <Double Name="ExpressionOnly">
+              <ExpressionType>Example</ExpressionType>
+            </Double>
+            <String Name="text"><DefaultValue>string item</DefaultValue></String>
+          </ItemDefinitions>
+        </Group> -->
+        <Group Name="ExtensibleGroup" Extensible="true">
+          <ItemDefinitions>
+            <Int Name="First"><DefaultValue>1</DefaultValue></Int>
+            <Double Name="Expression" NumberOfRequiredValues="2">
+              <DefaultValue>2.71828</DefaultValue>
+              <ExpressionType>Example</ExpressionType>
+            </Double>
+<!--             <Double Name="ExpressionOnly">
+              <ExpressionType>Example</ExpressionType>
+            </Double> -->
+            <String Name="text"><DefaultValue>string item</DefaultValue></String>
+          </ItemDefinitions>
+        </Group>
+        <String Name="After1"><DefaultValue>String data</DefaultValue></String>
+      </ItemDefinitions>
+    </AttDef>
+
     <AttDef Type="Example" />
    </Definitions>
 
@@ -70,6 +103,7 @@
       <Views>
         <View Title="InputsItems" />
         <View Title="ReferenceItems" />
+        <View Title="ExpressionItems" />
       </Views>
     </View>
 
@@ -82,6 +116,17 @@
     <View Type="Instanced" Title="ReferenceItems" Label="Reference Items">
       <InstancedAttributes>
         <Att Type="ReferenceItems" Name="ReferenceItems" />
+      </InstancedAttributes>
+    </View>
+
+    <View Type="Instanced" Title="ExpressionItems" Label="Expression Items">
+      <InstancedAttributes>
+        <Att Type="ExpressionItems" Name="ExpressionItems">
+        <ItemViews>
+          <View Path="/FixedGroup/ExpressionOnly" ExpressionOnly="true" />
+          <View Path="/ExtensibleGroup/ExpressionOnly" ExpressionOnly="true" />
+        </ItemViews>
+      </Att>
       </InstancedAttributes>
     </View>
 

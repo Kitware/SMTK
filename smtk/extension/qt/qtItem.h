@@ -97,9 +97,9 @@ public:
   virtual void markForDeletion();
 
   /** \brief Returns editor widget, used when setting tab order */
-  virtual QWidget* lastEditor() const { return nullptr; } // future: make pure virtual?
+  virtual QWidget* lastEditor() const { return nullptr; }
   /** \brief Sets previous widget for tabbing order */
-  virtual void setPreviousEditor(QWidget* w) {} // future: make pure virtual?
+  virtual void setPreviousEditor(QWidget* /*w*/) {}
 
 public Q_SLOTS:
   // Controls whether the Selection Manager should be used for setting model
@@ -120,6 +120,12 @@ Q_SIGNALS:
   /// Signal indicates that the child from the underlying item has been modified
   /// </summary>
   void childModified(qtItem* item);
+
+  /** \brief Indicates editing widget changed
+  *
+  * In some cases, parent item should update tab order.
+  */
+  void editingWidgetChanged();
 
 protected Q_SLOTS:
   virtual void onAdvanceLevelChanged(int levelIdx);

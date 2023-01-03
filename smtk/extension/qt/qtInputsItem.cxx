@@ -247,7 +247,11 @@ public:
 
 QWidget* qtInputsItem::lastEditor() const
 {
-  if (m_internals->m_editors.isEmpty())
+  if (m_internals->m_expressionCombo && m_internals->m_expressionCombo->isVisible())
+  {
+    return m_internals->m_expressionCombo;
+  }
+  else if (m_internals->m_editors.isEmpty())
   {
     return nullptr;
   }
@@ -257,6 +261,15 @@ QWidget* qtInputsItem::lastEditor() const
 void qtInputsItem::setPreviousEditor(QWidget* editor)
 {
   QWidget* previousEd = editor;
+
+  // Expression editor
+  if (m_internals->m_expressionCombo && m_internals->m_expressionCombo->isVisible())
+  {
+    QWidget::setTabOrder(previousEd, m_internals->m_expressionCombo);
+    return;
+  }
+
+  // Value editor(s)
   for (QWidget* ed : m_internals->m_editors)
   {
     if (ed != nullptr) // needed?
@@ -750,6 +763,7 @@ void qtInputsItem::addInputEditor(int i)
     minusButton->setIcon(QIcon(iconName));
     minusButton->setSizePolicy(sizeFixedPolicy);
     minusButton->setToolTip("Remove value");
+    minusButton->setFocusPolicy(Qt::ClickFocus);
     editorLayout->addWidget(minusButton);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveValue()));
     QPair<QPointer<QLayout>, QPointer<QWidget>> pair;
@@ -943,6 +957,7 @@ QFrame* qtInputsItem::createLabelFrame(
     m_internals->m_expressionButton->setSizePolicy(sizeFixedPolicy);
     m_internals->m_expressionButton->setToolTip(
       "Switch between a constant value or function instance");
+    m_internals->m_expressionButton->setFocusPolicy(Qt::ClickFocus);
     QObject::connect(
       m_internals->m_expressionButton,
       SIGNAL(toggled(bool)),
@@ -1377,8 +1392,15 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     }
   }
 
+  bool widgetChanged = checkstate == m_internals->m_valuesFrame->isVisible();
+
   m_internals->m_valuesFrame->setVisible(!checkstate);
   m_internals->m_expressionFrame->setVisible(checkstate);
+
+  if (widgetChanged)
+  {
+    QTimer::singleShot(0, [this]() { Q_EMIT this->editingWidgetChanged(); });
+  }
 }
 
 void qtInputsItem::onExpressionReferenceChanged()
