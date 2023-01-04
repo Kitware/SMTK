@@ -30,6 +30,8 @@ set(taskHeaders
   Instances.h
   Manager.h
   Registrar.h
+  State.h
+  adaptor/Instances.h
   adaptor/ResourceAndRole.h
   json/Configurator.h
   json/Configurator.txx
