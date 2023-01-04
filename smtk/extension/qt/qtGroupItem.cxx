@@ -34,6 +34,7 @@
 #include <QPointer>
 #include <QScrollBar>
 #include <QTableWidget>
+#include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 
@@ -227,6 +228,9 @@ void qtGroupItem::createWidget()
   {
     m_internals->m_titleCheckbox->setVisible(false);
   }
+
+  // Update tab ordering on next event loop
+  QTimer::singleShot(0, this, &qtGroupItem::updateTabOrder);
 }
 
 void qtGroupItem::setEnabledState(int state)
@@ -834,6 +838,12 @@ void qtGroupItem::onImportFromFile()
 
 void qtGroupItem::updateTabOrder()
 {
+  // Only applicable to QTableWidget
+  if (m_internals->ItemsTable == nullptr)
+  {
+    return;
+  }
+
   // Brute force iterate over all qtItem instances
   QWidget* previousEditor = m_internals->m_previousEditor;
   Q_FOREACH (qtItem* item, m_childItems)

@@ -242,12 +242,14 @@ public:
   QString m_lastExpression;
   int m_editPrecision;
 
+  // Store expression on/off state in lieu of widget visibility which isn't immediate
+  bool m_usingExpression = false;
   QList<QWidget*> m_editors;
 };
 
 QWidget* qtInputsItem::lastEditor() const
 {
-  if (m_internals->m_expressionCombo && m_internals->m_expressionCombo->isVisible())
+  if (m_internals->m_usingExpression)
   {
     return m_internals->m_expressionCombo;
   }
@@ -1032,6 +1034,10 @@ void qtInputsItem::updateUI()
     m_internals->m_expressionButton->setChecked(dataObj->isExpression() || expressionOnly);
     this->displayExpressionWidget(dataObj->isExpression() || expressionOnly);
     m_internals->m_expressionButton->setEnabled(!expressionOnly);
+    if (expressionOnly)
+    {
+      m_internals->m_usingExpression = true;
+    }
   }
 
   if (this->parentWidget() && this->parentWidget()->layout())
@@ -1276,6 +1282,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   {
     return;
   }
+  m_internals->m_usingExpression = checkstate;
 
   ResourcePtr sourceAttResource = inputitem->attribute()->attributeResource();
 
@@ -1397,7 +1404,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   m_internals->m_valuesFrame->setVisible(!checkstate);
   m_internals->m_expressionFrame->setVisible(checkstate);
 
-  if (widgetChanged)
+  if (QObject::sender() && widgetChanged)
   {
     QTimer::singleShot(0, [this]() { Q_EMIT this->editingWidgetChanged(); });
   }
