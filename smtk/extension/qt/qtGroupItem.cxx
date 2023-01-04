@@ -56,7 +56,6 @@ public:
   QPointer<QLabel> m_alertLabel;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
   QWidget* m_previousEditor = nullptr;
-  qtItem* m_lastItem = nullptr;
 };
 
 qtItem* qtGroupItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -109,7 +108,7 @@ void qtGroupItem::setLabelVisible(bool visible)
 
 QWidget* qtGroupItem::lastEditor() const
 {
-  return m_internals->m_lastItem ? m_internals->m_lastItem->lastEditor() : nullptr;
+  return m_childItems.isEmpty() ? nullptr : m_childItems.last()->lastEditor();
 }
 
 void qtGroupItem::createWidget()
@@ -311,6 +310,7 @@ void qtGroupItem::updateItemData()
       m_internals->AddItemButton = new QToolButton(m_internals->ButtonsFrame);
       m_internals->AddItemButton->setObjectName("AddItemButton");
       m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+      m_internals->AddItemButton->setFocusPolicy(Qt::ClickFocus);
       QString iconName(":/icons/attribute/plus.png");
       std::string extensibleLabel = "Add Row";
       m_itemInfo.component().attribute("ExtensibleLabel", extensibleLabel);
@@ -557,7 +557,7 @@ void qtGroupItem::addItemsToTable(int index)
   }
   else if (index == m_internals->ItemsTable->rowCount())
   {
-    previousEditor = m_internals->m_lastItem->lastEditor();
+    previousEditor = this->lastEditor();
   }
   else
   {
@@ -673,11 +673,6 @@ void qtGroupItem::addItemsToTable(int index)
         static_cast<Qt::ConnectionType>(Qt::AutoConnection | Qt::UniqueConnection));
     } // if (childItem)
   }   // for (j)
-
-  if (!itemList.isEmpty() && index == (m_internals->ItemsTable->rowCount() - 1))
-  {
-    m_internals->m_lastItem = itemList.last();
-  }
 
   // Check to see if the last column is not fixed width and set the  table to stretch
   // the last column if that is the case
