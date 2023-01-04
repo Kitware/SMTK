@@ -16,6 +16,7 @@ set(classes
   pqSMTKResourceRepresentation
   pqSMTKWrapper
   pqSMTKAppComponentsAutoStart
+  pqSMTKGuiAppComponentsAutoStart
   pqSMTKCallObserversOnMainThreadBehavior
   pqSMTKCloseResourceBehavior
   pqSMTKGroupComponentsBehavior

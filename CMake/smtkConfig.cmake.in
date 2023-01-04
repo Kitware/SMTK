@@ -162,9 +162,13 @@ endif ()
 
 # Now include the ParaView-specific targets and information.
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-smtk_paraview_extension_plugin-targets-depends.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-targets.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-paraview-plugin-properties.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionCorePlugins-smtk_paraview_extension_core_plugins-targets-depends.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionCorePlugins-targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionCorePlugins-paraview-plugin-properties.cmake")
+
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionGuiPlugins-smtk_paraview_extension_gui_plugins-targets-depends.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionGuiPlugins-targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionGuiPlugins-paraview-plugin-properties.cmake")
 
   include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewPlugins-smtk_paraview_plugins-targets-depends.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewPlugins-targets.cmake")

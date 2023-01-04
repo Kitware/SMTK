@@ -350,10 +350,17 @@ pqSMTKNewResourceBehavior::~pqSMTKNewResourceBehavior()
   if (g_instance == this)
   {
     pqServer* server = pqActiveObjects::instance().activeServer();
-    pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
-    if (wrapper != nullptr)
+    if (server)
     {
-      wrapper->smtkOperationManager()->groupObservers().erase(m_key);
+      pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+      if (wrapper != nullptr)
+      {
+        auto opMgr = wrapper->smtkOperationManager();
+        if (opMgr)
+        {
+          opMgr->groupObservers().erase(m_key);
+        }
+      }
     }
 
     g_instance = nullptr;
