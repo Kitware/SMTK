@@ -260,9 +260,9 @@ QWidget* qtInputsItem::lastEditor() const
   return m_internals->m_editors.last();
 }
 
-void qtInputsItem::setPreviousEditor(QWidget* editor)
+void qtInputsItem::updateTabOrder(QWidget* precedingEditor)
 {
-  QWidget* previousEd = editor;
+  QWidget* previousEd = precedingEditor;
 
   // Expression editor
   if (m_internals->m_expressionCombo && m_internals->m_expressionCombo->isVisible())
@@ -1210,7 +1210,6 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   {
     return nullptr;
   }
-  // m_internals->m_editors.reserve(elementIdx + 1);
   while (m_internals->m_editors.count() <= elementIdx)
   {
     m_internals->m_editors << nullptr;
@@ -1774,7 +1773,6 @@ QWidget* qtInputsItem::createIntWidget(
       spinbox->setValue(iitem->value(elementIdx));
     }
     connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intValueChanged(int)));
-
     return spinbox;
   }
   return nullptr;

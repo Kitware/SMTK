@@ -52,7 +52,7 @@ public:
   bool eventFilter(QObject* filterObj, QEvent* ev) override;
 
   QWidget* lastEditor() const override;
-  void setPreviousEditor(QWidget*) override;
+  void updateTabOrder(QWidget* precedingEditor) override;
 
 public Q_SLOTS:
   void setOutputOptional(int);

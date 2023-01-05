@@ -99,7 +99,7 @@ public:
   /** \brief Returns editor widget, used when setting tab order */
   virtual QWidget* lastEditor() const { return nullptr; }
   /** \brief Sets previous widget for tabbing order */
-  virtual void setPreviousEditor(QWidget* /*w*/) {}
+  virtual void updateTabOrder(QWidget* /*precedingEditor*/) {}
 
 public Q_SLOTS:
   // Controls whether the Selection Manager should be used for setting model

@@ -56,7 +56,7 @@ public:
   QPointer<QLabel> m_titleLabel;
   QPointer<QLabel> m_alertLabel;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
-  QWidget* m_previousEditor = nullptr;
+  QWidget* m_precedingEditor = nullptr;
 };
 
 qtItem* qtGroupItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -230,7 +230,7 @@ void qtGroupItem::createWidget()
   }
 
   // Update tab ordering on next event loop
-  QTimer::singleShot(0, this, &qtGroupItem::updateTabOrder);
+  QTimer::singleShot(0, [this]() { this->updateTabOrder(m_internals->m_precedingEditor); });
 }
 
 void qtGroupItem::setEnabledState(int state)
@@ -554,14 +554,14 @@ void qtGroupItem::addItemsToTable(int index)
     return;
   }
 
-  QWidget* previousEditor = nullptr;
+  QWidget* precedingEditor = nullptr;
   if (index == 0)
   {
-    previousEditor = m_internals->m_previousEditor;
+    precedingEditor = m_internals->m_precedingEditor;
   }
   else if (index == m_internals->ItemsTable->rowCount())
   {
-    previousEditor = this->lastEditor();
+    precedingEditor = this->lastEditor();
   }
   else
   {
@@ -628,7 +628,7 @@ void qtGroupItem::addItemsToTable(int index)
       if (valueItem && valueItem->allowsExpressions())
       {
         QObject::connect(
-          childItem, &qtItem::editingWidgetChanged, this, &qtGroupItem::updateTabOrder);
+          childItem, &qtItem::editingWidgetChanged, this, &qtGroupItem::onEditingWidgetChanged);
       }
 
       this->addChildItem(childItem);
@@ -659,8 +659,8 @@ void qtGroupItem::addItemsToTable(int index)
       m_internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
       itemList.push_back(childItem);
 
-      childItem->setPreviousEditor(previousEditor);
-      previousEditor = childItem->lastEditor();
+      childItem->updateTabOrder(precedingEditor);
+      precedingEditor = childItem->lastEditor();
 
       connect(
         childItem,
@@ -836,7 +836,7 @@ void qtGroupItem::onImportFromFile()
   }
 }
 
-void qtGroupItem::updateTabOrder()
+void qtGroupItem::onEditingWidgetChanged()
 {
   // Only applicable to QTableWidget
   if (m_internals->ItemsTable == nullptr)
@@ -845,10 +845,10 @@ void qtGroupItem::updateTabOrder()
   }
 
   // Brute force iterate over all qtItem instances
-  QWidget* previousEditor = m_internals->m_previousEditor;
+  QWidget* precedingEditor = m_internals->m_precedingEditor;
   Q_FOREACH (qtItem* item, m_childItems)
   {
-    item->setPreviousEditor(previousEditor);
-    previousEditor = item->lastEditor();
+    item->updateTabOrder(precedingEditor);
+    precedingEditor = item->lastEditor();
   }
 }

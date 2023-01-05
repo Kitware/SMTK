@@ -63,7 +63,7 @@ public:
   smtk::resource::PersistentObjectPtr object(int index);
 
   QWidget* lastEditor() const override;
-  void setPreviousEditor(QWidget*) override;
+  void updateTabOrder(QWidget* precedingEditor) override;
 public Q_SLOTS:
   void updateItemData() override;
   void highlightItem(int index);

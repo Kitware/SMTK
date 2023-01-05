@@ -485,11 +485,11 @@ QWidget* qtReferenceItemEditor::lastEditor() const
   return m_internals->m_comboBox;
 }
 
-void qtReferenceItemEditor::setPreviousEditor(QWidget* widget)
+void qtReferenceItemEditor::updateTabOrder(QWidget* precedingEditor)
 {
   if (m_internals->m_comboBox != nullptr)
   {
-    QWidget::setTabOrder(widget, m_internals->m_comboBox);
+    QWidget::setTabOrder(precedingEditor, m_internals->m_comboBox);
   }
 }
 

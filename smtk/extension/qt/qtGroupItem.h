@@ -45,7 +45,7 @@ protected Q_SLOTS:
   void onChildWidgetSizeChanged() override;
   virtual void onChildItemModified();
   void onImportFromFile();
-  void updateTabOrder();
+  void onEditingWidgetChanged();
 
 protected:
   void createWidget() override;
