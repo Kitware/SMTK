@@ -21,6 +21,7 @@
 #endif
 
 #include "smtk/Options.h"
+#include "smtk/io/Logger.h"
 
 #include <cstdio>
 
@@ -154,6 +155,39 @@ std::string Paths::pathToLibraryContainingFunction(void (*func)())
 std::string Paths::pathToThisLibrary()
 {
   return boost::dll::symbol_location(smtk::common::Paths::pathToThisLibrary).parent_path().string();
+}
+
+/// Return true when \a pathA and \a pathB resolve to the same location.
+///
+/// Note: both input paths must exist on the filesystem, otherwise this
+/// function will emit an error message and return false.
+bool Paths::areEquivalent(const std::string& pathA, const std::string& pathB)
+{
+  boost::system::error_code err;
+  bool result = boost::filesystem::equivalent(pathA, pathB, err);
+  if (err)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), err.message());
+    return false;
+  }
+  return result;
+}
+
+/// Return the canonical version of a path, which must exist on disk.
+/// The canonical path is an unambiguous and absolute path with (1) no
+/// single- or double-dots and (2) no symbolic links.
+/// On error, an empty string is returned and a log message is generated.
+std::string Paths::canonical(const std::string& path, const std::string& base)
+{
+  boost::system::error_code err;
+  auto canonPath = base.empty() ? boost::filesystem::canonical(path, err)
+                                : boost::filesystem::canonical(path, base, err);
+  if (err)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), err.message());
+    return std::string();
+  }
+  return canonPath.string();
 }
 
 /// Return the directory containing a file, given a path to the file.

@@ -44,7 +44,10 @@ void from_json(const json& j, ResourcePtr& resource)
   }
 
   // For backwards compatibility, do not require "location" json item.
-  if (j.find("location") != j.end())
+  // Do not override the location if it is already set; readers should
+  // set the location containing the JSON data. This is important so
+  // that auxiliary data can reference the resource's directory.
+  if (j.find("location") != j.end() && resource->location().empty())
   {
     resource->setLocation(j.at("location"));
   }

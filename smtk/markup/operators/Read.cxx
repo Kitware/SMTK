@@ -56,6 +56,11 @@ Read::Result Read::operateInternal()
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\" for reading.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+  if (smtk::common::Paths::isRelative(filename))
+  {
+    // Make the path absolute relative to the working directory
+    filename = smtk::common::Paths::canonical(filename);
+  }
 
   nlohmann::json jj;
   try
