@@ -482,11 +482,13 @@ smtk::resource::PersistentObjectPtr qtReferenceItemEditor::object(int index)
 
 QWidget* qtReferenceItemEditor::lastEditor() const
 {
+  // The current logic does not support children items.
   return m_internals->m_comboBox;
 }
 
 void qtReferenceItemEditor::updateTabOrder(QWidget* precedingEditor)
 {
+  // The current logic does not support children items.
   if (m_internals->m_comboBox != nullptr)
   {
     QWidget::setTabOrder(precedingEditor, m_internals->m_comboBox);
@@ -871,4 +873,9 @@ void qtReferenceItemEditor::updateContents()
 
   m_itemInfo.baseView()->childrenResized();
   Q_EMIT this->widgetSizeChanged();
+
+  if (item->numberOfChildrenItems() > 0)
+  {
+    Q_EMIT this->editingWidgetChanged();
+  }
 }

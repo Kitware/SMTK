@@ -1222,10 +1222,16 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     m_internals->DiscreteEditors.append(editor);
-    m_internals->m_editors[elementIdx] = editor->editingWidget();
+    m_internals->m_editors[elementIdx] = editor->lastEditingWidget();
+    QObject::connect(
+      editor,
+      &qtDiscreteValueEditor::editingWidgetChanged,
+      this,
+      &qtInputsItem::editingWidgetChanged);
     return editor;
   }
 
+  // (else)
   QWidget* editorWidget = this->createEditBox(elementIdx, m_widget);
   m_internals->m_editors[elementIdx] = editorWidget;
   return editorWidget;

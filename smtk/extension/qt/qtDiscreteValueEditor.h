@@ -35,7 +35,13 @@ public:
   ~qtDiscreteValueEditor() override;
   bool useSelectionManger() const { return m_useSelectionManager; }
   void updateContents();
-  QWidget* editingWidget() const; // the internal editing widget (QComboBox)
+
+  /** Tab ordering methods.
+   *
+   * The current logic does not support conditional children items.
+   */
+  QWidget* lastEditingWidget() const; // the last internal editing widget
+  void updateTabOrder(QWidget* /*precedingEditor*/) {}
 
 public Q_SLOTS:
   void onInputValueChanged();
@@ -46,6 +52,9 @@ public Q_SLOTS:
 Q_SIGNALS:
   /// /brief Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
+
+  /** \brief Indicates that editing widget changed. */
+  void editingWidgetChanged();
 
 protected Q_SLOTS:
 
