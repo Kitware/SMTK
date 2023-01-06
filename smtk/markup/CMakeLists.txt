@@ -91,6 +91,13 @@ list(APPEND classes
   ontology/OwlRdfSource
 )
 
+if(MSVC)
+  set_source_files_properties(
+    json/jsonResource.cxx
+    PROPERTIES
+      COMPILE_FLAGS /bigobj)
+endif()
+
 # NB: Keep the next two foreach loops in order!
 # Encode operation SBT files into headers and operations into classes.
 foreach(operation ${operations})
