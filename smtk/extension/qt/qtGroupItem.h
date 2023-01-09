@@ -33,6 +33,7 @@ public:
   qtGroupItem(const qtAttributeItemInfo& info);
   ~qtGroupItem() override;
   void setLabelVisible(bool) override;
+  QWidget* lastEditor() const override;
 
 public Q_SLOTS:
   void updateItemData() override;
@@ -44,6 +45,7 @@ protected Q_SLOTS:
   void onChildWidgetSizeChanged() override;
   virtual void onChildItemModified();
   void onImportFromFile();
+  void onEditingWidgetChanged();
 
 protected:
   void createWidget() override;

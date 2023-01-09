@@ -61,6 +61,14 @@ public:
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
   smtk::resource::PersistentObjectPtr object(int index);
+
+  /** Tab ordering methods.
+   *
+   * The current logic does not support children items.
+   */
+  QWidget* lastEditor() const override;
+  void updateTabOrder(QWidget* precedingEditor) override;
+
 public Q_SLOTS:
   void updateItemData() override;
   void highlightItem(int index);

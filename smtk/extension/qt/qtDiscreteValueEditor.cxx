@@ -86,6 +86,12 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
   delete this->Internals;
 }
 
+QWidget* qtDiscreteValueEditor::lastEditingWidget() const
+{
+  // The current logic does not support conditional children items.
+  return this->Internals->m_combo;
+}
+
 void qtDiscreteValueEditor::createWidget()
 {
   smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
@@ -482,4 +488,10 @@ void qtDiscreteValueEditor::updateContents()
   }
   this->Internals->m_inputItem->m_itemInfo.baseView()->childrenResized();
   Q_EMIT this->widgetSizeChanged();
+
+  // If there are children items, the editing widget(s) could have changed
+  if (item->numberOfChildrenItems() > 0)
+  {
+    Q_EMIT this->editingWidgetChanged();
+  }
 }
