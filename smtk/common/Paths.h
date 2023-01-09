@@ -53,6 +53,8 @@ public:
 
   static bool fileExists(const std::string& path);
   static bool isRelative(const std::string& path);
+  static bool areEquivalent(const std::string& pathA, const std::string& pathB);
+  static std::string canonical(const std::string& path, const std::string& base = {});
   static std::string directory(const std::string& path);
   static std::string filename(const std::string& path);
   static std::string stem(const std::string& path);

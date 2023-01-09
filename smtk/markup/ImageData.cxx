@@ -52,8 +52,8 @@ void ImageData::initialize(const nlohmann::json& data, smtk::resource::json::Hel
     if (smtk::common::Paths::isRelative(location))
     {
       // Relative paths must be relative to the resource's directory.
-      auto parentPath = smtk::common::Paths::directory(url->parentResource()->location()) + "/";
-      location = parentPath + location;
+      location = smtk::common::Paths::canonical(
+        location, smtk::common::Paths::directory(url->parentResource()->location()));
     }
     smtk::string::Token mimeType = url->type();
     helper.futures().emplace_back(

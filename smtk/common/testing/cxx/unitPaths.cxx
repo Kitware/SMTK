@@ -13,6 +13,10 @@
 #include "smtk/common/Paths.h"
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "smtk/io/Logger.h"
+
+#include <cstdio> // for remove()
+#include <fstream>
 #include <iostream>
 
 #include <cassert>
@@ -21,6 +25,7 @@ using namespace smtk::common;
 
 int main(int argc, char* argv[])
 {
+  smtk::io::Logger::instance().setFlushToStdout(true);
   Paths p1;
   std::string fmwkp1 = p1.bundleDirectory();
   std::cout << "Bundle directory \"" << fmwkp1 << "\"\n";
@@ -120,6 +125,49 @@ int main(int argc, char* argv[])
   auto dir = smtk::common::Paths::directory(example);
   smtkTest(dir.empty(), "Expected empty directory, got \"" << dir << "\".");
   // TODO: Add more tests of directory (absolute and relative paths).
+
+  // Test Paths::uniquePath(), Paths::canonical(), and Paths::areEquivalent().
+  auto unlikely = smtk::common::Paths::uniquePath() + ".text";
+  std::string canonical = smtk::common::Paths::canonical(unlikely);
+  std::cout << "Unlikely path: \"" << unlikely << "\" vs canonical \"" << canonical << "\"\n";
+  smtkTest(canonical.empty(), "Expected failure for non-existent path.");
+
+  if (smtk::common::Paths::canonical(smtk::common::Paths::currentDirectory()).empty())
+  {
+    // We don't have a temp directory; skip the rest.
+    return 0;
+  }
+
+  // Create the file on disk so we can properly canonicalize it.
+  std::ofstream tmp(unlikely.c_str());
+  tmp.write("foo\n", 4);
+  if (!tmp.good())
+  {
+    // We couldn't write to the temp directory; skip the rest.
+    return 0;
+  }
+  tmp.close();
+
+  canonical = smtk::common::Paths::canonical(smtk::common::Paths::currentDirectory());
+  std::cout << "Current directory: \"" << canonical << "\"\n";
+  smtkTest(
+    smtk::common::Paths::areEquivalent(canonical, smtk::common::Paths::currentDirectory()),
+    "Expected test-binary directory to resolve properly.");
+
+  canonical = smtk::common::Paths::canonical(".");
+  std::cout << "Current path: \"" << canonical << "\"\n";
+  smtkTest(canonical != ".", "Expected current working directory to be absolute.");
+  smtkTest(
+    !smtk::common::Paths::isRelative(canonical),
+    "Expected canonical version of current working directory to be absolute.");
+
+  canonical = smtk::common::Paths::canonical(unlikely, smtk::common::Paths::currentDirectory());
+  std::cout << "File path relative to explicit directory: \"" << canonical << "\"\n";
+  smtkTest(
+    smtk::common::Paths::areEquivalent(canonical, unlikely),
+    "Expected relative with explicit base-directory to resolve properly.");
+
+  remove(unlikely.c_str());
 
   return 0;
 }
