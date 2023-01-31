@@ -263,6 +263,20 @@ Improving the support of Value Items whose Expression are in a different Resourc
 * Assigning a ValueItem to another now properly deals with this case
 * Copying a ValueItem Definition will also now properly support this use case.
 
+SMTK Markup Resource
+====================
+
+SMTK now provides a resource based on the :smtk:`smtk::graph::Resource`
+for performing annotation tasks.
+It is not fully functional yet, but can import image and unstructured
+data, create analytic shapes, group geometric objects together, mark
+objects as instances in an ontology, and more.
+The objective of this resource is to allow more flexible conceptual models
+compared to the :smtk:`smtk::model::Resource`.
+We are working to extend the ontology editing capability to allow users to
+edit arbitrary relationship arcs between objects in the resource.
+Please see :ref:`smtk-markup-sys` for more details.
+
 
 SMTK Graph Resource Changes
 ===========================
