@@ -24,6 +24,10 @@ namespace json
 
 class Helper;
 
+// NB: Group is serialized/deserialized by methods in smtk/task/json/jsonTask.h
+//     that use the Configurator to swizzle/unswizzle pointers held by tasks.
+//     This file just declares a functor to fetch a Group from the Configurator.
+
 struct SMTKCORE_EXPORT jsonGroup
 {
   Task::Configuration operator()(const Task* task, Helper& helper) const;

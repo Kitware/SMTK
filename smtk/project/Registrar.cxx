@@ -13,6 +13,7 @@
 
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/operation/groups/CreatorGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -83,6 +84,9 @@ void Registrar::registerTo(const smtk::project::Manager::Ptr& projectManager)
 {
   projectManager->registerOperations<OperationList>();
 
+  smtk::operation::CreatorGroup(projectManager->operationManager())
+    .registerOperation<smtk::project::Project, smtk::project::Create>();
+
   smtk::operation::ReaderGroup(projectManager->operationManager())
     .registerOperation<smtk::project::Project, smtk::project::Read>();
 
@@ -93,6 +97,9 @@ void Registrar::registerTo(const smtk::project::Manager::Ptr& projectManager)
 void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager)
 {
   projectManager->unregisterOperations<OperationList>();
+
+  smtk::operation::CreatorGroup(projectManager->operationManager())
+    .unregisterOperation<smtk::project::Create>();
 
   smtk::operation::ReaderGroup(projectManager->operationManager())
     .unregisterOperation<smtk::project::Read>();

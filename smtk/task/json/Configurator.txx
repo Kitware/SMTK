@@ -207,12 +207,20 @@ ObjectType* Configurator<ObjectType, MF>::unswizzle(SwizzleId objectId) const
   return it->second;
 }
 
-/// Return a serialization of task-references that is consistent within
-/// the scope of serializing a set of tasks.
-// json swizzleDependencies(const ObjectType::PassedDependencies& deps);
-
-/// Return a deserialization of de-swizzled task-references.
-// ObjectType::PassedDependencies unswizzleDependencies(const json& ids) const;
+template<typename ObjectType, TypeMutexFunction MF>
+void Configurator<ObjectType, MF>::currentObjects(
+  std::vector<ObjectType*>& objects,
+  SwizzleId start)
+{
+  objects.clear();
+  for (const auto& entry : m_swizzleBck)
+  {
+    if (entry.first >= start)
+    {
+      objects.push_back(entry.second);
+    }
+  }
+}
 
 template<typename ObjectType, TypeMutexFunction MF>
 typename Configurator<ObjectType, MF>::HelperTypeMap Configurator<ObjectType, MF>::s_types;

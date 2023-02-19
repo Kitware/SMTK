@@ -28,6 +28,8 @@
 #include "smtk/project/Manager.h"
 
 #include "smtk/project/json/jsonProject.h"
+#include "smtk/resource/json/Helper.h"
+#include "smtk/task/json/Helper.h"
 
 #include "smtk/project/operators/Write_xml.h"
 
@@ -46,7 +48,6 @@ namespace project
 
 Write::Result Write::operateInternal()
 {
-  std::cout << "smtk::project::Write::operateInternal()" << std::endl;
   // Access the project to write.
   smtk::attribute::ReferenceItem::Ptr projectItem = this->parameters()->associations();
   smtk::project::ProjectPtr project = projectItem->valueAs<smtk::project::Project>();
@@ -118,6 +119,12 @@ Write::Result Write::operateInternal()
     }
   }
 
+  // Push helpers onto the stack so `to_json()` methods can reference
+  // state external to the objects they are serializing.
+  auto& resourceHelper = smtk::resource::json::Helper::pushInstance(project);
+  resourceHelper.setManagers(this->managers());
+  smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
+
   // We now write the project's smtk file.
   {
     nlohmann::json j = project;
@@ -132,6 +139,10 @@ Write::Result Write::operateInternal()
     file << fileContents;
     file.close();
   }
+
+  // Pop helpers above from the stack.
+  smtk::resource::json::Helper::popInstance();
+  smtk::task::json::Helper::popInstance();
 
   // Reset the project's clean flag
   project->setClean(true);

@@ -16,12 +16,26 @@ namespace string
 
 void to_json(json& j, const Token& t)
 {
-  j = t.id();
+  if (t.hasData())
+  {
+    j = t.data();
+  }
+  else
+  {
+    j = t.id();
+  }
 }
 
 void from_json(const json& j, Token& t)
 {
-  t = Token::fromHash(j.get<Hash>());
+  if (j.is_string())
+  {
+    t = Token(j.get<std::string>());
+  }
+  else
+  {
+    t = Token::fromHash(j.get<Hash>());
+  }
 }
 
 } // namespace string

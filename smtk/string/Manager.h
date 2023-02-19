@@ -70,6 +70,8 @@ public:
   /// Remove a hash from the manager. This also removes it from any string sets.
   std::size_t unmanage(Hash h);
 
+  /// Return true if a string exists for the Hash (false otherwise).
+  bool hasValue(Hash h) const;
   /// Look up a string from its hashed value.
   const std::string& value(Hash h) const;
   /// Look up a hash from a string value (without inserting it).

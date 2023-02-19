@@ -64,10 +64,12 @@ public:
   GatherResources();
   GatherResources(
     const Configuration& config,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr);
   GatherResources(
     const Configuration& config,
     const PassedDependencies& dependencies,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
   ~GatherResources() override = default;

@@ -53,9 +53,19 @@ public:
   /// available.
   static Helper& instance();
 
-  /// Push a new helper instance on the local thread's stack.
+  /// Push a new top-level helper instance on the local thread's stack.
   ///
   /// The returned \a Helper will have:
+  /// + The same managers as the previous (if any) helper.
+  /// + The \a parent task is assigned the ID 0.
+  static Helper& pushInstance(
+    smtk::task::Manager& taskManager,
+    const smtk::common::Managers::Ptr& otherManagers);
+
+  /// Push a new (non-top-level) helper instance on the local thread's stack.
+  ///
+  /// The returned \a Helper will have:
+  /// + The same taskManager as the previous helper.
   /// + The same managers as the previous (if any) helper.
   /// + The \a parent task is assigned the ID 0.
   static Helper& pushInstance(smtk::task::Task* parent);
@@ -67,6 +77,8 @@ public:
   ///
   /// The outermost helper will return 1 (assuming you have called instance() first).
   static std::size_t nestingDepth();
+
+  Manager& taskManager() { return *m_taskManager; }
 
   /// Return an object for registering task classes and serialization helpers.
   Configurator<Task>& tasks();
@@ -82,13 +94,6 @@ public:
   void setManagers(const smtk::common::Managers::Ptr& managers);
   smtk::common::Managers::Ptr managers();
 
-  /// Reset only negative task IDs.
-  ///
-  /// Negative task IDs are used to when deserializing a Group task's
-  /// children. Because only a single Group is deserialized at a time
-  /// (per thread), there are no namespace collisions.
-  void clearGroupTaskIds();
-
   /// Reset the helper's state.
   ///
   /// This should be called before beginning serialization or deserialization.
@@ -97,7 +102,13 @@ public:
   void clear();
 
   // --- Below here are methods specific to tasks and/or adaptors that
-  // --- don't fit in the Configurator class.
+  // --- don't fit in the Configurator class or use Configurator-specific API.
+
+  /// Populate \a tasks with the set of current tasks.
+  void currentTasks(std::vector<Task*>& tasks);
+
+  /// Populate \a adaptors with the set of current adaptors.
+  void currentAdaptors(std::vector<Adaptor*>& adaptors);
 
   /// Return a serialization of task-references that is consistent within
   /// the scope of serializing a set of tasks.
@@ -119,17 +130,25 @@ public:
   /// Get task-pointers based on the IDs set earlier.
   std::pair<Task*, Task*> getAdaptorTasks();
 
+  /// Set the current helper's active task and all parents which shared the
+  /// same task manager. You may pass (or expect) a null task.
+  void setActiveSerializedTask(Task* task);
+  Task* activeSerializedTask() const;
+
 protected:
   Helper();
+  Helper(Manager*);
+  Manager* m_taskManager{ nullptr };
   Configurator<Task> m_tasks;
   Configurator<Adaptor> m_adaptors;
+  Task* m_activeSerializedTask{ nullptr };
   smtk::common::Managers::Ptr m_managers;
   SwizzleId m_adaptorFromId = ~static_cast<SwizzleId>(0);
   SwizzleId m_adaptorToId = ~static_cast<SwizzleId>(0);
   /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
   /// was used to create this helper. If m_topLevel is false, the parent task
   /// is assigned swizzle ID 1.
-  bool m_topLevel = true;
+  bool m_topLevel{ true };
 };
 
 } // namespace json

@@ -18,7 +18,8 @@ namespace task
 constexpr const char* const Manager::type_name;
 
 Manager::Manager()
-  : m_active(&m_taskInstances)
+  : m_taskInstances(*this)
+  , m_active(&m_taskInstances)
 {
 }
 

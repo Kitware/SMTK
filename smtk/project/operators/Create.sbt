@@ -3,7 +3,7 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="create" Label="Project - Create" BaseType="operation">
+    <AttDef Type="create" Label="Project" BaseType="operation">
       <BriefDescription>
         Create a project instance for a specified type.
       </BriefDescription>

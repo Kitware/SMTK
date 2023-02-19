@@ -20,42 +20,17 @@ namespace smtk
 {
 namespace task
 {
-namespace json
-{
 
-/// Tools for saving and restoring the state of a task manager.
-class SMTKCORE_EXPORT jsonManager
-{
-public:
-  /// Serialize the task manager.
-  ///
-  /// Obviously, \a managers must hold a task manager before you
-  /// call this method. Depending on the task instances it holds,
-  /// other managers may be required.
-  static bool serialize(
-    const std::shared_ptr<smtk::common::Managers>& managers,
-    nlohmann::json& json);
-  /// Deserialize the task manager.
-  ///
-  /// Obviously, \a managers must hold or be able to create a
-  /// task manager. Depending on the task instances being deserialized,
-  /// this method may access and modify other managers held by the
-  /// \a managers instance.
-  ///
-  /// The second variant accepts a container holding weak pointers
-  /// to each top-level task deserialized (i.e., child tasks are
-  /// not included).
-  static bool deserialize(
-    const std::shared_ptr<smtk::common::Managers>& managers,
-    const nlohmann::json& json);
-  static bool deserialize(
-    std::vector<std::weak_ptr<smtk::task::Task>>& tasks,
-    std::vector<std::weak_ptr<smtk::task::Adaptor>>& adaptors,
-    const std::shared_ptr<smtk::common::Managers>& managers,
-    const nlohmann::json& json);
-};
+///@{
+/// Serialize/deserialize a task manager.
+///
+/// Note that the caller **must** push a smtk::task::json::Helper onto
+/// the stack before calling these methods and the helper must have its
+/// smtk::common::Managers set in order for these methods to work.
+void SMTKCORE_EXPORT from_json(const nlohmann::json& j, Manager& taskManager);
+void SMTKCORE_EXPORT to_json(nlohmann::json& j, const Manager& taskManager);
+///@}
 
-} // namespace json
 } // namespace task
 } // namespace smtk
 

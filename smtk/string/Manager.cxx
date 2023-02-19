@@ -69,6 +69,12 @@ std::size_t Manager::unmanage(Hash h)
   return num;
 }
 
+bool Manager::hasValue(Hash h) const
+{
+  auto it = m_data.find(h);
+  return (it != m_data.end());
+}
+
 const std::string& Manager::value(Hash h) const
 {
   static const std::string empty;

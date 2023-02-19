@@ -22,6 +22,11 @@ namespace smtk
 namespace task
 {
 
+// NB: FillOutAttributes is serialized/deserialized by methods in smtk/task/json/jsonTask.h
+//     that use the Configurator to swizzle/unswizzle pointers held by tasks.
+//     This file just adds to_json/from_json methods for member variables of FillOutAttributes
+//     and declares a functor to fetch a FillOutAttributes from the Configurator.
+
 void SMTKCORE_EXPORT
 from_json(const nlohmann::json& j, FillOutAttributes::AttributeSet& attributeSet);
 void SMTKCORE_EXPORT

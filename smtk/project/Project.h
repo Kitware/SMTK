@@ -16,10 +16,14 @@
 
 #include "smtk/resource/DerivedFrom.h"
 
+#include "smtk/task/Manager.h"
+
 #include "smtk/project/OperationFactory.h"
 #include "smtk/project/ResourceContainer.h"
 
 #include <boost/type_index.hpp>
+
+#include <memory> // for shared_ptr
 
 namespace smtk
 {
@@ -93,6 +97,10 @@ public:
 
   const smtk::project::Manager* manager() const { return m_manager; }
 
+  /// Return this project's task manager.
+  const smtk::task::Manager& taskManager() const { return *m_taskManager; }
+  smtk::task::Manager& taskManager() { return *m_taskManager; }
+
   bool clean() const override;
 
 protected:
@@ -104,6 +112,7 @@ private:
   std::string m_typeName;
   std::string m_version;
   smtk::project::Manager* m_manager{ nullptr };
+  std::shared_ptr<smtk::task::Manager> m_taskManager;
 };
 } // namespace project
 } // namespace smtk

@@ -48,6 +48,16 @@ const std::string& Token::data() const
   return Token::manager().value(m_id);
 }
 
+bool Token::hasData() const
+{
+  return Token::manager().hasValue(m_id);
+}
+
+bool Token::valid() const
+{
+  return m_id == smtk::string::Manager::Invalid;
+}
+
 bool Token::operator==(const Token& other) const
 {
   return m_id == other.m_id;

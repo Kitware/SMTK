@@ -32,6 +32,9 @@
 #include "smtk/task/Task.h"
 // #include "smtk/task/GatherResources.h"
 
+#include "smtk/resource/json/Helper.h"
+
+#include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonManager.h"
 #include "smtk/task/json/jsonTask.h"
 
@@ -72,7 +75,7 @@ int TestTaskJSON(int, char*[])
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
-  auto taskManager = managers->get<smtk::task::Manager::Ptr>();
+  auto taskManager = smtk::task::Manager::create();
 
   auto attributeResourceRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
@@ -167,7 +170,24 @@ int TestTaskJSON(int, char*[])
   auto config = nlohmann::json::parse(configString);
   std::cout << config.dump(2) << "\n";
   taskManager->taskInstances().pauseWorkflowNotifications(true);
-  bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
+
+  bool ok = true;
+  auto& resourceHelper = smtk::resource::json::Helper::instance();
+  resourceHelper.setManagers(managers);
+  try
+  {
+    auto& taskHelper =
+      smtk::task::json::Helper::pushInstance(*taskManager, resourceHelper.managers());
+    taskHelper.setManagers(resourceHelper.managers());
+    from_json(config, *taskManager);
+    smtk::task::json::Helper::popInstance();
+  }
+  catch (std::exception&)
+  {
+    ok = false;
+  }
+
+  // bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
   taskManager->taskInstances().pauseWorkflowNotifications(false);
   test(ok, "Failed to parse configuration.");
   test(taskManager->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
@@ -227,7 +247,16 @@ int TestTaskJSON(int, char*[])
   {
     // Round trip it.
     nlohmann::json config2;
-    ok = smtk::task::json::jsonManager::serialize(managers, config2);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager, resourceHelper.managers());
+      config2 = *taskManager;
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to serialize task manager.");
     configString2 = config2.dump(2);
     std::cout << configString2 << "\n";
@@ -240,9 +269,17 @@ int TestTaskJSON(int, char*[])
     managers2->insert(operationManager);
     auto taskManager2 = smtk::task::Manager::create();
     smtk::task::Registrar::registerTo(taskManager2);
-    managers2->insert(taskManager2);
     auto config3 = nlohmann::json::parse(configString2);
-    ok = smtk::task::json::jsonManager::deserialize(managers2, config3);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager2, resourceHelper.managers());
+      from_json(config3, *taskManager2);
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to parse second configuration.");
     test(taskManager2->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
 
@@ -266,7 +303,16 @@ int TestTaskJSON(int, char*[])
       gatherResources2->style().size() == 3, "Expected 3 style class-names for gatherResources2.");
 
     nlohmann::json config4;
-    ok = smtk::task::json::jsonManager::serialize(managers2, config4);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager2, resourceHelper.managers());
+      config4 = *taskManager2;
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to serialize second manager.");
     std::string configString3 = config4.dump(2);
     std::cout << "----\n" << configString3 << "\n";

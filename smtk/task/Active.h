@@ -11,13 +11,16 @@
 #ifndef smtk_task_Active_h
 #define smtk_task_Active_h
 
-#include "smtk/task/Instances.h"
+#include "smtk/CoreExports.h"
 #include "smtk/task/Task.h"
 
 namespace smtk
 {
 namespace task
 {
+
+class Instances;
+class Task;
 
 /// This object provides applications a way to change and observe the active task.
 ///
@@ -60,15 +63,14 @@ public:
   bool switchTo(smtk::task::Task*);
 
   /// Return the set of active-task observers (so you can insert yourself).
-  Observers& observers() { return m_observers; }
-  const Observers& observers() const { return m_observers; }
+  Observers& observers();
+  const Observers& observers() const;
 
 private:
-  smtk::task::Instances* m_instances;
-  smtk::task::Instances::Observers::Key m_instancesObserver;
-  std::weak_ptr<smtk::task::Task> m_active;
-  smtk::task::Task::Observers::Key m_activeObserver;
-  Observers m_observers;
+  // We declare a subclass to hold some internal state to avoid a
+  // cyclic header dependency (Instances requires Managers requires Active).
+  struct Internal;
+  Internal* m_p;
 };
 } // namespace task
 } // namespace smtk

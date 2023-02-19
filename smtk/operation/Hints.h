@@ -24,7 +24,13 @@
 
 #include "smtk/view/SelectionAction.h"
 
+#include "smtk/project/Project.h"
+
+#include "smtk/task/Task.h"
+
 #include "smtk/common/Visit.h"
+
+#include <sstream>
 
 namespace smtk
 {
@@ -177,6 +183,120 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitFocusHintsOfType(
     if (hint && hint->type() == hintType)
     {
       if (ff(hint->associations()) == smtk::common::Visit::Halt)
+      {
+        return smtk::common::Visited::Some;
+      }
+      didVisit = true;
+    }
+  }
+  return didVisit ? smtk::common::Visited::All : smtk::common::Visited::Empty;
+}
+
+template<typename Container>
+SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addHintWithTasks(
+  smtk::operation::Operation::Result result,
+  const smtk::project::Project::Ptr& project,
+  const Container& taskIds,
+  const std::string& hintType)
+{
+  if (!result)
+  {
+    return nullptr;
+  }
+  auto specification = result->attributeResource();
+  auto hint = specification->createAttribute(hintType);
+  if (!hint)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Could not create hint of type \"" << hintType << "\".");
+    return nullptr;
+  }
+  hint->associations()->setValue(project);
+  auto tasksItem = hint->findString("tasks");
+  if (!tasksItem)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Hint of type \"" << hintType << "\" does not allow associations.");
+    return nullptr;
+  }
+  bool ok = true;
+  ok &= tasksItem->setValues(taskIds.begin(), taskIds.end());
+  ok &= result->findReference("hints")->appendValue(hint);
+  if (!ok)
+  {
+    specification->removeAttribute(hint);
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Hint of type \"" << hintType << "\" does not allow objects.");
+    hint = nullptr;
+  }
+  return hint;
+}
+
+/// Add a hint to the \a result indicating the given \a task should become active.
+SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addActivateTaskHint(
+  smtk::operation::Operation::Result result,
+  const smtk::project::Project::Ptr& project,
+  smtk::task::Task* task)
+{
+  std::set<std::string> taskIds;
+  // Serialize the string token by converting the integer hash into a string;
+  // do not assume the string manager can provide string content for the token
+  // as we do not want the string to be relied upon.
+  std::ostringstream taskId;
+  taskId << task->id().id();
+  // Add the string to the set of task IDs.
+  taskIds.insert(taskId.str());
+  auto hint = addHintWithTasks(result, project, taskIds, "activate task hint");
+  return hint;
+}
+
+template<typename Functor>
+SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitTaskHintsOfType(
+  smtk::operation::Operation::Result result,
+  const std::string& hintType,
+  Functor functor)
+{
+  auto hintsItem = result->findReference("hints");
+  if (!hintsItem)
+  {
+    return smtk::common::Visited::Empty;
+  }
+  std::size_t numberOfHints = hintsItem->numberOfValues();
+  smtk::common::VisitorFunctor<Functor> ff(functor);
+  bool didVisit = false;
+  for (std::size_t ii = 0; ii < numberOfHints; ++ii)
+  {
+    auto hint = hintsItem->valueAs<smtk::attribute::Attribute>(ii);
+    if (hint && hint->type() == hintType)
+    {
+      // Convert the associated objects into a set of project pointers.
+      std::set<smtk::project::Project::Ptr> projects;
+      std::size_t na = hint->associations()->numberOfValues();
+      for (std::size_t ii = 0; ii < na; ++ii)
+      {
+        if (auto project = hint->associations()->valueAs<smtk::project::Project>(ii))
+        {
+          projects.insert(project);
+        }
+      }
+      // Convert the strings into string-tokens (task IDs) and then
+      // invoke the functor on the set.
+      auto tasksItem = hint->findString("tasks");
+      if (!tasksItem)
+      {
+        continue;
+      }
+
+      std::set<smtk::string::Token> taskIds;
+      for (const auto& value : *tasksItem)
+      {
+        smtk::string::Hash taskId;
+        std::istringstream valueStream(value);
+        valueStream >> taskId;
+        taskIds.insert(smtk::string::Token(taskId));
+      }
+      if (ff(projects, taskIds) == smtk::common::Visit::Halt)
       {
         return smtk::common::Visited::Some;
       }

@@ -25,7 +25,6 @@ inline PySharedPtrClass< smtk::task::Task > pybind11_init_smtk_task_Task(py::mod
   instance
     .def("typeName", &smtk::task::Task::typeName)
     .def_static("create", (std::shared_ptr<smtk::task::Task> (*)()) &smtk::task::Task::create)
-    .def_static("create", (std::shared_ptr<smtk::task::Task> (*)(::std::shared_ptr<smtk::task::Task> &)) &smtk::task::Task::create, py::arg("ref"))
     .def("configure", [](smtk::task::Task& task, const std::string& jsonConfig)
       {
         auto config = nlohmann::json::parse(jsonConfig);

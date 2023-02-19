@@ -48,10 +48,14 @@ public:
   smtkCreateMacro(smtk::task::Task);
 
   Group();
-  Group(const Configuration& config, const smtk::common::Managers::Ptr& managers = nullptr);
+  Group(
+    const Configuration& config,
+    Manager& taskManager,
+    const smtk::common::Managers::Ptr& managers = nullptr);
   Group(
     const Configuration& config,
     const PassedDependencies& dependencies,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
   ~Group() override = default;

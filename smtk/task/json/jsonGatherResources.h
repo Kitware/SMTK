@@ -20,6 +20,11 @@ namespace smtk
 namespace task
 {
 
+// NB: GatherResources is serialized/deserialized by methods in smtk/task/json/jsonTask.h
+//     that use the Configurator to swizzle/unswizzle pointers held by tasks.
+//     This file just adds to_json/from_json methods for member variables of GatherResources
+//     and declares a functor to fetch a GatherResources from the Configurator.
+
 void from_json(const nlohmann::json& j, GatherResources::ResourceSet& resourceSet);
 void to_json(nlohmann::json& j, const GatherResources::ResourceSet& resourceSet);
 

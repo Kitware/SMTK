@@ -234,6 +234,31 @@ int pqSMTKOperationHintsBehavior::processHints(
   }
 
   // III. Process render view hints.
+  // TODO.
+
+  // IV. Process task hints.
+  smtk::operation::visitTaskHintsOfType(
+    result,
+    "activate task hint",
+    [&](
+      const std::set<smtk::project::Project::Ptr>& projects,
+      const std::set<smtk::string::Token>& taskIds) {
+      if (projects.empty() || !*projects.begin())
+      {
+        return;
+      }
+      if (taskIds.empty())
+      {
+        return;
+      }
+      auto project = *projects.begin();
+      auto task = project->taskManager().taskInstances().findById(*taskIds.begin());
+      if (task)
+      {
+        project->taskManager().active().switchTo(task.get());
+      }
+    });
+
   return 0;
 }
 

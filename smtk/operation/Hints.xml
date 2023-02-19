@@ -64,3 +64,30 @@
     </Void>
   </ItemDefinitions>
 </AttDef>
+
+<AttDef Type="task hint" BaseType="hint" Abstract="True">
+  <BriefDescription>
+    Hints that identify a change to the task system.
+  </BriefDescription>
+  <AssociationsDef NumberOfRequiredValues="1" Extensible="true">
+    <BriefDescription>The project(s) whose tasks are involved.</BriefDescription>
+    <!-- Note that child attribute definitions are allowed to narrow association rules. -->
+    <Accepts>
+      <!-- Any project -->
+      <Resource Name="smtk::project::Project"/>
+    </Accepts>
+  </AssociationsDef>
+  <ItemDefinitions>
+    <String Name="tasks" NumberOfRequiredValues="1" Extensible="true">
+      <BriefDescription>
+        The task(s) that are the subject of the hint.
+      </BriefDescription>
+    </String>
+  </ItemDefinitions>
+</AttDef>
+
+<AttDef Type="activate task hint" BaseType="task hint">
+  <BriefDescription>
+    Make the named task active (if possible).
+  </BriefDescription>
+</AttDef>
