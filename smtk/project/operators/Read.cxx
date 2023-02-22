@@ -96,7 +96,7 @@ Read::Result Read::operateInternal()
 
   // Create a new project for the import
   boost::filesystem::path projectFilePath(filename);
-  auto project = this->projectManager()->create(j.at("type").get<std::string>());
+  auto project = this->projectManager()->create(j.at("type").get<std::string>(), this->managers());
   if (project == nullptr)
   {
     smtkErrorMacro(log(), "project of type " << j.at("type") << " was not created.");

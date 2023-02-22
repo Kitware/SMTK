@@ -45,8 +45,12 @@ inline std::string stateName(const State& s)
 }
 
 /// A type-conversion operation to cast strings to enumerants.
-inline State stateEnum(const std::string& s)
+inline State stateEnum(const std::string& s, bool* valid = nullptr)
 {
+  if (valid)
+  {
+    *valid = true;
+  }
   std::string stateName(s);
   std::transform(stateName.begin(), stateName.end(), stateName.begin(), [](unsigned char c) {
     return std::tolower(c);
@@ -70,6 +74,10 @@ inline State stateEnum(const std::string& s)
   if (stateName == "completed")
   {
     return State::Completed;
+  }
+  if (valid)
+  {
+    *valid = (stateName == "irrelevant");
   }
   return State::Irrelevant;
 }

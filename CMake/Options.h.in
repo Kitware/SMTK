@@ -18,6 +18,9 @@
 // Was SMTK built with VTK? If true, the smtkVTKExt library will exist.
 #cmakedefine SMTK_ENABLE_VTK_SUPPORT
 
+// Was SMTK build with Graphviz support? It true, the task editor will lay out tasks.
+#cmakedefine01 SMTK_ENABLE_GRAPHVIZ_SUPPORT
+
 // Was SMTK built with GDAL support? This affects functionality in smtkVTKExt.
 #cmakedefine01 SMTK_ENABLE_GDAL_SUPPORT
 
@@ -27,6 +30,7 @@
 
 // Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
 #cmakedefine SMTK_ENABLE_REMUS_SUPPORT
+
 
 #define SMTK_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 

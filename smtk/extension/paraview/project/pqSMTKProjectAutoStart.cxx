@@ -11,6 +11,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
+#include "smtk/extension/paraview/project/pqSMTKDisplayProjectOnLoadBehavior.h"
 #include "smtk/extension/paraview/project/pqSMTKProjectMenu.h"
 #include "smtk/project/Project.h"
 #include "smtk/view/ResourcePhraseModel.h"
@@ -67,10 +68,12 @@ pqSMTKProjectAutoStart::~pqSMTKProjectAutoStart() = default;
 void pqSMTKProjectAutoStart::startup()
 {
   auto* projectMenuMgr = pqSMTKProjectMenu::instance(this);
+  auto* displayProjectOnLoad = pqSMTKDisplayProjectOnLoadBehavior::instance(this);
 
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
+    pqCore->registerManager("smtk display project on load", displayProjectOnLoad);
     pqCore->registerManager("smtk project menu", projectMenuMgr);
   }
 
@@ -84,6 +87,7 @@ void pqSMTKProjectAutoStart::shutdown()
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
+    pqCore->unRegisterManager("smtk display attribute on load");
     pqCore->unRegisterManager("smtk project menu");
   }
 }

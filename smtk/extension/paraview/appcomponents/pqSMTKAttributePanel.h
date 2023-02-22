@@ -14,6 +14,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/project/Observer.h" // for EventType
 #include "smtk/resource/Observer.h"
 
 #include "smtk/PublicPointerDefs.h"
@@ -26,6 +27,7 @@
 
 class pqServer;
 class pqPipelineSource;
+class pqSMTKWrapper;
 
 /**\brief A panel that displays a single SMTK resource for editing by the user.
   *
@@ -123,6 +125,16 @@ protected Q_SLOTS:
    */
   virtual void displayActivePipelineSource(bool doDisplay);
 
+  /**\brief Track projects, react to the active task.
+    *
+    * These methods are used to add observers to each project loaded on each server
+    * so that changes to the active task of any can affect the attribute displayed
+    * in this panel.
+    */
+  virtual void observeProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server);
+  virtual void unobserveProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server);
+  virtual void handleProjectEvent(const smtk::project::Project&, smtk::project::EventType);
+
 protected:
   virtual bool displayResourceInternal(
     const smtk::attribute::ResourcePtr& rsrc,
@@ -136,6 +148,9 @@ protected:
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;
   pqPropertyLinks m_propertyLinks;
+
+  std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;
+  smtk::task::Active::Observers::Key m_activeObserverKey;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKAttributePanel_h

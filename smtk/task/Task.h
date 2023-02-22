@@ -266,6 +266,9 @@ public:
   /// inherent for the task itself.
   State internalState() const { return m_internalState; }
 
+  /// Return the tasks's manager (or null if unmanaged).
+  Manager* manager() const { return m_manager.lock().get(); }
+
 protected:
   friend SMTKCORE_EXPORT void
   workflowsOfTask(Task*, std::set<smtk::task::Task*>&, std::set<smtk::task::Task*>&);

@@ -20,14 +20,14 @@ set(interfaces
     ${dock_interfaces}
   )
 
-paraview_add_plugin(smtkPQProjectPlugin
+paraview_add_plugin(smtkPQGuiProjectPlugin
   VERSION "1.0"
-  REQUIRED_PLUGINS smtkProjectPlugin
+  REQUIRED_PLUGINS smtkPQCoreProjectPlugin
   UI_INTERFACES ${interfaces}
   SOURCES ${sources}
 )
 
-target_link_libraries(smtkPQProjectPlugin
+target_link_libraries(smtkPQGuiProjectPlugin
   PRIVATE
     ParaView::pqApplicationComponents
     smtkCore
@@ -35,4 +35,4 @@ target_link_libraries(smtkPQProjectPlugin
     smtkPQProjectExt
     smtkPVServerExt
 )
-target_compile_definitions(smtkPQProjectPlugin PRIVATE QT_NO_KEYWORDS)
+target_compile_definitions(smtkPQGuiProjectPlugin PRIVATE QT_NO_KEYWORDS)

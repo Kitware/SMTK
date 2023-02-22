@@ -25,6 +25,7 @@
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include <tuple>
 
@@ -34,7 +35,7 @@ namespace extension
 {
 namespace
 {
-typedef std::tuple<
+using ViewWidgetList = std::tuple<
   qtAnalysisView,
   qtAssociationView,
   qtAttributeView,
@@ -46,8 +47,8 @@ typedef std::tuple<
   qtOperationPalette,
   qtResourceBrowser,
   qtSelectorView,
-  qtSimpleExpressionView>
-  ViewWidgetList;
+  qtSimpleExpressionView,
+  qtTaskEditor>;
 using BadgeList =
   std::tuple<smtk::extension::qt::MembershipBadge, smtk::extension::qt::TypeAndColorBadge>;
 } // namespace
@@ -70,6 +71,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ModelEntity");
   manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ComponentAttribute");
   manager->viewWidgetFactory().addAlias<qtResourceBrowser>("ResourceBrowser");
+  manager->viewWidgetFactory().addAlias<qtTaskEditor>("TaskEditor");
 
   manager->badgeFactory().registerTypes<BadgeList>();
 }

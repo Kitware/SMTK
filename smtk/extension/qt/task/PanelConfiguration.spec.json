@@ -1,0 +1,78 @@
+[
+  "// The object below is the full set of panel configuration options accepted.",
+  "// Several of the colors should not be specified by workflow developers (such as",
+  "// BacgroundFill) since they will override user-selected themes (e.g. dark mode).",
+  {
+    "Name": "TaskView",
+    "Type": "TaskEditor",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "Title": "Tasks",
+        "TopLevel": true,
+        "Widget": "TaskGraph",
+        "SearchBar": true
+      },
+      "Children": [
+        {
+          "Name": "Style",
+          "Attributes": {
+            "NodeInfo": "compact",
+            "DependencyArcs": true,
+            "AdaptorArcs": true
+          },
+          "Children": [
+            {
+              "Name": "NodeLayout",
+              "Attributes": {
+                "Width": 300.0,
+                "Radius": 4.0,
+                "HeadlineHeight": 13.0,
+                "HeadlinePadding": 4.0,
+                "BorderThickness": 4.0,
+                "FontSize": 13,
+                "Layer": 10
+              }
+            },
+            {
+              "Name": "ArcLayout",
+              "Attributes": {
+                "Width": 4.0,
+                "Outline": 1.0,
+                "Layer": 5,
+                "ArrowStemLength": 16.0,
+                "ArrowHeadLength": 12.0,
+                "ArrowTipAspectRatio": 2.0
+              }
+            },
+            {
+              "Name": "ArcPalette",
+              "Attributes": {
+                "Dependency": "#BF5B17",
+                "Adaptor":    "#386CB0"
+              }
+            },
+            {
+              "Name": "StatusPalette",
+              "Attributes": {
+                "Unavailable": "#ff9898",
+                "Incomplete": "#ffeca3",
+                "Completable": "#e0f1ba",
+                "Complete": "#7ed637",
+                "Irrelevant": "#e7e7e7"
+              }
+            },
+            {
+              "Name": "ViewPalette",
+              "Attributes": {
+                "BackgroundGrid": "#cccccc",
+                "BackgroundFill": "#ffffff",
+                "ActiveTask": "#aaaaff"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

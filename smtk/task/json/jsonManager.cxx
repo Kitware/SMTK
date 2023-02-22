@@ -48,19 +48,35 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
       auto taskId = jsonTask.at("id").get<json::Helper::SwizzleId>();
       Task::Ptr task = jsonTask;
       taskMap[taskId] = task;
-      helper.tasks().swizzleId(task.get());
+      helper.tasks().setSwizzleId(task.get(), taskId);
     }
-    // Do a second pass to deserialize dependencies.
+    // Do a second pass to deserialize dependencies and UI config.
     for (const auto& jsonTask : jj.at("tasks"))
     {
+      auto taskId = jsonTask.at("id").get<json::Helper::SwizzleId>();
+      auto task = taskMap[taskId];
       if (jsonTask.contains("dependencies"))
       {
-        auto taskId = jsonTask.at("id").get<json::Helper::SwizzleId>();
-        auto task = taskMap[taskId];
         auto taskDeps = helper.unswizzleDependencies(jsonTask.at("dependencies"));
+        // Make sure this is not its own dependencies
+        auto finder = taskDeps.find(task);
+        if (finder != taskDeps.end())
+        {
+          smtkWarningMacro(
+            smtk::io::Logger::instance(), task->title() << " trying to set deps to itself");
+          taskDeps.erase(task);
+        }
+
         task->addDependencies(taskDeps);
       }
+
+      // Get UI object
+      if (jsonTask.contains("ui"))
+      {
+        taskManager.uiState().setData(task, jsonTask["ui"]);
+      }
     }
+
     // Now configure dependent tasks with adaptors if specified.
     // Note that tasks have already been deserialized, so the
     // helper's map from task-id to task-pointer is complete.
@@ -90,6 +106,10 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         }
       }
     }
+    if (jj.contains("styles"))
+    {
+      taskManager.setStyles(jj.at("styles"));
+    }
 
     // helper.clear();
   }
@@ -113,7 +133,11 @@ void to_json(nlohmann::json& jj, const Manager& manager)
       // Only serialize top-level tasks. (Tasks with children are responsible
       // for serializing their children).
       nlohmann::json jsonTask = task;
-      taskList.push_back(jsonTask);
+      if (!jsonTask.is_null())
+      {
+        helper.updateUIState(task, jsonTask);
+        taskList.push_back(jsonTask);
+      }
     }
     return smtk::common::Visit::Continue;
   });
@@ -134,6 +158,7 @@ void to_json(nlohmann::json& jj, const Manager& manager)
     return smtk::common::Visit::Continue;
   });
   jj["adaptors"] = adaptorList;
+  jj["styles"] = manager.getStyles();
 }
 
 } // namespace task

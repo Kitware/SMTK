@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "TaskView",
+    "Type": "TaskEditor",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "Title": "Tasks",
+        "TopLevel": true,
+        "Widget": "TaskGraph",
+        "SearchBar": true
+      }
+    }
+  }
+]

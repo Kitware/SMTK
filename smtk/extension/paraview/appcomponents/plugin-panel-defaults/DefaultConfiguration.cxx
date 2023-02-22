@@ -12,6 +12,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationToolboxPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKTaskPanel.h"
+#include "smtk/extension/qt/task/qtTaskEditor.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Information.h"
 #include "smtk/view/json/jsonView.h"
@@ -44,9 +46,19 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
   else if (const auto* browser = dynamic_cast<const pqSMTKResourcePanel*>(panel))
   {
     (void)browser;
-    // Use the default JSON configuration for the resource-browser panel.
+    // We provide a default configuration, but you can manipulate the
+    // panel or construct your own configuration as needed in your application.
     auto jsonConfig = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration())[0];
     std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
+    result.insert_or_assign(viewConfig);
+  }
+  else if (const auto* tasks = dynamic_cast<const pqSMTKTaskPanel*>(panel))
+  {
+    // We provide a default configuration, but you can manipulate the
+    // panel or construct your own configuration as needed in your application.
+    (void)tasks;
+    std::shared_ptr<smtk::view::Configuration> viewConfig =
+      smtk::extension::qtTaskEditor::defaultConfiguration();
     result.insert_or_assign(viewConfig);
   }
   else
