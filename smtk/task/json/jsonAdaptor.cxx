@@ -52,10 +52,10 @@ void from_json(const nlohmann::json& j, smtk::task::Adaptor::Ptr& adaptor)
   {
     auto& helper = json::Helper::instance();
     auto managers = helper.managers();
-    auto taskManager = managers->get<std::shared_ptr<smtk::task::Manager>>();
+    auto& taskManager = helper.taskManager();
     auto adaptorType = j.at("type").get<std::string>();
     auto taskPair = helper.getAdaptorTasks();
-    adaptor = taskManager->adaptorInstances().createFromName(
+    adaptor = taskManager.adaptorInstances().createFromName(
       adaptorType, const_cast<nlohmann::json&>(j), taskPair.first, taskPair.second);
   }
   catch (std::exception& e)

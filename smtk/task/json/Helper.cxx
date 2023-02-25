@@ -34,6 +34,13 @@ Helper::Helper()
 {
 }
 
+Helper::Helper(Manager* taskManager)
+  : m_taskManager(taskManager)
+  , m_tasks(this)
+  , m_adaptors(this)
+{
+}
+
 Helper::~Helper() = default;
 
 Helper& Helper::instance()
@@ -45,17 +52,35 @@ Helper& Helper::instance()
   return *(g_instanceStack.back());
 }
 
+Helper& Helper::pushInstance(
+  smtk::task::Manager& taskManager,
+  const smtk::common::Managers::Ptr& otherManagers)
+{
+  g_instanceStack.emplace_back(new Helper(&taskManager));
+  g_instanceStack.back()->setManagers(otherManagers);
+  return *(g_instanceStack.back());
+}
+
 Helper& Helper::pushInstance(smtk::task::Task* parent)
 {
   std::shared_ptr<smtk::common::Managers> managers;
+  smtk::task::Manager* taskManager = nullptr;
   if (!g_instanceStack.empty())
   {
     managers = g_instanceStack.back()->managers();
+    taskManager = &g_instanceStack.back()->taskManager();
+    g_instanceStack.emplace_back(new Helper(taskManager));
   }
-  g_instanceStack.emplace_back(new Helper);
+  else
+  {
+    g_instanceStack.emplace_back(new Helper());
+  }
   g_instanceStack.back()->setManagers(managers);
-  g_instanceStack.back()->tasks().swizzleId(parent);
-  g_instanceStack.back()->m_topLevel = false;
+  if (parent)
+  {
+    g_instanceStack.back()->tasks().swizzleId(parent);
+    g_instanceStack.back()->m_topLevel = false;
+  }
   return *(g_instanceStack.back());
 }
 
@@ -96,6 +121,16 @@ void Helper::clear()
 {
   m_tasks.clear();
   m_adaptors.clear();
+}
+
+void Helper::currentTasks(std::vector<Task*>& tasks)
+{
+  m_tasks.currentObjects(tasks, this->topLevel() ? 1 : 2);
+}
+
+void Helper::currentAdaptors(std::vector<Adaptor*>& adaptors)
+{
+  m_adaptors.currentObjects(adaptors, 1);
 }
 
 Helper::json Helper::swizzleDependencies(const Task::PassedDependencies& deps)
@@ -150,6 +185,29 @@ std::pair<Task*, Task*> Helper::getAdaptorTasks()
   auto* from = m_tasks.unswizzle(m_adaptorFromId);
   auto* to = m_tasks.unswizzle(m_adaptorToId);
   return std::make_pair(from, to);
+}
+
+void Helper::setActiveSerializedTask(Task* task)
+{
+  bool once = false;
+  for (auto& otherHelper : g_instanceStack)
+  {
+    if (&otherHelper->taskManager() == m_taskManager)
+    {
+      if (otherHelper->m_activeSerializedTask && !once)
+      {
+        once = true;
+        smtkWarningMacro(
+          smtk::io::Logger::instance(), "Multiple active tasks deserialized. Last one wins.");
+      }
+      otherHelper->m_activeSerializedTask = task;
+    }
+  }
+}
+
+Task* Helper::activeSerializedTask() const
+{
+  return m_activeSerializedTask;
 }
 
 } // namespace json

@@ -35,6 +35,7 @@
 #include "smtk/task/Registrar.h"
 #include "smtk/task/Task.h"
 
+#include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonManager.h"
 #include "smtk/task/json/jsonTask.h"
 
@@ -201,7 +202,7 @@ int TestTaskGroup(int, char*[])
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
-  auto taskManager = managers->get<smtk::task::Manager::Ptr>();
+  auto taskManager = smtk::task::Manager::create();
 
   auto attributeResourceRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
@@ -234,7 +235,17 @@ int TestTaskGroup(int, char*[])
 
   auto config = nlohmann::json::parse(configString);
   std::cout << config.dump(2) << "\n";
-  bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
+  bool ok = true;
+  try
+  {
+    smtk::task::json::Helper::pushInstance(*taskManager, managers);
+    smtk::task::from_json(config, *taskManager);
+    smtk::task::json::Helper::popInstance();
+  }
+  catch (std::exception&)
+  {
+    ok = false;
+  }
   test(ok, "Failed to parse configuration.");
   test(taskManager->taskInstances().size() == 4, "Expected to deserialize 4 tasks.");
 
@@ -242,30 +253,16 @@ int TestTaskGroup(int, char*[])
   std::vector<std::string> taskNames = {
     "Load a model and attribute", "Prepare simulation", "Mark up model", "Set simulation parameters"
   };
-  smtk::task::State taskStates[][4] = { { smtk::task::State::Completable,
-                                          smtk::task::State::Unavailable,
-                                          smtk::task::State::Unavailable,
-                                          smtk::task::State::Unavailable },
-                                        { smtk::task::State::Completed,
-                                          smtk::task::State::Incomplete,
-                                          smtk::task::State::Completable,
-                                          smtk::task::State::Incomplete },
-                                        { smtk::task::State::Completed,
-                                          smtk::task::State::Incomplete,
-                                          smtk::task::State::Incomplete,
-                                          smtk::task::State::Incomplete },
-                                        { smtk::task::State::Completed,
-                                          smtk::task::State::Incomplete,
-                                          smtk::task::State::Completable,
-                                          smtk::task::State::Incomplete },
-                                        { smtk::task::State::Completed,
-                                          smtk::task::State::Completable,
-                                          smtk::task::State::Completable,
-                                          smtk::task::State::Completable },
-                                        { smtk::task::State::Completed,
-                                          smtk::task::State::Irrelevant,
-                                          smtk::task::State::Irrelevant,
-                                          smtk::task::State::Irrelevant } };
+  // clang-format off
+  smtk::task::State taskStates[][4] = {
+    { State::Completable, State::Unavailable, State::Unavailable, State::Unavailable },
+    { State::Completed,   State::Incomplete,  State::Completable, State::Incomplete },
+    { State::Completed,   State::Incomplete,  State::Incomplete,  State::Incomplete },
+    { State::Completed,   State::Incomplete,  State::Completable, State::Incomplete },
+    { State::Completed,   State::Completable, State::Completable, State::Completable },
+    { State::Completed,   State::Irrelevant,  State::Irrelevant,  State::Irrelevant }
+  };
+  // clang-format on
   bool hasErrors = false;
   taskManager->taskInstances().visit(
     [&theTasks, &taskNames, &hasErrors](const smtk::task::Task::Ptr& task) {
@@ -387,7 +384,16 @@ int TestTaskGroup(int, char*[])
   {
     // Round trip it.
     nlohmann::json config2;
-    ok = smtk::task::json::jsonManager::serialize(managers, config2);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager, managers);
+      smtk::task::to_json(config2, *taskManager);
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to serialize task manager.");
     configString2 = config2.dump(2);
     std::cout << configString2 << "\n";
@@ -400,13 +406,30 @@ int TestTaskGroup(int, char*[])
     managers2->insert(operationManager);
     auto taskManager2 = smtk::task::Manager::create();
     smtk::task::Registrar::registerTo(taskManager2);
-    managers2->insert(taskManager2);
     auto config3 = nlohmann::json::parse(configString2);
-    ok = smtk::task::json::jsonManager::deserialize(managers2, config3);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager2, managers2);
+      smtk::task::from_json(config3, *taskManager2);
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to parse second configuration.");
     test(taskManager2->taskInstances().size() == 4, "Expected to deserialize 4 tasks.");
     nlohmann::json config4;
-    ok = smtk::task::json::jsonManager::serialize(managers2, config4);
+    try
+    {
+      smtk::task::json::Helper::pushInstance(*taskManager2, managers2);
+      smtk::task::to_json(config4, *taskManager2);
+      smtk::task::json::Helper::popInstance();
+    }
+    catch (std::exception&)
+    {
+      ok = false;
+    }
     test(ok, "Failed to serialize second manager.");
     std::string configString3 = config4.dump(2);
     std::cout << "----\n" << configString3 << "\n";

@@ -33,8 +33,9 @@ GatherResources::GatherResources() = default;
 
 GatherResources::GatherResources(
   const Configuration& config,
+  Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, managers)
+  : Task(config, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);
@@ -43,8 +44,9 @@ GatherResources::GatherResources(
 GatherResources::GatherResources(
   const Configuration& config,
   const PassedDependencies& dependencies,
+  Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, dependencies, managers)
+  : Task(config, dependencies, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);

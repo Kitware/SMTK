@@ -10,7 +10,10 @@
 #include "smtk/task/Task.h"
 #include "smtk/task/Manager.h"
 
+#include "smtk/string/json/jsonToken.h"
 #include "smtk/task/json/Helper.h"
+
+#include "smtk/io/Logger.h"
 
 #include <stdexcept>
 
@@ -55,10 +58,22 @@ std::set<smtk::task::Task*> workflowsOfTask(Task& task)
 
 constexpr const char* const Task::type_name;
 
-Task::Task() = default;
+Task::Task()
+{
+  this->setId();
+}
 
 Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Managers>& managers)
 {
+  static bool once = false;
+  if (!once)
+  {
+    once = true;
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Note to developers; call a constructor that takes a task::Manager&.");
+  }
+  this->setId();
   if (managers && managers->contains<smtk::task::Manager::Ptr>())
   {
     m_manager = managers->get<smtk::task::Manager::Ptr>();
@@ -68,13 +83,54 @@ Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Mana
 
 Task::Task(
   const Configuration& config,
+  Manager& taskManager,
+  const std::shared_ptr<smtk::common::Managers>& managers)
+{
+  this->setId();
+  (void)managers;
+  m_manager = taskManager.shared_from_this();
+  this->configure(config);
+}
+
+Task::Task(
+  const Configuration& config,
   const PassedDependencies& dependencies,
   const std::shared_ptr<smtk::common::Managers>& managers)
 {
+  static bool once = false;
+  if (!once)
+  {
+    once = true;
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Note to developers; call a constructor that takes a task::Manager&.");
+  }
+  this->setId();
   if (managers->contains<smtk::task::Manager::Ptr>())
   {
     m_manager = managers->get<smtk::task::Manager::Ptr>();
   }
+  this->configure(config);
+  for (const auto& dependency : dependencies)
+  {
+    m_dependencies.insert(std::make_pair(
+      (const std::weak_ptr<Task>)(dependency),
+      dependency->observers().insert([this](Task& dependency, State prev, State next) {
+        bool didChange = this->updateState(dependency, prev, next);
+        (void)didChange;
+      })));
+  }
+}
+
+Task::Task(
+  const Configuration& config,
+  const PassedDependencies& dependencies,
+  Manager& taskManager,
+  const std::shared_ptr<smtk::common::Managers>& managers)
+{
+  this->setId();
+  (void)managers;
+  m_manager = taskManager.shared_from_this();
   this->configure(config);
   for (const auto& dependency : dependencies)
   {
@@ -99,7 +155,13 @@ void Task::configure(const Configuration& config)
   }
   if (config.contains("style"))
   {
-    m_style = config.at("style").get<std::set<std::string>>();
+    try
+    {
+      m_style = config.at("style").get<std::set<smtk::string::Token>>();
+    }
+    catch (std::exception&)
+    {
+    }
   }
   if (config.contains("completed"))
   {
@@ -117,16 +179,16 @@ void Task::setTitle(const std::string& title)
   m_title = title;
 }
 
-bool Task::addStyle(const std::string& styleClass)
+bool Task::addStyle(const smtk::string::Token& styleClass)
 {
-  if (styleClass.empty())
+  if (styleClass.id() == smtk::string::Manager::Invalid)
   {
     return false;
   }
   return m_style.insert(styleClass).second;
 }
 
-bool Task::removeStyle(const std::string& styleClass)
+bool Task::removeStyle(const smtk::string::Token& styleClass)
 {
   return m_style.erase(styleClass) > 0;
 }
@@ -393,6 +455,14 @@ bool Task::internalStateChanged(State next)
     return true;
   }
   return false;
+}
+
+void Task::setId()
+{
+  // For now, create a string with the address of the task and hash it.
+  std::ostringstream uid;
+  uid << std::hex << this;
+  m_id = uid.str();
 }
 
 } // namespace task

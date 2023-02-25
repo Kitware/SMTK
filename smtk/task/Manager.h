@@ -45,7 +45,10 @@ public:
   smtkTypeMacroBase(smtk::task::Manager);
   smtkCreateMacro(smtk::task::Manager);
 
+  Manager();
   virtual ~Manager();
+  Manager(const Manager&) = delete;
+  void operator=(const Manager&) = delete;
 
   /// Managed instances of Task objects (and a registry of Task classes).
   using TaskInstances = smtk::task::Instances;
@@ -78,9 +81,6 @@ private:
   AdaptorInstances m_adaptorInstances;
   Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
-
-protected:
-  Manager();
 };
 } // namespace task
 } // namespace smtk

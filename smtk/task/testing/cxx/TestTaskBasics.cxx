@@ -39,16 +39,18 @@ public:
   UnavailableTask() = default;
   UnavailableTask(
     const Configuration& config,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr)
-    : Task(config, managers)
+    : Task(config, taskManager, managers)
   {
     this->internalStateChanged(State::Unavailable);
   }
   UnavailableTask(
     const Configuration& config,
     const Task::PassedDependencies& deps,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr)
-    : Task(config, deps, managers)
+    : Task(config, deps, taskManager, managers)
   {
     this->internalStateChanged(State::Unavailable);
   }
@@ -76,7 +78,7 @@ int TestTaskBasics(int, char*[])
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
-  auto taskManager = managers->get<smtk::task::Manager::Ptr>();
+  auto taskManager = smtk::task::Manager::create();
 
   auto attributeResourceRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
@@ -100,7 +102,7 @@ int TestTaskBasics(int, char*[])
 
   {
     std::shared_ptr<Task> t1 = taskManager->taskInstances().create<Task>(
-      Task::Configuration{ { "title", "Task 1" } }, managers);
+      Task::Configuration{ { "title", "Task 1" } }, *taskManager, managers);
     test(!!t1, "Expecting to create a non-null task.");
     test(
       t1->state() == State::Completable, "Expected task without dependencies to be completable.");
@@ -142,7 +144,7 @@ int TestTaskBasics(int, char*[])
       taskManager->taskInstances().contains<test_task::UnavailableTask>(),
       "Expected UnavailableTask to be registered.");
     std::shared_ptr<Task> t2 = taskManager->taskInstances().create<test_task::UnavailableTask>(
-      Task::Configuration{ { "title", "Task 2" } }, managers);
+      Task::Configuration{ { "title", "Task 2" } }, *taskManager, managers);
     called = 0;
     success = t1->addDependency(t2);
     test(success, "Expected to add dependency to task.");
@@ -156,7 +158,7 @@ int TestTaskBasics(int, char*[])
     // Test construction with dependencies
     Task::Configuration c3{ { "title", "Task 3" }, { "completed", true } };
     auto t3 = taskManager->taskInstances().create<smtk::task::Task>(
-      c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, managers);
+      c3, std::set<std::shared_ptr<Task>>{ { t1, t2 } }, *taskManager, managers);
 
     // Test visitors.
     called = 0;
@@ -205,7 +207,8 @@ int TestTaskBasics(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->taskInstances().create<smtk::task::GatherResources>(c4, managers);
+    auto t4 =
+      taskManager->taskInstances().create<smtk::task::GatherResources>(c4, *taskManager, managers);
     test(!!t4, "Could not create GatherResources.");
     test(t4->state() == State::Incomplete, "Task with no resources should be incomplete.");
     auto hokey = t4->observers().insert(callback);

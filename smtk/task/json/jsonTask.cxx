@@ -12,6 +12,9 @@
 
 #include "smtk/task/Manager.h"
 
+#include "smtk/string/json/jsonManager.h"
+#include "smtk/string/json/jsonToken.h"
+
 #include "smtk/io/Logger.h"
 
 namespace smtk
@@ -45,26 +48,34 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
 
 } // namespace json
 
-void to_json(nlohmann::json& j, const smtk::task::Task::Ptr& task)
+void to_json(nlohmann::json& jj, const smtk::task::Task::Ptr& task)
 {
   if (!task)
   {
     return;
   }
   auto& helper = json::Helper::instance();
-  j = helper.tasks().configuration(task.get());
+  jj = helper.tasks().configuration(task.get());
+  if (helper.taskManager().active().task() == task.get())
+  {
+    jj["active"] = true;
+  }
 }
 
-void from_json(const nlohmann::json& j, smtk::task::Task::Ptr& task)
+void from_json(const nlohmann::json& jj, smtk::task::Task::Ptr& task)
 {
   try
   {
     auto& helper = json::Helper::instance();
     auto managers = helper.managers();
-    auto taskManager = managers->get<std::shared_ptr<smtk::task::Manager>>();
-    auto taskType = j.at("type").get<std::string>();
-    task = taskManager->taskInstances().createFromName(
-      taskType, const_cast<nlohmann::json&>(j), managers);
+    auto& taskManager = helper.taskManager();
+    auto taskType = jj.at("type").get<std::string>();
+    task = taskManager.taskInstances().createFromName(
+      taskType, const_cast<nlohmann::json&>(jj), managers);
+    if (jj.contains("active") && jj.at("active").get<bool>())
+    {
+      helper.setActiveSerializedTask(task.get());
+    }
   }
   catch (std::exception& e)
   {

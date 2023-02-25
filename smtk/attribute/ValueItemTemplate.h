@@ -57,7 +57,7 @@ public:
   bool setValues(I vbegin, I vend)
   {
     bool ok = false;
-    std::size_t num = vend - vbegin;
+    std::size_t num = std::distance(vbegin, vend);
     if (this->setNumberOfValues(num))
     {
       ok = true;

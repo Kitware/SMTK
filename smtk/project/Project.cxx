@@ -11,6 +11,10 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/plugin/Manager.h"
+#include "smtk/plugin/Registry.h"
+#include "smtk/task/Registrar.h"
+
 namespace smtk
 {
 namespace project
@@ -19,7 +23,11 @@ Project::Project(const std::string& typeName)
   : m_resources(this, smtk::resource::Resource::m_manager)
   , m_operations(std::weak_ptr<smtk::operation::Manager>())
   , m_typeName(typeName)
+  , m_taskManager(new smtk::task::Manager)
 {
+  // Ensure task types are registered to this instance of the task manager.
+  // s_registry = smtk::plugin::addToManagers<smtk::task::Registrar>(m_taskManager);
+  smtk::plugin::Manager::instance()->registerPluginsTo(m_taskManager);
 }
 
 bool Project::clean() const
@@ -39,6 +47,8 @@ bool Project::clean() const
       return false;
     }
   }
+
+  // TODO: Remove tasks? Reset their status?
 
   return true; // everything in clean state
 }

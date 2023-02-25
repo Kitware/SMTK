@@ -23,11 +23,16 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/operation/Hints.h"
 #include "smtk/operation/operators/ReadResource.h"
 
-#include "smtk/project/Manager.h"
+#include "smtk/resource/json/Helper.h"
 
+#include "smtk/project/Manager.h"
 #include "smtk/project/json/jsonProject.h"
+
+#include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonManager.h"
 
 #include "smtk/project/operators/Read_xml.h"
 
@@ -105,13 +110,36 @@ Read::Result Read::operateInternal()
   //   resource paths to being relative (rather than absolute)
   j["location"] = filename;
 
-  // Transcribe project data into the project
+  // Transcribe project data into the project.
+  //
+  // Note that `from_json()` and `to_json()` only accept 2 arguments (a JSON object and a reference
+  // to some object), but sometimes external data based on the context is required. Thus, when
+  // serializing/deserializing, we push and pop helpers that provide context.
+  auto& resourceHelper = smtk::resource::json::Helper::pushInstance(project);
+  resourceHelper.setManagers(this->managers());
+  auto& taskHelper =
+    smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
+  // Do not invoke observers when reading individual tasks:
+  project->taskManager().taskInstances().pauseWorkflowNotifications(true);
+
+  // Deserialize the project and see if it has an active task.
   smtk::project::from_json(j, project);
+  smtk::task::Task* taskToActivate = taskHelper.activeSerializedTask();
+
+  // Unpause task observers and pop helpers since we are done reading.
+  project->taskManager().taskInstances().pauseWorkflowNotifications(false);
+  smtk::task::json::Helper::popInstance();
+  smtk::resource::json::Helper::popInstance();
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
     created->setValue(project);
+    // Hint to the application to make a deserialized task active upon completion:
+    if (taskToActivate)
+    {
+      smtk::operation::addActivateTaskHint(result, project, taskToActivate);
+    }
   }
 
   return result;

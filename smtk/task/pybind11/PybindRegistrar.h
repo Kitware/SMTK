@@ -24,11 +24,7 @@ inline py::class_< smtk::task::Registrar > pybind11_init_smtk_task_Registrar(py:
     .def(py::init<>())
     .def(py::init<::smtk::task::Registrar const &>())
     .def("deepcopy", (smtk::task::Registrar & (smtk::task::Registrar::*)(::smtk::task::Registrar const &)) &smtk::task::Registrar::operator=)
-    .def_static("registerTo", (void (*)(::smtk::common::Managers::Ptr const &)) &smtk::task::Registrar::registerTo, py::arg("manager"))
-    .def_static("registerTo", (void (*)(::smtk::resource::Manager::Ptr const &)) &smtk::task::Registrar::registerTo, py::arg("manager"))
     .def_static("registerTo", (void (*)(::smtk::task::Manager::Ptr const &)) &smtk::task::Registrar::registerTo, py::arg("manager"))
-    .def_static("unregisterFrom", (void (*)(::smtk::common::Managers::Ptr const &)) &smtk::task::Registrar::unregisterFrom, py::arg("manager"))
-    .def_static("unregisterFrom", (void (*)(::smtk::resource::Manager::Ptr const &)) &smtk::task::Registrar::unregisterFrom, py::arg("manager"))
     .def_static("unregisterFrom", (void (*)(::smtk::task::Manager::Ptr const &)) &smtk::task::Registrar::unregisterFrom, py::arg("manager"))
     ;
   return instance;

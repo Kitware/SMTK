@@ -45,7 +45,7 @@ int TestActiveTask(int, char*[])
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
-  auto taskManager = managers->get<smtk::task::Manager::Ptr>();
+  auto taskManager = smtk::task::Manager::create();
 
   auto attributeResourceRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
@@ -72,7 +72,7 @@ int TestActiveTask(int, char*[])
 
   {
     std::shared_ptr<Task> t1 = taskManager->taskInstances().create<Task>(
-      Task::Configuration{ { "title", "Task 1" } }, managers);
+      Task::Configuration{ { "title", "Task 1" } }, *taskManager, managers);
     std::cout << "Attempting to set active task:\n";
     taskManager->active().switchTo(t1.get());
     test(count == 2, "Expected to switch active task.");
@@ -95,7 +95,7 @@ int TestActiveTask(int, char*[])
 
     // Now add a task and switch to it.
     std::shared_ptr<Task> t2 = taskManager->taskInstances().create<Task>(
-      Task::Configuration{ { "title", "Task 2" } }, managers);
+      Task::Configuration{ { "title", "Task 2" } }, *taskManager, managers);
     success = t1->addDependency(t2);
     std::cout << "Switching to task 2:\n";
     taskManager->active().switchTo(t2.get());
@@ -112,7 +112,8 @@ int TestActiveTask(int, char*[])
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },
           { { "role", "simulation attribute" }, { "type", "smtk::attribute::Resource" } } } }
     };
-    auto t4 = taskManager->taskInstances().create<smtk::task::GatherResources>(c4, managers);
+    auto t4 =
+      taskManager->taskInstances().create<smtk::task::GatherResources>(c4, *taskManager, managers);
     t1->addDependency(t4);
     std::cout << "Ensuring switches to unavailable tasks fail.\n";
     bool didSwitch = taskManager->active().switchTo(t1.get());

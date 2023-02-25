@@ -41,31 +41,6 @@ using TaskJSON = std::
 using AdaptorList = std::tuple<adaptor::ResourceAndRole>;
 using AdaptorJSON = std::tuple<json::jsonResourceAndRole>;
 
-void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
-{
-  if (managers->insert(smtk::task::Manager::create()))
-  {
-    managers->get<smtk::task::Manager::Ptr>()->setManagers(managers);
-
-    smtk::plugin::Manager::instance()->registerPluginsTo(managers->get<smtk::task::Manager::Ptr>());
-  }
-}
-
-void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
-{
-  managers->erase<smtk::task::Manager::Ptr>();
-}
-
-void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
-{
-  (void)resourceManager;
-}
-
-void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
-{
-  (void)resourceManager;
-}
-
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
   auto& taskInstances = taskManager->taskInstances();

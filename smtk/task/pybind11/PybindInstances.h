@@ -26,21 +26,29 @@ inline PySharedPtrClass< smtk::task::Instances > pybind11_init_smtk_task_Instanc
   PySharedPtrClass< smtk::task::Instances > instance(m, "Instances");
   instance
     .def("createFromName",
-      [](smtk::task::Instances& tasks, const std::string& name, const std::string& config)
+      [](smtk::task::Instances& taskInstances, const std::string& name, const std::string& config)
       {
         std::shared_ptr<smtk::common::Managers> managers;
         smtk::task::Task::Configuration jConfig = nlohmann::json::parse(config);
-        std::shared_ptr<smtk::task::Task> task = tasks.createFromName(name, jConfig, managers);
+        std::shared_ptr<smtk::task::Task> task = taskInstances.createFromName(name, jConfig, managers);
+        return task;
+      }
+    )
+    .def("createFromName",
+      [](smtk::task::Instances& taskInstances, const std::string& name, const std::string& config, std::shared_ptr<smtk::common::Managers> managers)
+      {
+        smtk::task::Task::Configuration jConfig = nlohmann::json::parse(config);
+        std::shared_ptr<smtk::task::Task> task = taskInstances.createFromName(name, jConfig, managers);
         return task;
       }
     )
     .def("clear", &smtk::task::Instances::clear)
     .def("instances",
-      [](smtk::task::Instances& tasks)
+      [](smtk::task::Instances& taskInstances)
       {
         std::vector<std::shared_ptr<smtk::task::Task>> taskList;
-        taskList.reserve(tasks.size());
-        tasks.visit(
+        taskList.reserve(taskInstances.size());
+        taskInstances.visit(
           [&taskList](const std::shared_ptr<smtk::task::Task>& task)
           {
             if (task)

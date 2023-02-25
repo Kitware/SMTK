@@ -23,6 +23,7 @@
 #include "smtk/project/OperationFactory.h"
 #include "smtk/project/ResourceContainer.h"
 #include "smtk/resource/Component.h"
+#include "smtk/task/Manager.h"
 
 namespace py = pybind11;
 
@@ -52,6 +53,7 @@ inline PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Proje
     .def("shared_from_this", (std::shared_ptr<smtk::project::Project> (smtk::project::Project::*)()) &smtk::project::Project::shared_from_this)
     .def("typeName", &smtk::project::Project::typeName)
     .def("version", &smtk::project::Project::version)
+    .def("taskManager", [](const smtk::project::Project::Ptr& project) { return &project->taskManager(); })
     .def("visit", &smtk::project::Project::visit, py::arg("arg0"));
   return instance;
 }

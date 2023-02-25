@@ -13,6 +13,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/Observers.h"
 #include "smtk/common/Visit.h"
@@ -94,15 +95,33 @@ public:
   };
 
   Task();
+  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
   Task(
     const Configuration& config,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
+  Task(
+    const Configuration& config,
+    Manager& taskManager,
+    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
+  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
   Task(
     const Configuration& config,
     const PassedDependencies& dependencies,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
+  Task(
+    const Configuration& config,
+    const PassedDependencies& dependencies,
+    Manager& taskManager,
+    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
 
   virtual ~Task() = default;
+
+  /// Return a unique, ephemeral identifier for this task.
+  ///
+  /// The identifier is ephemeral in the sense that closing and reloading the
+  /// document that owns the task manager will not preserve the ID.
+  /// Thus, you must not serialize the ID.
+  smtk::string::Token id() const { return m_id; }
 
   /// A method called by all constructors passed Configuration information.
   ///
@@ -125,9 +144,9 @@ public:
   /// A style class specifies how applications should present the task
   /// (e.g., what type of view to provide the user, what rendering mode
   /// to use, what objects to list or exclude).
-  const std::set<std::string>& style() const { return m_style; }
-  bool addStyle(const std::string& styleClass);
-  bool removeStyle(const std::string& styleClass);
+  const std::set<smtk::string::Token>& style() const { return m_style; }
+  bool addStyle(const smtk::string::Token& styleClass);
+  bool removeStyle(const smtk::string::Token& styleClass);
   bool clearStyle();
 
   /// Populate a type-container with view-related data for configuration.
@@ -275,7 +294,7 @@ protected:
   /// A task name to present to the user.
   std::string m_title;
   /// The set of style classes for this task.
-  std::set<std::string> m_style;
+  std::set<smtk::string::Token> m_style;
   /// Whether the user has marked the task completed or not.
   bool m_completed = false;
   /// A set of dependent tasks and the keys used to observe their
@@ -295,8 +314,13 @@ protected:
   Task* m_parent = nullptr;
   /// If this task is being managed, this will refer to its manager.
   std::weak_ptr<smtk::task::Manager> m_manager;
+  /// The unique identifier for this task.
+  smtk::string::Token m_id;
 
 private:
+  /// Set the task's unique ID.
+  void setId();
+
   /// The internal state of the task as provided by subclasses.
   /// This is private so subclasses cannot alter it directly;
   /// instead they should invoke `internalStateChanged()` so that

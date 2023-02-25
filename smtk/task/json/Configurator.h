@@ -40,7 +40,7 @@ typedef std::mutex& (*TypeMutexFunction)();
 /// This is needed in order to serialized dependencies among tasks which
 /// are stored as pointers that could, in theory, form a cycle.
 template<typename ObjectType, TypeMutexFunction = &smtk::task::json::typeMutex>
-class SMTKCORE_EXPORT Configurator
+class SMTK_ALWAYS_EXPORT Configurator
 {
 public:
   /// Methods that can produce a configuration for a task have this signature.
@@ -133,12 +133,8 @@ public:
   /// Return the pointer to an object given its swizzled ID (or null).
   ObjectType* unswizzle(SwizzleId objectId) const;
 
-  /// Return a serialization of task-references that is consistent within
-  /// the scope of serializing a set of tasks.
-  // json swizzleDependencies(const ObjectType::PassedDependencies& deps);
-
-  /// Return a deserialization of de-swizzled task-references.
-  // ObjectType::PassedDependencies unswizzleDependencies(const json& ids) const;
+  /// Populate the vector with tasks whose swizzle ID is \a start or above.
+  void currentObjects(std::vector<ObjectType*>& objects, SwizzleId start = 2);
 
 protected:
   Helper* m_helper;

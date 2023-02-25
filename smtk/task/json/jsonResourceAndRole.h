@@ -26,6 +26,10 @@ namespace json
 
 class Helper;
 
+// NB: ResourceAndRole is serialized/deserialized by methods in smtk/task/json/jsonAdaptor.h
+//     that use the Configurator to swizzle/unswizzle pointers held by tasks.
+//     This file just declares a functor to fetch a ResourceAndRole from the Configurator.
+
 struct SMTKCORE_EXPORT jsonResourceAndRole
 {
   Adaptor::Configuration operator()(const Adaptor* task, Helper& helper) const;

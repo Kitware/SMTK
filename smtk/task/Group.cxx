@@ -32,8 +32,11 @@ namespace task
 
 Group::Group() = default;
 
-Group::Group(const Configuration& config, const smtk::common::Managers::Ptr& managers)
-  : Task(config, managers)
+Group::Group(
+  const Configuration& config,
+  Manager& taskManager,
+  const smtk::common::Managers::Ptr& managers)
+  : Task(config, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);
@@ -42,8 +45,9 @@ Group::Group(const Configuration& config, const smtk::common::Managers::Ptr& man
 Group::Group(
   const Configuration& config,
   const PassedDependencies& dependencies,
+  Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, dependencies, managers)
+  : Task(config, dependencies, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);
@@ -57,30 +61,32 @@ void Group::configure(const Configuration& config)
   }
   // Push a new helper onto the stack (so task/adaptor numbers
   // refer to children, not exernal objects):
+  std::vector<smtk::task::Task*> tasks;
+  smtk::task::json::Helper::instance().currentTasks(tasks);
   auto& helper = smtk::task::json::Helper::pushInstance(this);
   // Instantiate children and configure them
   if (config.contains("children"))
   {
-    std::vector<std::weak_ptr<smtk::task::Task>> tasks;
-    if (!smtk::task::json::jsonManager::deserialize(
-          tasks, m_adaptors, helper.managers(), config.at("children")))
+    smtk::task::from_json(config.at("children"), helper.taskManager());
+    tasks.clear();
+    helper.currentTasks(tasks);
+    std::vector<smtk::task::Adaptor*> adaptors;
+    helper.currentAdaptors(adaptors);
+    for (const auto& adaptor : adaptors)
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "Could not deserialize child tasks.");
+      m_adaptors.push_back(adaptor->shared_from_this());
     }
-    for (const auto& weakChild : tasks)
+    for (auto* child : tasks)
     {
-      if (auto child = weakChild.lock())
-      {
-        m_children.emplace(std::make_pair(
-          child,
-          child->observers().insert(
-            [this](Task& child, State prev, State next) {
-              this->childStateChanged(child, prev, next);
-            },
-            /* priority */ 0,
-            /* initialize */ true,
-            "Group child observer.")));
-      }
+      m_children.emplace(std::make_pair(
+        child->shared_from_this(),
+        child->observers().insert(
+          [this](Task& child, State prev, State next) {
+            this->childStateChanged(child, prev, next);
+          },
+          /* priority */ 0,
+          /* initialize */ true,
+          "Group child observer.")));
     }
   }
   else

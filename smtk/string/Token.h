@@ -45,6 +45,10 @@ public:
   Hash id() const { return m_id; }
   /// Return the string corresponding to the token.
   const std::string& data() const;
+  /// Return true if a string corresponding to the token exists.
+  bool hasData() const;
+  /// Return true if the token's ID has been set (false if not).
+  bool valid() const;
 
   /// Fast equality comparison (compares hashes, not strings).
   bool operator==(const Token& other) const;

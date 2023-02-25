@@ -81,10 +81,12 @@ public:
   FillOutAttributes();
   FillOutAttributes(
     const Configuration& config,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr);
   FillOutAttributes(
     const Configuration& config,
     const PassedDependencies& dependencies,
+    Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr);
 
   ~FillOutAttributes() override = default;
