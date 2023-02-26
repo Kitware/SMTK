@@ -16,12 +16,15 @@
 
 #include "smtk/common/Managers.h"
 
+#include "smtk/common/TypeContainer.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/project/Manager.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/task/Manager.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/Selection.h"
 
+#include <string>
 #include <vector>
 
 namespace py = pybind11;
@@ -35,6 +38,10 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
       {
         managers.insert_or_assign(operationManager);
       }, py::arg("operationManager"))
+    .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::project::Manager>& projectManager)
+      {
+        managers.insert_or_assign(projectManager);
+      }, py::arg("projectManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::resource::Manager>& resourceManager)
       {
         managers.insert_or_assign(resourceManager);
@@ -51,6 +58,37 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
       {
         managers.insert_or_assign(viewSelection);
       }, py::arg("selection"))
+    .def("get", [](smtk::common::Managers& managers, const std::string& managerType)
+      {
+        if (managerType == "smtk::operation::Manager")
+        {
+          return py::cast(managers.get<smtk::operation::Manager::Ptr>());
+        }
+        else if (managerType == "smtk::project::Manager")
+        {
+          return py::cast(managers.get<smtk::project::Manager::Ptr>());
+        }
+        else if (managerType == "smtk::resource::Manager")
+        {
+          return py::cast(managers.get<smtk::resource::Manager::Ptr>());
+        }
+        else if (managerType == "smtk::task::Manager")
+        {
+          return py::cast(managers.get<smtk::task::Manager::Ptr>());
+        }
+        else if (managerType == "smtk::view::Manager")
+        {
+          return py::cast(managers.get<smtk::view::Manager::Ptr>());
+        }
+        else if (managerType == "smtk::view::Selection")
+        {
+          return py::cast(managers.get<smtk::view::Selection::Ptr>());
+        }
+        else
+        {
+          throw smtk::common::TypeContainer::BadTypeError(managerType);
+        }
+      }, py::arg("managerType"))
     ;
   return instance;
 }
