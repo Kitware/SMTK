@@ -23,6 +23,13 @@ class QShowEvent;
 class QWidget;
 class qtOperationDialogInternals;
 
+namespace smtk
+{
+namespace extension
+{
+
+class qtUIManager;
+
 /**\brief Provides a dialog for launching SMTK operations.
  *
  * The intended use is for modelbuilder plugins that use menu or similar actions to invoke
@@ -31,16 +38,8 @@ class qtOperationDialogInternals;
  * for the operation, and the second tab displays the operation's "info" content. The
  * dialog replaces and hides the "Apply", "Info" and "Cancel" buttons and consumes their Qt
  * connections. The dialog can be shown non-modal, to allow repeated running of an operation.
+ * In non-modal operation, an optional "Apply & Close" button can be shown.
 */
-
-namespace smtk
-{
-namespace extension
-{
-
-class qtUIManager;
-
-// Modal dialog for smtk operation view.
 class SMTKQTEXT_EXPORT qtOperationDialog : public QDialog
 {
   Q_OBJECT
@@ -49,19 +48,21 @@ public:
   qtOperationDialog(
     smtk::operation::OperationPtr operation,
     QSharedPointer<smtk::extension::qtUIManager> uiManager,
-    QWidget* parentWidget = nullptr);
+    QWidget* parentWidget = nullptr,
+    bool showApplyAndClose = false);
   qtOperationDialog(
     smtk::operation::OperationPtr operation,
     smtk::resource::ManagerPtr resourceManager,
     smtk::view::ManagerPtr viewManager,
-    QWidget* parentWidget = nullptr);
+    QWidget* parentWidget = nullptr,
+    bool showApplyAndClose = false);
 
-  // Use this constructor to display the operation view in a
-  // vertically-scrolling area. You would generally only need
-  // this option if the operation parameters are lengthy and
-  // take up a significant amount of vertical display space.
-  // When setting the scrollable option, you would generally
-  // also want to call this class' setMinimumHeight() method.
+  /// Use this constructor to display the operation view in a
+  /// vertically-scrolling area. You would generally only need
+  /// this option if the operation parameters are lengthy and
+  /// take up a significant amount of vertical display space.
+  /// When setting the scrollable option, you would generally
+  /// also want to call this class' setMinimumHeight() method.
   qtOperationDialog(
     smtk::operation::OperationPtr operation,
     smtk::resource::ManagerPtr resourceManager,
@@ -82,7 +83,8 @@ protected:
   void buildUI(
     smtk::operation::OperationPtr op,
     QSharedPointer<smtk::extension::qtUIManager> uiMManager,
-    bool scrollable = false);
+    bool scrollable = false,
+    bool showApplyAndClose = false);
 
   // Override showEvent() in order to fix Qt sizing issue
   void showEvent(QShowEvent* event) override;
