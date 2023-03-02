@@ -83,11 +83,14 @@ class qtOperationDialogInternals
 public:
   QPushButton* m_applyButton = nullptr;
   QPushButton* m_cancelButton = nullptr;
+  QPushButton* m_applyCloseButton = nullptr;
   QTabWidget* m_tabWidget = nullptr;
 
   QSharedPointer<smtk::extension::qtUIManager> m_uiManager;
   smtk::extension::qtOperationView* m_smtkView = nullptr;
   smtk::operation::OperationPtr m_operation;
+
+  bool m_closeAfterOperate = false;
 
   qtOperationDialogInternals() = default;
   ~qtOperationDialogInternals() = default;
@@ -96,22 +99,24 @@ public:
 qtOperationDialog::qtOperationDialog(
   smtk::operation::OperationPtr op,
   QSharedPointer<smtk::extension::qtUIManager> uiManager,
-  QWidget* parentWidget)
+  QWidget* parentWidget,
+  bool showApplyAndClose)
   : QDialog(parentWidget)
 {
-  this->buildUI(op, uiManager);
+  this->buildUI(op, uiManager, false, showApplyAndClose);
 }
 
 qtOperationDialog::qtOperationDialog(
   smtk::operation::OperationPtr op,
   smtk::resource::ManagerPtr resManager,
   smtk::view::ManagerPtr viewManager,
-  QWidget* parentWidget)
+  QWidget* parentWidget,
+  bool showApplyAndClose)
   : QDialog(parentWidget)
 {
   auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
     new smtk::extension::qtUIManager(op, resManager, viewManager));
-  this->buildUI(op, uiManager);
+  this->buildUI(op, uiManager, false, showApplyAndClose);
 }
 
 qtOperationDialog::qtOperationDialog(
@@ -124,13 +129,14 @@ qtOperationDialog::qtOperationDialog(
 {
   auto uiManager = QSharedPointer<smtk::extension::qtUIManager>(
     new smtk::extension::qtUIManager(op, resManager, viewManager));
-  this->buildUI(op, uiManager, scrollable);
+  this->buildUI(op, uiManager, scrollable, false);
 }
 
 void qtOperationDialog::buildUI(
   smtk::operation::OperationPtr op,
   QSharedPointer<smtk::extension::qtUIManager> uiManager,
-  bool scrollable)
+  bool scrollable,
+  bool showApplyAndClose)
 {
   this->setObjectName("ExportDialog");
   m_internals = new qtOperationDialogInternals();
@@ -188,6 +194,12 @@ void qtOperationDialog::buildUI(
 
   m_internals->m_applyButton = buttonBox->button(QDialogButtonBox::Apply);
   m_internals->m_cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
+  if (showApplyAndClose)
+  {
+    m_internals->m_applyCloseButton = buttonBox->addButton(QDialogButtonBox::Yes);
+    m_internals->m_applyCloseButton->setText("Apply && Close");
+  }
+
   // don't set a default button, so "Enter" won't dismiss the dialog. But
   // make Apply come first it tab order, so tabbing to Apply then "Enter" works,
   // if the dialog is modal.
@@ -199,6 +211,15 @@ void qtOperationDialog::buildUI(
     this,
     &qtOperationDialog::onOperationExecuted);
   QObject::connect(m_internals->m_cancelButton, &QPushButton::clicked, this, &QDialog::reject);
+  if (m_internals->m_applyCloseButton)
+  {
+    QObject::connect(m_internals->m_applyCloseButton, &QPushButton::clicked, this, [this]() {
+      // flag that we want the dialog to close after the operation finishes
+      this->m_internals->m_closeAfterOperate = true;
+      // perform operation
+      this->m_internals->m_smtkView->onOperate();
+    });
+  }
 
   m_internals->m_smtkView->setButtons(m_internals->m_applyButton, nullptr, nullptr);
   bool isValid = m_internals->m_operation->parameters()->isValid();
@@ -224,9 +245,11 @@ qtOperationDialog::~qtOperationDialog()
 void qtOperationDialog::onOperationExecuted(const smtk::operation::Operation::Result& result)
 {
   Q_EMIT this->operationExecuted(result);
-  if (this->isModal())
+  if (this->isModal() || this->m_internals->m_closeAfterOperate)
   {
-    this->accept(); // closes the dialog
+    this->m_internals->m_closeAfterOperate = false;
+    // closes the dialog, and deletes if setAttribute(Qt::WA_DeleteOnClose) as called.
+    this->done(QDialog::Accepted);
   }
   else
   {
