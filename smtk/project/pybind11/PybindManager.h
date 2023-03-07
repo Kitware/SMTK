@@ -12,14 +12,14 @@
 #define pybind_smtk_project_Manager_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/project/Manager.h"
 
+#include "smtk/common/Managers.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/project/Container.h"
-#include "smtk/project/MetadataContainer.h"
 #include "smtk/project/Project.h"
 #include "smtk/resource/Manager.h"
 
@@ -68,8 +68,7 @@ inline PySharedPtrClass< smtk::project::Manager > pybind11_init_smtk_project_Man
     .def("observers", (smtk::project::Observers & (smtk::project::Manager::*)()) &smtk::project::Manager::observers)
     .def("observers", (smtk::project::Observers const & (smtk::project::Manager::*)() const) &smtk::project::Manager::observers)
     .def("operationManager", &smtk::project::Manager::operationManager)
-    .def("projects", (smtk::project::Container & (smtk::project::Manager::*)()) &smtk::project::Manager::projects)
-    .def("projects", (smtk::project::Container const & (smtk::project::Manager::*)() const) &smtk::project::Manager::projects)
+    .def("projectsSet", &smtk::project::Manager::projectsSet)
     .def("registerProject", (bool (smtk::project::Manager::*)(const std::string&, const std::set<std::string>&,
     const std::set<std::string>&, const std::string&)) &smtk::project::Manager::registerProject, py::arg("name"), py::arg("resources"), py::arg("operations"), py::arg("version"))
     .def("registered", (bool (smtk::project::Manager::*)(::std::string const &) const) &smtk::project::Manager::registered, py::arg("arg0"))

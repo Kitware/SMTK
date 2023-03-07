@@ -26,6 +26,7 @@
 
 #include "smtk/resource/Manager.h"
 
+#include <set>
 #include <tuple>
 #include <type_traits>
 
@@ -178,6 +179,7 @@ public:
   /// Return the set of projects.
   Container& projects() { return m_projects; }
   const Container& projects() const { return m_projects; }
+  std::set<smtk::project::ProjectPtr> projectsSet() const;
 
   /// Return the map of metadata.
   MetadataContainer& metadata() { return m_metadata; }
