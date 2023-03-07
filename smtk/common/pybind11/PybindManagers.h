@@ -20,12 +20,16 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/string/Token.h"
 #include "smtk/task/Manager.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/Selection.h"
 
 #include <string>
 #include <vector>
+
+using namespace smtk::string::literals;  // for ""_hash
+
 
 namespace py = pybind11;
 
@@ -60,33 +64,23 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
       }, py::arg("selection"))
     .def("get", [](smtk::common::Managers& managers, const std::string& managerType)
       {
-        if (managerType == "smtk::operation::Manager")
+        smtk::string::Token token = managerType;
+        switch(token.id())
         {
-          return py::cast(managers.get<smtk::operation::Manager::Ptr>());
-        }
-        else if (managerType == "smtk::project::Manager")
-        {
-          return py::cast(managers.get<smtk::project::Manager::Ptr>());
-        }
-        else if (managerType == "smtk::resource::Manager")
-        {
-          return py::cast(managers.get<smtk::resource::Manager::Ptr>());
-        }
-        else if (managerType == "smtk::task::Manager")
-        {
-          return py::cast(managers.get<smtk::task::Manager::Ptr>());
-        }
-        else if (managerType == "smtk::view::Manager")
-        {
-          return py::cast(managers.get<smtk::view::Manager::Ptr>());
-        }
-        else if (managerType == "smtk::view::Selection")
-        {
-          return py::cast(managers.get<smtk::view::Selection::Ptr>());
-        }
-        else
-        {
-          throw smtk::common::TypeContainer::BadTypeError(managerType);
+          case "smtk::operation::Manager"_hash:
+            return py::cast(managers.get<smtk::operation::Manager::Ptr>());
+          case "smtk::project::Manager"_hash:
+            return py::cast(managers.get<smtk::project::Manager::Ptr>());
+          case "smtk::resource::Manager"_hash:
+            return py::cast(managers.get<smtk::resource::Manager::Ptr>());
+          case "smtk::task::Manager"_hash:
+            return py::cast(managers.get<smtk::task::Manager::Ptr>());
+          case "smtk::view::Manager"_hash:
+            return py::cast(managers.get<smtk::view::Manager::Ptr>());
+          case "smtk::view::Selection"_hash:
+            return py::cast(managers.get<smtk::view::Selection::Ptr>());
+          default:
+            throw smtk::common::TypeContainer::BadTypeError(managerType);
         }
       }, py::arg("managerType"))
     ;
