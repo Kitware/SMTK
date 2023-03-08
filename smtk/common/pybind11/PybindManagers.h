@@ -16,7 +16,6 @@
 
 #include "smtk/common/Managers.h"
 
-#include "smtk/common/TypeContainer.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -68,16 +67,22 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
         switch(token.id())
         {
           case "smtk::operation::Manager"_hash:
+          case "smtk.operation.Manager"_hash:
             return py::cast(managers.get<smtk::operation::Manager::Ptr>());
           case "smtk::project::Manager"_hash:
+          case "smtk.project.Manager"_hash:
             return py::cast(managers.get<smtk::project::Manager::Ptr>());
           case "smtk::resource::Manager"_hash:
+          case "smtk.resource.Manager"_hash:
             return py::cast(managers.get<smtk::resource::Manager::Ptr>());
           case "smtk::task::Manager"_hash:
+          case "smtk.task.Manager"_hash:
             return py::cast(managers.get<smtk::task::Manager::Ptr>());
           case "smtk::view::Manager"_hash:
+          case "smtk.view.Manager"_hash:
             return py::cast(managers.get<smtk::view::Manager::Ptr>());
           case "smtk::view::Selection"_hash:
+          case "smtk.view.Selection"_hash:
             return py::cast(managers.get<smtk::view::Selection::Ptr>());
           default:
             throw smtk::common::TypeContainer::BadTypeError(managerType);

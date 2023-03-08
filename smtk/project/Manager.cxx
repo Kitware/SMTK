@@ -440,12 +440,10 @@ bool Manager::remove(const smtk::project::ProjectPtr& project)
 std::set<smtk::project::ProjectPtr> Manager::projectsSet() const
 {
   std::set<smtk::project::ProjectPtr> projects;
-
-  for (const smtk::project::Project::Ptr p : m_projects.get<IdTag>())
+  for (const smtk::project::Project::Ptr& p : m_projects.get<IdTag>())
   {
     projects.insert(p);
   }
-
   return projects;
 }
 

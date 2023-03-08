@@ -26,3 +26,12 @@ add_test(NAME testPythonProject
 set_tests_properties(testPythonProject PROPERTIES
   LABELS "Project"
   ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
+
+add_executable(TestManagersAccess TestManagersAccess.cxx)
+target_link_libraries(TestManagersAccess smtkCore)
+add_test(NAME TestManagersAccess
+  COMMAND $<TARGET_FILE:TestManagersAccess>
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_managers_operation.py")
+set_tests_properties(TestManagersAccess PROPERTIES
+  LABELS "Project"
+  ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
