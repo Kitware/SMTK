@@ -230,7 +230,13 @@ void qtGroupItem::createWidget()
   }
 
   // Update tab ordering on next event loop
-  QTimer::singleShot(0, [this]() { this->updateTabOrder(m_internals->m_precedingEditor); });
+  QPointer<qtGroupItem> guardedObject(this);
+  QTimer::singleShot(0, [guardedObject]() {
+    if (guardedObject)
+    {
+      guardedObject->updateTabOrder(guardedObject->m_internals->m_precedingEditor);
+    }
+  });
 }
 
 void qtGroupItem::setEnabledState(int state)
