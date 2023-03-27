@@ -15,6 +15,8 @@
 #define smtk_attribute_ValueItemDefinitionTemplate_h
 
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/common/CompilerInformation.h"
+
 #include <cassert>
 #include <sstream>
 
@@ -23,7 +25,7 @@ namespace smtk
 namespace attribute
 {
 template<typename DataT>
-class ValueItemDefinitionTemplate : public smtk::attribute::ValueItemDefinition
+class SMTK_ALWAYS_EXPORT ValueItemDefinitionTemplate : public smtk::attribute::ValueItemDefinition
 {
 public:
   typedef DataT DataType;

@@ -30,7 +30,7 @@ namespace smtk
 namespace attribute
 {
 template<typename DataT>
-class ValueItemTemplate : public ValueItem
+class SMTK_ALWAYS_EXPORT ValueItemTemplate : public ValueItem
 {
   //template<DataT> friend class ValueItemDefinitionTemplate;
 public:
