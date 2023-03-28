@@ -142,7 +142,7 @@ void qtInstancedView::updateUI()
   }
 
   smtk::attribute::ResourcePtr resource = this->attributeResource();
-  std::string attName, defName;
+  std::string attName, defName, attIDStr;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;
   Q_FOREACH (qtAttribute* qatt, this->Internals->AttInstances)
@@ -154,7 +154,7 @@ void qtInstancedView::updateUI()
   std::vector<smtk::attribute::AttributePtr> atts;
   std::vector<smtk::view::Configuration::Component> comps;
   int longLabelWidth = 0;
-  // Lets find the InstancedAttributes Infomation
+  // Lets find the InstancedAttributes Information
   int index = view->details().findChild("InstancedAttributes");
   if (index < 0)
   {
@@ -166,40 +166,76 @@ void qtInstancedView::updateUI()
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
   {
-    smtk::view::Configuration::Component attComp = comp.child(i);
+    smtk::view::Configuration::Component& attComp = comp.child(i);
     if (attComp.name() != "Att")
     {
       continue;
     }
 
-    if (!attComp.attribute("Name", attName))
+    // Lets see if we are searching by ID
+    if (attComp.attribute("ID", attIDStr))
     {
-      return; // No name set
-    }
-
-    // See if the attribute exists and if not then create it
-    att = resource->findAttribute(attName);
-    if (!att)
-    {
-      if (!attComp.attribute("Type", defName))
+      smtk::common::UUID attID(attIDStr);
+      att = resource->findAttribute(attID);
+      if (att == nullptr)
       {
-        // No attribute definition name
+        qWarning(
+          "WARNING: View \"%s\" could not find Attribute by ID: \"%s\".",
+          view->name().c_str(),
+          attIDStr.c_str());
         continue;
       }
-      attDef = resource->findDefinition(defName);
-      if (!attDef)
-      {
-        continue;
-      }
-      else
-      {
-        att = resource->createAttribute(attName, attDef);
-        this->attributeCreated(att);
-      }
+      attDef = att->definition();
     }
     else
     {
-      attDef = att->definition();
+      if (!attComp.attribute("Name", attName))
+      {
+        qWarning(
+          "WARNING: View \"%s\" could not find Attribute. Neither ID or Name was specified.",
+          view->name().c_str());
+        continue; // No name set
+      }
+
+      // See if the attribute exists and if not then create it
+      att = resource->findAttribute(attName);
+      if (att)
+      {
+        attDef = att->definition();
+      }
+      else
+      {
+        if (!attComp.attribute("Type", defName))
+        {
+          // No attribute definition name
+          qWarning(
+            "WARNING: View \"%s\" could not find Attribute by Name: \"%s\" and Type was not "
+            "specified.",
+            view->name().c_str(),
+            attName.c_str());
+          continue;
+        }
+        attDef = resource->findDefinition(defName);
+        if (!attDef)
+        {
+          qWarning(
+            "WARNING: View \"%s\" could not find Attribute by Name: \"%s\" and not find Type: "
+            "\"%s\".",
+            view->name().c_str(),
+            attName.c_str(),
+            defName.c_str());
+          continue;
+        }
+        else
+        {
+          att = resource->createAttribute(attName, attDef);
+          this->attributeCreated(att);
+        }
+      }
+      // Lets add the Attribute's ID to the configuration so we can look it up by ID.
+      // This will allow the View to reference the attribute even if its name is changed later on.
+      attIDStr = att->id().toString();
+      attComp.setAttribute("ID", attIDStr);
     }
 
     atts.push_back(att);
