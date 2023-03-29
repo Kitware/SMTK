@@ -37,6 +37,7 @@
 #endif
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#define BOOST_FILESYSTEM_VERSION 3
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
 #include <boost/dll.hpp>
@@ -121,7 +122,18 @@ bool Paths::createDirectory(const std::string& path)
 /// Is the given path a file?
 bool Paths::fileExists(const std::string& path)
 {
-  return boost::filesystem::exists(path.c_str());
+  bool ok = false;
+  try
+  {
+    ok = boost::filesystem::exists(path.c_str());
+  }
+  catch (boost::filesystem::filesystem_error&)
+  {
+    // Do nothing. If we get here, it is because we do not
+    // have permission to read a containing directory; assume
+    // the file does not exist (to the best of our knowledge).
+  }
+  return ok;
 }
 
 /// Is the path relative (i.e., not absolute)?
@@ -194,10 +206,17 @@ std::string Paths::canonical(const std::string& path, const std::string& base)
 std::string Paths::directory(const std::string& path)
 {
   auto fullpath = boost::filesystem::path(path);
-  if (boost::filesystem::exists(fullpath))
+  try
   {
-    return boost::filesystem::is_directory(fullpath) ? fullpath.string()
-                                                     : fullpath.parent_path().string();
+    if (boost::filesystem::exists(fullpath))
+    {
+      return boost::filesystem::is_directory(fullpath) ? fullpath.string()
+                                                       : fullpath.parent_path().string();
+    }
+  }
+  catch (boost::filesystem::filesystem_error&)
+  {
+    // Do nothing.
   }
   return fullpath.parent_path().string();
 }

@@ -16,6 +16,7 @@ foreach (test ${commonTests})
     NAME ${test}
     COMMAND $<TARGET_FILE:${test}>)
 endforeach()
+target_link_libraries(unitPaths ${Boost_LIBRARIES})
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_executable(QuerySMTKPythonForModule QuerySMTKPythonForModule.cxx)

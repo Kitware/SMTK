@@ -15,6 +15,13 @@
 
 #include "smtk/io/Logger.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
+#define BOOST_FILESYSTEM_VERSION 3
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
+#include <boost/dll.hpp>
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include <cstdio> // for remove()
 #include <fstream>
 #include <iostream>
@@ -22,6 +29,72 @@
 #include <cassert>
 
 using namespace smtk::common;
+
+namespace
+{
+
+bool directoryDoesNotThrow(bool allowAccess)
+{
+  std::cout << "Test parent directory computation when access " << (allowAccess ? "is" : "is not")
+            << " allowed.\n";
+  bool ok = true;
+  using boost::filesystem::create_directories;
+  using boost::filesystem::permissions;
+  using boost::filesystem::perms;
+  using boost::filesystem::remove_all;
+
+  auto unlikely = smtk::common::Paths::uniquePath();
+  auto unlikelyChild = unlikely + "/" + smtk::common::Paths::uniquePath();
+  std::cout << "  Unlikely dirs: \"" << unlikelyChild << "\n";
+
+  if (smtk::common::Paths::canonical(smtk::common::Paths::currentDirectory()).empty())
+  {
+    // We don't have a temp directory; skip the rest.
+    return ok;
+  }
+
+  // Create a directory and subdirectory, then remove permissions from the parent.
+  create_directories(unlikelyChild);
+  if (!allowAccess)
+  {
+    permissions(unlikelyChild, perms::remove_perms | perms::all_all);
+    permissions(unlikely, perms::remove_perms | perms::all_all);
+  }
+  try
+  {
+    auto parent = smtk::common::Paths::directory(unlikelyChild);
+    std::cout << "  Parent of " << unlikelyChild << " is " << parent << "\n";
+
+    // When directory access is allowed, since unlikelyChild is a directory,
+    // it returns the input directory as the directory portion of the path
+    // rather than its parent. In the case where allowAccess is false, we
+    // should expect the parent directory to be returned (since we cannot
+    // inspect unlikelyChild to determine its path). However, some platforms
+    // (fedora33/36, windows) behave differently than others (macos) so we do
+    // not force a validity check when access is disallowed.
+    if (allowAccess)
+    {
+      smtkTest(parent == unlikelyChild, "Expected parent directories to match.");
+      ok &= (parent == unlikelyChild);
+    }
+  }
+  catch (...)
+  {
+    std::cerr << "ERROR: Caught exception trying to identify parent directory.\n";
+    ok = false;
+  }
+  if (!allowAccess)
+  {
+    // Add permissions back and delete the directories whether we failed or not.
+    permissions(unlikely, perms::add_perms | perms::all_all);
+    permissions(unlikelyChild, perms::add_perms | perms::all_all);
+  }
+  remove_all(unlikely);
+
+  return ok;
+}
+
+} // namespace
 
 int main(int argc, char* argv[])
 {
@@ -168,6 +241,11 @@ int main(int argc, char* argv[])
     "Expected relative with explicit base-directory to resolve properly.");
 
   remove(unlikely.c_str());
+
+  smtkTest(
+    directoryDoesNotThrow(false), "Expected Paths::directory() to succeed without exception.");
+  smtkTest(
+    directoryDoesNotThrow(true), "Expected Paths::directory() to succeed without exception.");
 
   return 0;
 }
