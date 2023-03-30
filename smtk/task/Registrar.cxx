@@ -15,6 +15,7 @@
 #include "smtk/task/FillOutAttributes.h"
 #include "smtk/task/GatherResources.h"
 #include "smtk/task/Group.h"
+#include "smtk/task/SubmitOperation.h"
 #include "smtk/task/Task.h"
 #include "smtk/task/adaptor/ResourceAndRole.h"
 #include "smtk/task/json/Configurator.h"
@@ -24,6 +25,7 @@
 #include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/jsonGroup.h"
 #include "smtk/task/json/jsonResourceAndRole.h"
+#include "smtk/task/json/jsonSubmitOperation.h"
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/plugin/Manager.h"
@@ -35,9 +37,13 @@ namespace smtk
 namespace task
 {
 
-using TaskList = std::tuple<Task, FillOutAttributes, GatherResources, Group>;
-using TaskJSON = std::
-  tuple<json::jsonTask, json::jsonFillOutAttributes, json::jsonGatherResources, json::jsonGroup>;
+using TaskList = std::tuple<Task, FillOutAttributes, GatherResources, Group, SubmitOperation>;
+using TaskJSON = std::tuple<
+  json::jsonTask,
+  json::jsonFillOutAttributes,
+  json::jsonGatherResources,
+  json::jsonGroup,
+  json::jsonSubmitOperation>;
 using AdaptorList = std::tuple<adaptor::ResourceAndRole>;
 using AdaptorJSON = std::tuple<json::jsonResourceAndRole>;
 

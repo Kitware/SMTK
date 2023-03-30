@@ -190,8 +190,9 @@ int TestTaskBasics(int, char*[])
     test(success, "Expected to remove dependency from Task 1.");
     test(called == 2, "Expected 2 tasks to change state.");
     test(
-      from == State::Unavailable && to == State::Completed,
-      "Expected state transition unavailable⟶completed.");
+      from == State::Unavailable && to == State::Completable,
+      "Expected state transition unavailable⟶completable.");
+    t1->markCompleted(true);
     success = t1->removeDependency(t2);
     test(!success, "Expected removal of non-existent dependency to fail.");
 

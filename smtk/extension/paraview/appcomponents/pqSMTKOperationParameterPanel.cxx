@@ -18,6 +18,11 @@
 #include "smtk/extension/qt/qtOperationTypeModel.h"
 #include "smtk/extension/qt/qtOperationView.h"
 
+#include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
+#include "smtk/task/Manager.h"
+#include "smtk/task/SubmitOperation.h"
+
 #include "smtk/operation/Operation.h"
 
 #include "smtk/view/AvailableOperations.h"
@@ -54,6 +59,8 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 
+#include <QAction>
+#include <QDockWidget>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMainWindow>
@@ -118,12 +125,15 @@ pqSMTKOperationParameterPanel::~pqSMTKOperationParameterPanel() = default;
 
 void pqSMTKOperationParameterPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer* server)
 {
+  // Stop observing previous wrapper
   if (m_wrapper)
   {
     this->unobserveWrapper(m_wrapper, server);
   }
+  // Start observing this wrapper
   this->observeToolboxPanels();
   m_wrapper = wrapper;
+  this->observeProjectsOnServer();
   // // There is currently no easy way to tell the AvailableOperations instance to
   // // initialize, so for now we simly toggle the "useSelection" choice to
   // // populate the operation panel when a new server is connected.
@@ -144,6 +154,8 @@ void pqSMTKOperationParameterPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqS
   {
     this->cancelEditing(0);
   }
+  // Clear project observers
+  this->unobserveProjectsOnServer();
 
   m_wrapper = nullptr;
 }
@@ -187,7 +199,10 @@ void pqSMTKOperationParameterPanel::runOperationWithParameters(
 }
 
 void pqSMTKOperationParameterPanel::editExistingOperationParameters(
-  const std::shared_ptr<smtk::operation::Operation>& operation)
+  const std::shared_ptr<smtk::operation::Operation>& operation,
+  bool associateSelection,
+  bool isTabClosable,
+  bool showApply)
 {
   if (!m_wrapper)
   {
@@ -209,7 +224,9 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     if (opTab->m_operation == operation)
     {
       m_tabs->setCurrentWidget(opTab->m_tab);
+      opTab->m_closable = isTabClosable;
       this->raise();
+      this->focusPanel();
       return;
     }
   }
@@ -227,25 +244,29 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
   opTab->m_tab = new QWidget(m_tabs);
   opTab->m_tab->setLayout(new QVBoxLayout);
 
-  // Fetch the selection and associate it.
-  std::set<std::shared_ptr<smtk::resource::PersistentObject>> selected;
-  m_wrapper->smtkSelection()->currentSelectionByValue(selected, 1, false);
-  auto associations = opTab->m_operation->parameters()->associations();
-  if (associations)
+  // Fetch the selection and associate it if directed to do so.
+  if (associateSelection)
   {
-    if (associations->isOptional())
+    std::set<std::shared_ptr<smtk::resource::PersistentObject>> selected;
+    m_wrapper->smtkSelection()->currentSelectionByValue(selected, 1, false);
+    auto associations = opTab->m_operation->parameters()->associations();
+    if (associations)
     {
-      associations->setIsEnabled(!selected.empty());
-    }
-    if (!selected.empty())
-    {
-      associations->setNumberOfValues(selected.size());
-      associations->setValues(selected.begin(), selected.end());
+      if (associations->isOptional())
+      {
+        associations->setIsEnabled(!selected.empty());
+      }
+      if (!selected.empty())
+      {
+        associations->setNumberOfValues(selected.size());
+        associations->setValues(selected.begin(), selected.end());
+      }
     }
   }
 
   smtk::view::ConfigurationPtr view = opTab->m_uiMgr->findOrCreateOperationView();
   opTab->m_view = opTab->m_uiMgr->setSMTKView(view, opTab->m_tab);
+  opTab->m_closable = isTabClosable;
   bool didDisplay = opTab->m_view != nullptr;
   if (didDisplay)
   {
@@ -257,6 +278,15 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
       {
         doneButton->hide();
       }
+      if (!showApply)
+      {
+        auto applyButton = opView->applyButton();
+        if (applyButton)
+        {
+          applyButton->hide();
+        }
+      }
+
       QObject::connect(
         opView,
         &smtk::extension::qtOperationView::operationRequested,
@@ -276,6 +306,7 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     QString::fromStdString(opTab->m_operation->parameters()->type()));
   m_tabs->setCurrentWidget(opTab->m_tab);
   this->raise();
+  this->focusPanel();
 }
 
 void pqSMTKOperationParameterPanel::editOperationParameters(
@@ -405,6 +436,7 @@ void pqSMTKOperationParameterPanel::editOperationParameters(
     }
     opTab->m_tab->show();
     opTab->m_tab->raise();
+    this->focusPanel();
   }
 }
 
@@ -422,6 +454,13 @@ void pqSMTKOperationParameterPanel::cancelEditing(int tabIndex)
   {
     if (editor.second.m_tab == w)
     {
+      if (!editor.second.m_closable)
+      {
+        // TODO: Provide feedback to user that closing is disallowed.
+        // QTabWidget does not appear to provide a way to disable the
+        // close button…
+        return;
+      }
       editor.second.m_tab->hide();
       delete editor.second.m_uiMgr;
       while (QWidget* w = editor.second.m_tab->findChild<QWidget*>())
@@ -437,6 +476,32 @@ void pqSMTKOperationParameterPanel::cancelEditing(int tabIndex)
   smtkErrorMacro(smtk::io::Logger::instance(), "Unable to find operation for tab " << tabIndex);
 }
 
+bool pqSMTKOperationParameterPanel::closeTabForOperation(
+  const std::shared_ptr<smtk::operation::Operation>& operation,
+  bool forceClose)
+{
+  auto* tabData = this->tabDataForOperation(*operation);
+  if (!tabData)
+  {
+    return false;
+  }
+  if (forceClose)
+  {
+    tabData->m_closable = true; // Allow close-out, overriding any marks to the contrary.
+  }
+  else if (!tabData->m_closable)
+  {
+    return false;
+  }
+  int tabIndex = m_tabs->indexOf(tabData->m_tab);
+  if (tabIndex < 0)
+  {
+    return false;
+  }
+  this->cancelEditing(tabIndex);
+  return true;
+}
+
 void pqSMTKOperationParameterPanel::cancelTabFromSender()
 {
   auto* viewToCancel = dynamic_cast<smtk::extension::qtOperationView*>(this->sender());
@@ -449,6 +514,12 @@ void pqSMTKOperationParameterPanel::cancelTabFromSender()
   {
     if (editor.second.m_view == viewToCancel)
     {
+      if (!editor.second.m_closable)
+      {
+        // TODO: Provide feedback to user this is disallowed. QTabWidget
+        // does not allow us to disable the close button…
+        return;
+      }
       editor.second.m_tab->hide();
       delete editor.second.m_uiMgr;
       while (QWidget* w = editor.second.m_tab->findChild<QWidget*>())
@@ -464,6 +535,164 @@ void pqSMTKOperationParameterPanel::cancelTabFromSender()
   smtkErrorMacro(
     smtk::io::Logger::instance(),
     "Unable to find operation for view " << viewToCancel->objectName().toStdString());
+}
+
+void pqSMTKOperationParameterPanel::focusPanel()
+{
+  // If we are owned by a dock widget, ensure the dock is shown.
+  if (auto* dock = qobject_cast<QDockWidget*>(this->parent()))
+  {
+    auto* action = dock->toggleViewAction();
+    if (!action->isChecked())
+    {
+      action->trigger();
+    }
+  }
+  // Raise our parent widget.
+  if (auto* parent = qobject_cast<QWidget*>(this->parent()))
+  {
+    parent->raise();
+  }
+}
+
+void pqSMTKOperationParameterPanel::observeProjectsOnServer()
+{
+  auto projectManager = m_wrapper ? m_wrapper->smtkProjectManager() : nullptr;
+  if (!projectManager)
+  {
+    return;
+  }
+
+  QPointer<pqSMTKOperationParameterPanel> self(this);
+  auto observerKey = projectManager->observers().insert(
+    [self](const smtk::project::Project& project, smtk::project::EventType event) {
+      if (self)
+      {
+        self->handleProjectEvent(project, event);
+      }
+    },
+    0,    // assign a neutral priority
+    true, // immediatelyNotify
+    "pqSMTKOperationParameterPanel: Display active operation tasks in panel.");
+  m_projectManagerObservers[projectManager] = std::move(observerKey);
+}
+
+void pqSMTKOperationParameterPanel::unobserveProjectsOnServer()
+{
+  auto projectManager = m_wrapper ? m_wrapper->smtkProjectManager() : nullptr;
+  if (!projectManager)
+  {
+    return;
+  }
+
+  auto entry = m_projectManagerObservers.find(projectManager);
+  if (entry == m_projectManagerObservers.end())
+  {
+    return;
+  }
+  projectManager->observers().erase(entry->second);
+  m_projectManagerObservers.erase(entry);
+}
+
+void pqSMTKOperationParameterPanel::handleProjectEvent(
+  const smtk::project::Project& project,
+  smtk::project::EventType event)
+{
+  auto* taskManager = const_cast<smtk::task::Manager*>(&project.taskManager());
+  switch (event)
+  {
+    case smtk::project::EventType::ADDED:
+    {
+      // observe the active task
+      auto& activeTracker = taskManager->active();
+      m_activeObserverKey = activeTracker.observers().insert(
+        [this](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
+          // First, if oldTask is an operation task, remove its parameter-panel
+          // (if it was configured to display one).
+          auto* oldOpTask = dynamic_cast<smtk::task::SubmitOperation*>(oldTask);
+          if (oldOpTask)
+          {
+            auto styles = oldOpTask->style();
+            for (const auto& style : styles)
+            {
+              auto configurations = oldOpTask->manager()->getStyle(style);
+              if (!configurations.contains("operation-panel"))
+              {
+                continue;
+              }
+              auto section = configurations.at("operation-panel");
+              bool display = !section.contains("display") || section.at("display").get<bool>();
+              if (!display)
+              {
+                continue;
+              }
+              this->closeTabForOperation(oldOpTask->operation()->shared_from_this(), true);
+            }
+          }
+
+          // Now that we've "deactivated" any previous operation task, see if we
+          // need to "activate" a new one.
+          auto* submitOpTask = dynamic_cast<smtk::task::SubmitOperation*>(newTask);
+          if (!submitOpTask)
+          {
+            return;
+          }
+          auto styles = submitOpTask->style();
+          for (const auto& style : styles)
+          {
+            auto configurations = submitOpTask->manager()->getStyle(style);
+            if (!configurations.contains("operation-panel"))
+            {
+              continue;
+            }
+            auto section = configurations.at("operation-panel");
+            bool display = !section.contains("display") || section.at("display").get<bool>();
+            if (!display)
+            {
+              continue;
+            }
+            // At this point, we know we are going to display this operation to the user
+            // Observe the task so when it transitions state we can react (e.g., by
+            // removing the operation tab when the task is completed.)
+            QPointer<pqSMTKOperationParameterPanel> self(this);
+            m_taskObserver = submitOpTask->observers().insert([self](
+                                                                smtk::task::Task& task,
+                                                                smtk::task::State priorState,
+                                                                smtk::task::State currentState) {
+              if (!self)
+              {
+                return;
+              }
+              self->activeTaskStateChange(task, priorState, currentState);
+            });
+            // TODO: Fetch proper view-config from the task based on the "view" tag's
+            //       value (one of "anew"/"override"/"modified").
+            if (submitOpTask->state() != smtk::task::State::Completed)
+            {
+              this->editExistingOperationParameters(
+                submitOpTask->operation()->shared_from_this(),
+                /* associate selection? */
+                false, // TODO: Determine whether submitOpTask->associations() is specified.
+                /* allow tab to be closed? */ false,
+                /* show apply button */ submitOpTask->runStyle() !=
+                  smtk::task::SubmitOperation::RunStyle::OnCompletion);
+            }
+          }
+        });
+    }
+    break;
+    case smtk::project::EventType::REMOVED:
+    {
+      // stop observing active task
+      auto& activeTracker = taskManager->active();
+      activeTracker.observers().erase(m_activeObserverKey);
+    }
+    break;
+    case smtk::project::EventType::MODIFIED:
+    default:
+      // Do nothing.
+      break;
+  }
 }
 
 void pqSMTKOperationParameterPanel::observeToolboxPanels()
@@ -506,5 +735,51 @@ void pqSMTKOperationParameterPanel::observeToolboxPanels()
   {
     // Wait for the event loop.
     QTimer::singleShot(0, connectToolbox);
+  }
+}
+
+pqSMTKOperationParameterPanel::TabData* pqSMTKOperationParameterPanel::tabDataForOperation(
+  smtk::operation::Operation& op)
+{
+  auto it = m_views.lower_bound(op.index());
+  for (; it != m_views.end() && it->first == op.index(); ++it)
+  {
+    if (it->second.m_operation.get() != &op)
+    {
+      continue;
+    }
+    return &it->second;
+  }
+  return nullptr;
+}
+
+void pqSMTKOperationParameterPanel::activeTaskStateChange(
+  smtk::task::Task& task,
+  smtk::task::State priorState,
+  smtk::task::State currentState)
+{
+  (void)priorState;
+  auto* submitOpTask = dynamic_cast<smtk::task::SubmitOperation*>(&task);
+  if (!submitOpTask)
+  {
+    return;
+  }
+
+  if (currentState == smtk::task::State::Completed)
+  {
+    // The user cannot close the tab, but we can when the task is complete.
+    this->closeTabForOperation(submitOpTask->operation()->shared_from_this(), true);
+  }
+  else if (priorState == smtk::task::State::Completed)
+  {
+    // User is marking this task incomplete after having completed it.
+    // Show the operation dialog again.
+    this->editExistingOperationParameters(
+      submitOpTask->operation()->shared_from_this(),
+      /* associate selection? */
+      false, // TODO: Determine whether submitOpTask->associations() is specified.
+      /* allow tab to be closed? */ false,
+      /* show apply button */ submitOpTask->runStyle() !=
+        smtk::task::SubmitOperation::RunStyle::OnCompletion);
   }
 }

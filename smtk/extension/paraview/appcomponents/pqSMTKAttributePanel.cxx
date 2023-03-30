@@ -46,6 +46,8 @@
 #include "vtkCommand.h"
 #include "vtkVector.h"
 
+#include <QAction>
+#include <QDockWidget>
 #include <QPointer>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -148,6 +150,24 @@ void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 
   m_observer.release();
   m_rsrc = std::weak_ptr<smtk::resource::Resource>();
+}
+
+void pqSMTKAttributePanel::focusPanel()
+{
+  // If we are owned by a dock widget, ensure the dock is shown.
+  if (auto* dock = qobject_cast<QDockWidget*>(this->parent()))
+  {
+    auto* action = dock->toggleViewAction();
+    if (!action->isChecked())
+    {
+      action->trigger();
+    }
+  }
+  // Raise our parent widget.
+  if (auto* parent = qobject_cast<QWidget*>(this->parent()))
+  {
+    parent->raise();
+  }
 }
 
 bool pqSMTKAttributePanel::displayResource(
@@ -292,6 +312,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(
       "pqSMTKAttributePanel: Clear panel if a removed resource is being displayed.");
   }
   m_rsrc = rsrc;
+
   return didDisplay;
 }
 
@@ -338,7 +359,13 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     return false;
   }
   auto* qview = m_attrUIMgr->setSMTKView(view, this);
-  return qview != nullptr;
+  if (!qview)
+  {
+    return false;
+  }
+
+  this->focusPanel();
+  return true;
 }
 
 bool pqSMTKAttributePanel::updatePipeline()
@@ -429,7 +456,7 @@ void pqSMTKAttributePanel::observeProjectsOnServer(pqSMTKWrapper* mgr, pqServer*
     },
     0,    // assign a neutral priority
     true, // immediatelyNotify
-    "pqSMTKAttributePanel: Display new attribute project in panel.");
+    "pqSMTKAttributePanel: Display active task's related attributes in panel.");
   m_projectManagerObservers[projectManager] = std::move(observerKey);
 }
 

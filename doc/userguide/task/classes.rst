@@ -238,3 +238,100 @@ Example
        }
      ]
    }
+
+.. _task-submit-operation:
+
+SubmitOperation
+---------------
+
+The :smtk:`SubmitOperation <smtk::task::SubmitOperation>` task creates an operation,
+optionally pre-configures a subset of its
+parameters, and may allow users to run the operation once or repeatedly.
+
+The SubmitOperation task computes its internal state to be:
+
+* irrelevant if no ``operation`` type-name is configured (or no operation by that
+  name is registered to the application's operation manager);
+* unavailable if associations or parameters are configured by a task
+  adaptor (via the ``configured-by="adaptor"`` setting) and invalid.
+* incomplete while the operation's ``ableToOperate()`` method returns
+  false; and
+* completable once
+
+  * ``run-style`` is "iteratively-by-user" or "once-only" and the operation has run successfully or
+  * ``run-style`` is "upon-completion" and the operation's ``ableToOperate()`` returns true.
+
+It accepts all the JSON configuration that the base Task class does, plus:
+
+* ``operation``: the type-name of the operation to be created and monitored;
+* ``run-style``: one of the following enumerants specifying how users should interact with the operation:
+
+  * ``iteratively-by-user``: the operation may be run multiple times at the user's request.
+  * ``once-only``: the operation may only be run once; as soon as it successfully completes,
+    the operation is marked complete.
+  * ``upon-completion``: the operation is not run by the user but instead is launched when the
+    task is marked complete. (If the operation fails, then the task will transition back to
+    completable.)
+* ``run-since-edited``: false before the operation has run successfully; then, true after the operation
+  has successfully run until the operation's parameters have been modified (by the task, an adaptor, or
+  the user) – at which point it becomes false again.
+  This is used to make the task's state consistent across a save, restart, and load of modelbuilder.
+* ``parameters``: a dictionary whose keys are attribute item-paths into the operation's parameters
+  and whose values are JSON objects containing some subset of the following entries:
+
+  * ``enabled``: true or false indicated whether an optional item is enabled or not.
+    This is ignored if the item is not optional.
+  * ``value``: a JSON array of values to store in the parameter's item.
+    Specifying this forces ``enabled`` to be true.
+  * ``configured-by``: one of the following enumerants specifying how the item may be edited:
+
+    * ``task``: the item is configured solely by the provided, static values in this task's configuration.
+      Adaptors will ignore items marked with this enumerant.
+      By default, items marked with this enumerant are recursively hidden from the user.
+    * ``adaptor``: the item is configured by one or more :smtk:`adaptors <smtk::task::Adaptor>`.
+      By default, items marked with this enumerant are recursively hidden from the user.
+    * ``user``: the item is expected to be edited by the user even if the task configuration or a task
+      adaptor also edit the item.
+      Adaptors will configure items marked with this enumerant;
+      to prevent adaptors from editing an item, remove its item-path from the ``parameters`` section.
+      By default, items marked with this enumerant are shown to the user.
+  * ``visibility``: specifies whether the item (and optionally its children) should be shown to or
+    hidden from users. Normally, this behavior is controlled by ``configured-by``, but you may
+    override it explicitly by specifying one of the following enumerants:
+
+    * ``recursive-off``: hide this item and all of its children recursively.
+    * ``off``: hide only this item but show its children.
+    * ``on``: show this item and its children.
+  * ``role``: :smtk:`reference items <smtk::attribute::ReferenceItem>` may be provided with a role so that
+    the :smtk:`ConfigureOperation <smtk::task::adaptor::ConfigureOperation>` task-adaptor
+    can copy references to persistent objects into its ``value`` array.
+* ``associations``: a JSON object specifying how the operation's associations should be configured.
+  The key-value pairs in the object may be any configuration that items in
+  the ``parameters`` section above describes.
+
+Example
+"""""""
+
+.. code:: json
+
+   {
+     "type": "smtk::task::SubmitOperation",
+     "title": "Generate a face from corner points.",
+     "operation": "smtk::session::polygon::CreateEdgeFromPoints",
+     "run-style": "iteratively-by-user",
+     "associations": {
+         "role": "model geometry",
+         "configured-by": "adaptor",
+         "value": []
+     },
+     "parameters": {
+       "/pointGeometry": {
+         "value": [3],
+         "configured-by": "task",
+         "show": "false"
+       }
+     }
+   }
+
+See the `smtk-pv-parameter-editor-panel`_ documentation for how
+the user interface supports SubmitOperation tasks.
