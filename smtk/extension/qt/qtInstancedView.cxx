@@ -166,7 +166,7 @@ void qtInstancedView::updateUI()
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
   {
-    smtk::view::Configuration::Component& attComp = comp.child(i);
+    smtk::view::Configuration::Component attComp = comp.child(i);
     if (attComp.name() != "Att")
     {
       continue;
@@ -235,7 +235,7 @@ void qtInstancedView::updateUI()
       // Lets add the Attribute's ID to the configuration so we can look it up by ID.
       // This will allow the View to reference the attribute even if its name is changed later on.
       attIDStr = att->id().toString();
-      attComp.setAttribute("ID", attIDStr);
+      comp.child(i).setAttribute("ID", attIDStr);
     }
 
     atts.push_back(att);
