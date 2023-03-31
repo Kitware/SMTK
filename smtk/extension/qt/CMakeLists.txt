@@ -68,6 +68,14 @@ set(QAttrLibSrcs
   SVGIconEngine.cxx
   TypeAndColorBadge.cxx
   VisibilityBadge.cxx
+
+  task/qtTaskArc.cxx
+  task/qtTaskEditor.cxx
+  task/qtTaskNode.cxx
+  task/qtTaskScene.cxx
+  task/qtTaskView.cxx
+  task/qtTaskViewConfiguration.cxx
+  task/TaskEditorState.cxx
   )
 
 set(QAttrLibUIs
@@ -78,6 +86,7 @@ set(QAttrLibUIs
   qtNewAttributeWidget.ui
   qtTimeZoneSelectWidget.ui
   qtViewInfoDialog.ui
+  task/TaskNode.ui
 )
 
 
@@ -147,6 +156,14 @@ set(QAttrLibMocHeaders
   MembershipBadge.h
   SVGIconEngine.h
   VisibilityBadge.h
+
+  task/qtTaskArc.h
+  task/qtTaskEditor.h
+  task/qtTaskNode.h
+  task/qtTaskScene.h
+  task/qtTaskView.h
+  task/qtTaskViewConfiguration.h
+  task/TaskEditorState.h
 )
 
 set(QAttrLibHeaders
@@ -164,10 +181,17 @@ set(QAttrLibHeaders
   qtViewRegistrar.h
 )
 
-# put contents of this file in a string in a header, ending _json.h
+# Put the contents of this file in a string in a header, ending in `_json.h`.
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
   TYPE "_json"
   HEADER_OUTPUT rpJsonHeader)
+
+# Put the contents of this file in a *function* in a header, ending in `_cpp.h`.
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/task/PanelConfiguration.json"
+  NAME "taskPanelConfiguration"
+  TYPE "_cpp"
+  HEADER_OUTPUT tpXmlHeader
+)
 
 #install the headers
 smtk_public_headers(smtkQtExt ${QAttrLibHeaders})
@@ -184,6 +208,17 @@ add_library(smtkQtExt
   qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
   ${rpJsonHeader}
+  ${tpXmlHeader}
+)
+
+if (SMTK_ENABLE_GRAPHVIZ_SUPPORT)
+  list(APPEND _extra_private_libraries
+    Graphviz::cgraph
+    Graphviz::gvc
+  )
+endif()
+target_compile_definitions(smtkQtExt PRIVATE
+  "SMTK_ENABLE_GRAPHVIZ_SUPPORT=$<BOOL:${SMTK_ENABLE_GRAPHVIZ_SUPPORT}>"
 )
 
 if (NOT SMTK_ENABLE_OPERATION_THREADS)
@@ -203,6 +238,7 @@ target_link_libraries(smtkQtExt
   Qt5::Widgets
   LINK_PRIVATE
   Threads::Threads
+  ${_extra_private_libraries}
   )
 # add_dependencies(smtkQtExt ${rpJsonTarget})
 

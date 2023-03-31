@@ -17,12 +17,16 @@
 
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
+#include "smtk/string/Token.h"
 
 #include "smtk/task/Active.h"
 #include "smtk/task/Adaptor.h"
 #include "smtk/task/Instances.h"
 #include "smtk/task/Task.h"
+#include "smtk/task/UIState.h"
 #include "smtk/task/adaptor/Instances.h"
+
+#include "nlohmann/json.hpp"
 
 #include <array>
 #include <string>
@@ -76,11 +80,21 @@ public:
   smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
   void setManagers(const smtk::common::Managers::Ptr& managers) { m_managers = managers; }
 
+  /// Given a style key, return a style config.
+  nlohmann::json getStyle(const smtk::string::Token& styleClass) const;
+  nlohmann::json getStyles() const { return m_styles; };
+  void setStyles(const nlohmann::json& styles) { m_styles = styles; }
+
+  /// Store geometry changes from UI components
+  UIState& uiState() { return m_uiState; }
+
 private:
   TaskInstances m_taskInstances;
   AdaptorInstances m_adaptorInstances;
   Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
+  nlohmann::json m_styles;
+  UIState m_uiState;
 };
 } // namespace task
 } // namespace smtk

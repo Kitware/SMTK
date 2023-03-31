@@ -34,7 +34,7 @@ inline void pybind11_init_smtk_task_stateName(py::module &m)
 
 inline void pybind11_init_smtk_task_stateEnum(py::module &m)
 {
-  m.def("stateEnum", &smtk::task::stateEnum, "", py::arg("s"));
+  m.def("stateEnum", &smtk::task::stateEnum, "", py::arg("s"), py::arg("matched"));
 }
 
 #endif

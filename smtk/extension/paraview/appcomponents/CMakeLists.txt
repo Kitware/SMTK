@@ -33,6 +33,7 @@ set(classes
   pqSMTKSaveResourceBehavior
   pqSMTKSelectionFilterBehavior
   pqSMTKSubtractUI
+  pqSMTKTaskPanel
   vtkSMTKEncodeSelection
 
   # For testing
@@ -47,6 +48,7 @@ set(headers
   pqSMTKOperationParameterDock.h
   pqSMTKOperationToolboxDock.h
   pqSMTKResourceDock.h
+  pqSMTKTaskDock.h
 )
 
 set(CMAKE_AUTOMOC 1)

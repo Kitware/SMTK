@@ -17,6 +17,8 @@ set(taskSrcs
   Instances.cxx
   Manager.cxx
   Registrar.cxx
+  UIState.cxx
+  UIStateGenerator.cxx
   adaptor/ResourceAndRole.cxx
   json/Configurator.cxx
   json/Helper.cxx
@@ -31,6 +33,8 @@ set(taskHeaders
   Manager.h
   Registrar.h
   State.h
+  UIState.h
+  UIStateGenerator.h
   adaptor/Instances.h
   adaptor/ResourceAndRole.h
   json/Configurator.h

@@ -25,5 +25,14 @@ Manager::Manager()
 
 Manager::~Manager() = default;
 
+nlohmann::json Manager::getStyle(const smtk::string::Token& styleClass) const
+{
+  if (this->m_styles.contains(styleClass.data()))
+  {
+    return this->m_styles.at(styleClass.data());
+  }
+  return nlohmann::json();
+}
+
 } // namespace task
 } // namespace smtk

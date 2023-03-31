@@ -130,6 +130,11 @@ public:
   /// This will allocate a new ID if none exists.
   SwizzleId swizzleId(const ObjectType* object);
 
+  /// When deserializing an object, we have the swizzle ID assigned previously.
+  /// Accept the given ID; if it already exists, then return false and print
+  /// a warning. Otherwise, assign the given ID and return true.
+  bool setSwizzleId(const ObjectType* object, SwizzleId swizzle);
+
   /// Return the pointer to an object given its swizzled ID (or null).
   ObjectType* unswizzle(SwizzleId objectId) const;
 

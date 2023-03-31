@@ -22,6 +22,9 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
+
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Observer.h"
 #include "smtk/resource/Properties.h"
@@ -44,6 +47,7 @@
 #include "vtkVector.h"
 
 #include <QPointer>
+#include <QTimer>
 #include <QVBoxLayout>
 
 pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
@@ -59,6 +63,20 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
     SIGNAL(postProcessingModeChanged(bool)),
     this,
     SLOT(displayActivePipelineSource(bool)));
+  QObject::connect(
+    behavior,
+    SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)),
+    this,
+    SLOT(observeProjectsOnServer(pqSMTKWrapper*, pqServer*)));
+  QObject::connect(
+    behavior,
+    SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)),
+    this,
+    SLOT(unobserveProjectsOnServer(pqSMTKWrapper*, pqServer*)));
+  behavior->visitResourceManagersOnServers([this](pqSMTKWrapper* wrapper, pqServer* server) {
+    this->observeProjectsOnServer(wrapper, server);
+    return false; // terminate early
+  });
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
@@ -386,4 +404,129 @@ void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
   }
   this->setWindowTitle(panelName.c_str());
   Q_EMIT titleChanged(panelName.c_str());
+}
+
+void pqSMTKAttributePanel::observeProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
+{
+  (void)server;
+  if (!mgr)
+  {
+    return;
+  }
+  auto projectManager = mgr->smtkProjectManager();
+  if (!projectManager)
+  {
+    return;
+  }
+
+  QPointer<pqSMTKAttributePanel> self(this);
+  auto observerKey = projectManager->observers().insert(
+    [self](const smtk::project::Project& project, smtk::project::EventType event) {
+      if (self)
+      {
+        self->handleProjectEvent(project, event);
+      }
+    },
+    0,    // assign a neutral priority
+    true, // immediatelyNotify
+    "pqSMTKAttributePanel: Display new attribute project in panel.");
+  m_projectManagerObservers[projectManager] = std::move(observerKey);
+}
+
+void pqSMTKAttributePanel::unobserveProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
+{
+  (void)server;
+  if (!mgr)
+  {
+    return;
+  }
+  auto projectManager = mgr->smtkProjectManager();
+  if (!projectManager)
+  {
+    return;
+  }
+
+  auto entry = m_projectManagerObservers.find(projectManager);
+  if (entry != m_projectManagerObservers.end())
+  {
+    projectManager->observers().erase(entry->second);
+    m_projectManagerObservers.erase(entry);
+  }
+}
+
+void pqSMTKAttributePanel::handleProjectEvent(
+  const smtk::project::Project& project,
+  smtk::project::EventType event)
+{
+  auto* taskManager = const_cast<smtk::task::Manager*>(&project.taskManager());
+  QPointer<pqSMTKAttributePanel> self(this);
+  switch (event)
+  {
+    case smtk::project::EventType::ADDED:
+      // observe the active task
+      // Use QTimer to wait until the event queue is emptied before trying this;
+      // that gives operations time to complete. Blech.
+      QTimer::singleShot(0, [this, taskManager, self]() {
+        if (!self)
+        {
+          return;
+        }
+        auto& activeTracker = taskManager->active();
+        m_activeObserverKey = activeTracker.observers().insert(
+          [this, self](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
+            if (!self)
+            {
+              return;
+            }
+            (void)oldTask;
+            if (newTask)
+            {
+              auto styles = newTask->style();
+              for (const auto& style : styles)
+              {
+                auto styleConfig = newTask->manager()->getStyle(style);
+                // Does this style have a tag for us?
+                if (styleConfig.contains("attribute-panel"))
+                {
+                  auto panelConfig = styleConfig.at("attribute-panel");
+                  if (panelConfig.contains("attribute-editor"))
+                  {
+                    auto viewName = panelConfig.at("attribute-editor").get<std::string>();
+                    // std::cout << "Got view name " << viewName << std::endl;
+                    if (auto rsrc = m_rsrc.lock())
+                    {
+                      auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+                      smtk::view::ConfigurationPtr viewConfig =
+                        attrRsrc ? attrRsrc->findView(viewName) : nullptr;
+                      if (viewConfig)
+                      {
+                        self->resetPanel(attrRsrc->manager());
+                        // replace the contents with UI for this view.
+                        self->displayResource(attrRsrc, viewConfig);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "AttributePanel active task tracking");
+      });
+      break;
+    case smtk::project::EventType::REMOVED:
+      // stop observing active task
+      QTimer::singleShot(0, [this, taskManager, self]() {
+        if (!self)
+        {
+          return;
+        }
+        auto& activeTracker = taskManager->active();
+        activeTracker.observers().erase(m_activeObserverKey);
+      });
+      break;
+    case smtk::project::EventType::MODIFIED:
+    default:
+      // Do nothing.
+      break;
+  }
 }

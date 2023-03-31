@@ -25,14 +25,20 @@ paraview_plugin_add_dock_window(
   DOCK_AREA Left
   INTERFACES resource_dock_interfaces
   SOURCES resource_dock_sources)
+paraview_plugin_add_dock_window(
+  CLASS_NAME pqSMTKTaskDock
+  DOCK_AREA Left
+  INTERFACES task_dock_interfaces
+  SOURCES task_dock_sources)
 
 set(interfaces
-    ${auto_start_interfaces}
+  ${auto_start_interfaces}
   ${action_group_interfaces}
   ${toolbar_interfaces}
   ${proxy_interfaces}
   ${attribute_dock_interfaces}
   ${resource_dock_interfaces}
+  ${task_dock_interfaces}
 )
 list(APPEND sources
   ${auto_start_sources}
@@ -41,6 +47,7 @@ list(APPEND sources
   ${proxy_sources}
   ${attribute_dock_sources}
   ${resource_dock_sources}
+  ${task_dock_sources}
 )
 
 smtk_add_plugin(smtkPQGuiComponentsPlugin

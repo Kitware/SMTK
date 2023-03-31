@@ -151,6 +151,9 @@ ReadResource::Result ReadResource::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
+    // Pass our application state in to the read operation:
+    readOperation->setManagers(this->managers());
+
     // Set the local reader's filename field.
     smtk::attribute::FileItem::Ptr readerFileItem = readOperation->parameters()->findFile(
       readerGroup.fileItemNameForOperation(readOperation->index()));

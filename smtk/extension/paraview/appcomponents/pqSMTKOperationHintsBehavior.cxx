@@ -12,10 +12,12 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKTaskPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
+#include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/SelectionObserver.h"
@@ -27,6 +29,8 @@
 #include "smtk/operation/groups/DeleterGroup.h"
 
 #include "smtk/attribute/ReferenceItem.h"
+
+#include "pqApplicationCore.h"
 
 #include <QAbstractProxyModel>
 #include <QTreeView>
@@ -257,6 +261,12 @@ int pqSMTKOperationHintsBehavior::processHints(
       {
         project->taskManager().active().switchTo(task.get());
       }
+      if (
+        auto* taskPanel =
+          dynamic_cast<pqSMTKTaskPanel*>(pqApplicationCore::instance()->manager("smtk task panel")))
+      {
+        taskPanel->taskPanel()->displayProject(project);
+      }
     });
 
   return 0;
@@ -424,25 +434,16 @@ void pqSMTKOperationHintsBehavior::unobserveWrapper(pqSMTKWrapper* wrapper, pqSe
 {
   (void)wrapper;
   auto oit = m_p->m_opObservers.find(server);
+  // The observers may not alwats exist (e.g., during tests whose first recorded
+  // action is to disconnect the pre-existing built-in server). If they do exist,
+  // remove them.
   if (oit != m_p->m_opObservers.end())
   {
     m_p->m_opObservers.erase(oit);
-  }
-  else
-  {
-    smtkWarningMacro(
-      smtk::io::Logger::instance(),
-      "No operation observer existed for server " << server << " being disconnected.");
   }
   auto sit = m_p->m_selnObservers.find(server);
   if (sit != m_p->m_selnObservers.end())
   {
     m_p->m_selnObservers.erase(sit);
-  }
-  else
-  {
-    smtkWarningMacro(
-      smtk::io::Logger::instance(),
-      "No selection observer existed for server " << server << " being disconnected.");
   }
 }

@@ -177,7 +177,6 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     pqCore->unRegisterManager("call observers on main thread");
     pqCore->unRegisterManager("smtk register importers");
     pqCore->unRegisterManager("smtk pipeline selection sync");
-    pqCore->unRegisterManager("smtk display attribute on load");
   }
 }
 

@@ -141,6 +141,11 @@ option(SMTK_BUILD_PRECOMPILED_HEADERS
   "Precompile headers to improve build times" OFF)
 mark_as_advanced(SMTK_BUILD_PRECOMPILED_HEADERS)
 
+option(SMTK_ENABLE_GRAPHVIZ_SUPPORT "Use graphviz for task layout." OFF)
+if (SMTK_ENABLE_GRAPHVIZ_SUPPORT)
+  find_package(Graphviz REQUIRED)
+endif()
+
 option(SMTK_ENABLE_GDAL_SUPPORT "Include I/O for GDAL. This requires ParaView/VTK built with GDAL."
   OFF)
 

@@ -276,6 +276,10 @@ smtk::project::Project::Ptr Manager::create(
     // Create the project with the appropriate UUID
     project = metadata->create(id, m);
     this->add(metadata->index(), project);
+    if (project)
+    {
+      project->taskManager().setManagers(m);
+    }
   }
 
   return project;
@@ -294,6 +298,10 @@ smtk::project::Project::Ptr Manager::create(
   {
     // Create the project with the appropriate UUID
     project = metadata->create(id, mm);
+    if (project)
+    {
+      project->taskManager().setManagers(mm);
+    }
     this->add(index, project);
   }
 

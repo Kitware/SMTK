@@ -74,9 +74,11 @@ void from_json(const nlohmann::json& j, GatherResources::ResourceSet& resourceSe
           if (resource)
           {
             resourceSet.m_resources.insert(resource);
+            warnOnIds = false;
           }
           else
           {
+            warnOnIds = true;
             smtkWarningMacro(
               smtk::io::Logger::instance(), "Resource \"" << jsonId << "\" not found.");
           }
@@ -86,6 +88,10 @@ void from_json(const nlohmann::json& j, GatherResources::ResourceSet& resourceSe
       {
         warnOnIds = true;
       }
+    }
+    else
+    {
+      warnOnIds = true;
     }
     if (warnOnIds)
     {

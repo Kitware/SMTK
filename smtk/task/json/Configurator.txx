@@ -13,6 +13,8 @@
 #include "smtk/task/json/Configurator.h"
 #include "smtk/task/json/Helper.h"
 
+#include "smtk/io/Logger.h"
+
 namespace smtk
 {
 namespace task
@@ -193,6 +195,37 @@ typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::s
   m_swizzleFwd[ncobject] = id;
   m_swizzleBck[id] = ncobject;
   return id;
+}
+
+/// Assign a previously-provided swizzle ID to the object.
+/// This will warn and return false if the ID already exists.
+template<typename ObjectType, TypeMutexFunction MF>
+bool Configurator<ObjectType, MF>::setSwizzleId(
+  const ObjectType* object,
+  typename Configurator<ObjectType, MF>::SwizzleId swizzle)
+{
+  if (!object)
+  {
+    return false;
+  }
+  auto bit = m_swizzleBck.find(swizzle);
+  if (bit != m_swizzleBck.end())
+  {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Deserialized swizzle ID " << swizzle << " is already assigned to"
+                                 << "\"" << bit->second->title() << "\" " << bit->second
+                                 << ". Skipping.");
+    return false;
+  }
+  auto* ncobject = const_cast<ObjectType*>(object); // Need a non-const ObjectType in some cases.
+  m_swizzleFwd[ncobject] = swizzle;
+  m_swizzleBck[swizzle] = ncobject;
+  if (swizzle >= m_nextSwizzle)
+  {
+    m_nextSwizzle = swizzle + 1;
+  }
+  return true;
 }
 
 /// Return the pointer to an object given its swizzled ID (or null).

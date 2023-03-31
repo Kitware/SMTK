@@ -182,27 +182,55 @@ smtk::common::Visit FillOutAttributes::visitAttributeSets(AttributeSetVisitor vi
 
 bool FillOutAttributes::initializeResources()
 {
+  // By default, assume we are unconfigured:
   bool foundResource = false;
   if (m_attributeSets.empty())
   {
     return foundResource;
   }
+
   if (auto resourceManager = m_managers->get<smtk::resource::Manager::Ptr>())
   {
-    auto resources = resourceManager->find<smtk::attribute::Resource>();
-    for (const auto& resource : resources)
+    // Iterate attribute sets to see if any are configured with valid
+    // attribute resource and/or attribute UUIDs. If so and if we can
+    // find the matching resource in the manager, then we can return true.
+    bool anyAutoconfigure = false;
+    for (const auto& attributeSet : m_attributeSets)
     {
-      const std::string& role = smtk::project::detail::role(resource);
-      for (auto& attributeSet : m_attributeSets)
+      if (attributeSet.m_autoconfigure)
       {
-        if (
-          attributeSet.m_role.empty() || attributeSet.m_role == "*" || attributeSet.m_role == role)
+        anyAutoconfigure = true;
+      }
+      for (const auto& resourceEntry : attributeSet.m_resources)
+      {
+        if (auto rsrc = resourceManager->get<smtk::attribute::Resource>(resourceEntry.first))
         {
-          if (attributeSet.m_autoconfigure)
+          foundResource = true;
+        }
+      }
+    }
+
+    // If any attribute sets were marked "autoconfigure" (meaning we should
+    // identify any attribute resources with the proper role), then iterate
+    // resources in the resource manager and configure as required.
+    if (anyAutoconfigure)
+    {
+      auto resources = resourceManager->find<smtk::attribute::Resource>();
+      for (const auto& resource : resources)
+      {
+        const std::string& role = smtk::project::detail::role(resource);
+        for (auto& attributeSet : m_attributeSets)
+        {
+          if (
+            attributeSet.m_role.empty() || attributeSet.m_role == "*" ||
+            attributeSet.m_role == role)
           {
-            foundResource = true;
-            auto it = attributeSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
-            this->updateResourceEntry(*resource, attributeSet, it->second);
+            if (attributeSet.m_autoconfigure)
+            {
+              foundResource = true;
+              auto it = attributeSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
+              this->updateResourceEntry(*resource, attributeSet, it->second);
+            }
           }
         }
       }
@@ -422,7 +450,6 @@ bool FillOutAttributes::hasRelevantInfomation(
 }
 State FillOutAttributes::computeInternalState() const
 {
-  std::cerr << "Computing new state\n";
   auto resourceManager = m_managers->get<smtk::resource::Manager::Ptr>();
   if (!resourceManager)
   {
