@@ -28,6 +28,10 @@ class qtOperationTypeView;
 
 namespace smtk
 {
+namespace view
+{
+class OperationDecorator;
+}
 namespace extension
 {
 
@@ -48,6 +52,10 @@ namespace extension
   * is "Associability," so that operations appear first by their relevance
   * to the current selection and then, within groups of the same relevance,
   * sorted by the label text.
+  *
+  * If the "AlwaysLimit" configuration option is false (or absent), then
+  * a checkbox labeled "All" will be shown. The checkbox allows users to
+  * display all of the operations without any decorations.
   *
   * Each operation has a corresponding qtOperationAction that
   * creates QPushButton instances for display in a dynamic grid.
@@ -72,6 +80,7 @@ namespace extension
   * <View Type="qtOperationPalette"
   *   SearchBar="true"
   *   FilterSort="Precendence"
+  *   AlwaysLimit="false"
   *   SubsetSort="Associability" SubsetAssociability="[4-9]"
   *   >
   *   <Model ... see qtOperationModel for configuration details ... />
@@ -144,6 +153,7 @@ public Q_SLOTS:
   void onShowCategory() override {}
 
   virtual void editTopOperation();
+  virtual void toggleFiltering(int filterState);
 
 protected:
   ///\brief Creates the UI related to the view and properly assigns it
@@ -169,6 +179,11 @@ protected:
   QPointer<QLineEdit> m_search;
   /// The list-view of operations.
   QPointer<qtOperationTypeView> m_list;
+  /// The default operation decorator owned by m_model.
+  ///
+  /// Toggling the "All" checkbox to unlimit operations unsets or restores
+  /// the decorator on m_model.
+  std::shared_ptr<smtk::view::OperationDecorator> m_decorator;
 };
 
 } // namespace extension

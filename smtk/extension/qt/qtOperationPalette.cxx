@@ -29,6 +29,7 @@
 #include "smtk/view/Configuration.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QLineEdit>
 #include <QSortFilterProxyModel>
 #include <QWidget>
@@ -140,6 +141,36 @@ void qtOperationPalette::editTopOperation()
   }
 }
 
+void qtOperationPalette::toggleFiltering(int filterState)
+{
+  if (!m_decorator)
+  {
+    // Remember the decorator if it is present so we can reset it
+    // when the checkbox is toggled again.
+    m_decorator = m_model->decorator();
+  }
+  switch (filterState)
+  {
+    case Qt::Checked:
+      m_subset->setFilterRegularExpression("");
+      m_model->setDecorator(nullptr);
+      break;
+    default:
+    case Qt::Unchecked:
+    {
+      std::string subsetFilterRegex("[4-9]");
+      const auto& config = this->configuration();
+      if (config)
+      {
+        config->details().attribute("SubsetAssociability", subsetFilterRegex);
+      }
+      m_subset->setFilterRegularExpression(QString::fromStdString(subsetFilterRegex));
+      m_model->setDecorator(m_decorator);
+    }
+    break;
+  }
+}
+
 void qtOperationPalette::buildUI()
 {
   this->createWidget();
@@ -184,17 +215,43 @@ void qtOperationPalette::createWidget()
   m_layout = new QVBoxLayout;
   m_layout->setObjectName("Layout");
   this->Widget->setLayout(m_layout);
+  auto* controlsLayout = new QHBoxLayout;
+  controlsLayout->setObjectName("Controls");
+  bool haveControls = false;
   const auto& conf = m_viewInfo.configuration()->details();
   if (conf.attributeAsBool("SearchBar"))
   {
     m_search = new QLineEdit();
     m_search->setObjectName("Search");
     m_search->setPlaceholderText("Search");
-    m_layout->addWidget(m_search);
+    m_search->setToolTip("Search for an operation by its name.");
+    controlsLayout->addWidget(m_search);
+    haveControls = true;
     QObject::connect(
       m_search, &QLineEdit::textChanged, m_filter, &QSortFilterProxyModel::setFilterWildcard);
     QObject::connect(
       m_search, &QLineEdit::returnPressed, this, &qtOperationPalette::editTopOperation);
+  }
+  if (!conf.attributeAsBool("AlwaysLimit"))
+  {
+    auto* alwaysLimit = new QCheckBox();
+    alwaysLimit->setObjectName("AlwaysLimit");
+    alwaysLimit->setText("All");
+    alwaysLimit->setToolTip("Click to show all available operations.");
+    alwaysLimit->setCheckState(Qt::Unchecked);
+    controlsLayout->addWidget(alwaysLimit);
+    haveControls = true;
+    m_decorator = m_model->decorator();
+    QObject::connect(
+      alwaysLimit, &QCheckBox::stateChanged, this, &qtOperationPalette::toggleFiltering);
+  }
+  if (haveControls)
+  {
+    m_layout->addLayout(controlsLayout);
+  }
+  else
+  {
+    delete controlsLayout;
   }
   m_layout->addWidget(m_list);
 }

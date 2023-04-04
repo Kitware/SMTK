@@ -67,10 +67,15 @@ run the operation immediately.
 Long-clicking a push-button will emit a signal that the parameter-editor panel
 below accepts to allow further user configuration before running.
 
-You can activate the search bar for operations (i.e., switch the keyboard focus
-to the search bar) at any time by pressing ``Ctrl+Space`` (or ``Cmd+Space`` on macos).
-While the search bar has focus, pressing the ``Return`` key will emit a signal to
-edit the parameters of the first (top, left-most) push button in the grid.
+If the toolbox is configured to allow searching, you can activate the search bar
+for operations (i.e., switch the keyboard focus to the search bar) at any time by
+pressing ``Ctrl+Space`` (or ``Cmd+Space`` on macos). While the search bar has focus,
+pressing the ``Return`` key will emit a signal to edit the parameters of the first
+(top, left-most) push button in the grid.
+
+If the toolbox is configured to allow it, all operations (not just those available
+to the currently-selection objects) will be displayed without decoration and may
+be filtered by searching.
 
 Operation parameter-editor panel
 ================================
