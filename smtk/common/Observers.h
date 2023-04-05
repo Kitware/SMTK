@@ -62,7 +62,7 @@ namespace common
 /// goes out of scope, the Observer functor is removed from the Observers
 /// instance) by default. To decouple the Key's lifetime from that of the
 /// Observer functor, use the Key's release() method.
-template<typename Observer, bool DebugObservers = false>
+template<typename Observer, bool DebugObservers = false, int DefaultPriority = 0>
 class Observers
 {
   friend class Key;
@@ -71,6 +71,13 @@ public:
   /// A value to indicate the relative order in which an observer should be
   /// called. Larger is higher priority.
   typedef int Priority;
+
+  /// The default priority for observers inserted without an explicit priority.
+  static constexpr Priority Default = DefaultPriority;
+  static constexpr Priority defaultPriority() { return Default; }
+
+  /// A convenience that returns the lowest priority representable for observers.
+  static constexpr Priority lowestPriority() { return std::numeric_limits<Priority>::lowest(); }
 
 private:
   /// A key by which an Observer can be accessed within the Observers instance.
@@ -388,7 +395,7 @@ public:
 
   Key insert(Observer fn, std::string description = "")
   {
-    return insert(fn, std::numeric_limits<Priority>::lowest(), true, description);
+    return insert(fn, DefaultPriority, true, description);
   }
 
   /// Indicate that an observer should no longer be called. Returns the number

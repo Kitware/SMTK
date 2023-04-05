@@ -237,6 +237,8 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
       }
       return 0;
     },
+    smtk::operation::Observers::lowestPriority(),
+    /* initialize */ false,
     "Add created resources to the resource manager");
 
   return m_resourceObserver.assigned();
