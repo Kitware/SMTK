@@ -100,8 +100,8 @@ int TestRemoveResourceProject(int /*unused*/, char** const /*unused*/)
   auto vtkRegistry =
     smtk::plugin::addToManagers<smtk::session::vtk::Registrar>(resourceManager, operationManager);
 #endif
-  auto projectOpRegistry =
-    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
+  auto projectOpRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(
+    resourceManager, operationManager, projectManager);
 
   // Register a new project type
   projectManager->registerProject("foo");
@@ -109,7 +109,8 @@ int TestRemoveResourceProject(int /*unused*/, char** const /*unused*/)
   // Create a project and write it to disk.
   std::size_t numberOfResources = 0;
   smtk::resource::ResourcePtr resource;
-  smtk::project::Project::Ptr project = projectManager->create("foo");
+  smtk::project::Project::Ptr project = projectManager->create("foo", managers);
+  projectManager->add(project->index(), project);
   smtkTest(!!project, "Failed to create a project");
 
   {

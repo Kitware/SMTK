@@ -99,37 +99,51 @@ pqSaveResourceReaction::State pqSaveResourceReaction::saveResource(pqSMTKResourc
   }
 
   auto* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(activeResource->getServer());
-  if (smtk::resource::Manager::Ptr manager = resource->manager())
+  return pqSaveResourceReaction::saveResource(
+    resource, wrapper ? wrapper->smtkManagersPtr() : nullptr);
+}
+
+//-----------------------------------------------------------------------------
+pqSaveResourceReaction::State pqSaveResourceReaction::saveResource(
+  const std::shared_ptr<smtk::resource::Resource>& resource,
+  const std::shared_ptr<smtk::common::Managers>& managers)
+{
+  if (!resource)
   {
-    std::shared_ptr<smtk::common::Managers> managers =
-      wrapper ? wrapper->smtkManagersPtr() : nullptr;
-    // The resource manager returns true on success
+    return pqSaveResourceReaction::State::Failed;
+  }
+
+  if (resource->location().empty())
+  {
+    return pqSaveResourceAsReaction::saveResourceAs(resource, managers);
+  }
+
+  if (auto manager = resource->manager())
+  {
     return manager->write(resource, managers) ? pqSaveResourceReaction::State::Succeeded
                                               : pqSaveResourceReaction::State::Failed;
   }
-  else
+  else if (managers)
   {
     // the standard way of saving doesn't work, because the deleted
     // pipeline object doesn't have a resource manager.
     // Instead, directly call WriteResource:
-    pqServer* server = activeObjects.activeServer();
-    pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
-    if (!server || !wrapper)
+    if (auto operationManager = managers->get<smtk::operation::Manager::Ptr>())
     {
-      return pqSaveResourceReaction::State::Failed;
+      if (auto writeOp = operationManager->create<smtk::operation::WriteResource>())
+      {
+        std::string filename = resource->location();
+        writeOp->parameters()->associate(resource);
+        writeOp->parameters()->findFile("filename")->setIsEnabled(true);
+        writeOp->parameters()->findFile("filename")->setValue(filename);
+
+        smtk::operation::Operation::Result writeOpResult = writeOp->operate();
+        return writeOpResult->findInt("outcome")->value() ==
+            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED)
+          ? pqSaveResourceReaction::State::Succeeded
+          : pqSaveResourceReaction::State::Failed;
+      }
     }
-    smtk::operation::WriteResource::Ptr writeOp =
-      wrapper->smtkOperationManager()->create<smtk::operation::WriteResource>();
-
-    writeOp->parameters()->associate(resource);
-    writeOp->parameters()->findFile("filename")->setIsEnabled(true);
-    writeOp->parameters()->findFile("filename")->setValue(filename);
-
-    smtk::operation::Operation::Result writeOpResult = writeOp->operate();
-    return writeOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED)
-      ? pqSaveResourceReaction::State::Succeeded
-      : pqSaveResourceReaction::State::Failed;
   }
 
   return pqSaveResourceReaction::State::Failed;
@@ -161,7 +175,6 @@ void pqSaveResourceAsReaction::updateEnableState()
 //-----------------------------------------------------------------------------
 pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(pqSMTKResource* smtkResource)
 {
-  pqServer* server = pqActiveObjects::instance().activeServer();
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
   pqSMTKResource* activeResource = smtkResource != nullptr
     ? smtkResource
@@ -171,6 +184,36 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(pqSMTKRes
     return pqSaveResourceReaction::State::Failed;
   }
   smtk::resource::ResourcePtr resource = activeResource->getResource();
+  auto* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(activeResource->getServer());
+  return pqSaveResourceAsReaction::saveResourceAs(
+    resource, wrapper ? wrapper->smtkManagersPtr() : nullptr);
+}
+
+pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(
+  const std::shared_ptr<smtk::resource::Resource>& resource,
+  const std::shared_ptr<smtk::common::Managers>& managers)
+{
+  pqServer* server = pqActiveObjects::instance().activeServer();
+  if (!resource)
+  {
+    return pqSaveResourceReaction::State::Failed;
+  }
+
+  auto resourceManager = resource->manager();
+  if (!resourceManager && managers)
+  {
+    resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  }
+  auto operationManager = managers ? managers->get<smtk::operation::Manager::Ptr>() : nullptr;
+  if (!resourceManager && !operationManager)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "No resource or operation manager to save resource "
+      "\""
+        << resource->name() << "\" " << resource << ".");
+    return pqSaveResourceReaction::State::Failed;
+  }
 
   QString filters("Simulation Modeling Toolkit Resource files (*.smtk)");
   QString title(tr("Save File: "));
@@ -211,40 +254,20 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs(pqSMTKRes
       return pqSaveResourceReaction::State::Aborted;
     }
 
-    auto* wrapper =
-      pqSMTKBehavior::instance()->resourceManagerForServer(activeResource->getServer());
-    if (smtk::resource::Manager::Ptr manager = resource->manager())
+    // At this point, we know we are saving; it is OK to set the new filename.
+    if (!resource->setLocation(filename))
     {
-      std::shared_ptr<smtk::common::Managers> managers =
-        wrapper ? wrapper->smtkManagersPtr() : nullptr;
-      return manager->write(resource, filename, managers) ? pqSaveResourceReaction::State::Succeeded
-                                                          : pqSaveResourceReaction::State::Failed;
+      QWidget* mainWidget = pqCoreUtilities::mainWidget();
+      QString text;
+      QTextStream qs(&text);
+      qs << "Could not set resource's location to \"" << filename.c_str() << "\".";
+      QMessageBox::critical(mainWidget, "Unable to modify resource", text);
+      return pqSaveResourceReaction::State::Aborted;
     }
-    else
-    {
-      // the standard way of saving doesn't work, because the deleted
-      // pipeline object doesn't have a resource manager.
-      // Instead, directly call WriteResource:
-      pqServer* server = activeObjects.activeServer();
-      pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
-      if (!server || !wrapper)
-      {
-        return pqSaveResourceReaction::State::Failed;
-      }
-      smtk::operation::WriteResource::Ptr writeOp =
-        wrapper->smtkOperationManager()->create<smtk::operation::WriteResource>();
 
-      writeOp->parameters()->associate(resource);
-      writeOp->parameters()->findFile("filename")->setIsEnabled(true);
-      writeOp->parameters()->findFile("filename")->setValue(filename);
-
-      smtk::operation::Operation::Result writeOpResult = writeOp->operate();
-      return writeOpResult->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED)
-        ? pqSaveResourceReaction::State::Succeeded
-        : pqSaveResourceReaction::State::Failed;
-    }
+    return pqSaveResourceReaction::saveResource(resource, managers);
   }
+
   return pqSaveResourceReaction::State::Aborted;
 }
 

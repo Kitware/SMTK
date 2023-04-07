@@ -161,7 +161,7 @@ void resourcesFromItem(
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
     // no need to look at items that cannot be resolved
-    if (item->value(i) == nullptr)
+    if (!item->value(i))
     {
       continue;
     }

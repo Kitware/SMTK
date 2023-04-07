@@ -48,6 +48,9 @@ int main(int /*argc*/, char* /*argv*/[])
   // Create project with type "basic", a generic type that can be loaded into modelbuilder by default.
   projManager->registerProject("basic");
   smtk::project::ProjectPtr project = projManager->create("basic");
+  // If you create the project directly (rather than through
+  // an operation), you must add it to the manager explicitly:
+  projManager->add(project);
   // -- 2 --
 
   // ++ 3 ++

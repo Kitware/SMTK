@@ -30,6 +30,15 @@ Project::Project(const std::string& typeName)
   smtk::plugin::Manager::instance()->registerPluginsTo(m_taskManager);
 }
 
+std::shared_ptr<smtk::project::Project> Project::create(const std::string& typeName)
+{
+  // No operation manager; try this although it will cause trouble because
+  // normally the "Create" operation's result-observer will add it to the
+  // project manager.
+  auto project = smtk::shared_ptr<smtk::project::Project>(new smtk::project::Project(typeName));
+  return project;
+}
+
 bool Project::clean() const
 {
   // Check my flag first

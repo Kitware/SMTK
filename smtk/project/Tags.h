@@ -11,25 +11,27 @@
 #ifndef smtk_project_Tags_h
 #define smtk_project_Tags_h
 
+#include "smtk/CoreExports.h"
+
 namespace smtk
 {
 namespace project
 {
 
 /// Tags used to access Project data from multiindex arrays.
-struct IdTag
+struct SMTKCORE_EXPORT IdTag
 {
 };
-struct IndexTag
+struct SMTKCORE_EXPORT IndexTag
 {
 };
-struct LocationTag
+struct SMTKCORE_EXPORT LocationTag
 {
 };
-struct NameTag
+struct SMTKCORE_EXPORT NameTag
 {
 };
-struct RoleTag
+struct SMTKCORE_EXPORT RoleTag
 {
 };
 } // namespace project

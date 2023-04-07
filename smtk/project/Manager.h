@@ -17,6 +17,7 @@
 #include "smtk/common/TypeName.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
 
 #include "smtk/project/Container.h"
 #include "smtk/project/Metadata.h"
@@ -246,6 +247,10 @@ private:
   std::weak_ptr<smtk::operation::Manager> m_operationManager;
 
   smtk::operation::MetadataObservers::Key m_operationMetadataObserverKey;
+
+  /// An observer for m_operationManager that adds and removes projects
+  /// to/from this manager as directed by Operation::Result items.
+  smtk::operation::Observers::Key m_operationManagerObserver;
 };
 
 namespace detail

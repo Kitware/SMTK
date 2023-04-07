@@ -44,7 +44,12 @@ public:
     Aborted
   };
 
+  /// Save the resource to disk (or if null, save the active object's resource).
   static State saveResource(pqSMTKResource* smtkResource = nullptr);
+  /// Save the resource to disk (called by the variant above).
+  static State saveResource(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    const std::shared_ptr<smtk::common::Managers>& managers);
 
 public Q_SLOTS:
   /**
@@ -75,7 +80,12 @@ public:
   */
   pqSaveResourceAsReaction(QAction* parent);
 
+  /// Save the resource to disk under a different name (or if null, the active object's resource).
   static pqSaveResourceReaction::State saveResourceAs(pqSMTKResource* smtkResource = nullptr);
+  /// Save the resource to disk under a different name (called by the variant above).
+  static pqSaveResourceReaction::State saveResourceAs(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    const std::shared_ptr<smtk::common::Managers>& managers);
 
 public Q_SLOTS:
   /**
