@@ -35,7 +35,7 @@
           </DetailedDescription>
           <ItemDefinitions>
             <Reference Name="object"
-              NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1" HoldReferences="true" LockType="Read">
+              NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1" HoldReference="true" LockType="Read">
               <Accepts><Resource Name="smtk::resource::Resource" Filter="*"/></Accepts>
               <BriefDescription>The object owning the CoordinateFrame property matching this frame (if any).</BriefDescription>
             </Reference>

@@ -10,7 +10,7 @@
         Name="instance"
         NumberOfRequiredValues="1"
         Extensible="true"
-        HoldReferences="true">
+        HoldReference="true">
         <Accepts><Resource Name="smtk::model::Resource" Filter="instance"/></Accepts>
       </AssociationsDef>
       <BriefDescription>

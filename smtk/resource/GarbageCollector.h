@@ -32,7 +32,7 @@ namespace resource
   * managing them).
   *
   * Note that your deletion operation must (a) accept associations, (b) prevent
-  * its associations from holding references (i.e., "HoldReferences"="false"),
+  * its associations from holding references (i.e., "HoldReference"="false"),
   * and (c) require at least 1 associated persistent object.
   *
   * This class works by adding an observer to the registered operation manager
