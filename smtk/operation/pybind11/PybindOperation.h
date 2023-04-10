@@ -43,6 +43,7 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("_parameters", (smtk::operation::Operation::Parameters (smtk::operation::Operation::*)()) &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
+    .def("managers", &smtk::operation::Operation::managers)
     .def("restoreTrace", (bool (smtk::operation::Operation::*)(::std::string const &)) &smtk::operation::Operation::restoreTrace)
     ;
   py::enum_<smtk::operation::Operation::Outcome>(instance, "Outcome")
