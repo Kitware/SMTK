@@ -55,7 +55,7 @@ bool Token::hasData() const
 
 bool Token::valid() const
 {
-  return m_id == smtk::string::Manager::Invalid;
+  return m_id != smtk::string::Manager::Invalid;
 }
 
 bool Token::operator==(const Token& other) const
