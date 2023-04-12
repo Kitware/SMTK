@@ -193,7 +193,7 @@ pqSMTKProjectMenu::pqSMTKProjectMenu(QObject* parent)
           smtk::project::view::IconConstructor()(backgroundColor))),
         tr("New &Project..."),
         this);
-      newProjectAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+      newProjectAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
 
       if (menu)
       {
