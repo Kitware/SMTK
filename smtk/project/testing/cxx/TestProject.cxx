@@ -99,6 +99,7 @@ int TestProject(int /*unused*/, char** const /*unused*/)
   {
     // Create an instance of smtk::project::Project
     auto project = projectManager->create("MyProject");
+    projectManager->add(project->index(), project);
     smtkTest(projectManager->projects().size() == 1, "Project not added to manaager");
 
     // Create a resource

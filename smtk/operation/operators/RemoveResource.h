@@ -39,6 +39,10 @@ protected:
 
   Result operateInternal() override;
 
+  /// Do not report success as the base class prints specific console
+  /// messages after operateInternal() completes.
+  void generateSummary(Result&) override {}
+
   const char* xmlDescription() const override;
 };
 } // namespace operation

@@ -101,86 +101,170 @@ void pqCloseResourceReaction::updateEnableState()
 
 void pqCloseResourceReaction::closeResource()
 {
-  pqActiveObjects& activeObjects = pqActiveObjects::instance();
-  pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
+  std::set<smtk::resource::ResourcePtr> resources;
+  std::set<smtk::resource::ResourcePtr> dirty;
 
-  // Access the active resource
-  smtk::resource::ResourcePtr resource = smtkResource->getResource();
+  auto* behavior = pqSMTKBehavior::instance();
+  auto* wrapper = behavior->builtinOrActiveWrapper();
+  if (wrapper)
+  {
+    auto selection = wrapper->smtkSelection();
+    if (selection)
+    {
+      auto selectedResources =
+        selection->currentSelectionByValueAs<std::set<smtk::resource::Resource::Ptr>>(
+          "selected", /* exact match */ false);
+      for (const auto& resource : selectedResources)
+      {
+        if (resource)
+        {
+          resources.insert(resource);
+          if (!resource->clean())
+          {
+            dirty.insert(resource);
+          }
+        }
+      }
+    }
+  }
+  if (resources.empty())
+  {
+    pqActiveObjects& activeObjects = pqActiveObjects::instance();
+    pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
+
+    // Access the active resource
+    auto resource = smtkResource->getResource();
+    resources.insert(resource);
+    if (!resource->clean())
+    {
+      dirty.insert(resource);
+    }
+  }
+  if (resources.empty())
+  {
+    // TODO: Flash some application widget to acknowledge user pressed key
+    //       but warn the action was irrelevant.
+    return;
+  }
 
   int ret = QMessageBox::Discard;
 
-  if (resource && !resource->clean())
+  if (!dirty.empty())
   {
-    ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(1, true);
+    ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(dirty.size(), true);
 
     if (ret == QMessageBox::Save)
     {
-      activeObjects.setActiveSource(smtkResource);
-      pqSaveResourceReaction::State state = pqSaveResourceReaction::saveResource();
-      if (state == pqSaveResourceReaction::State::Aborted)
+      auto managers = wrapper ? wrapper->smtkManagersPtr() : nullptr;
+      for (const auto& resource : dirty)
       {
-        // If user pref is DontShowAndSave, an Aborted save dialog must mean
-        // Discard, otherwise there's no way to discard a modified resource.
-        auto* settings = vtkSMTKSettings::GetInstance();
-        int showSave = settings->GetShowSaveResourceOnClose();
-        ret =
-          showSave == vtkSMTKSettings::DontShowAndSave ? QMessageBox::Discard : QMessageBox::Cancel;
+        auto pvResource = behavior->getPVResource(resource);
+        pqSaveResourceReaction::State state;
+        if (pvResource)
+        {
+          state = pqSaveResourceReaction::saveResource(pvResource);
+        }
+        else
+        {
+          // Handle resources (e.g., without any renderable geometry)
+          // that do not have a ParaView pipeline source.
+          state = pqSaveResourceReaction::saveResource(resource, managers);
+        }
+        if (state == pqSaveResourceReaction::State::Aborted)
+        {
+          // If user pref is DontShowAndSave, an Aborted save dialog must mean
+          // Discard, otherwise there's no way to discard a modified resource.
+          auto* settings = vtkSMTKSettings::GetInstance();
+          int showSave = settings->GetShowSaveResourceOnClose();
+          ret = showSave == vtkSMTKSettings::DontShowAndSave ? QMessageBox::Discard
+                                                             : QMessageBox::Cancel;
+          if (ret == QMessageBox::Discard)
+          {
+            // The user wants to ignore modified resources... mark it clean so we can continue.
+            resource->setClean(true);
+            ret = QMessageBox::Save;
+          }
+          else
+          {
+            // The user canceled. Don't attempt to save more resources.
+            return;
+          }
+        }
+        else if (state != pqSaveResourceReaction::State::Succeeded)
+        {
+          // Failure. Do not close any resources that have not been properly saved.
+          return;
+        }
       }
     }
-    if (ret == QMessageBox::Discard)
+    else if (ret == QMessageBox::Discard)
     {
-      // Mark the resource as clean, even though it hasn't been saved. This way,
+      // Mark each resource as clean, even though it hasn't been saved. This way,
       // other listeners will not prompt the user to save the resource.
-      resource->setClean(true);
+      for (const auto& resource : dirty)
+      {
+        resource->setClean(true);
+      }
     }
+    dirty.clear();
   }
 
   if (ret != QMessageBox::Cancel)
   {
-    // Remove it from its manager. Use an operation to avoid observer conflicts.
-    pqServer* server = pqActiveObjects::instance().activeServer();
-    pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
-    if (server && wrapper)
+    int numClosed = 0;
+    for (const auto& resource : resources)
     {
-      smtk::operation::RemoveResource::Ptr removeOp =
-        wrapper->smtkOperationManager()->create<smtk::operation::RemoveResource>();
-
-      removeOp->parameters()->associate(resource);
-
-      smtk::operation::Operation::Result removeOpResult = removeOp->operate();
-      if (
-        removeOpResult->findInt("outcome")->value() !=
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+      // Remove each resource from its manager. Use an operation to avoid observer conflicts.
+      auto pvResource = behavior->getPVResource(resource);
+      pqServer* server = pvResource ? pvResource->getServer() : nullptr;
+      pqSMTKWrapper* wrapper = behavior->resourceManagerForServer(server);
+      if (wrapper)
       {
-        smtkErrorMacro(
-          smtk::io::Logger::instance(), "RemoveResource operation failed while closing a resource");
-        // resource is still managed (belongs to a project), avoid debug exception below.
-        ret = QMessageBox::Cancel;
+        smtk::operation::RemoveResource::Ptr removeOp =
+          wrapper->smtkOperationManager()->create<smtk::operation::RemoveResource>();
+
+        removeOp->parameters()->associate(resource);
+
+        smtk::operation::Operation::Result removeOpResult = removeOp->operate();
+        if (
+          removeOpResult->findInt("outcome")->value() !=
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "RemoveResource operation failed while closing \"" << resource->name() << "\".");
+          // resource is still managed (belongs to a project), avoid debug exception below.
+          ret = QMessageBox::Cancel;
+          break; // Jump out of loop to avoid closing more resources.
+        }
+        ++numClosed;
+      }
+      // Remove the resource from the active selection
+      {
+        smtk::view::Selection::SelectionMap& selections =
+          const_cast<smtk::view::Selection::SelectionMap&>(
+            smtk::view::Selection::instance()->currentSelection());
+        selections.erase(resource);
+      }
+      // For debugging, print the use count of the resource to indicate
+      // how many shared pointers are referencing it. This will generally
+      // be 1 just before the resource is released, but since this now
+      // happens on a different thread it may be 2 at the time this
+      // message is printed. Larger numbers indicate problems with
+      // code holding on to the resource beyond its expected life.
+      if (resource && resource.use_count() != 1)
+      {
+        smtkInfoMacro(
+          smtk::io::Logger::instance(),
+          "Unexpected use count (" << resource.use_count() << ") "
+                                   << "for resource " << resource << " (" << resource->name()
+                                   << ", " << resource->typeName() << ", " << resource->location()
+                                   << ") being released.");
       }
     }
-    // Remove it from the active selection
-    {
-      smtk::view::Selection::SelectionMap& selections =
-        const_cast<smtk::view::Selection::SelectionMap&>(
-          smtk::view::Selection::instance()->currentSelection());
-      selections.erase(resource);
-    }
-  }
-
-  // For debugging, print the use count of the resource to indicate
-  // how many shared pointers are referencing it. This will generally
-  // be 1 just before the resource is released, but since this now
-  // happens on a different thread it may be 2 at the time this
-  // message is printed. Larger numbers indicate problems with
-  // code holding on to the resource beyond its expected life.
-  if (ret != QMessageBox::Cancel && resource && resource.use_count() != 1)
-  {
     smtkInfoMacro(
       smtk::io::Logger::instance(),
-      "Unexpected use count (" << resource.use_count() << ") "
-                               << "for resource " << resource << " (" << resource->name() << ", "
-                               << resource->typeName() << ", " << resource->location()
-                               << ") being released.");
+      "Closed " << numClosed << "/" << resources.size() << " resources.");
   }
 }
 

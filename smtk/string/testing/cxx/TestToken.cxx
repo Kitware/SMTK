@@ -136,5 +136,10 @@ int TestToken(int, char*[])
     ++expectedCandy;
   }
 
+  smtk::string::Token naughty(smtk::string::Token::Invalid);
+  smtk::string::Token uninitialized;
+  test(!naughty.valid(), "Improper validity check.");
+  test(!uninitialized.valid(), "Uninitialized tokens should be invalid.");
+
   return 0;
 }

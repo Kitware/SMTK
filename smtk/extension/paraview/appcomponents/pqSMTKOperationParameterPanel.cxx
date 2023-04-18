@@ -350,14 +350,17 @@ void pqSMTKOperationParameterPanel::editOperationParameters(
     // The current tab now has the operation of interest;
     // populate its associations with the current selection.
     auto associations = opTab->m_operation->parameters()->associations();
-    if (associations->isOptional())
+    if (associations)
     {
-      associations->setIsEnabled(!selected.empty());
-    }
-    if (!selected.empty())
-    {
-      associations->setNumberOfValues(selected.size());
-      associations->setValues(selected.begin(), selected.end());
+      if (associations->isOptional())
+      {
+        associations->setIsEnabled(!selected.empty());
+      }
+      if (!selected.empty())
+      {
+        associations->setNumberOfValues(selected.size());
+        associations->setValues(selected.begin(), selected.end());
+      }
     }
 
     smtk::view::ConfigurationPtr view = opTab->m_uiMgr->findOrCreateOperationView();

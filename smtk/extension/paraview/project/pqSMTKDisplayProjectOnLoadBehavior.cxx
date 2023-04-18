@@ -152,18 +152,14 @@ void pqSMTKDisplayProjectOnLoadBehavior::handleProjectEvent(
 
 void pqSMTKDisplayProjectOnLoadBehavior::focusTaskPanel(smtk::task::Manager* taskManager)
 {
-  // Use QTimer to wait until the event queue is emptied before trying this;
-  // that gives operations time to complete. Blech.
-  QTimer::singleShot(0, [this, taskManager]() {
-    auto* core = pqApplicationCore::instance();
-    auto* panel = dynamic_cast<pqSMTKTaskPanel*>(core->manager("smtk task panel"));
-    if (panel)
+  auto* core = pqApplicationCore::instance();
+  auto* panel = dynamic_cast<pqSMTKTaskPanel*>(core->manager("smtk task panel"));
+  if (panel)
+  {
+    panel->taskPanel()->displayTaskManager(taskManager);
+    if (auto* parent = dynamic_cast<QWidget*>(panel->parent()))
     {
-      panel->taskPanel()->displayTaskManager(taskManager);
-      if (auto* parent = dynamic_cast<QWidget*>(panel->parent()))
-      {
-        parent->raise(); // Make sure the widget is visible and raised.
-      }
+      parent->raise(); // Make sure the widget is visible and raised.
     }
-  });
+  }
 }

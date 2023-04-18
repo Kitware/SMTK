@@ -450,6 +450,7 @@ bool removeResource(
   return removed;
 }
 } // namespace
+
 bool Operation::unmanageResources(Operation::Result& result)
 {
   auto item = result->findResource("resourcesToExpunge");

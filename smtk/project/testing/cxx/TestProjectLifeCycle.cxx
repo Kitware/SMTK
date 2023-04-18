@@ -10,6 +10,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
@@ -23,13 +24,13 @@
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
 #include "smtk/project/operators/Create.h"
+#include "smtk/resource/Manager.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include <iostream>
 
 #define ATT_ROLE_NAME "attributes"
-#define OP_NAME "create-project-op"
 #define PROJECT_TYPE "foo"
 
 // This test verifies that projects can be instantiated outside of the
@@ -62,12 +63,18 @@ public:
   Result operateInternal() override
   {
     auto project = m_projManager->create(PROJECT_TYPE);
+    if (this->managers())
+    {
+      project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
+      project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
+    }
 
     auto attRes = m_projManager->resourceManager()->create<smtk::attribute::Resource>();
     project->resources().add(attRes, ATT_ROLE_NAME);
 
     auto result = this->createResult(Outcome::SUCCEEDED);
-    result->findResource("resource")->setValue(project);
+    auto res = result->findResource("resource");
+    res->setValue(project);
     return result;
   }
 
@@ -76,43 +83,43 @@ public:
   smtk::project::Manager::Ptr m_projManager;
 };
 
-const char CreateProjectOpXML[] =
-  "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-  "<SMTK_AttributeSystem Version=\"2\">"
-  "  <Definitions>"
-  "    <AttDef Type=\"operation\" Label=\"operation\" Abstract=\"True\">"
-  "      <ItemDefinitions>"
-  "        <Int Name=\"debug level\" Optional=\"True\">"
-  "          <DefaultValue>0</DefaultValue>"
-  "        </Int>"
-  "      </ItemDefinitions>"
-  "    </AttDef>"
-  "    <AttDef Type=\"result\" Abstract=\"True\">"
-  "      <ItemDefinitions>"
-  "        <Int Name=\"outcome\" Label=\"outcome\" Optional=\"False\" NumberOfRequiredValues=\"1\">"
-  "        </Int>"
-  "        <String Name=\"log\" Optional=\"True\" NumberOfRequiredValues=\"0\" Extensible=\"True\">"
-  "        </String>"
-  "      </ItemDefinitions>"
-  "    </AttDef>"
-  "    <AttDef Type=\"" OP_NAME "\" Label=\"A Test Operation\" BaseType=\"operation\">"
-  "      <ItemDefinitions>"
-  "        <Int Name=\"my int\" Optional=\"False\">"
-  "          <DefaultValue>0</DefaultValue>"
-  "        </Int>"
-  "      </ItemDefinitions>"
-  "    </AttDef>"
-  "    <AttDef Type=\"result(test op)\" BaseType=\"result\">"
-  "      <ItemDefinitions>"
-  "        <Resource Name=\"resource\" HoldReference=\"true\">"
-  "          <Accepts>"
-  "            <Resource Name=\"smtk::project::Project\"/>"
-  "          </Accepts>"
-  "        </Resource>"
-  "      </ItemDefinitions>"
-  "    </AttDef>"
-  "  </Definitions>"
-  "</SMTK_AttributeSystem>";
+const char CreateProjectOpXML[] = R"xml(
+<?xml version="1.0" encoding="utf-8" ?>
+<SMTK_AttributeResource Version="3">
+  <Definitions>
+    <AttDef Type="operation" Label="operation" Abstract="True">
+      <ItemDefinitions>
+        <Int Name="debug level" Optional="True">
+          <DefaultValue>0</DefaultValue>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="result" Abstract="True">
+      <ItemDefinitions>
+        <Int Name="outcome" Label="outcome" Optional="False" NumberOfRequiredValues="1">
+        </Int>
+        <String Name="log" Optional="True" NumberOfRequiredValues="0" Extensible="True">
+        </String>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="create-project-op" Label="A Test Operation" BaseType="operation">
+      <ItemDefinitions>
+        <Int Name="my int" Optional="False">
+          <DefaultValue>0</DefaultValue>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="result(create-project-op)" BaseType="result">
+      <ItemDefinitions>
+        <Resource Name="resource" HoldReference="true">
+          <Accepts>
+            <Resource Name="smtk::project::Project"/>
+          </Accepts>
+        </Resource>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+</SMTK_AttributeResource>)xml";
 
 const char* CreateProjectOp::xmlDescription() const
 {
@@ -124,10 +131,14 @@ const char* CreateProjectOp::xmlDescription() const
 int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
 {
   // Create managers
+  smtk::common::Managers::Ptr managers = smtk::common::Managers::create();
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();
   smtk::operation::ManagerPtr opManager = smtk::operation::Manager::create();
   auto attributeRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resManager, opManager);
+  managers->insert_or_assign(resManager);
+  managers->insert_or_assign(opManager);
+  opManager->setManagers(managers);
 
 #if 0
   // This line changes behavior such that projects ARE stored in resource manager
@@ -139,6 +150,7 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
   smtk::project::ManagerPtr projManager = smtk::project::Manager::create(resManager, opManager);
   auto projectRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(projManager);
   projManager->registerProject(PROJECT_TYPE);
+  managers->insert_or_assign(projManager);
 
   smtkTest(resManager->empty(), "resource manager size is " << resManager->size());
 
@@ -148,16 +160,16 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
     std::cout << "Creating project" << std::endl;
 
     auto createOp = opManager->create<CreateProjectOp>();
-    smtkTest(createOp != nullptr, "create operation not created") createOp->m_projManager =
-      projManager; // back door
+    smtkTest(createOp != nullptr, "create operation not created");
+    createOp->m_projManager = projManager; // back door
 
     auto result = createOp->operate();
     int outcome = result->findInt("outcome")->value();
     smtkTest(outcome == OP_SUCCEEDED, "create operation failed");
 
-    auto res = result->findResource("resource")->value();
-    project = std::dynamic_pointer_cast<smtk::project::Project>(res);
-    smtkTest(res != nullptr, "project not created");
+    auto res = result->findResource("resource");
+    project = std::dynamic_pointer_cast<smtk::project::Project>(res->value(0));
+    smtkTest(res->value() != nullptr, "project not created");
   }
 
   {

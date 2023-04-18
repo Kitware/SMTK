@@ -13,7 +13,7 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(test op)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="resource" HoldReferences="True">
+        <Resource Name="resource" HoldReference="True">
           <Accepts Resource="smtk::model::Resource"/>
         </Resource>
       </ItemDefinitions>

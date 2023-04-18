@@ -123,6 +123,8 @@ int TestDefineOp(int /*unused*/, char** const /*unused*/)
   {
     // Create an instance of smtk::project::Project
     auto project = projectManager->create("MyProject");
+    projectManager->add(
+      project->index(), project); // Manual creation of project requires manual addition to manager.
     smtkTest(projectManager->projects().size() == 1, "Project not added to manaager");
 
     // Create a resource

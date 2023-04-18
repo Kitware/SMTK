@@ -24,8 +24,10 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/Hints.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"
 
+#include "smtk/resource/Manager.h"
 #include "smtk/resource/json/Helper.h"
 
 #include "smtk/project/Manager.h"
@@ -105,6 +107,8 @@ Read::Result Read::operateInternal()
 
   project->setId(projectId);
   project->setLocation(filename);
+  project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
+  project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
 
   // manually reset the "location" string so that smtk::project::from_json() can properly translate
   //   resource paths to being relative (rather than absolute)

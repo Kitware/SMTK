@@ -82,6 +82,7 @@ int TestProjectResources(int /*unused*/, char** const /*unused*/)
   {
     // Create an instance of smtk::project::Project
     auto project = projectManager->create<smtk::project::Project>();
+    projectManager->add(project); // We didn't run a Create operation; we must add manually.
     smtkTest(projectManager->projects().size() == 1, "Project not added to manager");
 
     // Create a resource

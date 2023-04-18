@@ -134,6 +134,7 @@ void qtSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
         m_activeOperationMutex.unlock();
       });
   }
+
   // Override the selection Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   auto selection = mgrs->get<smtk::view::Selection::Ptr>();
@@ -164,4 +165,194 @@ void qtSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
         m_activeSelection.erase(id);
       });
   }
+
+  auto projectManager = mgrs->get<smtk::project::Manager::Ptr>();
+  if (projectManager)
+  {
+    m_projectManager = projectManager;
+
+    projectManager->observers().overrideWith(
+      [this](const smtk::project::Project& project, smtk::project::EventType event) {
+        m_activeProjects[project.id()] =
+          const_cast<smtk::project::Project&>(project).shared_from_this();
+        Q_EMIT projectInstanceEvent(project.id(), event, QPrivateSignal());
+        return 0;
+      });
+
+    // Connect to the above signals on the main thread and call the Observer functors.
+    QObject::connect(
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::taskInstanceEvent,
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::processTaskInstanceEvent,
+      Qt::QueuedConnection);
+    QObject::connect(
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::adaptorInstanceEvent,
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::processAdaptorInstanceEvent,
+      Qt::QueuedConnection);
+    QObject::connect(
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::taskWorkflowEvent,
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::processTaskWorkflowEvent,
+      Qt::QueuedConnection);
+
+    QObject::connect(
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::projectInstanceEvent,
+      this,
+      &qtSMTKCallObserversOnMainThreadBehavior::processProjectInstanceEvent,
+      Qt::QueuedConnection);
+  }
+}
+
+void qtSMTKCallObserversOnMainThreadBehavior::processProjectInstanceEvent(
+  smtk::common::UUID projectId,
+  smtk::project::EventType event,
+  QPrivateSignal)
+{
+  auto it = m_activeProjects.find(projectId);
+  if (it == m_activeProjects.end())
+  {
+    return;
+  }
+  auto projectManager = m_projectManager.lock();
+  if (!projectManager)
+  {
+    return;
+  }
+
+  const auto& project = it->second;
+
+  // Override the task-manager's observers
+  if (event == smtk::project::EventType::ADDED)
+  {
+    auto projectId = project->id(); // const_cast<smtk::project::Project*>(&project);
+    // Force all observers to be invoked on thread 0 (the GUI thread).
+    // Override task observers:
+    project->taskManager().taskInstances().observers().overrideWith(
+      [projectId,
+       this](smtk::common::InstanceEvent event, const std::shared_ptr<smtk::task::Task>& task) {
+        m_activeTasks[task->id()] = task;
+        Q_EMIT taskInstanceEvent(projectId, event, task->id(), QPrivateSignal());
+      });
+    // Override adaptor observers:
+    project->taskManager().adaptorInstances().observers().overrideWith(
+      [projectId, this](
+        smtk::common::InstanceEvent event, const std::shared_ptr<smtk::task::Adaptor>& adaptor) {
+        m_activeAdaptors[std::make_pair(adaptor->from()->id(), adaptor->to()->id())] = adaptor;
+        Q_EMIT adaptorInstanceEvent(
+          projectId, event, adaptor->from()->id(), adaptor->to()->id(), QPrivateSignal());
+      });
+    // Override task observers:
+    project->taskManager().taskInstances().workflowObservers().overrideWith(
+      [projectId, this](
+        const std::set<smtk::task::Task*>& headTasks,
+        smtk::task::WorkflowEvent event,
+        smtk::task::Task* subject) {
+        std::set<smtk::string::Token> key;
+        std::set<std::shared_ptr<smtk::task::Task>> value;
+        for (const auto& headTask : headTasks)
+        {
+          key.insert(headTask->id());
+          value.insert(headTask->shared_from_this());
+        }
+        key.insert(subject->id());
+        value.insert(subject->shared_from_this());
+        m_activeWorkflows[key] = value;
+        Q_EMIT taskWorkflowEvent(projectId, key, event, subject->id(), QPrivateSignal());
+      });
+  }
+
+  // Call other project observers
+  projectManager->observers().callObserversDirectly(*project, event);
+
+  m_activeProjects.erase(it);
+}
+
+void qtSMTKCallObserversOnMainThreadBehavior::processTaskInstanceEvent(
+  smtk::common::UUID projectId,
+  smtk::common::InstanceEvent event,
+  smtk::string::Token taskId,
+  QPrivateSignal)
+{
+  auto it = m_activeTasks.find(taskId);
+  if (it == m_activeTasks.end())
+  {
+    return;
+  }
+  auto projectManager = m_projectManager.lock();
+  auto project = projectManager ? projectManager->get(projectId) : nullptr;
+  if (!project)
+  {
+    return;
+  }
+
+  project->taskManager().taskInstances().observers().callObserversDirectly(event, it->second);
+
+  m_activeTasks.erase(it);
+}
+
+void qtSMTKCallObserversOnMainThreadBehavior::processAdaptorInstanceEvent(
+  smtk::common::UUID projectId,
+  smtk::common::InstanceEvent event,
+  smtk::string::Token fromTaskId,
+  smtk::string::Token toTaskId,
+  QPrivateSignal)
+{
+  auto it = m_activeAdaptors.find(std::make_pair(fromTaskId, toTaskId));
+  if (it == m_activeAdaptors.end())
+  {
+    return;
+  }
+  auto projectManager = m_projectManager.lock();
+  auto project = projectManager ? projectManager->get(projectId) : nullptr;
+  if (!project)
+  {
+    return;
+  }
+
+  project->taskManager().adaptorInstances().observers().callObserversDirectly(event, it->second);
+
+  m_activeAdaptors.erase(it);
+}
+
+void qtSMTKCallObserversOnMainThreadBehavior::processTaskWorkflowEvent(
+  smtk::common::UUID projectId,
+  const std::set<smtk::string::Token>& headIds,
+  smtk::task::WorkflowEvent event,
+  smtk::string::Token subjectId,
+  QPrivateSignal)
+{
+  auto it = m_activeWorkflows.find(headIds);
+  if (it == m_activeWorkflows.end())
+  {
+    return;
+  }
+  auto projectManager = m_projectManager.lock();
+  auto project = projectManager ? projectManager->get(projectId) : nullptr;
+  if (!project)
+  {
+    return;
+  }
+
+  std::set<smtk::task::Task*> heads;
+  smtk::task::Task* subject = nullptr;
+  for (const auto& head : it->second)
+  {
+    if (!subject && head->id() == subjectId)
+    {
+      subject = head.get();
+    }
+    else
+    {
+      heads.insert(head.get());
+    }
+  }
+  project->taskManager().taskInstances().workflowObservers().callObserversDirectly(
+    heads, event, subject);
+
+  m_activeWorkflows.erase(it);
 }

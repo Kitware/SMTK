@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/project/Manager.h"
 
+#include "smtk/attribute/ResourceItem.h"
+
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -95,6 +97,67 @@ Manager::Manager(
     operationMetadataObserver,
     "Append the assignment of the project manager to the create functor "
     "for operations that inherit from smtk::project::Operation");
+
+  m_operationManagerObserver = operationManager->observers().insert(
+    [this](
+      const smtk::operation::Operation&,
+      smtk::operation::EventType event,
+      smtk::operation::Operation::Result result) -> int {
+      constexpr int doNotCancel = 0;
+      auto rsrcMgr = m_resourceManager.lock();
+      if (!rsrcMgr)
+      {
+        m_operationManagerObserver.release();
+        return doNotCancel;
+      }
+
+      if (event != smtk::operation::EventType::DID_OPERATE)
+      {
+        return doNotCancel;
+      }
+
+      // Gather all resource items
+      std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
+      std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
+        [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
+      result->filterItems(resourceItems, filter);
+
+      // For each resource item found...
+      for (auto& resourceItem : resourceItems)
+      {
+        bool removing = (resourceItem->name() == "resourcesToExpunge");
+        // ...for each resource in a resource item...
+        for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+        {
+          // (no need to look at resources that cannot be resolved)
+          if (!resourceItem->isValid(i) || !resourceItem->value(i))
+          {
+            continue;
+          }
+
+          if (auto project = resourceItem->valueAs<smtk::project::Project>(i))
+          {
+            if (removing)
+            {
+              // … remove the project from the manager.
+              // this->remove(project);
+            }
+            else
+            {
+              // … add the project to the manager.
+              this->add(project->index(), project);
+              // this->add(metadata->index(), project);
+              // this->add(index, project);
+            }
+          }
+        }
+      }
+
+      return doNotCancel;
+    },
+    smtk::operation::Observers::lowestPriority() + 1,
+    /* initialize */ false,
+    "Add/remove projects that operations report to/from a project::Manager.");
 }
 
 bool Manager::registerProject(
@@ -106,10 +169,11 @@ bool Manager::registerProject(
   return registerProject(Metadata(
     name,
     std::hash<std::string>{}(name),
-    [name](
+    [this, name](
       const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>&) -> ProjectPtr {
       ProjectPtr project = Project::create(name);
       project->setId(id);
+      // this->add(project->index(), project);
       return project;
     },
     resources,
@@ -275,7 +339,6 @@ smtk::project::Project::Ptr Manager::create(
   {
     // Create the project with the appropriate UUID
     project = metadata->create(id, m);
-    this->add(metadata->index(), project);
     if (project)
     {
       project->taskManager().setManagers(m);
@@ -302,7 +365,6 @@ smtk::project::Project::Ptr Manager::create(
     {
       project->taskManager().setManagers(mm);
     }
-    this->add(index, project);
   }
 
   return project;

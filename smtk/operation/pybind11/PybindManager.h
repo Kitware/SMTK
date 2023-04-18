@@ -51,6 +51,8 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
         return smtk::operation::ImportPythonOperation::importOperation(manager, moduleName, opName);
       })
     .def("unregisterOperation", (bool (smtk::operation::Manager::*)(const std::string&)) &smtk::operation::Manager::unregisterOperation, py::arg("typeName"))
+    .def("managers", &smtk::operation::Manager::managers)
+    .def("setManagers", &smtk::operation::Manager::setManagers, py::arg("managers"))
     ;
   return instance;
 }

@@ -21,9 +21,13 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "smtk/io/Logger.h"
+#include "smtk/resource/Manager.h"
+
+#include "smtk/operation/Manager.h"
 
 #include "smtk/project/Manager.h"
+
+#include "smtk/io/Logger.h"
 
 #include "smtk/project/operators/Create_xml.h"
 
@@ -74,6 +78,9 @@ Create::Result Create::operateInternal()
     smtkErrorMacro(this->log(), "Cannot create project type \"" << typeName << "\"");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+
+  project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
+  project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {

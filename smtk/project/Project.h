@@ -52,10 +52,7 @@ public:
   static constexpr const char* const type_name = "smtk::project::Project";
   std::string typeName() const override { return (m_typeName.empty() ? type_name : m_typeName); }
 
-  static std::shared_ptr<smtk::project::Project> create(const std::string& typeName = "")
-  {
-    return smtk::shared_ptr<smtk::project::Project>(new smtk::project::Project(typeName));
-  }
+  static std::shared_ptr<smtk::project::Project> create(const std::string& typeName = "");
 
   /// A hash value uniquely representing the project type.
   typedef std::size_t Index;

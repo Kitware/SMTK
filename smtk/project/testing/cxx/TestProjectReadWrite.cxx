@@ -73,6 +73,11 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
+  // Create common::Managers "application state".
+  auto managers = smtk::common::Managers::create();
+  managers->insert_or_assign(resourceManager);
+  managers->insert_or_assign(operationManager);
+
   auto attributeRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
   auto meshRegistry =
@@ -83,6 +88,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
+  operationManager->setManagers(managers);
 
   // Create a project manager
   smtk::project::ManagerPtr projectManager =
@@ -105,6 +111,8 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       std::cerr << "Failed to create a project\n";
       return 1;
     }
+    projectManager->add(
+      project->index(), project); // We didn't run a Create operation so we must add manually.
 
     {
       // Create an import operator

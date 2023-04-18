@@ -53,11 +53,17 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
 {
   // Create smtk managers
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Create common::Managers "application state".
+  auto managers = smtk::common::Managers::create();
+  managers->insert_or_assign(resourceManager);
+  managers->insert_or_assign(operationManager);
+
   auto operationRegistry =
     smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
   operationManager->registerResourceManager(resourceManager);
+  operationManager->setManagers(managers);
 
   smtk::project::ManagerPtr projectManager =
     smtk::project::Manager::create(resourceManager, operationManager);
@@ -71,6 +77,7 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
   // Create empty project and write it to disk.
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
+    projectManager->add(project); // No Create operation means we must manage it manually.
 
     smtk::operation::WriteResource::Ptr writeOp =
       operationManager->create<smtk::operation::WriteResource>();

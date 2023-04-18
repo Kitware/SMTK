@@ -41,6 +41,9 @@ public:
   {
   }
 
+  /// An invalid hash, used with the constructor above to make an invalid token.
+  static constexpr Hash Invalid = Manager::Invalid;
+
   /// Return the token's ID (usually its hash but possibly not in the case of collisions).
   Hash id() const { return m_id; }
   /// Return the string corresponding to the token.

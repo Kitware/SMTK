@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
   // Register a new project type and create one instance
   projectManager->registerProject("xyzzy");
   smtk::project::Project::Ptr project = projectManager->create("xyzzy");
+  projectManager->add(project);
   smtkTest(project != nullptr, "failed to create project.");
   smtkTest(project->setName("plugh"), "failed to set project name.");
 
