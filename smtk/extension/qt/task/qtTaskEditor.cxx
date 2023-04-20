@@ -483,6 +483,16 @@ qtTaskView* qtTaskEditor::taskWidget() const
   return m_p->m_widget;
 }
 
+qtTaskNode* qtTaskEditor::findNode(smtk::task::Task* task) const
+{
+  auto it = m_p->m_taskIndex.find(task);
+  if (it == m_p->m_taskIndex.end())
+  {
+    return nullptr;
+  }
+  return it->second;
+}
+
 std::shared_ptr<smtk::view::Configuration> qtTaskEditor::defaultConfiguration()
 {
   std::shared_ptr<smtk::view::Configuration> result;

@@ -84,6 +84,9 @@ public:
   /// Get the bounding box of the node, which includes the border width and the label.
   QRectF boundingRect() const override;
 
+  /// Return true if the task is currently active (i.e., being worked on by the user).
+  bool isActive() const;
+
 Q_SIGNALS:
   void nodeResized();
   void nodeMovedImmediate();
