@@ -15,6 +15,7 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
+#include "vtkVersionMacros.h"
 
 #include <algorithm>
 
@@ -115,7 +116,12 @@ int vtkSMTKResourceSource::RequestData(
   // method.
   for (int i = 0; i < this->VTKResource->GetNumberOfOutputPorts(); i++)
   {
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 2, 20221201)
+    vtkMultiBlockDataSet::GetData(outInfo, i)
+      ->CompositeShallowCopy(vtkCompositeDataSet::SafeDownCast(converter->GetOutputDataObject(i)));
+#else
     vtkMultiBlockDataSet::GetData(outInfo, i)->ShallowCopy(converter->GetOutputDataObject(i));
+#endif
   }
 
   return 1;

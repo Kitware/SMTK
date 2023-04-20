@@ -28,6 +28,7 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkStringArray.h>
 #include <vtkTransform.h>
+#include <vtkVersionMacros.h>
 #include <vtksys/SystemTools.hxx>
 
 #include <vtkPVRenderView.h>
@@ -373,7 +374,11 @@ int vtkSMTKResourceRepresentation::RequestData(
     this->ApplyTransforms->SetInputDataObject(untransformed);
     this->ApplyTransforms->Update();
     auto* mbds = vtkMultiBlockDataSet::SafeDownCast(this->ApplyTransforms->GetOutputDataObject(0));
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 2, 20221201)
+    this->CurrentData->CompositeShallowCopy(mbds);
+#else
     this->CurrentData->ShallowCopy(mbds);
+#endif
 
     vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
