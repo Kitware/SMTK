@@ -416,13 +416,39 @@ smtk::attribute::ReferenceItem::Key ReferenceItem::objectKey(std::size_t i) cons
 bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::ReferenceItem::Key& key)
 {
   AttributePtr myAtt = this->m_referencedAttribute.lock();
-  if ((myAtt != nullptr) && (i < m_cache->size()))
+  if ((myAtt == nullptr) || (i >= m_cache->size()))
   {
-    myAtt->guardedLinks()->removeLink(m_keys[i]);
-    m_keys[i] = key;
-    return true;
+    return false;
   }
-  return false;
+
+  myAtt->guardedLinks()->removeLink(m_keys[i]);
+  m_keys[i] = key;
+
+  // Are we "unsetting" the value?  If so do we need to
+  // adjust the the position of the first null value?
+  bool isKeyNull = m_keys[i].first.isNull();
+  if (isKeyNull && (m_nextUnsetPos > i))
+  {
+    m_nextUnsetPos = i;
+  }
+  // Else are we setting the value of the current
+  // first null position?
+  else if ((!isKeyNull) && (i == m_nextUnsetPos))
+  {
+    // We need to scan for the next unset value
+    m_nextUnsetPos = -1;
+    std::size_t numVals = this->numberOfValues();
+    for (size_t j = i + 1; j < numVals; j++)
+    {
+      if (!this->isSet(j))
+      {
+        m_nextUnsetPos = j;
+        break;
+      }
+    }
+  }
+
+  return true;
 }
 
 bool ReferenceItem::setObjectKey(
