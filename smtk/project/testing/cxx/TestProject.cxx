@@ -104,6 +104,8 @@ int TestProject(int /*unused*/, char** const /*unused*/)
 
     // Create a resource
     auto myResource = resourceManager->create<MyResource>();
+    // Manage the resource
+    resourceManager->add(myResource);
     smtkTest(resourceManager->size() == 1, "Resource not added to manaager");
 
     project->resources().registerResource<MyResource>();

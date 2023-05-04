@@ -213,6 +213,8 @@ int TestTaskGroup(int, char*[])
 
   auto attrib = resourceManager->create<smtk::attribute::Resource>();
   auto model = resourceManager->create<smtk::model::Resource>();
+  resourceManager->add(attrib);
+  resourceManager->add(model);
   attrib->setName("simulation");
   model->setName("geometry");
   attrib->properties().get<std::string>()["project_role"] = "simulation attribute";
