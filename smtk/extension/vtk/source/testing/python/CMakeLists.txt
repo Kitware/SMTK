@@ -10,14 +10,17 @@
 #
 #=============================================================================
 
-set(smtkExtensionVTKSourcePythonDataTests
-  iterateMultiBlockModel
-)
+# Our only test here requires the mesh session.
+if (SMTK_ENABLE_MESH_SESSION)
+  set(smtkExtensionVTKSourcePythonDataTests
+    iterateMultiBlockModel
+  )
 
-if (SMTK_DATA_DIR)
-  foreach(test ${smtkExtensionVTKSourcePythonDataTests})
-    smtk_add_test_python(${test}Py ${test}.py
-      --data-dir=${SMTK_DATA_DIR} )
-    set_tests_properties( ${test}Py PROPERTIES LABELS "VTK" )
-  endforeach()
+  if (SMTK_DATA_DIR)
+    foreach(test ${smtkExtensionVTKSourcePythonDataTests})
+      smtk_add_test_python(${test}Py ${test}.py
+        --data-dir=${SMTK_DATA_DIR} )
+      set_tests_properties( ${test}Py PROPERTIES LABELS "VTK" )
+    endforeach()
+  endif()
 endif()

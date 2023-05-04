@@ -56,6 +56,9 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   list(APPEND unit_tests_which_require_data
        UnitTestExportMeshVTK.cxx
        )
+  list(APPEND extra_libs
+    smtkIOVTK
+  )
 endif()
 
 if(SMTK_ENABLE_MESH_SESSION)
