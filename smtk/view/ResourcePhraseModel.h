@@ -59,7 +59,7 @@ protected:
     const smtk::operation::Operation::Result& res) override;
   void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
 
-  virtual void processResource(const Resource::Ptr& rsrc, bool adding);
+  void processResource(const Resource::Ptr& rsrc, bool adding) override;
   virtual void triggerModified(const Resource::Ptr& rsrc);
 
   smtk::view::DescriptivePhrasePtr m_root;

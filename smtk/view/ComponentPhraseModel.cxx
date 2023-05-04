@@ -68,21 +68,6 @@ bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, 
   return true;
 }
 
-void ComponentPhraseModel::handleResourceEvent(
-  const Resource& resource,
-  smtk::resource::EventType event)
-{
-  if (event != smtk::resource::EventType::MODIFIED)
-  {
-    // The PhraseModle system has been designed to handle shared pointers to
-    // non-const resources and components. We const-cast here to accommodate
-    // this pattern.
-    smtk::resource::ResourcePtr rsrc =
-      const_cast<smtk::resource::Resource&>(resource).shared_from_this();
-    this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
-  }
-}
-
 DescriptivePhrasePtr ComponentPhraseModel::createTopPhrase(const smtk::resource::ComponentPtr& comp)
 {
   if (comp == nullptr)
@@ -110,9 +95,12 @@ DescriptivePhrasePtr ComponentPhraseModel::createTopPhrase(const smtk::resource:
 
 void ComponentPhraseModel::handleCreated(const smtk::resource::PersistentObjectSet& createdObjects)
 {
-  // TODO: Instead of looking for new resources (which perhaps we should leave to the
-  //       handleResourceEvent()), we should optimize by adding new components to the
-  //       root phrase if they pass m_componentFilters.
+  // Note that new resources are handled separately by processResource() since these
+  // are passed in a separate item.
+  //
+  // TODO: It might be good defensive programming to check that each component's
+  //       parent resource is known to the phrase model – even though it is an
+  //       error if the resource is not already handled.
   for (auto it = createdObjects.begin(); it != createdObjects.end(); ++it)
   {
     auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
@@ -120,8 +108,8 @@ void ComponentPhraseModel::handleCreated(const smtk::resource::PersistentObjectS
     {
       continue;
     }
-    smtk::resource::ResourcePtr rsrc = comp->resource();
-    this->processResource(rsrc, true);
+    // smtk::resource::ResourcePtr rsrc = comp->resource();
+    // this->processResource(rsrc, true);
   }
   // We need to determine which components will be top-level and insert them
   // into the root's subphrases.
