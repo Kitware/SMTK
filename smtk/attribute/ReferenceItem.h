@@ -91,6 +91,14 @@ public:
     pointer operator->() const;
     reference operator[](const difference_type& d);
 
+    /// Return the iterator's target object cast to a shared-pointer type \a T.
+    template<typename T>
+    std::shared_ptr<T> as() const
+    {
+      // Type-cast the result of the "*" operator above:
+      return std::dynamic_pointer_cast<T>(this->const_iterator::operator*());
+    }
+
     bool isSet() const;
 
     friend difference_type SMTKCORE_EXPORT operator-(const const_iterator&, const const_iterator&);
