@@ -71,10 +71,15 @@ public:
     QWidget* parentWidget = nullptr);
   ~qtOperationDialog() override;
 
+  /// forwarded to internal qtOperationView
+  const smtk::operation::OperationPtr& operation() const;
+
 Q_SIGNALS:
   void operationExecuted(const smtk::operation::Operation::Result& result);
 
 public Q_SLOTS:
+  /// forwarded to internal qtOperationView
+  void updateUI();
 
 protected Q_SLOTS:
   void onOperationExecuted(const smtk::operation::Operation::Result& result);
