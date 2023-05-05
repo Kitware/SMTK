@@ -242,6 +242,19 @@ qtOperationDialog::~qtOperationDialog()
   delete m_internals;
 }
 
+void qtOperationDialog::updateUI()
+{
+  if (m_internals->m_smtkView)
+  {
+    m_internals->m_smtkView->updateUI();
+  }
+}
+
+const smtk::operation::OperationPtr& qtOperationDialog::operation() const
+{
+  return m_internals->m_smtkView->operation();
+}
+
 void qtOperationDialog::onOperationExecuted(const smtk::operation::Operation::Result& result)
 {
   Q_EMIT this->operationExecuted(result);
