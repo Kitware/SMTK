@@ -29,6 +29,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
+#include "smtk/model/ShellEntity.txx"
 
 #include "smtk/common/UnionFind.h"
 

@@ -17,6 +17,7 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Resource.h"
+#include "smtk/model/ShellEntity.txx"
 #include "smtk/model/Vertex.h"
 
 namespace smtk
