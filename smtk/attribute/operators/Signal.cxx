@@ -36,12 +36,14 @@ Signal::Result Signal::operateInternal()
   auto expIn = params->findComponent("expunged");
   auto updateIn = params->findVoid("update");
   auto categoriesModIn = params->findResource("categoriesModified");
+  auto resourcesAddedIn = params->findResource("resourcesCreated");
   auto modOut = result->findComponent("modified");
   auto itemsOut = result->findString("items");
   auto creOut = result->findComponent("created");
   auto expOut = result->findComponent("expunged");
   auto updateOut = result->findVoid("update");
   auto categoriesModOut = result->findResource("categoriesModified");
+  auto resourcesAddedOut = result->findResource("resource");
 
   // Copy the inputs to the output.
   creOut->setValues(creIn->begin(), creIn->end());
@@ -50,6 +52,7 @@ Signal::Result Signal::operateInternal()
   expOut->setValues(expIn->begin(), expIn->end());
   categoriesModOut->setValues(categoriesModIn->begin(), categoriesModIn->end());
   updateOut->setIsEnabled(updateIn->isEnabled());
+  resourcesAddedOut->setValues(resourcesAddedIn->begin(), resourcesAddedIn->end());
 
   return result;
 }

@@ -29,6 +29,9 @@
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
         <Void Name="update" Optional="True"/>
+        <Resource  Name="resourcesCreated" Extensible="true" NumberOfRequiredValues="0">
+          <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
+        </Resource>
       </ItemDefinitions>
     </AttDef>
 
@@ -39,6 +42,9 @@
           <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
           <Void Name="update"  Optional="True"/>
           <Resource  Name="categoriesModified" Extensible="true" NumberOfRequiredValues="0">
+            <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
+          </Resource>
+          <Resource Name="resource" HoldReference="true">
             <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
           </Resource>
         </ItemDefinitions>
