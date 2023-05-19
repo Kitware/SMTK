@@ -95,18 +95,9 @@ public:
   };
 
   Task();
-  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
-  Task(
-    const Configuration& config,
-    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
   Task(
     const Configuration& config,
     Manager& taskManager,
-    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
-  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
-  Task(
-    const Configuration& config,
-    const PassedDependencies& dependencies,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
   Task(
     const Configuration& config,

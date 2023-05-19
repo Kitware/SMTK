@@ -63,24 +63,6 @@ Task::Task()
   this->setId();
 }
 
-Task::Task(const Configuration& config, const std::shared_ptr<smtk::common::Managers>& managers)
-{
-  static bool once = false;
-  if (!once)
-  {
-    once = true;
-    smtkWarningMacro(
-      smtk::io::Logger::instance(),
-      "Note to developers; call a constructor that takes a task::Manager&.");
-  }
-  this->setId();
-  if (managers && managers->contains<smtk::task::Manager::Ptr>())
-  {
-    m_manager = managers->get<smtk::task::Manager::Ptr>();
-  }
-  this->configure(config);
-}
-
 Task::Task(
   const Configuration& config,
   Manager& taskManager,
@@ -90,36 +72,6 @@ Task::Task(
   (void)managers;
   m_manager = taskManager.shared_from_this();
   this->configure(config);
-}
-
-Task::Task(
-  const Configuration& config,
-  const PassedDependencies& dependencies,
-  const std::shared_ptr<smtk::common::Managers>& managers)
-{
-  static bool once = false;
-  if (!once)
-  {
-    once = true;
-    smtkWarningMacro(
-      smtk::io::Logger::instance(),
-      "Note to developers; call a constructor that takes a task::Manager&.");
-  }
-  this->setId();
-  if (managers->contains<smtk::task::Manager::Ptr>())
-  {
-    m_manager = managers->get<smtk::task::Manager::Ptr>();
-  }
-  this->configure(config);
-  for (const auto& dependency : dependencies)
-  {
-    m_dependencies.insert(std::make_pair(
-      (const std::weak_ptr<Task>)(dependency),
-      dependency->observers().insert([this](Task& dependency, State prev, State next) {
-        bool didChange = this->updateState(dependency, prev, next);
-        (void)didChange;
-      })));
-  }
 }
 
 Task::Task(
