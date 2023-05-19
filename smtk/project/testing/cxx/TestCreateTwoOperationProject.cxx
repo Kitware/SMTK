@@ -111,6 +111,45 @@ void readProject(smtk::common::ManagersPtr managers)
                                                          << taskManager.adaptorInstances().size());
 }
 #endif
+
+bool testInheritedAPI(const smtk::project::Project::Ptr& project)
+{
+  // Test the find(), visit(), and queryOperation() methods
+  // inherited from smtk::resource::Resource.
+  bool ok = true;
+  std::array<std::size_t, 3> numComp{ { 0, 0, 0 } };
+  auto qop1 = project->queryOperation("*");
+  auto qop2 = project->queryOperation("");
+  smtk::resource::Component::Visitor visitor =
+    [&project, &qop1, &qop2, &numComp](const smtk::resource::Component::Ptr& comp) {
+      if (comp)
+      {
+        ++numComp[0];
+        if (qop1(*comp))
+        {
+          ++numComp[1];
+        }
+        if (qop2(*comp))
+        {
+          ++numComp[2];
+        }
+
+        ::test(
+          comp == project->find(comp->id()), "Could not retrieve visited component with find().");
+      }
+    };
+  project->visit(visitor);
+  std::cout << "Visited " << numComp[0] << " project components.\n";
+  ::test(
+    numComp[0] == project->taskManager().taskInstances().size(),
+    "Expected to visit 5 tasks as project components.");
+  ::test(
+    numComp[1] == project->taskManager().taskInstances().size(),
+    "Expected to visit 5 tasks of type '*'.");
+  ::test(numComp[2] == 0, "Expected to visit 0 tasks with empty query.");
+  return ok;
+}
+
 } // namespace
 
 int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
@@ -177,6 +216,9 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 
   smtk::task::Manager& taskManager = project->taskManager();
   {
+    ::test(
+      taskManager.resource() == project.get(),
+      "Expected task manager to refer to its parent project.");
     // Inject tasks from json file
     std::string jsonPath = data_root + "/projects/src/two-operations.json";
     std::ifstream ifs(jsonPath);
@@ -230,6 +272,9 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     auto attResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(readResource);
     project->resources().add(attResource, "attributes");
   }
+
+  // Test inherited resource API.
+  testInheritedAPI(project);
 
   // Write project to scratch directory
   {

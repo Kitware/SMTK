@@ -15,6 +15,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/common/UUIDGenerator.h"
+
 #include <stdexcept>
 
 namespace smtk
@@ -60,7 +62,7 @@ constexpr const char* const Task::type_name;
 
 Task::Task()
 {
-  this->setId();
+  m_id = smtk::common::UUIDGenerator::instance().random();
 }
 
 Task::Task(
@@ -68,8 +70,8 @@ Task::Task(
   Manager& taskManager,
   const std::shared_ptr<smtk::common::Managers>& managers)
 {
-  this->setId();
   (void)managers;
+  m_id = smtk::common::UUIDGenerator::instance().random();
   m_manager = taskManager.shared_from_this();
   this->configure(config);
 }
@@ -80,7 +82,7 @@ Task::Task(
   Manager& taskManager,
   const std::shared_ptr<smtk::common::Managers>& managers)
 {
-  this->setId();
+  m_id = smtk::common::UUIDGenerator::instance().random();
   (void)managers;
   m_manager = taskManager.shared_from_this();
   this->configure(config);
@@ -101,9 +103,23 @@ void Task::configure(const Configuration& config)
   {
     throw std::logic_error("Invalid configuration passed to Task constructor.");
   }
-  if (config.contains("title"))
+  auto it = config.find("id");
+  if (it == config.end() || it->is_number_integer())
   {
-    m_title = config.at("title").get<std::string>();
+    // We are deserializing a task "template" which has no UUID. Make one up.
+    this->setId(smtk::common::UUID::random());
+  }
+  else
+  {
+    this->setId(it->get<smtk::common::UUID>());
+  }
+  if (config.contains("name"))
+  {
+    this->setName(config.at("name").get<std::string>());
+  }
+  else if (config.contains("title"))
+  {
+    this->setName(config.at("title").get<std::string>());
   }
   if (config.contains("style"))
   {
@@ -135,9 +151,44 @@ void Task::configure(const Configuration& config)
   }
 }
 
-void Task::setTitle(const std::string& title)
+bool Task::setId(const common::UUID& newId)
 {
-  m_title = title;
+  if (newId == m_id)
+  {
+    return false;
+  }
+  if (auto rsrc = this->resource())
+  {
+    // TODO: FIXME: ask resource to update our ID and index us.
+  }
+  m_id = newId;
+  return true;
+}
+
+void Task::setName(const std::string& name)
+{
+  if (name == m_name)
+  {
+    return;
+  }
+  if (auto rsrc = this->resource())
+  {
+    // TODO: FIXME: ask resource to update our name and index us.
+  }
+  m_name = name;
+}
+
+const std::shared_ptr<resource::Resource> Task::resource() const
+{
+  std::shared_ptr<resource::Resource> rsrc;
+  if (auto manager = m_manager.lock())
+  {
+    if (auto* ptr = manager->resource())
+    {
+      rsrc = ptr->shared_from_this();
+    }
+  }
+  return rsrc;
 }
 
 bool Task::addStyle(const smtk::string::Token& styleClass)
@@ -284,7 +335,7 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
       bool didChange = this->updateState(dependency, prev, next);
       (void)didChange;
     })));
-  dependency->m_dependents.insert(this->shared_from_this());
+  dependency->m_dependents.insert(std::dynamic_pointer_cast<Task>(this->shared_from_this()));
   if (wasHead)
   {
     if (auto taskManager = m_manager.lock())
@@ -446,14 +497,6 @@ bool Task::internalStateChanged(State next)
     return true;
   }
   return false;
-}
-
-void Task::setId()
-{
-  // For now, create a string with the address of the task and hash it.
-  std::ostringstream uid;
-  uid << std::hex << this;
-  m_id = uid.str();
 }
 
 } // namespace task

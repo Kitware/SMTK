@@ -244,7 +244,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addActivateTaskHint(
   // do not assume the string manager can provide string content for the token
   // as we do not want the string to be relied upon.
   std::ostringstream taskId;
-  taskId << task->id().id();
+  taskId << task->id();
   // Add the string to the set of task IDs.
   taskIds.insert(taskId.str());
   auto hint = addHintWithTasks(result, project, taskIds, "activate task hint");
@@ -280,7 +280,7 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitTaskHintsOfType(
           projects.insert(project);
         }
       }
-      // Convert the strings into string-tokens (task IDs) and then
+      // Convert the strings into UUIDs (task IDs) and then
       // invoke the functor on the set.
       auto tasksItem = hint->findString("tasks");
       if (!tasksItem)
@@ -288,13 +288,13 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitTaskHintsOfType(
         continue;
       }
 
-      std::set<smtk::string::Token> taskIds;
+      std::set<smtk::common::UUID> taskIds;
       for (const auto& value : *tasksItem)
       {
-        smtk::string::Hash taskId;
+        smtk::common::UUID taskId;
         std::istringstream valueStream(value);
         valueStream >> taskId;
-        taskIds.insert(smtk::string::Token(taskId));
+        taskIds.insert(smtk::common::UUID(taskId));
       }
       if (ff(projects, taskIds) == smtk::common::Visit::Halt)
       {

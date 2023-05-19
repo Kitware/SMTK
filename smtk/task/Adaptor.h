@@ -37,7 +37,7 @@ public:
   /// Destructor must be virtual.
   virtual ~Adaptor() = default;
 
-  SMTK_DEPRECATED_IN_23_08("Use updateDownstreamTask() instead.")
+  SMTK_DEPRECATED_IN_23_11("Use updateDownstreamTask() instead.")
   virtual bool reconfigureTask();
 
   /// Subclasses must override this method and respond to changes in

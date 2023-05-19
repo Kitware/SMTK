@@ -16,7 +16,7 @@
 
 #include "smtk/project/Observer.h" // for EventType
 #include "smtk/resource/Observer.h"
-#include "smtk/task/Task.h"
+#include "smtk/task/Task.h" // for Task::Observers
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -103,6 +103,9 @@ public Q_SLOTS:
   virtual bool updatePipeline();
   /**\brief Clear panel widgets, unobserve displayed resource,
     *       and set the attribute resource pointer to null.
+    *
+    * Note that this does not clear panel state related to
+    * observing a project's task manager.
     */
   virtual void resetPanel(smtk::resource::ManagerPtr rsrcMgr);
 
@@ -140,12 +143,26 @@ protected Q_SLOTS:
   virtual void handleProjectEvent(const smtk::project::Project&, smtk::project::EventType);
 
 protected:
+  /// Update the references to managers to reflect those related to the
+  /// attribute resource being displayed.
   virtual bool updateManagers(const std::shared_ptr<smtk::common::Managers>& managers);
+  /// Called by displayResource after fetching the resource's
+  /// top-level view and verifying it should be shown.
   virtual bool displayResourceInternal(
     const smtk::attribute::ResourcePtr& rsrc,
     smtk::view::ConfigurationPtr view = nullptr,
     int advancedlevel = 0);
+  /// If the view configuration specifies a title, set the window title to match.
+  /// Otherwise, use the default "Attribute Editor" window title.
   virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
+  /// Display an attribute view as requested by a task's style.
+  virtual bool displayTaskAttribute(smtk::task::Task* task);
+  /// Monitor the task controlling the panel's view (when a task is active).
+  virtual void activeTaskStateChange(
+    smtk::task::Task& task,
+    smtk::task::State priorState,
+    smtk::task::State currentState);
+
   smtk::extension::qtUIManager* m_attrUIMgr{ nullptr };
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;
@@ -153,7 +170,6 @@ protected:
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;
   pqPropertyLinks m_propertyLinks;
-
   std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;
   smtk::task::Active::Observers::Key m_activeObserverKey;
   smtk::task::Task::Observers::Key m_currentTaskObserverKey;

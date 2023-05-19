@@ -79,7 +79,7 @@ void Group::configure(const Configuration& config)
     for (auto* child : tasks)
     {
       m_children.emplace(std::make_pair(
-        child->shared_from_this(),
+        std::static_pointer_cast<Task>(child->shared_from_this()),
         child->observers().insert(
           [this](Task& child, State prev, State next) {
             this->childStateChanged(child, prev, next);

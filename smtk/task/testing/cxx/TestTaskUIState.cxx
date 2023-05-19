@@ -60,7 +60,7 @@ int TestTaskUIState(int, char*[])
 
   // Create task
   std::shared_ptr<smtk::task::Task> t1 = taskManager->taskInstances().create<smtk::task::Task>(
-    smtk::task::Task::Configuration{ { "title", "Task 1" } }, *taskManager, managers);
+    smtk::task::Task::Configuration{ { "name", "Task 1" } }, *taskManager, managers);
   smtkTest(t1 != nullptr, "failed to create task.");
 
   // Generate json object

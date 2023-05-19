@@ -30,8 +30,10 @@ inline PySharedPtrClass< smtk::task::Task > pybind11_init_smtk_task_Task(py::mod
         auto config = nlohmann::json::parse(jsonConfig);
         task.configure(config);
       })
-    .def("title", &smtk::task::Task::title)
-    .def("setTitle", &smtk::task::Task::setTitle, py::arg("title"))
+    .def("name", &smtk::task::Task::name)
+    .def("setName", &smtk::task::Task::setName, py::arg("name"))
+    .def("title", &smtk::task::Task::name)
+    .def("setTitle", &smtk::task::Task::setName, py::arg("title"))
     .def("state", &smtk::task::Task::state)
     .def("markCompleted", &smtk::task::Task::markCompleted, py::arg("completed"))
     .def("dependencies", &smtk::task::Task::dependencies)

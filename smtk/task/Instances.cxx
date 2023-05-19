@@ -95,11 +95,11 @@ Task::Ptr Instances::createFromName(
     taskType, configuration, dependencies, m_taskManager, managers);
 }
 
-std::set<smtk::task::Task::Ptr> Instances::findByTitle(const std::string& title) const
+std::set<smtk::task::Task::Ptr> Instances::findByName(const std::string& name) const
 {
   std::set<smtk::task::Task::Ptr> foundTasks;
-  this->visit([&foundTasks, title](const std::shared_ptr<smtk::task::Task>& task) {
-    if (task->title() == title)
+  this->visit([&foundTasks, name](const std::shared_ptr<smtk::task::Task>& task) {
+    if (task->name() == name)
     {
       foundTasks.insert(task);
     }
@@ -108,7 +108,7 @@ std::set<smtk::task::Task::Ptr> Instances::findByTitle(const std::string& title)
   return foundTasks;
 }
 
-smtk::task::Task::Ptr Instances::findById(smtk::string::Token taskId) const
+smtk::task::Task::Ptr Instances::findById(const smtk::common::UUID& taskId) const
 {
   smtk::task::Task::Ptr foundTask;
   this->visit([&foundTask, taskId](const std::shared_ptr<smtk::task::Task>& task) {

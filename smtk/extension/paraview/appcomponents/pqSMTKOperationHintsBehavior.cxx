@@ -246,7 +246,7 @@ int pqSMTKOperationHintsBehavior::processHints(
     "activate task hint",
     [&](
       const std::set<smtk::project::Project::Ptr>& projects,
-      const std::set<smtk::string::Token>& taskIds) {
+      const std::set<smtk::common::UUID>& taskIds) {
       if (projects.empty() || !*projects.begin())
       {
         return;

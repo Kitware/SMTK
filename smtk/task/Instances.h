@@ -111,11 +111,16 @@ public:
     std::shared_ptr<smtk::common::Managers> managers);
   ///@}
 
-  /// Returns the tasks with the given title
-  std::set<smtk::task::Task::Ptr> findByTitle(const std::string& title) const;
+  /// Returns the tasks with the given name
+  std::set<smtk::task::Task::Ptr> findByName(const std::string& name) const;
+  SMTK_DEPRECATED_IN_23_11("Use findByName() instead.")
+  std::set<smtk::task::Task::Ptr> findByTitle(const std::string& name) const
+  {
+    return this->findByName(name);
+  }
 
-  /// Returns the task with the given (presumably unique) ID.
-  smtk::task::Task::Ptr findById(smtk::string::Token taskId) const;
+  /// Returns the task with the given ID.
+  smtk::task::Task::Ptr findById(const smtk::common::UUID& taskId) const;
 
 protected:
   Manager& m_taskManager;

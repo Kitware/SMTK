@@ -164,28 +164,54 @@ Task::PassedDependencies Helper::unswizzleDependencies(const json& ids) const
         smtk::io::Logger::instance(), "No task or null task for ID " << taskId << ". Skipping.");
       continue;
     }
-    deps.insert(ptr->shared_from_this());
+    deps.insert(std::static_pointer_cast<Task>(ptr->shared_from_this()));
   }
   return deps;
 }
 
 void Helper::setAdaptorTaskIds(SwizzleId fromId, SwizzleId toId)
 {
+  // Only allow one set of IDs to be active at a time
+  m_adaptorFromUID = smtk::common::UUID::null();
+  m_adaptorToUID = smtk::common::UUID::null();
   m_adaptorFromId = fromId;
   m_adaptorToId = toId;
+}
+
+void Helper::setAdaptorTaskIds(const smtk::common::UUID& fromId, const smtk::common::UUID& toId)
+{
+  // Only allow one set of IDs to be active at a time
+  m_adaptorFromId = ~static_cast<SwizzleId>(0);
+  m_adaptorToId = ~static_cast<SwizzleId>(0);
+  m_adaptorFromUID = fromId;
+  m_adaptorToUID = toId;
 }
 
 void Helper::clearAdaptorTaskIds()
 {
   m_adaptorFromId = ~static_cast<SwizzleId>(0);
   m_adaptorToId = ~static_cast<SwizzleId>(0);
+  m_adaptorFromUID = smtk::common::UUID::null();
+  m_adaptorToUID = smtk::common::UUID::null();
 }
 
 std::pair<Task*, Task*> Helper::getAdaptorTasks()
 {
-  Task::Ptr fromPtr;
-  auto* from = m_tasks.unswizzle(m_adaptorFromId);
-  auto* to = m_tasks.unswizzle(m_adaptorToId);
+  Task* from = nullptr;
+  Task* to = nullptr;
+  if (!m_adaptorFromUID.isNull() && !m_adaptorToUID.isNull())
+  {
+    if (m_taskManager)
+    {
+      from = m_taskManager->taskInstances().findById(m_adaptorFromUID).get();
+      to = m_taskManager->taskInstances().findById(m_adaptorToUID).get();
+    }
+  }
+  else
+  {
+    from = m_tasks.unswizzle(m_adaptorFromId);
+    to = m_tasks.unswizzle(m_adaptorToId);
+  }
   return std::make_pair(from, to);
 }
 

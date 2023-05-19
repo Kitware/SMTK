@@ -49,7 +49,7 @@ qtBaseTaskNode::qtBaseTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGrap
   this->setFlag(GraphicsItemFlag::ItemSendsGeometryChanges);
   this->setCacheMode(CacheMode::DeviceCoordinateCache);
   this->setCursor(Qt::ArrowCursor);
-  this->setObjectName(QString("node") + QString::fromStdString(m_task->title()));
+  this->setObjectName(QString("node") + QString::fromStdString(m_task->name()));
 
   // Configure timer to rate-limit nodeMoved signal
   m_moveSignalTimer = new QTimer(this);

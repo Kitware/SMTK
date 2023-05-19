@@ -37,7 +37,7 @@ class TestTaskManager(smtk.testing.TestCase):
 
         # Verify we can create tasks from JSON
         cfg = {
-            'title': 'Task 5',
+            'name': 'Task 5',
             'auto-configure': True,
             'resources': [
                 {
@@ -51,8 +51,8 @@ class TestTaskManager(smtk.testing.TestCase):
             'smtk::task::FillOutAttributes', json.dumps(cfg))
         assert (foa != None)
         print('{:1} (an instance of {:2}), {:3}'.format(
-            foa.title(), foa.typeName(), str(foa.state())))
-        assert (foa.title() == cfg['title'])
+            foa.name(), foa.typeName(), str(foa.state())))
+        assert (foa.name() == cfg['name'])
         assert (foa.typeName() == 'smtk::task::FillOutAttributes')
         assert (foa.state() == smtk.task.State.Completable)
         foa.markCompleted(True)
@@ -62,28 +62,28 @@ class TestTaskManager(smtk.testing.TestCase):
         print('All managed task instances:')
         tasks = mgr.taskInstances()
         print('\n'.join(['  {:1} (an instance of {:2}'.format(
-            x.title(), x.typeName()) for x in tasks.instances()]))
+            x.name(), x.typeName()) for x in tasks.instances()]))
         assert (len(tasks.instances()) == 1)
 
         # Test getting/setting the manager's active task.
         # Initially there should be no active task.
         activeTask = mgr.active().task()
         print('Active task is {:1}'.format(
-            activeTask.title() if activeTask else '(null)'))
+            activeTask.name() if activeTask else '(null)'))
         assert (activeTask == None)
 
         # We should be able to switch the active task.
         mgr.active().switchTo(foa)
         activeTask = mgr.active().task()
         print('Active task is {:1}'.format(
-            activeTask.title() if activeTask else '(null)'))
+            activeTask.name() if activeTask else '(null)'))
         assert (activeTask == foa)
 
         # We should be able to reset the active task to its initial state.
         mgr.active().switchTo(None)
         activeTask = mgr.active().task()
         print('Active task is {:1}'.format(
-            activeTask.title() if activeTask else '(null)'))
+            activeTask.name() if activeTask else '(null)'))
         assert (activeTask == None)
 
 
