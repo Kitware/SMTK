@@ -10,6 +10,7 @@
 #include "smtk/extension/qt/task/qtTaskNode.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/task/qtTaskEditor.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
 
@@ -134,12 +135,12 @@ public:
         break;
       case smtk::task::State::Incomplete:
         m_headlineButton->setEnabled(true);
-        m_activateTask->setEnabled(true);
+        m_activateTask->setEnabled(!m_node->isActive());
         m_markCompleted->setEnabled(false);
         break;
       case smtk::task::State::Completable:
         m_headlineButton->setEnabled(true);
-        m_activateTask->setEnabled(true);
+        m_activateTask->setEnabled(!m_node->isActive());
         m_markCompleted->setEnabled(true);
         break;
       case smtk::task::State::Completed:
@@ -157,8 +158,23 @@ public:
     auto* taskManager = m_node->m_task->manager();
     if (taskManager)
     {
-      taskManager->active().switchTo(m_node->m_task);
-      // TODO: Provide feedback if no action taken (e.g., flash red)
+      auto* previouslyActive = taskManager->active().task();
+      if (previouslyActive != m_node->m_task)
+      {
+        if (taskManager->active().switchTo(m_node->m_task))
+        {
+          m_activateTask->setEnabled(false); // Can't activate task since it is now active.
+          auto* prevNode = (m_node->m_scene && m_node->m_scene->editor())
+            ? m_node->m_scene->editor()->findNode(previouslyActive)
+            : nullptr;
+          if (prevNode)
+          {
+            smtk::task::State prevState = previouslyActive->state();
+            prevNode->m_container->updateTaskState(prevState, prevState);
+          }
+        }
+        // TODO: Provide feedback if no action taken (e.g., flash red)
+      }
     }
   }
 
@@ -291,6 +307,20 @@ QRectF qtTaskNode::boundingRect() const
   const double height = m_container->height();
   // was = m_headlineHeight + (m_container->isVisible() ? m_container->height() : 0.0);
   return QRectF(0, 0, m_container->width(), height).adjusted(-border, -border, border, border);
+}
+
+bool qtTaskNode::isActive() const
+{
+  if (!m_task)
+  {
+    return false;
+  }
+  auto* taskManager = m_task->manager();
+  if (!taskManager)
+  {
+    return false;
+  }
+  return taskManager->active().task() == m_task;
 }
 
 QVariant qtTaskNode::itemChange(GraphicsItemChange change, const QVariant& value)

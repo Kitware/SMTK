@@ -1,3 +1,5 @@
+.. _smtk-pv-panels:
+
 Panels
 ------
 
@@ -16,6 +18,8 @@ Most panels register themselves with ParaView by calling ``pqApplicationCore::re
 and can thus be retrieved by calling ``pqApplicationCore::manager()`` with their registered
 name (listed in the sections below).
 
+.. _smtk-pv-resource-panel:
+
 Resource panel
 ==============
 
@@ -25,6 +29,8 @@ It is registered with the pqApplicationCore instance as a manager named "smtk re
 The panel has a ``setView()`` method that accepts a view configuration
 so your application can reconfigure the panel.
 
+.. _smtk-pv-attribute-panel:
+
 Attribute panel
 ===============
 
@@ -32,6 +38,8 @@ The :smtk:`pqSMTKAttributePanel` displays the top-level view of an SMTK attribut
 It is registered with the pqApplicationCore instance as a manager named "smtk attribute panel".
 It can also be programmatically configured to show views (including non-top-level views) by
 calling the ``displayResource()`` or ``displayView()`` methods.
+
+.. _smtk-pv-legacy-operation-panel:
 
 Legacy operation view
 =====================
@@ -47,6 +55,8 @@ editing parameters;
 and an a widget at the bottom that was intended to show documentation but is largely unused.
 At some point in the future, this panel will likely be deprecated and removed.
 You should prefer the operation toolbox and parameter-editor panels below as replacements.
+
+.. _smtk-pv-operation-toolbox-panel:
 
 Operation toolbox panel
 =======================
@@ -77,6 +87,8 @@ If the toolbox is configured to allow it, all operations (not just those availab
 to the currently-selection objects) will be displayed without decoration and may
 be filtered by searching.
 
+.. _smtk-pv-parameter-editor-panel:
+
 Operation parameter-editor panel
 ================================
 
@@ -93,3 +105,30 @@ Similarly, if the toolbox panel exists, the parameter editor will connect operat
 launch operations via that panel.
 Otherwise, your application is responsible for listening for the ``runOperation()`` signal
 and launching the provided operation.
+
+The :smtk:`pqSMTKOperationParameterPanel` supports projects with task-based workflows; when a new
+task becomes active, if it is a :smtk:`SubmitOperation <smtk::task::SubmitOperation>` task, and
+any of its style tags contain an ``operation-panel`` section: the panel will be raised; a tab for
+the task's operation will be created; that tab will gain focus and show a view of the operation's
+parameters.
+
+The panel does not yet but will eventually look for the following keys in the ``operation-panel``
+section to determine its behavior:
+
+* ``display``: true or false depending on whether the panel should display the task's operation.
+  The default is true, which means that just the existence of an ``operation-panel`` section
+  can determine whether the panel responds to a SubmitOperation task; if the section exists
+  even though it may be empty, then the default ``display`` style is assumed. If the section
+  does not exist, then the panel will ignore the task.
+
+* ``view``: one of the following enumerants specifying where the operation's view configuration
+  should come from:
+
+  * ``anew``: the task should create a new view configuration ab initio (i.e., ignoring any
+    view configuration provided by the operation itself).
+  * ``override``: the task should start with the view provided by the operation itself and
+    add item-view configurations for any parameters listed below.
+  * ``unmodified``: use the default view provided for the operation's parameters without any
+    changes that take the task configuration into consideration.
+
+  If no value is provided, then the view defaults to ``override``.

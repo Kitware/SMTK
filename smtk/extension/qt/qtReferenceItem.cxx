@@ -433,7 +433,10 @@ void qtReferenceItem::clearWidgets()
   {
     return;
   }
-  pwidget->layout()->removeWidget(m_widget);
+  if (m_widget)
+  {
+    pwidget->layout()->removeWidget(m_widget);
+  }
   delete m_widget;
   m_widget = nullptr;
 }

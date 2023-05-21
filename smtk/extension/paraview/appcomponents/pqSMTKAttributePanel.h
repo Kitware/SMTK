@@ -105,6 +105,9 @@ public Q_SLOTS:
     */
   virtual void resetPanel(smtk::resource::ManagerPtr rsrcMgr);
 
+  /// Raise the panel in the UI (first showing it if not shown).
+  void focusPanel();
+
 protected Q_SLOTS:
   /**\brief Called when vtkSMTKSettings is modified, indicating user preferences have changed.
     *

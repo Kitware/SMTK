@@ -52,6 +52,9 @@ public:
   void setConfiguration(qtTaskViewConfiguration* config) { m_config = config; }
   qtTaskViewConfiguration* configuration() const { return m_config; }
 
+  /// Return the parent task-editor.
+  qtTaskEditor* editor() { return m_editor; }
+
 public Q_SLOTS:
   /// Compute a layout of the \a nodes and \a arcs passed into this method.
   ///
@@ -69,6 +72,7 @@ protected:
   void drawBackground(QPainter* painter, const QRectF& rect) override;
 
   qtTaskViewConfiguration* m_config{ nullptr };
+  qtTaskEditor* m_editor{ nullptr };
 };
 
 } // namespace extension

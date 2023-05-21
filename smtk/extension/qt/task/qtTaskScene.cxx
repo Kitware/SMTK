@@ -37,6 +37,7 @@ namespace extension
 
 qtTaskScene::qtTaskScene(qtTaskEditor* parent)
   : Superclass(parent->widget())
+  , m_editor(parent)
 {
 }
 

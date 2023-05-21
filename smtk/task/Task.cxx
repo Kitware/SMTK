@@ -163,9 +163,14 @@ void Task::configure(const Configuration& config)
     {
     }
   }
-  if (config.contains("completed"))
+  if (config.contains("state"))
   {
-    m_completed = config.at("completed").get<bool>();
+    bool valid;
+    m_internalState = stateEnum(config.at("state").get<std::string>(), &valid);
+    if (valid)
+    {
+      m_completed = (m_internalState == State::Completed);
+    }
   }
   auto& helper = smtk::task::json::Helper::instance();
   if (!helper.topLevel())

@@ -206,7 +206,7 @@ public:
   /// Be aware that if this task transitions from State::Completed
   /// to State::Incomplete or State::Unavailable, `m_completed`
   /// will be reset to false and this method must be invoked again.
-  bool markCompleted(bool completed);
+  virtual bool markCompleted(bool completed);
 
   /// Return the tasks which this task depends upon.
   /// WARNING: The returned set is read-only (modifying it does not modify

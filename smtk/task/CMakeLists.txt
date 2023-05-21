@@ -1,10 +1,11 @@
 # Tasks are classes (with header and source files) that also have
 # JSON classes (with header and source files).
 set(tasks
-  Task
   FillOutAttributes
   GatherResources
   Group
+  SubmitOperation
+  Task
 )
 
 set(adaptors
