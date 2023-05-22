@@ -942,15 +942,13 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
 {
   if (info.uiManager() != this)
   {
-    // The view being constructed is not refering to this manager!
+    // The view being constructed is not referring to this manager!
     return nullptr;
   }
 
   // If there is a View associated with the item - does it want it
   // displayed?
-  auto item = info.item();
-  auto* iview = info.baseView();
-  if (iview && (!iview->displayItem(item)))
+  if (!info.toBeDisplayed())
   {
     return nullptr;
   }

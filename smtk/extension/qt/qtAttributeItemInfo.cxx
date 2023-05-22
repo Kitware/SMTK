@@ -52,7 +52,7 @@ bool qtAttributeItemInfo::buildFromComponent(
   for (i = 0; i < n; i++)
   {
     // There are 2 forms supported one that have an Item Attribute (old style) and
-    // one that has a Path attribute (new style).  Note that Item="foo" is equivelant to
+    // one that has a Path attribute (new style).  Note that Item="foo" is equivalent to
     // Path="/foo"
 
     // Do we have an item attribute?
@@ -184,4 +184,18 @@ bool qtAttributeItemInfo::createNewDictionary(std::map<std::string, qtAttributeI
 qtBaseAttributeView* qtAttributeItemInfo::baseView() const
 {
   return m_baseView;
+}
+
+bool qtAttributeItemInfo::toBeDisplayed() const
+{
+  // Is there an itemView Configuration that indicates
+  // the item should not be displayed (Type set to null)
+  std::string qtItemViewType;
+  if (m_component.attribute("Type", qtItemViewType) && (qtItemViewType == "null"))
+  {
+    return false;
+  }
+
+  smtk::attribute::ItemPtr theItem = m_item.lock();
+  return (!m_baseView || (m_baseView->displayItem(theItem)));
 }
