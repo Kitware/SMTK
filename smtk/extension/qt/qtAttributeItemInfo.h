@@ -76,14 +76,22 @@ public:
 
   /// \brief Method to return the qtUIManager that is being used to generate the UI.
   ///
-  /// Note that the manager is retrived via the qtBaseView assigned.  If the view does not have a manager
+  /// Note that the manager is retrieved via the qtBaseView assigned.  If the view does not have a manager
   /// or if the view is not set then this method will return nullptr.
   qtUIManager* uiManager() const;
+
+  /// \brief Indicates that the underlying item should be displayed.
+  ///
+  /// This will true if return all of the following are true:
+  ///   * the instance has a valid smtk::attribute::item
+  ///   * there is either no baseView or the baseView indicates that the item should be displayed
+  ///   * there is either no ItemView Configuration or that its type is not set to "null"
+  bool toBeDisplayed() const;
 
   /// \brief Method to return the style information for the item's children.
   ///
   /// The key string represents a path to an item's child and the corresponding
-  /// Component represents the style infomation that is to be used to generate its qtItem
+  /// Component represents the style information that is to be used to generate its qtItem
   std::map<std::string, smtk::view::Configuration::Component>& childrenViewInfo() const;
 
   /// \brief A helper method that can construct a dictionary from a View Component
