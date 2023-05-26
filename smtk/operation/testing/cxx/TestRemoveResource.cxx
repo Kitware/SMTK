@@ -80,6 +80,7 @@ int TestRemoveResource(int /*unused*/, char** const /*unused*/)
 
   // Create a new MyResource type
   auto myResource = resourceManager->create<MyResource>();
+  resourceManager->add(myResource);
   smtkTest(resourceManager->size() == 1, "Resource not added to manager.");
 
   // Create a "Remove Resource" operation

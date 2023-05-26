@@ -96,6 +96,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   // Create a new ResourceA type
   auto resourceA1 = resourceManager->create<ResourceA>();
   smtkTest(!!resourceA1, "Failed to create instance A1 of resource A");
+  // Add the resource to the manager.
+  resourceManager->add(resourceA1);
   smtkTest(resourceManager->size() == 1, "Resource A1 not added to manager.");
 
   // Observe resources being added
@@ -116,6 +118,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Create another ResourceA type
   auto resourceA2 = resourceManager->create<ResourceA>();
+  // Add the resource to the manager.
+  resourceManager->add(resourceA2);
   smtkTest(resourceManager->size() == 2, "Resource A2 not added to manager.");
   smtkTest(numResources == 2, "Did not observe resource A2 being added.");
 
@@ -140,6 +144,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   // Create a ResourceC type
   auto resourceC = resourceManager->create<ResourceC>();
   std::cout << "resourceC? " << resourceC << std::endl;
+  // Manage resourceC:
+  resourceManager->add(resourceC);
   smtkTest(!resourceManager->observers().erase(handle), "Observer did not remove itself.");
   resourceManager->remove(resourceC);
 
@@ -176,6 +182,8 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
 
   // Create a ResourceB instance
   auto resourceB1 = resourceManager->create<ResourceB>();
+  // Manage resourceB1
+  resourceManager->add(resourceB1);
   smtkTest(resourceManager->size() == 3, "Resource manager should be managing three resources.");
 
   auto resourceBSet = resourceManager->find<ResourceB>();

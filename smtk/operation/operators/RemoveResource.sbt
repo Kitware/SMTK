@@ -13,7 +13,7 @@
         Remove resources from its associated resource manager.
       </DetailedDescription>
       <AssociationsDef LockType="Write" HoldReference="true"
-                       OnlyResources="true">
+                       OnlyResources="true" Extensible="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>

@@ -51,6 +51,8 @@ class TestBasicProject(smtk.testing.TestCase):
         att_resource = self.res_manager.createResource(
             'smtk::attribute::Resource')
         self.assertIsNotNone(att_resource)
+        # Manage the resource
+        self.res_manager.add(att_resource)
         self.assertEqual(len(self.res_manager.resources()), 1,
                          'Wrong number of project resources; should be 1 not {}'.format(project.resources().size()))
 

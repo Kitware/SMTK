@@ -146,7 +146,6 @@ smtk::resource::ResourcePtr Manager::create(
   {
     // Create the resource using its index
     resource = metadata->create(uuid, managers);
-    this->add(metadata->index(), resource);
   }
 
   return resource;
@@ -165,7 +164,6 @@ smtk::resource::ResourcePtr Manager::create(
   {
     // Create the resource with the appropriate UUID
     resource = metadata->create(uuid, managers);
-    this->add(index, resource);
   }
 
   return resource;

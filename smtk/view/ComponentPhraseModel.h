@@ -88,10 +88,9 @@ protected:
   virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   */
-  void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
   void handleCreated(const smtk::resource::PersistentObjectSet& createdObjects) override;
 
-  virtual void processResource(const Resource::Ptr& rsrc, bool adding);
+  void processResource(const Resource::Ptr& rsrc, bool adding) override;
   virtual void populateRoot();
   /**\brief creates a DescriptivePhrase for  a top-level Component (i.e. one whose parent is root).
    * Returns null if comp would not be considered a top level phrase.

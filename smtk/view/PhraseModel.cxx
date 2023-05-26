@@ -22,6 +22,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/resource/Component.h"
 
@@ -258,15 +259,21 @@ bool PhraseModel::addSource(const smtk::common::TypeContainer& managers)
                          : smtk::view::SelectionObservers::Key();
   m_sources.emplace_back(
     managers, std::move(rsrcHandle), std::move(operHandle), std::move(selnHandle));
+
   // Now, we did not immediately invoke the resource-manager observer above – because
   // if we had, m_sources would be empty when the observer was invoked and would leave
   // some phrase models unable to populate their root phrase (e.g., ReferenceItemPhraseModel
   // which visits sources inside populateRoot()). Iterate over resources and invoke the
   // observer now.
+  //
+  // Also, we are trying to phase out the resource-manager observer (currently it is only
+  // used to update when a resource is modified (not added or removed). So, we visit each
+  // resource in the newly-available manager and call processResource() on it (as if an
+  // operation added the resource in question).
   if (rsrcMgr)
   {
     rsrcMgr->visit([&](smtk::resource::Resource& rsrc) {
-      this->handleResourceEvent(rsrc, smtk::resource::EventType::ADDED);
+      this->processResource(rsrc.shared_from_this(), true);
       return smtk::common::Processing::CONTINUE;
     });
   }
@@ -365,12 +372,6 @@ void PhraseModel::handleSelectionEvent(const std::string& src, Selection::Ptr se
   (void)seln;
 }
 
-void PhraseModel::handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event)
-{
-  std::cout << "      phrase " << (event == smtk::resource::EventType::ADDED ? "add" : "del")
-            << " rsrc " << &rsrc << " " << rsrc.location() << "\n";
-}
-
 int PhraseModel::handleOperationEvent(
   const Operation& op,
   operation::EventType event,
@@ -390,10 +391,32 @@ int PhraseModel::handleOperationEvent(
     return 0;
   }
 
-  // Find out which resource components were created, modified, or expunged.
+  // First, look for entire resources being added/removed.
+  if (auto resourcesToExpunge = res->findResource("resourcesToExpunge"))
+  {
+    for (auto rsrcIt = resourcesToExpunge->begin(); rsrcIt != resourcesToExpunge->end(); ++rsrcIt)
+    {
+      if (rsrcIt.isSet())
+      {
+        this->processResource(rsrcIt.as<smtk::resource::Resource>(), false);
+      }
+    }
+  }
+
+  if (auto resourcesToAdd = res->findResource("resource"))
+  {
+    for (auto rsrcIt = resourcesToAdd->begin(); rsrcIt != resourcesToAdd->end(); ++rsrcIt)
+    {
+      if (rsrcIt.isSet())
+      {
+        this->processResource(rsrcIt.as<smtk::resource::Resource>(), true);
+      }
+    }
+  }
+
+  // Find out which components were created, modified, or expunged.
   // Only inserting elements that are "set" so the callee, handle*(), is not
   // passed any nulllptrs.
-
   ComponentItemPtr expungedItem = res->findComponent("expunged");
   if (expungedItem)
   {
@@ -437,6 +460,14 @@ int PhraseModel::handleOperationEvent(
   }
 
   return 0;
+}
+
+void PhraseModel::processResource(
+  const std::shared_ptr<smtk::resource::Resource>& resource,
+  bool adding)
+{
+  (void)resource;
+  (void)adding;
 }
 
 void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRange[2])

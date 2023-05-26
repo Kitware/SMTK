@@ -375,6 +375,8 @@ int TestGarbageCollector(int /*unused*/, char** const /*unused*/)
 
   // Create a new ResourceA type
   auto resourceA = resourceManager->create<ResourceA>();
+  // Manage the created resource.
+  resourceManager->add(resourceA);
 
   TestSingle(resourceA, operationManager);
   TestMultiple(resourceA, operationManager);

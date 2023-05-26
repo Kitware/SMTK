@@ -34,6 +34,7 @@ void testDefaultEvaluatorRegistration()
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
 
   auto attRes = resourceManager->create<smtk::attribute::Resource>();
+  resourceManager->add(attRes);
   auto infixDefinition = attRes->createDefinition("infixExpression");
 
   {

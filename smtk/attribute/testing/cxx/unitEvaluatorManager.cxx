@@ -62,6 +62,7 @@ int unitEvaluatorManager(int /*argc*/, char** const /*argv*/)
 
     smtk::attribute::ResourcePtr managedAttRes =
       resourceManager->create<smtk::attribute::Resource>();
+  resourceManager->add(managedAttRes);
   smtk::attribute::DefinitionPtr fooExpDef = managedAttRes->createDefinition("fooExpDef");
 
   smtkTest(

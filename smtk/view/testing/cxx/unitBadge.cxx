@@ -23,6 +23,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/attribute/operators/Signal.h"
@@ -202,6 +203,7 @@ int unitBadge(int argc, char* argv[])
     auto compsItem = signalOp->parameters()->findComponent("created");
     compsItem->appendValue(attDBC);
     compsItem->appendValue(attNBC);
+    signalOp->parameters()->findResource("resourcesCreated")->appendValue(attRsrc);
     signalOp->operate();
   }
 

@@ -236,7 +236,11 @@ protected:
   virtual void handleSelectionEvent(const std::string& src, smtk::view::SelectionPtr seln);
 
   /// A method called when a resource manager adds or removes a resource.
-  virtual void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event);
+  ///
+  /// By default, this does nothing. Subclasses may override it if needed, but
+  /// most resource events should be handled by observing operations that act
+  /// on resources rather than by observing the resource manager.
+  virtual void handleResourceEvent(const Resource&, smtk::resource::EventType) {}
 
   /**\brief A method called when operators have modified one or more resources.
     *
@@ -247,6 +251,19 @@ protected:
     */
   virtual int
   handleOperationEvent(const Operation& op, operation::EventType e, const Operation::Result& res);
+
+  /// This is invoked from within handleOperationEvent when a resource is being added or removed.
+  ///
+  /// The base implementation does nothing; it is up to subclasses to implement this as needed.
+  ///
+  /// When \a adding is true, an operation has created \a resource and indicated it should be
+  /// managed by inserting it into the result's "resource" ResourceItem.
+  /// When \a adding is false, an operation has requested that \a resource should be removed
+  /// from its resource manager by inserting it into the result's "resourcesToExpunge"
+  /// ResourceItem.
+  virtual void processResource(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    bool adding);
 
   /**\brief Given the index of parent phrase and a range of its children, delete them.
     *

@@ -21,6 +21,8 @@
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
+#include "smtk/AutoInit.h"
+
 namespace
 {
 
@@ -118,6 +120,7 @@ void verify_read_write_valid_resource()
 
 int UnitTestExportMeshVTK(int /*unused*/, char** const /*unused*/)
 {
+  smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK);
   verify_write_empty_resource();
   verify_write_null_resource();
   verify_read_write_valid_resource();

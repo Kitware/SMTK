@@ -128,7 +128,9 @@ int ResourcePhraseModel::handleOperationEvent(
     }
   }
 
-  return PhraseModel::handleOperationEvent(op, event, res);
+  int result = PhraseModel::handleOperationEvent(op, event, res);
+  // this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
+  return result;
 }
 
 void ResourcePhraseModel::handleResourceEvent(
@@ -143,11 +145,9 @@ void ResourcePhraseModel::handleResourceEvent(
 
   if (event == smtk::resource::EventType::MODIFIED)
   {
+    // Indicate that resource phrases need to be redrawn to indicate
+    // when a resource changes its clean/dirty state.
     this->triggerModified(rsrc);
-  }
-  else
-  {
-    this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
   }
 }
 
