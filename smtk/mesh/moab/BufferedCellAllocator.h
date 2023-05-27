@@ -78,11 +78,11 @@ protected:
   template<typename IntegerType>
   bool addCell(smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates);
 
-  ::moab::EntityHandle m_firstCoordinate;
-  std::size_t m_nCoordinates;
+  ::moab::EntityHandle m_firstCoordinate{ 0 };
+  std::size_t m_nCoordinates{ 0 };
   std::vector<double*> m_coordinateMemory;
-  smtk::mesh::CellType m_activeCellType;
-  int m_nCoords;
+  smtk::mesh::CellType m_activeCellType{ smtk::mesh::CellType_MAX };
+  int m_nCoords{ 0 };
   std::vector<std::int64_t> m_localConnectivity;
   ::moab::Range m_cells;
 };

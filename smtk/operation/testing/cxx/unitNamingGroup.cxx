@@ -37,10 +37,7 @@ public:
   void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
-  ResourceA()
-    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
-  {
-  }
+  ResourceA() = default;
 };
 
 class MyComponent : public smtk::resource::Component

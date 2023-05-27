@@ -91,10 +91,7 @@ qtAttribute::~qtAttribute()
 {
   // First Clear all the items
   this->removeItems();
-  if (m_widget)
-  {
-    delete m_widget;
-  }
+  delete m_widget;
 
   delete m_internals;
 }

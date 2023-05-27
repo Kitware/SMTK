@@ -96,7 +96,7 @@ void verify_moab_incremental_allocator_cell(smtk::mesh::CellType cellType)
   }
 
   // Add a cell using the cell type and connectivity
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(allocator->addCell(cellType, connectivity.data(), nVerticesPerCell));
 
   // Finalize the addition of cells
   test(allocator->flush());
@@ -134,7 +134,7 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
   {
     connectivity[i] = static_cast<int>(i);
   }
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(allocator->addCell(cellType, connectivity.data(), nVerticesPerCell));
   test(allocator->isValid());
 
   // Flush with coordinates allocated but no cells added (should succeed)
@@ -212,7 +212,7 @@ void verify_moab_incremental_allocator_cells()
       test(pointCounter == connectivity[i]);
       pointCounter++;
     }
-    test(allocator->addCell(smtk::mesh::CellType(cellType), &connectivity[0], nVerticesPerCell));
+    test(allocator->addCell(smtk::mesh::CellType(cellType), connectivity.data(), nVerticesPerCell));
   }
 
   test(allocator->flush());

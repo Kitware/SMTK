@@ -54,10 +54,7 @@ public:
   void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
-  ResourceA()
-    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
-  {
-  }
+  ResourceA() = default;
 };
 
 class ResourceB : public smtk::resource::DerivedFrom<ResourceB, ResourceA>
@@ -67,10 +64,7 @@ public:
   smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
 protected:
-  ResourceB()
-    : smtk::resource::DerivedFrom<ResourceB, ResourceA>()
-  {
-  }
+  ResourceB() = default;
 };
 
 class ResourceX : public smtk::resource::DerivedFrom<ResourceX, smtk::resource::Resource>
@@ -93,10 +87,7 @@ public:
   void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
-  ResourceX()
-    : smtk::resource::DerivedFrom<ResourceX, smtk::resource::Resource>()
-  {
-  }
+  ResourceX() = default;
 };
 
 class MyComponent : public smtk::resource::Component

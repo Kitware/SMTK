@@ -1359,9 +1359,9 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   }
   // Now update the bounding box:
   std::vector<double> bbox(6);
-  smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
-  smtkTess->getBoundingBox(&bbox[0]);
-  faceRec.setBoundingBox(&bbox[0]);
+  smtk::model::Tessellation::invalidBoundingBox(bbox.data());
+  smtkTess->getBoundingBox(bbox.data());
+  faceRec.setBoundingBox(bbox.data());
 }
 
 void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr edgeData)
@@ -1386,7 +1386,7 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   for (ptIt = edgeData->pointsBegin(), ii = 0; ii < numUniquePts; ++ptIt, ++ii)
   {
     this->liftPoint(*ptIt, coords.begin());
-    conn.push_back(smtkTess->addCoords(&coords[0]));
+    conn.push_back(smtkTess->addCoords(coords.data()));
   }
   if (isPeriodic)
   {
@@ -1396,9 +1396,9 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
 
   // Now update the bounding box:
   std::vector<double> bbox(6);
-  smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
-  smtkTess->getBoundingBox(&bbox[0]);
-  edgeRec.setBoundingBox(&bbox[0]);
+  smtk::model::Tessellation::invalidBoundingBox(bbox.data());
+  smtkTess->getBoundingBox(bbox.data());
+  edgeRec.setBoundingBox(bbox.data());
 }
 
 void pmodel::addVertTessellation(smtk::model::Vertex& vertRec, internal::vertex::Ptr vertData)

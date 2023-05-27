@@ -303,7 +303,7 @@ Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const in
 bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 {
   size_type conn_length = static_cast<size_type>(cellConn.size());
-  return conn_length > 0 ? this->insertCell(offset, conn_length, &cellConn[0]) : false;
+  return conn_length > 0 ? this->insertCell(offset, conn_length, cellConn.data()) : false;
 }
 
 /**\brief Insert a cell by specifying exactly the values

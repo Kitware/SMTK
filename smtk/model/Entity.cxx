@@ -699,22 +699,22 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0:
-          ptr = !counters.empty() ? &counters[0] : nullptr;
+          ptr = !counters.empty() ? counters.data() : nullptr;
           break;
         case DIMENSION_1:
-          ptr = counters.size() > 1 ? &counters[1] : nullptr;
+          ptr = counters.size() > 1 ? (counters.data() + 1) : nullptr;
           break;
         case DIMENSION_2:
-          ptr = counters.size() > 2 ? &counters[2] : nullptr;
+          ptr = counters.size() > 2 ? (counters.data() + 2) : nullptr;
           break;
         case DIMENSION_3:
-          ptr = counters.size() > 3 ? &counters[3] : nullptr;
+          ptr = counters.size() > 3 ? (counters.data() + 3) : nullptr;
           break;
         case DIMENSION_4:
-          ptr = counters.size() > 4 ? &counters[4] : nullptr;
+          ptr = counters.size() > 4 ? (counters.data() + 4) : nullptr;
           break;
         default:
-          ptr = counters.size() > 5 ? &counters[5] : nullptr;
+          ptr = counters.size() > 5 ? (counters.data() + 5) : nullptr;
           break;
       }
       break;
@@ -722,46 +722,46 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0 | DIMENSION_1:
-          ptr = !counters.empty() ? &counters[0] : nullptr;
+          ptr = !counters.empty() ? counters.data() : nullptr;
           break;
         case DIMENSION_1 | DIMENSION_2:
-          ptr = counters.size() > 1 ? &counters[1] : nullptr;
+          ptr = counters.size() > 1 ? (counters.data() + 1) : nullptr;
           break;
         case DIMENSION_2 | DIMENSION_3:
-          ptr = counters.size() > 2 ? &counters[2] : nullptr;
+          ptr = counters.size() > 2 ? (counters.data() + 2) : nullptr;
           break;
         case DIMENSION_3 | DIMENSION_4:
-          ptr = counters.size() > 3 ? &counters[3] : nullptr;
+          ptr = counters.size() > 3 ? (counters.data() + 3) : nullptr;
           break;
         case 0:
-          ptr = counters.size() > 4 ? &counters[4] : nullptr;
+          ptr = counters.size() > 4 ? (counters.data() + 4) : nullptr;
           break;
         default:
-          ptr = counters.size() > 5 ? &counters[5] : nullptr;
+          ptr = counters.size() > 5 ? (counters.data() + 5) : nullptr;
       }
       break;
     case GROUP_ENTITY:
       if ((((flags & MODEL_BOUNDARY) != 0) ^ ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
-        ptr = !counters.empty() ? &counters[0] : nullptr;
+        ptr = !counters.empty() ? counters.data() : nullptr;
       }
       else if (flags & MODEL_DOMAIN)
       {
-        ptr = counters.size() > 1 ? &counters[1] : nullptr;
+        ptr = counters.size() > 1 ? (counters.data() + 1) : nullptr;
       }
       else // if (flags & MODEL_BOUNDARY)
       {
-        ptr = counters.size() > 2 ? &counters[2] : nullptr;
+        ptr = counters.size() > 2 ? (counters.data() + 2) : nullptr;
       }
       break;
     case MODEL_ENTITY:
-      ptr = !counters.empty() ? &counters[0] : nullptr;
+      ptr = !counters.empty() ? counters.data() : nullptr;
       break;
     case INSTANCE_ENTITY:
     case SESSION:
     case AUX_GEOM_ENTITY:
     default:
-      ptr = !counters.empty() ? &counters[0] : nullptr;
+      ptr = !counters.empty() ? counters.data() : nullptr;
       break;
   }
   if (!ptr)

@@ -46,7 +46,6 @@ void qtCheckableComboItemDelegate::paint(
 
 qtCheckItemComboBox::qtCheckItemComboBox(QWidget* pw, const QString& displayExt)
   : QComboBox(pw)
-  , m_displayItem(nullptr)
   , m_displayTextExt(displayExt)
 {
   this->setStyleSheet("combobox-popup: 0;");

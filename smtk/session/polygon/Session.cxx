@@ -31,7 +31,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/session/polygon/internal/Model.h"
@@ -39,7 +38,6 @@
 
 #include <cstring> // for strcmp
 
-using smtk::model::EntityRef;
 using namespace smtk::common;
 
 namespace smtk

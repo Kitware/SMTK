@@ -98,7 +98,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
   std::vector<std::int64_t> conn(connectivityLength);
   std::vector<float> fpoints(numberOfPoints * 3);
 
-  smtk::mesh::utility::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
+  smtk::mesh::utility::PreAllocatedTessellation ftess(conn.data(), fpoints.data());
 
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);

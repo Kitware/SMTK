@@ -447,10 +447,8 @@ void processDerivedValue(
 }; // namespace
 
 XmlDocV1Parser::XmlDocV1Parser(ResourcePtr myResource, smtk::io::Logger& logger)
-  : m_reportAsError(true)
-  , m_resource(myResource)
+  : m_resource(myResource)
   , m_logger(logger)
-  , m_includeIndex(0)
 {
 }
 

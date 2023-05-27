@@ -90,7 +90,7 @@ bool moab_load(
       return false;
     }
 
-    tag_values_ptr = &tag_values[0];
+    tag_values_ptr = tag_values.data();
     num_tag_values = static_cast<int>(tag_values.size());
   }
 

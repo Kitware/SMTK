@@ -154,22 +154,22 @@ void verify_complex_merge()
   //verify the all the points merged properly
   std::vector<double> p(3);
 
-  newMeshPoint1.points().get(&p[0]);
+  newMeshPoint1.points().get(p.data());
   test(p[0] == 0.0);
   test(p[1] == 2.0);
   test(p[2] == 0.0);
 
-  newMeshPoint2.points().get(&p[0]);
+  newMeshPoint2.points().get(p.data());
   test(p[0] == 1.0);
   test(p[1] == 0.0);
   test(p[2] == 0.0);
 
-  newMeshPoint3.points().get(&p[0]);
+  newMeshPoint3.points().get(p.data());
   test(p[0] == 3.0);
   test(p[1] == 0.0);
   test(p[2] == 0.0);
 
-  newMeshPoint4.points().get(&p[0]);
+  newMeshPoint4.points().get(p.data());
   test(p[0] == 0.0);
   test(p[1] == 2.0);
   test(p[2] == 0.0);

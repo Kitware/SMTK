@@ -29,6 +29,8 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 
+#include <boost/optional.hpp>
+
 #include <fstream>
 
 using namespace smtk::model;
@@ -70,8 +72,7 @@ Export::Result Export::operateInternal()
   {
     auto sourceType = sourceTerm->definition()->type();
     std::string termName;
-    bool hasZeta = false;
-    double zeta;
+    boost::optional<double> zeta;
     double omega = sourceTerm->findDouble("omega")->value();
     if (sourceType == "periodic-source")
     {
@@ -85,7 +86,6 @@ Export::Result Export::operateInternal()
     {
       termName = "damped";
       zeta = sourceTerm->findDouble("zeta")->value();
-      hasZeta = true;
     }
     else
     {
@@ -100,9 +100,9 @@ Export::Result Export::operateInternal()
       auto radius = sourcePoint.floatProperty("radius");
       oscFile << termName << "   " << center[0] << " " << center[1] << " " << center[2] << "   "
               << radius[0] << "   " << omega;
-      if (hasZeta)
+      if (zeta)
       {
-        oscFile << "   " << zeta;
+        oscFile << "   " << *zeta;
       }
       oscFile << "\n";
     }

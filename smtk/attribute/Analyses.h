@@ -97,17 +97,14 @@ public:
   protected:
     Analysis(const std::string& name)
       : m_name(name)
-      , m_parent(nullptr)
-      , m_exclusive(false)
-      , m_required(false)
     {
     }
     ~Analysis() = default;
 
     std::string m_name;                 ///< Name of the Analysis
-    Analysis* m_parent;                 ///< Analysis' Parent
-    bool m_exclusive;                   ///< Indicates if the Analysis' children are exclusive
-    bool m_required;                    ///< Indicates if the Analysis is required
+    Analysis* m_parent{ nullptr };      ///< Analysis' Parent
+    bool m_exclusive{ false };          ///< Indicates if the Analysis' children are exclusive
+    bool m_required{ false };           ///< Indicates if the Analysis is required
     std::string m_label;                ///< Optional label to be used for UIs
     std::set<std::string> m_categories; ///< Categories locally assigned to the analysis
     std::vector<Analysis*> m_children;  ///< Children of the Analysis

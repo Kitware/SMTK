@@ -121,10 +121,11 @@ std::string FileItemDefinition::aggregateFileFilters(const std::string& filtersS
     }
 
     // Collect all of the suffixes using a set to guarantee uniqueness.
+    // NOLINTNEXTLINE(readability-container-data-pointer): wrong `const`ness
     for (auto* i = std::strtok(&suffixes[0], " "); i != nullptr; i = std::strtok(nullptr, " "))
     {
       // If all entries are accepted, there is no need to aggregate.
-      if (std::string(i) == "*.*")
+      if (!strcmp(i, "*.*"))
       {
         return "(*.*)";
       }

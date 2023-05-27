@@ -35,7 +35,6 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/Configuration.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "pqApplicationCore.h"

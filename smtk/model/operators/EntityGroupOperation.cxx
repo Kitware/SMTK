@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/model/operators/EntityGroupOperation.h"
 
-#include "smtk/model/Session.h"
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Group.h"

@@ -60,7 +60,7 @@ PhraseModel::Ptr loadTestData(
     dataArgs.push_back(strdup(testFile.c_str()));
     dataArgs.push_back(nullptr);
     argc = 2;
-    argv = &dataArgs[0];
+    argv = dataArgs.data();
   }
   rsrcMgr = smtk::resource::Manager::create();
   operMgr = smtk::operation::Manager::create();

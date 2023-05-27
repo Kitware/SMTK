@@ -510,10 +510,7 @@ void qtReferenceTree::updateUI()
   }
 
   // Create a container for the item:
-  if (m_widget)
-  {
-    delete m_widget;
-  }
+  delete m_widget;
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   m_widget = new QFrame(m_itemInfo.parentWidget());

@@ -81,9 +81,9 @@ std::pair<double, std::array<double, 3>> DistanceTo::operator()(
 
     // Identify the nearest point and the associated triangle
     // cacheForIndex->m_tree.closest_triangle(
-    //   cacheForIndex->m_treeRootSet, &point[0], &returnValue.second[0], triangleOut);
+    //   cacheForIndex->m_treeRootSet, point.data(), &returnValue.second[0], triangleOut);
     search->second->m_tree.closest_triangle(
-      search->second->m_treeRootSet, &point[0], &returnValue.second[0], triangleOut);
+      search->second->m_treeRootSet, point.data(), returnValue.second.data(), triangleOut);
 
     returnValue.first = 0.;
     for (int i = 0; i < 3; i++)

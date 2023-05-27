@@ -24,7 +24,6 @@ qtInteractionWidget::qtInteractionWidget(
   QWidget* parentWdg)
   : Superclass(parentWdg)
   , WidgetProxy(smproxy.Get())
-  , Interactivity(false)
 {
   Q_ASSERT(smproxy != nullptr);
 

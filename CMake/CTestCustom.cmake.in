@@ -36,6 +36,9 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
 
   # Warnings from sccache that we don't care about.
   "sccache: warning: The server looks like it shut down unexpectedly, compiling locally instead"
+
+  # LTO serial compilation warnings
+  "lto-wrapper: warning: using serial compilation of [0-9]+ LTRANS jobs"
 )
 
 ##------------------------------------------------------------------------------

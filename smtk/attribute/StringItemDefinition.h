@@ -48,10 +48,10 @@ public:
 
 protected:
   StringItemDefinition(const std::string& myName);
-  bool m_multiline;
+  bool m_multiline{ false };
 
 private:
-  bool m_secure;
+  bool m_secure{ false };
 };
 } // namespace attribute
 } // namespace smtk

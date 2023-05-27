@@ -20,9 +20,6 @@ namespace moab
 
 MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface)
   : mbImpl(iface)
-  , mbMergeTag()
-  , deadEnts()
-  , mergedToVertices()
 {
 }
 
@@ -183,10 +180,10 @@ MergeMeshVertices::~MergeMeshVertices()
       return result;
     coords.resize(3 * leaf_range.size());
     merge_tag_val.resize(leaf_range.size());
-    result = mbImpl->get_coords(leaf_range, &coords[0]);
+    result = mbImpl->get_coords(leaf_range, coords.data());
     if (MB_SUCCESS != result)
       return result;
-    result = mbImpl->tag_get_data(merged_to, leaf_range, &merge_tag_val[0]);
+    result = mbImpl->tag_get_data(merged_to, leaf_range, merge_tag_val.data());
     if (MB_SUCCESS != result)
       return result;
     Range::iterator rit;
@@ -264,7 +261,7 @@ MergeMeshVertices::~MergeMeshVertices()
       }
       if (inleaf_merged)
       {
-        result = mbImpl->tag_set_data(merged_to, leaf_range, &merge_tag_val[0]);
+        result = mbImpl->tag_set_data(merged_to, leaf_range, merge_tag_val.data());
         if (MB_SUCCESS != result)
           return result;
       }
@@ -294,7 +291,7 @@ MergeMeshVertices::~MergeMeshVertices()
   if (mbImpl->type_from_handle(*deadEnts.rbegin()) != MBVERTEX)
     return MB_FAILURE;
   std::vector<EntityHandle> merge_tag_val(deadEnts.size());
-  result = mbImpl->tag_get_data(merged_to, deadEnts, &merge_tag_val[0]);
+  result = mbImpl->tag_get_data(merged_to, deadEnts, merge_tag_val.data());
   if (MB_SUCCESS != result)
     return result;
 

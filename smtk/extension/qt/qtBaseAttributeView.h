@@ -126,7 +126,7 @@ protected:
   void checkConfigurations(smtk::attribute::ItemPtr& item);
   QScrollArea* m_ScrollArea;
   bool m_topLevelInitialized;
-  bool m_topLevelCanCreateConfigurations;
+  bool m_topLevelCanCreateConfigurations{ false };
   smtk::attribute::WeakDefinitionPtr m_topLevelConfigurationDef;
   bool m_ignoreCategories;
   std::string m_addressString;

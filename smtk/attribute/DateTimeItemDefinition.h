@@ -71,17 +71,17 @@ protected:
   DateTimeItemDefinition(const std::string& myName);
 
   ::smtk::common::DateTimeZonePair m_defaultValue;
-  bool m_hasDefault;
-  std::size_t m_numberOfRequiredValues;
+  bool m_hasDefault = false;
+  std::size_t m_numberOfRequiredValues = 1;
 
   // Specifies format string to use in item UI.
   std::string m_displayFormat;
 
   // Specifies whether to include TimeZone option in item UI.
-  bool m_useTimeZone;
+  bool m_useTimeZone = false;
 
   // Specifies whether to include calendar popup in item UI.
-  bool m_useCalendarPopup;
+  bool m_useCalendarPopup = false;
 
 private:
 };

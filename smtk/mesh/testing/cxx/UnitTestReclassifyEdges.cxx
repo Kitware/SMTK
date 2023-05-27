@@ -160,12 +160,12 @@ void all_points_are_valid(smtk::mesh::ResourcePtr meshResource)
   //we know that we can't have duplicate points because
   smtk::mesh::PointSet ps = meshResource->points();
   std::vector<double> points(ps.size() * 3);
-  ps.get(&points[0]);
+  ps.get(points.data());
 
   std::set<xyz_view> unique_xyz;
   for (std::size_t i = 0; i < ps.size(); ++i)
   {
-    unique_xyz.insert(xyz_view(&points[0] + i * 3));
+    unique_xyz.insert(xyz_view(points.data() + i * 3));
   }
 
   test((ps.size() == unique_xyz.size()), "sizes should match");

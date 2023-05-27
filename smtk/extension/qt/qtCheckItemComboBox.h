@@ -51,7 +51,7 @@ protected:
   void showEvent(QShowEvent* e) override;
 
 private:
-  QStandardItem* m_displayItem;
+  QStandardItem* m_displayItem{ nullptr };
   QString m_displayTextExt;
 };
 

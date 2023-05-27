@@ -686,9 +686,9 @@ void CreateFaces::addTessellations()
     }
     // Now update the bounding box:
     std::vector<double> bbox(6);
-    smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
-    smtkTess->second.getBoundingBox(&bbox[0]);
-    modelFace.setBoundingBox(&bbox[0]);
+    smtk::model::Tessellation::invalidBoundingBox(bbox.data());
+    smtkTess->second.getBoundingBox(bbox.data());
+    modelFace.setBoundingBox(bbox.data());
   }
 
   if (!emptyFaces.empty())

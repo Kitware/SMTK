@@ -35,8 +35,6 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/operators/Signal.h"
 
-#include "smtk/extension/qt/qtOperationView.h"
-
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -45,7 +43,6 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/Configuration.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "pqApplicationCore.h"

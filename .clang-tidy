@@ -3,7 +3,9 @@ Checks: "-*,\
 boost-*,\
 bugprone-*,\
 -bugprone-branch-clone,\
+-bugprone-easily-swappable-parameters,\
 -bugprone-exception-escape,\
+-bugprone-implicit-widening-of-multiplication-result,\
 -bugprone-inaccurate-erase,\
 -bugprone-incorrect-roundings,\
 -bugprone-integer-division,\
@@ -60,6 +62,8 @@ readability-*,\
 -readability-const-return-type,\
 -readability-convert-member-functions-to-static,\
 -readability-else-after-return,\
+-readability-function-cognitive-complexity,\
+-readability-identifier-length,\
 -readability-implicit-bool-conversion,\
 -readability-inconsistent-declaration-parameter-name,\
 -readability-isolate-declaration,\

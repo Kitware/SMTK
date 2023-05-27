@@ -63,7 +63,7 @@ protected:
 
 private:
   qtDiscreteValueEditorInternals* Internals;
-  bool m_useSelectionManager;
+  bool m_useSelectionManager{ false };
 
 }; // class
 }; // namespace extension

@@ -49,9 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QScopedPointer> // for ivar
 #include <QTextStream>    // for formatDouble
 
-#include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtLineEdit.h"
-
 namespace smtk
 {
 namespace extension

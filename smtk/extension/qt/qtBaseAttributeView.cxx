@@ -58,10 +58,7 @@ public:
     this->deleteWidget(this->AdvLevelEditButton);
     this->deleteWidget(this->AdvLevelLabel);
     this->deleteWidget(this->m_configurationCombo);
-    if (this->TopLevelLayout)
-    {
-      delete this->TopLevelLayout;
-    }
+    delete this->TopLevelLayout;
   }
 
   QPointer<QComboBox> AdvLevelCombo;
@@ -110,7 +107,6 @@ bool qtBaseAttributeView::validateInformation(const smtk::view::Information& inf
 
 qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   : qtBaseView(info)
-  , m_topLevelCanCreateConfigurations(false)
 {
   this->Internals = new qtBaseAttributeViewInternals;
   m_ScrollArea = nullptr;

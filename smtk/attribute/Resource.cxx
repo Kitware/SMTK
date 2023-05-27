@@ -635,7 +635,7 @@ const double* Resource::advanceLevelColor(int level) const
   std::map<int, std::vector<double>>::const_iterator it = m_advLevelColors.find(level);
   if (it != m_advLevelColors.end() && it->second.size() == 4)
   {
-    return &it->second[0];
+    return it->second.data();
   }
   return nullptr;
 }

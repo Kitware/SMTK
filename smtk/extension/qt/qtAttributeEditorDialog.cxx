@@ -38,7 +38,6 @@ qtAttributeEditorDialog::qtAttributeEditorDialog(
   , m_attribute(attribute)
   , m_uiManager(uiManager)
   , m_widget(new Ui::qtAttributeEditorWidget())
-  , m_qtAttribute(nullptr)
 {
   m_widget->setupUi(this);
   this->setObjectName("qtAttributeEditorDialog");

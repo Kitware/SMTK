@@ -33,8 +33,6 @@ namespace moab
 ConnectivityStorage::ConnectivityStorage(
   ::moab::Interface* iface,
   const smtk::mesh::HandleRange& cells)
-  : NumberOfCells(0)
-  , NumberOfVerts(0)
 {
   std::size_t cellCount = 0;
   std::size_t vertCount = 0;

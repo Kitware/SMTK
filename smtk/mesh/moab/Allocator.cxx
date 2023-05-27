@@ -27,7 +27,6 @@ namespace moab
 {
 
 Allocator::Allocator(::moab::Interface* interface)
-  : m_rface(nullptr)
 {
   if (interface)
   {

@@ -76,15 +76,15 @@ public:
 
 protected:
   FileSystemItemDefinition(const std::string& myName);
-  bool m_shouldExist;
-  bool m_shouldBeRelative;
-  bool m_useCommonLabel;
-  bool m_isExtensible;
-  bool m_hasDefault;
+  bool m_shouldExist = false;
+  bool m_shouldBeRelative = false;
+  bool m_useCommonLabel = false;
+  bool m_isExtensible = false;
+  bool m_hasDefault = false;
   std::string m_defaultValue;
   std::vector<std::string> m_valueLabels;
-  std::size_t m_numberOfRequiredValues;
-  std::size_t m_maxNumberOfValues;
+  std::size_t m_numberOfRequiredValues = 1;
+  std::size_t m_maxNumberOfValues = 0;
 
 private:
 };

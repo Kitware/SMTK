@@ -125,6 +125,7 @@ public:
       {
         std::unique_lock<std::mutex> lock(m_observers->m_mutex);
         m_observers->m_keys[*this] = this;
+        // NOLINTNEXTLINE(bugprone-use-after-move): ???
         key.m_observers = nullptr;
       }
     }

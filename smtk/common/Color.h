@@ -35,7 +35,7 @@ public:
     double defaultAlpha = 1.0)
   {
     rgba.resize(4);
-    return Color::stringToFloatRGBA(&rgba[0], colorSpec, defaultAlpha);
+    return Color::stringToFloatRGBA(rgba.data(), colorSpec, defaultAlpha);
   }
   static std::string floatRGBAToString(const double* rgb);
   static std::string floatRGBAToString(const float* rgb);

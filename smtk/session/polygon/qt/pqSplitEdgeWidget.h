@@ -34,9 +34,9 @@ public:
   void doPick(pqRenderView* view);
   void donePicking(pqRenderView* view);
 
-  pqRenderViewSelectionReaction* Selecter;
-  QToolButton* InteractiveSelectButton;
-  bool m_isActive;
+  pqRenderViewSelectionReaction* Selecter{ nullptr };
+  QToolButton* InteractiveSelectButton{ nullptr };
+  bool m_isActive{ false };
 
 Q_SIGNALS:
   //emitted to allow selection to happen

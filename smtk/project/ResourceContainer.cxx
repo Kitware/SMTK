@@ -66,7 +66,6 @@ ResourceContainer::ResourceContainer(
   const std::weak_ptr<smtk::resource::Manager>& manager)
   : m_project(project)
   , m_manager(manager)
-  , m_undefinedRoleCounter(0)
 {
   // NOTE: When modifying this constructor, do not use the project parameter
   // or m_project field! The parent Project is still in construction and is in
@@ -435,8 +434,6 @@ bool ResourceContainer::remove(const smtk::resource::ResourcePtr& resource)
   auto resourceIt = resources.find(resource->id());
   if (resourceIt != resources.end())
   {
-    smtk::resource::Resource::Ptr rsrc = *resourceIt;
-
     // Remove it from the project's set of resources
     m_resources.erase(resourceIt);
     return true;

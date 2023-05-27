@@ -49,10 +49,6 @@ public:
     smtk::extension::qtBaseView* bview,
     Qt::Orientation orient)
     : m_orientation(orient)
-    , m_overrideWhen(OverrideWhen::Unset)
-    , m_geometrySource(GeometrySource::BestGuess)
-    , m_fallbackStrategy(FallbackStrategy::Hide)
-    , m_state(State::Idle)
   {
     (void)itm;
     (void)p;
@@ -66,13 +62,13 @@ public:
   pqInteractivePropertyWidget* m_pvwidget;
   // pqDataRepresentation* m_pvrepr;
   vtkNew<vtkEventQtSlotConnect> m_connector;
-  OverrideWhen m_overrideWhen;
-  GeometrySource m_geometrySource;
-  FallbackStrategy m_fallbackStrategy;
+  OverrideWhen m_overrideWhen{ OverrideWhen::Unset };
+  GeometrySource m_geometrySource{ GeometrySource::BestGuess };
+  FallbackStrategy m_fallbackStrategy{ FallbackStrategy::Hide };
 
   // state of children
   QMap<QWidget*, QPair<QLayout*, QWidget*>> m_children;
 
   smtk::operation::Observers::Key m_opObserver;
-  State m_state;
+  State m_state{ State::Idle };
 };

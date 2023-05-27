@@ -85,7 +85,7 @@ public:
 
   inline static int size() { return S; }
 
-  const unsigned char* value() const { return &m_value[0]; }
+  const unsigned char* value() const { return m_value.data(); }
 
   //custom operators to make comparing tags easy
   inline bool operator<(const OpaqueTag& other) const

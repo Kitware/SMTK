@@ -102,7 +102,7 @@ public:
       return std::vector<T>();
     }
     std::vector<T> values(size() * dimension());
-    if (!get(&values[0]))
+    if (!get(values.data()))
     {
       return std::vector<T>();
     }
@@ -118,7 +118,7 @@ public:
       return std::vector<T>();
     }
     std::vector<T> values(cellIds.size() * dimension());
-    if (!get(cellIds, &values[0]))
+    if (!get(cellIds, values.data()))
     {
       return std::vector<T>();
     }
@@ -133,7 +133,7 @@ public:
     {
       return false;
     }
-    return set(&values[0]);
+    return set(values.data());
   }
 
   //Convenience method for setting field data.
@@ -144,7 +144,7 @@ public:
     {
       return false;
     }
-    return set(cellIds, &values[0]);
+    return set(cellIds, values.data());
   }
 
 private:

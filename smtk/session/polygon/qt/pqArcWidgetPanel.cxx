@@ -50,11 +50,6 @@ namespace Ui
 {
 ArcPicker::ArcPicker(QObject* parent)
   : QAction(parent)
-  , Info(nullptr)
-  , Arc(nullptr)
-  , View(nullptr)
-  , Selecter(nullptr)
-  , m_isActive(false)
 {
   this->setCheckable(true);
 }

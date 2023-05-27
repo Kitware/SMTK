@@ -251,7 +251,7 @@ void qtSimpleExpressionEvaluationView::createFunctionWithExpression()
     QStringList strVals;
     for (vtkIdType i = 0, j = 0; i < result->GetNumberOfTuples(); i++, j += numberOfComponents)
     {
-      result->GetTypedTuple(i, &values[0]);
+      result->GetTypedTuple(i, values.data());
       for (int c = 0; c < numberOfComponents - 1; c++)
       {
         strVals << QString::number(values[c]) << "\t";

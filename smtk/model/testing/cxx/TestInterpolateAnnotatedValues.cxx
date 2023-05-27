@@ -130,7 +130,7 @@ public:
     bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
-    m_pointField.get(pointIds, &values[0]);
+    m_pointField.get(pointIds, values.data());
     for (auto& value : values)
     {
       std::size_t bin = static_cast<std::size_t>((value - m_min) / (m_max - m_min) * m_hist.size());
@@ -390,7 +390,8 @@ int TestInterpolateAnnotatedValues(int argc, char* argv[])
 
     // For testing, assign the interpolated values to the sample grid as a point
     // field
-    sampleGrid[0].createPointField("interpolation", 1, smtk::mesh::FieldType::Double, &values[0]);
+    sampleGrid[0].createPointField(
+      "interpolation", 1, smtk::mesh::FieldType::Double, values.data());
 
     bool debug = false;
     if (debug)

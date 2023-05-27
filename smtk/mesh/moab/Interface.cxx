@@ -101,7 +101,7 @@ computeDenseIntTagValues(U tag, const ::moab::Range& meshsets, ::moab::Interface
   //allocate a vector large enough to hold the tag values for every element
   std::vector<int> tag_values;
   tag_values.resize(entitiesWithTag.size());
-  void* tag_v_ptr = &tag_values[0];
+  void* tag_v_ptr = tag_values.data();
 
   //fetch the tag for each item in the range in bulk
   iface->tag_get_data(tag.moabTag(), entitiesWithTag, tag_v_ptr);
@@ -142,7 +142,7 @@ T computeDenseOpaqueTagValues(U tag, const ::moab::Range& meshsets, ::moab::Inte
 
   std::vector<unsigned char> tag_values;
   tag_values.resize(entitiesWithTag.size() * tag.size());
-  void* tag_v_ptr = &tag_values[0];
+  void* tag_v_ptr = tag_values.data();
 
   // Fetch the tag for each item in the range in bulk
   iface->tag_get_data(tag.moabTag(), entitiesWithTag, tag_v_ptr);
@@ -162,7 +162,7 @@ T computeDenseOpaqueTagValue(U tag, const smtk::mesh::Handle& handle, ::moab::In
 {
   std::vector<unsigned char> tag_values;
   tag_values.resize(tag.size());
-  void* tag_v_ptr = &tag_values[0];
+  void* tag_v_ptr = tag_values.data();
 
   // Fetch the tag for each item in the range in bulk
   ::moab::ErrorCode rval = iface->tag_get_data(tag.moabTag(), &handle, 1, tag_v_ptr);
@@ -182,7 +182,7 @@ bool setDenseTagValues(T tag, const ::moab::Range& handles, ::moab::Interface* i
   //create a vector the same value so we can assign a tag
   std::vector<int> values;
   values.resize(handles.size(), tag.value());
-  const void* tag_v_ptr = &values[0];
+  const void* tag_v_ptr = values.data();
 
   ::moab::ErrorCode rval = iface->tag_set_data(tag.moabTag(), handles, tag_v_ptr);
   return (rval == ::moab::MB_SUCCESS);
@@ -196,7 +196,7 @@ bool setDenseOpaqueTagValues(T tag, const ::moab::Range& handles, ::moab::Interf
   values.resize(handles.size() * tag.size());
   for (std::size_t i = 0; i < handles.size(); ++i)
     memcpy(&values[i * tag.size()], tag.value(), tag.size());
-  const void* tag_v_ptr = &values[0];
+  const void* tag_v_ptr = values.data();
 
   ::moab::ErrorCode rval = iface->tag_set_data(tag.moabTag(), handles, tag_v_ptr);
   return (rval == ::moab::MB_SUCCESS);
@@ -208,8 +208,8 @@ bool setDenseOpaqueTagValue(T tag, const smtk::mesh::Handle& handle, ::moab::Int
   //create a vector the same value so we can assign a tag
   std::vector<unsigned char> values;
   values.resize(tag.size());
-  memcpy(&values[0], tag.value(), tag.size());
-  const void* tag_v_ptr = &values[0];
+  memcpy(values.data(), tag.value(), tag.size());
+  const void* tag_v_ptr = values.data();
 
   ::moab::ErrorCode rval = iface->tag_set_data(tag.moabTag(), &handle, 1, tag_v_ptr);
   return (rval == ::moab::MB_SUCCESS);
@@ -615,11 +615,10 @@ namespace
 class GetCoords : public smtk::mesh::PointForEach
 {
 public:
-  std::size_t xyz_index;
+  std::size_t xyz_index{ 0 };
   float* m_xyz;
   GetCoords(float* xyz)
-    : xyz_index(0)
-    , m_xyz(xyz)
+    : m_xyz(xyz)
   {
   }
 
@@ -670,11 +669,10 @@ namespace
 class SetCoords : public smtk::mesh::PointForEach
 {
 public:
-  std::size_t xyz_index;
+  std::size_t xyz_index{ 0 };
   const float* const m_xyz;
   SetCoords(const float* const xyz)
-    : xyz_index(0)
-    , m_xyz(xyz)
+    : m_xyz(xyz)
   {
   }
 
@@ -978,7 +976,7 @@ smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) c
 
   std::vector<::moab::EntityHandle> neighbors;
   m_iface->get_adjacencies(
-    &adjacencies[0],
+    adjacencies.data(),
     static_cast<int>(adjacencies.size()),
     dimension,
     true,
@@ -2085,14 +2083,14 @@ void Interface::callPointForEach(
   ::moab::Range moabPoints = smtkToMOABRange(points);
 
   //fetch all the coordinates
-  m_iface->get_coords(moabPoints, &coords[0]);
+  m_iface->get_coords(moabPoints, coords.data());
 
   //call the filter for the rest of the points
   bool shouldBeSaved = false;
   filter.forPoints(points, coords, shouldBeSaved);
   if (shouldBeSaved)
   {
-    m_iface->set_coords(moabPoints, &coords[0]);
+    m_iface->set_coords(moabPoints, coords.data());
   }
   return;
 }
@@ -2201,7 +2199,7 @@ void Interface::cellForEach(
         coords.resize(size * 3);
 
         //query to grab the coordinates for these points
-        m_iface->get_coords(points, size, &coords[0]);
+        m_iface->get_coords(points, size, coords.data());
         //call the custom filter
         filter.pointIds(points);
         filter.coordinates(&coords);

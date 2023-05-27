@@ -16,10 +16,6 @@ using namespace smtk::attribute;
 
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
-  , m_hasDefault(false)
-  , m_numberOfRequiredValues(1)
-  , m_useTimeZone(true)
-  , m_useCalendarPopup(true)
 {
 }
 

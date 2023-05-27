@@ -224,7 +224,7 @@ void pqSMTKTransformWidget::resetWidget()
     {
       auto& boundingBoxQuery = smtk::resource::queryForObject<smtk::geometry::BoundingBox>(*object);
       std::array<double, 6> boundingBox = boundingBoxQuery(object);
-      vtkSMPropertyHelper(m_p->m_pvwidget->proxy(), "Bounds").Set(&boundingBox[0], 6);
+      vtkSMPropertyHelper(m_p->m_pvwidget->proxy(), "Bounds").Set(boundingBox.data(), 6);
     }
     catch (smtk::resource::query::BadTypeError&)
     {

@@ -89,10 +89,7 @@ public:
   }
 
 protected:
-  ResourceA()
-    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
-  {
-  }
+  ResourceA() = default;
 
 private:
   std::unordered_set<ComponentA::Ptr> m_components;
@@ -170,10 +167,7 @@ public:
   }
 
 protected:
-  ResourceB()
-    : smtk::resource::DerivedFrom<ResourceB, smtk::resource::Resource>()
-  {
-  }
+  ResourceB() = default;
 
 private:
   std::unordered_set<ComponentB::Ptr> m_components;

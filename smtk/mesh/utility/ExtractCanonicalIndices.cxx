@@ -58,7 +58,7 @@ void CanonicalIndices::extract(
   m_referenceCellIndices.resize(numberOfCells);
   m_canonicalIndices.resize(numberOfCells);
 
-  PreAllocatedCanonicalIndices field(&m_referenceCellIndices[0], &m_canonicalIndices[0]);
+  PreAllocatedCanonicalIndices field(m_referenceCellIndices.data(), m_canonicalIndices.data());
 
   extractCanonicalIndices(ms, referenceMS, field);
 }

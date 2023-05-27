@@ -216,7 +216,7 @@ void PointLocatorImpl::locatePointsWithinRadius(
   const double sqRadius = radius * radius;
   const std::size_t numPoints = points.size();
   std::vector<double> x_locs(numPoints), y_locs(numPoints), z_locs(numPoints);
-  m_interface->get_coords(points, &x_locs[0], &y_locs[0], &z_locs[0]);
+  m_interface->get_coords(points, x_locs.data(), y_locs.data(), z_locs.data());
 
   //now iterate and compute distances. We use a templated version of
   //find_valid_points so that we generate 4 versions of the algorithm that

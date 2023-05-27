@@ -44,7 +44,7 @@ function (smtk_test_apply_sanitizer)
     return ()
   endif ()
 
-  find_library(LIBASAN_LIBRARY NAMES asan libasan.so.6 libasan.so.5)
+  find_library(LIBASAN_LIBRARY NAMES asan libasan.so.8 libasan.so.7 libasan.so.6 libasan.so.5)
   mark_as_advanced(LIBASAN_LIBRARY)
 
   # Bail if we can't find `libasan`.

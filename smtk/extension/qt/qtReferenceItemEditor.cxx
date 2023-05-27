@@ -98,8 +98,6 @@ qtItem* qtReferenceItemEditor::createItemWidget(const qtAttributeItemInfo& info)
 
 qtReferenceItemEditor::qtReferenceItemEditor(const qtAttributeItemInfo& info)
   : qtItem(info)
-  , m_okToCreate(false)
-  , m_useAssociations(false)
 {
   m_internals = new qtReferenceItemEditorInternals;
   // Set up the item view map for the active children

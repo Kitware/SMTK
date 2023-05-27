@@ -122,7 +122,7 @@ public:
   RegionId m_outside;
   smtk::model::Resource::Ptr m_resource;
   smtk::session::polygon::SessionPtr m_session;
-  int m_debugLevel;
+  int m_debugLevel{ 0 };
 };
 
 } // namespace polygon

@@ -270,7 +270,7 @@ static void AddBlockChildrenAsModelChildren(vtkMultiBlockDataSet* data)
   }
   iter->Delete();
   Session::SMTK_CHILDREN()->SetRange(
-    data->GetInformation(), &children[0], 0, 0, static_cast<int>(children.size()));
+    data->GetInformation(), children.data(), 0, 0, static_cast<int>(children.size()));
 }
 
 static void

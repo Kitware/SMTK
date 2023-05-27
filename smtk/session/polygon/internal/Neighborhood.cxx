@@ -37,7 +37,6 @@ Neighborhood::Neighborhood(
   , m_activeEdges(&active)
   , m_resource(sess->resource())
   , m_session(sess)
-  , m_debugLevel(0)
 {
 }
 

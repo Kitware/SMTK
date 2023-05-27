@@ -328,7 +328,7 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
     conn.push_back(conn[0]); // repeat initial point instead of adding a duplicate.
   }
   lines->Reset();
-  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), &conn[0]);
+  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), conn.data());
   polydata->Modified();
 }
 
@@ -410,23 +410,23 @@ void Geometry::updateFace(
       pcit = poly::begin_points(*pit);
       std::array<vtkIdType, 3> triConn;
       ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-      polyModel->liftPoint(ipt, &smtkPt[0]);
-      triConn[0] = points->InsertNextPoint(&smtkPt[0]);
+      polyModel->liftPoint(ipt, smtkPt);
+      triConn[0] = points->InsertNextPoint(smtkPt);
       //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
       ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-      polyModel->liftPoint(ipt, &smtkPt[0]);
-      triConn[2] = points->InsertNextPoint(&smtkPt[0]);
+      polyModel->liftPoint(ipt, smtkPt);
+      triConn[2] = points->InsertNextPoint(smtkPt);
       ++pcit;
       //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
       {
         triConn[1] = triConn[2];
         ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-        polyModel->liftPoint(ipt, &smtkPt[0]);
-        triConn[2] = points->InsertNextPoint(&smtkPt[0]);
+        polyModel->liftPoint(ipt, smtkPt);
+        triConn[2] = points->InsertNextPoint(smtkPt);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
-        polys->InsertNextCell(3, &triConn[0]);
+        polys->InsertNextCell(3, triConn.data());
       }
       //std::cout << "\n";
       //faceRec.setColor(1., 1., 1., 1.);

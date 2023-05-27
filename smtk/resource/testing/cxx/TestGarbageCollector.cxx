@@ -107,10 +107,7 @@ public:
   std::size_t size() const { return m_components.size(); }
 
 protected:
-  ResourceA()
-    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
-  {
-  }
+  ResourceA() = default;
 
 private:
   std::unordered_set<ComponentA::Ptr> m_components;

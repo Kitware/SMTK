@@ -36,8 +36,6 @@
 
 #include "smtk/io/Logger.h"
 
-#include <map>
-
 #include <algorithm>
 #include <map>
 #include <set>

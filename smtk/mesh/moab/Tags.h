@@ -49,8 +49,6 @@ public:
 #endif
   QueryNameTag(::moab::Interface* iface)
     : m_iface(iface)
-    , m_tag()
-    , m_tagData()
   {
     //populate our tag
     m_iface->tag_get_handle(

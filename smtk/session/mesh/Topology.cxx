@@ -35,8 +35,6 @@ public:
   AddFreeElements(Topology* topology, Topology::Element* root)
     : m_topology(topology)
     , m_root(root)
-    , m_shells(nullptr)
-    , m_dimension(-1)
   {
   }
 
@@ -118,8 +116,8 @@ public:
 protected:
   Topology* m_topology;
   Topology::Element* m_root;
-  ElementShells* m_shells;
-  int m_dimension;
+  ElementShells* m_shells{ nullptr };
+  int m_dimension{ -1 };
 };
 
 struct AddBoundElements

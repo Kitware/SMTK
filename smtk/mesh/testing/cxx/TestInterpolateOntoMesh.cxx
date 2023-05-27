@@ -140,7 +140,7 @@ public:
     bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
-    m_pointField.get(pointIds, &values[0]);
+    m_pointField.get(pointIds, values.data());
     for (auto& value : values)
     {
       std::size_t bin = static_cast<std::size_t>((value - m_min) / (m_max - m_min) * m_hist.size());

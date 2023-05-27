@@ -66,10 +66,7 @@ void pqArcWidgetManager::reset()
     delete this->ArcWidget;
   }
   this->ArcWidget = nullptr;
-  if (this->EditWidget)
-  {
-    delete this->EditWidget;
-  }
+  delete this->EditWidget;
   this->EditWidget = nullptr;
   this->View = nullptr;
 }
@@ -82,8 +79,7 @@ void pqArcWidgetManager::setActiveArc(pqPolygonArc* arc)
 {
   if (this->Arc != arc)
   {
-    if (this->Arc)
-      delete this->Arc;
+    delete this->Arc;
     this->Arc = arc;
   }
 }
@@ -336,7 +332,7 @@ pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
       points.push_back(pointPos[2]);
     }
     vtkSMPropertyHelper(widgetProxy, "NodePositions")
-      .Set(&points[0], static_cast<unsigned int>(points.size()));
+      .Set(points.data(), static_cast<unsigned int>(points.size()));
   }
   else
   {

@@ -169,13 +169,12 @@ class WriteCellsPerRegion
 {
   smtk::mesh::PointSet m_PointSet;
   std::ostream& m_Stream;
-  int m_CellId;
+  int m_CellId{ 1 }; //2dm/3dm requires id values to start at 1
 
 public:
   WriteCellsPerRegion(const smtk::mesh::PointSet& ps, std::ostream& stream)
     : m_PointSet(ps)
     , m_Stream(stream)
-    , m_CellId(1) //2dm/3dm requires id values to start at 1
   {
   }
 
@@ -212,7 +211,7 @@ public:
     std::int64_t connectivityLen = cells.pointConnectivity().size();
     std::vector<std::int64_t> conn(connectivityLen);
 
-    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0]);
+    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(conn.data());
     connectivityInfo.disableVTKStyleConnectivity(true);
     smtk::mesh::utility::extractTessellation(cells, m_PointSet, connectivityInfo);
 
@@ -245,7 +244,7 @@ public:
     std::vector<std::int64_t> conn(connectivityLen);
     std::vector<double> points(pointLen);
 
-    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
+    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(conn.data(), points.data());
     connectivityInfo.disableVTKStyleConnectivity(true);
     smtk::mesh::utility::extractTessellation(cells, m_PointSet, connectivityInfo);
 
@@ -432,7 +431,7 @@ bool write_dm(
   //the points
 
   std::vector<double> xyz(numPoints * 3);
-  pointSet.get(&xyz[0]); //fill our buffer
+  pointSet.get(xyz.data()); //fill our buffer
 
   for (std::size_t i = 0; i < numPoints; ++i)
   {
@@ -722,7 +721,7 @@ bool readCells(
       }
 
       // add the cell
-      bcAllocator->addCell(type, &connectivity[0]);
+      bcAllocator->addCell(type, connectivity.data());
     }
   }
 

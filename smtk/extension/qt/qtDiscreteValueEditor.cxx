@@ -68,7 +68,6 @@ qtDiscreteValueEditor::qtDiscreteValueEditor(
   int elementIdx,
   QLayout* parentLayout)
   : QWidget(item->widget())
-  , m_useSelectionManager(false)
 {
   this->Internals = new qtDiscreteValueEditorInternals(item, elementIdx, parentLayout);
   if (item != nullptr)

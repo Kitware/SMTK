@@ -181,7 +181,6 @@ Configuration::Configuration(const std::string& myType, const std::string& myNam
   : m_name(myName)
   , m_type(myType)
   , m_details("Details")
-  , m_includeIndex(0)
 {
 }
 

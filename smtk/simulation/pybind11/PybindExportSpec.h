@@ -44,6 +44,7 @@ inline py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_
       std::stringstream ss;
       ss << std::hex << specAddressString;
       ss >> memAddress;
+      // NOLINTNEXTLINE(performance-no-int-to-ptr)
       return reinterpret_cast<smtk::simulation::ExportSpec*>(memAddress);
       })
 

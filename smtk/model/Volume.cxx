@@ -14,7 +14,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Tessellation.h"
-#include "smtk/model/Volume.h"
 
 namespace smtk
 {
