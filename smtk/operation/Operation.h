@@ -10,11 +10,13 @@
 #ifndef smtk_operation_Operation_h
 #define smtk_operation_Operation_h
 
-#include "smtk/CoreExports.h"
+#include "smtk/resource/Lock.h"
+
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
 #include <functional>
+#include <map>
 #include <string>
 #include <typeindex>
 #include <utility>
@@ -37,6 +39,12 @@ class Manager;
 class Operation;
 
 using Handler = std::function<void(Operation&, const std::shared_ptr<smtk::attribute::Attribute>&)>;
+
+/// Hold a set of resources to be locked for an operation along with the type of lock to acquire.
+using ResourceAccessMap = std::map<
+  std::weak_ptr<smtk::resource::Resource>,
+  smtk::resource::LockType,
+  std::owner_less<std::weak_ptr<smtk::resource::Resource>>>;
 
 /// Operation is a base class for all SMTK operations. SMTK operations are
 /// essentially functors that operate on SMTK resources and resource components.
@@ -191,7 +199,13 @@ public:
 protected:
   Operation();
 
-  // Perform the actual operation and construct the result.
+  /// Identify resources to lock, and whether to lock them for reading or writing.
+  ///
+  /// The default implementation simply calls extractResourceAndLockTypes()
+  /// on the operation's parameters.
+  virtual ResourceAccessMap identifyLocksRequired();
+
+  /// Perform the actual operation and construct the result.
   virtual Result operateInternal() = 0;
 
   // Apply post-processing to the result object. This method should not modify

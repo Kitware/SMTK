@@ -123,10 +123,15 @@ bool Operation::ableToOperate()
   return this->parameters()->isValid();
 }
 
+ResourceAccessMap Operation::identifyLocksRequired()
+{
+  return extractResourcesAndLockTypes(this->parameters());
+}
+
 Operation::Result Operation::operate()
 {
   // Gather all requested resources and their lock types.
-  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->parameters());
+  auto resourcesAndLockTypes = this->identifyLocksRequired();
 
   // Mutex to prevent multiple Operations from locking resources at the same
   // time (which could result in deadlock).
