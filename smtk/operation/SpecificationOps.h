@@ -34,11 +34,6 @@ namespace operation
 /// an API around Specification, giving it functions that are unique to its role
 /// as an operation specification.
 
-typedef std::map<
-  std::weak_ptr<smtk::resource::Resource>,
-  smtk::resource::LockType,
-  std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
-  ResourceAccessMap;
 typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefinitionVector;
 
 /// Return a new set of parameters for an operation.
