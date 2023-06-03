@@ -80,3 +80,59 @@ Example
      "to": 2,   /* must be a FillOutAttributes or Group task */
      "to-tag": "foo" /* if "to" is a Group, "foo" is a key for resource+role data. */
    }
+
+
+ConfigureOperation
+------------------
+
+The :smtk:`ConfigureOperation <smtk::task::adaptor::ConfigureOperation>`
+adaptor is used to automatically configure an SMTK operation assigned
+to a ``smtk::task::SubmitOperation`` task.
+When the ``from`` task is in the ``Completable`` or ``Completed`` state,
+this adaptor will copy values from attribute sets referenced in the
+source task ( ``smtk::task::FillOutAttributes`` ) to operation parameters
+in the destination task.
+
+The JSON object to configure a ``ConfigureOperation`` adaptor adds a
+``configure`` element to those defined for the base Adaptor class.
+The ``configure`` element is a JSON array with each child element a
+JSON object.
+
+* The ``configure`` array must include a ``from-role`` element to
+  specify the attribute resource (matching the ``role`` in the
+  ``smtk::task::FillOutAttributes`` task).
+* Additional key-value pairs specify the values to copy from
+  the attribute resource to the operation parameter instance.
+
+  * Each key specifies one item in the attribute resource, using the
+    SMTK grammar syntax for search criteria.
+    These keys always start with the ``attribute[]`` syntax.
+  * Each value specifies the corresponding item in the operation
+    parameters. Because the parameter attribute is known to the
+    operation, the ``attribute[]`` syntax is omitted from this
+    part of the specification.
+
+
+Example
+""""""""
+
+.. code:: json
+
+    {
+      "id": 1,
+      "type": "smtk::task::adaptor::ConfigureOperation",
+      "from": 1,  /* must be a FillOutAttributes task */
+      "to": 2,    /* must be a SubmitOperation or Group task */
+      "configure":
+        [
+          {
+            "from-role": "simulation attributes",
+            "attribute[type='BoxWidget']/box": "/bounds"
+            "attribute[type='BlockMeshSize']/MeshSize": "/meshsize",
+            "attribute[type='BlockMeshBoundaryConditions']/FrontBackSides": "/bc/frontback"
+          },
+          {
+            ...
+          }
+        ]
+    }
