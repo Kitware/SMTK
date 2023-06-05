@@ -13,6 +13,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
 #include "smtk/operation/Registrar.h"
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
@@ -38,17 +39,17 @@ namespace
 std::string attTemplate = R"(
   <SMTK_AttributeResource Version="6">
     <Definitions>
-      <AttDef Type="spec-2d">
+      <AttDef Type="source-att">
         <ItemDefinitions>
-          <Double Name="origin" NumberOfRequiredValues="2">
-            <DefaultValue>1.1,2.2</DefaultValue>
+          <Double Name="item1">
+            <DefaultValue>1.1</DefaultValue>
           </Double>
         </ItemDefinitions>
       </AttDef>
     </Definitions>
 
     <Attributes>
-      <Att Type="spec-2d" Name="spec-2d" />
+      <Att Type="source-att" Name="source-att" />
     </Attributes>
   </SMTK_AttributeResource>
 )";
@@ -65,7 +66,7 @@ std::string tasksConfig = R"(
       {
         "configure": [
           {
-            "attribute[type='spec-2d']/origin": "/dimension/origin2d",
+            "attribute[type='source-att']/item1": "/parameter1",
             "from-role": "attributes"
           }
         ],
@@ -99,7 +100,7 @@ std::string tasksConfig = R"(
         "attribute-sets": [
           {
             "definitions": [
-              "spec-2d"
+              "source-att"
             ],
             "role": "attributes"
           }
@@ -110,18 +111,54 @@ std::string tasksConfig = R"(
       },
       {
         "id": 3,
-        "operation": "smtk::session::mesh::CreateUniformGrid",
+        "operation": "SimpleOperation",
         "parameters": [],
         "run-style": "smtk::task::SubmitOperation::RunStyle::Once",
         "style": [
           "operation_view"
         ],
-        "title": "Create Grid",
+        "title": "Simple Operation",
         "type": "smtk::task::SubmitOperation"
       }
     ]
   }
 )";
+
+std::string simpleOpSpec = R"(
+  <SMTK_AttributeResource Version="6">
+    <Definitions>
+      <AttDef Type="simple" BaseType="operation">
+        <ItemDefinitions>
+          <Double Name="parameter1"/>
+        </ItemDefinitions>
+      </AttDef>
+    </Definitions>
+  </SMTK_AttributeResource>
+)";
+
+class SimpleOperation : public smtk::operation::Operation
+{
+public:
+  smtkTypeMacro(SimpleOperation);
+  smtkCreateMacro(SimpleOperation);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+
+  SimpleOperation() = default;
+  ~SimpleOperation() override = default;
+
+  smtk::operation::Operation::Specification createSpecification() override
+  {
+    auto spec = this->createBaseSpecification();
+    smtk::io::AttributeReader reader;
+    bool err = reader.readContents(spec, simpleOpSpec, this->log());
+    smtkTest(!err, "Error creating SimpleOperation spec.");
+    return spec;
+  }
+
+  Result operateInternal() override { return this->createResult(m_outcome); }
+
+  Outcome m_outcome{ Outcome::SUCCEEDED };
+};
 
 } // anonymous namespace
 
@@ -142,21 +179,24 @@ int TestConfigureOperation(int, char*[])
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager);
   auto attributeOperationRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(operationManager);
-  // auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
   auto taskTaskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(taskManager);
+
+  // Register the test operation
+  bool registered = operationManager->registerOperation<SimpleOperation>("SimpleOperation");
+  smtkTest(registered, "failed to register SimpleOperation");
 
   // Create attribute resource
   auto attResource = resourceManager->create<smtk::attribute::Resource>();
   smtk::io::AttributeReader attReader;
-  auto logger = smtk::io::Logger::instance();
+  auto& logger = smtk::io::Logger::instance();
   bool err = attReader.readContents(attResource, attTemplate, logger);
   smtkTest(!err, "failed to read attribute template");
 
   smtkTest(attResource->hasAttributes(), "expected att resource to have attributes");
   // Verify that attribute was created
-  auto specAtt = attResource->findAttribute("spec-2d");
-  smtkTest(specAtt != nullptr, "spec-2d attribute not found");
-  smtkTest(specAtt->isValid(), "spec-2d attribute not valid");
+  auto specAtt = attResource->findAttribute("source-att");
+  smtkTest(specAtt != nullptr, "source-att attribute not found");
+  smtkTest(specAtt->isValid(), "source-att attribute not valid");
 
   resourceManager->add(attResource);
   attResource->setName("attributes");
@@ -189,7 +229,7 @@ int TestConfigureOperation(int, char*[])
   // Organize tasks into std::vector
   std::vector<std::string> taskNames = { "Assign Attribute Resource",
                                          "Edit Attributes",
-                                         "Create Grid" };
+                                         "Simple Operation" };
   std::size_t numTasks = taskNames.size();
   std::vector<smtk::task::Task::Ptr> tasks(numTasks);
   bool hasErrors;
@@ -228,5 +268,13 @@ int TestConfigureOperation(int, char*[])
               << std::endl;
   }
 
+  if (logger.numberOfRecords() > 0)
+  {
+    std::cout << "\nLog:\n" << logger.convertToString(true) << std::endl;
+  }
+  else
+  {
+    std::cout << "\n(Log is empty)\n" << std::endl;
+  }
   return 0;
 }
