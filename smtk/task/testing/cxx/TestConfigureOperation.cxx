@@ -46,6 +46,10 @@ std::string attTemplate = R"(
         </ItemDefinitions>
       </AttDef>
     </Definitions>
+
+    <Attributes>
+      <Att Type="spec-2d" Name="spec-2d" />
+    </Attributes>
   </SMTK_AttributeResource>
 )";
 
@@ -53,15 +57,21 @@ std::string tasksConfig = R"(
   {
     "adaptors": [
       {
+        "from": 1,
+        "id": 1,
+        "to": 2,
+        "type": "smtk::task::adaptor::ResourceAndRole"
+      },
+      {
         "configure": [
           {
             "attribute[type='spec-2d']/origin": "/dimension/origin2d",
             "from-role": "attributes"
           }
         ],
-        "from": 1,
-        "id": 1,
-        "to": 2,
+        "from": 2,
+        "id": 2,
+        "to": 3,
         "type": "smtk::task::adaptor::ConfigureOperation"
       }
     ],
@@ -74,6 +84,18 @@ std::string tasksConfig = R"(
     },
     "tasks": [
       {
+        "auto-configure": true,
+        "id": 1,
+        "resources": [
+          {
+            "role": "attributes",
+            "type": "smtk::attribute::Resource"
+          }
+        ],
+        "title": "Assign Attribute Resource",
+        "type": "smtk::task::GatherResources"
+      },
+      {
         "attribute-sets": [
           {
             "definitions": [
@@ -82,12 +104,12 @@ std::string tasksConfig = R"(
             "role": "attributes"
           }
         ],
-        "id": 1,
+        "id": 2,
         "title": "Edit Attributes",
         "type": "smtk::task::FillOutAttributes"
       },
       {
-        "id": 2,
+        "id": 3,
         "operation": "smtk::session::mesh::CreateUniformGrid",
         "parameters": [],
         "run-style": "smtk::task::SubmitOperation::RunStyle::Once",
@@ -130,6 +152,12 @@ int TestConfigureOperation(int, char*[])
   bool err = attReader.readContents(attResource, attTemplate, logger);
   smtkTest(!err, "failed to read attribute template");
 
+  smtkTest(attResource->hasAttributes(), "expected att resource to have attributes");
+  // Verify that attribute was created
+  auto specAtt = attResource->findAttribute("spec-2d");
+  smtkTest(specAtt != nullptr, "spec-2d attribute not found");
+  smtkTest(specAtt->isValid(), "spec-2d attribute not valid");
+
   resourceManager->add(attResource);
   attResource->setName("attributes");
   attResource->properties().get<std::string>()["project_role"] = "attributes";
@@ -151,21 +179,24 @@ int TestConfigureOperation(int, char*[])
   }
   smtkTest(ok, "Failed to parse configuration.");
   smtkTest(
-    taskManager->taskInstances().size() == 2,
-    "Expected to deserialize 2 tasks, not " << taskManager->taskInstances().size());
+    taskManager->taskInstances().size() == 3,
+    "Expected to deserialize 3 tasks, not " << taskManager->taskInstances().size());
 
   smtkTest(
-    taskManager->adaptorInstances().size() == 1,
-    "Expected to deserialize 1 adaptor, not " << taskManager->adaptorInstances().size());
+    taskManager->adaptorInstances().size() == 2,
+    "Expected to deserialize 2 adaptors, not " << taskManager->adaptorInstances().size());
 
   // Organize tasks into std::vector
-  std::vector<smtk::task::Task::Ptr> tasks(2);
-  std::vector<std::string> taskNames = { "Edit Attributes", "Create Grid" };
+  std::vector<std::string> taskNames = { "Assign Attribute Resource",
+                                         "Edit Attributes",
+                                         "Create Grid" };
+  std::size_t numTasks = taskNames.size();
+  std::vector<smtk::task::Task::Ptr> tasks(numTasks);
   bool hasErrors;
   taskManager->taskInstances().visit(
     [&tasks, &taskNames, &hasErrors](const smtk::task::Task::Ptr& task) {
       bool found = false;
-      for (unsigned int i = 0; (i < 4) || (!found); i++)
+      for (unsigned int i = 0; (i < taskNames.size()) || (!found); i++)
       {
         if (task->title() == taskNames[i])
         {
@@ -180,6 +211,22 @@ int TestConfigureOperation(int, char*[])
       }
       return smtk::common::Visit::Continue;
     });
+
+  // For now, dump out task states
+  for (auto task : tasks)
+  {
+    std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
+              << std::endl;
+  }
+
+  // Set GatherResources task to complete state
+  tasks[0]->markCompleted(true);
+
+  for (auto task : tasks)
+  {
+    std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
+              << std::endl;
+  }
 
   return 0;
 }

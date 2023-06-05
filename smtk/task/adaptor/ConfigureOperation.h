@@ -13,6 +13,12 @@
 
 #include "smtk/task/Adaptor.h"
 
+#include "smtk/task/FillOutAttributes.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
 namespace smtk
 {
 namespace task
@@ -28,6 +34,14 @@ public:
   smtkSuperclassMacro(smtk::task::Adaptor);
   smtkCreateMacro(smtk::task::Adaptor);
 
+  struct ParameterSet
+  {
+    /// Role assigned to input attribute resource
+    std::string m_fromRole;
+    /// Map of <input item path, parameter item path>
+    std::map<std::string, std::string> m_pathMap;
+  };
+
   /// Construct an unconfigured adaptor.
   ConfigureOperation();
   ConfigureOperation(const Configuration& config);
@@ -41,6 +55,10 @@ public:
 
 protected:
   void configureSelf(const Configuration& config);
+
+  void updateOperation(const smtk::task::FillOutAttributes::AttributeSet&, const ParameterSet&);
+
+  std::vector<ParameterSet> m_parameterSets;
 };
 } // namespace adaptor
 } // namespace task
