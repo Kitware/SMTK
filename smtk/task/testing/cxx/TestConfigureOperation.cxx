@@ -7,6 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/common/Managers.h"
@@ -21,6 +23,7 @@
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
+#include "smtk/task/SubmitOperation.h"
 #include "smtk/task/Task.h"
 
 #include "smtk/task/json/Helper.h"
@@ -31,6 +34,7 @@
 
 #include "nlohmann/json.hpp"
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -47,13 +51,13 @@ std::string attTemplate = R"(
         </ItemDefinitions>
       </AttDef>
     </Definitions>
-
     <Attributes>
       <Att Type="source-att" Name="source-att" />
     </Attributes>
   </SMTK_AttributeResource>
 )";
 
+// Note that the FillOutAttributes task has "instances" in lieu of "definitions"
 std::string tasksConfig = R"(
   {
     "adaptors": [
@@ -99,7 +103,7 @@ std::string tasksConfig = R"(
       {
         "attribute-sets": [
           {
-            "definitions": [
+            "instances": [
               "source-att"
             ],
             "role": "attributes"
@@ -113,7 +117,7 @@ std::string tasksConfig = R"(
         "id": 3,
         "operation": "SimpleOperation",
         "parameters": [],
-        "run-style": "smtk::task::SubmitOperation::RunStyle::Once",
+        "run-style": "smtk::task::SubmitOperation::RunStyle::OnCompletion",
         "style": [
           "operation_view"
         ],
@@ -164,6 +168,9 @@ public:
 
 int TestConfigureOperation(int, char*[])
 {
+  std::cout << std::boolalpha;
+  auto& logger = smtk::io::Logger::instance();
+
   // Create managers
   auto managers = smtk::common::Managers::create();
   auto attributeRegistry = smtk::plugin::addToManagers<smtk::attribute::Registrar>(managers);
@@ -188,7 +195,6 @@ int TestConfigureOperation(int, char*[])
   // Create attribute resource
   auto attResource = resourceManager->create<smtk::attribute::Resource>();
   smtk::io::AttributeReader attReader;
-  auto& logger = smtk::io::Logger::instance();
   bool err = attReader.readContents(attResource, attTemplate, logger);
   smtkTest(!err, "failed to read attribute template");
 
@@ -252,8 +258,13 @@ int TestConfigureOperation(int, char*[])
       return smtk::common::Visit::Continue;
     });
 
+  auto submitTask = std::dynamic_pointer_cast<smtk::task::SubmitOperation>(tasks.back());
+  smtkTest(submitTask != nullptr, "failed to get SubmitOperation task");
+  std::cout << __FILE__ << ":" << __LINE__ << " " << submitTask->operation()->ableToOperate()
+            << std::endl;
+
   // For now, dump out task states
-  for (auto task : tasks)
+  for (const auto& task : tasks)
   {
     std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
               << std::endl;
@@ -261,8 +272,15 @@ int TestConfigureOperation(int, char*[])
 
   // Set GatherResources task to complete state
   tasks[0]->markCompleted(true);
+  std::cout << __FILE__ << ":" << __LINE__ << " " << submitTask->operation()->ableToOperate()
+            << std::endl;
 
-  for (auto task : tasks)
+  // Verify that SubmitOperation task is now completable
+  smtkTest(submitTask->operation()->ableToOperate(), "operation not able to operate");
+  smtkTest(
+    submitTask->state() == smtk::task::State::Completable, "SubmitOperation task not completable");
+
+  for (const auto& task : tasks)
   {
     std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
               << std::endl;
