@@ -13,10 +13,15 @@
 
 #include "smtk/task/Adaptor.h"
 
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 #include "smtk/task/FillOutAttributes.h"
+#include "smtk/task/Task.h"
 
 #include <map>
+#include <set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace smtk
@@ -42,24 +47,44 @@ public:
     std::map<std::string, std::string> m_pathMap;
   };
 
-  /// Construct an unconfigured adaptor.
+  /// Constructors
   ConfigureOperation();
   ConfigureOperation(const Configuration& config);
   ConfigureOperation(const Configuration& config, Task* from, Task* to);
 
-  /// Reconfigure the "to()" task. (required override)
-  ///
-  /// This method is called when the "from()" task changes into a
-  /// completable state.
-  bool reconfigureTask() override;
+  bool reconfigureTask() override; // required override
 
 protected:
   void configureSelf(const Configuration& config);
 
-  void updateOperation(const smtk::task::FillOutAttributes::AttributeSet&, const ParameterSet&);
+  /// Builds m_attributeSet and m_itemTable
+  bool buildInternalData(const Configuration& config);
+  bool updateInternalData(
+    const smtk::task::FillOutAttributes::AttributeSet&,
+    const ParameterSet&,
+    smtk::operation::Operation*);
 
-  std::vector<ParameterSet> m_parameterSets;
+  /// Creates signal observer
+  bool setupAttributeObserver(const Configuration& config);
+
+  /// Copy items from FillOut task to SubmitOp task
+  void updateOperation() const;
+  void updateOperation(const smtk::task::FillOutAttributes::AttributeSet&, const ParameterSet&)
+    const;
+
+  std::vector<ParameterSet> m_parameterSets; // configuration data
+
+  smtk::task::Task::Observers::Key m_taskObserver;     // for detecting state changes
+  smtk::operation::Observers::Key m_attributeObserver; // for detecting attribute changes
+
+  std::set<smtk::common::UUID> m_attributeSet; // attributes (uuids) being observed
+
+  // Table listing <source attribute, source item path, operation parameter (item) path>
+  std::vector<std::tuple<smtk::attribute::WeakAttributePtr, std::string, std::string>> m_itemTable;
+
+  bool m_applyChanges = false; // if true, copy changes from FillOut to SubmitOp task
 };
+
 } // namespace adaptor
 } // namespace task
 } // namespace smtk
