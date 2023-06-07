@@ -58,14 +58,14 @@ protected:
   void configureSelf(const Configuration& config);
 
   /// Builds m_attributeSet and m_itemTable
-  bool buildInternalData(const Configuration& config);
+  bool buildInternalData();
   bool updateInternalData(
     const smtk::task::FillOutAttributes::AttributeSet&,
     const ParameterSet&,
     smtk::operation::Operation*);
 
   /// Creates signal observer
-  bool setupAttributeObserver(const Configuration& config);
+  bool setupAttributeObserver();
 
   /// Copies items from FillOut task to SubmitOp task
   bool updateOperation() const;

@@ -58,19 +58,20 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
 
   if (from->state() == smtk::task::State::Completable)
   {
-    this->buildInternalData(config);
-    this->setupAttributeObserver(config);
+    this->buildInternalData();
+    this->setupAttributeObserver();
     m_applyChanges = true;
     this->updateOperation();
   }
 
   // Add observer for "from" task state changes
   m_taskObserver = from->observers().insert([this, config](Task&, State prev, State next) {
+    (void)prev;
     bool isCompletable = (next == State::Completable);
     if (isCompletable && m_attributeSet.empty())
     {
-      this->buildInternalData(config);
-      this->setupAttributeObserver(config);
+      this->buildInternalData();
+      this->setupAttributeObserver();
       m_applyChanges = true;
       this->updateOperation();
     }
@@ -138,7 +139,7 @@ void ConfigureOperation::configureSelf(const Configuration& config)
   } // for (configIter)
 }
 
-bool ConfigureOperation::buildInternalData(const Configuration& config)
+bool ConfigureOperation::buildInternalData()
 {
   defaultLogger.clearErrors();
   m_attributeSet.clear();
@@ -269,7 +270,7 @@ bool ConfigureOperation::updateInternalData(
   return ok;
 }
 
-bool ConfigureOperation::setupAttributeObserver(const Configuration& config)
+bool ConfigureOperation::setupAttributeObserver()
 {
   // Get operation manager from managers
   auto managers = this->from()->manager()->managers();
@@ -341,9 +342,8 @@ bool ConfigureOperation::updateOperation() const
       smtkWarningMacro(defaultLogger, "fromAtt is null");
       continue;
     }
-
-    std::string fromItemPath = std::get<1>(t);
-    std::string paramItemPath = std::get<2>(t);
+    const std::string& fromItemPath = std::get<1>(t);
+    const std::string& paramItemPath = std::get<2>(t);
 
     auto fromItem = fromAtt->itemAtPath(fromItemPath);
     if (fromItem == nullptr)

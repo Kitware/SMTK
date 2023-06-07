@@ -86,22 +86,25 @@ ConfigureOperation
 ------------------
 
 The :smtk:`ConfigureOperation <smtk::task::adaptor::ConfigureOperation>`
-adaptor is used to automatically configure an SMTK operation assigned
-to a ``smtk::task::SubmitOperation`` task.
-When the ``from`` task is in the ``Completable`` or ``Completed`` state,
+adaptor is used to automatically configure parts of an SMTK operation
+assigned to a ``smtk::task::SubmitOperation`` task.
+When the ``from`` task transitions to the ``Completable`` state,
 this adaptor will copy values from attribute sets referenced in the
 source task ( ``smtk::task::FillOutAttributes`` ) to operation parameters
-in the destination task.
+in the destination task. And if the source task is active and in the
+``Completable`` state, changes made to those attribute sets using the
+smtk view system will also be forwarded.
 
 The JSON object to configure a ``ConfigureOperation`` adaptor adds a
 ``configure`` element to those defined for the base Adaptor class.
 The ``configure`` element is a JSON array with each child element a
 JSON object.
 
-* The ``configure`` array must include a ``from-role`` element to
+* Each element in the ``configure`` array must include a ``from-role``
+  element to
   specify the attribute resource (matching the ``role`` in the
   ``smtk::task::FillOutAttributes`` task).
-* Additional key-value pairs specify the values to copy from
+* Additional key-value pairs specify the items to copy from
   the attribute resource to the operation parameter instance.
 
   * Each key specifies one item in the attribute resource, using the
