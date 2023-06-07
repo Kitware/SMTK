@@ -67,22 +67,24 @@ protected:
   /// Creates signal observer
   bool setupAttributeObserver(const Configuration& config);
 
-  /// Copy items from FillOut task to SubmitOp task
-  void updateOperation() const;
-  void updateOperation(const smtk::task::FillOutAttributes::AttributeSet&, const ParameterSet&)
-    const;
+  /// Copies items from FillOut task to SubmitOp task
+  bool updateOperation() const;
 
-  std::vector<ParameterSet> m_parameterSets; // configuration data
+  /// Stores configuration data
+  std::vector<ParameterSet> m_parameterSets;
 
-  smtk::task::Task::Observers::Key m_taskObserver;     // for detecting state changes
-  smtk::operation::Observers::Key m_attributeObserver; // for detecting attribute changes
+  /// Observers for task state changes and attribute changes
+  smtk::task::Task::Observers::Key m_taskObserver;
+  smtk::operation::Observers::Key m_attributeObserver;
 
-  std::set<smtk::common::UUID> m_attributeSet; // attributes (uuids) being observed
+  /// Stores attributes (uuids) that are to be checked for changes
+  std::set<smtk::common::UUID> m_attributeSet;
 
-  // Table listing <source attribute, source item path, operation parameter (item) path>
+  /// Table listing <source attribute, source item path, operation parameter (item) path>
   std::vector<std::tuple<smtk::attribute::WeakAttributePtr, std::string, std::string>> m_itemTable;
 
-  bool m_applyChanges = false; // if true, copy changes from FillOut to SubmitOp task
+  /// Indicates when FillOut task is completable, which is when we apply changes
+  bool m_applyChanges = false;
 };
 
 } // namespace adaptor

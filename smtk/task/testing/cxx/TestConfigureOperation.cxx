@@ -11,6 +11,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/operators/Signal.h"
 #include "smtk/common/Managers.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -20,6 +21,7 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/Active.h"
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
@@ -34,6 +36,7 @@
 
 #include "nlohmann/json.hpp"
 
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -50,9 +53,17 @@ std::string attTemplate = R"(
           </Double>
         </ItemDefinitions>
       </AttDef>
+      <AttDef Type="unused-att">
+        <ItemDefinitions>
+          <Double Name="item1">
+            <DefaultValue>-999.999</DefaultValue>
+          </Double>
+        </ItemDefinitions>
+      </AttDef>
     </Definitions>
     <Attributes>
       <Att Type="source-att" Name="source-att" />
+      <Att Type="unused-att" Name="unused-att" />
     </Attributes>
   </SMTK_AttributeResource>
 )";
@@ -164,6 +175,37 @@ public:
   Outcome m_outcome{ Outcome::SUCCEEDED };
 };
 
+void checkTaskStates(
+  const std::vector<smtk::task::Task::Ptr>& tasks,
+  const std::vector<smtk::task::State>& expected)
+{
+  for (std::size_t i = 0; i < tasks.size(); ++i)
+  {
+    const smtk::task::Task::Ptr task = tasks[i];
+    smtkTest(
+      task->state() == expected[i],
+      "Task " << task->title() << " expected state " << expected[i] << " actual state "
+              << task->state());
+  }
+}
+
+void printTaskStates(
+  const std::vector<smtk::task::Task::Ptr>& tasks,
+  const std::string& note = std::string())
+{
+  if (!note.empty())
+  {
+    std::cout << note << '\n';
+  }
+
+  for (const auto& task : tasks)
+  {
+    std::cout << task->title() << " -- " << task->state() << '\n';
+  }
+
+  std::cout << std::flush;
+}
+
 } // anonymous namespace
 
 int TestConfigureOperation(int, char*[])
@@ -208,7 +250,13 @@ int TestConfigureOperation(int, char*[])
   resourceManager->add(attResource);
   attResource->setName("attributes");
   attResource->properties().get<std::string>()["project_role"] = "attributes";
-  // auto attribUUIDStr = attrib->id().toString();
+
+  // Add a second attribute resource to to make sure it isn't used
+  auto unusedAttResource = resourceManager->create<smtk::attribute::Resource>();
+  attReader.readContents(unusedAttResource, attTemplate, logger);
+  resourceManager->add(unusedAttResource);
+  unusedAttResource->setName("attributes");
+  unusedAttResource->properties().get<std::string>()["project_role"] = "unused";
 
   // Populate taskManager
   auto config = nlohmann::json::parse(tasksConfig);
@@ -261,32 +309,50 @@ int TestConfigureOperation(int, char*[])
 
   auto submitTask = std::dynamic_pointer_cast<smtk::task::SubmitOperation>(tasks.back());
   smtkTest(submitTask != nullptr, "failed to get SubmitOperation task");
-  std::cout << __FILE__ << ":" << __LINE__ << " " << submitTask->operation()->ableToOperate()
-            << std::endl;
 
-  // For now, dump out task states
-  for (const auto& task : tasks)
-  {
-    std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
-              << std::endl;
-  }
+  // Check initial task states
+  printTaskStates(tasks, "\n*** Initial states:");
+  std::vector<smtk::task::State> initialExpected = { smtk::task::State::Completable,
+                                                     smtk::task::State::Unavailable,
+                                                     smtk::task::State::Incomplete };
+  checkTaskStates(tasks, initialExpected);
 
   // Set GatherResources task to complete state
   tasks[0]->markCompleted(true);
-  std::cout << __FILE__ << ":" << __LINE__ << " " << submitTask->operation()->ableToOperate()
-            << std::endl;
 
-  // Verify that SubmitOperation task is now completable
-  // smtkTest(submitTask->operation()->ableToOperate(), "operation not able to operate");
-  // smtkTest(
-  //   submitTask->state() == smtk::task::State::Completable, "SubmitOperation task not completable");
+  printTaskStates(tasks, "\n*** After GatherResources:");
+  std::vector<smtk::task::State> gatherExpected = { smtk::task::State::Completed,
+                                                    smtk::task::State::Completable,
+                                                    smtk::task::State::Completable };
+  checkTaskStates(tasks, gatherExpected);
 
-  // for (const auto& task : tasks)
-  // {
-  //   std::cout << __FILE__ << ":" << __LINE__ << " " << task->title() << " -- " << task->state()
-  //             << std::endl;
-  // }
+  // Check SubmitOperation content
+  smtkTest(submitTask->operation()->ableToOperate(), "operation not able to operate");
+  {
+    double expected = 1.1;
+    double value = submitTask->operation()->parameters()->findDouble("parameter1")->value();
+    double diff = std::fabs(value - expected);
+    smtkTest(diff < 0.001, "expected parameter value to be " << expected << " not " << value);
+  }
 
+  // Make FillOut task active, change the source item, emit Signal
+  taskManager->active().switchTo(tasks[1].get());
+  auto specItem = specAtt->findDouble("item1");
+  specItem->setValue(3.14159);
+  auto signal = operationManager->create<smtk::attribute::Signal>();
+  signal->parameters()->findComponent("modified")->appendValue(specAtt);
+  auto result = signal->operate();
+
+  // Task states should be the same but parameter changed
+  checkTaskStates(tasks, gatherExpected);
+  {
+    double expected = 3.14159;
+    double value = submitTask->operation()->parameters()->findDouble("parameter1")->value();
+    double diff = std::fabs(value - expected);
+    smtkTest(diff < 0.001, "expected parameter value to be " << expected << " not " << value);
+  }
+
+  // Print any log messages
   if (logger.numberOfRecords() > 0)
   {
     std::cout << "\nLog:\n" << logger.convertToString(true) << std::endl;
