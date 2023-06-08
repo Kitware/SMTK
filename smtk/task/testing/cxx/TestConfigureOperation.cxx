@@ -21,7 +21,7 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
-#include "smtk/task/Active.h"
+#include "smtk/task/GatherResources.h"
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
@@ -68,7 +68,6 @@ std::string attTemplate = R"(
   </SMTK_AttributeResource>
 )";
 
-// Note that the FillOutAttributes task has "instances" in lieu of "definitions"
 std::string tasksConfig = R"(
   {
     "adaptors": [
@@ -100,12 +99,13 @@ std::string tasksConfig = R"(
     },
     "tasks": [
       {
-        "auto-configure": true,
+        "auto-configure": false,
         "id": 1,
         "resources": [
           {
             "role": "attributes",
-            "type": "smtk::attribute::Resource"
+            "type": "smtk::attribute::Resource",
+            "max": 1
           }
         ],
         "title": "Assign Attribute Resource",
@@ -114,7 +114,7 @@ std::string tasksConfig = R"(
       {
         "attribute-sets": [
           {
-            "instances": [
+            "definitions": [
               "source-att"
             ],
             "role": "attributes"
@@ -251,12 +251,11 @@ int TestConfigureOperation(int, char*[])
   attResource->setName("attributes");
   attResource->properties().get<std::string>()["project_role"] = "attributes";
 
-  // Add a second attribute resource to to make sure it isn't used
+  // Add a second attribute resource with same role to make sure it isn't used
   auto unusedAttResource = resourceManager->create<smtk::attribute::Resource>();
-  attReader.readContents(unusedAttResource, attTemplate, logger);
   resourceManager->add(unusedAttResource);
   unusedAttResource->setName("attributes");
-  unusedAttResource->properties().get<std::string>()["project_role"] = "unused";
+  unusedAttResource->properties().get<std::string>()["project_role"] = "attributes";
 
   // Populate taskManager
   auto config = nlohmann::json::parse(tasksConfig);
@@ -307,26 +306,29 @@ int TestConfigureOperation(int, char*[])
       return smtk::common::Visit::Continue;
     });
 
-  auto submitTask = std::dynamic_pointer_cast<smtk::task::SubmitOperation>(tasks.back());
-  smtkTest(submitTask != nullptr, "failed to get SubmitOperation task");
+  // Set attribute resource for GatherResources
+  auto gatherTask = std::dynamic_pointer_cast<smtk::task::GatherResources>(tasks.front());
+  smtkTest(gatherTask != nullptr, "failed to get GatherResources task");
 
   // Check initial task states
   printTaskStates(tasks, "\n*** Initial states:");
-  std::vector<smtk::task::State> initialExpected = { smtk::task::State::Completable,
+  std::vector<smtk::task::State> initialExpected = { smtk::task::State::Incomplete,
                                                      smtk::task::State::Unavailable,
                                                      smtk::task::State::Incomplete };
   checkTaskStates(tasks, initialExpected);
 
-  // Set GatherResources task to complete state
-  tasks[0]->markCompleted(true);
+  // Set the GatherResources' attribute resource
+  gatherTask->addResourceInRole(attResource, "attributes");
 
   printTaskStates(tasks, "\n*** After GatherResources:");
-  std::vector<smtk::task::State> gatherExpected = { smtk::task::State::Completed,
+  std::vector<smtk::task::State> gatherExpected = { smtk::task::State::Completable,
                                                     smtk::task::State::Completable,
                                                     smtk::task::State::Completable };
   checkTaskStates(tasks, gatherExpected);
 
   // Check SubmitOperation content
+  auto submitTask = std::dynamic_pointer_cast<smtk::task::SubmitOperation>(tasks.back());
+  smtkTest(submitTask != nullptr, "failed to get SubmitOperation task");
   smtkTest(submitTask->operation()->ableToOperate(), "operation not able to operate");
   {
     double expected = 1.1;
@@ -335,15 +337,14 @@ int TestConfigureOperation(int, char*[])
     smtkTest(diff < 0.001, "expected parameter value to be " << expected << " not " << value);
   }
 
-  // Make FillOut task active, change the source item, emit Signal
-  taskManager->active().switchTo(tasks[1].get());
+  // Change the source item's value and emit Signal
   auto specItem = specAtt->findDouble("item1");
   specItem->setValue(3.14159);
   auto signal = operationManager->create<smtk::attribute::Signal>();
   signal->parameters()->findComponent("modified")->appendValue(specAtt);
   auto result = signal->operate();
 
-  // Task states should be the same but parameter changed
+  // Task states should be the same but parameter value changed
   checkTaskStates(tasks, gatherExpected);
   {
     double expected = 3.14159;

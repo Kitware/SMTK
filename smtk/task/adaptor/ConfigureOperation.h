@@ -59,10 +59,7 @@ protected:
 
   /// Builds m_attributeSet and m_itemTable
   bool buildInternalData();
-  bool updateInternalData(
-    const smtk::task::FillOutAttributes::AttributeSet&,
-    const ParameterSet&,
-    smtk::operation::Operation*);
+  bool updateInternalData(const smtk::task::FillOutAttributes::AttributeSet&, const ParameterSet&);
 
   /// Creates signal observer
   bool setupAttributeObserver();

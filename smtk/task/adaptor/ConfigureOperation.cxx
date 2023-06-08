@@ -21,7 +21,6 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Manager.h"
-#include "smtk/task/Active.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/SubmitOperation.h"
 
@@ -113,7 +112,7 @@ void ConfigureOperation::configureSelf(const Configuration& config)
     ParameterSet paramSet;
 
     // Traverse all items in the object
-    for (auto& el : it->items())
+    for (const auto& el : it->items())
     {
       const std::string& key = el.key();
       const std::string value = el.value().get<std::string>();
@@ -179,12 +178,12 @@ bool ConfigureOperation::buildInternalData()
     // Find matching attribute set (gotta use visitor pattern, of course)
     bool foundMatch = false;
     fromTask->visitAttributeSets(
-      [this, &foundMatch, &paramSet, operation](
+      [this, &foundMatch, &paramSet](
         const smtk::task::FillOutAttributes::AttributeSet& attSet) -> smtk::common::Visit {
         if (attSet.m_role == paramSet.m_fromRole)
         {
           foundMatch = true;
-          this->updateInternalData(attSet, paramSet, operation);
+          this->updateInternalData(attSet, paramSet);
           return smtk::common::Visit::Halt;
         }
         return smtk::common::Visit::Continue;
@@ -205,66 +204,74 @@ bool ConfigureOperation::buildInternalData()
 
 bool ConfigureOperation::updateInternalData(
   const smtk::task::FillOutAttributes::AttributeSet& attSet,
-  const ParameterSet& paramSet,
-  smtk::operation::Operation* operation)
+  const ParameterSet& paramSet)
 {
-  // Find  the attribute resource (there might be an easier way to do this?)
+  // Get the resource manager
+  auto resManager = this->from()->manager()->managers()->get<smtk::resource::Manager::Ptr>();
+
+  // Process each attribute resource in the attribute set
   smtk::attribute::ResourcePtr attResource;
-  auto resManager = operation->resourceManager();
-  std::string role = paramSet.m_fromRole;
-  resManager->visit(
-    [&resManager, &role, &attResource](
-      smtk::resource::Resource& resource) -> smtk::common::Processing {
-      if (resource.isOfType<smtk::attribute::Resource>())
-      {
-        if (resource.properties().get<std::string>()["project_role"] == role)
-        {
-          attResource = resManager->get<smtk::attribute::Resource>(resource.id());
-          return smtk::common::Processing::STOP;
-        }
-      }
-      return smtk::common::Processing::CONTINUE;
-    });
-
-  if (attResource == nullptr)
+  std::set<smtk::attribute::AttributePtr> atts;
+  for (const auto& el : attSet.m_resources)
   {
-    smtkErrorMacro(
-      defaultLogger, "attribute resource with role \"" << paramSet.m_fromRole << "\"not found.");
-    return false;
-  }
-
-  // Process paramSet to get source attribute
-  for (const auto& it : paramSet.m_pathMap)
-  {
-    const std::string attQuery = it.first;
-    const std::string paramPath = it.second;
-
-    // Split the qttQuery into attribute[] and itemPath (is there an easier way?)
-    std::size_t n = attQuery.find(']');
-    if (n == std::string::npos)
+    smtk::common::UUID resUUID = el.first;
+    auto attResource = resManager->get<smtk::attribute::Resource>(resUUID);
+    if (attResource == nullptr)
     {
-      smtkErrorMacro(
-        defaultLogger,
-        "ConfigureOperation unexpected from spec \""
-          << "\"; expected attribute[type='something'].");
       continue;
     }
-    std::string attributePart = attQuery.substr(0, n + 1);
-    std::string itemPart = attQuery.substr(n + 2);
+    std::string role = attResource->properties().at<std::string>("project_role");
 
-    // Find the attribute & item in the FillOutAttribute tasks and assign to parameter
-    auto queryOp = attResource->queryOperation(attributePart);
-    for (const auto& attName : attSet.m_instances)
+    // Populate atts
+    atts.clear();
+    smtk::task::FillOutAttributes::ResourceAttributes resAtts = el.second;
+    std::set<smtk::common::UUID> attUuids(resAtts.m_valid);
+    attUuids.insert(resAtts.m_invalid.begin(), resAtts.m_invalid.end());
+    for (const auto& attUuid : attUuids)
     {
-      auto fromAtt = attResource->findAttribute(attName);
-      if (fromAtt != nullptr && queryOp(*fromAtt))
+      auto att = attResource->findAttribute(attUuid);
+      if (att != nullptr)
       {
-        m_attributeSet.insert(fromAtt->id());
-        m_itemTable.emplace_back(fromAtt, itemPart, paramPath);
-        break;
+        atts.insert(att);
       }
-    } // for (attName)
-  }   // for (it)
+    }
+
+    // Process paramSet
+    for (const auto& it : paramSet.m_pathMap)
+    {
+      const std::string& attQuery = it.first;
+      const std::string& paramPath = it.second;
+
+      // Split the attQuery into attribute[] and itemPath (is there an easier way?)
+      std::size_t n = attQuery.find(']');
+      if (n == std::string::npos)
+      {
+        smtkErrorMacro(
+          defaultLogger,
+          "ConfigureOperation unexpected from spec \""
+            << "\"; expected attribute[type='something'].");
+        continue;
+      }
+      std::string attributePart = attQuery.substr(0, n + 1);
+      std::string itemPart = attQuery.substr(n + 1);
+      if (itemPart[0] == '/')
+      {
+        itemPart = itemPart.substr(1);
+      }
+
+      // Find the attribute & item in the FillOutAttribute tasks and assign to parameter
+      auto queryOp = attResource->queryOperation(attributePart);
+      for (const auto& fromAtt : atts)
+      {
+        if (queryOp(*fromAtt))
+        {
+          m_attributeSet.insert(fromAtt->id());
+          m_itemTable.emplace_back(fromAtt, itemPart, paramPath);
+          break;
+        }
+      } // for (fromAtt)
+    }   // for (paramSet.m_pathMap)
+  }     // for (el)
 
   bool ok = !defaultLogger.hasErrors();
   return ok;
@@ -303,9 +310,8 @@ bool ConfigureOperation::setupAttributeObserver()
         return 0;
       }
 
-      //  See if the "from" task is active
-      const auto& active = fromTask->manager()->active();
-      if (active.task() != fromTask)
+      // Check if "to" task is not completed
+      if (this->to()->state() == smtk::task::State::Completed)
       {
         return 0;
       }
