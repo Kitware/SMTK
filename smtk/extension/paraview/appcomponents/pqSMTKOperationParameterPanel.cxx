@@ -73,6 +73,8 @@
 
 using json = nlohmann::json;
 
+// #include <iostream>
+
 pqSMTKOperationParameterPanel::pqSMTKOperationParameterPanel(QWidget* parent)
   : Superclass(parent)
 {
@@ -636,6 +638,8 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
           {
             return;
           }
+
+          nlohmann::json panelStyle;
           auto styles = submitOpTask->style();
           for (const auto& style : styles)
           {
@@ -650,6 +654,7 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             {
               continue;
             }
+            panelStyle = section;
             // At this point, we know we are going to display this operation to the user
             // Observe the task so when it transitions state we can react (e.g., by
             // removing the operation tab when the task is completed.)
@@ -668,15 +673,24 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             //       value (one of "anew"/"override"/"modified").
             if (submitOpTask->state() != smtk::task::State::Completed)
             {
-              // Has TabData already been created?
+              // Find or create TabData instance
               auto* op = submitOpTask->operation();
               TabData* tabData = this->tabDataForOperation(*op);
               if (tabData == nullptr)
               {
                 tabData = this->createTabData(op);
               }
-              auto view = tabData->m_uiMgr->findOrCreateOperationView();
-              qDebug() << __FILE__ << __LINE__ << (view == nullptr);
+
+              // Get the view configuration
+              smtk::view::ConfigurationPtr view = tabData->m_uiMgr->findOrCreateOperationView();
+
+              // Process any style:hide-items in the task's style
+              if (panelStyle.contains("hide-items"))
+              {
+                this->configureHiddenItems(view, panelStyle.at("hide-items"));
+                qDebug() << __FILE__ << __LINE__ << "hide-items!";
+              }
+
               this->editExistingOperationParameters(
                 submitOpTask->operation()->shared_from_this(),
                 /* associate selection? */
@@ -780,6 +794,47 @@ pqSMTKOperationParameterPanel::TabData* pqSMTKOperationParameterPanel::createTab
   opTab->m_tab->setLayout(new QVBoxLayout);
 
   return opTab;
+}
+
+void pqSMTKOperationParameterPanel::configureHiddenItems(
+  smtk::view::ConfigurationPtr view,
+  const nlohmann::json& jItemArray) const
+{
+  // std::cout << "*** BEFORE\n" << *view << std::endl;
+  int attsIndex = view->details().findChild("InstancedAttributes");
+  if (attsIndex < 0)
+  {
+    qWarning("View \"%s\" has no InstancedAttributes defined.", view->name().c_str());
+    return;
+  }
+
+  // Current convention and style logic uses 1 attribute - let's get it
+  smtk::view::Configuration::Component& comp = view->details().child(attsIndex);
+  std::size_t i, n = comp.numberOfChildren();
+  for (i = 0; i < n; i++)
+  {
+    smtk::view::Configuration::Component& attComp = comp.child(i);
+    if (attComp.name() != "Att")
+    {
+      continue;
+    }
+
+    // Check for ItemViews section
+    int ivIndex = attComp.findChild("ItemViews");
+    auto& itemViewsComp = (ivIndex >= 0) ? attComp.child(ivIndex) : attComp.addChild("ItemViews");
+    for (auto it : jItemArray)
+    {
+      std::string itemPath = it.get<std::string>();
+      qDebug() << __FILE__ << __LINE__ << itemPath.c_str();
+      auto& ivComp = itemViewsComp.addChild("View");
+      ivComp.setAttribute("Path", itemPath);
+      ivComp.setAttribute("Type", "null");
+    }
+
+    break; // because operations only have 1 attribute, we can quit here
+  }        // for (i)
+
+  // std::cout << "*** AFTER\n" << *view << std::endl;
 }
 
 void pqSMTKOperationParameterPanel::activeTaskStateChange(

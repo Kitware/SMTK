@@ -149,6 +149,10 @@ protected:
   /// Create tab-view metadata for the given operation.
   TabData* createTabData(smtk::operation::Operation* op);
 
+  /// Modify view to hide items specified in task's style
+  void configureHiddenItems(smtk::view::ConfigurationPtr view, const nlohmann::json& jItemArray)
+    const;
+
   /// Called when the panel is displaying a SubmitOperation task and the task changes state.
   void activeTaskStateChange(
     smtk::task::Task& task,
