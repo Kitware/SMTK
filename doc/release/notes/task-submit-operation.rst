@@ -13,3 +13,13 @@ The operation parameter-editor panel responds to this new
 task by displaying the operation parameters corresponding
 to the task.
 See `smtk-pv-parameter-editor-panel`_ for more information.
+
+
+An adaptor for configuring SubmitOperation tasks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is a new :smtk:``smtk::task::adaptor::ConfigureOperation``
+class for situations where parts of an SMTK operation
+managed by a :smtk:``smtk::task::SubmitOperation`` are
+configured by an upstream :smtk:``smtk::task::FillOutAttributes``
+task.

@@ -9,6 +9,7 @@ set(tasks
 )
 
 set(adaptors
+  ConfigureOperation
   ResourceAndRole
 )
 

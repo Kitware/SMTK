@@ -162,6 +162,7 @@ Task::PassedDependencies Helper::unswizzleDependencies(const json& ids) const
     {
       smtkWarningMacro(
         smtk::io::Logger::instance(), "No task or null task for ID " << taskId << ". Skipping.");
+      continue;
     }
     deps.insert(ptr->shared_from_this());
   }

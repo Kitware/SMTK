@@ -17,10 +17,12 @@
 #include "smtk/task/Group.h"
 #include "smtk/task/SubmitOperation.h"
 #include "smtk/task/Task.h"
+#include "smtk/task/adaptor/ConfigureOperation.h"
 #include "smtk/task/adaptor/ResourceAndRole.h"
 #include "smtk/task/json/Configurator.h"
 #include "smtk/task/json/Configurator.txx"
 #include "smtk/task/json/jsonAdaptor.h"
+#include "smtk/task/json/jsonConfigureOperation.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
 #include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/jsonGroup.h"
@@ -44,8 +46,8 @@ using TaskJSON = std::tuple<
   json::jsonGatherResources,
   json::jsonGroup,
   json::jsonSubmitOperation>;
-using AdaptorList = std::tuple<adaptor::ResourceAndRole>;
-using AdaptorJSON = std::tuple<json::jsonResourceAndRole>;
+using AdaptorList = std::tuple<adaptor::ConfigureOperation, adaptor::ResourceAndRole>;
+using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceAndRole>;
 
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
