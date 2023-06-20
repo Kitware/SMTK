@@ -29,6 +29,7 @@ set(operationHeaders
   MarkGeometry.h
   Group.h
   GroupObserver.h
+  Hints.h
   Manager.h
   Metadata.h
   MetadataContainer.h
