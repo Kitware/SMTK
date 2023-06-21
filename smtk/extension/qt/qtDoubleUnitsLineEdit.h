@@ -16,14 +16,21 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include <QString>
+#include <QStringList>
+
 #include "units/System.h"
 #include "units/Unit.h"
+
+#include <vector>
+
+class QCompleter;
 
 namespace smtk
 {
 namespace extension
 {
-/**\brief qtDoubleUnitsLineEdit provides units-aware field for editing double values */
+/**\brief qtDoubleUnitsLineEdit provides units-aware line edit double values */
 class SMTKQTEXT_EXPORT qtDoubleUnitsLineEdit : public QLineEdit
 {
   Q_OBJECT
@@ -41,11 +48,15 @@ Q_SIGNALS:
 public Q_SLOTS:
 
 protected Q_SLOTS:
+  void onTextChanged(const QString& text);
 
 protected:
   smtk::attribute::ConstDoubleItemDefinitionPtr m_def;
   std::shared_ptr<units::System> m_unitsSystem;
   units::Unit m_unit;
+  std::vector<units::Unit> m_compatibleUnits;
+
+  QCompleter* m_completer = nullptr;
 };
 
 } // namespace extension
