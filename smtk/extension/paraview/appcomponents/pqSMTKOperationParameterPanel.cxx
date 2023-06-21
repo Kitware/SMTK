@@ -234,7 +234,7 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     }
   }
 
-  if (opTab == nullptr)
+  if (!opTab)
   {
     opTab = this->createTabData(operation.get());
   }
@@ -259,7 +259,7 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     }
   }
 
-  if (view == nullptr)
+  if (!view)
   {
     view = opTab->m_uiMgr->findOrCreateOperationView();
   }

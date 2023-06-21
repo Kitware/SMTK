@@ -106,22 +106,21 @@ launch operations via that panel.
 Otherwise, your application is responsible for listening for the ``runOperation()`` signal
 and launching the provided operation.
 
+Task system support
+^^^^^^^^^^^^^^^^^^^^
+
 The :smtk:`pqSMTKOperationParameterPanel` supports projects with task-based workflows; when a new
 task becomes active, if it is a :smtk:`SubmitOperation <smtk::task::SubmitOperation>` task, and
-any of its style tags contain an ``operation-panel`` section: the panel will be raised; a tab for
-the task's operation will be created; that tab will gain focus and show a view of the operation's
-parameters.
+any of its style tags contain an ``operation-panel`` section, the panel will update its behavior
+based on the following keys:
 
-The panel does not yet but will eventually look for the following keys in the ``operation-panel``
-section to determine its behavior:
+* ``hide-items``: an array of strings specifying paths to operation parameters to be hidden.
+  This key is typically used to hide parameters that are configured by a
+  ConfigureOperation adaptor.
 
-* ``display``: true or false depending on whether the panel should display the task's operation.
-  The default is true, which means that just the existence of an ``operation-panel`` section
-  can determine whether the panel responds to a SubmitOperation task; if the section exists
-  even though it may be empty, then the default ``display`` style is assumed. If the section
-  does not exist, then the panel will ignore the task.
+Future keys in the ``operation-panel`` section include:
 
-* ``view``: one of the following enumerants specifying where the operation's view configuration
+* (future) ``view``: one of the following enumerants specifying where the operation's view configuration
   should come from:
 
   * ``anew``: the task should create a new view configuration ab initio (i.e., ignoring any

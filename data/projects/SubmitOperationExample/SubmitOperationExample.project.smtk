@@ -2,7 +2,7 @@
   "conceptual_version": "",
   "id": "7221191a-fc10-4d22-8bd7-e8909e4a4948",
   "links": null,
-  "location": "/home/local/KHQ/john.tourtellott/projects/cmb-master/git/smtk/data/projects/SubmitOperationExample/SubmitOperationExample.project.smtk",
+  "location": "smtk/data/projects/SubmitOperationExample/SubmitOperationExample.project.smtk",
   "operations": {
     "types": []
   },
@@ -32,7 +32,6 @@
     "styles": {
       "operation_view": {
         "operation-panel": {
-          "focus-task-operation": true,
           "hide-items": [ "/dimension/size2d" ]
         }
       }
