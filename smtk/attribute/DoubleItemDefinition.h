@@ -31,6 +31,17 @@ public:
 
   ~DoubleItemDefinition() override;
   Item::Type type() const override;
+
+  using ValueItemDefinitionTemplate<double>::setDefaultValue;
+  bool setDefaultValue(const std::vector<double>& vals) override;
+  bool setDefaultValue(const double& val, const std::string& units);
+  bool setDefaultValue(const std::vector<double>& vals, const std::string& units);
+
+  bool setDefaultValueAsString(const std::string& val);
+  bool setDefaultValueAsString(const std::vector<std::string>& vals);
+  const std::string defaultValueAsString(std::size_t element = 0) const;
+  const std::vector<std::string> defaultValuesAsStrings() const;
+
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
     const override;
@@ -38,8 +49,13 @@ public:
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
+  bool setUnits(const std::string& newUnits) override;
+
 protected:
   DoubleItemDefinition(const std::string& myName);
+  bool reevaluateDefaults();
+
+  std::vector<std::string> m_defaultValuesAsStrings;
 
 private:
 };

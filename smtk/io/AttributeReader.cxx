@@ -16,6 +16,7 @@
 #include "smtk/io/XmlDocV4Parser.h"
 #include "smtk/io/XmlDocV5Parser.h"
 #include "smtk/io/XmlDocV6Parser.h"
+#include "smtk/io/XmlDocV7Parser.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -119,6 +120,11 @@ void AttributeReaderInternals::print(smtk::attribute::ResourcePtr resource)
 // Returns the attribute resource root node in a pugi doc
 pugi::xml_node AttributeReaderInternals::getRootNode(pugi::xml_document& doc)
 {
+  if (XmlDocV7Parser::canParse(doc))
+  {
+    return XmlDocV7Parser::getRootNode(doc);
+  }
+
   if (XmlDocV6Parser::canParse(doc))
   {
     return XmlDocV6Parser::getRootNode(doc);
@@ -280,7 +286,14 @@ void AttributeReaderInternals::parseXml(
   }
 
   // Lets see if any of the parsers can process the node
-  if (XmlDocV6Parser::canParse(root))
+  if (XmlDocV7Parser::canParse(root))
+  {
+    XmlDocV7Parser theReader(resource, logger);
+    theReader.setIncludeFileIndex(m_currentFileIndex);
+    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
+    theReader.process(root, m_globalItemBlocks);
+  }
+  else if (XmlDocV6Parser::canParse(root))
   {
     XmlDocV6Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);

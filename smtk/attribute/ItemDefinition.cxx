@@ -97,6 +97,9 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 
   def->setDetailedDescription(m_detailedDescription);
   def->setBriefDescription(m_briefDescription);
+  // Technically the units system being used by the ItemDefition should be
+  // the same as the Attribute Resource the Item Definition is part of
+  // we should not need to copy over the source's units system.
 }
 
 const Tag* ItemDefinition::tag(const std::string& name) const
@@ -151,4 +154,9 @@ bool ItemDefinition::removeTag(const std::string& name)
     return true;
   }
   return false;
+}
+
+void ItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  m_unitsSystem = unitsSystem;
 }

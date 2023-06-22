@@ -505,6 +505,16 @@ std::size_t ReferenceItemDefinition::testConditionals(PersistentObjectPtr& objec
   }
   return s_invalidIndex;
 }
+
+void ReferenceItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  m_unitsSystem = unitsSystem;
+
+  for (const auto& item : m_itemDefs)
+  {
+    item.second->setUnitsSystem(m_unitsSystem);
+  }
+}
 } // namespace attribute
 } // namespace smtk
 #endif

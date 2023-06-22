@@ -82,6 +82,34 @@ std::string getValueForXMLElement(const T& v, std::string& sep)
 }
 
 template<typename ItemDefType>
+void processDerivedValueDefaults(pugi::xml_node& node, ItemDefType idef)
+{
+  if (idef->hasDefault())
+  {
+    xml_node defnode = node.append_child("DefaultValue");
+    std::string sep; // TODO: The writer could accept a user-provided separator.
+    defnode.text().set(getValueForXMLElement(idef->defaultValues(), sep).c_str());
+    if (!sep.empty() && sep != ",")
+      defnode.append_attribute("Sep").set_value(sep.c_str());
+  }
+}
+
+template<>
+void processDerivedValueDefaults<attribute::DoubleItemDefinitionPtr>(
+  pugi::xml_node& node,
+  DoubleItemDefinitionPtr idef)
+{
+  if (idef->hasDefault())
+  {
+    xml_node defnode = node.append_child("DefaultValue");
+    std::string sep; // TODO: The writer could accept a user-provided separator.
+    defnode.text().set(getValueForXMLElement(idef->defaultValuesAsStrings(), sep).c_str());
+    if (!sep.empty() && sep != ",")
+      defnode.append_attribute("Sep").set_value(sep.c_str());
+  }
+}
+
+template<typename ItemDefType>
 void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
 {
   if (idef->isDiscrete())
@@ -172,14 +200,8 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
     return;
   }
   // Does this def have a default value
-  if (idef->hasDefault())
-  {
-    xml_node defnode = node.append_child("DefaultValue");
-    std::string sep; // TODO: The writer could accept a user-provided separator.
-    defnode.text().set(getValueForXMLElement(idef->defaultValues(), sep).c_str());
-    if (!sep.empty() && sep != ",")
-      defnode.append_attribute("Sep").set_value(sep.c_str());
-  }
+  processDerivedValueDefaults<ItemDefType>(node, idef);
+
   // Does this node have a range?
   if (idef->hasRange())
   {
@@ -227,7 +249,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item)
   {
     if (item->isSet())
     {
-      node.text().set(getValueForXMLElement(item->value()));
+      node.text().set(item->valueAsString().c_str());
     }
     else //This is an unset value
     {
@@ -242,7 +264,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item)
     {
       val = values.append_child("Val");
       val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      val.text().set(getValueForXMLElement(item->value(i)));
+      val.text().set(item->valueAsString(i).c_str());
     }
     else
     {

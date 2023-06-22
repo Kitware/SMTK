@@ -100,6 +100,7 @@ set(smtkCore_public_link_libraries
   taocpp::pegtl
   Threads::Threads
   Boost::boost
+  units
 )
 
 set(smtkCore_private_link_libraries

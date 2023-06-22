@@ -68,6 +68,7 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
     if (itemPtr->isSet())
     {
       j["Val"] = itemPtr->value();
+      j["SpecifiedVal"] = itemPtr->valueAsString();
     }
     else
     {
@@ -83,6 +84,7 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
     {
       value["Val"]["Ith"] = i;
       value["Val"]["Name"] = itemPtr->value(i);
+      value["Val"]["Specified"] = itemPtr->valueAsString(i);
     }
     else
     {
@@ -201,25 +203,49 @@ static void processDerivedValueFromJson(
   {
     for (auto iter = values.begin(); iter != values.end(); iter++)
     {
+      // Skip over unset values
+      auto query = iter->find("UnsetVal");
+      if (query != iter->end())
       {
-        auto query = iter->find("UnsetVal");
-        if (query != iter->end())
-        {
-          continue;
-        }
+        continue;
       }
 
+      // Do we have a value element?
+      query = iter->find("Val");
+      if (query != iter->end())
       {
-        auto query = iter->find("Val");
-        if (query != iter->end())
+        auto queryIth = query->find("Ith");
+        if (queryIth == query->end())
         {
-          auto queryIth = query->find("Ith");
-          auto queryValue = query->find("Name");
-          if (queryIth != query->end() && queryValue != query->end())
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Could not find index of value location for Item: " << itemPtr->name());
+        }
+        else
+        {
+          i = *queryIth;
+          // Lets see if we can find a specified or name key to get the value
+          auto queryValue = query->find("Specified");
+          if (queryValue != query->end())
           {
-            i = *queryIth;
-            BasicType currentValue = *queryValue;
-            itemPtr->setValue(static_cast<int>(i), currentValue);
+            std::string currentValue = *queryValue;
+            itemPtr->setValueFromString(static_cast<int>(i), currentValue);
+          }
+          else
+          {
+            queryValue = query->find("Name");
+            if (queryValue != query->end())
+            {
+              i = *queryIth;
+              BasicType currentValue = *queryValue;
+              itemPtr->setValue(static_cast<int>(i), currentValue);
+            }
+            else
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                "Could not find value[" << i << "] location for Item: " << itemPtr->name());
+            }
           }
         }
       }
@@ -253,11 +279,20 @@ static void processDerivedValueFromJson(
 
     if (noVal.is_null())
     {
-      auto query = j.find("Val");
+      auto query = j.find("SpecifiedVal");
       if (query != j.end())
       {
-        BasicType currentValue = *query;
-        itemPtr->setValue(currentValue);
+        std::string currentValue = *query;
+        itemPtr->setValueFromString(0, currentValue);
+      }
+      else
+      {
+        auto query = j.find("Val");
+        if (query != j.end())
+        {
+          BasicType currentValue = *query;
+          itemPtr->setValue(0, currentValue);
+        }
       }
     }
   }

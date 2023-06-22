@@ -30,6 +30,11 @@
 #include <utility>
 #include <vector>
 
+namespace units
+{
+struct System;
+}
+
 namespace smtk
 {
 namespace attribute
@@ -156,6 +161,9 @@ public:
   bool removeTag(const std::string& name);
   ///@}
 
+  ///\brief Return the unitsSystem of the Definition
+  const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+
   virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition)
     const = 0;
   virtual smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
@@ -174,6 +182,12 @@ protected:
   virtual void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent);
+
+  ///\brief Set the unitsSystem of the Definition
+  ///
+  /// Note that this should be done before units are specified in the Definition
+  virtual void setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+
   int m_version;
   bool m_isOptional;
   bool m_isEnabledByDefault;
@@ -187,6 +201,7 @@ protected:
   unsigned int m_advanceLevel[2];
   attribute::Tags m_tags;
   Categories::CombinationMode m_combinationMode;
+  std::shared_ptr<units::System> m_unitsSystem;
 
 private:
   // constant value that should never be changed

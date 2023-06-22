@@ -657,8 +657,20 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   std::size_t n = m_itemDefs.size();
   m_itemDefs.push_back(cdef);
   m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  this->setItemDefinitionUnitsSystem(cdef);
   this->updateDerivedDefinitions();
   return true;
+}
+
+void Definition::setItemDefinitionUnitsSystem(
+  const smtk::attribute::ItemDefinitionPtr& itemDef) const
+{
+  // Get the units system of the attribute resource
+  auto attRes = this->resource();
+  if (attRes)
+  {
+    itemDef->setUnitsSystem(attRes->unitsSystem());
+  }
 }
 
 void Definition::updateDerivedDefinitions()

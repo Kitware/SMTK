@@ -54,6 +54,8 @@ inline PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pyb
     .def("setExpression", &smtk::attribute::ValueItem::setExpression, py::arg("exp"))
     .def("setNumberOfValues", &smtk::attribute::ValueItem::setNumberOfValues, py::arg("newSize"))
     .def("setToDefault", &smtk::attribute::ValueItem::setToDefault, py::arg("elementIndex") = 0)
+    .def("setValueFromString", (bool (smtk::attribute::ValueItem::*)(const std::string&)) &smtk::attribute::ValueItem::setValueFromString, py::arg("value"))
+    .def("setValueFromString", (bool (smtk::attribute::ValueItem::*)(::size_t, const std::string&)) &smtk::attribute::ValueItem::setValueFromString, py::arg("elementIndex"), py::arg("value"))
     .def("unset", &smtk::attribute::ValueItem::unset, py::arg("elementIndex") = 0)
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)() const) &smtk::attribute::ValueItem::valueAsString)
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)(::size_t) const) &smtk::attribute::ValueItem::valueAsString, py::arg("elementIndex"))

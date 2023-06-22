@@ -68,6 +68,10 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
     {
       def->buildExpressionItem(this);
     }
+    if (!this->initializeValues())
+    {
+      return false;
+    }
   }
 
   return true;

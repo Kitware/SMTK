@@ -10,6 +10,10 @@
 
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
+
+#include "units/Converter.h"
+#include "units/System.h"
+
 using namespace smtk::attribute;
 
 DoubleItemDefinition::DoubleItemDefinition(const std::string& myName)
@@ -45,4 +49,236 @@ smtk::attribute::ItemDefinitionPtr smtk::attribute::DoubleItemDefinition::create
 
   ValueItemDefinitionTemplate<double>::copyTo(newDef, info);
   return newDef;
+}
+
+bool DoubleItemDefinition::setDefaultValue(const std::vector<double>& vals)
+{
+  return this->setDefaultValue(vals, m_units);
+}
+
+const std::string DoubleItemDefinition::defaultValueAsString(std::size_t element) const
+{
+  bool vectorDefault = m_defaultValuesAsStrings.size() == this->numberOfRequiredValues();
+  assert(!vectorDefault || m_defaultValuesAsStrings.size() > element);
+  return m_defaultValuesAsStrings.empty() ? ""
+                                          : m_defaultValuesAsStrings[vectorDefault ? element : 0];
+}
+
+const std::vector<std::string> DoubleItemDefinition::defaultValuesAsStrings() const
+{
+  return m_defaultValuesAsStrings;
+}
+
+bool DoubleItemDefinition::setDefaultValue(const double& val, const std::string& units)
+{
+  std::vector<double> defaultTuple(1, val);
+  return this->setDefaultValue(defaultTuple, units);
+}
+
+bool DoubleItemDefinition::setUnits(const std::string& newUnits)
+{
+  if (newUnits == m_units)
+  {
+    return true;
+  }
+  std::string origUnits = m_units;
+  m_units = newUnits;
+  if (!this->reevaluateDefaults())
+  {
+    // Could not set new units
+    m_units = origUnits;
+    return false;
+  }
+  return true;
+}
+
+bool DoubleItemDefinition::setDefaultValue(
+  const std::vector<double>& vals,
+  const std::string& units)
+{
+  if (
+    vals.empty() ||
+    ((vals.size() > 1) &&
+     (this->isDiscrete() || this->isExtensible() ||
+      (vals.size() != this->numberOfRequiredValues()))))
+  {
+    return false; // *some* value must be provided or only fixed-size attributes can have vector defaults.
+  }
+
+  std::vector<std::string> stringVals(vals.size());
+  // Do we need to do unit conversion?
+  if (units != m_units)
+  {
+    // Are either unit-less?
+    if (units.empty() || m_units.empty())
+    {
+      return false;
+    }
+    // do we have a unit system?
+    if (m_unitsSystem)
+    {
+      // Are the units compatible?
+      bool status;
+      auto defUnit = m_unitsSystem->unit(m_units, &status);
+      if (!status)
+      {
+        return false; // Could not find the definition's units
+      }
+      auto valUnit = m_unitsSystem->unit(units, &status);
+      if (!status)
+      {
+        return false; // Could not find the default vals' units
+      }
+      auto converter = m_unitsSystem->convert(valUnit, defUnit);
+      if (!converter)
+      {
+        return false; // Could not find a conversion between the units
+      }
+      std::vector<double> convertedVals(vals.size());
+      // Convert all of the values
+      converter->transform(vals.begin(), vals.end(), convertedVals.begin());
+      // Now check to make sure these values are valid w/r to the Definition
+      for (std::size_t i = 0; i < convertedVals.size(); i++)
+      {
+        if (!this->isValueValid(convertedVals[i]))
+        {
+          return false;
+        }
+        std::stringstream ss;
+        ss.precision(17);
+        ss << convertedVals[i] << " " << units;
+        stringVals[i] = ss.str();
+      }
+      m_defaultValue = convertedVals;
+      m_defaultValuesAsStrings = stringVals;
+      m_hasDefault = true;
+      return true;
+    }
+    // In this case there is no units system but we have been told to use units
+    return false;
+  }
+
+  // In this case we don't need to do unit conversion at all
+  typename std::vector<double>::const_iterator it;
+  for (std::size_t i = 0; i < vals.size(); i++)
+  {
+    if (!this->isValueValid(vals[i]))
+    {
+      return false; // Is each value valid?
+    }
+    std::stringstream ss;
+    ss.precision(17);
+    ss << vals[i];
+    if (!units.empty())
+    {
+      ss << " " << units;
+    }
+    stringVals[i] = ss.str();
+  }
+  m_defaultValue = vals;
+  m_defaultValuesAsStrings = stringVals;
+  m_hasDefault = true;
+  return true;
+}
+
+bool DoubleItemDefinition::setDefaultValueAsString(const std::string& val)
+{
+  std::vector<std::string> defaultTuple(1, val);
+  return this->setDefaultValueAsString(defaultTuple);
+}
+
+bool DoubleItemDefinition::setDefaultValueAsString(const std::vector<std::string>& vals)
+{
+  if (
+    vals.empty() ||
+    ((vals.size() > 1) &&
+     (this->isDiscrete() || this->isExtensible() ||
+      (vals.size() != this->numberOfRequiredValues()))))
+  {
+    return false; // *some* value must be provided or only fixed-size attributes can have vector defaults.
+  }
+
+  std::vector<std::string> origDefaults = m_defaultValuesAsStrings;
+  m_defaultValuesAsStrings = vals;
+  if (!this->reevaluateDefaults())
+  {
+    m_defaultValuesAsStrings = origDefaults;
+    return false;
+  }
+  m_hasDefault = true;
+  return true;
+}
+
+bool DoubleItemDefinition::reevaluateDefaults()
+{
+  std::vector<double> convertedVals(m_defaultValuesAsStrings.size());
+  std::string units;
+  units::Unit defUnit;
+  bool convert = false;
+  if (m_unitsSystem)
+  {
+    // If we have an units System, lets see if the definition's units
+    // are valid?
+    defUnit = m_unitsSystem->unit(m_units, &convert);
+  }
+
+  // Can we not do conversion?
+  if (!convert)
+  {
+    // In this case the defaults should either not have units or have units that match the definition
+    for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
+    {
+      std::stringstream convert(m_defaultValuesAsStrings[i]);
+      convert.precision(17);
+      if (!((convert >> convertedVals[i]) && this->isValueValid(convertedVals[i])))
+      {
+        return false; // failed to get the double or it was not considered valid
+      }
+      // Lets see if there are units to the string?  If there are none then assume there are in the units
+      // the definition
+      if (convert >> units)
+      {
+        if (units != m_units)
+        {
+          return false;
+        }
+      }
+    }
+  }
+  else
+  {
+    // OK we can do units conversion
+    bool status;
+    double convertedVal;
+    for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
+    {
+      auto valMeasure = m_unitsSystem->measurement(m_defaultValuesAsStrings[i], &status);
+      if (!status)
+      {
+        // Could not parse the value
+        return false;
+      }
+      if (!valMeasure.m_units.dimensionless())
+      {
+        auto convertedMeasure = m_unitsSystem->convert(valMeasure, defUnit, &status);
+        if (!status)
+        {
+          return false;
+        }
+        convertedVal = convertedMeasure.m_value;
+      }
+      else
+      {
+        // No conversion needed there were no units specified
+        convertedVal = valMeasure.m_value;
+      }
+      if (!this->isValueValid(convertedVal))
+      {
+        return false;
+      }
+      convertedVals[i] = convertedVal;
+    }
+  }
+  m_defaultValue = convertedVals;
+  return true;
 }

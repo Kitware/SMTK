@@ -24,6 +24,7 @@
 #include "smtk/attribute/operators/Read.h"
 #include "smtk/attribute/operators/Write.h"
 
+#include "smtk/common/Environment.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -252,10 +253,13 @@ int main(int argc, char** argv)
       }
     }
 
-    // Clean up all generated files
-    cleanup(smtkFileName);
-    cleanup(sbi1FileName);
-    cleanup(sbi2FileName);
+    // Clean up all generated files when running a dashboard or if there are no problems
+    if ((status == 0) || smtk::common::Environment::hasVariable("DASHBOARD_TEST_FROM_CTEST"))
+    {
+      cleanup(smtkFileName);
+      cleanup(sbi1FileName);
+      cleanup(sbi2FileName);
+    }
     if (status != 0)
     {
       return status;

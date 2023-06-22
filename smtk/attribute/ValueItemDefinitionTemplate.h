@@ -35,8 +35,8 @@ public:
   const DataT& defaultValue() const;
   const DataT& defaultValue(std::size_t element) const;
   const std::vector<DataT>& defaultValues() const;
-  bool setDefaultValue(const DataT& val);
-  bool setDefaultValue(const std::vector<DataT>& val);
+  virtual bool setDefaultValue(const DataT& val);
+  virtual bool setDefaultValue(const std::vector<DataT>& val);
   const DataT& discreteValue(std::size_t element) const { return m_discreteValues[element]; }
   void addDiscreteValue(const DataT& val);
   void addDiscreteValue(const DataT& val, const std::string& discreteEnum);
@@ -118,7 +118,10 @@ bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const std::vector<DataT
 {
   if (dvalue.empty())
     return false; // *some* value must be provided.
-  if (dvalue.size() > 1 && (this->isDiscrete() || this->isExtensible()))
+  if (
+    dvalue.size() > 1 &&
+    (this->isDiscrete() || this->isExtensible() ||
+     (dvalue.size() != this->numberOfRequiredValues())))
     return false; // only fixed-size attributes can have vector defaults.
   typename std::vector<DataT>::const_iterator it;
   for (it = dvalue.begin(); it != dvalue.end(); ++it)

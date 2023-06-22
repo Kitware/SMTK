@@ -39,7 +39,9 @@ set(_smtk_packages
   VTK
   Remus
   ZeroMQ # for Remus
-  pybind11)
+  pybind11
+  units
+)
 
 # Per-package variable forwarding goes here.
 set(Boost_find_package_vars

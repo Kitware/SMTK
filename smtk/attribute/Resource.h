@@ -95,6 +95,8 @@ public:
 
   ~Resource() override;
 
+  bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName,
     const std::string& baseTypeName = "");

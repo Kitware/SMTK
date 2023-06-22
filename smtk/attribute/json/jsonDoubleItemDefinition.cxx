@@ -31,6 +31,12 @@ SMTKCORE_EXPORT void to_json(
   // to_json function would take care of it
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr));
   smtk::attribute::processDerivedValueDefToJson(j, defPtr);
+  if ((!defPtr->isDiscrete()) && defPtr->hasDefault())
+  {
+    // Add the Defaults as strings since they may contain units. Note that we still
+    // store the default values as doubles as well for backward compatibility
+    j["DefaultValueAsString"] = defPtr->defaultValuesAsStrings();
+  }
 }
 
 SMTKCORE_EXPORT void from_json(
@@ -47,6 +53,21 @@ SMTKCORE_EXPORT void from_json(
   smtk::attribute::from_json(j, valDef, resPtr);
   smtk::attribute::processDerivedValueDefFromJson<smtk::attribute::DoubleItemDefinitionPtr, double>(
     j, defPtr, resPtr);
+  if (!defPtr->isDiscrete())
+  {
+    auto defaultVal = j.find("DefaultValueAsString");
+    if (defaultVal != j.end())
+    {
+      std::vector<std::string> values = *defaultVal;
+      if (!defPtr->setDefaultValueAsString(values))
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, doubleItemDefinition "
+            << defPtr->name() << " could not set its defaults from strings");
+      }
+    }
+  }
 }
 } // namespace attribute
 } // namespace smtk

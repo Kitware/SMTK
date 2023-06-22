@@ -44,15 +44,21 @@ public:
   typename std::vector<DataT>::const_iterator end() const { return m_values.end(); }
   bool setNumberOfValues(std::size_t newSize) override;
 
+  ///@{
+  /// \brief Returns a value of the item in the units specified in the units of its definition
   DataT value(std::size_t element = 0) const;
   DataT value(smtk::io::Logger& log) const { return this->value(0, log); }
   DataT value(std::size_t element, smtk::io::Logger& log) const;
+  ///@}
 
-  std::string valueAsString() const override { return this->valueAsString(0); }
+  using ValueItem::valueAsString;
   std::string valueAsString(std::size_t element) const override;
-  bool setValue(const DataT& val) { return this->setValue(0, val); }
-  bool setValue(std::size_t element, const DataT& val);
+  virtual bool setValue(const DataT& val) { return this->setValue(0, val); }
+  virtual bool setValue(std::size_t element, const DataT& val);
+
+  using ValueItem::setValueFromString;
   bool setValueFromString(std::size_t element, const std::string& val) override;
+
   template<typename I>
   bool setValues(I vbegin, I vend)
   {
@@ -73,8 +79,8 @@ public:
     }
     return ok;
   }
-  bool appendValue(const DataT& val);
-  bool removeValue(std::size_t element);
+  virtual bool appendValue(const DataT& val);
+  virtual bool removeValue(std::size_t element);
   void reset() override;
   bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
   bool setToDefault(std::size_t element = 0) override;
@@ -102,12 +108,12 @@ public:
 protected:
   ValueItemTemplate(Attribute* owningAttribute, int itemPosition);
   ValueItemTemplate(Item* owningItem, int myPosition, int mySubGroupPosition);
-  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
   void updateDiscreteValue(std::size_t element) override;
+  bool initializeValues() override;
+
   std::vector<DataT> m_values;
   const std::vector<DataT> m_dummy; //(1, DataT());
 
-private:
   std::string streamValue(const DataT& val) const;
 };
 
@@ -156,7 +162,7 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     {
       smtkErrorMacro(
         log,
-        "Item \"" << this->name() << "\" has no referemce expression (attribute \""
+        "Item \"" << this->name() << "\" has no reference expression (attribute \""
                   << this->attribute()->name() << "\").");
       return DataT();
     }
@@ -166,7 +172,7 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
     {
       smtkErrorMacro(
         log,
-        "Item \"" << this->name() << "\" expression is not evaluatable (attribute \""
+        "Item \"" << this->name() << "\" expression is not evaluate (attribute \""
                   << this->attribute()->name() << "\").");
       return DataT();
     }
@@ -202,16 +208,12 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
 }
 
 template<typename DataT>
-bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitionPtr tdef)
+bool ValueItemTemplate<DataT>::initializeValues()
 {
-  // Note that we do a dynamic cast here since we don't
-  // know if the proper definition is being passed
-  const DefType* def = dynamic_cast<const DefType*>(tdef.get());
-  // Call the parent's set definition - similar to constructor calls
-  // we call from base to derived
-  if ((def == nullptr) || (!ValueItem::setDefinition(tdef)))
+  const DefType* def = dynamic_cast<const DefType*>(this->definition().get());
+  if (def == nullptr)
   {
-    return false;
+    return false; // Can't initialize values without a definition
   }
   size_t n = def->numberOfRequiredValues();
   if (n)
@@ -256,6 +258,11 @@ bool ValueItemTemplate<DataT>::setValueFromString(std::size_t element, const std
 template<typename DataT>
 bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
 {
+  // Simple Fail check
+  if (m_values.size() <= element)
+  {
+    return false;
+  }
   const DefType* def = static_cast<const DefType*>(this->definition().get());
   if (def->isDiscrete())
   {
@@ -270,7 +277,6 @@ bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
     if (index != -1)
     {
       m_discreteIndices[element] = index;
-      assert(m_values.size() > element);
       m_values[element] = val;
       if (def->allowsExpressions())
       {
@@ -291,7 +297,6 @@ bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
   }
   if (def->isValueValid(val))
   {
-    assert(m_values.size() > element);
     m_values[element] = val;
     assert(m_isSet.size() > element);
     m_isSet[element] = true;
@@ -687,7 +692,7 @@ bool ValueItemTemplate<DataT>::assign(
   {
     if (sourceValueItemTemplate->isSet(i))
     {
-      if (!this->setValue(i, sourceValueItemTemplate->value(i)))
+      if (!this->setValueFromString(i, sourceValueItemTemplate->valueAsString(i)))
       {
         if (options.itemOptions.allowPartialValues())
         {

@@ -328,6 +328,7 @@ public:
     {
       std::size_t n = m_itemDefs.size();
       item = SharedTypes::RawPointerType::New(name);
+      this->setItemDefinitionUnitsSystem(item);
       m_itemDefs.push_back(item);
       m_itemDefPositions[name] = static_cast<int>(n);
       this->updateDerivedDefinitions();
@@ -439,6 +440,9 @@ protected:
   virtual void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent);
+
+  void setItemDefinitionUnitsSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const;
+
   smtk::attribute::WeakResourcePtr m_resource;
   int m_version;
   bool m_isAbstract;
