@@ -174,6 +174,9 @@ public:
   void SetAmbient(double val);
   void SetPickable(int val);
   void SetTexture(vtkTexture* val);
+
+  vtkSetStringMacro(ActiveAssembly);
+  vtkGetStringMacro(ActiveAssembly);
   //@}
 
   //@{
@@ -514,6 +517,9 @@ protected:
   vtkTimeStamp SelectionTime;
   /// Timestamp for when highlighting styles related to the selection were last applied.
   vtkTimeStamp ApplyStyleTime;
+
+  /// The name of the active assembly.
+  char* ActiveAssembly{ nullptr };
 };
 
 #endif
