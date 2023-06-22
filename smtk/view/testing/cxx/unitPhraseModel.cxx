@@ -46,6 +46,25 @@ using namespace smtk::io;
 
 namespace
 {
+int numRemoved = 0;
+int numInserted = 0;
+int numMoved = 0;
+
+void checkCounts(const std::array<int, 3>& counts, const std::string& event)
+{
+  std::cout << "\nUpon " << event << ":\n"
+            << "  inserted: " << numInserted << "  removed: " << numRemoved
+            << " moved: " << numMoved << "\n"
+            << "  expected: " << counts[0] << "         : " << counts[1] << "      : " << counts[2]
+            << "\n---\n";
+  test(numInserted == counts[0], "Unexpected insertion count.");
+  test(numRemoved == counts[1], "Unexpected insertion count.");
+  test(numMoved == counts[2], "Unexpected insertion count.");
+  numRemoved = 0;
+  numInserted = 0;
+  numMoved = 0;
+}
+
 class StringPhraseContent : public smtk::view::PhraseContent
 {
 public:
@@ -139,21 +158,26 @@ void loadPhrases(PhraseModel* phraseModel, const std::vector<std::string>& title
     switch (event)
     {
       case PhraseModelEvent::ABOUT_TO_INSERT:
+        numInserted = 0;
         std::cout << "will insert";
         break;
       case PhraseModelEvent::INSERT_FINISHED:
+        numInserted = range[1] - range[0] + 1;
         std::cout << "did  insert";
         break;
       case PhraseModelEvent::ABOUT_TO_REMOVE:
+        numRemoved = 0;
         std::cout << "will remove";
         break;
       case PhraseModelEvent::REMOVE_FINISHED:
+        numRemoved = range[1] - range[0] + 1;
         std::cout << "did  remove";
         break;
       case PhraseModelEvent::ABOUT_TO_MOVE:
         std::cout << "will move";
         break;
       case PhraseModelEvent::MOVE_FINISHED:
+        numMoved += range[1] - range[0] + 1;
         std::cout << "did  move";
         break;
       case PhraseModelEvent::PHRASE_MODIFIED:
@@ -250,7 +274,7 @@ int unitPhraseModel(int argc, char* argv[])
                                     "z" };
   loadPhrases(phraseModel.get(), titles0);
   print(phraseModel.get());
-  std::cout << "\n----\n\n";
+  checkCounts({ 27, 0, 0 }, "initial insertion");
 
   // Test updateChildren phrase-moves that resulted in infinite loop of old technique.
   std::vector<std::string> titles1{ "a",
@@ -282,18 +306,19 @@ int unitPhraseModel(int argc, char* argv[])
                                     "z" };
   loadPhrases(phraseModel.get(), titles1);
   print(phraseModel.get());
-  std::cout << "\n----\n\n";
+  checkCounts({ 0, 1, 33 }, "uniqification+reorder");
 
   // Test updateChildren deletion and moves to beginning and end of list.
   std::vector<std::string> titles2{ "z", "b", "c", "a" };
   loadPhrases(phraseModel.get(), titles2);
   print(phraseModel.get());
-  std::cout << "\n----\n\n";
+  checkCounts({ 0, 22, 4 }, "deletion+reorder");
 
   // Test updateChildren removal of everything.
   std::vector<std::string> titles3;
   loadPhrases(phraseModel.get(), titles3);
   print(phraseModel.get());
+  checkCounts({ 0, 4, 0 }, "cleanup");
 
   return 0;
 }

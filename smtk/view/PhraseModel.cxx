@@ -30,6 +30,8 @@
 
 #include <thread>
 
+#undef SMTK_DBG_PHRASE
+
 namespace smtk
 {
 namespace view
@@ -476,7 +478,15 @@ void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRan
   std::vector<int> removeRange{ childRange[0], childRange[1] };
 
   this->trigger(phr, PhraseModelEvent::ABOUT_TO_REMOVE, parentIdx, parentIdx, removeRange);
-  phr->subphrases().erase(phr->subphrases().begin() + removeRange[0]);
+  if (removeRange[0] == removeRange[1])
+  {
+    phr->subphrases().erase(phr->subphrases().begin() + removeRange[0]);
+  }
+  else
+  {
+    phr->subphrases().erase(
+      phr->subphrases().begin() + removeRange[0], phr->subphrases().begin() + removeRange[1] + 1);
+  }
   this->trigger(phr, PhraseModelEvent::REMOVE_FINISHED, parentIdx, parentIdx, removeRange);
 }
 
@@ -510,6 +520,9 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
     }
   }
 
+  std::vector<int> lastPath;
+  int removeRange[2] = { -1, -1 };
+  bool remaining = false;
   for (auto idx : phrasePaths)
   {
     if (idx.empty())
@@ -517,11 +530,47 @@ void PhraseModel::handleExpunged(const smtk::resource::PersistentObjectSet& expu
       continue;
     }
 
-    int removeRange[2];
-    removeRange[0] = idx.back();
-    removeRange[1] = removeRange[0];
+    auto backIdx = idx.back();
     idx.pop_back();
-    this->removeChildren(idx, removeRange);
+    if (removeRange[1] == -1)
+    {
+      removeRange[0] = backIdx;
+      removeRange[1] = removeRange[0];
+      remaining = true;
+      lastPath = idx;
+    }
+    else if (removeRange[0] == backIdx + 1 && lastPath == idx)
+    {
+      removeRange[0] = backIdx;
+    }
+    else
+    {
+#ifdef SMTK_DBG_PHRASE
+      std::cout << "Remove (";
+      for (const auto& rr : lastPath)
+      {
+        std::cout << " " << rr;
+      }
+      std::cout << " ) " << removeRange[0] << " " << removeRange[1] << "\n";
+#endif
+      this->removeChildren(lastPath, removeRange);
+      removeRange[0] = backIdx;
+      removeRange[1] = removeRange[0];
+      remaining = true;
+      lastPath = idx;
+    }
+  }
+  if (remaining && removeRange[1] != -1)
+  {
+#ifdef SMTK_DBG_PHRASE
+    std::cout << "Remove (";
+    for (const auto& rr : lastPath)
+    {
+      std::cout << " " << rr;
+    }
+    std::cout << " ) " << removeRange[0] << " " << removeRange[1] << "\n";
+#endif
+    this->removeChildren(lastPath, removeRange);
   }
 }
 
