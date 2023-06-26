@@ -53,25 +53,25 @@ fedora33:test:
     needs:
         - fedora33:build
 
-fedora33-vtk-python3:build:
-    extends:
-        - .fedora33_vtk_python3
-        - .cmake_build_linux
-        - .cmake_build_artifacts
-        - .linux_builder_tags
-        - .run_automatically
+# fedora33-vtk-python3:build:
+#     extends:
+#         - .fedora33_vtk_python3
+#         - .cmake_build_linux
+#         - .cmake_build_artifacts
+#         - .linux_builder_tags
+#         - .run_automatically
 
-fedora33-vtk-python3:test:
-    extends:
-        - .fedora33_vtk_python3
-        - .cmake_test_linux
-        - .cmake_test_artifacts
-        - .linux_test_tags
-        - .run_dependent
-    dependencies:
-        - fedora33-vtk-python3:build
-    needs:
-        - fedora33-vtk-python3:build
+# fedora33-vtk-python3:test:
+#     extends:
+#         - .fedora33_vtk_python3
+#         - .cmake_test_linux
+#         - .cmake_test_artifacts
+#         - .linux_test_tags
+#         - .run_dependent
+#     dependencies:
+#         - fedora33-vtk-python3:build
+#     needs:
+#         - fedora33-vtk-python3:build
 
 fedora33-paraview:build:
     extends:
