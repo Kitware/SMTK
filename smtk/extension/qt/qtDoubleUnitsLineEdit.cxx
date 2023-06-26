@@ -11,10 +11,13 @@
 #include "smtk/extension/qt/qtDoubleUnitsLineEdit.h"
 
 #include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/common/StringUtil.h"
 
 #include <QCompleter>
 #include <QDebug>
 #include <QStringListModel>
+
+#include "units/Measurement.h"
 
 #include <sstream>
 
@@ -32,8 +35,9 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   , m_unitsSystem(unitsSystem)
 {
   std::string unitsString = def->units();
+  std::string trimUnitsString = smtk::common::StringUtil::trim(unitsString);
   bool success = false;
-  m_unit = unitsSystem->unit(unitsString, &success);
+  m_unit = unitsSystem->unit(trimUnitsString, &success);
   if (!success)
   {
     qWarning() << "Unable to parse unit string" << unitsString.c_str();
