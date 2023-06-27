@@ -102,6 +102,10 @@ public:
   virtual std::string valueAsString() const { return this->valueAsString(0); }
 
   virtual std::string valueAsString(std::size_t elementIndex) const = 0;
+  virtual bool setValueFromString(const std::string& stringVal)
+  {
+    return this->setValueFromString(0, stringVal);
+  }
   virtual bool setValueFromString(std::size_t elementIndex, const std::string& stringVal) = 0;
   virtual bool isSet(std::size_t elementIndex = 0) const;
   virtual void unset(std::size_t elementIndex = 0);
@@ -157,6 +161,8 @@ protected:
   virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
   virtual void updateActiveChildrenItems();
   bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
+  virtual bool initializeValues() = 0;
+
   std::vector<int> m_discreteIndices;
   std::vector<bool> m_isSet;
   smtk::attribute::ComponentItemPtr m_expression;

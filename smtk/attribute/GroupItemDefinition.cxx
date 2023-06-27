@@ -57,6 +57,7 @@ bool GroupItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
   {
     cdef->setIsOptional(true);
   }
+  cdef->setUnitsSystem(m_unitsSystem);
   return true;
 }
 
@@ -235,4 +236,14 @@ bool GroupItemDefinition::removeItemDefinition(ItemDefinitionPtr itemDef)
   }
   m_itemDefPositions.erase(itemDef->name());
   return true;
+}
+
+void GroupItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  m_unitsSystem = unitsSystem;
+
+  for (const auto& item : m_itemDefs)
+  {
+    item->setUnitsSystem(m_unitsSystem);
+  }
 }

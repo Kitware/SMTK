@@ -8,16 +8,16 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20220902: Bump to catch ParaView widget changes.
+# 20230626: Bump to catch units dependency.
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_item "631240d2f64de9b950e243aa")
-  set(file_hash "79f324cb04bb3d850c0bfd73b4783a030e9d4cdb3524c253607bbba951c04aee12de449dbb2a0592c3e0254edf711cb6414fc6bc55ff69c11cedec799494fd2f")
+  set(file_item "6499bf6e5121da8eb1a8124f")
+  set(file_hash "bafc715b93bf50340cf7345ccb68e04fd2edc415bea9ddd4df30f3f749488ade4144557d39c5939bc3442c04fe3c8f919b54f11888812e5ea1d35e0aee768b24")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_item "631240d2f64de9b950e243a5")
-  set(file_hash "dfd4d179ebfca6e2809cc8a7d6907f66977b64fd976af8fd5c27a73ddcf5e3fa28bb7970b8da5d2ee74b37e8c1fff506259a1296722aa168a3e82831459c3c4c")
+  set(file_item "6499bf6e5121da8eb1a8124d")
+  set(file_hash "5dc484ea42496f98398fa90ab16c1370348f139836ac02bf82636aad0c22fefc0a106ef05c1e28daa59c4dbffc8261d1bbb5f33187dbeb6be33d94cd514c0a6d")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_item "631240d2f64de9b950e2439b")
-  set(file_hash "d1541b18e0e1a000561935365e0394462af2dbd477625e130d121a3d716cbe11193021f53fe09290ffcc1466dbec596390c3c6a087f5e86efeaa30980839ff43")
+  set(file_item "6499bf6e5121da8eb1a8124b")
+  set(file_hash "1c4e2b54c4ae0b36807b974c1200ffa25593a1cb462adc75746c23f7bdc42450fc201c99d6083d034876540faf11af8cc0002d7795c8565f0bd30ea1cbad74b4")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")

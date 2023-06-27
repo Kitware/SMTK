@@ -122,7 +122,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
   // Does this def have a default value
   if (defPtr->hasDefault())
   {
-    // Ignore the notion of seperator in XmlV2StringWriter::L195
+    // Ignore the notion of separator in XmlV2StringWriter::L195
     //
     j["DefaultValue"] = defPtr->defaultValues();
   }

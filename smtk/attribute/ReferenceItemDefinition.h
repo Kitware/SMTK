@@ -260,6 +260,8 @@ protected:
     const smtk::attribute::Categories::Stack& inheritedFromParent,
     smtk::attribute::Categories& inheritedToParent) override;
 
+  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
   bool m_isExtensible;

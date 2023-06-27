@@ -107,31 +107,63 @@ getValueFromXMLElement(xml_node& node, const std::string& sep, std::vector<int> 
   return result;
 }
 
-std::vector<double>
-getValueFromXMLElement(xml_node& node, const std::string& sep, std::vector<double> /*unused*/)
-{
-  std::vector<double> result;
-  std::vector<std::string> vals;
-  std::stringstream convert;
-  double val;
-  vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
-  std::vector<std::string>::iterator it;
-  for (it = vals.begin(); it != vals.end(); ++it)
-  {
-    convert.str(*it);
-    convert >> val;
-    result.push_back(val);
-    convert.clear();
-  }
-  return result;
-}
-
 std::vector<std::string>
 getValueFromXMLElement(xml_node& node, const std::string& sep, std::vector<std::string> /*unused*/)
 {
   std::vector<std::string> vals;
   vals = smtk::common::StringUtil::split(node.text().get(), sep, false, false);
   return vals;
+}
+
+template<typename ItemDefType, typename BasicType>
+void processDerivedValueDefaults(pugi::xml_node& dnode, ItemDefType idef, Logger& logger)
+{
+  auto xatt = dnode.attribute("Sep");
+  std::string sep = xatt ? xatt.value() : ",";
+  std::vector<BasicType> defs = getValueFromXMLElement(dnode, sep, std::vector<BasicType>());
+  if (defs.size() == 1 || defs.size() == idef->numberOfRequiredValues())
+  {
+    if (!idef->setDefaultValue(defs))
+    {
+      smtkErrorMacro(
+        logger,
+        "Could not set defaults values: (" << dnode.text().get() << ") for item " << idef->type());
+    }
+  }
+  else
+  {
+    smtkErrorMacro(
+      logger,
+      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->type());
+  }
+}
+
+template<>
+void processDerivedValueDefaults<attribute::DoubleItemDefinitionPtr, double>(
+  pugi::xml_node& dnode,
+  DoubleItemDefinitionPtr idef,
+  Logger& logger)
+{
+  auto xatt = dnode.attribute("Sep");
+  std::string sep = xatt ? xatt.value() : ",";
+  std::vector<std::string> defs =
+    smtk::common::StringUtil::split(dnode.text().get(), sep, false, true);
+
+  if (defs.size() == 1 || defs.size() == idef->numberOfRequiredValues())
+  {
+    if (!idef->setDefaultValueAsString(defs))
+    {
+      smtkErrorMacro(
+        logger,
+        "Could not set defaults values: (" << dnode.text().get() << ") for item " << idef->type());
+    }
+  }
+  else
+  {
+    smtkErrorMacro(
+      logger,
+      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->type());
+  }
 }
 
 template<typename ItemDefType, typename BasicType>
@@ -277,19 +309,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
   dnode = node.child("DefaultValue");
   if (dnode)
   {
-    xatt = dnode.attribute("Sep");
-    std::string sep = xatt ? xatt.value() : ",";
-    std::vector<BasicType> defs = getValueFromXMLElement(dnode, sep, std::vector<BasicType>());
-    if (defs.size() == 1 || defs.size() == idef->numberOfRequiredValues())
-    {
-      idef->setDefaultValue(defs);
-    }
-    else
-    {
-      smtkErrorMacro(
-        logger,
-        "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->type());
-    }
+    processDerivedValueDefaults<ItemDefType, BasicType>(dnode, idef, logger);
   }
   // Does this node have a range?
   rnode = node.child("RangeInfo");
@@ -414,7 +434,7 @@ void processDerivedValue(
       }
       if (nodeName == "Val")
       {
-        item->setValue(static_cast<int>(i), getValueFromXMLElement(val, BasicType()));
+        item->setValueFromString(static_cast<int>(i), val.text().get());
       }
       else if (allowsExpressions && (nodeName == "Expression"))
       {
@@ -436,7 +456,7 @@ void processDerivedValue(
     noVal = node.child("UnsetVal");
     if (!(noVal || node.text().empty()))
     {
-      item->setValue(getValueFromXMLElement(node, BasicType()));
+      item->setValueFromString(0, node.text().get());
     }
   }
   else

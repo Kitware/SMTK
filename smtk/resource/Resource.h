@@ -23,6 +23,11 @@
 #include "smtk/resource/query/BadTypeError.h"
 #include "smtk/resource/query/Queries.h"
 
+namespace units
+{
+struct System;
+}
+
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -192,6 +197,12 @@ public:
 
   Resource(Resource&&) noexcept;
 
+  ///@{
+  /// \brief Sets and Gets the system of units used by this resource
+  virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+  const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+  ///@}
+
 protected:
   // Derived resources should inherit
   // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's
@@ -200,6 +211,7 @@ protected:
   Resource(ManagerPtr manager = nullptr);
 
   WeakManagerPtr m_manager;
+  std::shared_ptr<units::System> m_unitsSystem;
 
 private:
   /// Instances of this internal class are passed to resource::Manager to

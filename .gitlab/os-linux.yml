@@ -1,12 +1,13 @@
 # Linux-specific builder configurations and build commands
 
 ## Base images
+# Superbuild base images at https://hub.docker.com/repository/docker/kitware/cmb
 
 ### Fedora
 
 .fedora33:
-    # Bump to catch ParaView widget changes.
-    image: "kitware/cmb:ci-smtk-fedora33-20220902"
+    # Bump to catch units lib dependency.
+    image: "kitware/cmb:ci-smtk-fedora33-20230622"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -64,23 +65,24 @@
 
 ### Build and test
 
-.fedora33_vtk_python3:
-    extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-vtk-20220902"
+# temporarily disabled until base image is generated
+# .fedora33_vtk_python3:
+#     extends: .fedora33
+#     image: "kitware/cmb:ci-smtk-fedora33-vtk-20230517"
 
-    variables:
-        CMAKE_CONFIGURATION: fedora33_vtk_python3
+#     variables:
+#         CMAKE_CONFIGURATION: fedora33_vtk_python3
 
 .fedora33_paraview:
-    extends: .fedora33_vtk_python3
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20220902"
+    extends: .fedora33
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20230622"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
 
 .fedora33_paraview59_compat:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20220902"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20230622"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview59_compat

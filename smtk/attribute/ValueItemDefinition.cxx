@@ -36,6 +36,12 @@ ValueItemDefinition::ValueItemDefinition(const std::string& myName)
 
 ValueItemDefinition::~ValueItemDefinition() = default;
 
+bool ValueItemDefinition::setUnits(const std::string& newUnits)
+{
+  m_units = newUnits;
+  return true;
+}
+
 bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == m_numberOfRequiredValues)
@@ -178,13 +184,7 @@ void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
 
 bool ValueItemDefinition::addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
-  // First see if there is a item by the same name
-  if (this->hasChildItemDefinition(cdef->name()))
-  {
-    return false;
-  }
-  m_itemDefs[cdef->name()] = cdef;
-  return true;
+  return this->addItemDefinition(cdef);
 }
 
 bool ValueItemDefinition::addConditionalItem(
@@ -481,6 +481,7 @@ bool ValueItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
     return false;
   }
   m_itemDefs[cdef->name()] = cdef;
+  cdef->setUnitsSystem(m_unitsSystem);
   return true;
 }
 
@@ -523,4 +524,14 @@ std::vector<std::string> ValueItemDefinition::relevantEnums(
     }
   }
   return result;
+}
+
+void ValueItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  m_unitsSystem = unitsSystem;
+
+  for (const auto& item : m_itemDefs)
+  {
+    item.second->setUnitsSystem(m_unitsSystem);
+  }
 }

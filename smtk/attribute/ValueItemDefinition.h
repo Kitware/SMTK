@@ -46,7 +46,7 @@ public:
   ~ValueItemDefinition() override;
 
   const std::string& units() const { return m_units; }
-  void setUnits(const std::string& newUnits) { m_units = newUnits; }
+  virtual bool setUnits(const std::string& newUnits);
 
   bool isDiscrete() const { return !m_discreteValueEnums.empty(); }
   std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
@@ -178,6 +178,8 @@ public:
     }
     item = SharedTypes::RawPointerType::New(idName);
     m_itemDefs[item->name()] = item;
+    // We need to get a pointer to the base Item class to set the unitsSystem
+    static_cast<ItemDefinition*>(item.get())->setUnitsSystem(m_unitsSystem);
     return item;
   }
 
@@ -199,6 +201,8 @@ protected:
   void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent) override;
+
+  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;

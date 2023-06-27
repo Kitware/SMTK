@@ -25,6 +25,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "units/System.h"
+
 #include <nlohmann/json.hpp>
 
 #include <string>
@@ -94,11 +96,54 @@ public:
     mp_def = mp_attRes->createDefinition("def");
     mp_doubleItemDef = DoubleItemDefinition::New("testDoubleItem");
     mp_def->addItemDefinition(mp_doubleItemDef);
+
+    mp_doubleItemDef1 = mp_def->addItemDefinition<DoubleItemDefinition>("testDoubleItem1");
+    smtkTest(mp_doubleItemDef1->setUnits("cm"), "Could not set units to cm");
+    smtkTest(mp_doubleItemDef1->setDefaultValue(10.0), "Could not set default to 10.0");
+    smtkTest(mp_doubleItemDef1->defaultValue() == 10.0, "Default is not 10.0");
+    smtkTest(
+      mp_doubleItemDef1->setDefaultValueAsString("10.0 m"), "Could not set default to 10.0 m");
+    smtkTest(
+      mp_doubleItemDef1->defaultValueAsString() == "10.0 m", "Default as string was not 10.0 m");
+    smtkTest(mp_doubleItemDef1->defaultValue() == 1000.0, "Default is not 1000.0");
+    smtkTest(
+      !mp_doubleItemDef1->setDefaultValueAsString("10.0 m/s"), "Was able to set default to 10 m/s");
+
+    // Simple test with no units system
+    auto ddef = DoubleItemDefinition::New("NoUnitsDef");
+    smtkTest(ddef->setUnits("cm"), "Could not set units to cm");
+    smtkTest(
+      ddef->setDefaultValue(10.0), "Could not set def with no units system's default to 10.0");
+    smtkTest(ddef->defaultValue() == 10.0, "Default is not 10.0 for def with no units system");
+    smtkTest(
+      !ddef->setDefaultValueAsString("10.0 m"),
+      "Could set def with no units system's default to 10.0 m");
+    smtkTest(
+      ddef->setDefaultValueAsString("20.0"),
+      "Could not set def with no units system's default to 20.0");
+    smtkTest(ddef->defaultValue() == 20.0, "Default is not 20.0 for def with no units system");
+    smtkTest(
+      ddef->setDefaultValueAsString("30.0 cm"),
+      "Could not set def with no units system's default to 30.0 cm");
+    smtkTest(ddef->defaultValue() == 30.0, "Default is not 30.0 for def with no units system");
   }
 
   DoubleItemPtr getDoubleItem()
   {
-    return mp_attRes->createAttribute(mp_def)->findDouble("testDoubleItem");
+    if (!mp_att)
+    {
+      mp_att = mp_attRes->createAttribute(mp_def);
+    }
+    return mp_att->findDouble("testDoubleItem");
+  }
+
+  DoubleItemPtr getDoubleItem1()
+  {
+    if (!mp_att)
+    {
+      mp_att = mp_attRes->createAttribute(mp_def);
+    }
+    return mp_att->findDouble("testDoubleItem1");
   }
 
   void SetUpDoubleItemTestExpressions()
@@ -117,8 +162,10 @@ public:
   }
 
   ResourcePtr mp_attRes;
+  AttributePtr mp_att;
   DefinitionPtr mp_def;
   DoubleItemDefinitionPtr mp_doubleItemDef;
+  DoubleItemDefinitionPtr mp_doubleItemDef1;
 
   DefinitionPtr mp_evaluatorDef;
 };
@@ -139,6 +186,16 @@ void testBasicGettingValue()
 
   smtkTest(item->value() == 5.0, "Expected value to be 5.0") smtkTest(
     smtk::io::Logger::instance().hasErrors() == false, "Expected global logger to have no errors.")
+
+    // Lets test an item with units
+    DoubleItemPtr item1 = doubleItemTest.getDoubleItem1();
+  smtkTest(item1->value() == 1000.0, "Expected default to be 1000.0 cm.");
+  smtkTest(item1->setValue(20.0), "Could not set value to 20.0 cm.");
+  smtkTest(item1->value() == 20.0, "Expected value to be 20.0 cm.");
+  smtkTest(item1->setValueFromString(0, "150 mm"), "Could not set value to 150.0 mm.");
+  smtkTest(item1->value() == 15.0, "Expected value to be 15.0 cm.");
+  smtkTest(item1->valueAsString() == "150 mm", "Expected value to be 150 mm.");
+  smtkTest(!item1->setValueFromString(0, "150 cm/s"), "Could set value to 150 cm/s");
 }
 
 void testGettingValueWithExpression()

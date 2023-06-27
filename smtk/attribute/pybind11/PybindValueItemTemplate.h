@@ -40,8 +40,6 @@ inline PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribut
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("element") = 0)
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("log"))
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("element"), py::arg("log"))
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<int>::*)() const) &smtk::attribute::ValueItemTemplate<int>::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<int>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<int>::valueAsString, py::arg("element"))
     ;
   return instance;
 }
@@ -68,8 +66,6 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attrib
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("element") = 0)
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("log"))
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("element"), py::arg("log"))
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<double>::*)() const) &smtk::attribute::ValueItemTemplate<double>::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<double>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<double>::valueAsString, py::arg("element"))
     ;
   return instance;
 }
@@ -96,8 +92,6 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::a
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("element") = 0)
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("log"))
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("element"), py::arg("log"))
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)() const) &smtk::attribute::ValueItemTemplate<std::string>::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<std::string>::valueAsString, py::arg("element"))
     ;
   return instance;
 

@@ -29,6 +29,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include "units/System.h"
+
 #include <algorithm>
 #include <iostream>
 #include <numeric>
@@ -49,12 +51,16 @@ Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr ma
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(myID, manager)
 {
   queries().registerQueries<QueryList>();
+  m_unitsSystem = units::System::
+    createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(manager)
 {
   queries().registerQueries<QueryList>();
+  m_unitsSystem = units::System::
+    createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
 }
 
 Resource::~Resource()
@@ -65,6 +71,23 @@ Resource::~Resource()
     // Decouple all defintions from this Resource
     (*it).second->clearResource();
   }
+}
+
+bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  if (m_unitsSystem == unitsSystem)
+  {
+    return true;
+  }
+  // Since changing units systems can invalidate Item Definitions and Items
+  // we only can change systems when there are no definitions or if there was not
+  // currently an units system specified.
+  if (m_unitsSystem && !m_definitions.empty())
+  {
+    return false;
+  }
+  m_unitsSystem = unitsSystem;
+  return true;
 }
 
 smtk::attribute::DefinitionPtr Resource::createDefinition(

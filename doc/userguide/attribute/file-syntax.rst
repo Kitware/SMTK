@@ -1,4 +1,4 @@
-Template File Syntax (Reference) for Version 6 XML Attribute Files
+Template File Syntax (Reference) for Version 7 XML Attribute Files
 ==================================================================
 
 File Layout
@@ -17,7 +17,7 @@ Attributes that can be included in this XML Element.
    * - Version
      - Integer value that indicates the SMTK attribute format (Required)
 
-       Current value is 6 (latest version)
+       Current value is 7 (latest version)
 
    * - DisplayHint
      - Boolean value that indicates if the Attribute Resource should be automatically

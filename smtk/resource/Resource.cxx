@@ -229,5 +229,11 @@ void Resource::setClean(bool state)
   }
 }
 
+bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+{
+  m_unitsSystem = unitsSystem;
+  return true;
+}
+
 } // namespace resource
 } // namespace smtk

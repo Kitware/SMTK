@@ -21,6 +21,9 @@ inline PySharedPtrClass< smtk::attribute::DoubleItem, smtk::attribute::ValueItem
 {
   PySharedPtrClass< smtk::attribute::DoubleItem, smtk::attribute::ValueItemTemplate<double> > instance(m, "DoubleItem");
   instance
+    .def("setValue", (bool (smtk::attribute::DoubleItem::*)(double const &)) &smtk::attribute::DoubleItem::setValue)
+    .def("setValue", (bool (smtk::attribute::DoubleItem::*)(::size_t, double const &)) &smtk::attribute::DoubleItem::setValue)
+    .def("setValue", (bool (smtk::attribute::DoubleItem::*)(::size_t, double const &, const std::string&)) &smtk::attribute::DoubleItem::setValue)
     .def(py::init<::smtk::attribute::DoubleItem const &>())
     .def("type", &smtk::attribute::DoubleItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
