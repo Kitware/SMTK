@@ -1619,7 +1619,9 @@ QWidget* qtInputsItem::createDoubleWidget(
       {
         valueAsString.clear();
       }
+      lineEdit->blockSignals(true);
       lineEdit->setText(valueAsString.c_str());
+      lineEdit->blockSignals(false);
       editorWidget = static_cast<QWidget*>(lineEdit);
     }
     else
@@ -2080,19 +2082,32 @@ void qtInputsItem::onLineEditChanged()
   {
     return;
   }
-  // If this is not from setText(), ignore it. We are using editingFinished
-  // signal to handle others.
-  if (editBox->isModified())
-  {
-    return;
-  }
 
-  this->onInputValueChanged(editBox);
+  // Check for units editor
+  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(editBox);
+  if (valueUnitsEditor != nullptr)
+  {
+    valueUnitsEditor->onTextChanged();
+  }
+  else if (!editBox->isModified())
+  {
+    // If this is not from setText(), ignore it. We are using editingFinished
+    // signal to handle others.
+    this->onInputValueChanged(editBox);
+  }
 }
 
 void qtInputsItem::onLineEditFinished()
 {
-  this->onInputValueChanged(QObject::sender());
+  QObject* sender = QObject::sender();
+  this->onInputValueChanged(sender);
+
+  // Check for units editor
+  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(sender);
+  if (valueUnitsEditor != nullptr)
+  {
+    valueUnitsEditor->onEditFinished();
+  }
 }
 
 void qtInputsItem::doubleValueChanged(double newVal)
@@ -2202,6 +2217,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     return;
   }
 
+  qtDoubleUnitsLineEdit* valueUnitsBox = qobject_cast<qtDoubleUnitsLineEdit*>(obj);
+
   int elementIdx =
     editBox ? editBox->property("ElementIndex").toInt() : textBox->property("ElementIndex").toInt();
   bool isDefault = false;
@@ -2212,7 +2229,14 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     if (rawitem->type() == smtk::attribute::Item::DoubleType)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
-      if (
+      if (valueUnitsBox != nullptr)
+      {
+        if (!ditem->setValueFromString(elementIdx, editBox->text().toStdString()))
+        {
+          this->unsetValue(elementIdx); // editor's contents are invalid
+        }
+      }
+      else if (
         (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         ditem->value(elementIdx) != editBox->text().toDouble())
       {

@@ -41,14 +41,15 @@ public:
     smtk::attribute::ConstDoubleItemDefinitionPtr def,
     std::shared_ptr<units::System> unitsSystem,
     QWidget* parent = nullptr);
-  ~qtDoubleUnitsLineEdit() = default;
+  ~qtDoubleUnitsLineEdit() override = default;
 
 Q_SIGNALS:
 
 public Q_SLOTS:
+  void onTextChanged();
+  void onEditFinished();
 
 protected Q_SLOTS:
-  void onTextChanged(const QString& text);
 
 protected:
   smtk::attribute::ConstDoubleItemDefinitionPtr m_def;
