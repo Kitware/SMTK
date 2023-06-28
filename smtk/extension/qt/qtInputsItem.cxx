@@ -32,6 +32,7 @@
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtDoubleLineEdit.h"
+#include "smtk/extension/qt/qtDoubleUnitsLineEdit.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
@@ -58,6 +59,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
+
+#include "units/System.h"
 
 #include <cmath>
 
@@ -931,7 +934,7 @@ QFrame* qtInputsItem::createLabelFrame(
     std::string option = "LineEdit"; // defualt behavior
     m_itemInfo.component().attribute("Option", option);
 
-    if (option == "LineEdit")
+    if ((option == "LineEdit") && (vitemDef->isDiscrete() || vitemDef->allowsExpressions()))
     {
       QString unitText = label->text();
       unitText.append(" (").append(vitemDef->units().c_str()).append(")");
@@ -1603,51 +1606,79 @@ QWidget* qtInputsItem::createDoubleWidget(
 
   if (option == "LineEdit")
   {
-    auto* editBox = new qtDoubleLineEdit(pWidget);
-    editBox->setObjectName(QString("editBox%1").arg(elementIdx));
-    editBox->setUseGlobalPrecisionAndNotation(false);
-    std::string notation("Mixed");
-    m_itemInfo.component().attribute("Notation", notation);
-    if (notation == "Fixed")
-    {
-      editBox->setNotation(qtDoubleLineEdit::FixedNotation);
-    }
-    else if (notation == "Scientific")
-    {
-      editBox->setNotation(qtDoubleLineEdit::ScientificNotation);
-    }
+    QWidget* editorWidget = nullptr;
 
-    qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
-    validator->setObjectName(QString("validator%1").arg(elementIdx));
-
-    editBox->setValidator(validator);
-    int widthValue = 100; // Default fixed width
-    int precision = 0;
-    m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
-    if (widthValue > 0)
+    if (!(dDef->isDiscrete() || dDef->allowsExpressions() || dDef->units().empty()))
     {
-      editBox->setFixedWidth(widthValue);
-    }
-    m_itemInfo.component().attributeAsInt("Precision", precision);
-    if (precision > 0)
-    {
-      editBox->setPrecision(precision);
-    }
-    validator->setBottom(minVal);
-    validator->setTop(maxVal);
-    if (vitem->isSet(elementIdx))
-    {
-      if (m_internals->m_editPrecision > 0)
+      // If item has numerical value with units, use qtDoubleUnitsListEdit
+      auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
+      auto* lineEdit = new qtDoubleUnitsLineEdit(dDef, unitsSystem, pWidget);
+      lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
+      std::string valueAsString = vitem->valueAsString(elementIdx);
+      if (valueAsString == "VALUE_IS_NOT_SET")
       {
-        editBox->setText(
-          QString::number(ditem->value(elementIdx), 'f', m_internals->m_editPrecision));
+        valueAsString.clear();
       }
-      else
+      lineEdit->blockSignals(true);
+      lineEdit->setText(valueAsString.c_str());
+      lineEdit->blockSignals(false);
+      editorWidget = static_cast<QWidget*>(lineEdit);
+    }
+    else
+    {
+      // Otherwise use qtDoubleLineEdit (sans units)
+      auto* editBox = new qtDoubleLineEdit(pWidget);
+      editBox->setObjectName(QString("editBox%1").arg(elementIdx));
+
+      editBox->setUseGlobalPrecisionAndNotation(false);
+      std::string notation("Mixed");
+      m_itemInfo.component().attribute("Notation", notation);
+      if (notation == "Fixed")
       {
+        editBox->setNotation(qtDoubleLineEdit::FixedNotation);
+      }
+      else if (notation == "Scientific")
+      {
+        editBox->setNotation(qtDoubleLineEdit::ScientificNotation);
+      }
+
+      qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
+      validator->setObjectName(QString("validator%1").arg(elementIdx));
+
+      editBox->setValidator(validator);
+      int widthValue = 100; // Default fixed width
+      int precision = 0;
+      m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
+      if (widthValue > 0)
+      {
+        editBox->setFixedWidth(widthValue);
+      }
+      m_itemInfo.component().attributeAsInt("Precision", precision);
+      if (precision > 0)
+      {
+        editBox->setPrecision(precision);
+      }
+      validator->setBottom(minVal);
+      validator->setTop(maxVal);
+
+      if (vitem->isSet(elementIdx))
+      {
+        if (m_internals->m_editPrecision > 0)
+        {
+          editBox->setText(
+            QString::number(ditem->value(elementIdx), 'f', m_internals->m_editPrecision));
+        }
+        else
+        {
+          editBox->setText(vitem->valueAsString(elementIdx).c_str());
+        }
         editBox->setText(vitem->valueAsString(elementIdx).c_str());
       }
+
+      editorWidget = static_cast<QWidget*>(editBox);
     }
-    return editBox;
+
+    return editorWidget;
   }
 
   if (option == "SpinBox")
@@ -2051,19 +2082,32 @@ void qtInputsItem::onLineEditChanged()
   {
     return;
   }
-  // If this is not from setText(), ignore it. We are using editingFinished
-  // signal to handle others.
-  if (editBox->isModified())
-  {
-    return;
-  }
 
-  this->onInputValueChanged(editBox);
+  // Check for units editor
+  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(editBox);
+  if (valueUnitsEditor != nullptr)
+  {
+    valueUnitsEditor->onTextChanged();
+  }
+  else if (!editBox->isModified())
+  {
+    // If this is not from setText(), ignore it. We are using editingFinished
+    // signal to handle others.
+    this->onInputValueChanged(editBox);
+  }
 }
 
 void qtInputsItem::onLineEditFinished()
 {
-  this->onInputValueChanged(QObject::sender());
+  QObject* sender = QObject::sender();
+  this->onInputValueChanged(sender);
+
+  // Check for units editor
+  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(sender);
+  if (valueUnitsEditor != nullptr)
+  {
+    valueUnitsEditor->onEditFinished();
+  }
 }
 
 void qtInputsItem::doubleValueChanged(double newVal)
@@ -2173,6 +2217,8 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     return;
   }
 
+  qtDoubleUnitsLineEdit* valueUnitsBox = qobject_cast<qtDoubleUnitsLineEdit*>(obj);
+
   int elementIdx =
     editBox ? editBox->property("ElementIndex").toInt() : textBox->property("ElementIndex").toInt();
   bool isDefault = false;
@@ -2183,7 +2229,14 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     if (rawitem->type() == smtk::attribute::Item::DoubleType)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
-      if (
+      if (valueUnitsBox != nullptr)
+      {
+        if (!ditem->setValueFromString(elementIdx, editBox->text().toStdString()))
+        {
+          this->unsetValue(elementIdx); // editor's contents are invalid
+        }
+      }
+      else if (
         (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
         ditem->value(elementIdx) != editBox->text().toDouble())
       {

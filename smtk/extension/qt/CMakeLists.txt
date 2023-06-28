@@ -47,6 +47,7 @@ set(QAttrLibSrcs
   qtColorButton.cxx
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
+  qtDoubleUnitsLineEdit.cxx
   qtViewRegistrar.cxx
 
   qtItem.cxx
@@ -139,6 +140,7 @@ set(QAttrLibMocHeaders
   qtColorButton.h
   qtLineEdit.h
   qtDoubleLineEdit.h
+  qtDoubleUnitsLineEdit.h
 
   qtItem.h
   qtDiscreteValueEditor.h
