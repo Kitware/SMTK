@@ -15,5 +15,13 @@ expression options also use the same editor as before.
 
 An example template file can be found at data/attribute/attribute_collection/unitsExample.sbt.
 
-There is one known issue: the popup completer does not display if the numerical value ends
-in the decimal point optionally followed by 1 or more zeroes.
+Known issues:
+
+* The popup completer does not display if the numerical value ends in the decimal
+  point optionally followed by 1 or more zeroes.
+* The current logic treats unrecognized units as valid. This will be changed -- in
+  the near future, SMTK will ignore units (strings) not recognized by the units system.
+  A warning message will be output for each unrecognized unit.
+* The "Restore Default" logic should use the definition's default string.
+  (The current behavior is valid but unexpected.)
+* Certain input strings are not detected and handled as invalid, e.g. "2 ftxx".

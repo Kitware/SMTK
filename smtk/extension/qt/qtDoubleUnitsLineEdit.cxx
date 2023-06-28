@@ -61,10 +61,21 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
     qCritical() << "Underlying definition MUST have units defined";
   }
 
-  m_completer = new QCompleter(parentWidget);
+  // Initialize list of compatible units
   m_compatibleUnits = unitsSystem->compatibleUnits(m_unit);
   std::sort(m_compatibleUnits.begin(), m_compatibleUnits.end(), compareUnitNames);
 
+  // Find the same unit in the list and move it to front of list
+  auto matchUnit = [this](const units::Unit& u) { return u == m_unit; };
+  auto iter = std::find_if(m_compatibleUnits.begin(), m_compatibleUnits.end(), matchUnit);
+  if (iter != m_compatibleUnits.end())
+  {
+    std::rotate(m_compatibleUnits.begin(), iter, iter + 1);
+  }
+
+  // Instantiate completer with (empty) string list model
+  QStringList list;
+  m_completer = new QCompleter(list, parentWidget);
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
 }
@@ -82,31 +93,28 @@ void qtDoubleUnitsLineEdit::onTextChanged()
     return;
   }
 
+  // Parse the text
   bool didParse = false;
   auto measurement = m_unitsSystem->measurement(utext, &didParse);
-  std::cout << __FILE__ << ":" << __LINE__ << " " << measurement.m_value << std::endl;
-#ifndef NDEBUG
-  std::stringstream ss;
-  ss << measurement << " (" << measurement.m_units.dimension() << ')';
-  qDebug() << ss.str().c_str();
-#endif
 
+  // Generate completer list with current value
+  QStringList compatibleList;
   if (measurement.m_value != 0.)
   {
-    QStringList compatibleList;
-    QString first = QString("%1 %2").arg(measurement.m_value).arg(m_def->units().c_str());
-    compatibleList << first;
     for (const auto& unit : m_compatibleUnits)
     {
       std::ostringstream prompt;
-      prompt << measurement.m_value << " " << unit.name();
+      std::string uname = unit.name();
+      prompt << measurement.m_value << " " << uname;
       compatibleList << QString::fromStdString(prompt.str());
-    }
-    m_completer->setModel(new QStringListModel(compatibleList, m_completer));
-
-    // Shouldn't need to call complete() but doesn't display without it
-    m_completer->complete();
+    } // for
   }
+
+  auto* model = qobject_cast<QStringListModel*>(m_completer->model());
+  model->setStringList(compatibleList);
+
+  // Shouldn't need to call complete() but doesn't display without it
+  m_completer->complete();
 
   if (!didParse)
   {
@@ -173,7 +181,7 @@ void qtDoubleUnitsLineEdit::onEditFinished()
   if (text.indexOf(' ') < 0)
   {
     std::ostringstream ss;
-    ss << text.toStdString() << ' ' << m_def->units();
+    ss << text.toStdString() << ' ' << m_unit.name();
     this->blockSignals(true);
     this->setText(QString::fromStdString(ss.str()));
     this->blockSignals(false);

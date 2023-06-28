@@ -27,7 +27,7 @@
           <DefaultValue>2 m</DefaultValue>
         </Double>
 
-        <Double Name="Speed" Units="meter-per-sec">
+        <Double Name="Custom" Units="some-units">
           <BriefDescription>Unrecognized Units</BriefDescription>
         </Double>
 
