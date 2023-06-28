@@ -1272,6 +1272,21 @@
           </RequiredProperties>
         </RepresentedArrayListDomain>
       </StringVectorProperty>
+      <StringVectorProperty name="Assembly"
+        command="SetActiveAssembly"
+        number_of_elements="1"
+        default_values="Hierarchy"
+        panel_visibility="multiblock_inspector">
+        <DataAssemblyListDomain name="data_assembly">
+          <RequiredProperties>
+            <Property function="Input" name="Input" />
+          </RequiredProperties>
+        </DataAssemblyListDomain>
+        <Documentation>
+          Select which assembly is used to specify selectors
+          to choose block visibilities, block colors, etc. for composite datasets.
+        </Documentation>
+      </StringVectorProperty>
       <ProxyProperty command="SetLookupTable"
                      name="LookupTable">
         <Documentation>Set the lookup-table to use to map data array to colors.
@@ -1894,6 +1909,8 @@
             <Property name="BlockColor"
                       panel_visibility="never" />
             <Property name="BlockOpacity"
+                      panel_visibility="never" />
+            <Property name="Assembly"
                       panel_visibility="never" />
             <Property name="HoverColor"
                       panel_visibility="never" />
