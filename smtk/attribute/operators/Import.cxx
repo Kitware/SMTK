@@ -100,12 +100,21 @@ Import::Result Import::operateInternal()
 
   // Populate the attribute resource with the contents of the file.
   smtk::io::AttributeReader reader;
-  if (reader.read(resource, filename, useDirectoryInfo, log()))
+
+  // Since we could have multiple operations running at the same time and
+  // since the AttributeReader uses logger to track parsing errors
+  // we need to create an internal logger and then merge it when the
+  // read is completed
+  smtk::io::Logger logger;
+
+  if (reader.read(resource, filename, useDirectoryInfo, logger))
   {
-    smtkErrorMacro(log(), "Encountered errors while reading \"" << filename << "\".");
+    smtkErrorMacro(logger, "Encountered errors while reading \"" << filename << "\".");
+    this->log().append(logger);
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
+  this->log().append(logger);
   // Create a result object.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
