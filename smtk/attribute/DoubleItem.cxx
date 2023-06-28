@@ -373,3 +373,27 @@ std::string DoubleItem::valueAsString(std::size_t element) const
     return "VALUE_IS_NOT_SET";
   }
 }
+
+bool DoubleItem::setToDefault(std::size_t element)
+{
+  const DoubleItemDefinition* def =
+    static_cast<const DoubleItemDefinition*>(this->definition().get());
+  if (!def->hasDefault())
+  {
+    return false; // Doesn't have a default value
+  }
+
+  if (def->isDiscrete())
+  {
+    this->setDiscreteIndex(element, def->defaultDiscreteIndex());
+  }
+  else
+  {
+    assert(def->defaultValues().size() > element);
+    this->setValueFromString(
+      element,
+      def->defaultValues().size() > 1 ? def->defaultValueAsString(element)
+                                      : def->defaultValueAsString(0));
+  }
+  return true;
+}
