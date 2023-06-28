@@ -7,7 +7,7 @@
 
 .fedora33:
     # Bump to catch units lib dependency.
-    image: "kitware/cmb:ci-smtk-fedora33-20230622"
+    image: "kitware/cmb:ci-smtk-fedora33-20230628"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -65,24 +65,23 @@
 
 ### Build and test
 
-# temporarily disabled until base image is generated
-# .fedora33_vtk_python3:
-#     extends: .fedora33
-#     image: "kitware/cmb:ci-smtk-fedora33-vtk-20230517"
+.fedora33_vtk_python3:
+    extends: .fedora33
+    image: "kitware/cmb:ci-smtk-fedora33-vtk-20230628"
 
-#     variables:
-#         CMAKE_CONFIGURATION: fedora33_vtk_python3
+    variables:
+        CMAKE_CONFIGURATION: fedora33_vtk_python3
 
 .fedora33_paraview:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20230622"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20230628"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
 
 .fedora33_paraview59_compat:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20230622"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview59-20230628"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview59_compat
