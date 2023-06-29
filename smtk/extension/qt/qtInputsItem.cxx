@@ -41,6 +41,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QDoubleValidator>
 #include <QEvent>
@@ -55,12 +56,14 @@
 #include <QSizePolicy>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QTextStream>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
 
 #include "units/System.h"
+#include "units/Unit.h"
 
 #include <cmath>
 
@@ -1608,10 +1611,35 @@ QWidget* qtInputsItem::createDoubleWidget(
   {
     QWidget* editorWidget = nullptr;
 
-    if (!(dDef->isDiscrete() || dDef->allowsExpressions() || dDef->units().empty()))
+    // Check if we should use units-aware editor
+    bool useUnits = false;
+    auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
+    if (
+      (unitsSystem != nullptr) &&
+      !(dDef->isDiscrete() || dDef->allowsExpressions() || dDef->units().empty()))
     {
-      // If item has numerical value with units, use qtDoubleUnitsListEdit
-      auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
+      // Make sure units string is recognized by unit system
+      auto unit = unitsSystem->unit(dDef->units());
+      if (unit.dimensionless())
+      {
+        // Go through some Qt gymnastics to format warning message
+        QString msg;
+        QTextStream qs(&msg);
+        qs << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
+           << " in attribute item \"" << vitem->name().c_str() << "\".";
+        QDebug warning(QtWarningMsg);
+        warning.noquote();
+        warning << msg;
+      }
+      else
+      {
+        useUnits = true;
+      }
+    }
+
+    if (useUnits)
+    {
+      // For item with numerical value and units, use qtDoubleUnitsListEdit
       auto* lineEdit = new qtDoubleUnitsLineEdit(dDef, unitsSystem, pWidget);
       lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
       std::string valueAsString = vitem->valueAsString(elementIdx);
