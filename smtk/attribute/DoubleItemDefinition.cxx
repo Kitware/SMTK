@@ -271,6 +271,11 @@ bool DoubleItemDefinition::reevaluateDefaults()
       {
         // No conversion needed there were no units specified
         convertedVal = valMeasure.m_value;
+        // We should add the units to the string if not empty
+        if (!m_units.empty())
+        {
+          m_defaultValuesAsStrings[i].append(" ").append(m_units);
+        }
       }
       if (!this->isValueValid(convertedVal))
       {

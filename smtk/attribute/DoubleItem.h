@@ -61,6 +61,7 @@ public:
   bool removeValue(std::size_t element) override;
   bool setNumberOfValues(std::size_t newSize) override;
   bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
+  bool setToDefault(std::size_t element = 0) override;
 
   using ValueItem::valueAsString;
   /// \brief Return the value as a string.
