@@ -27,10 +27,15 @@
           <DefaultValue>2 m</DefaultValue>
         </Double>
 
+        <Double Name="Capacity" Units="gallon">
+          <RangeInfo>
+            <Min Inclusive="true">0.0</Min>
+          </RangeInfo>
+        </Double>
+
         <Double Name="Custom" Units="some-units">
           <BriefDescription>Unrecognized Units</BriefDescription>
         </Double>
-
       </ItemDefinitions>
     </AttDef>
 

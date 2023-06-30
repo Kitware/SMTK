@@ -10,7 +10,9 @@
 
 #include "smtk/extension/qt/qtDoubleUnitsLineEdit.h"
 
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/common/StringUtil.h"
 
 #include <QCompleter>
@@ -19,8 +21,7 @@
 
 #include "units/Measurement.h"
 
-#include <algorithm> // std::sort
-#include <iostream>
+#include <algorithm> // std::sort et al
 #include <sstream>
 
 namespace
@@ -36,33 +37,69 @@ namespace smtk
 {
 namespace extension
 {
+QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
+  smtk::attribute::ConstDoubleItemPtr item,
+  QWidget* parent)
+{
+  // Create qWarning object without string quoting
+  QDebug qtWarning(QtWarningMsg);
+  qtWarning.noquote();
+  qtWarning.nospace();
+
+  // Get the item definition and see if it specifies dimensional units
+  auto dDef = dynamic_pointer_cast<const smtk::attribute::DoubleItemDefinition>(item->definition());
+  if (dDef->units().empty())
+  {
+    return nullptr;
+  }
+
+  // Sanity check that units only supported for numerical values
+  if (dDef->isDiscrete() || dDef->allowsExpressions())
+  {
+    qtWarning << "Ignoring units for discrete or expression item " << item->name().c_str() << "\".";
+    return nullptr;
+  }
+
+  // Get units system
+  auto unitsSystem = item->attribute()->attributeResource()->unitsSystem();
+  if (unitsSystem == nullptr)
+  {
+    return nullptr;
+  }
+
+  // Try parsing the unit string
+  bool parsedOK = false;
+  auto unit = unitsSystem->unit(dDef->units(), &parsedOK);
+  if (!parsedOK || unit.dimensionless())
+  {
+    qtWarning << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
+              << " in attribute item \"" << item->name().c_str() << "\".";
+    return nullptr;
+  }
+
+  // Sanity check
+  if (unit.system() == nullptr)
+  {
+    return nullptr;
+  }
+
+  auto* editor = new qtDoubleUnitsLineEdit(dDef, unit, parent);
+  return static_cast<QWidget*>(editor);
+}
 
 qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   smtk::attribute::ConstDoubleItemDefinitionPtr def,
-  std::shared_ptr<units::System> unitsSystem,
+  const units::Unit& unit,
   QWidget* parentWidget)
   : QLineEdit(parentWidget)
   , m_def(def)
-  , m_unitsSystem(unitsSystem)
+  , m_unit(unit)
 {
-  std::string unitsString = def->units();
-  std::string trimUnitsString = smtk::common::StringUtil::trim(unitsString);
-  bool success = false;
-  m_unit = unitsSystem->unit(trimUnitsString, &success);
-  if (!success)
-  {
-    qWarning() << "Unable to parse unit string" << unitsString.c_str();
-    unitsString.clear();
-  }
-  this->setPlaceholderText(QString::fromStdString(unitsString));
+  // Set placeholder text
+  this->setPlaceholderText(QString::fromStdString(unit.name().c_str()));
 
-  if (unitsString.empty())
-  {
-    qCritical() << "Underlying definition MUST have units defined";
-  }
-
-  // Initialize list of compatible units
-  m_compatibleUnits = unitsSystem->compatibleUnits(m_unit);
+  // Get list of compatible units
+  m_compatibleUnits = m_unit.system()->compatibleUnits(m_unit);
   std::sort(m_compatibleUnits.begin(), m_compatibleUnits.end(), compareUnitNames);
 
   // Find the same unit in the list and move it to front of list
@@ -95,7 +132,7 @@ void qtDoubleUnitsLineEdit::onTextChanged()
 
   // Parse the text
   bool didParse = false;
-  auto measurement = m_unitsSystem->measurement(utext, &didParse);
+  auto measurement = m_unit.system()->measurement(utext, &didParse);
 
   // Generate completer list with current value
   QStringList compatibleList;
@@ -135,7 +172,7 @@ void qtDoubleUnitsLineEdit::onTextChanged()
   if (m_def->hasRange())
   {
     bool converted = false;
-    units::Measurement convertedMsmt = m_unitsSystem->convert(measurement, m_unit, &converted);
+    units::Measurement convertedMsmt = m_unit.system()->convert(measurement, m_unit, &converted);
     if (!converted)
     {
       std::ostringstream ss;
@@ -164,7 +201,7 @@ void qtDoubleUnitsLineEdit::onEditFinished()
 #if 0
   // std::string valString = this->text().toStdString();
   // bool success = false;
-  // auto valMeasure = m_unitsSystem->measurement(valString, &success);
+  // auto valMeasure = m_unit->system()->measurement(valString, &success);
   // if (success && valMeasure.m_units.dimensionless())
   // {
   //   std::ostringstream ss;

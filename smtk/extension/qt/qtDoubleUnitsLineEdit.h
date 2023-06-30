@@ -37,10 +37,16 @@ class SMTKQTEXT_EXPORT qtDoubleUnitsLineEdit : public QLineEdit
 public:
   using Superclass = QLineEdit;
 
+  /** \brief Creates instance if double item has units; Returns editor as QWidget */
+  static QWidget* checkAndCreate(
+    smtk::attribute::ConstDoubleItemPtr item,
+    QWidget* parent = nullptr);
+
   qtDoubleUnitsLineEdit(
     smtk::attribute::ConstDoubleItemDefinitionPtr def,
-    std::shared_ptr<units::System> unitsSystem,
+    const units::Unit& unit,
     QWidget* parent = nullptr);
+
   ~qtDoubleUnitsLineEdit() override = default;
 
 Q_SIGNALS:
@@ -53,7 +59,6 @@ protected Q_SLOTS:
 
 protected:
   smtk::attribute::ConstDoubleItemDefinitionPtr m_def;
-  std::shared_ptr<units::System> m_unitsSystem;
   units::Unit m_unit;
   std::vector<units::Unit> m_compatibleUnits;
 
