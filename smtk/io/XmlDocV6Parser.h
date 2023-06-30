@@ -34,10 +34,15 @@ public:
   using XmlDocV5Parser::process;
   void process(
     pugi::xml_node& rootNode,
-    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
+    override;
 
 protected:
-  void processCategories(
+  void processCategoryAtts(
+    pugi::xml_node& node,
+    attribute::Categories::Set& catSet,
+    attribute::Categories::CombinationMode& inheritanceMode) override;
+  void processCategoryInfoNode(
     pugi::xml_node& node,
     attribute::Categories::Set& catSet,
     attribute::Categories::CombinationMode& inheritanceMode) override;

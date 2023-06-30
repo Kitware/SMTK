@@ -109,6 +109,7 @@ set(smtkCore_private_link_libraries
   Boost::system
   LibArchive::LibArchive
   Eigen3::Eigen
+  fmt::fmt
 )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)

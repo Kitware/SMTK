@@ -21,7 +21,7 @@ STILL MISSING/TODO:
             <Min Inclusive="false">0.0</Min>
             <Max Inclusive="true">1.0</Max>
           </RangeInfo>
-          <DefaultValue>3.14159</DefaultValue>
+          <DefaultValue>0.314159</DefaultValue>
         </Double>
       </ItemDefinitions>
     </AttDef>

@@ -247,9 +247,9 @@ XmlDocV3Parser::~XmlDocV3Parser() = default;
 
 void XmlDocV3Parser::process(
   pugi::xml_node& rootNode,
-  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+  std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
 {
-  XmlDocV2Parser::process(rootNode, globalItemBlocks);
+  XmlDocV2Parser::process(rootNode, globalTemplateMap);
 
   auto configurationsNode = rootNode.child("Configurations");
   if (configurationsNode)
@@ -469,20 +469,45 @@ void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
   }
 }
 
-void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
+void XmlDocV3Parser::processDefCategoryInfoNode(
+  xml_node& defNode,
+  smtk::attribute::DefinitionPtr& def)
 {
-
-  this->XmlDocV2Parser::processDefinition(defNode, def);
-
-  // Process Category Information for the Definition
   Categories::CombinationMode inheritanceMode;
-  this->processCategories(defNode, def->localCategories(), inheritanceMode);
+  this->processCategoryInfoNode(defNode, def->localCategories(), inheritanceMode);
+  def->setCategoryInheritanceMode(inheritanceMode);
+}
+
+void XmlDocV3Parser::processDefinitionAtts(xml_node& defNode, smtk::attribute::DefinitionPtr& def)
+{
+  Categories::CombinationMode inheritanceMode;
+  // Process Category Information stored in defNode's XML Attributes
+  this->processCategoryAtts(defNode, def->localCategories(), inheritanceMode);
   def->setCategoryInheritanceMode(inheritanceMode);
 
-  xml_node tagsNode = defNode.child("Tags");
-  if (tagsNode)
+  this->XmlDocV2Parser::processDefinitionAtts(defNode, def);
+}
+
+void XmlDocV3Parser::processDefinitionChildNode(xml_node& node, DefinitionPtr& def)
+{
+
+  std::string nodeName = node.name();
+  if (nodeName == "Categories")
   {
-    for (xml_node tagNode = tagsNode.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
+    // Old style Category Format
+    this->processOldStyleCategoryNode(node, def->localCategories());
+    return;
+  }
+
+  if (nodeName == "CategoryInfo")
+  {
+    this->processDefCategoryInfoNode(node, def);
+    return;
+  }
+
+  if (nodeName == "Tags")
+  {
+    for (xml_node tagNode = node.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
     {
       xml_attribute name_att = tagNode.attribute("Name");
       std::string values = tagNode.text().get();
@@ -507,7 +532,10 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
         }
       }
     }
+    return;
   }
+
+  this->XmlDocV2Parser::processDefinitionChildNode(node, def);
 }
 
 void XmlDocV3Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
@@ -943,10 +971,9 @@ void XmlDocV3Parser::processReferenceDef(
   xml_node cinode, citemsNode = node.child("ChildrenDefinitions");
 
   ItemDefinitionsHelper helper;
-  std::set<std::string> currentActiveBlocks;
 
   helper.processItemDefinitions<ReferenceItemDefinitionPtr>(
-    this, citemsNode, idef, currentActiveBlocks, idef->name(), "ReferenceItemDefinition");
+    this, citemsNode, idef, idef->name(), "ReferenceItemDefinition");
 
   // Now process the conditional information
   citemsNode = node.child("ConditionalInfo");

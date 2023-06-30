@@ -31,7 +31,8 @@ public:
   void process(pugi::xml_document& doc) override;
   void process(
     pugi::xml_node& rootNode,
-    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
+    override;
 
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
@@ -39,10 +40,13 @@ public:
 
 protected:
   void processDefinitionInformation(pugi::xml_node& rootNode) override;
+  void processDefinitionAtts(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def) override;
+  void processDefinitionChildNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def)
+    override;
+  void processDefCategoryInfoNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def);
   void processConfigurations(pugi::xml_node& configurationsNode);
   void processExclusion(pugi::xml_node& excludeNode);
   void processPrerequisite(pugi::xml_node& depNode);
-  void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
   void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def) override;
 
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item) override;

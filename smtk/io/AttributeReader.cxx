@@ -10,6 +10,7 @@
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/TemplateInfo.h"
 #include "smtk/io/XmlDocV1Parser.h"
 #include "smtk/io/XmlDocV2Parser.h"
 #include "smtk/io/XmlDocV3Parser.h"
@@ -78,7 +79,7 @@ public:
   void print(smtk::attribute::ResourcePtr resource);
   smtk::attribute::DirectoryInfo m_dirInfo;
   std::size_t m_currentFileIndex;
-  std::map<std::string, std::map<std::string, std::string>> m_globalItemBlocks;
+  std::map<std::string, std::map<std::string, TemplateInfo>> m_globalTemplateMap;
 };
 }; // namespace io
 }; // namespace smtk
@@ -291,49 +292,49 @@ void AttributeReaderInternals::parseXml(
     XmlDocV7Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV6Parser::canParse(root))
   {
     XmlDocV6Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV5Parser::canParse(root))
   {
     XmlDocV5Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV4Parser::canParse(root))
   {
     XmlDocV4Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV3Parser::canParse(root))
   {
     XmlDocV3Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV2Parser::canParse(root))
   {
     XmlDocV2Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else if (XmlDocV1Parser::canParse(root))
   {
     XmlDocV1Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-    theReader.process(root, m_globalItemBlocks);
+    theReader.process(root, m_globalTemplateMap);
   }
   else
   {
