@@ -52,10 +52,10 @@ public:
 Q_SIGNALS:
 
 public Q_SLOTS:
-  void onTextChanged();
   void onEditFinished();
 
 protected Q_SLOTS:
+  void onTextEdited();
 
 protected:
   smtk::attribute::ConstDoubleItemDefinitionPtr m_def;

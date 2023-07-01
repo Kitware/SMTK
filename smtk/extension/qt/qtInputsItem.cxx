@@ -2079,12 +2079,6 @@ void qtInputsItem::onLineEditChanged()
     return;
   }
 
-  // Check for units editor
-  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(editBox);
-  if (valueUnitsEditor != nullptr)
-  {
-    valueUnitsEditor->onTextChanged();
-  }
   else if (!editBox->isModified())
   {
     // If this is not from setText(), ignore it. We are using editingFinished

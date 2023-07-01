@@ -172,9 +172,10 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   m_completer = new QCompleter(model, parentWidget);
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
+  QObject::connect(this, &QLineEdit::textEdited, this, &qtDoubleUnitsLineEdit::onTextEdited);
 }
 
-void qtDoubleUnitsLineEdit::onTextChanged()
+void qtDoubleUnitsLineEdit::onTextEdited()
 {
   QPalette palette = this->palette();
 
