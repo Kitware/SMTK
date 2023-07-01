@@ -17,7 +17,9 @@
 
 #include <QCompleter>
 #include <QDebug>
+#include <QFont>
 #include <QStringListModel>
+#include <QVariant>
 
 #include "units/Measurement.h"
 
@@ -62,6 +64,29 @@ bool splitInput(const std::string& input, std::string& valueString, std::string&
 
   return true;
 }
+
+/** \brief Subclass QStringListModel to highlight first item */
+class qtCompleterStringModel : public QStringListModel
+{
+public:
+  qtCompleterStringModel(QObject* parent = nullptr)
+    : QStringListModel(parent)
+  {
+  }
+
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override
+  {
+    if (role == Qt::FontRole && index.row() == 0)
+    {
+      QVariant var = QStringListModel::data(index, role);
+      QFont font = qvariant_cast<QFont>(var);
+      font.setBold(true);
+      return font;
+    }
+    // (else)
+    return QStringListModel::data(index, role);
+  }
+};
 
 } // anonymous namespace
 
@@ -143,8 +168,8 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   }
 
   // Instantiate completer with (empty) string list model
-  QStringList list;
-  m_completer = new QCompleter(list, parentWidget);
+  auto* model = new qtCompleterStringModel(this);
+  m_completer = new QCompleter(model, parentWidget);
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
 }
@@ -185,8 +210,8 @@ void qtDoubleUnitsLineEdit::onTextChanged()
       compatibleList << QString::fromStdString(prompt.str());
     } // for
     // qDebug() << compatibleList;
-  }
-  auto* model = qobject_cast<QStringListModel*>(m_completer->model());
+  } // if (ok)
+  auto* model = dynamic_cast<qtCompleterStringModel*>(m_completer->model());
   model->setStringList(compatibleList);
 
   // Shouldn't need to call complete() but doesn't display without it
