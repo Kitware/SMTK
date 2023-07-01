@@ -3,9 +3,6 @@
   <Definitions>
     <AttDef Type="UnitsExample">
       <ItemDefinitions>
-        <Double Name="No Units 1">
-          <BriefDescription>No Units, No Default</BriefDescription>
-        </Double>
         <Double Name="No Units [0-100)">
           <BriefDescription>No Units, Default Value</BriefDescription>
           <DefaultValue>3.14159</DefaultValue>
@@ -23,7 +20,7 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Distance [-inf, inf] ft" Units="ft">
+        <Double Name="Length (-inf, inf) ft" Units="ft">
           <DefaultValue>2 m</DefaultValue>
         </Double>
 
@@ -33,8 +30,9 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Custom" Units="some-units">
+        <Double Name="Made Up Units" Units="some-units">
           <BriefDescription>Unrecognized Units</BriefDescription>
+          <DefaultValue>0.0</DefaultValue>
         </Double>
       </ItemDefinitions>
     </AttDef>

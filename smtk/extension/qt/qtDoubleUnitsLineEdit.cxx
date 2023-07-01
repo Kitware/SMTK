@@ -31,7 +31,39 @@ bool compareUnitNames(const units::Unit& a, const units::Unit& b)
   // For sorting units by name
   return a.name() < b.name();
 }
-} // namespace
+
+/** \brief Splits input string into double value and any remaining part
+ *
+ * Returns true if double was found
+ */
+bool splitInput(const std::string& input, std::string& valueString, std::string& unitsString)
+{
+  valueString.clear();
+  unitsString.clear();
+
+  // Try streaming double value
+  std::istringstream iss(input);
+  double value;
+  iss >> value;
+  if ((iss.bad()) || iss.fail())
+  {
+    return false;
+  }
+
+  if (iss.eof())
+  {
+    valueString = input;
+    return true;
+  }
+
+  std::size_t pos = iss.tellg();
+  valueString = input.substr(0, pos);
+  unitsString = input.substr(pos);
+
+  return true;
+}
+
+} // anonymous namespace
 
 namespace smtk
 {
@@ -130,29 +162,38 @@ void qtDoubleUnitsLineEdit::onTextChanged()
     return;
   }
 
-  // Parse the text
-  bool didParse = false;
-  auto measurement = m_unit.system()->measurement(utext, &didParse);
-
-  // Generate completer list with current value
+  // Update the completer strings
   QStringList compatibleList;
-  if (measurement.m_value != 0.)
+
+  std::string valueString;
+  std::string unitsString;
+  bool ok = splitInput(utext, valueString, unitsString);
+  if (ok)
   {
+    if (unitsString.empty() || unitsString[0] == ' ')
+    {
+      valueString += ' ';
+    }
+
+    // Generate the completer strings
+    std::ostringstream prompt;
     for (const auto& unit : m_compatibleUnits)
     {
-      std::ostringstream prompt;
-      std::string uname = unit.name();
-      prompt << measurement.m_value << " " << uname;
+      prompt.str("");
+      prompt.clear();
+      prompt << valueString << unit.name();
       compatibleList << QString::fromStdString(prompt.str());
     } // for
+    // qDebug() << compatibleList;
   }
-
   auto* model = qobject_cast<QStringListModel*>(m_completer->model());
   model->setStringList(compatibleList);
 
   // Shouldn't need to call complete() but doesn't display without it
   m_completer->complete();
 
+  bool didParse = false;
+  auto measurement = m_unit.system()->measurement(utext, &didParse);
   if (!didParse)
   {
     palette.setColor(QPalette::Base, QColor("#ffb9b9"));
@@ -198,32 +239,23 @@ void qtDoubleUnitsLineEdit::onTextChanged()
 void qtDoubleUnitsLineEdit::onEditFinished()
 {
   // Check if we need to add units string
-#if 0
-  // std::string valString = this->text().toStdString();
-  // bool success = false;
-  // auto valMeasure = m_unit->system()->measurement(valString, &success);
-  // if (success && valMeasure.m_units.dimensionless())
-  // {
-  //   std::ostringstream ss;
-  //   ss << valString << ' ' << m_unit;
-  //   this->blockSignals(true);
-  //   this->setText(QString::fromStdString(ss.str()));
-  //   this->blockSignals(false);
-  // }
-#else
-  // Check for space in middle of text, even though not required by units library.
-  // Using this approach because we don't know how to tell the difference
-  // between an invalid units e.g., "3x" and missing units (both are dimensionless).
-  QString text = this->text().trimmed();
-  if (text.indexOf(' ') < 0)
+  std::string input = this->text().toStdString();
+  std::string valueString;
+  std::string unitsString;
+  if (!splitInput(input, valueString, unitsString))
+  {
+    return;
+  }
+
+  std::string trimmedString = smtk::common::StringUtil::trim(unitsString);
+  if (trimmedString.empty())
   {
     std::ostringstream ss;
-    ss << text.toStdString() << ' ' << m_unit.name();
+    ss << valueString << ' ' << m_unit.name();
     this->blockSignals(true);
     this->setText(QString::fromStdString(ss.str()));
     this->blockSignals(false);
   }
-#endif
 }
 
 } // namespace extension
