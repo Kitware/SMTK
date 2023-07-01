@@ -60,6 +60,6 @@ if(@SMTK_COVERAGE_ENABLED@)
     "CMakeFiles"
 
     # ParaView-generated sources.
-    "plugin/.*Plugin\.h"
+    "plugin/.*Plugin\\.h"
     )
 endif()
