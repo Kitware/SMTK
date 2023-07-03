@@ -129,14 +129,10 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
   auto unit = unitsSystem->unit(dDef->units(), &parsedOK);
   if (!parsedOK || unit.dimensionless())
   {
+#ifndef NDEBUG
     qtWarning << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
               << " in attribute item \"" << item->name().c_str() << "\".";
-    return nullptr;
-  }
-
-  // Sanity check
-  if (unit.system() == nullptr)
-  {
+#endif
     return nullptr;
   }
 
@@ -153,7 +149,7 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   , m_unit(unit)
 {
   // Set placeholder text
-  this->setPlaceholderText(QString::fromStdString(unit.name().c_str()));
+  this->setPlaceholderText(QString::fromStdString(unit.name()));
 
   // Get list of compatible units
   m_compatibleUnits = m_unit.system()->compatibleUnits(m_unit);
@@ -273,6 +269,7 @@ void qtDoubleUnitsLineEdit::onEditFinished()
     return;
   }
 
+  // Yes - add (default) units string to the current line edit contents
   std::string trimmedString = smtk::common::StringUtil::trim(unitsString);
   if (trimmedString.empty())
   {

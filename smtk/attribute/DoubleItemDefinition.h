@@ -53,7 +53,7 @@ public:
 
 protected:
   DoubleItemDefinition(const std::string& myName);
-  bool reevaluateDefaults();
+  bool reevaluateDefaults(bool checkUnits = false);
 
   std::vector<std::string> m_defaultValuesAsStrings;
 

@@ -30,10 +30,11 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Made Up Units" Units="some-units">
+<!-- Invalid units cause reader to fail. -->
+<!--         <Double Name="Made Up Units" Units="some-units">
           <BriefDescription>Unrecognized Units</BriefDescription>
           <DefaultValue>0.0</DefaultValue>
-        </Double>
+        </Double> -->
       </ItemDefinitions>
     </AttDef>
 

@@ -83,7 +83,7 @@ bool DoubleItemDefinition::setUnits(const std::string& newUnits)
   }
   std::string origUnits = m_units;
   m_units = newUnits;
-  if (!this->reevaluateDefaults())
+  if (!this->reevaluateDefaults(true))
   {
     // Could not set new units
     m_units = origUnits;
@@ -209,7 +209,7 @@ bool DoubleItemDefinition::setDefaultValueAsString(const std::vector<std::string
   return true;
 }
 
-bool DoubleItemDefinition::reevaluateDefaults()
+bool DoubleItemDefinition::reevaluateDefaults(bool checkUnits)
 {
   std::vector<double> convertedVals(m_defaultValuesAsStrings.size());
   std::string units;
@@ -220,6 +220,10 @@ bool DoubleItemDefinition::reevaluateDefaults()
     // If we have an units System, lets see if the definition's units
     // are valid?
     defUnit = m_unitsSystem->unit(m_units, &convert);
+    if (!convert && checkUnits)
+    {
+      return false;
+    }
   }
 
   // Can we not do conversion?
