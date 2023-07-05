@@ -1452,11 +1452,19 @@ Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filte
   catch (tao::pegtl::parse_error& err)
   {
     const auto p = err.positions.front();
+#if TAO_PEGTL_VERSION_MAJOR <= 2 && TAO_PEGTL_VERSION_MINOR <= 7
     smtkErrorMacro(
       smtk::io::Logger::instance(),
       "Entity::filterStringToQueryFunctor: " << err.what() << "\n"
                                              << in.line_as_string(p) << "\n"
                                              << std::string(p.byte_in_line, ' ') << "^\n");
+#else
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Entity::filterStringToQueryFunctor: " << err.what() << "\n"
+                                             << in.line_at(p) << "\n"
+                                             << std::string(p.byte_in_line, ' ') << "^\n");
+#endif
     return std::bind(IsValueValid, std::placeholders::_1, bitflags);
   }
   if (limitClause.m_propType == smtk::resource::PropertyType::INVALID_PROPERTY)
