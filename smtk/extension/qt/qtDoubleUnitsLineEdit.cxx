@@ -111,7 +111,7 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
   }
 
   // Sanity check that units only supported for numerical values
-  if (dDef->isDiscrete() || dDef->allowsExpressions())
+  if (dDef->isDiscrete())
   {
     qtWarning << "Ignoring units for discrete or expression item " << item->name().c_str() << "\".";
     return nullptr;

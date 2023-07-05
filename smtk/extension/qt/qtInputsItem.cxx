@@ -1606,23 +1606,30 @@ QWidget* qtInputsItem::createDoubleWidget(
 
   if (option == "LineEdit")
   {
-    // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
-    QWidget* editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(ditem, pWidget);
-    if (editorWidget != nullptr)
+    QWidget* editorWidget = nullptr;
+
+    bool expressionOnly = m_itemInfo.component().attributeAsBool("ExpressionOnly");
+    if (!expressionOnly)
     {
-      auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
-      lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
-      if (vitem->isSet(elementIdx))
+      // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
+      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(ditem, pWidget);
+      if (editorWidget != nullptr)
       {
-        std::string valueAsString = vitem->valueAsString(elementIdx);
-        lineEdit->blockSignals(true);
-        lineEdit->setText(valueAsString.c_str());
-        lineEdit->blockSignals(false);
+        auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
+        lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
+        if (vitem->isSet(elementIdx))
+        {
+          std::string valueAsString = vitem->valueAsString(elementIdx);
+          lineEdit->blockSignals(true);
+          lineEdit->setText(valueAsString.c_str());
+          lineEdit->blockSignals(false);
+        }
       }
     }
-    else
+
+    // If units editor not created, use qtDoubleLineEdit
+    if (editorWidget == nullptr)
     {
-      // If not, use qtDoubleLineEdit
       auto* editBox = new qtDoubleLineEdit(pWidget);
       editBox->setObjectName(QString("editBox%1").arg(elementIdx));
 
