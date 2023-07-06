@@ -48,7 +48,11 @@ int tryParse(const std::string& expression)
   {
     const auto p = err.positions.front();
     std::cout << "ExpressionParser: " << err.what() << "\n"
+#if TAO_PEGTL_VERSION_MAJOR <= 2 && TAO_PEGTL_VERSION_MINOR <= 7
               << in.line_as_string(p) << "\n"
+#else
+              << in.line_at(p) << "\n"
+#endif
               << std::string(p.byte_in_line, ' ') << "^\n"
               << std::endl;
     return 1;
@@ -80,7 +84,11 @@ double evaluateExpression(const std::string& expression)
   {
     const auto p = err.positions.front();
     std::cout << "ExpressionParser: " << err.what() << "\n"
+#if TAO_PEGTL_VERSION_MAJOR <= 2 && TAO_PEGTL_VERSION_MINOR <= 7
               << in.line_as_string(p) << "\n"
+#else
+              << in.line_at(p) << "\n"
+#endif
               << std::string(p.byte_in_line, ' ') << "^\n"
               << std::endl;
     return std::nan("");

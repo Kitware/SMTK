@@ -104,7 +104,7 @@ InfixExpressionError InfixExpressionGrammar::testExpressionSyntax(
   {
     //    const auto p = parse_err.positions.front();
     //    std::cout << "ExpressionParser: " << parse_err.what() << "\n"
-    //              << in.line_as_string(p) << "\n"
+    //              << in.line_at(p) << "\n"
     //              << std::string(p.byte_in_line, ' ') << "^\n"
     //              << std::endl;
 
