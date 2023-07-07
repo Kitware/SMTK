@@ -41,6 +41,7 @@ set(_smtk_packages
   ZeroMQ # for Remus
   pybind11
   units
+  fmt
 )
 
 # Per-package variable forwarding goes here.

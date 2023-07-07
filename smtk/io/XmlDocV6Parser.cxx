@@ -68,7 +68,7 @@ bool XmlDocV6Parser::canParse(pugi::xml_node& node)
 
 void XmlDocV6Parser::process(
   pugi::xml_node& rootNode,
-  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+  std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
 {
   pugi::xml_attribute xatt;
 
@@ -88,16 +88,16 @@ void XmlDocV6Parser::process(
   std::size_t templateVersion = static_cast<std::size_t>(tmp);
   m_resource->setTemplateVersion(templateVersion);
 
-  XmlDocV5Parser::process(rootNode, globalItemBlocks);
+  XmlDocV5Parser::process(rootNode, globalTemplateMap);
 }
 
-void XmlDocV6Parser::processCategories(
+// This is to support specifying category inheritance via XML Attributes
+void XmlDocV6Parser::processCategoryAtts(
   xml_node& node,
   Categories::Set& catSet,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
-  xml_node child;
 
   // The default inheritance mode is And
   inheritanceMode = Categories::CombinationMode::And;
@@ -113,72 +113,68 @@ void XmlDocV6Parser::processCategories(
   {
     catSet.setInclusionMode(catMode);
   }
+}
 
-  // This is old style
-  xml_node catNodes = node.child("Categories");
-  // This is the new format
-  xml_node catInfoNode = node.child("CategoryInfo");
-  if (catInfoNode)
+void XmlDocV6Parser::processCategoryInfoNode(
+  xml_node& node,
+  Categories::Set& catSet,
+  Categories::CombinationMode& inheritanceMode)
+{
+  attribute::Categories::Set::CombinationMode catMode;
+  xml_node child;
+  xml_attribute xatt;
+
+  // How are we inheriting categories
+  xatt = node.attribute("InheritanceMode");
+  if (xatt && XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    // How are we inheriting categories
-    xatt = catInfoNode.attribute("InheritanceMode");
-    if (xatt && XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    inheritanceMode = catMode;
+  }
+  else // Check the old style
+  {
+    xatt = node.attribute("Inherit");
+    if (xatt)
     {
-      inheritanceMode = catMode;
-    }
-    else // Check the old style
-    {
-      xatt = catInfoNode.attribute("Inherit");
-      if (xatt)
-      {
-        // In teh old style inheriting meant or'ing
-        inheritanceMode =
-          xatt.as_bool() ? Categories::CombinationMode::Or : Categories::CombinationMode::LocalOnly;
-      }
-    }
-
-    // Lets get the overall combination mode
-    xatt = catInfoNode.attribute("Combination");
-    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-    {
-      catSet.setCombinationMode(catMode);
-    }
-    // Get the Include set (if one exists)
-    xml_node catGroup;
-    catGroup = catInfoNode.child("Include");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        catSet.setInclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        catSet.insertInclusion(child.text().get());
-      }
-    }
-    catGroup = catInfoNode.child("Exclude");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        catSet.setExclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        catSet.insertExclusion(child.text().get());
-      }
+      // In teh old style inheriting meant or'ing
+      inheritanceMode =
+        xatt.as_bool() ? Categories::CombinationMode::Or : Categories::CombinationMode::LocalOnly;
     }
   }
-  else if (catNodes) // Deprecated Format
+
+  // Lets get the overall combination mode
+  xatt = node.attribute("Combination");
+  if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    for (child = catNodes.first_child(); child; child = child.next_sibling())
+    catSet.setCombinationMode(catMode);
+  }
+  // Get the Include set (if one exists)
+  xml_node catGroup;
+  catGroup = node.child("Include");
+  if (catGroup)
+  {
+    // Lets get the include combination mode
+    xatt = catGroup.attribute("Combination");
+    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    {
+      catSet.setInclusionMode(catMode);
+    }
+    for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
       catSet.insertInclusion(child.text().get());
+    }
+  }
+  catGroup = node.child("Exclude");
+  if (catGroup)
+  {
+    // Lets get the include combination mode
+    xatt = catGroup.attribute("Combination");
+    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    {
+      catSet.setExclusionMode(catMode);
+    }
+    for (child = catGroup.first_child(); child; child = child.next_sibling())
+    {
+      catSet.insertExclusion(child.text().get());
     }
   }
 }

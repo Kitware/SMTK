@@ -45,8 +45,11 @@ public:
   ///\brief Method for parsing Item Definitions represented
   /// by the xml node itemsNode, for Definition-type class
   /// def.
-  /// ActiveBlockNames is used when processing Item Block
-  /// references in order to prevent infinite recursion.
+  /// When instantiating an XML node from Block or Template using
+  /// the parser's createXmlFromTemplate method make sure you "release"
+  /// it by calling the parser's releaseXmlTemplate.  Though this does not
+  /// release memory, it does tell the parser t is done with the node and
+  /// removes it from its active list (which is used to detect infinite loops)
   /// defName is used for error reporting if a problem should
   /// be encountered and is the name of the def being processed
   /// and attType is its type
@@ -54,8 +57,7 @@ public:
   void processItemDefinitions(
     XmlDocV1Parser* parser,
     pugi::xml_node& itemsNode,
-    DefType& def,
-    std::set<std::string>& activeBlockNames,
+    const DefType& def,
     const std::string& defName,
     const std::string& attType)
   {
@@ -77,44 +79,16 @@ public:
 
       itemName = xatt.value();
       nodeName = node.name();
-      // Are we referencing an Item Definition Block
-      if (nodeName == "Block")
+      // Are we referencing a Block or Template Instantiation?
+      if ((nodeName == "Block") || (nodeName == "Template"))
       {
-        // See if a namespace was specified else assume the global namespace ""
-        xatt = node.attribute("Namespace");
-        std::string itemNamespace = (xatt) ? xatt.value() : "";
-
-        auto nsit = parser->m_itemDefintionBlocks.find(itemNamespace);
-        if (nsit == parser->m_itemDefintionBlocks.end())
+        pugi::xml_node instancedTemplateNode;
+        if (parser->createXmlFromTemplate(node, instancedTemplateNode))
         {
-          smtkErrorMacro(
-            parser->m_logger,
-            "Can not find Item Block Namespace: " << itemNamespace << " referenced in " << attType
-                                                  << ": " << defName);
-          continue;
+          this->processItemDefinitions<DefType>(
+            parser, instancedTemplateNode, def, defName, attType);
+          parser->releaseXmlTemplate(instancedTemplateNode);
         }
-        auto it = nsit->second.find(itemName);
-        if (it == nsit->second.end())
-        {
-          smtkErrorMacro(
-            parser->m_logger,
-            "Can not find Item Block Name: " << itemName << "in Namespace: " << itemNamespace
-                                             << " referenced in " << attType << ": " << defName);
-          continue;
-        }
-        // Make sure we are not already parsing a block of the same name
-        else if (activeBlockNames.find(itemName) != activeBlockNames.end())
-        {
-          smtkErrorMacro(
-            parser->m_logger,
-            "Encountered Recursive Loop : " << itemName << " referenced in " << attType << ": "
-                                            << defName);
-          continue;
-        }
-        activeBlockNames.emplace(itemName);
-        this->processItemDefinitions<DefType>(
-          parser, it->second, def, activeBlockNames, defName, attType);
-        activeBlockNames.erase(itemName);
         continue;
       }
 

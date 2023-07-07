@@ -8,6 +8,7 @@ set(ioSrcs
   json/jsonSelectionMap.cxx
   Logger.cxx
   ModelToMesh.cxx
+  TemplateInfo.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
   XmlDocV3Parser.cxx
@@ -32,6 +33,7 @@ set(ioHeaders
   json/jsonSelectionMap.h
   Logger.h
   ModelToMesh.h
+  TemplateInfo.h
   XmlDocV1Parser.h
   XmlDocV2Parser.h
   XmlDocV3Parser.h

@@ -1467,7 +1467,6 @@
             <Min Inclusive="true">1</Min>
             <Min Inclusive="true">10e9</Min>
           </RangeInfo>
-          <DefaultValue>0</DefaultValue>
         </Int>
         <Double Name="term" Label="Simulation termination time" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>Define the simulation termination time, in units consistent with the problem definition (term)</BriefDescription>
@@ -1475,7 +1474,6 @@
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>
-          <DefaultValue>0</DefaultValue>
         </Double>
         <Double Name="deltat" Label="Time step size" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>Define the time step size to be used. This value may be over-ridden by physics specific constraints on the time step (deltat)</BriefDescription>
@@ -1483,7 +1481,6 @@
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>
-          <DefaultValue>0</DefaultValue>
         </Double>
       </ItemDefinitions>
     </AttDef>

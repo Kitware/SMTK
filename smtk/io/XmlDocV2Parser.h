@@ -34,7 +34,7 @@ public:
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
-  void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
+  void processDefinitionAtts(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def) override;
   void processDirectoryItem(pugi::xml_node& node, smtk::attribute::DirectoryItemPtr item) override;
   void processDirectoryDef(pugi::xml_node& node, smtk::attribute::DirectoryItemDefinitionPtr idef)
     override;
@@ -44,8 +44,9 @@ protected:
     override;
   void processMeshEntityDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
     override;
-  void processStringDef(pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef)
-    override;
+  void processStringDefAtts(
+    pugi::xml_node& node,
+    const smtk::attribute::StringItemDefinitionPtr& idef) override;
   void processViews(pugi::xml_node& root) override;
   void processViewComponent(
     smtk::view::Configuration::Component& comp,

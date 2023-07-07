@@ -103,6 +103,13 @@ if (NOT units_FOUND)
   set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
 endif ()
 
+find_package(fmt ${_smtk_find_quietly})
+if (NOT fmt_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "fmt dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
 find_package(MOAB ${_smtk_find_quietly})
 if (NOT MOAB_FOUND)
   list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"

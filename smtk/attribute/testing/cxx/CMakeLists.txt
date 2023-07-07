@@ -109,8 +109,9 @@ set(unit_tests
 set(unit_tests_which_require_data
   unitAnalysisConfigurations.cxx
   unitConditionalGroup.cxx
-  unitXmlReaderProperties.cxx
   unitItemBlocks.cxx
+  unitTemplates.cxx
+  unitXmlReaderProperties.cxx
   )
 
 set(extra_libs ${Boost_LIBRARIES})

@@ -43,7 +43,8 @@ This element can contain the following optional children XML Elements:
 - Categories : used to define workflow specific categories (see `Category Section`_)
 - Analyses : used to define various analysis groups (see `Analysis Section`_)
 - Analysis Configurations: predefined analysis configuration from which the user can choose from (see `Analysis Configuration Section`_)
-- Item Blocks : used to define reusable  blocks of Item Definitions(see `Item Blocks Section`_)
+- ItemBlocks : used to define reusable  blocks of Attribute/Item Definitions Information (see `Item Blocks Section`_)
+- Templates : used to define reusable  parameterized blocks of Attribute/Item Definitions Information(see `Templates Section`_)
 - Definitions : used to define attribute definitions (see `Definitions Section`_)
 - Attributes : used to define attributes
 - Views : used to define various Views (used to create GUIs)
@@ -434,7 +435,7 @@ In this case roles 10 and 0 are considered to be unique.
 
 Item Blocks Section
 ---------------------------------
-Item Definition Blocks allows the reuse of a group of Item Definitions in different Attribute Definitions.  Providing a "hasA" relationship as opposed to the currently supported "isA". These blocks can then be referenced in the "ItemDefinitions" nodes of Attribute or Group Item Definitions or in the "ChildrenDefinitions" nodes for Reference or Value Item Definitions.  Blocks themselves can reference other blocks.  But care must be taken not to form a recursive relationship.  In the parser detects such a pattern it will report an error.
+Item Definition Blocks allows the reuse of a group of Attribute / Item Definitions Components in different Attribute/Item Definitions.  Providing a "hasA" relationship as opposed to the currently supported "isA". These blocks can then be referenced in the "ItemDefinitions" nodes of Attribute or Group Item Definitions or in the "ChildrenDefinitions" nodes for Reference or Value Item Definitions. Blocks themselves can reference other blocks.  But care must be taken not to form a recursive relationship.  In the parser detects such a pattern it will report an error.
 
 When referencing a Block, the items will be inserted relative to where the Block is being referenced.
 
@@ -492,7 +493,15 @@ The Item Block functionality has been extended so that an Item Block can be expo
 better organize  Item Blocks, we have also introduced the concept of a *namespace* that behaves similar to namespaces in C++.  A namespace scopes an
 Item Block and therefore must also be used when referring to an Item Block.
 
-**Note** Namespaces are only used w/r Item Blocks and they can not be nested.
+In Version 7 XML files, Item Blocks functionality has been further extended. Blocks can be used within XML Elements:
+
+ * Definitions
+ * AttDef
+ * Any ValueItemDefinition
+
+ For example, you can use a Block to contain the discrete information of a String ItemDefinition.
+
+**Note** Namespaces are only used w/r Item Blocks (and now Templates) and they can not be nested.
 
 .. list-table:: XML Attributes for <ItemBlocks> Element
    :widths: 10 40
@@ -530,6 +539,118 @@ Item Block and therefore must also be used when referring to an Item Block.
        (Optional)
 
        **Note** If not specified SMTK assumes that the value is *false* meaning that the ItemBlock is file-scope only
+
+Templates Section
+---------------------------------
+Templates are a further extension of Item Block's functionality by provided the ability to parameterize the information. A Template Definition is composed of two elements.  **Contents** represents the information to be inserted.  This is similar to the contents of an ItemBlock.  It also can contain an optional **Parameters** element that defines the parameters used in the Template.  When referring to a template parameter, you need to enclose it in {}.  A declared parameter may be given a default value.  When instantiating a Template, you can include a set of Parameters along with their values.  **You must include values for all parameters that were not given a default value in the Template's Definition.** A Template can be used anywhere an ItemBlock can be used.
+
+When instantiating a Template, the infromation will be inserted relative to where the Template is being referenced.
+
+Category constraints are inherited as usual and that Templates can call other Templates.  Here is an example of using a Template:
+
+.. code-block:: xml
+
+  <Templates>
+
+    <Template Name="SimpleStringDefault">
+      <Parameters>
+        <Param Name="a">dog</Param>
+      </Parameters>
+      <Contents>
+        <DefaultValue>{a}</DefaultValue>
+      </Contents>
+    </Template>
+
+    <Template Name="SimpleAttribute">
+      <Parameters>
+        <Param Name="type"/>
+      </Parameters>
+      <Contents>
+        <AttDef Type="{type}">
+          <ItemDefinitions>
+            <String Name="s1">
+              <Template Name="SimpleStringDefault">
+                <Param Name="a">cat</Param>
+              </Template>
+            </String>
+            <String Name="s2">
+              <Template Name="SimpleStringDefault"/>
+            </String>
+            <String Name="s3">
+              <Template Name="DiscreteStringInfo">
+                <Param Name="defaultIndex">1</Param>
+              </Template>
+            </String>
+          </ItemDefinitions>
+        </AttDef>
+      </Contents>
+    </Template>
+  </Templates>
+
+  <Definitions>
+    <Template Name="SimpleAttribute">
+      <Param Name="type">A</Param>
+    </Template>
+  </Definitions>
+
+See data/attribute/attribute_collection/TemplateTest.sbt and smtk/attribute/testing/cxx/unitTemplates.cxx for examples.
+
+Templates are supported in Version 7 (and later) XML files.
+
+**Note** As mentioned previously, Namespaces are only used w/r Templates and ItemBlocks and they can not be nested.
+
+.. list-table:: XML Attributes for <Templates> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Namespace
+     - String value representing the default namespace to which all of its Templates belong to. (Optional)
+
+       **Note** that if not specified SMTK assumes that the default namespace is the global namespace represented by ""
+
+.. list-table:: XML Attributes for <Template> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Name
+     - String value representing the name of the Template.
+       (Required)
+
+   * - Namespace
+     - String value representing the  namespace that the Template belongs to.
+       (Optional)
+
+       **Note** If not specified it will use the default namespace specified in the **Templates** node.
+
+   * - Export
+     - Boolean indicating that the Template should be made available to XML attribute files that include this one.
+       (Optional)
+
+       **Note** If not specified SMTK assumes that the value is *false* meaning that the Template is file-scope only
+
+
+.. list-table:: XML Children Elements for <Template> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Child Element
+     - Description
+
+   * - <Parameters>
+     - Defines the parameters used by the Template
+       (Optional).
+
+   * - <Contents>
+     - Defines the information to be inserted when the template is instanced.
+
 
 Definitions Section
 ---------------------------------

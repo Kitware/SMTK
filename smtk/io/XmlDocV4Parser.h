@@ -32,15 +32,18 @@ public:
   void process(pugi::xml_document& doc) override;
   void process(
     pugi::xml_node& rootNode,
-    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks) override;
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
+    override;
 
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
-  void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
-  void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+  void processDefinitionChildNode(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def)
+    override;
+  void processItemDefChildNode(pugi::xml_node& node, const smtk::attribute::ItemDefinitionPtr& idef)
+    override;
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
   void processViews(pugi::xml_node& root) override;
   void processAssociationRules(pugi::xml_node& root) override;

@@ -102,11 +102,12 @@ void XmlDocV2Parser::process(pugi::xml_document& doc)
   this->process(amnode);
 }
 
-void XmlDocV2Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
+void XmlDocV2Parser::processDefinitionAtts(xml_node& defNode, smtk::attribute::DefinitionPtr& def)
 {
+  this->XmlDocV1Parser::processDefinitionAtts(defNode, def);
+
   xml_attribute xatt;
-  // we just need to process Secure XML Attribute added in V2
-  this->XmlDocV1Parser::processDefinition(defNode, def);
+  // we just need to process RootName added in V2
   xatt = defNode.attribute("RootName");
   if (xatt)
   {
@@ -163,11 +164,13 @@ void XmlDocV2Parser::processFileDef(pugi::xml_node& node, attribute::FileItemDef
   }
 }
 
-void XmlDocV2Parser::processStringDef(xml_node& node, smtk::attribute::StringItemDefinitionPtr idef)
+void XmlDocV2Parser::processStringDefAtts(
+  xml_node& node,
+  const smtk::attribute::StringItemDefinitionPtr& idef)
 {
   xml_attribute xatt;
   // we just need to process Secure XML Attribute added in V2
-  this->XmlDocV1Parser::processStringDef(node, idef);
+  this->XmlDocV1Parser::processStringDefAtts(node, idef);
   xatt = node.attribute("Secure");
   if (xatt)
   {

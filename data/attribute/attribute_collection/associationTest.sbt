@@ -13,8 +13,29 @@
 
   Views have been defined to allow the user to create Suppliers and Consumers.
   The user is able to create Consumers and Suppliers and validate the above constraints when associating Suppliers to a Consumer.
+
+  Updated to use Templates to show how reuse Association Infomation
   -->
-<SMTK_AttributeResource Version="4">
+<SMTK_AttributeResource Version="7">
+
+  <Templates>
+    <Template Name="ConsumerAssociation">
+      <Parameters>
+        <Param Name="reject"/>
+      </Parameters>
+      <Contents>
+        <AssociationsDef Name="assoc" Extensible="true" NumberOfRequiredValues="0">
+          <Accepts>
+            <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Supplier']"/>
+          </Accepts>
+          <Rejects>
+            <Resource Name="smtk::attribute::Resource" Filter="attribute[type='{reject}']"/>
+          </Rejects>
+        </AssociationsDef>
+      </Contents>
+    </Template>
+  </Templates>
+
   <!--**********  Attribute Definitions ***********-->
   <Definitions>
     <AttDef Type="Supplier"/>
@@ -22,24 +43,14 @@
     <AttDef Type="Beta" BaseType="Supplier" />
     <AttDef Type="Consumer" Abstract="1" />
     <AttDef Type="NotBetaConsumer" BaseType="Consumer">
-      <AssociationsDef Name="assoc" Extensible="true" NumberOfRequiredValues="0">
-        <Accepts>
-          <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Supplier']"/>
-        </Accepts>
-        <Rejects>
-          <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Beta']"/>
-        </Rejects>
-      </AssociationsDef>
+      <Template Name="ConsumerAssociation">
+        <Param Name="reject">Beta</Param>
+      </Template>
     </AttDef>
     <AttDef Type="NotAlphaConsumer" BaseType="Consumer">
-      <AssociationsDef Name="assoc" Extensible="true" NumberOfRequiredValues="0">
-        <Accepts>
-          <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Supplier']"/>
-        </Accepts>
-        <Rejects>
-          <Resource Name="smtk::attribute::Resource" Filter="attribute[type='Alpha']"/>
-        </Rejects>
-      </AssociationsDef>
+      <Template Name="ConsumerAssociation">
+        <Param Name="reject">Alpha</Param>
+      </Template>
     </AttDef>
   </Definitions>
   <Views>

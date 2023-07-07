@@ -17,7 +17,11 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+// Class for recording problems
 #include "smtk/io/Logger.h"
+
+// For storing Template Definition Info
+#include "smtk/io/TemplateInfo.h"
 
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
@@ -39,8 +43,8 @@ namespace smtk
 {
 namespace io
 {
-// Class for recording problems
-class Logger;
+// Class to hold Parser's pugi data;
+class XmlDocV1ParserInternals;
 
 // Helper struct needed for dealing with attribute references
 struct AttRefInfo
@@ -69,7 +73,7 @@ public:
   virtual void process(pugi::xml_node& rootNode);
   virtual void process(
     pugi::xml_node& rootNode,
-    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks);
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap);
 
   // This function has no implementation!
   static void convertStringToXML(std::string& str);
@@ -92,22 +96,62 @@ protected:
   void processAttributeInformation(pugi::xml_node& root);
   virtual void processViews(pugi::xml_node& root);
   virtual void processAssociationRules(pugi::xml_node&) {}
-  virtual void processCategories(
+
+  virtual void processCategoryAtts(
+    pugi::xml_node& node,
+    attribute::Categories::Set& catSet,
+    attribute::Categories::CombinationMode& inheritanceMode);
+  void processOldStyleCategoryNode(pugi::xml_node& node, smtk::attribute::Categories::Set& catSet);
+  void processItemDefCategoryInfoNode(
+    pugi::xml_node& node,
+    smtk::attribute::ItemDefinitionPtr idef);
+  virtual void processCategoryInfoNode(
     pugi::xml_node& node,
     attribute::Categories::Set& catSet,
     attribute::Categories::CombinationMode& inheritanceMode);
 
-  void createDefinition(pugi::xml_node& defNode);
   virtual void processDefinitionInformation(pugi::xml_node& defNode);
-  virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
+  void processDefinitionInformationChildren(pugi::xml_node& node);
+  void createDefinition(pugi::xml_node& defNode);
+
+  virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def);
+  virtual void processDefinitionAtts(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def);
+  virtual void processDefinitionContents(
+    pugi::xml_node& defNode,
+    smtk::attribute::DefinitionPtr& def);
+  virtual void processDefinitionChildNode(
+    pugi::xml_node& node,
+    smtk::attribute::DefinitionPtr& def);
+
   virtual void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def);
   virtual void processAttribute(pugi::xml_node& attNode);
   virtual void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
-  virtual void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
+
+  void addDefaultCategoryIfNeeded(const smtk::attribute::ItemDefinitionPtr& idef);
+
+  virtual void processItemDef(pugi::xml_node& node, const smtk::attribute::ItemDefinitionPtr& idef);
+  virtual void processItemDefAtts(
+    pugi::xml_node& node,
+    const smtk::attribute::ItemDefinitionPtr& idef);
+  virtual void processItemDefContents(
+    pugi::xml_node& node,
+    const smtk::attribute::ItemDefinitionPtr& idef);
+  virtual void processItemDefChildNode(
+    pugi::xml_node& node,
+    const smtk::attribute::ItemDefinitionPtr& idef);
+
   void processRefItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   void processRefDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   void processDoubleItem(pugi::xml_node& node, smtk::attribute::DoubleItemPtr item);
-  void processDoubleDef(pugi::xml_node& node, smtk::attribute::DoubleItemDefinitionPtr idef);
+
+  void processDoubleDef(pugi::xml_node& node, const smtk::attribute::DoubleItemDefinitionPtr& idef);
+  void processDoubleDefContents(
+    pugi::xml_node& node,
+    const smtk::attribute::DoubleItemDefinitionPtr& idef);
+  virtual void processDoubleDefChildNode(
+    pugi::xml_node& node,
+    const smtk::attribute::DoubleItemDefinitionPtr& idef);
+
   virtual void processDirectoryItem(pugi::xml_node& node, smtk::attribute::DirectoryItemPtr item);
   virtual void processDirectoryDef(
     pugi::xml_node& node,
@@ -117,11 +161,28 @@ protected:
   void processGroupItem(pugi::xml_node& node, smtk::attribute::GroupItemPtr item);
   void processGroupDef(pugi::xml_node& node, smtk::attribute::GroupItemDefinitionPtr idef);
   void processIntItem(pugi::xml_node& node, smtk::attribute::IntItemPtr item);
-  void processIntDef(pugi::xml_node& node, smtk::attribute::IntItemDefinitionPtr idef);
-  void processStringItem(pugi::xml_node& node, smtk::attribute::StringItemPtr item);
-  virtual void processStringDef(
+
+  void processIntDef(pugi::xml_node& node, const smtk::attribute::IntItemDefinitionPtr& idef);
+  void processIntDefContents(
     pugi::xml_node& node,
-    smtk::attribute::StringItemDefinitionPtr idef);
+    const smtk::attribute::IntItemDefinitionPtr& idef);
+  virtual void processIntDefChildNode(
+    pugi::xml_node& node,
+    const smtk::attribute::IntItemDefinitionPtr& idef);
+
+  void processStringItem(pugi::xml_node& node, smtk::attribute::StringItemPtr item);
+
+  void processStringDef(pugi::xml_node& node, const smtk::attribute::StringItemDefinitionPtr& idef);
+  virtual void processStringDefAtts(
+    pugi::xml_node& node,
+    const smtk::attribute::StringItemDefinitionPtr& idef);
+  void processStringDefContents(
+    pugi::xml_node& node,
+    const smtk::attribute::StringItemDefinitionPtr& idef);
+  virtual void processStringDefChildNode(
+    pugi::xml_node& node,
+    const smtk::attribute::StringItemDefinitionPtr& idef);
+
   virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   void processModelEntityDef(
     pugi::xml_node& node,
@@ -148,7 +209,13 @@ protected:
     pugi::xml_node& node,
     smtk::attribute::ComponentItemDefinitionPtr idef);
   void processValueItem(pugi::xml_node& node, smtk::attribute::ValueItemPtr item);
-  void processValueDef(pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef);
+
+  void processValueDefAtts(
+    pugi::xml_node& node,
+    const smtk::attribute::ValueItemDefinitionPtr& idef);
+  void processValueDefChildNode(
+    pugi::xml_node& node,
+    const smtk::attribute::ValueItemDefinitionPtr& idef);
 
   void processAttributeView(pugi::xml_node& node, smtk::view::ConfigurationPtr v);
 
@@ -166,17 +233,15 @@ protected:
 
   virtual smtk::common::UUID getAttributeID(pugi::xml_node& attNode);
 
-  // For processing item definition blocks
+  /// For processing item definition blocks
   void processItemDefinitionBlocks(
     pugi::xml_node& rootNode,
-    std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks);
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap);
 
-  // For processing the child item definition block for attribute
-  // definitions
-  void processItemDefinitions(
-    pugi::xml_node& itemDefs,
-    smtk::attribute::DefinitionPtr& def,
-    std::set<std::string>& activeBlockNames);
+  /// For processing template definitions
+  void processTemplatesDefinitions(
+    pugi::xml_node& rootNode,
+    std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap);
 
   /// Process hints that may be on the document's root node.
   ///
@@ -185,6 +250,14 @@ protected:
 
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
+
+  ///\brief Creates a new XML Node that represents the instantiation of a template.
+  /// instanceInfo is the XML that is instantiating the template and
+  /// instancedNode is the new XML node
+  bool createXmlFromTemplate(pugi::xml_node& instanceInfo, pugi::xml_node& instancedNode);
+  ///\brief Indicate that this node that represents an instantiated template is no longer needed
+  void releaseXmlTemplate(pugi::xml_node& instancedNode);
+
   bool m_reportAsError{ true };
   smtk::attribute::ResourcePtr m_resource;
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;
@@ -192,9 +265,11 @@ protected:
   std::string m_defaultCategory;
   smtk::io::Logger& m_logger;
   std::size_t m_includeIndex{ 0 };
-  std::map<std::string, std::map<std::string, pugi::xml_node>> m_itemDefintionBlocks;
+  std::map<std::string, std::set<std::string>> m_activeTemplates;
+  std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>> m_localTemplateMap;
 
 private:
+  XmlDocV1ParserInternals* m_internals;
 };
 } // namespace io
 } // namespace smtk

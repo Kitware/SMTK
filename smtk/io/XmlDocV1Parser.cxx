@@ -127,14 +127,18 @@ void processDerivedValueDefaults(pugi::xml_node& dnode, ItemDefType idef, Logger
     {
       smtkErrorMacro(
         logger,
-        "Could not set defaults values: (" << dnode.text().get() << ") for item " << idef->type());
+        "Could not set defaults values: ("
+          << dnode.text().get() << ") for item " << idef->name()
+          << " type: " << attribute::Item::type2String(idef->type()));
     }
   }
   else
   {
     smtkErrorMacro(
       logger,
-      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->type());
+      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->name()
+                                              << " type: "
+                                              << attribute::Item::type2String(idef->type()));
   }
 }
 
@@ -155,32 +159,37 @@ void processDerivedValueDefaults<attribute::DoubleItemDefinitionPtr, double>(
     {
       smtkErrorMacro(
         logger,
-        "Could not set defaults values: (" << dnode.text().get() << ") for item " << idef->type());
+        "Could not set defaults values: ("
+          << dnode.text().get() << ") for item " << idef->name()
+          << " type: " << attribute::Item::type2String(idef->type()));
     }
   }
   else
   {
     smtkErrorMacro(
       logger,
-      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->type());
+      "XML DefaultValue has incorrect size: " << defs.size() << " for item " << idef->name()
+                                              << " type: "
+                                              << attribute::Item::type2String(idef->type()));
   }
 }
 
 template<typename ItemDefType, typename BasicType>
-void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logger)
+bool processDerivedValueDefChildNode(pugi::xml_node& node, const ItemDefType& idef, Logger& logger)
 {
-  xml_node dnode, child, rnode;
+  xml_node child;
   xml_attribute xatt;
   attribute::Categories::Set::CombinationMode catMode;
-  // Is the item discrete?
-  dnode = node.child("DiscreteInfo");
-  if (dnode)
+
+  std::string nodeName = node.name();
+  // Is this discrete information?
+  if (nodeName == "DiscreteInfo")
   {
     BasicType val;
     int i;
     xml_node vnode;
     std::string cname;
-    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
+    for (child = node.first_child(), i = 0; child; child = child.next_sibling(), i++)
     {
       cname = child.name();
       if (cname == "Structure")
@@ -298,25 +307,25 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
         idef->setEnumCategories(v, cats);
       }
     }
-    xatt = dnode.attribute("DefaultIndex");
+    xatt = node.attribute("DefaultIndex");
     if (xatt)
     {
       idef->setDefaultDiscreteIndex(xatt.as_int());
     }
-    return;
+    return true;
   }
-  // Does this def have a default value
-  dnode = node.child("DefaultValue");
-  if (dnode)
+
+  // Does the node represent Default Value Info
+  if (nodeName == "DefaultValue")
   {
-    processDerivedValueDefaults<ItemDefType, BasicType>(dnode, idef, logger);
+    processDerivedValueDefaults<ItemDefType, BasicType>(node, idef, logger);
+    return true;
   }
-  // Does this node have a range?
-  rnode = node.child("RangeInfo");
-  if (rnode)
+
+  if (nodeName == "RangeInfo")
   {
     bool inclusive;
-    child = rnode.child("Min");
+    child = node.child("Min");
     if (child)
     {
       xatt = child.attribute("Inclusive");
@@ -331,7 +340,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
       idef->setMinRange(getValueFromXMLElement(child, BasicType()), inclusive);
     }
 
-    child = rnode.child("Max");
+    child = node.child("Max");
     if (child)
     {
       xatt = child.attribute("Inclusive");
@@ -345,7 +354,9 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
       }
       idef->setMaxRange(getValueFromXMLElement(child, BasicType()), inclusive);
     }
+    return true;
   }
+  return false; // Nothing matched
 }
 
 template<typename ItemType, typename BasicType>
@@ -466,19 +477,44 @@ void processDerivedValue(
 }
 }; // namespace
 
+namespace smtk
+{
+namespace io
+{
+class XmlDocV1ParserInternals
+{
+public:
+  XmlDocV1ParserInternals()
+  {
+    m_templateRoot = m_templatesDoc.append_child("InstantiatedTemplates");
+  }
+
+  ~XmlDocV1ParserInternals() = default;
+  // Document for storing instantiated templates/blocks XML Elements
+  xml_document m_templatesDoc;
+  // Root node where instantiated templates/blocks XML Elements reside
+  xml_node m_templateRoot;
+};
+
 XmlDocV1Parser::XmlDocV1Parser(ResourcePtr myResource, smtk::io::Logger& logger)
   : m_resource(myResource)
   , m_logger(logger)
 {
+  m_internals = new XmlDocV1ParserInternals();
 }
 
-XmlDocV1Parser::~XmlDocV1Parser() = default;
+XmlDocV1Parser::~XmlDocV1Parser()
+{
+  delete m_internals;
+}
 
 xml_node XmlDocV1Parser::getRootNode(xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeManager");
   return amnode;
 }
+} // namespace io
+} // namespace smtk
 
 void XmlDocV1Parser::getCategories(
   xml_node& rootNode,
@@ -561,15 +597,19 @@ void XmlDocV1Parser::process(pugi::xml_document& doc)
 
 void XmlDocV1Parser::process(pugi::xml_node& amnode)
 {
-  std::map<std::string, std::map<std::string, std::string>>
-    globalItemBlocks; // There are no global item blocks being passed in
-  this->process(amnode, globalItemBlocks);
+  std::map<std::string, std::map<std::string, TemplateInfo>>
+    globalTemplateMap; // There are no global templates/blocks definitions being passed in
+  this->process(amnode, globalTemplateMap);
 }
 
 void XmlDocV1Parser::process(
   pugi::xml_node& amnode,
-  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+  std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
 {
+  // First we want to copy the global template/block definitions into the parser's local
+  // copy
+  m_localTemplateMap = globalTemplateMap;
+
   // Lets get the UUID of the resource if there is one
   auto idAtt = amnode.attribute("ID");
   if (idAtt)
@@ -687,7 +727,8 @@ void XmlDocV1Parser::process(
     }
   }
 
-  this->processItemDefinitionBlocks(amnode, globalItemBlocks);
+  this->processItemDefinitionBlocks(amnode, globalTemplateMap);
+  this->processTemplatesDefinitions(amnode, globalTemplateMap);
   this->processAssociationRules(amnode);
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
@@ -735,136 +776,93 @@ void XmlDocV1Parser::process(
 
 void XmlDocV1Parser::processItemDefinitionBlocks(
   xml_node& root,
-  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+  std::map<std::string, std::map<std::string, TemplateInfo>>& globalTemplateMap)
 {
-  std::size_t numGlobalBlocks = 0;
   xml_node child, node = root.child("ItemBlocks");
   if (!node)
   {
-    // if we don't have any global items blocks we can just return
-    // else we need to create an ItemBlocks node to store the global blocks
-    if (globalItemBlocks.empty())
-    {
-      return;
-    }
-    node = root.append_child("ItemBlocks");
+    return; // There are no ItemBlocks
   }
 
   xml_attribute xnsatt = node.attribute("Namespace");
-  std::string itemBlocksNamespace = (xnsatt) ? xnsatt.value() : "";
-  // Lets insert the global item blocks into the doc's item blocks node
-  for (const auto& namespaceMap : globalItemBlocks)
+  std::string globalNameSpace = (xnsatt) ? xnsatt.value() : "";
+  TemplateInfo tinfo;
+  bool isToBeExported;
+
+  for (child = node.child("Block"); child; child = child.next_sibling("Block"))
   {
-    for (const auto& itemBlockDef : namespaceMap.second)
+    if (tinfo.define(globalNameSpace, child, isToBeExported, m_logger))
     {
-      xml_document tempDoc;
-      if (tempDoc.load_buffer(itemBlockDef.second.c_str(), itemBlockDef.second.size()))
+      m_localTemplateMap[tinfo.nameSpace()][tinfo.name()] = tinfo;
+      if (isToBeExported)
       {
-        xml_node globalDef = tempDoc.first_child(); // There should only be one node
-        if (globalDef)
-        {
-          node.prepend_copy(globalDef);
-          numGlobalBlocks++;
-        }
-        else
-        {
-          smtkErrorMacro(
-            m_logger,
-            "Could not insert global Item Block: "
-              << namespaceMap.first << "::" << itemBlockDef.first << " into local item block map");
-        }
-      }
-      else
-      {
-        smtkErrorMacro(
-          m_logger,
-          "Could not de-serialize global Item Block: "
-            << namespaceMap.first << "::" << itemBlockDef.first << " into local item block map");
+        globalTemplateMap[tinfo.nameSpace()][tinfo.name()] = tinfo;
       }
     }
   }
-  for (child = node.first_child(); child; child = child.next_sibling())
+}
+
+void XmlDocV1Parser::processTemplatesDefinitions(
+  xml_node& root,
+  std::map<std::string, std::map<std::string, TemplateInfo>>& globalTemplateMap)
+{
+  xml_node child, node = root.child("Templates");
+  if (!node)
   {
-    xml_attribute xatt;
-    std::string blockName;
-    std::string blockNamespace;
-    bool hasExplicitNamespace;
-    xatt = child.attribute("Name");
-    if (xatt)
-    {
-      blockName = xatt.value();
-    }
-    else
-    {
-      smtkErrorMacro(m_logger, "Item Block is Missing Name attribute");
-      continue;
-    }
-    // See if the item block has an explicit namespace set.  If it does not
-    // it will inherit the namespace specified at the ItemBlocks node.  If that
-    // node does not have one set, then we assume it is the global namespace represented by ""
+    return; // There are no ItemBlocks
+  }
 
-    xatt = child.attribute("Namespace");
-    if (xatt)
+  xml_attribute xnsatt = node.attribute("Namespace");
+  std::string globalNameSpace = (xnsatt) ? xnsatt.value() : "";
+  TemplateInfo tinfo;
+  bool isToBeExported;
+
+  for (child = node.child("Template"); child; child = child.next_sibling("Template"))
+  {
+    if (tinfo.define(globalNameSpace, child, isToBeExported, m_logger))
     {
-      blockNamespace = xatt.value();
-      hasExplicitNamespace = true;
-    }
-    else
-    {
-      blockNamespace = itemBlocksNamespace;
-      hasExplicitNamespace = false;
-    }
-    xml_node items = child.first_child();
-    if (items)
-    {
-      m_itemDefintionBlocks[blockNamespace][blockName] = items;
-      // Are we no longer processing item blocks that were passed in?
-      if (!numGlobalBlocks)
+      m_localTemplateMap[tinfo.nameSpace()][tinfo.name()] = tinfo;
+      if (isToBeExported)
       {
-        // Is the block marked for export?
-        xatt = child.attribute("Export");
-        if (xatt && xatt.as_bool())
-        {
-          // In order to retain its proper namespace association
-          // the block must have an explicit namespace attribute
-          // associated with it
-          if (!hasExplicitNamespace)
-          {
-            // Add the namespace it inherited from the itemblocks node
-            child.append_attribute("Namespace").set_value(itemBlocksNamespace.c_str());
-          }
-          // serialize the node and add it to the global map
-          std::stringstream temp;
-          child.print(temp);
-
-          globalItemBlocks[blockNamespace][blockName] = temp.str();
-        }
+        globalTemplateMap[tinfo.nameSpace()][tinfo.name()] = tinfo;
       }
-    }
-    else
-    {
-      smtkErrorMacro(m_logger, "Item Block: " << blockName << " is missing ItemDefinition node");
-      continue;
-    }
-    // If this is an item block that we got from the global dictionary then decrement the count
-    if (numGlobalBlocks)
-    {
-      numGlobalBlocks--;
     }
   }
 }
 
 void XmlDocV1Parser::processDefinitionInformation(xml_node& root)
 {
-  xml_node child, node = root.child("Definitions");
+  xml_node node = root.child("Definitions");
   if (node)
   {
-    for (child = node.first_child(); child; child = child.next_sibling())
-    {
-      this->createDefinition(child);
-    }
+    this->processDefinitionInformationChildren(node);
   }
 }
+
+void XmlDocV1Parser::processDefinitionInformationChildren(xml_node& node)
+{
+  for (xml_node child = node.first_child(); child; child = child.next_sibling())
+  {
+    std::string nodeName = child.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(child, instancedTemplateNode))
+      {
+        this->processDefinitionInformationChildren(instancedTemplateNode);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    if (nodeName == "AttDef")
+    {
+      this->createDefinition(child);
+      continue;
+    }
+    smtkWarningMacro(m_logger, "Skipping unsupported Definitions child element type: " << nodeName);
+  }
+}
+
 void XmlDocV1Parser::processAttributeInformation(xml_node& root)
 {
   // Process definitions first
@@ -965,12 +963,23 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
   this->processDefinition(defNode, def);
 }
 
-void XmlDocV1Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
+void XmlDocV1Parser::processDefinition(xml_node& defNode, DefinitionPtr& def)
+{
+  // First set the include file index
+  def->setIncludeIndex(m_includeIndex);
+  // Process All of the Definition Node's XML Attributes
+  this->processDefinitionAtts(defNode, def);
+  // Process the DefNode's Children
+  this->processDefinitionContents(defNode, def);
+}
+
+void XmlDocV1Parser::processDefinitionAtts(xml_node& defNode, DefinitionPtr& def)
 {
   xml_attribute xatt;
   xml_node node;
-  // First set the include file index
-  def->setIncludeIndex(m_includeIndex);
+
+  // Process all of the XML Attributes on defNode
+
   xatt = defNode.attribute("Label");
   if (xatt)
   {
@@ -1028,47 +1037,76 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
     def->setLocalAssociationMask(mask);
     def->localAssociationRule()->setIsExtensible(true);
   }
+}
 
-  double color[4];
-
-  node = defNode.child("NotApplicableColor");
-  if (node && this->getColor(node, color, "NotApplicableColor"))
+void XmlDocV1Parser::processDefinitionContents(xml_node& defNode, DefinitionPtr& def)
+{
+  // Iterate over all of the Node's Children Elements
+  for (xml_node node = defNode.first_child(); node; node = node.next_sibling())
   {
-    def->setNotApplicableColor(color);
+    std::string nodeName = node.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(node, instancedTemplateNode))
+      {
+        this->processDefinitionContents(instancedTemplateNode, def);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    this->processDefinitionChildNode(node, def);
   }
+}
 
-  node = defNode.child("DefaultColor");
-  if (node && this->getColor(node, color, "DefaultColor"))
-  {
-    def->setDefaultColor(color);
-  }
+void XmlDocV1Parser::processDefinitionChildNode(xml_node& node, DefinitionPtr& def)
+{
+  std::string nodeName = node.name();
 
-  node = defNode.child("BriefDescription");
-  if (node)
-  {
-    def->setBriefDescription(node.text().get());
-  }
-
-  node = defNode.child("DetailedDescription");
-  if (node)
-  {
-    def->setDetailedDescription(node.text().get());
-  }
-
-  // See if we allow any associations
-  node = defNode.child("AssociationsDef");
-  if (node)
+  if (nodeName == "AssociationsDef")
   {
     this->processAssociationDef(node, def);
+    return;
   }
 
-  // Now lets process its items
-  xml_node itemsNode = defNode.child("ItemDefinitions");
-  std::set<std::string> currentActiveBlocks;
-  ItemDefinitionsHelper helper;
+  if (nodeName == "ItemDefinitions")
+  {
+    ItemDefinitionsHelper helper;
 
-  helper.processItemDefinitions<DefinitionPtr>(
-    this, itemsNode, def, currentActiveBlocks, def->type(), "Definition");
+    helper.processItemDefinitions<DefinitionPtr>(this, node, def, def->type(), "Definition");
+    return;
+  }
+
+  if (nodeName == "BriefDescription")
+  {
+    def->setBriefDescription(node.text().get());
+    return;
+  }
+
+  if (nodeName == "DetailedDescription")
+  {
+    def->setDetailedDescription(node.text().get());
+    return;
+  }
+
+  double color[4];
+  if (nodeName == "NotApplicableColor")
+  {
+    if (this->getColor(node, color, "NotApplicableColor"))
+    {
+      def->setNotApplicableColor(color);
+    }
+    return;
+  }
+
+  if (nodeName == "DefaultColor")
+  {
+    if (this->getColor(node, color, "DefaultColor"))
+    {
+      def->setDefaultColor(color);
+    }
+    return;
+  }
 }
 
 void XmlDocV1Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
@@ -1086,14 +1124,13 @@ void XmlDocV1Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
   def->setLocalAssociationRule(assocDef);
 }
 
-void XmlDocV1Parser::processCategories(
+// This is to support specifying category inheritance via XML Attributes
+void XmlDocV1Parser::processCategoryAtts(
   xml_node& node,
   Categories::Set& catSet,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
-  xml_node child;
-
   // The default inheritance mode is Or
   inheritanceMode = Categories::CombinationMode::Or;
 
@@ -1108,69 +1145,80 @@ void XmlDocV1Parser::processCategories(
   {
     catSet.setInclusionMode(catMode);
   }
+}
 
-  // This is old style
-  xml_node catNodes = node.child("Categories");
-  // This is the new format
-  xml_node catInfoNode = node.child("CategoryInfo");
-  if (catInfoNode)
+void XmlDocV1Parser::processOldStyleCategoryNode(xml_node& node, Categories::Set& catSet)
+{
+  for (xml_node child = node.first_child(); child; child = child.next_sibling())
   {
-    // Are we inheriting categories?
-    xatt = catInfoNode.attribute("Inherit");
-    if (xatt && !xatt.as_bool())
-    {
-      inheritanceMode = Categories::CombinationMode::LocalOnly;
-    }
+    catSet.insertInclusion(child.text().get());
+  }
+}
 
-    // Lets get the overall combination mode
-    xatt = catInfoNode.attribute("Combination");
+void XmlDocV1Parser::processItemDefCategoryInfoNode(xml_node& node, ItemDefinitionPtr idef)
+{
+  Categories::CombinationMode inheritanceMode;
+  this->processCategoryInfoNode(node, idef->localCategories(), inheritanceMode);
+  idef->setCategoryInheritanceMode(inheritanceMode);
+}
+
+void XmlDocV1Parser::processCategoryInfoNode(
+  xml_node& node,
+  Categories::Set& catSet,
+  Categories::CombinationMode& inheritanceMode)
+{
+  attribute::Categories::Set::CombinationMode catMode;
+  xml_node child;
+  xml_attribute xatt;
+
+  // Are we inheriting categories?
+  xatt = node.attribute("Inherit");
+  if (xatt && !xatt.as_bool())
+  {
+    inheritanceMode = Categories::CombinationMode::LocalOnly;
+  }
+
+  // Lets get the overall combination mode
+  xatt = node.attribute("Combination");
+  if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+  {
+    catSet.setCombinationMode(catMode);
+  }
+  // Get the Include set (if one exists)
+  xml_node catGroup;
+  catGroup = node.child("Include");
+  if (catGroup)
+  {
+    // Lets get the include combination mode
+    xatt = catGroup.attribute("Combination");
     if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
     {
-      catSet.setCombinationMode(catMode);
+      catSet.setInclusionMode(catMode);
     }
-    // Get the Include set (if one exists)
-    xml_node catGroup;
-    catGroup = catInfoNode.child("Include");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        catSet.setInclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        catSet.insertInclusion(child.text().get());
-      }
-    }
-    catGroup = catInfoNode.child("Exclude");
-    if (catGroup)
-    {
-      // Lets get the include combination mode
-      xatt = catGroup.attribute("Combination");
-      if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
-      {
-        catSet.setExclusionMode(catMode);
-      }
-      for (child = catGroup.first_child(); child; child = child.next_sibling())
-      {
-        catSet.insertExclusion(child.text().get());
-      }
-    }
-  }
-  else if (catNodes) // Deprecated Format
-  {
-    for (child = catNodes.first_child(); child; child = child.next_sibling())
+    for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
       catSet.insertInclusion(child.text().get());
     }
   }
+  catGroup = node.child("Exclude");
+  if (catGroup)
+  {
+    // Lets get the include combination mode
+    xatt = catGroup.attribute("Combination");
+    if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
+    {
+      catSet.setExclusionMode(catMode);
+    }
+    for (child = catGroup.first_child(); child; child = child.next_sibling())
+    {
+      catSet.insertExclusion(child.text().get());
+    }
+  }
 }
-void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
+
+void XmlDocV1Parser::processItemDefAtts(xml_node& node, const ItemDefinitionPtr& idef)
 {
   xml_attribute xatt;
-  xml_node child;
   xatt = node.attribute("Label");
   if (xatt)
   {
@@ -1190,17 +1238,9 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
 
   // Process Category Information
   Categories::CombinationMode inheritanceMode;
-  this->processCategories(node, idef->localCategories(), inheritanceMode);
+  // Specifying Category related info as XML Attributes (Old Style)
+  this->processCategoryAtts(node, idef->localCategories(), inheritanceMode);
   idef->setCategoryInheritanceMode(inheritanceMode);
-  // If the definition's local categories are empty and is not a group definition
-  // and there is a default category defined - then use it
-  if (
-    idef->localCategories().empty() &&
-    !(m_defaultCategory.empty() ||
-      smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef)))
-  {
-    idef->localCategories().insertInclusion(m_defaultCategory);
-  }
 
   // If using AdvanceLevel then we are setting
   // both read and write
@@ -1223,44 +1263,226 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
       idef->setLocalAdvanceLevel(1, xatt.as_uint());
     }
   }
+}
 
-  child = node.child("BriefDescription");
-  if (child)
+void XmlDocV1Parser::addDefaultCategoryIfNeeded(const ItemDefinitionPtr& idef)
+{
+  // If the definition's local categories are empty and is not a group definition
+  // and there is a default category defined - then use it
+  if (
+    idef->localCategories().empty() &&
+    !(m_defaultCategory.empty() ||
+      smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef)))
   {
-    idef->setBriefDescription(child.text().get());
+    idef->localCategories().insertInclusion(m_defaultCategory);
+  }
+}
+
+// NOTE: this method should only be called if no method exists to process the
+// type of ItemDefinition explicitly - currently only Void and custom Item
+// Definitions should call this method.
+void XmlDocV1Parser::processItemDef(xml_node& node, const ItemDefinitionPtr& idef)
+{
+  // Process All of the Definition Node's XML Attributes
+  this->processItemDefAtts(node, idef);
+  // Process the DefNode's Children
+  this->processItemDefContents(node, idef);
+  // Deal with Default Categories
+  this->addDefaultCategoryIfNeeded(idef);
+}
+
+void XmlDocV1Parser::processItemDefContents(xml_node& idefNode, const ItemDefinitionPtr& def)
+{
+  // Iterate over all of the Node's Children Elements
+  for (xml_node node = idefNode.first_child(); node; node = node.next_sibling())
+  {
+    std::string nodeName = node.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(node, instancedTemplateNode))
+      {
+        this->processItemDefContents(instancedTemplateNode, def);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    this->processItemDefChildNode(node, def);
+  }
+}
+
+void XmlDocV1Parser::processItemDefChildNode(xml_node& node, const ItemDefinitionPtr& idef)
+{
+
+  std::string nodeName = node.name();
+
+  // Are we dealing with the old style of Categories?
+  if (nodeName == "Categories")
+  {
+    this->processOldStyleCategoryNode(node, idef->localCategories());
+    return;
   }
 
-  child = node.child("DetailedDescription");
-  if (child)
+  // Are we dealing with the new style of categories?
+  if (nodeName == "CategoryInfo")
   {
-    idef->setDetailedDescription(child.text().get());
+    this->processItemDefCategoryInfoNode(node, idef);
+    return;
+  }
+
+  if (nodeName == "BriefDescription")
+  {
+    idef->setBriefDescription(node.text().get());
+    return;
+  }
+
+  if (nodeName == "DetailedDescription")
+  {
+    idef->setDetailedDescription(node.text().get());
+    return;
   }
 }
 
-void XmlDocV1Parser::processDoubleDef(pugi::xml_node& node, attribute::DoubleItemDefinitionPtr idef)
+void XmlDocV1Parser::processDoubleDef(
+  pugi::xml_node& node,
+  const attribute::DoubleItemDefinitionPtr& idef)
 {
-  // First process the common value item def stuff
-  this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::DoubleItemDefinitionPtr, double>(node, idef, m_logger);
+  // Process All of the Definition Node's XML Attributes
+  this->processValueDefAtts(node, idef); // There are no special XML Attributes for Doubles
+  // Process the DefNode's Children
+  this->processDoubleDefContents(node, idef);
 }
 
-void XmlDocV1Parser::processIntDef(pugi::xml_node& node, attribute::IntItemDefinitionPtr idef)
+void XmlDocV1Parser::processDoubleDefContents(
+  pugi::xml_node& idefNode,
+  const attribute::DoubleItemDefinitionPtr& idef)
 {
-  // First process the common value item def stuff
-  this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::IntItemDefinitionPtr, int>(node, idef, m_logger);
+  // Iterate over all of the Node's Children Elements
+  for (xml_node node = idefNode.first_child(); node; node = node.next_sibling())
+  {
+    std::string nodeName = node.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(node, instancedTemplateNode))
+      {
+        this->processDoubleDefContents(instancedTemplateNode, idef);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    this->processDoubleDefChildNode(node, idef);
+  }
+}
+void XmlDocV1Parser::processDoubleDefChildNode(
+  pugi::xml_node& node,
+  const attribute::DoubleItemDefinitionPtr& idef)
+{
+  if (processDerivedValueDefChildNode<attribute::DoubleItemDefinitionPtr, double>(
+        node, idef, m_logger))
+  {
+    return; // The node was processed
+  }
+  this->processValueDefChildNode(node, idef);
 }
 
-void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringItemDefinitionPtr idef)
+void XmlDocV1Parser::processIntDef(
+  pugi::xml_node& node,
+  const attribute::IntItemDefinitionPtr& idef)
 {
-  // First process the common value item def stuff
-  this->processValueDef(node, idef);
+  // Process All of the Definition Node's XML Attributes
+  this->processValueDefAtts(node, idef); // There are no special XML Attributes for Ints
+  // Process the DefNode's Children
+  this->processIntDefContents(node, idef);
+}
+
+void XmlDocV1Parser::processIntDefContents(
+  pugi::xml_node& idefNode,
+  const attribute::IntItemDefinitionPtr& idef)
+{
+  // Iterate over all of the Node's Children Elements
+  for (xml_node node = idefNode.first_child(); node; node = node.next_sibling())
+  {
+    std::string nodeName = node.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(node, instancedTemplateNode))
+      {
+        this->processIntDefContents(instancedTemplateNode, idef);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    this->processIntDefChildNode(node, idef);
+  }
+}
+void XmlDocV1Parser::processIntDefChildNode(
+  pugi::xml_node& node,
+  const attribute::IntItemDefinitionPtr& idef)
+{
+  if (processDerivedValueDefChildNode<attribute::IntItemDefinitionPtr, int>(node, idef, m_logger))
+  {
+    return; // The node was processed
+  }
+  this->processValueDefChildNode(node, idef);
+}
+
+void XmlDocV1Parser::processStringDef(
+  pugi::xml_node& node,
+  const attribute::StringItemDefinitionPtr& idef)
+{
+  // Process All of the Definition Node's XML Attributes
+  this->processStringDefAtts(node, idef);
+  // Process the DefNode's Children
+  this->processStringDefContents(node, idef);
+}
+
+void XmlDocV1Parser::processStringDefAtts(
+  pugi::xml_node& node,
+  const attribute::StringItemDefinitionPtr& idef)
+{
+  this->processValueDefAtts(node, idef);
+
   if (xml_attribute xatt = node.attribute("MultipleLines"))
   {
     (void)xatt;
     idef->setIsMultiline(true);
   }
-  processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>(node, idef, m_logger);
+}
+
+void XmlDocV1Parser::processStringDefContents(
+  pugi::xml_node& idefNode,
+  const attribute::StringItemDefinitionPtr& idef)
+{
+  // Iterate over all of the Node's Children Elements
+  for (xml_node node = idefNode.first_child(); node; node = node.next_sibling())
+  {
+    std::string nodeName = node.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(node, instancedTemplateNode))
+      {
+        this->processStringDefContents(instancedTemplateNode, idef);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    this->processStringDefChildNode(node, idef);
+  }
+}
+
+void XmlDocV1Parser::processStringDefChildNode(
+  pugi::xml_node& node,
+  const attribute::StringItemDefinitionPtr& idef)
+{
+  if (processDerivedValueDefChildNode<attribute::StringItemDefinitionPtr, std::string>(
+        node, idef, m_logger))
+  {
+    return; // The node was processed
+  }
+  this->processValueDefChildNode(node, idef);
 }
 
 void XmlDocV1Parser::processModelEntityDef(
@@ -1371,12 +1593,12 @@ void XmlDocV1Parser::processComponentDef(
     "Component item defs only supported starting Attribute Version 3 Format" << idef->name());
 }
 
-void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemDefinitionPtr idef)
+void XmlDocV1Parser::processValueDefAtts(
+  pugi::xml_node& node,
+  const attribute::ValueItemDefinitionPtr& idef)
 {
-  xml_node labels, child;
   xml_attribute xatt;
-  std::size_t i;
-  this->processItemDef(node, idef);
+  this->processItemDefAtts(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
   std::size_t numberOfComponents = idef->numberOfRequiredValues();
@@ -1397,14 +1619,32 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     }
   }
 
-  // Lets see if there are labels
-  if (node.child("Labels"))
+  xatt = node.attribute("Units");
+  if (xatt)
+  {
+    idef->setUnits(xatt.value());
+  }
+}
+
+void XmlDocV1Parser::processValueDefChildNode(
+  pugi::xml_node& node,
+  const attribute::ValueItemDefinitionPtr& idef)
+{
+  xml_node child;
+  std::size_t i;
+  xml_attribute xatt;
+  std::string nodeName = node.name();
+
+  // Is this an old Labels Node
+  if (nodeName == "Labels")
   {
     smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    return;
   }
-  labels = node.child("ComponentLabels");
-  if (labels)
+
+  if (nodeName == "ComponentLabels")
   {
+    auto numberOfComponents = idef->numberOfRequiredValues();
     if ((numberOfComponents == 1) && !idef->isExtensible())
     {
       smtkErrorMacro(
@@ -1413,11 +1653,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     }
 
     // Are we using a common label?
-    xatt = labels.attribute("CommonLabel");
+    xatt = node.attribute("CommonLabel");
     if (xatt)
     {
       idef->setCommonValueLabel(xatt.value());
-      if (labels.first_child())
+      if (node.first_child())
       {
         smtkErrorMacro(
           m_logger, "Cannot combine CommonLabel with Label child nodes : " << idef->name());
@@ -1425,7 +1665,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     }
     else
     {
-      for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
+      for (child = node.first_child(), i = 0; child; child = child.next_sibling(), i++)
       {
         if (i < numberOfComponents)
         {
@@ -1437,27 +1677,27 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         smtkErrorMacro(m_logger, "Wrong number of component values for : " << idef->name());
       }
     }
+    return;
   }
-  child = node.child("ExpressionType");
-  if (child)
+  if (nodeName == "ExpressionType")
   {
-    std::string etype = child.text().get();
+    std::string etype = node.text().get();
     idef->setExpressionType(etype);
+    return;
   }
-  xatt = node.attribute("Units");
-  if (xatt)
+
+  if (nodeName == "ChildrenDefinitions")
   {
-    idef->setUnits(xatt.value());
+    // Process its children items
+
+    ItemDefinitionsHelper helper;
+
+    helper.processItemDefinitions<ValueItemDefinitionPtr>(
+      this, node, idef, idef->name(), "ValueItemDefinition");
+    return;
   }
 
-  // Now lets process its children items
-  xml_node cinode, citemsNode = node.child("ChildrenDefinitions");
-
-  ItemDefinitionsHelper helper;
-  std::set<std::string> currentActiveBlocks;
-
-  helper.processItemDefinitions<ValueItemDefinitionPtr>(
-    this, citemsNode, idef, currentActiveBlocks, idef->name(), "ValueItemDefinition");
+  this->processItemDefChildNode(node, idef);
 }
 
 void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
@@ -1684,10 +1924,9 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
   xml_node itemsNode = node.child("ItemDefinitions");
 
   ItemDefinitionsHelper helper;
-  std::set<std::string> currentActiveBlocks;
 
   helper.processItemDefinitions<GroupItemDefinitionPtr>(
-    this, itemsNode, def, currentActiveBlocks, def->name(), "GroupItemDefinition");
+    this, itemsNode, def, def->name(), "GroupItemDefinition");
 }
 
 smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node& attNode)
@@ -2795,5 +3034,94 @@ void XmlDocV1Parser::processHints(pugi::xml_node& root)
     // Starting with V5, this property will only be added if an
     // XML attribute ("DisplayHint") exists on the root document node.
     m_resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+  }
+}
+
+bool XmlDocV1Parser::createXmlFromTemplate(
+  pugi::xml_node& instanceInfo,
+  pugi::xml_node& instancedNode)
+{
+  xml_attribute xatt = instanceInfo.attribute("Name");
+  if (!xatt)
+  {
+    smtkErrorMacro(m_logger, "Block/Template is missing Name attribute");
+    return false;
+  }
+  std::string name = xatt.value();
+
+  // See if a namespace was specified else assume the global namespace ""
+  xatt = instanceInfo.attribute("Namespace");
+  std::string nameSpace = (xatt) ? xatt.value() : "";
+
+  auto nsit = m_localTemplateMap.find(nameSpace);
+  if (nsit == m_localTemplateMap.end())
+  {
+    smtkErrorMacro(
+      m_logger, "Can not find Template/Block: " << name << "'s' Namespace: " << nameSpace);
+    return false;
+  }
+
+  auto it = nsit->second.find(name);
+  if (it == nsit->second.end())
+  {
+    smtkErrorMacro(
+      m_logger, "Can not find Template/Block Name: " << name << "in Namespace: " << nameSpace);
+    return false;
+  }
+  // Make sure we are not already parsing a block of the same name within the same namespace
+  else
+  {
+    auto atnsit = m_activeTemplates.find(nameSpace);
+    if (atnsit != m_activeTemplates.end())
+    {
+      // Ok so we know we have templates active within this namespace
+      if (atnsit->second.find(name) != atnsit->second.end())
+      {
+        smtkErrorMacro(m_logger, "Encountered Recursive Loop : " << name);
+        return false;
+      }
+    }
+  }
+  // instantiate the new XML Node
+  instancedNode = it->second.instantiate(instanceInfo, m_internals->m_templateRoot, m_logger);
+  if (instancedNode.empty())
+  {
+    smtkErrorMacro(
+      m_logger,
+      "Could not create XML node for Template/Block Name: " << name
+                                                            << "in Namespace: " << nameSpace);
+    return false;
+  }
+  m_activeTemplates[nameSpace].emplace(name);
+  return true;
+}
+
+void XmlDocV1Parser::releaseXmlTemplate(pugi::xml_node& instancedNode)
+{
+  // Technically this does not release the XML that was generated but it does
+  // indicate that the consumer is done with the node created from createXmlFromTemplate
+  // so we can remove it from m_activeTemplates
+  // Lets get the template name and namespace
+
+  xml_attribute xatt = instancedNode.attribute("TemplateName");
+  if (!xatt)
+  {
+    smtkErrorMacro(m_logger, "Block/Template Instance is missing TemplateName attribute");
+    return;
+  }
+  std::string name = xatt.value();
+  xatt = instancedNode.attribute("TemplateNameSpace");
+  if (!xatt)
+  {
+    smtkErrorMacro(m_logger, "Block/Template Instance is missing TemplateNameSpace attribute");
+    return;
+  }
+  std::string nameSpace = xatt.value();
+  m_activeTemplates[nameSpace].erase(name);
+  if (m_activeTemplates[nameSpace].empty())
+  {
+    // If there are no active templates in the namespace,
+    // we can get rid of the namespace as well
+    m_activeTemplates.erase(nameSpace);
   }
 }

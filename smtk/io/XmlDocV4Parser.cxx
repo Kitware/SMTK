@@ -43,9 +43,9 @@ void XmlDocV4Parser::process(xml_document& doc)
 
 void XmlDocV4Parser::process(
   xml_node& rootNode,
-  std::map<std::string, std::map<std::string, std::string>>& globalItemBlocks)
+  std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
 {
-  XmlDocV3Parser::process(rootNode, globalItemBlocks);
+  XmlDocV3Parser::process(rootNode, globalTemplateMap);
 
   xml_node evaluatorsNode = rootNode.child("Evaluators");
   if (evaluatorsNode)
@@ -100,12 +100,13 @@ pugi::xml_node XmlDocV4Parser::getRootNode(pugi::xml_document& doc)
   return amnode;
 }
 
-void XmlDocV4Parser::processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def)
+void XmlDocV4Parser::processDefinitionChildNode(
+  pugi::xml_node& node,
+  smtk::attribute::DefinitionPtr& def)
 {
-  XmlDocV3Parser::processDefinition(defNode, def);
+  std::string nodeName = node.name();
 
-  xml_node node = defNode.child("AssociationRule");
-  if (node)
+  if (nodeName == "AssociationRule")
   {
     pugi::xml_attribute xatt = node.attribute("Name");
 
@@ -130,10 +131,10 @@ void XmlDocV4Parser::processDefinition(pugi::xml_node& defNode, smtk::attribute:
         "AssociationRule for definition type \"" << def->type()
                                                  << "\" does not have \"Name\" attribute.");
     }
+    return;
   }
 
-  node = defNode.child("DissociationRule");
-  if (node)
+  if (nodeName == "DissociationRule")
   {
     pugi::xml_attribute xatt = node.attribute("Name");
 
@@ -158,17 +159,21 @@ void XmlDocV4Parser::processDefinition(pugi::xml_node& defNode, smtk::attribute:
         "DissociationRule for definition type \"" << def->type()
                                                   << "\" does not have \"Name\" attribute.");
     }
+    return;
   }
+
+  XmlDocV3Parser::processDefinitionChildNode(node, def);
 }
 
-void XmlDocV4Parser::processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+void XmlDocV4Parser::processItemDefChildNode(
+  pugi::xml_node& node,
+  const smtk::attribute::ItemDefinitionPtr& idef)
 {
-  this->XmlDocV3Parser::processItemDef(node, idef);
+  std::string nodeName = node.name();
   // Adding Tag support for item defs
-  xml_node tagsNode = node.child("Tags");
-  if (tagsNode)
+  if (nodeName == "Tags")
   {
-    for (xml_node tagNode = tagsNode.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
+    for (xml_node tagNode = node.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
     {
       xml_attribute name_att = tagNode.attribute("Name");
       std::string values = tagNode.text().get();
@@ -193,7 +198,9 @@ void XmlDocV4Parser::processItemDef(pugi::xml_node& node, smtk::attribute::ItemD
         }
       }
     }
+    return;
   }
+  this->XmlDocV3Parser::processItemDefChildNode(node, idef);
 }
 
 void XmlDocV4Parser::processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item)
