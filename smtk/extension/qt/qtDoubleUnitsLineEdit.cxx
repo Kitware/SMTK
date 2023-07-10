@@ -28,41 +28,13 @@
 
 namespace
 {
+// Alias for split-string method
+const auto& splitInput = smtk::attribute::DoubleItemDefinition::splitStringStartingDouble;
+
 bool compareUnitNames(const units::Unit& a, const units::Unit& b)
 {
   // For sorting units by name
   return a.name() < b.name();
-}
-
-/** \brief Splits input string into double value and any remaining part
- *
- * Returns true if double was found
- */
-bool splitInput(const std::string& input, std::string& valueString, std::string& unitsString)
-{
-  valueString.clear();
-  unitsString.clear();
-
-  // Try streaming double value
-  std::istringstream iss(input);
-  double value;
-  iss >> value;
-  if ((iss.bad()) || iss.fail())
-  {
-    return false;
-  }
-
-  if (iss.eof())
-  {
-    valueString = input;
-    return true;
-  }
-
-  std::size_t pos = iss.tellg();
-  valueString = input.substr(0, pos);
-  unitsString = input.substr(pos);
-
-  return true;
 }
 
 /** \brief Subclass QStringListModel to highlight first item */
@@ -189,6 +161,7 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
   std::string valueString;
   std::string unitsString;
+  // bool ok = smtk::attribute::DoubleItemDefinition::splitStringStartingDouble(utext, valueString, unitsString);
   bool ok = splitInput(utext, valueString, unitsString);
   if (ok)
   {
@@ -264,7 +237,8 @@ void qtDoubleUnitsLineEdit::onEditFinished()
   std::string input = this->text().toStdString();
   std::string valueString;
   std::string unitsString;
-  if (!splitInput(input, valueString, unitsString))
+  // if (!DoubleItemDefinition::splitStringStartingDouble(input, valueString, unitsString))
+  bool ok = splitInput(input, valueString, unitsString);
   {
     return;
   }

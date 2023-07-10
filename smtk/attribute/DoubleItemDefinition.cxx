@@ -209,6 +209,36 @@ bool DoubleItemDefinition::setDefaultValueAsString(const std::vector<std::string
   return true;
 }
 
+bool DoubleItemDefinition::splitStringStartingDouble(
+  const std::string& input,
+  std::string& valueString,
+  std::string& unitsString)
+{
+  valueString.clear();
+  unitsString.clear();
+
+  // Try streaming double value
+  std::istringstream iss(input);
+  double value;
+  iss >> value;
+  if ((iss.bad()) || iss.fail())
+  {
+    return false;
+  }
+
+  if (iss.eof())
+  {
+    valueString = input;
+    return true;
+  }
+
+  std::size_t pos = iss.tellg();
+  valueString = input.substr(0, pos);
+  unitsString = input.substr(pos);
+
+  return true;
+}
+
 bool DoubleItemDefinition::reevaluateDefaults()
 {
   std::vector<double> convertedVals(m_defaultValuesAsStrings.size());

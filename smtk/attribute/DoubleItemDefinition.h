@@ -51,6 +51,12 @@ public:
 
   bool setUnits(const std::string& newUnits) override;
 
+  /** \brief Splits input string into 2 parts with first part representing double value.
+   *
+   * Returns true if double was found.
+   */
+  static bool splitStringStartingDouble(const std::string&, std::string&, std::string&);
+
 protected:
   DoubleItemDefinition(const std::string& myName);
   bool reevaluateDefaults();
