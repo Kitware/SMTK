@@ -20,8 +20,10 @@
 #include <QCompleter>
 #include <QDebug>
 #include <QFont>
+#include <QKeyEvent>
 #include <QStringListModel>
 #include <QVariant>
+#include <Qt>
 
 #include "units/Measurement.h"
 
@@ -248,6 +250,19 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
 void qtDoubleUnitsLineEdit::onEditFinished()
 {
+  // This works around unexpected QLineEdit behavior. When certain keys
+  // are pressed (backspace, e.g.), a QLineEdit::editingFinished signal
+  // is emitted. The cause is currently unknown.
+  // This code ignores the editingFinished signal if the editor is still
+  // in focus and the last key pressed was not <Enter> or <Return>.
+  bool finished = (m_lastKey == Qt::Key_Enter) || (m_lastKey == Qt::Key_Return);
+  if (!finished && this->hasFocus())
+  {
+    qDebug() << "qtDoubleUnitsLineEdit::onEditFinished() ignoring key" << Qt::hex << Qt::showbase
+             << m_lastKey;
+    return;
+  }
+
   // Check if we need to add units string
   std::string input = this->text().toStdString();
   std::string valueString;
@@ -267,6 +282,13 @@ void qtDoubleUnitsLineEdit::onEditFinished()
     this->setText(QString::fromStdString(ss.str()));
     this->blockSignals(false);
   }
+}
+
+void qtDoubleUnitsLineEdit::keyPressEvent(QKeyEvent* event)
+{
+  // Save last key pressed
+  m_lastKey = event->key();
+  QLineEdit::keyPressEvent(event);
 }
 
 } // namespace extension

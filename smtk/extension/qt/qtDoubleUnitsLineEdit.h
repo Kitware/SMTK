@@ -27,6 +27,7 @@
 #include <vector>
 
 class QCompleter;
+class QKeyEvent;
 
 namespace smtk
 {
@@ -55,9 +56,12 @@ protected Q_SLOTS:
   void onTextEdited();
 
 protected:
+  void keyPressEvent(QKeyEvent* event) override;
+
   QPointer<qtInputsItem> m_inputsItem;
   units::Unit m_unit;
   std::vector<units::Unit> m_compatibleUnits;
+  int m_lastKey = -1;
 
   QCompleter* m_completer = nullptr;
 };
