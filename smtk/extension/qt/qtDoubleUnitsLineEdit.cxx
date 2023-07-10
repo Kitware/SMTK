@@ -14,7 +14,9 @@
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/common/StringUtil.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
+#include <QColor>
 #include <QCompleter>
 #include <QDebug>
 #include <QFont>
@@ -66,9 +68,7 @@ namespace smtk
 {
 namespace extension
 {
-QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
-  smtk::attribute::ConstDoubleItemPtr item,
-  QWidget* parent)
+QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem)
 {
   // Create qWarning object without string quoting
   QDebug qtWarning(QtWarningMsg);
@@ -76,7 +76,7 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
   qtWarning.nospace();
 
   // Get the item definition and see if it specifies dimensional units
-  auto dDef = dynamic_pointer_cast<const smtk::attribute::DoubleItemDefinition>(item->definition());
+  auto dDef = inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
   if (dDef->units().empty())
   {
     return nullptr;
@@ -85,12 +85,13 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
   // Sanity check that units only supported for numerical values
   if (dDef->isDiscrete())
   {
-    qtWarning << "Ignoring units for discrete or expression item " << item->name().c_str() << "\".";
+    qtWarning << "Ignoring units for discrete or expression item "
+              << inputsItem->item()->name().c_str() << "\".";
     return nullptr;
   }
 
   // Get units system
-  auto unitsSystem = item->attribute()->attributeResource()->unitsSystem();
+  auto unitsSystem = inputsItem->item()->attribute()->attributeResource()->unitsSystem();
   if (unitsSystem == nullptr)
   {
     return nullptr;
@@ -103,21 +104,18 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(
   {
 #ifndef NDEBUG
     qtWarning << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
-              << " in attribute item \"" << item->name().c_str() << "\".";
+              << " in attribute item \"" << inputsItem->item()->name().c_str() << "\".";
 #endif
     return nullptr;
   }
 
-  auto* editor = new qtDoubleUnitsLineEdit(dDef, unit, parent);
+  auto* editor = new qtDoubleUnitsLineEdit(inputsItem, unit);
   return static_cast<QWidget*>(editor);
 }
 
-qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
-  smtk::attribute::ConstDoubleItemDefinitionPtr def,
-  const units::Unit& unit,
-  QWidget* parentWidget)
-  : QLineEdit(parentWidget)
-  , m_def(def)
+qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit)
+  : QLineEdit(item->widget())
+  , m_inputsItem(item)
   , m_unit(unit)
 {
   // Set placeholder text
@@ -137,7 +135,7 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
 
   // Instantiate completer with (empty) string list model
   auto* model = new qtCompleterStringModel(this);
-  m_completer = new QCompleter(model, parentWidget);
+  m_completer = new QCompleter(model, m_inputsItem->widget());
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
   QObject::connect(this, &QLineEdit::textEdited, this, &qtDoubleUnitsLineEdit::onTextEdited);
@@ -151,7 +149,8 @@ void qtDoubleUnitsLineEdit::onTextEdited()
   auto utext = text.toStdString();
   if (utext.empty())
   {
-    palette.setColor(QPalette::Base, QColor("#ffffff"));
+    QColor invalidColor = m_inputsItem->uiManager()->correctedInvalidValueColor();
+    palette.setColor(QPalette::Base, invalidColor);
     this->setPalette(palette);
     return;
   }
@@ -161,7 +160,6 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
   std::string valueString;
   std::string unitsString;
-  // bool ok = smtk::attribute::DoubleItemDefinition::splitStringStartingDouble(utext, valueString, unitsString);
   bool ok = splitInput(utext, valueString, unitsString);
   if (ok)
   {
@@ -187,45 +185,62 @@ void qtDoubleUnitsLineEdit::onTextEdited()
   // Shouldn't need to call complete() but doesn't display without it
   m_completer->complete();
 
+  // Update background based on current input string
   bool didParse = false;
   auto measurement = m_unit.system()->measurement(utext, &didParse);
   if (!didParse)
   {
-    palette.setColor(QPalette::Base, QColor("#ffb9b9"));
+    QColor invalidColor = m_inputsItem->uiManager()->correctedTempInvalidValueColor();
+    palette.setColor(QPalette::Base, invalidColor);
     this->setPalette(palette);
     return;
   }
 
+  bool inputHasUnits = !smtk::common::StringUtil::trim(unitsString).empty();
   bool conformal = measurement.m_units.dimension() == m_unit.dimension();
-  if (!conformal)
+  if (!conformal && inputHasUnits)
   {
-    palette.setColor(QPalette::Base, QColor("#ffdab9"));
+    QColor invalidColor = m_inputsItem->uiManager()->correctedInvalidValueColor().lighter(110);
+    palette.setColor(QPalette::Base, invalidColor);
     this->setPalette(palette);
     return;
   }
 
   // Check if in range
-  if (m_def->hasRange())
+  auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
+  if (dDef->hasRange())
   {
     bool converted = false;
-    units::Measurement convertedMsmt = m_unit.system()->convert(measurement, m_unit, &converted);
-    if (!converted)
+    double convertedValue;
+    if (!inputHasUnits)
     {
-      std::ostringstream ss;
-      ss << "Failed to convert measurement: " << measurement << " to units: " << m_unit;
-      qWarning() << ss.str().c_str();
+      std::istringstream iss(valueString);
+      iss >> convertedValue;
+      converted = !(iss.bad() || iss.fail());
     }
     else
     {
-      double convertedValue = convertedMsmt.m_value;
-      if (!m_def->isValueValid(convertedValue))
+      units::Measurement convertedMsmt = m_unit.system()->convert(measurement, m_unit, &converted);
+      if (!converted)
       {
-        palette.setColor(QPalette::Base, QColor("#ffb9b9"));
-        this->setPalette(palette);
-        return;
+        std::ostringstream ss;
+        ss << "Failed to convert measurement: " << measurement << " to units: " << m_unit;
+        qWarning() << ss.str().c_str();
       }
+      else
+      {
+        convertedValue = convertedMsmt.m_value;
+      } // else (input converts to measurement)
+    }   // else (!inputHasUnits)
+
+    if (!(converted && dDef->isValueValid(convertedValue)))
+    {
+      QColor invalidColor = m_inputsItem->uiManager()->correctedInvalidValueColor().lighter(110);
+      palette.setColor(QPalette::Base, invalidColor);
+      this->setPalette(palette);
+      return;
     }
-  }
+  } // if (def has range spec)
 
   palette.setColor(QPalette::Base, QColor("#ffffff"));
   this->setPalette(palette);
@@ -237,8 +252,7 @@ void qtDoubleUnitsLineEdit::onEditFinished()
   std::string input = this->text().toStdString();
   std::string valueString;
   std::string unitsString;
-  // if (!DoubleItemDefinition::splitStringStartingDouble(input, valueString, unitsString))
-  bool ok = splitInput(input, valueString, unitsString);
+  if (!splitInput(input, valueString, unitsString))
   {
     return;
   }

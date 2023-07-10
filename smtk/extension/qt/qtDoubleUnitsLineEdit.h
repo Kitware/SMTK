@@ -15,7 +15,9 @@
 #include "smtk/extension/qt/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/qtInputsItem.h"
 
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 
@@ -30,6 +32,8 @@ namespace smtk
 {
 namespace extension
 {
+class qtInputsItem;
+
 /**\brief qtDoubleUnitsLineEdit provides units-aware line edit double values */
 class SMTKQTEXT_EXPORT qtDoubleUnitsLineEdit : public QLineEdit
 {
@@ -38,15 +42,8 @@ public:
   using Superclass = QLineEdit;
 
   /** \brief Creates instance if double item has units; Returns editor as QWidget */
-  static QWidget* checkAndCreate(
-    smtk::attribute::ConstDoubleItemPtr item,
-    QWidget* parent = nullptr);
-
-  qtDoubleUnitsLineEdit(
-    smtk::attribute::ConstDoubleItemDefinitionPtr def,
-    const units::Unit& unit,
-    QWidget* parent = nullptr);
-
+  static QWidget* checkAndCreate(qtInputsItem* item);
+  qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit);
   ~qtDoubleUnitsLineEdit() override = default;
 
 Q_SIGNALS:
@@ -58,7 +55,7 @@ protected Q_SLOTS:
   void onTextEdited();
 
 protected:
-  smtk::attribute::ConstDoubleItemDefinitionPtr m_def;
+  QPointer<qtInputsItem> m_inputsItem;
   units::Unit m_unit;
   std::vector<units::Unit> m_compatibleUnits;
 

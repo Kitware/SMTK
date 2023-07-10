@@ -1612,7 +1612,7 @@ QWidget* qtInputsItem::createDoubleWidget(
     if (!expressionOnly)
     {
       // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
-      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(ditem, pWidget);
+      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(this);
       if (editorWidget != nullptr)
       {
         auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
