@@ -41,6 +41,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QDoubleValidator>
 #include <QEvent>
@@ -55,12 +56,11 @@
 #include <QSizePolicy>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QTextStream>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
-
-#include "units/System.h"
 
 #include <cmath>
 
@@ -1608,25 +1608,28 @@ QWidget* qtInputsItem::createDoubleWidget(
   {
     QWidget* editorWidget = nullptr;
 
-    if (!(dDef->isDiscrete() || dDef->allowsExpressions() || dDef->units().empty()))
+    bool expressionOnly = m_itemInfo.component().attributeAsBool("ExpressionOnly");
+    if (!expressionOnly)
     {
-      // If item has numerical value with units, use qtDoubleUnitsListEdit
-      auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
-      auto* lineEdit = new qtDoubleUnitsLineEdit(dDef, unitsSystem, pWidget);
-      lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
-      std::string valueAsString = vitem->valueAsString(elementIdx);
-      if (valueAsString == "VALUE_IS_NOT_SET")
+      // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
+      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(this);
+      if (editorWidget != nullptr)
       {
-        valueAsString.clear();
+        auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
+        lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
+        if (vitem->isSet(elementIdx))
+        {
+          std::string valueAsString = vitem->valueAsString(elementIdx);
+          lineEdit->blockSignals(true);
+          lineEdit->setText(valueAsString.c_str());
+          lineEdit->blockSignals(false);
+        }
       }
-      lineEdit->blockSignals(true);
-      lineEdit->setText(valueAsString.c_str());
-      lineEdit->blockSignals(false);
-      editorWidget = static_cast<QWidget*>(lineEdit);
     }
-    else
+
+    // If units editor not created, use qtDoubleLineEdit
+    if (editorWidget == nullptr)
     {
-      // Otherwise use qtDoubleLineEdit (sans units)
       auto* editBox = new qtDoubleLineEdit(pWidget);
       editBox->setObjectName(QString("editBox%1").arg(elementIdx));
 
@@ -2083,12 +2086,6 @@ void qtInputsItem::onLineEditChanged()
     return;
   }
 
-  // Check for units editor
-  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(editBox);
-  if (valueUnitsEditor != nullptr)
-  {
-    valueUnitsEditor->onTextChanged();
-  }
   else if (!editBox->isModified())
   {
     // If this is not from setText(), ignore it. We are using editingFinished

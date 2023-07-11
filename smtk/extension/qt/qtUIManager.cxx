@@ -163,6 +163,7 @@ void qtUIManager::commonConstructor()
   this->advFont.setItalic(false);
   this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
   this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
+  this->TempInvalidValueColor.setRgbF(1.0, 0.85, 0.72); // peach puff #ffdab9
 
   m_currentAdvLevel = 0;
   m_selectionBit = 0;
@@ -624,6 +625,32 @@ QColor qtUIManager::correctedInvalidValueColor() const
   return qtUIManager::contrastWithText(this->InvalidValueColor);
 }
 
+void qtUIManager::setTempInvalidValueColor(const QColor& color)
+{
+  if (color == this->TempInvalidValueColor)
+  {
+    return;
+  }
+  this->TempInvalidValueColor = color;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
+}
+
+QVariantList qtUIManager::tempInvalidValueColorRgbF() const
+{
+  QVariantList val;
+  val << this->TempInvalidValueColor.redF() << this->TempInvalidValueColor.greenF()
+      << this->TempInvalidValueColor.blueF();
+  return val;
+}
+
+QColor qtUIManager::correctedTempInvalidValueColor() const
+{
+  return qtUIManager::contrastWithText(this->TempInvalidValueColor);
+}
+
 QColor qtUIManager::correctedNormalValueColor() const
 {
   return qtUIManager::contrastWithText(Qt::white);
@@ -647,6 +674,26 @@ void qtUIManager::setInvalidValueColorRgbF(const QVariantList& color)
     return;
   }
   this->InvalidValueColor = replacement;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
+}
+
+void qtUIManager::setTempInvalidValueColorRgbF(const QVariantList& color)
+{
+  if (color.size() != 3)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Bad color specification.");
+    return;
+  }
+  auto replacement =
+    QColor::fromRgbF(color[0].toDouble(), color[1].toDouble(), color[2].toDouble());
+  if (replacement == this->TempInvalidValueColor)
+  {
+    return;
+  }
+  this->TempInvalidValueColor = replacement;
   if (m_topView)
   {
     m_topView->onShowCategory();

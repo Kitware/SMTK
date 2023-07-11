@@ -66,6 +66,10 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
   Q_PROPERTY(
     QVariantList invalidValueColorRgbF READ invalidValueColorRgbF WRITE setInvalidValueColorRgbF);
 
+  Q_PROPERTY(QColor tempInvalidValueColor READ invalidValueColor WRITE setTempInvalidValueColor);
+  Q_PROPERTY(QVariantList tempInvalidValueColorRgbF READ tempInvalidValueColorRgbF WRITE
+               setTempInvalidValueColorRgbF);
+
 public:
   qtUIManager(const smtk::attribute::ResourcePtr& resource);
   qtUIManager(
@@ -145,6 +149,15 @@ public:
   QColor invalidValueColor() const { return this->InvalidValueColor; }
   QVariantList invalidValueColorRgbF() const;
   ///}@
+
+  ///@{
+  /// Set/Get the "temporary" invalid value color
+  void setTempInvalidValueColor(const QColor& color);
+  void setTempInvalidValueColorRgbF(const QVariantList& color);
+  QColor tempInvalidValueColor() const { return this->InvalidValueColor; }
+  QVariantList tempInvalidValueColorRgbF() const;
+  ///}@
+
   ///@{
   /// Get color values corrected based on the text color - this allows
   /// the system to change color themes and the resulting GUI can still be
@@ -152,6 +165,7 @@ public:
   QColor correctedInvalidValueColor() const;
   QColor correctedNormalValueColor() const;
   QColor correctedDefaultValueColor() const;
+  QColor correctedTempInvalidValueColor() const;
   ///@}
 
   ///@{
@@ -323,6 +337,7 @@ private:
   QFont advFont;
   QColor DefaultValueColor;
   QColor InvalidValueColor;
+  QColor TempInvalidValueColor;
   bool AdvancedBold;   // true by default
   bool AdvancedItalic; // false by default
 

@@ -163,6 +163,16 @@ int main(int argc, char* argv[])
       qCritical() << QString::fromStdString(inputLogger.convertToString());
       return 1;
     }
+
+    // List out any warning/info/debug records
+    if (inputLogger.numberOfRecords() > 0)
+    {
+      bool includeSourceLoc = false;
+#ifndef NDEBUG
+      includeSourceLoc = true;
+#endif
+      qDebug() << inputLogger.convertToString(includeSourceLoc).c_str();
+    }
   }
   else
   {

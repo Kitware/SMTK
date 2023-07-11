@@ -15,7 +15,9 @@
 #include "smtk/extension/qt/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/qtInputsItem.h"
 
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 
@@ -25,11 +27,14 @@
 #include <vector>
 
 class QCompleter;
+class QKeyEvent;
 
 namespace smtk
 {
 namespace extension
 {
+class qtInputsItem;
+
 /**\brief qtDoubleUnitsLineEdit provides units-aware line edit double values */
 class SMTKQTEXT_EXPORT qtDoubleUnitsLineEdit : public QLineEdit
 {
@@ -37,25 +42,26 @@ class SMTKQTEXT_EXPORT qtDoubleUnitsLineEdit : public QLineEdit
 public:
   using Superclass = QLineEdit;
 
-  qtDoubleUnitsLineEdit(
-    smtk::attribute::ConstDoubleItemDefinitionPtr def,
-    std::shared_ptr<units::System> unitsSystem,
-    QWidget* parent = nullptr);
+  /** \brief Creates instance if double item has units; Returns editor as QWidget */
+  static QWidget* checkAndCreate(qtInputsItem* item);
+  qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit);
   ~qtDoubleUnitsLineEdit() override = default;
 
 Q_SIGNALS:
 
 public Q_SLOTS:
-  void onTextChanged();
   void onEditFinished();
 
 protected Q_SLOTS:
+  void onTextEdited();
 
 protected:
-  smtk::attribute::ConstDoubleItemDefinitionPtr m_def;
-  std::shared_ptr<units::System> m_unitsSystem;
+  void keyPressEvent(QKeyEvent* event) override;
+
+  QPointer<qtInputsItem> m_inputsItem;
   units::Unit m_unit;
   std::vector<units::Unit> m_compatibleUnits;
+  int m_lastKey = -1;
 
   QCompleter* m_completer = nullptr;
 };

@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <SMTK_AttributeResource Version="7">
+  <Properties>
+    <!-- Display when loaded -->
+    <Property Name="smtk.attribute_panel.display_hint" Type="bool">true</Property>
+  </Properties>
+
   <Definitions>
     <AttDef Type="UnitsExample">
       <ItemDefinitions>
-        <Double Name="No Units 1">
-          <BriefDescription>No Units, No Default</BriefDescription>
-        </Double>
         <Double Name="No Units [0-100)">
           <BriefDescription>No Units, Default Value</BriefDescription>
           <DefaultValue>3.14159</DefaultValue>
@@ -23,14 +25,33 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Distance [-inf, inf] ft" Units="ft">
+        <Double Name="Length (-inf, inf) ft" Units="ft">
           <DefaultValue>2 m</DefaultValue>
         </Double>
 
-        <Double Name="Custom" Units="some-units">
-          <BriefDescription>Unrecognized Units</BriefDescription>
+        <Double Name="Capacity" Units="gallon">
+          <RangeInfo>
+            <Min Inclusive="true">0.0</Min>
+          </RangeInfo>
         </Double>
 
+        <Double Name="Infix Option" Units="meter">
+          <DefaultValue>2.8128</DefaultValue>
+          <ExpressionType>infixExpression</ExpressionType>
+        </Double>
+
+<!-- Invalid units cause reader to fail. -->
+<!--         <Double Name="Made Up Units" Units="some-units">
+          <BriefDescription>Unrecognized Units</BriefDescription>
+          <DefaultValue>0.0</DefaultValue>
+        </Double> -->
+      </ItemDefinitions>
+    </AttDef>
+
+    <AttDef Type="infixExpression">
+      <ItemDefinitions>
+        <String Extensible="true" Name="expression">
+        </String>
       </ItemDefinitions>
     </AttDef>
 
@@ -58,12 +79,20 @@
     </AttDef>
   </Definitions>
 
+  <Evaluators>
+    <Evaluator Name="InfixExpressionEvaluator">
+      <Definition Type="infixExpression">
+      </Definition>
+    </Evaluator>
+  </Evaluators>
+
   <Views>
     <View Type="Group" Title="Units Example" TopLevel="true" TabPosition="North"
           FilterByAdvanceLevel="false" FilterByCategory="false">
       <Views>
         <View Title="Tab 1" />
         <View Title="Tab 2" />
+        <View Title="Tab 3" />
       </Views>
     </View>
 
@@ -73,7 +102,13 @@
       </InstancedAttributes>
     </View>
 
-    <View Type="Instanced" Title="Tab 2">
+    <View Type="Attribute" Title="Tab 2">
+      <AttributeTypes>
+        <Att Type="infixExpression" />
+      </AttributeTypes>
+    </View>
+
+    <View Type="Instanced" Title="Tab 3">
       <InstancedAttributes>
         <Att Type="Other" Name="Other" />
       </InstancedAttributes>
