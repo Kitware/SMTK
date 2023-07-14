@@ -113,10 +113,8 @@ public:
   // takes into account whether to use the common label or specific
   // component label.
   std::string valueLabel(std::size_t element) const;
-  bool isDiscreteIndexValid(int index) const
-  {
-    return ((index > -1) && (static_cast<unsigned int>(index) < m_discreteValueEnums.size()));
-  }
+  bool isDiscreteIndexValid(int index) const;
+  bool isDiscreteIndexValid(int index, const std::set<std::string>& categories) const;
 
   ///\brief For conditional children items based on the item's current discrete value
   std::size_t numberOfChildrenItemDefinitions() const { return m_itemDefs.size(); }

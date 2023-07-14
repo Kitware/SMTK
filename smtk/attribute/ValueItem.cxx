@@ -154,14 +154,38 @@ bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>&
     return true;
   }
 
-  // Let check to make sure all of the values are set
-  for (std::size_t i = 0; i < m_isSet.size(); ++i)
+  // Let check to make sure all of the values are set.  In the case of discrete values
+  // we need to also make sure values are still valid since enumerations can depend on
+  // the set of categories enabled
+
+  if (!(this->isDiscrete() && useCategories))
   {
-    if (!m_isSet[i])
+    for (std::size_t i = 0; i < m_isSet.size(); ++i)
+    {
+      if (!m_isSet[i])
+      {
+        return false;
+      }
+    }
+  }
+  else
+  {
+    // Discrete Item w/ categories case
+    const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+    if (!def)
     {
       return false;
     }
+
+    for (std::size_t i = 0; i < m_isSet.size(); ++i)
+    {
+      if (!(m_isSet[i] && def->isDiscreteIndexValid(m_discreteIndices[i], categories)))
+      {
+        return false;
+      }
+    }
   }
+
   // Now we need to check the active items
   for (auto it = m_activeChildrenItems.begin(); it != m_activeChildrenItems.end(); ++it)
   {

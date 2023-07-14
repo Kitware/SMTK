@@ -535,3 +535,21 @@ void ValueItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsS
     item.second->setUnitsSystem(m_unitsSystem);
   }
 }
+
+bool ValueItemDefinition::isDiscreteIndexValid(int index, const std::set<std::string>& categories)
+  const
+{
+  // Is the index out of range?
+  if ((index < 0) || (static_cast<unsigned int>(index) >= m_discreteValueEnums.size()))
+  {
+    return false;
+  }
+
+  const auto& cats = this->enumCategories(m_discreteValueEnums[index]);
+  return (cats.empty() || cats.passes(categories));
+}
+
+bool ValueItemDefinition::isDiscreteIndexValid(int index) const
+{
+  return ((index > -1) && (static_cast<unsigned int>(index) < m_discreteValueEnums.size()));
+}

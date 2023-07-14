@@ -9,11 +9,13 @@
 //=========================================================================
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/operators/Read.h"
@@ -399,5 +401,44 @@ int unitCategories(int /*unused*/, char* /*unused*/[])
   smtkTest(
     testCategories(attRes, "XML Pass - ", answers), "Failed checking Categories in XML Pass");
 
-  return 0;
+  // Lets test the validity of a discrete item with enums
+  std::set<std::string> cats;
+  int status = 0;
+  cats.insert("A");
+  attRes->setActiveCategories(cats);
+  attRes->setActiveCategoriesEnabled(true);
+
+  auto a = attRes->findAttribute("a");
+  smtkTest(a != nullptr, "Could not find Attribute a!");
+  auto g1 = a->findGroup("g1");
+  smtkTest(g1 != nullptr, "Could not find a:g1!");
+  auto s1 = g1->findAs<StringItem>(0, "s1");
+  smtkTest(s1 != nullptr, "Could not find a:g1:s1!");
+
+  s1->setDiscreteIndex(2); // This enum has no category constraints
+  if (!s1->isValid())
+  {
+    std::cerr << "Setting s1 to e3 - FAILED!!\n";
+    status = -1;
+  }
+
+  s1->setDiscreteIndex(0); // This enum requires ec1
+  if (s1->isValid())
+  {
+    std::cerr << "Setting s1 to e1 - FAILED!!\n";
+    status = -1;
+  }
+  // Lets add e1's category
+  cats.insert("ec1");
+  attRes->setActiveCategories(cats);
+  if (!s1->isValid())
+  {
+    std::cerr << "Setting s1 to e1 after adding ec1 to active categories- FAILED!!\n";
+    status = -1;
+  }
+  if (status == 0)
+  {
+    std::cerr << "All Enum Category Tests - Passed!\n";
+  }
+  return status;
 }
