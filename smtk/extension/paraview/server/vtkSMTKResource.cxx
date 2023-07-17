@@ -127,7 +127,12 @@ int vtkSMTKResource::RequestData(
   // method.
   for (int i = 0; i < converter->GetNumberOfOutputPorts(); i++)
   {
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 2, 20221201)
+    vtkMultiBlockDataSet::GetData(outInfo, i)
+      ->CompositeShallowCopy(vtkMultiBlockDataSet::SafeDownCast(converter->GetOutputDataObject(i)));
+#else
     vtkMultiBlockDataSet::GetData(outInfo, i)->ShallowCopy(converter->GetOutputDataObject(i));
+#endif
   }
 
   return 1;
