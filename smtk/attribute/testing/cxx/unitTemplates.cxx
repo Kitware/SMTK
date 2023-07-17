@@ -118,6 +118,21 @@ int unitTemplates(int /*unused*/, char* /*unused*/[])
               << " children definitions, should have been 2\n";
     return -1;
   }
+
+  // Let check to make sure a parameter whose default is empty works correctly
+  auto cit = sitem->childrenItemDefinitions().find("value");
+  if (cit == sitem->childrenItemDefinitions().end())
+  {
+    std::cerr << "Error - StringItemDefinition: s3's child named value can not be found\n";
+    return -1;
+  }
+
+  if (cit->second->label() != "Value")
+  {
+    std::cerr << "Error - StringItemDefinition: s3's child name value's label is' "
+              << cit->second->label() << ", but should have been Value\n";
+    return -1;
+  }
   if (sitem->numberOfDiscreteValues() != 2)
   {
     std::cerr << "Error - StringItemDefinition: s3 has " << sitem->numberOfDiscreteValues()
