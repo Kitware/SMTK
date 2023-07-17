@@ -473,7 +473,7 @@ void XmlDocV3Parser::processDefCategoryInfoNode(
   xml_node& defNode,
   smtk::attribute::DefinitionPtr& def)
 {
-  Categories::CombinationMode inheritanceMode;
+  Categories::CombinationMode inheritanceMode = def->categoryInheritanceMode();
   this->processCategoryInfoNode(defNode, def->localCategories(), inheritanceMode);
   def->setCategoryInheritanceMode(inheritanceMode);
 }

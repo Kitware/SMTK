@@ -1157,7 +1157,7 @@ void XmlDocV1Parser::processOldStyleCategoryNode(xml_node& node, Categories::Set
 
 void XmlDocV1Parser::processItemDefCategoryInfoNode(xml_node& node, ItemDefinitionPtr idef)
 {
-  Categories::CombinationMode inheritanceMode;
+  Categories::CombinationMode inheritanceMode = idef->categoryInheritanceMode();
   this->processCategoryInfoNode(node, idef->localCategories(), inheritanceMode);
   idef->setCategoryInheritanceMode(inheritanceMode);
 }
