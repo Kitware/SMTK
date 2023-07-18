@@ -652,6 +652,33 @@ Templates are supported in Version 7 (and later) XML files.
      - Defines the information to be inserted when the template is instanced.
 
 
+.. list-table:: XML Children Elements for <Parameters> Element
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Child Element
+     - Description
+
+   * - <Param>
+     - Defines a parameter used by the Template.  If the contents of the element is not empty, it will be assumed to be the default value of the parameter
+
+.. list-table:: XML Attributes for <Param> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - Name
+     - String value representing the name of the Parameter.
+       (Required)
+
+   * - OkToBeEmpty
+     - Boolean indicating that the parameter has an empty default.
+       (Optional)
+
+
 Definitions Section
 ---------------------------------
 This is an optional section that defines a set of attribute

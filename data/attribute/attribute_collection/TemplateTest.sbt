@@ -20,10 +20,11 @@ and Discrete Information
     <Template Name = "DiscreteStringInfo">
       <Parameters>
         <Param Name="defaultIndex">0</Param>
+        <Param Name="labelExtention" OkToBeEmpty="true"/>
       </Parameters>
       <Contents>
         <ChildrenDefinitions>
-          <Double Name="value" Label="Value">
+          <Double Name="value" Label="Value{labelExtention}">
             <RangeInfo>
               <Min Inclusive="false">0</Min>
             </RangeInfo>

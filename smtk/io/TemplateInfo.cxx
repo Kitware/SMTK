@@ -87,12 +87,18 @@ bool TemplateInfo::define(
         if (xatt)
         {
           paramName = xatt.value();
+          //Lets see if this parameter is allowed to be empty
+          xatt = pnode.attribute("OkToBeEmpty");
           m_parameters.insert(paramName);
           // Is there a default value for this parameter?
           if (!pnode.text().empty())
           {
             defVal = pnode.text().get();
             m_paramValues[paramName] = defVal;
+          }
+          else if (xatt && xatt.as_bool())
+          {
+            m_paramValues[paramName] = "";
           }
         }
         else
