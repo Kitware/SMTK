@@ -42,7 +42,8 @@
 
         <Double Name="Made Up Units" Units="some-units">
           <BriefDescription>Unrecognized Units</BriefDescription>
-          <DefaultValue>0.0</DefaultValue>
+          <DefaultValue>1.1</DefaultValue>
+          <ExpressionType>infixExpression</ExpressionType>
         </Double>
       </ItemDefinitions>
     </AttDef>

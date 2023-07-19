@@ -82,21 +82,19 @@ bool DoubleItemDefinition::setUnits(const std::string& newUnits)
   {
     return true;
   }
-  else if (!m_unitsSystem)
-  {
-    m_units = newUnits;
-    return true;
-  }
-
+  std::string origUnits = m_units;
   m_units = newUnits;
   if (!this->reevaluateDefaults())
   {
+    // Could not set new units
 #ifndef NDEBUG
     smtkWarningMacro(
       smtk::io::Logger::instance(),
       "Failed to set units of \"" << newUnits << "\" for item definition \"" << this->name()
                                   << "\"");
 #endif
+    m_units = origUnits;
+    return false;
   }
   return true;
 }

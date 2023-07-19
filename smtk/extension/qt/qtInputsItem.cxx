@@ -715,7 +715,23 @@ void qtInputsItem::showExpressionResultWidgets(
     uiManager()->setWidgetColorToInvalid(m_internals->m_expressionResultLineEdit);
   }
   m_internals->m_expressionResultLineEdit->setToolTip(tooltip);
-  m_internals->m_expressionResultLineEdit->setText(text);
+
+  // Add units to the text if definition has units string recognized by units system
+  QString displayText = text;
+  auto item = m_itemInfo.itemAs<ValueItem>();
+  auto def =
+    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(item->definition());
+  if (!def->units().empty())
+  {
+    auto unitsSystem = item->attribute()->attributeResource()->unitsSystem();
+    bool parsed = false;
+    unitsSystem->unit(def->units(), &parsed);
+    if (parsed)
+    {
+      displayText = QString("%1 %2").arg(text).arg(def->units().c_str());
+    }
+  }
+  m_internals->m_expressionResultLineEdit->setText(displayText);
 
   m_internals->m_expressionResultLineEdit->setVisible(true);
   m_internals->m_expressionEqualsLabel->setVisible(true);
