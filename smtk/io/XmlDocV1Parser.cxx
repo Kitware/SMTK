@@ -1622,14 +1622,7 @@ void XmlDocV1Parser::processValueDefAtts(
   xatt = node.attribute("Units");
   if (xatt)
   {
-    bool didSet = idef->setUnits(xatt.value());
-    if (!didSet)
-    {
-      smtkErrorMacro(
-        m_logger,
-        "Failed to set units of \"" << xatt.value() << "\" for item definition \"" << idef->name()
-                                    << "\"");
-    }
+    idef->setUnits(xatt.value());
   }
 }
 
