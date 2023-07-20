@@ -62,6 +62,9 @@
 #include <QVBoxLayout>
 #include <QVariant>
 
+#include "units/System.h"
+#include "units/Unit.h"
+
 #include <cmath>
 
 #if defined(SMTK_MSVC) && _MSC_VER <= 1500
@@ -712,7 +715,23 @@ void qtInputsItem::showExpressionResultWidgets(
     uiManager()->setWidgetColorToInvalid(m_internals->m_expressionResultLineEdit);
   }
   m_internals->m_expressionResultLineEdit->setToolTip(tooltip);
-  m_internals->m_expressionResultLineEdit->setText(text);
+
+  // Add units to the text if definition has units string recognized by units system
+  QString displayText = text;
+  auto item = m_itemInfo.itemAs<ValueItem>();
+  auto def =
+    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(item->definition());
+  if (!def->units().empty())
+  {
+    auto unitsSystem = item->attribute()->attributeResource()->unitsSystem();
+    bool parsed = false;
+    unitsSystem->unit(def->units(), &parsed);
+    if (parsed)
+    {
+      displayText = QString("%1 %2").arg(text).arg(def->units().c_str());
+    }
+  }
+  m_internals->m_expressionResultLineEdit->setText(displayText);
 
   m_internals->m_expressionResultLineEdit->setVisible(true);
   m_internals->m_expressionEqualsLabel->setVisible(true);
@@ -930,11 +949,22 @@ QFrame* qtInputsItem::createLabelFrame(
 
   if (!vitemDef->units().empty())
   {
-    // Are we using a spin box?  If so we don't need to add units
-    std::string option = "LineEdit"; // defualt behavior
+    // Check if we should units to the label
+    std::string option = "LineEdit"; // default behavior
     m_itemInfo.component().attribute("Option", option);
-
-    if ((option == "LineEdit") && (vitemDef->isDiscrete() || vitemDef->allowsExpressions()))
+    bool addUnitsLabel = (option == "LineEdit");
+    if (addUnitsLabel && !vitemDef->isDiscrete())
+    {
+      // Check if units are "valid"
+      auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
+      if (unitsSystem)
+      {
+        bool unitsParsed = false;
+        units::Unit defUnit = unitsSystem->unit(vitemDef->units(), &unitsParsed);
+        addUnitsLabel = addUnitsLabel && (!unitsParsed);
+      }
+    }
+    if (addUnitsLabel)
     {
       QString unitText = label->text();
       unitText.append(" (").append(vitemDef->units().c_str()).append(")");

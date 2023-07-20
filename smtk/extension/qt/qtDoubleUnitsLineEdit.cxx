@@ -102,7 +102,7 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem)
   // Try parsing the unit string
   bool parsedOK = false;
   auto unit = unitsSystem->unit(dDef->units(), &parsedOK);
-  if (!parsedOK || unit.dimensionless())
+  if (!parsedOK)
   {
 #ifndef NDEBUG
     qtWarning << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""

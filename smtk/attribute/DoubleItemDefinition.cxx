@@ -10,6 +10,7 @@
 
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/io/Logger.h"
 
 #include "units/Converter.h"
 #include "units/System.h"
@@ -86,6 +87,12 @@ bool DoubleItemDefinition::setUnits(const std::string& newUnits)
   if (!this->reevaluateDefaults())
   {
     // Could not set new units
+#ifndef NDEBUG
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Failed to set units of \"" << newUnits << "\" for item definition \"" << this->name()
+                                  << "\"");
+#endif
     m_units = origUnits;
     return false;
   }
@@ -242,17 +249,41 @@ bool DoubleItemDefinition::splitStringStartingDouble(
 bool DoubleItemDefinition::reevaluateDefaults()
 {
   std::vector<double> convertedVals(m_defaultValuesAsStrings.size());
-  if (m_unitsSystem && !m_units.empty())
+  std::string units;
+  units::Unit defUnit;
+  bool convert = false;
+  if (m_unitsSystem)
   {
     // If we have an units System, lets see if the definition's units
     // are valid?
-    bool unitsParsed = false;
-    units::Unit defUnit = m_unitsSystem->unit(m_units, &unitsParsed);
-    if (!unitsParsed)
-    {
-      return false;
-    }
+    defUnit = m_unitsSystem->unit(m_units, &convert);
+  }
 
+  // Can we not do conversion?
+  if (!convert)
+  {
+    // In this case the defaults should either not have units or have units that match the definition
+    for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
+    {
+      std::stringstream convert(m_defaultValuesAsStrings[i]);
+      convert.precision(17);
+      if (!((convert >> convertedVals[i]) && this->isValueValid(convertedVals[i])))
+      {
+        return false; // failed to get the double or it was not considered valid
+      }
+      // Lets see if there are units to the string?  If there are none then assume there are in the units
+      // the definition
+      if (convert >> units)
+      {
+        if (units != m_units)
+        {
+          return false;
+        }
+      }
+    }
+  }
+  else
+  {
     // OK we can do units conversion
     bool status;
     double convertedVal;
@@ -288,33 +319,8 @@ bool DoubleItemDefinition::reevaluateDefaults()
         return false;
       }
       convertedVals[i] = convertedVal;
-    } // for (i)
-
-    m_defaultValue = convertedVals;
-    return true;
-  }
-
-  // In this case the defaults should either not have units or have units that match the definition
-  std::string units;
-  for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
-  {
-    std::stringstream convert(m_defaultValuesAsStrings[i]);
-    convert.precision(17);
-    if (!((convert >> convertedVals[i]) && this->isValueValid(convertedVals[i])))
-    {
-      return false; // failed to get the double or it was not considered valid
-    }
-    // Lets see if there are units to the string?  If there are none then assume there are in the units
-    // the definition
-    if (convert >> units)
-    {
-      if (units != m_units)
-      {
-        return false;
-      }
     }
   }
-
   m_defaultValue = convertedVals;
   return true;
 }
