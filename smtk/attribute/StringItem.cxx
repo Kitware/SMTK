@@ -49,3 +49,8 @@ bool StringItem::isSecure() const
   }
   return sdef->isSecure();
 }
+
+bool StringItem::setValueFromString(std::size_t element, const std::string& val)
+{
+  return this->setValue(element, val);
+}
