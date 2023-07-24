@@ -35,6 +35,8 @@ public:
   // Returns true if the item's value is not to be displayed in a GUI
   bool isSecure() const;
 
+  bool setValueFromString(std::size_t element, const std::string& val) override;
+
   using Item::assign;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occurred.  By default, an attribute being used by this
