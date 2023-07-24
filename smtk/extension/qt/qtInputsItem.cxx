@@ -2262,6 +2262,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
         {
           this->unsetValue(elementIdx); // editor's contents are invalid
         }
+        valChanged = true;
       }
       else if (
         (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
