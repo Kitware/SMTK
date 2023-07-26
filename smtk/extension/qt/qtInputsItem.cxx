@@ -1579,7 +1579,7 @@ QWidget* qtInputsItem::createDoubleWidget(
 {
   auto dDef = vitem->definitionAs<DoubleItemDefinition>();
   auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
-  double minVal, maxVal, defVal;
+  double minVal, maxVal;
 
   // Let get the range of the item
   minVal = smtk_DOUBLE_MIN;
@@ -1620,12 +1620,12 @@ QWidget* qtInputsItem::createDoubleWidget(
   if (dDef->hasDefault())
   {
     int defaultIdx = static_cast<int>(dDef->defaultValues().size()) <= elementIdx ? 0 : elementIdx;
-    defVal = dDef->defaultValue(defaultIdx);
+    std::string defValString = dDef->defaultValueAsString(defaultIdx);
     if (!tooltip.isEmpty())
     {
       tooltip.append("; ");
     }
-    tooltip.append("Default: ").append(QString::number(defVal));
+    tooltip.append("Default: ").append(defValString.c_str());
   }
 
   // What type of option are we suppose to use

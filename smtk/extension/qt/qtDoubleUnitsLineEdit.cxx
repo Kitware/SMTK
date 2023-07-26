@@ -35,12 +35,6 @@ namespace
 // Alias for split-string method
 const auto& splitInput = smtk::attribute::DoubleItemDefinition::splitStringStartingDouble;
 
-bool compareUnitNames(const units::Unit& a, const units::Unit& b)
-{
-  // For sorting units by name
-  return a.name() < b.name();
-}
-
 /** \brief Subclass QStringListModel to highlight first item */
 class qtCompleterStringModel : public QStringListModel
 {
@@ -93,7 +87,7 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem)
   }
 
   // Get units system
-  auto unitsSystem = inputsItem->item()->attribute()->attributeResource()->unitsSystem();
+  auto unitsSystem = dDef->unitsSystem();
   if (unitsSystem == nullptr)
   {
     return nullptr;
@@ -120,20 +114,24 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Un
   , m_inputsItem(item)
   , m_unit(unit)
 {
+  auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
   // Set placeholder text
-  this->setPlaceholderText(QString::fromStdString(unit.name()));
+  this->setPlaceholderText(QString::fromStdString(dDef->units()));
 
   // Get list of compatible units
-  m_compatibleUnits = m_unit.system()->compatibleUnits(m_unit);
-  std::sort(m_compatibleUnits.begin(), m_compatibleUnits.end(), compareUnitNames);
+  auto compatibleUnits = m_unit.system()->compatibleUnits(m_unit);
 
-  // Find the same unit in the list and move it to front of list
-  auto matchUnit = [this](const units::Unit& u) { return u == m_unit; };
-  auto iter = std::find_if(m_compatibleUnits.begin(), m_compatibleUnits.end(), matchUnit);
-  if (iter != m_compatibleUnits.end())
+  //  create a list of possible units names
+  for (const auto& unit : compatibleUnits)
   {
-    std::rotate(m_compatibleUnits.begin(), iter, iter + 1);
+    m_unitChoices.push_back(unit.name().c_str());
   }
+
+  // Lets remove duplicates and sort the list
+  m_unitChoices.removeDuplicates();
+  m_unitChoices.sort();
+  // Now make the Definition's units appear at the top
+  m_unitChoices.push_front(dDef->units().c_str());
 
   // Instantiate completer with (empty) string list model
   auto* model = new qtCompleterStringModel(this);
@@ -171,16 +169,13 @@ void qtDoubleUnitsLineEdit::onTextEdited()
     }
 
     // Generate the completer strings
-    std::ostringstream prompt;
-    for (const auto& unit : m_compatibleUnits)
+    for (const QString& unit : m_unitChoices)
     {
-      prompt.str("");
-      prompt.clear();
-      prompt << valueString << unit.name();
-      compatibleList << QString::fromStdString(prompt.str());
+      QString entry(valueString.c_str());
+      entry += unit;
+      compatibleList << entry;
     } // for
-    // qDebug() << compatibleList;
-  } // if (ok)
+  }   // if (ok)
   auto* model = dynamic_cast<qtCompleterStringModel*>(m_completer->model());
   model->setStringList(compatibleList);
 
@@ -276,8 +271,9 @@ void qtDoubleUnitsLineEdit::onEditFinished()
   std::string trimmedString = smtk::common::StringUtil::trim(unitsString);
   if (trimmedString.empty())
   {
+    auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
     std::ostringstream ss;
-    ss << valueString << ' ' << m_unit.name();
+    ss << valueString << ' ' << dDef->units();
     this->blockSignals(true);
     this->setText(QString::fromStdString(ss.str()));
     this->blockSignals(false);

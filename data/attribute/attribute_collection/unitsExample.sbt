@@ -17,7 +17,7 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Length [0-100) m" Units="m">
+        <Double Name="Length [0-100) m" Units="meters">
           <DefaultValue>5.5</DefaultValue>
           <RangeInfo>
             <Min Inclusive="true">0.0</Min>
@@ -25,7 +25,7 @@
           </RangeInfo>
         </Double>
 
-        <Double Name="Length (-inf, inf) ft" Units="ft">
+        <Double Name="Length (-inf, inf) km" Units="km">
           <DefaultValue>2 m</DefaultValue>
         </Double>
 
