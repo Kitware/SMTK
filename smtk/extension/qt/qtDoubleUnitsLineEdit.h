@@ -60,7 +60,7 @@ protected:
 
   QPointer<qtInputsItem> m_inputsItem;
   units::Unit m_unit;
-  std::vector<units::Unit> m_compatibleUnits;
+  QStringList m_unitChoices;
   int m_lastKey = -1;
 
   QCompleter* m_completer = nullptr;
