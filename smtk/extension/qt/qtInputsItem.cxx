@@ -457,10 +457,25 @@ void qtInputsItem::updateDoubleItemData(
 {
   int elementIdx = iwidget->property("ElementIndex").toInt();
   QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
+  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(iwidget);
   bool isValid = ditem->isSet(elementIdx);
   bool isDefault = ditem->isUsingDefault(elementIdx);
-  if (lineEdit != nullptr)
+
+  if (valueUnitsEditor != nullptr)
   {
+    QSignalBlocker blocker(valueUnitsEditor);
+    if (isValid)
+    {
+      valueUnitsEditor->setText(ditem->valueAsString(elementIdx).c_str());
+    }
+    else
+    {
+      valueUnitsEditor->setText("");
+    }
+  }
+  else if (lineEdit != nullptr)
+  {
+    QSignalBlocker blocker(lineEdit);
     QString ival;
     if (isValid)
     {
@@ -470,20 +485,21 @@ void qtInputsItem::updateDoubleItemData(
       }
       else
       {
-        ival = ditem->valueAsString(elementIdx).c_str();
+        // We need to split the value string into 2 parts and only display the value
+        // not the units
+        std::string valStr, unitsStr;
+        DoubleItemDefinition::splitStringStartingDouble(
+          ditem->valueAsString(elementIdx), valStr, unitsStr);
+        ival = valStr.c_str();
       }
       if (lineEdit->text() != ival)
       {
-        lineEdit->blockSignals(true);
         lineEdit->setText(ival);
-        lineEdit->blockSignals(false);
       }
     }
     else if (lineEdit->text() != "")
     {
-      lineEdit->blockSignals(true);
       lineEdit->setText("");
-      lineEdit->blockSignals(false);
     }
   }
   else
@@ -1703,9 +1719,13 @@ QWidget* qtInputsItem::createDoubleWidget(
         }
         else
         {
-          editBox->setText(vitem->valueAsString(elementIdx).c_str());
+          // We need to split the value string into 2 parts and only display the value
+          // not the units
+          std::string valStr, unitsStr;
+          DoubleItemDefinition::splitStringStartingDouble(
+            vitem->valueAsString(elementIdx), valStr, unitsStr);
+          editBox->setText(valStr.c_str());
         }
-        editBox->setText(vitem->valueAsString(elementIdx).c_str());
       }
 
       editorWidget = static_cast<QWidget*>(editBox);
