@@ -43,9 +43,14 @@ public:
   using Superclass = QLineEdit;
 
   /** \brief Creates instance if double item has units; Returns editor as QWidget */
-  static QWidget* checkAndCreate(qtInputsItem* item);
-  qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit);
+  static QWidget* checkAndCreate(qtInputsItem* item, const QString& tooltip);
+  qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit, const QString& tooltip);
   ~qtDoubleUnitsLineEdit() override = default;
+
+  /** \brief Return the text that represents the widget's base tool-tip.
+   * The text does not contain the item's converted value
+   */
+  const QString& baseToolTipText() const { return m_baseTooltip; }
 
 Q_SIGNALS:
 
@@ -61,6 +66,7 @@ protected:
   QPointer<qtInputsItem> m_inputsItem;
   units::Unit m_unit;
   QStringList m_unitChoices;
+  QString m_baseTooltip;
   int m_lastKey = -1;
 
   QCompleter* m_completer = nullptr;

@@ -64,7 +64,7 @@ namespace smtk
 {
 namespace extension
 {
-QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem)
+QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem, const QString& tooltip)
 {
   // Create qWarning object without string quoting
   QDebug qtWarning(QtWarningMsg);
@@ -105,14 +105,18 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem)
     return nullptr;
   }
 
-  auto* editor = new qtDoubleUnitsLineEdit(inputsItem, unit);
+  auto* editor = new qtDoubleUnitsLineEdit(inputsItem, unit, tooltip);
   return static_cast<QWidget*>(editor);
 }
 
-qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit)
+qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
+  qtInputsItem* item,
+  const units::Unit& unit,
+  const QString& tooltip)
   : QLineEdit(item->widget())
   , m_inputsItem(item)
   , m_unit(unit)
+  , m_baseTooltip(tooltip)
 {
   auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
   // Set placeholder text
@@ -139,6 +143,8 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Un
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
   QObject::connect(this, &QLineEdit::textEdited, this, &qtDoubleUnitsLineEdit::onTextEdited);
+  //Add the converted value of the item to the tooltip if set
+  auto dItem = std::dynamic_pointer_cast<smtk::attribute::DoubleItem>(m_inputsItem->item());
 }
 
 void qtDoubleUnitsLineEdit::onTextEdited()

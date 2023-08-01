@@ -1642,7 +1642,7 @@ QWidget* qtInputsItem::createDoubleWidget(
     if (!expressionOnly)
     {
       // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
-      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(this);
+      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(this, tooltip);
       if (editorWidget != nullptr)
       {
         auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
@@ -1653,6 +1653,17 @@ QWidget* qtInputsItem::createDoubleWidget(
           lineEdit->blockSignals(true);
           lineEdit->setText(valueAsString.c_str());
           lineEdit->blockSignals(false);
+        }
+        // Added the converted value to the tool-tip
+        if (ditem->isSet(elementIdx))
+        {
+          QString val;
+          val.setNum(ditem->value(elementIdx));
+          if (!tooltip.isEmpty())
+          {
+            tooltip.append("; ");
+          }
+          tooltip.append("Val: ").append(val).append(dDef->units().c_str());
         }
       }
     }
@@ -2258,10 +2269,23 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
       if (valueUnitsBox != nullptr)
       {
+        QString newToolTip = valueUnitsBox->baseToolTipText();
         if (!ditem->setValueFromString(elementIdx, editBox->text().toStdString()))
         {
           this->unsetValue(elementIdx); // editor's contents are invalid
         }
+        else
+        {
+          QString val;
+          val.setNum(ditem->value(elementIdx));
+          auto dDef = ditem->definitionAs<DoubleItemDefinition>();
+          if (!newToolTip.isEmpty())
+          {
+            newToolTip.append("; ");
+          }
+          newToolTip.append("Val: ").append(val).append(dDef->units().c_str());
+        }
+        valueUnitsBox->setToolTip(newToolTip);
         valChanged = true;
       }
       else if (
