@@ -82,14 +82,23 @@ bool DoubleItem::setValue(std::size_t element, const double& val)
   {
     return false;
   }
-  double origVal = m_values[element];
+  double origVal;
+  bool wasSet = false;
+
+  // Was the current value set?
+  if (m_isSet[element])
+  {
+    origVal = m_values[element];
+    wasSet = true;
+  }
+
   if (!ValueItemTemplate<double>::setValue(element, val))
   {
     return false;
   }
 
   // Did it actually change the value?
-  if (m_values[element] == origVal)
+  if (wasSet && (m_values[element] == origVal))
   {
     return true; // nothing to be done
   }
