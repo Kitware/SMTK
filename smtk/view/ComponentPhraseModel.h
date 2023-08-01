@@ -104,7 +104,6 @@ protected:
     m_resources;
   std::multimap<std::string, std::string> m_componentFilters;
 
-private:
   SortingCompFunc m_comparator = smtk::view::DescriptivePhrase::compareByTypeThenTitle;
 };
 } // namespace view
