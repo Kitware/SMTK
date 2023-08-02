@@ -19,6 +19,7 @@
 #include <QColor>
 #include <QCompleter>
 #include <QDebug>
+#include <QFocusEvent>
 #include <QFont>
 #include <QKeyEvent>
 #include <QStringListModel>
@@ -29,6 +30,8 @@
 
 #include <algorithm> // std::sort et al
 #include <sstream>
+
+using namespace smtk::extension;
 
 namespace
 {
@@ -58,13 +61,91 @@ public:
   }
 };
 
+QTextStream::RealNumberNotation toTextStreamNotation(
+  qtDoubleUnitsLineEdit::RealNumberNotation notation)
+{
+  if (notation == qtDoubleUnitsLineEdit::FixedNotation)
+  {
+    return QTextStream::FixedNotation;
+  }
+  else if (notation == qtDoubleUnitsLineEdit::ScientificNotation)
+  {
+    return QTextStream::ScientificNotation;
+  }
+  else
+  {
+    return QTextStream::SmartNotation;
+  }
+}
 } // anonymous namespace
 
 namespace smtk
 {
 namespace extension
 {
-QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem, const QString& tooltip)
+
+class qtDoubleUnitsLineEdit::qtInternals
+{
+public:
+  int m_precision = 6; // default out of focus precision
+
+  qtDoubleUnitsLineEdit::RealNumberNotation m_notation = qtDoubleUnitsLineEdit::MixedNotation;
+  QPointer<QLineEdit> m_inactiveLineEdit = nullptr;
+
+  bool useFullPrecision(const qtDoubleUnitsLineEdit* self) const { return self->hasFocus(); }
+
+  void sync(qtDoubleUnitsLineEdit* self)
+  {
+    bool changed = false;
+    if (self->text().isEmpty())
+    {
+      m_inactiveLineEdit->setText("");
+    }
+    else
+    {
+      // The string will have both a value and units so lets make sure we split the two
+      std::string valStr, unitsStr;
+      splitInput(self->text().toStdString(), valStr, unitsStr);
+      QString val = valStr.c_str();
+      QString limited = qtDoubleUnitsLineEdit::formatDouble(
+        val.toDouble(), toTextStreamNotation(m_notation), m_precision);
+
+      // Now add the units back if needed
+      if (!unitsStr.empty())
+      {
+        // Do we need to add a space between the number and unit?
+        if (!(limited.endsWith(" ") || (unitsStr[0] == ' ')))
+        {
+          limited.append(" ");
+        }
+        limited.append(unitsStr.c_str());
+      }
+      changed = (limited != m_inactiveLineEdit->text());
+      m_inactiveLineEdit->setText(limited);
+    }
+    auto pal = self->palette();
+    m_inactiveLineEdit->setPalette(pal);
+    if (changed & !this->useFullPrecision(self))
+    {
+      // ensures that if the low precision text changed and it was being shown on screen,
+      // we repaint it.
+      self->update();
+    }
+  }
+
+  // Render the contents of the hidden widget which holds the out of focus value
+  void renderSimplified(qtDoubleUnitsLineEdit* self)
+  {
+    if (m_inactiveLineEdit)
+    {
+      m_inactiveLineEdit->render(self, self->mapTo(self->window(), QPoint(0, 0)));
+    }
+  }
+};
+
+qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
+  qtInputsItem* inputsItem,
+  const QString& tooltip)
 {
   // Create qWarning object without string quoting
   QDebug qtWarning(QtWarningMsg);
@@ -106,7 +187,7 @@ QWidget* qtDoubleUnitsLineEdit::checkAndCreate(qtInputsItem* inputsItem, const Q
   }
 
   auto* editor = new qtDoubleUnitsLineEdit(inputsItem, unit, tooltip);
-  return static_cast<QWidget*>(editor);
+  return editor;
 }
 
 qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
@@ -117,6 +198,8 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   , m_inputsItem(item)
   , m_unit(unit)
   , m_baseTooltip(tooltip)
+  , m_internals(new qtDoubleUnitsLineEdit::qtInternals())
+
 {
   auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
   // Set placeholder text
@@ -142,9 +225,96 @@ qtDoubleUnitsLineEdit::qtDoubleUnitsLineEdit(
   m_completer = new QCompleter(model, m_inputsItem->widget());
   m_completer->setCompletionMode(QCompleter::PopupCompletion);
   this->setCompleter(m_completer);
+
+  // Connect up the signals
   QObject::connect(this, &QLineEdit::textEdited, this, &qtDoubleUnitsLineEdit::onTextEdited);
-  //Add the converted value of the item to the tooltip if set
-  auto dItem = std::dynamic_pointer_cast<smtk::attribute::DoubleItem>(m_inputsItem->item());
+  QObject::connect(this, &QLineEdit::editingFinished, this, &qtDoubleUnitsLineEdit::onEditFinished);
+
+  m_internals->m_inactiveLineEdit = new QLineEdit();
+  m_internals->m_inactiveLineEdit->hide();
+  m_internals->sync(this);
+
+  QObject::connect(
+    this, &QLineEdit::textChanged, [this](const QString& /*unused*/) { m_internals->sync(this); });
+}
+
+qtDoubleUnitsLineEdit::~qtDoubleUnitsLineEdit()
+{
+  delete m_internals->m_inactiveLineEdit;
+}
+
+qtDoubleUnitsLineEdit::RealNumberNotation qtDoubleUnitsLineEdit::notation() const
+{
+  return m_internals->m_notation;
+}
+
+void qtDoubleUnitsLineEdit::setNotation(qtDoubleUnitsLineEdit::RealNumberNotation _notation)
+{
+  if (m_internals->m_notation != _notation)
+  {
+    m_internals->m_notation = _notation;
+    m_internals->sync(this);
+  }
+}
+
+int qtDoubleUnitsLineEdit::precision() const
+{
+  return m_internals->m_precision;
+}
+
+void qtDoubleUnitsLineEdit::setPrecision(int _precision)
+{
+  if (m_internals->m_precision != _precision)
+  {
+    m_internals->m_precision = _precision;
+    m_internals->sync(this);
+  }
+}
+
+void qtDoubleUnitsLineEdit::resizeEvent(QResizeEvent* evt)
+{
+  this->Superclass::resizeEvent(evt);
+  m_internals->m_inactiveLineEdit->resize(this->size());
+}
+
+void qtDoubleUnitsLineEdit::paintEvent(QPaintEvent* evt)
+{
+  if (m_internals->useFullPrecision(this))
+  {
+    this->Superclass::paintEvent(evt);
+  }
+  else
+  {
+    m_internals->sync(this);
+    m_internals->renderSimplified(this);
+  }
+}
+
+QString qtDoubleUnitsLineEdit::simplifiedText() const
+{
+  return m_internals->m_inactiveLineEdit->text();
+}
+
+QString qtDoubleUnitsLineEdit::formatDouble(
+  double value,
+  QTextStream::RealNumberNotation notation,
+  int precision)
+{
+  QString text;
+  QTextStream converter(&text);
+  converter.setRealNumberNotation(notation);
+  converter.setRealNumberPrecision(precision);
+  converter << value;
+
+  return text;
+}
+
+QString qtDoubleUnitsLineEdit::formatDouble(
+  double value,
+  qtDoubleUnitsLineEdit::RealNumberNotation notation,
+  int precision)
+{
+  return qtDoubleUnitsLineEdit::formatDouble(value, toTextStreamNotation(notation), precision);
 }
 
 void qtDoubleUnitsLineEdit::onTextEdited()
@@ -259,8 +429,6 @@ void qtDoubleUnitsLineEdit::onEditFinished()
   bool finished = (m_lastKey == Qt::Key_Enter) || (m_lastKey == Qt::Key_Return);
   if (!finished && this->hasFocus())
   {
-    qDebug() << "qtDoubleUnitsLineEdit::onEditFinished() ignoring key" << Qt::hex << Qt::showbase
-             << m_lastKey;
     return;
   }
 
@@ -284,6 +452,8 @@ void qtDoubleUnitsLineEdit::onEditFinished()
     this->setText(QString::fromStdString(ss.str()));
     this->blockSignals(false);
   }
+
+  Q_EMIT this->editingCompleted(this);
 }
 
 void qtDoubleUnitsLineEdit::keyPressEvent(QKeyEvent* event)
@@ -293,5 +463,32 @@ void qtDoubleUnitsLineEdit::keyPressEvent(QKeyEvent* event)
   QLineEdit::keyPressEvent(event);
 }
 
+void qtDoubleUnitsLineEdit::focusOutEvent(QFocusEvent* event)
+{
+  // Ignore losing focus due to the completer popping up
+  if (event->reason() != Qt::PopupFocusReason)
+  {
+    // Check if we need to add units string
+    std::string input = this->text().toStdString();
+    std::string valueString;
+    std::string unitsString;
+    if (splitInput(input, valueString, unitsString))
+    {
+      // Yes - add (default) units string to the current line edit contents
+      std::string trimmedString = smtk::common::StringUtil::trim(unitsString);
+      if (trimmedString.empty())
+      {
+        QSignalBlocker blocker(this);
+        auto dDef = m_inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
+        std::ostringstream ss;
+        ss << valueString << ' ' << dDef->units();
+        this->setText(QString::fromStdString(ss.str()));
+      }
+    }
+    // Let the world know editing is done
+    Q_EMIT this->editingCompleted(this);
+  }
+  QLineEdit::focusOutEvent(event);
+}
 } // namespace extension
 } // namespace smtk

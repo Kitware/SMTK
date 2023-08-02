@@ -184,15 +184,22 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     return true;
   }
 
+  std::string valStr, valUnitsStr;
+  if (!DoubleItemDefinition::splitStringStartingDouble(val, valStr, valUnitsStr))
+  {
+    return false; // badly formatted string
+  }
+
   const DoubleItemDefinition* def =
     dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
   const std::string& dunits = def->units();
 
   units::Unit defUnit;
   // We can only do conversion if we have a units system and the
-  // definition has known units.
+  // definition has known units. Note that we don't need to do conversion
+  // if the value does not have units specified
   bool convert = false;
-  if (def->unitsSystem() && (!dunits.empty()))
+  if (def->unitsSystem() && (!(dunits.empty() || valUnitsStr.empty())))
   {
     // If we have a units System, let's see if the definition's units
     // are valid?
@@ -200,21 +207,19 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
   }
 
   double convertedVal;
-  // Is conversion not possible?
+  // Is conversion not possible or required
   if (!convert)
   {
-    std::istringstream iss(val);
+    if (!(valUnitsStr.empty() || (valUnitsStr == dunits)))
+    {
+      return false; // Units were specified that did not match the definition's
+    }
+
+    std::istringstream iss(valStr);
     iss >> convertedVal;
     if (iss.fail())
     {
       return false; // Could not read double
-    }
-    // Let's see if there are units in the string
-    std::string valUnits;
-    iss >> valUnits;
-    if ((!valUnits.empty()) && (valUnits != dunits))
-    {
-      return false; // Units were specified that did not match the definition's
     }
   }
   else
@@ -249,6 +254,12 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     return false;
   }
   m_valuesAsString[element] = val;
+  // if the value didn't have units but the definition did, append the definition's units
+  // to the value
+  if (valUnitsStr.empty() && (!dunits.empty()))
+  {
+    m_valuesAsString[element].append(" ").append(dunits);
+  }
   return true;
 }
 
