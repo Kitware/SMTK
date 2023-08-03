@@ -83,7 +83,7 @@ namespace
 
 // Returns the value in position |element| from ValueItem |item|, with errors
 // reporting in |log|. Used by qtInputsItem's expression widgets. The returned
-// QVariant will return true for QVariant::isNull if no value can be obtainted.
+// QVariant will return true for QVariant::isNull if no value can be obtained.
 // If |floatingPointPrecision| is greater than 0, that number of decimal places
 // will be used for values from DoubleItems.
 QVariant valueFromValueItemAsQVariant(
@@ -1658,17 +1658,34 @@ QWidget* qtInputsItem::createDoubleWidget(
     if (!expressionOnly)
     {
       // First check if we should use units-aware editor (qtDoubleUnitsLineEdit)
-      editorWidget = qtDoubleUnitsLineEdit::checkAndCreate(this, tooltip);
-      if (editorWidget != nullptr)
+      auto* unitEditor = qtDoubleUnitsLineEdit::checkAndCreate(this, tooltip);
+      if (unitEditor != nullptr)
       {
-        auto* lineEdit = qobject_cast<QLineEdit*>(editorWidget);
-        lineEdit->setObjectName(QString("editBox%1").arg(elementIdx));
+        editorWidget = unitEditor;
+        // Prep the widget
+        unitEditor->setObjectName(QString("editBox%1").arg(elementIdx));
+        std::string notation("Mixed");
+        m_itemInfo.component().attribute("Notation", notation);
+        if (notation == "Fixed")
+        {
+          unitEditor->setNotation(qtDoubleUnitsLineEdit::FixedNotation);
+        }
+        else if (notation == "Scientific")
+        {
+          unitEditor->setNotation(qtDoubleUnitsLineEdit::ScientificNotation);
+        }
+        int precision = 0;
+        m_itemInfo.component().attributeAsInt("Precision", precision);
+        if (precision > 0)
+        {
+          unitEditor->setPrecision(precision);
+        }
+        // Set the value
         if (vitem->isSet(elementIdx))
         {
+          QSignalBlocker blocker(unitEditor);
           std::string valueAsString = vitem->valueAsString(elementIdx);
-          lineEdit->blockSignals(true);
-          lineEdit->setText(valueAsString.c_str());
-          lineEdit->blockSignals(false);
+          unitEditor->setText(valueAsString.c_str());
         }
         // Added the converted value to the tool-tip
         if (ditem->isSet(elementIdx))
@@ -1679,7 +1696,7 @@ QWidget* qtInputsItem::createDoubleWidget(
           {
             tooltip.append("; ");
           }
-          tooltip.append("Val: ").append(val).append(dDef->units().c_str());
+          tooltip.append("Val: ").append(val).append(" ").append(dDef->units().c_str());
         }
       }
     }
@@ -1990,8 +2007,6 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       this,
       SLOT(onLineEditChanged()),
       Qt::QueuedConnection);
-    QObject::connect(
-      lineEdit, SIGNAL(editingFinished()), this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
     lineEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(
       lineEdit, &QLineEdit::customContextMenuRequested, this, [self, elementIdx](const QPoint& pt) {
@@ -2001,6 +2016,24 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
         }
         self->showContextMenu(pt, elementIdx);
       });
+    if (auto* const unitsEdit = qobject_cast<qtDoubleUnitsLineEdit*>(lineEdit))
+    {
+      QObject::connect(
+        unitsEdit,
+        SIGNAL(editingCompleted(QObject*)),
+        this,
+        SLOT(onInputValueChanged(QObject*)),
+        Qt::QueuedConnection);
+    }
+    else
+    {
+      QObject::connect(
+        lineEdit,
+        SIGNAL(editingFinished()),
+        this,
+        SLOT(onLineEditFinished()),
+        Qt::QueuedConnection);
+    }
   }
   else if (QTextEdit* const textEdit = qobject_cast<QTextEdit*>(inputWidget))
   {
@@ -2159,13 +2192,6 @@ void qtInputsItem::onLineEditFinished()
 {
   QObject* sender = QObject::sender();
   this->onInputValueChanged(sender);
-
-  // Check for units editor
-  auto* valueUnitsEditor = qobject_cast<qtDoubleUnitsLineEdit*>(sender);
-  if (valueUnitsEditor != nullptr)
-  {
-    valueUnitsEditor->onEditFinished();
-  }
 }
 
 void qtInputsItem::doubleValueChanged(double newVal)
@@ -2289,24 +2315,28 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
       if (valueUnitsBox != nullptr)
       {
-        QString newToolTip = valueUnitsBox->baseToolTipText();
-        if (!ditem->setValueFromString(elementIdx, editBox->text().toStdString()))
+        // Do we have a new value?
+        if (ditem->valueAsString(elementIdx) != editBox->text().toStdString())
         {
-          this->unsetValue(elementIdx); // editor's contents are invalid
-        }
-        else
-        {
-          QString val;
-          val.setNum(ditem->value(elementIdx));
-          auto dDef = ditem->definitionAs<DoubleItemDefinition>();
-          if (!newToolTip.isEmpty())
+          QString newToolTip = valueUnitsBox->baseToolTipText();
+          if (!ditem->setValueFromString(elementIdx, editBox->text().toStdString()))
           {
-            newToolTip.append("; ");
+            this->unsetValue(elementIdx); // editor's contents are invalid
           }
-          newToolTip.append("Val: ").append(val).append(dDef->units().c_str());
+          else
+          {
+            QString val;
+            val.setNum(ditem->value(elementIdx));
+            auto dDef = ditem->definitionAs<DoubleItemDefinition>();
+            if (!newToolTip.isEmpty())
+            {
+              newToolTip.append("; ");
+            }
+            newToolTip.append("Val: ").append(val).append(" ").append(dDef->units().c_str());
+          }
+          valueUnitsBox->setToolTip(newToolTip);
+          valChanged = true;
         }
-        valueUnitsBox->setToolTip(newToolTip);
-        valChanged = true;
       }
       else if (
         (rawitem->isExpression() || !rawitem->isSet(elementIdx)) ||
