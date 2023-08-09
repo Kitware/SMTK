@@ -106,9 +106,11 @@ bool DoubleItem::setValue(std::size_t element, const double& val)
   m_valuesAsString[element] = this->streamValue(m_values[element]);
   const DoubleItemDefinition* def =
     dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
-  const std::string& units = def->units();
-  if (!units.empty())
+
+  // Append the definition's units if they are defined and supported
+  if (def->hasSupportedUnits())
   {
+    const std::string& units = def->units();
     m_valuesAsString[element].append(" ").append(units);
   }
   return true;
@@ -168,7 +170,7 @@ bool DoubleItem::setValue(std::size_t element, const double& val, const std::str
     return true; // nothing to be done
   }
   m_valuesAsString[element] = this->streamValue(m_values[element]);
-  if (!units.empty())
+  if (def->hasSupportedUnits())
   {
     m_valuesAsString[element].append(" ").append(units);
   }
@@ -254,11 +256,18 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     return false;
   }
   m_valuesAsString[element] = val;
-  // if the value didn't have units but the definition did, append the definition's units
-  // to the value
-  if (valUnitsStr.empty() && (!dunits.empty()))
+
+  // if the value didn't have units but the definition did and the units are supported
+  // by the units system, append the definition's units to the value
+  bool defUnitsSupported = def->hasSupportedUnits();
+  if (valUnitsStr.empty() && defUnitsSupported)
   {
     m_valuesAsString[element].append(" ").append(dunits);
+  }
+  // Else if the definition's units are not supported then drop the units from the string
+  else if (!defUnitsSupported)
+  {
+    m_valuesAsString[element] = valStr;
   }
   return true;
 }

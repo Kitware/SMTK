@@ -37,8 +37,17 @@ public:
   bool setDefaultValue(const double& val, const std::string& units);
   bool setDefaultValue(const std::vector<double>& vals, const std::string& units);
 
+  ///@{
+  /// \brief Sets default value of the definition using a string.
+  ///
+  /// If the definition has been assigned units that are not supported
+  /// by its units system or has no units system, and the value string
+  /// contains units that matches the definition's, the string
+  /// stored in the definition will not include the units.
   bool setDefaultValueAsString(const std::string& val);
   bool setDefaultValueAsString(const std::vector<std::string>& vals);
+  ///}@
+
   const std::string defaultValueAsString(std::size_t element = 0) const;
   const std::vector<std::string> defaultValuesAsStrings() const;
 
@@ -49,12 +58,15 @@ public:
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
+  ///\brief Returns true if units and a units system have been specified and that the
+  /// specified units are supported by the units system
+  bool hasSupportedUnits() const;
+
   bool setUnits(const std::string& newUnits) override;
 
-  /** \brief Splits input string into 2 parts with first part representing double value.
-   *
-   * Returns true if double was found.
-   */
+  ///\brief Splits input string into 2 parts with first part representing double value.
+  ///
+  /// Returns true if double was found.
   static bool splitStringStartingDouble(const std::string&, std::string&, std::string&);
 
 protected:

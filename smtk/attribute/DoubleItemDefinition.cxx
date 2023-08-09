@@ -10,6 +10,8 @@
 
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
+
+#include "smtk/common/StringUtil.h"
 #include "smtk/io/Logger.h"
 
 #include "units/Converter.h"
@@ -97,6 +99,17 @@ bool DoubleItemDefinition::setUnits(const std::string& newUnits)
     return false;
   }
   return true;
+}
+
+bool DoubleItemDefinition::hasSupportedUnits() const
+{
+  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
+  {
+    bool status;
+    auto defUnit = m_unitsSystem->unit(m_units, &status);
+    return status;
+  }
+  return false;
 }
 
 bool DoubleItemDefinition::setDefaultValue(
@@ -243,6 +256,9 @@ bool DoubleItemDefinition::splitStringStartingDouble(
   valueString = input.substr(0, pos);
   unitsString = input.substr(pos);
 
+  // Trim away any white space
+  smtk::common::StringUtil::trim(valueString);
+  smtk::common::StringUtil::trim(unitsString);
   return true;
 }
 
@@ -265,20 +281,28 @@ bool DoubleItemDefinition::reevaluateDefaults()
     // In this case the defaults should either not have units or have units that match the definition
     for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
     {
-      std::stringstream convert(m_defaultValuesAsStrings[i]);
-      convert.precision(17);
-      if (!((convert >> convertedVals[i]) && this->isValueValid(convertedVals[i])))
+      std::string valStr, unitsStr;
+      if (!DoubleItemDefinition::splitStringStartingDouble(
+            m_defaultValuesAsStrings[i], valStr, unitsStr))
+      {
+        return false; // String is badly formatted
+      }
+      // If we have units, do they match?
+      if (!(unitsStr.empty() || (unitsStr == m_units)))
+      {
+        return false;
+      }
+      // Is the value valid w/r to the Definition's constraints?
+      std::stringstream convertToDouble(valStr);
+      convertToDouble.precision(17);
+      if (!((convertToDouble >> convertedVals[i]) && this->isValueValid(convertedVals[i])))
       {
         return false; // failed to get the double or it was not considered valid
       }
-      // Lets see if there are units to the string?  If there are none then assume there are in the units
-      // the definition
-      if (convert >> units)
+      // If there were units specified, drop them since they must match the Definition's and are not needed
+      if (!unitsStr.empty())
       {
-        if (units != m_units)
-        {
-          return false;
-        }
+        m_defaultValuesAsStrings[i] = valStr;
       }
     }
   }
