@@ -2020,19 +2020,14 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
     {
       QObject::connect(
         unitsEdit,
-        SIGNAL(editingCompleted(QObject*)),
+        &qtDoubleUnitsLineEdit::editingCompleted,
         this,
-        SLOT(onInputValueChanged(QObject*)),
-        Qt::QueuedConnection);
+        &qtInputsItem::onInputValueChanged);
     }
     else
     {
       QObject::connect(
-        lineEdit,
-        SIGNAL(editingFinished()),
-        this,
-        SLOT(onLineEditFinished()),
-        Qt::QueuedConnection);
+        lineEdit, &QLineEdit::editingFinished, this, &qtInputsItem::onLineEditFinished);
     }
   }
   else if (QTextEdit* const textEdit = qobject_cast<QTextEdit*>(inputWidget))
@@ -2060,6 +2055,8 @@ void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
 {
   QLineEdit* const lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
   QTextEdit* const textEdit = qobject_cast<QTextEdit*>(QObject::sender());
+  qtDoubleUnitsLineEdit* const unitsLineEdit =
+    qobject_cast<qtDoubleUnitsLineEdit*>(QObject::sender());
   auto item = this->m_itemInfo.itemAs<ValueItem>();
   if (!(textEdit || lineEdit) || !item)
   {
@@ -2072,7 +2069,10 @@ void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
   {
     QPointer<qtInputsItem> self(this);
     QObject::connect(
-      resetDefault, &QAction::triggered, this, [self, elementIdx, lineEdit, textEdit]() {
+      resetDefault,
+      &QAction::triggered,
+      this,
+      [self, elementIdx, lineEdit, textEdit, unitsLineEdit]() {
         if (!self)
         {
           return;
@@ -2081,9 +2081,25 @@ void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
         if (item)
         {
           item->setToDefault(elementIdx);
-          if (lineEdit)
+          if (unitsLineEdit)
           {
-            lineEdit->setText(item->valueAsString(elementIdx).c_str());
+            unitsLineEdit->setText(item->valueAsString(elementIdx).c_str());
+          }
+          else if (lineEdit)
+          {
+            auto ditem = std::dynamic_pointer_cast<DoubleItem>(item);
+            if (ditem)
+            {
+              // We need to make sure not to include the units if any are present
+              std::string valStr, unitsStr;
+              DoubleItemDefinition::splitStringStartingDouble(
+                item->valueAsString(elementIdx), valStr, unitsStr);
+              lineEdit->setText(valStr.c_str());
+            }
+            else
+            {
+              lineEdit->setText(item->valueAsString(elementIdx).c_str());
+            }
           }
           else if (textEdit)
           {
