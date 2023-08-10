@@ -9,6 +9,19 @@ the default or value will fail.
 The Item's value(...) methods will always return the value in the units specified in its Definition.
 The Item's valueAsString(...) methods will always return a string based on the unconverted value
 
+When specifying Default Values (for DoubleItemDefinitions) and Values (for DoubleItems) the following is the expected behavior:
+
+DoubleItemDefinition::setDefaultValueAsString and DoubleItemDefinition::setDefaultValue
+
+	1. Will only append units to its default string values iff its units are supported by its units system
+	2. Will remove the units from a default value string iff its units are not supported by its units system
+	3. Its static splitStringStartingDouble method now trims both the value and units strings it returns.
+	4. Added a hasSupportedUnits method that returns true if the Definition's units are set and are supported by its units system.
+
+ DoubleItem::setValue and DoubleItem::setValueFromString
+	1. Will only append units if its definition's units are supported by its units system and the input value string does not contains units
+    2. Will remove units from an input value string if its definition's units are not supported by its units system
+
 Developer changes
 ~~~~~~~~~~~~~~~~~~
 
@@ -31,6 +44,7 @@ DoubleItemDefinition has the following new methods:
 * bool setDefaultValueAsString(const std::vector<std::string>& vals);
 * const std::string defaultValueAsString(std::size_t element = 0) const;
 * const std::vector<std::string> defaultValuesAsStrings() const;
+* bool hasSupportedUnits() const;
 
 DoubleItem has the following new methods:
 

@@ -485,12 +485,7 @@ void qtInputsItem::updateDoubleItemData(
       }
       else
       {
-        // We need to split the value string into 2 parts and only display the value
-        // not the units
-        std::string valStr, unitsStr;
-        DoubleItemDefinition::splitStringStartingDouble(
-          ditem->valueAsString(elementIdx), valStr, unitsStr);
-        ival = valStr.c_str();
+        ival = ditem->valueAsString(elementIdx).c_str();
       }
       if (lineEdit->text() != ival)
       {
@@ -1747,12 +1742,7 @@ QWidget* qtInputsItem::createDoubleWidget(
         }
         else
         {
-          // We need to split the value string into 2 parts and only display the value
-          // not the units
-          std::string valStr, unitsStr;
-          DoubleItemDefinition::splitStringStartingDouble(
-            vitem->valueAsString(elementIdx), valStr, unitsStr);
-          editBox->setText(valStr.c_str());
+          editBox->setText(vitem->valueAsString(elementIdx).c_str());
         }
       }
 
@@ -2088,18 +2078,7 @@ void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
           else if (lineEdit)
           {
             auto ditem = std::dynamic_pointer_cast<DoubleItem>(item);
-            if (ditem)
-            {
-              // We need to make sure not to include the units if any are present
-              std::string valStr, unitsStr;
-              DoubleItemDefinition::splitStringStartingDouble(
-                item->valueAsString(elementIdx), valStr, unitsStr);
-              lineEdit->setText(valStr.c_str());
-            }
-            else
-            {
-              lineEdit->setText(item->valueAsString(elementIdx).c_str());
-            }
+            lineEdit->setText(item->valueAsString(elementIdx).c_str());
           }
           else if (textEdit)
           {
