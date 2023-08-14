@@ -199,7 +199,8 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
   const std::shared_ptr<smtk::operation::Operation>& operation,
   bool associateSelection,
   bool isTabClosable,
-  bool showApply)
+  bool showApply,
+  smtk::view::ConfigurationPtr view)
 {
   if (!m_wrapper)
   {
@@ -220,6 +221,11 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     opTab = &it->second;
     if (opTab->m_operation == operation)
     {
+      if (!opTab->m_view)
+      {
+        break; // hasn't been displayed (new preconfigured view)
+      }
+
       m_tabs->setCurrentWidget(opTab->m_tab);
       opTab->m_closable = isTabClosable;
       this->raise();
@@ -228,18 +234,10 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     }
   }
 
-  // We didn't find the operation, so create a new tab.
-  auto it = m_views.emplace(opType, TabData{});
-  opTab = &it->second;
-  opTab->m_operation = operation;
-  opTab->m_uiMgr = new smtk::extension::qtUIManager(
-    opTab->m_operation, m_wrapper->smtkResourceManager(), m_wrapper->smtkViewManager());
-  opTab->m_uiMgr->setMaxValueLabelLength(100);
-  opTab->m_uiMgr->managers() = m_wrapper->smtkManagers();
-  opTab->m_uiMgr->setOperationManager(m_wrapper->smtkOperationManager());
-  opTab->m_uiMgr->setSelection(m_wrapper->smtkSelection());
-  opTab->m_tab = new QWidget(m_tabs);
-  opTab->m_tab->setLayout(new QVBoxLayout);
+  if (!opTab)
+  {
+    opTab = this->createTabData(operation.get());
+  }
 
   // Fetch the selection and associate it if directed to do so.
   if (associateSelection)
@@ -261,7 +259,10 @@ void pqSMTKOperationParameterPanel::editExistingOperationParameters(
     }
   }
 
-  smtk::view::ConfigurationPtr view = opTab->m_uiMgr->findOrCreateOperationView();
+  if (!view)
+  {
+    view = opTab->m_uiMgr->findOrCreateOperationView();
+  }
   opTab->m_view = opTab->m_uiMgr->setSMTKView(view, opTab->m_tab);
   opTab->m_closable = isTabClosable;
   bool didDisplay = opTab->m_view != nullptr;
@@ -634,6 +635,8 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
           {
             return;
           }
+
+          nlohmann::json panelStyle;
           auto styles = submitOpTask->style();
           for (const auto& style : styles)
           {
@@ -648,6 +651,7 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             {
               continue;
             }
+            panelStyle = section;
             // At this point, we know we are going to display this operation to the user
             // Observe the task so when it transitions state we can react (e.g., by
             // removing the operation tab when the task is completed.)
@@ -666,13 +670,31 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             //       value (one of "anew"/"override"/"modified").
             if (submitOpTask->state() != smtk::task::State::Completed)
             {
+              // Find or create TabData instance
+              auto* op = submitOpTask->operation();
+              TabData* tabData = this->tabDataForOperation(*op);
+              if (tabData == nullptr)
+              {
+                tabData = this->createTabData(op);
+              }
+
+              // Get the view configuration
+              smtk::view::ConfigurationPtr view = tabData->m_uiMgr->findOrCreateOperationView();
+
+              // Process any style:hide-items in the task's style
+              if (panelStyle.contains("hide-items"))
+              {
+                submitOpTask->configureHiddenItems(view, panelStyle.at("hide-items"));
+              }
+
               this->editExistingOperationParameters(
                 submitOpTask->operation()->shared_from_this(),
                 /* associate selection? */
                 false, // TODO: Determine whether submitOpTask->associations() is specified.
                 /* allow tab to be closed? */ false,
                 /* show apply button */ submitOpTask->runStyle() !=
-                  smtk::task::SubmitOperation::RunStyle::OnCompletion);
+                  smtk::task::SubmitOperation::RunStyle::OnCompletion,
+                view);
             }
           }
         });
@@ -748,6 +770,26 @@ pqSMTKOperationParameterPanel::TabData* pqSMTKOperationParameterPanel::tabDataFo
     return &it->second;
   }
   return nullptr;
+}
+
+pqSMTKOperationParameterPanel::TabData* pqSMTKOperationParameterPanel::createTabData(
+  smtk::operation::Operation* op)
+{
+  smtk::operation::Operation::Index opType = op->index();
+  auto it = m_views.emplace(opType, TabData{});
+  TabData* opTab = &it->second;
+
+  opTab->m_operation = op->shared_from_this();
+  opTab->m_uiMgr = new smtk::extension::qtUIManager(
+    opTab->m_operation, m_wrapper->smtkResourceManager(), m_wrapper->smtkViewManager());
+  opTab->m_uiMgr->setMaxValueLabelLength(100);
+  opTab->m_uiMgr->managers() = m_wrapper->smtkManagers();
+  opTab->m_uiMgr->setOperationManager(m_wrapper->smtkOperationManager());
+  opTab->m_uiMgr->setSelection(m_wrapper->smtkSelection());
+  opTab->m_tab = new QWidget(m_tabs);
+  opTab->m_tab->setLayout(new QVBoxLayout);
+
+  return opTab;
 }
 
 void pqSMTKOperationParameterPanel::activeTaskStateChange(

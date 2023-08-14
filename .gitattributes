@@ -22,3 +22,4 @@ doc/**/*.png    lfs
 data/**         lfs -format.autopep8
 data/**/*.sbt  -lfs
 data/**/*.md   -lfs
+data/projects/**/*.project.smtk -lfs

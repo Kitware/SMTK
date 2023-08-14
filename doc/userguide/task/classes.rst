@@ -253,7 +253,7 @@ The SubmitOperation task computes its internal state to be:
 * irrelevant if no ``operation`` type-name is configured (or no operation by that
   name is registered to the application's operation manager);
 * unavailable if associations or parameters are configured by a task
-  adaptor (via the ``configured-by="adaptor"`` setting) and invalid.
+  adaptor (via the ``configured-by="adaptor"`` setting) and invalid. (future)
 * incomplete while the operation's ``ableToOperate()`` method returns
   false; and
 * completable once
@@ -276,9 +276,19 @@ It accepts all the JSON configuration that the base Task class does, plus:
   has successfully run until the operation's parameters have been modified (by the task, an adaptor, or
   the user) – at which point it becomes false again.
   This is used to make the task's state consistent across a save, restart, and load of modelbuilder.
-* ``parameters``: a dictionary whose keys are attribute item-paths into the operation's parameters
-  and whose values are JSON objects containing some subset of the following entries:
 
+Configuration features planned for the future include the following:
+
+* (**future**) ``associations``: a JSON object specifying how the operation's associations should be configured.
+  The key-value pairs in the object may be any configuration that items in
+  the ``parameters`` section above describes.
+* (**future**) ``configured-by``: when set to ``adaptor``, indicates that the task associations and/or
+  parameters are configured by a task adaptor. This feature is not currently enforced by smtk, but
+  can be used for documentation purposes.
+* (**future**) ``parameters``: an array of JSON objects that configure individual items in the operation
+  parameters. Each JSON object contains some subset of the following entries:
+
+  * ``item``: (string) item-path to the operation's parameter. This entry is *required*.
   * ``enabled``: true or false indicated whether an optional item is enabled or not.
     This is ignored if the item is not optional.
   * ``value``: a JSON array of values to store in the parameter's item.
@@ -305,9 +315,6 @@ It accepts all the JSON configuration that the base Task class does, plus:
   * ``role``: :smtk:`reference items <smtk::attribute::ReferenceItem>` may be provided with a role so that
     the :smtk:`ConfigureOperation <smtk::task::adaptor::ConfigureOperation>` task-adaptor
     can copy references to persistent objects into its ``value`` array.
-* ``associations``: a JSON object specifying how the operation's associations should be configured.
-  The key-value pairs in the object may be any configuration that items in
-  the ``parameters`` section above describes.
 
 Example
 """""""
@@ -324,14 +331,15 @@ Example
          "configured-by": "adaptor",
          "value": []
      },
-     "parameters": {
-       "/pointGeometry": {
-         "value": [3],
-         "configured-by": "task",
-         "show": "false"
+     "parameters": [
+        {
+          "item": "/pointGeometry",
+          "value": [3],
+          "configured-by": "task",
+          "visibility": "off"
        }
-     }
+     ]
    }
 
-See the `smtk-pv-parameter-editor-panel`_ documentation for how
+See the :ref:`smtk-pv-parameter-editor-panel` documentation for how
 the user interface supports SubmitOperation tasks.

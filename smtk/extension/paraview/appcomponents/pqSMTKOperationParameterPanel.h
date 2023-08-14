@@ -99,7 +99,8 @@ public Q_SLOTS:
     const std::shared_ptr<smtk::operation::Operation>& operation,
     bool associateSelection = true,
     bool isTabClosable = true,
-    bool showApply = true);
+    bool showApply = true,
+    smtk::view::ConfigurationPtr view = nullptr);
 
   /// Called when users close an operation-parameter's tab.
   virtual void cancelEditing(int tabIndex);
@@ -144,6 +145,9 @@ protected:
 
   /// Return the tab-view metadata for the given operation (if any).
   TabData* tabDataForOperation(smtk::operation::Operation& op);
+
+  /// Create tab-view metadata for the given operation.
+  TabData* createTabData(smtk::operation::Operation* op);
 
   /// Called when the panel is displaying a SubmitOperation task and the task changes state.
   void activeTaskStateChange(

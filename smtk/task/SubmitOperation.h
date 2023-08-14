@@ -147,6 +147,10 @@ public:
   /// True if the operation has *successfully* run since its parameters were last edited.
   bool runSinceEdited() const { return m_runSinceEdited; }
 
+  /// Modify view to hide items specified in task's style
+  void configureHiddenItems(smtk::view::ConfigurationPtr view, const nlohmann::json& jItemArray)
+    const;
+
 protected:
   friend class adaptor::ResourceAndRole;
   friend class adaptor::ConfigureOperation;

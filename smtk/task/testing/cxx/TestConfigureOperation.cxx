@@ -93,7 +93,6 @@ std::string tasksConfig = R"(
     "styles": {
       "operation_view": {
         "operation-panel": {
-          "focus-task-operation": true
         }
       }
     },

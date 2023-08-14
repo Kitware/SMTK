@@ -308,6 +308,51 @@ smtk::common::Visit SubmitOperation::visitParameterSpecs(ParameterSpecVisitor vi
   return smtk::common::Visit::Continue;
 }
 
+void SubmitOperation::configureHiddenItems(
+  smtk::view::ConfigurationPtr view,
+  const nlohmann::json& jItemArray) const
+{
+  if (!m_operation)
+  {
+    return;
+  }
+
+  int attsIndex = view->details().findChild("InstancedAttributes");
+  if (attsIndex < 0)
+  {
+#ifdef SMTK_DBG_SUBMITOPERATION
+    std::cout << "View \"" << view->name() << "\" has no InstancedAttributes defined."
+              << " (Operation " << m_operation->typeName() << ")\n";
+#endif
+    return;
+  }
+
+  // Current convention and style logic uses 1 attribute - let's get it
+  smtk::view::Configuration::Component& comp = view->details().child(attsIndex);
+  std::size_t i, n = comp.numberOfChildren();
+  for (i = 0; i < n; i++)
+  {
+    smtk::view::Configuration::Component& attComp = comp.child(i);
+    if (attComp.name() != "Att")
+    {
+      continue;
+    }
+
+    // Check for ItemViews section
+    int ivIndex = attComp.findChild("ItemViews");
+    auto& itemViewsComp = (ivIndex >= 0) ? attComp.child(ivIndex) : attComp.addChild("ItemViews");
+    for (const auto& it : jItemArray)
+    {
+      std::string itemPath = it.get<std::string>();
+      auto& ivComp = itemViewsComp.addChild("View");
+      ivComp.setAttribute("Path", itemPath);
+      ivComp.setAttribute("Type", "null");
+    }
+
+    break; // because operations only have 1 attribute, we can quit here
+  }        // for (i)
+}
+
 int SubmitOperation::update(
   const smtk::operation::Operation& op,
   smtk::operation::EventType event,

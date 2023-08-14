@@ -1,0 +1,55 @@
+{
+  "conceptual_version": "",
+  "id": "7221191a-fc10-4d22-8bd7-e8909e4a4948",
+  "links": null,
+  "location": "smtk/data/projects/SubmitOperationExample/SubmitOperationExample.project.smtk",
+  "operations": {
+    "types": []
+  },
+  "properties": {
+    "unordered_map<uuid, bool>": {},
+    "unordered_map<uuid, double>": {},
+    "unordered_map<uuid, int>": {},
+    "unordered_map<uuid, long>": {},
+    "unordered_map<uuid, map<string, smtk::resource::properties::CoordinateFrame>>": {},
+    "unordered_map<uuid, set<int>>": {},
+    "unordered_map<uuid, set<smtk::string::Token>>": {},
+    "unordered_map<uuid, smtk::resource::properties::CoordinateFrame>": {},
+    "unordered_map<uuid, smtk::string::Token>": {},
+    "unordered_map<uuid, string>": {},
+    "unordered_map<uuid, vector<bool>>": {},
+    "unordered_map<uuid, vector<double>>": {},
+    "unordered_map<uuid, vector<int>>": {},
+    "unordered_map<uuid, vector<long>>": {},
+    "unordered_map<uuid, vector<string>>": {}
+  },
+  "resources": {
+    "resources": [],
+    "types": []
+  },
+  "task_manager": {
+    "adaptors": [],
+    "styles": {
+      "operation_view": {
+        "operation-panel": {
+          "hide-items": [ "/dimension/size2d" ]
+        }
+      }
+    },
+    "tasks": [
+      {
+        "id": 1,
+        "operation": "smtk::session::mesh::CreateUniformGrid",
+        "parameters": [],
+        "run-style": "smtk::task::SubmitOperation::RunStyle::Once",
+        "style": [
+          "operation_view"
+        ],
+        "title": "Create Grid",
+        "type": "smtk::task::SubmitOperation"
+      }
+    ]
+  },
+  "type": "basic",
+  "version": "3.0"
+}
