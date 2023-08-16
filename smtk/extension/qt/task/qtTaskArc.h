@@ -32,7 +32,7 @@ namespace extension
 
 class qtTaskEditor;
 class qtTaskScene;
-class qtTaskNode;
+class qtBaseTaskNode;
 
 /**\brief A widget that holds a Qt scene graph.
   *
@@ -55,22 +55,22 @@ public:
 
   qtTaskArc(
     qtTaskScene* scene,
-    qtTaskNode* predecessor,
-    qtTaskNode* successor,
+    qtBaseTaskNode* predecessor,
+    qtBaseTaskNode* successor,
     ArcType type = ArcType::Dependency,
     QGraphicsItem* parent = nullptr);
   qtTaskArc(
     qtTaskScene* scene,
-    qtTaskNode* predecessor,
-    qtTaskNode* successor,
+    qtBaseTaskNode* predecessor,
+    qtBaseTaskNode* successor,
     smtk::task::Adaptor* adaptor,
     QGraphicsItem* parent = nullptr);
   ~qtTaskArc() override;
 
   qtTaskScene* scene() const { return m_scene; }
   ArcType arcType() const { return m_arcType; }
-  qtTaskNode* predecessor() const { return m_predecessor; }
-  qtTaskNode* successor() const { return m_successor; }
+  qtBaseTaskNode* predecessor() const { return m_predecessor; }
+  qtBaseTaskNode* successor() const { return m_successor; }
   smtk::task::Adaptor* adaptor() const { return m_adaptor; }
 
   static ArcType arcTypeEnum(const std::string& enumerant, bool* match = nullptr);
@@ -89,8 +89,8 @@ protected:
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
   qtTaskScene* m_scene{ nullptr };
-  qtTaskNode* m_predecessor{ nullptr };
-  qtTaskNode* m_successor{ nullptr };
+  qtBaseTaskNode* m_predecessor{ nullptr };
+  qtBaseTaskNode* m_successor{ nullptr };
   smtk::task::Adaptor* m_adaptor{ nullptr }; // Only set when ArcType == Adaptor.
   ArcType m_arcType{ ArcType::Dependency };
   QPainterPath m_computedPath;

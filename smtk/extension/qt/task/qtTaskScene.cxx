@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/task/qtTaskScene.h"
+#include "smtk/extension/qt/task/qtBaseTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskArc.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
-#include "smtk/extension/qt/task/qtTaskNode.h"
 
 #include "smtk/Options.h"
 #include "smtk/io/Logger.h"
@@ -44,7 +44,7 @@ qtTaskScene::qtTaskScene(qtTaskEditor* parent)
 qtTaskScene::~qtTaskScene() = default;
 
 bool qtTaskScene::computeLayout(
-  const std::unordered_set<qtTaskNode*>& nodes,
+  const std::unordered_set<qtBaseTaskNode*>& nodes,
   const std::unordered_set<qtTaskArc*>& arcs)
 {
 #if SMTK_ENABLE_GRAPHVIZ_SUPPORT

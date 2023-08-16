@@ -32,7 +32,7 @@ namespace extension
 
 class qtTaskArc;
 class qtTaskEditor;
-class qtTaskNode;
+class qtBaseTaskNode;
 class qtTaskViewConfiguration;
 
 /**\brief A QGraphicsScene that holds workflow-related QGraphicsItems.
@@ -60,7 +60,7 @@ public Q_SLOTS:
   ///
   /// This uses graphviz to perform the layout and returns true on success.
   bool computeLayout(
-    const std::unordered_set<qtTaskNode*>& nodes,
+    const std::unordered_set<qtBaseTaskNode*>& nodes,
     const std::unordered_set<qtTaskArc*>& arcs);
 
 protected:

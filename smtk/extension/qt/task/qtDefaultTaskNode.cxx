@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/task/qtTaskNode.h"
+#include "smtk/extension/qt/task/qtDefaultTaskNode.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
@@ -31,7 +31,7 @@
 #include <QPainter>
 #include <QTimer>
 
-#include "task/ui_TaskNode.h"
+#include "task/ui_DefaultTaskNode.h"
 
 class QAbstractItemModel;
 class QItemSelection;
@@ -84,12 +84,12 @@ namespace smtk
 namespace extension
 {
 
-class TaskNodeWidget
+class DefaultTaskNodeWidget
   : public QWidget
-  , public Ui::TaskNode
+  , public Ui::DefaultTaskNode
 {
 public:
-  TaskNodeWidget(qtTaskNode* node, QWidget* parent = nullptr)
+  DefaultTaskNodeWidget(qtDefaultTaskNode* node, QWidget* parent = nullptr)
     : QWidget(parent)
     , m_node(node)
   {
@@ -103,9 +103,12 @@ public:
     m_nodeMenu->addAction(m_markCompleted);
     m_markCompleted->setEnabled(false);
     m_headlineButton->setMenu(m_nodeMenu);
-    QObject::connect(m_activateTask, &QAction::triggered, this, &TaskNodeWidget::activateTask);
-    QObject::connect(m_markCompleted, &QAction::triggered, this, &TaskNodeWidget::markCompleted);
-    QObject::connect(m_expandTask, &QAction::triggered, this, &TaskNodeWidget::toggleControls);
+    QObject::connect(
+      m_activateTask, &QAction::triggered, this, &DefaultTaskNodeWidget::activateTask);
+    QObject::connect(
+      m_markCompleted, &QAction::triggered, this, &DefaultTaskNodeWidget::markCompleted);
+    QObject::connect(
+      m_expandTask, &QAction::triggered, this, &DefaultTaskNodeWidget::toggleControls);
     m_taskObserver = m_node->task()->observers().insert(
       [this](smtk::task::Task&, smtk::task::State prev, smtk::task::State next) {
         // Sometimes the application invokes this observer after the GUI
@@ -117,7 +120,7 @@ public:
           this->updateTaskState(prev, next);
         }
       },
-      "TaskNodeWidget observer");
+      "DefaultTaskNodeWidget observer");
     this->updateTaskState(m_node->m_task->state(), m_node->m_task->state());
   }
 
@@ -170,7 +173,7 @@ public:
           if (prevNode)
           {
             smtk::task::State prevState = previouslyActive->state();
-            prevNode->m_container->updateTaskState(prevState, prevState);
+            prevNode->updateTaskState(prevState, prevState);
           }
         }
         // TODO: Provide feedback if no action taken (e.g., flash red)
@@ -213,29 +216,22 @@ public:
   QAction* m_activateTask;
   QAction* m_expandTask;
   QAction* m_markCompleted;
-  qtTaskNode* m_node;
+  qtDefaultTaskNode* m_node;
   smtk::task::Task::Observers::Key m_taskObserver;
 };
 
-qtTaskNode::qtTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGraphicsItem* parent)
-  : Superclass(parent)
-  , m_scene(scene)
-  , m_task(task)
-  , m_container(new TaskNodeWidget(this))
+qtDefaultTaskNode::qtDefaultTaskNode(
+  qtTaskScene* scene,
+  smtk::task::Task* task,
+  QGraphicsItem* parent)
+  : Superclass(scene, task, parent)
+  , m_container(new DefaultTaskNodeWidget(this))
 {
   qtTaskViewConfiguration& cfg(*m_scene->configuration());
-  // === Base constructor ===
-  this->setFlag(GraphicsItemFlag::ItemIsMovable);
-  this->setFlag(GraphicsItemFlag::ItemSendsGeometryChanges);
-  this->setCacheMode(CacheMode::DeviceCoordinateCache);
-  this->setCursor(Qt::ArrowCursor);
-  this->setObjectName(QString("node") + QString::fromStdString(m_task->title()));
-
   // Create a container to hold node contents
   {
     m_container->setObjectName("nodeContainer");
     m_container->setMinimumWidth(cfg.nodeWidth());
-    // m_container->setMaximumWidth(cfg.nodeWidth());
 
     // install resize event filter
     m_container->installEventFilter(
@@ -255,27 +251,15 @@ qtTaskNode::qtTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGraphicsItem
 
     m_container->m_headlineButton->setText(QString::fromStdString(m_task->title()));
     m_container->m_controls->hide();
-
-    // Configure timer to rate-limit nodeMoved signal
-    m_moveSignalTimer = new QTimer(this);
-    m_moveSignalTimer->setSingleShot(true);
-    m_moveSignalTimer->setInterval(100);
-    QObject::connect(m_moveSignalTimer, &QTimer::timeout, this, &qtTaskNode::nodeMoved);
   }
 
-  this->updateSize();
-  m_scene->addItem(this);
+  this->addToScene();
 
   // === Task-specific constructor ===
   this->setZValue(cfg.nodeLayer());
 }
 
-qtTaskNode::~qtTaskNode()
-{
-  m_scene->removeItem(this);
-}
-
-void qtTaskNode::setContentStyle(ContentStyle cs)
+void qtDefaultTaskNode::setContentStyle(ContentStyle cs)
 {
   m_contentStyle = cs;
   switch (cs)
@@ -292,7 +276,7 @@ void qtTaskNode::setContentStyle(ContentStyle cs)
   }
 }
 
-void qtTaskNode::setOutlineStyle(OutlineStyle os)
+void qtDefaultTaskNode::setOutlineStyle(OutlineStyle os)
 {
   qtTaskViewConfiguration& cfg(*m_scene->configuration());
   m_outlineStyle = os;
@@ -300,7 +284,7 @@ void qtTaskNode::setOutlineStyle(OutlineStyle os)
   this->update(this->boundingRect());
 }
 
-QRectF qtTaskNode::boundingRect() const
+QRectF qtDefaultTaskNode::boundingRect() const
 {
   qtTaskViewConfiguration& cfg(*m_scene->configuration());
   const auto& border = cfg.nodeBorderThickness();
@@ -309,32 +293,10 @@ QRectF qtTaskNode::boundingRect() const
   return QRectF(0, 0, m_container->width(), height).adjusted(-border, -border, border, border);
 }
 
-bool qtTaskNode::isActive() const
-{
-  if (!m_task)
-  {
-    return false;
-  }
-  auto* taskManager = m_task->manager();
-  if (!taskManager)
-  {
-    return false;
-  }
-  return taskManager->active().task() == m_task;
-}
-
-QVariant qtTaskNode::itemChange(GraphicsItemChange change, const QVariant& value)
-{
-  if (change == GraphicsItemChange::ItemPositionHasChanged)
-  {
-    m_moveSignalTimer->start();
-    Q_EMIT this->nodeMovedImmediate();
-  }
-
-  return QGraphicsItem::itemChange(change, value);
-}
-
-void qtTaskNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void qtDefaultTaskNode::paint(
+  QPainter* painter,
+  const QStyleOptionGraphicsItem* option,
+  QWidget* widget)
 {
   (void)option;
   (void)widget;
@@ -373,7 +335,7 @@ void qtTaskNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
   painter->drawPath(path);
 }
 
-int qtTaskNode::updateSize()
+int qtDefaultTaskNode::updateSize()
 {
   this->prepareGeometryChange();
 
@@ -381,6 +343,11 @@ int qtTaskNode::updateSize()
   Q_EMIT this->nodeResized();
 
   return 1;
+}
+
+void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next)
+{
+  m_container->updateTaskState(prev, next);
 }
 
 } // namespace extension

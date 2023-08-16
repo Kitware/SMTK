@@ -25,7 +25,11 @@
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/task/qtDefaultTaskNode.h"
+#include "smtk/extension/qt/task/qtDefaultTaskNode1.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
+
+#include "smtk/plugin/Manager.h"
 
 #include <tuple>
 
@@ -49,9 +53,34 @@ using ViewWidgetList = std::tuple<
   qtSelectorView,
   qtSimpleExpressionView,
   qtTaskEditor>;
+
 using BadgeList =
   std::tuple<smtk::extension::qt::MembershipBadge, smtk::extension::qt::TypeAndColorBadge>;
+
+using TaskNodeList = std::tuple<qtDefaultTaskNode, qtDefaultTaskNode1>;
+
 } // namespace
+
+void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
+{
+  managers->insert(qtManager::create());
+  smtk::plugin::Manager::instance()->registerPluginsTo(managers->get<qtManager::Ptr>());
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
+{
+  managers->erase<qtManager>();
+}
+
+void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
+{
+  qtMgr->taskNodeFactory().registerTypes<TaskNodeList>();
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::extension::qtManager::Ptr& qtMgr)
+{
+  qtMgr->taskNodeFactory().unregisterTypes<TaskNodeList>();
+}
 
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
 {
