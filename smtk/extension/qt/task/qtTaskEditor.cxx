@@ -79,6 +79,12 @@ public:
     this->removeObservers();
     this->clear();
     m_taskManager = taskManager;
+
+    if (!m_taskManager)
+    {
+      return;
+    }
+
     this->installObservers();
 
     auto generator = std::dynamic_pointer_cast<smtk::task::UIStateGenerator>(m_uiState);
