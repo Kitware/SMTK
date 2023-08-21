@@ -11,6 +11,7 @@
 #define smtk_extension_qt_qtViewRegistrar_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtManager.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/Registrar.h"
 
@@ -22,6 +23,12 @@ class SMTKQTEXT_EXPORT qtViewRegistrar
 {
 public:
   using Dependencies = std::tuple<view::Registrar>;
+
+  static void registerTo(const smtk::common::Managers::Ptr&);
+  static void unregisterFrom(const smtk::common::Managers::Ptr&);
+
+  static void registerTo(const smtk::extension::qtManager::Ptr&);
+  static void unregisterFrom(const smtk::extension::qtManager::Ptr&);
 
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);

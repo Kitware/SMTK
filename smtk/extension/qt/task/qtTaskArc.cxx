@@ -10,7 +10,7 @@
 #include "smtk/extension/qt/task/qtTaskArc.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
-#include "smtk/extension/qt/task/qtTaskNode.h"
+#include "smtk/extension/qt/task/qtBaseTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
 
@@ -34,8 +34,8 @@ namespace extension
 
 qtTaskArc::qtTaskArc(
   qtTaskScene* scene,
-  qtTaskNode* predecessor,
-  qtTaskNode* successor,
+  qtBaseTaskNode* predecessor,
+  qtBaseTaskNode* successor,
   ArcType arcType,
   QGraphicsItem* parent)
   : Superclass(parent)
@@ -46,10 +46,11 @@ qtTaskArc::qtTaskArc(
 {
   const auto& cfg(*m_scene->configuration());
   QObject::connect(
-    m_predecessor, &qtTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_predecessor, &qtTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_successor, &qtTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_successor, &qtTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
+    m_predecessor, &qtBaseTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_predecessor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(
+    m_successor, &qtBaseTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_successor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
   this->setAcceptedMouseButtons(Qt::NoButton);
 
   this->updateArcPoints();
@@ -62,8 +63,8 @@ qtTaskArc::qtTaskArc(
 
 qtTaskArc::qtTaskArc(
   qtTaskScene* scene,
-  qtTaskNode* predecessor,
-  qtTaskNode* successor,
+  qtBaseTaskNode* predecessor,
+  qtBaseTaskNode* successor,
   smtk::task::Adaptor* adaptor,
   QGraphicsItem* parent)
   : Superclass(parent)
@@ -74,10 +75,10 @@ qtTaskArc::qtTaskArc(
   , m_arcType(ArcType::Adaptor)
 {
   const auto& cfg(*m_scene->configuration());
-  QObject::connect(m_predecessor, &qtTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_predecessor, &qtTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_successor, &qtTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(m_successor, &qtTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_predecessor, &qtBaseTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_predecessor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_successor, &qtBaseTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_successor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
   this->setAcceptedMouseButtons(Qt::NoButton);
 
   this->updateArcPoints();

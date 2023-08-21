@@ -34,7 +34,7 @@ namespace smtk
 namespace extension
 {
 
-class qtTaskNode;
+class qtBaseTaskNode;
 class qtTaskScene;
 class qtTaskView;
 
@@ -59,7 +59,7 @@ public:
   /// Provide the scene (and nodes within it) a way to look up nodes from a task.
   ///
   /// This will never create a node for the given task and may return a null pointer.
-  qtTaskNode* findNode(smtk::task::Task* task) const;
+  qtBaseTaskNode* findNode(smtk::task::Task* task) const;
 
   static std::shared_ptr<smtk::view::Configuration> defaultConfiguration();
   nlohmann::json uiStateForTask(const smtk::task::Task* task) const;

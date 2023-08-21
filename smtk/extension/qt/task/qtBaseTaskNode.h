@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_qtTaskNode_h
-#define smtk_extension_qtTaskNode_h
+#ifndef smtk_extension_qtBaseTaskNode_h
+#define smtk_extension_qtBaseTaskNode_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
@@ -30,19 +30,18 @@ namespace smtk
 {
 namespace task
 {
+enum class State;
 class Task;
-}
+} // namespace task
 namespace extension
 {
 
-class qtTaskEditor;
 class qtTaskScene;
-class TaskNodeWidget;
 
-/**\brief A widget that represents a task as a node in a scene.
+/**\brief A Graphical Item that represents a task as a node in a scene.
   *
   */
-class SMTKQTEXT_EXPORT qtTaskNode
+class SMTKQTEXT_EXPORT qtBaseTaskNode
   : public QObject
   , public QGraphicsItem
 {
@@ -67,25 +66,25 @@ public:
     Active  //!< Render a highlighted border around the node.
   };
 
-  qtTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGraphicsItem* parent = nullptr);
-  ~qtTaskNode() override;
+  qtBaseTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGraphicsItem* parent = nullptr);
+  ~qtBaseTaskNode() override;
 
   /// Return the task this node represents.
   smtk::task::Task* task() const { return m_task; }
 
   /// Set/get how much data the node should render inside its boundary.
-  void setContentStyle(ContentStyle cs);
+  virtual void setContentStyle(ContentStyle cs);
   ContentStyle contentStyle() const { return m_contentStyle; }
 
   /// Set/get how the node's boundary should be rendered.
-  void setOutlineStyle(OutlineStyle cs);
+  virtual void setOutlineStyle(OutlineStyle cs);
   OutlineStyle outlineStyle() const { return m_outlineStyle; }
-
-  /// Get the bounding box of the node, which includes the border width and the label.
-  QRectF boundingRect() const override;
 
   /// Return true if the task is currently active (i.e., being worked on by the user).
   bool isActive() const;
+
+  /// Deals with state updates
+  virtual void updateTaskState(smtk::task::State prev, smtk::task::State next) = 0;
 
 Q_SIGNALS:
   void nodeResized();
@@ -93,16 +92,20 @@ Q_SIGNALS:
   void nodeMoved(); // a rate-limited version of nodeMovedImmediate
 
 protected:
-  friend class TaskNodeWidget;
   QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
   /// Update the node bounds to fit its content.
-  int updateSize();
+  virtual int updateSize();
+
+  ///\brief Adds the node to the scene
+  ///
+  /// NOTE: since qtBaseTaskNode class does not have any UI geometry associated
+  /// with it, it will not automatically add itself to the Task Scene.  Derived
+  /// classes should call this method after its UI geometry has been setup
+  void addToScene();
 
   qtTaskScene* m_scene{ nullptr };
   smtk::task::Task* m_task{ nullptr };
-  TaskNodeWidget* m_container{ nullptr };
   ContentStyle m_contentStyle{ ContentStyle::Minimal };
   OutlineStyle m_outlineStyle{ OutlineStyle::Normal };
 
@@ -113,4 +116,4 @@ protected:
 } // namespace extension
 } // namespace smtk
 
-#endif // smtk_extension_qtTaskNode_h
+#endif // smtk_extension_qtBaseTaskNode_h

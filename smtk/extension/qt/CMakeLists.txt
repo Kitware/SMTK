@@ -70,9 +70,11 @@ set(QAttrLibSrcs
   TypeAndColorBadge.cxx
   VisibilityBadge.cxx
 
+  task/qtBaseTaskNode.cxx
+  task/qtDefaultTaskNode.cxx
+  task/qtDefaultTaskNode1.cxx
   task/qtTaskArc.cxx
   task/qtTaskEditor.cxx
-  task/qtTaskNode.cxx
   task/qtTaskScene.cxx
   task/qtTaskView.cxx
   task/qtTaskViewConfiguration.cxx
@@ -87,7 +89,7 @@ set(QAttrLibUIs
   qtNewAttributeWidget.ui
   qtTimeZoneSelectWidget.ui
   qtViewInfoDialog.ui
-  task/TaskNode.ui
+  task/DefaultTaskNode.ui
 )
 
 
@@ -159,13 +161,18 @@ set(QAttrLibMocHeaders
   SVGIconEngine.h
   VisibilityBadge.h
 
+  task/qtBaseTaskNode.h
+  task/qtDefaultTaskNode.h
+  task/qtDefaultTaskNode1.h
   task/qtTaskArc.h
   task/qtTaskEditor.h
-  task/qtTaskNode.h
+  task/qtTaskNodeFactory.h
   task/qtTaskScene.h
   task/qtTaskView.h
   task/qtTaskViewConfiguration.h
   task/TaskEditorState.h
+
+  qtManager.h
 )
 
 set(QAttrLibHeaders

@@ -11,10 +11,12 @@
 
 #include "smtk/common/Managers.h"
 
+#include "smtk/extension/qt/qtManager.h"
+
 #include "smtk/extension/qt/task/PanelConfiguration_cpp.h"
 #include "smtk/extension/qt/task/TaskEditorState.h"
+#include "smtk/extension/qt/task/qtDefaultTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskArc.h"
-#include "smtk/extension/qt/task/qtTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskView.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
@@ -91,9 +93,9 @@ public:
       // After layout complete, connect nodeMoved signal
       for (const auto& entry : m_taskIndex)
       {
-        qtTaskNode* taskNode = entry.second;
+        qtBaseTaskNode* taskNode = entry.second;
         QObject::connect(
-          taskNode, &qtTaskNode::nodeMoved, m_self, &qtTaskEditor::onNodeGeometryChanged);
+          taskNode, &qtBaseTaskNode::nodeMoved, m_self, &qtTaskEditor::onNodeGeometryChanged);
       }
 
       if (modified)
@@ -139,7 +141,7 @@ public:
     }
 
     // If geometry not configured, call the scenes method to layout nodes
-    std::unordered_set<qtTaskNode*> nodes;
+    std::unordered_set<qtBaseTaskNode*> nodes;
     std::unordered_set<qtTaskArc*> arcs;
     for (const auto& entry : m_taskIndex)
     {
@@ -184,7 +186,38 @@ public:
           case smtk::common::InstanceEvent::Managed:
           {
             // std::cout << "Add task instance " << task << " " << task->title() << "\n";
-            auto* tnode = new qtTaskNode(m_scene, task.get());
+            // Determine the qtTaskNode constructed needed for this Task.
+            std::string taskNodeType = "smtk::extension::qtDefaultTaskNode";
+            for (const auto& style : task->style())
+            {
+              const auto& styleConfig = m_taskManager->getStyle(style);
+              auto it = styleConfig.find("task-panel");
+              if (it == styleConfig.end())
+              {
+                continue;
+              }
+              auto it1 = it->find("node-class");
+              if (it1 != it->end())
+              {
+                taskNodeType = it1->get<std::string>();
+                break;
+              }
+            }
+
+            auto qtmgr = m_taskManager->managers()->get<smtk::extension::qtManager::Ptr>();
+            auto* tnode =
+              qtmgr->taskNodeFactory()
+                .createFromName(taskNodeType, m_scene, task.get(), (QGraphicsItem*)nullptr)
+                .release();
+            if (!tnode)
+            {
+              tnode = new qtDefaultTaskNode(m_scene, task.get());
+              smtkWarningMacro(
+                smtk::io::Logger::instance(),
+                "Could not find Task Node Class " << taskNodeType
+                                                  << " creating Default Task Node!");
+            }
+
             m_taskIndex[task.get()] = tnode;
           }
           break;
@@ -226,7 +259,7 @@ public:
 #ifdef SMTK_DBG_WORKFLOWS
             std::cout << "Add task " << task << " with " << workflow.size() << " tasks in flow:\n";
 #endif
-            // new qtTaskNode(m_scene, task);
+            // new qtBaseTaskNode(m_scene, task);
             break;
           case smtk::task::WorkflowEvent::TaskRemoved:
 #ifdef SMTK_DBG_WORKFLOWS
@@ -320,17 +353,17 @@ public:
         auto nextNode = m_taskIndex.find(next);
         if (prevNode != m_taskIndex.end())
         {
-          prevNode->second->setOutlineStyle(qtTaskNode::OutlineStyle::Normal);
+          prevNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Normal);
         }
         if (nextNode != m_taskIndex.end())
         {
-          nextNode->second->setOutlineStyle(qtTaskNode::OutlineStyle::Active);
+          nextNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
         }
       },
       "qtTaskEditor watching active task.");
   }
 
-  void removeArcsAttachedTo(qtTaskNode* node)
+  void removeArcsAttachedTo(qtBaseTaskNode* node)
   {
     // Examine node->task()->dependencies() for upstream arcs
     auto deps = node->task()->dependencies();
@@ -434,8 +467,8 @@ public:
   smtk::task::Instances::WorkflowObservers::Key m_workflowObserverKey;
   smtk::task::Instances::Observers::Key m_instanceObserverKey;
   smtk::task::Active::Observers::Key m_activeObserverKey;
-  std::unordered_map<Task*, qtTaskNode*> m_taskIndex;
-  std::unordered_map<qtTaskNode*, std::unordered_set<qtTaskArc*>>
+  std::unordered_map<Task*, qtBaseTaskNode*> m_taskIndex;
+  std::unordered_map<qtBaseTaskNode*, std::unordered_set<qtTaskArc*>>
     m_arcIndex; // Arcs grouped by their predecessor task.
 };
 
@@ -483,7 +516,7 @@ qtTaskView* qtTaskEditor::taskWidget() const
   return m_p->m_widget;
 }
 
-qtTaskNode* qtTaskEditor::findNode(smtk::task::Task* task) const
+qtBaseTaskNode* qtTaskEditor::findNode(smtk::task::Task* task) const
 {
   auto it = m_p->m_taskIndex.find(task);
   if (it == m_p->m_taskIndex.end())
@@ -509,7 +542,7 @@ nlohmann::json qtTaskEditor::uiStateForTask(const smtk::task::Task* task) const
     return nlohmann::json();
   }
 
-  qtTaskNode* taskNode = iter->second;
+  qtBaseTaskNode* taskNode = iter->second;
   QPointF pos = taskNode->scenePos();
   nlohmann::json jUI = nlohmann::json::object();
   jUI["position"] = { pos.x(), pos.y() };
@@ -524,7 +557,7 @@ void qtTaskEditor::onNodeGeometryChanged()
     return;
   }
 
-  auto* taskNode = dynamic_cast<qtTaskNode*>(this->sender());
+  auto* taskNode = dynamic_cast<qtBaseTaskNode*>(this->sender());
   if (taskNode != nullptr)
   {
     // Check if modified
