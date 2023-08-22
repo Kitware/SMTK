@@ -139,6 +139,7 @@ protected Q_SLOTS:
   virtual void handleProjectEvent(const smtk::project::Project&, smtk::project::EventType);
 
 protected:
+  virtual bool updateManagers(const std::shared_ptr<smtk::common::Managers>& managers);
   virtual bool displayResourceInternal(
     const smtk::attribute::ResourcePtr& rsrc,
     smtk::view::ConfigurationPtr view = nullptr,

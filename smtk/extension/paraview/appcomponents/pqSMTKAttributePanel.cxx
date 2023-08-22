@@ -114,20 +114,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
     {
       pqSMTKWrapper* wrapper =
         pqSMTKBehavior::instance()->resourceManagerForServer(rsrc->getServer());
-      if (wrapper)
-      {
-        // Keep hold of the selection instance for the active server connection
-        // so that this->displayResource() below can make use of it.
-        m_seln = wrapper->smtkSelection();
-        m_opManager = wrapper->smtkOperationManager();
-        m_viewManager = wrapper->smtkViewManager();
-      }
-      else
-      {
-        m_seln = nullptr;
-        m_opManager = nullptr;
-        m_viewManager = nullptr;
-      }
+      this->updateManagers(wrapper ? wrapper->smtkManagersPtr() : nullptr);
       return this->displayResource(attrRsrc);
     }
   }
@@ -203,6 +190,23 @@ bool pqSMTKAttributePanel::displayResource(
   }
 
   return didDisplay;
+}
+
+bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Managers>& managers)
+{
+  if (!managers)
+  {
+    m_seln = nullptr;
+    m_opManager = nullptr;
+    m_viewManager = nullptr;
+    return false;
+  }
+  // Keep hold of the selection instance for the active server connection
+  // so that this->displayResource() below can make use of it.
+  m_seln = managers->get<smtk::view::Selection::Ptr>();
+  m_opManager = managers->get<smtk::operation::Manager::Ptr>();
+  m_viewManager = managers->get<smtk::view::Manager::Ptr>();
+  return true;
 }
 
 bool pqSMTKAttributePanel::displayResourceInternal(
@@ -326,20 +330,7 @@ bool pqSMTKAttributePanel::displayResourceOnServer(
   {
     auto* behavior = pqSMTKBehavior::instance();
     pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
-    if (wrapper)
-    {
-      // Keep hold of the selection instance for the active server connection
-      // so that this->displayResource() below can make use of it.
-      m_seln = wrapper->smtkSelection();
-      m_opManager = wrapper->smtkOperationManager();
-      m_viewManager = wrapper->smtkViewManager();
-    }
-    else
-    {
-      m_seln = nullptr;
-      m_opManager = nullptr;
-      m_viewManager = nullptr;
-    }
+    this->updateManagers(wrapper ? wrapper->smtkManagersPtr() : nullptr);
     return this->displayResource(rsrc, view, advancedlevel);
   }
   return false;
@@ -519,6 +510,7 @@ void pqSMTKAttributePanel::handleProjectEvent(
                   if (panelConfig.contains("attribute-editor"))
                   {
                     auto viewName = panelConfig.at("attribute-editor").get<std::string>();
+                    bool didDisplay = false;
                     // std::cout << "Got view name " << viewName << std::endl;
                     if (auto rsrc = m_rsrc.lock())
                     {
@@ -529,8 +521,36 @@ void pqSMTKAttributePanel::handleProjectEvent(
                       {
                         self->resetPanel(attrRsrc->manager());
                         // replace the contents with UI for this view.
-                        self->displayResource(attrRsrc, viewConfig);
+                        didDisplay = self->displayResource(attrRsrc, viewConfig);
                       }
+                    }
+                    if (!didDisplay)
+                    {
+                      auto managers = newTask->manager()->managers();
+                      this->updateManagers(managers);
+                      auto rsrcMgr = managers->get<smtk::resource::Manager::Ptr>();
+                      // Look in all the attribute resources the task manager knows of for the named view.
+                      self->resetPanel(rsrcMgr);
+                      auto attributeResources = rsrcMgr->find("smtk::attribute::Resource");
+                      for (const auto& rsrc : attributeResources)
+                      {
+                        auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+                        auto viewConfig = attrRsrc->findView(viewName);
+                        if (viewConfig)
+                        {
+                          didDisplay = self->displayResource(attrRsrc, viewConfig);
+                          if (didDisplay)
+                          {
+                            break;
+                          }
+                        }
+                      }
+                    }
+                    if (!didDisplay)
+                    {
+                      smtkWarningMacro(
+                        smtk::io::Logger::instance(),
+                        "Could not find an attribute view named \"" << viewName << "\".");
                     }
                   }
                 }
