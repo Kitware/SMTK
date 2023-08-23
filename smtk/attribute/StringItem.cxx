@@ -30,7 +30,7 @@ Item::Type StringItem::type() const
   return StringType;
 }
 
-bool StringItem::assign(
+Item::Status StringItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)

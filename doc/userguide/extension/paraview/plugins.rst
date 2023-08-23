@@ -62,3 +62,31 @@ Some notes about the plugins:
     * The ``plugin-operations-panel`` directory exposes two production-ready panels for
       choosing operations and editing their parameters; and
     * The ``plugin-panel-defaults`` directory exposes an application-configuration interface class.
+
+Python operation plugins
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ParaView's plugin manager allows you to add python files as plugins.
+These files are then imported when ParaView (and thus modelbuilder)
+are initialized.
+In order to register a python operation (let's say it is named ``feature_op``),
+just place the following at the bottom of the python file you add to ParaView
+as a plugin.
+
+.. code:: python
+
+   import smtk.operation
+   class feature_op(smtk.operation.Operation):
+       def __init__(self):
+           smtk.operation.Operation.__init__(self)
+       # …
+
+   if __name__ != '__main__':
+       try:
+           import smtk.extension.paraview.appcomponents as pv
+           pv.importPythonOperation(__name__, 'feature_op')
+       finally:
+           pass
+
+You can call ``importPythonOperation()`` as many times as you like (to
+register many python operations).

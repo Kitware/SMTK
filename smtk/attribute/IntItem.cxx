@@ -30,7 +30,7 @@ Item::Type IntItem::type() const
   return IntType;
 }
 
-bool IntItem::assign(
+Item::Status IntItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)

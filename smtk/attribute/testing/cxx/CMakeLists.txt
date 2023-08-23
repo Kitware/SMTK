@@ -75,6 +75,7 @@ endif()
 
 set(unit_tests
   unitAdvanceLevelTest.cxx
+  unitAssignmentModification.cxx
   unitAssociationTest.cxx
   unitAttributeAnalysis.cxx
   unitAttributeAssociation.cxx

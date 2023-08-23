@@ -63,8 +63,16 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("reset", &smtk::attribute::Item::reset)
     .def("detachOwningAttribute", &smtk::attribute::Item::detachOwningAttribute)
     .def("detachOwningItem", &smtk::attribute::Item::detachOwningItem)
-    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, const smtk::attribute::CopyAssignmentOptions&)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("options") = smtk::attribute::CopyAssignmentOptions())
-    .def("assign", (bool (smtk::attribute::Item::*)(const ::smtk::attribute::ConstItemPtr&, const smtk::attribute::CopyAssignmentOptions&, smtk::io::Logger&)) &smtk::attribute::Item::assign, py::arg("sourceItem"), py::arg("options"), py::arg("logger"))
+    .def("assign", [](smtk::attribute::Item& item, const ::smtk::attribute::ConstItemPtr& sourceItem, const smtk::attribute::CopyAssignmentOptions& options)
+      {
+        auto result = item.assign(sourceItem, options);
+        return result.success();
+      }, py::arg("sourceItem"), py::arg("options") = smtk::attribute::CopyAssignmentOptions())
+    .def("assign", [](smtk::attribute::Item& item, const ::smtk::attribute::ConstItemPtr& sourceItem, const smtk::attribute::CopyAssignmentOptions& options, smtk::io::Logger& logger)
+      {
+        auto result = item.assign(sourceItem, options, logger);
+        return result.success();
+      }, py::arg("sourceItem"), py::arg("options"), py::arg("logger"))
     .def("assign", [](smtk::attribute::Item& item, const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options)
     {
       smtkWarningMacro(smtk::io::Logger::instance(), "Item::assign(const smtk::attribute::ConstItemPtr&, unsigned int)"

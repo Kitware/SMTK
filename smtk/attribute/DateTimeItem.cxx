@@ -180,51 +180,65 @@ bool DateTimeItem::hasDefault() const
   return def->hasDefault();
 }
 
-bool DateTimeItem::assign(
+Item::Status DateTimeItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
+  Item::Status result;
   // Assigns my contents to be same as sourceItem
   ConstDateTimeItemPtr sourceDateTimeItem =
     smtk::dynamic_pointer_cast<const DateTimeItem>(sourceItem);
   if (!sourceDateTimeItem)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a DateTimeItem");
-    return false; // Source is not a DateTimeItem!
+    return result; // Source is not a DateTimeItem!
   }
 
-  std::size_t numVals, myNumVals, sourceNumVals;
-  myNumVals = this->numberOfValues();
+  std::size_t numVals, sourceNumVals;
+  numVals = this->numberOfValues();
   sourceNumVals = sourceDateTimeItem->numberOfValues();
-  // Lets initially assumes we can fit all of the source's values
-  numVals = sourceNumVals;
-
-  if (myNumVals == sourceNumVals)
+  bool status;
+  if (numVals != sourceNumVals)
   {
-    m_isSet = sourceDateTimeItem->m_isSet;
-    m_values = sourceDateTimeItem->m_values;
+    status = this->setNumberOfValues(sourceNumVals);
+    if (status)
+    {
+      result.modified();
+    }
+    numVals = this->numberOfValues();
   }
-  else if (myNumVals < sourceNumVals)
+
+  if (numVals == sourceNumVals)
+  {
+    if (m_isSet != sourceDateTimeItem->m_isSet || m_values != sourceDateTimeItem->m_values)
+    {
+      m_isSet = sourceDateTimeItem->m_isSet;
+      m_values = sourceDateTimeItem->m_values;
+      result.markModified();
+    }
+  }
+  else if (numVals < sourceNumVals)
   {
     // Ok so the source has more values than we can deal with - was partial copying permitted?
     if (options.itemOptions.allowPartialValues())
     {
-      numVals = myNumVals;
       smtkInfoMacro(
         logger,
-        "Item: " << this->name() << "'s number of values (" << myNumVals
+        "Item: " << this->name() << "'s number of values (" << numVals
                  << ") is smaller than source Item's number of values (" << sourceNumVals
                  << ") - will partially copy the values");
     }
     else
     {
+      result.markFailed();
       smtkErrorMacro(
         logger,
-        "Item: " << this->name() << "'s number of values (" << myNumVals
+        "Item: " << this->name() << "'s number of values (" << numVals
                  << ") can not hold source Item's number of values (" << sourceNumVals
                  << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
 
@@ -232,7 +246,12 @@ bool DateTimeItem::assign(
   {
     if (sourceDateTimeItem->isSet(i))
     {
-      if (!this->setValue(i, sourceDateTimeItem->value(i)))
+      if (this->value(i) == sourceDateTimeItem->value(i))
+      {
+        continue;
+      }
+      status = this->setValue(i, sourceDateTimeItem->value(i));
+      if (!status)
       {
         if (options.itemOptions.allowPartialValues())
         {
@@ -241,25 +260,33 @@ bool DateTimeItem::assign(
             "Could not assign Value:" << sourceDateTimeItem->value(i).serialize()
                                       << " to DateTimeItem: " << sourceItem->name());
           this->unset(i);
+          result.markModified();
         }
         else
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not assign Value:" << sourceDateTimeItem->value(i).serialize()
                                       << " to DateTimeItem: " << sourceItem->name()
                                       << " and allowPartialValues options was not specified.");
-          return false;
+          return result;
         }
+      }
+      if (status)
+      {
+        result.markModified();
       }
     }
     else
     {
+      result.markModified();
       this->unset(i);
     }
   }
 
-  return Item::assign(sourceItem, options, logger);
+  result &= Item::assign(sourceItem, options, logger);
+  return result;
 }
 
 bool DateTimeItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)

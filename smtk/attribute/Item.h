@@ -7,9 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Item.h -
-// .SECTION Description
-// .SECTION See Also
 
 #ifndef smtk_attribute_Item_h
 #define smtk_attribute_Item_h
@@ -21,6 +18,7 @@
 #include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/common/Deprecation.h"
+#include "smtk/common/Status.h"
 #include <algorithm>
 #include <map>
 #include <queue>
@@ -41,6 +39,12 @@ class ItemDefinition;
 class GroupItem;
 class Attribute;
 
+/**\brief The base class for items that hold information inside an attribute.
+  *
+  * An attribute is an atomic unit of useful, related information.
+  * Items exist within the attribute to structure the information
+  * the attribute collects.
+  */
 class SMTKCORE_EXPORT Item : public smtk::enable_shared_from_this<Item>
 {
   friend class Definition;
@@ -253,16 +257,24 @@ public:
   SMTK_DEPRECATED_IN_22_11("Replaced by assign(ConstItemPtr&, const ItemAssignmentOptions&).")
   virtual bool assign(const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options);
 
-  // Assigns this item to be equivalent to another. Options are processed by derived item classes.
-  // The options are defined in Item.h. Returns true if success and false if a problem occurred.
-  virtual bool assign(
+  using Status = smtk::common::Status;
+
+  ///@{
+  /// Assigns this item to be equivalent to another. Options are processed by derived item classes.
+  /// The options are defined in Item.h.
+  ///
+  /// This method returns a Status object that indicates both success/failure and
+  /// modification/stasis. If cast to a boolean, the Status object returns true
+  /// for success and false for failure.
+  virtual Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options = CopyAssignmentOptions());
 
-  virtual bool assign(
+  virtual Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger);
+  ///@}
 
   ///@{
   /// \brief Controls if an item should be ignored.

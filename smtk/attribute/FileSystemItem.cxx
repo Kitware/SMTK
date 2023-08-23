@@ -357,11 +357,12 @@ void FileSystemItem::reset()
   }
 }
 
-bool FileSystemItem::assign(
+Item::Status FileSystemItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
+  Item::Status result;
   // Assigns my contents to be same as sourceItem
 
   smtk::shared_ptr<const FileSystemItem> sourceFSItem =
@@ -369,11 +370,21 @@ bool FileSystemItem::assign(
 
   if (!sourceFSItem)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a FileSytemItem");
-    return false;
+    return result;
   }
 
-  this->setNumberOfValues(sourceFSItem->numberOfValues());
+  bool status;
+  if (this->numberOfValues() != sourceFSItem->numberOfValues())
+  {
+    status = this->setNumberOfValues(sourceFSItem->numberOfValues());
+    if (status)
+    {
+      result.markModified();
+    }
+  }
+
   // Were we able to allocate enough space to fit all of the source's values?
   std::size_t myNumVals, sourceNumVals, numVals;
   myNumVals = this->numberOfValues();
@@ -392,12 +403,13 @@ bool FileSystemItem::assign(
     }
     else
     {
+      result.markFailed();
       smtkErrorMacro(
         logger,
         "FileSytemItem: " << name() << "'s number of values (" << myNumVals
                           << ") can not hold source FileSytemItem's number of values ("
                           << sourceNumVals << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
   else
@@ -409,7 +421,12 @@ bool FileSystemItem::assign(
   {
     if (sourceFSItem->isSet(i))
     {
-      if (!this->setValue(i, sourceFSItem->value(i)))
+      if (this->value(i) == sourceFSItem->value(i))
+      {
+        continue;
+      }
+      status = this->setValue(i, sourceFSItem->value(i));
+      if (!status)
       {
         if (options.itemOptions.allowPartialValues())
         {
@@ -418,23 +435,31 @@ bool FileSystemItem::assign(
             "Could not assign Value:" << sourceFSItem->value(i)
                                       << " to DateTimeItem: " << sourceItem->name());
           this->unset(i);
+          result.markModified();
         }
         else
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not assign Value:" << sourceFSItem->value(i)
                                       << " to DateTimeItem: " << sourceItem->name()
                                       << " and allowPartialValues options was not specified.");
-          return false;
+          return result;
         }
+      }
+      if (status)
+      {
+        result.markModified();
       }
     }
     else
     {
       this->unset(i);
+      result.markModified();
     }
   }
 
-  return Item::assign(sourceItem, options, logger);
+  result &= Item::assign(sourceItem, options, logger);
+  return result;
 }

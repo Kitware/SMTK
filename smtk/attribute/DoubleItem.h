@@ -38,7 +38,7 @@ public:
   // to represent an expression will be copied if needed.  Use itemOptions.setIgnoreExpressions option to prevent this
   // When an expression attribute is copied, its  associations are by default not.
   // Use attributeOptions.setCopyAssociations option if you want them copied as well.These options are defined in CopyAssigmentOptions.h .
-  bool assign(
+  Item::Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;

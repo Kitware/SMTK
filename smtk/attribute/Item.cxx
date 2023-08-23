@@ -296,18 +296,20 @@ bool Item::assign(const ConstItemPtr& sourceItem, unsigned int oldOptions)
   return this->assign(sourceItem, options);
 }
 
-bool Item::assign(
+Item::Status Item::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options)
 {
-  return this->assign(sourceItem, options, smtk::io::Logger::instance());
+  Status status = this->assign(sourceItem, options, smtk::io::Logger::instance());
+  return status;
 }
 
-bool Item::assign(
+Item::Status Item::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions&,
   smtk::io::Logger&)
 {
+  Status status;
   // Assigns my contents to be same as sourceItem
   m_isEnabled = sourceItem->m_isEnabled;
   m_isIgnored = sourceItem->m_isIgnored;
@@ -318,7 +320,7 @@ bool Item::assign(
     m_hasLocalAdvanceLevelInfo[i] = sourceItem->m_hasLocalAdvanceLevelInfo[i];
     m_localAdvanceLevel[i] = sourceItem->m_localAdvanceLevel[i];
   } // for
-  return true;
+  return status;
 }
 
 std::string Item::type2String(Item::Type t)

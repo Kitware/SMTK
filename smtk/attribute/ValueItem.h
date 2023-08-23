@@ -139,7 +139,7 @@ public:
   // also be copied (as well as its definition).  Use itemOptions.setDisableCopyAttributes(true) if copying the expression
   // attribute should not happen and copyOptions.copyDefiniiton(true) if you want the Definition to be copied.
   // Use attributeOptions.setCopyAssociations(true) if you want them copied as well.These options are defined in CopyAssigmentOptions.h .
-  bool assign(
+  Item::Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;

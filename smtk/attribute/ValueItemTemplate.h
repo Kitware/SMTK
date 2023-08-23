@@ -95,7 +95,7 @@ public:
   // to represent an expression will be copied if needed.  Use itemOptions.setIgnoreExpressions option to prevent this
   // When an expression attribute is copied, its  associations are by default not.
   // Use attributeOptions.setCopyAssociations option if you want them copied as well.These options are defined in CopyAssigmentOptions.h .
-  bool assign(
+  Item::Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;
@@ -630,14 +630,15 @@ bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPo
 }
 
 template<typename DataT>
-bool ValueItemTemplate<DataT>::assign(
+Item::Status ValueItemTemplate<DataT>::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
-  if (!ValueItem::assign(sourceItem, options, logger))
+  Item::Status result = ValueItem::assign(sourceItem, options, logger);
+  if (!result.success())
   {
-    return false;
+    return result;
   }
   // Cast input pointer to ValueItemTemplate
   const ValueItemTemplate<DataT>* sourceValueItemTemplate =
@@ -645,17 +646,26 @@ bool ValueItemTemplate<DataT>::assign(
 
   if (!sourceValueItemTemplate)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a ValueItemTemplate");
-    return false; // Source is not the right type of item
+    return result; // Source is not the right type of item
   }
   // If the item is discrete or an expression there is nothing to be done
   if (sourceValueItemTemplate->isExpression() || sourceValueItemTemplate->isDiscrete())
   {
-    return true;
+    return result;
   }
 
   // Update values
-  this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
+  bool status;
+  if (this->numberOfValues() != sourceValueItemTemplate->numberOfValues())
+  {
+    status = this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
+    if (status)
+    {
+      result.markModified();
+    }
+  }
 
   // Were we able to allocate enough space to fit all of the source's values?
   std::size_t myNumVals, sourceNumVals, numVals;
@@ -675,12 +685,13 @@ bool ValueItemTemplate<DataT>::assign(
     }
     else
     {
+      result.markFailed();
       smtkErrorMacro(
         logger,
         "ValueItem: " << name() << "'s number of values (" << myNumVals
                       << ") can not hold source ValueItem's number of values (" << sourceNumVals
                       << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
   else
@@ -692,7 +703,12 @@ bool ValueItemTemplate<DataT>::assign(
   {
     if (sourceValueItemTemplate->isSet(i))
     {
-      if (!this->setValueFromString(i, sourceValueItemTemplate->valueAsString(i)))
+      if (this->valueAsString(i) == sourceValueItemTemplate->valueAsString(i))
+      {
+        continue;
+      }
+      status = this->setValueFromString(i, sourceValueItemTemplate->valueAsString(i));
+      if (!status)
       {
         if (options.itemOptions.allowPartialValues())
         {
@@ -701,20 +717,26 @@ bool ValueItemTemplate<DataT>::assign(
             "Could not assign Value:" << sourceValueItemTemplate->value(i)
                                       << " to ValueItem: " << sourceItem->name());
           this->unset(i);
+          result.markModified();
         }
         else
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not assign Value:" << sourceValueItemTemplate->value(i)
                                       << " to ValueItem: " << sourceItem->name()
                                       << " and allowPartialValues options was not specified.");
-          return false;
+          return result;
         }
+      }
+      if (status)
+      {
+        result.markModified();
       }
     }
   }
-  return true;
+  return result;
 }
 
 template<typename DataT>
