@@ -8,6 +8,7 @@ set(unit_tests
   TestProjectResources.cxx
 )
 set(unit_tests_which_require_data
+  TestCreateTwoOperationProject.cxx
   TestProjectPortability.cxx
   TestProjectReadWrite.cxx
   TestProjectReadWrite2.cxx

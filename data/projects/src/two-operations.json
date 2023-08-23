@@ -1,0 +1,131 @@
+{
+  "adaptors": [
+    {
+      "configure": [
+        {
+          "attribute[type='Stage1Data']/DoubleValue": "/DoubleValue",
+          "attribute[type='Stage1Data']/IntValue": "/IntValue",
+          "from-role": "attributes"
+        }
+      ],
+      "from": 2,
+      "id": 1,
+      "to": 3,
+      "type": "smtk::task::adaptor::ConfigureOperation"
+    },
+    {
+      "configure": [
+        {
+          "attribute[type='Stage2Data']/DoubleValue": "/DoubleValue",
+          "attribute[type='Stage2Data']/IntValue": "/IntValue",
+          "from-role": "attributes"
+        }
+      ],
+      "from": 4,
+      "id": 2,
+      "to": 5,
+      "type": "smtk::task::adaptor::ConfigureOperation"
+    },
+    {
+      "from": 1,
+      "id": 3,
+      "to": 2,
+      "type": "smtk::task::adaptor::ResourceAndRole"
+    },
+    {
+      "from": 1,
+      "id": 4,
+      "to": 4,
+      "type": "smtk::task::adaptor::ResourceAndRole"
+    }
+  ],
+  "styles": {
+    "operation_view": {
+      "operation-panel": {
+        "focus-task-operation": true
+      }
+    },
+    "task2_view": {
+      "attribute-panel": {
+        "attribute-editor": "Stage1"
+      }
+    },
+    "task4_view": {
+      "attribute-panel": {
+        "attribute-editor": "Stage2"
+      }
+    }
+  },
+  "tasks": [
+    {
+      "auto-configure": true,
+      "id": 1,
+      "resources": [
+        {
+          "max": 1,
+          "role": "attributes",
+          "type": "smtk::attribute::Resource"
+        }
+      ],
+      "title": "Assign Attribute Resource",
+      "type": "smtk::task::GatherResources"
+    },
+    {
+      "attribute-sets": [
+        {
+          "instances": [
+            "Stage1Data"
+          ],
+          "role": "attributes"
+        }
+      ],
+      "id": 2,
+      "style": [
+        "task2_view"
+      ],
+      "title": "Stage 1 Attributes",
+      "type": "smtk::task::FillOutAttributes"
+    },
+    {
+      "id": 3,
+      "operation": "math_op.MathOp",
+      "parameters": [],
+      "run-style": "once-only",
+      "style": [
+        "operation_view"
+      ],
+      "title": "Stage 1 Operation",
+      "type": "smtk::task::SubmitOperation"
+    },
+    {
+      "attribute-sets": [
+        {
+          "instances": [
+            "Stage2Data"
+          ],
+          "role": "attributes"
+        }
+      ],
+      "id": 4,
+      "style": [
+        "task4_view"
+      ],
+      "title": "Stage 2 Attributes",
+      "type": "smtk::task::FillOutAttributes"
+    },
+    {
+      "dependencies": [
+        3
+      ],
+      "id": 5,
+      "operation": "math_op.MathOp",
+      "parameters": [],
+      "run-style": "once-only",
+      "style": [
+        "operation_view"
+      ],
+      "title": "Stage 2 Operation",
+      "type": "smtk::task::SubmitOperation"
+    }
+  ]
+}
