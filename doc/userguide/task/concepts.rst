@@ -8,8 +8,8 @@ to model geometry, meshing a model, exporting a simulation input
 deck, submitting a simulation job, post-processing simulation results).
 Each task has *state* that indicates how complete it is.
 Tasks may reference other tasks as *dependencies*,
-which means the referenced tasks must be completed before
-their *dependent* tasks may be undertaken by the user.
+which means the referenced tasks must be completed (or at least completable)
+before their *dependent* tasks may be undertaken by the user.
 
 The graph of tasks (with dependencies as arcs) indicates what tasks a user may
 work on, what tasks are incomplete, and what tasks cannot be performed because of
@@ -77,8 +77,8 @@ dependencies whose dependents reference all of the head tasks).
   This object can be observed for changes to the active task.
 
 :smtk:`Adaptor <smtk::task::Adaptor>`
-  instances configure a dependent task when the dependency
-  changes state. This way, information provided by the user
+  instances configure a "downstream" task when the "upstream"
+  task changes state. This way, information provided by the user
   can have an effect on the state and user-interface of
   subsequent tasks.
   You should subclass this to implement logic that determines what
@@ -107,3 +107,39 @@ Pipelines
   The task :smtk:`Instances <smtk::task::Instances>` class has
   a ``workflowObservers()`` method that you may use to be informed
   of :smtk:`workflow events <smtk::task::WorkflowEvent>`.
+
+Dependency and Adaptor Details
+------------------------------
+
+Dependencies and adaptors provide similar but distinct functionality:
+
++ Dependencies are **administrative** (rather than technical) barriers
+  which prevent users from working on downstream tasks until the
+  upstream dependencies are met.
++ Adaptors generally serve as **technical** barriers;
+  generally, a downstream task will be unavailable until it is
+  properly configured by user actions when working on an upstream task.
+
+Adaptors may not always act as barriers in a workflow;
+it may be that the downstream tasks are configured such that
+they are always available to users.
+In these cases, adaptors often improve the user experience by
+enforcing consistency in the state of a workflow.
+
+There are times where you (as a workflow designer) may want
+**both** a dependency and an adaptor connecting the same pair
+of tasks.
+This is perfectly valid since they serve different purposes.
+
+A task's dependencies may be treated as **strict** or **lax**.
+When dependencies are strictly enforced, the task is
+unavailable until all its dependencies are marked completed.
+When dependencies are lax, the task may be made active
+as long as all its dependencies are completable (but not necessarily
+marked completed).
+The default is for dependencies to be laxly enforced.
+You can configure this on a per-task basis, but not a per-dependency basis.
+See the `Task::state()`_ documentation for a state table comparison of
+strict and lazy dependency evaluation.
+
+.. _Task::state(): https://smtk.readthedocs.io/en/latest/doc/reference/smtk/html/classsmtk_1_1task_1_1Task.xhtml#a7cdb07988d9d3f57381a2bcf013f3583

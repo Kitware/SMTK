@@ -163,6 +163,10 @@ void Task::configure(const Configuration& config)
     {
     }
   }
+  if (config.contains("strict-dependencies"))
+  {
+    m_strictDependencies = config.at("strict-dependencies").get<bool>();
+  }
   if (config.contains("state"))
   {
     bool valid;
@@ -225,6 +229,11 @@ State Task::state() const
         break;
       case State::Irrelevant:
       case State::Completable:
+        if (m_strictDependencies)
+        {
+          s = State::Unavailable;
+        }
+        break;
       case State::Completed:
         break;
     }
@@ -244,8 +253,8 @@ bool Task::markCompleted(bool completed)
 {
   switch (this->state())
   {
-    case State::Irrelevant:  // fall through
-    case State::Unavailable: // fall through
+    case State::Irrelevant:
+    case State::Unavailable:
     case State::Incomplete:
       return false;
     case State::Completable:
@@ -400,8 +409,9 @@ bool Task::updateState(Task& dependency, State prev, State next)
 {
   // If a dependent task becomes blocking or non-blocking,
   // check other tasks and see if we should change our state
-  bool dependencyNowUnblocked = (prev < State::Completable && next > State::Incomplete);
-  bool dependencyNowBlocking = (prev > State::Incomplete && next < State::Completable);
+  State limit = m_strictDependencies ? State::Completed : State::Completable;
+  bool dependencyNowUnblocked = (prev < limit && next >= limit);
+  bool dependencyNowBlocking = (prev >= limit && next < limit);
 
   // No significant change to our dependency.
   if (!dependencyNowUnblocked && !dependencyNowBlocking)

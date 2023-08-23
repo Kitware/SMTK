@@ -173,23 +173,35 @@ public:
   /// If a subclass marks the internal state as Incomplete, then this method may
   /// return Incomplete.
   ///
+  /// The table below shows the internal state of the task in the far left column
+  /// and the lowest state of all the task's dependencies in the top header row.
+  /// The table entries are the resulting value returned by this method.
+  ///
   /// <table>
   /// <caption>State "truth table" given internal and dependency states</caption>
   /// <tr><th>Dependencies/<br>Internal</th><th>Unavailable</th><th>Incomplete</th> <th>Completable</th><th>Completed</th></tr>
-  /// <tr><td colspan="5">User has not marked task completed</td></tr>
+  /// <tr><td colspan="5">Strict dependencies disabled.</td></tr>
   /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
   /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
   /// <tr><th>Incomplete</th>               <td>Unavailable</td> <td>Incomplete</td><td>Incomplete</td> <td>Incomplete</td></tr>
-  /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td>Completable</td></tr>
-  /// <tr><td colspan="5">User has marked task completed</td></tr>
+  /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td style="background: #cecece;">Completable</td></tr>
+  /// <tr><td colspan="5">Strict dependencies enabled.</td></tr>
   /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
   /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
-  /// <tr><th>Incomplete</th>               <td>Unavailable</td> <td>Incomplete</td><td>Incomplete</td> <td>Incomplete</td></tr>
-  /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td>Completed</td></tr>
+  /// <tr><th>Incomplete</th>               <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td> <td>Incomplete</td></tr>
+  /// <tr><th>Completable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td style="background: #cecece;">Completable</td></tr>
   /// </table>
   ///
-  /// Note that the internal state does not include State::Completed; only the user may mark a task
-  /// completed and the base class implements a method to handle user input.
+  /// Note that the internal state (far left column) and the table values (not including the top
+  /// header row) do not include State::Completed; only the user may mark a task
+  /// completed. Furthermore, the user is only allowed to mark a Completable task completed.
+  /// When the user has marked a completable task as completed, the bottom-right entry of each
+  /// table section (with a light grey background) will be Completed instead of Completable.
+  ///
+  /// Each task instance may be configured with a "dependency strictness" that determines when
+  /// users may work on a task with incomplete dependencies and whether users are allowed to mark
+  /// a task with incomplete dependencies as completed.
+  ///
   /// A subclass that wishes to autocomplete might invoke the base-class method although this could
   /// frustrate users.
   virtual State state() const;
@@ -208,6 +220,18 @@ public:
   /// will be reset to false and this method must be invoked again.
   virtual bool markCompleted(bool completed);
 
+  /// Return true if this task has been configured with strict
+  /// dependency enforcement.
+  ///
+  /// When true, a task will (1) not become available until all its
+  /// dependencies are marked completed and (2) not be completable
+  /// until all its dependencies are marked completed.
+  ///
+  /// When false, a task will become available once its internal
+  /// state becomes incomplete or completable, regardless of its
+  /// dependent tasks. However, it will not be allowed to be marked
+  /// complete until its dependencies are marked complete.
+  bool areDependenciesStrict() const { return m_strictDependencies; }
   /// Return the tasks which this task depends upon.
   /// WARNING: The returned set is read-only (modifying it does not modify
   /// this Task); however, modifying tasks in the returned set can affect
@@ -303,6 +327,8 @@ protected:
   /// A set of dependent tasks and the keys used to observe their
   /// state so that this task can update its state in response.
   std::map<WeakPtr, Observers::Key, std::owner_less<WeakPtr>> m_dependencies;
+  /// Should dependencies be strictly enforced?
+  bool m_strictDependencies = false;
   /// Tasks upon which this task depends.
   ///
   /// This set is maintained by other Task instances when

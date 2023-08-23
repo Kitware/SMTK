@@ -20,6 +20,10 @@ The following JSON can be used to configure it:
   style-class names for the task.
 * ``completed``: an optional boolean value indicating whether the
   user has marked the task complete or not.
+* ``strict-dependencies``: an optional boolean value indicating
+  whether dependencies are strict or lax (i.e., whether a task
+  with dependencies will be available before its dependents are
+  marked completed). The default is false.
 
 Example
 """""""
@@ -30,7 +34,8 @@ Example
      "type": "smtk::task::Task",
      "title": "Instructions to users.",
      "style": [ "unique-component-colors", "fancy-menu" ],
-     "completed": false
+     "completed": false,
+     "strict-dependencies": true
    }
 
 FillOutAttributes
