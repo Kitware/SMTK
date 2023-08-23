@@ -103,6 +103,22 @@ bool ConfigureOperation::updateDownstreamTask(State upstreamPrev, State upstream
   return false;
 }
 
+nlohmann::json ConfigureOperation::config() const
+{
+  auto config = nlohmann::json::array();
+  for (const auto& paramSet : m_parameterSets)
+  {
+    auto j = nlohmann::json::object();
+    j["from-role"] = paramSet.m_fromRole;
+    for (const auto& ele : paramSet.m_pathMap)
+    {
+      j[ele.first] = ele.second;
+    }
+    config.push_back(j);
+  }
+  return config;
+}
+
 void ConfigureOperation::configureSelf(const Configuration& config)
 {
   auto configIter = config.find("configure");

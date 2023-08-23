@@ -8,12 +8,17 @@ set(unit_tests
   TestProjectResources.cxx
 )
 set(unit_tests_which_require_data
-  TestCreateTwoOperationProject.cxx
   TestProjectPortability.cxx
   TestProjectReadWrite.cxx
   TestProjectReadWrite2.cxx
   TestProjectReadWriteEmpty.cxx
 )
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND unit_tests_which_require_data
+    TestCreateTwoOperationProject.cxx
+  )
+endif()
+
 set(extra_libs)
 if (SMTK_ENABLE_VTK_SUPPORT)
   add_compile_definitions(VTK_SUPPORT)

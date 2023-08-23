@@ -19,6 +19,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ImportPythonOperation.h"
+#include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 #include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
@@ -55,7 +56,10 @@ namespace
 {
 std::string data_root = SMTK_DATA_DIR;     // defined in cmake file
 std::string write_root = SMTK_SCRATCH_DIR; // defined in cmake file
-int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED); // alias
+const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+
+const int TASK_COUNT = 5;
+const int ADAPTOR_COUNT = 4;
 
 void cleanup(const std::string& file_path)
 {
@@ -69,6 +73,40 @@ void cleanup(const std::string& file_path)
   }
 }
 } // namespace
+
+/** \brief Reads project from disk and does some minimal checks */
+void readProject(smtk::common::ManagersPtr managers)
+{
+  std::string projectDirectory = write_root + "/TwoOperations/";
+  std::string projectLocation = projectDirectory + "TwoOperations.project.smtk";
+
+  auto opManager = managers->get<smtk::operation::ManagerPtr>();
+  auto readOp = opManager->create<smtk::operation::ReadResource>();
+  smtkTest(!!readOp, "No read operation");
+  readOp->parameters()->findFile("filename")->setValue(projectLocation);
+  auto readResult = readOp->operate();
+  int readOutcome = readResult->findInt("outcome")->value();
+  if (readOutcome != OP_SUCCEEDED)
+  {
+    std::string log = readOp->log().convertToString();
+    std::cerr << log << std::endl;
+    smtkTest(false, "failed to read " << projectLocation);
+  }
+
+  auto resource = readResult->findResource("resource")->value();
+  auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
+  smtkTest(!!project, "failed to read  project from location " << projectLocation);
+
+  smtk::task::Manager& taskManager = project->taskManager();
+  smtkTest(
+    taskManager.taskInstances().size() == TASK_COUNT,
+    "Input project wrong number of tasks; should be " << TASK_COUNT << " not "
+                                                      << taskManager.taskInstances().size());
+  smtkTest(
+    taskManager.adaptorInstances().size() == ADAPTOR_COUNT,
+    "Input project wrong number of adaptors; should be " << ADAPTOR_COUNT << " not "
+                                                         << taskManager.adaptorInstances().size());
+}
 
 int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 {
@@ -156,8 +194,13 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     taskManager.taskInstances().pauseWorkflowNotifications(false);
 
     smtkTest(
-      taskManager.taskInstances().size() == 5,
-      "Wrong number of tasks; should be 5 not " << taskManager.taskInstances().size());
+      taskManager.taskInstances().size() == TASK_COUNT,
+      "New project wrong number of tasks; should be " << TASK_COUNT << " not "
+                                                      << taskManager.taskInstances().size());
+    smtkTest(
+      taskManager.adaptorInstances().size() == ADAPTOR_COUNT,
+      "New project wrong number of adaptors; should be " << ADAPTOR_COUNT << " not "
+                                                         << taskManager.adaptorInstances().size());
 
     // Load sbt file and add attribute resource to the project.
     auto readOp = operationManager->create<smtk::attribute::Import>();
@@ -197,7 +240,13 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     std::cout << "Wrote " << projectLocation << std::endl;
   }
 
-  // Finis
   projectManager->remove(project);
+  resourceManager->remove(project);
+  project.reset();
+
+  // Sanity check the output
+  readProject(managers);
+
+  // Finis
   return 0;
 }

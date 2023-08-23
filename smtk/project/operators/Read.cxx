@@ -33,6 +33,7 @@
 #include "smtk/project/Manager.h"
 #include "smtk/project/json/jsonProject.h"
 
+#include "smtk/task/Registrar.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonManager.h"
 
@@ -109,6 +110,7 @@ Read::Result Read::operateInternal()
   project->setLocation(filename);
   project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
   project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
+  smtk::task::Registrar::registerTo(project->taskManager().shared_from_this());
 
   // manually reset the "location" string so that smtk::project::from_json() can properly translate
   //   resource paths to being relative (rather than absolute)

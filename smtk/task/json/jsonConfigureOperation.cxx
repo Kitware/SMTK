@@ -33,6 +33,7 @@ Adaptor::Configuration jsonConfigureOperation::operator()(const Adaptor* adaptor
   {
     jsonAdaptor superclass;
     config = superclass(ConfigureOperation, helper);
+    config["configure"] = ConfigureOperation->config();
   }
   return config;
 }

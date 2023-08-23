@@ -151,6 +151,7 @@ Task::Configuration jsonGatherResources::operator()(const Task* task, Helper& he
         return smtk::common::Visit::Continue;
       });
     config["resources"] = resourceSets;
+    config["auto-configure"] = gatherResources->autoConfigure();
   }
   return config;
 }
