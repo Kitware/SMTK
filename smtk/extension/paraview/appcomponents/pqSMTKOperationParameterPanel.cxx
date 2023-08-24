@@ -459,15 +459,25 @@ void pqSMTKOperationParameterPanel::cancelEditing(int tabIndex)
         // close button…
         return;
       }
+      // Hide the tab immediately, but wait for other events (such as
+      // other operation observers) to fire before deleting the tab.
       editor.second.m_tab->hide();
-      delete editor.second.m_uiMgr;
-      while (QWidget* w = editor.second.m_tab->findChild<QWidget*>())
-      {
-        delete w;
-      }
-      delete editor.second.m_view;
-      m_tabs->removeTab(tabIndex);
-      m_views.erase(editor.first);
+      auto opIdx = editor.first;
+      QTimer::singleShot(0, [this, opIdx, tabIndex]() {
+        auto it = m_views.find(opIdx);
+        if (it == m_views.end())
+        { // Somebody already deleted it for us.
+          return;
+        }
+        delete it->second.m_uiMgr;
+        while (QWidget* w = it->second.m_tab->findChild<QWidget*>())
+        {
+          delete w;
+        }
+        delete it->second.m_view;
+        m_tabs->removeTab(tabIndex);
+        m_views.erase(it);
+      });
       return;
     }
   }
