@@ -79,9 +79,6 @@ protected:
 
   /// Table listing <source attribute, source item path, operation parameter (item) path>
   std::vector<std::tuple<smtk::attribute::WeakAttributePtr, std::string, std::string>> m_itemTable;
-
-  /// Indicates when FillOut task is completable, which is when we apply changes
-  bool m_applyChanges = false;
 };
 
 } // namespace adaptor

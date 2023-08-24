@@ -59,7 +59,6 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
   {
     this->buildInternalData();
     this->setupAttributeObserver();
-    m_applyChanges = true;
     this->updateOperation();
   }
 
@@ -71,12 +70,7 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
     {
       this->buildInternalData();
       this->setupAttributeObserver();
-      m_applyChanges = true;
       this->updateOperation();
-    }
-    else
-    {
-      m_applyChanges = false;
     }
   });
 }
@@ -288,30 +282,16 @@ bool ConfigureOperation::setupAttributeObserver()
       smtk::operation::EventType eventType,
       smtk::operation::Operation::Result result) -> int {
       // Most of the time we can ignore the op
-      if (!this->m_applyChanges)
+      if (
+        eventType != smtk::operation::EventType::DID_OPERATE ||
+        op.typeName() != smtk::common::typeName<smtk::attribute::Signal>())
       {
         return 0;
       }
 
-      if (eventType != smtk::operation::EventType::DID_OPERATE)
-      {
-        return 0;
-      }
-
-      if (op.typeName() != smtk::common::typeName<smtk::attribute::Signal>())
-      {
-        return 0;
-      }
-
-      // Get the "from" task and check its state
+      // Only copy item-data from a completable FillOutAttributes task?
       smtk::task::Task* fromTask = this->from();
-      if ((fromTask == nullptr) || fromTask->state() != smtk::task::State::Completable)
-      {
-        return 0;
-      }
-
-      // Check if "to" task is not completed
-      if (this->to()->state() == smtk::task::State::Completed)
+      if (!fromTask || fromTask->state() != smtk::task::State::Completable)
       {
         return 0;
       }
@@ -328,7 +308,7 @@ bool ConfigureOperation::setupAttributeObserver()
         }
       }
 
-      return 1;
+      return 0; // was 1
     });
 
   return true;
@@ -339,6 +319,7 @@ bool ConfigureOperation::updateOperation() const
   auto* operationTask = dynamic_cast<smtk::task::SubmitOperation*>(this->to());
   auto* operation = operationTask->operation();
 
+  bool didModify = false;
   // Traverse m_itemTable
   for (const auto& t : m_itemTable)
   {
@@ -374,17 +355,32 @@ bool ConfigureOperation::updateOperation() const
 
     // Use assign() method
     smtk::attribute::CopyAssignmentOptions options;
-    bool assignOK = paramItem->assign(fromItem, options, defaultLogger);
-    if (!assignOK)
+    auto status = paramItem->assign(fromItem, options, defaultLogger);
+    if (!status.success())
     {
       smtkWarningMacro(
         defaultLogger,
         "ConfigureOperation failed to assign parameter at path \" " << paramItemPath << "\"");
     }
+    if (status.modified())
+    {
+      didModify = true;
+    }
+  }
+  if (didModify)
+  {
+    // This will invoke operationTask->updateInternalState() if it returns
+    // true. But we may still need to update the state even if the
+    // runSinceEdited() was false.
+    if (!operationTask->setNeedsToRun())
+    {
+      // For example, if we haven't run since parameters were edited, but now
+      // we've overridden operation parameters that make the operation unavailable
+      // or irrelevant, we need to force the task to update.
+      operationTask->internalStateChanged(operationTask->computeInternalState());
+    }
   }
 
-  // Update operation task state
-  operationTask->internalStateChanged(operationTask->computeInternalState());
   return true;
 }
 

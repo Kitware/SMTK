@@ -614,7 +614,12 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
       // observe the active task
       auto& activeTracker = taskManager->active();
       m_activeObserverKey = activeTracker.observers().insert(
-        [this](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
+        [this, &activeTracker](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
+          if (oldTask == newTask)
+          {
+            return;
+          }
+          m_taskObserver.release();
           // First, if oldTask is an operation task, remove its parameter-panel
           // (if it was configured to display one).
           auto* oldOpTask = dynamic_cast<smtk::task::SubmitOperation*>(oldTask);
@@ -666,11 +671,13 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             // Observe the task so when it transitions state we can react (e.g., by
             // removing the operation tab when the task is completed.)
             QPointer<pqSMTKOperationParameterPanel> self(this);
-            m_taskObserver = submitOpTask->observers().insert([self](
+            m_taskObserver = submitOpTask->observers().insert([self, &activeTracker](
                                                                 smtk::task::Task& task,
                                                                 smtk::task::State priorState,
                                                                 smtk::task::State currentState) {
-              if (!self)
+              // If the panel has been destroyed or the task being
+              // observed is no longer active, ignore this event.
+              if (!self || activeTracker.task() != &task)
               {
                 return;
               }

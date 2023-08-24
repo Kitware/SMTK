@@ -353,6 +353,17 @@ void SubmitOperation::configureHiddenItems(
   }        // for (i)
 }
 
+bool SubmitOperation::setNeedsToRun()
+{
+  if (!m_runSinceEdited)
+  {
+    return false;
+  }
+  m_runSinceEdited = false;
+  this->internalStateChanged(this->computeInternalState());
+  return true;
+}
+
 int SubmitOperation::update(
   const smtk::operation::Operation& op,
   smtk::operation::EventType event,
