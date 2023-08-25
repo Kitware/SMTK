@@ -29,7 +29,7 @@
 #include <stdexcept>
 
 // Define this to get debug messages.
-#define SMTK_DBG_SUBMITOPERATION
+#undef SMTK_DBG_SUBMITOPERATION
 
 namespace smtk
 {

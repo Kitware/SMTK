@@ -52,7 +52,7 @@ public:
   ConfigureOperation(const Configuration& config);
   ConfigureOperation(const Configuration& config, Task* from, Task* to);
 
-  bool reconfigureTask() override; // required override
+  bool updateDownstreamTask(State upstreamPrev, State upstreamNext) override;
 
 protected:
   void configureSelf(const Configuration& config);

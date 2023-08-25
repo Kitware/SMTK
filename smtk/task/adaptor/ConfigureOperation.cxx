@@ -14,6 +14,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
@@ -75,9 +76,31 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
   });
 }
 
-bool ConfigureOperation::reconfigureTask()
+bool ConfigureOperation::updateDownstreamTask(State upstreamPrev, State upstreamNext)
 {
-  return false; // Required override
+  if (auto* submitOp = dynamic_cast<SubmitOperation*>(this->to()))
+  {
+    switch (upstreamPrev)
+    {
+      case State::Irrelevant:
+      case State::Unavailable:
+      case State::Incomplete:
+        break;
+      case State::Completable:
+        if (upstreamNext < upstreamPrev)
+        {
+          return submitOp->setNeedsToRun();
+        }
+        break;
+      case State::Completed:
+        if (upstreamNext != State::Completed)
+        {
+          return submitOp->setNeedsToRun();
+        }
+        break;
+    }
+  }
+  return false;
 }
 
 void ConfigureOperation::configureSelf(const Configuration& config)
@@ -289,13 +312,6 @@ bool ConfigureOperation::setupAttributeObserver()
         return 0;
       }
 
-      // Only copy item-data from a completable FillOutAttributes task?
-      smtk::task::Task* fromTask = this->from();
-      if (!fromTask || fromTask->state() != smtk::task::State::Completable)
-      {
-        return 0;
-      }
-
       // Check the result for any attributes in our set
       auto compItem = result->findComponent("modified");
       for (std::size_t i = 0; i < compItem->numberOfValues(); ++i)
@@ -319,8 +335,14 @@ bool ConfigureOperation::updateOperation() const
   auto* operationTask = dynamic_cast<smtk::task::SubmitOperation*>(this->to());
   auto* operation = operationTask->operation();
 
-  bool didModify = false;
+  // We'll add modified item paths to a Signal operation:
+  auto managers = this->from()->manager()->managers();
+  auto opMgr = managers->get<smtk::operation::Manager::Ptr>();
+  auto signalOp = opMgr->create<smtk::attribute::Signal>();
+  auto signalItems = signalOp->parameters()->findString("items");
+  signalOp->parameters()->findComponent("modified")->appendValue(operation->parameters());
   // Traverse m_itemTable
+  bool didModify = false;
   for (const auto& t : m_itemTable)
   {
     const smtk::attribute::AttributePtr fromAtt = std::get<0>(t).lock();
@@ -365,6 +387,7 @@ bool ConfigureOperation::updateOperation() const
     if (status.modified())
     {
       didModify = true;
+      signalItems->appendValue(paramItemPath);
     }
   }
   if (didModify)
@@ -379,6 +402,9 @@ bool ConfigureOperation::updateOperation() const
       // or irrelevant, we need to force the task to update.
       operationTask->internalStateChanged(operationTask->computeInternalState());
     }
+    // Now we must queue the Signal operation to notify any Qt views
+    // of the changes we just made.
+    opMgr->launchers()(signalOp);
   }
 
   return true;
