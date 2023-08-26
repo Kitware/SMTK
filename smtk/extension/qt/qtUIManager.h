@@ -281,6 +281,11 @@ public:
   ///\brief Return the pixmap used for alert icons
   const QPixmap& alertPixmap() const { return m_alertPixmap; }
 
+  ///@{
+  /// Set and Get methods to make the Views of the UI Manager read-only
+  void setReadOnly(bool mode);
+  bool isReadOnly() const { return m_readOnly; }
+
 #ifdef _WIN32
 #define LINE_BREAKER_STRING "\n";
 #else
@@ -351,6 +356,8 @@ private:
 
   // current advance level to show advanced attributes/items
   int m_currentAdvLevel;
+
+  bool m_readOnly = false;
 
   // map for <Definition, its longest item label>
   // The longest label is used as a hint when aligning all item labels

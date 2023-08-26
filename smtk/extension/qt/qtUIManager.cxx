@@ -1209,3 +1209,19 @@ const smtk::view::Configuration::Component& qtUIManager::findStyle(
   }
   return attRes->findStyle(def, styleName);
 }
+
+void qtUIManager::setReadOnly(bool mode)
+{
+  if (m_readOnly == mode)
+  {
+    return;
+  }
+
+  m_readOnly = mode;
+
+  // Refresh the top view if we have one
+  if (m_topView)
+  {
+    m_topView->updateUI();
+  }
+}

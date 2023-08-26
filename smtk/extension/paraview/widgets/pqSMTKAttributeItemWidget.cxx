@@ -496,6 +496,11 @@ void pqSMTKAttributeItemWidget::updateUI()
   {
     this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
   }
+  // If the Item is set to read-only then disable the widget
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
 }
 
 /// Create the widget(s) that allow editing of the Item (as opposed to labels and conditional child widgets).

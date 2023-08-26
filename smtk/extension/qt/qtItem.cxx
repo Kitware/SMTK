@@ -189,7 +189,9 @@ bool qtItem::isReadOnly() const
   auto item = m_itemInfo.item();
   auto* view = m_itemInfo.baseView();
   return (
-    (m_readOnly || (item == nullptr) || (view == nullptr)) ? true : !view->isItemWriteable(item));
+    (m_readOnly || (item == nullptr) || (view == nullptr) || m_itemInfo.uiManager()->isReadOnly())
+      ? true
+      : !view->isItemWriteable(item));
 }
 
 bool qtItem::isFixedWidth() const
