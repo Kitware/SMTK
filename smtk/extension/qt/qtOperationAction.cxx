@@ -163,11 +163,6 @@ QWidget* qtOperationAction::createWidget(QWidget* parent)
   }
 }
 
-void qtOperationAction::deleteWidget(QWidget* widget)
-{
-  delete widget;
-}
-
 void qtOperationAction::forceStyle(Qt::ToolButtonStyle buttonStyle, ActionFunctor functor)
 {
   Qt::ToolButtonStyle lastStyle = m_style;
