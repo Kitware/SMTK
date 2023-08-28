@@ -40,6 +40,16 @@ void qtToolPaletteLayout::addItem(QLayoutItem* item)
 
 void qtToolPaletteLayout::insertItem(int insertAfter, QLayoutItem* item)
 {
+  // Adjust insertion position if needed.
+  insertAfter = qMax(0, insertAfter);
+  insertAfter = qMin(m_itemList.count(), insertAfter);
+
+  if (item && item->widget())
+  {
+    item->widget()->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+    item->widget()->hide(); // This will get shown only if doLayout() places it.
+  }
+
   m_itemList.insert(insertAfter, item);
 }
 
@@ -75,7 +85,8 @@ QLayoutItem* qtToolPaletteLayout::takeAt(int index)
 {
   if (index >= 0 && index < m_itemList.size())
   {
-    return m_itemList.takeAt(index);
+    auto* item = m_itemList.takeAt(index);
+    return item;
   }
   return nullptr;
 }
@@ -196,6 +207,7 @@ int qtToolPaletteLayout::doLayout(const QRect& rect, bool testOnly) const
     y = effectiveRect.y() + (maxHeight + vSpace) * (ii / numCols);
     item->setGeometry(QRect(QPoint(x, y), QSize(maxWidth, maxHeight)));
     wid->setGeometry(QRect(QPoint(x, y), QSize(maxWidth, maxHeight)));
+    wid->show(); // Only show widgets we have laid out.
     ++ii;
   }
   return totalHeight;

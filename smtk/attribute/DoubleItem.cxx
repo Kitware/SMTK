@@ -32,7 +32,7 @@ Item::Type DoubleItem::type() const
   return DoubleType;
 }
 
-bool DoubleItem::assign(
+Item::Status DoubleItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)

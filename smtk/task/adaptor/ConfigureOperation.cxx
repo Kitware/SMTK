@@ -14,6 +14,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
@@ -59,7 +60,6 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
   {
     this->buildInternalData();
     this->setupAttributeObserver();
-    m_applyChanges = true;
     this->updateOperation();
   }
 
@@ -71,19 +71,36 @@ ConfigureOperation::ConfigureOperation(const Configuration& config, Task* from, 
     {
       this->buildInternalData();
       this->setupAttributeObserver();
-      m_applyChanges = true;
       this->updateOperation();
-    }
-    else
-    {
-      m_applyChanges = false;
     }
   });
 }
 
-bool ConfigureOperation::reconfigureTask()
+bool ConfigureOperation::updateDownstreamTask(State upstreamPrev, State upstreamNext)
 {
-  return false; // Required override
+  if (auto* submitOp = dynamic_cast<SubmitOperation*>(this->to()))
+  {
+    switch (upstreamPrev)
+    {
+      case State::Irrelevant:
+      case State::Unavailable:
+      case State::Incomplete:
+        break;
+      case State::Completable:
+        if (upstreamNext < upstreamPrev)
+        {
+          return submitOp->setNeedsToRun();
+        }
+        break;
+      case State::Completed:
+        if (upstreamNext != State::Completed)
+        {
+          return submitOp->setNeedsToRun();
+        }
+        break;
+    }
+  }
+  return false;
 }
 
 void ConfigureOperation::configureSelf(const Configuration& config)
@@ -288,30 +305,9 @@ bool ConfigureOperation::setupAttributeObserver()
       smtk::operation::EventType eventType,
       smtk::operation::Operation::Result result) -> int {
       // Most of the time we can ignore the op
-      if (!this->m_applyChanges)
-      {
-        return 0;
-      }
-
-      if (eventType != smtk::operation::EventType::DID_OPERATE)
-      {
-        return 0;
-      }
-
-      if (op.typeName() != smtk::common::typeName<smtk::attribute::Signal>())
-      {
-        return 0;
-      }
-
-      // Get the "from" task and check its state
-      smtk::task::Task* fromTask = this->from();
-      if ((fromTask == nullptr) || fromTask->state() != smtk::task::State::Completable)
-      {
-        return 0;
-      }
-
-      // Check if "to" task is not completed
-      if (this->to()->state() == smtk::task::State::Completed)
+      if (
+        eventType != smtk::operation::EventType::DID_OPERATE ||
+        op.typeName() != smtk::common::typeName<smtk::attribute::Signal>())
       {
         return 0;
       }
@@ -328,7 +324,7 @@ bool ConfigureOperation::setupAttributeObserver()
         }
       }
 
-      return 1;
+      return 0; // was 1
     });
 
   return true;
@@ -339,7 +335,14 @@ bool ConfigureOperation::updateOperation() const
   auto* operationTask = dynamic_cast<smtk::task::SubmitOperation*>(this->to());
   auto* operation = operationTask->operation();
 
+  // We'll add modified item paths to a Signal operation:
+  auto managers = this->from()->manager()->managers();
+  auto opMgr = managers->get<smtk::operation::Manager::Ptr>();
+  auto signalOp = opMgr->create<smtk::attribute::Signal>();
+  auto signalItems = signalOp->parameters()->findString("items");
+  signalOp->parameters()->findComponent("modified")->appendValue(operation->parameters());
   // Traverse m_itemTable
+  bool didModify = false;
   for (const auto& t : m_itemTable)
   {
     const smtk::attribute::AttributePtr fromAtt = std::get<0>(t).lock();
@@ -374,17 +377,36 @@ bool ConfigureOperation::updateOperation() const
 
     // Use assign() method
     smtk::attribute::CopyAssignmentOptions options;
-    bool assignOK = paramItem->assign(fromItem, options, defaultLogger);
-    if (!assignOK)
+    auto status = paramItem->assign(fromItem, options, defaultLogger);
+    if (!status.success())
     {
       smtkWarningMacro(
         defaultLogger,
         "ConfigureOperation failed to assign parameter at path \" " << paramItemPath << "\"");
     }
+    if (status.modified())
+    {
+      didModify = true;
+      signalItems->appendValue(paramItemPath);
+    }
+  }
+  if (didModify)
+  {
+    // This will invoke operationTask->updateInternalState() if it returns
+    // true. But we may still need to update the state even if the
+    // runSinceEdited() was false.
+    if (!operationTask->setNeedsToRun())
+    {
+      // For example, if we haven't run since parameters were edited, but now
+      // we've overridden operation parameters that make the operation unavailable
+      // or irrelevant, we need to force the task to update.
+      operationTask->internalStateChanged(operationTask->computeInternalState());
+    }
+    // Now we must queue the Signal operation to notify any Qt views
+    // of the changes we just made.
+    opMgr->launchers()(signalOp);
   }
 
-  // Update operation task state
-  operationTask->internalStateChanged(operationTask->computeInternalState());
   return true;
 }
 

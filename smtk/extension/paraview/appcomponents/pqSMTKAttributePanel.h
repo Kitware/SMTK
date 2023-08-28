@@ -16,6 +16,7 @@
 
 #include "smtk/project/Observer.h" // for EventType
 #include "smtk/resource/Observer.h"
+#include "smtk/task/Task.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -155,6 +156,8 @@ protected:
 
   std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;
   smtk::task::Active::Observers::Key m_activeObserverKey;
+  smtk::task::Task::Observers::Key m_currentTaskObserverKey;
+  smtk::task::Task* m_currentTask{ nullptr };
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKAttributePanel_h

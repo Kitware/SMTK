@@ -29,7 +29,7 @@
 #include <stdexcept>
 
 // Define this to get debug messages.
-#define SMTK_DBG_SUBMITOPERATION
+#undef SMTK_DBG_SUBMITOPERATION
 
 namespace smtk
 {
@@ -351,6 +351,17 @@ void SubmitOperation::configureHiddenItems(
 
     break; // because operations only have 1 attribute, we can quit here
   }        // for (i)
+}
+
+bool SubmitOperation::setNeedsToRun()
+{
+  if (!m_runSinceEdited)
+  {
+    return false;
+  }
+  m_runSinceEdited = false;
+  this->internalStateChanged(this->computeInternalState());
+  return true;
 }
 
 int SubmitOperation::update(

@@ -176,7 +176,7 @@ void qtOperationTypeView::operationsAdded(const QModelIndex& parent, int first, 
     return;
   }
 
-  // Add toolbar button for each new row.
+  // Add toolbar button for each new model-row.
   for (int ii = first; ii <= last; ++ii)
   {
     QModelIndex operationActionIndex =
@@ -185,7 +185,11 @@ void qtOperationTypeView::operationsAdded(const QModelIndex& parent, int first, 
     if (opAction)
     {
       auto* button = opAction->requestWidget(m_palette);
-      button->setVisible(true); // For some reason, buttons are made invisible?
+      // NB: For some reason, the \a button is not visible by default.
+      // However, this is what we desire, since the layout will show()
+      // it **if** it is placed properly. Blindly calling
+      // button->setVisible(true) will cause unused buttons to appear
+      // beneath active buttons in the top-left corner of the widget.
       m_flow->insertItem(ii, new QWidgetItem(button));
     }
   }
@@ -229,7 +233,10 @@ void qtOperationTypeView::operationsRemoved(const QModelIndex& parent, int first
         opModel->index(ii, static_cast<int>(qtOperationTypeModel::Column::WidgetAction));
       auto* widgetAction = dynamic_cast<qtOperationAction*>(
         qvariant_cast<QObject*>(opModel->data(operationActionIndex)));
-      widgetAction->releaseWidget(layoutItem->widget());
+      if (widgetAction)
+      {
+        widgetAction->releaseWidget(layoutItem->widget());
+      }
     }
   }
   m_flow->invalidate();

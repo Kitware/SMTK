@@ -144,12 +144,22 @@ public:
   ParameterSpec& associationSpec() { return m_associationSpec; }
   ParameterSpec associationSpec() const { return m_associationSpec; }
 
-  /// True if the operation has *successfully* run since its parameters were last edited.
-  bool runSinceEdited() const { return m_runSinceEdited; }
-
   /// Modify view to hide items specified in task's style
   void configureHiddenItems(smtk::view::ConfigurationPtr view, const nlohmann::json& jItemArray)
     const;
+
+  /// True if the operation has *successfully* run since its parameters were last edited.
+  bool runSinceEdited() const { return m_runSinceEdited; }
+
+  /// Force the task into an incomplete state because its input parameters have changed.
+  ///
+  /// This is invoked by \a configureHiddenItems() if any items are modified.
+  /// The returned value is true if the call had any effect (i.e., m_runSinceEdited
+  /// was true before the call and false afterward).
+  ///
+  /// Calling this method will generally result in a state change (to Incomplete)
+  /// if true is returned.
+  bool setNeedsToRun();
 
 protected:
   friend class adaptor::ResourceAndRole;

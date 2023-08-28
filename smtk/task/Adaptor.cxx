@@ -28,13 +28,25 @@ Adaptor::Adaptor(const Configuration& config, Task* from, Task* to)
   (void)config; // subclasses may use this
   if (from)
   {
-    m_observer = from->observers().insert([this](Task&, State prev, State next) {
-      if (prev < next && next >= State::Completable)
-      {
-        this->reconfigureTask();
-      }
-    });
+    m_observer = from->observers().insert(
+      [this](Task&, State prev, State next) { this->updateDownstreamTask(prev, next); });
   }
+}
+
+bool Adaptor::reconfigureTask()
+{
+  // NOTICE! When you remove this method, make updateDownstreamTask
+  // pure virtual so that subclasses must provide an implementation.
+  return false;
+}
+
+bool Adaptor::updateDownstreamTask(State upstreamPrev, State upstreamNext)
+{
+  if (upstreamPrev < upstreamNext && upstreamNext >= State::Completable)
+  {
+    return this->reconfigureTask();
+  }
+  return false;
 }
 
 } // namespace task

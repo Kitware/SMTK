@@ -11,6 +11,7 @@
 #ifndef smtk_task_Adaptor_h
 #define smtk_task_Adaptor_h
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/task/Task.h"
 
 namespace smtk
@@ -36,10 +37,16 @@ public:
   /// Destructor must be virtual.
   virtual ~Adaptor() = default;
 
-  /// Subclasses must implement this to reconfigure the "to()" task.
-  /// This method is called when the "from()" task changes into a
-  /// completable state.
-  virtual bool reconfigureTask() = 0;
+  SMTK_DEPRECATED_IN_23_08("Use updateDownstreamTask() instead.")
+  virtual bool reconfigureTask();
+
+  /// Subclasses must override this method and respond to changes in
+  /// the state of the upstream task as provided.
+  ///
+  /// Note that the default implementation is provided only for
+  /// backward compatibility and will be removed when the deprecated
+  /// `reconfigureTask()` method is removed.
+  virtual bool updateDownstreamTask(State upstreamPrev, State upstreamNext);
 
   /// The task this adaptor uses to fetch configuration parameters.
   Task* from() const { return m_from; }

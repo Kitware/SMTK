@@ -481,11 +481,12 @@ GroupItem::find(std::size_t element, const std::string& inName, SearchStyle styl
   return nullptr;
 }
 
-bool GroupItem::assign(
+Item::Status GroupItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
+  Item::Status result;
   // Assigns my contents to be same as sourceItem
   // Cast input pointer to GroupItem
   smtk::shared_ptr<const GroupItem> sourceGroupItem =
@@ -493,12 +494,21 @@ bool GroupItem::assign(
 
   if (!sourceGroupItem)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << this->name() << " is not a GroupItem");
-    return false; // Source is not a group item
+    return result; // Source is not a group item
   }
 
   // Update children (items)
-  this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
+  bool status;
+  if (this->numberOfGroups() != sourceGroupItem->numberOfGroups())
+  {
+    status = this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
+    if (status)
+    {
+      result.markModified();
+    }
+  }
 
   // Were we able to allocate enough space to fit all of the source's values?
   std::size_t myNumVals, sourceNumVals, numVals;
@@ -523,7 +533,7 @@ bool GroupItem::assign(
         "GroupItem: " << this->name() << "'s number of groups (" << myNumVals
                       << ") can not hold source GroupItem's number of groups (" << sourceNumVals
                       << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
   else
@@ -544,25 +554,29 @@ bool GroupItem::assign(
         // Are missing items allowed?
         if (!options.itemOptions.ignoreMissingChildren())
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not find Child Item: " << sourceChildItem->name()
                                           << " in GroupItem: " << this->name()
                                           << " and IGNORE MISSING CHILDREN option was not set");
-          return false;
+          return result;
         }
         continue;
       }
-      if (!childItem->assign(sourceChildItem, options, logger))
+      auto childResult = childItem->assign(sourceChildItem, options, logger);
+      result &= childResult;
+      if (!childResult.success())
       {
         smtkErrorMacro(
           logger,
           "Could not assign GroupItem: " << this->name() << "'s Child Item: " << childItem->name());
-        return false;
+        return result;
       }
     }
   }
-  return Item::assign(sourceItem, options, logger);
+  result &= Item::assign(sourceItem, options, logger);
+  return result;
 }
 
 bool GroupItem::hasRelevantChildren(

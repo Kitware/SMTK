@@ -423,11 +423,12 @@ void ValueItem::updateActiveChildrenItems()
   }
 }
 
-bool ValueItem::assign(
+Item::Status ValueItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
+  Item::Status result;
   // Assigns my contents to be same as sourceItem
   // Cast input pointer to ValueItem
   smtk::shared_ptr<const ValueItem> sourceValueItem =
@@ -435,14 +436,23 @@ bool ValueItem::assign(
 
   if (!sourceValueItem)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a ValueItem");
-    return false; //Source is not a value item!
+    return result; //Source is not a value item!
   }
 
   // Get reference to attribute resource
   ResourcePtr resource = this->attribute()->attributeResource();
 
-  this->setNumberOfValues(sourceValueItem->numberOfValues());
+  bool status;
+  if (this->numberOfValues() != sourceValueItem->numberOfValues())
+  {
+    status = this->setNumberOfValues(sourceValueItem->numberOfValues());
+    if (status)
+    {
+      result.markModified();
+    }
+  }
 
   // Were we able to allocate enough space to fit all of the source's values?
   std::size_t myNumVals, sourceNumVals, numVals;
@@ -462,12 +472,13 @@ bool ValueItem::assign(
     }
     else
     {
+      result.markFailed();
       smtkErrorMacro(
         logger,
         "ValueItem: " << name() << "'s number of values (" << myNumVals
                       << ") can not hold source ValueItem's number of values (" << sourceNumVals
                       << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
   else
@@ -483,6 +494,7 @@ bool ValueItem::assign(
       // OK we are not to copy the expression so instead
       // we need to clear all of the values
       this->reset();
+      result.markModified();
     }
     // If the expression is contained in the same resource as the item, then find it or create a copy of it
     else if (sourceValueItem->attribute()->resource() == sourceValueItem->expression()->resource())
@@ -497,12 +509,13 @@ bool ValueItem::assign(
           att = resource->copyAttribute(sourceValueItem->expression(), options, logger);
           if (att == nullptr)
           {
+            result.markFailed();
             smtkErrorMacro(
               logger,
               "Could not copy Attribute:" << sourceValueItem->expression()->name()
                                           << " used as an expression by item: "
                                           << sourceItem->name());
-            return false;
+            return result;
           }
         }
         else
@@ -515,7 +528,8 @@ bool ValueItem::assign(
                                           << " because it is in the same resource as the source "
                                              "item and disableCopyAttributes option was set");
         }
-        if (!this->setExpression(att))
+        status = this->setExpression(att);
+        if (!status)
         {
           if (options.itemOptions.allowPartialValues())
           {
@@ -524,16 +538,22 @@ bool ValueItem::assign(
               "Could not assign Expression:" << att->name()
                                              << " to ValueItem: " << sourceItem->name());
             this->setExpression(nullptr);
+            result.markModified();
           }
           else
           {
+            result.markFailed();
             smtkErrorMacro(
               logger,
               "Could not assign Expression:"
                 << att->name() << " to ValueItem: " << sourceItem->name()
                 << " and allowPartialValues options was not specified.");
-            return false;
+            return result;
           }
+        }
+        if (status)
+        {
+          result.markModified();
         }
       }
     }
@@ -541,7 +561,8 @@ bool ValueItem::assign(
     {
       // The source expression is located in a different resource than the source Item's attribute
       // so simply assign it
-      if (!this->setExpression(sourceValueItem->expression()))
+      status = this->setExpression(sourceValueItem->expression());
+      if (!status)
       {
         if (options.itemOptions.allowPartialValues())
         {
@@ -550,16 +571,22 @@ bool ValueItem::assign(
             "Could not assign Expression:" << sourceValueItem->expression()->name()
                                            << " to ValueItem: " << sourceItem->name());
           this->setExpression(nullptr);
+          result.markModified();
         }
         else
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not assign Expression:" << sourceValueItem->expression()->name()
                                            << " to ValueItem: " << sourceItem->name()
                                            << " and allowPartialValues options was not specified.");
-          return false;
+          return result;
         }
+      }
+      if (status)
+      {
+        result.markModified();
       }
     }
   }
@@ -571,11 +598,13 @@ bool ValueItem::assign(
     {
       if (!sourceValueItem->isSet(i))
       {
+        result.markModified();
         this->unset(i);
       }
       else if (sourceValueItem->isDiscrete())
       {
-        if (!this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i)))
+        status = this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
+        if (!status)
         {
           if (options.itemOptions.allowPartialValues())
           {
@@ -584,16 +613,22 @@ bool ValueItem::assign(
               "Could not assign Discrete Index:" << sourceValueItem->discreteIndex(i)
                                                  << " to ValueItem: " << sourceItem->name());
             this->unset(i);
+            result.markModified();
           }
           else
           {
+            result.markFailed();
             smtkErrorMacro(
               logger,
               "Could not assign Discrete Index:"
                 << sourceValueItem->discreteIndex(i) << " to ValueItem: " << sourceItem->name()
                 << " and allowPartialValues options was not specified.");
-            return false;
+            return result;
           }
+        }
+        if (status)
+        {
+          result.markModified();
         }
       }
     } // for
@@ -612,24 +647,28 @@ bool ValueItem::assign(
       // Are missing items allowed?
       if (!options.itemOptions.ignoreMissingChildren())
       {
+        result.markFailed();
         smtkErrorMacro(
           logger,
           "Could not find Child Item: " << sourceIter->first << " in ValueItem: " << this->name()
                                         << " and ignoreMissingChildren option was not set");
-        return false;
+        return result;
       }
       continue;
     }
     ItemPtr newChild = newIter->second;
-    if (!newChild->assign(sourceChild, options))
+    auto childResult = newChild->assign(sourceChild, options);
+    result &= childResult;
+    if (!childResult.success())
     {
       smtkErrorMacro(
         logger,
         "Could not assign ValueItem: " << this->name() << "'s Child Item: " << newChild->name());
-      return false;
+      return result;
     }
   }
-  return Item::assign(sourceItem, options, logger);
+  result &= Item::assign(sourceItem, options, logger);
+  return result;
 }
 
 smtk::attribute::ItemPtr ValueItem::findInternal(const std::string& childName, SearchStyle style)

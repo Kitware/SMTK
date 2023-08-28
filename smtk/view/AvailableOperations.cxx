@@ -28,7 +28,7 @@ AvailableOperations::AvailableOperations()
 {
 // For debugging:
 #if !defined(NDEBUG) && DEBUG_AVAILABLE_OPERATIONS
-  this->observers().insert(
+  static auto observerKey = this->observers().insert(
     [](AvailableOperations::Ptr self) {
       std::cout << "Available ops changed:\n";
       auto& mdByIdx = self->operationManager()->metadata().get<smtk::operation::IndexTag>();

@@ -65,7 +65,7 @@ public:
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.
   // The options are defined in CopyAssignmentOptions.h. Returns true if success and false if a problem occurred.
   using Item::assign;
-  bool assign(
+  Item::Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;

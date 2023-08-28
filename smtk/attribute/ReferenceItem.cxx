@@ -811,22 +811,25 @@ std::size_t ReferenceItem::numberOfSetValues() const
   return result;
 }
 
-bool ReferenceItem::assign(
+Item::Status ReferenceItem::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options,
   smtk::io::Logger& logger)
 {
+  Item::Status result;
   // Cast input pointer to ReferenceItem
   auto sourceReferenceItem = smtk::dynamic_pointer_cast<const ReferenceItem>(sourceItem);
   if (!sourceReferenceItem)
   {
+    result.markFailed();
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a ReferenceItem");
-    return false; // Source is not a model entity item
+    return result; // Source is not a model entity item
   }
   // Are we supposed to assign the model entity values?
   if (options.itemOptions.ignoreReferenceValues())
   {
-    return Item::assign(sourceItem, options, logger);
+    result = Item::assign(sourceItem, options, logger);
+    return result;
   }
 
   // Update children items
@@ -841,28 +844,39 @@ bool ReferenceItem::assign(
       // Are missing items allowed?
       if (!options.itemOptions.ignoreMissingChildren())
       {
+        result.markFailed();
         smtkErrorMacro(
           logger,
           "Could not find Child Item: " << sourceIter->first
                                         << " in ReferenceItem: " << this->name()
                                         << " and ignoreMissingChildren option was not set");
-        return false;
+        return result;
       }
       continue;
     }
     ItemPtr newChild = newIter->second;
-    if (!newChild->assign(sourceChild, options, logger))
+    auto childResult = newChild->assign(sourceChild, options, logger);
+    result &= childResult;
+    if (!childResult.success())
     {
       smtkErrorMacro(
         logger,
         "Could not assign ReferenceItem: " << this->name()
                                            << "'s Child Item: " << newChild->name());
-      return false;
+      return result;
     }
   }
 
   // Update values
-  this->setNumberOfValues(sourceReferenceItem->numberOfValues());
+  bool status;
+  if (this->numberOfValues() != sourceReferenceItem->numberOfValues())
+  {
+    status = this->setNumberOfValues(sourceReferenceItem->numberOfValues());
+    if (status)
+    {
+      result.markModified();
+    }
+  }
 
   // Were we able to allocate enough space to fit all of the source's values?
   std::size_t myNumVals, sourceNumVals, numVals;
@@ -882,12 +896,13 @@ bool ReferenceItem::assign(
     }
     else
     {
+      result.markFailed();
       smtkErrorMacro(
         logger,
         "ReferenceItem: " << name() << "'s number of values (" << myNumVals
                           << ") can not hold source ReferenceItem's number of values ("
                           << sourceNumVals << ") and Partial Copying was not permitted");
-      return false;
+      return result;
     }
   }
   else
@@ -932,11 +947,12 @@ bool ReferenceItem::assign(
             att = resource->copyAttribute(sourceAttVal, options, logger);
             if (att == nullptr)
             {
+              result.markFailed();
               smtkErrorMacro(
                 logger,
                 "Could not create Attribute:" << val->name()
                                               << " used by ReferenceItem: " << sourceItem->name());
-              return false;
+              return result;
             }
           }
           else
@@ -952,7 +968,13 @@ bool ReferenceItem::assign(
         val = att;
       }
 
-      if (!this->setValue(i, val))
+      if (this->isSet(i) && this->value(i) == val)
+      {
+        // No change necessary. Do not mark result as modified.
+        continue;
+      }
+      status = this->setValue(i, val);
+      if (!status)
       {
         // Was partial values option specified
         if (options.itemOptions.allowPartialValues())
@@ -964,21 +986,28 @@ bool ReferenceItem::assign(
         }
         else
         {
+          result.markFailed();
           smtkErrorMacro(
             logger,
             "Could not assign PersistentObject:"
               << val->name() << " to ReferenceItem: " << sourceItem->name()
               << " and allowPartialValues options was not specified.");
-          return false;
+          return result;
         }
+      }
+      if (status)
+      {
+        result.markModified();
       }
     }
     else
     {
       this->unset(i);
+      result.markModified();
     }
   }
-  return Item::assign(sourceItem, options, logger);
+  result &= Item::assign(sourceItem, options, logger);
+  return result;
 }
 
 bool ReferenceItem::isExtensible() const

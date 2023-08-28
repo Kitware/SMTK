@@ -168,7 +168,7 @@ public:
   /// Options are processed by derived item classes
   /// Returns true if success and false if a problem occurred - options are use when copying sub-items.
   /// See CopyAssigmentOptions.h for a description of these options.
-  bool assign(
+  Item::Status assign(
     const smtk::attribute::ConstItemPtr& sourceItem,
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;

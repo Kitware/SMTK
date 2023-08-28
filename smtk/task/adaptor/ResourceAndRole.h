@@ -35,9 +35,8 @@ public:
 
   /// Reconfigure the "to()" task.
   ///
-  /// This method is called when the "from()" task changes into a
-  /// completable state.
-  bool reconfigureTask() override;
+  /// This method is called when the "from()" task changes state.
+  bool updateDownstreamTask(State upstreamPrev, State upstreamNext) override;
 
 protected:
   void configureSelf(const Configuration& config);

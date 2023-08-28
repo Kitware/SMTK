@@ -93,7 +93,6 @@ Q_SIGNALS:
 
 protected:
   QWidget* createWidget(QWidget* parent) override;
-  void deleteWidget(QWidget* widget) override;
 
   bool eventFilter(QObject* watched, QEvent* event) override;
 

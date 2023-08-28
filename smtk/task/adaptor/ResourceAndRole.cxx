@@ -40,9 +40,14 @@ ResourceAndRole::ResourceAndRole(const Configuration& config, Task* from, Task* 
   this->configureSelf(config);
 }
 
-bool ResourceAndRole::reconfigureTask()
+bool ResourceAndRole::updateDownstreamTask(State upstreamPrev, State upstreamNext)
 {
   bool didChange = false;
+  if (upstreamPrev >= upstreamNext || upstreamNext < State::Completable)
+  {
+    return didChange;
+  }
+
   std::map<std::string, std::set<smtk::resource::ResourcePtr>> configs;
   FillOutAttributes* fill = nullptr;
   auto updateFillOutAttributes =

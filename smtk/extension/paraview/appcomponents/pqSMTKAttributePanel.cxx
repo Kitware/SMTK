@@ -349,6 +349,18 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     smtkErrorMacro(smtk::io::Logger::instance(), "View passed but no resource indicated.");
     return false;
   }
+  // It is possible in some cases to display attributes not part of the
+  // task workflow. In that case, we need to stop watching the currently-active
+  // task (so its completion state changing does not disable an unrelated
+  // attribute editor) and force the panel widget to be enabled.
+  // If this new view _is_ part of the currently-active task, the enabled
+  // status and observer will be reset after this by the method calling us.
+  this->setEnabled(true);
+  if (m_currentTask)
+  {
+    m_currentTask->observers().erase(m_currentTaskObserverKey);
+  }
+  m_currentTask = nullptr;
   auto* qview = m_attrUIMgr->setSMTKView(view, this);
   if (!qview)
   {
@@ -497,8 +509,14 @@ void pqSMTKAttributePanel::handleProjectEvent(
               return;
             }
             (void)oldTask;
+            if (m_currentTask)
+            {
+              m_currentTask->observers().erase(m_currentTaskObserverKey);
+            }
+            m_currentTask = nullptr;
             if (newTask)
             {
+              bool didDisplay = false;
               auto styles = newTask->style();
               for (const auto& style : styles)
               {
@@ -510,7 +528,6 @@ void pqSMTKAttributePanel::handleProjectEvent(
                   if (panelConfig.contains("attribute-editor"))
                   {
                     auto viewName = panelConfig.at("attribute-editor").get<std::string>();
-                    bool didDisplay = false;
                     // std::cout << "Got view name " << viewName << std::endl;
                     if (auto rsrc = m_rsrc.lock())
                     {
@@ -552,16 +569,48 @@ void pqSMTKAttributePanel::handleProjectEvent(
                         smtk::io::Logger::instance(),
                         "Could not find an attribute view named \"" << viewName << "\".");
                     }
+                    else
+                    {
+                      break;
+                    }
                   }
                 }
               }
+              if (didDisplay)
+              {
+                auto curState = newTask->state();
+                m_currentTask = newTask;
+                m_currentTaskObserverKey = newTask->observers().insert(
+                  [this, self](smtk::task::Task&, smtk::task::State prev, smtk::task::State next) {
+                    (void)prev;
+                    if (!self)
+                    {
+                      return;
+                    }
+                    self->setEnabled(
+                      next >= smtk::task::State::Incomplete && next < smtk::task::State::Completed);
+                  },
+                  "AttributePanel current task state-tracking.");
+                self->setEnabled(
+                  curState >= smtk::task::State::Incomplete &&
+                  curState < smtk::task::State::Completed);
+              }
             }
           },
+          /* priority */ 0,
+          /* initialize */ true,
           "AttributePanel active task tracking");
       });
       break;
     case smtk::project::EventType::REMOVED:
-      // stop observing active task
+      // stop observing active-task tracker and any active task.
+      if (m_currentTask)
+      {
+        m_currentTask->observers().erase(m_currentTaskObserverKey);
+      }
+      m_currentTask = nullptr;
+      m_activeObserverKey.release();
+      // Remove our observer key later.
       QTimer::singleShot(0, [this, taskManager, self]() {
         if (!self)
         {
