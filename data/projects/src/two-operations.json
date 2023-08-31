@@ -90,7 +90,7 @@
       "id": 3,
       "operation": "math_op.MathOp",
       "parameters": [],
-      "run-style": "once-only",
+      "run-style": "iteratively-by-user",
       "style": [
         "operation_view"
       ],
@@ -121,6 +121,7 @@
       "operation": "math_op.MathOp",
       "parameters": [],
       "run-style": "once-only",
+      "strict-dependencies": true,
       "style": [
         "operation_view"
       ],

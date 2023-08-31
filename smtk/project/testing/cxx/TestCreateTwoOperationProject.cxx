@@ -21,6 +21,7 @@
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
+#include "smtk/plugin/Manager.h"
 #include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -34,6 +35,7 @@
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
+#include "smtk/plugin/Client.txx"
 
 #include "nlohmann/json.hpp"
 
@@ -54,22 +56,23 @@
 
 namespace
 {
-std::string data_root = SMTK_DATA_DIR;     // defined in cmake file
-std::string write_root = SMTK_SCRATCH_DIR; // defined in cmake file
+const std::string data_root = SMTK_DATA_DIR;     // defined in cmake file
+const std::string write_root = SMTK_SCRATCH_DIR; // defined in cmake file
+const std::string projectDirectory = write_root + "/TwoOperations/";
+const std::string projectLocation = projectDirectory + "TwoOperations.project.smtk";
+
 const int OP_SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
 
 const int TASK_COUNT = 5;
 const int ADAPTOR_COUNT = 4;
 
-void cleanup(const std::string& file_path)
+void clearDirectory(const std::string& path)
 {
-  //first verify the file exists
-  ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::exists(path))
+  ::boost::filesystem::path boostPath(path);
+  if (::boost::filesystem::exists(boostPath))
   {
     std::cout << "Deleting existing directory " << path << std::endl;
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove_all(path);
+    ::boost::filesystem::remove_all(boostPath);
   }
 }
 } // namespace
@@ -77,9 +80,6 @@ void cleanup(const std::string& file_path)
 /** \brief Reads project from disk and does some minimal checks */
 void readProject(smtk::common::ManagersPtr managers)
 {
-  std::string projectDirectory = write_root + "/TwoOperations/";
-  std::string projectLocation = projectDirectory + "TwoOperations.project.smtk";
-
   auto opManager = managers->get<smtk::operation::ManagerPtr>();
   auto readOp = opManager->create<smtk::operation::ReadResource>();
   smtkTest(!!readOp, "No read operation");
@@ -110,8 +110,7 @@ void readProject(smtk::common::ManagersPtr managers)
 
 int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 {
-  std::string projectDirectory = write_root + "/TwoOperations/";
-  cleanup(projectDirectory);
+  clearDirectory(projectDirectory);
 
   // Copy the mystery managers/registry code from TestReadWriteProject.cxx
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
@@ -128,7 +127,13 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
   operationManager->registerResourceManager(resourceManager);
   operationManager->setManagers(managers);
 
-  // Import MathOp operation (referenced in the SubmitOperation tasks)
+  // Create smtk::plugin::Client for task manager, so that we can successfully call
+  // smtk::plugin::Manager::registerPluginsTo() when project is created.
+  using Client = smtk::plugin::Client<smtk::task::Registrar, smtk::task::Manager>;
+  static std::shared_ptr<Client> myClient;
+  myClient = std::dynamic_pointer_cast<Client>(Client::create());
+
+  // Import MathOp operation (used in the SubmitOperation tasks)
   {
     auto importOp = operationManager->create("smtk::operation::ImportPythonOperation");
     std::string importPath = data_root + "/projects/src/math_op.py";
@@ -143,7 +148,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
       smtkTest(false, "Error importing " << importPath);
     }
     std::string opName = importResult->findString("unique_name")->value();
-    std::cout << "Imported operattion \"" << opName << "\"" << std::endl;
+    std::cout << "Imported operation \"" << opName << "\"" << std::endl;
   }
 
   // Create project manager
@@ -158,14 +163,13 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 
   // Build the project
   smtk::project::Project::Ptr project = projectManager->create("basic");
+  smtkTest(!!project, "Failed to create project");
+  projectManager->add(
+    project->index(), project); // we didn't run a Create operation so we must do this manually.
+
   smtk::task::Manager& taskManager = project->taskManager();
-  smtk::task::Registrar::registerTo(taskManager.shared_from_this());
-
+  smtk::plugin::Manager::instance()->registerPluginsTo(project->taskManager().shared_from_this());
   {
-    smtkTest(!!project, "Failed to create project");
-    projectManager->add(
-      project->index(), project); // we didn't run a Create operation so we must do this manually.
-
     // Inject tasks from json file
     std::string jsonPath = data_root + "/projects/src/two-operations.json";
     std::ifstream ifs(jsonPath);

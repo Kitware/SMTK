@@ -89,3 +89,12 @@ class MathOp(smtk.operation.Operation):
             self.log().addError(message)
             raise RuntimeError(message)
         return spec
+
+
+# Comment out rest of file if you don't want to auto-load into modelbuilder
+if __name__ != '__main__':
+    try:
+        import smtk.extension.paraview.appcomponents as pv
+        pv.importPythonOperation(__name__, 'MathOp')
+    except:
+        pass
