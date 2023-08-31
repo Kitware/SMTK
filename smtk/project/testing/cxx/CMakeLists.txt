@@ -16,6 +16,7 @@ set(unit_tests_which_require_data
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND unit_tests_which_require_data
     TestCreateTwoOperationProject.cxx
+    TestReadTwoOperationProject.cxx
   )
 endif()
 
@@ -34,3 +35,10 @@ smtk_unit_tests(
     ${Boost_LIBRARIES}
     ${extra_libs}
 )
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  set_tests_properties(TestReadTwoOperationProject
+    PROPERTIES
+      DEPENDS TestCreateTwoOperationProject
+  )
+endif()
