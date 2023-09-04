@@ -36,7 +36,8 @@ smtk_unit_tests(
     ${extra_libs}
 )
 
-if (SMTK_ENABLE_PYTHON_WRAPPING)
+if (TEST TestReadTwoOperationProject)
+  message("Setting Dependency")
   set_tests_properties(TestReadTwoOperationProject
     PROPERTIES
       DEPENDS TestCreateTwoOperationProject
