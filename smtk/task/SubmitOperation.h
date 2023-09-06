@@ -80,16 +80,16 @@ public:
     /// The path to the item to be configured.
     std::string m_itemPath;
     /// True if an item is optional and should be enabled.
-    bool m_enable;
+    bool m_enable = true;
     /// If the parameter is a ReferenceItem, the role specifies objects
     /// in the project that are allowed as values in the item.
     std::string m_role;
     /// Values to assign to the item (UUIDs for reference items).
     nlohmann::json m_values;
     /// What should be allowed to modify the parameter.
-    ConfiguredBy m_configuredBy;
+    ConfiguredBy m_configuredBy = ConfiguredBy::Task;
     /// Should this item (and potentially its children) be shown or hidden.
-    ItemVisibility m_visibility;
+    ItemVisibility m_visibility = ItemVisibility::On;
   };
 
   /// Convert to/from a ConfigureBy enumerant.

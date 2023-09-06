@@ -31,11 +31,7 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/plugin/Client.txx"
 
-// #include "nlohmann/json.hpp"
-
 #include "boost/filesystem.hpp"
-
-#include <exception>
 
 #include <fstream>
 #include <iostream>
@@ -63,26 +59,35 @@ const int ADAPTOR_COUNT = 4;
 
 int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
 {
-  // Copy the mystery managers/registry code from TestReadWriteProject.cxx
-  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+  // Instantiate smtk plugin clients
+  using ResClient = smtk::plugin::Client<smtk::resource::Registrar, smtk::common::Managers>;
+  static auto resClient = std::dynamic_pointer_cast<ResClient>(ResClient::create());
+
+  using OpClient = smtk::plugin::Client<
+    smtk::operation::Registrar,
+    smtk::operation::Manager,
+    smtk::common::Managers,
+    smtk::resource::Manager>;
+  static auto opClient = std::dynamic_pointer_cast<OpClient>(OpClient::create());
+
+  using ProjClient = smtk::plugin::Client<
+    smtk::project::Registrar,
+    smtk::project::Manager,
+    smtk::common::Managers,
+    smtk::operation::Manager,
+    smtk::resource::Manager>;
+  static auto projClient = std::dynamic_pointer_cast<ProjClient>(ProjClient::create());
+
+  using TaskClient = smtk::plugin::Client<smtk::task::Registrar, smtk::task::Manager>;
+  static auto taskClient = std::dynamic_pointer_cast<TaskClient>(TaskClient::create());
+
+  // Create smtk managers
   auto managers = smtk::common::Managers::create();
-  managers->insert_or_assign(resourceManager);
-  managers->insert_or_assign(operationManager);
+  smtk::plugin::Manager::instance()->registerPluginsTo(managers);
 
-  auto attributeRegistry =
-    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
-  auto operationRegistry =
-    smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
-
-  operationManager->registerResourceManager(resourceManager);
-  operationManager->setManagers(managers);
-
-  // Create smtk::plugin::Client for task manager, so that we can successfully call
-  // smtk::plugin::Manager::registerPluginsTo() when project is created.
-  using Client = smtk::plugin::Client<smtk::task::Registrar, smtk::task::Manager>;
-  static std::shared_ptr<Client> myClient;
-  myClient = std::dynamic_pointer_cast<Client>(Client::create());
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  auto projectManager = managers->get<smtk::project::Manager::Ptr>();
 
   // Import MathOp operation (used in the SubmitOperation tasks)
   {
@@ -101,13 +106,6 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
     std::string opName = importResult->findString("unique_name")->value();
     std::cout << "Imported operation \"" << opName << "\"" << std::endl;
   }
-
-  // Create project manager
-  smtk::project::ManagerPtr projectManager =
-    smtk::project::Manager::create(resourceManager, operationManager);
-  auto projectRegistry =
-    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
-  auto taskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(managers);
 
   // Register "basic" project type for our input
   projectManager->registerProject("basic");

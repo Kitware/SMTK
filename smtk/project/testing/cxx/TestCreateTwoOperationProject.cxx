@@ -45,6 +45,9 @@
 #include <iostream>
 #include <string>
 
+// There is some unresolved issue loading a second project in this session.
+// In the interest of time, the project is read back in a separate test
+// called TestReadTwoOperationProject
 #define READ_PROJECT 0
 
 /** \brief Creates a "TwoOperation" project instance.
@@ -114,26 +117,35 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 {
   clearDirectory(projectDirectory);
 
-  // Copy the mystery managers/registry code from TestReadWriteProject.cxx
-  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+  // Instantiate smtk plugin clients
+  using ResClient = smtk::plugin::Client<smtk::resource::Registrar, smtk::common::Managers>;
+  static auto resClient = std::dynamic_pointer_cast<ResClient>(ResClient::create());
+
+  using OpClient = smtk::plugin::Client<
+    smtk::operation::Registrar,
+    smtk::operation::Manager,
+    smtk::common::Managers,
+    smtk::resource::Manager>;
+  static auto opClient = std::dynamic_pointer_cast<OpClient>(OpClient::create());
+
+  using ProjClient = smtk::plugin::Client<
+    smtk::project::Registrar,
+    smtk::project::Manager,
+    smtk::common::Managers,
+    smtk::operation::Manager,
+    smtk::resource::Manager>;
+  static auto projClient = std::dynamic_pointer_cast<ProjClient>(ProjClient::create());
+
+  using TaskClient = smtk::plugin::Client<smtk::task::Registrar, smtk::task::Manager>;
+  static auto taskClient = std::dynamic_pointer_cast<TaskClient>(TaskClient::create());
+
+  // Create smtk managers
   auto managers = smtk::common::Managers::create();
-  managers->insert_or_assign(resourceManager);
-  managers->insert_or_assign(operationManager);
+  smtk::plugin::Manager::instance()->registerPluginsTo(managers);
 
-  auto attributeRegistry =
-    smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
-  auto operationRegistry =
-    smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
-
-  operationManager->registerResourceManager(resourceManager);
-  operationManager->setManagers(managers);
-
-  // Create smtk::plugin::Client for task manager, so that we can successfully call
-  // smtk::plugin::Manager::registerPluginsTo() when project is created.
-  using Client = smtk::plugin::Client<smtk::task::Registrar, smtk::task::Manager>;
-  static std::shared_ptr<Client> myClient;
-  myClient = std::dynamic_pointer_cast<Client>(Client::create());
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  auto projectManager = managers->get<smtk::project::Manager::Ptr>();
 
   // Import MathOp operation (used in the SubmitOperation tasks)
   {
@@ -152,12 +164,6 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     std::string opName = importResult->findString("unique_name")->value();
     std::cout << "Imported operation \"" << opName << "\"" << std::endl;
   }
-
-  // Create project manager
-  smtk::project::ManagerPtr projectManager =
-    smtk::project::Manager::create(resourceManager, operationManager);
-  auto projectRegistry =
-    smtk::plugin::addToManagers<smtk::project::Registrar>(resourceManager, projectManager);
   auto taskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(managers);
 
   // Register "basic" project type, which can be read by default modelbuilder
@@ -170,7 +176,6 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     project->index(), project); // we didn't run a Create operation so we must do this manually.
 
   smtk::task::Manager& taskManager = project->taskManager();
-  smtk::plugin::Manager::instance()->registerPluginsTo(project->taskManager().shared_from_this());
   {
     // Inject tasks from json file
     std::string jsonPath = data_root + "/projects/src/two-operations.json";
@@ -250,9 +255,6 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
   resourceManager->remove(project);
   project.reset();
 
-  // There is some issue loading a second project in this session.
-  // In the interest of time, the project is read back in a separate test
-  // TestReadTwoOperationProject
 #if READ_PROJECT
   readProject(managers);
 #endif
