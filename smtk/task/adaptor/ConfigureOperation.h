@@ -39,6 +39,8 @@ public:
   smtkSuperclassMacro(smtk::task::Adaptor);
   smtkCreateMacro(smtk::task::Adaptor);
 
+  using Configuration = nlohmann::json;
+
   struct ParameterSet
   {
     /// Role assigned to input attribute resource
@@ -53,6 +55,8 @@ public:
   ConfigureOperation(const Configuration& config, Task* from, Task* to);
 
   bool updateDownstreamTask(State upstreamPrev, State upstreamNext) override;
+
+  Configuration config() const; // for output serialization
 
 protected:
   void configureSelf(const Configuration& config);

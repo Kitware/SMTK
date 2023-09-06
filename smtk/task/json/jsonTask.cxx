@@ -42,7 +42,7 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     {
       config["dependencies"] = deps;
     }
-    config["strict-dependencies"] = true;
+    config["strict-dependencies"] = task->areDependenciesStrict();
   }
   return config;
 }

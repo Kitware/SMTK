@@ -94,6 +94,8 @@ public:
 
   smtk::common::Visit visitResourceSets(ResourceSetVisitor visitor);
 
+  bool autoConfigure() const { return m_autoconfigure; }
+
 protected:
   /// Respond to resource changes that may change task state.
   void updateResources(smtk::resource::Resource& resource, smtk::resource::EventType event);

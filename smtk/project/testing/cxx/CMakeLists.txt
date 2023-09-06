@@ -13,6 +13,13 @@ set(unit_tests_which_require_data
   TestProjectReadWrite2.cxx
   TestProjectReadWriteEmpty.cxx
 )
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND unit_tests_which_require_data
+    TestCreateTwoOperationProject.cxx
+    TestReadTwoOperationProject.cxx
+  )
+endif()
+
 set(extra_libs)
 if (SMTK_ENABLE_VTK_SUPPORT)
   add_compile_definitions(VTK_SUPPORT)
@@ -28,3 +35,11 @@ smtk_unit_tests(
     ${Boost_LIBRARIES}
     ${extra_libs}
 )
+
+if (TEST TestReadTwoOperationProject)
+  message("Setting Dependency")
+  set_tests_properties(TestReadTwoOperationProject
+    PROPERTIES
+      DEPENDS TestCreateTwoOperationProject
+  )
+endif()
