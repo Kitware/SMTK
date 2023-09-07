@@ -97,16 +97,16 @@ public:
     m_nodeMenu = new QMenu(m_headlineButton);
     m_activateTask = new QAction("Work on this");
     m_expandTask = new QAction("Show controls");
-    m_markCompleted = new QAction("Mark completed");
+    m_toggleCompletion = new QAction("Mark completed");
     m_nodeMenu->addAction(m_activateTask);
     m_nodeMenu->addAction(m_expandTask);
-    m_nodeMenu->addAction(m_markCompleted);
-    m_markCompleted->setEnabled(false);
+    m_nodeMenu->addAction(m_toggleCompletion);
+    m_toggleCompletion->setEnabled(false);
     m_headlineButton->setMenu(m_nodeMenu);
     QObject::connect(
       m_activateTask, &QAction::triggered, this, &DefaultTaskNodeWidget::activateTask);
     QObject::connect(
-      m_markCompleted, &QAction::triggered, this, &DefaultTaskNodeWidget::markCompleted);
+      m_toggleCompletion, &QAction::triggered, this, &DefaultTaskNodeWidget::markCompleted);
     QObject::connect(
       m_expandTask, &QAction::triggered, this, &DefaultTaskNodeWidget::toggleControls);
     m_taskObserver = m_node->task()->observers().insert(
@@ -127,6 +127,7 @@ public:
   void updateTaskState(smtk::task::State prev, smtk::task::State next)
   {
     (void)prev;
+    m_toggleCompletion->setText("Mark completed");
     switch (next)
     {
       case smtk::task::State::Irrelevant:
@@ -139,17 +140,18 @@ public:
       case smtk::task::State::Incomplete:
         m_headlineButton->setEnabled(true);
         m_activateTask->setEnabled(!m_node->isActive());
-        m_markCompleted->setEnabled(false);
+        m_toggleCompletion->setEnabled(false);
         break;
       case smtk::task::State::Completable:
         m_headlineButton->setEnabled(true);
         m_activateTask->setEnabled(!m_node->isActive());
-        m_markCompleted->setEnabled(true);
+        m_toggleCompletion->setEnabled(true);
         break;
       case smtk::task::State::Completed:
         m_headlineButton->setEnabled(true);
         m_activateTask->setEnabled(false);
-        m_markCompleted->setEnabled(true);
+        m_toggleCompletion->setEnabled(true);
+        m_toggleCompletion->setText("Undo completion");
         break;
     }
     m_headlineButton->setToolTip(QString::fromStdString("Status: " + smtk::task::stateName(next)));
@@ -215,7 +217,7 @@ public:
   QMenu* m_nodeMenu;
   QAction* m_activateTask;
   QAction* m_expandTask;
-  QAction* m_markCompleted;
+  QAction* m_toggleCompletion;
   qtDefaultTaskNode* m_node;
   smtk::task::Task::Observers::Key m_taskObserver;
 };

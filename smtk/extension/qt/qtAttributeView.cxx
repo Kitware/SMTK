@@ -348,6 +348,13 @@ void qtAttributeView::createWidget()
   m_internals->TopToolBar->addAction(m_internals->CopyAction);
   m_internals->TopToolBar->addAction(m_internals->DeleteAction);
 
+  // Set the action states to reflect the status of the UIManager
+  // If the manager is read-only then these actions must be disabled
+  bool canBeModified = !(this->uiManager()->isReadOnly());
+  m_internals->AddAction->setEnabled(canBeModified);
+  m_internals->DeleteAction->setEnabled(canBeModified);
+  m_internals->CopyAction->setEnabled(canBeModified);
+
   //If we have more than 1 def then create a combo box for selecting a def,
   // else just create a label
   if (m_internals->AllDefs.size() > 1)
@@ -986,7 +993,15 @@ void qtAttributeView::onViewBy()
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
 
-  m_internals->AddAction->setEnabled(currentDefs.count() > 0);
+  // Set the action states to reflect the status of the UIManager
+  // If the manager is read-only then these actions must be disabled
+  bool canBeModified = !(this->uiManager()->isReadOnly());
+  m_internals->DeleteAction->setEnabled(canBeModified);
+  m_internals->CopyAction->setEnabled(canBeModified);
+
+  // For the add action, in addition to the UI Manager not being
+  // read-only, we must also have definitions to create new attributes from
+  m_internals->AddAction->setEnabled(canBeModified && (currentDefs.count() > 0));
 
   m_internals->ButtonsFrame->setVisible(m_internals->m_showTopButtons);
   m_internals->ListTable->setVisible(true);

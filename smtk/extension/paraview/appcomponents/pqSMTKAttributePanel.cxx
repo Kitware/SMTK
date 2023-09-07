@@ -186,6 +186,7 @@ bool pqSMTKAttributePanel::displayResource(
   }
   else
   {
+    this->resetPanel(nullptr);
     this->updateTitle();
   }
 
@@ -355,7 +356,7 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
   // attribute editor) and force the panel widget to be enabled.
   // If this new view _is_ part of the currently-active task, the enabled
   // status and observer will be reset after this by the method calling us.
-  this->setEnabled(true);
+  this->m_attrUIMgr->setReadOnly(false);
   if (m_currentTask)
   {
     m_currentTask->observers().erase(m_currentTaskObserverKey);
@@ -512,6 +513,7 @@ void pqSMTKAttributePanel::handleProjectEvent(
             if (m_currentTask)
             {
               m_currentTask->observers().erase(m_currentTaskObserverKey);
+              self->displayResource(nullptr);
             }
             m_currentTask = nullptr;
             if (newTask)
@@ -587,13 +589,13 @@ void pqSMTKAttributePanel::handleProjectEvent(
                     {
                       return;
                     }
-                    self->setEnabled(
-                      next >= smtk::task::State::Incomplete && next < smtk::task::State::Completed);
+                    self->m_attrUIMgr->setReadOnly(
+                      next < smtk::task::State::Incomplete || next >= smtk::task::State::Completed);
                   },
                   "AttributePanel current task state-tracking.");
-                self->setEnabled(
-                  curState >= smtk::task::State::Incomplete &&
-                  curState < smtk::task::State::Completed);
+                self->m_attrUIMgr->setReadOnly(
+                  curState < smtk::task::State::Incomplete ||
+                  curState >= smtk::task::State::Completed);
               }
             }
           },

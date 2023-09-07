@@ -330,9 +330,9 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
   auto theAttribute = m_internals->currentAtt.lock();
   attribute::DefinitionPtr attDef;
 
-  // If we are dealing with an attribute we need to turn on the
-  // buttons that change association info - else they need to be off
-  if (theAttribute)
+  // If we are dealing with an attribute and the UI Manager is not read-only,
+  // we need to turn on the buttons that change association info - else they need to be off
+  if (theAttribute && !m_view->uiManager()->isReadOnly())
   {
     attDef = theAttribute->definition();
     m_internals->MoveToRight->setEnabled(true);
