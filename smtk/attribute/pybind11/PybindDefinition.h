@@ -70,7 +70,7 @@ inline PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attrib
     .def("isDefaultColorSet", &smtk::attribute::Definition::isDefaultColorSet)
     .def("associationRule", &smtk::attribute::Definition::associationRule)
     .def("localAssociationRule", &smtk::attribute::Definition::localAssociationRule)
-    .def("createLocalAssociationRule", &smtk::attribute::Definition::createLocalAssociationRule)
+    .def("createLocalAssociationRule", &smtk::attribute::Definition::createLocalAssociationRule, py::arg("name") = "")
     .def("clearLocalAssociationRule", &smtk::attribute::Definition::clearLocalAssociationRule)
     .def("setLocalAssociationRule", (void (smtk::attribute::Definition::*)(smtk::attribute::ReferenceItemDefinitionPtr))&smtk::attribute::Definition::setLocalAssociationRule, py::arg("arg0"))
     .def("associationMask", &smtk::attribute::Definition::associationMask)

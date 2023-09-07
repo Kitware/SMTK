@@ -220,13 +220,20 @@ ConstReferenceItemDefinitionPtr Definition::associationRule() const
   * This creates a local association rule (if one does not already exist) and returns it.
   * The default is to create an empty association rule (nothing can be associated).
   */
-ReferenceItemDefinitionPtr Definition::createLocalAssociationRule()
+ReferenceItemDefinitionPtr Definition::createLocalAssociationRule(const std::string& name)
 {
   if (!m_acceptsRules)
   {
-    std::ostringstream assocName;
-    assocName << this->type() << "Associations";
-    m_acceptsRules = ReferenceItemDefinition::New(assocName.str());
+    if (name.empty())
+    {
+      std::ostringstream assocName;
+      assocName << this->type() << "Associations";
+      m_acceptsRules = ReferenceItemDefinition::New(assocName.str());
+    }
+    else
+    {
+      m_acceptsRules = ReferenceItemDefinition::New(name);
+    }
     m_acceptsRules->setIsExtensible(false);
     m_acceptsRules->setNumberOfRequiredValues(0);
     m_acceptsRules->setRole(smtk::attribute::Resource::AssociationRole);

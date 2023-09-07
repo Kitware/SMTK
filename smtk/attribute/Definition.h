@@ -250,20 +250,23 @@ public:
     * when it does not have a local association rule specified.
     */
   ConstReferenceItemDefinitionPtr associationRule() const;
-  // return the local association rule if one is set
+  /// Return the local association rule if one is set
   ReferenceItemDefinitionPtr localAssociationRule() const;
-  // Create a new local association rule (if needed) and returns it
-  ReferenceItemDefinitionPtr createLocalAssociationRule();
-  // Set the local Association Rule for the definition that overrides the base definition rule
+  /// Create a new local association rule (if needed) and returns it.
+  ///
+  /// If a non-empty \a name is provided **and** there is no pre-existing
+  /// association rule, the newly-created instance will be given the \a name.
+  ReferenceItemDefinitionPtr createLocalAssociationRule(const std::string& name = std::string());
+  /// Set the local Association Rule for the definition that overrides the base definition rule
   virtual void setLocalAssociationRule(ReferenceItemDefinitionPtr);
-  // Returns the association mask used by the definition for model association
-  //Note that this may come from the base definition if there is no local
-  //association rule
+  /// Returns the association mask used by the definition for model association
+  /// Note that this may come from the base definition if there is no local
+  /// association rule
   smtk::model::BitFlags associationMask() const;
-  //Sets the association mask - note that this will always create a local
-  //association rule
+  /// Sets the association mask - note that this will always create a local
+  /// association rule
   void setLocalAssociationMask(smtk::model::BitFlags mask);
-  //Removes the local association rule
+  /// Removes the local association rule
   void clearLocalAssociationRule();
 
   bool associatesWithVertex() const;
