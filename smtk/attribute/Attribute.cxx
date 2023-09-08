@@ -262,6 +262,17 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
       }
     }
   }
+  else
+  {
+    // No item matches, but perhaps the reference-item holding associations does?
+    if (m_associatedObjects && m_associatedObjects->name() == *it)
+    {
+      if (m_associatedObjects->isEnabled() || !activeOnly)
+      {
+        current = m_associatedObjects;
+      }
+    }
+  }
   return current;
 }
 

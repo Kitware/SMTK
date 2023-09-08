@@ -163,6 +163,10 @@ public:
   /// If activeOnly is true then all items in the path must active (with repsect to a parent ValueItem)
   /// else nullptr will be returned.  This parameter will have no effect on other types of items.
   /// Note that the path should not start with a separator character.
+  ///
+  /// Note that itemAtPath() can also be used to reference an attribute's associations (if any
+  /// are allowed) as long as the association-definition's name does not collide with any immediate
+  /// child-item's name.
   smtk::attribute::ConstItemPtr
   itemAtPath(const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
   smtk::attribute::ItemPtr

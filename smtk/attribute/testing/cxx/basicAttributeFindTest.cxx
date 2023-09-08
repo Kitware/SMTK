@@ -30,6 +30,7 @@ int main()
 {
   ResourcePtr resource = smtk::attribute::Resource::create();
   DefinitionPtr def = resource->createDefinition("testDef");
+  auto assocRule = def->createLocalAssociationRule("associations");
   // Lets add some item definitions
   // First create a string item def that has 2 possible discrete values
   // a-a (String) and a-b (Group).  For a-a duplicate this structure again.
@@ -185,6 +186,8 @@ int main()
   smtkTest((item == nullptr), "Could find using path: a/a-a/a-a-b when asking for active");
   item = att->itemAtPath("a/a-b/a-b-a", "/", true);
   smtkTest((item != nullptr), "Could not find using path: a/a-b/a-b-a when asking for active");
+  item = att->itemAtPath("/associations");
+  smtkTest(!!item, "Could not reference associations.");
   // for groups, test adding the index for the sub-group.
   item = att->itemAtPath("b/b-b/b-b-a");
   smtkTest((item != nullptr), "Could not find using path: b/b-b/b-b-a");
