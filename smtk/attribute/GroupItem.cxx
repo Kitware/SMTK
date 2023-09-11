@@ -119,7 +119,7 @@ bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>&
       }
       else
       {
-        if (!*it1 || !(*it1)->isValid())
+        if (!*it1 || !(*it1)->isValid(false))
         {
           return false;
         }
