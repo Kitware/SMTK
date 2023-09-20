@@ -480,6 +480,12 @@ bool Manager::add(const Project::Index& index, const smtk::project::Project::Ptr
     return false;
   }
 
+  if (m_projects.get<IdTag>().find(project->id()) != m_projects.get<IdTag>().end())
+  {
+    // Project has already been added.
+    return false;
+  }
+
   smtk::project::Project::Ptr p = const_cast<ProjectPtr&>(project);
 
   {
@@ -503,6 +509,7 @@ bool Manager::add(const Project::Index& index, const smtk::project::Project::Ptr
 
 bool Manager::remove(const smtk::project::ProjectPtr& project)
 {
+  m_observers(*project, smtk::project::EventType::REMOVED);
   // Remove the project from the manager's set of projects
   return m_projects.erase(project->id()) > 0;
 }

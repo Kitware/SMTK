@@ -4,6 +4,9 @@ Project subsystem
 Project manager changes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+Project management at creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The project manager no longer automatically manages projects as they are created.
 
 Instead, the project manager observes operations which create projects and manage
@@ -20,3 +23,17 @@ should not do so any longer. Instead, you should add the project to the
 operation-result's ``resourcesToExpunge`` ReferenceItem. The base Operation class
 will remove the project from its manager after the operation's observers have been
 invoked to properly order Operation and Resource observers before Project observers.
+
+Project addition
+^^^^^^^^^^^^^^^^
+
+The project manager's observer was being invoked twice each time a project was
+added because multiple calls to ``smtk::project::Manager::add()`` were made and
+no checking was done to prevent the second call from succeeding even though the
+project was already managed. This has been fixed.
+
+Project removal
+^^^^^^^^^^^^^^^
+
+The project manager's observers were not informed when a project was removed
+from the manager; now they are.
