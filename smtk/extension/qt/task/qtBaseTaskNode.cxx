@@ -58,10 +58,7 @@ qtBaseTaskNode::qtBaseTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGrap
   QObject::connect(m_moveSignalTimer, &QTimer::timeout, this, &qtBaseTaskNode::nodeMoved);
 }
 
-qtBaseTaskNode::~qtBaseTaskNode()
-{
-  m_scene->removeItem(this);
-}
+qtBaseTaskNode::~qtBaseTaskNode() = default;
 
 void qtBaseTaskNode::addToScene()
 {

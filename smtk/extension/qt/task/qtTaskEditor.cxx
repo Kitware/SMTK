@@ -457,11 +457,9 @@ public:
 
   void clear()
   {
-    for (const auto& entry : m_taskIndex)
-    {
-      delete entry.second;
-    }
-    // TODO: Delete arcs, too.
+    m_scene->clear();
+    m_taskIndex.clear();
+    m_arcIndex.clear();
   }
 
   qtTaskEditor* m_self;

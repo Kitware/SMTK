@@ -19,6 +19,7 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/RemoveResource.h"
 #include "smtk/plugin/Manager.h"
 #include "smtk/plugin/Registry.h"
 #include "smtk/project/Manager.h"
@@ -109,7 +110,25 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
 
   // Register "basic" project type for our input
   projectManager->registerProject("basic");
+  int addedCount = 0;
+  int removedCount = 0;
+  auto key = projectManager->observers().insert(
+    [&](const smtk::project::Project&, smtk::project::EventType event) {
+      std::cout << "Observing project event " << static_cast<int>(event) << "\n";
+      if (event == smtk::project::EventType::ADDED)
+      {
+        ++addedCount;
+      }
+      if (event == smtk::project::EventType::REMOVED)
+      {
+        ++removedCount;
+      }
+    },
+    0,
+    true,
+    "TestReadTwoOperationProject observer.");
 
+  std::shared_ptr<smtk::project::Project> project;
   // Read the project and sanity check the task manager
   {
     auto readOp = operationManager->create<smtk::operation::ReadResource>();
@@ -125,7 +144,7 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
     }
 
     auto resource = readResult->findResource("resource")->value();
-    auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
+    project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
     smtkTest(!!project, "failed to read  project from location " << projectLocation);
 
     smtk::task::Manager& taskManager = project->taskManager();
@@ -137,6 +156,18 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
       taskManager.adaptorInstances().size() == ADAPTOR_COUNT,
       "Input project wrong number of adaptors; should be "
         << ADAPTOR_COUNT << " not " << taskManager.adaptorInstances().size());
+  }
+
+  // Test closing the project and verify that the project manager's observers are invoked.
+  {
+    auto removeOp = operationManager->create<smtk::operation::RemoveResource>();
+    smtkTest(!!removeOp, "No remove operation");
+    removeOp->parameters()->associations()->setValue(project);
+    auto removeResult = removeOp->operate();
+    int removeOutcome = removeResult->findInt("outcome")->value();
+    smtkTest(removeOutcome == OP_SUCCEEDED, "Failed to remove project.");
+    smtkTest(addedCount == 1, "Failed to observe project being added.");
+    smtkTest(removedCount == 1, "Failed to observe project being removed.");
   }
 
   return 0;
