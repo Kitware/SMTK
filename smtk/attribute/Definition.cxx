@@ -184,7 +184,7 @@ bool Definition::isRelevant(
   bool includeReadAccess,
   unsigned int readAccessLevel) const
 {
-  if (includeCategoryCheck)
+  if (includeCategoryCheck && (!m_ignoreCategories))
   {
     auto aResource = this->resource();
     if (aResource && aResource->activeCategoriesEnabled())

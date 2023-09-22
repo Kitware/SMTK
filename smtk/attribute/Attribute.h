@@ -347,13 +347,14 @@ public:
 
   ///\brief Returns true if the attribute is relevant.
   ///
-  /// If includeCatagories is true and the attribute does not pass it's category checks with respects
+  /// If requestCatagories is true, the Attribute's Definition does not ignore categories,
+  /// and the attribute does not pass it's category checks with respects
   /// to the resource's active category settings then return false,
   /// If includeReadAccess is true, and if all of the items in the attribute have their
   ///  advanceLevel > readAccessLevel then return false.
   /// Else return true.
   bool isRelevant(
-    bool includeCategories = true,
+    bool requestCatagories = true,
     bool includeReadAccess = false,
     unsigned int readAccessLevel = 0) const;
 

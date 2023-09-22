@@ -655,6 +655,7 @@ void XmlV2StringWriter::processDefinitionInternal(xml_node& definition, Definiti
   {
     definition.append_attribute("AdvanceWriteLevel") = def->localAdvanceLevel(1);
   }
+
   if (def->isUnique())
   { // false is the default
     definition.append_attribute("Unique").set_value("true");
@@ -663,6 +664,16 @@ void XmlV2StringWriter::processDefinitionInternal(xml_node& definition, Definiti
   {
     definition.append_attribute("Unique").set_value("false");
   }
+
+  if (def->ignoreCategories())
+  {
+    definition.append_attribute("IgnoreCategories").set_value("true");
+  }
+  else
+  {
+    definition.append_attribute("IgnoreCategories").set_value("false");
+  }
+
   if (def->rootName() != def->type())
   {
     definition.append_attribute("RootName").set_value(def->rootName().c_str());

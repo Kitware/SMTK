@@ -1022,6 +1022,12 @@ void XmlDocV1Parser::processDefinitionAtts(xml_node& defNode, DefinitionPtr& def
     def->setIsUnique(xatt.as_bool());
   }
 
+  xatt = defNode.attribute("IgnoreCategories");
+  if (xatt)
+  {
+    def->setIgnoreCategories(xatt.as_bool());
+  }
+
   xatt = defNode.attribute("Nodal");
   if (xatt)
   {

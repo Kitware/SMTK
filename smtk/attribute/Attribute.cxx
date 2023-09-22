@@ -297,13 +297,13 @@ const smtk::attribute::Categories& Attribute::categories() const
   * This can be used to ensure that an attribute is in a good state
   * before using it to perform some operation.
   *
-  * If useActiveCategories is true and if the resource has active
-  * categories enabled, then the resource's active categories will be
-  * taken into consideration
+  * If useActiveCategories is true, the Definition does not ignoreCategories,
+  * and if the resource has active categories enabled, then the resource's
+  * active categories will be taken into consideration
   */
 bool Attribute::isValid(bool useActiveCategories) const
 {
-  if (useActiveCategories)
+  if (useActiveCategories && (!m_definition->ignoreCategories()))
   {
     auto aResource = this->attributeResource();
     if (aResource && aResource->activeCategoriesEnabled())
@@ -359,10 +359,11 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
 }
 
 bool Attribute::isRelevant(
-  bool includeCategoryCheck,
+  bool requestCategoryCheck,
   bool includeReadAccess,
   unsigned int readAccessLevel) const
 {
+  bool includeCategoryCheck = requestCategoryCheck && (!m_definition->ignoreCategories());
   if (includeCategoryCheck)
   {
     auto aResource = this->attributeResource();

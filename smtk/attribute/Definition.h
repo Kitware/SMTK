@@ -252,7 +252,7 @@ public:
   ConstReferenceItemDefinitionPtr associationRule() const;
   /// Return the local association rule if one is set
   ReferenceItemDefinitionPtr localAssociationRule() const;
-  /// Create a new local association rule (if needed) and returns it.
+  ///\brief Create a new local association rule (if needed) and returns it.
   ///
   /// If a non-empty \a name is provided **and** there is no pre-existing
   /// association rule, the newly-created instance will be given the \a name.
@@ -418,6 +418,15 @@ public:
   /// Returns true if the definition has prerequisites (which can be inherited)
   bool hasPrerequisites() const;
 
+  ///\brief Indicates that the Definition's validity (and relevancy) does not
+  /// depends on the Resource's set of active categories.
+  ///
+  ///  This is very useful for modeling information such as Analysis Definitions
+  ///  since they set active categories but don't use categories themselves.
+  ///@{
+  bool ignoreCategories() const { return m_ignoreCategories; }
+  void setIgnoreCategories(bool val) { m_ignoreCategories = val; }
+
 protected:
   friend class smtk::attribute::Resource;
   // AttributeDefinitions can only be created by an attribute resource
@@ -471,6 +480,7 @@ protected:
   bool m_isRequired;
   bool m_isNotApplicableColorSet;
   bool m_isDefaultColorSet;
+  bool m_ignoreCategories = false;
   smtk::attribute::ReferenceItemDefinitionPtr m_acceptsRules;
 
   std::string m_detailedDescription;

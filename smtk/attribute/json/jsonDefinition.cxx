@@ -60,13 +60,16 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     j["AdvanceWriteLevel"] = defPtr->localAdvanceLevel(1);
   }
   if (defPtr->isUnique())
-  { // true is the defPtrault
+  { // true is the default
     j["Unique"] = true;
   }
   else
   {
     j["Unique"] = false;
   }
+
+  j["IgnoreCategories"] = defPtr->ignoreCategories();
+
   if (defPtr->rootName() != defPtr->type())
   {
     j["RootName"] = defPtr->rootName();
@@ -238,6 +241,13 @@ SMTKCORE_EXPORT void from_json(
   {
     defPtr->setIsUnique(*result);
   }
+
+  result = j.find("IgnoreCategories");
+  if (result != j.end())
+  {
+    defPtr->setIgnoreCategories(*result);
+  }
+
   // Process Category Info ()
   smtk::attribute::Categories::CombinationMode cmode;
   auto catInfo = j.find("CategoryInfo");  // Current Form

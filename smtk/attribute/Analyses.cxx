@@ -273,6 +273,10 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
   // 6. An exclusive Analysis with children is a child item of a string item
 
   def = resource->createDefinition(type);
+  // Set the definition to ignore categories since it will be used to
+  // define the set of active categories and therefore does not use them
+  def->setIgnoreCategories(true);
+
   auto topAnalyses = this->topLevel();
 
   if (m_topLevelExclusive)
