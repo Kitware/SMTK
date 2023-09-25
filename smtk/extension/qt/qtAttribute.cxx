@@ -195,7 +195,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   qtItem* qItem = nullptr;
   smtk::attribute::AttributePtr att = this->attribute();
   auto* uiManager = m_internals->m_view->uiManager();
-  // If there are model assocications for the attribute, create UI for them if requested.
+  // If there are model associations for the attribute, create UI for them if requested.
   // This will be the same widget used for ModelEntityItem.
   if (includeAssociations && att->associations())
   {

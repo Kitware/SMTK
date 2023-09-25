@@ -2135,7 +2135,7 @@ An Instance View will display a set of an Attributes for the user to edit.
 
     <View Type="Instanced" Title="General">
       <InstancedAttributes>
-        <Att Name="numerics-att" Type="numerics"/>
+        <Att Name="numerics-att" Type="numerics" ExcludeAssocations="true"/>
         <Att Name="outputs-att" Type="outputs" />
         <Att Name="simulation-control-att" Type="simulation-control" />
       </InstancedAttributes>
@@ -2160,6 +2160,11 @@ The XML Element should have one child element called <InstancedAttributes>.  The
      - A string that indicates the *Style* to be used to display the Attribute.
 
        (Optional)
+
+   * - ExcludeAssocations
+     - A boolean indicating (if set to true) that the Attribute's associations (if specified) should not be displayed.
+
+       (Optional) – default is false
 
 Here in an example UI of an Associations View.
 
