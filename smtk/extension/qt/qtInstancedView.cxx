@@ -152,6 +152,7 @@ void qtInstancedView::updateUI()
   this->Internals->AttInstances.clear();
 
   std::vector<smtk::attribute::AttributePtr> atts;
+  std::vector<bool> excludeAssociations;
   std::vector<smtk::view::Configuration::Component> comps;
   int longLabelWidth = 0;
   // Lets find the InstancedAttributes Information
@@ -239,6 +240,8 @@ void qtInstancedView::updateUI()
     }
 
     atts.push_back(att);
+    excludeAssociations.push_back(attComp.attributeAsBool("ExcludeAssocations"));
+
     // Does the component contain style information?
     if (attComp.numberOfChildren() == 0)
     {
@@ -268,8 +271,8 @@ void qtInstancedView::updateUI()
       if (attInstance)
       {
         //Without any additional info lets use a basic layout with model associations
-        // if any exists
-        attInstance->createBasicLayout(true);
+        // if any exists and the configuration did not request they be excluded
+        attInstance->createBasicLayout(!excludeAssociations[i]);
         this->Internals->AttInstances.push_back(attInstance);
         if (attInstance->widget() && !attInstance->isEmpty())
         {
