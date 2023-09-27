@@ -843,6 +843,17 @@ Attributes that can be included in this XML Element.
 
        If not specified, the definition is assumed to be non-unique.
 
+   * - IgnoreCategories
+     - Boolean value used to indicate if the attributes this definition
+       generates should ignore categories when determining their validity and/or
+       relevance.
+       For example, Definitions that model analyses, which defines an Attribute Resource's set of active categories, will ignore categories themselves.
+       (Optional)
+
+       If not specified, the definition is assumed to not ignore categories.
+
+       **Note** - this will only affect the Attribute's validity and relevance and not its Items.
+
    * - Nodal
      - Boolean value used to indicate if the attribute effects the
        nodes of the analysis mesh or the elements.

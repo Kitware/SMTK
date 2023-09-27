@@ -102,6 +102,8 @@ inline PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attrib
     .def("tag", (smtk::attribute::Tag* (smtk::attribute::Definition::*)(const std::string&)) &smtk::attribute::Definition::tag, py::arg("name"), py::return_value_policy::reference_internal)
     .def("addTag", &smtk::attribute::Definition::addTag)
     .def("removeTag", &smtk::attribute::Definition::removeTag)
+    .def("ignoreCategories", &smtk::attribute::Definition::ignoreCategories)
+    .def("setIgnoreCategories", &smtk::attribute::Definition::setIgnoreCategories, py::arg("val"))
     ;
   return instance;
 }
