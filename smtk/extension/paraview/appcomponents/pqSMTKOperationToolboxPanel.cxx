@@ -251,19 +251,19 @@ void pqSMTKOperationToolboxPanel::reconfigure()
   m_uiMgr->managers() = m_wrapper->smtkManagers();
   m_uiMgr->setOperationManager(m_wrapper->smtkOperationManager());
   auto managers = smtk::common::Managers::create();
-  managers->insert_or_assign(m_wrapper->smtkResourceManager());
-  managers->insert_or_assign(m_wrapper->smtkOperationManager());
-  managers->insert_or_assign(m_wrapper->smtkViewManager());
-  managers->insert_or_assign(m_wrapper->smtkSelection());
+  managers->insertOrAssign(m_wrapper->smtkResourceManager());
+  managers->insertOrAssign(m_wrapper->smtkOperationManager());
+  managers->insertOrAssign(m_wrapper->smtkViewManager());
+  managers->insertOrAssign(m_wrapper->smtkSelection());
   if (
     auto decorator =
       m_wrapper->smtkManagers().get<std::shared_ptr<smtk::view::OperationDecorator>>())
   {
-    managers->insert_or_assign(decorator);
+    managers->insertOrAssign(decorator);
   }
   else if (s_defaultOperations)
   {
-    managers->insert_or_assign(s_defaultOperations);
+    managers->insertOrAssign(s_defaultOperations);
   }
   smtk::view::Information viewInfo;
   this->setToolTip("Click an operation to edit its parameters.\n"

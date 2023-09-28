@@ -75,8 +75,8 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
 
   // Create common::Managers "application state".
   auto managers = smtk::common::Managers::create();
-  managers->insert_or_assign(resourceManager);
-  managers->insert_or_assign(operationManager);
+  managers->insertOrAssign(resourceManager);
+  managers->insertOrAssign(operationManager);
 
   auto attributeRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);

@@ -136,8 +136,8 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
   smtk::operation::ManagerPtr opManager = smtk::operation::Manager::create();
   auto attributeRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resManager, opManager);
-  managers->insert_or_assign(resManager);
-  managers->insert_or_assign(opManager);
+  managers->insertOrAssign(resManager);
+  managers->insertOrAssign(opManager);
   opManager->setManagers(managers);
 
 #if 0
@@ -150,7 +150,7 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
   smtk::project::ManagerPtr projManager = smtk::project::Manager::create(resManager, opManager);
   auto projectRegistry = smtk::plugin::addToManagers<smtk::project::Registrar>(projManager);
   projManager->registerProject(PROJECT_TYPE);
-  managers->insert_or_assign(projManager);
+  managers->insertOrAssign(projManager);
 
   smtkTest(resManager->empty(), "resource manager size is " << resManager->size());
 

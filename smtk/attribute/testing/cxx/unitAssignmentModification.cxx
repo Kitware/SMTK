@@ -74,8 +74,8 @@ int unitAssignmentModification(int /*unused*/, char* /*unused*/[])
   auto managers = smtk::common::Managers::create();
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();
-  managers->insert_or_assign(resourceManager);
-  managers->insert_or_assign(operationManager);
+  managers->insertOrAssign(resourceManager);
+  managers->insertOrAssign(operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).

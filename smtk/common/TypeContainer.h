@@ -30,12 +30,16 @@ namespace smtk
 {
 namespace common
 {
-/// A container for caching and retrieving instances of types. Instances are
-/// retrieved using type information as a key, allowing for simultaneous lookup
-/// and static downcast into that type. TypeContainer supports copying by cloning
-/// its elements using thier copy constructors.
+/**\brief A container for caching and retrieving instances of types.
+  *
+  * Instances are retrieved using type information as a key, allowing
+  * for simultaneous lookup and static downcast into that type.
+  * TypeContainer supports copying by cloning its elements using their
+  * copy constructors.
+  */
 class SMTKCORE_EXPORT TypeContainer
 {
+protected:
   struct Wrapper
   {
     virtual ~Wrapper() = default;
@@ -141,13 +145,21 @@ public:
 
   /// Insert a Type instance into the TypeContainer if it does not exist already or replace it if it does.
   template<typename Type>
-  bool insert_or_assign(const Type& value)
+  bool insertOrAssign(const Type& value)
   {
     if (this->contains<Type>())
     {
       this->erase<Type>();
     }
     return this->insert<Type>(value);
+  }
+
+  /// Insert a Type instance into the TypeContainer if it does not exist already or replace it if it does.
+  template<typename Type>
+  SMTK_DEPRECATED_IN_23_02("Use insertOrAssign() instead.")
+  bool insert_or_assign(const Type& value)
+  {
+    return this->insertOrAssign(value);
   }
 
   /// Emplace a Type instance into the TypeContainer.
@@ -256,7 +268,7 @@ public:
     return result;
   }
 
-private:
+protected:
   template<typename Arg, typename... Args>
   typename std::enable_if<!std::is_base_of<TypeContainer, Arg>::value, bool>::type insertAll(
     const Arg& arg,
@@ -266,7 +278,7 @@ private:
   }
   bool insertAll() { return true; }
 
-  std::unordered_map<std::size_t, std::unique_ptr<Wrapper>> m_container;
+  std::unordered_map<KeyType, std::unique_ptr<Wrapper>> m_container;
 };
 } // namespace common
 } // namespace smtk
