@@ -44,6 +44,7 @@ protected:
   {
     virtual ~Wrapper() = default;
     virtual std::unique_ptr<Wrapper> clone() const = 0;
+    virtual smtk::string::Token objectType() const = 0;
   };
 
   template<typename Type>
@@ -53,6 +54,7 @@ protected:
     WrapperFor(Args&&... v)
       : value(std::forward<Args>(v)...)
     {
+      m_objectType = smtk::common::typeName<Type>();
     }
 
     std::unique_ptr<Wrapper> clone() const override
@@ -63,8 +65,10 @@ protected:
       return std::unique_ptr<Wrapper>(new WrapperFor<Type>(new Type(*value)));
 #endif
     }
+    smtk::string::Token objectType() const override { return m_objectType; }
 
     std::unique_ptr<Type> value;
+    smtk::string::Token m_objectType;
   };
 
 public:

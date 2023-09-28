@@ -42,6 +42,7 @@ set(unit_tests
   UnitTestInfixExpressionGrammarImpl.cxx
   UnitTestLinks.cxx
   UnitTestObservers.cxx
+  UnitTestRuntimeTypeContainer.cxx
   UnitTestThreadPool.cxx
   UnitTestTypeContainer.cxx
   UnitTestTypeMap.cxx

@@ -13,6 +13,7 @@ set(commonSrcs
   json/jsonVersionNumber.cxx
   Managers.cxx
   Paths.cxx
+  RuntimeTypeContainer.cxx
   Status.cxx
   StringUtil.cxx
   TimeZone.cxx
@@ -51,6 +52,7 @@ set(commonHeaders
   Paths.h
   Processing.h
   RangeDetector.h
+  RuntimeTypeContainer.h
   Singleton.h
   Status.h
   StringUtil.h
