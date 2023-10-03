@@ -95,9 +95,13 @@ public:
   {
     this->setupUi(this);
     m_nodeMenu = new QMenu(m_headlineButton);
+    m_nodeMenu->setObjectName("contextMenu");
     m_activateTask = new QAction("Work on this");
+    m_activateTask->setObjectName("activateAction");
     m_expandTask = new QAction("Show controls");
+    m_expandTask->setObjectName("expandAction");
     m_toggleCompletion = new QAction("Mark completed");
+    m_toggleCompletion->setObjectName("toggleCompletionAction");
     m_nodeMenu->addAction(m_activateTask);
     m_nodeMenu->addAction(m_expandTask);
     m_nodeMenu->addAction(m_toggleCompletion);
