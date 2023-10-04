@@ -303,32 +303,32 @@ public:
   /// Check if a link with the input value matching the tagged search criterion
   /// exists.
   template<typename tag>
-  bool contains(const typename LinkTraits<tag>::type&) const;
+  bool contains(const typename Links::LinkTraits<tag>::type&) const;
 
   /// Return the number of links with the input value matching the tagged search
   /// criterion.
   template<typename tag>
-  std::size_t size(const typename LinkTraits<tag>::type&) const;
+  std::size_t size(const typename Links::LinkTraits<tag>::type&) const;
 
   /// Erase all links matching the input value for the tagged search criterion.
   template<typename tag>
-  bool erase_all(const typename LinkTraits<tag>::type&);
+  bool erase_all(const typename Links::LinkTraits<tag>::type&);
 
   /// Erase all links matching the input value and role for the tagged search
   /// criterion.
   template<typename tag>
-  bool erase_all(const std::tuple<typename LinkTraits<tag>::type, role_type>&);
+  bool erase_all(const std::tuple<typename Links::LinkTraits<tag>::type, role_type>&);
 
   /// Access a link by its id and set its value associated with the tagged
   /// search criterion to a new value.
   template<typename tag>
-  bool set(const id_type&, const typename LinkTraits<tag>::type&);
+  bool set(const id_type&, const typename Links::LinkTraits<tag>::type&);
 
   /// Return a set of ids corresponding to the input value for the tagged search
   /// criterion.
   template<typename tag>
   const std::set<std::reference_wrapper<const id_type>> ids(
-    const typename LinkTraits<tag>::type&) const;
+    const typename Links::LinkTraits<tag>::type&) const;
 
   /// Access the link with the input id (must be const).
   const Link& at(const id_type&) const;
@@ -340,23 +340,23 @@ public:
   /// Access a tagged value associated with the input id (must be const; values
   /// can be modified using the "set" method).
   template<typename tag>
-  const typename LinkTraits<tag>::type& at(const id_type&) const;
+  const typename Links::LinkTraits<tag>::type& at(const id_type&) const;
 
   /// Given a Left or Right tag and an associated value, return a set of the
   /// other type that links to the input value.
   template<typename tag>
   const std::set<
-    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
-    std::less<const typename LinkTraits<tag>::other_type>>
-  linked_to(const typename LinkTraits<tag>::type&) const;
+    std::reference_wrapper<const typename Links::LinkTraits<tag>::other_type>,
+    std::less<const typename Links::LinkTraits<tag>::other_type>>
+  linked_to(const typename Links::LinkTraits<tag>::type&) const;
 
   /// Given a Left or Right tag, an associated value and a role, return a set of
   /// the other type that links to the input value and has the role value.
   template<typename tag>
   const std::set<
-    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
-    std::less<const typename LinkTraits<tag>::other_type>>
-  linked_to(const typename LinkTraits<tag>::type&, const role_type& role) const;
+    std::reference_wrapper<const typename Links::LinkTraits<tag>::other_type>,
+    std::less<const typename Links::LinkTraits<tag>::other_type>>
+  linked_to(const typename Links::LinkTraits<tag>::type&, const role_type& role) const;
 };
 
 template<
