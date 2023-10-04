@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DefaultTaskNode</class>
- <widget class="QWidget" name="DefaultTaskNode">
+ <class>DefaultTaskNode1</class>
+ <widget class="QWidget" name="DefaultTaskNode1">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>163</width>
-    <height>51</height>
+    <width>171</width>
+    <height>80</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,21 +92,55 @@
        <property name="cursor">
         <cursorShape>ClosedHandCursor</cursorShape>
        </property>
-       <property name="toolTip">
-        <string>Click and drag to reposition this task.</string>
-       </property>
        <property name="text">
         <string>≡</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="m_title">
+      <widget class="QToolButton" name="m_headlineButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="HighlightedText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>119</red>
+             <green>118</green>
+             <blue>123</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="HighlightedText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>119</red>
+             <green>118</green>
+             <blue>123</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="HighlightedText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>119</red>
+             <green>118</green>
+             <blue>123</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
        </property>
        <property name="font">
         <font>
@@ -115,34 +149,34 @@
          <bold>true</bold>
         </font>
        </property>
-       <property name="toolTip">
-        <string>Click to make this task active.</string>
-       </property>
        <property name="text">
         <string>Task title</string>
        </property>
-       <property name="checkable">
-        <bool>true</bool>
+       <property name="popupMode">
+        <enum>QToolButton::MenuButtonPopup</enum>
        </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="m_completed">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle completion status.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If checked, this task is complete and you may not make it active until this has been toggled off. Note that toggling off may make irreversible changes to your project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string/>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_controls">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Controls</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

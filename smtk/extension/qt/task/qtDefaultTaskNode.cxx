@@ -94,25 +94,9 @@ public:
     , m_node(node)
   {
     this->setupUi(this);
-    m_nodeMenu = new QMenu(m_headlineButton);
-    m_nodeMenu->setObjectName("contextMenu");
-    m_activateTask = new QAction("Work on this");
-    m_activateTask->setObjectName("activateAction");
-    m_expandTask = new QAction("Show controls");
-    m_expandTask->setObjectName("expandAction");
-    m_toggleCompletion = new QAction("Mark completed");
-    m_toggleCompletion->setObjectName("toggleCompletionAction");
-    m_nodeMenu->addAction(m_activateTask);
-    m_nodeMenu->addAction(m_expandTask);
-    m_nodeMenu->addAction(m_toggleCompletion);
-    m_toggleCompletion->setEnabled(false);
-    m_headlineButton->setMenu(m_nodeMenu);
-    QObject::connect(
-      m_activateTask, &QAction::triggered, this, &DefaultTaskNodeWidget::activateTask);
-    QObject::connect(
-      m_toggleCompletion, &QAction::triggered, this, &DefaultTaskNodeWidget::markCompleted);
-    QObject::connect(
-      m_expandTask, &QAction::triggered, this, &DefaultTaskNodeWidget::toggleControls);
+    m_title->setCheckable(true);
+    QObject::connect(m_title, &QPushButton::toggled, this, &DefaultTaskNodeWidget::activateTask);
+    QObject::connect(m_completed, &QCheckBox::toggled, this, &DefaultTaskNodeWidget::markCompleted);
     m_taskObserver = m_node->task()->observers().insert(
       [this](smtk::task::Task&, smtk::task::State prev, smtk::task::State next) {
         // Sometimes the application invokes this observer after the GUI
@@ -121,45 +105,49 @@ public:
         // so, check that qApp exists before going further.
         if (qApp)
         {
-          this->updateTaskState(prev, next);
+          this->updateTaskState(prev, next, m_node->isActive());
         }
       },
       "DefaultTaskNodeWidget observer");
-    this->updateTaskState(m_node->m_task->state(), m_node->m_task->state());
+    this->updateTaskState(m_node->m_task->state(), m_node->m_task->state(), m_node->isActive());
   }
 
-  void updateTaskState(smtk::task::State prev, smtk::task::State next)
+  void flashWarning()
+  {
+    // TODO: pulse the widget background.
+  }
+
+  void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
   {
     (void)prev;
-    m_toggleCompletion->setText("Mark completed");
+    m_completed->setEnabled(m_node->m_task->editableCompletion());
+
+    // Update the checkbox widget without infinite recursion:
+    m_completed->blockSignals(true);
+    m_completed->setChecked(next == smtk::task::State::Completed);
+    m_completed->blockSignals(false);
+
     switch (next)
     {
       case smtk::task::State::Irrelevant:
-        m_headlineButton->setEnabled(false);
-        break;
       case smtk::task::State::Unavailable:
-        m_headlineButton->setEnabled(false);
-        m_activateTask->setEnabled(false);
+        m_title->setEnabled(false);
         break;
       case smtk::task::State::Incomplete:
-        m_headlineButton->setEnabled(true);
-        m_activateTask->setEnabled(!m_node->isActive());
-        m_toggleCompletion->setEnabled(false);
-        break;
       case smtk::task::State::Completable:
-        m_headlineButton->setEnabled(true);
-        m_activateTask->setEnabled(!m_node->isActive());
-        m_toggleCompletion->setEnabled(true);
-        break;
       case smtk::task::State::Completed:
-        m_headlineButton->setEnabled(true);
-        m_activateTask->setEnabled(false);
-        m_toggleCompletion->setEnabled(true);
-        m_toggleCompletion->setText("Undo completion");
+        m_title->setEnabled(true);
         break;
     }
-    m_headlineButton->setToolTip(QString::fromStdString("Status: " + smtk::task::stateName(next)));
-    m_headlineButton->setIcon(this->renderStatusIcon(next, m_headlineButton->height() / 2));
+    m_completed->setToolTip(
+      next == smtk::task::State::Completed ? "Undo completion" : "Mark completed");
+    // Force the title button to match the active/inactive state of the task
+    // without infinite recursion.
+    m_title->blockSignals(true);
+    m_title->setChecked(active);
+    m_title->blockSignals(false);
+    m_title->setToolTip(QString::fromStdString("Status: " + smtk::task::stateName(next)));
+    m_title->setIcon(this->renderStatusIcon(next, m_title->height() / 2));
   }
 
   void activateTask()
@@ -170,19 +158,19 @@ public:
       auto* previouslyActive = taskManager->active().task();
       if (previouslyActive != m_node->m_task)
       {
-        if (taskManager->active().switchTo(m_node->m_task))
+        if (!taskManager->active().switchTo(m_node->m_task))
         {
-          m_activateTask->setEnabled(false); // Can't activate task since it is now active.
-          auto* prevNode = (m_node->m_scene && m_node->m_scene->editor())
-            ? m_node->m_scene->editor()->findNode(previouslyActive)
-            : nullptr;
-          if (prevNode)
-          {
-            smtk::task::State prevState = previouslyActive->state();
-            prevNode->updateTaskState(prevState, prevState);
-          }
+          this->flashWarning();
         }
-        // TODO: Provide feedback if no action taken (e.g., flash red)
+      }
+      else
+      {
+        // Deactivate this task without making any other active.
+        m_title->setChecked(false);
+        if (!taskManager->active().switchTo(nullptr))
+        {
+          this->flashWarning();
+        }
       }
     }
   }
@@ -211,17 +199,6 @@ public:
     return QIcon(pix);
   }
 
-  void toggleControls()
-  {
-    bool shouldShow = !m_controls->isVisible();
-    m_controls->setVisible(shouldShow);
-    m_expandTask->setText(shouldShow ? "Hide controls" : "Show controls");
-  }
-
-  QMenu* m_nodeMenu;
-  QAction* m_activateTask;
-  QAction* m_expandTask;
-  QAction* m_toggleCompletion;
   qtDefaultTaskNode* m_node;
   smtk::task::Task::Observers::Key m_taskObserver;
 };
@@ -255,8 +232,7 @@ qtDefaultTaskNode::qtDefaultTaskNode(
     graphicsProxyWidget->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     graphicsProxyWidget->setPos(QPointF(0, 0));
 
-    m_container->m_headlineButton->setText(QString::fromStdString(m_task->title()));
-    m_container->m_controls->hide();
+    m_container->m_title->setText(QString::fromStdString(m_task->title()));
   }
 
   this->addToScene();
@@ -351,9 +327,9 @@ int qtDefaultTaskNode::updateSize()
   return 1;
 }
 
-void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next)
+void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
 {
-  m_container->updateTaskState(prev, next);
+  m_container->updateTaskState(prev, next, active);
 }
 
 } // namespace extension

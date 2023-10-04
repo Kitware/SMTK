@@ -359,10 +359,14 @@ public:
         auto nextNode = m_taskIndex.find(next);
         if (prevNode != m_taskIndex.end())
         {
+          auto prevState = prev->state();
+          prevNode->second->updateTaskState(prevState, prevState, false);
           prevNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Normal);
         }
         if (nextNode != m_taskIndex.end())
         {
+          auto nextState = next->state();
+          nextNode->second->updateTaskState(nextState, nextState, true);
           nextNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
         }
       },

@@ -63,7 +63,7 @@ public:
   QRectF boundingRect() const override;
 
   /// Deals with state updates
-  void updateTaskState(smtk::task::State prev, smtk::task::State next) override;
+  void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) override;
 
 protected:
   friend class DefaultTaskNodeWidget1;
