@@ -366,6 +366,8 @@ public:
           nextNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
         }
       },
+      0,
+      true,
       "qtTaskEditor watching active task.");
   }
 
