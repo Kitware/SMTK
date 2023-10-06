@@ -6,6 +6,7 @@ set(classes
 set(vtkGeomOperations
   DataSetInfoInspector
   ExportEdgesToVTK
+  ExportFaceset
   MeshInspector
   ImageInspector
 )
@@ -13,6 +14,7 @@ set(vtkGeomOperations
 set(icons
   image_inspector
   mesh_inspector
+  export_faceset
 )
 
 foreach (operator ${vtkGeomOperations})
