@@ -615,10 +615,6 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
       auto& activeTracker = taskManager->active();
       m_activeObserverKey = activeTracker.observers().insert(
         [this, &activeTracker](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
-          if (oldTask == newTask)
-          {
-            return;
-          }
           m_taskObserver.release();
           // First, if oldTask is an operation task, remove its parameter-panel
           // (if it was configured to display one).
