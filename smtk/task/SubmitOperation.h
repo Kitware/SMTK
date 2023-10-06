@@ -161,6 +161,8 @@ public:
   /// if true is returned.
   bool setNeedsToRun();
 
+  bool editableCompletion() const override;
+
 protected:
   friend class adaptor::ResourceAndRole;
   friend class adaptor::ConfigureOperation;
