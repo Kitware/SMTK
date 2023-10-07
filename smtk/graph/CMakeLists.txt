@@ -14,6 +14,7 @@ set(graphHeaders
   ArcMap.h
   Component.h
   ExplicitArcs.h
+  Functions.h
   NodeProperties.h
   NodeSet.h
   OwnershipSemantics.h
