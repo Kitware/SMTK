@@ -93,9 +93,9 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
   auto resourceManager = smtk::resource::Manager::create();
   auto viewManager = smtk::view::Manager::create();
   auto selection = smtk::view::Selection::create();
-  managers->insert_or_assign(operationManager);
-  managers->insert_or_assign(viewManager);
-  managers->insert_or_assign(selection);
+  managers->insertOrAssign(operationManager);
+  managers->insertOrAssign(viewManager);
+  managers->insertOrAssign(selection);
   // auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
   // auto viewManager = managers->get<smtk::view::Manager::Ptr>();
   // auto selection = managers->get<smtk::view::Selection::Ptr>();
@@ -164,7 +164,7 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
       wrap<smtk::attribute::Dissociate>(),
       wrap<smtk::attribute::Export>(),
       wrap<smtk::attribute::Import>() }));
-  managers->insert_or_assign(opDecor);
+  managers->insertOrAssign(opDecor);
   smtk::view::Information viewInfo;
 
   viewInfo.insert(widget);

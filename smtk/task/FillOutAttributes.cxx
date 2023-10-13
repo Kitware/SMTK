@@ -143,7 +143,7 @@ bool FillOutAttributes::getViewData(smtk::common::TypeContainer& configuration) 
   }
   if (didChange)
   {
-    configuration.insert_or_assign(viewData);
+    configuration.insertOrAssign(viewData);
   }
   return didChange;
 }

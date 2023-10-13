@@ -39,27 +39,57 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
     .def_static("create", (std::shared_ptr<smtk::common::Managers> (*)()) &smtk::common::Managers::create)
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::operation::Manager>& operationManager)
       {
-        managers.insert_or_assign(operationManager);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(operationManager);
       }, py::arg("operationManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::project::Manager>& projectManager)
       {
-        managers.insert_or_assign(projectManager);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(projectManager);
       }, py::arg("projectManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::resource::Manager>& resourceManager)
       {
-        managers.insert_or_assign(resourceManager);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(resourceManager);
       }, py::arg("resourceManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::task::Manager>& taskManager)
       {
-        managers.insert_or_assign(taskManager);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(taskManager);
       }, py::arg("taskManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::view::Manager>& viewManager)
       {
-        managers.insert_or_assign(viewManager);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(viewManager);
       }, py::arg("viewManager"))
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::view::Selection>& viewSelection)
       {
-        managers.insert_or_assign(viewSelection);
+        std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";
+        managers.insertOrAssign(viewSelection);
+      }, py::arg("selection"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::operation::Manager>& operationManager)
+      {
+        managers.insertOrAssign(operationManager);
+      }, py::arg("operationManager"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::project::Manager>& projectManager)
+      {
+        managers.insertOrAssign(projectManager);
+      }, py::arg("projectManager"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::resource::Manager>& resourceManager)
+      {
+        managers.insertOrAssign(resourceManager);
+      }, py::arg("resourceManager"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::task::Manager>& taskManager)
+      {
+        managers.insertOrAssign(taskManager);
+      }, py::arg("taskManager"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::view::Manager>& viewManager)
+      {
+        managers.insertOrAssign(viewManager);
+      }, py::arg("viewManager"))
+    .def("insertOrAssign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::view::Selection>& viewSelection)
+      {
+        managers.insertOrAssign(viewSelection);
       }, py::arg("selection"))
     .def("get", [](smtk::common::Managers& managers, const std::string& managerType)
       {

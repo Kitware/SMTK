@@ -327,9 +327,9 @@ void qtGroupView::createWidget()
     // Setup the information for the new child view based off of
     // this one
     auto vinfo = m_viewInfo;
-    vinfo.insert_or_assign<smtk::view::ConfigurationPtr>(v);
-    vinfo.insert_or_assign<QWidget*>(this->Widget);
-    vinfo.insert_or_assign<std::weak_ptr<smtk::attribute::Resource>>(resource);
+    vinfo.insertOrAssign<smtk::view::ConfigurationPtr>(v);
+    vinfo.insertOrAssign<QWidget*>(this->Widget);
+    vinfo.insertOrAssign<std::weak_ptr<smtk::attribute::Resource>>(resource);
     qtView = this->uiManager()->createView(vinfo);
     if (qtView)
     {

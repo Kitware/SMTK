@@ -203,11 +203,11 @@ void qtOperationView::createWidget()
 
   // Create  the information to create an Instance View
   smtk::view::Information v = m_viewInfo;
-  v.insert_or_assign<smtk::view::ConfigurationPtr>(this->Internals->m_instancedViewDef);
-  v.insert_or_assign<QWidget*>(this->Widget);
-  v.insert_or_assign<qtOperationView*>(this);
-  v.insert_or_assign<smtk::operation::Operation::Ptr>(this->operation());
-  v.insert_or_assign<smtk::operation::Manager::Ptr>(this->operation()->manager());
+  v.insertOrAssign<smtk::view::ConfigurationPtr>(this->Internals->m_instancedViewDef);
+  v.insertOrAssign<QWidget*>(this->Widget);
+  v.insertOrAssign<qtOperationView*>(this);
+  v.insertOrAssign<smtk::operation::Operation::Ptr>(this->operation());
+  v.insertOrAssign<smtk::operation::Manager::Ptr>(this->operation()->manager());
 
   qtInstancedView* iview = dynamic_cast<qtInstancedView*>(qtInstancedView::createViewWidget(v));
   this->Internals->m_instancedView.reset(iview);

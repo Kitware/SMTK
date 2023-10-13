@@ -41,7 +41,7 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
             { { { "Name", "Model" }, { "Attributes", { { "Autorun", "true" } } } } } } } }
     };
     std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
-    result.insert_or_assign(viewConfig);
+    result.insertOrAssign(viewConfig);
   }
   else if (const auto* browser = dynamic_cast<const pqSMTKResourcePanel*>(panel))
   {
@@ -50,7 +50,7 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
     // panel or construct your own configuration as needed in your application.
     auto jsonConfig = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration())[0];
     std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
-    result.insert_or_assign(viewConfig);
+    result.insertOrAssign(viewConfig);
   }
   else if (const auto* tasks = dynamic_cast<const pqSMTKTaskPanel*>(panel))
   {
@@ -59,7 +59,7 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
     (void)tasks;
     std::shared_ptr<smtk::view::Configuration> viewConfig =
       smtk::extension::qtTaskEditor::defaultConfiguration();
-    result.insert_or_assign(viewConfig);
+    result.insertOrAssign(viewConfig);
   }
   else
   {

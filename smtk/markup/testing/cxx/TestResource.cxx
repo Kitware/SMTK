@@ -66,8 +66,8 @@ smtk::common::Managers::Ptr testRegistrar()
   auto managers = smtk::common::Managers::create();
   auto resourceManager = smtk::resource::Manager::create();
   auto operationManager = smtk::operation::Manager::create();
-  managers->insert_or_assign(resourceManager);
-  managers->insert_or_assign(operationManager);
+  managers->insertOrAssign(resourceManager);
+  managers->insertOrAssign(operationManager);
 
   auto markupRegistry =
     smtk::plugin::addToManagers<smtk::markup::Registrar>(resourceManager, operationManager);

@@ -230,8 +230,8 @@ bool qtSelectorView::createChildren()
     // Setup the information for the new child view based off of
     // this one
     auto vinfo = m_viewInfo;
-    vinfo.insert_or_assign<smtk::view::ConfigurationPtr>(v);
-    vinfo.insert_or_assign<QWidget*>(this->Widget);
+    vinfo.insertOrAssign<smtk::view::ConfigurationPtr>(v);
+    vinfo.insertOrAssign<QWidget*>(this->Widget);
 
     qtView = this->uiManager()->createView(vinfo);
     if (qtView)
