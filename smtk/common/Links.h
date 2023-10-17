@@ -303,60 +303,209 @@ public:
   /// Check if a link with the input value matching the tagged search criterion
   /// exists.
   template<typename tag>
-  bool contains(const typename Links::LinkTraits<tag>::type&) const;
+  bool contains(const typename LinkTraits<tag>::type& value) const
+  {
+    auto& self = this->Parent::template get<tag>();
+    auto found = self.find(value);
+    return found != self.end();
+  }
 
   /// Return the number of links with the input value matching the tagged search
   /// criterion.
   template<typename tag>
-  std::size_t size(const typename Links::LinkTraits<tag>::type&) const;
+  std::size_t size(const typename LinkTraits<tag>::type& value) const
+  {
+    auto& self = this->Parent::template get<tag>();
+    auto range = self.equal_range(value);
+    return std::distance(range.first, range.second);
+  }
 
   /// Erase all links matching the input value for the tagged search criterion.
   template<typename tag>
-  bool erase_all(const typename Links::LinkTraits<tag>::type&);
+  bool erase_all(const typename LinkTraits<tag>::type& value)
+  {
+    auto& self = this->Parent::template get<tag>();
+    auto to_erase = self.equal_range(value);
+
+    // No elements match |value|, or |self| is empty.
+    if (to_erase.first == to_erase.second || to_erase.first == self.end())
+    {
+      return false;
+    }
+
+    self.erase(to_erase.first, to_erase.second);
+    return true;
+  }
 
   /// Erase all links matching the input value and role for the tagged search
   /// criterion.
   template<typename tag>
-  bool erase_all(const std::tuple<typename Links::LinkTraits<tag>::type, role_type>&);
+  bool erase_all(const std::tuple<typename LinkTraits<tag>::type, role_type>& value)
+  {
+    auto& self = this->Parent::template get<tag>();
+    auto to_erase = self.equal_range(value);
+
+    // No elements match |value|, or |self| is empty.
+    if (to_erase.first == to_erase.second || to_erase.first == self.end())
+    {
+      return false;
+    }
+
+    self.erase(to_erase.first, to_erase.second);
+    return true;
+  }
 
   /// Access a link by its id and set its value associated with the tagged
   /// search criterion to a new value.
   template<typename tag>
-  bool set(const id_type&, const typename Links::LinkTraits<tag>::type&);
+  bool set(const id_type& id, const typename LinkTraits<tag>::type& value)
+  {
+    typedef LinkTraits<tag> traits;
+
+    auto linkIt = this->find(id);
+
+    if (linkIt == this->end())
+    {
+      throw std::out_of_range("Links<id_type, left_type, right_type, role_type, "
+                              "base_type>::set(const id_type&, const type& value) : "
+                              "no link has this index");
+    }
+
+    bool modified = false;
+
+    auto originalValue = traits::value(*linkIt);
+
+    if (originalValue != value)
+    {
+      struct Modify
+      {
+        Modify(const typename traits::type& v)
+          : value(v)
+        {
+        }
+
+        void operator()(Link& link) { traits::setValue(link, value); }
+
+        const typename traits::type& value;
+      };
+
+      auto& self = this->Parent::template get<tag>();
+      auto range = self.equal_range(originalValue);
+      for (auto it = range.first; it != range.second; ++it)
+      {
+        if (it->id == id)
+        {
+          modified = self.modify(it, Modify(value), Modify(originalValue));
+          break;
+        }
+      }
+      assert(modified == true);
+    }
+    return modified;
+  }
 
   /// Return a set of ids corresponding to the input value for the tagged search
   /// criterion.
   template<typename tag>
   const std::set<std::reference_wrapper<const id_type>> ids(
-    const typename Links::LinkTraits<tag>::type&) const;
+    const typename LinkTraits<tag>::type& value) const
+  {
+    std::set<std::reference_wrapper<const id_type>> ids;
+
+    auto& self = this->Parent::template get<tag>();
+    auto range = self.equal_range(value);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      ids.insert(std::cref(it->id));
+    }
+    return ids;
+  }
 
   /// Access the link with the input id (must be const).
-  const Link& at(const id_type&) const;
+  const Link& at(const id_type& id) const
+  {
+    auto it = this->find(id);
+
+    if (it == this->end())
+    {
+      throw std::out_of_range(
+        "Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type&) : "
+        "no link has this index");
+    }
+
+    return *it;
+  }
 
   /// Access a link as its base type (can be non-const).
-  LinkBase& value(const id_type&);
-  const LinkBase& value(const id_type&) const;
+  LinkBase& value(const id_type& id) { return const_cast<Link&>(this->at(id)); }
+  const LinkBase& value(const id_type& id) const { return this->at(id); }
 
   /// Access a tagged value associated with the input id (must be const; values
   /// can be modified using the "set" method).
   template<typename tag>
-  const typename Links::LinkTraits<tag>::type& at(const id_type&) const;
+  const typename LinkTraits<tag>::type& at(const id_type& id) const
+  {
+    typedef LinkTraits<tag> traits;
+
+    auto it = this->find(id);
+
+    if (it == this->end())
+    {
+      throw std::out_of_range(
+        "Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type&) : "
+        "no link has this index");
+    }
+
+    return traits::value(*it);
+  }
 
   /// Given a Left or Right tag and an associated value, return a set of the
   /// other type that links to the input value.
   template<typename tag>
   const std::set<
-    std::reference_wrapper<const typename Links::LinkTraits<tag>::other_type>,
-    std::less<const typename Links::LinkTraits<tag>::other_type>>
-  linked_to(const typename Links::LinkTraits<tag>::type&) const;
+    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
+    std::less<const typename LinkTraits<tag>::other_type>>
+  linked_to(const typename LinkTraits<tag>::type& value) const
+  {
+    typedef LinkTraits<tag> traits;
+
+    std::set<
+      std::reference_wrapper<const typename traits::other_type>,
+      std::less<const typename traits::other_type>>
+      values;
+
+    auto& self = this->Parent::template get<tag>();
+    auto range = self.equal_range(std::make_tuple(value));
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));
+    }
+    return values;
+  }
 
   /// Given a Left or Right tag, an associated value and a role, return a set of
   /// the other type that links to the input value and has the role value.
   template<typename tag>
   const std::set<
-    std::reference_wrapper<const typename Links::LinkTraits<tag>::other_type>,
-    std::less<const typename Links::LinkTraits<tag>::other_type>>
-  linked_to(const typename Links::LinkTraits<tag>::type&, const role_type& role) const;
+    std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
+    std::less<const typename LinkTraits<tag>::other_type>>
+  linked_to(const typename LinkTraits<tag>::type& value, const role_type& role) const
+  {
+    typedef LinkTraits<tag> traits;
+
+    std::set<
+      std::reference_wrapper<const typename traits::other_type>,
+      std::less<const typename traits::other_type>>
+      values;
+
+    auto& self = this->Parent::template get<tag>();
+    auto range = self.equal_range(std::make_tuple(value, role));
+    for (auto it = range.first; it != range.second; ++it)
+    {
+      values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));
+    }
+    return values;
+  }
 };
 
 template<
@@ -400,301 +549,6 @@ Links<id_type, left_type, right_type, role_type, base_type>::insert(
   const role_type& role)
 {
   return this->insert(Link(std::forward<base_type>(base), id, left, right, role));
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::contains(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value) const
-{
-  auto& self = this->Parent::template get<tag>();
-  auto found = self.find(value);
-  return found != self.end();
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-std::size_t Links<id_type, left_type, right_type, role_type, base_type>::size(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value) const
-{
-  auto& self = this->Parent::template get<tag>();
-  auto range = self.equal_range(value);
-  return std::distance(range.first, range.second);
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value)
-{
-  auto& self = this->Parent::template get<tag>();
-  auto to_erase = self.equal_range(value);
-
-  // No elements match |value|, or |self| is empty.
-  if (to_erase.first == to_erase.second || to_erase.first == self.end())
-  {
-    return false;
-  }
-
-  self.erase(to_erase.first, to_erase.second);
-  return true;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
-  const std::tuple<
-    typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type,
-    role_type>& value)
-{
-  auto& self = this->Parent::template get<tag>();
-  auto to_erase = self.equal_range(value);
-
-  // No elements match |value|, or |self| is empty.
-  if (to_erase.first == to_erase.second || to_erase.first == self.end())
-  {
-    return false;
-  }
-
-  self.erase(to_erase.first, to_erase.second);
-  return true;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::set(
-  const id_type& id,
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value)
-{
-  typedef LinkTraits<tag> traits;
-
-  auto linkIt = this->find(id);
-
-  if (linkIt == this->end())
-  {
-    throw std::out_of_range("Links<id_type, left_type, right_type, role_type, "
-                            "base_type>::set(const id_type&, const type& value) : "
-                            "no link has this index");
-  }
-
-  bool modified = false;
-
-  auto originalValue = traits::value(*linkIt);
-
-  if (originalValue != value)
-  {
-    struct Modify
-    {
-      Modify(const typename traits::type& v)
-        : value(v)
-      {
-      }
-
-      void operator()(Link& link) { traits::setValue(link, value); }
-
-      const typename traits::type& value;
-    };
-
-    auto& self = this->Parent::template get<tag>();
-    auto range = self.equal_range(originalValue);
-    for (auto it = range.first; it != range.second; ++it)
-    {
-      if (it->id == id)
-      {
-        modified = self.modify(it, Modify(value), Modify(originalValue));
-        break;
-      }
-    }
-    assert(modified == true);
-  }
-  return modified;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-const std::set<std::reference_wrapper<const id_type>>
-Links<id_type, left_type, right_type, role_type, base_type>::ids(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value) const
-{
-  std::set<std::reference_wrapper<const id_type>> ids;
-
-  auto& self = this->Parent::template get<tag>();
-  auto range = self.equal_range(value);
-  for (auto it = range.first; it != range.second; ++it)
-  {
-    ids.insert(std::cref(it->id));
-  }
-  return ids;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-const typename Links<id_type, left_type, right_type, role_type, base_type>::Link&
-Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& id) const
-{
-  auto it = this->find(id);
-
-  if (it == this->end())
-  {
-    throw std::out_of_range(
-      "Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type&) : "
-      "no link has this index");
-  }
-
-  return *it;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-base_type& Links<id_type, left_type, right_type, role_type, base_type>::value(const id_type& id)
-{
-  return const_cast<Link&>(this->at(id));
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-const base_type& Links<id_type, left_type, right_type, role_type, base_type>::value(
-  const id_type& id) const
-{
-  return this->at(id);
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type&
-Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type& id) const
-{
-  typedef LinkTraits<tag> traits;
-
-  auto it = this->find(id);
-
-  if (it == this->end())
-  {
-    throw std::out_of_range(
-      "Links<id_type, left_type, right_type, role_type, base_type>::at(const id_type&) : "
-      "no link has this index");
-  }
-
-  return traits::value(*it);
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-const std::set<
-  std::reference_wrapper<
-    const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-      other_type>,
-  std::less<const typename detail::
-              LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::other_type>>
-Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value) const
-{
-  typedef LinkTraits<tag> traits;
-
-  std::set<
-    std::reference_wrapper<const typename traits::other_type>,
-    std::less<const typename traits::other_type>>
-    values;
-
-  auto& self = this->Parent::template get<tag>();
-  auto range = self.equal_range(std::make_tuple(value));
-  for (auto it = range.first; it != range.second; ++it)
-  {
-    values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));
-  }
-  return values;
-}
-
-template<
-  typename id_type,
-  typename left_type,
-  typename right_type,
-  typename role_type,
-  typename base_type>
-template<typename tag>
-const std::set<
-  std::reference_wrapper<
-    const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-      other_type>,
-  std::less<const typename detail::
-              LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::other_type>>
-Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
-  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::
-    type& value,
-  const role_type& role) const
-{
-  typedef LinkTraits<tag> traits;
-
-  std::set<
-    std::reference_wrapper<const typename traits::other_type>,
-    std::less<const typename traits::other_type>>
-    values;
-
-  auto& self = this->Parent::template get<tag>();
-  auto range = self.equal_range(std::make_tuple(value, role));
-  for (auto it = range.first; it != range.second; ++it)
-  {
-    values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));
-  }
-  return values;
 }
 } // namespace common
 } // namespace smtk
