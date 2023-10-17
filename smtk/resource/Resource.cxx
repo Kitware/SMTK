@@ -28,6 +28,7 @@ namespace smtk
 namespace resource
 {
 
+constexpr smtk::resource::Links::RoleType Resource::VisuallyLinkedRole;
 constexpr const char* const Resource::type_name;
 const Resource::Index Resource::type_index = std::type_index(typeid(Resource)).hash_code();
 

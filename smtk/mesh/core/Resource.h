@@ -78,8 +78,8 @@ public:
   // typedef referring to the parent resource.
   typedef smtk::geometry::Resource ParentResource;
 
-  //A mesh resource may be classified to a model. This relationship is modeled
-  //using resource links.
+  /// A mesh resource may be classified to a model, indicating the mesh set
+  /// discretizes the linked model component.
   static constexpr smtk::resource::Links::RoleType ClassificationRole = -3;
 
   static smtk::shared_ptr<Resource> create(const smtk::common::UUID& resourceID)

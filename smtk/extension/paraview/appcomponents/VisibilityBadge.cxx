@@ -203,9 +203,17 @@ int UpdateVisibilityForFootprint(
     }
   }
 
-  if (didUpdate && smap)
+  if (didUpdate)
   {
-    smap->renderViewEventually();
+    if (smap)
+    {
+      smap->renderViewEventually();
+    }
+    else
+    {
+      // At the very least, update the active render view.
+      pqActiveObjects::instance().activeView()->render();
+    }
   }
   return rval;
 }
@@ -281,8 +289,13 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
   auto* smtkBehavior = pqSMTKBehavior::instance();
 
   auto pvrc = smtkBehavior->getPVResource(rsrc);
-  if (!pvrc)
+  if (!pvrc && comp)
   {
+    auto valIt = m_visibleThings.find(comp->id());
+    if (valIt != m_visibleThings.end())
+    {
+      return valIt->second;
+    }
     return true; // pipeline hasn't been created yet; the default is visible.
   }
 
@@ -315,40 +328,76 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
 
 void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int val)
 {
-  auto comp = phrase->relatedComponent();
-  auto rsrc = phrase->relatedResource();
-
-  smtk::model::EntityPtr ent = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
-  smtk::model::ResourcePtr modelRsrc =
-    ent ? ent->modelResource() : std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
-
-  smtk::mesh::ComponentPtr msh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
-  smtk::mesh::ResourcePtr meshRsrc = msh
-    ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
-    : std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
-
-  smtk::geometry::ResourcePtr geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
-
   auto* smtkBehavior = pqSMTKBehavior::instance();
+  if (phrase->relatedComponent())
+  {
+    auto* model = this->phraseModel();
 
-  auto pvrc = smtkBehavior->getPVResource(rsrc);
+    // Process linked components
+    auto objs =
+      phrase->relatedComponent()->links().linkedTo(smtk::resource::Resource::VisuallyLinkedRole);
 
-  if (ent || msh || (comp && geomRsrc))
-  { // Find the mapper in the active view for the related resource, then set the visibility.
-    auto* view = pqActiveObjects::instance().activeView();
-    auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
-    auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
-    UpdateVisibilityForFootprint(smap, comp, val, m_visibleThings, phrase);
-  }
-  else if (geomRsrc)
-  { // A resource, not a component, is being modified. Change the pipeline object's visibility.
-    auto* view = pqActiveObjects::instance().activeView();
-    auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
-    if (mapr)
+    // Update the phrase for the component that definitely changed
+    objs.insert(phrase->relatedComponent());
+
+    for (const auto& obj : objs)
     {
-      mapr->setVisible(!mapr->isVisible());
-      pqActiveObjects::instance().setActiveSource(pvrc);
-      mapr->renderViewEventually();
+      auto comp = obj->as<smtk::resource::Component>();
+      if (!comp)
+      {
+        // This object is not a component, so skip it.
+        continue;
+      }
+
+      auto rsrc = comp->resource();
+      smtk::model::EntityPtr ent = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+      smtk::model::ResourcePtr modelRsrc =
+        ent ? ent->modelResource() : std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
+
+      smtk::mesh::ComponentPtr msh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
+      smtk::mesh::ResourcePtr meshRsrc = msh
+        ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
+        : std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
+
+      smtk::geometry::ResourcePtr geomRsrc =
+        std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
+      if (smtkBehavior)
+      {
+        auto pvrc = smtkBehavior->getPVResource(rsrc);
+        if (ent || msh || (comp && geomRsrc))
+        { // Find the mapper in the active view for the related resource, then set the visibility.
+          auto* view = pqActiveObjects::instance().activeView();
+          auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+          auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+          UpdateVisibilityForFootprint(smap, comp, val, m_visibleThings, phrase);
+
+          if (model)
+          {
+            model->triggerDataChangedFor(comp);
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    auto rsrc = phrase->relatedResource();
+    smtk::geometry::ResourcePtr geomRsrc =
+      std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
+    if (geomRsrc)
+    { // A resource, not a component, is being modified. Change the pipeline object's visibility.
+      if (smtkBehavior)
+      {
+        auto* view = pqActiveObjects::instance().activeView();
+        auto pvrc = smtkBehavior->getPVResource(rsrc);
+        auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+        if (mapr)
+        {
+          mapr->setVisible(!mapr->isVisible());
+          pqActiveObjects::instance().setActiveSource(pvrc);
+          mapr->renderViewEventually();
+        }
+      }
     }
   }
 }
@@ -523,12 +572,23 @@ void VisibilityBadge::representationRemovedFromActiveView(pqRepresentation* rep)
 
 void VisibilityBadge::componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible)
 {
-  // The visibility should change for every row displaying the same \a comp:
-  m_visibleThings[comp->id()] = visible;
   auto* model = this->phraseModel();
-  if (model)
+
+  // Update phrases for any visually linked components
+  auto objs = comp->links().linkedFrom(smtk::resource::Resource::VisuallyLinkedRole);
+
+  // Update the phrase for the component that definitely changed
+  objs.insert(comp);
+
+  for (const auto& obj : objs)
   {
-    model->triggerDataChangedFor(comp);
+    // The visibility should change for every row displaying the same \a comp:
+    m_visibleThings[obj->id()] = visible;
+    auto objAsComp = obj->as<smtk::resource::Component>();
+    if (objAsComp && model)
+    {
+      model->triggerDataChangedFor(objAsComp);
+    }
   }
 }
 } // namespace appcomponents
