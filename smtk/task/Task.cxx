@@ -442,15 +442,24 @@ bool Task::updateState(Task& dependency, State prev, State next)
     // keep us in our current state.
     return false;
   }
+
+  State taskState = m_internalState;
+  // If the internal state is Completable and m_completed is true then externally the task state
+  // is Completed
+  if (m_completed && (taskState == State::Completable))
+  {
+    taskState = State::Completed;
+  }
+
   if (dependencyNowUnblocked)
   {
-    // All other tasks are also unblocked, we changed from Unavailable to Completable or Complete.
-    this->changeState(State::Unavailable, m_completed ? State::Completed : State::Completable);
+    // All other tasks are also unblocked, we changed from Unavailable to the task state
+    this->changeState(State::Unavailable, taskState);
   }
   else if (dependencyNowBlocking)
   {
-    // All other tasks are also unblocked, we changed from Completable or Complete to Unavailable.
-    this->changeState(m_completed ? State::Completed : State::Completable, State::Unavailable);
+    // All other tasks are also unblocked, we changed from task state to Unavailable.
+    this->changeState(taskState, State::Unavailable);
   }
   return true;
 }
