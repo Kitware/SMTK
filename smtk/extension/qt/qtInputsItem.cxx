@@ -813,10 +813,14 @@ void qtInputsItem::addInputEditor(int i)
     std::string componentLabel = itemDef->valueLabel(i);
     if (!componentLabel.empty())
     {
-      // acbauer -- this should probably be improved to look nicer
       QString labelText = componentLabel.c_str();
       QLabel* label = new QLabel(labelText, editBox);
       label->setSizePolicy(sizeFixedPolicy);
+      if (i > 0)
+      {
+        // add some spacing between label and previous item
+        editorLayout->addSpacing(5);
+      }
       editorLayout->addWidget(label);
     }
   }
@@ -906,6 +910,7 @@ QFrame* qtInputsItem::createLabelFrame(
   labelLayout->setObjectName("labelLayout");
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
+  // this default may be overridden to just AlignLeft for one-line items
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
 
@@ -1041,7 +1046,8 @@ void qtInputsItem::updateUI()
   m_internals->m_dataFrame->setObjectName("dataFrame");
 
   // Add Label Information
-  mainlayout->addWidget(this->createLabelFrame(dataObj.get(), itemDef.get()));
+  QFrame* labelFrame = this->createLabelFrame(dataObj.get(), itemDef.get());
+  mainlayout->addWidget(labelFrame);
 
   // Add Data Section
   auto* dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
@@ -1060,6 +1066,12 @@ void qtInputsItem::updateUI()
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   this->loadInputValues();
+  // to make component labels align with the overall label, don't use AlignTop for
+  // one-line items (i.e. the grid layout has one row)
+  if (m_internals->EntryLayout->rowCount() == 1)
+  {
+    labelFrame->layout()->setAlignment(Qt::AlignLeft);
+  }
   dataLayout->addWidget(m_internals->m_valuesFrame);
 
   // Does this item allow expressions?
