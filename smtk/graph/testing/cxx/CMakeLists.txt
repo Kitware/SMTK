@@ -3,6 +3,7 @@
 ################################################################################
 set(unit_tests
   TestArcs.cxx
+  TestCorrespondences.cxx
   TestNodalResource.cxx
   TestNodalResourceFilter.cxx
   TestScalability.cxx
