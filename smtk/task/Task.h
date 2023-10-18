@@ -206,6 +206,16 @@ public:
   /// frustrate users.
   virtual State state() const;
 
+  /// Return whether or not users are allowed to mark a task completed.
+  ///
+  /// User interfaces (e.g., qtTaskView) should check this to decide whether
+  /// to enable UI elements that accept user completion.
+  /// Subclasses of Task that automate completion (e.g., SubmitOperation
+  /// when RunStyle is set to Once) can override this method to prevent users
+  /// from explicitly marking completion. The default implementation returns
+  /// true when the task state is completable or completed.
+  virtual bool editableCompletion() const;
+
   /// This public method allows user-interface components to indicate
   /// when the user marks a task complete (or unmarks it).
   ///

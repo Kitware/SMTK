@@ -84,7 +84,7 @@ public:
   bool isActive() const;
 
   /// Deals with state updates
-  virtual void updateTaskState(smtk::task::State prev, smtk::task::State next) = 0;
+  virtual void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) = 0;
 
 Q_SIGNALS:
   void nodeResized();

@@ -249,6 +249,21 @@ State Task::state() const
   return s;
 }
 
+bool Task::editableCompletion() const
+{
+  switch (this->state())
+  {
+    default:
+    case State::Irrelevant:
+    case State::Unavailable:
+    case State::Incomplete:
+      return false;
+    case State::Completable:
+    case State::Completed:
+      return true;
+  }
+}
+
 bool Task::markCompleted(bool completed)
 {
   switch (this->state())

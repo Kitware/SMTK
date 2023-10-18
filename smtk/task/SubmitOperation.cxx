@@ -364,6 +364,19 @@ bool SubmitOperation::setNeedsToRun()
   return true;
 }
 
+bool SubmitOperation::editableCompletion() const
+{
+  switch (m_runStyle)
+  {
+    default:
+    case RunStyle::OnCompletion:
+    case RunStyle::Iteratively:
+      return this->Task::editableCompletion();
+    case RunStyle::Once:
+      return this->state() == State::Completed;
+  }
+}
+
 int SubmitOperation::update(
   const smtk::operation::Operation& op,
   smtk::operation::EventType event,

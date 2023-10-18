@@ -31,7 +31,7 @@
 #include <QPainter>
 #include <QTimer>
 
-#include "task/ui_DefaultTaskNode.h"
+#include "task/ui_DefaultTaskNode1.h"
 
 class QAbstractItemModel;
 class QItemSelection;
@@ -86,7 +86,7 @@ namespace extension
 
 class DefaultTaskNodeWidget1
   : public QWidget
-  , public Ui::DefaultTaskNode
+  , public Ui::DefaultTaskNode1
 {
 public:
   DefaultTaskNodeWidget1(qtDefaultTaskNode1* node, QWidget* parent = nullptr)
@@ -121,16 +121,17 @@ public:
         // so, check that qApp exists before going further.
         if (qApp)
         {
-          this->updateTaskState(prev, next);
+          this->updateTaskState(prev, next, m_node->isActive());
         }
       },
       "DefaultTaskNodeWidget1 observer");
-    this->updateTaskState(m_node->m_task->state(), m_node->m_task->state());
+    this->updateTaskState(m_node->m_task->state(), m_node->m_task->state(), m_node->isActive());
   }
 
-  void updateTaskState(smtk::task::State prev, smtk::task::State next)
+  void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
   {
     (void)prev;
+    (void)active;
     auto& cfg = *m_node->m_scene->configuration();
     QPalette p = this->palette();
     QColor newStateColor;
@@ -186,7 +187,7 @@ public:
           if (prevNode)
           {
             smtk::task::State prevState = previouslyActive->state();
-            prevNode->updateTaskState(prevState, prevState);
+            prevNode->updateTaskState(prevState, prevState, false);
           }
         }
         // TODO: Provide feedback if no action taken (e.g., flash red)
@@ -358,9 +359,12 @@ int qtDefaultTaskNode1::updateSize()
   return 1;
 }
 
-void qtDefaultTaskNode1::updateTaskState(smtk::task::State prev, smtk::task::State next)
+void qtDefaultTaskNode1::updateTaskState(
+  smtk::task::State prev,
+  smtk::task::State next,
+  bool active)
 {
-  m_container->updateTaskState(prev, next);
+  m_container->updateTaskState(prev, next, active);
 }
 
 } // namespace extension

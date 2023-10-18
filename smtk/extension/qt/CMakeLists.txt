@@ -90,6 +90,7 @@ set(QAttrLibUIs
   qtTimeZoneSelectWidget.ui
   qtViewInfoDialog.ui
   task/DefaultTaskNode.ui
+  task/DefaultTaskNode1.ui
 )
 
 
