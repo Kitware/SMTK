@@ -98,7 +98,7 @@ public:
   template<typename ProjectType>
   bool registered() const;
 
-  /// Unegister an operation identified by its typename, type index or class type.
+  /// Unregister an operation identified by its typename, type index or class type.
   bool unregisterOperation(const std::string&);
   bool unregisterOperation(const smtk::operation::Operation::Index&);
   template<typename OperationType>
@@ -299,6 +299,12 @@ template<typename ProjectType>
 bool Manager::registered() const
 {
   return this->registered(std::type_index(typeid(ProjectType)).hash_code());
+}
+
+template<typename ProjectType>
+bool Manager::unregisterProject()
+{
+  return this->unregisterProject(std::type_index(typeid(ProjectType)).hash_code());
 }
 
 template<typename OperationType>
