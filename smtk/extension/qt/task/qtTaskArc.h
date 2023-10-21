@@ -34,7 +34,7 @@ class qtTaskEditor;
 class qtTaskScene;
 class qtBaseTaskNode;
 
-/**\brief A widget that holds a Qt scene graph.
+/**\brief A graphics item that represents a task dependency or adaptor.
   *
   */
 class SMTKQTEXT_EXPORT qtTaskArc
