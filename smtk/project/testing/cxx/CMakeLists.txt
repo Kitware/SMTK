@@ -37,7 +37,6 @@ smtk_unit_tests(
 )
 
 if (TEST TestReadTwoOperationProject)
-  message("Setting Dependency")
   set_tests_properties(TestReadTwoOperationProject
     PROPERTIES
       DEPENDS TestCreateTwoOperationProject
