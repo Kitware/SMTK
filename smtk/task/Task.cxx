@@ -468,12 +468,12 @@ bool Task::updateState(Task& dependency, State prev, State next)
 
   if (dependencyNowUnblocked)
   {
-    // All other tasks are also unblocked, we changed from Unavailable to the task state
+    // All other tasks are also unblocked, we changed from Unavailable to the modulated internal task state
     this->changeState(State::Unavailable, taskState);
   }
   else if (dependencyNowBlocking)
   {
-    // All other tasks are also unblocked, we changed from task state to Unavailable.
+    // All other tasks are also unblocked, we changed from the modulated internal task state to Unavailable.
     this->changeState(taskState, State::Unavailable);
   }
   return true;
