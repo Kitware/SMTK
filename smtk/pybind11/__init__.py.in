@@ -20,6 +20,7 @@ import sys
 __all__ = ('common', 'attribute', 'extension', 'model',
            'mesh', 'io', 'project', 'session', 'simulation', 'task')
 
+appContext = None
 
 def _windows_dll_path():
     import os
@@ -56,6 +57,82 @@ def _windows_dll_path():
 if sys.version_info >= (3, 8) and sys.platform == 'win32':
     _windows_dll_path()
 
+def findAvailablePlugins():
+    """Search this SMTK installation for plugins, returning their full paths."""
+    import os
+    import smtk.common
+    import smtk.plugin
+    pluginList = []
+    # Look for plugins relative to the smtk.common python library.
+    pluginDir = os.path.join(
+        smtk.common.Paths.pathToThisLibrary(),
+        'smtk-' + smtk.common.Version.number())
+    # Each plugin lives in its own directory and has a name that ends with
+    # `Plugin.so` (linux, macos) or `Plugin.dll` (windows).
+    ending = 'Plugin.so' if sys.platform != 'win32' else 'Plugin.dll'
+    for pluginCheck in [x for x in os.listdir(pluginDir) if os.path.isdir(os.path.join(pluginDir,x))]:
+        entries = os.listdir(os.path.join(pluginDir, pluginCheck))
+        pluginList += ([os.path.join(pluginDir, pluginCheck, x) for x in entries if ending in x])
+    return pluginList
+
+def loadPlugins(pluginList = None):
+    """Load all of the provided plugins in pluginList or, if empty, load all available plugins.
+
+    This function returns a list of loaded and a list of skipped plugins.
+    Example usage:
+        import smtk
+        loaded, skipped = smtk.loadPlugins()
+        print('Loaded %d / %d plugins' % (len(loaded), len(skipped)))
+    """
+    skipped = []
+    loaded = []
+    try:
+        from paraview.simple import LoadPlugin
+        if pluginList == None:
+            pluginList = findAvailablePlugins()
+        for plugin in pluginList:
+            try:
+                LoadPlugin(plugin)
+                loaded.append(plugin)
+            except:
+                skipped.append(plugin)
+                # Allow loading a plugin to fail without causing all plugin loads to fail.
+                pass
+    except:
+        pass
+    if not pluginList or len(skipped) == len(pluginList):
+        print('Unable to load any plugins.')
+    elif len(skipped) > 0:
+        print('Unable to load %d / %d plugins.' % (len(skipped), len(pluginList)))
+    return (loaded, skipped)
+
+def applicationContext():
+    """Return an instance of smtk.common.Managers.
+
+    Typically, an application or script will create a single instance of smtk.common.Managers
+    and use it to hold all of the application's state (at least as far as SMTK is concerned).
+    Inside ParaView-based applications, this is created by client-side plugins and simply
+    fetched by this method. For scripts run outside the ParaView, this will create an instance
+    for you.
+    """
+    global appContext
+    import smtk.common
+    import smtk.plugin
+    if appContext == None:
+        try:
+            from smtk.extension.paraview.appcomponents import pqSMTKBehavior
+            bb = pqSMTKBehavior.instance()
+            if bb:
+                bb.updateWrapperMap()
+                if bb.haveActiveWrapper():
+                    appContext = bb.activeWrapperCommonManagers()
+        except:
+            pass
+        if appContext == None:
+            # Create a managers instance, then initialize and return it.
+            appContext = smtk.common.Managers.create()
+            smtk.plugin.registerPluginsTo(appContext)
+    return appContext
 
 def wrappingProtocol():
     return 'pybind11'

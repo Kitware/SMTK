@@ -32,12 +32,14 @@
 #include "pqServerManagerModel.h"
 #include "pqView.h"
 #include "vtkNew.h"
+#include "vtkProcessModule.h"
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyDefinitionManager.h"
 #include "vtkSMSession.h"
 #include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
+#include "vtkSessionIterator.h"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -390,6 +392,10 @@ pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
   if (!builtin)
   {
     auto* app = pqApplicationCore::instance();
+    if (!app)
+    {
+      return existing;
+    }
     pqServer* server = app->getActiveServer();
     if (server)
     {
@@ -401,6 +407,58 @@ pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
     }
   }
   return builtin;
+}
+
+void pqSMTKBehavior::updateWrapperMap()
+{
+  auto* pqCore = pqApplicationCore::instance();
+  if (!pqCore)
+  {
+    return;
+  }
+  auto* smm = pqCore->getServerManagerModel();
+  if (!smm)
+  {
+    return;
+  }
+  auto* pm = vtkProcessModule::GetProcessModule();
+  if (!pm)
+  {
+    return;
+  }
+
+  auto* it = pm->NewSessionIterator();
+  for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
+  {
+    auto* session = it->GetCurrentSession();
+    if (!session)
+    {
+      continue;
+    }
+    auto* server = smm->findServer(session);
+    if (!server)
+    {
+      continue;
+    }
+    auto remoteIt = m_p->Remotes.find(server);
+    if (remoteIt != m_p->Remotes.end())
+    {
+      continue;
+    } // We already have an entry.
+
+    // Point the server to one of the wrappers (only one should exist,
+    // but we loop over them all and the last one wins):
+    auto wrappers = smm->findItems<pqSMTKWrapper*>();
+    for (const auto& wrapper : wrappers)
+    {
+      if (wrapper && wrapper->getProxy())
+      {
+        m_p->Remotes[server] = std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*>(
+          vtkSMSMTKWrapperProxy::SafeDownCast(wrapper->getProxy()), wrapper);
+      }
+    }
+  }
+  it->Delete();
 }
 
 void pqSMTKBehavior::importPythonOperationsForModule(

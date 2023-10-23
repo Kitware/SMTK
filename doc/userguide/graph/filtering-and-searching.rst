@@ -22,8 +22,14 @@ the following format:
 
 where
 
-+ ``node-typename`` is the name returned from the node's `typeName()`
-  method.
++ ``node-typename`` specifies matches to names returned from any
+  node's ``typeName()`` method. The type name may be
+
+    + an exact match for a component's type-name (with no enclosing quotes);
+    + a single-quoted type-name;
+    + a forward-slash-enclosed regular expression matching one or more type names; or
+    + ``*`` or ``any`` to indicate any graph node should be considered.
+
 + ``property-type`` is one of the following string literals
   ``string``, ``floating-point``, ``integer``.
 + ``property-name`` is either a single-quoted name or a slash-quoted
