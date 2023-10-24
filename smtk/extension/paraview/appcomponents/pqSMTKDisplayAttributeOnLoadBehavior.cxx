@@ -165,9 +165,6 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
 
     switch (event)
     {
-      case smtk::resource::EventType::MODIFIED:
-        // Do nothing.
-        break;
       case smtk::resource::EventType::ADDED:
         // We want to just display things now, but at this point,
         // the attribute may exist but be empty because it is added
@@ -186,6 +183,8 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
         break;
       case smtk::resource::EventType::REMOVED:
         // TODO: Find another attribute to display
+        break;
+      default:
         break;
     }
   }

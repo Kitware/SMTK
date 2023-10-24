@@ -57,7 +57,6 @@ protected:
     const smtk::operation::Operation& op,
     smtk::operation::EventType event,
     const smtk::operation::Operation::Result& res) override;
-  void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
 
   void processResource(const Resource::Ptr& rsrc, bool adding) override;
   virtual void triggerModified(const Resource::Ptr& rsrc);

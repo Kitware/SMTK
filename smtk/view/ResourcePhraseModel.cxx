@@ -133,24 +133,6 @@ int ResourcePhraseModel::handleOperationEvent(
   return result;
 }
 
-void ResourcePhraseModel::handleResourceEvent(
-  const Resource& resource,
-  smtk::resource::EventType event)
-{
-  // The PhraseModle system has been designed to handle shared pointers to
-  // non-const resources and components. We const-cast here to accommodate
-  // this pattern.
-  smtk::resource::ResourcePtr rsrc =
-    const_cast<smtk::resource::Resource&>(resource).shared_from_this();
-
-  if (event == smtk::resource::EventType::MODIFIED)
-  {
-    // Indicate that resource phrases need to be redrawn to indicate
-    // when a resource changes its clean/dirty state.
-    this->triggerModified(rsrc);
-  }
-}
-
 void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool adding)
 {
   if (adding)

@@ -209,7 +209,6 @@ Operation::Result Operation::operate()
 
     // Perform the derived operation.
     result = this->operateInternal();
-
     // Post-process the result if the operation was successful.
     outcome = static_cast<Outcome>(result->findInt("outcome")->value());
     if (outcome == Outcome::SUCCEEDED)
