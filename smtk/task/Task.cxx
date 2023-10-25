@@ -159,7 +159,7 @@ void Task::configure(const Configuration& config)
     {
       m_style = config.at("style").get<std::set<smtk::string::Token>>();
     }
-    catch (std::exception&)
+    catch (nlohmann::json::exception&)
     {
     }
   }

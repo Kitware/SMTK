@@ -78,7 +78,7 @@ void from_json(const nlohmann::json& jj, smtk::task::Task::Ptr& task)
       helper.setActiveSerializedTask(task.get());
     }
   }
-  catch (std::exception& e)
+  catch (nlohmann::json::exception& e)
   {
     smtkErrorMacro(
       smtk::io::Logger::instance(), "Could not deserialize task (" << e.what() << ").");
