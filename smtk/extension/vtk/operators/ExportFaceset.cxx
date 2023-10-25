@@ -142,7 +142,7 @@ std::list<vtkSmartPointer<vtkPolyData>> ExtractFaceset(vtkDataSet* dset)
   // Identify the surface geometry we need to extractf rom this dataset.
   vtkSmartPointer<vtkDataSet> surfaceGeometry;
   int dimension = EstimateParametricDimension(dset);
-  auto ugrid = vtkUnstructuredGrid::SafeDownCast(dset);
+  auto* ugrid = vtkUnstructuredGrid::SafeDownCast(dset);
   if (dimension == 3 && ugrid)
   {
     // Extract boundary of unstructured grid as a surface.
@@ -165,9 +165,9 @@ std::list<vtkSmartPointer<vtkPolyData>> ExtractFaceset(vtkDataSet* dset)
     triangleFilter->PassVertsOff();
     triangleFilter->PassLinesOff();
     triangleFilter->Update();
-    if (auto faceset = triangleFilter->GetOutput())
+    if (auto* faceset = triangleFilter->GetOutput())
     {
-      retValue.push_back(faceset);
+      retValue.emplace_back(faceset);
     }
   }
   return retValue;
@@ -175,19 +175,19 @@ std::list<vtkSmartPointer<vtkPolyData>> ExtractFaceset(vtkDataSet* dset)
 
 std::list<vtkSmartPointer<vtkPolyData>> ExtractFaceset(vtkDataObject* data)
 {
-  if (auto dset = vtkDataSet::SafeDownCast(data))
+  if (auto* dset = vtkDataSet::SafeDownCast(data))
   {
     return ExtractFaceset(dset);
   }
 
   std::list<vtkSmartPointer<vtkPolyData>> retValue;
-  if (auto cdata = vtkCompositeDataSet::SafeDownCast(data))
+  if (auto* cdata = vtkCompositeDataSet::SafeDownCast(data))
   {
     auto* it = cdata->NewIterator();
     it->SkipEmptyNodesOn();
     for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
     {
-      auto dobj = it->GetCurrentDataObject();
+      auto* dobj = it->GetCurrentDataObject();
       std::list<vtkSmartPointer<vtkPolyData>> partFaceset = ExtractFaceset(dobj);
       retValue.insert(retValue.end(), partFaceset.begin(), partFaceset.end());
     }
@@ -238,7 +238,7 @@ ExportFaceset::Result ExportFaceset::operateInternal()
             listOfSurfaces.end(),
             [appendFilter](vtkSmartPointer<vtkPolyData> s) { appendFilter->AddInputData(s); });
           appendFilter->Update();
-          if (auto finalOutput = appendFilter->GetOutput())
+          if (auto* finalOutput = appendFilter->GetOutput())
           {
             stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
             stlWriter->SetInputData(finalOutput);
