@@ -67,17 +67,16 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
     // source associated with a resource removed from the manager.
     m_p->key = wrapper->smtkResourceManager()->observers().insert(
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) {
+        auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
         switch (eventType)
         {
           case smtk::resource::EventType::REMOVED:
           {
-            auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
             this->destroyPipelineSource(rsrc);
             break;
           }
           case smtk::resource::EventType::ADDED:
-            QTimer::singleShot(0, this, [this, &resource]() {
-              auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
+            QTimer::singleShot(0, this, [this, rsrc]() {
               // Only add pipeline sources for geometry resources...
               if (auto geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc))
               {
