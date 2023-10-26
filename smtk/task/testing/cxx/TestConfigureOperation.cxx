@@ -36,6 +36,7 @@
 
 #include "nlohmann/json.hpp"
 
+#include <atomic>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -169,7 +170,11 @@ public:
     return spec;
   }
 
-  Result operateInternal() override { return this->createResult(m_outcome); }
+  Result operateInternal() override
+  {
+    std::cerr << "Running SimpleOperation!\n";
+    return this->createResult(m_outcome);
+  }
 
   Outcome m_outcome{ Outcome::SUCCEEDED };
 };
@@ -233,6 +238,26 @@ int TestConfigureOperation(int, char*[])
   // Register the test operation
   bool registered = operationManager->registerOperation<SimpleOperation>("SimpleOperation");
   smtkTest(registered, "failed to register SimpleOperation");
+
+  // Since we will have operations running in different threads, we need to know when all of them
+  // have completed before we return.
+  std::atomic<int> numberOfOperationsCompleted(0);
+  smtk::operation::Observers::Key handleTmp = operationManager->observers().insert(
+    [&numberOfOperationsCompleted](
+      const smtk::operation::Operation& op,
+      smtk::operation::EventType event,
+      smtk::operation::Operation::Result /*unused*/) -> int {
+      if (event == smtk::operation::EventType::DID_OPERATE)
+      {
+        std::cerr << "[x] " << op.typeName() << " event " << static_cast<int>(event)
+                  << " number of operations run: " << numberOfOperationsCompleted + 1 << ".\n";
+        std::cerr.flush();
+        numberOfOperationsCompleted++;
+      }
+      return 0;
+    },
+    std::numeric_limits<smtk::operation::Observers::Priority>::lowest(),
+    false);
 
   // Create attribute resource
   auto attResource = resourceManager->create<smtk::attribute::Resource>();
@@ -342,6 +367,11 @@ int TestConfigureOperation(int, char*[])
   auto signal = operationManager->create<smtk::attribute::Signal>();
   signal->parameters()->findComponent("modified")->appendValue(specAtt);
   auto result = signal->operate();
+
+  // Wait for all of the operations to be done
+  while (numberOfOperationsCompleted != 3)
+  {
+  }
 
   // Task states should be the same but parameter value changed
   checkTaskStates(tasks, gatherExpected);

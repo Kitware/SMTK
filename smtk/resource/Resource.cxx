@@ -218,16 +218,7 @@ bool Resource::setName(const std::string& name)
 
 void Resource::setClean(bool state)
 {
-  if (m_clean == state)
-  {
-    return;
-  }
   m_clean = state;
-  auto mgr = this->manager();
-  if (mgr)
-  {
-    mgr->observers()(*this, EventType::MODIFIED);
-  }
 }
 
 bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)

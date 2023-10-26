@@ -23,7 +23,6 @@ inline void pybind11_init_smtk_resource_EventType(py::module &m)
 {
   py::enum_<smtk::resource::EventType>(m, "EventType")
     .value("ADDED", smtk::resource::EventType::ADDED)
-    .value("MODIFIED", smtk::resource::EventType::MODIFIED)
     .value("REMOVED", smtk::resource::EventType::REMOVED)
     .export_values();
 }

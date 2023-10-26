@@ -182,8 +182,7 @@ void GatherResources::updateResources(
       }
     }
     break;
-    case smtk::resource::EventType::MODIFIED:
-      // TODO: Maybe a role was removed?
+    default:
       break;
   }
   if (resourceSetsUpdated)

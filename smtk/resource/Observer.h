@@ -19,21 +19,11 @@ namespace resource
 {
 
 /**\brief Enumerate events that the resource manager may encounter.
-  *
-  * Note that the resource modification event only fires when
-  * a resource's clean/dirty state changes, not for each modification:
-  * once a resource is dirty, further modifications are not reported.
-  * If you want to monitor each modification to a resource, you should
-  * observe operations via an operation manager.
-  *
-  * Also, the MODIFIED signal is fired when a resource is marked clean
-  * not just when it is marked dirty.
   */
 enum class EventType
 {
-  ADDED,    //!< A new resource's contents now available in memory.
-  MODIFIED, //!< an existing resource's clean/dirty state has changed.
-  REMOVED   //!< An existing resource's contents are being removed from memory.
+  ADDED,  //!< A new resource's contents now available in memory.
+  REMOVED //!< An existing resource's contents are being removed from memory.
 };
 
 typedef std::function<void(const Resource&, EventType)> Observer;
