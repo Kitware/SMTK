@@ -85,12 +85,12 @@ public:
   // typedef referring to the parent resource.
   typedef smtk::geometry::Resource ParentResource;
 
-  // Associations and references to other resources and components are managed
-  // internally using smtk::resource::Links. The concepts of association and
-  // reference are internally very similar, but to the outward-facing API they
-  // are treated separately and serve different functions. The storage for these
-  // values are therefore logically separated by different role values.
+  /// Link from an attribute to persistent objects
+  /// which manifest, exhibit, or possess the attribute.
   static constexpr smtk::resource::Links::RoleType AssociationRole = -1;
+
+  /// Link from an attribute item to persistent objects
+  /// which the item contains or references.
   static constexpr smtk::resource::Links::RoleType ReferenceRole = -2;
 
   ~Resource() override;

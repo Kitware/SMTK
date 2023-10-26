@@ -37,6 +37,27 @@ In addition to these useful base classes,
   less than zero are reserved for internal SMTK use while positive roles
   are available for user-specified (i.e., application-specific) roles.
 
+  .. list-table:: SMTK system roles for Links
+     :widths: 50 50
+     :header-rows: 1
+
+     * - Role
+       - Purpose
+     * - :smtk:`smtk::attribute::Resource::AssociationRole`
+       - Link objects to an *instance* of an attribute to
+         indicate they possess, exhibit, or manifest the attribute.
+     * - :smtk:`smtk::attribute::Resource::ReferenceRole`
+       - Link objects to an *item* of an attribute to indicate the
+         item contains or references the object.
+     * - :smtk:`smtk::mesh::Resource::ClassificationRole`
+       - Link a mesh-set object to a source component whose geometry
+         the mesh-set discretizes.
+     * - :smtk:`smtk::resource::Resource::VisuallyLinkedRole`
+       - Link objects to one another to indicate the source
+         (left-hand) object (which does not have renderable geometry)
+         should be provided with visibility controls for the target
+         (right-hand) object(s) (which should have renderable geometry).
+
 :smtk:`Properties <smtk::resource::Properties>`
   Resources and components contain a dictionary-like data structure that
   can hold any copyable type. If the property type has JSON bindings, it

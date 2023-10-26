@@ -77,6 +77,14 @@ public:
 
   static const Resource::Index type_index;
 
+  /// A role for components that implies their visibility in renderings
+  /// should be linked to another object.
+  ///
+  /// When an object, A, without renderable geometry is linked to object(s), B,
+  /// with renderable geometry, SMTK user-interface elements should show
+  /// visibility-control badges for both A and B.
+  static constexpr smtk::resource::Links::RoleType VisuallyLinkedRole = -4;
+
   smtkTypeMacro(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
