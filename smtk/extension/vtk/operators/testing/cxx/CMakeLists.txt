@@ -34,3 +34,21 @@ if (SMTK_DATA_DIR AND SMTK_ENABLE_POLYGON_SESSION)
     COMMAND DeleteSmtkCell2 ${SMTK_DATA_DIR}/model/2d/smtk/simple.smtk -T "${CMAKE_CURRENT_BINARY_DIR}"
     )
 endif ()
+
+if (SMTK_DATA_DIR)
+  # test of ExportFaceset operation (exporting geometry resource to STL file.)
+  add_executable(ExportFacesetTest ExportFacesetTest.cxx)
+  target_link_libraries(ExportFacesetTest
+    smtkCore
+    smtkMeshSession
+    vtkSMTKOperationsExt
+    vtkSMTKSourceExt
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::IOXML
+    )
+  add_test(
+    NAME ExportFacesetTest
+    COMMAND ExportFacesetTest -T "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+endif ()
