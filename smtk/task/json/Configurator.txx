@@ -214,7 +214,7 @@ bool Configurator<ObjectType, MF>::setSwizzleId(
     smtkWarningMacro(
       smtk::io::Logger::instance(),
       "Deserialized swizzle ID " << swizzle << " is already assigned to"
-                                 << "\"" << bit->second->title() << "\" " << bit->second
+                                 << "\"" << bit->second->name() << "\" " << bit->second
                                  << ". Skipping.");
     return false;
   }

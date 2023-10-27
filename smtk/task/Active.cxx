@@ -93,7 +93,7 @@ bool Active::switchTo(smtk::task::Task* task)
   {
     return false;
   }
-  auto sharedTask = task->shared_from_this();
+  auto sharedTask = std::static_pointer_cast<Task>(task->shared_from_this());
   if (m_p->m_instances && !m_p->m_instances->contains(sharedTask))
   {
     // Only managed tasks can be active if we have instances tracked.

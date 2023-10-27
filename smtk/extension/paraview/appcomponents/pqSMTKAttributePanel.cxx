@@ -102,6 +102,7 @@ pqSMTKAttributePanel::~pqSMTKAttributePanel()
 
   m_propertyLinks.clear();
   delete m_attrUIMgr;
+  m_attrUIMgr = nullptr;
 }
 
 bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
@@ -119,6 +120,99 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
     }
   }
   return false;
+}
+
+bool pqSMTKAttributePanel::displayResource(
+  const smtk::attribute::ResourcePtr& rsrc,
+  smtk::view::ConfigurationPtr view,
+  int advancedlevel)
+{
+  bool didDisplay = false;
+
+  if (rsrc)
+  {
+    auto previousResource = m_rsrc.lock();
+
+    if (!rsrc->isPrivate() && rsrc != previousResource)
+    {
+      if (previousResource)
+      {
+        previousResource->properties().erase<bool>("smtk.attribute_panel.display_hint");
+      }
+      resetPanel(rsrc->manager());
+      didDisplay = displayResourceInternal(rsrc, view, advancedlevel);
+    }
+    else if (rsrc->isPrivate() && rsrc == previousResource)
+    {
+      // the panel is displaying a resource that is now private
+      // stop displaying it
+      resetPanel(rsrc->manager());
+    }
+  }
+  else
+  {
+    this->resetPanel(nullptr);
+    this->updateTitle();
+  }
+
+  return didDisplay;
+}
+
+bool pqSMTKAttributePanel::displayResourceOnServer(
+  const smtk::attribute::ResourcePtr& rsrc,
+  smtk::view::ConfigurationPtr view,
+  int advancedlevel)
+{
+  smtk::resource::ManagerPtr rsrcMgr;
+  if (rsrc && (rsrcMgr = rsrc->manager()))
+  {
+    auto* behavior = pqSMTKBehavior::instance();
+    pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
+    this->updateManagers(wrapper ? wrapper->smtkManagersPtr() : nullptr);
+    return this->displayResource(rsrc, view, advancedlevel);
+  }
+  return false;
+}
+
+bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
+{
+  if (!view)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Null view passed to attribute panel.");
+    return false;
+  }
+
+  if (!m_attrUIMgr)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "View passed but no resource indicated.");
+    return false;
+  }
+  // It is possible in some cases to display attributes not part of the
+  // task workflow. In that case, we need to stop watching the currently-active
+  // task (so its completion state changing does not disable an unrelated
+  // attribute editor) and force the panel widget to be enabled.
+  // If this new view _is_ part of the currently-active task, the enabled
+  // status and observer will be reset after this by the method calling us.
+  this->m_attrUIMgr->setReadOnly(false);
+  if (m_currentTask)
+  {
+    m_currentTask->observers().erase(m_currentTaskObserverKey);
+  }
+  m_currentTask = nullptr;
+  auto* qview = m_attrUIMgr->setSMTKView(view, this);
+  if (!qview)
+  {
+    return false;
+  }
+
+  this->focusPanel();
+  return true;
+}
+
+bool pqSMTKAttributePanel::updatePipeline()
+{
+  auto* dataSource = pqActiveObjects::instance().activeSource();
+  return this->displayPipelineSource(dataSource);
 }
 
 void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
@@ -157,40 +251,161 @@ void pqSMTKAttributePanel::focusPanel()
   }
 }
 
-bool pqSMTKAttributePanel::displayResource(
-  const smtk::attribute::ResourcePtr& rsrc,
-  smtk::view::ConfigurationPtr view,
-  int advancedlevel)
+void pqSMTKAttributePanel::updateSettings()
 {
-  bool didDisplay = false;
-
-  if (rsrc)
+  if (!m_attrUIMgr)
   {
-    auto previousResource = m_rsrc.lock();
+    return;
+  }
 
-    if (!rsrc->isPrivate() && rsrc != previousResource)
-    {
-      if (previousResource)
-      {
-        previousResource->properties().erase<bool>("smtk.attribute_panel.display_hint");
-      }
-      resetPanel(rsrc->manager());
-      didDisplay = displayResourceInternal(rsrc, view, advancedlevel);
-    }
-    else if (rsrc->isPrivate() && rsrc == previousResource)
-    {
-      // the panel is displaying a resource that is now private
-      // stop displaying it
-      resetPanel(rsrc->manager());
-    }
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
+  m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
+}
+
+void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
+{
+  if (doDisplay)
+  {
+    QObject::connect(
+      &pqActiveObjects::instance(),
+      SIGNAL(sourceChanged(pqPipelineSource*)),
+      this,
+      SLOT(displayPipelineSource(pqPipelineSource*)),
+      Qt::QueuedConnection);
+    QObject::connect(
+      &pqActiveObjects::instance(),
+      SIGNAL(dataUpdated()),
+      this,
+      SLOT(updatePipeline()),
+      Qt::QueuedConnection);
   }
   else
   {
-    this->resetPanel(nullptr);
-    this->updateTitle();
+    QObject::disconnect(
+      &pqActiveObjects::instance(),
+      SIGNAL(sourceChanged(pqPipelineSource*)),
+      this,
+      SLOT(displayPipelineSource(pqPipelineSource*)));
+    QObject::disconnect(
+      &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
+  }
+}
+
+void pqSMTKAttributePanel::observeProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
+{
+  (void)server;
+  if (!mgr)
+  {
+    return;
+  }
+  auto projectManager = mgr->smtkProjectManager();
+  if (!projectManager)
+  {
+    return;
   }
 
-  return didDisplay;
+  QPointer<pqSMTKAttributePanel> self(this);
+  auto observerKey = projectManager->observers().insert(
+    [self](const smtk::project::Project& project, smtk::project::EventType event) {
+      if (self)
+      {
+        self->handleProjectEvent(project, event);
+      }
+    },
+    0,    // assign a neutral priority
+    true, // immediatelyNotify
+    "pqSMTKAttributePanel: Display active task's related attributes in panel.");
+  m_projectManagerObservers[projectManager] = std::move(observerKey);
+}
+
+void pqSMTKAttributePanel::unobserveProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
+{
+  (void)server;
+  if (!mgr)
+  {
+    return;
+  }
+  auto projectManager = mgr->smtkProjectManager();
+  if (!projectManager)
+  {
+    return;
+  }
+
+  auto entry = m_projectManagerObservers.find(projectManager);
+  if (entry != m_projectManagerObservers.end())
+  {
+    projectManager->observers().erase(entry->second);
+    m_projectManagerObservers.erase(entry);
+  }
+}
+
+void pqSMTKAttributePanel::handleProjectEvent(
+  const smtk::project::Project& project,
+  smtk::project::EventType event)
+{
+  auto* taskManager = const_cast<smtk::task::Manager*>(&project.taskManager());
+  QPointer<pqSMTKAttributePanel> self(this);
+  switch (event)
+  {
+    case smtk::project::EventType::ADDED:
+      // observe the active task
+      // Use QTimer to wait until the event queue is emptied before trying this;
+      // that gives operations time to complete. Blech.
+      QTimer::singleShot(0, [this, taskManager, self]() {
+        if (!self)
+        {
+          return;
+        }
+        auto& activeTracker = taskManager->active();
+        m_activeObserverKey = activeTracker.observers().insert(
+          [this, self](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
+            if (!self)
+            {
+              return;
+            }
+            // Stop observing the prior task (if any).
+            m_currentTaskObserverKey.release();
+
+            (void)oldTask;
+            if (m_currentTask)
+            {
+              m_currentTask->observers().erase(m_currentTaskObserverKey);
+              self->displayResource(nullptr);
+            }
+            m_currentTask = nullptr;
+            if (newTask)
+            {
+              self->displayTaskAttribute(newTask);
+            }
+          },
+          /* priority */ 0,
+          /* initialize */ true,
+          "AttributePanel active task tracking");
+      });
+      break;
+    case smtk::project::EventType::REMOVED:
+      // stop observing active-task tracker and any active task.
+      if (m_currentTask)
+      {
+        m_currentTask->observers().erase(m_currentTaskObserverKey);
+      }
+      m_currentTask = nullptr;
+      m_activeObserverKey.release();
+      // Remove our observer key later.
+      QTimer::singleShot(0, [this, taskManager, self]() {
+        if (!self)
+        {
+          return;
+        }
+        auto& activeTracker = taskManager->active();
+        activeTracker.observers().erase(m_activeObserverKey);
+      });
+      break;
+    case smtk::project::EventType::MODIFIED:
+    default:
+      // Do nothing.
+      break;
+  }
 }
 
 bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Managers>& managers)
@@ -321,103 +536,6 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   return didDisplay;
 }
 
-bool pqSMTKAttributePanel::displayResourceOnServer(
-  const smtk::attribute::ResourcePtr& rsrc,
-  smtk::view::ConfigurationPtr view,
-  int advancedlevel)
-{
-  smtk::resource::ManagerPtr rsrcMgr;
-  if (rsrc && (rsrcMgr = rsrc->manager()))
-  {
-    auto* behavior = pqSMTKBehavior::instance();
-    pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
-    this->updateManagers(wrapper ? wrapper->smtkManagersPtr() : nullptr);
-    return this->displayResource(rsrc, view, advancedlevel);
-  }
-  return false;
-}
-
-bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
-{
-  if (!view)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Null view passed to attribute panel.");
-    return false;
-  }
-
-  if (!m_attrUIMgr)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "View passed but no resource indicated.");
-    return false;
-  }
-  // It is possible in some cases to display attributes not part of the
-  // task workflow. In that case, we need to stop watching the currently-active
-  // task (so its completion state changing does not disable an unrelated
-  // attribute editor) and force the panel widget to be enabled.
-  // If this new view _is_ part of the currently-active task, the enabled
-  // status and observer will be reset after this by the method calling us.
-  this->m_attrUIMgr->setReadOnly(false);
-  if (m_currentTask)
-  {
-    m_currentTask->observers().erase(m_currentTaskObserverKey);
-  }
-  m_currentTask = nullptr;
-  auto* qview = m_attrUIMgr->setSMTKView(view, this);
-  if (!qview)
-  {
-    return false;
-  }
-
-  this->focusPanel();
-  return true;
-}
-
-bool pqSMTKAttributePanel::updatePipeline()
-{
-  auto* dataSource = pqActiveObjects::instance().activeSource();
-  return this->displayPipelineSource(dataSource);
-}
-
-void pqSMTKAttributePanel::updateSettings()
-{
-  if (!m_attrUIMgr)
-  {
-    return;
-  }
-
-  auto* smtkSettings = vtkSMTKSettings::GetInstance();
-  m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
-}
-
-void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
-{
-  if (doDisplay)
-  {
-    QObject::connect(
-      &pqActiveObjects::instance(),
-      SIGNAL(sourceChanged(pqPipelineSource*)),
-      this,
-      SLOT(displayPipelineSource(pqPipelineSource*)),
-      Qt::QueuedConnection);
-    QObject::connect(
-      &pqActiveObjects::instance(),
-      SIGNAL(dataUpdated()),
-      this,
-      SLOT(updatePipeline()),
-      Qt::QueuedConnection);
-  }
-  else
-  {
-    QObject::disconnect(
-      &pqActiveObjects::instance(),
-      SIGNAL(sourceChanged(pqPipelineSource*)),
-      this,
-      SLOT(displayPipelineSource(pqPipelineSource*)));
-    QObject::disconnect(
-      &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
-  }
-}
-
 void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
 {
   // By default the Panel's name is Attribute Editor
@@ -437,194 +555,114 @@ void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
   Q_EMIT titleChanged(panelName.c_str());
 }
 
-void pqSMTKAttributePanel::observeProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
+bool pqSMTKAttributePanel::displayTaskAttribute(smtk::task::Task* task)
 {
-  (void)server;
-  if (!mgr)
+  bool didDisplay = false;
+  if (!task)
   {
-    return;
+    return didDisplay;
   }
-  auto projectManager = mgr->smtkProjectManager();
-  if (!projectManager)
+  auto styles = task->style();
+  for (const auto& style : styles)
   {
-    return;
-  }
-
-  QPointer<pqSMTKAttributePanel> self(this);
-  auto observerKey = projectManager->observers().insert(
-    [self](const smtk::project::Project& project, smtk::project::EventType event) {
-      if (self)
+    auto styleConfig = task->manager()->getStyle(style);
+    // Does this style have a tag for us?
+    if (styleConfig.contains("attribute-panel"))
+    {
+      auto panelConfig = styleConfig.at("attribute-panel");
+      if (panelConfig.contains("attribute-editor"))
       {
-        self->handleProjectEvent(project, event);
-      }
-    },
-    0,    // assign a neutral priority
-    true, // immediatelyNotify
-    "pqSMTKAttributePanel: Display active task's related attributes in panel.");
-  m_projectManagerObservers[projectManager] = std::move(observerKey);
-}
-
-void pqSMTKAttributePanel::unobserveProjectsOnServer(pqSMTKWrapper* mgr, pqServer* server)
-{
-  (void)server;
-  if (!mgr)
-  {
-    return;
-  }
-  auto projectManager = mgr->smtkProjectManager();
-  if (!projectManager)
-  {
-    return;
-  }
-
-  auto entry = m_projectManagerObservers.find(projectManager);
-  if (entry != m_projectManagerObservers.end())
-  {
-    projectManager->observers().erase(entry->second);
-    m_projectManagerObservers.erase(entry);
-  }
-}
-
-void pqSMTKAttributePanel::handleProjectEvent(
-  const smtk::project::Project& project,
-  smtk::project::EventType event)
-{
-  auto* taskManager = const_cast<smtk::task::Manager*>(&project.taskManager());
-  QPointer<pqSMTKAttributePanel> self(this);
-  switch (event)
-  {
-    case smtk::project::EventType::ADDED:
-      // observe the active task
-      // Use QTimer to wait until the event queue is emptied before trying this;
-      // that gives operations time to complete. Blech.
-      QTimer::singleShot(0, [this, taskManager, self]() {
-        if (!self)
+        auto viewName = panelConfig.at("attribute-editor").get<std::string>();
+        // std::cout << "Got view name " << viewName << std::endl;
+        if (auto rsrc = m_rsrc.lock())
         {
-          return;
+          auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+          smtk::view::ConfigurationPtr viewConfig =
+            attrRsrc ? attrRsrc->findView(viewName) : nullptr;
+          if (viewConfig)
+          {
+            this->resetPanel(attrRsrc->manager());
+            // replace the contents with UI for this view.
+            didDisplay = this->displayResource(attrRsrc, viewConfig);
+          }
         }
-        auto& activeTracker = taskManager->active();
-        m_activeObserverKey = activeTracker.observers().insert(
-          [this, self](smtk::task::Task* oldTask, smtk::task::Task* newTask) {
-            if (!self)
+        if (!didDisplay)
+        {
+          auto managers = task->manager()->managers();
+          this->updateManagers(managers);
+          auto rsrcMgr = managers->get<smtk::resource::Manager::Ptr>();
+          // Look in all the attribute resources the task manager knows of for the named view.
+          this->resetPanel(rsrcMgr);
+          auto attributeResources = rsrcMgr->find("smtk::attribute::Resource");
+          for (const auto& rsrc : attributeResources)
+          {
+            auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+            auto viewConfig = attrRsrc->findView(viewName);
+            if (viewConfig)
             {
-              return;
-            }
-            (void)oldTask;
-            if (m_currentTask)
-            {
-              m_currentTask->observers().erase(m_currentTaskObserverKey);
-              self->displayResource(nullptr);
-            }
-            m_currentTask = nullptr;
-            if (newTask)
-            {
-              bool didDisplay = false;
-              auto styles = newTask->style();
-              for (const auto& style : styles)
-              {
-                auto styleConfig = newTask->manager()->getStyle(style);
-                // Does this style have a tag for us?
-                if (styleConfig.contains("attribute-panel"))
-                {
-                  auto panelConfig = styleConfig.at("attribute-panel");
-                  if (panelConfig.contains("attribute-editor"))
-                  {
-                    auto viewName = panelConfig.at("attribute-editor").get<std::string>();
-                    // std::cout << "Got view name " << viewName << std::endl;
-                    if (auto rsrc = m_rsrc.lock())
-                    {
-                      auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-                      smtk::view::ConfigurationPtr viewConfig =
-                        attrRsrc ? attrRsrc->findView(viewName) : nullptr;
-                      if (viewConfig)
-                      {
-                        self->resetPanel(attrRsrc->manager());
-                        // replace the contents with UI for this view.
-                        didDisplay = self->displayResource(attrRsrc, viewConfig);
-                      }
-                    }
-                    if (!didDisplay)
-                    {
-                      auto managers = newTask->manager()->managers();
-                      this->updateManagers(managers);
-                      auto rsrcMgr = managers->get<smtk::resource::Manager::Ptr>();
-                      // Look in all the attribute resources the task manager knows of for the named view.
-                      self->resetPanel(rsrcMgr);
-                      auto attributeResources = rsrcMgr->find("smtk::attribute::Resource");
-                      for (const auto& rsrc : attributeResources)
-                      {
-                        auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-                        auto viewConfig = attrRsrc->findView(viewName);
-                        if (viewConfig)
-                        {
-                          didDisplay = self->displayResource(attrRsrc, viewConfig);
-                          if (didDisplay)
-                          {
-                            break;
-                          }
-                        }
-                      }
-                    }
-                    if (!didDisplay)
-                    {
-                      smtkWarningMacro(
-                        smtk::io::Logger::instance(),
-                        "Could not find an attribute view named \"" << viewName << "\".");
-                    }
-                    else
-                    {
-                      break;
-                    }
-                  }
-                }
-              }
+              didDisplay = this->displayResource(attrRsrc, viewConfig);
               if (didDisplay)
               {
-                auto curState = newTask->state();
-                m_currentTask = newTask;
-                m_currentTaskObserverKey = newTask->observers().insert(
-                  [this, self](smtk::task::Task&, smtk::task::State prev, smtk::task::State next) {
-                    (void)prev;
-                    if (!self)
-                    {
-                      return;
-                    }
-                    self->m_attrUIMgr->setReadOnly(
-                      next < smtk::task::State::Incomplete || next >= smtk::task::State::Completed);
-                  },
-                  "AttributePanel current task state-tracking.");
-                self->m_attrUIMgr->setReadOnly(
-                  curState < smtk::task::State::Incomplete ||
-                  curState >= smtk::task::State::Completed);
+                break;
               }
             }
-          },
-          /* priority */ 0,
-          /* initialize */ true,
-          "AttributePanel active task tracking");
-      });
-      break;
-    case smtk::project::EventType::REMOVED:
-      // stop observing active-task tracker and any active task.
-      if (m_currentTask)
-      {
-        m_currentTask->observers().erase(m_currentTaskObserverKey);
+          }
+        }
+        if (!didDisplay)
+        {
+          smtkWarningMacro(
+            smtk::io::Logger::instance(),
+            "Could not find an attribute view named \"" << viewName << "\".");
+        }
+        else
+        {
+          break;
+        }
       }
-      m_currentTask = nullptr;
-      m_activeObserverKey.release();
-      // Remove our observer key later.
-      QTimer::singleShot(0, [this, taskManager, self]() {
+    }
+  }
+  if (didDisplay)
+  {
+    // If we were able to show a view related to the task, start tracking
+    // changes in the task state so we can mark the view read-only if the
+    // task is completed (or read+write if marked incomplete).
+    auto curState = task->state();
+    m_currentTask = task;
+    QPointer<pqSMTKAttributePanel> self = this;
+    m_currentTaskObserverKey = task->observers().insert(
+      [self](smtk::task::Task& task, smtk::task::State priorState, smtk::task::State currentState) {
+        (void)task;
+        (void)priorState;
         if (!self)
         {
           return;
         }
-        auto& activeTracker = taskManager->active();
-        activeTracker.observers().erase(m_activeObserverKey);
-      });
-      break;
-    case smtk::project::EventType::MODIFIED:
-    default:
-      // Do nothing.
-      break;
+        self->m_attrUIMgr->setReadOnly(
+          currentState < smtk::task::State::Incomplete ||
+          currentState >= smtk::task::State::Completed);
+      },
+      "AttributePanel current task state-tracking.");
+    this->m_attrUIMgr->setReadOnly(
+      curState < smtk::task::State::Incomplete || curState >= smtk::task::State::Completed);
+  }
+  return didDisplay;
+}
+
+void pqSMTKAttributePanel::activeTaskStateChange(
+  smtk::task::Task& task,
+  smtk::task::State priorState,
+  smtk::task::State currentState)
+{
+  if (currentState == smtk::task::State::Completed)
+  {
+    // Do not let the user edit this task's attribute any longer.
+    if (auto resource = m_rsrc.lock())
+    {
+      this->resetPanel(resource->manager());
+    }
+  }
+  else if (priorState == smtk::task::State::Completed)
+  {
+    this->displayTaskAttribute(&task);
   }
 }

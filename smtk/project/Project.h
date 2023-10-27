@@ -78,19 +78,15 @@ public:
   const std::string& version() const { return m_version; }
   void setVersion(const std::string& version) { m_version = version; }
 
-  // Current project design does not contain any components (this could change in the future)
+  /// Return a functor that evaluates whether a component matches the \a query string.
   std::function<bool(const smtk::resource::Component&)> queryOperation(
-    const std::string&) const override
-  {
-    return [](const smtk::resource::Component&) { return true; };
-  }
+    const std::string& query) const override;
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  /// Visit components this project owns.
+  void visit(smtk::resource::Component::Visitor&) const override;
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
-  {
-    return smtk::resource::ComponentPtr();
-  }
+  /// Return a project component pointer given its UUID.
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override;
 
   const smtk::project::Manager* manager() const { return m_manager; }
 

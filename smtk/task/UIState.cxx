@@ -69,7 +69,7 @@ void UIState::dump(std::ostream& os)
     auto configIter = classIter->second.begin();
     for (; configIter != classIter->second.end(); ++configIter)
     {
-      os << "  " << configIter->first.data() << ", " << configIter->second << '\n';
+      os << "  " << configIter->first << ", " << configIter->second << '\n';
     }
   }
   os << std::endl;

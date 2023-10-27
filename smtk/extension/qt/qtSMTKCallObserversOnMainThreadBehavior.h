@@ -75,33 +75,35 @@ Q_SIGNALS:
   void selectionEvent(QString selectionId, QString str, QPrivateSignal);
 
   /// Override for project observations.
-  void
-  projectInstanceEvent(smtk::common::UUID project, smtk::project::EventType event, QPrivateSignal);
+  void projectInstanceEvent(
+    const smtk::common::UUID& project,
+    smtk::project::EventType event,
+    QPrivateSignal);
 
   /**\brief Signal that a task has been managed/unmanaged.
    */
   void taskInstanceEvent(
-    smtk::common::UUID project,
+    const smtk::common::UUID& project,
     smtk::common::InstanceEvent event,
-    smtk::string::Token taskId,
+    const smtk::common::UUID& taskId,
     QPrivateSignal);
 
   /**\brief Signal that an adaptor has been managed/unmanaged.
    */
   void adaptorInstanceEvent(
-    smtk::common::UUID project,
+    const smtk::common::UUID& project,
     smtk::common::InstanceEvent event,
-    smtk::string::Token fromTaskId,
-    smtk::string::Token toTaskId,
+    const smtk::common::UUID& fromTaskId,
+    const smtk::common::UUID& toTaskId,
     QPrivateSignal);
 
   /**\brief Signal that a worflow (task-chain) has been edited.
    */
   void taskWorkflowEvent(
-    smtk::common::UUID project,
-    const std::set<smtk::string::Token>& headKeys,
+    const smtk::common::UUID& project,
+    const std::set<smtk::common::UUID>& headKeys,
     smtk::task::WorkflowEvent event,
-    smtk::string::Token subjectId,
+    const smtk::common::UUID& subjectId,
     QPrivateSignal);
 
 protected:
@@ -111,34 +113,34 @@ protected Q_SLOTS:
   /**\brief Slot run on GUI thread when a project has been managed/unmanaged.
    */
   void processProjectInstanceEvent(
-    smtk::common::UUID project,
+    const smtk::common::UUID& project,
     smtk::project::EventType event,
     QPrivateSignal);
 
   /**\brief Slot run on GUI thread when a task has been managed/unmanaged.
    */
   void processTaskInstanceEvent(
-    smtk::common::UUID project,
+    const smtk::common::UUID& project,
     smtk::common::InstanceEvent event,
-    smtk::string::Token taskId,
+    const smtk::common::UUID& taskId,
     QPrivateSignal);
 
   /**\brief Slot run on GUI thread when an adaptor has been managed/unmanaged.
    */
   void processAdaptorInstanceEvent(
-    smtk::common::UUID project,
+    const smtk::common::UUID& project,
     smtk::common::InstanceEvent event,
-    smtk::string::Token fromTaskId,
-    smtk::string::Token toTaskId,
+    const smtk::common::UUID& fromTaskId,
+    const smtk::common::UUID& toTaskId,
     QPrivateSignal);
 
   /**\brief Slot run on GUI thread when a worflow (task-chain) has been edited.
    */
   void processTaskWorkflowEvent(
-    smtk::common::UUID project,
-    const std::set<smtk::string::Token>& headIds,
+    const smtk::common::UUID& project,
+    const std::set<smtk::common::UUID>& headIds,
     smtk::task::WorkflowEvent event,
-    smtk::string::Token subjectId,
+    const smtk::common::UUID& subjectId,
     QPrivateSignal);
 
 private:
@@ -150,11 +152,10 @@ private:
   std::weak_ptr<smtk::project::Manager> m_projectManager;
   smtk::project::Observers::Key m_projectObserver;
   std::map<smtk::common::UUID, std::shared_ptr<smtk::project::Project>> m_activeProjects;
-  std::unordered_map<smtk::string::Token, std::shared_ptr<smtk::task::Task>> m_activeTasks;
-  std::
-    map<std::pair<smtk::string::Token, smtk::string::Token>, std::shared_ptr<smtk::task::Adaptor>>
-      m_activeAdaptors;
-  std::map<std::set<smtk::string::Token>, std::set<std::shared_ptr<smtk::task::Task>>>
+  std::unordered_map<smtk::common::UUID, std::shared_ptr<smtk::task::Task>> m_activeTasks;
+  std::map<std::pair<smtk::common::UUID, smtk::common::UUID>, std::shared_ptr<smtk::task::Adaptor>>
+    m_activeAdaptors;
+  std::map<std::set<smtk::common::UUID>, std::set<std::shared_ptr<smtk::task::Task>>>
     m_activeWorkflows;
 
   // A mutex to make access to m_activeOperations thread-safe

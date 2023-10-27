@@ -191,7 +191,7 @@ public:
         {
           case smtk::common::InstanceEvent::Managed:
           {
-            // std::cout << "Add task instance " << task << " " << task->title() << "\n";
+            // std::cout << "Add task instance " << task << " " << task->name() << "\n";
             // Determine the qtTaskNode constructed needed for this Task.
             std::string taskNodeType = "smtk::extension::qtDefaultTaskNode";
             for (const auto& style : task->style())
@@ -229,7 +229,7 @@ public:
           break;
           case smtk::common::InstanceEvent::Unmanaged:
           {
-            // std::cout << "Remove task instance " << task << " " << task->title() << "\n";
+            // std::cout << "Remove task instance " << task << " " << task->name() << "\n";
             auto it = m_taskIndex.find(task.get());
             if (it != m_taskIndex.end())
             {
@@ -287,7 +287,7 @@ public:
 #ifdef SMTK_DBG_WORKFLOWS
         for (const auto& wtask : workflow)
         {
-          std::cout << "  " << wtask << " " << wtask->title() << "\n";
+          std::cout << "  " << wtask << " " << wtask->name() << "\n";
         }
 #endif
       },

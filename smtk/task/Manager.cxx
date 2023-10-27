@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/task/Manager.h"
+#include "smtk/resource/Resource.h"
 
 namespace smtk
 {
@@ -23,6 +24,13 @@ Manager::Manager()
 {
 }
 
+Manager::Manager(smtk::resource::Resource* parent)
+  : m_taskInstances(*this)
+  , m_active(&m_taskInstances)
+  , m_parent(parent)
+{
+}
+
 Manager::~Manager() = default;
 
 nlohmann::json Manager::getStyle(const smtk::string::Token& styleClass) const
@@ -32,6 +40,11 @@ nlohmann::json Manager::getStyle(const smtk::string::Token& styleClass) const
     return this->m_styles.at(styleClass.data());
   }
   return nlohmann::json();
+}
+
+smtk::resource::Resource* Manager::resource() const
+{
+  return m_parent;
 }
 
 } // namespace task

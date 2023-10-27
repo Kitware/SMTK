@@ -29,15 +29,20 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
   Task::Configuration config;
   if (task)
   {
-    config["id"] = helper.tasks().swizzleId(task);
+    config["id"] = task->id();
+    config["swizzle"] = helper.tasks().swizzleId(task);
     config["type"] = task->typeName();
-    config["title"] = task->title();
+    config["name"] = task->name();
     if (!task->style().empty())
     {
       config["style"] = task->style();
     }
     config["state"] = stateName(task->internalState());
-    auto deps = helper.swizzleDependencies(task->dependencies());
+    nlohmann::json::array_t deps;
+    for (const auto& dependency : task->dependencies())
+    {
+      deps.push_back(dependency->id());
+    }
     if (!deps.empty())
     {
       config["dependencies"] = deps;

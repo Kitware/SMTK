@@ -34,14 +34,14 @@ inline PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Proje
   instance
     .def(py::init_alias<>())
     .def_static("create", &smtk::project::Project::create, py::arg("typeName") = "")
-    .def("find", &smtk::project::Project::find, py::arg("compId"))
+    .def("find", &smtk::project::Project::find, py::arg("id"))
     .def("index", &smtk::project::Project::index)
     .def("manager", &smtk::project::Project::manager)
     .def("name", &smtk::project::Project::name)
     .def("operations", (smtk::project::OperationFactory const& (smtk::project::Project::*)() const) &smtk::project::Project::operations)
     .def("operations", (smtk::project::OperationFactory & (smtk::project::Project::*)()) &
         smtk::project::Project::operations)
-    .def("queryOperation", &smtk::project::Project::queryOperation, py::arg("arg0"))
+    .def("queryOperation", &smtk::project::Project::queryOperation, py::arg("queryString"))
     .def("resources", (smtk::project::ResourceContainer const& (smtk::project::Project::*)() const) &smtk::project::Project::resources,
         py::return_value_policy::reference_internal)
     .def("resources", (smtk::project::ResourceContainer & (smtk::project::Project::*)()) &smtk::project::Project::resources,
@@ -54,7 +54,7 @@ inline PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Proje
     .def("typeName", &smtk::project::Project::typeName)
     .def("version", &smtk::project::Project::version)
     .def("taskManager", [](const smtk::project::Project::Ptr& project) { return &project->taskManager(); })
-    .def("visit", &smtk::project::Project::visit, py::arg("arg0"));
+    .def("visit", &smtk::project::Project::visit, py::arg("visitor"));
   return instance;
 }
 

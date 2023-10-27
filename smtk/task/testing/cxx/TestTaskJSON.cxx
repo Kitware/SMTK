@@ -53,7 +53,7 @@ namespace
 void printTaskStates(smtk::task::Manager::Ptr taskManager)
 {
   taskManager->taskInstances().visit([](const std::shared_ptr<smtk::task::Task>& task) {
-    std::cout << task->title() << ": " << smtk::task::stateName(task->state()) << "\n";
+    std::cout << task->name() << ": " << smtk::task::stateName(task->state()) << "\n";
     return smtk::common::Visit::Continue;
   });
 }
@@ -90,7 +90,7 @@ int TestTaskJSON(int, char*[])
                 << " workflows:\n";
       for (const auto& wftask : workflows)
       {
-        std::cout << "--  head task " << wftask->title() << "\n";
+        std::cout << "--  head task " << wftask->name() << "\n";
       }
       std::cout << "--\n";
     };
@@ -110,7 +110,7 @@ int TestTaskJSON(int, char*[])
     {
       "id": 1,
       "type": "smtk::task::GatherResources",
-      "title": "Load a model and attribute",
+      "name": "Load a model and attribute",
       "style": [ "foo", "bar", "baz" ],
       "state": "completed",
       "auto-configure": true,
@@ -129,7 +129,7 @@ int TestTaskJSON(int, char*[])
     {
       "id": 2,
       "type": "smtk::task::FillOutAttributes",
-      "title": "Mark up model",
+      "name": "Mark up model",
       "state": "incomplete",
       "dependencies": [ 1 ],
       "attribute-sets": [

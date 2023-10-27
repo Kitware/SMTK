@@ -41,32 +41,97 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
       helper.clear();
     }
     // helper.setManagers(managers);
-    std::map<json::Helper::SwizzleId, Task::Ptr> taskMap;
+    std::map<smtk::common::UUID, Task::Ptr> taskMap;
     std::map<json::Helper::SwizzleId, Adaptor::Ptr> adaptorMap;
     for (const auto& jsonTask : jj.at("tasks"))
     {
-      auto taskId = jsonTask.at("id").get<json::Helper::SwizzleId>();
+      json::Helper::SwizzleId taskSwizzle = 0;
+      auto taskId = smtk::common::UUID::null();
+      auto jTaskId = jsonTask.at("id");
+      if (jTaskId.is_number_integer())
+      {
+        taskSwizzle = jTaskId.get<json::Helper::SwizzleId>();
+      }
+      else if (jTaskId.is_string())
+      {
+        taskId = jsonTask.at("id").get<smtk::common::UUID>();
+      }
       Task::Ptr task = jsonTask;
+      if (taskSwizzle)
+      {
+        helper.tasks().setSwizzleId(task.get(), taskSwizzle);
+        taskId = task->id(); // task->setId(taskId);
+      }
       taskMap[taskId] = task;
-      helper.tasks().setSwizzleId(task.get(), taskId);
     }
     // Do a second pass to deserialize dependencies and UI config.
     for (const auto& jsonTask : jj.at("tasks"))
     {
-      auto taskId = jsonTask.at("id").get<json::Helper::SwizzleId>();
-      auto task = taskMap[taskId];
+      auto jTaskId = jsonTask.at("id");
+      Task::Ptr task;
+      if (jTaskId.is_number_integer())
+      {
+        auto taskSwizzle = jTaskId.get<json::Helper::SwizzleId>();
+        auto* tp = helper.tasks().unswizzle(taskSwizzle);
+        task = tp ? std::static_pointer_cast<smtk::task::Task>(tp->shared_from_this()) : nullptr;
+      }
+      else
+      {
+        auto taskId = jsonTask.at("id").get<smtk::common::UUID>();
+        auto it = taskMap.find(taskId);
+        if (it != taskMap.end())
+        {
+          task = it->second;
+        }
+      }
+      if (!task)
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Could not find task for id: " << jTaskId << ".");
+        continue;
+      }
       if (jsonTask.contains("dependencies"))
       {
-        auto taskDeps = helper.unswizzleDependencies(jsonTask.at("dependencies"));
-        // Make sure this is not its own dependencies
-        auto finder = taskDeps.find(task);
-        if (finder != taskDeps.end())
+        smtk::task::Task::PassedDependencies taskDeps;
+        for (const auto& dep : jsonTask.at("dependencies"))
         {
-          smtkWarningMacro(
-            smtk::io::Logger::instance(), task->title() << " trying to set deps to itself");
-          taskDeps.erase(task);
+          if (dep.is_number_integer())
+          {
+            // Set by call to helper.tasks().setSwizzleId(task.get(), taskId) above
+            auto* depTask = helper.tasks().unswizzle(dep.get<json::Helper::SwizzleId>());
+            if (depTask)
+            {
+              taskDeps.insert(
+                std::static_pointer_cast<smtk::task::Task>(depTask->shared_from_this()));
+            }
+            else
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                task->name() << " has unknown dependency " << dep.get<json::Helper::SwizzleId>()
+                             << "; skipping.");
+              continue;
+            }
+          }
+          else
+          {
+            auto it = taskMap.find(dep.get<smtk::common::UUID>());
+            if (it == taskMap.end())
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                task->name() << " has unknown dependency " << dep << "; skipping.");
+              continue;
+            }
+            if (it->second == task)
+            {
+              smtkWarningMacro(
+                smtk::io::Logger::instance(), task->name() << " trying to set deps to itself");
+              continue;
+            }
+            taskDeps.insert(it->second);
+          }
         }
-
         task->addDependencies(taskDeps);
       }
 
@@ -90,9 +155,31 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
           try
           {
             auto adaptorId = jsonAdaptor.at("id").get<json::Helper::SwizzleId>();
-            auto taskFromId = jsonAdaptor.at("from").get<json::Helper::SwizzleId>();
-            auto taskToId = jsonAdaptor.at("to").get<json::Helper::SwizzleId>();
-            helper.setAdaptorTaskIds(taskFromId, taskToId);
+            // Tasks are now components. They may have temporary IDs that need to
+            // be de-swizzled. Or they may just have UUIDs.
+            auto jTaskFrom = jsonAdaptor.at("from");
+            auto jTaskTo = jsonAdaptor.at("to");
+            if (jTaskFrom.is_string() && jTaskTo.is_string())
+            {
+              // Both tasks specified by UUID.
+              auto taskFromId = jTaskFrom.get<smtk::common::UUID>();
+              auto taskToId = jTaskTo.get<smtk::common::UUID>();
+              helper.setAdaptorTaskIds(taskFromId, taskToId);
+            }
+            else if (jTaskFrom.is_number_integer() && jTaskTo.is_number_integer())
+            {
+              // Both tasks specified by integer index (not a UUID).
+              auto taskFromId = jTaskFrom.get<json::Helper::SwizzleId>();
+              auto taskToId = jTaskTo.get<json::Helper::SwizzleId>();
+              helper.setAdaptorTaskIds(taskFromId, taskToId);
+            }
+            else
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                "Skipping adaptor because 'from' and 'to' are not of the same, proper type.");
+              continue;
+            }
             Adaptor::Ptr adaptor = jsonAdaptor;
             adaptorMap[adaptorId] = adaptor;
             helper.adaptors().swizzleId(adaptor.get());
@@ -101,7 +188,7 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
           {
             smtkErrorMacro(
               smtk::io::Logger::instance(),
-              "Skipping task because 'id', 'from', and/or 'to' fields are missing.");
+              "Skipping adaptor because 'id', 'from', and/or 'to' fields are missing.");
           }
         }
       }

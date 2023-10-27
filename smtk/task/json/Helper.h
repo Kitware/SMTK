@@ -17,6 +17,7 @@
 
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
+#include "smtk/common/UUID.h"
 
 #include <exception>
 #include <string>
@@ -126,6 +127,7 @@ public:
   /// be "stateless" (i.e., taking no additional parameters and using
   /// the Helper as a side effect).
   void setAdaptorTaskIds(SwizzleId fromId, SwizzleId toId);
+  void setAdaptorTaskIds(const smtk::common::UUID& fromId, const smtk::common::UUID& toId);
   void clearAdaptorTaskIds();
   /// Get task-pointers based on the IDs set earlier.
   std::pair<Task*, Task*> getAdaptorTasks();
@@ -148,6 +150,8 @@ protected:
   smtk::common::Managers::Ptr m_managers;
   SwizzleId m_adaptorFromId = ~static_cast<SwizzleId>(0);
   SwizzleId m_adaptorToId = ~static_cast<SwizzleId>(0);
+  smtk::common::UUID m_adaptorFromUID;
+  smtk::common::UUID m_adaptorToUID;
   /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
   /// was used to create this helper. If m_topLevel is false, the parent task
   /// is assigned swizzle ID 1.

@@ -50,7 +50,7 @@ std::string configString = R"(
     {
       "id": 1,
       "type": "smtk::task::GatherResources",
-      "title": "Load a model and attribute",
+      "name": "Load a model and attribute",
       "state": "completed",
       "auto-configure": true,
       "resources": [
@@ -69,14 +69,14 @@ std::string configString = R"(
       "id": 2,
       "type": "smtk::task::Group",
       "mode": "parallel",
-      "title": "Prepare simulation",
+      "name": "Prepare simulation",
       "dependencies": [ 1 ],
       "children": {
         "tasks": [
           {
             "id": 2,
             "type": "smtk::task::FillOutAttributes",
-            "title": "Mark up model",
+            "name": "Mark up model",
             "attribute-sets": [
               {
                 "role": "simulation attribute",
@@ -90,7 +90,7 @@ std::string configString = R"(
           {
             "id": 3,
             "type": "smtk::task::FillOutAttributes",
-            "title": "Set simulation parameters",
+            "name": "Set simulation parameters",
             "attribute-sets": [
               {
                 "role": "simulation attribute",
@@ -150,7 +150,7 @@ void printTaskStates(smtk::task::Manager::Ptr taskManager, const std::string& me
     std::string indent(depth * 2, ' ');
     std::cout << indent << &task << " : children? " << (task.hasChildren() ? "Y" : "N")
               << " parent " << task.parent() << " state " << smtk::task::stateName(task.state())
-              << " " << task.title() << "\n";
+              << " " << task.name() << "\n";
     if (task.hasChildren())
     {
       parent = &task;
@@ -178,7 +178,7 @@ bool testStates(std::vector<smtk::task::Task::Ptr>& theTasks, smtk::task::State 
   {
     if (theTasks[i]->state() != taskStates[i])
     {
-      std::cerr << "Error: Task(" << theTasks[i]->title()
+      std::cerr << "Error: Task(" << theTasks[i]->name()
                 << ") has state :" << smtk::task::stateName(theTasks[i]->state())
                 << " should have been: " << smtk::task::stateName(taskStates[i]) << std::endl;
       passed = false;
@@ -271,7 +271,7 @@ int TestTaskGroup(int, char*[])
       bool found = false;
       for (unsigned int i = 0; (i < 4) || (!found); i++)
       {
-        if (task->title() == taskNames[i])
+        if (task->name() == taskNames[i])
         {
           found = true;
           theTasks[i] = task;
@@ -279,7 +279,7 @@ int TestTaskGroup(int, char*[])
       }
       if (!found)
       {
-        std::cerr << "Found unexpected task: " << task->title() << std::endl;
+        std::cerr << "Found unexpected task: " << task->name() << std::endl;
         hasErrors = true;
       }
       return smtk::common::Visit::Continue;

@@ -209,7 +209,7 @@ void qtSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
 }
 
 void qtSMTKCallObserversOnMainThreadBehavior::processProjectInstanceEvent(
-  smtk::common::UUID projectId,
+  const smtk::common::UUID& projectId,
   smtk::project::EventType event,
   QPrivateSignal)
 {
@@ -252,15 +252,15 @@ void qtSMTKCallObserversOnMainThreadBehavior::processProjectInstanceEvent(
         const std::set<smtk::task::Task*>& headTasks,
         smtk::task::WorkflowEvent event,
         smtk::task::Task* subject) {
-        std::set<smtk::string::Token> key;
+        std::set<smtk::common::UUID> key;
         std::set<std::shared_ptr<smtk::task::Task>> value;
         for (const auto& headTask : headTasks)
         {
           key.insert(headTask->id());
-          value.insert(headTask->shared_from_this());
+          value.insert(std::static_pointer_cast<smtk::task::Task>(headTask->shared_from_this()));
         }
         key.insert(subject->id());
-        value.insert(subject->shared_from_this());
+        value.insert(std::static_pointer_cast<smtk::task::Task>(subject->shared_from_this()));
         m_activeWorkflows[key] = value;
         Q_EMIT taskWorkflowEvent(projectId, key, event, subject->id(), QPrivateSignal());
       });
@@ -273,9 +273,9 @@ void qtSMTKCallObserversOnMainThreadBehavior::processProjectInstanceEvent(
 }
 
 void qtSMTKCallObserversOnMainThreadBehavior::processTaskInstanceEvent(
-  smtk::common::UUID projectId,
+  const smtk::common::UUID& projectId,
   smtk::common::InstanceEvent event,
-  smtk::string::Token taskId,
+  const smtk::common::UUID& taskId,
   QPrivateSignal)
 {
   auto it = m_activeTasks.find(taskId);
@@ -296,10 +296,10 @@ void qtSMTKCallObserversOnMainThreadBehavior::processTaskInstanceEvent(
 }
 
 void qtSMTKCallObserversOnMainThreadBehavior::processAdaptorInstanceEvent(
-  smtk::common::UUID projectId,
+  const smtk::common::UUID& projectId,
   smtk::common::InstanceEvent event,
-  smtk::string::Token fromTaskId,
-  smtk::string::Token toTaskId,
+  const smtk::common::UUID& fromTaskId,
+  const smtk::common::UUID& toTaskId,
   QPrivateSignal)
 {
   auto it = m_activeAdaptors.find(std::make_pair(fromTaskId, toTaskId));
@@ -320,10 +320,10 @@ void qtSMTKCallObserversOnMainThreadBehavior::processAdaptorInstanceEvent(
 }
 
 void qtSMTKCallObserversOnMainThreadBehavior::processTaskWorkflowEvent(
-  smtk::common::UUID projectId,
-  const std::set<smtk::string::Token>& headIds,
+  const smtk::common::UUID& projectId,
+  const std::set<smtk::common::UUID>& headIds,
   smtk::task::WorkflowEvent event,
-  smtk::string::Token subjectId,
+  const smtk::common::UUID& subjectId,
   QPrivateSignal)
 {
   auto it = m_activeWorkflows.find(headIds);

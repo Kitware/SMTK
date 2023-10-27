@@ -263,7 +263,7 @@ qtDefaultTaskNode1::qtDefaultTaskNode1(
     graphicsProxyWidget->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     graphicsProxyWidget->setPos(QPointF(0, 0));
 
-    m_container->m_headlineButton->setText(QString::fromStdString(m_task->title()));
+    m_container->m_headlineButton->setText(QString::fromStdString(m_task->name()));
     m_container->m_controls->hide();
   }
 

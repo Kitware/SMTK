@@ -58,8 +58,8 @@ int TestActiveTask(int, char*[])
   smtk::task::Task* nextTask = nullptr;
   auto ikey = taskManager->active().observers().insert(
     [&count, &previousTask, &nextTask](smtk::task::Task* prev, smtk::task::Task* next) {
-      std::cout << "  Active task switched " << (prev ? prev->title() : "(none)") << " ⟶  "
-                << (next ? next->title() : "(none)") << "\n";
+      std::cout << "  Active task switched " << (prev ? prev->name() : "(none)") << " ⟶  "
+                << (next ? next->name() : "(none)") << "\n";
       ++count;
       previousTask = prev;
       nextTask = next;
@@ -72,7 +72,7 @@ int TestActiveTask(int, char*[])
 
   {
     std::shared_ptr<Task> t1 = taskManager->taskInstances().create<Task>(
-      Task::Configuration{ { "title", "Task 1" } }, *taskManager, managers);
+      Task::Configuration{ { "name", "Task 1" } }, *taskManager, managers);
     std::cout << "Attempting to set active task:\n";
     taskManager->active().switchTo(t1.get());
     test(count == 2, "Expected to switch active task.");
@@ -82,7 +82,7 @@ int TestActiveTask(int, char*[])
       std::cout << "Ensuring unmanaged tasks cannot become active.\n";
       std::shared_ptr<Task> tmp = Task::create();
       test(!!tmp, "Expected to create unmanaged task.");
-      tmp->configure(Task::Configuration{ { "title", "Unmanaged Task" } });
+      tmp->configure(Task::Configuration{ { "name", "Unmanaged Task" } });
       taskManager->active().switchTo(tmp.get());
       test(count == 2, "Should not be able to switch to an unmanaged task.");
     }
@@ -95,7 +95,7 @@ int TestActiveTask(int, char*[])
 
     // Now add a task and switch to it.
     std::shared_ptr<Task> t2 = taskManager->taskInstances().create<Task>(
-      Task::Configuration{ { "title", "Task 2" } }, *taskManager, managers);
+      Task::Configuration{ { "name", "Task 2" } }, *taskManager, managers);
     success = t1->addDependency(t2);
     std::cout << "Switching to task 2:\n";
     taskManager->active().switchTo(t2.get());
@@ -106,7 +106,7 @@ int TestActiveTask(int, char*[])
     //    and 1 or more simulation attribute resources are held by the
     //    resource manager.
     Task::Configuration c4{
-      { "title", "Task 4" },
+      { "name", "Task 4" },
       { "auto-configure", true },
       { "resources",
         { { { "role", "model geometry" }, { "type", "smtk::model::Resource" }, { "max", 2 } },

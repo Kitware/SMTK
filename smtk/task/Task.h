@@ -10,6 +10,9 @@
 #ifndef smtk_task_Task_h
 #define smtk_task_Task_h
 
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Resource.h"
+
 #include "smtk/CoreExports.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
@@ -67,10 +70,11 @@ SMTKCORE_EXPORT std::set<smtk::task::Task*> workflowsOfTask(const Task& task);
   * The base class will determine if this results in a state transition or not
   * (based on dependencies blocking the change) and notify observers as needed.
   */
-class SMTKCORE_EXPORT Task : smtkEnableSharedPtr(Task)
+class SMTKCORE_EXPORT Task : public smtk::resource::Component
 {
 public:
-  smtkTypeMacroBase(smtk::task::Task);
+  smtkTypeMacro(smtk::task::Task);
+  smtkSuperclassMacro(smtk::resource::Component);
   smtkCreateMacro(smtk::task::Task);
 
   /// A task's state changes may be observed.
@@ -95,18 +99,9 @@ public:
   };
 
   Task();
-  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
-  Task(
-    const Configuration& config,
-    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
   Task(
     const Configuration& config,
     Manager& taskManager,
-    const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
-  SMTK_DEPRECATED_IN_23_02("Use variants that accept a task::Manager&.")
-  Task(
-    const Configuration& config,
-    const PassedDependencies& dependencies,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
   Task(
     const Configuration& config,
@@ -114,14 +109,17 @@ public:
     Manager& taskManager,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
 
-  virtual ~Task() = default;
+  ~Task() override = default;
 
-  /// Return a unique, ephemeral identifier for this task.
-  ///
-  /// The identifier is ephemeral in the sense that closing and reloading the
-  /// document that owns the task manager will not preserve the ID.
-  /// Thus, you must not serialize the ID.
-  smtk::string::Token id() const { return m_id; }
+  /// Set/get the task's unique identifier.
+  const common::UUID& id() const override { return m_id; }
+  bool setId(const common::UUID& newId) override;
+
+  /// Return the task's name
+  std::string name() const override { return m_name; }
+  virtual void setName(const std::string& name);
+
+  const std::shared_ptr<resource::Resource> resource() const override;
 
   /// A method called by all constructors passed Configuration information.
   ///
@@ -134,11 +132,13 @@ public:
   void configure(const Configuration& config);
 
   /// Return the title of the task (if one was provided).
-  const std::string& title() const { return m_title; }
+  SMTK_DEPRECATED_IN_23_11("Use name() instead.")
+  const std::string& title() const { return m_name; }
 
   /// Set the title of the task to be presented to users.
   /// This is not intended to be a unique identifier.
-  void setTitle(const std::string& title);
+  SMTK_DEPRECATED_IN_23_11("Use setName() instead.")
+  void setTitle(const std::string& title) { this->setName(title); }
 
   /// Set/get style classes for the task.
   /// A style class specifies how applications should present the task
@@ -148,6 +148,18 @@ public:
   bool addStyle(const smtk::string::Token& styleClass);
   bool removeStyle(const smtk::string::Token& styleClass);
   bool clearStyle();
+
+#if 0
+  /// For a given task and UI element, return a view configuration as
+  /// dictated by the task's style.
+  ///
+  /// If multiple styles apply to the same UI element, this method is
+  /// responsible for harmonizing them.
+  /// If a UI element is not referenced by the task's style, this method
+  /// will return null.
+  std::shared_ptr<smtk::view::Configuration> findViewFor(
+    smtk::string::Token uiElement) const { return nullptr; }
+#endif
 
   /// Populate a type-container with view-related data for configuration.
   ///
@@ -329,7 +341,7 @@ protected:
   bool internalStateChanged(State next);
 
   /// A task name to present to the user.
-  std::string m_title;
+  std::string m_name;
   /// The set of style classes for this task.
   std::set<smtk::string::Token> m_style;
   /// Whether the user has marked the task completed or not.
@@ -354,12 +366,9 @@ protected:
   /// If this task is being managed, this will refer to its manager.
   std::weak_ptr<smtk::task::Manager> m_manager;
   /// The unique identifier for this task.
-  smtk::string::Token m_id;
+  smtk::common::UUID m_id;
 
 private:
-  /// Set the task's unique ID.
-  void setId();
-
   /// The internal state of the task as provided by subclasses.
   /// This is private so subclasses cannot alter it directly;
   /// instead they should invoke `internalStateChanged()` so that

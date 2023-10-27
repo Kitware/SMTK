@@ -50,6 +50,7 @@ public:
   smtkCreateMacro(smtk::task::Manager);
 
   Manager();
+  Manager(smtk::resource::Resource* parent);
   virtual ~Manager();
   Manager(const Manager&) = delete;
   void operator=(const Manager&) = delete;
@@ -88,11 +89,15 @@ public:
   /// Store geometry changes from UI components
   UIState& uiState() { return m_uiState; }
 
+  /// If this manager is owned by a resource (typically a project), return it.
+  smtk::resource::Resource* resource() const;
+
 private:
   TaskInstances m_taskInstances;
   AdaptorInstances m_adaptorInstances;
   Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
+  smtk::resource::Resource* m_parent = nullptr;
   nlohmann::json m_styles;
   UIState m_uiState;
 };

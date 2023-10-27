@@ -12,6 +12,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/UUID.h"
 #include "smtk/string/Token.h"
 #include "smtk/task/UIStateGenerator.h"
 
@@ -54,7 +55,7 @@ public:
 
 protected:
   /** \brief Nested map of <<class>, <task_id, json>> for deserialized UI state data. */
-  std::unordered_map<smtk::string::Token, std::unordered_map<smtk::string::Token, nlohmann::json>>
+  std::unordered_map<smtk::string::Token, std::unordered_map<smtk::common::UUID, nlohmann::json>>
     m_data;
 
   /** \brief Map of <classname, generator> for serializing UI state data. */
