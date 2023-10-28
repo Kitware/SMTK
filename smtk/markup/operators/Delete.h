@@ -28,10 +28,11 @@ namespace markup
 
 /**\brief Delete components from a resource.
   *
-  * This operation is an abstract base class for operations.
-  * You must subclass it for your particular markup-resource
-  * and override operationInternal() and ableToOperate() in
-  * order to pass helper methods your resource's Traits object.
+  * This operation subclasses the abstract smtk::graph::Delete
+  * and – if you subclass the markup resource – you must subclass
+  * this operation as well, overriding operationInternal() and
+  * ableToOperate() in order to pass helper methods your resource's
+  * Traits object.
   *
   * Given a set, S, of nodes to remove, this operation will examine
   * graph arcs connected to all members of S and, if any are marked

@@ -623,5 +623,10 @@ bool Operation::restoreTrace(const std::string& trace)
   return false;
 }
 
+Operation::Outcome outcome(const Operation::Result& result)
+{
+  return static_cast<Operation::Outcome>(result->findInt("outcome")->value());
+}
+
 } // namespace operation
 } // namespace smtk

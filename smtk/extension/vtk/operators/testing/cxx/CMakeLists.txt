@@ -46,6 +46,7 @@ if (SMTK_DATA_DIR)
     VTK::CommonCore
     VTK::CommonDataModel
     VTK::IOXML
+    VTK::IOGeometry
     )
   add_test(
     NAME ExportFacesetTest

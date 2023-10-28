@@ -6,3 +6,4 @@ PRIVATE_DEPENDS
   vtkSMTKGeometryExt
   VTK::CommonDataModel
   VTK::IOXML
+  VTK::IOGeometry

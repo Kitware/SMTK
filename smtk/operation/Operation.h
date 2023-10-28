@@ -261,6 +261,14 @@ private:
   Definition m_resultDefinition;
   std::vector<std::weak_ptr<smtk::attribute::Attribute>> m_results;
 };
+
+/**\brief Return the outcome of an operation given its \a result object.
+  *
+  * This saves the tedium of fetching the integer item and casting it
+  * to an outcome.
+  */
+SMTKCORE_EXPORT Operation::Outcome outcome(const Operation::Result& result);
+
 } // namespace operation
 } // namespace smtk
 

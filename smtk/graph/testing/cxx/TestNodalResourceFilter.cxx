@@ -73,6 +73,8 @@ int TestNodalResourceFilter(int, char*[])
   auto queryOp8A = resource->queryOperation("/N.deA/ [ floating-point { /f.o/ = 3.14159 } ]");
   auto queryOp9A = resource->queryOperation("'NodeA' [ floating-point { /f.o/ = 2.71828 } ]");
   auto queryOp10A = resource->queryOperation("'NodeA'");
+  auto queryOp11A = resource->queryOperation("NodeA [ integer { 'foo' = 2 }]");
+  auto queryOp12A = resource->queryOperation("NodeA [ integer { 'foo' = 3 }]");
 
   auto queryOp1B = resource->queryOperation("'NodeB' [ integer { 'foo' }]");
   auto queryOp2B = resource->queryOperation("'NodeB' [ integer { 'foo' = 2 }]");
@@ -84,19 +86,23 @@ int TestNodalResourceFilter(int, char*[])
   auto queryOp8B = resource->queryOperation("'NodeB' [ floating-point { /f.o/ = 3.14159 } ]");
   auto queryOp9B = resource->queryOperation("'NodeB' [ floating-point { /f.o/ = 2.71828 } ]");
   auto queryOp10B = resource->queryOperation("/N.deB/");
+  auto queryOp11B = resource->queryOperation("NodeB [ integer { 'foo' = 2 }]");
+  auto queryOp12B = resource->queryOperation("NodeB [ integer { 'foo' = 3 }]");
 
   std::array<smtk::resource::Component*, 2> components = { nodeA.get(), nodeB.get() };
 
-  std::array<decltype(queryOp1A)*, 10> queryOpsA = { &queryOp1A, &queryOp2A, &queryOp3A, &queryOp4A,
-                                                     &queryOp5A, &queryOp6A, &queryOp7A, &queryOp8A,
-                                                     &queryOp9A, &queryOp10A };
-  std::array<decltype(queryOp1A)*, 10> queryOpsB = { &queryOp1B, &queryOp2B, &queryOp3B, &queryOp4B,
-                                                     &queryOp5B, &queryOp6B, &queryOp7B, &queryOp8B,
-                                                     &queryOp9B, &queryOp10B };
+  std::array<decltype(queryOp1A)*, 12> queryOpsA = { &queryOp1A,  &queryOp2A,  &queryOp3A,
+                                                     &queryOp4A,  &queryOp5A,  &queryOp6A,
+                                                     &queryOp7A,  &queryOp8A,  &queryOp9A,
+                                                     &queryOp10A, &queryOp11A, &queryOp12A };
+  std::array<decltype(queryOp1A)*, 12> queryOpsB = { &queryOp1B,  &queryOp2B,  &queryOp3B,
+                                                     &queryOp4B,  &queryOp5B,  &queryOp6B,
+                                                     &queryOp7B,  &queryOp8B,  &queryOp9B,
+                                                     &queryOp10B, &queryOp11B, &queryOp12B };
 
   std::array<decltype(queryOpsA)*, 2> queryOps = { &queryOpsA, &queryOpsB };
 
-  for (int i = 0; i < 10; ++i)
+  for (int i = 0; i < 12; ++i)
   {
     for (int j = 0; j < 2; ++j)
     {

@@ -14,6 +14,8 @@
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Rule.h"
 
+#include "smtk/common/StringUtil.h"
+
 #include "smtk/Regex.h"
 
 namespace smtk
@@ -29,8 +31,11 @@ using namespace tao::pegtl;
 
 struct TypeName
 {
-  /// Syntax for the property name.
+  /// Syntax for a component type-name.
   struct Name : smtk::resource::filter::Name<smtk::graph::Component> {};
+
+  /// Syntax for a bare component type-name.
+  struct BareTypeName : smtk::resource::filter::BareName<smtk::graph::Component> {};
 
   /// Syntax for the property name regex.
   struct Regex : smtk::resource::filter::Regex<smtk::graph::Component> {};
@@ -48,6 +53,7 @@ struct TypeName
   struct Representation : sor<pad<AnyOrStar, space>,
                               pad<smtk::resource::filter::quoted<Name>, space>,
                               pad<smtk::resource::filter::slashed<Regex>, space>,
+                              pad<BareTypeName, space>,
                               EmptyNameIsResource> {};
 
   /// The grammar for this type is a composition of the above elements.
@@ -138,6 +144,20 @@ struct Action<smtk::graph::filter::TypeName::Regex>
     rules.emplace_back(new smtk::graph::filter::TypeName::RegexRule());
     std::unique_ptr<Rule>& rule = rules.data().back();
     static_cast<smtk::graph::filter::TypeName::RegexRule*>(rule.get())->value = input.string();
+  }
+};
+
+template<>
+struct Action<smtk::graph::filter::TypeName::BareTypeName>
+{
+  template<typename Input>
+  static void apply(const Input& input, Rules& rules)
+  {
+    rules.emplace_back(new smtk::graph::filter::TypeName::Exact());
+    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::string matchName = input.string();
+    static_cast<smtk::graph::filter::TypeName::Exact*>(rule.get())->value =
+      smtk::common::StringUtil::trim(matchName);
   }
 };
 } // namespace filter

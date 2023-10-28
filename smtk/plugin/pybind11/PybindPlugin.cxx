@@ -41,6 +41,14 @@ PYBIND11_MODULE(_smtkPybindPlugin, plugin)
   // directory.
   plugin
     .def("registerPluginsTo",
+      [](const std::shared_ptr<smtk::common::Managers>& managers) {
+        smtk::plugin::Manager::instance()->registerPluginsTo(managers);
+      })
+    .def("unregisterPluginsFrom",
+      [](const std::shared_ptr<smtk::common::Managers>& managers) {
+        smtk::plugin::Manager::instance()->unregisterPluginsFrom(managers);
+      })
+    .def("registerPluginsTo",
       [](const std::shared_ptr<smtk::resource::Manager>& manager) {
         smtk::plugin::Manager::instance()->registerPluginsTo(manager);
       })

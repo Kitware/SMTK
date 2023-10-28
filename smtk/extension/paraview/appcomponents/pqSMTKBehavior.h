@@ -113,6 +113,17 @@ public:
    */
   bool postProcessingMode() const { return m_postProcessingMode; }
 
+  /**\brief Update the map from servers to SMTK wrappers.
+    *
+    * In the ModelBuilder application, if the Python Shell panel is
+    * started after the application has started, the builtin client
+    * will not have an entry in `m_p->Remotes` yet. This function will
+    * ensure the active server has an entry so that Python methods
+    * on the behavior (such as activeWrapperCommonManagers()) do not
+    * return a null object.
+    */
+  void updateWrapperMap();
+
   /**\brief Register operations from the named module after the event loop starts.
     *
     * ParaView loads plugins (including python plugins) before a

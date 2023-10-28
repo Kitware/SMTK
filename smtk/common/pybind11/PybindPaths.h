@@ -28,6 +28,7 @@ inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::mod
     .def("deepcopy", (smtk::common::Paths & (smtk::common::Paths::*)(::smtk::common::Paths const &)) &smtk::common::Paths::operator=)
     .def_static("currentDirectory", &smtk::common::Paths::currentDirectory)
     .def_static("directoryExists", &smtk::common::Paths::directoryExists, py::arg("path"))
+    .def_static("pathToThisLibrary", &smtk::common::Paths::pathToThisLibrary)
     .def_static("pruneInvalidDirectories", &smtk::common::Paths::pruneInvalidDirectories, py::arg("src"))
     .def("executableDirectory", &smtk::common::Paths::executableDirectory)
     .def("toplevelDirectory", &smtk::common::Paths::toplevelDirectory)
