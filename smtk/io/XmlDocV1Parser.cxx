@@ -726,7 +726,7 @@ void XmlDocV1Parser::process(
       }
     }
   }
-
+  this->processConfigurations(amnode);
   this->processItemDefinitionBlocks(amnode, globalTemplateMap);
   this->processTemplatesDefinitions(amnode, globalTemplateMap);
   this->processAssociationRules(amnode);

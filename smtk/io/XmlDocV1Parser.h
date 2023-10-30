@@ -95,7 +95,12 @@ public:
 protected:
   void processAttributeInformation(pugi::xml_node& root);
   virtual void processViews(pugi::xml_node& root);
+  // Version 1 does not support association rules - they are supported in
+  // version 4 and later
   virtual void processAssociationRules(pugi::xml_node&) {}
+  // Version 1 does not support configurations - they are supported in
+  // version 3 and later
+  virtual void processConfigurations(pugi::xml_node&) {}
 
   virtual void processCategoryAtts(
     pugi::xml_node& node,
