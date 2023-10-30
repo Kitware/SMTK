@@ -276,6 +276,10 @@ void qtAttribute::onItemModified()
     return;
   }
   Q_EMIT this->itemModified(iobject);
+  if (m_internals == nullptr)
+  {
+    return;
+  }
   Q_EMIT this->modified();
 }
 
