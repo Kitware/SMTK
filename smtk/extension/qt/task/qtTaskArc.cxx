@@ -45,11 +45,9 @@ qtTaskArc::qtTaskArc(
   , m_arcType(arcType)
 {
   const auto& cfg(*m_scene->configuration());
-  QObject::connect(
-    m_predecessor, &qtBaseTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_predecessor, &qtBaseTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
   QObject::connect(m_predecessor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
-  QObject::connect(
-    m_successor, &qtBaseTaskNode::nodeMovedImmediate, this, &qtTaskArc::updateArcPoints);
+  QObject::connect(m_successor, &qtBaseTaskNode::nodeMoved, this, &qtTaskArc::updateArcPoints);
   QObject::connect(m_successor, &qtBaseTaskNode::nodeResized, this, &qtTaskArc::updateArcPoints);
   this->setAcceptedMouseButtons(Qt::NoButton);
 

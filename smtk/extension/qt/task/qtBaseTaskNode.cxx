@@ -50,12 +50,6 @@ qtBaseTaskNode::qtBaseTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGrap
   this->setCacheMode(CacheMode::DeviceCoordinateCache);
   this->setCursor(Qt::ArrowCursor);
   this->setObjectName(QString("node") + QString::fromStdString(m_task->name()));
-
-  // Configure timer to rate-limit nodeMoved signal
-  m_moveSignalTimer = new QTimer(this);
-  m_moveSignalTimer->setSingleShot(true);
-  m_moveSignalTimer->setInterval(100);
-  QObject::connect(m_moveSignalTimer, &QTimer::timeout, this, &qtBaseTaskNode::nodeMoved);
 }
 
 qtBaseTaskNode::~qtBaseTaskNode() = default;
@@ -94,8 +88,7 @@ QVariant qtBaseTaskNode::itemChange(GraphicsItemChange change, const QVariant& v
 {
   if (change == GraphicsItemChange::ItemPositionHasChanged)
   {
-    m_moveSignalTimer->start();
-    Q_EMIT this->nodeMovedImmediate();
+    Q_EMIT this->nodeMoved();
   }
 
   return QGraphicsItem::itemChange(change, value);

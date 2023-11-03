@@ -4,7 +4,7 @@ set(unit_tests
   TestTaskBasics.cxx
   #TestTaskGroup.cxx
   TestTaskJSON.cxx
-  TestTaskUIState.cxx
+  # TestTaskUIState.cxx
 )
 
 find_package(Threads REQUIRED)

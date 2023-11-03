@@ -23,7 +23,6 @@
 class QAbstractItemModel;
 class QGraphicsTextItem;
 class QItemSelection;
-class QTimer;
 class QTreeView;
 
 namespace smtk

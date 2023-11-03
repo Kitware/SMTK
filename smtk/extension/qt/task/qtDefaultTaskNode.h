@@ -23,7 +23,6 @@
 class QAbstractItemModel;
 class QGraphicsTextItem;
 class QItemSelection;
-class QTimer;
 class QTreeView;
 
 namespace smtk
@@ -63,6 +62,9 @@ public:
 
   /// Deals with state updates
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) override;
+
+  /// Handle renames, etc.
+  void updateToMatchModifiedTask() override;
 
 protected:
   friend class DefaultTaskNodeWidget;

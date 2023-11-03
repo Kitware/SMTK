@@ -13,6 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKTaskPanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWorkletToolboxPanel.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Information.h"
@@ -59,6 +60,21 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
     (void)tasks;
     std::shared_ptr<smtk::view::Configuration> viewConfig =
       smtk::extension::qtTaskEditor::defaultConfiguration();
+    result.insertOrAssign(viewConfig);
+  }
+  else if (const auto* gallery = dynamic_cast<const pqSMTKWorkletToolboxPanel*>(panel))
+  {
+    (void)gallery;
+    nlohmann::json jsonConfig = {
+      { "Name", "Gallery" },
+      { "Type", "qtWorkletPalette" },
+      { "Component",
+        { { "Name", "Details" },
+          { "Attributes", { { "SearchBar", true }, { "Title", "Tools" } } },
+          { "Children",
+            { { { "Name", "Model" }, { "Attributes", { { "Autorun", "true" } } } } } } } }
+    };
+    std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
     result.insertOrAssign(viewConfig);
   }
   else

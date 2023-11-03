@@ -22,8 +22,9 @@ namespace common
 /// Events that an instance-manager can observe.
 enum class InstanceEvent
 {
-  Managed,  //!< An instance of a managed class was added to the instance manager.
-  Unmanaged //!< An instance of a managed class was removed from the instance manager.
+  Managed,   //!< An instance of a managed class was added to the instance manager.
+  Unmanaged, //!< An instance of a managed class was removed from the instance manager.
+  Modified   //!< An instance has been marked modified (by an operation).
 };
 
 /// The Instances class is used to manage instances of objects which

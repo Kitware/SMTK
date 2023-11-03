@@ -134,6 +134,7 @@ add_dependencies(smtkCore
   modelGenHeaders
   operationGenHeaders
   projectGenHeaders
+  taskGenHeaders
   viewGenHeaders
 )
 

@@ -14,6 +14,7 @@
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonAdaptor.h"
 #include "smtk/task/json/jsonTask.h"
+#include "smtk/task/json/jsonWorklet.h"
 
 #include "smtk/io/Logger.h"
 
@@ -61,6 +62,10 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
       {
         helper.tasks().setSwizzleId(task.get(), taskSwizzle);
         taskId = task->id(); // task->setId(taskId);
+      }
+      else
+      {
+        taskSwizzle = helper.tasks().swizzleId(task.get());
       }
       taskMap[taskId] = task;
     }
@@ -134,12 +139,7 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         }
         task->addDependencies(taskDeps);
       }
-
-      // Get UI object
-      if (jsonTask.contains("ui"))
-      {
-        taskManager.uiState().setData(task, jsonTask["ui"]);
-      }
+      // TODO: UI state.
     }
 
     // Now configure dependent tasks with adaptors if specified.
@@ -154,7 +154,16 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         {
           try
           {
-            auto adaptorId = jsonAdaptor.at("id").get<json::Helper::SwizzleId>();
+            auto jAdaptorId = jsonAdaptor.at("id");
+            json::Helper::SwizzleId adaptorId;
+            if (jAdaptorId.is_string())
+            {
+              adaptorId = -128;
+            }
+            else if (jAdaptorId.is_number_integer())
+            {
+              adaptorId = jsonAdaptor.at("id").get<json::Helper::SwizzleId>();
+            }
             // Tasks are now components. They may have temporary IDs that need to
             // be de-swizzled. Or they may just have UUIDs.
             auto jTaskFrom = jsonAdaptor.at("from");
@@ -181,11 +190,12 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
               continue;
             }
             Adaptor::Ptr adaptor = jsonAdaptor;
+            adaptorId = helper.adaptors().swizzleId(adaptor.get());
             adaptorMap[adaptorId] = adaptor;
-            helper.adaptors().swizzleId(adaptor.get());
           }
-          catch (std::exception&)
+          catch (std::exception& e)
           {
+            std::cout << e.what() << "ERROR\n";
             smtkErrorMacro(
               smtk::io::Logger::instance(),
               "Skipping adaptor because 'id', 'from', and/or 'to' fields are missing.");
@@ -196,6 +206,23 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     if (jj.contains("styles"))
     {
       taskManager.setStyles(jj.at("styles"));
+    }
+
+    // Read in the Worklet Gallery if one exists
+    auto it = jj.find("gallery");
+    if (it != jj.end())
+    {
+      std::vector<Worklet::Ptr> worklets;
+      worklets = it->get<std::vector<Worklet::Ptr>>();
+      for (const auto& worklet : worklets)
+      {
+        if (!taskManager.gallery().add(worklet))
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Could not add Worklet: " << worklet->name() << " to TaskManager's Gallery");
+        }
+      }
     }
 
     // helper.clear();
@@ -222,7 +249,7 @@ void to_json(nlohmann::json& jj, const Manager& manager)
       nlohmann::json jsonTask = task;
       if (!jsonTask.is_null())
       {
-        helper.updateUIState(task, jsonTask);
+        // helper.updateUIState(task, jsonTask);
         taskList.push_back(jsonTask);
       }
     }
@@ -232,6 +259,7 @@ void to_json(nlohmann::json& jj, const Manager& manager)
 
   // Serialize adaptors
   nlohmann::json::array_t adaptorList;
+  adaptorList.reserve(manager.adaptorInstances().size());
   manager.adaptorInstances().visit([&adaptorList](const smtk::task::Adaptor::Ptr& adaptor) {
     if (
       adaptor && adaptor->from() && !adaptor->from()->parent() && adaptor->to() &&
@@ -246,6 +274,20 @@ void to_json(nlohmann::json& jj, const Manager& manager)
   });
   jj["adaptors"] = adaptorList;
   jj["styles"] = manager.getStyles();
+
+  // Serialize the Worklet gallery if one exists
+  const std::unordered_map<smtk::string::Token, Worklet::Ptr>& gallery =
+    manager.gallery().worklets();
+  if (!gallery.empty())
+  {
+    std::vector<Worklet::Ptr> worklets;
+    worklets.reserve(gallery.size());
+    for (const auto& workletInfo : gallery)
+    {
+      worklets.push_back(workletInfo.second);
+    }
+    jj["gallery"] = worklets;
+  }
 }
 
 } // namespace task

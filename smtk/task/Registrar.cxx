@@ -30,6 +30,9 @@
 #include "smtk/task/json/jsonSubmitOperation.h"
 #include "smtk/task/json/jsonTask.h"
 
+#include "smtk/task/operators/EmplaceWorklet.h"
+#include "smtk/task/operators/RenameTask.h"
+
 #include "smtk/plugin/Manager.h"
 
 #include <tuple>
@@ -48,6 +51,8 @@ using TaskJSON = std::tuple<
   json::jsonSubmitOperation>;
 using AdaptorList = std::tuple<adaptor::ConfigureOperation, adaptor::ResourceAndRole>;
 using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceAndRole>;
+
+using OperationList = std::tuple<EmplaceWorklet, RenameTask>;
 
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
@@ -69,6 +74,16 @@ void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
   auto& adaptorInstances = taskManager->adaptorInstances();
   adaptorInstances.unregisterTypes<AdaptorList>();
   json::Configurator<Adaptor>::unregisterTypes<AdaptorList>();
+}
+
+void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->registerOperations<OperationList>();
+}
+
+void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
 }
 
 } // namespace task

@@ -12,8 +12,13 @@
 #include "smtk/extension/qt/task/qtTaskEditor.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 
+#include "smtk/io/Logger.h"
+
 #include <QAction>
+#include <QByteArray>
+#include <QDragEnterEvent>
 #include <QKeyEvent>
+#include <QMimeData>
 #include <QWheelEvent>
 
 namespace smtk
@@ -23,16 +28,29 @@ namespace extension
 
 class qtTaskView::Internal
 {
+public:
+  Internal() = default;
+  Internal(qtTaskView* self, qtTaskEditor* editor)
+    : m_self(self)
+    , m_editor(editor)
+  {
+  }
+  Internal(const Internal&) = delete;
+  void operator=(const Internal&) = delete;
+
+  qtTaskView* m_self{ nullptr };
+  qtTaskEditor* m_editor{ nullptr };
 };
 
 qtTaskView::qtTaskView(qtTaskScene* scene, qtTaskEditor* widget)
   : Superclass(scene, widget->widget())
-  , m_p(new Internal)
+  , m_p(new Internal(this, widget))
 {
   this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
   this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   this->setDragMode(QGraphicsView::ScrollHandDrag);
+  this->setAcceptDrops(true);
   constexpr QRectF MAX_SCENE_SIZE{ -1e4, -1e4, 3e4, 3e4 };
   this->setSceneRect(MAX_SCENE_SIZE);
 }
@@ -66,6 +84,58 @@ void qtTaskView::keyReleaseEvent(QKeyEvent* event)
 {
   (void)event;
   // do nothing yet.
+}
+
+void qtTaskView::dragEnterEvent(QDragEnterEvent* event)
+{
+  if (event->mimeData()->hasFormat("application/x-smtk-worklet-name"))
+  {
+    event->acceptProposedAction();
+  }
+  // TODO: Add a fancy preview of laid-out nodes+arcs to be inserted upon drop.
+}
+
+void qtTaskView::dragLeaveEvent(QDragLeaveEvent* event)
+{
+  (void)event;
+  // TODO: Remove a fancy preview of laid-out nodes+arcs to be inserted upon drop.
+}
+
+void qtTaskView::dragMoveEvent(QDragMoveEvent* event)
+{
+  (void)event;
+  // TODO: Translate the fancy preview of laid-out nodes+arcs to be inserted upon drop.
+}
+
+void qtTaskView::dropEvent(QDropEvent* event)
+{
+  bool didAdd = false;
+  bool didFail = false;
+  std::array<double, 2> location{ { event->posF().x(), event->posF().y() } };
+  QByteArray encodedData = event->mimeData()->data("application/x-smtk-worklet-name");
+  QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+  while (!stream.atEnd())
+  {
+    QString text;
+    stream >> text;
+    if (m_p->m_editor && m_p->m_editor->addWorklet(text.toStdString(), location))
+    {
+      didAdd = true;
+    }
+    else
+    {
+      didFail = true;
+    }
+  }
+  if (didAdd)
+  {
+    event->acceptProposedAction();
+  }
+  if (didFail)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Failed to emplace one or more dropped worklets.");
+  }
 }
 
 } // namespace extension

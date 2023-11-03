@@ -141,11 +141,15 @@ bool testInheritedAPI(const smtk::project::Project::Ptr& project)
   project->visit(visitor);
   std::cout << "Visited " << numComp[0] << " project components.\n";
   ::test(
-    numComp[0] == project->taskManager().taskInstances().size(),
-    "Expected to visit 5 tasks as project components.");
+    numComp[0] ==
+      project->taskManager().taskInstances().size() +
+        project->taskManager().adaptorInstances().size(),
+    "Expected to visit 9 tasks+adaptors as project components.");
   ::test(
-    numComp[1] == project->taskManager().taskInstances().size(),
-    "Expected to visit 5 tasks of type '*'.");
+    numComp[1] ==
+      project->taskManager().taskInstances().size() +
+        project->taskManager().adaptorInstances().size(),
+    "Expected to visit 9 tasks of type '*'.");
   ::test(numComp[2] == 0, "Expected to visit 0 tasks with empty query.");
   return ok;
 }
@@ -189,7 +193,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
   // Import MathOp operation (used in the SubmitOperation tasks)
   {
     auto importOp = operationManager->create("smtk::operation::ImportPythonOperation");
-    std::string importPath = data_root + "/projects/src/math_op.py";
+    std::string importPath = data_root + "/operations/math_op.py";
     importOp->parameters()->findFile("filename")->setValue(importPath);
     auto importResult = importOp->operate();
     int outcome = importResult->findInt("outcome")->value();
@@ -227,8 +231,6 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     ifs.close();
     // std::cout << j.dump(2) << std::endl;
 
-    taskManager.taskInstances().pauseWorkflowNotifications(true);
-
     auto& resourceHelper = smtk::resource::json::Helper::instance();
     resourceHelper.setManagers(managers);
     try
@@ -243,8 +245,6 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     {
       smtkTest(false, "Exception " << e.what());
     }
-    // bool ok = smtk::task::json::jsonManager::deserialize(managers, j);
-    taskManager.taskInstances().pauseWorkflowNotifications(false);
 
     smtkTest(
       taskManager.taskInstances().size() == TASK_COUNT,

@@ -85,34 +85,49 @@ namespace smtk
 {
 namespace operation
 {
-class PyOperation : public Operation
+class SMTKCORE_EXPORT PyOperation : public Operation
 {
 public:
   PyOperation() = default;
   ~PyOperation() override = default;
 
+  using SimpleFunction = std::function<void(void)>;
+
+  /// This is a functor that multi-threaded applications should provide
+  /// in order to force a SimpleFunction to be run on the main thread.
+  /// The default implementation simply assumes it will always be invoked
+  /// on the main thread and directly invokes the function it is passed.
+  static std::function<void(SimpleFunction)> runOnMainThread;
+
   static std::shared_ptr<smtk::operation::Operation> create(std::string modulename,
                                                             std::string className,
                                                             smtk::operation::Operation::Index index)
     {
-      // Import the module containing our operation
-      pybind11::module module = pybind11::module::import(modulename.c_str());
+      std::shared_ptr<smtk::operation::Operation> result;
 
-      // Create an instance of our operation
-      pybind11::object obj = module.attr(className.c_str())();
+      PyOperation::runOnMainThread([&result, &modulename, &className, &index]()
+        {
+          // Import the module containing our operation
+          pybind11::module module = pybind11::module::import(modulename.c_str());
 
-      // For C++ operations, index() is a compile-time intrinsic of the
-      // operation class. Python operations only come into existence at runtime,
-      // though, so we need to manually set a python operation's index.
-      obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setIndex(index);
+          // Create an instance of our operation
+          pybind11::object obj = module.attr(className.c_str())();
 
-      // The precedent for python operation names is estabilished in
-      // ImportPythonOperation to be the modulename.className
-      // We follow that convention here.
-      obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setTypeName(
-        modulename + "." + className);
+          // For C++ operations, index() is a compile-time intrinsic of the
+          // operation class. Python operations only come into existence at runtime,
+          // though, so we need to manually set a python operation's index.
+          obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setIndex(index);
 
-      return obj.cast<std::shared_ptr<smtk::operation::Operation> >();
+          // The precedent for python operation names is estabilished in
+          // ImportPythonOperation to be the modulename.className
+          // We follow that convention here.
+          obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setTypeName(
+            modulename + "." + className);
+
+          result = obj.cast<std::shared_ptr<smtk::operation::Operation> >();
+        }
+      );
+      return result;
     }
 
   Index index() const override { return m_index; }

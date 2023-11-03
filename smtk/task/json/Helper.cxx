@@ -238,17 +238,6 @@ Task* Helper::activeSerializedTask() const
   return m_activeSerializedTask;
 }
 
-void Helper::updateUIState(std::shared_ptr<smtk::task::Task> task, nlohmann::json& j)
-{
-  if (m_taskManager == nullptr)
-  {
-    return;
-  }
-
-  auto& uiState = m_taskManager->uiState();
-  uiState.updateJson(task, j);
-}
-
 } // namespace json
 } // namespace task
 } // namespace smtk

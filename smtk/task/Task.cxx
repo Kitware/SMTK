@@ -316,18 +316,7 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
   {
     return false;
   }
-  // Was this task previously without dependencies? If so,
-  // it used to be a workflow head and we must notify
-  // the task-manager's instances object that a head task
-  // is being removed.
-  bool wasHead = m_dependencies.empty();
-  if (wasHead)
-  {
-    if (auto taskManager = m_manager.lock())
-    {
-      taskManager->taskInstances().workflowEvent({ this }, WorkflowEvent::Destroyed, nullptr);
-    }
-  }
+
   State prev = this->state();
   m_dependencies.insert(std::make_pair(
     (const std::weak_ptr<Task>)(dependency),
@@ -336,14 +325,6 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
       (void)didChange;
     })));
   dependency->m_dependents.insert(std::dynamic_pointer_cast<Task>(this->shared_from_this()));
-  if (wasHead)
-  {
-    if (auto taskManager = m_manager.lock())
-    {
-      taskManager->taskInstances().workflowEvent(
-        smtk::task::workflowsOfTask(*this), WorkflowEvent::TaskAdded, this);
-    }
-  }
   // Now determine if this dependency changed the state.
   State next = this->state();
   if (prev != next)
@@ -357,26 +338,9 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
 bool Task::removeDependency(const std::shared_ptr<Task>& dependency)
 {
   State prev = this->state();
-  bool willBeHead =
-    m_dependencies.size() == 1 && m_dependencies.begin()->first.lock() == dependency;
-  if (willBeHead)
-  {
-    if (auto taskManager = m_manager.lock())
-    {
-      taskManager->taskInstances().workflowEvent(
-        smtk::task::workflowsOfTask(*this), WorkflowEvent::TaskRemoved, nullptr);
-    }
-  }
   bool didRemove = m_dependencies.erase(dependency) > 0;
   if (didRemove)
   {
-    if (willBeHead)
-    {
-      if (auto taskManager = m_manager.lock())
-      {
-        taskManager->taskInstances().workflowEvent({ this }, WorkflowEvent::Created, nullptr);
-      }
-    }
     State next = this->state();
     if (prev != next)
     {

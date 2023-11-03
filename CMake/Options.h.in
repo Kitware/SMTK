@@ -31,6 +31,8 @@
 // Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
 #cmakedefine SMTK_ENABLE_REMUS_SUPPORT
 
+// Was SMTK build with python bindings?
+#cmakedefine01 SMTK_ENABLE_PYTHON_WRAPPING
 
 #define SMTK_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 

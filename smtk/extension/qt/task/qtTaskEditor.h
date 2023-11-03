@@ -64,6 +64,14 @@ public:
   static std::shared_ptr<smtk::view::Configuration> defaultConfiguration();
   nlohmann::json uiStateForTask(const smtk::task::Task* task) const;
 
+  bool addWorklet(const std::string& workletName, std::array<double, 2> location);
+
+  ///@{
+  /// Set and get the current configuration of the Task Nodes' positions in JSON format.
+  bool configure(const nlohmann::json& data);
+  nlohmann::json configuration();
+  ///@}
+
 public Q_SLOTS:
   /// Display the \a project's tasks in this widget.
   virtual void displayProject(const std::shared_ptr<smtk::project::Project>& project);

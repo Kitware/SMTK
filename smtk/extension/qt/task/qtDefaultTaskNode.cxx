@@ -14,6 +14,9 @@
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/task/Active.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Task.h"
@@ -25,11 +28,11 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsTextItem>
 #include <QIcon>
+#include <QInputDialog>
 #include <QLabel>
 #include <QLayout>
 #include <QMenu>
 #include <QPainter>
-#include <QTimer>
 
 #include "task/ui_DefaultTaskNode.h"
 
@@ -109,7 +112,74 @@ public:
         }
       },
       "DefaultTaskNodeWidget observer");
+    // Create the context menu for the Task Button
+    QPointer<DefaultTaskNodeWidget> self(this);
+    m_title->setContextMenuPolicy(Qt::CustomContextMenu);
+    // We are capturing the this pointer to deal with a warning on Windows - we should not
+    // need to do this
+    QObject::connect(
+      m_title, &QPushButton::customContextMenuRequested, this, [self, this](const QPoint& pt) {
+        if (!self)
+        {
+          return;
+        }
+        // Create a name for the context menu
+        QString menuName(self->m_node->task()->name().c_str());
+        menuName.append("_contextMenu");
+
+        QMenu* menu = new QMenu();
+        menu->setObjectName(menuName);
+        auto* renameAction = new QAction("Change Task Name");
+        QObject::connect(
+          renameAction, &QAction::triggered, self.data(), &DefaultTaskNodeWidget::renameTask);
+        menu->addAction(renameAction);
+        menu->exec(self->m_title->mapToGlobal(pt));
+        delete menu;
+      });
     this->updateTaskState(m_node->m_task->state(), m_node->m_task->state(), m_node->isActive());
+  }
+
+  // This method runs the rename task operation
+  bool renameTask()
+  {
+    bool ok;
+    auto* task = m_node->task();
+    if (!task)
+    {
+      return false;
+    }
+    // Request the new name from the user
+    QString origName(task->name().c_str());
+    QString newName = QInputDialog::getText(
+      nullptr, tr("Renaming Task"), tr("New Task Name: "), QLineEdit::Normal, origName, &ok);
+    // If the name is the same or the user canceled the dialog just return
+    if (!ok || (origName == newName))
+    {
+      return false;
+    }
+
+    // Prep and run the operation (if possible)
+    auto opMgr = task->manager()->managers()->get<smtk::operation::Manager::Ptr>();
+    auto op = opMgr->create("smtk::task::RenameTask");
+    if (!op)
+    {
+      return false;
+    }
+    if (!op->parameters()->associate(task->shared_from_this()))
+    {
+      return false;
+    }
+    if (!op->parameters()->findAs<smtk::attribute::StringItem>("name")->setValue(
+          newName.toStdString()))
+    {
+      return false;
+    }
+    if (!op->ableToOperate())
+    {
+      return false;
+    }
+    opMgr->launchers()(op);
+    return true;
   }
 
   void flashWarning()
@@ -330,6 +400,11 @@ int qtDefaultTaskNode::updateSize()
 void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
 {
   m_container->updateTaskState(prev, next, active);
+}
+
+void qtDefaultTaskNode::updateToMatchModifiedTask()
+{
+  m_container->m_title->setText(QString::fromStdString(m_task->title()));
 }
 
 } // namespace extension

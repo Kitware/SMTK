@@ -31,6 +31,9 @@
 #include "smtk/resource/json/Helper.h"
 #include "smtk/task/json/Helper.h"
 
+#include "smtk/view/Manager.h"
+#include "smtk/view/UIElementState.h"
+
 #include "smtk/project/operators/Write_xml.h"
 
 #include <fstream>
@@ -134,6 +137,23 @@ Write::Result Write::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
+    // Save the JSON configurations of all the UI Elements in the
+    // View Manager.
+    auto managers = this->managers();
+    if (managers)
+    {
+      auto viewMngr = this->managers()->get<smtk::view::Manager::Ptr>();
+      if (viewMngr)
+      {
+        nlohmann::json js;
+        auto& elementStateMap = viewMngr->elementStateMap();
+        for (auto& element : elementStateMap)
+        {
+          js[element.first.data()] = element.second->configuration();
+        }
+        j["ui_state"] = js;
+      }
+    }
     std::string fileContents = j.dump(2);
     std::ofstream file(outputFile);
     file << fileContents;
