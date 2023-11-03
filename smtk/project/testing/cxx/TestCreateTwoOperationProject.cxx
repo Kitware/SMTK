@@ -296,6 +296,19 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     std::cout << "Wrote " << projectLocation << std::endl;
   }
 
+  // Test that filtering for tasks and worklets by type works.
+  auto tasks = project->filter("smtk::task::GatherResources");
+  smtkTest(tasks.size() == 1, "Expected to filter 1 GatherResources task from the project.");
+
+  tasks = project->filter("smtk::task::FillOutAttributes");
+  smtkTest(tasks.size() == 2, "Expected to filter 2 FillOutAttributes tasks from the project.");
+
+  tasks = project->filter("smtk::task::SubmitOperation");
+  smtkTest(tasks.size() == 2, "Expected to filter 2 SubmitOperation tasks from the project.");
+
+  auto worklets = project->filter("'smtk::task::Worklet'");
+  smtkTest(worklets.empty(), "Expected to filter 0 worklets from project.");
+
   projectManager->remove(project);
   resourceManager->remove(project);
   project.reset();

@@ -9,7 +9,10 @@
 //=========================================================================
 #include "smtk/project/Project.h"
 
+#include "smtk/project/filter/Grammar.h"
+
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/filter/Filter.h"
 
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"
@@ -45,21 +48,7 @@ std::shared_ptr<smtk::project::Project> Project::create(const std::string& typeN
 std::function<bool(const smtk::resource::Component&)> Project::queryOperation(
   const std::string& query) const
 {
-  if (query.empty())
-  {
-    // An empty query matches no component.
-    // This is so that when we allow joint resource + component queries, there
-    // is a way to select the resource (i.e., by providing only a resource clause
-    // and an empty component clause).
-    return [](const smtk::resource::Component&) { return false; };
-  }
-  if (query == "*" || query == "any")
-  {
-    // Match all components.
-    return [](const smtk::resource::Component&) { return true; };
-  }
-  // Behave like our base Resource class for now.
-  return this->Resource::queryOperation(query);
+  return smtk::resource::filter::Filter<smtk::project::filter::Grammar>(query);
 }
 
 void Project::visit(smtk::resource::Component::Visitor& visitor) const
@@ -69,18 +58,35 @@ void Project::visit(smtk::resource::Component::Visitor& visitor) const
     return;
   }
 
-  // Currently, a project's only components are tasks.
+  // Currently, a project's only components are tasks and worklets.
   m_taskManager->taskInstances().visit([&visitor](const smtk::task::Task::Ptr& task) {
     visitor(task);
     return smtk::common::Visit::Continue;
   });
+
+  for (const auto& entry : m_taskManager->gallery())
+  {
+    visitor(entry.second);
+  }
 }
 
 smtk::resource::ComponentPtr Project::find(const smtk::common::UUID& compId) const
 {
   // Currently, a project's only components are tasks.
   auto task = m_taskManager->taskInstances().findById(compId);
-  return task;
+  if (task)
+  {
+    return task;
+  }
+
+  for (const auto& entry : m_taskManager->gallery())
+  {
+    if (entry.second->id() == compId)
+    {
+      return entry.second;
+    }
+  }
+  return smtk::resource::ComponentPtr();
 }
 
 bool Project::clean() const
