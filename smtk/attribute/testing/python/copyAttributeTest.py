@@ -132,8 +132,10 @@ if __name__ == '__main__':
     #
     test_resource = smtk.attribute.Resource.create()
     # Copy SecondConcrete attribute
-    options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
-    test_resource.copyAttribute(second_concrete, True, int(options))
+    options = smtk.attribute.CopyAssignmentOptions()
+    options.attributeOptions.setCopyAssociations(True)
+    options.copyOptions.setCopyDefinition(True)
+    test_resource.copyAttribute(second_concrete, options)
     expected_deftypes = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
         'PolyLinearFunction', 'FirstConcrete'

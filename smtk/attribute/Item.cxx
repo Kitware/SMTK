@@ -271,31 +271,6 @@ unsigned int Item::advanceLevel(int mode) const
   return level;
 }
 
-void Item::mapOldAssignmentOptions(CopyAssignmentOptions& options, unsigned int oldStyleOptions)
-{
-  // By default we always copy Definitions if needed
-  options.copyOptions.setCopyDefinition(true);
-  if (oldStyleOptions & Item::IGNORE_EXPRESSIONS)
-  {
-    options.itemOptions.setIgnoreExpressions(true);
-  }
-  if (oldStyleOptions & Item::IGNORE_RESOURCE_COMPONENTS)
-  {
-    options.itemOptions.setIgnoreReferenceValues(true);
-  }
-  if (oldStyleOptions & Item::COPY_MODEL_ASSOCIATIONS)
-  {
-    options.attributeOptions.setCopyAssociations(true);
-  }
-}
-
-bool Item::assign(const ConstItemPtr& sourceItem, unsigned int oldOptions)
-{
-  CopyAssignmentOptions options;
-  Item::mapOldAssignmentOptions(options, oldOptions);
-  return this->assign(sourceItem, options);
-}
-
 Item::Status Item::assign(
   const smtk::attribute::ConstItemPtr& sourceItem,
   const CopyAssignmentOptions& options)

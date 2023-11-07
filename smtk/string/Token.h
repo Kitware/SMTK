@@ -10,7 +10,6 @@
 #ifndef smtk_string_Token_h
 #define smtk_string_Token_h
 
-#include "smtk/common/Deprecation.h"
 #include "smtk/string/Manager.h"
 
 namespace smtk
@@ -130,12 +129,6 @@ protected:
   Hash m_id;
   static std::shared_ptr<Manager> s_manager;
 };
-
-SMTK_DEPRECATED_IN_22_11("Moving to smtk::string::literals namespace.")
-inline Token operator""_token(const char* data, std::size_t size)
-{
-  return Token{ data, size };
-}
 
 namespace literals
 {

@@ -942,31 +942,6 @@ smtk::attribute::AttributePtr Resource::copyAttribute(
   return this->copyAttribute(att, options, smtk::io::Logger::instance());
 }
 
-// Copies attribute into this Resource
-// Returns smart pointer (will be empty if operation unsuccessful)
-// If definition contains ExpressionType instances, might also
-// copy additional attributes from the source attribute Resource.
-smtk::attribute::AttributePtr Resource::copyAttribute(
-  const smtk::attribute::AttributePtr sourceAtt,
-  const bool& copyModelAssocs,
-  const unsigned int& itemCopyOptions)
-{
-  CopyAssignmentOptions options;
-
-  // Lets convert the old style items options to the new version
-  Item::mapOldAssignmentOptions(options, itemCopyOptions);
-
-  // By default we copy definitions
-  options.copyOptions.setCopyDefinition(true);
-
-  if (copyModelAssocs)
-  {
-    options.attributeOptions.setCopyAssociations(true);
-  }
-
-  return this->copyAttribute(sourceAtt, options);
-}
-
 void Resource::addView(smtk::view::ConfigurationPtr v)
 {
   m_views[v->name()] = v;

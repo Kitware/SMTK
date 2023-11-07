@@ -106,22 +106,6 @@ inline PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute
       })
     .def("copyAttribute", (smtk::attribute::AttributePtr (smtk::attribute::Resource::*)(const smtk::attribute::AttributePtr& att, const smtk::attribute::CopyAssignmentOptions&)) &smtk::attribute::Resource::copyAttribute, py::arg("sourceAttribute"), py::arg("options") = smtk::attribute::CopyAssignmentOptions())
     .def("copyAttribute", (smtk::attribute::AttributePtr (smtk::attribute::Resource::*)(const smtk::attribute::AttributePtr& att, const smtk::attribute::CopyAssignmentOptions&, smtk::io::Logger&)) &smtk::attribute::Resource::copyAttribute, py::arg("sourceAttribute"), py::arg("options"), py::arg("logger"))
-    .def("copyAttribute", [](smtk::attribute::Resource& res, smtk::attribute::AttributePtr att, bool copyAssoc, unsigned int options)
-    {
-      smtkWarningMacro(smtk::io::Logger::instance(), "Resource::copyAttribute(smtk::attribute::AttributePtr, bool, unsigned int)"
-        << " has been deprecated.  The replacement is Resource::copyAttribute(const smtk::attribute::AttributePtr&, const AttributeCopyOptions&,"
-        << " const AttributeAssignmentOptions&, const ItemAssignmentOptions& itemOptions)");
-      smtk::attribute::CopyAssignmentOptions opts;
-      smtk::attribute::Item::mapOldAssignmentOptions(opts, options);
-      opts.copyOptions.setCopyDefinition(true);
-
-      if (copyAssoc)
-      {
-        opts.attributeOptions.setCopyAssociations(true);
-      }
-
-      return res.copyAttribute(att, opts);
-    }, py::arg("attribute"), py::arg("copyAssoc"), py::arg("options"))
     ;
   return instance;
 }

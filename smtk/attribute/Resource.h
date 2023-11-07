@@ -11,7 +11,6 @@
 #ifndef smtk_attribute_Resource_h
 #define smtk_attribute_Resource_h
 
-#include "smtk/common/Deprecation.h"
 #include "smtk/common/Factory.h"
 #include "smtk/common/UUID.h"
 
@@ -298,21 +297,17 @@ public:
   smtk::attribute::DefinitionPtr copyDefinition(
     smtk::attribute::DefinitionPtr def,
     unsigned int options = 0);
-  // Copies an attribute.
-  SMTK_DEPRECATED_IN_22_11(
-    "Replaced by copyAttribute(const AttributePtr&, const AttributeCopyOptions&, const "
-    "ItemAssignmentOptions&, smtk::io::Logger&).")
-  smtk::attribute::AttributePtr copyAttribute(
-    smtk::attribute::AttributePtr att,
-    const bool& copyModelAssocs,
-    const unsigned int& options = 0);
 
-  ///\brief  Copies attribute.
+  /// @{
+  ///\brief  Copies an attribute.
   ///
   /// Will create a copy of an attribute.  Note that the source attribute can belong to
   /// a different attribute resource.  The logger will contain any information including warnings
-  /// or errors encountered in the copying/assignment process.  If errors occur that prevent the copy process
-  /// from successfully completing, no attribute will be created.  - see CopyAssignmentOptions.h for attribute and item assignment/copy options.
+  /// or errors encountered in the copying/assignment process.  In the version that does not take in
+  /// a logger, smtk::io::Logger::instance() will be used.  Note that the source attribute does not
+  /// need to be a component of the attribute resource holding the copy.
+  /// If errors occur that prevent the copy process from successfully completing, no attribute will
+  /// be created.  - see CopyAssignmentOptions.h for attribute and item assignment/copy options.
   smtk::attribute::AttributePtr copyAttribute(
     const smtk::attribute::AttributePtr& att,
     const CopyAssignmentOptions& options,
@@ -321,6 +316,7 @@ public:
   smtk::attribute::AttributePtr copyAttribute(
     const smtk::attribute::AttributePtr& att,
     const CopyAssignmentOptions& options = CopyAssignmentOptions());
+  /// @}
 
   //Get a list of all definitions in the Resource
   void definitions(std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList = false)

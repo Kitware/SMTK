@@ -73,15 +73,6 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
         auto result = item.assign(sourceItem, options, logger);
         return result.success();
       }, py::arg("sourceItem"), py::arg("options"), py::arg("logger"))
-    .def("assign", [](smtk::attribute::Item& item, const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options)
-    {
-      smtkWarningMacro(smtk::io::Logger::instance(), "Item::assign(const smtk::attribute::ConstItemPtr&, unsigned int)"
-        << " has been deprecated.  The replacement is Item::assign(const smtk::attribute::ConstItemPtr&, const CopyAssignmentOptions&)");
-      smtk::attribute::CopyAssignmentOptions opts;
-      smtk::attribute::Item::mapOldAssignmentOptions(opts, options);
-      return item.assign(sourceItem, opts);
-    }, py::arg("sourceItem"), py::arg("oldOptions"))
-
     .def_static("type2String", &smtk::attribute::Item::type2String, py::arg("t"))
     .def_static("string2Type", &smtk::attribute::Item::string2Type, py::arg("s"))
     ;
@@ -102,13 +93,6 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .value("ResourceType", smtk::attribute::Item::Type::ResourceType)
     .value("ComponentType", smtk::attribute::Item::Type::ComponentType)
     .value("NUMBER_OF_TYPES", smtk::attribute::Item::Type::NUMBER_OF_TYPES)
-    .export_values();
-  py::enum_<smtk::attribute::Item::AssignmentOptions>(instance, "AssignmentOptions")
-    .value("IGNORE_EXPRESSIONS", smtk::attribute::Item::AssignmentOptions::IGNORE_EXPRESSIONS)
-    .value("IGNORE_MODEL_ENTITIES", smtk::attribute::Item::AssignmentOptions::IGNORE_MODEL_ENTITIES)
-    .value("IGNORE_ATTRIBUTE_REF_ITEMS", smtk::attribute::Item::AssignmentOptions::IGNORE_ATTRIBUTE_REF_ITEMS)
-    .value("IGNORE_RESOURCE_COMPONENTS", smtk::attribute::Item::AssignmentOptions::IGNORE_RESOURCE_COMPONENTS)
-    .value("COPY_MODEL_ASSOCIATIONS", smtk::attribute::Item::AssignmentOptions::COPY_MODEL_ASSOCIATIONS)
     .export_values();
   return instance;
 }
