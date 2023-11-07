@@ -44,7 +44,7 @@ protected:
   void processDefinitionChildNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def)
     override;
   void processDefCategoryInfoNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def);
-  void processConfigurations(pugi::xml_node& configurationsNode);
+  void processConfigurations(pugi::xml_node& rootNode) override;
   void processExclusion(pugi::xml_node& excludeNode);
   void processPrerequisite(pugi::xml_node& depNode);
   void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def) override;

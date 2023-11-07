@@ -251,12 +251,6 @@ void XmlDocV3Parser::process(
 {
   XmlDocV2Parser::process(rootNode, globalTemplateMap);
 
-  auto configurationsNode = rootNode.child("Configurations");
-  if (configurationsNode)
-  {
-    this->processConfigurations(configurationsNode);
-  }
-
   this->getUniqueRoles(rootNode);
 
   auto associationsNode = rootNode.child("Associations");
@@ -1052,8 +1046,14 @@ void XmlDocV3Parser::processComponentDef(pugi::xml_node& node, ComponentItemDefi
   this->processReferenceDef(node, idef, "ComponentLabels");
 }
 
-void XmlDocV3Parser::processConfigurations(pugi::xml_node& configurationsNode)
+void XmlDocV3Parser::processConfigurations(pugi::xml_node& rootNode)
 {
+  auto configurationsNode = rootNode.child("Configurations");
+  if (!configurationsNode)
+  {
+    return; // No configurations
+  }
+
   // First we need to build the analysis definition
   DefinitionPtr analysisDef;
   xml_attribute xatt = configurationsNode.attribute("AnalysisAttributeType");

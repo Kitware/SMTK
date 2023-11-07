@@ -92,6 +92,10 @@
     </Config>
   </Configurations>
 
+  <Attributes>
+    <Att Name="IntiallyEmptyConfig" Type="Analysis"/>
+  </Attributes>
+
     <Views>
     <View Type="Attribute" Title="Analysis" AnalysisAttributeName="simpleAnalysis" AnalysisAttributeType="Analysis"  TopLevel="true">
       <AttributeTypes>
