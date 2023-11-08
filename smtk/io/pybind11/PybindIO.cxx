@@ -8,9 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-// Suppress SMTK_DEPRECATED_IN_22_02 warnings
-#define SMTK_DEPRECATION_LEVEL 0
-
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE

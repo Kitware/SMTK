@@ -17,7 +17,6 @@
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/SearchStyle.h"
-#include "smtk/common/Deprecation.h"
 #include "smtk/common/Status.h"
 #include <algorithm>
 #include <map>
@@ -72,18 +71,6 @@ public:
     ResourceType,
     ComponentType,
     NUMBER_OF_TYPES
-  };
-
-  /// \brief Deprecated Assignment Options
-  ///
-  ///  You should use the CopyAssignmentOptions class instead!
-  enum AssignmentOptions
-  {
-    IGNORE_EXPRESSIONS = 0x001,         //!< Don't assign source value item's expressions
-    IGNORE_MODEL_ENTITIES = 0x002,      //!< Don't assign source model entity items
-    IGNORE_ATTRIBUTE_REF_ITEMS = 0x004, //!< Don't assign source attribute reference items
-    IGNORE_RESOURCE_COMPONENTS = 0x008, //!< Don't assign source component items
-    COPY_MODEL_ASSOCIATIONS = 0x010     //!< If creating attributes, copy their model associations
   };
 
   virtual ~Item();
@@ -252,11 +239,6 @@ public:
   /// this one
   void detachOwningItem() { m_owningItem = nullptr; }
 
-  /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  /// Returns true if success and false if a problem occurred
-  SMTK_DEPRECATED_IN_22_11("Replaced by assign(ConstItemPtr&, const ItemAssignmentOptions&).")
-  virtual bool assign(const smtk::attribute::ConstItemPtr& sourceItem, unsigned int options);
-
   using Status = smtk::common::Status;
 
   ///@{
@@ -290,7 +272,6 @@ public:
 
   static std::string type2String(Item::Type t);
   static Item::Type string2Type(const std::string& s);
-  static void mapOldAssignmentOptions(CopyAssignmentOptions& options, unsigned int oldStyleOptions);
 
 protected:
   Item(Attribute* owningAttribute, int itemPosition);
