@@ -7,12 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Definition.h - stores the definition of an attribute.
-// .SECTION Description
-// Stores all of the necessary information for a definition of a
-// single attribute. Attributes should be created through
-// Resource::createAttribute().
-// .SECTION See Also
 
 #ifndef smtk_attribute_Definition_h
 #define smtk_attribute_Definition_h
@@ -42,6 +36,12 @@ class Attribute;
 class ItemDefinition;
 class Resource;
 
+/**\brief Stores the definition of an attribute.
+  *
+  * Stores all of the necessary information for a definition of a
+  * single attribute. Instances of a definition should be created
+  * through Resource::createAttribute().
+  */
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
 public:
@@ -184,54 +184,54 @@ public:
   {
     return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
   }
-  // unsetLocalAdvanceLevel causes the definition to return its
-  // base definition advance level information for the specified mode when calling
-  // the advanceLevel(mode) method or 0 if there is no base definition
+  /// unsetLocalAdvanceLevel causes the definition to return its
+  /// base definition advance level information for the specified mode when calling
+  /// the advanceLevel(mode) method or 0 if there is no base definition
   void unsetLocalAdvanceLevel(int mode = 0);
-  // Returns true if the definition is returning its local
-  // advance level information
+  /// Returns true if the definition is returning its local
+  /// advance level information
   bool hasLocalAdvanceLevelInfo(int mode = 0) const
   {
     return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
   }
 
-  // Indicates if a persistent object can have multiple attributes of this
-  // type associated with it (true means it can not)
+  /// Indicates if a persistent object can have multiple attributes of this
+  /// type associated with it (true means it can not)
   bool isUnique() const { return m_isUnique; }
-  // Setting isUnique to be true indicates that only one attribute of this
-  // defintion (or any definition derived from this) can be associated to a
-  // persistent object.
+  /// Setting isUnique to be true indicates that only one attribute of this
+  /// defintion (or any definition derived from this) can be associated to a
+  /// persistent object.
   void setIsUnique(bool isUniqueValue);
 
-  // Indicates if the attribute applies to the
-  // nodes of the analysis mesh
+  /// Indicates if the attribute applies to the
+  /// nodes of the analysis mesh
   bool isNodal() const { return m_isNodal; }
   void setIsNodal(bool isNodalValue) { m_isNodal = isNodalValue; }
 
-  //Color Specifications
-  // Color in the case the attribute does not exist on the model entity
-  // If the color has not been set and the def has no base definition it will
-  // return s_notApplicableBaseColor
+  ///Color Specifications
+  /// Color in the case the attribute does not exist on the model entity
+  /// If the color has not been set and the def has no base definition it will
+  /// return s_notApplicableBaseColor
   const double* notApplicableColor() const;
   void setNotApplicableColor(double r, double g, double b, double alpha);
   void setNotApplicableColor(const double* color)
   {
     this->setNotApplicableColor(color[0], color[1], color[2], color[3]);
   }
-  // By unsetting the color it is now inherited from the def's base definition
+  /// By unsetting the color it is now inherited from the def's base definition
   void unsetNotApplicableColor() { m_isNotApplicableColorSet = false; }
   bool isNotApplicableColorSet() const { return m_isNotApplicableColorSet; }
 
-  // Default Color for attributes created from this definition -
-  // If the color has not been set and the def has no base definition it will
-  // return s_defaultBaseColor
+  /// Default Color for attributes created from this definition -
+  /// If the color has not been set and the def has no base definition it will
+  /// return s_defaultBaseColor
   const double* defaultColor() const;
   void setDefaultColor(double r, double g, double b, double alpha);
   void setDefaultColor(const double* color)
   {
     this->setDefaultColor(color[0], color[1], color[2], color[3]);
   }
-  // By unsetting the color it is now inherited from the def's base definition
+  /// By unsetting the color it is now inherited from the def's base definition
   void unsetDefaultColor() { m_isDefaultColorSet = false; }
   bool isDefaultColorSet() const { return m_isDefaultColorSet; }
 
@@ -277,30 +277,30 @@ public:
   bool associatesWithGroup() const;
 
   bool canBeAssociated(smtk::model::BitFlags maskType) const;
-  // Tests to see if attributes based on this definition can be
-  // associated with a persistent object - see the documentation
-  // for AssociationResultType for details on return values.
-  // If a conflict is found, conflictAtt is set to the conflicting attribute
-  // If a prerequisite is missing, prerequisiteDef is set to the
-  // missing requirement
-  // NOTE - testing is completed once a problem has been detected.  There maybe be
-  // other issues preventing association so this method may need be called multiple
-  // times
+  /// Tests to see if attributes based on this definition can be
+  /// associated with a persistent object - see the documentation
+  /// for AssociationResultType for details on return values.
+  /// If a conflict is found, conflictAtt is set to the conflicting attribute
+  /// If a prerequisite is missing, prerequisiteDef is set to the
+  /// missing requirement
+  /// NOTE - testing is completed once a problem has been detected.  There maybe be
+  /// other issues preventing association so this method may need be called multiple
+  /// times
   AssociationResultType canBeAssociated(
     smtk::resource::ConstPersistentObjectPtr object,
     AttributePtr& conflictAtt,
     DefinitionPtr& prerequisiteDef) const;
-  // Check the association rules of the definition (and the definiion it derived from)
-  // to see if the object can be associated
+  /// Check the association rules of the definition (and the definiion it derived from)
+  /// to see if the object can be associated
   bool checkAssociationRules(smtk::resource::ConstPersistentObjectPtr object) const;
-  // Test to see if there is a conflict between this definition and attributes
-  // already associated to the object.  Returns the conflicting attribute if there is a conflict
+  /// Test to see if there is a conflict between this definition and attributes
+  /// already associated to the object.  Returns the conflicting attribute if there is a conflict
   AttributePtr checkForConflicts(smtk::resource::ConstPersistentObjectPtr object) const;
-  // Test to see if there is a missing prerequisite attribute that would prevent attributes of
-  // this type from being associated to the object.  Returns the missing prerequisite definition
+  /// Test to see if there is a missing prerequisite attribute that would prevent attributes of
+  /// this type from being associated to the object.  Returns the missing prerequisite definition
   DefinitionPtr checkForPrerequisites(smtk::resource::ConstPersistentObjectPtr object) const;
 
-  // Return all of the attributes associated with object that are derived from this definition
+  /// Return all of the attributes associated with object that are derived from this definition
   std::set<AttributePtr> attributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
 
   bool conflicts(smtk::attribute::DefinitionPtr definition) const;
@@ -314,10 +314,9 @@ public:
     return m_itemDefs;
   }
 
-  // Description:
-  // Item definitions are the definitions of what data is stored
-  // in the attribute. For example, an IntItemDefinition would store
-  // an integer value.
+  /// Item definitions are the definitions of what data is stored
+  /// in the attribute. For example, an IntItemDefinition would store
+  /// an integer value.
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
   template<typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
@@ -339,16 +338,15 @@ public:
     return item;
   }
 
-  // Description:
-  // This method will only remove the specified ItemDefinition (if it exists)
-  // from the class internals. Only ItemDefinitions local to this Definition
-  // can be removed. Remove inherited ItemDefinitinos directy from the inherited
-  // type.
-  //
-  // Warning:
-  // It is up to the caller to ensure integrity of the attribute::Resource
-  // instance (e.g. Attribute instances of this Definition type need to be
-  // cleansed from the Resource).
+  /// This method will only remove the specified ItemDefinition (if it exists)
+  /// from the class internals. Only ItemDefinitions local to this Definition
+  /// can be removed. Remove inherited ItemDefinitinos directy from the inherited
+  /// type.
+  ///
+  /// Warning:
+  /// It is up to the caller to ensure integrity of the attribute::Resource
+  /// instance (e.g. Attribute instances of this Definition type need to be
+  /// cleansed from the Resource).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;
@@ -359,45 +357,42 @@ public:
   const std::string& briefDescription() const { return m_briefDescription; }
   void setBriefDescription(const std::string& text) { m_briefDescription = text; }
 
-  // Description:
-  // Build an attribute corresponding to this definition. If the
-  // attribute already has items, clear them out.
+  /// Build an attribute corresponding to this definition. If the
+  /// attribute already has items, clear them out.
   void buildAttribute(smtk::attribute::Attribute* attribute) const;
 
-  // Description:
-  // Sets and returns the root name to be used to construct the name for
-  // an attribute. This is used by the attribute resource when creating an
-  // attribute without specifying a name - by default it is set to be the
-  // type name of the definition
+  /// Sets and returns the root name to be used to construct the name for
+  /// an attribute. This is used by the attribute resource when creating an
+  /// attribute without specifying a name - by default it is set to be the
+  /// type name of the definition
   void setRootName(const std::string& val) { m_rootName = val; }
   std::string rootName() const { return m_rootName; }
 
-  //This method resets the definition item offset - this is used by the
-  // resource when a definition is modified
+  ///This method resets the definition item offset - this is used by the
+  /// resource when a definition is modified
   void resetItemOffset();
   std::size_t itemOffset() const { return m_baseItemOffset; }
 
-  // These methods are use primarily by I/O operations.  The include ID corresponds to
-  // the include directory information store in the attribute reosurce and is used
-  // when writing out the resource to use include files
+  /// These methods are use primarily by I/O operations.  The include ID corresponds to
+  /// the include directory information store in the attribute reosurce and is used
+  /// when writing out the resource to use include files
   void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
 
   std::size_t includeIndex() const { return m_includeIndex; }
 
-  // Since Exclusion Constraints are symmetric this method will
-  // also insert this "definiton" into def
+  /// Since Exclusion Constraints are symmetric this method will
+  /// also insert this "definiton" into def
   void addExclusion(smtk::attribute::DefinitionPtr def)
   {
     m_exclusionDefs.insert(def);
     def->m_exclusionDefs.insert(this->shared_from_this());
   }
 
-  // Since Exclusion Constriants are symmetric this method will also remove
-  // this "definition" from def
+  /// Since Exclusion Constriants are symmetric this method will also remove
+  /// this "definition" from def.
   void removeExclusion(smtk::attribute::DefinitionPtr def);
   const WeakDefinitionSet exclusions() const { return m_exclusionDefs; }
-  // Return a list of sorted type names that exlude this type of
-  // attribute
+  /// Return a list of sorted type names that exlude this type of attribute.
   std::vector<std::string> excludedTypeNames() const;
 
   void addPrerequisite(smtk::attribute::DefinitionPtr def);
@@ -407,12 +402,12 @@ public:
 
   void removePrerequisite(smtk::attribute::DefinitionPtr def);
   const WeakDefinitionSet prerequisites() const { return m_prerequisiteDefs; }
-  // Return a sort of list of type names that are prerequisite to the type
-  // of attribute
+  /// Return a sort of list of type names that are prerequisite to the type
+  /// of attribute
   std::vector<std::string> prerequisiteTypeNames() const;
 
-  // Return nullptr if def is not a prerequisite of this Definition else
-  // return the prerequisite definition that def is derived from
+  /// Return nullptr if def is not a prerequisite of this Definition else
+  /// return the prerequisite definition that def is derived from
   smtk::attribute::ConstDefinitionPtr hasPrerequisite(
     smtk::attribute::ConstDefinitionPtr def) const;
   /// Returns true if the definition has prerequisites (which can be inherited)
@@ -429,7 +424,7 @@ public:
 
 protected:
   friend class smtk::attribute::Resource;
-  // AttributeDefinitions can only be created by an attribute resource
+  /// AttributeDefinitions can only be created by an attribute resource
   Definition(
     const std::string& myType,
     smtk::attribute::DefinitionPtr myBaseDef,
@@ -441,8 +436,8 @@ protected:
   /// inherited is an initial set passed down from the definition's base.
   void applyCategories(smtk::attribute::Categories::Stack inherited);
 
-  // This method updates derived definitions when this
-  // definition's items have been changed
+  /// This method updates derived definitions when this
+  /// definition's items have been changed
   void updateDerivedDefinitions();
 
   ///\brief update the advance level information of the definition and its items.
@@ -473,9 +468,9 @@ protected:
   size_t m_prerequisiteUsageCount;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
-  //Is Unique indicates if more than one attribute of this type can be assigned to a
-  // model entity - this constraint is implimented by using adding the definition itself
-  // into its exclusion list
+  ///Is Unique indicates if more than one attribute of this type can be assigned to a
+  /// model entity - this constraint is implimented by using adding the definition itself
+  /// into its exclusion list
   bool m_isUnique;
   bool m_isRequired;
   bool m_isNotApplicableColorSet;
@@ -485,7 +480,7 @@ protected:
 
   std::string m_detailedDescription;
   std::string m_briefDescription;
-  // Used by the find method to calculate an item's position
+  /// Used by the find method to calculate an item's position
   std::size_t m_baseItemOffset;
   std::string m_rootName;
   Tags m_tags;
@@ -493,7 +488,7 @@ protected:
   Categories::CombinationMode m_combinationMode;
 
 private:
-  // These colors are returned for base definitions w/o set colors
+  /// These colors are returned for base definitions w/o set colors
   static double s_notApplicableBaseColor[4];
   static double s_defaultBaseColor[4];
 
