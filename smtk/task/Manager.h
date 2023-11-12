@@ -17,13 +17,14 @@
 
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/string/Token.h"
 
 #include "smtk/task/Active.h"
 #include "smtk/task/Adaptor.h"
+#include "smtk/task/Gallery.h"
 #include "smtk/task/Instances.h"
 #include "smtk/task/Task.h"
-#include "smtk/task/UIState.h"
 #include "smtk/task/adaptor/Instances.h"
 
 #include "nlohmann/json.hpp"
@@ -38,6 +39,27 @@ namespace smtk
 {
 namespace task
 {
+
+/// Indicate that a task is being managed or unmanaged.
+///
+/// Emitted during operation observation by the task manager.
+using TaskManagerTaskObserver =
+  std::function<void(smtk::common::InstanceEvent, const std::shared_ptr<Task>&)>;
+using TaskManagerTaskObservers = smtk::common::Observers<TaskManagerTaskObserver>;
+
+/// Indicate that an adaptor is being managed or unmanaged.
+///
+/// Emitted during operation observation by the task manager.
+using TaskManagerAdaptorObserver =
+  std::function<void(smtk::common::InstanceEvent, const std::shared_ptr<Adaptor>&)>;
+using TaskManagerAdaptorObservers = smtk::common::Observers<TaskManagerAdaptorObserver>;
+
+/// Indicate that a workflow is undergoing creation, destruction, or a topology change.
+///
+/// Emitted during operation observation by the task manager.
+using TaskManagerWorkflowObserver =
+  std::function<void(const std::set<Task*>&, WorkflowEvent, Task*)>;
+using TaskManagerWorkflowObservers = smtk::common::Observers<TaskManagerWorkflowObserver>;
 
 /// A task manager is responsible for creating new tasks.
 ///
@@ -79,27 +101,59 @@ public:
 
   /// Return the managers instance that contains this manager, if it exists.
   smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
-  void setManagers(const smtk::common::Managers::Ptr& managers) { m_managers = managers; }
+  void setManagers(const smtk::common::Managers::Ptr& managers);
 
   /// Given a style key, return a style config.
   nlohmann::json getStyle(const smtk::string::Token& styleClass) const;
   nlohmann::json getStyles() const { return m_styles; };
   void setStyles(const nlohmann::json& styles) { m_styles = styles; }
 
-  /// Store geometry changes from UI components
-  UIState& uiState() { return m_uiState; }
-
   /// If this manager is owned by a resource (typically a project), return it.
   smtk::resource::Resource* resource() const;
 
+  /// Return a gallery of Task Worklets
+  Gallery& gallery() { return m_gallery; }
+  const Gallery& gallery() const { return m_gallery; }
+
+  /// Return the set of observers of task events (so you can insert/remove an observer).
+  TaskManagerTaskObservers& taskObservers() { return m_taskEvents; }
+  /// Return the set of observers of adaptor events (so you can insert/remove an observer).
+  TaskManagerAdaptorObservers& adaptorObservers() { return m_adaptorEvents; }
+  /// Return the set of observers of workflow events (so you can insert/remove an observer).
+  TaskManagerWorkflowObservers& workflowObservers() { return m_workflowEvents; }
+
+  /// Use an elevated priority for the task-manager's observation of operations.
+  ///
+  /// This is done so that task-related events are emitted before other ordinary-priority
+  /// operation observations (especially hint-processing).
+  static constexpr smtk::operation::Observers::Priority operationObserverPriority()
+  {
+    return 0x100;
+  }
+
 private:
+  /// A method invoked when the \a m_manager's operation manager runs an operation.
+  int handleOperation(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
+    smtk::operation::Operation::Result result);
+
   TaskInstances m_taskInstances;
   AdaptorInstances m_adaptorInstances;
   Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
   smtk::resource::Resource* m_parent = nullptr;
   nlohmann::json m_styles;
-  UIState m_uiState;
+  Gallery m_gallery;
+
+  /// Monitor operation results and, if any involve tasks, invoke task observers.
+  smtk::operation::Observers::Key m_taskEventObserver;
+  /// Observers to notify when a task is managed/unmanaged by an operation.
+  TaskManagerTaskObservers m_taskEvents;
+  /// Observers to notify when an adaptor is managed/unmanaged by an operation.
+  TaskManagerAdaptorObservers m_adaptorEvents;
+  /// Observers to notify when a workflow is created/destroyed/modified by an operation.
+  TaskManagerWorkflowObservers m_workflowEvents;
 };
 } // namespace task
 } // namespace smtk

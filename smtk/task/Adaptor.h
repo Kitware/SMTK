@@ -21,10 +21,12 @@ namespace task
 
 /// This object provides applications a way to configure a task using
 /// information adapted from its dependencies.
-class SMTKCORE_EXPORT Adaptor : smtkEnableSharedPtr(Adaptor)
+class SMTKCORE_EXPORT Adaptor : public smtk::resource::Component
 {
 public:
-  smtkTypeMacroBase(smtk::task::Adaptor);
+  smtkTypeMacro(smtk::task::Adaptor);
+  smtkSuperclassMacro(smtk::resource::Component);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   /// Task adaptors are configured using JSON.
   using Configuration = nlohmann::json;
@@ -35,7 +37,13 @@ public:
   Adaptor(const Configuration& config, Task* from, Task* to);
 
   /// Destructor must be virtual.
-  virtual ~Adaptor() = default;
+  ~Adaptor() override = default;
+
+  const smtk::resource::ResourcePtr resource() const override;
+  std::string name() const override;
+  const common::UUID& id() const override { return m_id; }
+  // TODO: Once task::Manager indexes adaptors by UUID, this will need to change.
+  bool setId(const common::UUID& uid) override;
 
   SMTK_DEPRECATED_IN_23_11("Use updateDownstreamTask() instead.")
   virtual bool reconfigureTask();
@@ -54,8 +62,11 @@ public:
   Task* to() const { return m_to; }
 
 protected:
-  Task* m_from;
-  Task* m_to;
+  void configureId(const Configuration& config);
+
+  smtk::common::UUID m_id;
+  Task* m_from{ nullptr };
+  Task* m_to{ nullptr };
   smtk::task::Task::Observers::Key m_observer;
 };
 } // namespace task

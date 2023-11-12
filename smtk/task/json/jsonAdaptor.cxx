@@ -23,10 +23,11 @@ namespace json
 
 Adaptor::Configuration jsonAdaptor::operator()(const Adaptor* adaptor, Helper& helper) const
 {
+  (void)helper;
   Adaptor::Configuration config;
   if (adaptor)
   {
-    config = { { "id", helper.adaptors().swizzleId(adaptor) },
+    config = { { "id", adaptor->id() },
                { "type", adaptor->typeName() },
                { "from", adaptor->from()->id() },
                { "to", adaptor->to()->id() } };

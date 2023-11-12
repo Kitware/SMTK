@@ -25,13 +25,25 @@
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/qtWorkletPalette.h"
 #include "smtk/extension/qt/task/qtDefaultTaskNode.h"
 #include "smtk/extension/qt/task/qtDefaultTaskNode1.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include "smtk/plugin/Manager.h"
 
+#include "smtk/Options.h"
+
 #include <tuple>
+
+#if SMTK_ENABLE_PYTHON_WRAPPING
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Resource.h"
+#include "smtk/operation/pybind11/PyOperation.h"
+#endif
+
+#include <QApplication>
+#include <QTimer>
 
 namespace smtk
 {
@@ -52,7 +64,8 @@ using ViewWidgetList = std::tuple<
   qtResourceBrowser,
   qtSelectorView,
   qtSimpleExpressionView,
-  qtTaskEditor>;
+  qtTaskEditor,
+  qtWorkletPalette>;
 
 using BadgeList =
   std::tuple<smtk::extension::qt::MembershipBadge, smtk::extension::qt::TypeAndColorBadge>;
@@ -65,11 +78,30 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   managers->insert(qtManager::create());
   smtk::plugin::Manager::instance()->registerPluginsTo(managers->get<qtManager::Ptr>());
+
+#if SMTK_ENABLE_PYTHON_WRAPPING
+  smtk::operation::PyOperation::runOnMainThread =
+    [](smtk::operation::PyOperation::SimpleFunction fn) {
+      if (QThread::currentThread() == qApp->thread())
+      {
+        // We're running in the GUI thread already, just call the function:
+        fn();
+        return;
+      }
+
+      QMetaObject::invokeMethod(qApp, fn, Qt::BlockingQueuedConnection);
+    };
+#endif
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   managers->erase<qtManager>();
+
+#if SMTK_ENABLE_PYTHON_WRAPPING
+  smtk::operation::PyOperation::runOnMainThread =
+    [](smtk::operation::PyOperation::SimpleFunction fn) { fn(); };
+#endif
 }
 
 void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
@@ -101,6 +133,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ComponentAttribute");
   manager->viewWidgetFactory().addAlias<qtResourceBrowser>("ResourceBrowser");
   manager->viewWidgetFactory().addAlias<qtTaskEditor>("TaskEditor");
+  manager->viewWidgetFactory().addAlias<qtWorkletPalette>("WorkletPalette");
 
   manager->badgeFactory().registerTypes<BadgeList>();
 }

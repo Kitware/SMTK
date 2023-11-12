@@ -35,6 +35,9 @@ namespace smtk
 {
 namespace view
 {
+class UIElementState;
+using ElementStateMap = std::unordered_map<smtk::string::Token, UIElementState*>;
+
 /// A view Manager is responsible for creating new views (eventually) as well as
 /// view components such as PhraseModels and SubPhraseGenerators.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
@@ -66,6 +69,9 @@ public:
   ViewWidgetFactory& viewWidgetFactory() { return m_viewWidgetFactory; }
   const ViewWidgetFactory& viewWidgetFactory() const { return m_viewWidgetFactory; }
 
+  const ElementStateMap& elementStateMap() const { return m_elementStateMap; }
+  ElementStateMap& elementStateMap() { return m_elementStateMap; }
+
 private:
   BadgeFactory m_badgeFactory;
   ObjectIcons m_objectIcons;
@@ -73,6 +79,7 @@ private:
   PhraseModelFactory m_phraseModelFactory;
   SubphraseGeneratorFactory m_subphraseGeneratorFactory;
   ViewWidgetFactory m_viewWidgetFactory;
+  ElementStateMap m_elementStateMap;
 
 protected:
   Manager();

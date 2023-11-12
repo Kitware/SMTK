@@ -117,6 +117,9 @@ void pqSMTKTaskPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* ser
     m_taskPanel = nullptr;
   }
 
+  // Add the panel to the View Manger
+  viewMgr->elementStateMap()[this->elementType()] = this;
+
   m_viewUIMgr = new smtk::extension::qtUIManager(rsrcMgr, viewMgr);
   m_viewUIMgr->setOperationManager(wrapper->smtkOperationManager());
   m_viewUIMgr->setSelection(wrapper->smtkSelection());
@@ -163,4 +166,41 @@ void pqSMTKTaskPanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* serve
   {
     return;
   }
+  smtk::view::ManagerPtr viewMgr = mgr->smtkViewManager();
+  if (!viewMgr)
+  {
+    return;
+  }
+
+  // Remove the panel to the View Manger
+  auto& stateMap = viewMgr->elementStateMap();
+  auto it = stateMap.find(this->elementType());
+  if (it != stateMap.end())
+  {
+    stateMap.erase(it);
+  }
+}
+
+nlohmann::json pqSMTKTaskPanel::configuration()
+{
+  nlohmann::json config;
+  if (m_taskPanel)
+  {
+    config["layout"] = m_taskPanel->configuration();
+  }
+  return config;
+}
+
+bool pqSMTKTaskPanel::configure(const nlohmann::json& data)
+{
+  if (m_taskPanel)
+  {
+    auto it = data.find("layout");
+    if (it == data.end())
+    {
+      return false; // no layout information present
+    }
+    return m_taskPanel->configure(*it);
+  }
+  return false;
 }

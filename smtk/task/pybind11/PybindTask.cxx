@@ -23,10 +23,12 @@ using namespace nlohmann;
 #include "PybindActive.h"
 #include "PybindFillOutAttributes.h"
 #include "PybindGatherResources.h"
+#include "PybindGallery.h"
 #include "PybindManager.h"
 #include "PybindRegistrar.h"
 #include "PybindState.h"
 #include "PybindTask.h"
+#include "PybindWorklet.h"
 #include "PybindInstances.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -49,4 +51,6 @@ PYBIND11_MODULE(_smtkPybindTask, m)
   pybind11_init_smtk_task_stateName(m);
   auto smtk_task_FillOutAttributes = pybind11_init_smtk_task_FillOutAttributes(m);
   auto smtk_task_GatherResources = pybind11_init_smtk_task_GatherResources(m);
+  auto smtk_task_Worklet = pybind11_init_smtk_task_Worklet(m);
+  auto smtk_task_Gallery = pybind11_init_smtk_task_Gallery(m);
 }

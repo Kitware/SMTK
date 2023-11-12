@@ -32,6 +32,14 @@ namespace smtk
 namespace operation
 {
 
+std::function<void(PyOperation::SimpleFunction)> PyOperation::runOnMainThread =
+  [](PyOperation::SimpleFunction fn) {
+    if (fn)
+    {
+      fn();
+    }
+  };
+
 bool registerPythonOperations(
   const smtk::operation::Manager::Ptr& operationManager,
   const std::string& moduleName)

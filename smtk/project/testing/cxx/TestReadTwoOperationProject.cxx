@@ -93,7 +93,7 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
   // Import MathOp operation (used in the SubmitOperation tasks)
   {
     auto importOp = operationManager->create("smtk::operation::ImportPythonOperation");
-    std::string importPath = data_root + "/projects/src/math_op.py";
+    std::string importPath = data_root + "/operations/math_op.py";
     importOp->parameters()->findFile("filename")->setValue(importPath);
     auto importResult = importOp->operate();
     int outcome = importResult->findInt("outcome")->value();

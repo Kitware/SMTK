@@ -1,6 +1,8 @@
 Key Concepts
 ============
 
+Tasks and Workflows
+-------------------
 A *task* is some activity that a user must complete to accomplish
 a simulation pre- or post-processing objective (e.g., generating
 a geometric model of a simulation domain, associating attributes
@@ -109,7 +111,7 @@ Pipelines
   of :smtk:`workflow events <smtk::task::WorkflowEvent>`.
 
 Dependency and Adaptor Details
-------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Dependencies and adaptors provide similar but distinct functionality:
 
@@ -143,3 +145,9 @@ See the `Task::state()`_ documentation for a state table comparison of
 strict and lazy dependency evaluation.
 
 .. _Task::state(): https://smtk.readthedocs.io/en/latest/doc/reference/smtk/html/classsmtk_1_1task_1_1Task.xhtml#a7cdb07988d9d3f57381a2bcf013f3583
+
+Task Worklets and Task Galleries
+--------------------------------
+There are times when a user will need to interactively extend a task workflow  by adding a tasks or a group of related tasks.  To provide this functionality, SMTK provide the concept of a :smtk:smtk::task::Worklet.  A worklet is defined as an object representing a template for a set of tasks that can be instantiated to reuse some portion of a workflow. In SMTK, a worklet is a subclass of :smtk:smtk::resource::Component and its instances are held by a project's :smtk:smtk::task::Manager.
+
+Worklets can be versioned with a schema type and version number so that they and the workflows into which they are instantiated can be processed by updaters (see :smtk:update::Factory <smtk::common::update::Factory>).

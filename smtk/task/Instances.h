@@ -52,48 +52,18 @@ using TaskInstancesBase = smtk::common::Instances<
 
 /// Track smtk::task::Task objects with smtk::common::Instances.
 ///
-/// This class adds an API for observing vectors of tasks that
-/// form workflows as instances are managed/unmanaged and
-/// dependencies are added/removed.
+/// This class adds methods to create tasks by name and will
+/// eventually index tasks by UUID and name.
 class SMTKCORE_EXPORT Instances : public TaskInstancesBase
 {
 public:
   smtkTypeMacroBase(smtk::task::Instances);
   smtkSuperclassMacro(smtk::task::TaskInstancesBase);
 
-  /// The signature for observing workflow construction/destruction/modification.
-  ///
-  /// The first parameter is the head task of the workflow (i.e., the one on which
-  /// all others depend). The second parameter is the type of event and the third
-  /// parameter is a task that is non-null only for WorkflowEvent::TaskAdded and
-  /// WorkflowEvent::TaskRemoved events:
-  /// + For WorkflowEvent::TaskAdded, the third parameter is the added task.
-  /// + For WorkflowEvent::TaskRemoved, the third parameter is the removed task.
-  using WorkflowObserver = std::function<void(const std::set<Task*>&, WorkflowEvent, Task*)>;
-  /// Observers that are invoked when the workflow structure changes.
-  using WorkflowObservers = smtk::common::Observers<WorkflowObserver>;
-
   Instances(Manager& taskManager);
   Instances(const Instances&) = delete;
   void operator=(const Instances&) = delete;
   virtual ~Instances() = default;
-
-  /// Return the set of workflow-event observers (so you can add yourself to it).
-  const WorkflowObservers& workflowObservers() const { return m_workflowObservers; }
-  WorkflowObservers& workflowObservers() { return m_workflowObservers; }
-
-  /// Pause or resume workflow-event notifications.
-  ///
-  /// This exists so that deserialization does not generate many
-  /// redundant events (e.g., creating a new head for each task
-  /// then destroying each as dependencies are added).
-  bool pauseWorkflowNotifications(bool doPause);
-
-  /// Notify observers of a change.
-  /// Use this method to invoke observers since it can be "paused"
-  /// (i.e., no observers will be invoked if \a m_workflowNotificationsPaused
-  /// is true).
-  bool workflowEvent(const std::set<Task*>& workflows, WorkflowEvent event, Task* subject);
 
   ///@{
   /// Create a task given its class name and optionally more configuration data.
@@ -124,9 +94,6 @@ public:
 
 protected:
   Manager& m_taskManager;
-  WorkflowObservers m_workflowObservers;
-  bool m_workflowNotificationsPaused = false;
-  bool m_needNotification = false;
 };
 
 } // namespace task

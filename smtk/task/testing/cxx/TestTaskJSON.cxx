@@ -64,6 +64,7 @@ int TestTaskJSON(int, char*[])
 {
   using smtk::task::State;
   using smtk::task::Task;
+  using smtk::task::TaskManagerWorkflowObserver;
   using smtk::task::WorkflowEvent;
 
   // Create managers
@@ -84,7 +85,7 @@ int TestTaskJSON(int, char*[])
   auto modelRegistry = smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager);
   auto taskTaskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(taskManager);
 
-  smtk::task::Instances::WorkflowObserver wfObserver =
+  TaskManagerWorkflowObserver wfObserver =
     [&](const std::set<Task*>& workflows, WorkflowEvent event, Task* subject) {
       std::cout << "-- Workflow event " << static_cast<int>(event) << " subject: " << subject
                 << " workflows:\n";
@@ -94,7 +95,7 @@ int TestTaskJSON(int, char*[])
       }
       std::cout << "--\n";
     };
-  auto workflowObserver = taskManager->taskInstances().workflowObservers().insert(wfObserver);
+  auto workflowObserver = taskManager->workflowObservers().insert(wfObserver);
 
   auto attrib = resourceManager->create<smtk::attribute::Resource>();
   auto model = resourceManager->create<smtk::model::Resource>();
@@ -169,7 +170,6 @@ int TestTaskJSON(int, char*[])
 
   auto config = nlohmann::json::parse(configString);
   std::cout << config.dump(2) << "\n";
-  taskManager->taskInstances().pauseWorkflowNotifications(true);
 
   bool ok = true;
   auto& resourceHelper = smtk::resource::json::Helper::instance();
@@ -187,8 +187,6 @@ int TestTaskJSON(int, char*[])
     ok = false;
   }
 
-  // bool ok = smtk::task::json::jsonManager::deserialize(managers, config);
-  taskManager->taskInstances().pauseWorkflowNotifications(false);
   test(ok, "Failed to parse configuration.");
   test(taskManager->taskInstances().size() == 2, "Expected to deserialize 2 tasks.");
 

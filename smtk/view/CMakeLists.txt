@@ -50,6 +50,7 @@ set(viewHeaders
   SelectionObserver.h
   SubphraseGeneratorFactory.h
   SubphraseGenerator.txx
+  UIElementState.h
   ViewWidgetFactory.h
 )
 

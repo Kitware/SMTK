@@ -29,7 +29,6 @@
 #include <QLayout>
 #include <QMenu>
 #include <QPainter>
-#include <QTimer>
 
 #include "task/ui_DefaultTaskNode1.h"
 

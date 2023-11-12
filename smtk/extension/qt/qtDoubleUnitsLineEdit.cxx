@@ -147,11 +147,6 @@ qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
   qtInputsItem* inputsItem,
   const QString& tooltip)
 {
-  // Create qWarning object without string quoting
-  QDebug qtWarning(QtWarningMsg);
-  qtWarning.noquote();
-  qtWarning.nospace();
-
   // Get the item definition and see if it specifies dimensional units
   auto dDef = inputsItem->item()->definitionAs<smtk::attribute::DoubleItemDefinition>();
   if (dDef->units().empty())
@@ -162,8 +157,8 @@ qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
   // Sanity check that units only supported for numerical values
   if (dDef->isDiscrete())
   {
-    qtWarning << "Ignoring units for discrete or expression item "
-              << inputsItem->item()->name().c_str() << "\".";
+    qWarning() << "Ignoring units for discrete or expression item \""
+               << inputsItem->item()->name().c_str() << "\".";
     return nullptr;
   }
 
@@ -179,10 +174,8 @@ qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
   auto unit = unitsSystem->unit(dDef->units(), &parsedOK);
   if (!parsedOK)
   {
-#ifndef NDEBUG
-    qtWarning << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
-              << " in attribute item \"" << inputsItem->item()->name().c_str() << "\".";
-#endif
+    qWarning() << "Ignoring unrecognized units \"" << dDef->units().c_str() << "\""
+               << " in attribute item \"" << inputsItem->item()->name().c_str() << "\".";
     return nullptr;
   }
 

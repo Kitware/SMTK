@@ -137,9 +137,6 @@ public:
   void setActiveSerializedTask(Task* task);
   Task* activeSerializedTask() const;
 
-  // Insert UI states (if any) for given task
-  void updateUIState(std::shared_ptr<smtk::task::Task> task, nlohmann::json& j);
-
 protected:
   Helper();
   Helper(Manager*);

@@ -37,7 +37,7 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     {
       config["style"] = task->style();
     }
-    config["state"] = stateName(task->internalState());
+    config["state"] = stateName(task->state());
     nlohmann::json::array_t deps;
     for (const auto& dependency : task->dependencies())
     {

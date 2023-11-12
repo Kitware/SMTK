@@ -31,6 +31,8 @@ inline PySharedPtrClass< smtk::task::Manager > pybind11_init_smtk_task_Manager(p
     .def("managers", &smtk::task::Manager::managers)
     .def("setManagers", &smtk::task::Manager::setManagers, py::arg("managers"))
     .def("typeName", &smtk::task::Manager::typeName)
+    .def("gallery", (const smtk::task::Gallery& (smtk::task::Manager::*)() const) &smtk::task::Manager::gallery)
+    .def("gallery", (smtk::task::Gallery& (smtk::task::Manager::*)()) &smtk::task::Manager::gallery)
     .def_readonly_static("type_name", &smtk::task::Manager::type_name)
     ;
   return instance;

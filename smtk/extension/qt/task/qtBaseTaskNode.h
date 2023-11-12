@@ -86,10 +86,15 @@ public:
   /// Deals with state updates
   virtual void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) = 0;
 
+  /// Deal with task updates (e.g., name or other configuration change).
+  ///
+  /// This method is invoked when an operation changes a task name or
+  /// makes other changes that require a visual update to the GUI.
+  virtual void updateToMatchModifiedTask(){};
+
 Q_SIGNALS:
   void nodeResized();
-  void nodeMovedImmediate();
-  void nodeMoved(); // a rate-limited version of nodeMovedImmediate
+  void nodeMoved();
 
 protected:
   QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
@@ -108,9 +113,6 @@ protected:
   smtk::task::Task* m_task{ nullptr };
   ContentStyle m_contentStyle{ ContentStyle::Minimal };
   OutlineStyle m_outlineStyle{ OutlineStyle::Normal };
-
-  // Use timer to limit frequency of nodeMoved() signals to 10 hz.
-  QTimer* m_moveSignalTimer{ nullptr };
 };
 
 } // namespace extension

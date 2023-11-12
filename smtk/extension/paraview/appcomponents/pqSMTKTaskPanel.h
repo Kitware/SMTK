@@ -11,9 +11,12 @@
 #define smtk_extension_paraview_appcomponents_pqSMTKTaskPanel_h
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+#include "smtk/view/UIElementState.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
+
+#include "smtk/string/Token.h"
 
 #include <QPointer>
 #include <QWidget>
@@ -27,7 +30,9 @@ class QVBoxLayout;
 /**\brief A panel that displays SMTK tasks available to the user.
   *
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKTaskPanel : public QWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKTaskPanel
+  : public QWidget
+  , public smtk::view::UIElementState
 {
   Q_OBJECT
   typedef QWidget Superclass;
@@ -41,6 +46,17 @@ public:
 
   /// Access the underlying resource browser.
   smtk::extension::qtTaskEditor* taskPanel() const { return m_taskPanel; }
+
+  /// Return an (application-unique) token for the type of user-interface
+  /// element this state object will serialize/deserialize.
+  smtk::string::Token elementType() const override { return "pqSMTKTaskPanel"; }
+
+  /// Return the UI element's current, in-memory state to be serialized.
+  nlohmann::json configuration() override;
+
+  /// Using the deserialized configuration \a data, configure the user
+  /// interface element to match it.
+  bool configure(const nlohmann::json& data) override;
 
 Q_SIGNALS:
   void titleChanged(QString title);

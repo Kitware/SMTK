@@ -9,28 +9,62 @@
 //=========================================================================
 #include "smtk/task/Adaptor.h"
 
+#include "smtk/task/json/Configurator.txx"
+#include "smtk/task/json/Helper.h"
+
 namespace smtk
 {
 namespace task
 {
 
-Adaptor::Adaptor() = default;
+Adaptor::Adaptor()
+  : m_id(smtk::common::UUID::random())
+{
+}
 
 Adaptor::Adaptor(const Configuration& config)
 {
-  (void)config; // subclasses may use this
+  this->configureId(config);
 }
 
 Adaptor::Adaptor(const Configuration& config, Task* from, Task* to)
   : m_from(from)
   , m_to(to)
 {
-  (void)config; // subclasses may use this
+  this->configureId(config);
   if (from)
   {
     m_observer = from->observers().insert(
       [this](Task&, State prev, State next) { this->updateDownstreamTask(prev, next); });
   }
+}
+
+const smtk::resource::ResourcePtr Adaptor::resource() const
+{
+  if (m_from)
+  {
+    return m_from->resource();
+  }
+  if (m_to)
+  {
+    return m_to->resource();
+  }
+  return smtk::resource::ResourcePtr();
+}
+
+std::string Adaptor::name() const
+{
+  return this->typeName() + " " + m_id.toString().substr(4);
+}
+
+bool Adaptor::setId(const common::UUID& uid)
+{
+  if (m_id == uid || uid.isNull())
+  {
+    return false;
+  }
+  m_id = uid;
+  return true;
 }
 
 bool Adaptor::reconfigureTask()
@@ -47,6 +81,27 @@ bool Adaptor::updateDownstreamTask(State upstreamPrev, State upstreamNext)
     return this->reconfigureTask();
   }
   return false;
+}
+
+void Adaptor::configureId(const Configuration& config)
+{
+  auto it = config.find("id");
+  if (it != config.end())
+  {
+    if (it->is_number_integer())
+    {
+      // taskSwizzle = jTaskId.get<json::Helper::SwizzleId>();
+      m_id = smtk::common::UUID::random();
+    }
+    else if (it->is_string())
+    {
+      m_id = it->get<smtk::common::UUID>();
+    }
+  }
+  else
+  {
+    m_id = smtk::common::UUID::random();
+  }
 }
 
 } // namespace task

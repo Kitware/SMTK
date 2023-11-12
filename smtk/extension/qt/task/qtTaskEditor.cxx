@@ -10,16 +10,19 @@
 #include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include "smtk/common/Managers.h"
+#include "smtk/common/json/jsonUUID.h"
 
 #include "smtk/extension/qt/qtManager.h"
 
 #include "smtk/extension/qt/task/PanelConfiguration_cpp.h"
-#include "smtk/extension/qt/task/TaskEditorState.h"
 #include "smtk/extension/qt/task/qtDefaultTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskArc.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskView.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
+
+#include "smtk/view/Configuration.h"
+#include "smtk/view/json/jsonView.h"
 
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -28,8 +31,11 @@
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"
 
-#include "smtk/view/Configuration.h"
-#include "smtk/view/json/jsonView.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -61,7 +67,6 @@ public:
     m_self = self;
     m_scene = new qtTaskScene(m_self);
     m_widget = new qtTaskView(m_scene, m_self);
-    m_uiState = std::make_shared<TaskEditorState>(m_self);
     auto* layout = new QVBoxLayout;
     layout->setObjectName("taskEditor");
     m_self->Widget = m_widget;
@@ -89,9 +94,7 @@ public:
 
     this->installObservers();
 
-    auto generator = std::dynamic_pointer_cast<smtk::task::UIStateGenerator>(m_uiState);
-    m_taskManager->uiState().setGenerator(m_self->typeName(), generator);
-
+    // TODO: Fetch UI state?
     QTimer::singleShot(0, [this]() {
       bool modified = this->computeNodeLayout();
       m_widget->ensureVisible(m_scene->sceneRect());
@@ -114,36 +117,9 @@ public:
   // Returns true if UI configuration was modified
   bool computeNodeLayout()
   {
-    if (m_taskIndex.empty())
+    if (m_taskIndex.empty() || (!m_layoutMap.empty()))
     {
       return false;
-    }
-
-    // Check if taskManager has UI config objects first
-    bool configured = false;
-    auto* firstTask = m_taskIndex.begin()->first;
-    auto* taskManager = firstTask->manager();
-    auto& uiState = taskManager->uiState();
-    smtk::string::Token classToken = m_self->typeName();
-    for (const auto& entry : m_taskIndex)
-    {
-      nlohmann::json uiConfig = uiState.getData(classToken, entry.first);
-      if (uiConfig.contains("position"))
-      {
-        auto jPosition = uiConfig["position"];
-        double x = jPosition[0].get<double>();
-        double y = jPosition[1].get<double>();
-
-        auto* node = entry.second;
-        node->setPos(x, y);
-
-        configured = true;
-      } // if
-    }   // for
-
-    if (configured)
-    {
-      return false; // not modified
     }
 
     // If geometry not configured, call the scenes method to layout nodes
@@ -166,10 +142,20 @@ public:
   void removeObservers()
   {
     // Reset task-manager observers
-    m_adaptorObserverKey.release();
-    m_instanceObserverKey.release();
-    m_workflowObserverKey.release();
-    m_activeObserverKey.release();
+    if (m_taskManager)
+    {
+      m_taskManager->adaptorObservers().erase(m_adaptorObserverKey);
+      m_taskManager->taskObservers().erase(m_instanceObserverKey);
+      m_taskManager->workflowObservers().erase(m_workflowObserverKey);
+      m_taskManager->active().observers().erase(m_activeObserverKey);
+    }
+    else
+    {
+      m_adaptorObserverKey.release();
+      m_instanceObserverKey.release();
+      m_workflowObserverKey.release();
+      m_activeObserverKey.release();
+    }
   }
 
   void installObservers()
@@ -180,7 +166,7 @@ public:
     }
 
     QPointer<qtTaskEditor> parent(m_self);
-    m_instanceObserverKey = m_taskManager->taskInstances().observers().insert(
+    m_instanceObserverKey = m_taskManager->taskObservers().insert(
       [this,
        parent](smtk::common::InstanceEvent event, const std::shared_ptr<smtk::task::Task>& task) {
         if (!parent)
@@ -191,7 +177,7 @@ public:
         {
           case smtk::common::InstanceEvent::Managed:
           {
-            // std::cout << "Add task instance " << task << " " << task->name() << "\n";
+            // std::cout << "Add task instance node " << task << " " << task->name() << "\n";
             // Determine the qtTaskNode constructed needed for this Task.
             std::string taskNodeType = "smtk::extension::qtDefaultTaskNode";
             for (const auto& style : task->style())
@@ -225,6 +211,16 @@ public:
             }
 
             m_taskIndex[task.get()] = tnode;
+            // If a layout map has been set, use it to position the Task Node
+            if (!m_layoutMap.empty())
+            {
+              // Does this node have a location in the layout?
+              auto it = m_layoutMap.find(task->id());
+              if (it != m_layoutMap.end())
+              {
+                tnode->setPos(it->second.first, it->second.second);
+              }
+            }
           }
           break;
           case smtk::common::InstanceEvent::Unmanaged:
@@ -239,11 +235,22 @@ public:
             }
           }
           break;
+          case smtk::common::InstanceEvent::Modified:
+          {
+            // std::cout << "Update task " << task << " " << task->name() << "\n";
+            auto it = m_taskIndex.find(task.get());
+            if (it != m_taskIndex.end())
+            {
+              // Update name, update arcs, etc.
+              it->second->updateToMatchModifiedTask();
+            }
+          }
+          break;
         }
       },
       "qtTaskEditor watching task instances.");
     // Observe task-manager's taskInstances() and active() objects.
-    m_workflowObserverKey = m_taskManager->taskInstances().workflowObservers().insert(
+    m_workflowObserverKey = m_taskManager->workflowObservers().insert(
       [this, parent](
         const std::set<smtk::task::Task*>& workflow,
         smtk::task::WorkflowEvent workflowEvent,
@@ -293,7 +300,7 @@ public:
       },
       "qtTaskEditor watching task workflows.");
 
-    m_adaptorObserverKey = m_taskManager->adaptorInstances().observers().insert(
+    m_adaptorObserverKey = m_taskManager->adaptorObservers().insert(
       [this, parent](
         smtk::common::InstanceEvent event, const std::shared_ptr<smtk::task::Adaptor>& adaptor) {
         if (!parent)
@@ -344,6 +351,9 @@ public:
             delete match;
           }
           break;
+          case smtk::common::InstanceEvent::Modified:
+            // TODO: Update modified arc? What could change? from/to?
+            break;
         }
       },
       "qtTaskEditor watching task adaptors.");
@@ -468,18 +478,41 @@ public:
     m_arcIndex.clear();
   }
 
+  bool configure(const nlohmann::json& data)
+  {
+    m_layoutMap = data.get<std::unordered_map<smtk::common::UUID, std::pair<double, double>>>();
+    return true;
+  }
+
+  nlohmann::json configuration()
+  {
+    nlohmann::json config;
+    // Need to update the layout map
+    m_layoutMap.clear();
+    for (const auto& entry : m_taskIndex)
+    {
+      auto* node = entry.second;
+      auto* task = entry.first;
+      auto qpoint = node->pos();
+      std::pair<double, double> pos(qpoint.x(), qpoint.y());
+      m_layoutMap[task->id()] = pos;
+    }
+    config = m_layoutMap;
+    return config;
+  }
+
   qtTaskEditor* m_self;
   smtk::task::Manager* m_taskManager{ nullptr };
   qtTaskScene* m_scene{ nullptr };
   qtTaskView* m_widget{ nullptr };
-  std::shared_ptr<TaskEditorState> m_uiState;
-  smtk::task::adaptor::Instances::Observers::Key m_adaptorObserverKey;
-  smtk::task::Instances::WorkflowObservers::Key m_workflowObserverKey;
-  smtk::task::Instances::Observers::Key m_instanceObserverKey;
+  smtk::task::TaskManagerAdaptorObservers::Key m_adaptorObserverKey;
+  smtk::task::TaskManagerWorkflowObservers::Key m_workflowObserverKey;
+  smtk::task::TaskManagerTaskObservers::Key m_instanceObserverKey;
   smtk::task::Active::Observers::Key m_activeObserverKey;
   std::unordered_map<Task*, qtBaseTaskNode*> m_taskIndex;
   std::unordered_map<qtBaseTaskNode*, std::unordered_set<qtTaskArc*>>
     m_arcIndex; // Arcs grouped by their predecessor task.
+  std::unordered_map<smtk::common::UUID, std::pair<double, double>> m_layoutMap;
 };
 
 qtTaskEditor::qtTaskEditor(const smtk::view::Information& info)
@@ -559,8 +592,51 @@ nlohmann::json qtTaskEditor::uiStateForTask(const smtk::task::Task* task) const
   return jUI;
 }
 
+bool qtTaskEditor::addWorklet(const std::string& workletName, std::array<double, 2> location)
+{
+  if (!m_p->m_taskManager)
+  {
+    return false;
+  }
+  auto worklet = m_p->m_taskManager->gallery().find(workletName);
+  if (!worklet)
+  {
+    // No such worklet?!
+    return false;
+  }
+  auto opMgr = m_p->m_taskManager->managers()->get<smtk::operation::Manager::Ptr>();
+  auto op = opMgr->create(worklet->operationName());
+  if (!op)
+  {
+    return false;
+  }
+  if (!op->parameters()->associate(worklet))
+  {
+    return false;
+  }
+  if (!op->ableToOperate())
+  {
+    return false;
+  }
+  // TODO: Add location to operation parameters
+  (void)location;
+  opMgr->launchers()(op);
+  return true;
+}
+
+bool qtTaskEditor::configure(const nlohmann::json& data)
+{
+  return m_p->configure(data);
+}
+
+nlohmann::json qtTaskEditor::configuration()
+{
+  return m_p->configuration();
+}
+
 void qtTaskEditor::onNodeGeometryChanged()
 {
+#if 0
   auto managers = m_p->m_taskManager->managers();
   if (managers == nullptr)
   {
@@ -596,6 +672,7 @@ void qtTaskEditor::onNodeGeometryChanged()
   auto project = *projects.begin();
   auto mutableProject = dynamic_pointer_cast<smtk::project::Project>(project);
   mutableProject->setClean(false);
+#endif
 }
 
 } // namespace extension

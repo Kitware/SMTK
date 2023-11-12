@@ -13,30 +13,36 @@ set(adaptors
   ResourceAndRole
 )
 
+set(operations
+  EmplaceWorklet
+  RenameTask
+)
+
 set(taskSrcs
   Active.cxx
   Adaptor.cxx
+  Gallery.cxx
   Instances.cxx
   Manager.cxx
   Registrar.cxx
-  UIState.cxx
-  UIStateGenerator.cxx
+  Worklet.cxx
   adaptor/ResourceAndRole.cxx
   json/Configurator.cxx
   json/Helper.cxx
   json/jsonManager.cxx
   json/jsonAdaptor.cxx
+  json/jsonWorklet.cxx
 )
 
 set(taskHeaders
   Active.h
   Adaptor.h
+  Gallery.h
   Instances.h
   Manager.h
   Registrar.h
   State.h
-  UIState.h
-  UIStateGenerator.h
+  Worklet.h
   adaptor/Instances.h
   adaptor/ResourceAndRole.h
   json/Configurator.h
@@ -44,12 +50,26 @@ set(taskHeaders
   json/Helper.h
   json/jsonAdaptor.h
   json/jsonManager.h
+  json/jsonWorklet.h
 )
 
 foreach(task ${tasks})
   list(APPEND taskSrcs ${task}.cxx json/json${task}.cxx)
   list(APPEND taskHeaders ${task}.h json/json${task}.h)
 endforeach()
+
+foreach(operation ${operations})
+  list(APPEND taskHeaders operators/${operation}.h)
+  list(APPEND taskSrcs operators/${operation}.cxx)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/operators/${operation}.sbt")
+    smtk_encode_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/operators/${operation}.sbt"
+      HEADER_OUTPUT headerName
+    )
+    list(APPEND _taskDependencies ${headerName})
+  endif()
+endforeach()
+add_custom_target(taskGenHeaders DEPENDS ${_taskDependencies})
 
 foreach(adaptor ${adaptors})
   list(APPEND taskSrcs adaptor/${adaptor}.cxx json/json${adaptor}.cxx)

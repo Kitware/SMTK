@@ -49,6 +49,8 @@ set(QAttrLibSrcs
   qtDoubleLineEdit.cxx
   qtDoubleUnitsLineEdit.cxx
   qtViewRegistrar.cxx
+  qtWorkletModel.cxx
+  qtWorkletPalette.cxx
 
   qtItem.cxx
   qtDiscreteValueEditor.cxx
@@ -78,8 +80,7 @@ set(QAttrLibSrcs
   task/qtTaskScene.cxx
   task/qtTaskView.cxx
   task/qtTaskViewConfiguration.cxx
-  task/TaskEditorState.cxx
-  )
+)
 
 set(QAttrLibUIs
   qtAssociationView.ui
@@ -171,7 +172,6 @@ set(QAttrLibMocHeaders
   task/qtTaskScene.h
   task/qtTaskView.h
   task/qtTaskViewConfiguration.h
-  task/TaskEditorState.h
 
   qtManager.h
 )
@@ -189,6 +189,8 @@ set(QAttrLibHeaders
   qtStringItem.h
   qtTypeDeclarations.h
   qtViewRegistrar.h
+  qtWorkletModel.h
+  qtWorkletPalette.h
 )
 
 # Put the contents of this file in a string in a header, ending in `_json.h`.
@@ -221,12 +223,19 @@ add_library(smtkQtExt
   ${tpXmlHeader}
 )
 
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND _extra_private_libraries
+    pybind11::embed
+  )
+endif()
+
 if (SMTK_ENABLE_GRAPHVIZ_SUPPORT)
   list(APPEND _extra_private_libraries
     Graphviz::cgraph
     Graphviz::gvc
   )
 endif()
+
 target_compile_definitions(smtkQtExt PRIVATE
   "SMTK_ENABLE_GRAPHVIZ_SUPPORT=$<BOOL:${SMTK_ENABLE_GRAPHVIZ_SUPPORT}>"
 )

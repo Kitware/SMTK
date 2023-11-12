@@ -36,6 +36,9 @@
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonManager.h"
 
+#include "smtk/view/Manager.h"
+#include "smtk/view/UIElementState.h"
+
 #include "smtk/project/operators/Read_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -123,26 +126,62 @@ Read::Result Read::operateInternal()
   resourceHelper.setManagers(this->managers());
   auto& taskHelper =
     smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
-  // Do not invoke observers when reading individual tasks:
-  project->taskManager().taskInstances().pauseWorkflowNotifications(true);
 
   // Deserialize the project and see if it has an active task.
   smtk::project::from_json(j, project);
   smtk::task::Task* taskToActivate = taskHelper.activeSerializedTask();
 
-  // Unpause task observers and pop helpers since we are done reading.
-  project->taskManager().taskInstances().pauseWorkflowNotifications(false);
   smtk::task::json::Helper::popInstance();
   smtk::resource::json::Helper::popInstance();
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(project);
+    auto createdProject = result->findResource("resource");
+    createdProject->setValue(project);
+    // Indicate what worklets were read.
+    auto createdComponents = result->findComponent("created");
+    project->taskManager().taskInstances().visit(
+      [&createdComponents](const smtk::task::Task::Ptr& task) {
+        createdComponents->appendValue(task);
+        return smtk::common::Visit::Continue;
+      });
+    project->taskManager().adaptorInstances().visit(
+      [&createdComponents](const smtk::task::Adaptor::Ptr& adaptor) {
+        createdComponents->appendValue(adaptor);
+        return smtk::common::Visit::Continue;
+      });
+    for (const auto& entry : project->taskManager().gallery().worklets())
+    {
+      createdComponents->appendValue(entry.second);
+    }
     // Hint to the application to make a deserialized task active upon completion:
     if (taskToActivate)
     {
       smtk::operation::addActivateTaskHint(result, project, taskToActivate);
+    }
+  }
+
+  // Process the ui_state information if it exists
+  auto it = j.find("ui_state");
+  if (it != j.end())
+  {
+    auto viewMngr = this->managers()->get<smtk::view::Manager::Ptr>();
+    if (viewMngr)
+    {
+      // for each UI element type specified, look to see if one is registered in the
+      // View Manager and if so, pass it the configuration specified.
+      auto& elementStateMap = viewMngr->elementStateMap();
+      for (auto& element : it->items())
+      {
+        auto it = elementStateMap.find(element.key());
+        if (it != elementStateMap.end())
+        {
+          if (!it->second->configure(element.value()))
+          {
+            smtkErrorMacro(log(), "ElementState " << element.key() << " failed to be configured.");
+          }
+        }
+      }
     }
   }
 
