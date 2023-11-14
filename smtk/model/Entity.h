@@ -53,7 +53,8 @@ public:
   //using ResourcePtr = smtk::resource::ResourcePtr;
 
   smtkTypeMacro(smtk::model::Entity);
-  smtkSharedPtrCreateMacro(smtk::resource::Component);
+  smtkSuperclassMacro(smtk::resource::Component);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
   ~Entity() override;
 
   static EntityPtr create(

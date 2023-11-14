@@ -14,8 +14,11 @@
  */
 
 #include "smtk/SharedPtr.h"
+#include "smtk/common/TypeHierarchy.h"
 
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 /// Used by smtkTypeMacro()
 #define smtkTypedefs(...)                                                                          \
@@ -24,6 +27,79 @@
   typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
   typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
   typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
+
+/// Used by smtkTypeMacro and smtkTypeMacroBase to provide access to the inheritance hierarchy.
+#define smtkInheritanceHierarchyBase(...)                                                          \
+  virtual smtk::string::Token typeToken() const { return smtk::string::Token(type_name); }         \
+  virtual std::vector<smtk::string::Token> classHierarchy() const                                  \
+  {                                                                                                \
+    static std::vector<smtk::string::Token> baseTypes;                                             \
+    if (baseTypes.empty())                                                                         \
+    {                                                                                              \
+      smtk::common::typeHierarchy<__VA_ARGS__>(baseTypes);                                         \
+    }                                                                                              \
+    return baseTypes;                                                                              \
+  }                                                                                                \
+  virtual bool matchesType(smtk::string::Token candidate) const                                    \
+  {                                                                                                \
+    static std::unordered_set<smtk::string::Token> baseTypes;                                      \
+    if (baseTypes.empty())                                                                         \
+    {                                                                                              \
+      smtk::common::typeHierarchy<__VA_ARGS__>(baseTypes);                                         \
+    }                                                                                              \
+    return baseTypes.find(candidate) != baseTypes.end();                                           \
+  }                                                                                                \
+  std::size_t generationsFromBase(smtk::string::Token base)                                        \
+  {                                                                                                \
+    std::size_t generations = 0;                                                                   \
+    for (const auto& entry : this->classHierarchy())                                               \
+    {                                                                                              \
+      if (entry == base)                                                                           \
+      {                                                                                            \
+        return generations;                                                                        \
+      }                                                                                            \
+      ++generations;                                                                               \
+    }                                                                                              \
+    return std::string::npos;                                                                      \
+  }
+
+#define smtkInheritanceHierarchy(...)                                                              \
+  std::vector<smtk::string::Token> classHierarchy() const override                                 \
+  {                                                                                                \
+    static std::vector<smtk::string::Token> baseTypes;                                             \
+    if (baseTypes.empty())                                                                         \
+    {                                                                                              \
+      smtk::common::typeHierarchy<__VA_ARGS__>(baseTypes);                                         \
+    }                                                                                              \
+    return baseTypes;                                                                              \
+  }                                                                                                \
+  bool matchesType(smtk::string::Token candidate) const override                                   \
+  {                                                                                                \
+    static std::unordered_set<smtk::string::Token> baseTypes;                                      \
+    if (baseTypes.empty())                                                                         \
+    {                                                                                              \
+      smtk::common::typeHierarchy<__VA_ARGS__>(baseTypes);                                         \
+    }                                                                                              \
+    return baseTypes.find(candidate) != baseTypes.end();                                           \
+  }
+
+///@{
+/**\brief Add typedefs to a class for identifcation.
+  *
+  * Similar to smtkTypeMacro(), but only adds a typeName, and no
+  * shared_ptr definitions. Useful for e.g. Qt classes, that have
+  * their own shared pointer definition.
+  */
+#define smtkTypenameMacroBase(...)                                                                 \
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  virtual std::string typeName() const { return type_name; }                                       \
+  smtkInheritanceHierarchyBase(__VA_ARGS__);
+#define smtkTypenameMacro(...)                                                                     \
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  std::string typeName() const override { return type_name; }                                      \
+  smtkInheritanceHierarchy(__VA_ARGS__);
+///@}
+
 ///@{
 /**\brief Add typedefs to a class for identifcation.
   *
@@ -50,27 +126,10 @@
   */
 #define smtkTypeMacro(...)                                                                         \
   smtkTypedefs(__VA_ARGS__);                                                                       \
-  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
-  std::string typeName() const override { return type_name; }
+  smtkTypenameMacro(__VA_ARGS__);
 #define smtkTypeMacroBase(...)                                                                     \
   smtkTypedefs(__VA_ARGS__);                                                                       \
-  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
-  virtual std::string typeName() const { return type_name; }
-///@}
-
-///@{
-/**\brief Add typedefs to a class for identifcation.
-  *
-  * Similar to smtkTypeMacro(), but only adds a typeName, and no
-  * shared_ptr definitions. Useful for e.g. Qt classes, that have
-  * their own shared pointer definition.
-  */
-#define smtkTypenameMacro(...)                                                                     \
-  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
-  std::string typeName() const override { return type_name; }
-#define smtkTypenameMacroBase(...)                                                                 \
-  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
-  virtual std::string typeName() const { return type_name; }
+  smtkTypenameMacroBase(__VA_ARGS__);
 ///@}
 
 /**\brief Add a typedef to the superclass of this class.

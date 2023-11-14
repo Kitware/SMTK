@@ -40,6 +40,7 @@ protected:
 
 public:
   smtkTypeMacro(Component);
+  smtkSuperclassMacro(smtk::resource::Component);
   smtkSharedFromThisMacro(smtk::resource::Component);
 
   // Comparison operators

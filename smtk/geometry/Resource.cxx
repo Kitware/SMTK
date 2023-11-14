@@ -27,17 +27,17 @@ namespace geometry
 {
 
 Resource::Resource(const smtk::common::UUID& myID, resource::ManagerPtr manager)
-  : Superclass(myID, manager)
+  : DirectSuperclass(myID, manager)
 {
 }
 
 Resource::Resource(const smtk::common::UUID& myID)
-  : Superclass(myID)
+  : DirectSuperclass(myID)
 {
 }
 
 Resource::Resource(resource::ManagerPtr manager)
-  : Superclass(manager)
+  : DirectSuperclass(manager)
 {
 }
 

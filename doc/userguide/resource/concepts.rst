@@ -1,11 +1,20 @@
 Key Concepts
 ============
 
-There are two base classes holding provenance metadata:
+There are three base classes holding provenance metadata:
+
+:smtk:`PersistentObject <smtk::resource::PersistentObject>`
+  serves as a base class for any object that will be serialized to/from
+  file storage (and is thus persistent across runs of your SMTK application).
+  Any such object must have a UUID and provide a name (the default
+  implementation simply stringifies the UUID to produce a name, but this
+  is not user friendly). Inheritance is used to specialize the type
+  of information held by a persistent object (i.e., is it geometric data?
+  does it conform to a schema? what methods provide access?).
 
 :smtk:`Resource <smtk::resource::Resource>`
   instances correspond to files and thus have a URL.
-  Each resource also has a UUID and a type.
+  Each resource also has a UUID (since it inherits PersistentObject) and a type.
   Resources may also provide access to a resource of components (see below)
   present in the file, indexed by UUID.
 
@@ -14,15 +23,15 @@ There are two base classes holding provenance metadata:
   An attribute resource presents its attributes as resource components.
   Similarly, geometric model entities (vertices, edges, faces, etc.) are
   components in the model subsystem.
-  Each component has a UUID and holds a weak reference to the resource
-  which owns it.
+  Each component has a UUID (since it inherits PersistentObject) and
+  holds a weak reference to the resource which owns it.
 
 In addition to these useful base classes,
 
 :smtk:`Manager <smtk::resource::Manager>`
-  instances hold a resource of resources.
+  instances hold a collection of resources.
   How the resources are related to each other is determined by your application,
-  but a common use is holding all of the resources related to a simulation.
+  but typically there will be a single resource manager for the entire application.
 
 :smtk:`Links <smtk::resource::Links>`
   Resource links connect persistent objects via a unidirectional
