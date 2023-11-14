@@ -19,13 +19,16 @@ smtk_add_client_tests(
   #LABEL "MarkupPlugin" # TODO: Label fixed by macro currently
   TEST_SCRIPTS ${TESTS_WITH_BASELINES}
   LOAD_PLUGINS
+    smtkQtPlugin
+    smtkTaskPlugin
+    smtkDefaultConfigurationPlugin
     smtkMarkupPlugin
     smtkResourcePlugin
     smtkOperationPlugin
     smtkGeometryPlugin
     smtkViewPlugin
     smtkPVServerExtPlugin
-    smtkPQMarkupExtPlugin
+    smtkPQMarkupPlugin
     smtkPQComponentsPlugin
     smtkPQGuiComponentsPlugin
     smtkPQOperationsPanelPlugin
@@ -33,6 +36,9 @@ smtk_add_client_tests(
     smtkPQReadersPlugin
     smtkPQWidgetsPlugin
   PLUGIN_PATHS
+    $<TARGET_FILE_DIR:smtkQtPlugin>/..
+    $<TARGET_FILE_DIR:smtkTaskPlugin>/..
+    $<TARGET_FILE_DIR:smtkDefaultConfigurationPlugin>/..
     $<TARGET_FILE_DIR:smtkMarkupPlugin>/..
     $<TARGET_FILE_DIR:smtkResourcePlugin>/..
     $<TARGET_FILE_DIR:smtkOperationPlugin>/..
@@ -44,7 +50,7 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkPQOperationViewsPlugin>/..
     $<TARGET_FILE_DIR:smtkPQReadersPlugin>/..
     $<TARGET_FILE_DIR:smtkPVServerExtPlugin>/..
-    $<TARGET_FILE_DIR:smtkPQMarkupExtPlugin>/..
+    $<TARGET_FILE_DIR:smtkPQMarkupPlugin>/..
     $<TARGET_FILE_DIR:smtkPQWidgetsPlugin>/..
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/widgets

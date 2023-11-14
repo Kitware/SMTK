@@ -29,7 +29,8 @@ namespace markup
 class VTKSMTKMARKUPEXT_EXPORT Registrar
 {
 public:
-  using Dependencies = std::tuple<markup::Registrar, vtk::geometry::Registrar>;
+  using Dependencies =
+    std::tuple<smtk::markup::Registrar, smtk::extension::vtk::geometry::Registrar>;
 
   static void registerTo(const smtk::geometry::Manager::Ptr&);
   static void unregisterFrom(const smtk::geometry::Manager::Ptr&);

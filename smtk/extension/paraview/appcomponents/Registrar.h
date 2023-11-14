@@ -12,6 +12,7 @@
 #ifndef __VTK_WRAP__
 
 #include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+#include "smtk/extension/qt/qtViewRegistrar.h"
 
 #include "smtk/common/Managers.h"
 #include "smtk/resource/query/Manager.h"
@@ -29,6 +30,8 @@ namespace appcomponents
 class SMTKPQCOMPONENTSEXT_EXPORT Registrar
 {
 public:
+  using Dependencies = std::tuple<smtk::extension::qtViewRegistrar>;
+
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };

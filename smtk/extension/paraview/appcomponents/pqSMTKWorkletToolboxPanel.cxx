@@ -257,7 +257,7 @@ void pqSMTKWorkletToolboxPanel::reconfigure()
 
   auto* taskPanel =
     qobject_cast<pqSMTKTaskPanel*>(pqApplicationCore::instance()->manager("smtk task panel"));
-  if (taskPanel)
+  if (taskPanel && taskPanel->taskPanel())
   {
     QObject::connect(
       m_view,
