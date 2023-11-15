@@ -42,6 +42,11 @@ qtTaskViewConfiguration::qtTaskViewConfiguration(const smtk::view::Configuration
     QColor("#BF5B17"), // dependency
     QColor("#386CB0"), // adaptor
   };
+  // NB!!! QColor uses ARGB rather than RGBA if 4-byte color is provided:
+  m_colorForArcStatus = {
+    QColor("#ffff5555"), // invalid
+    QColor("#7f89b32d")  // valid
+  };
 
   // Look for overrides from the workflow designer.
   int styleIdx = viewConfig.details().findChild("Style");

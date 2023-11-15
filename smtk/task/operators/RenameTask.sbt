@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the task-system "RenameTask" Operation -->
-<SMTK_AttributeResource Version="6">
+<SMTK_AttributeResource Version="7">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="RenameTask" BaseType="operation">

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666666 8.4666666"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="mode-selection.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="20.70196"
+     inkscape:cx="13.235462"
+     inkscape:cy="12.003695"
+     inkscape:window-width="2880"
+     inkscape:window-height="1620"
+     inkscape:window-x="0"
+     inkscape:window-y="40"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1, 1;stroke-dashoffset:0.5;-inkscape-stroke:none"
+       d="M 1.25,1 A 0.25,0.25 0 0 0 1,1.25 v 0.5 A 0.25,0.25 0 0 0 1.25,2 0.25,0.25 0 0 0 1.5,1.75 V 1.5 H 1.75 A 0.25,0.25 0 0 0 2,1.25 0.25,0.25 0 0 0 1.75,1 Z m 1.5,0 A 0.25,0.25 0 0 0 2.5,1.25 0.25,0.25 0 0 0 2.75,1.5 h 1 A 0.25,0.25 0 0 0 4,1.25 0.25,0.25 0 0 0 3.75,1 Z m 2,0 A 0.25,0.25 0 0 0 4.5,1.25 0.25,0.25 0 0 0 4.75,1.5 h 1 A 0.25,0.25 0 0 0 6,1.25 0.25,0.25 0 0 0 5.75,1 Z m 2,0 A 0.25,0.25 0 0 0 6.5,1.25 0.25,0.25 0 0 0 6.75,1.5 H 7 V 1.75 A 0.25,0.25 0 0 0 7.25,2 0.25,0.25 0 0 0 7.5,1.75 V 1.25 A 0.250025,0.250025 0 0 0 7.25,1 Z M 1.25,2.5 A 0.25,0.25 0 0 0 1,2.75 v 1 A 0.25,0.25 0 0 0 1.25,4 0.25,0.25 0 0 0 1.5,3.75 v -1 A 0.25,0.25 0 0 0 1.25,2.5 Z m 6,0 A 0.25,0.25 0 0 0 7,2.75 v 1 A 0.25,0.25 0 0 0 7.25,4 0.25,0.25 0 0 0 7.5,3.75 v -1 A 0.25,0.25 0 0 0 7.25,2.5 Z m -6,2 A 0.25,0.25 0 0 0 1,4.75 v 1 A 0.25,0.25 0 0 0 1.25,6 0.25,0.25 0 0 0 1.5,5.75 v -1 A 0.25,0.25 0 0 0 1.25,4.5 Z m 6,0 A 0.25,0.25 0 0 0 7,4.75 v 1 A 0.25,0.25 0 0 0 7.25,6 0.25,0.25 0 0 0 7.5,5.75 v -1 A 0.25,0.25 0 0 0 7.25,4.5 Z m -6,2 A 0.25,0.25 0 0 0 1,6.75 v 0.5 A 0.250025,0.250025 0 0 0 1.25,7.5 h 0.5 A 0.25,0.25 0 0 0 2,7.25 0.25,0.25 0 0 0 1.75,7 H 1.5 V 6.75 A 0.25,0.25 0 0 0 1.25,6.5 Z m 6,0 A 0.25,0.25 0 0 0 7,6.75 V 7 H 6.75 A 0.25,0.25 0 0 0 6.5,7.25 0.25,0.25 0 0 0 6.75,7.5 h 0.5 A 0.250025,0.250025 0 0 0 7.5,7.25 V 6.75 A 0.25,0.25 0 0 0 7.25,6.5 Z M 2.75,7 A 0.25,0.25 0 0 0 2.5,7.25 0.25,0.25 0 0 0 2.75,7.5 h 1 A 0.25,0.25 0 0 0 4,7.25 0.25,0.25 0 0 0 3.75,7 Z m 2,0 A 0.25,0.25 0 0 0 4.5,7.25 0.25,0.25 0 0 0 4.75,7.5 h 1 A 0.25,0.25 0 0 0 6,7.25 0.25,0.25 0 0 0 5.75,7 Z"
+       id="rect234" />
+  </g>
+</svg>

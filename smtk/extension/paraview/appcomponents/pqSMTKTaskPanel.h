@@ -45,7 +45,7 @@ public:
   void setView(const smtk::view::ConfigurationPtr& view);
 
   /// Access the underlying resource browser.
-  smtk::extension::qtTaskEditor* taskPanel() const { return m_taskPanel; }
+  smtk::extension::qtTaskEditor* taskEditor() const { return m_taskEditor; }
 
   /// Return an (application-unique) token for the type of user-interface
   /// element this state object will serialize/deserialize.
@@ -66,7 +66,7 @@ protected Q_SLOTS:
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
 protected:
-  smtk::extension::qtTaskEditor* m_taskPanel{ nullptr };
+  smtk::extension::qtTaskEditor* m_taskEditor{ nullptr };
   smtk::view::ConfigurationPtr m_view;
   smtk::extension::qtUIManager* m_viewUIMgr{ nullptr };
   /// The central widget's layout.

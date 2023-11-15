@@ -75,6 +75,7 @@ set(QAttrLibSrcs
   task/qtBaseTaskNode.cxx
   task/qtDefaultTaskNode.cxx
   task/qtDefaultTaskNode1.cxx
+  task/qtPreviewArc.cxx
   task/qtTaskArc.cxx
   task/qtTaskEditor.cxx
   task/qtTaskScene.cxx
@@ -166,6 +167,7 @@ set(QAttrLibMocHeaders
   task/qtBaseTaskNode.h
   task/qtDefaultTaskNode.h
   task/qtDefaultTaskNode1.h
+  task/qtPreviewArc.h
   task/qtTaskArc.h
   task/qtTaskEditor.h
   task/qtTaskNodeFactory.h

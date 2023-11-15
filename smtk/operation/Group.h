@@ -156,6 +156,11 @@ protected:
   smtk::attribute::ConstReferenceItemDefinitionPtr operationAssociationsRule(
     const Operation::Index& index) const;
 
+  /// A utility to fetch reference-item rules for a given operation (used by subclasses such as ArcCreator).
+  smtk::attribute::ConstReferenceItemDefinitionPtr operationReferenceItemRule(
+    const Operation::Index& index,
+    const std::string& itemName) const;
+
 private:
   std::string m_name;
 };

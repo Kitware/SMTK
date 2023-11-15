@@ -14,7 +14,9 @@ set(adaptors
 )
 
 set(operations
+  AddDependency
   EmplaceWorklet
+  RemoveDependency
   RenameTask
 )
 

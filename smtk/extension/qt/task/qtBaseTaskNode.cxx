@@ -46,6 +46,7 @@ qtBaseTaskNode::qtBaseTaskNode(qtTaskScene* scene, smtk::task::Task* task, QGrap
   , m_task(task)
 {
   this->setFlag(GraphicsItemFlag::ItemIsMovable);
+  this->setFlag(GraphicsItemFlag::ItemIsSelectable);
   this->setFlag(GraphicsItemFlag::ItemSendsGeometryChanges);
   this->setCacheMode(CacheMode::DeviceCoordinateCache);
   this->setCursor(Qt::ArrowCursor);

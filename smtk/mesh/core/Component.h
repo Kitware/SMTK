@@ -41,7 +41,7 @@ protected:
 public:
   smtkTypeMacro(Component);
   smtkSuperclassMacro(smtk::resource::Component);
-  smtkSharedFromThisMacro(smtk::resource::Component);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   // Comparison operators
   bool operator==(const Component&) const;

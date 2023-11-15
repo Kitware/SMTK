@@ -9,13 +9,8 @@
 //=========================================================================
 #include "smtk/common/TypeHierarchy.h"
 
-// Note that this test does not link to smtkMarkup but safely includes
-// the header file since all references to the type are processed
-// during compilation (not at runtime).
+#include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
-#if SMTK_ENABLE_MARKUP
-#include "smtk/markup/OntologyIdentifier.h"
-#endif
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -155,16 +150,10 @@ int UnitTestTypeHierarchy(int /*unused*/, char** const /*unused*/)
                                                "smtk::resource::PersistentObject" }),
     "Failed resource hierarchy");
 
-#if SMTK_ENABLE_MARKUP
   test(
-    validateHierarchy<smtk::markup::OntologyIdentifier>({ "smtk::markup::OntologyIdentifier",
-                                                          "smtk::markup::Label",
-                                                          "smtk::markup::Component",
-                                                          "smtk::graph::Component",
-                                                          "smtk::resource::Component",
-                                                          "smtk::resource::PersistentObject" }),
+    validateHierarchy<smtk::model::Entity>(
+      { "smtk::model::Entity", "smtk::resource::Component", "smtk::resource::PersistentObject" }),
     "Failed component hierarchy.");
-#endif
 
   // Now test persistent-object methods that use the inheritance tree:
   auto rsrc = smtk::attribute::Resource::create();

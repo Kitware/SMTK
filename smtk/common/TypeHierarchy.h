@@ -23,7 +23,7 @@ namespace common
 namespace detail
 {
 
-// Used by typeHierarchy with parentClasses to produce a list of inherited type names.
+// Used by typeHierarchy with parentClasses to produce a container holding inherited type names.
 template<typename Container, typename StopAtType = void>
 struct addNames
 {

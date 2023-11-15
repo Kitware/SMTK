@@ -10,12 +10,14 @@
 #ifndef smtk_extension_qtTaskViewConfiguration_h
 #define smtk_extension_qtTaskViewConfiguration_h
 
+#include "smtk/extension/qt/task/qtPreviewArc.h"
 #include "smtk/extension/qt/task/qtTaskArc.h"
 #include "smtk/task/State.h"
 
 #include <QColor>
 
 #include <array>
+#include <unordered_map>
 
 namespace smtk
 {
@@ -51,6 +53,20 @@ public:
     return m_colorForState[static_cast<int>(state)];
   }
 
+  QColor colorForArcType(smtk::string::Token arcType) const
+  {
+    auto it = m_colorForArcType.find(arcType);
+    if (it == m_colorForArcType.end())
+    {
+      return QColor();
+    }
+    return it->second;
+  }
+  QColor colorForArcStatus(qtPreviewArc::ArcStatus status) const
+  {
+    return m_colorForArcStatus[static_cast<int>(status)];
+  }
+
   qreal nodeWidth() const { return m_nodeWidth; }
   qreal nodeRadius() const { return m_nodeRadius; }
   qreal nodeHeadlineHeight() const { return m_nodeHeadlineHeight; }
@@ -67,6 +83,8 @@ public:
   qreal arrowHeadLength() const { return m_arrowHeadLength; }
   qreal arrowTipAspectRatio() const { return m_arrowTipAspectRatio; }
 
+  int constructionLayer() const { return m_constructionLayer; }
+
 protected:
   QColor m_backgroundFillColor;
   QColor m_backgroundGridColor;
@@ -75,6 +93,9 @@ protected:
 
   std::array<QColor, static_cast<int>(qtTaskArc::ArcType::Adaptor) + 1> m_colorForArc;
   std::array<QColor, static_cast<int>(smtk::task::State::Completed) + 1> m_colorForState;
+  std::array<QColor, static_cast<int>(qtPreviewArc::ArcStatus::Valid) + 1> m_colorForArcStatus;
+
+  std::unordered_map<smtk::string::Token, QColor> m_colorForArcType;
 
   qreal m_nodeWidth{ 300. };
   qreal m_nodeRadius{ 4. };
@@ -91,6 +112,8 @@ protected:
   qreal m_arrowStemLength{ 16. };    // The length of the path guaranteed to be a straight line.
   qreal m_arrowHeadLength{ 12. };    // The length of the arrow head along the linear stem.
   qreal m_arrowTipAspectRatio{ 2. }; // The width of the arrow head as a fraction of head length.
+
+  int m_constructionLayer{ 15 };
 };
 
 } // namespace extension

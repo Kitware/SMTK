@@ -64,6 +64,9 @@ public:
   /// Deals with state updates
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) override;
 
+  /// Handle renames, etc.
+  void updateToMatchModifiedTask() override;
+
 protected:
   friend class DefaultTaskNodeWidget1;
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

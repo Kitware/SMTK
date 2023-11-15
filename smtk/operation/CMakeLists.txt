@@ -9,6 +9,7 @@ set(operationSrcs
   SpecificationOps.cxx
   XMLOperation.cxx
 
+  groups/ArcCreator.cxx
   groups/CreatorGroup.cxx
   groups/DeleterGroup.cxx
   groups/GroupingGroup.cxx
@@ -40,6 +41,7 @@ set(operationHeaders
   SpecificationOps.h
   XMLOperation.h
 
+  groups/ArcCreator.h
   groups/CreatorGroup.h
   groups/DeleterGroup.h
   groups/GroupingGroup.h
@@ -67,6 +69,7 @@ set(operationOperators
   AssignColors
   CoordinateTransform
   EditProperties
+  MarkModified
   ReadResource
   RemoveResource
   SetProperty

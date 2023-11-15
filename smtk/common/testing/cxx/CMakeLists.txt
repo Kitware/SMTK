@@ -61,9 +61,6 @@ set(_extra_libraries
   Threads::Threads
   MOAB
 )
-if (SMTK_ENABLE_MARKUP)
-  list(APPEND _extra_libraries smtkMarkup)
-endif()
 
 smtk_unit_tests(
   LABEL "Common"

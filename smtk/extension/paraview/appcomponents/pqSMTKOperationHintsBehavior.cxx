@@ -265,7 +265,7 @@ int pqSMTKOperationHintsBehavior::processHints(
         auto* taskPanel =
           dynamic_cast<pqSMTKTaskPanel*>(pqApplicationCore::instance()->manager("smtk task panel")))
       {
-        taskPanel->taskPanel()->displayProject(project);
+        taskPanel->taskEditor()->displayProject(project);
       }
     });
 
