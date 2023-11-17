@@ -260,6 +260,15 @@ public:
   /// this Task's state.
   PassedDependencies dependencies() const;
 
+  /// Check whether inserting a dependency would induce a cycle.
+  ///
+  /// Note that this method does not check adaptors as it is possible
+  /// that they may have cycles and yet terminate. (It is also possible
+  /// adaptors have cycles that would not terminate.)
+  ///
+  /// This method is invoked by \a addDependency().
+  bool canAddDependency(const std::shared_ptr<Task>& dependency);
+
   /// Add a dependency.
   ///
   /// Returns true if the \a dependency was added, false if it already existed or is null.
