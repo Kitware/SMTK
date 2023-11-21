@@ -33,6 +33,7 @@ cmake -GNinja \
     -DENABLE_matplotlib:BOOL=ON \
     -DENABLE_vtkonly:BOOL=ON \
     -DENABLE_python3:BOOL=ON \
+    -DENABLE_pybind11:BOOL=ON \
     -DUSE_SYSTEM_qt5:BOOL=ON \
     $sccache_settings \
     "-D__BUILDBOT_INSTALL_LOCATION:PATH=$SUPERBUILD_PREFIX" \
