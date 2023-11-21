@@ -31,6 +31,7 @@ cmake -GNinja \
     -DENABLE_cmb:BOOL=OFF \
     -DENABLE_cmbusersguide:BOOL=OFF \
     -DENABLE_python3:BOOL=ON \
+    -DENABLE_pybind11:BOOL=ON \
     -DUSE_SYSTEM_qt5:BOOL=ON \
     $sccache_settings \
     "-D__BUILDBOT_INSTALL_LOCATION:PATH=$SUPERBUILD_PREFIX" \
