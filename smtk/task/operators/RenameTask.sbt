@@ -14,7 +14,7 @@
 
       <AssociationsDef Name="task" LockType="Write" NumberOfRequiredValues="1">
         <BriefDescription>The Task to be renamed.</BriefDescription>
-        <Accepts><Resource Name="smtk::project::Project" Filter="*"/></Accepts>
+        <Accepts><Resource Name="smtk::project::Project" Filter="smtk::task::Task"/></Accepts>
       </AssociationsDef>
 
       <ItemDefinitions>

@@ -86,6 +86,20 @@ struct TypeName
     std::string value;
   };
 
+  /// A rule that accepts exact and inherited type-name matches.
+  class Inherited : public smtk::resource::filter::Rule
+  {
+  public:
+    ~Inherited() override = default;
+
+    bool operator()(const smtk::resource::PersistentObject& object) const override
+    {
+      return object.matchesType(value);
+    }
+
+    std::string value;
+  };
+
   /// A rule that accepts regex type-name matches.
   class RegexRule : public smtk::resource::filter::Rule
   {
@@ -153,10 +167,10 @@ struct Action<smtk::project::filter::TypeName::BareTypeName>
   template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
-    rules.emplace_back(new smtk::project::filter::TypeName::Exact());
+    rules.emplace_back(new smtk::project::filter::TypeName::Inherited());
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::string matchName = input.string();
-    static_cast<smtk::project::filter::TypeName::Exact*>(rule.get())->value =
+    static_cast<smtk::project::filter::TypeName::Inherited*>(rule.get())->value =
       smtk::common::StringUtil::trim(matchName);
   }
 };

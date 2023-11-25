@@ -14,14 +14,12 @@
 
       <AssociationsDef Name="from" NumberOfRequiredValues="1">
         <BriefDescription>The task to serve as the dependency.</BriefDescription>
-        <!-- TODO: The Filter="*" below should accept any Task, but not Worklet or Adaptor components. -->
-        <Accepts><Resource Name="smtk::project::Project" Filter="*"/></Accepts>
+        <Accepts><Resource Name="smtk::project::Project" Filter="smtk::task::Task"/></Accepts>
       </AssociationsDef>
 
       <ItemDefinitions>
         <Component Name="to" LockType="Write" NumberOfRequiredValues="1">
-          <!-- TODO: The Filter="*" below should accept any Task, but not Worklet or Adaptor components. -->
-          <Accepts><Resource Name="smtk::project::Project" Filter="*"/></Accepts>
+          <Accepts><Resource Name="smtk::project::Project" Filter="smtk::task::Task"/></Accepts>
           <BriefDescription>
             The task which should be dependent on the associated task.
           </BriefDescription>
