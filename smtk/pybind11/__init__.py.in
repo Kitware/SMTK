@@ -72,7 +72,7 @@ def findAvailablePlugins():
     ending = 'Plugin.so' if sys.platform != 'win32' else 'Plugin.dll'
     for pluginCheck in [x for x in os.listdir(pluginDir) if os.path.isdir(os.path.join(pluginDir,x))]:
         entries = os.listdir(os.path.join(pluginDir, pluginCheck))
-        pluginList += ([os.path.join(pluginDir, pluginCheck, x) for x in entries if ending in x])
+        pluginList += ([os.path.join(pluginDir, pluginCheck, x) for x in entries if x.endswith(ending)])
     return pluginList
 
 def loadPlugins(pluginList = None):
