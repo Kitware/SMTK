@@ -46,7 +46,7 @@ class SMTKQTEXT_EXPORT qtTaskEditor : public qtBaseView
   Q_OBJECT
   typedef smtk::extension::qtBaseView Superclass;
 
-  Q_PROPERTY(smtk::string::Token mode READ mode);
+  Q_PROPERTY(smtk::string::Token mode READ mode WRITE requestModeChange);
 
 public:
   smtkTypenameMacro(qtTaskEditor);
@@ -74,24 +74,28 @@ public:
   nlohmann::json configuration();
   ///@}
 
+  /// Enable or disable task nodes.
+  ///
+  /// Modes such as qtConnectMode use this to modify user interactions.
+  void enableTasks(bool shouldEnable);
+
+  /// Enable or disable arc selection.
+  ///
+  /// Modes such as qtDisconnectMode use this to allow users to select arcs.
+  void enableArcSelection(bool shouldEnable);
+
   /// Report the current user interaction mode.
   ///
-  /// This will be one of: "pan", "select", "connect" but the list may be extended
-  /// in the future.
+  /// This will be one of: "pan", "select", "connect", or "disconnect"; but the list
+  /// may be extended in the future.
   smtk::string::Token mode() const;
 
-  /// In "connect" mode, the qtTaskView calls this method with the task node under
-  /// the pointer each time it moves.
-  void hoverConnectNode(qtBaseTaskNode* node);
-
-  /// In "connect" mode, the qtTaskView calls this method with the task node under
-  /// the pointer when its controller is clicked.
-  void clickConnectNode(qtBaseTaskNode* node);
-
-  /// In "connect" mode, abandon the connection by resetting the predecessor node.
+  /// Return the default mode for the editor.
   ///
-  /// If no predecessor node was set, this will exit "connect" mode.
-  void abandonConnection();
+  /// If a non-default mode wishes to allow users to "escape" from the mode
+  /// (usually via the Escape key), they can request a change to this mode.
+  /// The "connect" and "disconnect" modes currently use this method.
+  smtk::string::Token defaultMode() const;
 
 Q_SIGNALS:
   /// Emitted by modeChangeRequested when the mode is actually changed
@@ -111,14 +115,8 @@ protected Q_SLOTS:
   void modeChangeRequested(QAction* modeAction);
   /// Invoked when a user moves a node.
   void onNodeGeometryChanged();
-  /// Invoked when, in connection mode, the user selects a different arc type.
-  void setConnectionType(int arcTypeItemIndex);
 
 protected:
-  /// Invoked by operation::Manager::groupObservers() when operations are added to the
-  /// ArcCreator group.
-  void updateArcTypes();
-
   class Internal;
   Internal* m_p;
 };

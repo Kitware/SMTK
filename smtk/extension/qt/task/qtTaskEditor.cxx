@@ -16,16 +16,17 @@
 #include "smtk/extension/qt/qtManager.h"
 
 #include "smtk/extension/qt/task/PanelConfiguration_cpp.h"
+#include "smtk/extension/qt/task/qtConnectMode.h"
 #include "smtk/extension/qt/task/qtDefaultTaskNode.h"
+#include "smtk/extension/qt/task/qtDisconnectMode.h"
+#include "smtk/extension/qt/task/qtPanMode.h"
+#include "smtk/extension/qt/task/qtSelectMode.h"
 #include "smtk/extension/qt/task/qtTaskArc.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 #include "smtk/extension/qt/task/qtTaskView.h"
 #include "smtk/extension/qt/task/qtTaskViewConfiguration.h"
 
 #include "smtk/view/Configuration.h"
-#include "smtk/view/icons/mode_connection_cpp.h"
-#include "smtk/view/icons/mode_pan_cpp.h"
-#include "smtk/view/icons/mode_selection_cpp.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/project/Manager.h"
@@ -70,18 +71,6 @@
 
 using namespace smtk::string::literals;
 
-namespace
-{
-
-QIcon colorAdjustedIcon(const std::string& svg, const QColor& background)
-{
-  std::string adjusted =
-    background.lightnessF() >= 0.5 ? svg : smtk::regex_replace(svg, smtk::regex("black"), "white");
-  return QIcon(new smtk::extension::SVGIconEngine(adjusted));
-}
-
-} // anonymous namespace
-
 namespace smtk
 {
 namespace extension
@@ -114,9 +103,6 @@ public:
       m_operationManager = managers->get<smtk::operation::Manager::Ptr>();
     }
 
-    // Add a preview arc for manipulation in "connect" mode.
-    m_previewArc = new qtPreviewArc(m_scene, m_operationManager);
-
     QDockWidget* dock = nullptr;
     QObject* dp = info.get<QWidget*>();
     while (dp && !dock)
@@ -126,126 +112,49 @@ public:
     }
     if (dock)
     {
-      // auto* tbar = dock->titleBarWidget();
       auto* tbar = new QToolBar(dock);
       tbar->setIconSize(QSize(16, 16));
-      // auto* lout = new QHBoxLayout;
-      // tbar->setLayout(lout);
-      auto* lbl = new QLabel("Tasks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+      auto* lbl = new QLabel("Tasks");
       lbl->setTextFormat(Qt::RichText);
-      // lout->addWidget(lbl);
+      auto* spacer = new QFrame;
+      spacer->setFrameShape(QFrame::NoFrame);
+      spacer->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
+      spacer->setMinimumSize(20, 1);
       auto* taskMode = new QActionGroup(tbar);
       QObject::connect(
         taskMode, &QActionGroup::triggered, self, &qtTaskEditor::modeChangeRequested);
-      QColor background = tbar->palette().window().color();
 
-      QIcon panIcon(colorAdjustedIcon(mode_pan_svg(), background));
-      m_panMode = taskMode->addAction(panIcon, "Pan");
-      m_panMode->setObjectName("pan");
-      m_panMode->setCheckable(true);
+      // Constructing each mode:
+      //   + creates an action (fetchable via modeAction()) from taskMode (the QActionGroup)
+      //   + installs the modeAction() into the QToolBar, i.e.: tbar->addAction(panMode->modeAction());
+      //   + may add more widgets/actions to QToolBar (e.g., qtConnectMode).
+      auto* panMode = new qtPanMode(self, m_widget, tbar, taskMode);
+      auto* selectMode = new qtSelectMode(self, m_widget, tbar, taskMode);
+      auto* connectMode = new qtConnectMode(m_operationManager, self, m_widget, tbar, taskMode);
+      auto* disconnectMode =
+        new qtDisconnectMode(m_operationManager, self, m_widget, tbar, taskMode);
 
-      QIcon selectIcon(colorAdjustedIcon(mode_selection_svg(), background));
-      m_selectMode = taskMode->addAction(selectIcon, "Select");
-      m_selectMode->setObjectName("select");
-      m_selectMode->setCheckable(true);
+      m_modeMap[panMode->modeAction()->objectName().toStdString()] = panMode;
+      m_modeMap[selectMode->modeAction()->objectName().toStdString()] = selectMode;
+      m_modeMap[connectMode->modeAction()->objectName().toStdString()] = connectMode;
+      m_modeMap[disconnectMode->modeAction()->objectName().toStdString()] = disconnectMode;
 
-      QIcon connectIcon(colorAdjustedIcon(mode_connection_svg(), background));
-      m_connectMode = taskMode->addAction(connectIcon, "Connect");
-      m_connectMode->setObjectName("connect");
-      m_connectMode->setCheckable(true);
-
+      // Force the initial mode to be "pan"
       taskMode->setExclusionPolicy(QActionGroup::ExclusionPolicy::Exclusive);
-      m_panMode->setChecked(true);
-      m_mode = "pan";
+      panMode->modeAction()->setChecked(true);
+      // Calling enterMode here causes issues because self->m_p is not assigned
+      // yet, so qtPanMode::enterMode cannot call qtTaskEditor::taskView(). Wait
+      // until the event loop is processed to install the mode's event-filter.
+      QTimer::singleShot(0, [panMode]() { panMode->enterMode(); });
+      m_mode = "pan"_token;
 
-      // Add a combo-box for selecting the type of arc to create
-      m_connectType = new QComboBox(dock);
-      m_connectType->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-      m_connectType->setFixedHeight(tbar->height());
-      m_connectType->setEditable(false);
-      m_connectType->setPlaceholderText("Choose an arc type");
-      m_connectType->setObjectName("arcTypeCombo");
-      m_connectType->setToolTip("Choose the type of arc to create");
-      QPointer<qtTaskEditor> scopedSelf(self);
-      m_groupObserverKey = m_operationManager->groupObservers().insert(
-        [scopedSelf, this](
-          const smtk::operation::Operation::Index& operationIndex,
-          const std::string& groupName,
-          bool adding) {
-          (void)operationIndex;
-          (void)adding;
-          if (!scopedSelf)
-          {
-            return;
-          }
-          if (groupName == smtk::operation::ArcCreator::type_name)
-          {
-            this->updateArcTypes();
-          }
-        });
-      this->updateArcTypes();
-      if (m_connectType->count())
-      {
-        m_connectType->setCurrentIndex(0);
-      }
-      // Listen for changes to the combobox and update the preview arc.
-      QObject::connect(
-        m_connectType.data(),
-        QOverload<int>::of(&QComboBox::currentIndexChanged),
-        self,
-        &qtTaskEditor::setConnectionType);
-      // lout->addAction(m_panMode);
-      // lout->addAction(m_connectMode);
-      tbar->addWidget(lbl);
-      tbar->addAction(m_panMode);
-      tbar->addAction(m_selectMode);
-      tbar->addAction(m_connectMode);
-      m_connectTypeAction = tbar->addWidget(m_connectType);
-      m_connectTypeAction->setVisible(false); // We are in pan mode by default.
+      tbar->insertWidget(panMode->modeAction(), lbl);
+      tbar->insertWidget(panMode->modeAction(), spacer);
       dock->setTitleBarWidget(tbar);
     }
   }
 
-  void updateArcTypes()
-  {
-    if (!m_operationManager)
-    {
-      return;
-    }
-
-    // Clear old arc types, remembering which one was active
-    auto currentArcType = m_connectType->currentText().toStdString();
-    while (m_connectType->count())
-    {
-      m_connectType->removeItem(0);
-    }
-
-    int currentIndex = -1;
-    smtk::operation::ArcCreator arcCreators(m_operationManager);
-    for (const auto& entry : arcCreators.allArcCreators())
-    {
-      const auto& meta = m_operationManager->metadata().get<smtk::operation::IndexTag>();
-      auto it = meta.find(entry.second);
-      if (it == meta.end())
-      {
-        continue;
-      }
-      if (entry.first == currentArcType && currentIndex < 0)
-      {
-        currentIndex = m_connectType->count();
-      }
-      std::cout << "Arc type: \"" << entry.first << "\", \"" << it->typeName() << "\"\n";
-      m_connectType->addItem(
-        QString::fromStdString(entry.first), QString::fromStdString(it->typeName()));
-    }
-
-    if (currentIndex >= 0)
-    {
-      m_connectType->setCurrentIndex(currentIndex);
-    }
-  }
-
-  ~Internal() { delete m_previewArc; }
+  ~Internal() = default;
 
   void displayTaskManager(smtk::task::Manager* taskManager)
   {
@@ -381,6 +290,15 @@ public:
             }
 
             m_taskIndex[task.get()] = tnode;
+            tnode->setEnabled(m_tasksEnabled);
+            if (m_arcSelectionEnabled)
+            {
+              tnode->setFlags(tnode->flags() & ~QGraphicsItem::ItemIsSelectable);
+            }
+            else
+            {
+              tnode->setFlags(tnode->flags() | QGraphicsItem::ItemIsSelectable);
+            }
             // If a layout map has been set, use it to position the Task Node
             if (!m_layoutMap.empty())
             {
@@ -491,9 +409,15 @@ public:
         switch (event)
         {
           case smtk::common::InstanceEvent::Managed:
-            m_arcIndex[fromIt->second].insert(
-              new qtTaskArc(m_scene, fromIt->second, toIt->second, adaptor.get()));
-            break;
+          {
+            auto* arc = new qtTaskArc(m_scene, fromIt->second, toIt->second, adaptor.get());
+            if (m_arcSelectionEnabled)
+            {
+              arc->setFlags(arc->flags() | QGraphicsItem::ItemIsSelectable);
+            }
+            m_arcIndex[fromIt->second].insert(arc);
+          }
+          break;
           case smtk::common::InstanceEvent::Unmanaged:
           {
             qtTaskArc* match = nullptr;
@@ -635,7 +559,12 @@ public:
           // std::cout << "  Skip task " << predecessor.get() << "\n";
           continue;
         }
-        m_arcIndex[predIt->second].insert(new qtTaskArc(m_scene, predIt->second, succIt->second));
+        auto* arc = new qtTaskArc(m_scene, predIt->second, succIt->second);
+        if (m_arcSelectionEnabled)
+        {
+          arc->setFlags(arc->flags() | QGraphicsItem::ItemIsSelectable);
+        }
+        m_arcIndex[predIt->second].insert(arc);
       }
       return smtk::common::Visit::Continue;
     });
@@ -647,10 +576,12 @@ public:
     m_taskIndex.clear();
     m_arcIndex.clear();
 
-    // Now we must recreate the preview arc since clearing the scene destroys it.
-    // TODO: Grab current arc type selected from combobox or legend.
-    m_previewArc = new qtPreviewArc(
-      m_scene, m_operationManager, "smtk::task::Dependency", "smtk::task::AddDependency");
+    // Inform all the modes the scene has been cleared so they
+    // can add new items if needed.
+    for (const auto& entry : m_modeMap)
+    {
+      entry.second->sceneCleared();
+    }
   }
 
   bool configure(const nlohmann::json& data)
@@ -684,19 +615,24 @@ public:
   smtk::task::TaskManagerWorkflowObservers::Key m_workflowObserverKey;
   smtk::task::TaskManagerTaskObservers::Key m_instanceObserverKey;
   smtk::task::Active::Observers::Key m_activeObserverKey;
+  // Nodes mapped from their source task:
   std::unordered_map<Task*, qtBaseTaskNode*> m_taskIndex;
-  std::unordered_map<qtBaseTaskNode*, std::unordered_set<qtTaskArc*>>
-    m_arcIndex; // Arcs grouped by their predecessor task.
+  // Arcs grouped by their predecessor task:
+  std::unordered_map<qtBaseTaskNode*, std::unordered_set<qtTaskArc*>> m_arcIndex;
+  // Configuration that an operation (read, emplace-worklet, etc.) may provide for layout.
   std::unordered_map<smtk::common::UUID, std::pair<double, double>> m_layoutMap;
+
+  // The current interaction mode for the editor.
   smtk::string::Token m_mode;
-  QAction* m_panMode{ nullptr };
-  QAction* m_selectMode{ nullptr };
-  QAction* m_connectMode{ nullptr };
-  QPointer<qtPreviewArc> m_previewArc;
-  QPointer<QComboBox> m_connectType;
-  QPointer<QAction> m_connectTypeAction;
+  // The set of all interaction modes:
+  std::unordered_map<smtk::string::Token, qtGraphViewMode*> m_modeMap;
+  // The operation manager obtained from the view information.
   std::shared_ptr<smtk::operation::Manager> m_operationManager;
-  smtk::operation::GroupObservers::Key m_groupObserverKey;
+
+  // Should task-nodes be enabled?
+  bool m_tasksEnabled{ true };
+  // Should arc selection be enabled (and node selection be disabled).
+  bool m_arcSelectionEnabled{ false };
 };
 
 qtTaskEditor::qtTaskEditor(const smtk::view::Information& info)
@@ -705,7 +641,16 @@ qtTaskEditor::qtTaskEditor(const smtk::view::Information& info)
 {
 }
 
-qtTaskEditor::~qtTaskEditor() = default;
+qtTaskEditor::~qtTaskEditor()
+{
+  // Delete modes explicitly here so any installed event filters are removed
+  while (!m_p->m_modeMap.empty())
+  {
+    auto it = m_p->m_modeMap.begin();
+    delete it->second;
+    m_p->m_modeMap.erase(it);
+  }
+}
 
 qtBaseView* qtTaskEditor::createViewWidget(const smtk::view::Information& info)
 {
@@ -739,21 +684,14 @@ void qtTaskEditor::requestModeChange(smtk::string::Token mode)
   {
     return;
   }
-  switch (mode.id())
+  auto it = m_p->m_modeMap.find(mode);
+  if (it == m_p->m_modeMap.end())
   {
-    case "pan"_hash:
-      m_p->m_panMode->trigger();
-      break;
-    case "select"_hash:
-      m_p->m_selectMode->trigger();
-      break;
-    case "connect"_hash:
-      m_p->m_connectMode->trigger();
-      break;
-    default:
-      // Do nothing. Maybe warn?
-      break;
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Unknown mode \"" << mode.data() << "\" requested. Ignoring.");
+    return;
   }
+  it->second->modeAction()->trigger();
 }
 
 qtTaskScene* qtTaskEditor::taskScene() const
@@ -763,7 +701,7 @@ qtTaskScene* qtTaskEditor::taskScene() const
 
 qtTaskView* qtTaskEditor::taskWidget() const
 {
-  return m_p->m_widget;
+  return m_p ? m_p->m_widget : nullptr;
 }
 
 qtBaseTaskNode* qtTaskEditor::findNode(smtk::task::Task* task) const
@@ -841,58 +779,72 @@ nlohmann::json qtTaskEditor::configuration()
   return m_p->configuration();
 }
 
+void qtTaskEditor::enableTasks(bool shouldEnable)
+{
+  if (m_p->m_tasksEnabled == shouldEnable)
+  {
+    // Nothing to do.
+    return;
+  }
+
+  for (const auto& entry : m_p->m_taskIndex)
+  {
+    entry.second->setEnabled(shouldEnable);
+  }
+  m_p->m_tasksEnabled = shouldEnable;
+}
+
+void qtTaskEditor::enableArcSelection(bool shouldEnable)
+{
+  if (m_p->m_arcSelectionEnabled == shouldEnable)
+  {
+    // Nothing to do.
+    return;
+  }
+
+  if (shouldEnable)
+  {
+    // Ensure tasks cannot be selected while arcs can be.
+    for (const auto& entry : m_p->m_taskIndex)
+    {
+      entry.second->setFlags(entry.second->flags() & ~QGraphicsItem::ItemIsSelectable);
+    }
+    // Enable arc selection.
+    for (const auto& entry : m_p->m_arcIndex)
+    {
+      for (const auto& arc : entry.second)
+      {
+        arc->setFlags(arc->flags() | QGraphicsItem::ItemIsSelectable);
+      }
+    }
+  }
+  else
+  {
+    // Enable task selection now that arcs are no longer selectable.
+    for (const auto& entry : m_p->m_taskIndex)
+    {
+      entry.second->setFlags(entry.second->flags() | QGraphicsItem::ItemIsSelectable);
+    }
+    // Disable arc selection.
+    for (const auto& entry : m_p->m_arcIndex)
+    {
+      for (const auto& arc : entry.second)
+      {
+        arc->setFlags(arc->flags() & ~QGraphicsItem::ItemIsSelectable);
+      }
+    }
+  }
+  m_p->m_arcSelectionEnabled = shouldEnable;
+}
+
 smtk::string::Token qtTaskEditor::mode() const
 {
   return m_p->m_mode;
 }
 
-void qtTaskEditor::hoverConnectNode(qtBaseTaskNode* node)
+smtk::string::Token qtTaskEditor::defaultMode() const
 {
-  if (!node)
-  {
-    return;
-  }
-
-  if (!m_p->m_previewArc->isPredecessorConfirmed())
-  {
-    m_p->m_previewArc->setPredecessor(node);
-  }
-  else
-  {
-    m_p->m_previewArc->setSuccessor(node);
-  }
-}
-
-void qtTaskEditor::clickConnectNode(qtBaseTaskNode* node)
-{
-  if (!m_p->m_previewArc->isPredecessorConfirmed())
-  {
-    if (node)
-    {
-      m_p->m_previewArc->setPredecessor(node);
-    }
-    m_p->m_previewArc->confirmPredecessorNode();
-  }
-  else
-  {
-    if (node)
-    {
-      m_p->m_previewArc->setSuccessor(node);
-    }
-    m_p->m_previewArc->confirmSuccessorNode();
-  }
-}
-
-void qtTaskEditor::abandonConnection()
-{
-  if (m_p->m_previewArc->isPredecessorConfirmed())
-  {
-    m_p->m_previewArc->setPredecessor(nullptr);
-  }
-  else
-  {
-    this->requestModeChange("pan"_token);
-  }
+  return "pan"_token;
 }
 
 void qtTaskEditor::modeChangeRequested(QAction* modeAction)
@@ -908,36 +860,15 @@ void qtTaskEditor::modeChangeRequested(QAction* modeAction)
     return;
   }
 
-  // Choose how to render and interact with tasks in the new mode.
-  bool enableNodes;
-  switch (mode.id())
+  auto it = m_p->m_modeMap.find(m_p->m_mode);
+  if (it != m_p->m_modeMap.end())
   {
-    default:
-    case "pan"_hash:
-      enableNodes = true;
-      m_p->m_widget->setDragMode(QGraphicsView::ScrollHandDrag);
-      m_p->m_connectTypeAction->setVisible(false);
-      break;
-    case "select"_hash:
-      enableNodes = true;
-      m_p->m_widget->setDragMode(QGraphicsView::RubberBandDrag);
-      m_p->m_connectTypeAction->setVisible(false);
-      break;
-    case "connect"_hash:
-      m_p->m_widget->setDragMode(QGraphicsView::ScrollHandDrag);
-      m_p->m_connectTypeAction->setVisible(true);
-      enableNodes = false;
-      break;
+    it->second->exitMode();
   }
-
-  // Reset the preview arc geometry at each mode switch as it is always in the scene.
-  m_p->m_previewArc->setPredecessor(nullptr);
-  m_p->m_previewArc->setSuccessor(nullptr);
-
-  // Enable/disable tasks
-  for (const auto& entry : m_p->m_taskIndex)
+  it = m_p->m_modeMap.find(mode);
+  if (it != m_p->m_modeMap.end())
   {
-    entry.second->setEnabled(enableNodes);
+    it->second->enterMode();
   }
 
   // Finally notify others that the mode has changed.
@@ -970,22 +901,6 @@ void qtTaskEditor::onNodeGeometryChanged()
       marker->parameters()->associate(rsrc);
       m_p->m_operationManager->launchers()(marker);
     }
-  }
-}
-
-void qtTaskEditor::setConnectionType(int arcTypeItemIndex)
-{
-  smtk::string::Token arcType = m_p->m_connectType->itemText(arcTypeItemIndex).toStdString();
-  auto arcOp = m_p->m_connectType->itemData(arcTypeItemIndex).toString().toStdString();
-  // std::cout << "Arc type now " << arcType.data() << ", op " << arcOp << "\n";
-  m_p->m_previewArc->setArcType(arcType, arcOp);
-}
-
-void qtTaskEditor::updateArcTypes()
-{
-  if (m_p)
-  {
-    m_p->updateArcTypes();
   }
 }
 
