@@ -10,16 +10,16 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20231026: Bump in hopes of fixing contract tests.
+# 20231127: Enable Python in bundles
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_item "653a95755be10c8fb6ed52d5")
-  set(file_hash "923575106ea9ec98267e795191978776f14c47ba316ec245eaa4408bb96e0a06f6d8f7e3bf789449c8998b92d0569e9de324b9776a2792306b991eb285800ca6")
+  set(file_item "6564b7f7c5a2b36857ad16c4")
+  set(file_hash "8b3687c140346c6b23629ff5373694cab068b5197be963ccf699b42ec708baaad80aa9d5e2eff26ee36c5eaea72629d212866c735789d1b0509c6f9756ec7a32")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_item "653a95755be10c8fb6ed52d3")
-  set(file_hash "c539e0b574c6cd0632adff875304486bb0661316bfd5ab2a34ddfa083f831215ce66bfb87af79de4ff254f53debc67d2ff4b8f3fd1589856e02af8c9e925308f")
+  set(file_item "6564b7f7c5a2b36857ad16c2")
+  set(file_hash "06513bdf597172315a27fa4dce524ea4a8588721b33f5c86833140214e3f94d2e312c80cc2d5efb4b61226d4736bb0860c377722d96f89e4a20a5c91584c1329")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_item "653a95755be10c8fb6ed52d1")
-  set(file_hash "ba9286286384073fa000ad763e9f0356a5d06fc18b01a687084b7aefda5ced8f70f70b1754f438616fc40419ef8e6c801026956ff00225fcb19d69771df2335f")
+  set(file_item "6564b7f6c5a2b36857ad16c0")
+  set(file_hash "cb44f9cf11f18c3517828cb76f893e8265ee01a4f1a0ae89e96695c7fa5a930226a422cb9151e7845245584e85585772eca24e029846d459e934717a8b11aace")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")

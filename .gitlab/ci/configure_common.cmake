@@ -4,6 +4,9 @@ set(SMTK_PUBLIC_DROP_SITE "ON" CACHE BOOL "")
 set(SMTK_ENABLE_TESTING "ON" CACHE BOOL "")
 set(SMTK_ENABLE_EXAMPLES "ON" CACHE BOOL "")
 
+# Disable `matplotlib` as it uses removed CMake APIs and needs updated. See #522.
+set(SMTK_ENABLE_MATPLOTLIB "OFF" CACHE BOOL "")
+
 # Build binaries that will run on older architectures
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
   set(CMAKE_C_FLAGS "-march=core2 -mno-avx512f -Wall -Wextra" CACHE STRING "")
