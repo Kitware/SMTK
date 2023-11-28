@@ -35,7 +35,6 @@ class SMTKCORE_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::geometry::Resource);
-  smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   ~Resource() override;

@@ -156,7 +156,7 @@ void pqSMTKDisplayProjectOnLoadBehavior::focusTaskPanel(smtk::task::Manager* tas
   auto* panel = dynamic_cast<pqSMTKTaskPanel*>(core->manager("smtk task panel"));
   if (panel)
   {
-    panel->taskPanel()->displayTaskManager(taskManager);
+    panel->taskEditor()->displayTaskManager(taskManager);
     if (auto* parent = dynamic_cast<QWidget*>(panel->parent()))
     {
       parent->raise(); // Make sure the widget is visible and raised.

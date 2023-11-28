@@ -32,7 +32,11 @@ template<typename Self, typename Parent>
 class DerivedFrom : public Parent
 {
 public:
-  typedef Parent ParentResource;
+  using ParentResource = Parent;
+  using Superclass = Parent;
+
+  // Provide a type-alias to the derived type so it can invoke our constructor.
+  using DirectSuperclass = DerivedFrom<Self, Parent>;
 
   /// A static index for this resource type.
   ///

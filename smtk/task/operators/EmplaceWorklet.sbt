@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the task-system "AddWorklet" Operation -->
-<SMTK_AttributeResource Version="3">
+<!-- Description of the task-system "EmplaceWorklet" Operation -->
+<SMTK_AttributeResource Version="7">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="emplace worklet" BaseType="operation">

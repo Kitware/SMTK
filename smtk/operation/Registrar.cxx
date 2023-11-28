@@ -18,10 +18,13 @@
 #include "smtk/operation/operators/CoordinateTransform.h"
 #include "smtk/operation/operators/EditProperties.h"
 #include "smtk/operation/operators/ImportResource.h"
+#include "smtk/operation/operators/MarkModified.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/RemoveResource.h"
 #include "smtk/operation/operators/SetProperty.h"
 #include "smtk/operation/operators/WriteResource.h"
+
+#include "smtk/operation/groups/InternalGroup.h"
 
 #include "smtk/plugin/Manager.h"
 
@@ -42,6 +45,7 @@ typedef std::tuple<
   AssignColors,
   CoordinateTransform,
   EditProperties,
+  MarkModified,
 #ifdef SMTK_PYTHON_ENABLED
   ImportPythonOperation,
 #endif
@@ -77,11 +81,15 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperations<OperationList>();
+
+  InternalGroup(operationManager).registerOperation<MarkModified>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->unregisterOperations<OperationList>();
+
+  InternalGroup(operationManager).unregisterOperation<MarkModified>();
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)

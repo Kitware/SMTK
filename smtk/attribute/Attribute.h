@@ -53,6 +53,8 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
 
 public:
   smtkTypeMacro(smtk::attribute::Attribute);
+  smtkSuperclassMacro(smtk::resource::Component);
+
   struct SMTKCORE_EXPORT CompareByName
   {
     bool operator()(

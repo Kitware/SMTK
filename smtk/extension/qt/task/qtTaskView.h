@@ -49,7 +49,14 @@ public:
 
 protected:
   void wheelEvent(QWheelEvent* event) override;
+  void keyPressEvent(QKeyEvent* event) override;
   void keyReleaseEvent(QKeyEvent* event) override;
+
+  // Handle translate/scale on rubber-band mouse-motion
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void mouseDoubleClickEvent(QMouseEvent* event) override;
 
   // Handle worklets being dropped into this view.
   void dragEnterEvent(QDragEnterEvent* event) override;

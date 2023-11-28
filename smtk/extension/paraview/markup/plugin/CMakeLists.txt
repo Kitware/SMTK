@@ -24,6 +24,7 @@ get_property(smtk_vtk_modules GLOBAL
 smtk_add_plugin(smtkPQMarkupPlugin
   REGISTRARS
     smtk::extension::paraview::markup::Registrar
+    smtk::extension::vtk::markup::Registrar
   MANAGERS
     smtk::geometry::Manager
     smtk::operation::Manager

@@ -117,11 +117,12 @@ bool testInheritedAPI(const smtk::project::Project::Ptr& project)
   // Test the find(), visit(), and queryOperation() methods
   // inherited from smtk::resource::Resource.
   bool ok = true;
-  std::array<std::size_t, 3> numComp{ { 0, 0, 0 } };
+  std::array<std::size_t, 4> numComp{ { 0, 0, 0, 0 } };
   auto qop1 = project->queryOperation("*");
   auto qop2 = project->queryOperation("");
+  auto qop3 = project->queryOperation("smtk::task::Task");
   smtk::resource::Component::Visitor visitor =
-    [&project, &qop1, &qop2, &numComp](const smtk::resource::Component::Ptr& comp) {
+    [&project, &qop1, &qop2, &qop3, &numComp](const smtk::resource::Component::Ptr& comp) {
       if (comp)
       {
         ++numComp[0];
@@ -133,13 +134,18 @@ bool testInheritedAPI(const smtk::project::Project::Ptr& project)
         {
           ++numComp[2];
         }
+        if (qop3(*comp))
+        {
+          ++numComp[3];
+        }
 
         ::test(
           comp == project->find(comp->id()), "Could not retrieve visited component with find().");
       }
     };
   project->visit(visitor);
-  std::cout << "Visited " << numComp[0] << " project components.\n";
+  std::cout << "Visited " << numComp[0] << " project components, including " << numComp[3]
+            << " tasks.\n";
   ::test(
     numComp[0] ==
       project->taskManager().taskInstances().size() +

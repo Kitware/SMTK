@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the task-system "RenameTask" Operation -->
-<SMTK_AttributeResource Version="6">
+<SMTK_AttributeResource Version="7">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="RenameTask" BaseType="operation">
@@ -14,7 +14,7 @@
 
       <AssociationsDef Name="task" LockType="Write" NumberOfRequiredValues="1">
         <BriefDescription>The Task to be renamed.</BriefDescription>
-        <Accepts><Resource Name="smtk::project::Project" Filter="*"/></Accepts>
+        <Accepts><Resource Name="smtk::project::Project" Filter="smtk::task::Task"/></Accepts>
       </AssociationsDef>
 
       <ItemDefinitions>

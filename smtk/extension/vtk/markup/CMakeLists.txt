@@ -19,5 +19,6 @@ vtk_module_link(vtkSMTKMarkupExt
     smtkMarkup
     smtkIOVTK
     vtkSMTKSourceExt
+    vtkSMTKGeometryExt
     VTK::FiltersSources
 )

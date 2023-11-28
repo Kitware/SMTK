@@ -59,6 +59,7 @@ set(commonHeaders
   ThreadPool.h
   TimeZone.h
   timezonespec.h
+  TypeHierarchy.h
   TypeMap.h
   TypeName.h
   TypeContainer.h

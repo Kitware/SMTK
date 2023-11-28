@@ -80,6 +80,9 @@ set(iconFiles
   icons/vertex.svg
   icons/volume.svg
   icons/unselected.svg
+  icons/mode_connection.svg
+  icons/mode_pan.svg
+  icons/mode_selection.svg
 )
 
 set(_viewDependencies)

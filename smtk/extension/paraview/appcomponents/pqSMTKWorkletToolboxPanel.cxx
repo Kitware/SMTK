@@ -257,12 +257,12 @@ void pqSMTKWorkletToolboxPanel::reconfigure()
 
   auto* taskPanel =
     qobject_cast<pqSMTKTaskPanel*>(pqApplicationCore::instance()->manager("smtk task panel"));
-  if (taskPanel)
+  if (taskPanel && taskPanel->taskEditor())
   {
     QObject::connect(
       m_view,
       &smtk::extension::qtWorkletPalette::emplaceWorklet,
-      taskPanel->taskPanel(),
+      taskPanel->taskEditor(),
       &smtk::extension::qtTaskEditor::addWorklet);
   }
 #ifndef PARAVIEW_VERSION_59

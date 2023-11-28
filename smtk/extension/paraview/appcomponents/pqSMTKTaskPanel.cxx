@@ -23,7 +23,12 @@
 
 #include "pqApplicationCore.h"
 
-#include <QVBoxLayout>
+#include <QAction>
+#include <QActionGroup>
+#include <QDockWidget>
+#include <QLabel>
+#include <QLayout>
+#include <QToolBar>
 
 pqSMTKTaskPanel::pqSMTKTaskPanel(QWidget* parent)
   : Superclass(parent)
@@ -79,8 +84,8 @@ pqSMTKTaskPanel::~pqSMTKTaskPanel()
     pqCore->unRegisterManager("smtk task panel");
   }
   delete m_viewUIMgr;
-  // m_viewUIMgr deletes m_taskPanel
-  // deletion of m_taskPanel->widget() is handled when parent widget is deleted.
+  // m_viewUIMgr deletes m_taskEditor
+  // deletion of m_taskEditor->widget() is handled when parent widget is deleted.
 }
 
 void pqSMTKTaskPanel::setView(const smtk::view::ConfigurationPtr& view)
@@ -113,8 +118,8 @@ void pqSMTKTaskPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* ser
   {
     delete m_viewUIMgr;
     m_viewUIMgr = nullptr;
-    // m_viewUIMgr deletes m_taskPanel, which deletes the container, which deletes child QWidgets.
-    m_taskPanel = nullptr;
+    // m_viewUIMgr deletes m_taskEditor, which deletes the container, which deletes child QWidgets.
+    m_taskEditor = nullptr;
   }
 
   // Add the panel to the View Manger
@@ -129,20 +134,21 @@ void pqSMTKTaskPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* ser
   resinfo.insert<smtk::view::ConfigurationPtr>(m_view);
   resinfo.insert<QWidget*>(this);
   resinfo.insert<smtk::extension::qtUIManager*>(m_viewUIMgr);
+  resinfo.insert(wrapper->smtkManagersPtr());
 
   // the top-level "Type" in m_view should be qtTaskEditor or compatible.
   auto* baseView = m_viewUIMgr->setSMTKView(resinfo);
-  m_taskPanel = dynamic_cast<smtk::extension::qtTaskEditor*>(baseView);
-  if (baseView && !m_taskPanel)
+  m_taskEditor = dynamic_cast<smtk::extension::qtTaskEditor*>(baseView);
+  if (baseView && !m_taskEditor)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Unsupported task panel type.");
     return;
   }
-  else if (!m_taskPanel)
+  else if (!m_taskEditor)
   {
     return;
   }
-  m_taskPanel->widget()->setObjectName("qtTaskEditor");
+  m_taskEditor->widget()->setObjectName("qtTaskView");
   std::string title;
   m_view->details().attribute("Title", title);
   if (title.empty())
@@ -157,7 +163,7 @@ void pqSMTKTaskPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* ser
     m_layout->setObjectName("Layout");
     this->setLayout(m_layout);
   }
-  m_layout->addWidget(m_taskPanel->widget());
+  m_layout->addWidget(m_taskEditor->widget());
 }
 
 void pqSMTKTaskPanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
@@ -184,23 +190,23 @@ void pqSMTKTaskPanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* serve
 nlohmann::json pqSMTKTaskPanel::configuration()
 {
   nlohmann::json config;
-  if (m_taskPanel)
+  if (m_taskEditor)
   {
-    config["layout"] = m_taskPanel->configuration();
+    config["layout"] = m_taskEditor->configuration();
   }
   return config;
 }
 
 bool pqSMTKTaskPanel::configure(const nlohmann::json& data)
 {
-  if (m_taskPanel)
+  if (m_taskEditor)
   {
     auto it = data.find("layout");
     if (it == data.end())
     {
       return false; // no layout information present
     }
-    return m_taskPanel->configure(*it);
+    return m_taskEditor->configure(*it);
   }
   return false;
 }

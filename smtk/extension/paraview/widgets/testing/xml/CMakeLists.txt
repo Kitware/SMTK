@@ -28,6 +28,7 @@ smtk_add_client_tests(
   LOAD_PLUGINS
     smtkResourcePlugin
     smtkOperationPlugin
+    smtkTaskPlugin
     smtkGeometryPlugin
     smtkViewPlugin
     smtkPVServerExtPlugin
@@ -38,6 +39,7 @@ smtk_add_client_tests(
   PLUGIN_PATHS
     $<TARGET_FILE_DIR:smtkResourcePlugin>/..
     $<TARGET_FILE_DIR:smtkOperationPlugin>/..
+    $<TARGET_FILE_DIR:smtkTaskPlugin>/..
     $<TARGET_FILE_DIR:smtkGeometryPlugin>/..
     $<TARGET_FILE_DIR:smtkViewPlugin>/..
     $<TARGET_FILE_DIR:smtkPQComponentsPlugin>/..

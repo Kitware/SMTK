@@ -392,5 +392,45 @@ smtk::attribute::ConstReferenceItemDefinitionPtr Group::operationAssociationsRul
     extractParameterDefinition(spec, metadata->typeName());
   return parameterDefinition->associationRule();
 }
+
+smtk::attribute::ConstReferenceItemDefinitionPtr Group::operationReferenceItemRule(
+  const Operation::Index& index,
+  const std::string& itemName) const
+{
+  using smtk::attribute::ConstReferenceItemDefinitionPtr;
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(index);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  Operation::Specification spec = specification(metadata->typeName());
+  if (spec == nullptr)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(spec, metadata->typeName());
+  if (!parameterDefinition)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+  int ii = parameterDefinition->findItemPosition(itemName);
+  if (ii < 0)
+  {
+    return ConstReferenceItemDefinitionPtr();
+  }
+  auto result = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+    parameterDefinition->itemDefinition(ii));
+  return result;
+}
+
 } // namespace operation
 } // namespace smtk

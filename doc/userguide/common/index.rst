@@ -15,6 +15,7 @@ patterns are defined in SMTK's `common` directory.
    links.rst
    observers.rst
    threadpool.rst
+   typehierarchy.rst
    typecontainer.rst
    typemap.rst
    updaters.rst

@@ -62,7 +62,7 @@ if (TARGET ParaView::pqApplicationComponents)
     )
   endif()
   if (SMTK_MARKUP_SUPPORT_ENABLED)
-    list(APPEND plugin_files
+    list(APPEND core_plugin_files
       markup/plugin/paraview.plugin
     )
   endif()

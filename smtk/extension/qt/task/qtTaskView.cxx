@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/task/qtTaskView.h"
 
+#include "smtk/extension/qt/task/qtBaseTaskNode.h"
 #include "smtk/extension/qt/task/qtTaskEditor.h"
 #include "smtk/extension/qt/task/qtTaskScene.h"
 
@@ -26,6 +27,8 @@ namespace smtk
 namespace extension
 {
 
+using namespace smtk::string::literals;
+
 class qtTaskView::Internal
 {
 public:
@@ -40,6 +43,7 @@ public:
 
   qtTaskView* m_self{ nullptr };
   qtTaskEditor* m_editor{ nullptr };
+  smtk::string::Token m_snapBackMode;
 };
 
 qtTaskView::qtTaskView(qtTaskScene* scene, qtTaskEditor* widget)
@@ -50,6 +54,7 @@ qtTaskView::qtTaskView(qtTaskScene* scene, qtTaskEditor* widget)
   this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   this->setDragMode(QGraphicsView::ScrollHandDrag);
+  this->setRubberBandSelectionMode(Qt::IntersectsItemShape);
   this->setAcceptDrops(true);
   constexpr QRectF MAX_SCENE_SIZE{ -1e4, -1e4, 3e4, 3e4 };
   this->setSceneRect(MAX_SCENE_SIZE);
@@ -80,10 +85,79 @@ void qtTaskView::wheelEvent(QWheelEvent* event)
   this->setTransformationAnchor(anchor);
 }
 
+void qtTaskView::keyPressEvent(QKeyEvent* event)
+{
+  if (m_p->m_editor->mode() == "pan"_token && event->key() == Qt::Key_Shift)
+  {
+    m_p->m_snapBackMode = "pan"_token;
+    m_p->m_editor->requestModeChange("select"_token);
+  }
+  else if (m_p->m_editor->mode() == "connect"_token && event->key() == Qt::Key_Escape)
+  {
+    m_p->m_editor->abandonConnection();
+  }
+  else
+  {
+    this->Superclass::keyPressEvent(event);
+  }
+}
+
 void qtTaskView::keyReleaseEvent(QKeyEvent* event)
 {
-  (void)event;
-  // do nothing yet.
+  if (event->key() == Qt::Key_Shift && m_p->m_snapBackMode.valid())
+  {
+    m_p->m_editor->requestModeChange(m_p->m_snapBackMode);
+    m_p->m_snapBackMode = smtk::string::Token();
+  }
+  else
+  {
+    this->Superclass::keyReleaseEvent(event);
+  }
+}
+
+void qtTaskView::mouseMoveEvent(QMouseEvent* event)
+{
+  this->Superclass::mouseMoveEvent(event);
+  switch (m_p->m_editor->mode().id())
+  {
+    case "select"_hash:
+    {
+      // turn on/off a timer to scroll at a rate proportional to distance from the border.
+    }
+    break;
+    case "connect"_hash:
+      m_p->m_editor->hoverConnectNode(
+        dynamic_cast<smtk::extension::qtBaseTaskNode*>(this->itemAt(event->pos())));
+      break;
+    default:
+      // Do nothing more.
+      this->Superclass::mouseMoveEvent(event);
+      break;
+  }
+}
+
+void qtTaskView::mousePressEvent(QMouseEvent* event)
+{
+  this->Superclass::mousePressEvent(event);
+}
+
+void qtTaskView::mouseReleaseEvent(QMouseEvent* event)
+{
+  switch (m_p->m_editor->mode().id())
+  {
+    case "connect"_hash:
+      m_p->m_editor->clickConnectNode(
+        dynamic_cast<smtk::extension::qtBaseTaskNode*>(this->itemAt(event->pos())));
+      break;
+    default:
+      break;
+  }
+  this->Superclass::mouseReleaseEvent(event);
+}
+
+void qtTaskView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  this->Superclass::mouseDoubleClickEvent(event);
 }
 
 void qtTaskView::dragEnterEvent(QDragEnterEvent* event)

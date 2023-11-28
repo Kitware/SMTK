@@ -46,6 +46,8 @@ class SMTKQTEXT_EXPORT qtTaskEditor : public qtBaseView
   Q_OBJECT
   typedef smtk::extension::qtBaseView Superclass;
 
+  Q_PROPERTY(smtk::string::Token mode READ mode);
+
 public:
   smtkTypenameMacro(qtTaskEditor);
 
@@ -72,16 +74,51 @@ public:
   nlohmann::json configuration();
   ///@}
 
+  /// Report the current user interaction mode.
+  ///
+  /// This will be one of: "pan", "select", "connect" but the list may be extended
+  /// in the future.
+  smtk::string::Token mode() const;
+
+  /// In "connect" mode, the qtTaskView calls this method with the task node under
+  /// the pointer each time it moves.
+  void hoverConnectNode(qtBaseTaskNode* node);
+
+  /// In "connect" mode, the qtTaskView calls this method with the task node under
+  /// the pointer when its controller is clicked.
+  void clickConnectNode(qtBaseTaskNode* node);
+
+  /// In "connect" mode, abandon the connection by resetting the predecessor node.
+  ///
+  /// If no predecessor node was set, this will exit "connect" mode.
+  void abandonConnection();
+
+Q_SIGNALS:
+  /// Emitted by modeChangeRequested when the mode is actually changed
+  /// (and not when unchanged).
+  void modeChanged(smtk::string::Token nextMode);
+
 public Q_SLOTS:
   /// Display the \a project's tasks in this widget.
   virtual void displayProject(const std::shared_ptr<smtk::project::Project>& project);
   /// Display a \a taskManager's tasks in this widget (which need not belong to a project).
   virtual void displayTaskManager(smtk::task::Manager* taskManager);
+  /// Request a change in the user-interaction mode.
+  virtual void requestModeChange(smtk::string::Token mode);
 
 protected Q_SLOTS:
+  /// Invoked when a user clicks on a title-bar button to change modes.
+  void modeChangeRequested(QAction* modeAction);
+  /// Invoked when a user moves a node.
   void onNodeGeometryChanged();
+  /// Invoked when, in connection mode, the user selects a different arc type.
+  void setConnectionType(int arcTypeItemIndex);
 
 protected:
+  /// Invoked by operation::Manager::groupObservers() when operations are added to the
+  /// ArcCreator group.
+  void updateArcTypes();
+
   class Internal;
   Internal* m_p;
 };

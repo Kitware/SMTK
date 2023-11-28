@@ -45,6 +45,7 @@ set(unit_tests
   UnitTestRuntimeTypeContainer.cxx
   UnitTestThreadPool.cxx
   UnitTestTypeContainer.cxx
+  UnitTestTypeHierarchy.cxx
   UnitTestTypeMap.cxx
   UnitTestTypeName.cxx
   UnitTestUpdateFactory.cxx
@@ -55,9 +56,15 @@ set(unit_tests
 set(unit_tests_which_require_data
 )
 
+set(_extra_libraries
+  ${Boost_LIBRARIES}
+  Threads::Threads
+  MOAB
+)
+
 smtk_unit_tests(
   LABEL "Common"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads MOAB
+  LIBRARIES smtkCore ${_extra_libraries}
 )

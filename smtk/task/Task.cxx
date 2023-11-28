@@ -24,6 +24,37 @@ namespace smtk
 namespace task
 {
 
+namespace
+{
+
+bool checkDependenciesRecursive(Task* check, Task* cycle, std::set<Task*>& visited)
+{
+  // If we have visited this task before, terminate recursion.
+  if (visited.find(check) != visited.end())
+  {
+    return true;
+  }
+
+  visited.insert(check);
+  if (check == cycle)
+  {
+    // Oops, we found the task about to be inserted; this would be a dependency cycle.
+    return false;
+  }
+
+  for (const auto& dependency : check->dependencies())
+  {
+    if (!checkDependenciesRecursive(dependency.get(), cycle, visited))
+    {
+      // Oops, a child found the task about to be inserted; this would be a dependency cycle.
+      return false;
+    }
+  }
+  return true;
+}
+
+} // anonymous namespace
+
 void workflowsOfTask(
   Task* task,
   std::set<smtk::task::Task*>& workflows,
@@ -305,6 +336,13 @@ Task::PassedDependencies Task::dependencies() const
   return result;
 }
 
+bool Task::canAddDependency(const std::shared_ptr<Task>& dependency)
+{
+  std::set<Task*> visited;
+  bool ok = checkDependenciesRecursive(dependency.get(), this, visited);
+  return ok;
+}
+
 bool Task::addDependency(const std::shared_ptr<Task>& dependency)
 {
   if (!dependency)
@@ -314,6 +352,12 @@ bool Task::addDependency(const std::shared_ptr<Task>& dependency)
   auto it = m_dependencies.find(dependency);
   if (it != m_dependencies.end())
   {
+    return false;
+  }
+
+  if (!this->canAddDependency(dependency))
+  {
+    // Ensure no dependency cycles exist.
     return false;
   }
 

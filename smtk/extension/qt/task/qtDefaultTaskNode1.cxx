@@ -300,7 +300,7 @@ void qtDefaultTaskNode1::setOutlineStyle(OutlineStyle os)
 QRectF qtDefaultTaskNode1::boundingRect() const
 {
   qtTaskViewConfiguration& cfg(*m_scene->configuration());
-  const auto& border = cfg.nodeBorderThickness();
+  const auto border = 4 * cfg.nodeBorderThickness();
   const double height = m_container->height();
   // was = m_headlineHeight + (m_container->isVisible() ? m_container->height() : 0.0);
   return QRectF(0, 0, m_container->width(), height).adjusted(-border, -border, border, border);
@@ -316,10 +316,10 @@ void qtDefaultTaskNode1::paint(
   qtTaskViewConfiguration& cfg(*m_scene->configuration());
   QPainterPath path;
   // Make sure the whole node is redrawn to avoid artifacts:
-  const double borderOffset = 0.5 * cfg.nodeBorderThickness();
+  const double borderOffset = cfg.nodeBorderThickness();
   const QRectF br =
     this->boundingRect().adjusted(borderOffset, borderOffset, -borderOffset, -borderOffset);
-  path.addRoundedRect(br, cfg.nodeBorderThickness(), cfg.nodeBorderThickness());
+  path.addRoundedRect(br, 2 * cfg.nodeBorderThickness(), 2 * cfg.nodeBorderThickness());
 
   const QColor baseColor = QApplication::palette().window().color();
   const QColor highlightColor = QApplication::palette().highlight().color();
@@ -330,7 +330,7 @@ void qtDefaultTaskNode1::paint(
   // const QColor greenBaseColor = QColor::fromHslF(0.361, 0.666, baseColor.lightnessF() * 0.4 + 0.2);
 
   QPen pen;
-  pen.setWidth(cfg.nodeBorderThickness());
+  pen.setWidth(cfg.nodeBorderThickness() * 1.1);
   switch (m_outlineStyle)
   {
     case OutlineStyle::Normal:
@@ -344,8 +344,28 @@ void qtDefaultTaskNode1::paint(
   }
 
   painter->setPen(pen);
-  painter->fillPath(path, baseColor);
+  painter->fillPath(path, cfg.colorForState(m_task->state()));
   painter->drawPath(path);
+
+  if (this->isSelected())
+  {
+    QPen spen;
+    spen.setWidth(cfg.nodeBorderThickness());
+    QPainterPath selPath;
+    const QColor contrastColor2 = QColor::fromHslF(
+      pen.brush().color().hueF(),
+      pen.brush().color().saturationF(),
+      qBound(
+        0.,
+        baseColor.lightnessF() > 0.5 ? pen.brush().color().lightnessF() + 0.25
+                                     : pen.brush().color().lightnessF() - 0.25,
+        1.));
+    spen.setBrush(contrastColor2);
+    painter->setPen(spen);
+    const QRectF selRect = br.adjusted(borderOffset, borderOffset, -borderOffset, -borderOffset);
+    selPath.addRoundedRect(selRect, cfg.nodeBorderThickness(), cfg.nodeBorderThickness());
+    painter->drawPath(selPath);
+  }
 }
 
 int qtDefaultTaskNode1::updateSize()
@@ -364,6 +384,11 @@ void qtDefaultTaskNode1::updateTaskState(
   bool active)
 {
   m_container->updateTaskState(prev, next, active);
+}
+
+void qtDefaultTaskNode1::updateToMatchModifiedTask()
+{
+  m_container->m_headlineButton->setText(QString::fromStdString(m_task->name()));
 }
 
 } // namespace extension
