@@ -17,10 +17,12 @@
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/common/Managers.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
 #include "smtk/operation/groups/InternalGroup.h"
+#include "smtk/project/Project.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/OperationDecorator.h"
@@ -275,6 +277,7 @@ void qtWorkletModel::workletUpdate(
   auto created = result->findComponent("created");
   auto modified = result->findComponent("modified");
   auto expunged = result->findComponent("expunged");
+  auto expungedResources = result->findResource("resourcesToExpunge");
   int row;
   for (const auto& comp : *created)
   {
@@ -316,6 +319,28 @@ void qtWorkletModel::workletUpdate(
           this->endRemoveRows();
           break;
         }
+      }
+    }
+  }
+  for (const auto& res : *expungedResources)
+  {
+    // Ignore all non-project resources being removed
+    if (std::dynamic_pointer_cast<smtk::project::Project>(res) == nullptr)
+    {
+      continue;
+    }
+    // Look at all of the worklets and remove those that are owned by the project being removed
+    for (row = 0; row < static_cast<int>(m_worklets.size());)
+    {
+      if (m_worklets[row].m_worklet->resource() == res)
+      {
+        this->beginRemoveRows(QModelIndex(), row, row);
+        m_worklets.erase(m_worklets.begin() + row);
+        this->endRemoveRows();
+      }
+      else
+      {
+        ++row;
       }
     }
   }
