@@ -42,6 +42,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/DoubleItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -759,12 +760,17 @@ bool qtTaskEditor::addWorklet(const std::string& workletName, std::array<double,
   {
     return false;
   }
+  if (auto locationItem = op->parameters()->findDouble("location"))
+  {
+    for (int ii = 0; ii < 2; ++ii)
+    {
+      locationItem->setValue(ii, location[ii]);
+    }
+  }
   if (!op->ableToOperate())
   {
     return false;
   }
-  // TODO: Add location to operation parameters
-  (void)location;
   opMgr->launchers()(op);
   return true;
 }

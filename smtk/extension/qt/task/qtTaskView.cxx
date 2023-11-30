@@ -173,7 +173,8 @@ void qtTaskView::dropEvent(QDropEvent* event)
 {
   bool didAdd = false;
   bool didFail = false;
-  std::array<double, 2> location{ { event->posF().x(), event->posF().y() } };
+  QPointF mappedPt = this->mapToScene(event->pos());
+  std::array<double, 2> location{ { mappedPt.x(), mappedPt.y() } };
   QByteArray encodedData = event->mimeData()->data("application/x-smtk-worklet-name");
   QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
