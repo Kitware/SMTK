@@ -94,6 +94,16 @@ StringUtil::split(const std::string& s, const std::string& sep, bool omitEmpty, 
   return result;
 }
 
+bool StringUtil::endsWith(const std::string& ss, const std::string& ending)
+{
+  if (ss.size() < ending.size())
+  {
+    return false;
+  }
+  auto nn = ss.rfind(ending);
+  return (nn + ending.size() == ss.size());
+}
+
 std::size_t StringUtil::replaceAll(
   std::string& source,
   const std::string& search,

@@ -25,8 +25,9 @@ where
 + ``node-typename`` specifies matches to names returned from any
   node's ``typeName()`` method. The type name may be
 
-    + an exact match for a component's type-name (with no enclosing quotes);
-    + a single-quoted type-name;
+    + a "bare" component's type-name (with no enclosing quotes) to match any object
+      which inherits the given type-name;
+    + a single-quoted type-name which requires an exact match to the component's type-name;
     + a forward-slash-enclosed regular expression matching one or more type names; or
     + ``*`` or ``any`` to indicate any graph node should be considered.
 

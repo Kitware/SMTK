@@ -256,10 +256,22 @@ public:
     */
   bool disconnect(bool onlyExplicit = false);
 
+  /// Given a runtime arc type-name, return a runtime endpoint interface.
+  ///
+  /// If the arc type does not exist or this component has no such endpoints,
+  /// this method will return an invalid endpoint interface.
+  RuntimeArcEndpoint<NonConstArc> outgoing(smtk::string::Token arcType);
+  RuntimeArcEndpoint<ConstArc> outgoing(smtk::string::Token arcType) const;
+  RuntimeArcEndpoint<NonConstArc> incoming(smtk::string::Token arcType);
+  RuntimeArcEndpoint<ConstArc> incoming(smtk::string::Token arcType) const;
+
 protected:
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&);
 
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&, const smtk::common::UUID&);
+
+  const ArcImplementationBase* arcsOfType(smtk::string::Token arcType) const;
+  ArcImplementationBase* arcsOfType(smtk::string::Token arcType);
 
   virtual void createDependentArcs() {}
 

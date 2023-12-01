@@ -13,6 +13,17 @@
 
 #include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/TypeAndColorBadge.h"
+#include "smtk/extension/qt/diagram/qtComponentNode.h"
+#include "smtk/extension/qt/diagram/qtConnectMode.h"
+#include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
+#include "smtk/extension/qt/diagram/qtDefaultTaskNode1.h"
+#include "smtk/extension/qt/diagram/qtDiagram.h"
+#include "smtk/extension/qt/diagram/qtDisconnectMode.h"
+#include "smtk/extension/qt/diagram/qtPanMode.h"
+#include "smtk/extension/qt/diagram/qtResourceDiagram.h"
+#include "smtk/extension/qt/diagram/qtResourceNode.h"
+#include "smtk/extension/qt/diagram/qtSelectMode.h"
+#include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -26,9 +37,6 @@
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtWorkletPalette.h"
-#include "smtk/extension/qt/task/qtDefaultTaskNode.h"
-#include "smtk/extension/qt/task/qtDefaultTaskNode1.h"
-#include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include "smtk/plugin/Manager.h"
 
@@ -64,13 +72,16 @@ using ViewWidgetList = std::tuple<
   qtResourceBrowser,
   qtSelectorView,
   qtSimpleExpressionView,
-  qtTaskEditor,
+  qtDiagram,
   qtWorkletPalette>;
 
 using BadgeList =
   std::tuple<smtk::extension::qt::MembershipBadge, smtk::extension::qt::TypeAndColorBadge>;
 
+using DiagramGeneratorList = std::tuple<qtTaskEditor, qtResourceDiagram>;
+using DiagramViewModeList = std::tuple<qtConnectMode, qtDisconnectMode, qtPanMode, qtSelectMode>;
 using TaskNodeList = std::tuple<qtDefaultTaskNode, qtDefaultTaskNode1>;
+using ObjectNodeList = std::tuple<qtResourceNode, qtComponentNode>;
 
 } // namespace
 
@@ -106,12 +117,18 @@ void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers
 
 void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
 {
+  qtMgr->diagramViewModeFactory().registerTypes<DiagramViewModeList>();
+  qtMgr->diagramGeneratorFactory().registerTypes<DiagramGeneratorList>();
   qtMgr->taskNodeFactory().registerTypes<TaskNodeList>();
+  qtMgr->objectNodeFactory().registerTypes<ObjectNodeList>();
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::extension::qtManager::Ptr& qtMgr)
 {
+  qtMgr->diagramViewModeFactory().unregisterTypes<DiagramViewModeList>();
+  qtMgr->diagramGeneratorFactory().unregisterTypes<DiagramGeneratorList>();
   qtMgr->taskNodeFactory().unregisterTypes<TaskNodeList>();
+  qtMgr->objectNodeFactory().unregisterTypes<ObjectNodeList>();
 }
 
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
@@ -132,7 +149,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ModelEntity");
   manager->viewWidgetFactory().addAlias<qtComponentAttributeView>("ComponentAttribute");
   manager->viewWidgetFactory().addAlias<qtResourceBrowser>("ResourceBrowser");
-  manager->viewWidgetFactory().addAlias<qtTaskEditor>("TaskEditor");
+  manager->viewWidgetFactory().addAlias<qtDiagram>("Diagram");
   manager->viewWidgetFactory().addAlias<qtWorkletPalette>("WorkletPalette");
 
   manager->badgeFactory().registerTypes<BadgeList>();

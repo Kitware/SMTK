@@ -27,11 +27,14 @@ class SMTKCORE_EXPORT Registrar
 public:
   using Dependencies = std::tuple<resource::Registrar>;
 
-  static void registerTo(const smtk::task::Manager::Ptr&);
-  static void unregisterFrom(const smtk::task::Manager::Ptr&);
+  static void registerTo(const smtk::resource::Manager::Ptr& resourceManager);
+  static void unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager);
 
-  static void registerTo(const smtk::operation::Manager::Ptr&);
-  static void unregisterFrom(const smtk::operation::Manager::Ptr&);
+  static void registerTo(const smtk::task::Manager::Ptr& taskManager);
+  static void unregisterFrom(const smtk::task::Manager::Ptr& taskManager);
+
+  static void registerTo(const smtk::operation::Manager::Ptr& operationManager);
+  static void unregisterFrom(const smtk::operation::Manager::Ptr& operationManager);
 };
 } // namespace task
 } // namespace smtk

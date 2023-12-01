@@ -24,7 +24,6 @@
 #include "smtk/graph/NodeSet.h"
 #include "smtk/graph/evaluators/DeleteArcs.h"
 #include "smtk/graph/evaluators/Dump.h"
-#include "smtk/graph/evaluators/InsertUntypedArc.h"
 #include "smtk/graph/filter/Grammar.h"
 
 #include "smtk/resource/filter/Filter.h"
@@ -210,6 +209,9 @@ public:
     Functor::begin(this, std::forward<Args>(args)...);
     m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
       this, std::forward<Args>(args)...);
+    // Now, for arc-map entries not present in the ArcTypes tuple,
+    // invoke the Functor on the runtime arc-object base.
+    m_arcs.invokeRuntime<Functor>(this, std::forward<Args>(args)...);
     Functor::end(this, std::forward<Args>(args)...);
   }
 
@@ -220,6 +222,9 @@ public:
     Functor::begin(this, std::forward<Args>(args)...);
     m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
       this, std::forward<Args>(args)...);
+    // Now, for arc-map entries not present in the ArcTypes tuple,
+    // invoke the Functor on the runtime arc-object base.
+    m_arcs.invokeRuntime<Functor>(this, std::forward<Args>(args)...);
     Functor::end(this, std::forward<Args>(args)...);
   }
   //@}
@@ -288,8 +293,7 @@ public:
   /// ensured by run-time checks.
   bool connect(Component* from, Component* to, smtk::string::Token arcType) override
   {
-    bool result = false;
-    this->evaluateArcs<evaluators::InsertUntypedArc>(from, to, arcType, result);
+    bool result = from->outgoing(arcType).connect(to);
     return result;
   }
 

@@ -46,6 +46,7 @@ class ImplicitShape;
 class Label;
 class LabelMap;
 class Landmark;
+class NodeSet;
 class Ontology;
 class OntologyIdentifier;
 class Plane;
@@ -180,6 +181,7 @@ struct SMTKMARKUP_EXPORT Traits
     Label,
     // LabelMap,
     // Landmark,
+    NodeSet,
     Ontology,
     OntologyIdentifier,
     Plane,
@@ -234,6 +236,7 @@ struct SMTKMARKUP_EXPORT Traits
 #include "smtk/markup/Label.h"
 // #include "smtk/markup/LabelMap.h"
 // #include "smtk/markup/Landmark.h"
+#include "smtk/markup/NodeSet.h"
 #include "smtk/markup/Ontology.h"
 #include "smtk/markup/OntologyIdentifier.h"
 #include "smtk/markup/Plane.h"

@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/graph/Component.h"
 #include "smtk/graph/Resource.h"
+#include "smtk/graph/RuntimeArc.h"
 
 #include "smtk/common/Visit.h"
 
@@ -137,7 +138,7 @@ public:
     // which are impossible given the FromType and ToType):
     std::string filter = "'" + std::string(ToType::type_name) + "'";
     auto others = resource->filterAs<std::set<std::shared_ptr<ToType>>>(filter);
-    std::cout << "Filter <" << filter << "> produced " << others.size() << " hits\n";
+    // std::cout << "Filter <" << filter << "> produced " << others.size() << " hits\n";
     for (const auto& other : others)
     {
       ++s_outVisitorCount;
@@ -191,6 +192,8 @@ public:
     }
     smtk::common::VisitorFunctor<Functor> visitor(ff);
     // Implicitly generate fully connected graph except for self-connections:
+    // Note that we use the single-quote filter since it matches objects with
+    // *exactly* the specified type rather than objects which inherit the type.
     std::string filter = "'" + std::string(FromType::type_name) + "'";
     auto others = resource->filterAs<std::set<std::shared_ptr<FromType>>>(filter);
     std::cout << "Filter <" << filter << "> produced " << others.size() << " hits\n";
@@ -279,6 +282,18 @@ class Example3Traits
 public:
   using NodeTypes = std::tuple<Thingy, Notable, Comment>;
   using ArcTypes = std::tuple<DirectedDistinctArc, UndirectedSelfArc>;
+};
+
+class ExampleRuntimeTraits
+{
+public:
+  using NodeTypes = std::tuple<Thingy, Comment>;
+  using ArcTypes = std::tuple<
+    InvertibleImplicitArc,
+    ImplicitArc,
+    ExplicitArc,
+    smtk::graph::RuntimeArc<smtk::graph::IsDirected>,
+    smtk::graph::RuntimeArc<smtk::graph::IsUndirected>>;
 };
 
 } // namespace test

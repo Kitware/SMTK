@@ -51,6 +51,28 @@ public:
 
   static constexpr const char* const type_name = "smtk::project::Project";
   std::string typeName() const override { return (m_typeName.empty() ? type_name : m_typeName); }
+  smtk::string::Token typeToken() const override { return this->typeName(); }
+  std::vector<smtk::string::Token> classHierarchy() const override
+  {
+    static std::vector<smtk::string::Token> baseTypes;
+    if (baseTypes.empty())
+    {
+      smtk::common::typeHierarchy<smtk::project::Project>(baseTypes);
+    }
+    std::vector<smtk::string::Token> result;
+    result.emplace_back(this->typeName());
+    result.insert(result.end(), baseTypes.begin(), baseTypes.end());
+    return result;
+  }
+  bool matchesType(smtk::string::Token candidate) const override
+  {
+    static std::unordered_set<smtk::string::Token> baseTypes;
+    if (baseTypes.empty())
+    {
+      smtk::common::typeHierarchy<smtk::project::Project>(baseTypes);
+    }
+    return candidate == this->typeToken() || baseTypes.find(candidate) != baseTypes.end();
+  }
 
   static std::shared_ptr<smtk::project::Project> create(const std::string& typeName = "");
 

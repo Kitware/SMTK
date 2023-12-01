@@ -1,7 +1,7 @@
 set(smtk_markup_tests_without_data
   TestDelete.cxx
   TestIds.cxx
-  TestResource.cxx
+  TestMarkupResource.cxx
 )
 set(smtk_markup_tests_which_require_data
   TestTag.cxx

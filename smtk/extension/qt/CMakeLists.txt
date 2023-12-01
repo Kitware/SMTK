@@ -11,6 +11,7 @@ set(QAttrLibSrcs
   qtBadgeActionToggle.cxx
   qtBaseAttributeView.cxx
   qtBaseView.cxx
+  qtBSpline2D.cxx
   qtCategorySelectorView.cxx
   qtCheckItemComboBox.cxx
   qtCollapsibleGroupWidget.cxx
@@ -74,20 +75,34 @@ set(QAttrLibSrcs
   TypeAndColorBadge.cxx
   VisibilityBadge.cxx
 
-  task/qtBaseTaskNode.cxx
-  task/qtConnectMode.cxx
-  task/qtDisconnectMode.cxx
-  task/qtDefaultTaskNode.cxx
-  task/qtDefaultTaskNode1.cxx
-  task/qtGraphViewMode.cxx
-  task/qtPanMode.cxx
-  task/qtPreviewArc.cxx
-  task/qtSelectMode.cxx
-  task/qtTaskArc.cxx
-  task/qtTaskEditor.cxx
-  task/qtTaskScene.cxx
-  task/qtTaskView.cxx
-  task/qtTaskViewConfiguration.cxx
+  diagram/qtBaseArc.cxx
+  diagram/qtBaseNode.cxx
+  diagram/qtBaseObjectNode.cxx
+  diagram/qtBaseTaskNode.cxx
+  diagram/qtComponentNode.cxx
+  diagram/qtConnectMode.cxx
+  diagram/qtDisconnectMode.cxx
+  diagram/qtDefaultTaskNode.cxx
+  diagram/qtDefaultTaskNode1.cxx
+  diagram/qtDiagram.cxx
+  diagram/qtDiagramGenerator.cxx
+  diagram/qtDiagramLegend.cxx
+  diagram/qtDiagramLegendEntry.cxx
+  diagram/qtDiagramScene.cxx
+  diagram/qtDiagramView.cxx
+  diagram/qtDiagramViewConfiguration.cxx
+  diagram/qtDiagramViewMode.cxx
+  diagram/qtGroupingNode.cxx
+  diagram/qtLegendDelegate.cxx
+  diagram/qtPanMode.cxx
+  diagram/qtPreviewArc.cxx
+  diagram/qtResourceDiagram.cxx
+  diagram/qtResourceDiagramArc.cxx
+  diagram/qtResourceDiagramSummary.cxx
+  diagram/qtResourceNode.cxx
+  diagram/qtSelectMode.cxx
+  diagram/qtTaskArc.cxx
+  diagram/qtTaskEditor.cxx
 )
 
 set(QAttrLibUIs
@@ -98,8 +113,8 @@ set(QAttrLibUIs
   qtNewAttributeWidget.ui
   qtTimeZoneSelectWidget.ui
   qtViewInfoDialog.ui
-  task/DefaultTaskNode.ui
-  task/DefaultTaskNode1.ui
+  diagram/DefaultTaskNode.ui
+  diagram/DefaultTaskNode1.ui
 )
 
 
@@ -113,6 +128,7 @@ set(QAttrLibMocHeaders
   qtAttributeEditorDialog.h
   qtBaseAttributeView.h
   qtBaseView.h
+  qtBSpline2D.h
   qtCategorySelectorView.h
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
@@ -172,21 +188,39 @@ set(QAttrLibMocHeaders
   SVGIconEngine.h
   VisibilityBadge.h
 
-  task/qtBaseTaskNode.h
-  task/qtConnectMode.h
-  task/qtDisconnectMode.h
-  task/qtDefaultTaskNode.h
-  task/qtDefaultTaskNode1.h
-  task/qtGraphViewMode.h
-  task/qtPanMode.h
-  task/qtPreviewArc.h
-  task/qtSelectMode.h
-  task/qtTaskArc.h
-  task/qtTaskEditor.h
-  task/qtTaskNodeFactory.h
-  task/qtTaskScene.h
-  task/qtTaskView.h
-  task/qtTaskViewConfiguration.h
+  diagram/qtBaseArc.h
+  diagram/qtBaseNode.h
+  diagram/qtBaseObjectNode.h
+  diagram/qtBaseTaskNode.h
+  diagram/qtComponentNode.h
+  diagram/qtConnectMode.h
+  diagram/qtDefaultTaskNode.h
+  diagram/qtDefaultTaskNode1.h
+  diagram/qtDiagram.h
+  diagram/qtDiagramGenerator.h
+  diagram/qtDiagramLegend.h
+  diagram/qtDiagramLegendEntry.h
+  diagram/qtDiagramGeneratorFactory.h
+  diagram/qtDiagramScene.h
+  diagram/qtDiagramView.h
+  diagram/qtDiagramViewConfiguration.h
+  diagram/qtDiagramViewMode.h
+  diagram/qtDiagramViewModeFactory.h
+  diagram/qtDisconnectMode.h
+  diagram/qtGroupingNode.h
+  diagram/qtLegendDelegate.h
+  diagram/qtObjectArc.h
+  diagram/qtObjectNodeFactory.h
+  diagram/qtPanMode.h
+  diagram/qtPreviewArc.h
+  diagram/qtResourceDiagram.h
+  diagram/qtResourceDiagramArc.h
+  diagram/qtResourceDiagramSummary.h
+  diagram/qtResourceNode.h
+  diagram/qtSelectMode.h
+  diagram/qtTaskArc.h
+  diagram/qtTaskEditor.h
+  diagram/qtTaskNodeFactory.h
 
   qtManager.h
 )
@@ -215,7 +249,7 @@ smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
   HEADER_OUTPUT rpJsonHeader)
 
 # Put the contents of this file in a *function* in a header, ending in `_cpp.h`.
-smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/task/PanelConfiguration.json"
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/diagram/PanelConfiguration.json"
   NAME "taskPanelConfiguration"
   TYPE "_cpp"
   HEADER_OUTPUT tpXmlHeader

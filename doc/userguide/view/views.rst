@@ -27,3 +27,12 @@ These views appear in 2 types of widgets in SMTK:
 panels holding tree views (such as the :smtk:`resource panel <smtk::extension::qtResourceBrowser>`)
 and widgets for selecting components or resources, where only a flat list is presented
 (such as the :smtk:`reference item widget <smtk::extension::qtReferenceItem>`).
+
+Diagram views
+-------------
+
+A :smtk:`diagram <smtk::extension::qtDiagram>` is a schematic view that
+uses nodes and arcs to represent the organization of information in a
+two-dimensional graph.
+This type of view is entirely dependent on Qt and further documentation
+for it is in the :ref:`smtk-qt-sys` extension section.

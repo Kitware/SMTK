@@ -313,6 +313,63 @@ public:
   {
     return hasSemantics<ArcTraits>()();
   }
+
+  // clang-format off
+  /// Test whether an arc-traits object provides an "accepts()"
+  /// method with the same signature as "connect()". If present,
+  /// this method will return whether an arc between two nodes
+  /// will be allowed.
+  ///@{
+  template<class T, class = void>
+  struct hasAccepts : std::false_type
+  {
+  };
+  template<class T>
+  struct hasAccepts<
+    T,
+    type_sink_t<
+      decltype(std::declval<T>().accepts(nullptr, nullptr, nullptr, nullptr))>> : std::true_type
+  {
+  };
+  ///@}
+
+  /// Test whether an arc-traits object provides a "size()" method
+  /// that returns the number of arcs of its type in the entire graph.
+  ///@{
+  template<class T, class = void>
+  struct hasSize : std::false_type
+  {
+  };
+  template<class T>
+  struct hasSize<
+    T,
+    type_sink_t<
+      decltype(std::declval<T>().size())>> : std::true_type
+  {
+  };
+  ///@}
+  // clang-format on
+
+  /// Does the traits object have a member named m_fromNodeSpecs?
+  template<typename U = ArcTraits, typename = void>
+  struct hasFromNodeSpecs : std::false_type
+  {
+  };
+  template<typename U>
+  struct hasFromNodeSpecs<U, type_sink_t<decltype(std::declval<U>().m_fromNodeSpecs)>>
+    : std::true_type
+  {
+  };
+
+  /// Does the traits object have a member named m_toNodeSpecs?
+  template<typename U = ArcTraits, typename = void>
+  struct hasToNodeSpecs : std::false_type
+  {
+  };
+  template<typename U>
+  struct hasToNodeSpecs<U, type_sink_t<decltype(std::declval<U>().m_toNodeSpecs)>> : std::true_type
+  {
+  };
 };
 
 /// Return the maximum out-degree of an arc type (or unconstrained() if unspecified).

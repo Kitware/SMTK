@@ -44,6 +44,16 @@ public:
 
   using UUID = smtk::common::UUID;
 
+  ExplicitArcs() = default;
+  ExplicitArcs(Traits&& traits)
+    : m_traits(std::move(traits))
+  {
+  }
+  ExplicitArcs(const Traits& traits)
+    : m_traits(traits)
+  {
+  }
+
   static constexpr std::size_t MaxOutDegree = maxOutDegree<ArcTraits>(unconstrained());
   static constexpr std::size_t MaxInDegree = maxInDegree<ArcTraits>(unconstrained());
   static constexpr std::size_t MinOutDegree = maxOutDegree<ArcTraits>(unconstrained());
@@ -347,22 +357,53 @@ public:
     return result;
   }
 
-  /**\brief Insert an arc from \a from to \a to,
-    *       optionally ordered by \a beforeFrom and \a beforeTo.
+protected:
+  template<typename U = typename ArcProperties<Traits>::template hasConnect<Traits>>
+  typename std::enable_if<!U::value, bool>::type runtimeConnectionCheck(
+    const FromType* from,
+    const ToType* to,
+    const FromType* beforeFrom,
+    const ToType* beforeTo) const
+  {
+    (void)from;
+    (void)to;
+    (void)beforeFrom;
+    (void)beforeTo;
+    // If no runtime checks are provided by the Traits object
+    // (i.e., it does not have a "connect()" method), then we
+    // allow any arc that passes compile-time checks.
+    return true;
+  }
+
+  template<typename U = typename ArcProperties<Traits>::template hasConnect<Traits>>
+  typename std::enable_if<U::value, bool>::type runtimeConnectionCheck(
+    const FromType* from,
+    const ToType* to,
+    const FromType* beforeFrom,
+    const ToType* beforeTo) const
+  {
+    // If a runtime check is provided by the Traits object (i.e., it has
+    // a "connect()" method), then we call it here.) Note that calling
+    // "Traits::connect()" on an *explicit* ArcTraits object should *not*
+    // produce a side effect since this template (ExplicitArcs) is providing
+    // the storage.
+    auto* traits = const_cast<Traits*>(&m_traits);
+    return traits->connect(from, to, beforeFrom, beforeTo);
+  }
+
+public:
+  /**\brief Check whether an arc from \a from to \a to is acceptable.
     *
-    * If the arc is ordered, then \a beforeFrom indicates where
-    * \a from should be placed in the order of incoming nodes and
-    * similarly for \a beforeTo and \a to.
-    * If the arc is not ordered, then \a beforeFrom and \a beforeTo
-    * are ignored.
+    * This will not make any modifications; it simply checks whether
+    * the arc is allowed.
     */
   //@{
   template<bool MM = Mutable::value>
-  typename std::enable_if<!MM, bool>::type connect(
+  typename std::enable_if<!MM, bool>::type accepts(
     const FromType* from,
     const ToType* to,
     const FromType* beforeFrom = nullptr,
-    const ToType* beforeTo = nullptr)
+    const ToType* beforeTo = nullptr) const
   {
     (void)from;
     (void)to;
@@ -372,17 +413,17 @@ public:
   }
 
   template<bool MM = Mutable::value>
-  typename std::enable_if<MM, bool>::type connect(
+  typename std::enable_if<MM, bool>::type accepts(
     const FromType* from,
     const ToType* to,
     const FromType* beforeFrom = nullptr,
-    const ToType* beforeTo = nullptr)
+    const ToType* beforeTo = nullptr) const
   {
     (void)beforeFrom;
     (void)beforeTo;
     if (!from || !to)
     {
-      throw std::domain_error("Cannot connect null nodes.");
+      return false;
     }
     bool inserting = true;
     // For auto-undirected arcs, we must verify that to → from does not
@@ -413,10 +454,39 @@ public:
         inserting &= (MaxInDegree > this->inDegree(to));
       }
     }
+    // Perform any additional run-time checks provided by the traits object.
+    inserting &= this->runtimeConnectionCheck(from, to, beforeFrom, beforeTo);
     // NB: We do not enforce MinInDegree or MinOutDegree because those
-    //     conditions would frequently be validated. In the future,
+    //     conditions would frequently be invalidated. In the future,
     //     we may wish to mark our state as invalid if those (soft)
     //     constraints are invalid.
+    return inserting;
+  }
+  //@}
+
+  /**\brief Insert an arc from \a from to \a to,
+    *       optionally ordered by \a beforeFrom and \a beforeTo.
+    *
+    * If the arc is ordered, then \a beforeFrom indicates where
+    * \a from should be placed in the order of incoming nodes and
+    * similarly for \a beforeTo and \a to.
+    * If the arc is not ordered, then \a beforeFrom and \a beforeTo
+    * are ignored.
+    */
+  //@{
+  bool connect(
+    const FromType* from,
+    const ToType* to,
+    const FromType* beforeFrom = nullptr,
+    const ToType* beforeTo = nullptr)
+  {
+    (void)beforeFrom;
+    (void)beforeTo;
+    if (!from || !to)
+    {
+      throw std::domain_error("Cannot connect null nodes.");
+    }
+    bool inserting = this->accepts(from, to, beforeFrom, beforeTo);
     if (inserting)
     {
       // Insert from → to.
@@ -628,9 +698,20 @@ public:
   }
   //@}
 
+  /// Return true if there are no arcs stored.
+  bool empty() const { return m_forward.empty(); }
+
+  /// Return the number of arcs stored.
+  std::size_t size() const { return m_forward.size(); }
+
+  /// Return the traits object that ExplicitArcs is storing arcs for.
+  const Traits& traits() const { return m_traits; }
+  Traits& traits() { return m_traits; }
+
 protected:
   std::unordered_map<const FromType*, std::unordered_set<const ToType*>> m_forward;
   std::unordered_map<const ToType*, std::unordered_set<const FromType*>> m_reverse;
+  Traits m_traits;
 };
 
 } // namespace graph

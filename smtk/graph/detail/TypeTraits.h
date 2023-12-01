@@ -57,6 +57,12 @@ struct SelectArcContainer<
     !ArcProperties<ArcTraits>::isOrdered::value,
     "Ordered explicit arcs aren't yet supported.");
   using type = ExplicitArcs<ArcTraits>;
+
+  SelectArcContainer() = default;
+  SelectArcContainer(const ArcTraits& traits)
+    : ExplicitArcs<ArcTraits>(traits)
+  {
+  }
 };
 
 /**\brief Store arcs explicitly with a random-access ordering.
@@ -81,6 +87,12 @@ struct SelectArcContainer<
     ArcProperties<ArcTraits>::isOrdered::value,
     "Cannot use ordered storage for unordered arcs.");
   using type = ExplicitArcs<ArcTraits>; // TODO: should be ExplicitOrderedArcs<ArcTraits>;
+
+  SelectArcContainer() = default;
+  SelectArcContainer(const ArcTraits& traits)
+    : ExplicitArcs<ArcTraits>(traits)
+  {
+  }
 };
 
 /**\brief Store arcs implicitly.
@@ -100,6 +112,12 @@ struct SelectArcContainer<
     ArcProperties<ArcTraits>::isImplicit::value,
     "Cannot use implicit storage for this arc type.");
   using type = ArcTraits;
+
+  SelectArcContainer() = default;
+  SelectArcContainer(const ArcTraits& traits)
+    : ArcTraits(traits)
+  {
+  }
 };
 
 } // namespace detail

@@ -139,6 +139,10 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::attribute::Resource>(read, write);
+
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  typeLabels[smtk::common::typeName<smtk::attribute::Resource>()] = "attribute resource";
+  typeLabels[smtk::common::typeName<smtk::attribute::Attribute>()] = "attribute";
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)

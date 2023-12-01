@@ -220,7 +220,7 @@ public:
 
   /// Return whether or not users are allowed to mark a task completed.
   ///
-  /// User interfaces (e.g., qtTaskView) should check this to decide whether
+  /// User interfaces (e.g., qtDiagramView) should check this to decide whether
   /// to enable UI elements that accept user completion.
   /// Subclasses of Task that automate completion (e.g., SubmitOperation
   /// when RunStyle is set to Once) can override this method to prevent users

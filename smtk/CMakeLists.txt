@@ -142,6 +142,11 @@ target_include_directories(smtkCore
   PUBLIC
   ${smtkCore_public_include_directories}
 )
+
+if (SMTK_MATH_DEFINES)
+  target_compile_definitions(smtkCore PRIVATE _USE_MATH_DEFINES)
+endif()
+
 target_link_libraries(smtkCore
   LINK_PUBLIC ${smtkCore_public_link_libraries}
   LINK_PRIVATE ${smtkCore_private_link_libraries})

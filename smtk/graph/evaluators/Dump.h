@@ -12,6 +12,7 @@
 
 #include "smtk/graph/ArcImplementation.h"
 #include "smtk/graph/ArcProperties.h"
+#include "smtk/graph/Component.h"
 
 #include "smtk/string/Token.h"
 
@@ -134,6 +135,7 @@ struct SMTKCORE_EXPORT Dump
     }
   }
 
+  /// Compile-time arc evaluation
   template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
   void operator()(
     const Impl* arcs,
@@ -144,6 +146,7 @@ struct SMTKCORE_EXPORT Dump
     std::string arcType = smtk::common::typeName<ArcTraits>();
     smtk::string::Token arcToken(arcType);
     if (
+      !arcs || arcs->empty() ||
       (self.m_includeArcs.empty() &&
        self.m_excludeArcs.find(arcToken) != self.m_excludeArcs.end()) ||
       (!self.m_includeArcs.empty() &&
@@ -202,6 +205,86 @@ struct SMTKCORE_EXPORT Dump
         {
           stream << line.str() << "\n";
         }
+      });
+    if (self.m_mimeType == "text/vnd.graphviz")
+    {
+      stream << "  }\n";
+    }
+    stream << "\n";
+  }
+
+  /// Run-time arc evaluation
+  template<typename ResourceType>
+  void operator()(
+    smtk::string::Token arcTypeName,
+    const ArcImplementationBase& arcs,
+    const ResourceType* resource,
+    std::ostream& stream,
+    const Dump& self) const
+  {
+    if (
+      (self.m_includeArcs.empty() &&
+       self.m_excludeArcs.find(arcTypeName) != self.m_excludeArcs.end()) ||
+      (!self.m_includeArcs.empty() &&
+       self.m_includeArcs.find(arcTypeName) == self.m_includeArcs.end()))
+    {
+      // Skip arcs explicitly excluded (or not included if given a whitelist)
+      return;
+    }
+    if (self.m_mimeType != "text/vnd.graphviz")
+    {
+      stream << "  " << arcTypeName.data() << "\n";
+    }
+    else
+    {
+      // To make a valid CSS class name from a namespace-qualified C++ name,
+      // replace colons with underscores:
+      std::string arcClass = arcTypeName.data();
+      std::replace(arcClass.begin(), arcClass.end(), ':', '_');
+      stream << "  subgraph \"" << arcTypeName.data() << "\" {\n";
+      stream << "    edge [class=\"" << arcClass << "\"";
+      if (arcs.directionality() == Directionality::IsUndirected)
+      {
+        stream << " dir=\"none\"";
+      }
+      auto colorIt = self.m_arcColors.find(arcTypeName);
+      if (colorIt != self.m_arcColors.end())
+      {
+        stream << " color=\"" << smtk::common::Color::floatRGBAToString(colorIt->second.data())
+               << "\"";
+      }
+      stream << "]\n";
+    }
+    arcs.visitOutgoingNodes(
+      resource, arcTypeName, [&arcTypeName, &stream, &self](const smtk::graph::Component* node) {
+        int fromLabel = self.m_nodeMap[node->id()];
+        std::size_t arcCount = 0;
+        std::ostringstream line;
+        if (self.m_mimeType != "text/vnd.graphviz")
+        {
+          line << "    " << node << ": ";
+        }
+        const_cast<smtk::graph::Component*>(node)
+          ->outgoing(arcTypeName)
+          .visit([&arcTypeName, &fromLabel, &line, &arcCount, &stream, &self](
+                   const smtk::graph::Component* other) {
+            ++arcCount;
+            int toLabel = self.m_nodeMap[other->id()];
+            if (self.m_mimeType == "text/vnd.graphviz")
+            {
+              stream << "    " << fromLabel << " -> " << toLabel << "\n";
+            }
+            else
+            {
+              line << " " << toLabel;
+            }
+            return smtk::common::Visit::Continue;
+          });
+        if (arcCount > 0 && self.m_mimeType != "text/vnd.graphviz")
+        {
+          stream << line.str() << "\n";
+        }
+        return smtk::common::Visit::Continue;
       });
     if (self.m_mimeType == "text/vnd.graphviz")
     {

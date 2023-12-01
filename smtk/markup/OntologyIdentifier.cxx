@@ -24,7 +24,7 @@ void OntologyIdentifier::initialize(
 {
   (void)data;
   (void)helper;
-  m_ontologyId = smtk::string::Token::fromHash(data["ontology_id"].get<smtk::string::Hash>());
+  m_ontologyId = data["ontology_id"].get<smtk::string::Token>();
 }
 
 bool OntologyIdentifier::setOntologyId(const smtk::string::Token& ontologyId)

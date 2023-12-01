@@ -111,6 +111,9 @@ void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<Project>(read, write);
+
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  typeLabels[smtk::common::typeName<smtk::project::Project>()] = "project";
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)

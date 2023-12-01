@@ -30,6 +30,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QHeaderView>
+#include <QLabel>
 #include <QLineEdit>
 #include <QSortFilterProxyModel>
 #include <QTableView>
@@ -185,17 +186,46 @@ void qtWorkletPalette::createWidget()
   m_list->setFrameShadow(QFrame::Plain);
   m_list->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
   m_list->setAlternatingRowColors(true);
+
+  // Worklet descriptions may be long, but the table prevents us from reading them.
+  // Just setting wordWrap to true (which is the default, anyway) does *not*
+  // actually cause row heights to change. Instead, you must
+  // 1. Force off text elision.
+  // 2. When the user changes column widths, then the view must resize row heights.
+  // 3. When the model changes (rows inserted or descriptions changed), then
+  //    the view must be told to resize the rows.
+  m_list->setWordWrap(true);
+  m_list->setTextElideMode(Qt::ElideNone);
+  QObject::connect(
+    m_list->horizontalHeader(),
+    &QHeaderView::sectionResized,
+    m_list,
+    &QTableView::resizeRowsToContents);
+  QObject::connect(
+    m_filter, &QAbstractItemModel::dataChanged, m_list, &QTableView::resizeRowsToContents);
+  QObject::connect(
+    m_filter, &QAbstractItemModel::rowsInserted, m_list, &QTableView::resizeRowsToContents);
+
   m_list->setDragEnabled(true);
   m_list->setDragDropMode(QAbstractItemView::DragOnly);
   m_list->hideColumn(static_cast<int>(qtWorkletModel::Column::WorkletOp));
+  // m_list->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   m_layout = new QVBoxLayout;
   m_layout->setObjectName("Layout");
+  m_layout->setMargin(0);
   this->Widget->setLayout(m_layout);
+  const auto& conf = m_viewInfo.configuration()->details();
+  if (conf.attributeAsBool("ShowTitle"))
+  {
+    std::string title("Worklets");
+    conf.attribute("Title", title);
+    auto* titlebar = new QLabel(title.c_str());
+    m_layout->addWidget(titlebar);
+  }
   auto* controlsLayout = new QHBoxLayout;
   controlsLayout->setObjectName("Controls");
   bool haveControls = false;
-  const auto& conf = m_viewInfo.configuration()->details();
   if (conf.attributeAsBool("SearchBar"))
   {
     m_search = new QLineEdit();
@@ -218,6 +248,14 @@ void qtWorkletPalette::createWidget()
     delete controlsLayout;
   }
   m_layout->addWidget(m_list);
+  if (parentLayout)
+  {
+    parentLayout->addWidget(this->Widget);
+  }
+  else if (auto* pw = this->parentWidget())
+  {
+    this->Widget->setParent(pw);
+  }
 }
 
 void qtWorkletPalette::setInfoToBeDisplayed()

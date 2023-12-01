@@ -18,10 +18,10 @@ namespace smtk
 namespace task
 {
 
-/**\brief Emplace (instantiate) a worklet into a project.
+/**\brief Remove a task dependency between a pair of tasks.
   *
-  * This operation deserializes a worklet's JSON into the
-  * it's project's task manager.
+  * Upon completion, both the upstream and downstream tasks
+  * are marked modified.
   */
 class SMTKCORE_EXPORT RemoveDependency : public smtk::operation::XMLOperation
 {

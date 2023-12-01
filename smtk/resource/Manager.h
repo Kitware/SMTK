@@ -293,6 +293,38 @@ public:
   /// Return a garbage collector used to clean up ephemeral objects after their use.
   GarbageCollectorPtr garbageCollector() { return m_garbageCollector; }
 
+  /// Return a map from the type-name of any subclass of PersistentObject
+  /// to a user-presentable label.
+  ///
+  /// This is not intended to produce multiple names for a single object type;
+  /// if that functionality is required (i.e., inspection of individual instances
+  /// of a class to determine a name), then another service should be offered.
+  ///
+  /// This is intended to be populated by plugin registrars and not saved to
+  /// resources or projects as document state. The order in which plugin registrars
+  /// is called is dictated by their Dependencies, so your application can force
+  /// its registrar to be invoked after registrars that may provide conflicting
+  /// names.
+  ///
+  /// In general, you should use the map like so:
+  /// ```cpp
+  /// void Registrar::registerTo(
+  ///   const smtk::resource::Manager::Ptr& resourceManager)
+  /// {
+  ///   smtk::string::Token userFacingLabel("something");
+  ///   resourceManager->objectTypeLabels()[
+  ///     smtk::common::typeName<SomeClass>()] = userFacingLabel;
+  /// }
+  /// ```
+  const std::unordered_map<smtk::string::Token, smtk::string::Token>& objectTypeLabels() const
+  {
+    return m_objectTypeLabels;
+  }
+  std::unordered_map<smtk::string::Token, smtk::string::Token>& objectTypeLabels()
+  {
+    return m_objectTypeLabels;
+  }
+
 private:
   Manager();
 
@@ -311,6 +343,9 @@ private:
 
   /// A map connecting legacy resource names to legacy readers.
   std::map<std::string, std::function<ResourcePtr(const std::string&)>> m_legacyReaders;
+
+  /// A map for user-presentable labels of PersistentObject and subclass typenames.
+  std::unordered_map<smtk::string::Token, smtk::string::Token> m_objectTypeLabels;
 
   /// A set of operations to delete ephemeral objects.
   GarbageCollectorPtr m_garbageCollector;

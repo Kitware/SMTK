@@ -21,7 +21,7 @@ Field::~Field() = default;
 void Field::initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper)
 {
   this->Superclass::initialize(data, helper);
-  m_fieldType = smtk::string::Token::fromHash(data["field_type"].get<smtk::string::Hash>());
+  m_fieldType = data["field_type"].get<smtk::string::Token>();
 }
 
 void Field::initialize(const std::string& name, smtk::string::Token fieldType)

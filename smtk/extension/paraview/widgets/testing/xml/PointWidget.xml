@@ -2,9 +2,9 @@
 <pqevents>
   <!-- Reset the server. -->
   <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
-  <!-- Hide the "Tasks" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
+  <!-- Hide the "Diagram" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
   <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_View" />
-  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Tasks" />
+  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Diagram" />
   <!-- Lock the window size. -->
   <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
 

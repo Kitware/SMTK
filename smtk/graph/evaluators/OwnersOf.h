@@ -67,6 +67,7 @@ struct SMTKCORE_EXPORT OwnersOf
   {
   }
 
+  // Support compile-time arcs.
   template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
   void operator()(
     const Impl* arcs,
@@ -124,6 +125,24 @@ struct SMTKCORE_EXPORT OwnersOf
         }
       }
     }
+  }
+
+  // Do not support run-time arcs.
+  template<typename ResourcePtr>
+  void operator()(
+    smtk::string::Token arcTypeName,
+    const ArcImplementationBase& arcs,
+    ResourcePtr resource,
+    const std::set<smtk::graph::Component*>& inputs,
+    std::set<smtk::graph::Component*>& outputs,
+    bool& addedDependencies) const
+  {
+    (void)arcTypeName;
+    (void)arcs;
+    (void)resource;
+    (void)inputs;
+    (void)outputs;
+    (void)addedDependencies;
   }
 };
 

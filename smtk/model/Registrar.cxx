@@ -78,6 +78,12 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::model::Resource>();
+
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  // Resource name
+  typeLabels[smtk::common::typeName<smtk::model::Resource>()] = "model resource";
+  // Component name
+  typeLabels[smtk::common::typeName<smtk::model::Entity>()] = "model entity";
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)

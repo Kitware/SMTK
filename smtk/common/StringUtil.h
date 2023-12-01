@@ -33,6 +33,9 @@ public:
   static std::vector<std::string>
   split(const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
 
+  /// Return true if and only if \a ss ends with \a ending.
+  static bool endsWith(const std::string& ss, const std::string& ending);
+
   /// Perform in-place replacement of \a search with \a replacement.
   ///
   /// The returned integer is the number of occurrences of \a search in \a source

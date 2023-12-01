@@ -23,13 +23,18 @@ namespace resource
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   managers->insert(smtk::resource::Manager::create());
-  smtk::plugin::Manager::instance()->registerPluginsTo(
-    managers->get<smtk::resource::Manager::Ptr>());
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  smtk::plugin::Manager::instance()->registerPluginsTo(resourceManager);
 
   managers->insert(
     smtk::resource::query::Manager::create(managers->get<smtk::resource::Manager::Ptr>()));
   smtk::plugin::Manager::instance()->registerPluginsTo(
     managers->get<smtk::resource::query::Manager::Ptr>());
+
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  typeLabels[smtk::common::typeName<smtk::resource::Component>()] = "component";
+  typeLabels[smtk::common::typeName<smtk::resource::Resource>()] = "resource";
+  typeLabels[smtk::common::typeName<smtk::resource::PersistentObject>()] = "object";
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)

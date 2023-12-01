@@ -96,6 +96,56 @@ smtk::attribute::ReferenceItemDefinition::Ptr ArcCreator::arcDestinationItemDefi
     parameterDefinition->itemDefinition(i));
 }
 
+bool ArcCreator::registerOperation(
+  Operation::Index operationIndex,
+  const std::set<std::string>& arcTypes,
+  const std::string& arcDestinationItemName)
+{
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return false;
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(operationIndex);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return false;
+  }
+
+  Operation::Specification spec = specification(metadata->typeName());
+  if (spec == nullptr)
+  {
+    return false;
+  }
+
+  std::string destinationName =
+    arcDestinationItemName.empty() ? s_defaultArcDestinationItemName : arcDestinationItemName;
+
+  Operation::Parameters parameters = extractParameters(spec, metadata->typeName());
+  // TODO: We could verify that either associations() >=2 or findReference(destinationName) > 0
+  if (
+    !parameters || !parameters->associations() || !parameters->findReference(destinationName) ||
+    parameters->associations()->numberOfRequiredValues() < 1)
+  {
+    return false;
+  }
+
+  // Only register the item name if it is not already registered.
+  auto preExisting = m_arcDestinationItemName.values(metadata->typeName());
+  if (preExisting.find(destinationName) == preExisting.end())
+  {
+    if (!m_arcDestinationItemName.registerOperation(metadata->typeName(), { destinationName }))
+    {
+      return false;
+    }
+  }
+  preExisting = this->values(operationIndex);
+  preExisting.insert(
+    arcTypes.begin(), arcTypes.end()); // Union pre-existing arc types with the new ones (if any).
+  return Group::registerOperation(operationIndex, preExisting);
+}
+
 std::set<std::string> ArcCreator::allArcTypes() const
 {
   std::set<std::string> arcTypes;

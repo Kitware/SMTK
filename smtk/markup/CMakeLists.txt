@@ -11,6 +11,7 @@ set(headers
 )
 set(operations
   Create
+  CreateArc
   CreateAnalyticShape
   CreateGroup
   Delete
@@ -64,6 +65,7 @@ list(APPEND classes
   # ExplicitSubset
   # RangedSubset
   # CompositeSubset
+  NodeSet
   SideSet
   Field
   # LabelMap

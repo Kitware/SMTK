@@ -31,7 +31,7 @@ RuntimeTypeContainer& RuntimeTypeContainer::operator=(const RuntimeTypeContainer
   return *this;
 }
 
-std::unordered_set<smtk::string::Token> RuntimeTypeContainer::runtimeBaseTypes()
+std::unordered_set<smtk::string::Token> RuntimeTypeContainer::runtimeBaseTypes() const
 {
   std::unordered_set<smtk::string::Token> result;
   for (const auto& entry : m_runtimeObjects)
@@ -42,7 +42,7 @@ std::unordered_set<smtk::string::Token> RuntimeTypeContainer::runtimeBaseTypes()
 }
 
 std::unordered_set<smtk::string::Token> RuntimeTypeContainer::runtimeTypeNames(
-  smtk::string::Token baseType)
+  smtk::string::Token baseType) const
 {
   auto it = m_runtimeObjects.find(baseType);
   if (it == m_runtimeObjects.end())
