@@ -159,7 +159,9 @@ ReadResource::Result ReadResource::operateInternal()
       readerGroup.fileItemNameForOperation(readOperation->index()));
     readerFileItem->setValue(filename);
 
-    smtk::operation::Operation::Result readOperationResult = readOperation->operate();
+    // Run the local read internally using Key (do not fire observers) and
+    // copy the output resources into our result.
+    smtk::operation::Operation::Result readOperationResult = readOperation->operate(Key{});
     if (
       readOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
