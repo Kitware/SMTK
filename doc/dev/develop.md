@@ -1,7 +1,15 @@
-Develop SMTK with Git
-=========================
+Developer's Notes Concerning SMTK
+=================================
 
-This page documents how to develop SMTK through [Git][].
+Coding Conventions
+------------------
+With respect to coding conventions used when writing code for SMTK,
+please look [here](https://smtk.readthedocs.io/en/latest/userguide/contributing/style.html)
+for more information.
+
+Developing SMTK with Git
+------------------------
+The remainder of this page documents how to develop SMTK using [Git][].
 See the [README](README.md) for more information.
 
 [Git]: http://git-scm.com
@@ -307,6 +315,16 @@ A re-check may be explicitly requested by adding a comment with a single
 
 A topic cannot be [merged](#merge-a-topic) until the automatic review
 succeeds.
+
+### Reformatting a Merge Request ###
+
+If format issues have been detected, you can request that the merge request be reformatted using the following command:
+
+    Do: Reformat
+
+This will reformat your merge request and allow you to compare the new version with the original.  Note that the reformatting process
+rewrites your merge request's history instead of adding an adding a new commit.  To retrieve these changes, you will need to fetch from your gitlab remote and
+do a hard reset.
 
 ### Testing ###
 
