@@ -44,8 +44,16 @@ public:
   qtTaskView(qtTaskScene* scene, qtTaskEditor* widget = nullptr);
   ~qtTaskView() override;
 
-  // qtTaskScene* taskScene() const;
-  // qtTaskEditor* taskEditor() const;
+  qtTaskEditor* taskEditor() const;
+
+  /// Temporarily change modes until \a snapBackOnReleaseKey is released.
+  ///
+  /// When qtGraphViewMode classes capture key presses (and **only** presses,
+  /// not releases) in order to use modifier keys to switch modes temporarily,
+  /// they can call this method on the view and, when the key is released by
+  /// the user, the mode will revert from the \a snapToMode back to the mode
+  /// before \a addModeSnapback was invoked.
+  void addModeSnapback(Qt::Key snapBackOnReleaseKey, smtk::string::Token snapToMode);
 
 protected:
   void wheelEvent(QWheelEvent* event) override;

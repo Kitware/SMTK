@@ -4,6 +4,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core Svg Widgets)
 set(QAttrLibSrcs
   qtAvailableOperations.cxx
   qtUIManager.cxx
+  qtUtility.cxx
   qtAttribute.cxx
   qtAttributeEditorDialog.cxx
   qtAttributeItemInfo.cxx
@@ -73,9 +74,14 @@ set(QAttrLibSrcs
   VisibilityBadge.cxx
 
   task/qtBaseTaskNode.cxx
+  task/qtConnectMode.cxx
+  task/qtDisconnectMode.cxx
   task/qtDefaultTaskNode.cxx
   task/qtDefaultTaskNode1.cxx
+  task/qtGraphViewMode.cxx
+  task/qtPanMode.cxx
   task/qtPreviewArc.cxx
+  task/qtSelectMode.cxx
   task/qtTaskArc.cxx
   task/qtTaskEditor.cxx
   task/qtTaskScene.cxx
@@ -99,6 +105,7 @@ set(QAttrLibUIs
 set(QAttrLibMocHeaders
   qtAvailableOperations.h
   qtUIManager.h
+  qtUtility.h
   qtAssociationWidget.h
   qtAssociation2ColumnWidget.h
   qtAttribute.h
@@ -165,9 +172,14 @@ set(QAttrLibMocHeaders
   VisibilityBadge.h
 
   task/qtBaseTaskNode.h
+  task/qtConnectMode.h
+  task/qtDisconnectMode.h
   task/qtDefaultTaskNode.h
   task/qtDefaultTaskNode1.h
+  task/qtGraphViewMode.h
+  task/qtPanMode.h
   task/qtPreviewArc.h
+  task/qtSelectMode.h
   task/qtTaskArc.h
   task/qtTaskEditor.h
   task/qtTaskNodeFactory.h

@@ -298,7 +298,7 @@ void qtTaskArc::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
   const auto& cfg(*m_scene->configuration());
 
   QPen pen;
-  pen.setWidth(cfg.arcWidth());
+  pen.setWidth((this->isSelected() ? 2. : 1.) * cfg.arcWidth());
   pen.setBrush(cfg.colorForArc(m_arcType));
 
   // painter->setPen(pen);
