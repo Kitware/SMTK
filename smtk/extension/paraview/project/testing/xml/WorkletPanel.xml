@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<pqevents>
+  <!-- Reset the server. -->
+  <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
+
+  <!-- Hide the "Tasks" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_View" />
+  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Tasks" />
+
+  <!-- Lock the window size. -->
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
+
+  <!-- Load the math_op python operation as a plugin -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menuTools" />
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionManage_Plugins" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/splitter/localGroup/loadLocal" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/pqFileDialog" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/operations/math_op.py" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/buttonBox/1QPushButton0" command="activate" arguments="" />
+
+  <!-- Load a project with worklets -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_File" />
+  <pqevent object="pqClientMainWindow/menubar/menu_File" command="activate" arguments="actionFileOpen" />
+  <pqevent object="pqClientMainWindow/FileOpenDialog" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/projects/SimpleWorkletExample/simpleWorklet.smtk" />
+  <pqevent object="pqClientMainWindow/propertiesDock/propertiesPanel/Accept" command="activate" arguments="" />
+
+  <!-- Search for Worklet 1. -->
+  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Search" command="set_string" arguments="Worklet 1" />
+
+  <!-- Validate that the first worklet listed matches "Worklet 1" -->
+  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" command="setCurrent" arguments="0.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" command="setSelection" arguments="0.0,0.2" />
+  <pqcheck object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" property="modelItemData" arguments="0.0,Worklet 1" />
+
+  <!-- Emplace the worklet. -->
+  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Search" command="key" arguments="16777220" />
+
+  <!-- Validate that there are now 2 "Stage 1 Operation" tasks (the second created by EmplaceWorklet). -->
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/Search" command="set_string" arguments="Stage 1 Operation" />
+  <pqcheck object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" property="modelRowCount" arguments="1" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="expand" arguments="0.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setCurrent" arguments="0.0.1.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="0.0.1.0,0.0.1.0" />
+  <pqcheck object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" property="modelItemData" arguments="0.0.1.0,Stage 1 Operation" />
+
+  <!-- Reset the camera. -->
+  <pqevent object="pqClientMainWindow/cameraToolbar/actionResetCamera" command="activate" arguments="" />
+</pqevents>

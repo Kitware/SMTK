@@ -84,7 +84,6 @@ vtk_module_link(smtkPQWidgetsExt
 )
 vtk_module_definitions(smtkPQWidgetsExt PRIVATE QT_NO_KEYWORDS)
 
-
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()

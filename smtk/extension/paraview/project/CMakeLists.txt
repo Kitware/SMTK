@@ -39,3 +39,7 @@ target_link_libraries(smtkPQProjectExt
     smtkPQComponentsExt
     smtkPVServerExt
 )
+
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif()
