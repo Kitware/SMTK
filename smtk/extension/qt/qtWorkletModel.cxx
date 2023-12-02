@@ -277,8 +277,28 @@ void qtWorkletModel::workletUpdate(
   auto created = result->findComponent("created");
   auto modified = result->findComponent("modified");
   auto expunged = result->findComponent("expunged");
+  auto createdResources = result->findResource("resource");
   auto expungedResources = result->findResource("resourcesToExpunge");
   int row;
+  smtk::string::Token workletTypeName = "smtk::task::Worklet";
+  smtk::resource::Component::Visitor visitor =
+    [this, &row, workletTypeName](const smtk::resource::Component::Ptr& comp) {
+      if (comp->matchesType(workletTypeName))
+      {
+        row = static_cast<int>(m_worklets.size());
+        this->beginInsertRows(QModelIndex(), row, row);
+        m_worklets.emplace_back(std::dynamic_pointer_cast<smtk::task::Worklet>(comp));
+        this->endInsertRows();
+      }
+    };
+  if (createdResources)
+  {
+    for (const auto& obj : *createdResources)
+    {
+      auto rsrc = std::static_pointer_cast<smtk::resource::Resource>(obj);
+      rsrc->visit(visitor);
+    }
+  }
   for (const auto& comp : *created)
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
