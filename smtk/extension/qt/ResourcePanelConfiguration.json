@@ -35,7 +35,13 @@
                 {
                   "Name": "Badge",
                   "Attributes": {
-                    "Type": "smtk::extension::paraview::appcomponents::VisibilityBadge"
+                    "Type": "smtk::extension::paraview::appcomponents::HierarchicalVisibilityBadge"
+                  }
+                },
+                {
+                  "Name": "Badge",
+                  "Attributes": {
+                    "Type": "smtk::extension::paraview::appcomponents::GeometricVisibilityBadge"
                   }
                 },
                 {

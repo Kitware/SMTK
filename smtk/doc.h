@@ -243,7 +243,12 @@ namespace opencv
   */
 namespace paraview
 {
+/**\brief User interface elements for Qt-based ParaView applications.
+  */
+namespace appcomponents
+{
 }
+} // namespace paraview
 /**\brief Extensions that expose SMTK data in Qt UI components.
   *
   */

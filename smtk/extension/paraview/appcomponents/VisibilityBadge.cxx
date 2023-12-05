@@ -39,7 +39,8 @@
 
 #include "pqActiveObjects.h"
 #include "vtkCompositeRepresentation.h"
-#include "vtkSMProxy.h"
+#include "vtkSMParaViewPipelineControllerWithRendering.h"
+#include "vtkSMSourceProxy.h"
 
 namespace
 {
@@ -434,11 +435,6 @@ bool VisibilityBadge::action(const DescriptivePhrase* phrase, const BadgeAction&
     this->setPhraseVisibility(phrase, newVal);
   }
 
-  auto model = phrase->phraseModel();
-  if (model)
-  {
-    model->triggerDataChanged();
-  }
   return true;
 }
 

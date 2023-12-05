@@ -29,6 +29,18 @@ It is registered with the pqApplicationCore instance as a manager named "smtk re
 The panel has a ``setView()`` method that accepts a view configuration
 so your application can reconfigure the panel.
 
+The default panel configuration is in ``smtk/extension/qt/ResourcePanelConfiguration.json``,
+but if your application includes a plugin that provides an
+:smtk:`smtk::paraview::ApplicationConfiguration` object, you may override it at startup.
+Plugins can also change the panel configuration at any time while your application is running.
+
+The resource panel configuration accepts settings for
++ a phrase model, which determines what appears at the top level of the resource-panel's tree;
++ a subphrase generator, which determines which children appear beneath the top-level items;
++ and a set of badges that may appear next to phrases in the tree.
+
+Added Ternary Visibility Badge Support)
+
 .. _smtk-pv-attribute-panel:
 
 Attribute panel

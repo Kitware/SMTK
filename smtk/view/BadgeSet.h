@@ -14,6 +14,8 @@
 #include "smtk/view/Badge.h"
 #include "smtk/view/Configuration.h"
 
+#include "smtk/common/TypeContainer.h"
+
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
@@ -64,10 +66,15 @@ public:
   template<typename T>
   T* findBadgeOfType();
 
+  smtk::common::TypeContainer& badgeData() { return m_badgeData; }
+  const smtk::common::TypeContainer& badgeData() const { return m_badgeData; }
+
 private:
   std::weak_ptr<Manager> m_manager;
   PhraseModel* m_phraseModel{ nullptr };
   std::vector<std::unique_ptr<Badge>> m_badges;
+  /// Place to store badge related information
+  smtk::common::TypeContainer m_badgeData;
 };
 
 template<typename T>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32mm"
+   height="32mm"
+   viewBox="0 0 32 32"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="checkbox_blanked.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.6769544"
+     inkscape:cx="12.522702"
+     inkscape:cy="110.02088"
+     inkscape:window-width="1837"
+     inkscape:window-height="1256"
+     inkscape:window-x="392"
+     inkscape:window-y="180"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     inkscape:pageshadow="2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect227"
+       style="fill:#8b8b8b;fill-opacity:0;stroke-width:0.264583"
+       d="M 0,0 H 32 V 32 H 0 Z" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#7b7b7b;stroke-width:2;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2465"
+       width="16"
+       height="16"
+       x="8"
+       y="8"
+       ry="4" />
+  </g>
+</svg>

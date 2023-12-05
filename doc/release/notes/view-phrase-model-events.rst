@@ -26,3 +26,8 @@ However, since they served the same purpose, they are now virtual overrides.
 If you have custom subclasses of PhraseModel, you may wish to override this method
 and you should guarantee that you do not hide the base-class method with a non-virtual
 method of the same signature.
+
+Using a Timer w/r PhraseModel's triggerDataChanged() method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Put `PhraseModel::triggerDataChanged()` on a timer in order to prevent overly frequent redraws by rate-limiting observers to be fired at most 10 times per second.

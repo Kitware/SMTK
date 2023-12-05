@@ -26,15 +26,15 @@ namespace smtk
 namespace paraview
 {
 
-/**\brief An interface by which applications can configure SMTK UI components.
+/**\brief An interface by which applications can configure SMTK UI elements.
   *
-  * SMTK UI components (not resource::Component, but panels, toolbars, etc.)
+  * SMTK user interface elements (e.g., panels, toolbars, etc.)
   * should use the ApplicationConfiguration::notify() function to provide an
   * Observer that will be invoked either immediately or when a plugin is loaded
   * that provides an instance of ApplicationConfiguration.
   *
   * Currently this interface only supports panels, but API may be added for
-  * other components as needed.
+  * other elements as needed.
   */
 class SMTKPQCOMPONENTSEXT_EXPORT ApplicationConfiguration
 {
@@ -47,7 +47,7 @@ public:
     * instance of ApplicationConfiguration becomes available.
     * (It may be available immediately via `pqInterfaceTracker::interfaces()`
     * or later upon the `pqInterfaceTracker::interfaceRegistered()` signal.)
-    * Once found, the observer is invoked so it can configure components as needed by
+    * Once found, the observer is invoked so it can configure elements as needed by
     * calling methods on the interface.
     *
     * This method returns true if the configuration instance was invoked immediately

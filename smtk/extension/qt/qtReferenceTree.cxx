@@ -708,6 +708,7 @@ bool qtReferenceTree::eventFilter(QObject* src, QEvent* event)
               // this->synchronizeAndHide(true);
               return true;
               break;
+              //TODO NEED TO MAKE THIS CONFIGURABLE W/R TO VISIBILITY (OLD, GEOMETRIC, HIERARCHICAL )
             case Qt::Key_Return:
             case Qt::Key_Enter:
               // this->synchronizeAndHide(false);

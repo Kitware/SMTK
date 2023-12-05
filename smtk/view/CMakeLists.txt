@@ -66,6 +66,9 @@ endif()
 set(iconFiles
   icons/attribute.svg
   icons/attributeResource.svg
+  icons/checkbox_blanked.svg
+  icons/checkbox_partial.svg
+  icons/checkbox_visible.svg
   icons/default_operation_opt.svg
   icons/edge.svg
   icons/face.svg
@@ -77,6 +80,9 @@ set(iconFiles
   icons/modelResource.svg
   icons/resource.svg
   icons/selected.svg
+  icons/tree_blanked.svg
+  icons/tree_partial.svg
+  icons/tree_visible.svg
   icons/vertex.svg
   icons/volume.svg
   icons/unselected.svg

@@ -950,7 +950,9 @@ qtBaseView* qtUIManager::createView(const smtk::view::Information& info)
   std::string viewType = info.get<smtk::view::ConfigurationPtr>()->type();
   if (!viewManager)
   {
-    std::cerr << "No viewManager for View Type: " << viewType << " skipping view!\n";
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "No viewManager for View Type: " << viewType << " skipping view!");
     return nullptr;
   }
   qtBaseView* qtView = nullptr;
@@ -971,7 +973,8 @@ qtBaseView* qtUIManager::createView(const smtk::view::Information& info)
   if (!qtView)
   {
     // Constructor for that type could not be found)
-    std::cerr << "Could not find View Type: " << viewType << " skipping view!\n";
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Could not find View Type: " << viewType << " skipping view!");
   }
   else
   {
