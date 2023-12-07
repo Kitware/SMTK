@@ -1,7 +1,8 @@
 set(operationSrcs
+  Group.cxx
+  Helper.cxx
   Launcher.cxx
   MarkGeometry.cxx
-  Group.cxx
   Manager.cxx
   Metadata.cxx
   Operation.cxx
@@ -30,6 +31,7 @@ set(operationHeaders
   MarkGeometry.h
   Group.h
   GroupObserver.h
+  Helper.h
   Hints.h
   Manager.h
   Metadata.h

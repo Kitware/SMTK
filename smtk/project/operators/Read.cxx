@@ -23,6 +23,7 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/operation/Helper.h"
 #include "smtk/operation/Hints.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"
@@ -123,16 +124,22 @@ Read::Result Read::operateInternal()
   // to some object), but sometimes external data based on the context is required. Thus, when
   // serializing/deserializing, we push and pop helpers that provide context.
   auto& resourceHelper = smtk::resource::json::Helper::pushInstance(project);
+  // Add a key to the operation helper so that the ResourceContainer de-serialization code can
+  // internally call Resource Read Operations.
+  Operation::Key key;
+  smtk::operation::Helper::pushInstance(&key);
   resourceHelper.setManagers(this->managers());
   auto& taskHelper =
     smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
 
   // Deserialize the project and see if it has an active task.
+  //project = j;
   smtk::project::from_json(j, project);
   smtk::task::Task* taskToActivate = taskHelper.activeSerializedTask();
 
   smtk::task::json::Helper::popInstance();
   smtk::resource::json::Helper::popInstance();
+  smtk::operation::Helper::popInstance();
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
