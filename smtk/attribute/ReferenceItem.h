@@ -322,11 +322,11 @@ public:
   /// A convenience method returning whether the item's definition is extensible.
   bool isExtensible() const;
 
-  /**\brief Return an iterator to the first model-entity value in this item.
+  /**\brief Return an iterator to the first value in this item.
     *
     */
   const_iterator begin() const;
-  /**\brief Return an iterator just past the last model-entity value in this item.
+  /**\brief Return an iterator just past the last value in this item.
     *
     */
   const_iterator end() const;
