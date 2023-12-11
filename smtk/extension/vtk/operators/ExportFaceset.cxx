@@ -293,7 +293,7 @@ ExportFaceset::Result ExportFaceset::operateInternal()
   if (errorCode != vtkErrorCode::NoError)
   {
     std::string errorString(vtkErrorCode::GetStringFromErrorCode(errorCode));
-    smtkErrorMacro(this->log(), "VTK failed to write STL file. Error: " << errorString);
+    smtkErrorMacro(this->log(), "VTK failed to write output file. Error: " << errorString);
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
