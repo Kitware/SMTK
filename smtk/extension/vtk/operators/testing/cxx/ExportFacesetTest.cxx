@@ -31,6 +31,8 @@
 #include "smtk/session/mesh/operators/CreateUniformGrid.h"
 
 #include "vtkNew.h"
+#include "vtkOBJReader.h"
+#include "vtkPLYReader.h"
 #include "vtkPolyData.h"
 #include "vtkSTLReader.h"
 #include "vtkSmartPointer.h"
@@ -67,7 +69,21 @@ smtk::resource::ResourcePtr ConstructGrid(smtk::operation::Manager::Ptr operatio
 
 void verifySTL(const std::string& filename, const int vertexCount, const int cellCount)
 {
-  vtkNew<vtkSTLReader> reader;
+  auto fileExt = filename.substr(filename.size() - 4, 4);
+  std::for_each(fileExt.begin(), fileExt.end(), [](char& c) { c = std::tolower(c); });
+  vtkSmartPointer<vtkAbstractPolyDataReader> reader;
+  if (fileExt == ".stl")
+  {
+    reader = vtkSmartPointer<vtkSTLReader>::New();
+  }
+  else if (fileExt == ".obj")
+  {
+    reader = vtkSmartPointer<vtkOBJReader>::New();
+  }
+  else if (fileExt == ".ply")
+  {
+    reader = vtkSmartPointer<vtkPLYReader>::New();
+  }
   reader->SetFileName(filename.c_str());
   reader->Update();
   auto* pd = reader->GetOutput();
@@ -75,7 +91,7 @@ void verifySTL(const std::string& filename, const int vertexCount, const int cel
   test(pd->GetNumberOfCells() == cellCount, "Cell count mismatch");
 }
 
-int main(/*int argc, char* argv[]*/)
+void runTest(const std::string gridVolumeFile)
 {
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
@@ -104,7 +120,6 @@ int main(/*int argc, char* argv[]*/)
 
   if (auto grid = ConstructGrid(operationManager))
   {
-    const std::string gridVolumeFile = "ExportFacesetTest-grid-volume-output.stl";
     exportOp->parameters()->findFile("filename")->setValue(gridVolumeFile);
 
     // Export Volume component
@@ -141,6 +156,16 @@ int main(/*int argc, char* argv[]*/)
       verifySTL(gridFaceFile, 36, 50);
     }
   }
+}
+
+int main(/*int argc, char* argv[]*/)
+{
+  std::string gridVolumeFile = "ExportFacesetTest-grid-volume-output.stl";
+  runTest(gridVolumeFile);
+  gridVolumeFile = "ExportFacesetTest-grid-volume-output.obj";
+  runTest(gridVolumeFile);
+  gridVolumeFile = "ExportFacesetTest-grid-volume-output.ply";
+  runTest(gridVolumeFile);
 
   return 0;
 }

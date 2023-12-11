@@ -26,6 +26,8 @@
 #include "vtkDataSetSurfaceFilter.h"
 #include "vtkErrorCode.h"
 #include "vtkNew.h"
+#include "vtkOBJWriter.h"
+#include "vtkPLYWriter.h"
 #include "vtkPolyData.h"
 #include "vtkSTLWriter.h"
 #include "vtkSmartPointer.h"
@@ -200,11 +202,11 @@ std::list<vtkSmartPointer<vtkPolyData>> ExtractFaceset(vtkDataObject* data)
 ExportFaceset::Result ExportFaceset::operateInternal()
 {
   smtk::attribute::FileItemPtr filenameItem = this->parameters()->findFile("filename");
-  std::string filename = filenameItem->value();
+  const std::string filename = filenameItem->value();
   auto assoc = this->parameters()->associations();
-  if (filename.empty())
+  if (filename.empty() || filename.size() < 5)
   {
-    smtkErrorMacro(this->log(), "A filename must be provided.");
+    smtkErrorMacro(this->log(), "A valid filename and extension must be provided.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   if (!assoc)
@@ -218,7 +220,8 @@ ExportFaceset::Result ExportFaceset::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  vtkSmartPointer<vtkSTLWriter> stlWriter;
+  bool fileWritingCalled = false;
+  unsigned long errorCode = 0;
   if (const auto& comp = assoc->valueAs<smtk::resource::Component>())
   {
     auto* geometryResource = dynamic_cast<smtk::geometry::Resource*>(comp->parentResource());
@@ -240,25 +243,56 @@ ExportFaceset::Result ExportFaceset::operateInternal()
           appendFilter->Update();
           if (auto* finalOutput = appendFilter->GetOutput())
           {
-            stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
-            stlWriter->SetInputData(finalOutput);
-            stlWriter->SetFileName(filenameItem->value().c_str());
-            stlWriter->Write();
+            // Extract last three chars of the filename as file extension,
+            // and convert to lower case for subsequent non-case-sensitive comparisons.
+            auto fileExt = filename.substr(filename.size() - 4, 4);
+            std::for_each(fileExt.begin(), fileExt.end(), [](char& c) { c = std::tolower(c); });
+            if (fileExt == ".stl")
+            {
+              vtkNew<vtkSTLWriter> stlWriter;
+              stlWriter->SetInputData(finalOutput);
+              stlWriter->SetFileName(filename.c_str());
+              stlWriter->Write();
+              errorCode = stlWriter->GetErrorCode();
+              fileWritingCalled = true;
+            }
+            else if (fileExt == ".obj")
+            {
+              vtkNew<vtkOBJWriter> objWriter;
+              objWriter->SetInputData(finalOutput);
+              objWriter->SetFileName(filename.c_str());
+              objWriter->Write();
+              errorCode = objWriter->GetErrorCode();
+              fileWritingCalled = true;
+            }
+            else if (fileExt == ".ply")
+            {
+              vtkNew<vtkPLYWriter> plyWriter;
+              plyWriter->SetInputData(finalOutput);
+              plyWriter->SetFileName(filename.c_str());
+              plyWriter->Write();
+              errorCode = plyWriter->GetErrorCode();
+              fileWritingCalled = true;
+            }
+            else
+            {
+              smtkErrorMacro(this->log(), "Unsupported output file extension: " << fileExt);
+            }
           }
         }
       }
     }
   }
 
-  if (!stlWriter)
+  if (!fileWritingCalled)
   {
     smtkErrorMacro(this->log(), "No valid geometry found.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  if (stlWriter && stlWriter->GetErrorCode() != 0)
+  if (errorCode != vtkErrorCode::NoError)
   {
-    std::string errorString(vtkErrorCode::GetStringFromErrorCode(stlWriter->GetErrorCode()));
+    std::string errorString(vtkErrorCode::GetStringFromErrorCode(errorCode));
     smtkErrorMacro(this->log(), "VTK failed to write STL file. Error: " << errorString);
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

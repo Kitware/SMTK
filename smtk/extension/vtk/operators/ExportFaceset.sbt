@@ -16,7 +16,7 @@
       </AssociationsDef>
 
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1">
+        <File Name="filename" NumberOfRequiredValues="1" FileFilters="Surface mesh (*.stl *.obj *.ply)">
           <BriefDescription>The destination STL file</BriefDescription>
         </File>
       </ItemDefinitions>
