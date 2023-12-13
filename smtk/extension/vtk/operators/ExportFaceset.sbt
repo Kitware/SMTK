@@ -4,9 +4,9 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="smtk::geometry::ExportFaceset" Label="Export Faceset" BaseType="operation">
-      <BriefDescription>Export surface model to STL.</BriefDescription>
+      <BriefDescription>Export surface model to STL / OBJ / PLY.</BriefDescription>
       <DetailedDescription>
-        Export a selected surface / faceset to an STL file format.
+        Export a selected surface / faceset to an STL / OBJ / PLY file format.
       </DetailedDescription>
       <AssociationsDef Name="source" Label="Inputs" NumberOfRequiredValues="1" Extensible="no">
         <Accepts>
@@ -16,8 +16,9 @@
       </AssociationsDef>
 
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1">
-          <BriefDescription>The destination STL file</BriefDescription>
+        <File Name="filename" NumberOfRequiredValues="1"
+              FileFilters="Stereolithography File (*.stl);;Wavefront OBJ File (*.obj);;Stanford Triangle Files (*.ply)">
+          <BriefDescription>The destination file</BriefDescription>
         </File>
       </ItemDefinitions>
     </AttDef>
