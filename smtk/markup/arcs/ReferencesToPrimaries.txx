@@ -36,6 +36,10 @@ smtk::common::Visited ReferencesToPrimaries::outVisitor(const SpatialData* from,
     std::set<DiscreteGeometry*> visited;
     for (const auto& assignment : assignments)
     {
+      if (!assignment)
+      {
+        continue;
+      }
       if (assignment->nature() == IdNature::Referential)
       {
         auto destinations = assignment->space()->assignedIds(
