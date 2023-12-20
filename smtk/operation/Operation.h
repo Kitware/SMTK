@@ -34,6 +34,8 @@ class Logger;
 }
 namespace operation
 {
+class Helper;
+
 class ImportPythonOperation;
 class Manager;
 class Operation;
@@ -58,6 +60,8 @@ using ResourceAccessMap = std::map<
 /// standalone functors.
 class SMTKCORE_EXPORT Operation : smtkEnableSharedPtr(Operation)
 {
+  friend class Helper;
+
 public:
   smtkTypeMacroBase(smtk::operation::Operation);
 

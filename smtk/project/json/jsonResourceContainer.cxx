@@ -9,9 +9,15 @@
 //=========================================================================
 #include "smtk/project/json/jsonResourceContainer.h"
 
-#include "smtk/resource/json/jsonResource.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/json/jsonResource.h"
+
+#include "smtk/operation/Helper.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/project/Project.h"
 
@@ -62,9 +68,17 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
     return;
   }
 
+  auto reader = project->operations().manager()->create<smtk::operation::ReadResource>();
+
+  if (!reader)
+  {
+    std::cerr << "Could not find ReadResource Operation\n";
+    return;
+  }
   // get the base path of the project
   std::string projectPath = project->location();
   boost::filesystem::path parentPath = boost::filesystem::path(projectPath).parent_path();
+  smtk::resource::ResourcePtr resource;
 
   for (json::const_iterator it = j["resources"].begin(); it != j["resources"].end(); ++it)
   {
@@ -76,12 +90,24 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
     }
     replaceWindowsSeparators(locationPath);
 
-    smtk::resource::ResourcePtr resource =
-      manager->read(it->at("type").get<std::string>(), locationPath.string());
+    reader->parameters()
+      ->findAs<smtk::attribute::FileItem>("filename")
+      ->setValue(locationPath.string());
+    auto result = reader->operate(*smtk::operation::Helper::instance().key());
+    if (smtk::operation::outcome(result) == smtk::operation::Operation::Outcome::SUCCEEDED)
+    {
+      resource = result->findAs<smtk::attribute::ResourceItem>("resource")->value();
+    }
+    else
+    {
+      std::cerr << "ReadResource Operation did not succeed - outcome was: "
+                << static_cast<int>(smtk::operation::outcome(result)) << std::endl;
+    }
     if (!resource)
     {
       continue;
     }
+    resource->setClean(true);
     resourceContainer.add(
       resource, resource->properties().get<std::string>()[ResourceContainer::role_name]);
   }

@@ -285,9 +285,21 @@ bool Manager::registerProject(const std::string& version)
   return registerProject(Metadata(
     smtk::common::typeName<ProjectType>(),
     std::type_index(typeid(ProjectType)).hash_code(),
-    [](const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>&) {
+    [](const smtk::common::UUID& id, const std::shared_ptr<smtk::common::Managers>& managers) {
       Project::Ptr project = ProjectType::create();
       project->setId(id);
+      if (managers)
+      {
+        if (managers->contains<smtk::resource::Manager::Ptr>())
+        {
+          project->resources().setManager(managers->get<smtk::resource::Manager::Ptr>());
+        }
+        if (managers->contains<smtk::operation::Manager::Ptr>())
+        {
+          project->operations().setManager(managers->get<smtk::operation::Manager::Ptr>());
+        }
+      }
+
       return project;
     },
     detail::tupleToTypeNames<ResourcesTuple>(),
