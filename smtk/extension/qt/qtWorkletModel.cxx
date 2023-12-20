@@ -281,14 +281,18 @@ void qtWorkletModel::workletUpdate(
   auto expungedResources = result->findResource("resourcesToExpunge");
   int row;
   smtk::string::Token workletTypeName = "smtk::task::Worklet";
+
+  // We need to be careful not to insert newly created worklets twice - once from a
+  // newly created resource and again from worklets being explicitly returned as created
+  // components.  So use a set to assemble all of the uniquely created worklets and then
+  // insert them all at the same time.
+  std::set<smtk::task::Worklet::Ptr> workletsToBeInserted;
   smtk::resource::Component::Visitor visitor =
-    [this, &row, workletTypeName](const smtk::resource::Component::Ptr& comp) {
+    [this, workletTypeName, &workletsToBeInserted](const smtk::resource::Component::Ptr& comp) {
       if (comp->matchesType(workletTypeName))
       {
-        row = static_cast<int>(m_worklets.size());
-        this->beginInsertRows(QModelIndex(), row, row);
-        m_worklets.emplace_back(std::dynamic_pointer_cast<smtk::task::Worklet>(comp));
-        this->endInsertRows();
+        auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp);
+        workletsToBeInserted.insert(worklet);
       }
     };
   if (createdResources)
@@ -303,12 +307,22 @@ void qtWorkletModel::workletUpdate(
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
     {
-      row = static_cast<int>(m_worklets.size());
-      this->beginInsertRows(QModelIndex(), row, row);
-      m_worklets.emplace_back(worklet);
-      this->endInsertRows();
+      workletsToBeInserted.insert(worklet);
     }
   }
+
+  // Insert new worklets
+  if (!workletsToBeInserted.empty())
+  {
+    row = static_cast<int>(m_worklets.size());
+    this->beginInsertRows(QModelIndex(), row, row + workletsToBeInserted.size() - 1);
+    for (const auto& worklet : workletsToBeInserted)
+    {
+      m_worklets.emplace_back(worklet);
+    }
+    this->endInsertRows();
+  }
+
   for (const auto& comp : *modified)
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
