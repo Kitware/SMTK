@@ -144,8 +144,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinxcontrib.actdiag',
     'sphinxcontrib.doxylink',
-    'findfigure',
-    'breathe'
+    'findfigure'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
