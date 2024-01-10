@@ -12,7 +12,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-
 import sys
 import os
 import datetime
@@ -205,7 +204,6 @@ version, release = readVersionInfo(sourcedir)
 # table of contents listing.
 exclude_patterns = ['userguide-overview.rst']
 
-
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
 # default_role = None
@@ -278,28 +276,18 @@ doxylink = {
 # function and method role text. Default is True.
 # add_function_parentheses = True
 
-
-# -- Breath configuration -------------------------------------------------
-
-breathe_projects = {
-    'smtk': os.path.join(builddir, '..', '..', 'reference', 'smtk', 'xml') + os.path.sep,
-}
-breathe_default_project = 'smtk'
-breathe_default_members = ('members', 'protected-members', 'undoc-members')
-
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-if readTheDocs:
-    html_theme = 'default'
-else:
-    try:
-        import sphinx_rtd_theme
-        html_theme = 'sphinx_rtd_theme'
-        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    except:
+try:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+except:
+    if readTheDocs:
+        html_theme = 'default'
+    else:
         html_theme = 'haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -381,7 +369,6 @@ html_static_path = ['.static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'SMTKdoc'
 
-
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
@@ -423,7 +410,6 @@ latex_documents = [
 # If false, no module index is generated.
 # latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -435,7 +421,6 @@ man_pages = [
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
