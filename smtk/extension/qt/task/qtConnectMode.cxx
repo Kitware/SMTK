@@ -193,8 +193,11 @@ void qtConnectMode::exitMode()
   m_editor->enableTasks(true);
 
   // Force the preview to render nothing when not in connect-mode.
-  m_previewArc->setPredecessor(nullptr);
-  m_previewArc->setSuccessor(nullptr);
+  if (m_previewArc)
+  {
+    m_previewArc->setPredecessor(nullptr);
+    m_previewArc->setSuccessor(nullptr);
+  }
 
   m_connectTypeAction->setVisible(false);
 }
