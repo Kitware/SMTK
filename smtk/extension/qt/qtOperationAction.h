@@ -113,7 +113,9 @@ protected:
   /// A label for the operation.
   std::string m_operationName;
   /// Whether the operation has editable parameters.
-  smtk::attribute::utility::EditableParameters m_editableParameters;
+  smtk::attribute::utility::EditableParameters m_editableParameters{
+    smtk::attribute::utility::EditableParameters::None
+  };
   /// A timer used to detect long-presses/double-clicks of buttons.
   QTimer m_timer;
   /// Setting that dictates how createWidget() decorates the button it creates.

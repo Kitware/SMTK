@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
+#include "smtk/extension/qt/GroupOps.h"
 #include "smtk/extension/qt/VisibilityBadge.h"
 #include "smtk/extension/qt/qtBadgeActionToggle.h"
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
@@ -31,7 +32,6 @@
 #include "smtk/mesh/core/Resource.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/groups/DeleterGroup.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/VoidItem.h"
@@ -429,6 +429,7 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
       auto operationManager = m_p->m_phraseModel->operationManager();
       if (operationManager)
       {
+        // Gather selected objects
         auto selected = m_p->m_view->selectionModel()->selection();
         std::set<smtk::resource::PersistentObjectPtr> objects;
         for (const auto& idx : selected.indexes())
@@ -440,57 +441,9 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
             objects.insert(phrase->relatedObject());
           }
         }
-        smtk::operation::DeleterGroup deleters(operationManager);
-        while (!objects.empty())
-        {
-          std::set<smtk::resource::PersistentObjectPtr> candidates;
-          smtk::operation::OperationPtr op;
-          for (const auto& object : objects)
-          {
-            if (!op)
-            {
-              auto index = deleters.matchingOperation(*object);
-              if (index)
-              {
-                op = operationManager->create(index);
-              }
-            }
-            if (op && op->parameters()->associate(object))
-            {
-              candidates.insert(object);
-            }
-          }
-          for (const auto& object : candidates)
-          {
-            objects.erase(object);
-          }
-          if (!op)
-          {
-            // No operation was found for anything selected and unprocessed.
-            break;
-          }
-          if (!op->ableToOperate() && op->parameters()->findVoid("delete dependents"))
-          {
-            QMessageBox msgBox;
-            msgBox.setText(
-              QString("Unable to delete %1 selected object(s).").arg(candidates.size()));
-            msgBox.setInformativeText("Delete all dependent entities as well?");
-            auto buttons = QMessageBox::Yes | QMessageBox::No;
-            msgBox.setStandardButtons(buttons);
-            msgBox.setDefaultButton(QMessageBox::Yes);
-            // QCheckBox* cb = new QCheckBox("Set default and don't show again.");
-            // msgBox.setCheckBox(cb);
-
-            int ret = msgBox.exec();
-            // auto cbChecked = cb->isChecked();
-            if (ret == QMessageBox::No)
-            {
-              return true;
-            }
-            op->parameters()->findVoid("delete dependents")->setIsEnabled(true);
-          }
-          operationManager->launchers()(op);
-        }
+        // Launch operations to delete them all, using qtDeleterDisposition to
+        // fetch user input to resolve dependency issues.
+        smtk::operation::deleteObjects(objects, operationManager, qtDeleterDisposition);
         return true;
       }
     }

@@ -97,6 +97,13 @@ UnstructuredData::~UnstructuredData() = default;
 void UnstructuredData::initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper)
 {
   auto resource = helper.resourceAs<smtk::markup::Resource>();
+  if (data.find("point_ids") == data.end() || data.find("cell_ids") == data.end())
+  {
+    // No shape data, so no IDs to assign.
+    // Also, skip trying to fetch shape data.
+    // Perhaps we should warn? This is not usual.
+    return;
+  }
   auto pointSpace = std::dynamic_pointer_cast<IdSpace>(resource->domains().find("points"_token));
   auto cellSpace = std::dynamic_pointer_cast<IdSpace>(resource->domains().find("cells"_token));
   auto jpid = data["point_ids"];

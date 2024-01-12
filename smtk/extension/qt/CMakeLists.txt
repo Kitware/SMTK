@@ -67,6 +67,7 @@ set(QAttrLibSrcs
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
 
+  GroupOps.cxx
   MembershipBadge.cxx
   RedirectOutput.cxx
   SVGIconEngine.cxx
@@ -192,6 +193,7 @@ set(QAttrLibMocHeaders
 
 set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
+  GroupOps.h
   RedirectOutput.h
   qtAttributeItemInfo.h
   qtBadgeActionToggle.h

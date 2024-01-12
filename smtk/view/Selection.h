@@ -315,13 +315,15 @@ public:
   T currentSelectionByValueAs(int value, bool exactMatch = true) const
   {
     T result;
-    return this->currentSelectionByValue(result, value, exactMatch);
+    this->currentSelectionByValue(result, value, exactMatch);
+    return result;
   }
   template<typename T>
   T currentSelectionByValueAs(const std::string& valueLabel, bool exactMatch = true) const
   {
     T result;
-    return this->currentSelectionByValue(result, valueLabel, exactMatch);
+    this->currentSelectionByValue(result, valueLabel, exactMatch);
+    return result;
   }
   //@}
 
