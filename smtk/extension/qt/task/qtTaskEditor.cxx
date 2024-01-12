@@ -98,10 +98,10 @@ public:
     {
       m_scene->setConfiguration(new qtTaskViewConfiguration(*info.configuration()));
     }
-    auto managers = info.get<std::shared_ptr<smtk::common::Managers>>();
-    if (managers)
+    m_managers = info.get<std::shared_ptr<smtk::common::Managers>>();
+    if (m_managers)
     {
-      m_operationManager = managers->get<smtk::operation::Manager::Ptr>();
+      m_operationManager = m_managers->get<smtk::operation::Manager::Ptr>();
     }
 
     QDockWidget* dock = nullptr;
@@ -627,6 +627,8 @@ public:
   smtk::string::Token m_mode;
   // The set of all interaction modes:
   std::unordered_map<smtk::string::Token, qtGraphViewMode*> m_modeMap;
+  /// Application-wide context.
+  smtk::common::Managers::Ptr m_managers;
   // The operation manager obtained from the view information.
   std::shared_ptr<smtk::operation::Manager> m_operationManager;
 
@@ -851,6 +853,11 @@ smtk::string::Token qtTaskEditor::mode() const
 smtk::string::Token qtTaskEditor::defaultMode() const
 {
   return "pan"_token;
+}
+
+smtk::common::Managers::Ptr qtTaskEditor::managers() const
+{
+  return m_p->m_managers;
 }
 
 void qtTaskEditor::modeChangeRequested(QAction* modeAction)

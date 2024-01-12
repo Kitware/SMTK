@@ -97,6 +97,9 @@ public:
   /// The "connect" and "disconnect" modes currently use this method.
   smtk::string::Token defaultMode() const;
 
+  /// Return the application state (smtk::common::Managers) object this editor was configured with.
+  smtk::common::Managers::Ptr managers() const;
+
 Q_SIGNALS:
   /// Emitted by modeChangeRequested when the mode is actually changed
   /// (and not when unchanged).

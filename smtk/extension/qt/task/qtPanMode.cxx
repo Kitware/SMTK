@@ -51,9 +51,18 @@ bool qtPanMode::eventFilter(QObject* obj, QEvent* event)
       if (event->type() == QEvent::KeyPress)
       {
         auto* keyEvent = dynamic_cast<QKeyEvent*>(event);
-        if (keyEvent && keyEvent->key() == Qt::Key_Shift)
+        if (keyEvent)
         {
-          m_editor->taskWidget()->addModeSnapback(Qt::Key_Shift, "select"_token);
+          switch (keyEvent->key())
+          {
+            case Qt::Key_Shift:
+              m_editor->taskWidget()->addModeSnapback(Qt::Key_Shift, "select"_token);
+              break;
+            case Qt::Key_Backspace:
+            case Qt::Key_Delete:
+              this->removeSelectedObjects();
+              break;
+          }
         }
       }
     }

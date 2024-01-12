@@ -84,6 +84,9 @@ protected:
   /// drawn while the mode is active, etc.)
   virtual void enterMode() {}
 
+  /// A method subclasses may call to invoke deleters on the view's selection.
+  bool removeSelectedObjects();
+
   smtk::string::Token m_modeName;
   qtTaskEditor* m_editor{ nullptr };
   QAction* m_modeAction{ nullptr };
