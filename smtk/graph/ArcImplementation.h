@@ -24,7 +24,7 @@ namespace graph
 
 /// For endpoint interfaces, provide tag classes used to select const or non-const APIs.
 template<bool Constness>
-struct ArcConstness : std::integral_constant<bool, Constness>
+struct SMTK_ALWAYS_EXPORT ArcConstness : std::integral_constant<bool, Constness>
 {
 };
 using ConstArc = ArcConstness<true>;
@@ -32,7 +32,7 @@ using NonConstArc = ArcConstness<false>;
 
 /// For endpoint interfaces, provide tag classes used to select incoming or outgoing APIs.
 template<bool OutgoingDirection>
-struct ArcDirection : std::integral_constant<bool, OutgoingDirection>
+struct SMTK_ALWAYS_EXPORT ArcDirection : std::integral_constant<bool, OutgoingDirection>
 {
 };
 using OutgoingArc = ArcDirection<true>;
@@ -51,7 +51,7 @@ class ArcEndpointInterface;
   * traits object or provides implementations for methods itself.
   */
 template<typename ArcTraits>
-class ArcImplementation
+class SMTK_ALWAYS_EXPORT ArcImplementation
 {
 public:
   using Traits = ArcTraits; // Allow classes to inspect our input parameter.
@@ -497,7 +497,7 @@ protected:
   * assuming the arc type provides reverse indexing.
   */
 template<typename TraitsType, typename Const, typename Outgoing>
-class ArcEndpointInterface
+class SMTK_ALWAYS_EXPORT ArcEndpointInterface
 {
 public:
   using Traits = TraitsType;
