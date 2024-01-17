@@ -349,6 +349,7 @@ public:
   /// cleansed from the Resource).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
+  /// Return the integer offset of the item with the given \a name or -1 if not found.
   int findItemPosition(const std::string& name) const;
 
   const std::string& detailedDescription() const { return m_detailedDescription; }

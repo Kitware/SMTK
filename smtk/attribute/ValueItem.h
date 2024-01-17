@@ -7,10 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME ValueItem.h -
-// .SECTION Description
-// .SECTION See Also
-
 #ifndef smtk_attribute_ValueItem_h
 #define smtk_attribute_ValueItem_h
 
@@ -28,6 +24,16 @@ namespace attribute
 class Attribute;
 class ComponentItem;
 class ValueItemDefinition;
+
+/**\brief A concrete base class for items that store a vector of plain-old-data (POD) as values.
+  *
+  * The `ValueItemTemplate<T>` template inherits this class; it in turn is inherited by
+  * StringItem, IntItem, and DoubleItem.
+  *
+  * Besides POD, this class adds the concepts of items that can take on values
+  * only from a discrete set and expressions that can be evaluated to produce
+  * values rather than storing only raw values.
+  */
 class SMTKCORE_EXPORT ValueItem : public smtk::attribute::Item
 {
 public:
