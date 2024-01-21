@@ -16,6 +16,7 @@ set(operations
   CreateGroup
   Delete
   DumpGraph
+  EditComment
   Import
   Read
   SetName
@@ -75,7 +76,7 @@ list(APPEND classes
   # OntologyIdentifier
   Comment
   Feature
-  # Landmark
+  Landmark
   URL
   UnstructuredData
 

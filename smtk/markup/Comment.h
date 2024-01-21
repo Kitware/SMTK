@@ -27,11 +27,14 @@ public:
 
   template<typename... Args>
   Comment(Args&&... args)
-    : smtk::markup::Label(std::forward<Args>(args)...)
+    : Superclass(std::forward<Args>(args)...)
   {
   }
 
   ~Comment() override;
+
+  /// Provide an initializer for resources to call after construction.
+  void initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper) override;
 
   /// Text of the comment.
   bool setData(const smtk::string::Token& data);

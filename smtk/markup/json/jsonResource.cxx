@@ -137,6 +137,19 @@ void to_json(json& jj, const smtk::markup::OntologyIdentifier* oid)
   jj["ontology_id"] = oid->ontologyId();
 }
 
+void to_json(json& jj, const smtk::markup::Comment* comment)
+{
+  to_json(jj, static_cast<const smtk::markup::Comment::Superclass*>(comment));
+  if (comment->mimetype().valid())
+  {
+    jj["mime-type"] = comment->mimetype();
+  }
+  if (comment->data().valid())
+  {
+    jj["data"] = comment->data();
+  }
+}
+
 template<typename NodeType>
 void from_json(const json& jj, std::shared_ptr<NodeType>& node)
 {

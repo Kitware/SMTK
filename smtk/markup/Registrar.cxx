@@ -17,6 +17,7 @@
 #include "smtk/markup/operators/CreateGroup.h"
 #include "smtk/markup/operators/Delete.h"
 #include "smtk/markup/operators/DumpGraph.h"
+#include "smtk/markup/operators/EditComment.h"
 #include "smtk/markup/operators/Import.h"
 #include "smtk/markup/operators/Read.h"
 #include "smtk/markup/operators/SetName.h"
@@ -53,6 +54,7 @@ using OperationList = std::tuple<
   CreateGroup,
   Delete,
   DumpGraph,
+  EditComment,
   Import,
   Read,
   SetName,

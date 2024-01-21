@@ -180,7 +180,7 @@ struct SMTKMARKUP_EXPORT Traits
     // ImplicitShape,
     Label,
     // LabelMap,
-    // Landmark,
+    Landmark,
     NodeSet,
     Ontology,
     OntologyIdentifier,
@@ -235,7 +235,7 @@ struct SMTKMARKUP_EXPORT Traits
 // #include "smtk/markup/ImplicitShape.h"
 #include "smtk/markup/Label.h"
 // #include "smtk/markup/LabelMap.h"
-// #include "smtk/markup/Landmark.h"
+#include "smtk/markup/Landmark.h"
 #include "smtk/markup/NodeSet.h"
 #include "smtk/markup/Ontology.h"
 #include "smtk/markup/OntologyIdentifier.h"
