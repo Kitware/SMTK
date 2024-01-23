@@ -27,3 +27,6 @@ simply create a registrar in your application whose ``Dependencies`` tuple
 lists these registrars and overwrite their strings with ones better for your
 application; because your application registrar depends on others, it will
 always be invoked last.
+
+Currently, this facility is only used by the diagram panel. (In the future,
+descriptive phrases may also adopt these type labels.)

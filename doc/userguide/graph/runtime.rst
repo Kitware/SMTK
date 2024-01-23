@@ -42,3 +42,7 @@ on your resource's :smtk:`ArcMap <smtk::graph::ArcMap>`:
 If you pass empty sets for ``fromTypes`` or ``toTypes`` (as in the example
 above), then no type-checking is performed and the arc may connect nodes
 of any type.
+
+For a complete example, see the `runtime-arc unit test`_.
+
+.. _runtime-arc unit test: https://gitlab.kitware.com/cmb/smtk/-/blob/master/smtk/graph/testing/cxx/TestArcs.cxx#L776

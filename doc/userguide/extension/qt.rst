@@ -45,6 +45,23 @@ The diagram includes a legend at the top of the sidebar
 showing the types of arcs present.
 The legend may also show node types in the future.
 
+.. findfigure:: diagram-panel.*
+   :align: center
+   :width: 95%
+
+   The leftmost panel shows a qtDiagram view configured to display
+   a task diagram (top) and a resource diagram (bottom). The sidebar
+   on the left shows the legend and widgets specific to each
+   diagram-generator.
+
+The image above shows a panel containing a qtDiagram; note that
+the selection is brushed across all three views (the diagram, the
+center 3-d rendering, and the resource browser to the right).
+At the top of the panel is the title bar showing, from left to right,
+a button to control the sidebar visibility; the diagram title;
+and four buttons representing interaction modes (which are in a
+QActionGroup so only one may be active at a time).
+
 Configuration
 ~~~~~~~~~~~~~
 
@@ -108,6 +125,20 @@ Components have an arc to their owning resource.
 Graph nodes have arcs for each type of relationship
 present in the graph.
 
+.. findfigure:: resource-diagram.*
+   :align: center
+   :width: 95%
+
+   An example resource diagram showing a markup resource and its components.
+   Labels in italics point to the 3 types of nodes in the diagram while
+   other labels indicate the description of each grouping node in the diagram.
+
+The image above shows a resource diagram.
+Rounded rectangles are drawn for grouping nodes (with no fill) and
+component nodes (filled with the background color or the selection color
+depending on their selection state).
+Circles are drawn for nodes representing resources.
+
 Arcs are drawn as splines that go up and then down a tree used to group nodes by type.
 The "top" of each arc is the least-common ancestor node in the tree.
 This type of layout is known as `Hierarchical Edge Bundling`_ after the 2006 paper
@@ -159,8 +190,9 @@ tag, you can provide the following attributes
        follow the control polygon (the path up the tree from the
        source node and down the tree to the destination node).
        Values must be in [0, 1] where 0 will result in straight
-       lines between nodes while 1 will force arcs to exactly follow
-       the control polygon. The default value is 0.95.
+       lines between nodes while 1 will specify arcs whose control
+       polygons exactly match the description above.
+       The default value is 0.95.
 
    * - ShortArcOpacity
      - The opacity, :math:`O_{short}`, to use when coloring arcs that connect

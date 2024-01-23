@@ -1,14 +1,31 @@
 Adding the Concept of UI Element State
 --------------------------------------
 
-There are times when a UI Element (such as a panel or editor) needs to be configured at runtime.  For example when loading in a Project, which contains a workflow of Tasks that have been previously laid out in a qtDiagram, the qtDiagram will need to be given this information when visually reconstructing the original graph.  Since this information is not part of the Task, it should not be stored with the Task JSON information.
+SMTK provides :smtk:`smtk::view::Configuration` so that XML-formatted documents
+(such as attribute XML files) can specify views for particular workflow tasks.
+There are also times when application-provided user interface (UI) elements
+(such as a panel or editor) needs to be configured at runtime with document-specific
+JSON data.
+For example when loading in a :smtk:`project <smtk::project::Project>`,
+which contains a workflow of tasks that have been previously laid out in a :smtk:`diagram <smtk::extension::qtDiagram>`,
+the diagram will need to be given this information when visually reconstructing the original graph.
+Since this information is not part of the task, it should not be stored with the task JSON information.
 
-To address this issue, SMTK has added the concept of a UIElementState class that conceptually provides an API to configure the UI Element's state represented as JSON and to retrieve its current configuration as a JSON representation.
+To address this issue, SMTK has added a :smtk:`UIElementState <smtk::view::UIElementState>` class
+that conceptually provides an API to configure the UI element's state represented as JSON and
+to retrieve its current configuration as a JSON representation.
 
-The UIElementState class is intended to be subclassed to produce and consume state data that is relevant to a specific element in the application's user interface (e.g., panel, menu, etc.).
+The UIElementState class is intended to be subclassed to produce and consume state data that is
+relevant to a specific element in the application's user interface (e.g., panel, menu, etc.).
 
-SMTK's View Manager now holds a map of instances whose classes are derived from smtk::view::UIElementState.
+SMTK's :smtk:`view manager <smtk::view::Manager>` now holds a map from application UI element names
+(provided by the application) to instances of classes derived from UIElementState.
+Application UI elements should own an instances of UIElementState specific to itself
+and insert it into (or remove it from) the view manager when the UI element is constructed
+For example, an operation reading/writing a project may wish to read/write configuration of
+the user interface by iterating over the view manager's map.
 
-When an UIElementState object is constructed, it should be added to the View Manager.  An operation, for example reading/writing a Project, may need to configure or get the configuration of theses Elements.
-
-The first class to be derived from this is pqSMTKTaskPanel so that Task Node locations can be saved and retrieved when writing and reading Projects respectively.
+The first UI element to implement element state serialization is
+the :smtk:`diagram panel <pqSMTKDiagamPanel>`, so that positions of task nodes
+(as edited by users) can be saved and retrieved when writing and
+reading projects that define those tasks.
