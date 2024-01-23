@@ -36,13 +36,6 @@ public:
   {
   }
 
-  template<typename... Args>
-  URL(const smtk::string::Token& location, Args&&... args)
-    : smtk::markup::Label(std::forward<Args>(args)...)
-  {
-    this->setLocation(location);
-  }
-
   ~URL() override;
 
   /// Set/get the actual URL; either a filename or a full resource locator with protocol.
