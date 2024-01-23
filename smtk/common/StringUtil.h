@@ -43,6 +43,24 @@ public:
   static std::size_t
   replaceAll(std::string& source, const std::string& search, const std::string& replacement);
 
+  /// Perform a single in-place replacement of \a search with \a replacement.
+  ///
+  /// If \a whichOne is 0, no replacement is performed and std::string::npos is returned.
+  ///
+  /// If \a whichOne is positive, the n-th occurrence (if it exists) – counting
+  /// from the start of \a source – is replaced with \a replacement.
+  ///
+  /// If \a whichOne is negative, the n-th occurrence (if it exists) – counting
+  /// backward from the end of \a source – is replaced with \a replacement.
+  ///
+  /// If no such occurrence is found, std::string::npos is returned. Otherwise,
+  /// the location of the matching occurrence is returned.
+  static std::size_t replaceOne(
+    std::string& source,
+    int whichOne,
+    const std::string& search,
+    const std::string& replacement);
+
   /**\brief Converts a string to a boolean
    *
    * If the string \p s can be converted to a boolean then the function returns true
