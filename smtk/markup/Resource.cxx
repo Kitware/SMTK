@@ -19,6 +19,9 @@
 
 #include "smtk/resource/query/Queries.h"
 
+#include "smtk/common/Paths.h"
+#include "smtk/common/StringUtil.h"
+
 namespace smtk
 {
 namespace markup
@@ -41,6 +44,37 @@ Resource::Resource(smtk::resource::ManagerPtr manager)
   : Superclass(manager)
 {
   this->initialize();
+}
+
+bool Resource::setLocation(const std::string& location)
+{
+  std::string prev = this->location();
+  if (!this->Superclass::setLocation(location))
+  {
+    return false;
+  }
+  // Erase resource-relative "output" URL locations; they will be set by markup::Write.
+  (void)prev;
+  const auto& nodesByType = m_nodes.get<detail::TypeNameTag>();
+  auto it = nodesByType.lower_bound(smtk::common::typeName<URL>());
+  if (it == nodesByType.end())
+  {
+    return true;
+  }
+  auto lastNode = nodesByType.upper_bound(smtk::common::typeName<URL>());
+  smtk::string::Token empty;
+  for (; it != lastNode; ++it)
+  {
+    auto url = std::static_pointer_cast<smtk::markup::URL>(*it);
+    if (!url->outgoing<arcs::URLsToData>().empty())
+    {
+      if (smtk::common::Paths::isRelative(url->location().data()))
+      {
+        url->setLocation(empty);
+      }
+    }
+  }
+  return true;
 }
 
 std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(

@@ -66,6 +66,10 @@ public:
   Resource(const Resource&) = delete;
   ~Resource() override = default;
 
+  /// Override methods that revise the location of the resource so
+  /// we can reset resource-relative URLs.
+  bool setLocation(const std::string& location) override;
+
   // Wrap this method (instead of create()) to avoid name conflict in MSVC.
   template<typename componentT, typename... Args>
   smtk::shared_ptr<componentT> createNode(Args&&... args)
