@@ -49,6 +49,18 @@ public:
   /// This is called immediately after construction by Resource::add().
   void initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper) override;
 
+  /// Return the domains this data participates in (points and cells).
+  ///
+  /// Note that you should own a lock on the resource for the duration
+  /// of this call plus the time you dereference any of its returned pointers.
+  std::unordered_set<Domain*> domains() const override;
+
+  /// Return the AssignedIds object given a domain.
+  ///
+  /// Note that you should own a lock on the resource for the duration
+  /// of this call plus the time you dereference any of its returned pointers.
+  AssignedIds* domainExtent(smtk::string::Token domainName) const override;
+
   /// Provide all the IDs (point and cell) this data participates in.
   void assignedIds(std::vector<AssignedIds*>& assignments) const override;
 

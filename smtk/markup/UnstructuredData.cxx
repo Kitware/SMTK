@@ -177,6 +177,33 @@ void UnstructuredData::initialize(const nlohmann::json& data, smtk::resource::js
   });
 }
 
+std::unordered_set<Domain*> UnstructuredData::domains() const
+{
+  std::unordered_set<Domain*> result;
+  if (m_pointIds)
+  {
+    result.insert(m_pointIds->space().get());
+  }
+  if (m_cellIds)
+  {
+    result.insert(m_cellIds->space().get());
+  }
+  return result;
+}
+
+AssignedIds* UnstructuredData::domainExtent(smtk::string::Token domainName) const
+{
+  if (m_cellIds && domainName == m_cellIds->space()->name())
+  {
+    return m_cellIds.get();
+  }
+  else if (m_pointIds && domainName == m_pointIds->space()->name())
+  {
+    return m_pointIds.get();
+  }
+  return nullptr;
+}
+
 void UnstructuredData::assignedIds(std::vector<AssignedIds*>& assignments) const
 {
   assignments.clear();
