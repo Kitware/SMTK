@@ -123,7 +123,7 @@ Write::Result Write::operateInternal()
     }
     else if (smtk::common::Paths::isRelative(dataFilename.data()))
     {
-      std::string fullPath = fileDirectory + dataFilename.data();
+      std::string fullPath = smtkDirectory + dataFilename.data();
       dataFilename = fullPath;
     }
     ok = this->writeData(dataNode, dataFilename.data(), url->type());
