@@ -200,7 +200,7 @@ bool ConfigureOperation::buildInternalData()
   {
     smtkErrorMacro(
       defaultLogger,
-      "SubmitOperation task \"" << operationTask->title()
+      "SubmitOperation task \"" << operationTask->name()
                                 << "\" not configured to an Operation instance.");
     return false;
   }

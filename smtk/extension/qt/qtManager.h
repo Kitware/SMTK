@@ -52,17 +52,9 @@ public:
   qtObjectNodeFactory& objectNodeFactory() { return m_objectNodeFactory; }
   const qtObjectNodeFactory& objectNodeFactory() const { return m_objectNodeFactory; }
 
-#if 1
   /// A factory to create task nodes from tasks.
   qtTaskNodeFactory& taskNodeFactory() { return m_taskNodeFactory; }
   const qtTaskNodeFactory& taskNodeFactory() const { return m_taskNodeFactory; }
-#else
-  SMTK_DEPRECATED_IN_23_11("Use objectNodeFactory instead.")
-  qtObjectNodeFactory& taskNodeFactory() { return m_objectNodeFactory; }
-
-  SMTK_DEPRECATED_IN_23_11("Use objectNodeFactory instead.")
-  const qtObjectNodeFactory& taskNodeFactory() const { return m_objectNodeFactory; }
-#endif
 
 private:
   qtDiagramGeneratorFactory m_diagramGeneratorFactory;

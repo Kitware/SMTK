@@ -85,7 +85,7 @@ public:
   ///
   /// This method is invoked when an operation changes a task name or
   /// makes other changes that require a visual update to the GUI.
-  SMTK_DEPRECATED_IN_23_11("Override or call dataUpdated() from qtBaseNode instead.")
+  SMTK_DEPRECATED_IN_24_01("Override or call dataUpdated() from qtBaseNode instead.")
   virtual void updateToMatchModifiedTask() { this->dataUpdated(); };
 
 protected:

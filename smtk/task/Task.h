@@ -132,12 +132,12 @@ public:
   void configure(const Configuration& config);
 
   /// Return the title of the task (if one was provided).
-  SMTK_DEPRECATED_IN_23_11("Use name() instead.")
+  SMTK_DEPRECATED_IN_24_01("Use name() instead.")
   const std::string& title() const { return m_name; }
 
   /// Set the title of the task to be presented to users.
   /// This is not intended to be a unique identifier.
-  SMTK_DEPRECATED_IN_23_11("Use setName() instead.")
+  SMTK_DEPRECATED_IN_24_01("Use setName() instead.")
   void setTitle(const std::string& title) { this->setName(title); }
 
   /// Set/get style classes for the task.

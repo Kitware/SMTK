@@ -153,7 +153,7 @@ void Group::setAdaptorData(const std::string& tagName, Task::Configuration& conf
     {
       if (adaptor->from() == this)
       {
-        adaptor->reconfigureTask();
+        adaptor->updateDownstreamTask(adaptor->to()->state(), adaptor->to()->state());
       }
     }
   }
@@ -210,7 +210,7 @@ State Group::computeInternalState() const
       {
         if (adaptor->to() == this)
         {
-          adaptor->reconfigureTask();
+          adaptor->updateDownstreamTask(adaptor->to()->state(), adaptor->to()->state());
         }
       }
     }

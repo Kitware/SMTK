@@ -316,7 +316,7 @@ qtDefaultTaskNode::qtDefaultTaskNode(
     // this bug: https://bugreports.qt.io/browse/QTBUG-10683 .
     // graphicsProxyWidget->setWindowFlags(Qt::BypassGraphicsProxyWidget);
 
-    m_container->m_title->setText(QString::fromStdString(m_task->title()));
+    m_container->m_title->setText(QString::fromStdString(m_task->name()));
   }
 
   this->addToScene();

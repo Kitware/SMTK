@@ -67,22 +67,6 @@ bool Adaptor::setId(const common::UUID& uid)
   return true;
 }
 
-bool Adaptor::reconfigureTask()
-{
-  // NOTICE! When you remove this method, make updateDownstreamTask
-  // pure virtual so that subclasses must provide an implementation.
-  return false;
-}
-
-bool Adaptor::updateDownstreamTask(State upstreamPrev, State upstreamNext)
-{
-  if (upstreamPrev < upstreamNext && upstreamNext >= State::Completable)
-  {
-    return this->reconfigureTask();
-  }
-  return false;
-}
-
 void Adaptor::configureId(const Configuration& config)
 {
   auto it = config.find("id");

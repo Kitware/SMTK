@@ -162,7 +162,7 @@ public:
 
   /// Insert a Type instance into the TypeContainer if it does not exist already or replace it if it does.
   template<typename Type>
-  SMTK_DEPRECATED_IN_23_11("Use insertOrAssign() instead.")
+  SMTK_DEPRECATED_IN_24_01("Use insertOrAssign() instead.")
   bool insert_or_assign(const Type& value)
   {
     return this->insertOrAssign(value);
