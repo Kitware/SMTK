@@ -56,12 +56,6 @@
 #define SMTK_DEPRECATION_REASON(version_major, version_minor, reason)                              \
   "SMTK Deprecated in " #version_major "." #version_minor ": " reason
 
-#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(23, 11)
-#define SMTK_DEPRECATED_IN_23_11(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(23, 11, reason))
-#else
-#define SMTK_DEPRECATED_IN_23_11(reason)
-#endif
-
 #if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(24, 01)
 #define SMTK_DEPRECATED_IN_24_01(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(24, 01, reason))
 #else

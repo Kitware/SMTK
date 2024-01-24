@@ -188,7 +188,7 @@ void checkTaskStates(
     const smtk::task::Task::Ptr task = tasks[i];
     smtkTest(
       task->state() == expected[i],
-      "Task " << task->title() << " expected state " << expected[i] << " actual state "
+      "Task " << task->name() << " expected state " << expected[i] << " actual state "
               << task->state());
   }
 }
@@ -204,7 +204,7 @@ void printTaskStates(
 
   for (const auto& task : tasks)
   {
-    std::cout << task->title() << " -- " << task->state() << '\n';
+    std::cout << task->name() << " -- " << task->state() << '\n';
   }
 
   std::cout << std::flush;
@@ -316,7 +316,7 @@ int TestConfigureOperation(int, char*[])
       bool found = false;
       for (unsigned int i = 0; (i < taskNames.size()) || (!found); i++)
       {
-        if (task->title() == taskNames[i])
+        if (task->name() == taskNames[i])
         {
           found = true;
           tasks[i] = task;
@@ -324,7 +324,7 @@ int TestConfigureOperation(int, char*[])
       }
       if (!found)
       {
-        std::cerr << "Found unexpected task: " << task->title() << std::endl;
+        std::cerr << "Found unexpected task: " << task->name() << std::endl;
         hasErrors = true;
       }
       return smtk::common::Visit::Continue;

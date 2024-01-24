@@ -83,7 +83,7 @@ public:
 
   /// Returns the tasks with the given name
   std::set<smtk::task::Task::Ptr> findByName(const std::string& name) const;
-  SMTK_DEPRECATED_IN_23_11("Use findByName() instead.")
+  SMTK_DEPRECATED_IN_24_01("Use findByName() instead.")
   std::set<smtk::task::Task::Ptr> findByTitle(const std::string& name) const
   {
     return this->findByName(name);

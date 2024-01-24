@@ -11,7 +11,6 @@
 #ifndef smtk_task_Adaptor_h
 #define smtk_task_Adaptor_h
 
-#include "smtk/common/Deprecation.h"
 #include "smtk/task/Task.h"
 
 namespace smtk
@@ -45,16 +44,11 @@ public:
   // TODO: Once task::Manager indexes adaptors by UUID, this will need to change.
   bool setId(const common::UUID& uid) override;
 
-  SMTK_DEPRECATED_IN_23_11("Use updateDownstreamTask() instead.")
-  virtual bool reconfigureTask();
-
   /// Subclasses must override this method and respond to changes in
   /// the state of the upstream task as provided.
   ///
-  /// Note that the default implementation is provided only for
-  /// backward compatibility and will be removed when the deprecated
-  /// `reconfigureTask()` method is removed.
-  virtual bool updateDownstreamTask(State upstreamPrev, State upstreamNext);
+  /// Note this method replaces `reconfigureTask()` method which has been removed.
+  virtual bool updateDownstreamTask(State upstreamPrev, State upstreamNext) = 0;
 
   /// The task this adaptor uses to fetch configuration parameters.
   Task* from() const { return m_from; }

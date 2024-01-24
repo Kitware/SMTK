@@ -75,8 +75,8 @@ protected:
   QPointer<QVBoxLayout> m_layout;
 };
 
-SMTK_DEPRECATED_IN_24_01("Use pqSMTKDiagramPanel instead.")
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKTaskPanel : public pqSMTKDiagramPanel
+class SMTK_DEPRECATED_IN_24_01("Use pqSMTKDiagramPanel instead.")
+  SMTKPQCOMPONENTSEXT_EXPORT pqSMTKTaskPanel : public pqSMTKDiagramPanel
 {
 };
 
