@@ -91,7 +91,7 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
             auto lit = taskPanelState.find("layout");
             auto locationItem = this->parameters()->findDouble("location");
             std::array<double, 2> dropPoint{ { locationItem->value(0), locationItem->value(1) } };
-            std::array<double, 2> xy;
+            std::array<double, 2> xy{ { 0, 0 } };
             int nxy = 0;
             if (lit != taskPanelState.end())
             {
