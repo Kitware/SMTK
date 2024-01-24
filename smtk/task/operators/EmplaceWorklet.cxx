@@ -82,7 +82,8 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
         auto it = elementStateMap.find(element.key());
         if (it != elementStateMap.end())
         {
-          if (element.key() == "pqSMTKTaskPanel")
+          // Note: For backwards compatibility, we also handle pqSMTKTaskPanel data.
+          if (element.key() == "pqSMTKDiagramPanel" || element.key() == "pqSMTKTaskPanel")
           {
             // Translate UI node layout now that tasks have UUIDs.
             // Copy the original:

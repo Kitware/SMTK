@@ -1,6 +1,15 @@
 Changes to Task UI Architecture
 -------------------------------
 
+Task panel classes have changed names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``pqSMTKTaskDock`` and ``pqSMTKTaskPanel`` classes have been
+renamed ``pqSMTKDiagramDock`` and ``pqSMTKDiagramPanel``, respectively.
+This was done to reflect their new, more general purpose.
+A placeholder class for the panel has been added; it should generate
+warnings if you attempt to use it.
+
 Subclassing task nodes
 ~~~~~~~~~~~~~~~~~~~~~~
 

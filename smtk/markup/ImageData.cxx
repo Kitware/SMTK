@@ -78,6 +78,33 @@ void ImageData::initialize(const nlohmann::json& data, smtk::resource::json::Hel
   });
 }
 
+std::unordered_set<Domain*> ImageData::domains() const
+{
+  std::unordered_set<Domain*> result;
+  if (m_pointIds)
+  {
+    result.insert(m_pointIds->space().get());
+  }
+  if (m_cellIds)
+  {
+    result.insert(m_cellIds->space().get());
+  }
+  return result;
+}
+
+AssignedIds* ImageData::domainExtent(smtk::string::Token domainName) const
+{
+  if (m_cellIds && domainName == m_cellIds->space()->name())
+  {
+    return m_cellIds.get();
+  }
+  else if (m_pointIds && domainName == m_pointIds->space()->name())
+  {
+    return m_pointIds.get();
+  }
+  return nullptr;
+}
+
 void ImageData::assignedIds(std::vector<AssignedIds*>& assignments) const
 {
   assignments.clear();

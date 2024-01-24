@@ -1,29 +1,40 @@
 set(graphOperations
+  CreateArc
+  CreateArcType
   Delete
+  DeleteArc
 )
 
 set(graphSrcs
+  ArcMap.cxx
   Component.cxx
+  Directionality.cxx
   NodeSet.cxx
+  Registrar.cxx
   evaluators/Dump.cxx
 )
 
 set(graphHeaders
+  ArcImplementationBase.h
   ArcImplementation.h
   ArcProperties.h
   ArcMap.h
+  ArcTraits.h
   Component.h
+  Directionality.h
   ExplicitArcs.h
   Functions.h
   NodeProperties.h
   NodeSet.h
   OwnershipSemantics.h
+  Registrar.h
   Resource.h
   ResourceBase.h
+  RuntimeArc.h
+  RuntimeArcEndpoint.h
   detail/TypeTraits.h
   evaluators/DeleteArcs.h
   evaluators/Dump.h
-  evaluators/InsertUntypedArc.h
   evaluators/OwnersOf.h
   evaluators/OwnedBy.h
   filter/Grammar.h
@@ -53,6 +64,11 @@ add_custom_target(graphGenHeaders
 
 # Install the headers:
 smtk_public_headers(smtkCore ${graphHeaders})
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

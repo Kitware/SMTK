@@ -76,6 +76,24 @@ struct SMTKCORE_EXPORT DeleteArcs
       // didRemove |= to->template incoming<ArcTraits>().disconnect(nullptr);
     }
   }
+
+  // For run-time arcs, we only support bidirectionally indexed variants for the moment.
+  template<typename Resource>
+  void operator()(
+    smtk::string::Token arcTypeName,
+    ArcImplementationBase& arcs,
+    const Resource*,
+    Component* node,
+    bool explicitOnly,
+    bool& didRemove) const
+  {
+    (void)arcs;
+    // Runtime arcs are always explicit.
+    (void)explicitOnly;
+
+    didRemove |= node->outgoing(arcTypeName).disconnect(nullptr);
+    didRemove |= node->incoming(arcTypeName).disconnect(nullptr);
+  }
 };
 
 } // namespace evaluators

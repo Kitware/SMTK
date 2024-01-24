@@ -11,10 +11,12 @@ set(headers
 )
 set(operations
   Create
+  CreateArc
   CreateAnalyticShape
   CreateGroup
   Delete
   DumpGraph
+  EditComment
   Import
   Read
   SetName
@@ -64,6 +66,7 @@ list(APPEND classes
   # ExplicitSubset
   # RangedSubset
   # CompositeSubset
+  NodeSet
   SideSet
   Field
   # LabelMap
@@ -73,7 +76,7 @@ list(APPEND classes
   # OntologyIdentifier
   Comment
   Feature
-  # Landmark
+  Landmark
   URL
   UnstructuredData
 

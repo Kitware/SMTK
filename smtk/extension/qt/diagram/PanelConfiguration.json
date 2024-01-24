@@ -1,0 +1,59 @@
+[
+  {
+    "Name": "Resource Diagram",
+    "Type": "Diagram",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "TopLevel": true,
+        "SearchBar": true,
+        "Title": "Diagram"
+      },
+      "Children": [
+
+        { "Name": "Diagram",
+          "Attributes": {
+            "Type": "smtk::extension::qtResourceDiagram",
+            "Name": "resource diagram",
+            "Beta": 0.95,
+            "NodeSpacing": 2,
+            "ShortArcOpacity": 0.9,
+            "LongArcOpacityAdjustment": 0.2
+          },
+          "Children": [
+            { "Name": "ObjectFilters", "Children": [
+              { "Name": "Rejects",
+                "Attributes": { "Resource": "smtk::project::Project", "ComponentsOnly": false},
+                "Children": [
+                  { "Name": "Filter", "Contents": "smtk::task::Task" },
+                  { "Name": "Filter", "Contents": "smtk::task::Worklet" },
+                  { "Name": "Filter", "Contents": "smtk::task::Adaptor" }
+                ]
+              },
+              { "Name": "Accepts", "Attributes": { "Resource": "*", "Filter": "*" } }
+            ]},
+
+            { "Name": "ClassExclusions", "Children": [
+              { "Name": "Exclude", "Contents": "smtk::resource::Resource" },
+              { "Name": "Exclude", "Contents": "smtk::resource::Component" },
+              { "Name": "Exclude", "Contents": "smtk::geometry::Resource" },
+              { "Name": "Exclude", "Contents": "smtk::graph::ResourceBase" },
+              { "Name": "Exclude", "Contents": "smtk::graph::Component" }
+            ]},
+
+            { "Name": "ArcFilters", "Children": [
+              { "Name": "Filter", "Attributes": { "Type": "smtk::attribute::Associations" } },
+              { "Name": "Filter", "Attributes": { "Type": "smtk::markup::Arcs" } }
+            ]}
+           ]},
+
+        { "Name": "Diagram", "Attributes": { "Type": "smtk::extension::qtTaskEditor", "Name": "task editor" } },
+
+        { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtPanMode", "Default": true } },
+        { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtSelectMode" } },
+        { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtConnectMode" } },
+        { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtDisconnectMode" } }
+      ]
+    }
+  }
+]

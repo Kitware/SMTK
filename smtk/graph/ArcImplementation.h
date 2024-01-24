@@ -11,9 +11,16 @@
 #ifndef smtk_graph_ArcImplementation_h
 #define smtk_graph_ArcImplementation_h
 
+// The order of inclusion for these headers is significant.
+// Do NOT reorder them alphabetically, nor allow clang-format to do so.
 #include "smtk/common/TypeName.h"
-#include "smtk/common/Visit.h"
 #include "smtk/graph/detail/TypeTraits.h"
+// Do not reorder:
+#include "smtk/graph/RuntimeArcEndpoint.h"
+// RuntimeArcEndpoint.h must come before ArcImplementationBase.h here
+// but there are other instances where ArcImplementationBase should not
+// be included while RuntimeArcEndpoint should be.
+#include "smtk/graph/ArcImplementationBase.h"
 #include "smtk/resource/Component.h"
 #include "smtk/string/Token.h"
 
@@ -22,21 +29,8 @@ namespace smtk
 namespace graph
 {
 
-/// For endpoint interfaces, provide tag classes used to select const or non-const APIs.
-template<bool Constness>
-struct SMTK_ALWAYS_EXPORT ArcConstness : std::integral_constant<bool, Constness>
-{
-};
-using ConstArc = ArcConstness<true>;
-using NonConstArc = ArcConstness<false>;
-
-/// For endpoint interfaces, provide tag classes used to select incoming or outgoing APIs.
-template<bool OutgoingDirection>
-struct SMTK_ALWAYS_EXPORT ArcDirection : std::integral_constant<bool, OutgoingDirection>
-{
-};
-using OutgoingArc = ArcDirection<true>;
-using IncomingArc = ArcDirection<false>;
+template<Directionality>
+struct RuntimeArc;
 
 // Forward-declare the arc adaptor classes:
 template<typename TraitsType>
@@ -51,10 +45,16 @@ class ArcEndpointInterface;
   * traits object or provides implementations for methods itself.
   */
 template<typename ArcTraits>
-class SMTK_ALWAYS_EXPORT ArcImplementation
+class SMTK_ALWAYS_EXPORT ArcImplementation : public ArcImplementationBase
 {
 public:
   using Traits = ArcTraits; // Allow classes to inspect our input parameter.
+
+  ArcImplementation() = default;
+  ArcImplementation(const Traits& traits)
+    : m_data(traits)
+  {
+  }
 
   /// If "truthy," this arc is considered directed rather than undirected.
   using Directed = typename ArcTraits::Directed;
@@ -103,7 +103,330 @@ public:
   bool isExplicit() const { return Explicit::value; }
 
   /// Return the type of arc this class implements.
-  std::string typeName() const { return smtk::common::typeName<ArcTraits>(); }
+  std::string typeName() const override { return smtk::common::typeName<ArcTraits>(); }
+
+  Directionality directionality() const override
+  {
+    return this->isDirected() ? Directionality::IsDirected : Directionality::IsUndirected;
+  }
+  bool mutability() const override { return this->isMutable(); }
+
+protected:
+  template<
+    typename U = typename ArcProperties<ArcTraits>::template hasFromNodeSpecs<ArcTraits>::type>
+  typename std::enable_if<!U::value, std::unordered_set<smtk::string::Token>>::type _fromTypes()
+    const
+  {
+    return { { ("'" + smtk::common::typeName<typename ArcTraits::FromType>() + "'") } };
+  }
+
+  template<
+    typename U = typename ArcProperties<ArcTraits>::template hasFromNodeSpecs<ArcTraits>::type>
+  typename std::enable_if<U::value, std::unordered_set<smtk::string::Token>>::type _fromTypes()
+    const
+  {
+    return m_data.traits().m_fromNodeSpecs;
+  }
+
+  template<typename U = typename ArcProperties<ArcTraits>::template hasToNodeSpecs<ArcTraits>::type>
+  typename std::enable_if<!U::value, std::unordered_set<smtk::string::Token>>::type _toTypes() const
+  {
+    return { { ("'" + smtk::common::typeName<typename ArcTraits::ToType>() + "'") } };
+  }
+
+  template<typename U = typename ArcProperties<ArcTraits>::template hasToNodeSpecs<ArcTraits>::type>
+  typename std::enable_if<U::value, std::unordered_set<smtk::string::Token>>::type _toTypes() const
+  {
+    return m_data.traits().m_toNodeSpecs;
+  }
+
+public:
+  std::unordered_set<smtk::string::Token> fromTypes() const override { return this->_fromTypes(); }
+
+  std::unordered_set<smtk::string::Token> toTypes() const override { return this->_toTypes(); }
+
+  /// The minimum out-degree of a FromType node. This is not enforced.
+  std::size_t minimumOutDegree() const override { return MinOutDegree; }
+  /// The minimum in-degree of a ToType node. This is not enforced.
+  std::size_t minimumInDegree() const override { return MinInDegree; }
+  /// The maximum out-degree of a FromType node. This is enforced.
+  std::size_t maximumOutDegree() const override { return MaxOutDegree; }
+  /// The maximum in-degree of a ToType node. This is enforced.
+  std::size_t maximumInDegree() const override { return MaxInDegree; }
+
+  /// Return true if there are no arcs of this type in the resource.
+  ///
+  /// Note that this method may return false even when there are no
+  /// arcs of this type because the arc-traits object does not provide
+  /// an efficient way to obtain the number of arcs.
+  ///@{
+  template<
+    typename U =
+      typename ArcProperties<Traits>::template hasSize<detail::SelectArcContainer<Traits, Traits>>>
+  typename std::enable_if<U::value, bool>::type empty() const
+  {
+    auto result = m_data.size();
+    return result == 0;
+  }
+
+  template<
+    typename U =
+      typename ArcProperties<Traits>::template hasSize<detail::SelectArcContainer<Traits, Traits>>>
+  typename std::enable_if<!U::value, bool>::type empty() const
+  {
+    return false;
+  }
+  ///@}
+
+protected:
+  /// A functor that either calls inVisitor (on arcs with reverse indices) or does nothing.
+  template<
+    typename TraitsType,
+    bool IsBidirectional = !ArcProperties<TraitsType>::isOnlyForwardIndexed::value>
+  struct RuntimeInVisitor;
+
+  template<typename TraitsType>
+  struct RuntimeInVisitor<TraitsType, true>
+  {
+    smtk::common::Visited operator()(
+      const ArcImplementation<TraitsType>* self,
+      const ToType* node,
+      std::function<smtk::common::Visit(const Component*)> visitor) const
+    {
+      return self->inVisitor(node, [&](const FromType* from) { return visitor(from); });
+    }
+  };
+
+  template<typename TraitsType>
+  struct RuntimeInVisitor<TraitsType, false>
+  {
+    smtk::common::Visited operator()(
+      const ArcImplementation<TraitsType>*,
+      const ToType*,
+      std::function<smtk::common::Visit(const Component*)>) const
+    {
+      return smtk::common::Visited::Empty;
+    }
+  };
+
+public:
+  /// Return a "container" of outgoing arcs of the given \a from node.
+  ///@{
+  // const version
+  RuntimeArcEndpoint<ConstArc> outgoingRuntime(const Component* from) const override
+  {
+    const auto* properType = dynamic_cast<const FromType*>(from);
+    if (!properType)
+    {
+      return RuntimeArcEndpoint<ConstArc>();
+    }
+
+    return RuntimeArcEndpoint<ConstArc>(
+      this->typeName(),
+      from,
+      true,
+      // Degree-limits functor
+      [this](bool isMax) { return isMax ? maximumOutDegree() : minimumOutDegree(); },
+      // Degree (node valence) functor
+      [this, properType]() { return this->outDegree(properType); },
+      // Graph contains arc functor
+      [this, properType](const Component* to) {
+        if (const auto* properTo = dynamic_cast<const ToType*>(to))
+        {
+          return this->contains(properType, properTo);
+        }
+        return false;
+      },
+      // Arc insertion functor
+      [this, properType](const Component*, const Component*, const Component*) { return false; },
+      // Arc removal functor
+      [this, properType](const Component*) { return false; },
+      // Arc visitor functor
+      [this, properType](std::function<smtk::common::Visit(const Component*)> visitor) {
+        return this->outVisitor(properType, [&](const ToType* node) { return visitor(node); });
+      });
+  }
+  // non-const version
+  RuntimeArcEndpoint<NonConstArc> outgoingRuntime(const Component* from) override
+  {
+    const auto* properType = dynamic_cast<const FromType*>(from);
+    if (!properType)
+    {
+      return RuntimeArcEndpoint<NonConstArc>();
+    }
+
+    return RuntimeArcEndpoint<NonConstArc>(
+      this->typeName(),
+      from,
+      true,
+      // Degree-limits functor
+      [this](bool isMax) { return isMax ? maximumOutDegree() : minimumOutDegree(); },
+      // Degree (node valence) functor
+      [this, properType]() { return this->outDegree(properType); },
+      // Graph contains arc functor
+      [this, properType](const Component* to) {
+        if (const auto* properTo = dynamic_cast<const ToType*>(to))
+        {
+          return this->contains(properType, properTo);
+        }
+        return false;
+      },
+      // Arc insertion functor
+      [this,
+       properType](const Component* to, const Component* beforeTo, const Component* beforeFrom) {
+        if (
+          (beforeTo && !dynamic_cast<const ToType*>(beforeTo)) ||
+          (beforeFrom && !dynamic_cast<const FromType*>(beforeFrom)))
+        {
+          // TODO: Emit warning?
+          return false;
+        }
+        if (const auto* properTo = dynamic_cast<const ToType*>(to))
+        {
+          auto* self = const_cast<ArcImplementation<ArcTraits>*>(this);
+          return self->connect(
+            properType,
+            properTo,
+            dynamic_cast<const FromType*>(beforeFrom),
+            dynamic_cast<const ToType*>(beforeTo));
+        }
+        return false;
+      },
+      // Arc removal functor
+      [this, properType](const Component* to) {
+        if (const auto* properTo = dynamic_cast<const ToType*>(to))
+        {
+          auto* self = const_cast<ArcImplementation<ArcTraits>*>(this);
+          return self->disconnect(properType, properTo);
+        }
+        return false;
+      },
+      // Arc visitor functor
+      [this, properType](std::function<smtk::common::Visit(const Component*)> visitor) {
+        return this->outVisitor(properType, [&](const ToType* node) { return visitor(node); });
+      });
+  }
+  ///@}
+
+  /// Return a "container" of incoming arcs of the given \a to node.
+  ///@{
+  // const version
+  RuntimeArcEndpoint<ConstArc> incomingRuntime(const Component* to) const override
+  {
+    const auto* properType = dynamic_cast<const ToType*>(to);
+    if (!properType)
+    {
+      return RuntimeArcEndpoint<ConstArc>();
+    }
+
+    return RuntimeArcEndpoint<ConstArc>(
+      this->typeName(),
+      to,
+      false,
+      // Degree-limits functor
+      [this](bool isMax) { return isMax ? maximumInDegree() : minimumInDegree(); },
+      // Degree (node valence) functor
+      [this, properType]() {
+        std::size_t result = 0;
+        if (!properType)
+        {
+          return result;
+        }
+        RuntimeInVisitor<ArcTraits>()(this, properType, [&result](const Component*) {
+          ++result;
+          return smtk::common::Visit::Continue;
+        });
+        return result;
+      },
+      // Graph contains arc functor
+      [this, properType](const Component* from) {
+        if (const auto* properFrom = dynamic_cast<const FromType*>(from))
+        {
+          return this->contains(properFrom, properType);
+        }
+        return false;
+      },
+      // Arc insertion functor
+      [this, properType](const Component*, const Component*, const Component*) { return false; },
+      // Arc removal functor
+      [this, properType](const Component*) { return false; },
+      // Arc visitor functor
+      [this, properType](std::function<smtk::common::Visit(const Component*)> visitor) {
+        return RuntimeInVisitor<ArcTraits>()(this, properType, visitor);
+      });
+  }
+  // non-const version
+  RuntimeArcEndpoint<NonConstArc> incomingRuntime(const Component* to) override
+  {
+    const auto* properType = dynamic_cast<const ToType*>(to);
+    if (!properType)
+    {
+      return RuntimeArcEndpoint<NonConstArc>();
+    }
+
+    return RuntimeArcEndpoint<NonConstArc>(
+      this->typeName(),
+      to,
+      false,
+      // Degree-limits functor
+      [this](bool isMax) { return isMax ? maximumInDegree() : minimumInDegree(); },
+      // Degree (node valence) functor
+      [this, properType]() {
+        std::size_t result = 0;
+        if (!properType)
+        {
+          return result;
+        }
+        RuntimeInVisitor<ArcTraits>()(this, properType, [&result](const Component*) {
+          ++result;
+          return smtk::common::Visit::Continue;
+        });
+        return result;
+      },
+      // Graph contains arc functor
+      [this, properType](const Component* from) {
+        if (const auto* properFrom = dynamic_cast<const FromType*>(from))
+        {
+          return this->contains(properFrom, properType);
+        }
+        return false;
+      },
+      // Arc insertion functor
+      [this,
+       properType](const Component* from, const Component* beforeFrom, const Component* beforeTo) {
+        if (
+          (beforeTo && !dynamic_cast<const ToType*>(beforeTo)) ||
+          (beforeFrom && !dynamic_cast<const FromType*>(beforeFrom)))
+        {
+          // TODO: Emit warning?
+          return false;
+        }
+        if (const auto* properFrom = dynamic_cast<const FromType*>(from))
+        {
+          auto* self = const_cast<ArcImplementation<ArcTraits>*>(this);
+          return self->connect(
+            properFrom,
+            properType,
+            dynamic_cast<const FromType*>(beforeFrom),
+            dynamic_cast<const ToType*>(beforeTo));
+        }
+        return false;
+      },
+      // Arc removal functor
+      [this, properType](const Component* from) {
+        if (auto* properFrom = dynamic_cast<const FromType*>(from))
+        {
+          auto* self = const_cast<ArcImplementation<ArcTraits>*>(this);
+          return self->disconnect(properFrom, properType);
+        }
+        return false;
+      },
+      // Arc visitor functor
+      [this, properType](std::function<smtk::common::Visit(const Component*)> visitor) {
+        return RuntimeInVisitor<ArcTraits>()(this, properType, visitor);
+      });
+  }
+  ///@}
 
   /**\brief Test whether an arc from \a from to \a to exists.
     *
@@ -198,6 +521,18 @@ public:
   };
   ///@}
 
+  /// Visit all nodes with outgoing run-time arcs.
+  smtk::common::Visited visitOutgoingNodes(
+    const smtk::graph::ResourceBase* resource,
+    smtk::string::Token arcTypeName,
+    RuntimeNodeVisitor visitor) const override
+  {
+    (void)arcTypeName;
+    return this->visitAllOutgoingNodes(
+      const_cast<ResourceBase*>(resource),
+      [&](const typename Traits::FromType* node) { return visitor(node); });
+  }
+
   /**\brief Visit all nodes which have incoming arcs of this type.
     *
     * If the traits object does not provide its own implementation,
@@ -251,6 +586,78 @@ public:
     return result;
   };
   ///@}
+
+  /**\brief Determine whether the given arc is allowed.
+    *
+    * If the decorated traits object provides an "accepts()"
+    * method, return the result of that. Otherwise, consider
+    * only whether the compile-time constraints are satisfied.
+    *
+    * Note that if "accepts()" is not provided, this method
+    * may eventually be implemented by checking the maximum
+    * incoming and outgoing degree constraints; that can be
+    * slow since degree() could be called on each node.
+    */
+  ///@{
+  template<
+    typename U = typename ArcProperties<Traits>::template hasAccepts<
+      detail::SelectArcContainer<Traits, Traits>>>
+  typename std::enable_if<U::value, bool>::type accepts(
+    const FromType* from,
+    const ToType* to,
+    const FromType* beforeFrom = nullptr,
+    const ToType* beforeTo = nullptr) const
+  {
+    return m_data.accepts(from, to, beforeFrom, beforeTo);
+  }
+
+  template<
+    typename U = typename ArcProperties<Traits>::template hasAccepts<
+      detail::SelectArcContainer<Traits, Traits>>>
+  typename std::enable_if<!U::value, bool>::type accepts(
+    const FromType* from,
+    const ToType* to,
+    const FromType* beforeFrom = nullptr,
+    const ToType* beforeTo = nullptr) const
+  {
+    (void)beforeFrom;
+    (void)beforeTo;
+    if (!from || !to)
+    {
+      return false;
+    }
+    if (MaxOutDegree != unconstrained() && this->outDegree(from) + 1 >= MaxOutDegree)
+    {
+      return false;
+    }
+#if 0
+    // TODO: Check inDegree constraint. This is
+    // complicated by the fact that inDegree may not be
+    // computable if the arc is forward-only-indexed.
+    if (MaxInDegree != unconstrained() &&
+      this->inDegree(to) + 1 >= MaxInDegree)
+    {
+      return false;
+    }
+#endif
+    if (this->contains(from, to))
+    {
+      return false;
+    }
+    return true;
+  }
+  ///@}
+
+  bool acceptsRuntime(Component* from, Component* to, Component* beforeFrom, Component* beforeTo)
+    const override
+  {
+    bool ok = this->accepts(
+      dynamic_cast<const FromType*>(from),
+      dynamic_cast<const ToType*>(to),
+      dynamic_cast<const FromType*>(beforeFrom),
+      dynamic_cast<const ToType*>(beforeTo));
+    return ok;
+  };
 
   /**\brief Insert an arc from \a from to \a to,
     *       optionally ordered by \a beforeFrom and \a beforeTo.
@@ -528,8 +935,14 @@ public:
   {
   }
 
-  // Provide a default copy constructor.
+  /// Provide a default copy constructor.
   ArcEndpointInterface(const ArcEndpointInterface<TraitsType, Const, Outgoing>&) = default;
+
+  /// Return this endpoint's endpoint.
+  typename std::conditional<Const::value, const ThisType*, ThisType*>::type self()
+  {
+    return m_endpoint;
+  }
 
   // Return constraints on the degree of this endpoint's arcs:
   constexpr std::size_t maxDegree() const

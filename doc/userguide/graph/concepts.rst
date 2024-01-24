@@ -50,7 +50,8 @@ Arc
   An arc class may present either *explicit* or *implicit* arcs.
 
   Explicit arcs are those which are explicitly stored by SMTK as pairs
-  of connected node IDs.
+  of connected node IDs. Any arc whose struct/class does **not**
+  provide visitor methods (discussed below) is considered explicit.
 
   Implicit arcs are those which are implied by the nature of data being
   represented (e.g., in a structured grid, points are implicitly connected

@@ -16,6 +16,22 @@ namespace markup
 
 Comment::~Comment() = default;
 
+void Comment::initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper)
+{
+  (void)helper;
+
+  auto it = data.find("mime-type");
+  if (it != data.end())
+  {
+    this->setMimetype(it->get<smtk::string::Token>());
+  }
+  it = data.find("data");
+  if (it != data.end())
+  {
+    this->setData(it->get<smtk::string::Token>());
+  }
+}
+
 bool Comment::setData(const smtk::string::Token& data)
 {
   if (m_data == data)

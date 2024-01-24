@@ -9,12 +9,11 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/plugin-panel-defaults/DefaultConfiguration.h"
 
+#include "smtk/extension/paraview/appcomponents/pqSMTKDiagramPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationToolboxPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKTaskPanel.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKWorkletToolboxPanel.h"
-#include "smtk/extension/qt/task/qtTaskEditor.h"
+#include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Information.h"
 #include "smtk/view/json/jsonView.h"
@@ -53,28 +52,13 @@ smtk::view::Information DefaultConfiguration::panelConfiguration(const QWidget* 
     std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
     result.insertOrAssign(viewConfig);
   }
-  else if (const auto* tasks = dynamic_cast<const pqSMTKTaskPanel*>(panel))
+  else if (const auto* tasks = dynamic_cast<const pqSMTKDiagramPanel*>(panel))
   {
     // We provide a default configuration, but you can manipulate the
     // panel or construct your own configuration as needed in your application.
     (void)tasks;
     std::shared_ptr<smtk::view::Configuration> viewConfig =
       smtk::extension::qtTaskEditor::defaultConfiguration();
-    result.insertOrAssign(viewConfig);
-  }
-  else if (const auto* gallery = dynamic_cast<const pqSMTKWorkletToolboxPanel*>(panel))
-  {
-    (void)gallery;
-    nlohmann::json jsonConfig = {
-      { "Name", "Gallery" },
-      { "Type", "qtWorkletPalette" },
-      { "Component",
-        { { "Name", "Details" },
-          { "Attributes", { { "SearchBar", true }, { "Title", "Tools" } } },
-          { "Children",
-            { { { "Name", "Model" }, { "Attributes", { { "Autorun", "true" } } } } } } } }
-    };
-    std::shared_ptr<smtk::view::Configuration> viewConfig = jsonConfig;
     result.insertOrAssign(viewConfig);
   }
   else

@@ -32,7 +32,7 @@ Task-editor interaction modes
 
 The :smtk:`smtk::extension::qtTaskEditor` has been refactored so that each
 user-interaction mode is a separate class that installs event filters on
-the :smtk:`smtk::extension::qtTaskView` and adds a QAction to the task-panel's
+the :smtk:`smtk::extension::qtDiagramView` and adds a QAction to the task-panel's
 toolbar. The QAction is checkable and, when triggered, causes the editor to
 enter its corresponding interaction mode.
 All the modes' actions belong to a ``QActionGroup`` so that only one action
@@ -56,3 +56,19 @@ Arcs may be removed by entering the :smtk:`smtk::extension::qtDisconnectMode`
 and clicking the backspace key with one or more arcs selected.
 If no operation exists to delete a selected arc, no action is taken except
 that an error is reported.
+
+Task-node constructor
+~~~~~~~~~~~~~~~~~~~~~
+
+The class hierarchy and constructor for :smtk:`smtk::extension::qtBaseTaskNode` have changed:
+
+* What was formerly the ``qtTaskEditor`` class has become :smtk:`smtk::extension::qtDiagram`.
+* Now :smtk:`smtk::extension::qtTaskEditor` is a subclass of :smtk:`smtk::extension::qtDiagramGenerator`
+  and is owned by a ``qtDiagram``. (This change was made to allow multiple sources of items to reside in
+  the same overall diagram.)
+* The constructors of nodes in the diagram all take :smtk:`smtk::extension::qtDiagramGenerator`
+  rather than :smtk:`smtk::extension::qtDiagramScene` as the first argument to their constructor.
+  This is because all nodes live in the same scene; diagram generators subdivide ownership more
+  finely than the scene. Each node maintains a pointer to the diagram generator which created it.
+* Task nodes no longer have a member variable named ``m_scene``. Instead, call the ``scene()``
+  method on the node to obtain the scene from the diagram generator.

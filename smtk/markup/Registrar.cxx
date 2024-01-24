@@ -13,9 +13,11 @@
 
 #include "smtk/markup/operators/Create.h"
 #include "smtk/markup/operators/CreateAnalyticShape.h"
+#include "smtk/markup/operators/CreateArc.h"
 #include "smtk/markup/operators/CreateGroup.h"
 #include "smtk/markup/operators/Delete.h"
 #include "smtk/markup/operators/DumpGraph.h"
+#include "smtk/markup/operators/EditComment.h"
 #include "smtk/markup/operators/Import.h"
 #include "smtk/markup/operators/Read.h"
 #include "smtk/markup/operators/SetName.h"
@@ -47,10 +49,12 @@ namespace
 {
 using OperationList = std::tuple<
   Create,
+  CreateArc,
   CreateAnalyticShape,
   CreateGroup,
   Delete,
   DumpGraph,
+  EditComment,
   Import,
   Read,
   SetName,
@@ -87,6 +91,47 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   // Beyond registering the resource type, we now prepare the resource by
   // registering domain and node types to their respective factories.
   smtk::markup::Resource::domainFactory().registerTypes<smtk::markup::Traits::DomainTypes>();
+
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  // clang-format off
+  // Resource name
+  typeLabels[smtk::common::typeName<smtk::markup::Resource>()] = "markup resource";
+
+  // Component names
+  typeLabels[smtk::common::typeName<smtk::markup::AnalyticShape>()] = "analytic shape";
+  typeLabels[smtk::common::typeName<smtk::markup::Box>()] = "box";
+  typeLabels[smtk::common::typeName<smtk::markup::Comment>()] = "comment";
+  typeLabels[smtk::common::typeName<smtk::markup::Component>()] = "markup component";
+  typeLabels[smtk::common::typeName<smtk::markup::Cone>()] = "cone";
+  typeLabels[smtk::common::typeName<smtk::markup::DiscreteGeometry>()] = "discrete geometry";
+  typeLabels[smtk::common::typeName<smtk::markup::Feature>()] = "feature";
+  typeLabels[smtk::common::typeName<smtk::markup::Field>()] = "field";
+  typeLabels[smtk::common::typeName<smtk::markup::Group>()] = "group";
+  typeLabels[smtk::common::typeName<smtk::markup::ImageData>()] = "image";
+  typeLabels[smtk::common::typeName<smtk::markup::Label>()] = "label";
+  typeLabels[smtk::common::typeName<smtk::markup::NodeSet>()] = "node set";
+  typeLabels[smtk::common::typeName<smtk::markup::Ontology>()] = "ontology";
+  typeLabels[smtk::common::typeName<smtk::markup::OntologyIdentifier>()] = "ontology id";
+  typeLabels[smtk::common::typeName<smtk::markup::Plane>()] = "plane";
+  typeLabels[smtk::common::typeName<smtk::markup::SideSet>()] = "side set";
+  typeLabels[smtk::common::typeName<smtk::markup::SpatialData>()] = "spatial data";
+  typeLabels[smtk::common::typeName<smtk::markup::Sphere>()] = "sphere";
+  typeLabels[smtk::common::typeName<smtk::markup::Subset>()] = "subset";
+  typeLabels[smtk::common::typeName<smtk::markup::UnstructuredData>()] = "unstructured mesh";
+  typeLabels[smtk::common::typeName<smtk::markup::URL>()] = "url";
+
+  // Arc names
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::BoundariesToShapes>()] = "boundaries of shape";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::FieldsToShapes>()] = "shapes";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::GroupsToMembers>()] = "members";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::LabelsToSubjects>()] = "subjects";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::OntologyIdentifiersToIndividuals>()] = "individuals";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::OntologyIdentifiersToSubtypes>()] = "ontological subtypes";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::OntologyToIdentifiers>()] = "identifiers";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::ReferencesToPrimaries>()] = "primaries";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::URLsToData>()] = "source URL for";
+  typeLabels[smtk::common::typeName<smtk::markup::arcs::URLsToImportedData>()] = "import URL for";
+  // clang-format on
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

@@ -12,7 +12,13 @@
 #include "smtk/graph/Resource.h"
 #include "smtk/graph/evaluators/Dump.h"
 #include "smtk/graph/json/jsonResource.h"
+#include "smtk/graph/operators/CreateArc.h"
+#include "smtk/graph/operators/CreateArcType.h"
+
 #include "smtk/resource/json/Helper.h"
+
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -27,6 +33,7 @@ namespace smtk
 namespace test
 {
 using namespace smtk::graph;
+using smtk::operation::outcome;
 
 int ImplicitArc::s_outVisitorCount = 0;
 int InvertibleImplicitArc::s_inVisitorCount = 0;
@@ -44,7 +51,7 @@ void to_json(json& j, const Thingy* thingy)
 
 // ++ 5 ++
 template<typename NodeType>
-void from_json(const json& j, std::shared_ptr<NodeType>& node)
+void SMTK_ALWAYS_EXPORT from_json(const json& j, std::shared_ptr<NodeType>& node)
 {
   auto& helper = smtk::resource::json::Helper::instance();
   auto resource = std::dynamic_pointer_cast<smtk::graph::ResourceBase>(helper.resource());
@@ -76,6 +83,7 @@ struct PrintArcInfo
     std::cout << "  Arc type                  Implicit Explicit Mutable  Bidir   Directed\n"
                  "  ---------------------------------------------------------------------\n";
   }
+  // Compile-time version
   template<typename T, typename ResourceType>
   void operator()(T* arcData, const ResourceType*)
   {
@@ -101,6 +109,33 @@ struct PrintArcInfo
               << "\n"
               << "       From: " << smtk::common::typeName<typename Traits::FromType>() << "\n"
               << "       To:   " << smtk::common::typeName<typename Traits::ToType>() << "\n";
+  }
+  // Run-time version
+  template<typename ResourceType>
+  void
+  operator()(smtk::string::Token arcTypeName, ArcImplementationBase& arcData, const ResourceType*)
+  {
+    (void)arcData;
+    std::string typeName = arcTypeName.data();
+    if (typeName.find("smtk::test::") == 0 || typeName.find("smtk::test::") == 0)
+    {
+      typeName = typeName.substr(12);
+    }
+#ifndef WIN32
+    const std::string xx = "×";
+#else
+    const std::string xx = "x";
+#endif
+    const std::string oo = " ";
+    std::cout << "  " << typeName << std::string(25 - typeName.size(), ' ') << "    "
+              << /* never implicit */ oo << "    "
+              << "    " << /* always explicit */ xx << "    "
+              << "    " << (arcData.mutability() ? xx : oo) << "    "
+              << "    " << /* always bi-directionally indexed */ oo << "    "
+              << "    " << (arcData.directionality() == IsDirected ? xx : oo) << "    "
+              << "\n"
+              << "       From: runtime\n"
+              << "       To:   runtime\n";
   }
   template<typename ResourceType>
   static void end(const ResourceType*)
@@ -477,6 +512,7 @@ struct DegreeDumper
   {
   }
 
+  // Compile-time arcs
   template<typename Impl, typename ArcTraits = typename Impl::Traits, typename ResourceType>
   void operator()(const Impl* arcs, const ResourceType* resource) const
   {
@@ -492,6 +528,21 @@ struct DegreeDumper
       std::cout << "      " << node->name() << ": " << node->template incoming<ArcTraits>().degree()
                 << "\n";
     });
+  }
+
+  // Run-time arcs
+  template<typename ResourceType>
+  void operator()(
+    smtk::string::Token arcTypeName,
+    const ArcImplementationBase& arcs,
+    const ResourceType* resource) const
+  {
+    std::cout << "  " << arcTypeName.data() << "\n    outgoing degree\n";
+    arcs.visitOutgoingNodes(resource, arcTypeName, [&arcTypeName](const Component* node) {
+      std::cout << "      " << node->name() << ": " << node->outgoing(arcTypeName).degree() << "\n";
+      return smtk::common::Visit::Continue;
+    });
+    // TODO: Incoming degree unavailable with run-time arc API.
   }
 
   template<typename ResourceType>
@@ -722,6 +773,91 @@ void testNodeTypeNames()
   ::test(nodeTypeNames == expectedNodeTypes, "Node types do not match.");
 }
 
+void testRuntimeArcs()
+{
+  using namespace smtk::graph;
+  using namespace smtk::string::literals;
+  std::cout << "Test run-time arcs\n";
+  auto resource = smtk::graph::Resource<ExampleRuntimeTraits>::create();
+  auto c1 = resource->create<Comment>("comment 1");
+  auto c2 = resource->create<Comment>("comment 2");
+  auto t1 = resource->create<Thingy>("thingy 1");
+  auto t2 = resource->create<Thingy>("thingy 2");
+  bool didInsert = resource->arcs().insertRuntimeArcType(
+    resource.get(),
+    "Metacomment",
+    { { "'Comment'"_token } },
+    { { "'Comment'"_token } },
+    smtk::graph::IsUndirected);
+  ::test(didInsert, "Failed to add runtime 'Metacomment' arc type.");
+  std::cout << "  Arc types in existence\n";
+  for (const auto& arcTypeName : resource->arcs().types())
+  {
+    std::cout << "    " << arcTypeName.data() << "\n";
+  }
+  c1->incoming<ExplicitArc>().connect(t1);
+
+  // clang-format off
+  std::cout << "  Test outgoing connect(), contains(), and disconnect():\n";
+  ::test(!c1->outgoing("Metacomment"_token).contains(c2), "Runtime arc should not exist by default.");
+  ::test(c1->outgoing("Metacomment"_token).connect(c2), "Could not insert runtime arc.");
+  ::test(c1->outgoing("Metacomment"_token).contains(c2), "Runtime arc should exist after insertion.");
+  ::test(c1->outgoing("Metacomment"_token).disconnect(c2), "Could not remove runtime arc.");
+  ::test(!c1->outgoing("Metacomment"_token).contains(c2), "Runtime arc should not exist after removal.");
+  std::cout << "    done\n";
+
+  std::cout << "  Test incoming connect(), contains(), and disconnect():\n";
+  ::test(!c1->incoming("Metacomment"_token).contains(c2), "Runtime arc should not exist by default.");
+  ::test(c1->incoming("Metacomment"_token).connect(c2), "Could not insert runtime arc.");
+  ::test(c1->incoming("Metacomment"_token).contains(c2), "Runtime arc should exist after insertion.");
+  ::test(c1->incoming("Metacomment"_token).disconnect(c2), "Could not remove runtime arc.");
+  ::test(!c1->incoming("Metacomment"_token).contains(c2), "Runtime arc should not exist after removal.");
+  std::cout << "    done\n";
+
+  std::cout << "  Test attempt to create an improper arc:\n";
+  ::test(!t1->outgoing("Metacomment"_token).connect(c1), "Runtime arc should not accept bad nodes.");
+  ::test(!t1->outgoing("Metacomment"_token).contains(c1), "Runtime arc should not accept bad nodes.");
+  // ::test(!t1->outgoing("Metacomment"_token).valid(), "Runtime arc should not accept bad nodes.");
+  std::cout << "    done\n";
+
+  std::cout << "  Test runtime access to compile-time arcs:\n";
+  ::test(t1->outgoing(smtk::common::typeName<ExplicitArc>()).contains(c1), "Expected outgoing connection.");
+  ::test(c1->incoming(smtk::common::typeName<ExplicitArc>()).contains(t1), "Expected incoming connection.");
+  std::cout << "    done\n";
+  // clang-format on
+
+  std::cout << "  Testing CreateArcType operation...\n";
+  auto cat = smtk::graph::CreateArcType::create();
+  ::test(!!cat, "Could not create operation 'CreateArcType'.");
+  auto params = cat->parameters();
+  params->associations()->setValue(resource);
+  params->findString("type name")->setValue("Metathingy");
+  params->findString("directionality")->setValue("undirected");
+  // Note that using single-quotes here forces the type name of the
+  // object to exactly match (rather than accepting subclasses:
+  params->findString("end node types")->appendValue("'Thingy'");
+  auto result = cat->operate();
+  ::test(
+    outcome(result) == smtk::operation::Operation::Outcome::SUCCEEDED,
+    "Expected operation to succeed.");
+  std::cout << "    done\n";
+  std::cout << "  Testing CreateArcType operation...\n";
+  auto car = smtk::graph::CreateArc::create();
+  car->parameters()->associate(t2);
+  car->parameters()->associate(t1);
+  car->parameters()->findString("arc type")->setValue("Metathingy");
+  result = car->operate();
+  ::test(
+    outcome(result) == smtk::operation::Operation::Outcome::SUCCEEDED,
+    "Expected operation to succeed.");
+  ::test(t2->outgoing("Metathingy"_token).contains(t1), "Expected to connect two thingies.");
+
+  ::test(!t2->outgoing("Metathingy"_token).connect(c1), "Improper arc should fail insertion.");
+  std::cout << "    done\n";
+
+  resource->dump("");
+}
+
 } // namespace test
 } // namespace smtk
 
@@ -737,6 +873,7 @@ int TestArcs(int, char*[])
   smtk::test::testReadWrite();
   smtk::test::testDump();
   smtk::test::testNodeTypeNames();
+  smtk::test::testRuntimeArcs();
 
   return 0;
 }

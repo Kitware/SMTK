@@ -64,6 +64,7 @@
   }
 
 #define smtkInheritanceHierarchy(...)                                                              \
+  smtk::string::Token typeToken() const override { return smtk::string::Token(type_name); }        \
   std::vector<smtk::string::Token> classHierarchy() const override                                 \
   {                                                                                                \
     static std::vector<smtk::string::Token> baseTypes;                                             \

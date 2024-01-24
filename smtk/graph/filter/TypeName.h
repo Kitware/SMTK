@@ -16,6 +16,8 @@
 
 #include "smtk/common/StringUtil.h"
 
+#include "smtk/string/Token.h"
+
 #include "smtk/Regex.h"
 
 namespace smtk
@@ -86,6 +88,20 @@ struct TypeName
     std::string value;
   };
 
+  /// A rule that accepts exact type-name matches as well as subclass matches.
+  class ExactPlusInherited : public smtk::resource::filter::Rule
+  {
+  public:
+    ~ExactPlusInherited() override = default;
+
+    bool operator()(const smtk::resource::PersistentObject& object) const override
+    {
+      return object.matchesType(value);
+    }
+
+    smtk::string::Token value;
+  };
+
   /// A rule that accepts regex type-name matches.
   class RegexRule : public smtk::resource::filter::Rule
   {
@@ -153,10 +169,10 @@ struct Action<smtk::graph::filter::TypeName::BareTypeName>
   template<typename Input>
   static void apply(const Input& input, Rules& rules)
   {
-    rules.emplace_back(new smtk::graph::filter::TypeName::Exact());
+    rules.emplace_back(new smtk::graph::filter::TypeName::ExactPlusInherited());
     std::unique_ptr<Rule>& rule = rules.data().back();
     std::string matchName = input.string();
-    static_cast<smtk::graph::filter::TypeName::Exact*>(rule.get())->value =
+    static_cast<smtk::graph::filter::TypeName::ExactPlusInherited*>(rule.get())->value =
       smtk::common::StringUtil::trim(matchName);
   }
 };

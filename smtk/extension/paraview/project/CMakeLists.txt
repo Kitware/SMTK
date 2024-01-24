@@ -1,5 +1,4 @@
 set(classes
-  pqSMTKDisplayProjectOnLoadBehavior
   pqSMTKProjectAutoStart
   pqSMTKProjectBrowser
   pqSMTKProjectMenu

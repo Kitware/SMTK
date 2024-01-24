@@ -46,33 +46,57 @@ namespace task
 
 RemoveDependency::Result RemoveDependency::operateInternal()
 {
-  auto fromTask = this->parameters()->associations()->valueAs<smtk::task::Task>();
-  auto toTask = this->parameters()->findComponent("to")->valueAs<smtk::task::Task>();
-  if (!fromTask || !toTask)
+  // First, accumulate task pairs while validating that all dependencies exist.
+  auto endpoints = this->parameters()->findGroup("task endpoints");
+  std::size_t nn = endpoints->numberOfGroups();
+  std::multimap<smtk::task::Task::Ptr, smtk::task::Task::Ptr> taskPairs;
+  std::size_t invalid = 0;
+  for (std::size_t ii = 0; ii < nn; ++ii)
   {
-    smtkErrorMacro(log(), "Associated or referenced task was null or of wrong type.");
+    // clang-format off
+    auto fromTask = endpoints->findAs<smtk::attribute::ReferenceItem>(ii, "from")->valueAs<smtk::task::Task>();
+    auto toTask   = endpoints->findAs<smtk::attribute::ReferenceItem>(ii,   "to")->valueAs<smtk::task::Task>();
+    // clang-format on
+
+    auto deps = toTask->dependencies();
+    if (deps.find(fromTask) == deps.end())
+    {
+      ++invalid;
+    }
+    else
+    {
+      taskPairs.insert(std::make_pair(toTask, fromTask));
+    }
+  }
+  // Do not remove any dependencies if any task-pairs were missing their dependency.
+  if (invalid > 0 || taskPairs.empty())
+  {
+    smtkErrorMacro(
+      this->log(), "Attempt to remove " << invalid << " non-existent dependencies. Aborting.");
     return this->createResult(Outcome::FAILED);
   }
 
-  if (!toTask->removeDependency(fromTask))
+  // The operation should succeed; proceed to remove dependencies.
+  auto result = this->createResult(Outcome::SUCCEEDED);
+  auto modified = result->findComponent("modified");
+  for (const auto& entry : taskPairs)
   {
-    smtkErrorMacro(log(), "Dependency did not exist.");
-    return this->createResult(Outcome::FAILED);
+    if (!entry.first->removeDependency(entry.second))
+    {
+      smtkErrorMacro(
+        log(),
+        "Failed to remove dependency between \"" << entry.second->name()
+                                                 << "\" "
+                                                    "and \""
+                                                 << entry.first->name() << "\".");
+      result->findInt("outcome")->setValue(static_cast<int>(Outcome::FAILED));
+    }
+    else
+    {
+      modified->appendValue(entry.second);
+      modified->appendValue(entry.first);
+    }
   }
-
-  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  {
-    auto modified = result->findComponent("modified");
-
-    // Indicate that the tasks have been modified:
-    modified->appendValue(fromTask);
-    modified->appendValue(toTask);
-
-    // Hint to the application to select and center on deserialized tasks:
-    // smtk::operation::addSelectionHint(result, sharedTasks);
-    // smtk::operation::addBrowserScrollHint(result, sharedTasks);
-  }
-
   return result;
 }
 

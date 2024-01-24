@@ -71,6 +71,7 @@ public:
     const std::string& arcDestinationItemName = s_defaultArcDestinationItemName);
 
   bool registerOperation(
+    Operation::Index operationIndex,
     const std::set<std::string>& arcTypes,
     const std::string& arcDestinationItemName = s_defaultArcDestinationItemName);
 
@@ -109,37 +110,8 @@ bool ArcCreator::registerOperation(
   const std::set<std::string>& arcTypes,
   const std::string& arcDestinationItemName)
 {
-  auto manager = m_manager.lock();
-  if (manager == nullptr)
-  {
-    return false;
-  }
-
-  auto metadata =
-    manager->metadata().get<IndexTag>().find(std::type_index(typeid(OperationType)).hash_code());
-  if (metadata == manager->metadata().get<IndexTag>().end())
-  {
-    return false;
-  }
-
-  Operation::Specification spec = specification(metadata->typeName());
-  if (spec == nullptr)
-  {
-    return false;
-  }
-
-  Operation::Parameters parameters = extractParameters(spec, metadata->typeName());
-  if (
-    !parameters || !parameters->associations() ||
-    !parameters->findComponent(arcDestinationItemName) ||
-    parameters->associations()->numberOfRequiredValues() != 1 ||
-    parameters->findComponent(arcDestinationItemName)->numberOfRequiredValues() != 1)
-  {
-    return false;
-  }
-  return m_arcDestinationItemName.registerOperation(
-           metadata->typeName(), { arcDestinationItemName }) &&
-    Group::registerOperation(std::type_index(typeid(OperationType)).hash_code(), arcTypes);
+  Operation::Index index = std::type_index(typeid(OperationType)).hash_code();
+  return this->registerOperation(index, arcTypes, arcDestinationItemName);
 }
 
 } // namespace operation

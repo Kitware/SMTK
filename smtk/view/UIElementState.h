@@ -43,7 +43,7 @@ public:
   /// Return an (application-unique) token for the type of user-interface
   /// element this state object will serialize/deserialize.
   ///
-  /// We suggest the type-name of the UI element (e.g., "pqSMTKTaskPanel")
+  /// We suggest the type-name of the UI element (e.g., "pqSMTKDiagramPanel")
   /// that owns or inherits this UIElementState instance.
   virtual smtk::string::Token elementType() const = 0;
 

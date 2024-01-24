@@ -17,6 +17,9 @@ namespace smtk
 namespace markup
 {
 
+class Domain;
+class AssignedIds;
+
 /**\brief Markup nodes that have spatial extents.
   *
   * Spatial data has a map from some abstract space (a Domain)
@@ -46,6 +49,25 @@ public:
 
   /// Provide an initializer for resources to call after construction.
   void initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper) override;
+
+  /// Return the set of domains in which this node participates.
+  ///
+  /// For discrete data (i.e., UnstructuredData, SubSet, SideSet, NodeSet), this
+  /// usually includes an IdSpace names "cells" and another IdSpace named "points".
+  /// (NodeSets only provide "points"; SideSets also include "sides").
+  virtual std::unordered_set<Domain*> domains() const;
+
+  /// Given a domain or its name, return an object recording the data's extent in the domain.
+  ///
+  /// For now, this method returns AssignedIds. In the future (when ParameterSpace
+  /// domains are in use), it will return some yet-to-be-designed superclass of
+  /// AssignedIds).
+  ///
+  /// Note that children only need to override the variant that accepts \a domainName
+  /// as the default implementation of the other simply fetches the domain's name
+  /// and passes it to the name-variant.
+  virtual AssignedIds* domainExtent(Domain* domain) const;
+  virtual AssignedIds* domainExtent(smtk::string::Token domainName) const;
 
 protected:
 };

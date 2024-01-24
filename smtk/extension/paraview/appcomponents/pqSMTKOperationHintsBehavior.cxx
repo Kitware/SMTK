@@ -10,14 +10,14 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationHintsBehavior.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKDiagramPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKTaskPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
-#include "smtk/extension/qt/task/qtTaskEditor.h"
 
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/SelectionObserver.h"
@@ -260,12 +260,6 @@ int pqSMTKOperationHintsBehavior::processHints(
       if (task)
       {
         project->taskManager().active().switchTo(task.get());
-      }
-      if (
-        auto* taskPanel =
-          dynamic_cast<pqSMTKTaskPanel*>(pqApplicationCore::instance()->manager("smtk task panel")))
-      {
-        taskPanel->taskEditor()->displayProject(project);
       }
     });
 

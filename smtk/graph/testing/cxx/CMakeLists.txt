@@ -6,6 +6,7 @@ set(unit_tests
   TestCorrespondences.cxx
   TestNodalResource.cxx
   TestNodalResourceFilter.cxx
+  TestRuntimeJSON.cxx
   TestScalability.cxx
 )
 

@@ -477,7 +477,7 @@ bool Import::importVTKImage(const Resource::Ptr& resource, const std::string& fi
   auto createdItems = m_result->findComponent("created");
   auto stem = smtk::common::Paths::stem(filename);
   auto imageNode = resource->createNode<ImageData>();
-  auto imageImportURL = resource->createNode<URL>(filename);
+  auto imageImportURL = resource->createNode<URL>();
   auto imageURL = resource->createNode<URL>();
   ImageData::ShapeOptions options{ { m_result } };
   imageNode->setName(stem);
@@ -488,29 +488,16 @@ bool Import::importVTKImage(const Resource::Ptr& resource, const std::string& fi
   imageImportURL->setType("vtk/image");
   imageURL->setName(stem + " url");
   imageURL->setType("vtk/image");
+  // NB: We do not set locations on the "output" URL as that will be
+  //     set once the resource is written.
   imageURL->data().connect(imageNode);
   operation::MarkGeometry(resource).markModified(imageNode);
 
   createdItems->appendValue(imageNode);
   createdItems->appendValue(imageImportURL);
   createdItems->appendValue(imageURL);
-
-#if 0
-  auto model = resource->addModel(3, 3, filename);
-  auto modelComp = model.component();
-  modelComp->properties().get<std::string>()["datatype"] = "image";
-  modelComp->properties().get<std::string>()["import_filename"] = filename;
-  auto volume = resource->addVolume();
-  model.addCell(volume);
-  createdItems->appendValue(modelComp);
-  createdItems->appendValue(volume.component());
-
-  session->addStorage(volume.entity(), image);
-  if (image->GetPointData()->GetScalars())
-  {
-    volume.setName(image->GetPointData()->GetScalars()->GetName());
-  }
-#endif
+  // NB: setShapeData has added Field nodes to the result for any
+  //     new point/cell-data arrays.
 
   return true;
 }
@@ -527,14 +514,16 @@ bool Import::importVTKMesh(const Resource::Ptr& resource, const std::string& fil
   auto createdItems = m_result->findComponent("created");
   auto stem = smtk::common::Paths::stem(filename);
   auto meshNode = resource->createNode<UnstructuredData>(data);
-  auto meshImportURL = resource->createNode<URL>(filename);
-  auto meshURL = resource->createNode<URL>(filename);
+  auto meshImportURL = resource->createNode<URL>();
+  auto meshURL = resource->createNode<URL>();
   UnstructuredData::ShapeOptions options;
   options.trackedChanges = m_result;
   options.sharedPointIds = nullptr;
   meshURL->data().connect(meshNode);
   meshURL->setName(stem + " url");
   meshURL->setType(data->IsA("vtkUnstructuredGrid") ? "vtk/unstructured-grid" : "vtk/polydata");
+  // NB: We do not set locations on the "output" URL as that will be
+  //     set once the resource is written.
   meshImportURL->setName(stem + " import url");
   meshImportURL->setLocation(filename);
   meshImportURL->setType(smtk::common::Paths::extension(filename));
@@ -546,6 +535,9 @@ bool Import::importVTKMesh(const Resource::Ptr& resource, const std::string& fil
   createdItems->appendValue(meshNode);
   createdItems->appendValue(meshImportURL);
   createdItems->appendValue(meshURL);
+  // NB: setShapeData has added Field nodes to the result for any
+  //     new point/cell-data arrays.
+
   // If importing a volume mesh, add its boundary as another component.
   // TODO: Detect feature edges/vertices and add even more boundaries of boundaries?
   if (maxDimension(data) == 3)
@@ -564,60 +556,6 @@ bool Import::importVTKMesh(const Resource::Ptr& resource, const std::string& fil
     bdyNode->setName("∂" + stem);
     createdItems->appendValue(bdyNode);
   }
-#if 0
-      auto model = resource->addModel(3, 3, stem);
-      auto modelComp = model.component();
-      modelComp->properties().get<std::string>()["datatype"] = "poly";
-      modelComp->properties().get<std::string>()["filename"] = filename;
-      modelComp->properties().get<std::string>()["import_filename"] = filename;
-      createdItems->appendValue(modelComp);
-      int count = 0;
-      auto cell = smtk::markup::CreateCellForData(model,
-        data,
-        createdItems,
-        count,
-        marker,
-        pointIdOffset,
-        cellIdOffset,
-        maxPointId,
-        maxCellId);
-      // Volume cells should have surface faces:
-      if (cell.isVolume())
-      {
-        vtkNew<vtkGeometryFilter> boundaryFilter;
-        // share points (and ids) with volume.
-        boundaryFilter->MergingOff();
-        boundaryFilter->SetInputDataObject(0, data);
-        boundaryFilter->Update();
-        // faces have global ids passed through from volume cells. Move to pedigree ids,
-        // then new global ids are generated and they are offset from the volume cells.
-        auto* geom = vtkDataSet::SafeDownCast(boundaryFilter->GetOutputDataObject(0));
-        auto* pedigreeIds = geom->GetCellData()->GetGlobalIds();
-        // take ownership (incr reference count) so it's not deleted when we clear global ids.
-        pedigreeIds->Register(nullptr);
-        geom->GetCellData()->SetGlobalIds(nullptr);
-        geom->GetCellData()->SetPedigreeIds(pedigreeIds);
-        pedigreeIds->FastDelete();
-        cellIdOffset = maxCellId + 1;
-
-        auto bdy = smtk::markup::CreateCellForData(cell,
-          geom,
-          createdItems,
-          count,
-          marker,
-          pointIdOffset,
-          cellIdOffset,
-          maxPointId,
-          maxCellId);
-      }
-      // update the ID offsets per-file
-      pointIdOffset = maxPointId + 1;
-      cellIdOffset = maxCellId + 1;
-
-  // update the resource ID offsets.
-  resource->properties().get<long>()["global point id offset"] = pointIdOffset;
-  resource->properties().get<long>()["global cell id offset"] = cellIdOffset;
-#endif
 
   return true;
 }
@@ -659,7 +597,7 @@ bool Import::importOWL(const Resource::Ptr& resource, const std::string& filenam
   // Create the parent of all ontology identifiers.
   auto createdItems = m_result->findComponent("created");
   auto ontologyNode = resource->createNode<Ontology>();
-  auto ontologyImportURL = resource->createNode<URL>(filename);
+  auto ontologyImportURL = resource->createNode<URL>();
   auto stem = smtk::common::Paths::stem(filename);
   ontologyNode->setUrl(filename);
   ontologyNode->importedFrom().connect(ontologyImportURL);
@@ -668,6 +606,10 @@ bool Import::importOWL(const Resource::Ptr& resource, const std::string& filenam
   ontologyImportURL->setType("ontology/owl");
   createdItems->appendValue(ontologyNode);
   createdItems->appendValue(ontologyImportURL);
+  // NB: We do not provide an "output" URL as we do not save
+  //     the entire imported ontology with each document.
+  //     They can get quite large and are properly part of
+  //     the application, not its documents.
 
   try
   {

@@ -11,7 +11,11 @@
 #include "smtk/markup/operators/Read.h"
 
 #include "smtk/markup/Resource.h"
+#include "smtk/markup/json/jsonResource.h"
 #include "smtk/markup/operators/Read_xml.h"
+
+#include "smtk/view/Manager.h"
+#include "smtk/view/UIElementState.h"
 
 #include "smtk/operation/Hints.h"
 
@@ -21,8 +25,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
-
-#include "smtk/markup/json/jsonResource.h"
 
 #include "smtk/resource/json/Helper.h"
 
@@ -81,6 +83,31 @@ Read::Result Read::operateInternal()
   helper.setManagers(this->managers());
 
   smtk::markup::from_json(jj, resource);
+
+  // Handle UI-element state data saved in the file (if any).
+  // Process the ui_state information if it exists
+  auto it = jj.find("ui_state");
+  if (it != jj.end())
+  {
+    auto viewManager = this->managers()->get<smtk::view::Manager::Ptr>();
+    if (viewManager)
+    {
+      // for each UI element type specified, look to see if one is registered in the
+      // view manager and, if so, pass it the configuration specified.
+      auto& elementStateMap = viewManager->elementStateMap();
+      for (auto& element : it->items())
+      {
+        auto it = elementStateMap.find(element.key());
+        if (it != elementStateMap.end())
+        {
+          if (!it->second->configure(element.value()))
+          {
+            smtkErrorMacro(log(), "ElementState " << element.key() << " failed to be configured.");
+          }
+        }
+      }
+    }
+  }
 
   // std::string fileDirectory = smtk::common::Paths::directory(rsrc->location()) + "/";
 

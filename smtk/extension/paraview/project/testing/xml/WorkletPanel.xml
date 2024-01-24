@@ -3,9 +3,9 @@
   <!-- Reset the server. -->
   <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
 
-  <!-- Hide the "Tasks" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
+  <!-- Hide the "Diagram" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
   <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_View" />
-  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Tasks" />
+  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Diagram" />
 
   <!-- Lock the window size. -->
   <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
@@ -23,24 +23,32 @@
   <pqevent object="pqClientMainWindow/FileOpenDialog" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/projects/SimpleWorkletExample/simpleWorklet.smtk" />
   <pqevent object="pqClientMainWindow/propertiesDock/propertiesPanel/Accept" command="activate" arguments="" />
 
+  <!-- Rename the Stage 1 Attributes task so there will be no conflict with one of the same name created for Worklet 1. -->
+  <pqevent object="nodeContainer_3bd2e1bf-030b-4218-998e-dc5bdc856a4a/m_title" command="contextMenu" arguments="" />
+  <pqevent object="Stage 1 Attributes_contextMenu" command="activate" arguments="RenameTaskAction" />
+  <pqevent object="1QInputDialog0/1QLineEdit0" command="set_string" arguments="Stage 0 Attributes" />
+  <pqevent object="1QInputDialog0" command="key" arguments="16777220" />
+
   <!-- Search for Worklet 1. -->
-  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Search" command="set_string" arguments="Worklet 1" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="set_string" arguments="Worklet 1" />
 
   <!-- Validate that the first worklet listed matches "Worklet 1" -->
-  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" command="setCurrent" arguments="0.0" />
-  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" command="setSelection" arguments="0.0,0.2" />
-  <pqcheck object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Worklets" property="modelItemData" arguments="0.0,Worklet 1" />
+  <pqcheck object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Worklets" property="modelItemData" arguments="0.0,Worklet 1" />
 
   <!-- Emplace the worklet. -->
-  <pqevent object="pqClientMainWindow/pqSMTKWorkletDock/1pqSMTKWorkletToolboxPanel0/WorkletPalette/Search" command="key" arguments="16777220" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="key" arguments="16777220" />
 
-  <!-- Validate that there are now 2 "Stage 1 Operation" tasks (the second created by EmplaceWorklet). -->
-  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/Search" command="set_string" arguments="Stage 1 Operation" />
+  <!-- Validate that there are now 2 "Stage _ Attributes" tasks (the second created by EmplaceWorklet).
+       Note that validation is tricky: if the EmplaceWorklet operation does not create new tasks, then
+       the model-index passed to setCurrent below will not exist. If you see error messages such as
+       "Abstract Item view must have changed," it is likely the operation is failing to create tasks.
+    -->
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/Search" command="set_string" arguments="Attributes" />
   <pqcheck object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" property="modelRowCount" arguments="1" />
   <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="expand" arguments="0.0" />
   <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setCurrent" arguments="0.0.1.0" />
   <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="0.0.1.0,0.0.1.0" />
-  <pqcheck object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" property="modelItemData" arguments="0.0.1.0,Stage 1 Operation" />
+  <pqcheck object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" property="modelItemData" arguments="0.0.1.0,Stage 1 Attributes" />
 
   <!-- Reset the camera. -->
   <pqevent object="pqClientMainWindow/cameraToolbar/actionResetCamera" command="activate" arguments="" />

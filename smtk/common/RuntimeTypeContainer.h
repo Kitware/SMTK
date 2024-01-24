@@ -316,14 +316,14 @@ public:
   }
 
   /// Report the base classes used to insert runtime objects.
-  std::unordered_set<smtk::string::Token> runtimeBaseTypes();
+  std::unordered_set<smtk::string::Token> runtimeBaseTypes() const;
 
   /// Report the declared type-names of objects inserted using the given \a base type
-  std::unordered_set<smtk::string::Token> runtimeTypeNames(smtk::string::Token baseType);
+  std::unordered_set<smtk::string::Token> runtimeTypeNames(smtk::string::Token baseType) const;
 
   /// Report the declared type-names of objects inserted using the given \a base type
   template<typename RuntimeType>
-  std::unordered_set<smtk::string::Token> runtimeTypeNames()
+  std::unordered_set<smtk::string::Token> runtimeTypeNames() const
   {
     return this->runtimeTypeNames(smtk::common::typeName<RuntimeType>());
   }

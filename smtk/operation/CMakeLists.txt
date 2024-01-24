@@ -8,10 +8,12 @@ set(operationSrcs
   Metadata.cxx
   Operation.cxx
   Registrar.cxx
+  ResultOps.cxx
   SpecificationOps.cxx
   XMLOperation.cxx
 
   groups/ArcCreator.cxx
+  groups/ArcDeleter.cxx
   groups/CreatorGroup.cxx
   groups/DeleterGroup.cxx
   groups/GroupingGroup.cxx
@@ -42,10 +44,12 @@ set(operationHeaders
   Observer.h
   Operation.h
   Registrar.h
+  ResultOps.h
   SpecificationOps.h
   XMLOperation.h
 
   groups/ArcCreator.h
+  groups/ArcDeleter.h
   groups/CreatorGroup.h
   groups/DeleterGroup.h
   groups/GroupingGroup.h

@@ -13,6 +13,9 @@
 #include "smtk/markup/Resource.h"
 #include "smtk/markup/operators/Write_xml.h"
 
+#include "smtk/view/Manager.h"
+#include "smtk/view/UIElementState.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -120,7 +123,7 @@ Write::Result Write::operateInternal()
     }
     else if (smtk::common::Paths::isRelative(dataFilename.data()))
     {
-      std::string fullPath = fileDirectory + dataFilename.data();
+      std::string fullPath = smtkDirectory + dataFilename.data();
       dataFilename = fullPath;
     }
     ok = this->writeData(dataNode, dataFilename.data(), url->type());
@@ -144,6 +147,24 @@ Write::Result Write::operateInternal()
 
   // Serialize resource into a set of JSON records:
   nlohmann::json j = rsrc;
+
+  // Save the JSON configurations of all the UI Elements in the
+  // View Manager.
+  auto managers = this->managers();
+  if (managers)
+  {
+    auto viewManager = this->managers()->get<smtk::view::Manager::Ptr>();
+    if (viewManager)
+    {
+      nlohmann::json js;
+      auto& elementStateMap = viewManager->elementStateMap();
+      for (auto& element : elementStateMap)
+      {
+        js[element.first.data()] = element.second->configuration();
+      }
+      j["ui_state"] = js;
+    }
+  }
 
   if (j.is_null())
   {

@@ -121,7 +121,7 @@ public:
   const std::string& location() const { return m_location; }
 
   bool setId(const smtk::common::UUID& myID) override;
-  bool setLocation(const std::string& location);
+  virtual bool setLocation(const std::string& location);
 
   /// Return the user-assigned name of the resource.
   ///
@@ -129,7 +129,7 @@ public:
   /// You may use isNameSet() to determine whether the returned name
   /// is generated or assigned.
   std::string name() const override;
-  bool setName(const std::string& name);
+  virtual bool setName(const std::string& name);
   bool isNameSet() { return !m_name.empty(); }
 
   /// Indicate whether the resource is in sync with its location.

@@ -303,6 +303,13 @@ immutable – meaning that no arcs may be added or removed by users.
 that only allows arcs to be added or removed in patterns consistent with
 their modeling intent.)
 
+If you do not provide an ``outVisitor`` and (for bi-directionally indexed
+arcs) an ``inVisitor`` method, an explicit arc will be created.
+If the ``connect`` method is present for an *explicit* arc, then it
+will be called by the explicit arc's ``connect()`` method as a run-time
+check that an arc is allowed.
+No run-time checks are allowed for disconnection at this time.
+
 Arc-trait properties
 --------------------
 

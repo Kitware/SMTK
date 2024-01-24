@@ -36,6 +36,7 @@
 #include "smtk/task/operators/RenameTask.h"
 
 #include "smtk/operation/groups/ArcCreator.h"
+#include "smtk/operation/groups/ArcDeleter.h"
 
 #include "smtk/plugin/Manager.h"
 
@@ -57,6 +58,35 @@ using AdaptorList = std::tuple<adaptor::ConfigureOperation, adaptor::ResourceAnd
 using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceAndRole>;
 
 using OperationList = std::tuple<AddDependency, EmplaceWorklet, RemoveDependency, RenameTask>;
+
+void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
+{
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  // clang-format off
+  // Tasks
+  typeLabels[smtk::common::typeName<smtk::task::Task>()] = "task";
+  typeLabels[smtk::common::typeName<smtk::task::FillOutAttributes>()] = "fill out attributes task";
+  typeLabels[smtk::common::typeName<smtk::task::GatherResources>()] = "gather resources task";
+  typeLabels[smtk::common::typeName<smtk::task::Group>()] = "group task";
+  typeLabels[smtk::common::typeName<smtk::task::SubmitOperation>()] = "operation task";
+
+  // Adaptors
+  typeLabels[smtk::common::typeName<smtk::task::adaptor::ConfigureOperation>()] = "operation adaptor";
+  typeLabels[smtk::common::typeName<smtk::task::adaptor::ResourceAndRole>()] = "resource and role adaptor";
+  // clang-format on
+}
+
+void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
+{
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  typeLabels.erase(smtk::common::typeName<smtk::task::Task>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::FillOutAttributes>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::GatherResources>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::Group>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::SubmitOperation>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::adaptor::ConfigureOperation>());
+  typeLabels.erase(smtk::common::typeName<smtk::task::adaptor::ResourceAndRole>());
+}
 
 void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
 {
@@ -86,6 +116,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::ArcCreator arcCreator(operationManager);
   arcCreator.registerOperation<smtk::task::AddDependency>({ "task dependency" });
+  smtk::operation::ArcDeleter arcDeleter(operationManager);
+  arcDeleter.registerOperation<smtk::task::RemoveDependency>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
@@ -94,6 +126,8 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   smtk::operation::ArcCreator arcCreator(operationManager);
   arcCreator.unregisterOperation<smtk::task::AddDependency>();
+  smtk::operation::ArcDeleter arcDeleter(operationManager);
+  arcDeleter.unregisterOperation<smtk::task::RemoveDependency>();
 }
 
 } // namespace task

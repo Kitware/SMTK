@@ -53,18 +53,13 @@ public:
   smtkTypeMacro(smtk::markup::Resource);
   smtkCreateMacro(smtk::resource::PersistentObject);
   smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, GraphResource>);
-  //=========================================================================
-  //  Copyright (c) Kitware, Inc.
-  //  All rights reserved.
-  //  See LICENSE.txt for details.
-  //
-  //  This software is distributed WITHOUT ANY WARRANTY; without even
-  //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  //  PURPOSE.  See the above copyright notice for more information.
-  //=========================================================================
 
   Resource(const Resource&) = delete;
   ~Resource() override = default;
+
+  /// Override methods that revise the location of the resource so
+  /// we can reset resource-relative URLs.
+  bool setLocation(const std::string& location) override;
 
   // Wrap this method (instead of create()) to avoid name conflict in MSVC.
   template<typename componentT, typename... Args>

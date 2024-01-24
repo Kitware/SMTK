@@ -37,7 +37,7 @@ Component::~Component() = default;
 void Component::initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper)
 {
   (void)helper;
-  // std::cout << "init comp " << this << " with " << data.dump(2) << "\n";
+  std::cout << "init comp " << this << " with " << data.dump(2) << "\n";
   auto it = data.find("name");
   if (it != data.end())
   {

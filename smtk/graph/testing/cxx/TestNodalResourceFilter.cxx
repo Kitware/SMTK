@@ -91,18 +91,22 @@ int TestNodalResourceFilter(int, char*[])
 
   std::array<smtk::resource::Component*, 2> components = { nodeA.get(), nodeB.get() };
 
-  std::array<decltype(queryOp1A)*, 12> queryOpsA = { &queryOp1A,  &queryOp2A,  &queryOp3A,
-                                                     &queryOp4A,  &queryOp5A,  &queryOp6A,
-                                                     &queryOp7A,  &queryOp8A,  &queryOp9A,
-                                                     &queryOp10A, &queryOp11A, &queryOp12A };
-  std::array<decltype(queryOp1A)*, 12> queryOpsB = { &queryOp1B,  &queryOp2B,  &queryOp3B,
-                                                     &queryOp4B,  &queryOp5B,  &queryOp6B,
-                                                     &queryOp7B,  &queryOp8B,  &queryOp9B,
-                                                     &queryOp10B, &queryOp11B, &queryOp12B };
+  // clang-format off
+  constexpr int numQueries = 12;
+  std::array<decltype(queryOp1A)*, numQueries> queryOpsA = {
+    &queryOp1A, &queryOp2A, &queryOp3A, &queryOp4A,
+    &queryOp5A, &queryOp6A, &queryOp7A, &queryOp8A,
+    &queryOp9A, &queryOp10A, &queryOp11A, &queryOp12A };
+
+  std::array<decltype(queryOp1A)*, numQueries> queryOpsB = {
+    &queryOp1B, &queryOp2B, &queryOp3B, &queryOp4B,
+    &queryOp5B, &queryOp6B, &queryOp7B, &queryOp8B,
+    &queryOp9B, &queryOp10B, &queryOp11B, &queryOp12B };
+  // clang-format on
 
   std::array<decltype(queryOpsA)*, 2> queryOps = { &queryOpsA, &queryOpsB };
 
-  for (int i = 0; i < 12; ++i)
+  for (int i = 0; i < numQueries; ++i)
   {
     for (int j = 0; j < 2; ++j)
     {

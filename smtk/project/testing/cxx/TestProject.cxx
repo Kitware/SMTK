@@ -24,6 +24,8 @@
 // creates a project instance, adds a resource to the project, and checks that the
 // resource can be accessed from the project.
 
+using namespace smtk::string::literals;
+
 namespace
 {
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>
@@ -115,6 +117,24 @@ int TestProject(int /*unused*/, char** const /*unused*/)
     // deletion)
     resource = project->resources().get(myResource->id());
     smtkTest(!!resource, "could not access resource from project interface");
+
+    // Test project type-hierarchy
+    auto hierarchy = project->classHierarchy();
+    project->setName("TestExample");
+    std::cout << project->name() << " (" << project->typeToken().data() << ") inheritance:\n";
+    for (const auto& entry : hierarchy)
+    {
+      std::cout << "  " << entry.data() << "\n";
+    }
+    std::cout << "Matches project type? "
+              << (project->matchesType("smtk::project::Project"_token) ? "Y" : "N") << "\n";
+    std::vector<smtk::string::Token> expectedHierarchy{
+      { "MyProject"_token,
+        "smtk::project::Project"_token,
+        "smtk::resource::Resource"_token,
+        "smtk::resource::PersistentObject"_token }
+    };
+    smtkTest(hierarchy == expectedHierarchy, "Improper project class hierarchy.");
 
     // Verify the find by type method
     auto resourceSet = project->resources().find<MyResource>();

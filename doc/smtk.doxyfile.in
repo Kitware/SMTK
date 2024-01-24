@@ -711,6 +711,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/widgets/plugin/resources" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt/diagram" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt/icons" \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay" \
@@ -816,6 +817,7 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/widgets/plugin/resources" \
   "@smtk_BINARY_DIR@/smtk/extension/qt" \
+  "@smtk_BINARY_DIR@/smtk/extension/qt/diagram" \
   "@smtk_BINARY_DIR@/smtk/extension/qt/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/qt/icons" \
   "@smtk_BINARY_DIR@/smtk/extension/delaunay" \

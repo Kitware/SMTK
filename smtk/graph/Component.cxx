@@ -106,5 +106,79 @@ bool Component::disconnect(bool onlyExplicit)
   return resource->disconnect(this, onlyExplicit);
 }
 
+RuntimeArcEndpoint<NonConstArc> Component::outgoing(smtk::string::Token arcType)
+{
+  if (auto* arcData = this->arcsOfType(arcType))
+  {
+    return arcData->outgoingRuntime(this);
+  }
+  return RuntimeArcEndpoint<NonConstArc>();
+}
+
+RuntimeArcEndpoint<ConstArc> Component::outgoing(smtk::string::Token arcType) const
+{
+  if (const auto* arcData = this->arcsOfType(arcType))
+  {
+    return arcData->outgoingRuntime(this);
+  }
+  return RuntimeArcEndpoint<ConstArc>();
+}
+
+RuntimeArcEndpoint<NonConstArc> Component::incoming(smtk::string::Token arcType)
+{
+  if (auto* arcData = this->arcsOfType(arcType))
+  {
+    return arcData->incomingRuntime(this);
+  }
+  return RuntimeArcEndpoint<NonConstArc>();
+}
+
+RuntimeArcEndpoint<ConstArc> Component::incoming(smtk::string::Token arcType) const
+{
+  if (const auto* arcData = this->arcsOfType(arcType))
+  {
+    return arcData->incomingRuntime(this);
+  }
+  return RuntimeArcEndpoint<ConstArc>();
+}
+
+const ArcImplementationBase* Component::arcsOfType(smtk::string::Token arcType) const
+{
+  const ArcImplementationBase* arcsOfType = nullptr;
+  auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+  if (resource)
+  {
+    auto& arcs = resource->arcs();
+    arcsOfType = arcs.at<ArcImplementationBase>(arcType);
+    if (!arcsOfType)
+    {
+      // If we were passed the type-name of a compile-time traits type,
+      // try the storage type of its arcs:
+      arcsOfType =
+        arcs.at<ArcImplementationBase>("smtk::graph::ArcImplementation<" + arcType.data() + ">");
+    }
+  }
+  return arcsOfType;
+}
+
+ArcImplementationBase* Component::arcsOfType(smtk::string::Token arcType)
+{
+  ArcImplementationBase* arcsOfType = nullptr;
+  auto* resource = static_cast<smtk::graph::ResourceBase*>(this->parentResource());
+  if (resource)
+  {
+    auto& arcs = resource->arcs();
+    arcsOfType = arcs.at<ArcImplementationBase>(arcType);
+    if (!arcsOfType)
+    {
+      // If we were passed the type-name of a compile-time traits type,
+      // try the storage type of its arcs:
+      arcsOfType =
+        arcs.at<ArcImplementationBase>("smtk::graph::ArcImplementation<" + arcType.data() + ">");
+    }
+  }
+  return arcsOfType;
+}
+
 } // namespace graph
 } // namespace smtk

@@ -93,12 +93,64 @@ struct ArcDeserializer
     }
   };
 
+  // Compile-time deserialization
   template<typename ResourceType, typename Impl>
   void operator()(Impl* arcs, ResourceType* resource, const json& jj) const
   {
     // Dispatch to different handlers based on mutability of the arc type.
     TrueDeserializer<ResourceType, Impl, ArcProperties<typename Impl::Traits>::isMutable::value>()(
       arcs, resource, jj);
+  }
+
+  // Run-time deserialization.
+  template<typename ResourceType>
+  void operator()(
+    smtk::string::Token arcTypeName,
+    ArcImplementationBase& arcs,
+    ResourceType* resource,
+    const json& jj) const
+  {
+    auto it = jj.find(arcTypeName.data());
+    if (it == jj.end())
+    {
+      return;
+    }
+
+    // Iterate over all the objects
+    for (const auto& entry : it->items())
+    {
+      smtk::common::UUID fromId(entry.key());
+      const auto* fromNode =
+        dynamic_cast<const smtk::graph::Component*>(resource->component(fromId));
+      if (!fromNode)
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Asked to create an arc from non-existent node " << fromId << ".");
+        continue;
+      }
+      for (const auto& jTo : entry.value().items())
+      {
+        auto toId = jTo.value().get<smtk::common::UUID>();
+        const auto* toNode = dynamic_cast<const smtk::graph::Component*>(resource->component(toId));
+        if (!toNode)
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Asked to create an arc to non-existent node " << toId << ".");
+          continue;
+        }
+        // TODO: For ordered arcs, we can easily handle the "beforeTo"
+        //       argument, but "beforeFrom" is impossible to determine
+        //       from what is currently stored.
+        if (!arcs.outgoingRuntime(fromNode).connect(toNode))
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Could not connect nodes " << fromId << " to " << toId << ".");
+        }
+      }
+    }
   }
 
   template<typename ResourceType>

@@ -94,6 +94,16 @@ StringUtil::split(const std::string& s, const std::string& sep, bool omitEmpty, 
   return result;
 }
 
+bool StringUtil::endsWith(const std::string& ss, const std::string& ending)
+{
+  if (ss.size() < ending.size())
+  {
+    return false;
+  }
+  auto nn = ss.rfind(ending);
+  return (nn + ending.size() == ss.size());
+}
+
 std::size_t StringUtil::replaceAll(
   std::string& source,
   const std::string& search,
@@ -107,6 +117,47 @@ std::size_t StringUtil::replaceAll(
     source.replace(pos, search.length(), replacement.data(), replacement.length());
   }
   return count;
+}
+
+std::size_t StringUtil::replaceOne(
+  std::string& source,
+  int whichOne,
+  const std::string& search,
+  const std::string& replacement)
+{
+  int count = 0;
+  if (whichOne == 0)
+  {
+    return std::string::npos;
+  }
+  else if (whichOne < 0)
+  {
+    whichOne = -whichOne;
+    for (std::string::size_type pos = std::string::npos;
+         std::string::npos != (pos = source.rfind(search.data(), pos, search.length()));
+         pos -= search.length(), ++count)
+    {
+      if (count == whichOne - 1)
+      {
+        source.replace(pos, search.length(), replacement.data(), replacement.length());
+        return pos;
+      }
+    }
+  }
+  else // whichOne > 0
+  {
+    for (std::string::size_type pos = 0;
+         std::string::npos != (pos = source.find(search.data(), pos, search.length()));
+         pos += search.length(), ++count)
+    {
+      if (count == whichOne - 1)
+      {
+        source.replace(pos, search.length(), replacement.data(), replacement.length());
+        return pos;
+      }
+    }
+  }
+  return std::string::npos;
 }
 
 bool StringUtil::toBoolean(const std::string& s, bool& value)

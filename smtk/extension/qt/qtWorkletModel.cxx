@@ -356,25 +356,28 @@ void qtWorkletModel::workletUpdate(
       }
     }
   }
-  for (const auto& res : *expungedResources)
+  if (expungedResources)
   {
-    // Ignore all non-project resources being removed
-    if (std::dynamic_pointer_cast<smtk::project::Project>(res) == nullptr)
+    for (const auto& res : *expungedResources)
     {
-      continue;
-    }
-    // Look at all of the worklets and remove those that are owned by the project being removed
-    for (row = 0; row < static_cast<int>(m_worklets.size());)
-    {
-      if (m_worklets[row].m_worklet->resource() == res)
+      // Ignore all non-project resources being removed
+      if (std::dynamic_pointer_cast<smtk::project::Project>(res) == nullptr)
       {
-        this->beginRemoveRows(QModelIndex(), row, row);
-        m_worklets.erase(m_worklets.begin() + row);
-        this->endRemoveRows();
+        continue;
       }
-      else
+      // Look at all of the worklets and remove those that are owned by the project being removed
+      for (row = 0; row < static_cast<int>(m_worklets.size());)
       {
-        ++row;
+        if (m_worklets[row].m_worklet->resource() == res)
+        {
+          this->beginRemoveRows(QModelIndex(), row, row);
+          m_worklets.erase(m_worklets.begin() + row);
+          this->endRemoveRows();
+        }
+        else
+        {
+          ++row;
+        }
       }
     }
   }
