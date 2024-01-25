@@ -468,9 +468,12 @@ void pqSMTKBehavior::importPythonOperationsForModule(
 #ifdef SMTK_PYTHON_ENABLED
   QTimer::singleShot(0, [moduleName, operationName]() {
     auto* behavior = pqSMTKBehavior::instance();
-    auto* wrapper = behavior->builtinOrActiveWrapper();
-    auto opMgr = wrapper->smtkOperationManager();
-    smtk::operation::ImportPythonOperation::importOperation(*opMgr, moduleName, operationName);
+    auto* wrapper = behavior ? behavior->builtinOrActiveWrapper() : nullptr;
+    auto opMgr = wrapper ? wrapper->smtkOperationManager() : nullptr;
+    if (opMgr)
+    {
+      smtk::operation::ImportPythonOperation::importOperation(*opMgr, moduleName, operationName);
+    }
   });
 #else
   static bool once = false;
