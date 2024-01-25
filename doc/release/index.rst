@@ -5,6 +5,7 @@ Release notes
 .. toctree::
    :maxdepth: 2
 
+   smtk-24.01.rst
    smtk-23.04.rst
    smtk-23.01.rst
    smtk-22.11.rst

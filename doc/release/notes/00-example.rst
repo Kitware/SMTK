@@ -1,3 +1,6 @@
+Release Note Section (Optional) - indicates where in the compiled release notes this belongs in
+===============================================================================================
+
 Example merge request note
 --------------------------
 
