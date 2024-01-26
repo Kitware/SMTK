@@ -28,7 +28,7 @@
     <AttDef Type="result(close model)" BaseType="result">
       <!-- The close models are stored in the base result's "expunged" item. -->
       <ItemDefinitions>
-        <Resource Name="resource modified" IsEnabledByDefault="true"></Resource>
+        <Resource Name="resource modified" IsEnabledByDefault="true" Extensible="true" NumberOfRequiredValues="0" />
       </ItemDefinitions>
     </AttDef>
   </Definitions>
