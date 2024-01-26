@@ -24,7 +24,7 @@
     <AttDef Type="result(create)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource" HoldReference="true">
+        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
           <Accepts>
             <Resource Name="smtk::project::Project"/>
           </Accepts>

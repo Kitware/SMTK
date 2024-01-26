@@ -144,6 +144,7 @@ Read::Result Read::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     auto createdProject = result->findResource("resource");
+    createdProject->setNumberOfValues(1);
     createdProject->setValue(project);
     // Indicate what worklets were read.
     auto createdComponents = result->findComponent("created");

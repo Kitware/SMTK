@@ -155,6 +155,7 @@ Read::Result Read::operateInternal()
   // Populate the result object with the new attribute resource.
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setNumberOfValues(1);
     created->setValue(resource);
   }
 

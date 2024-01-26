@@ -33,7 +33,7 @@
 
         <Resource Name="resource" HoldReference="true">
           <Accepts>
-            <Resource Name="smtk::attribute::Resource"/>
+            <Resource Name="smtk::attribute::Resource" Extensible="true" NumberOfRequiredValues="0"/>
           </Accepts>
         </Resource>
 

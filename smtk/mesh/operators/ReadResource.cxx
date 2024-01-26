@@ -108,6 +108,7 @@ ReadResource::Result ReadResource::operateInternal()
 
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setNumberOfValues(1);
     created->setValue(resource);
   }
 

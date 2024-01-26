@@ -85,6 +85,7 @@ Create::Result Create::operateInternal()
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setNumberOfValues(1);
     created->setValue(project);
   }
 

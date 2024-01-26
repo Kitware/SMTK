@@ -27,7 +27,7 @@
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource" HoldReference="true">
+        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
           <Accepts>
             <Resource Name="smtk::mesh::Resource"/>
           </Accepts>
