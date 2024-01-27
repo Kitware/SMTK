@@ -89,6 +89,12 @@ smtk::view::DescriptivePhrases SubphraseGenerator::subphrases(
           });
       }
     }
+    else
+    {
+      // We have a component but it is not a markup component;
+      // ask our superclass for subphrases.
+      result = this->Superclass::subphrases(parent);
+    }
   }
   else if (auto* resourceContent = dynamic_cast<ResourcePhraseContent*>(content))
   {
@@ -202,6 +208,10 @@ bool SubphraseGenerator::hasChildren(const smtk::view::DescriptivePhrase& parent
           return smtk::common::Visit::Continue;
         });
       }
+    }
+    else
+    {
+      result = this->Superclass::hasChildren(parent);
     }
   }
   else if (auto* resourceContent = dynamic_cast<ResourcePhraseContent*>(content))

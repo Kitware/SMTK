@@ -182,6 +182,8 @@ fedora33-tidy:build:
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
+    # Give more time until we can implement clang-tidy-cache:
+    timeout: 1h 30m
 
 fedora33-coverage:build:
     extends:
