@@ -618,6 +618,8 @@ public:
 
   // Should task-nodes be enabled?
   bool m_nodesEnabled{ true };
+  // Should task-nodes be selectable?
+  bool m_nodeSelectionEnabled{ true };
   // Should arc selection be enabled (and node selection be disabled).
   bool m_arcSelectionEnabled{ false };
 
@@ -726,7 +728,7 @@ bool qtDiagram::updateSMTKSelection()
   //       changes seems tedious…
   std::set<smtk::resource::PersistentObject::Ptr> selected;
   std::size_t nn = 0;
-  if (m_p->m_nodesEnabled)
+  if (m_p->m_nodesEnabled && m_p->m_nodeSelectionEnabled)
   {
     for (const auto* item : m_p->m_scene->selectedItems())
     {
@@ -869,6 +871,10 @@ bool qtDiagram::addNode(qtBaseNode* node, bool enforceInteractionMode)
   if (enforceInteractionMode)
   {
     node->setEnabled(m_p->m_nodesEnabled);
+    if (node->flags() & QGraphicsItem::ItemIsSelectable && !m_p->m_nodeSelectionEnabled)
+    {
+      node->setFlags(node->flags() & ~QGraphicsItem::ItemIsSelectable);
+    }
   }
   m_p->m_nodeIndex[node->nodeId()] = node;
 
@@ -1061,6 +1067,32 @@ void qtDiagram::enableNodes(bool shouldEnable)
   // TODO: Notify generators?
 }
 
+void qtDiagram::enableNodeSelection(bool shouldEnable)
+{
+  if (m_p->m_nodeSelectionEnabled == shouldEnable)
+  {
+    // Nothing to do.
+    return;
+  }
+
+  if (shouldEnable)
+  {
+    for (const auto& entry : m_p->m_nodeIndex)
+    {
+      entry.second->setFlags(entry.second->flags() | QGraphicsItem::ItemIsSelectable);
+    }
+  }
+  else
+  {
+    for (const auto& entry : m_p->m_nodeIndex)
+    {
+      entry.second->setFlags(entry.second->flags() & ~QGraphicsItem::ItemIsSelectable);
+    }
+  }
+  m_p->m_nodeSelectionEnabled = shouldEnable;
+  // TODO: Notify generators?
+}
+
 void qtDiagram::enableArcSelection(bool shouldEnable)
 {
   if (m_p->m_arcSelectionEnabled == shouldEnable)
@@ -1162,6 +1194,11 @@ void qtDiagram::includeInView(const QRectF& inclusion, int priority)
 bool qtDiagram::nodesEnabled() const
 {
   return m_p->m_nodesEnabled;
+}
+
+bool qtDiagram::nodeSelectionEnabled() const
+{
+  return m_p->m_nodeSelectionEnabled;
 }
 
 bool qtDiagram::arcSelectionEnabled() const
