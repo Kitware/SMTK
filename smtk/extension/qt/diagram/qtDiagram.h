@@ -212,6 +212,8 @@ public:
 
   /// True when nodes are enabled (i.e., users may interact with them) and false otherwise.
   bool nodesEnabled() const;
+  /// True when nodes are selectable (i.e., users may select them) and false otherwise.
+  bool nodeSelectionEnabled() const;
   /// True when arcs are selectable and false otherwise.
   bool arcSelectionEnabled() const;
 
@@ -228,6 +230,8 @@ Q_SIGNALS:
 public Q_SLOTS:
   /// Enable (or disable if \a shouldEnable is false) node interactivity.
   void enableNodes(bool shouldEnable);
+  /// Enable (or disable if \a shouldEnable is false) node selectability.
+  void enableNodeSelection(bool shouldEnable);
   /// Enable (or disable if \a shouldEnable is false) arc selection.
   void enableArcSelection(bool shouldEnable);
   /// Request a change in the user-interaction mode.

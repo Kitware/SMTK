@@ -290,7 +290,7 @@ void qtDisconnectMode::removeSelectedArcs()
 void qtDisconnectMode::enterMode()
 {
   // Disable nodes so arc-preview works.
-  m_diagram->enableNodes(false);
+  m_diagram->enableNodeSelection(false);
 
   // Enable selection of arcs.
   m_diagram->enableArcSelection(true);
@@ -309,7 +309,7 @@ void qtDisconnectMode::exitMode()
   m_diagram->diagramWidget()->removeEventFilter(this);
 
   // Enable tasks. (Next mode can re-disable them as needed.)
-  m_diagram->enableNodes(true);
+  m_diagram->enableNodeSelection(true);
   // Disable arc selection. (Next mode can re-enable as needed.)
   m_diagram->enableArcSelection(false);
 

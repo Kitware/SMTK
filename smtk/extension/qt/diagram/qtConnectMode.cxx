@@ -191,7 +191,7 @@ void qtConnectMode::enterMode()
   m_connectTypeAction->setVisible(true);
 
   // Disable tasks so arc-preview works.
-  m_diagram->enableNodes(false);
+  m_diagram->enableNodeSelection(false);
 
   // When in connect mode, grab certain events from the view widget
   // (for key events) and its viewport (for mouse events)
@@ -206,7 +206,7 @@ void qtConnectMode::exitMode()
   m_diagram->diagramWidget()->removeEventFilter(this);
 
   // Enable tasks. (Next mode can re-disable them as needed.)
-  m_diagram->enableNodes(true);
+  m_diagram->enableNodeSelection(true);
 
   // Force the preview to render nothing when not in connect-mode.
   if (m_previewArc)
