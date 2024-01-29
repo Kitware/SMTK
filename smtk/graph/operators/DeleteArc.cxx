@@ -392,6 +392,7 @@ bool DeleteArc::updateSpecification(
         "Could not create group for arc type \"" << arcType.data() << "\".");
       return didAdd;
     }
+    didAdd = true;
     groupDef->setIsExtensible(true);
     groupDef->setNumberOfRequiredGroups(0);
     // Add "from" and "to" reference-item definitions to the group-item definition and
