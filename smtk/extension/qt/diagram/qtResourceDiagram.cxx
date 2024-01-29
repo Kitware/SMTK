@@ -561,6 +561,7 @@ void qtResourceDiagram::updateScene(
   auto& objectNodeFactory = mgr->objectNodeFactory();
   // auto& bareNodeFactory = mgr->bareNodeFactory();
   bool didModify = false;
+  bool somethingAdded = false;
   for (auto* object : created)
   {
     if (!this->acceptObject(object))
@@ -661,6 +662,7 @@ void qtResourceDiagram::updateScene(
       // std::cout << "  Add " << node << " obj " << object->typeName() << "\n";
       if (node)
       {
+        somethingAdded = true;
         didModify = true;
         treeEntry.push_back(node);
         QObject::connect(
@@ -717,7 +719,11 @@ void qtResourceDiagram::updateScene(
   // Compute new positions for every node except the root node
   // (which is the qtGroupingNode for "smtk::resource::PersistentObject").
   // This also hides any referenced grouping nodes.
-  this->generateLayout(didModify);
+  // The boolean parameter instructs generateLayout whether to force
+  // the diagram to zoom out so the entire layout is in view (which should
+  // only happen when components are added to (not removed from or modified)
+  // the diagram.
+  this->generateLayout(didModify && somethingAdded);
 
   // We should now be able to clear the JSON data provided by the operation.
   // Do this so that subsequent operations which do not provide JSON do not
