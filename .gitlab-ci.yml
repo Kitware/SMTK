@@ -208,6 +208,7 @@ fedora33-coverage:analyze:
         - .fedora33_coverage
         - .cmake_coverage_linux
         - .linux_builder_tags
+        - .cmake_annotations_artifacts
         - .run_dependent
     dependencies:
         - fedora33-coverage:test
