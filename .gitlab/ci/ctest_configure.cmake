@@ -21,11 +21,10 @@ ctest_configure(
 
 # Read the files from the build directory.
 ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
-include("${CMAKE_CURRENT_LIST_DIR}/ctest_submit_multi.cmake")
 
 # We can now submit because we've configured. This is a cmb-superbuild-ism.
-ctest_submit_multi(PARTS Update)
-ctest_submit_multi(PARTS Configure)
+ctest_submit(PARTS Update)
+ctest_submit(PARTS Configure)
 
 if (configure_result)
   message(FATAL_ERROR
