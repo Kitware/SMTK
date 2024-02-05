@@ -1,8 +1,21 @@
 # Lists of paths for artifacts of various stages.
 
+.cmake_annotations_artifacts:
+    artifacts:
+        expire_in: 1d
+        reports:
+            annotations:
+                - build/annotations.json
+        paths:
+            # CDash files.
+            - build/cdash-build-id
+
 .cmake_build_artifacts:
     artifacts:
         expire_in: 1d
+        reports:
+            annotations:
+                - build/annotations.json
         paths:
             # The artifacts of the build.
             - build/bin/
@@ -31,18 +44,26 @@
 
             # CDash files.
             - build/DartConfiguration.tcl
+            - build/cdash-build-id
 
 .cmake_test_artifacts:
     artifacts:
         expire_in: 1d
         reports:
+            annotations:
+                - build/annotations.json
             junit:
                 - build/junit.xml
+        paths:
+            # CDash files.
+            - build/cdash-build-id
 
 .cmake_coverage_artifacts:
     artifacts:
         expire_in: 1d
         reports:
+            annotations:
+                - build/annotations.json
             junit:
                 - build/junit.xml
         paths:
@@ -63,3 +84,4 @@
 
             # CDash files.
             - build/DartConfiguration.tcl
+            - build/cdash-build-id

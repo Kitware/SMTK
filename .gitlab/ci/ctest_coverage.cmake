@@ -18,6 +18,13 @@ ctest_coverage(
   RETURN_VALUE coverage_result)
 ctest_submit(PARTS Coverage)
 
+include("${CMAKE_CURRENT_LIST_DIR}/ctest_annotation.cmake")
+if (DEFINED build_id)
+  ctest_annotation_report("${CTEST_BINARY_DIRECTORY}/annotations.json"
+    "Coverage Report" "https://open.cdash.org/viewCoverage.php?buildid=${build_id}"
+  )
+endif ()
+
 if (coverage_result)
   message(FATAL_ERROR
     "Failed to gather coverage")
