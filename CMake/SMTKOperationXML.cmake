@@ -127,6 +127,9 @@ function(smtk_encode_file inFile)
     set(_nameArgs "NAME;${_SMTK_op_NAME}")
   endif()
 
+  get_filename_component(_genFileDir "${_genFile}" DIRECTORY)
+  file(MAKE_DIRECTORY "${_genFileDir}")
+
   add_custom_command(
     OUTPUT  "${_genFile}"
     MAIN_DEPENDENCY "${inFile}"
