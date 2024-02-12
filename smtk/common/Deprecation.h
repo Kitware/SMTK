@@ -56,6 +56,14 @@
 #define SMTK_DEPRECATION_REASON(version_major, version_minor, reason)                              \
   "SMTK Deprecated in " #version_major "." #version_minor ": " reason
 
+/* NEXT deprecation macro template (replace `last_` symbols).
+#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(last_major, last_minor, 99)
+#define SMTK_DEPRECATED_IN_NEXT(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(last_major, NEXT, reason))
+#else
+#define SMTK_DEPRECATED_IN_NEXT(reason)
+#endif
+*/
+
 #if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(24, 01, 99)
 #define SMTK_DEPRECATED_IN_NEXT(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(24, NEXT, reason))
 #else

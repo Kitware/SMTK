@@ -34,6 +34,9 @@ Please remove this comment.
     - Create branch for release commits
         - [ ] `git checkout -b update-to-vVERSION BRANCHPOINT`
 
+    - Make a commit for each of these changes that go to `master` and `release`:
+      - [ ] Rename all `SMTK_DEPRECATED_IN_NEXT` macro usages to the current release.
+      - [ ] Update `NEXT` usage in the macro definition to the MINOR version of this release.
     - Make a commit for each of these `release`-only changes:
       - [ ] Assemble release notes into `doc/release/smtk-MAJOR.MINOR.rst`.
         - [ ] Top of release notes should have `.. _release-notes-MAJOR.MINOR:` and a reference to the previous release's notes (See `doc/release/smtk-21.07.rst` or later for an example.)
@@ -91,8 +94,9 @@ Please remove this comment.
   - [ ] Write and publish blog post with release notes.
   - [ ] Post an announcement in the Announcements category on
         [discourse.smtk.org](https://discourse.kitware.com/c/smtk/).
-  - [ ] Create a new commit on `master` that does the following:
+  - [ ] Create a new commit on `master` for each of the following:
     - [ ] Remove the deprecated methods on `master`.  Note that it should be discussed before hand which deprecated methods should be removed in this release.
+    - [ ] Create a new `_NEXT` deprecation macro pattern.
     - [ ] Set the version.txt on `master` to be yy.mm.100
 
 /cc @ben.boeckel
