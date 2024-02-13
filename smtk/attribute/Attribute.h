@@ -23,6 +23,7 @@
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/ValueItem.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
 #include <map>
@@ -162,7 +163,7 @@ public:
   /// @{
   /// \brief Find an item via its path with respects to the attribute.
   ///
-  /// If activeOnly is true then all items in the path must active (with repsect to a parent ValueItem)
+  /// If activeOnly is true then all items in the path must active (with respect to a parent ValueItem)
   /// else nullptr will be returned.  This parameter will have no effect on other types of items.
   /// Note that the path should not start with a separator character.
   ///
@@ -170,23 +171,24 @@ public:
   /// are allowed) as long as the association-definition's name does not collide with any immediate
   /// child-item's name.
   smtk::attribute::ConstItemPtr
-  itemAtPath(const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
+  itemAtPath(const std::string& path, const std::string& sep = "/", bool activeOnly = false) const;
   smtk::attribute::ItemPtr
-  itemAtPath(const std::string& path, const std::string& seps = "/", bool activeOnly = false);
+  itemAtPath(const std::string& path, const std::string& sep = "/", bool activeOnly = false);
 
   template<typename T>
   typename T::ConstPtr itemAtPathAs(
     const std::string& path,
-    const std::string& seps = "/",
+    const std::string& sep = "/",
     bool activeOnly = false) const;
   template<typename T>
   typename T::Ptr
-  itemAtPathAs(const std::string& path, const std::string& seps = "/", bool activeOnly = false);
+  itemAtPathAs(const std::string& path, const std::string& sep = "/", bool activeOnly = false);
   /// @}
 
   /// @{
   /// \brief Formats the full path to the item with respect to the attribute.
-  std::string itemPath(const ItemPtr& item, const std::string& seps = "/") const;
+  SMTK_DEPRECATED_IN_NEXT("Use Item::path() instead.")
+  std::string itemPath(const ItemPtr& item, const std::string& sep = "/") const;
   /// @}
 
   smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
@@ -562,16 +564,16 @@ T Attribute::associatedModelEntities() const
       */
 template<typename T>
 typename T::Ptr
-Attribute::itemAtPathAs(const std::string& path, const std::string& seps, bool activeOnly)
+Attribute::itemAtPathAs(const std::string& path, const std::string& sep, bool activeOnly)
 {
-  return smtk::dynamic_pointer_cast<T>(this->itemAtPath(path, seps, activeOnly));
+  return smtk::dynamic_pointer_cast<T>(this->itemAtPath(path, sep, activeOnly));
 }
 
 template<typename T>
 typename T::ConstPtr
-Attribute::itemAtPathAs(const std::string& path, const std::string& seps, bool activeOnly) const
+Attribute::itemAtPathAs(const std::string& path, const std::string& sep, bool activeOnly) const
 {
-  return smtk::dynamic_pointer_cast<const T>(this->itemAtPath(path, seps, activeOnly));
+  return smtk::dynamic_pointer_cast<const T>(this->itemAtPath(path, sep, activeOnly));
 }
 
 template<typename T>

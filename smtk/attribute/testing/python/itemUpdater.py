@@ -99,7 +99,7 @@ if __name__ == '__main__':
             oiq3 = att2.findGroup('ObjectiveIQ')
             updater = updateManager.findItemUpdater(
                 rsrcv1.templateType(), att1.type(),
-                att1.itemPath(siq1),
+                siq1.path(),
                 siq3.definition().version(),
                 siq1.definition().version())
             if not updater(siq1, siq3, logger) or \
@@ -107,7 +107,7 @@ if __name__ == '__main__':
                 raise ('Could not update SubjectiveIQ')
             updater = updateManager.findItemUpdater(
                 rsrcv1.templateType(), att1.type(),
-                att1.itemPath(oiq1),
+                oiq1.path(),
                 oiq3.definition().version(),
                 oiq1.definition().version())
             if not updater(oiq1, oiq3, logger):

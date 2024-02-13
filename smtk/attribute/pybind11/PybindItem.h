@@ -39,6 +39,7 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("attribute", &smtk::attribute::Item::attribute)
     .def("owningItem", &smtk::attribute::Item::owningItem)
     .def("position", &smtk::attribute::Item::position)
+    .def("path", &smtk::attribute::Item::path, py::arg("sep") = "/")
     .def("subGroupPosition", &smtk::attribute::Item::subGroupPosition)
     .def("isOptional", &smtk::attribute::Item::isOptional)
     .def("isEnabled", &smtk::attribute::Item::isEnabled)
