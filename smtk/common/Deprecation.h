@@ -20,7 +20,7 @@
 #endif
 
 // API deprecated before 22.11 have already been removed.
-#define SMTK_MINIMUM_DEPRECATION_LEVEL SMTK_VERSION_CHECK(22, 11)
+#define SMTK_MINIMUM_DEPRECATION_LEVEL SMTK_VERSION_CHECK(22, 11, 0)
 
 // Force the deprecation level to be at least that of SMTK's build
 // configuration.
@@ -56,7 +56,21 @@
 #define SMTK_DEPRECATION_REASON(version_major, version_minor, reason)                              \
   "SMTK Deprecated in " #version_major "." #version_minor ": " reason
 
-#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(24, 01)
+/* NEXT deprecation macro template (replace `last_` symbols).
+#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(last_major, last_minor, 99)
+#define SMTK_DEPRECATED_IN_NEXT(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(last_major, NEXT, reason))
+#else
+#define SMTK_DEPRECATED_IN_NEXT(reason)
+#endif
+*/
+
+#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(24, 01, 99)
+#define SMTK_DEPRECATED_IN_NEXT(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(24, NEXT, reason))
+#else
+#define SMTK_DEPRECATED_IN_NEXT(reason)
+#endif
+
+#if SMTK_DEPRECATION_LEVEL >= SMTK_VERSION_CHECK(23, 12, 99)
 #define SMTK_DEPRECATED_IN_24_01(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(24, 01, reason))
 #else
 #define SMTK_DEPRECATED_IN_24_01(reason)
