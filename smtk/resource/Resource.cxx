@@ -227,5 +227,49 @@ bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
   return true;
 }
 
+bool Resource::setTemplateType(const smtk::string::Token& templateType)
+{
+  (void)templateType;
+  return false;
+}
+
+const smtk::string::Token& Resource::templateType() const
+{
+  static smtk::string::Token empty;
+  return empty;
+}
+
+bool Resource::setTemplateVersion(std::size_t templateVersion)
+{
+  (void)templateVersion;
+  return false;
+}
+
+std::size_t Resource::templateVersion() const
+{
+  return 0;
+}
+
+std::shared_ptr<Resource> Resource::emptyClone(CopyOptions& options)
+{
+  (void)options;
+  std::shared_ptr<Resource> nil;
+  return nil;
+}
+
+bool Resource::copy(const std::shared_ptr<const Resource>& source, CopyOptions& options)
+{
+  (void)source;
+  (void)options;
+  return false;
+}
+
+bool Resource::resolveCopy(const std::shared_ptr<const Resource>& source, CopyOptions& options)
+{
+  (void)source;
+  (void)options;
+  return false;
+}
+
 } // namespace resource
 } // namespace smtk

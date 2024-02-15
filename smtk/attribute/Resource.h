@@ -397,8 +397,8 @@ public:
   ///
   /// A resource template-type is not required, but if present it can be used to
   /// register updaters for migrating from an old template to a newer version.
-  virtual bool setTemplateType(const smtk::string::Token& templateType);
-  const smtk::string::Token& templateType() const { return m_templateType; }
+  bool setTemplateType(const smtk::string::Token& templateType) override;
+  const smtk::string::Token& templateType() const override { return m_templateType; }
 
   /// Set/get the version of the template this instance of the resource is based upon.
   ///
@@ -406,8 +406,8 @@ public:
   /// template (i.e., SBT file) the definitions in the current resource
   /// are drawn from. It is used during the update process to determine
   /// which updaters are applicable.
-  virtual bool setTemplateVersion(std::size_t templateVersion);
-  std::size_t templateVersion() const { return m_templateVersion; }
+  bool setTemplateVersion(std::size_t templateVersion) override;
+  std::size_t templateVersion() const override { return m_templateVersion; }
 
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);

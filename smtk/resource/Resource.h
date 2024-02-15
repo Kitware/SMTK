@@ -40,6 +40,8 @@ class Operation;
 }
 namespace resource
 {
+class CopyOptions;
+
 /// Operations need the ability to lock and unlock resources, but no additional
 /// access privilege is required. We therefore use the PassKey pattern to grant
 /// Operation access to a resource's lock.
@@ -60,7 +62,13 @@ class DerivedFrom;
 class Manager;
 class Metadata;
 
-/// An abstract base class for SMTK resources.
+/**\brief An abstract base class for SMTK resources.
+  *
+  * Resources represent a collection of persistent objects written
+  * to a single file (i.e., a document). While it is possible –
+  * via resource::Links – for a document to reference objects external
+  * to a file, resources are intended mostly to be self-contained.
+  */
 class SMTKCORE_EXPORT Resource : public PersistentObject
 {
 public:
@@ -210,6 +218,80 @@ public:
   virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
   const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
   ///@}
+
+  /// Set/get the "type" of a resource's template.
+  ///
+  /// A resource template-type is not required, but if present it can be used to
+  /// register updaters for migrating from an old template to a newer version.
+  ///
+  /// The default implementation returns an invalid string token (indicating
+  /// the resource does not support templates). Subclasses must override this
+  /// method if they wish to support document templates.
+  virtual bool setTemplateType(const smtk::string::Token& templateType);
+  virtual const smtk::string::Token& templateType() const;
+
+  /// Set/get the version number of the template this instance of the resource is based upon.
+  ///
+  /// If non-zero, this number indicates the version number of the
+  /// template (i.e., the attribute/item definitions for attribute resources)
+  /// the current resource draws from. It is used during the update process to determine
+  /// which updaters are applicable.
+  ///
+  /// The default implementation always returns 0, indicating version numbers
+  /// are not supported by resources of this type. Subclasses must override
+  /// these methods if they wish to support document-template versioning.
+  virtual bool setTemplateVersion(std::size_t templateVersion);
+  virtual std::size_t templateVersion() const;
+
+  /// Create an empty, un-managed clone of this resource instance.
+  ///
+  /// Note that it is valid to (and the default implementation does) return
+  /// a null pointer to indicate a resource cannot be cloned.
+  ///
+  /// This method may be used create a resource for either copying (i.e.,
+  /// in order to create a new resource with the same structure as the
+  /// original but with distinct UUIDs) or updating (i.e., in order to
+  /// transform a resource from one revision of a template to another
+  /// while preserving UUIDs).
+  ///
+  /// This method generally does not copy the content of a resource.
+  /// Use the copy() method on the returned clone if you wish to copy
+  /// resource-specific persistent objects.
+  /// However, the \a options **will** determine whether ancillary data
+  /// such as template-specific data, the unit system, and other information
+  /// not related to the information being modeled by the resource is
+  /// present in the returned clone.
+  virtual std::shared_ptr<Resource> emptyClone(CopyOptions& options);
+
+  /// Copy data from a \a source resource into this resource.
+  ///
+  /// This method must be subclassed by resources that wish to support copying;
+  /// the default implementation simply returns false.
+  ///
+  /// Call this method on the result of emptyClone() to copy persistent
+  /// objects, properties, links, and other data from the \a source into
+  /// this resource.
+  /// Note that link-data is copied wholesale but not adjusted to reference
+  /// copied objects rather than objects in the \a source resource;
+  /// use resolveCopy() to perform this adjustment.
+  ///
+  /// If this method returns true, you should call resolveCopy() as well.
+  /// The resolveCopy() method resolves external references using data stored
+  /// in \a options by the copy() method. The two methods (copy() and resolveCopy())
+  /// allow duplication of _multiple resources_ at once with references among them
+  /// properly translated. This is accomplished by calling copy() on each resource
+  /// to be processed and then calling resolveCopy() on each resource.
+  ///
+  /// This method will always produce components that mirror the \a source components
+  /// but have distinct UUIDs. On completion, the \a options object holds a map relating
+  /// the \a source components to their copies in this resource.
+  virtual bool copy(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+
+  /// Resolve internal and external references among components copied from a \a source resource.
+  ///
+  /// After components are copied from the \a source, there may still be references to the
+  /// original components; this method resolves those references to the copied components.
+  virtual bool resolveCopy(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
 protected:
   // Derived resources should inherit

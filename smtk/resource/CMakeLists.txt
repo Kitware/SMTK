@@ -2,6 +2,7 @@
 set(resourceSrcs
   Component.cxx
   ComponentLinks.cxx
+  CopyOptions.cxx
   GarbageCollector.cxx
   Links.cxx
   Lock.cxx
@@ -28,6 +29,7 @@ set(resourceHeaders
   Component.h
   ComponentLinks.h
   Container.h
+  CopyOptions.h
   DerivedFrom.h
   GarbageCollector.h
   LinkInformation.h
