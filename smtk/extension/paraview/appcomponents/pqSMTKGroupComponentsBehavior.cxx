@@ -69,8 +69,14 @@ pqGroupComponentsReaction::pqGroupComponentsReaction(QAction* parentObject, bool
 
 void pqGroupComponentsReaction::updateEnableState()
 {
-  auto* b = pqSMTKBehavior::instance();
-  auto selection = b->builtinOrActiveWrapper()->smtkSelection();
+  auto* bb = pqSMTKBehavior::instance();
+  auto* ww = bb ? bb->builtinOrActiveWrapper() : nullptr;
+  auto selection = ww ? ww->smtkSelection() : nullptr;
+  if (!selection)
+  {
+    // Skip during destruction.
+    return;
+  }
   auto selected =
     selection->currentSelectionByValueAs<std::set<smtk::resource::PersistentObject::Ptr>>(
       "selected", /*exactMatch*/ false);
