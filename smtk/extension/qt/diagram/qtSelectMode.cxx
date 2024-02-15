@@ -53,9 +53,21 @@ bool qtSelectMode::eventFilter(QObject* obj, QEvent* event)
       if (event->type() == QEvent::KeyPress)
       {
         auto* keyEvent = dynamic_cast<QKeyEvent*>(event);
-        if (keyEvent && keyEvent->key() == Qt::Key_Shift)
+        if (keyEvent)
         {
-          m_diagram->diagramWidget()->addModeSnapback(Qt::Key_Shift, "select"_token);
+          switch (keyEvent->key())
+          {
+            case Qt::Key_Shift:
+              m_diagram->diagramWidget()->addModeSnapback(Qt::Key_Shift, "pan"_token);
+              break;
+            case Qt::Key_Escape:
+              m_diagram->requestModeChange(m_diagram->defaultMode());
+              break;
+            case Qt::Key_Backspace:
+            case Qt::Key_Delete:
+              this->removeSelectedObjects();
+              break;
+          }
         }
       }
     }
