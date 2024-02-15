@@ -529,7 +529,6 @@ void qtTaskEditor::updateScene(
       modBounds = modBounds.united(node->boundingRect());
       diagramModified = true;
       this->diagram()->removeNode(node);
-      delete node;
     }
     else if (auto* project = dynamic_cast<smtk::project::Project*>(obj))
     {
