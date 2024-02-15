@@ -58,6 +58,9 @@ bool qtPanMode::eventFilter(QObject* obj, QEvent* event)
             case Qt::Key_Shift:
               m_diagram->diagramWidget()->addModeSnapback(Qt::Key_Shift, "select"_token);
               break;
+            case Qt::Key_Escape:
+              m_diagram->requestModeChange(m_diagram->defaultMode());
+              break;
             case Qt::Key_Backspace:
             case Qt::Key_Delete:
               this->removeSelectedObjects();

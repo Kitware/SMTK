@@ -101,6 +101,7 @@ bool qtDisconnectMode::eventFilter(QObject* obj, QEvent* event)
         {
           switch (keyEvent->key())
           {
+            case Qt::Key_Delete:
             case Qt::Key_Backspace:
               this->removeSelectedArcs();
               break;
