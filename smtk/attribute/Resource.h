@@ -409,6 +409,24 @@ public:
   bool setTemplateVersion(std::size_t templateVersion) override;
   std::size_t templateVersion() const override { return m_templateVersion; }
 
+  /// Create an empty, un-managed clone of this resource instance.
+  ///
+  /// If \a options has copyTemplateData() set to true, then this resource's
+  /// Definition instances will be copied to the output resources.
+  std::shared_ptr<smtk::resource::Resource> emptyClone(
+    smtk::resource::CopyOptions& options) const override;
+
+  /// Copy data from the \a other resource into this resource, as specified by \a options.
+  bool copyData(
+    const std::shared_ptr<const smtk::resource::Resource>& other,
+    smtk::resource::CopyOptions& options) override;
+
+  /// Copy relations (associations, references) from the \a other resource
+  /// into this resource, as specified by \a options.
+  bool copyRelations(
+    const std::shared_ptr<const smtk::resource::Resource>& other,
+    smtk::resource::CopyOptions& options) override;
+
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
   Resource(smtk::resource::ManagerPtr manager = nullptr);

@@ -23,6 +23,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/filter/Filter.h"
@@ -1180,6 +1181,149 @@ bool Resource::setTemplateVersion(std::size_t templateVersion)
   }
   m_templateVersion = templateVersion;
   return true;
+}
+
+std::shared_ptr<smtk::resource::Resource> Resource::emptyClone(
+  smtk::resource::CopyOptions& options) const
+{
+  using smtk::resource::CopyOptions;
+
+  Resource::Ptr rsrc(new Resource(smtk::common::UUID::random(), this->manager()));
+  if (!rsrc)
+  {
+    return rsrc;
+  }
+
+  rsrc->copyUnitSystem(rsrc, options);
+
+  if (options.copyTemplateData() || options.copyComponents())
+  {
+    if (options.copyTemplateData())
+    {
+      rsrc->setTemplateType(this->templateType());
+      auto version = this->templateVersion();
+      rsrc->setTemplateVersion(version);
+    }
+
+    // Copy all the definitions from this resource into the new one:
+    std::vector<smtk::attribute::DefinitionPtr> allDefs;
+    this->definitions(allDefs, /* sort list: */ false);
+    for (const auto& def : allDefs)
+    {
+      rsrc->copyDefinition(def);
+    }
+
+    if (options.copyTemplateData() && !options.copyTemplateVersion())
+    {
+      // TODO: We need a way to fetch the update factory to find
+      //       if we can upgrade to a newer revision of a template.
+      smtkErrorMacro(
+        options.log(), "Unimplemented feature required to upgrade the resource's definitions.");
+    }
+  }
+
+  return rsrc;
+}
+
+bool Resource::copyData(
+  const std::shared_ptr<const smtk::resource::Resource>& other,
+  smtk::resource::CopyOptions& options)
+{
+  auto source = std::dynamic_pointer_cast<const smtk::attribute::Resource>(other);
+  if (!source)
+  {
+    smtkErrorMacro(options.log(), "Source resource was null or not an attribute resource.");
+    return false;
+  }
+
+  std::vector<smtk::attribute::AttributePtr> allAttributes;
+  if (options.copyComponents())
+  {
+    // Construct default options for copying attributes.
+    smtk::attribute::CopyAssignmentOptions attOptions;
+
+    attOptions.copyOptions.setCopyUUID(false);
+    attOptions.copyOptions.setCopyDefinition(
+      false); // These should already be present from emptyClone().
+
+    attOptions.attributeOptions.setIgnoreMissingItems(false);
+    attOptions.attributeOptions.setAllowPartialAssociations(true);
+    attOptions.attributeOptions.setDoNotValidateAssociations(true);
+    attOptions.attributeOptions.setCopyAssociations(false);
+
+    attOptions.itemOptions.setIgnoreMissingChildren(false);
+    attOptions.itemOptions.setAllowPartialValues(true);
+    attOptions.itemOptions.setIgnoreReferenceValues(true);
+    attOptions.itemOptions.setDoNotValidateReferenceInfo(true);
+    attOptions.itemOptions.setDisableCopyAttributes(false);
+
+    if (options.suboptions().contains<smtk::attribute::CopyAssignmentOptions>())
+    {
+      // Our caller is providing an override.
+      attOptions = options.suboptions().get<smtk::attribute::CopyAssignmentOptions>();
+    }
+
+    // Copy all the attributes.
+    source->attributes(allAttributes);
+    for (const auto& att : allAttributes)
+    {
+      auto result = this->copyAttribute(att, attOptions, options.log());
+      if (result)
+      {
+        options.objectMapping()[att->id()] = result.get();
+      }
+      else
+      {
+        // Note: Some attributes may have been copied before they were
+        // iterated in allAttributes (e.g., attribute A has an item with an
+        // expression attribute B – B gets created while copying A and is
+        // thus not copied when the loop above reaches B).
+        // But we need to ensure all attributes are mapped in \a options.
+        result = this->findAttribute(att->name());
+        if (result)
+        {
+          options.objectMapping()[att->id()] = result.get();
+        }
+        else
+        {
+          smtkErrorMacro(
+            options.log(), "Could not copy \"" << att->name() << "\" (" << att->id() << ").");
+        }
+      }
+    }
+  }
+
+  if (options.copyProperties())
+  {
+    // Copy the resource properties
+    // this->copyProperties(source, this, source->id(), this->id());
+    // if (options.copyComponents())
+    // {
+    //   // Copy properties of each component.
+    //   for (const auto& att : allAttributes)
+    //   {
+    //     auto* target = options.targetObjectFromSourceId<smtk::attribute::Attribute>(att->id());
+    //     if (target)
+    //     {
+    //       this->copyProperties(att->id(), target->id());
+    //     }
+    //     else
+    //     {
+    //       smtkErrorMacro(options.log(),
+    //         "No mapping from attribute \"" << att->name() << "\" (" << att->id() << ")"
+    //         " so no properties copied.");
+    //     }
+    //   }
+    // }
+  }
+  return true;
+}
+
+bool Resource::copyRelations(
+  const std::shared_ptr<const smtk::resource::Resource>& other,
+  smtk::resource::CopyOptions& options)
+{
+  return false;
 }
 
 void Resource::setActiveCategoriesEnabled(bool mode)

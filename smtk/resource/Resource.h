@@ -254,44 +254,43 @@ public:
   /// transform a resource from one revision of a template to another
   /// while preserving UUIDs).
   ///
-  /// This method generally does not copy the content of a resource.
-  /// Use the copy() method on the returned clone if you wish to copy
-  /// resource-specific persistent objects.
+  /// This method does not copy the user-authored content of a resource.
+  /// Use the copyData() method on the returned clone if you wish to copy
+  /// that data.
+  ///
   /// However, the \a options **will** determine whether ancillary data
   /// such as template-specific data, the unit system, and other information
   /// not related to the information being modeled by the resource is
   /// present in the returned clone.
-  virtual std::shared_ptr<Resource> emptyClone(CopyOptions& options);
+  virtual std::shared_ptr<Resource> emptyClone(CopyOptions& options) const;
 
   /// Copy data from a \a source resource into this resource.
   ///
   /// This method must be subclassed by resources that wish to support copying;
   /// the default implementation simply returns false.
   ///
-  /// Call this method on the result of emptyClone() to copy persistent
-  /// objects, properties, links, and other data from the \a source into
-  /// this resource.
-  /// Note that link-data is copied wholesale but not adjusted to reference
-  /// copied objects rather than objects in the \a source resource;
-  /// use resolveCopy() to perform this adjustment.
+  /// Call this method on the result of emptyClone() to copy persistent objects,
+  /// properties, and other self-contained resource-specific data from the \a source
+  /// into this resource.
   ///
-  /// If this method returns true, you should call resolveCopy() as well.
-  /// The resolveCopy() method resolves external references using data stored
-  /// in \a options by the copy() method. The two methods (copy() and resolveCopy())
+  /// If this method returns true, you should call copyRelations() as well.
+  /// The copyRelations() method adds any requested references between objects (both
+  /// in the same and in external resources) using data stored in \a options by the
+  /// copyData() method. The two methods (copyData() and copyRelations())
   /// allow duplication of _multiple resources_ at once with references among them
-  /// properly translated. This is accomplished by calling copy() on each resource
-  /// to be processed and then calling resolveCopy() on each resource.
+  /// properly translated. This is accomplished by calling copyData() on each resource
+  /// to be processed and _then_ calling copyRelations() on each resource.
   ///
   /// This method will always produce components that mirror the \a source components
   /// but have distinct UUIDs. On completion, the \a options object holds a map relating
   /// the \a source components to their copies in this resource.
-  virtual bool copy(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+  virtual bool copyData(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
   /// Resolve internal and external references among components copied from a \a source resource.
   ///
   /// After components are copied from the \a source, there may still be references to the
   /// original components; this method resolves those references to the copied components.
-  virtual bool resolveCopy(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+  virtual bool copyRelations(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
 protected:
   // Derived resources should inherit
@@ -299,6 +298,27 @@ protected:
   // constructors are declared private to enforce this relationship.
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
+
+  /// Copy the units system from \a rsrc into this resource as specified by \a options.
+  ///
+  /// This method is provided so subclasses that implement emptyClone() do
+  /// not need to repeat code common to all resources.
+  void copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
+
+  /// Copy all property data from \a rsrc, mapping them along the way via \a options.
+  ///
+  /// This method is intended for use by subclasses of Resource from within their
+  /// copyData() implementation.
+  void copyProperties(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
+
+  /// Copy links from \a rsrc (except those excluded by \a options), mapping them along the way.
+  ///
+  /// The objectMapping() in \a options is used to transform links, so that any UUID present in
+  /// the mapping keys is transformed to the UUID of the map's corresponding value.
+  ///
+  /// This method is intended for use by subclasses of Resource from within their
+  /// copyRelations() implementation.
+  void copyLinks(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;
   std::shared_ptr<units::System> m_unitsSystem;

@@ -82,7 +82,15 @@ public:
   bool setCopyUnitSystem(CopyType copy);
   CopyType copyUnitSystem() const { return m_copyUnitSystem; }
 
-  /// Set/get which link data should **not** be bulk-copied (and bulk-resolved).
+  /// Set/get whether or not to copy link data.
+  ///
+  /// If true (the default), then link data may be excluded by role using
+  /// the addLinkRoleToExclude() method.
+  /// If false, then linkRolesToExclude() is ignored.
+  bool setCopyLinks();
+  bool copyLinks() const { return m_copyLinks; }
+
+  /// Set/get which link data should **not** be copied.
   ///
   /// By default, all link data will be copied; adding link roles here will omit them
   /// from duplication.
@@ -131,11 +139,12 @@ public:
   smtk::io::Logger& log() { return *m_log; }
 
 protected:
-  bool m_copyComponents{ true };
-  bool m_copyProperties{ true };
   bool m_copyTemplateData{ true };
   bool m_copyTemplateVersion{ true };
   CopyType m_copyUnitSystem{ CopyType::Shallow };
+  bool m_copyComponents{ true };
+  bool m_copyProperties{ true };
+  bool m_copyLinks{ true };
   std::set<smtk::resource::Links::RoleType> m_linkRolesToExclude;
 
   ObjectMapType m_objectMapping;

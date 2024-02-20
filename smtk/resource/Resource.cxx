@@ -13,6 +13,7 @@
 
 #include "smtk/resource/Resource.h"
 
+#include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/resource/filter/Filter.h"
@@ -22,6 +23,9 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/io/Logger.h"
+
+#include "units/System.h"
+#include "units/json/jsonUnits.h"
 
 namespace smtk
 {
@@ -250,25 +254,64 @@ std::size_t Resource::templateVersion() const
   return 0;
 }
 
-std::shared_ptr<Resource> Resource::emptyClone(CopyOptions& options)
+std::shared_ptr<Resource> Resource::emptyClone(CopyOptions& options) const
 {
   (void)options;
   std::shared_ptr<Resource> nil;
   return nil;
 }
 
-bool Resource::copy(const std::shared_ptr<const Resource>& source, CopyOptions& options)
+bool Resource::copyData(const std::shared_ptr<const Resource>& source, CopyOptions& options)
 {
   (void)source;
   (void)options;
   return false;
 }
 
-bool Resource::resolveCopy(const std::shared_ptr<const Resource>& source, CopyOptions& options)
+bool Resource::copyRelations(const std::shared_ptr<const Resource>& source, CopyOptions& options)
 {
   (void)source;
   (void)options;
   return false;
+}
+
+void Resource::copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options)
+{
+  switch (options.copyUnitSystem())
+  {
+    case CopyOptions::CopyType::None:
+      // Do not set a unit system.
+      break;
+    case CopyOptions::CopyType::Shallow:
+      rsrc->setUnitsSystem(this->unitsSystem());
+      break;
+    case CopyOptions::CopyType::Deep:
+    {
+      if (auto unitSys = this->unitsSystem())
+      {
+        nlohmann::json spec = unitSys;
+        shared_ptr<units::System> unitCopy = units::System::createFromSpec(spec.dump());
+        rsrc->setUnitsSystem(unitCopy);
+      }
+    }
+    break;
+  }
+}
+
+void Resource::copyLinks(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options) {}
+
+void Resource::copyProperties(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options)
+{
+  if (!options.copyProperties())
+  {
+    return;
+  }
+
+  // Iterate over all the properties (whether they correspond to a resource,
+  // a component, or an unassociated UUID) and copy them.
+  // Note that we do this rather than visit components so that resources which
+  // wish to store properties unrelated to extant components can still have data
+  // preserved across copies.
 }
 
 } // namespace resource
