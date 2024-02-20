@@ -60,5 +60,7 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
   PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > smtk_operation_SetProperty = pybind11_init_smtk_operation_SetProperty(operation);
   PySharedPtrClass< smtk::operation::WriteResource, smtk::operation::XMLOperation > smtk_operation_WriteResource = pybind11_init_smtk_operation_WriteResource(operation);
 
+  operation.def("outcome", &smtk::operation::outcome, "Return the outcome of an operation given its result object.");
+
   py::class_< smtk::operation::Registrar > smtk_operation_Registrar = pybind11_init_smtk_operation_Registrar(operation);
 }
