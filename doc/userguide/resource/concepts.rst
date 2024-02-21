@@ -95,6 +95,13 @@ In addition to these useful base classes,
   on both resources and components; on the resource, the properties subclass
   provides actual storage, while on components, the subclass asks its
   parent resource for the properties object to search for values.
+  Property data is a map from a string holding the data type-name
+  (e.g., ``std::vector<int>``) to a subclass of :smtk:`TypeMapEntry <smtk::common::TypeMapEntry>`
+  named :smtk:`PropertiesOfType <smtk::resource::detail::PropertiesOfType>`
+  which owns a ``std::map<std::string, std::unordered_map<smtk::common::UUID, T>``
+  (in our example, ``T`` is a ``std::vector<int>``, but in general ``T`` is any
+  type allowed as a property value). Thus, properties map
+  value-type-name → key-name → UUID → value.
 
 :smtk:`Queries <smtk::resource::Queries>`
   Resources hold a container of relevant :smtk:`Query <smtk::resource::Query>` objects.
