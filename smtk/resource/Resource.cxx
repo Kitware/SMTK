@@ -254,7 +254,7 @@ std::size_t Resource::templateVersion() const
   return 0;
 }
 
-std::shared_ptr<Resource> Resource::emptyClone(CopyOptions& options) const
+std::shared_ptr<Resource> Resource::clone(CopyOptions& options) const
 {
   (void)options;
   std::shared_ptr<Resource> nil;

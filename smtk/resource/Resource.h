@@ -262,14 +262,14 @@ public:
   /// such as template-specific data, the unit system, and other information
   /// not related to the information being modeled by the resource is
   /// present in the returned clone.
-  virtual std::shared_ptr<Resource> emptyClone(CopyOptions& options) const;
+  virtual std::shared_ptr<Resource> clone(CopyOptions& options) const;
 
   /// Copy data from a \a source resource into this resource.
   ///
   /// This method must be subclassed by resources that wish to support copying;
   /// the default implementation simply returns false.
   ///
-  /// Call this method on the result of emptyClone() to copy persistent objects,
+  /// Call this method on the result of clone() to copy persistent objects,
   /// properties, and other self-contained resource-specific data from the \a source
   /// into this resource.
   ///
@@ -301,7 +301,7 @@ protected:
 
   /// Copy the units system from \a rsrc into this resource as specified by \a options.
   ///
-  /// This method is provided so subclasses that implement emptyClone() do
+  /// This method is provided so subclasses that implement clone() do
   /// not need to repeat code common to all resources.
   void copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
 

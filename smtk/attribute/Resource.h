@@ -413,7 +413,7 @@ public:
   ///
   /// If \a options has copyTemplateData() set to true, then this resource's
   /// Definition instances will be copied to the output resources.
-  std::shared_ptr<smtk::resource::Resource> emptyClone(
+  std::shared_ptr<smtk::resource::Resource> clone(
     smtk::resource::CopyOptions& options) const override;
 
   /// Copy data from the \a other resource into this resource, as specified by \a options.

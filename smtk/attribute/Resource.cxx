@@ -1183,7 +1183,7 @@ bool Resource::setTemplateVersion(std::size_t templateVersion)
   return true;
 }
 
-std::shared_ptr<smtk::resource::Resource> Resource::emptyClone(
+std::shared_ptr<smtk::resource::Resource> Resource::clone(
   smtk::resource::CopyOptions& options) const
 {
   using smtk::resource::CopyOptions;
@@ -1244,7 +1244,7 @@ bool Resource::copyData(
 
     attOptions.copyOptions.setCopyUUID(false);
     attOptions.copyOptions.setCopyDefinition(
-      false); // These should already be present from emptyClone().
+      false); // These should already be present from clone().
 
     attOptions.attributeOptions.setIgnoreMissingItems(false);
     attOptions.attributeOptions.setAllowPartialAssociations(true);
