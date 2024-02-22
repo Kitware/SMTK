@@ -146,11 +146,11 @@ int unitItemUpdater(int /*unused*/, char* /*unused*/[])
   ::test(!!att2IntItem, "Int item not found");
 
   // Now attempt to migrate items from att1 to att2.
-  std::cout << "    Can we update \"" << att1->itemPath(att1StrItem) << "\"?\n";
+  std::cout << "    Can we update \"" << att1StrItem->path() << "\"?\n";
   if (
     auto updater = updateManager->itemUpdaters(attRsrc1->templateType(), att1->type())
                      .find(
-                       att1->itemPath(att1StrItem),
+                       att1StrItem->path(),
                        att2StrItem->definition()->version(),
                        att1StrItem->definition()->version()))
   {
@@ -166,11 +166,11 @@ int unitItemUpdater(int /*unused*/, char* /*unused*/[])
     ::test(false, "Did not find updater for SubjectiveIQ.");
   }
 
-  std::cout << "    Can we update \"" << att1->itemPath(att1IntItem) << "\"?\n";
+  std::cout << "    Can we update \"" << att1IntItem->path() << "\"?\n";
   if (
     auto updater = updateManager->itemUpdaters(attRsrc1->templateType(), att1->type())
                      .find(
-                       att1->itemPath(att1IntItem),
+                       att1IntItem->path(),
                        att2IntItem->definition()->version(),
                        att1IntItem->definition()->version()))
   {

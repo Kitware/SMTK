@@ -34,11 +34,8 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
-
-SMTK_THIRDPARTY_PRE_INCLUDE
-#include "boost/algorithm/string.hpp"
-SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cassert>
 #include <functional>
@@ -191,21 +188,14 @@ unsigned int Attribute::advanceLevel(int mode) const
   *
   */
 smtk::attribute::ConstItemPtr
-Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly) const
+Attribute::itemAtPath(const std::string& path, const std::string& sep, bool activeOnly) const
 {
-  std::vector<std::string> tree;
+  // Split the path and omit all empty sub-paths - the reason we need to worry about
+  // empty sub-paths is to deal with the case of the path starting with the sep string.
+  // Since there is no restriction in terms of what constitutes a valid item name we should
+  // not trim away any white space.
+  std::vector<std::string> tree = StringUtil::split(path, sep, true, false);
   std::vector<std::string>::iterator it;
-  if (path[0] == '/')
-  {
-    // Skip leading forward slash
-    std::string subpath = path.substr(1);
-    boost::split(tree, subpath, boost::is_any_of(seps));
-  }
-  else
-  {
-    boost::split(tree, path, boost::is_any_of(seps));
-  }
-
   if (tree.empty())
   {
     return nullptr;
@@ -241,7 +231,7 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
             current = nullptr;
             break;
           }
-          // go to next path substring, using the sub-group index
+          // go to next path sub-string, using the sub-group index
           ++it;
           current = (it != tree.end() ? group->find(index, *it, style) : nullptr);
         }
@@ -277,12 +267,12 @@ Attribute::itemAtPath(const std::string& path, const std::string& seps, bool act
 }
 
 smtk::attribute::ItemPtr
-Attribute::itemAtPath(const std::string& path, const std::string& seps, bool activeOnly)
+Attribute::itemAtPath(const std::string& path, const std::string& sep, bool activeOnly)
 {
   // use a const_cast to avoid duplicating code.
   const auto& constSelf = *this;
   return std::const_pointer_cast<smtk::attribute::Item>(
-    constSelf.itemAtPath(path, seps, activeOnly));
+    constSelf.itemAtPath(path, sep, activeOnly));
 }
 
 const smtk::attribute::Categories& Attribute::categories() const
@@ -891,27 +881,18 @@ void Attribute::forceDisassociate(smtk::resource::PersistentObjectPtr obj)
   }
 }
 
-std::string smtk::attribute::Attribute::itemPath(const ItemPtr& item, const std::string& seps) const
+std::string smtk::attribute::Attribute::itemPath(const ItemPtr& item, const std::string& sep) const
 {
   std::string result;
 
   // Make sure this item actually belongs to this attribute. Otherwise the resulting
   // path will be incorrect.
-  if (item->attribute()->id() == id())
+  if ((item == nullptr) || (item->attribute()->id() != id()))
   {
-    auto parent = item->owningItem();
-
-    while (parent != nullptr)
-    {
-      result.insert(0, parent->name().append(seps));
-      parent = parent->owningItem();
-    }
-
-    //Finally append the child item's name
-    result.append(item->name());
+    return result;
   }
 
-  return result;
+  return item->path(sep);
 }
 
 /**\brief Return the item with the given \a inName, searching in the given \a style.

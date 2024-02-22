@@ -298,6 +298,62 @@ Item::Status Item::assign(
   return status;
 }
 
+int Item::subGroupPosition() const
+{
+  const auto* groupParent = dynamic_cast<const GroupItem*>(m_owningItem);
+  if (groupParent == nullptr)
+  {
+    return -1;
+  }
+
+  std::size_t i, num = groupParent->numberOfGroups();
+  for (i = 0; i < num; i++)
+  {
+    if (groupParent->item(i, m_position).get() == this)
+    {
+      return i;
+    }
+  }
+  // Problem - we could not find the item where it was suppose to be
+  // in any of the subgroups
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "Could not find " << name() << " within GroupItem: " << groupParent->name());
+  return -1;
+}
+
+std::string Item::path(const std::string& sep) const
+{
+  // sep can not be an empty string
+  if (sep.empty())
+  {
+    return "";
+  }
+
+  std::string result, tmp;
+  int gpos;
+  const Item* current = this;
+  const Item* parent = current->m_owningItem;
+
+  while (parent != nullptr)
+  {
+    tmp = parent->name().append(sep);
+    // get the item's subgroup position if it has one
+    gpos = current->subGroupPosition();
+    if (gpos > -1)
+    {
+      tmp.append(std::to_string(gpos)).append(sep);
+    }
+    result.insert(0, tmp);
+    current = parent;
+    parent = parent->m_owningItem;
+  }
+
+  //Finally append the item's name
+  result.append(this->name());
+  return result;
+}
+
 std::string Item::type2String(Item::Type t)
 {
   switch (t)

@@ -1436,7 +1436,7 @@ void qtAttributeView::onItemChanged(qtItem* qitem)
 
   // Get path to item that changed so that it is possible for the item be retrieved
   // and examined later.
-  std::string path = attribute->itemPath(item);
+  std::string path = item->path();
 
   // Append path to vector of item paths
   items.push_back(path);

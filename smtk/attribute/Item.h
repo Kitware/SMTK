@@ -124,7 +124,7 @@ public:
 
   /**
    * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
-   * is true, each active) child item. If a subclass presents childern items(ValueItem,
+   * is true, each active) child item. If a subclass presents children items(ValueItem,
    * Group, ...) then this function should be overriden.
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
@@ -155,7 +155,15 @@ public:
   /// GroupItem and ValueItem (for children)
   int position() const { return m_position; }
 
-  int subGroupPosition() const { return m_subGroupPosition; }
+  ///\brief Return the position of the item with respects to the GroupItem that owns it.
+  /// returns -1 if the item is not owned by a GroupItem
+  int subGroupPosition() const;
+
+  /// @{
+  /// \brief Formats the full path to the item with respect to its owning attribute using
+  /// sep as the path separator
+  std::string path(const std::string& sep = "/") const;
+  /// @}
 
   /// \brief Returns true if the item is optional
   bool isOptional() const;
@@ -275,7 +283,7 @@ public:
 
 protected:
   Item(Attribute* owningAttribute, int itemPosition);
-  Item(Item* owningItem, int myPosition, int mySubGroupPOsition);
+  Item(Item* owningItem, int myPosition, int mySubGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
   /// \brief Internal implementation of the find method
   virtual smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style);

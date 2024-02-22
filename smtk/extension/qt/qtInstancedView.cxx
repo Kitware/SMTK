@@ -288,7 +288,7 @@ void qtInstancedView::updateUI()
           if (guardedObject != nullptr)
           {
             std::vector<std::string> items;
-            items.push_back(item->item()->name());
+            items.push_back(item->item()->path());
             guardedObject->attributeChanged(item->item()->attribute(), items);
           }
         });
