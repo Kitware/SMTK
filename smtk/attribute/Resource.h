@@ -398,7 +398,7 @@ public:
   /// A resource template-type is not required, but if present it can be used to
   /// register updaters for migrating from an old template to a newer version.
   bool setTemplateType(const smtk::string::Token& templateType) override;
-  const smtk::string::Token& templateType() const override { return m_templateType; }
+  smtk::string::Token templateType() const override { return m_templateType; }
 
   /// Set/get the version of the template this instance of the resource is based upon.
   ///

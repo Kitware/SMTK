@@ -1194,7 +1194,7 @@ std::shared_ptr<smtk::resource::Resource> Resource::clone(
     return rsrc;
   }
 
-  rsrc->copyUnitSystem(rsrc, options);
+  rsrc->copyUnitSystem(shared_from_this(), options);
 
   if (options.copyTemplateData() || options.copyComponents())
   {
@@ -1293,29 +1293,7 @@ bool Resource::copyData(
     }
   }
 
-  if (options.copyProperties())
-  {
-    // Copy the resource properties
-    // this->copyProperties(source, this, source->id(), this->id());
-    // if (options.copyComponents())
-    // {
-    //   // Copy properties of each component.
-    //   for (const auto& att : allAttributes)
-    //   {
-    //     auto* target = options.targetObjectFromSourceId<smtk::attribute::Attribute>(att->id());
-    //     if (target)
-    //     {
-    //       this->copyProperties(att->id(), target->id());
-    //     }
-    //     else
-    //     {
-    //       smtkErrorMacro(options.log(),
-    //         "No mapping from attribute \"" << att->name() << "\" (" << att->id() << ")"
-    //         " so no properties copied.");
-    //     }
-    //   }
-    // }
-  }
+  this->copyProperties(other, options);
   return true;
 }
 

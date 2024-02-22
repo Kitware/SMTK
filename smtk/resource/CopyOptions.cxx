@@ -38,45 +38,23 @@ CopyOptions::~CopyOptions()
   m_log = nullptr;
 }
 
-bool CopyOptions::setCopyComponents(bool copy)
-{
-  if (copy == m_copyComponents)
-  {
-    return false;
+#define smtkCopySetMacro(Class, Thing)                                                             \
+  bool Class ::setCopy##Thing(bool copy)                                                           \
+  {                                                                                                \
+    if (copy == m_copy##Thing)                                                                     \
+    {                                                                                              \
+      return false;                                                                                \
+    }                                                                                              \
+    m_copy##Thing = copy;                                                                          \
+    return true;                                                                                   \
   }
-  m_copyComponents = copy;
-  return true;
-}
 
-bool CopyOptions::setCopyProperties(bool copy)
-{
-  if (copy == m_copyProperties)
-  {
-    return false;
-  }
-  m_copyProperties = copy;
-  return true;
-}
-
-bool CopyOptions::setCopyTemplateData(bool copy)
-{
-  if (copy == m_copyTemplateData)
-  {
-    return false;
-  }
-  m_copyTemplateData = copy;
-  return true;
-}
-
-bool CopyOptions::setCopyTemplateVersion(bool copy)
-{
-  if (copy == m_copyTemplateVersion)
-  {
-    return false;
-  }
-  m_copyTemplateVersion = copy;
-  return true;
-}
+smtkCopySetMacro(CopyOptions, Location);
+smtkCopySetMacro(CopyOptions, Components);
+smtkCopySetMacro(CopyOptions, Properties);
+smtkCopySetMacro(CopyOptions, TemplateData);
+smtkCopySetMacro(CopyOptions, TemplateVersion);
+smtkCopySetMacro(CopyOptions, Links);
 
 bool CopyOptions::setCopyUnitSystem(CopyType copy)
 {

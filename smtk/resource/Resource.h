@@ -228,7 +228,7 @@ public:
   /// the resource does not support templates). Subclasses must override this
   /// method if they wish to support document templates.
   virtual bool setTemplateType(const smtk::string::Token& templateType);
-  virtual const smtk::string::Token& templateType() const;
+  virtual smtk::string::Token templateType() const;
 
   /// Set/get the version number of the template this instance of the resource is based upon.
   ///
@@ -292,6 +292,26 @@ public:
   /// original components; this method resolves those references to the copied components.
   virtual bool copyRelations(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
+  /// Copy the units system from \a rsrc into this resource as specified by \a options.
+  ///
+  /// This method is provided so subclasses that implement clone() do
+  /// not need to repeat code common to all resources.
+  void copyUnitSystem(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
+
+  /// Copy all property data from \a rsrc, mapping them along the way via \a options.
+  ///
+  /// This method is intended for use by subclasses of Resource from within their
+  /// copyData() implementation.
+  ///
+  /// Note that this method must be called **after** components have been copied from
+  /// \a rsrc as it relies upon \a options.objectMapping() to contain entries that
+  /// map original component UUIDs to their new UUIDs.
+  ///
+  /// If \a options.copyComponents() is false, any properties on the resource
+  /// and non-component properties (property entries with a UUID that do not
+  /// correspond to a component in \a rsrc) will still be copied.
+  void copyProperties(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
+
 protected:
   // Derived resources should inherit
   // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's
@@ -299,17 +319,20 @@ protected:
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
 
-  /// Copy the units system from \a rsrc into this resource as specified by \a options.
+  /// Copy **all** property data for \a sourceId from \a rsrc into \a targetId of _this_ resource.
   ///
-  /// This method is provided so subclasses that implement clone() do
-  /// not need to repeat code common to all resources.
-  void copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
-
-  /// Copy all property data from \a rsrc, mapping them along the way via \a options.
+  /// This is called from copyProperties() for each entry in \a rsrc, possibly
+  /// with the \a options objectMappings() applied.
   ///
-  /// This method is intended for use by subclasses of Resource from within their
-  /// copyData() implementation.
-  void copyProperties(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
+  /// This method returns true if any properties were copied and false otherwise.
+  ///
+  /// Note that some properties may not be copy-constructible – these properties
+  /// will not be copied and, depending on \a options, may result in a log message.
+  bool copyPropertiesForId(
+    const std::shared_ptr<Resource>& rsrc,
+    const smtk::common::UUID& sourceId,
+    const smtk::common::UUID& targetId,
+    const CopyOptions& options);
 
   /// Copy links from \a rsrc (except those excluded by \a options), mapping them along the way.
   ///

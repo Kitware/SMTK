@@ -46,6 +46,16 @@ public:
   CopyOptions(smtk::io::Logger& log);
   virtual ~CopyOptions();
 
+  /// Should the resource location be copied?
+  ///
+  /// By default, the location of a clone should not be set;
+  /// we do not want users to accidentally overwrite the original
+  /// resource by saving the new one.
+  /// When using clone() to produce an upgraded resource, this
+  /// may be set to true.
+  bool setCopyLocation(bool copy);
+  bool copyLocation() const { return m_copyLocation; }
+
   /// Should components be copied?
   ///
   /// If true, each component in the \a source should have a matching component
@@ -87,7 +97,7 @@ public:
   /// If true (the default), then link data may be excluded by role using
   /// the addLinkRoleToExclude() method.
   /// If false, then linkRolesToExclude() is ignored.
-  bool setCopyLinks();
+  bool setCopyLinks(bool copy);
   bool copyLinks() const { return m_copyLinks; }
 
   /// Set/get which link data should **not** be copied.
@@ -118,7 +128,7 @@ public:
   /// object that corresponds to the input \a sourceId or (b) the object
   /// cannot be cast to \a ObjectType.
   template<typename ObjectType>
-  ObjectType* targetObjectFromSourceId(const smtk::common::UUID& sourceId)
+  ObjectType* targetObjectFromSourceId(const smtk::common::UUID& sourceId) const
   {
     auto it = m_objectMapping.find(sourceId);
     if (it == m_objectMapping.end())
@@ -136,12 +146,13 @@ public:
   smtk::common::TypeContainer& suboptions() { return m_suboptions; }
 
   /// Return a logger to be used to provide feedback on copying.
-  smtk::io::Logger& log() { return *m_log; }
+  smtk::io::Logger& log() const { return *m_log; }
 
 protected:
   bool m_copyTemplateData{ true };
   bool m_copyTemplateVersion{ true };
   CopyType m_copyUnitSystem{ CopyType::Shallow };
+  bool m_copyLocation{ false };
   bool m_copyComponents{ true };
   bool m_copyProperties{ true };
   bool m_copyLinks{ true };
@@ -151,7 +162,7 @@ protected:
 
   smtk::common::TypeContainer m_suboptions;
 
-  smtk::io::Logger* m_log{ nullptr };
+  mutable smtk::io::Logger* m_log{ nullptr };
   bool m_deleteLog{ false };
 };
 

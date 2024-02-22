@@ -237,7 +237,7 @@ bool Resource::setTemplateType(const smtk::string::Token& templateType)
   return false;
 }
 
-const smtk::string::Token& Resource::templateType() const
+smtk::string::Token Resource::templateType() const
 {
   static smtk::string::Token empty;
   return empty;
@@ -275,7 +275,9 @@ bool Resource::copyRelations(const std::shared_ptr<const Resource>& source, Copy
   return false;
 }
 
-void Resource::copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options)
+void Resource::copyUnitSystem(
+  const std::shared_ptr<const Resource>& rsrc,
+  const CopyOptions& options)
 {
   switch (options.copyUnitSystem())
   {
@@ -283,15 +285,15 @@ void Resource::copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyO
       // Do not set a unit system.
       break;
     case CopyOptions::CopyType::Shallow:
-      rsrc->setUnitsSystem(this->unitsSystem());
+      this->setUnitsSystem(rsrc->unitsSystem());
       break;
     case CopyOptions::CopyType::Deep:
     {
-      if (auto unitSys = this->unitsSystem())
+      if (auto unitSys = rsrc->unitsSystem())
       {
         nlohmann::json spec = unitSys;
         shared_ptr<units::System> unitCopy = units::System::createFromSpec(spec.dump());
-        rsrc->setUnitsSystem(unitCopy);
+        this->setUnitsSystem(unitCopy);
       }
     }
     break;
@@ -300,18 +302,108 @@ void Resource::copyUnitSystem(const std::shared_ptr<Resource>& rsrc, const CopyO
 
 void Resource::copyLinks(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options) {}
 
-void Resource::copyProperties(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options)
+void Resource::copyProperties(
+  const std::shared_ptr<const Resource>& rsrc,
+  const CopyOptions& options)
 {
   if (!options.copyProperties())
   {
     return;
   }
 
-  // Iterate over all the properties (whether they correspond to a resource,
-  // a component, or an unassociated UUID) and copy them.
-  // Note that we do this rather than visit components so that resources which
-  // wish to store properties unrelated to extant components can still have data
-  // preserved across copies.
+  // In order to obey options.copyComponents(), we create/populate a
+  // list of UUIDs to skip when not copying components.
+  std::unordered_set<smtk::common::UUID> omit;
+  if (!options.copyComponents())
+  {
+    Component::Visitor omitComponents = [&omit](const Component::Ptr& comp) {
+      omit.insert(comp->id());
+    };
+    rsrc->visit(omitComponents);
+  }
+  const auto& sourceMap = rsrc->properties().data().data();
+  auto& targetMap = this->properties().data().data();
+  std::size_t numCopied = 0;
+  for (const auto& sourceEntry : sourceMap)
+  {
+    auto it = targetMap.find(sourceEntry.first);
+    std::cout << "Copy " << sourceEntry.first << " data\n";
+    if (it == targetMap.end())
+    {
+      smtkErrorMacro(options.log(), "No matching \"" << sourceEntry.first << "\" property data.");
+      continue;
+    }
+    auto* targetProps = dynamic_cast<detail::PropertiesBase*>(it->second);
+    auto* sourceProps = dynamic_cast<detail::PropertiesBase*>(sourceEntry.second);
+    if (!targetProps || !sourceProps)
+    {
+      smtkErrorMacro(
+        options.log(),
+        "The \"" << sourceEntry.first << "\" property data cannot be cast to the same type.");
+      continue;
+    }
+    smtk::string::Token invalid;
+    std::set<smtk::common::UUID> sourceIds;
+    sourceProps->allIds(sourceIds);
+    for (const auto& sourceId : sourceIds)
+    {
+      // Skip component properties when not copying components:
+      if (omit.find(sourceId) != omit.end())
+      {
+        continue;
+      }
+
+      smtk::common::UUID targetId;
+      if (auto* targetObj = options.targetObjectFromSourceId<Component>(sourceId))
+      {
+        targetId = targetObj->id();
+      }
+      else
+      {
+        targetId = sourceId;
+      }
+      numCopied += targetProps->copyFrom(sourceProps, invalid, sourceId, targetId);
+    }
+  }
+  smtkInfoMacro(options.log(), "Copied " << numCopied << " properties\n");
+
+  // The problem with the approach below is inefficiency; it will visit every property type
+  // and every property name for every UUID.
+#if 0
+  // Copy the resource's properties:
+  this->copyPropertiesForId(rsrc, rsrc->id(), this->id(), options);
+
+  // Copy each component's properties:
+  if (options.copyComponents())
+  {
+    // Visitor to copy properties of each component.
+    ComponentVisitor copyComponentProperties = [&](const Component& source)
+    {
+      auto* target = options.targetObjectFromSourceId<Component>(source.id());
+      if (target)
+      {
+        this->copyPropertiesForId(rsrc, source.id(), target->id(), options);
+      }
+      else
+      {
+        smtkErrorMacro(options.log(),
+          "No mapping from component \"" << source.name() << "\" (" << source.id() << ")"
+          " so no properties copied.");
+      }
+    };
+
+    rsrc->visit(copyComponentProperties);
+  }
+#endif
+}
+
+bool Resource::copyPropertiesForId(
+  const std::shared_ptr<Resource>& rsrc,
+  const smtk::common::UUID& sourceId,
+  const smtk::common::UUID& targetId,
+  const CopyOptions& options)
+{
+  return false;
 }
 
 } // namespace resource
