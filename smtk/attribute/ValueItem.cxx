@@ -496,46 +496,21 @@ Item::Status ValueItem::assign(
       this->reset();
       result.markModified();
     }
-    // If the expression is contained in the same resource as the item, then find it or create a copy of it
-    else if (sourceValueItem->attribute()->resource() == sourceValueItem->expression()->resource())
+    else
     {
-      std::string nameStr = sourceValueItem->expression()->name();
-      AttributePtr att = resource->findAttribute(nameStr);
-      if (!att)
+      // Do we have the expression in the options' mapping information?
+      Attribute* rawDestExpAtt =
+        options.itemOptions.targetObjectFromSourceId<Attribute>(sourceValueItem->attribute()->id());
+      if (rawDestExpAtt)
       {
-        // Are we allowed to create new attributes?
-        if (!options.itemOptions.disableCopyAttributes())
-        {
-          att = resource->copyAttribute(sourceValueItem->expression(), options, logger);
-          if (att == nullptr)
-          {
-            result.markFailed();
-            smtkErrorMacro(
-              logger,
-              "Could not copy Attribute:" << sourceValueItem->expression()->name()
-                                          << " used as an expression by item: "
-                                          << sourceItem->name());
-            return result;
-          }
-        }
-        else
-        {
-          smtkWarningMacro(
-            logger,
-            "Could not assign Attribute:" << sourceValueItem->expression()->name()
-                                          << " used as an expression by item: "
-                                          << sourceItem->name()
-                                          << " because it is in the same resource as the source "
-                                             "item and disableCopyAttributes option was set");
-        }
-        status = this->setExpression(att);
+        status = this->setExpression(rawDestExpAtt->shared_from_this());
         if (!status)
         {
           if (options.itemOptions.allowPartialValues())
           {
             smtkInfoMacro(
               logger,
-              "Could not assign Expression:" << att->name()
+              "Could not assign Expression:" << rawDestExpAtt->name()
                                              << " to ValueItem: " << sourceItem->name());
             this->setExpression(nullptr);
             result.markModified();
@@ -546,7 +521,97 @@ Item::Status ValueItem::assign(
             smtkErrorMacro(
               logger,
               "Could not assign Expression:"
-                << att->name() << " to ValueItem: " << sourceItem->name()
+                << rawDestExpAtt->name() << " to ValueItem: " << sourceItem->name()
+                << " and allowPartialValues options was not specified.");
+            return result;
+          }
+        }
+      }
+      // If the expression is contained in the same resource as the item, then find it or create a copy of it
+      else if (
+        sourceValueItem->attribute()->resource() == sourceValueItem->expression()->resource())
+      {
+        std::string nameStr = sourceValueItem->expression()->name();
+        AttributePtr att = resource->findAttribute(nameStr);
+        if (!att)
+        {
+          // Are we allowed to create new attributes?
+          if (!options.itemOptions.disableCopyAttributes())
+          {
+            att = resource->copyAttribute(sourceValueItem->expression(), options, logger);
+            if (att == nullptr)
+            {
+              result.markFailed();
+              smtkErrorMacro(
+                logger,
+                "Could not copy Attribute:" << sourceValueItem->expression()->name()
+                                            << " used as an expression by item: "
+                                            << sourceItem->name());
+              return result;
+            }
+          }
+          else
+          {
+            smtkWarningMacro(
+              logger,
+              "Could not assign Attribute:" << sourceValueItem->expression()->name()
+                                            << " used as an expression by item: "
+                                            << sourceItem->name()
+                                            << " because it is in the same resource as the source "
+                                               "item and disableCopyAttributes option was set");
+          }
+          status = this->setExpression(att);
+          if (!status)
+          {
+            if (options.itemOptions.allowPartialValues())
+            {
+              smtkInfoMacro(
+                logger,
+                "Could not assign Expression:" << att->name()
+                                               << " to ValueItem: " << sourceItem->name());
+              this->setExpression(nullptr);
+              result.markModified();
+            }
+            else
+            {
+              result.markFailed();
+              smtkErrorMacro(
+                logger,
+                "Could not assign Expression:"
+                  << att->name() << " to ValueItem: " << sourceItem->name()
+                  << " and allowPartialValues options was not specified.");
+              return result;
+            }
+          }
+          if (status)
+          {
+            result.markModified();
+          }
+        }
+      }
+      else
+      {
+        // The source expression is located in a different resource than the source Item's attribute
+        // so simply assign it
+        status = this->setExpression(sourceValueItem->expression());
+        if (!status)
+        {
+          if (options.itemOptions.allowPartialValues())
+          {
+            smtkInfoMacro(
+              logger,
+              "Could not assign Expression:" << sourceValueItem->expression()->name()
+                                             << " to ValueItem: " << sourceItem->name());
+            this->setExpression(nullptr);
+            result.markModified();
+          }
+          else
+          {
+            result.markFailed();
+            smtkErrorMacro(
+              logger,
+              "Could not assign Expression:"
+                << sourceValueItem->expression()->name() << " to ValueItem: " << sourceItem->name()
                 << " and allowPartialValues options was not specified.");
             return result;
           }
@@ -555,38 +620,6 @@ Item::Status ValueItem::assign(
         {
           result.markModified();
         }
-      }
-    }
-    else
-    {
-      // The source expression is located in a different resource than the source Item's attribute
-      // so simply assign it
-      status = this->setExpression(sourceValueItem->expression());
-      if (!status)
-      {
-        if (options.itemOptions.allowPartialValues())
-        {
-          smtkInfoMacro(
-            logger,
-            "Could not assign Expression:" << sourceValueItem->expression()->name()
-                                           << " to ValueItem: " << sourceItem->name());
-          this->setExpression(nullptr);
-          result.markModified();
-        }
-        else
-        {
-          result.markFailed();
-          smtkErrorMacro(
-            logger,
-            "Could not assign Expression:" << sourceValueItem->expression()->name()
-                                           << " to ValueItem: " << sourceItem->name()
-                                           << " and allowPartialValues options was not specified.");
-          return result;
-        }
-      }
-      if (status)
-      {
-        result.markModified();
       }
     }
   }

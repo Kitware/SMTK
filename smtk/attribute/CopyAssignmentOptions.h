@@ -12,11 +12,19 @@
 #define smtk_attribute_CopyAssignmentOptions_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/common/UUID.h"
 
 #include <string>
+#include <unordered_map>
 
 namespace smtk
 {
+
+namespace resource
+{
+class PersistentObject;
+}
+
 namespace attribute
 {
 
@@ -28,6 +36,16 @@ namespace attribute
 class SMTKCORE_EXPORT AttributeCopyOptions
 {
 public:
+  /// @{
+  /// \brief Methods to set and retrieve the performAssignment Option
+  ///
+  /// If set, this indicates that copied attributes be assigned the values of the original.
+  /// **Note** : If not set then all of the items in the copied Attribute will not be assigned
+  /// including the Attribute's Associations
+  bool performAssignment() const { return m_performAssignment; }
+  void setPerformAssignment(bool val) { m_performAssignment = val; }
+  /// @}
+
   /// @{
   /// \brief Methods to set and retrieve the copyUUID Option
   ///
@@ -56,15 +74,58 @@ public:
 protected:
   bool m_copyUUID = false;
   bool m_copyDefinition = false;
+  bool m_performAssignment = true;
+};
+
+///\brief Class that represents functionality common to both attribute and item assignments.
+///
+/// Currently this is limited to providing a mapping of Persistent Object information used
+/// to determine if the Persistent Object information stored in the source needs to be
+/// mapped to a different Persistent Object w/r to the copy.
+class SMTKCORE_EXPORT CommonAssignmentOptions
+{
+public:
+  /// A type alias for the container holding the UUID translation table.
+  using ObjectMapType = std::unordered_map<smtk::common::UUID, smtk::resource::PersistentObject*>;
+  void setObjectMapping(ObjectMapType* val) { m_objectMapping = val; }
+  const ObjectMapType* objectMapping() const { return m_objectMapping; }
+
+  /// A convenience to fetch an entry from object mapping (if set), casting it to the given type.
+  ///
+  /// Be aware this method may return a null pointer if (a) there is no mapping, (b) there is no
+  /// object that corresponds to the input \a sourceId or (c) the object
+  /// cannot be cast to \a ObjectType.
+  template<typename ObjectType>
+  ObjectType* targetObjectFromSourceId(const smtk::common::UUID& sourceId) const
+  {
+    if (m_objectMapping == nullptr)
+    {
+      return nullptr;
+    }
+    auto it = m_objectMapping->find(sourceId);
+    if (it == m_objectMapping->end())
+    {
+      return nullptr;
+    }
+    return dynamic_cast<ObjectType*>(it->second);
+  }
+
+  virtual std::string convertToString(const std::string& prefix = "") const;
+
+protected:
+  ObjectMapType* m_objectMapping = nullptr;
 };
 
 ///\brief Class used to control how an attribute's information is assigned to another attribute.
 ///
 /// This is primarily used by smtk::attribute::Attribute::assign but can be also
 /// indirectly by smtk::attribute::Resource::copyAttribute and smtk::attribute::Item::assign.
-class SMTKCORE_EXPORT AttributeAssignmentOptions
+class SMTKCORE_EXPORT AttributeAssignmentOptions : public CommonAssignmentOptions
 {
 public:
+  /// A type alias for the container holding the UUID translation table.
+  using ObjectMapType = std::unordered_map<smtk::common::UUID, smtk::resource::PersistentObject*>;
+
   /// @{
   /// \brief Methods to set and retrieve the ignoreMissingItems Option
   ///
@@ -109,7 +170,7 @@ public:
   void setDoNotValidateAssociations(bool val) { m_doNotValidateAssociations = val; }
   /// @}
 
-  std::string convertToString(const std::string& prefix = "") const;
+  std::string convertToString(const std::string& prefix = "") const override;
 
 protected:
   bool m_ignoreMissingItems = false;
@@ -122,7 +183,7 @@ protected:
 ///
 /// This is primarily used by smtk::attribute::Item::assign but can be also
 /// indirectly by smtk::attribute::Attribute::assign and smtk::attribute::Resource::copyAttribute.
-class SMTKCORE_EXPORT ItemAssignmentOptions
+class SMTKCORE_EXPORT ItemAssignmentOptions : public CommonAssignmentOptions
 {
 public:
   /// @{
@@ -196,7 +257,7 @@ public:
   /// @}
 
   /// \brief Converts the current option state into a string that is prefixed by prefix
-  std::string convertToString(const std::string& prefix = "") const;
+  std::string convertToString(const std::string& prefix = "") const override;
 
 protected:
   bool m_ignoreMissingChildren = false;

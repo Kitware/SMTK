@@ -825,7 +825,7 @@ Item::Status ReferenceItem::assign(
     smtkErrorMacro(logger, "Source Item: " << name() << " is not a ReferenceItem");
     return result; // Source is not a model entity item
   }
-  // Are we supposed to assign the model entity values?
+  // Are we supposed to assign the PersistentObject values?
   if (options.itemOptions.ignoreReferenceValues())
   {
     result = Item::assign(sourceItem, options, logger);
@@ -919,55 +919,64 @@ Item::Status ReferenceItem::assign(
     if (sourceReferenceItem->isSet(i))
     {
       auto val = sourceReferenceItem->value(i);
+      // does options provide a mapping of this value to a value to be used by the destination?
+      auto* rawDestVal =
+        options.itemOptions.targetObjectFromSourceId<resource::PersistentObject>(val->id());
 
-      // If the value is contained in the same resource as the item, then find it or create a copy of it
-      // Are we dealing with a Resource or Component?
-      auto valRes = std::dynamic_pointer_cast<smtk::resource::Resource>(val);
-      auto valComp = std::dynamic_pointer_cast<smtk::resource::Component>(val);
-      if (valRes)
+      if (rawDestVal)
       {
-        // Is the resource the source resource?
-        if (valRes == sourceResource)
-        {
-          val = resource; // replace the value with the resource that owns this item
-        }
+        val = rawDestVal->shared_from_this();
       }
-      else if (valComp && (valComp->resource() == sourceResource))
+      else
       {
-        // if this case, val is an attribute which resides in the same resource as the source
-        // item - we need to find it corresponding attribute in this resource and
-        // if doesn't exist, see if we can copy it
-        AttributePtr sourceAttVal = std::dynamic_pointer_cast<Attribute>(val);
-        AttributePtr att = resource->findAttribute(sourceAttVal->name());
-        if (!att)
+        // If the value is contained in the same resource as the item, then find it or create a copy of it
+        // Are we dealing with a Resource or Component?
+        auto valRes = std::dynamic_pointer_cast<smtk::resource::Resource>(val);
+        auto valComp = std::dynamic_pointer_cast<smtk::resource::Component>(val);
+        if (valRes)
         {
-          // Are we allowed to create new attributes?
-          if (!options.itemOptions.disableCopyAttributes())
+          // Is the resource the source resource?
+          if (valRes == sourceResource)
           {
-            att = resource->copyAttribute(sourceAttVal, options, logger);
-            if (att == nullptr)
+            val = resource; // replace the value with the resource that owns this item
+          }
+        }
+        else if (valComp && (valComp->resource() == sourceResource))
+        {
+          // if this case, val is an attribute which resides in the same resource as the source
+          // item - we need to find it corresponding attribute in this resource and
+          // if doesn't exist, see if we can copy it
+          AttributePtr sourceAttVal = std::dynamic_pointer_cast<Attribute>(val);
+          AttributePtr att = resource->findAttribute(sourceAttVal->name());
+          if (!att)
+          {
+            // Are we allowed to create new attributes?
+            if (!options.itemOptions.disableCopyAttributes())
             {
-              result.markFailed();
-              smtkErrorMacro(
+              att = resource->copyAttribute(sourceAttVal, options, logger);
+              if (att == nullptr)
+              {
+                result.markFailed();
+                smtkErrorMacro(
+                  logger,
+                  "Could not create Attribute:" << val->name() << " used by ReferenceItem: "
+                                                << sourceItem->name());
+                return result;
+              }
+            }
+            else
+            {
+              smtkWarningMacro(
                 logger,
-                "Could not create Attribute:" << val->name()
-                                              << " used by ReferenceItem: " << sourceItem->name());
-              return result;
+                "Could not assign Attribute:"
+                  << val->name() << " to ReferenceItem: " << sourceItem->name()
+                  << " because it is in the same resource as the source item "
+                  << "and disableCopyAttributes option was set");
             }
           }
-          else
-          {
-            smtkWarningMacro(
-              logger,
-              "Could not assign Attribute:"
-                << val->name() << " to ReferenceItem: " << sourceItem->name()
-                << " because it is in the same resource as the source item "
-                << "and disableCopyAttributes option was set");
-          }
+          val = att;
         }
-        val = att;
       }
-
       if (this->isSet(i) && this->value(i) == val)
       {
         // No change necessary. Do not mark result as modified.

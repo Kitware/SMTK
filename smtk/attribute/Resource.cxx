@@ -924,6 +924,12 @@ smtk::attribute::AttributePtr Resource::copyAttribute(
     return newAtt;
   }
 
+  if (!options.copyOptions.performAssignment())
+  {
+    // Don't need to assign anything just return the new attribute
+    return newAtt;
+  }
+
   if (!newAtt->assign(sourceAtt, options, logger))
   {
     // There was a problem assigning the attribute information to the copy
@@ -1194,6 +1200,16 @@ std::shared_ptr<smtk::resource::Resource> Resource::clone(
     return rsrc;
   }
 
+  if (this->isNameSet())
+  {
+    rsrc->setName(this->name());
+  }
+
+  if (options.copyLocation())
+  {
+    rsrc->setLocation(this->location());
+  }
+
   rsrc->copyUnitSystem(shared_from_this(), options);
 
   if (options.copyTemplateData() || options.copyComponents())
@@ -1239,23 +1255,13 @@ bool Resource::copyData(
   std::vector<smtk::attribute::AttributePtr> allAttributes;
   if (options.copyComponents())
   {
-    // Construct default options for copying attributes.
+    // Construct options for copying attributes but not their contents.
     smtk::attribute::CopyAssignmentOptions attOptions;
 
     attOptions.copyOptions.setCopyUUID(false);
+    attOptions.copyOptions.setPerformAssignment(false);
     attOptions.copyOptions.setCopyDefinition(
       false); // These should already be present from clone().
-
-    attOptions.attributeOptions.setIgnoreMissingItems(false);
-    attOptions.attributeOptions.setAllowPartialAssociations(true);
-    attOptions.attributeOptions.setDoNotValidateAssociations(true);
-    attOptions.attributeOptions.setCopyAssociations(false);
-
-    attOptions.itemOptions.setIgnoreMissingChildren(false);
-    attOptions.itemOptions.setAllowPartialValues(true);
-    attOptions.itemOptions.setIgnoreReferenceValues(true);
-    attOptions.itemOptions.setDoNotValidateReferenceInfo(true);
-    attOptions.itemOptions.setDisableCopyAttributes(false);
 
     if (options.suboptions().contains<smtk::attribute::CopyAssignmentOptions>())
     {
@@ -1274,34 +1280,146 @@ bool Resource::copyData(
       }
       else
       {
-        // Note: Some attributes may have been copied before they were
-        // iterated in allAttributes (e.g., attribute A has an item with an
-        // expression attribute B – B gets created while copying A and is
-        // thus not copied when the loop above reaches B).
-        // But we need to ensure all attributes are mapped in \a options.
-        result = this->findAttribute(att->name());
-        if (result)
-        {
-          options.objectMapping()[att->id()] = result.get();
-        }
-        else
-        {
-          smtkErrorMacro(
-            options.log(), "Could not copy \"" << att->name() << "\" (" << att->id() << ").");
-        }
+        smtkErrorMacro(
+          options.log(), "Could not copy \"" << att->name() << "\" (" << att->id() << ").");
       }
     }
   }
 
-  this->copyProperties(other, options);
+  // Now copy the View information
+
+  this->copyProperties(source, options);
+  this->copyGeometry(source, options);
+  this->copyViews(source, options);
+
   return true;
 }
 
 bool Resource::copyRelations(
-  const std::shared_ptr<const smtk::resource::Resource>& other,
+  const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
-  return false;
+  const auto& sourceAttResource =
+    std::dynamic_pointer_cast<const smtk::attribute::Resource>(source);
+  if (sourceAttResource == nullptr)
+  {
+    smtkErrorMacro(options.log(), "Source Resource is not an Attribute Resource.");
+    return false;
+  }
+
+  smtk::attribute::CopyAssignmentOptions attOptions;
+
+  // I. Copy associations and reference-item data.
+
+  // None of the copy options should be needed since all of the
+  // attributes should already be copied
+  attOptions.copyOptions.setCopyUUID(false);
+  attOptions.copyOptions.setPerformAssignment(true);
+  attOptions.copyOptions.setCopyDefinition(false); // These should already be present from clone().
+
+  attOptions.attributeOptions.setIgnoreMissingItems(false);
+  attOptions.attributeOptions.setAllowPartialAssociations(false);
+  attOptions.attributeOptions.setDoNotValidateAssociations(
+    true); // There should be no need to validate
+  attOptions.attributeOptions.setCopyAssociations(true);
+  attOptions.attributeOptions.setObjectMapping(&options.objectMapping());
+
+  attOptions.itemOptions.setIgnoreMissingChildren(false);
+  attOptions.itemOptions.setAllowPartialValues(false);
+  attOptions.itemOptions.setIgnoreReferenceValues(false);
+  attOptions.itemOptions.setDoNotValidateReferenceInfo(true);
+  attOptions.itemOptions.setDisableCopyAttributes(true);
+  attOptions.itemOptions.setObjectMapping(&options.objectMapping());
+
+  // for each attribute in the source resource copy assign its data to its copy
+
+  bool status = true;
+  for (const auto& sourceAttInfo : sourceAttResource->m_attributes)
+  {
+    // Find the cloned attribute
+    auto sourceAtt = sourceAttInfo.second;
+    auto* destAtt = options.targetObjectFromSourceId<smtk::attribute::Attribute>(sourceAtt->id());
+
+    if (destAtt == nullptr)
+    {
+      smtkErrorMacro(
+        options.log(),
+        "Can not find Attribute named : " << sourceAtt->name() << "'s UUID in this resource.");
+      status = false;
+      continue;
+    }
+
+    if (destAtt->resource().get() != this)
+    {
+      smtkErrorMacro(
+        options.log(),
+        "Copy of Attribute named : " << sourceAtt->name() << " is not owned by this Resource.");
+      status = false;
+      continue;
+    }
+
+    if (!destAtt->assign(sourceAtt, attOptions, options.log()))
+    {
+      // There was a problem assigning the attribute information to the copy
+      smtkErrorMacro(
+        options.log(),
+        "Could not assign Attribute: " << sourceAtt->name() << "'s information to attribute copy.");
+      status = false;
+    }
+  }
+
+  // II. Copy any other link data (not part of associations or references)
+  // First, ensure AssociationRole and ReferenceRole are excluded.
+  bool removeAssocLinks = options.addLinkRoleToExclude(smtk::attribute::Resource::AssociationRole);
+  bool removeRefLinks = options.addLinkRoleToExclude(smtk::attribute::Resource::ReferenceRole);
+  // Copy link data for this resource.
+  this->copyLinks(source, options);
+  // If AssociationRole and ReferenceRole were not previously excluded, add them back.
+  if (removeAssocLinks)
+  {
+    options.removeLinkRoleToExclude(smtk::attribute::Resource::AssociationRole);
+  }
+  if (removeRefLinks)
+  {
+    options.removeLinkRoleToExclude(smtk::attribute::Resource::ReferenceRole);
+  }
+
+  return status;
+}
+
+void Resource::copyViews(
+  const std::shared_ptr<const smtk::attribute::Resource>& source,
+  smtk::resource::CopyOptions& options)
+{
+  for (const auto& sourceViewInfo : source->m_views)
+  {
+    const auto& sourceView = sourceViewInfo.second;
+    auto view = smtk::view::Configuration::New(sourceView->type(), sourceView->name());
+    view->copyContents(*sourceView);
+    this->updateViewComponentIdAttributes(view->details(), options);
+    this->addView(view);
+  }
+}
+
+void Resource::updateViewComponentIdAttributes(
+  smtk::view::Configuration::Component& comp,
+  smtk::resource::CopyOptions& options)
+{
+  std::string idString;
+  // Does the component have an ID Attribute?
+  if (comp.attribute("ID", idString))
+  {
+    smtk::common::UUID uuid(idString);
+    auto pobj = options.targetObjectFromSourceId<smtk::resource::PersistentObject>(uuid);
+    if (pobj)
+    {
+      comp.setAttribute("ID", pobj->id().toString());
+    }
+  }
+  for (auto& child : comp.children())
+  {
+    this->updateViewComponentIdAttributes(child, options);
+  }
 }
 
 void Resource::setActiveCategoriesEnabled(bool mode)

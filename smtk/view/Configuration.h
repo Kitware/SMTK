@@ -77,6 +77,7 @@ public:
     void copyContents(const Component& comp);
 
     const std::vector<Component>& children() const { return m_children; }
+    std::vector<Component>& children() { return m_children; }
 
     std::size_t numberOfChildren() const { return m_children.size(); }
 

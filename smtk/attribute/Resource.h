@@ -421,11 +421,24 @@ public:
     const std::shared_ptr<const smtk::resource::Resource>& other,
     smtk::resource::CopyOptions& options) override;
 
-  /// Copy relations (associations, references) from the \a other resource
+  /// Copy relations (associations, references) from the \a source resource
   /// into this resource, as specified by \a options.
   bool copyRelations(
-    const std::shared_ptr<const smtk::resource::Resource>& other,
+    const std::shared_ptr<const smtk::resource::Resource>& source,
     smtk::resource::CopyOptions& options) override;
+
+  /// Copy View Information from the \a source resource
+  /// into this resource, as specified by \a options.
+  void copyViews(
+    const std::shared_ptr<const smtk::attribute::Resource>& source,
+    smtk::resource::CopyOptions& options);
+  /// Update ID information of a View Component using the object mapping (if provided)
+  ///
+  /// If /a comp contains an ID attribute and it maps to a different persistent object,
+  /// the mapped object's id will be substituted in /a comp.
+  void updateViewComponentIdAttributes(
+    smtk::view::Configuration::Component& comp,
+    smtk::resource::CopyOptions& options);
 
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
