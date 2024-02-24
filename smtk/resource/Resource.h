@@ -168,7 +168,7 @@ public:
   /// is generated or assigned.
   std::string name() const override;
   virtual bool setName(const std::string& name);
-  bool isNameSet() { return !m_name.empty(); }
+  bool isNameSet() const { return !m_name.empty(); }
   ///@}
 
   ///@name Clean/Dirty State
