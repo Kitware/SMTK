@@ -419,7 +419,7 @@ public:
   /// If \a options.copyComponents() is false, any properties on the resource
   /// and non-component properties (property entries with a UUID that do not
   /// correspond to a component in \a rsrc) will still be copied.
-  void copyProperties(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
+  void copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyOptions& options);
   ///@}
 
 protected:

@@ -449,7 +449,15 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
 {
   using smtk::resource::CopyOptions;
 
-  auto result = Resource<Traits>::create();
+  std::shared_ptr<smtk::graph::ResourceBase> result;
+  if (auto rsrcMgr = this->manager())
+  {
+    result = std::dynamic_pointer_cast<ResourceBase>(rsrcMgr->create(this->typeName()));
+  }
+  if (!result)
+  {
+    result = Resource<Traits>::create();
+  }
   if (!result)
   {
     return result;
@@ -488,6 +496,15 @@ bool Resource<Traits>::copyData(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
+  const auto& graphSource = std::dynamic_pointer_cast<const Resource<Traits>>(source);
+  if (!graphSource)
+  {
+    smtkErrorMacro(
+      options.log(),
+      "Resource types do not match (" << source->typeName() << " vs " << this->typeName() << ").");
+    return false;
+  }
+
   // Copy nodes
   // Note that this simply constructs new nodes of the same type
   // assuming they can be created with default constructors.
@@ -505,6 +522,9 @@ bool Resource<Traits>::copyData(
 
   // Copy property data
   this->copyProperties(source, options);
+
+  // Copy renderable geometry
+  this->copyGeometry(graphSource, options);
 
   // Copy arcs
   // TODO.

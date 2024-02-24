@@ -302,9 +302,7 @@ void Resource::copyUnitSystem(
 
 void Resource::copyLinks(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options) {}
 
-void Resource::copyProperties(
-  const std::shared_ptr<const Resource>& rsrc,
-  const CopyOptions& options)
+void Resource::copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyOptions& options)
 {
   if (!options.copyProperties())
   {
@@ -313,13 +311,9 @@ void Resource::copyProperties(
 
   // In order to obey options.copyComponents(), we create/populate a
   // list of UUIDs to skip when not copying components.
-  std::unordered_set<smtk::common::UUID> omit;
   if (!options.copyComponents())
   {
-    Component::Visitor omitComponents = [&omit](const Component::Ptr& comp) {
-      omit.insert(comp->id());
-    };
-    rsrc->visit(omitComponents);
+    options.omitComponents(rsrc);
   }
   const auto& sourceMap = rsrc->properties().data().data();
   auto& targetMap = this->properties().data().data();
@@ -348,7 +342,7 @@ void Resource::copyProperties(
     for (const auto& sourceId : sourceIds)
     {
       // Skip component properties when not copying components:
-      if (omit.find(sourceId) != omit.end())
+      if (options.isOmitted(sourceId))
       {
         continue;
       }

@@ -65,11 +65,23 @@ public:
 
   /// Should property data be copied?
   ///
-  /// If copyComponents() returns false, only properties corresponding to the resource are
-  /// copied. Otherwise, all properties (resource and component) are copied if copyProperties()
+  /// Note that if copyComponents() returns false, only properties corresponding to the resource
+  /// are copied. Otherwise, all properties (resource and component) are copied if copyProperties()
   /// returns true.
   bool setCopyProperties(bool copy);
   bool copyProperties() const { return m_copyProperties; }
+
+  /// Should renderable geometry be copied?
+  ///
+  /// In general, copying geometry should not be required as backend providers should be
+  /// able to regenerate the geometry on demand; however, copying this data can save
+  /// significant effort since generating renderable data can be slow.
+  ///
+  /// Note that if copyComponents() returns false, only geometry corresponding to the resource
+  /// is copied. Otherwise, all geometry (resource and component) are copied if copyGeometry()
+  /// returns true.
+  bool setCopyGeometry(bool copy);
+  bool copyGeometry() const { return m_copyGeometry; }
 
   /// Should the template type (and perhaps other template-related data) be copied?
   ///
@@ -106,6 +118,7 @@ public:
   /// from duplication.
   bool clearLinkRolesToExclude();
   bool addLinkRoleToExclude(smtk::resource::Links::RoleType linkRole);
+  bool removeLinkRoleToExclude(smtk::resource::Links::RoleType linkRole);
   const std::set<smtk::resource::Links::RoleType>& linkRolesToExclude() const
   {
     return m_linkRolesToExclude;
@@ -138,6 +151,25 @@ public:
     return dynamic_cast<ObjectType*>(it->second);
   }
 
+  /// Return a set of UUIDs to omit from copying.
+  ///
+  /// These UUIDs need not necessarily correspond to persistent objects,
+  /// although typically this map is populated with component IDs (e.g., by
+  /// smtk::resource::Resource::copyProperties() or other methods)
+  /// when copyComponents() is false.
+  const std::unordered_set<smtk::common::UUID>& omit() const { return m_omit; }
+  std::unordered_set<smtk::common::UUID>& omit() { return m_omit; }
+
+  /// Return whether a \a sourceId should be omitted from the copy.
+  bool shouldOmitId(const smtk::common::UUID& sourceId) const;
+
+  /// Insert a \a resource's component UUIDs into the omit() set.
+  ///
+  /// This is used by smtk::resource::Resource::copyProperties() and other
+  /// helpers to prevent data related to components by UUID from being
+  /// copied.
+  void omitComponents(const std::shared_ptr<const Resource>& resource);
+
   /// Provide a type-container to hold options specific to Resource subclasses.
   ///
   /// For example, you may insert an instance of smtk::attribute::CopyAssignmentOptions
@@ -155,10 +187,13 @@ protected:
   bool m_copyLocation{ false };
   bool m_copyComponents{ true };
   bool m_copyProperties{ true };
+  bool m_copyGeometry{ true };
   bool m_copyLinks{ true };
   std::set<smtk::resource::Links::RoleType> m_linkRolesToExclude;
 
   ObjectMapType m_objectMapping;
+  std::unordered_set<smtk::common::UUID> m_omit;
+  std::unordered_set<smtk::common::UUID> m_omitComponentsResources;
 
   smtk::common::TypeContainer m_suboptions;
 

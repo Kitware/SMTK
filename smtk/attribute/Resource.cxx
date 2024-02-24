@@ -1286,8 +1286,6 @@ bool Resource::copyData(
     }
   }
 
-  // Now copy the View information
-
   this->copyProperties(source, options);
   this->copyGeometry(source, options);
   this->copyViews(source, options);

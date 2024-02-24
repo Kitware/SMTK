@@ -33,6 +33,8 @@ inline py::class_< smtk::resource::CopyOptions > pybind11_init_smtk_resource_Cop
     .def("setCopyComponents", &smtk::resource::CopyOptions::setCopyComponents)
     .def("copyProperties", &smtk::resource::CopyOptions::copyProperties)
     .def("setCopyProperties", &smtk::resource::CopyOptions::setCopyProperties)
+    .def("copyGeometry", &smtk::resource::CopyOptions::copyGeometry)
+    .def("setCopyGeometry", &smtk::resource::CopyOptions::setCopyGeometry)
     .def("copyTemplateData", &smtk::resource::CopyOptions::copyTemplateData)
     .def("setCopyTemplateData", &smtk::resource::CopyOptions::setCopyTemplateData)
     .def("copyTemplateVersion", &smtk::resource::CopyOptions::copyTemplateVersion)
@@ -43,8 +45,13 @@ inline py::class_< smtk::resource::CopyOptions > pybind11_init_smtk_resource_Cop
     .def("setCopyLinks", &smtk::resource::CopyOptions::setCopyLinks)
     .def("clearLinkRolesToExclude", &smtk::resource::CopyOptions::clearLinkRolesToExclude)
     .def("addLinkRoleToExclude", &smtk::resource::CopyOptions::addLinkRoleToExclude)
+    .def("removeLinkRoleToExclude", &smtk::resource::CopyOptions::removeLinkRoleToExclude)
     .def("linkRolesToExclude", &smtk::resource::CopyOptions::linkRolesToExclude)
     .def("shouldExcludeLinksInRole", &smtk::resource::CopyOptions::shouldExcludeLinksInRole)
+    .def("omit", (std::unordered_set<smtk::common::UUID>& (smtk::resource::CopyOptions::*)())&smtk::resource::CopyOptions::omit)
+    .def("shouldOmitId", &smtk::resource::CopyOptions::shouldOmitId)
+    .def("omitComponents", &smtk::resource::CopyOptions::omitComponents, py::arg("resource"))
+    .def("objectMapping", (smtk::resource::CopyOptions::ObjectMapType& (smtk::resource::CopyOptions::*)())&smtk::resource::CopyOptions::objectMapping)
     .def("log", &smtk::resource::CopyOptions::log)
     ;
   return instance;

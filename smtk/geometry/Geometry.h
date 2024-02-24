@@ -19,6 +19,10 @@
 
 namespace smtk
 {
+namespace resource
+{
+class CopyOptions;
+}
 namespace geometry
 {
 
@@ -118,10 +122,10 @@ public:
   /// Providers are responsible for updating m_lastModified.
   GenerationNumber lastModified() const { return m_lastModified; }
 
-  /// Query methods
-  ///
+  ///@name Query methods
+  ///@{
   /// These methods are invoked by consumers of geometry.
-  //@{
+
   /// Return a monotonically increasing number that changes whenever the object's geometry changes.
   virtual GenerationNumber generationNumber(const resource::PersistentObject::Ptr&) const = 0;
   /// Populate the bounds (\a bds) with the given object's bounds.
@@ -132,15 +136,15 @@ public:
   virtual bool readLockRequired() const { return true; }
   /// Visit each persistent object that has renderable geometry.
   virtual void visit(Visitor fn) const = 0;
-  //@}
+  ///@}
 
-  /// Modfication methods
-  ///
+  ///@name Modfication methods
+  ///@{
   /// These methods are typically invoked by operations
   /// that create or modify objects with renderable geometry.
   /// There is no requirement that these methods be used by subclasses
   /// (there may be alternate methods)
-  //@{
+
   /// Mark the object's geometry as modified.
   /// Calling this should increment the generation number and
   /// recompute any tessellation the next time the object is queried.
@@ -152,7 +156,24 @@ public:
   /// cached geometry; this method tells the geometry provider never to ask
   /// for the geometry of the given \a uid again.
   virtual bool erase(const smtk::common::UUID& uid) = 0;
-  //@}
+  ///@}
+
+  ///@name Copy methods
+  ///@{
+  /// This method is used by smtk::geometry::Resource::copyGeometry()
+  /// to shallow-copy renderable geometry into a cloned/copied resource.
+  ///
+  /// The default implementation (since it does not know the form of
+  /// the renderable geometry) does nothing. If your backend's implementation
+  /// uses the geometry::Cache, copying is supported as long as
+  /// copy-construction of the renderable geometry is supported.
+  ///
+  /// This method should return true on success and false otherwise.
+  /// If \a options.copyGeometry() is false, this method should always
+  /// return true (i.e., it is not an error to omit geometry when asked
+  /// to omit it).
+  virtual bool copyGeometry(const UniquePtr& sourceGeometry, smtk::resource::CopyOptions& options);
+  ///@}
 
 protected:
   std::atomic<GenerationNumber> m_lastModified;

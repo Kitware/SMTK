@@ -13,6 +13,8 @@
 #include "smtk/geometry/GeometryForBackend.h"
 #include "smtk/geometry/Resource.h"
 
+#include "smtk/resource/CopyOptions.h"
+
 #include <map>
 
 namespace smtk
@@ -254,6 +256,46 @@ public:
         // else remove cache entry?
       }
     }
+  }
+
+  /// Copy data from another backend as directed by \a options.
+  ///
+  /// This implementation will only work if the \a source geometry
+  /// is the same type as this object.
+  bool copyGeometry(const std::unique_ptr<Geometry>& source, smtk::resource::CopyOptions& options)
+    override
+  {
+    // Exit without error if we should not copy renderable geometry.
+    if (!options.copyGeometry())
+    {
+      return true;
+    }
+
+    // Error out if given data of a different type.
+    const auto* sourceCache = dynamic_cast<Cache*>(source.get());
+    if (!sourceCache)
+    {
+      return false;
+    }
+
+    for (const auto& entry : sourceCache->m_cache)
+    {
+      if (options.shouldOmitId(entry.first))
+      {
+        continue;
+      }
+      if (
+        auto* targetObj =
+          options.targetObjectFromSourceId<smtk::resource::PersistentObject>(entry.first))
+      {
+        m_cache[targetObj->id()] = entry.second;
+      }
+      else
+      {
+        m_cache[entry.first] = entry.second;
+      }
+    }
+    return true;
   }
 
   /// Remove a cache entry's geometry (but keep its generation number intact).

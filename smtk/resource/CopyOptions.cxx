@@ -7,8 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
 #include "smtk/resource/CopyOptions.h"
+
+#include "smtk/resource/Resource.h"
 
 #include "smtk/io/Logger.h"
 
@@ -52,6 +53,7 @@ CopyOptions::~CopyOptions()
 smtkCopySetMacro(CopyOptions, Location);
 smtkCopySetMacro(CopyOptions, Components);
 smtkCopySetMacro(CopyOptions, Properties);
+smtkCopySetMacro(CopyOptions, Geometry);
 smtkCopySetMacro(CopyOptions, TemplateData);
 smtkCopySetMacro(CopyOptions, TemplateVersion);
 smtkCopySetMacro(CopyOptions, Links);
@@ -80,6 +82,33 @@ bool CopyOptions::addLinkRoleToExclude(smtk::resource::Links::RoleType linkRole)
 {
   bool didInsert = m_linkRolesToExclude.insert(linkRole).second;
   return didInsert;
+}
+
+bool CopyOptions::removeLinkRoleToExclude(smtk::resource::Links::RoleType linkRole)
+{
+  bool didRemove = m_linkRolesToExclude.erase(linkRole) > 0;
+  return didRemove;
+}
+
+bool CopyOptions::shouldOmitId(const smtk::common::UUID& sourceId) const
+{
+  return m_omit.find(sourceId) != m_omit.end();
+}
+
+void CopyOptions::omitComponents(const std::shared_ptr<const Resource>& resource)
+{
+  // Do not attempt to re-omit what is already omitted.
+  if (
+    !resource || m_omitComponentsResources.find(resource->id()) != m_omitComponentsResources.end())
+  {
+    return;
+  }
+
+  Component::Visitor omitComponents = [this](const Component::Ptr& comp) {
+    m_omit.insert(comp->id());
+  };
+  resource->visit(omitComponents);
+  m_omitComponentsResources.insert(resource->id());
 }
 
 } // namespace resource
