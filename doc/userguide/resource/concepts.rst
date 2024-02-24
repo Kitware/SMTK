@@ -125,12 +125,3 @@ In addition to these useful base classes,
   cache objects that individual Query objects may use. Multiple query classes can
   share the same cache object (e.g., ClosestPoint and ClosestCell might both use
   a PointLocator cache object).
-
-Conceptually, resources may be
-
-* **cloned** (which produces a new "blank" resource that has its own UUID but with
-  ancillary data matching the source's ancillary data); or
-* **copied** (which produces a new resource that has a different UUID and different
-  component UUIDs but whose content matches the source document); or
-* **updated** (which produces a new resource whose UUIDs match the source but whose
-  template version has been updated).
