@@ -29,6 +29,10 @@ inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_r
     .def("setId", &smtk::resource::PersistentObject::setId, py::arg("myID"))
     .def("name", &smtk::resource::PersistentObject::name)
     .def("properties", (smtk::resource::Properties& (smtk::resource::PersistentObject::*)())&smtk::resource::PersistentObject::properties, py::return_value_policy::reference_internal)
+    .def("typeToken", &smtk::resource::PersistentObject::typeToken)
+    .def("classHierarchy", &smtk::resource::PersistentObject::classHierarchy)
+    .def("matchesType", &smtk::resource::PersistentObject::matchesType, py::arg("candidate"))
+    .def("generationsFromBase", &smtk::resource::PersistentObject::generationsFromBase, py::arg("base"))
     ;
   return instance;
 }
