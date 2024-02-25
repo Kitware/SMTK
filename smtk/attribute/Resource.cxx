@@ -1241,7 +1241,7 @@ std::shared_ptr<smtk::resource::Resource> Resource::clone(
   return rsrc;
 }
 
-bool Resource::copyData(
+bool Resource::copyStructure(
   const std::shared_ptr<const smtk::resource::Resource>& other,
   smtk::resource::CopyOptions& options)
 {

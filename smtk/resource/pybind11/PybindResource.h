@@ -33,7 +33,7 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def_static("create", &smtk::resource::PyResource::create)
     .def("clean", &smtk::resource::Resource::clean)
     .def("clone", &smtk::resource::Resource::clone)
-    .def("copyData", &smtk::resource::Resource::copyData, py::arg("source"), py::arg("copyOptions"))
+    .def("copyStructure", &smtk::resource::Resource::copyStructure, py::arg("source"), py::arg("copyOptions"))
     .def("copyRelations", &smtk::resource::Resource::copyRelations, py::arg("source"), py::arg("copyOptions"))
     .def("copyProperties", &smtk::resource::Resource::copyProperties, py::arg("source"), py::arg("copyOptions"))
     .def("copyUnitSystem", &smtk::resource::Resource::copyUnitSystem, py::arg("source"), py::arg("copyOptions"))

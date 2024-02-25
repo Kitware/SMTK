@@ -25,7 +25,7 @@ Thus, resources may be
 * **updated** (which produces a new resource whose UUIDs match the source but whose
   template version has been updated).
 
-See the :smtk:`clone <smtk::resource::Resource::clone>`, :smtk:`copyData <smtk::resource::Resource::copyData>`,
+See the :smtk:`clone <smtk::resource::Resource::clone>`, :smtk:`copyStructure <smtk::resource::Resource::copyStructure>`,
 and :smtk:`copyRelations <smtk::resource::Resource::copyRelations>` methods for details on how to carry
 these tasks out.
 Note that, as with supports for template type and version information, the ability to clone

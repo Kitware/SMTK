@@ -364,7 +364,7 @@ public:
   /// while preserving UUIDs).
   ///
   /// This method does not copy the user-authored content of a resource.
-  /// Use the copyData() method on the returned clone if you wish to copy
+  /// Use the copyStructure() method on the returned clone if you wish to copy
   /// that data.
   ///
   /// However, the \a options **will** determine whether ancillary data
@@ -385,15 +385,15 @@ public:
   /// If this method returns true, you should call copyRelations() as well.
   /// The copyRelations() method adds any requested references between objects (both
   /// in the same and in external resources) using data stored in \a options by the
-  /// copyData() method. The two methods (copyData() and copyRelations())
+  /// copyStructure() method. The two methods (copyStructure() and copyRelations())
   /// allow duplication of _multiple resources_ at once with references among them
-  /// properly translated. This is accomplished by calling copyData() on each resource
+  /// properly translated. This is accomplished by calling copyStructure() on each resource
   /// to be processed and _then_ calling copyRelations() on each resource.
   ///
   /// This method will always produce components that mirror the \a source components
   /// but have distinct UUIDs. On completion, the \a options object holds a map relating
   /// the \a source components to their copies in this resource.
-  virtual bool copyData(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+  virtual bool copyStructure(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
   /// Resolve internal and external references among components copied from a \a source resource.
   ///
@@ -410,7 +410,7 @@ public:
   /// Copy all property data from \a rsrc, mapping them along the way via \a options.
   ///
   /// This method is intended for use by subclasses of Resource from within their
-  /// copyData() implementation.
+  /// copyStructure() implementation.
   ///
   /// Note that this method must be called **after** components have been copied from
   /// \a rsrc as it relies upon \a options.objectMapping() to contain entries that

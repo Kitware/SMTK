@@ -261,7 +261,7 @@ std::shared_ptr<Resource> Resource::clone(CopyOptions& options) const
   return nil;
 }
 
-bool Resource::copyData(const std::shared_ptr<const Resource>& source, CopyOptions& options)
+bool Resource::copyStructure(const std::shared_ptr<const Resource>& source, CopyOptions& options)
 {
   (void)source;
   (void)options;

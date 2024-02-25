@@ -252,8 +252,8 @@ public:
   std::shared_ptr<smtk::resource::Resource> clone(
     smtk::resource::CopyOptions& options) const override;
 
-  /// Implement copyData() to copy arcs and nodes from a non-empty resource of the same type.
-  bool copyData(
+  /// Implement copyStructure() to copy arcs and nodes from a non-empty resource of the same type.
+  bool copyStructure(
     const std::shared_ptr<const smtk::resource::Resource>& source,
     smtk::resource::CopyOptions& options) override;
 
@@ -492,7 +492,7 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
 }
 
 template<typename Traits>
-bool Resource<Traits>::copyData(
+bool Resource<Traits>::copyStructure(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
@@ -509,7 +509,7 @@ bool Resource<Traits>::copyData(
   // Note that this simply constructs new nodes of the same type
   // assuming they can be created with default constructors.
   // If your subclass requires something fancier, you should
-  // override copyData().
+  // override copyStructure().
   if (options.copyComponents())
   {
     smtk::resource::Component::Visitor copyComponent =

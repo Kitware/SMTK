@@ -417,7 +417,7 @@ public:
     smtk::resource::CopyOptions& options) const override;
 
   /// Copy data from the \a other resource into this resource, as specified by \a options.
-  bool copyData(
+  bool copyStructure(
     const std::shared_ptr<const smtk::resource::Resource>& other,
     smtk::resource::CopyOptions& options) override;
 
