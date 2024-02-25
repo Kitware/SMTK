@@ -451,7 +451,7 @@ protected:
   ///
   /// This method is intended for use by subclasses of Resource from within their
   /// copyRelations() implementation.
-  void copyLinks(const std::shared_ptr<Resource>& rsrc, const CopyOptions& options);
+  void copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;
   std::shared_ptr<units::System> m_unitsSystem;

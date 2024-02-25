@@ -540,7 +540,9 @@ bool Resource<Traits>::copyRelations(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
-  // TODO: Copy links.
+  // Copy links.
+  this->copyLinks(source, options);
+
   return true;
 }
 
