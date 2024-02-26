@@ -719,15 +719,16 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay/io" \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/mesh" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators/plugin" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/source" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/geometry" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/io" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/io/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/markup" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/mesh" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/model" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/geometry" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators/plugin" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/filter" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/source" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/widgets" \
   "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
   "@smtk_SOURCE_DIR@/smtk/extension/matplotlib/plugin" \
