@@ -9,6 +9,9 @@ produce an empty ``clone()`` of itself; to copy user data (via ``copyStructure()
 and to copy internal/external relationships among components (via ``copyRelations()``).
 See the user's guide for more information.
 
+A new operation, :smtk:`CopyResources <smtk::operation::CoypResources>` is provided
+that invokes these methods on a collection of resources.
+
 Developer changes
 ~~~~~~~~~~~~~~~~~~
 
@@ -29,3 +32,11 @@ You may also wish to
   :smtk:`smtk::resource::Resource::CopyProperties` will not copy
   them; either you must implement a copy constructor or copy these
   property values yourself.
+
+User changes
+~~~~~~~~~~~~
+
+SMTK now provides a "copy resources" operation that accepts a set of input
+resources to duplicate.
+If all of the resources provide support for copying, then a copy of each
+one is constructed and added to the resource manager on completion.
