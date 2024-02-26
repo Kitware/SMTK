@@ -160,6 +160,8 @@ public:
 
   ///@name Copy methods
   ///@{
+  /// Methods to assist in copying resources.
+
   /// This method is used by smtk::geometry::Resource::copyGeometry()
   /// to shallow-copy renderable geometry into a cloned/copied resource.
   ///

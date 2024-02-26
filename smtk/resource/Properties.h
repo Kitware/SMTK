@@ -504,6 +504,8 @@ private:
 class SMTKCORE_EXPORT Properties
 {
 public:
+  virtual ~Properties() = default;
+
   template<typename Type>
   using Indexed = std::unordered_map<smtk::common::UUID, Type>;
 

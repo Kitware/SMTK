@@ -44,6 +44,7 @@ public:
   smtkSharedFromThisMacro(Geometry);
   smtkSuperclassMacro(BaseClass);
 
+  using UniquePtr = Geometry::UniquePtr;
   using GenerationNumber = Geometry::GenerationNumber;
   using DataType = typename BaseClass::DataType;
   using BoundingBox = Geometry::BoundingBox;
@@ -262,8 +263,7 @@ public:
   ///
   /// This implementation will only work if the \a source geometry
   /// is the same type as this object.
-  bool copyGeometry(const std::unique_ptr<Geometry>& source, smtk::resource::CopyOptions& options)
-    override
+  bool copyGeometry(const UniquePtr& source, smtk::resource::CopyOptions& options) override
   {
     // Exit without error if we should not copy renderable geometry.
     if (!options.copyGeometry())
