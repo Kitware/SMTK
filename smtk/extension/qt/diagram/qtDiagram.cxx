@@ -187,6 +187,12 @@ public:
     // widgets with stretch factors).
     m_sidebarInnerLayout->addWidget(m_legend);
     m_sidebarInnerLayout->setStretchFactor(m_legend, 4);
+    bool showLegend = true;
+    if (m_configuration)
+    {
+      m_configuration->details().attributeAsBool("Legend", showLegend);
+    }
+    m_legend->setVisible(showLegend);
 
     std::string panelTitle = "Workflow Diagram";
     if (m_configuration)
