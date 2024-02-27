@@ -527,6 +527,7 @@ bool Resource<Traits>::copyStructure(
   this->copyGeometry(graphSource, options);
 
   // Copy arcs
+  this->arcs().copyArcs(graphSource.get(), options, this);
   // TODO.
   // TODO: Look for an option to omit arc copying (specific to graph resource) in suboptions?
   // TODO: Need to iterate only over explicit arc types (implicit arcs do not need copying)

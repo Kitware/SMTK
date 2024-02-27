@@ -123,6 +123,7 @@
       return this->isDirected() ? Directionality::IsDirected : Directionality::IsUndirected;
     }
     bool mutability() const override { return this->isMutable(); }
+    bool explicitStorage() const override { return this->isExplicit(); }
 
   protected:
     template<
