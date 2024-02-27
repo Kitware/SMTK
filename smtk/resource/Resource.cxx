@@ -435,6 +435,10 @@ bool Resource::copyPropertiesForId(
   const smtk::common::UUID& targetId,
   const CopyOptions& options)
 {
+  (void)rsrc;
+  (void)sourceId;
+  (void)targetId;
+  (void)options;
   return false;
 }
 

@@ -198,7 +198,8 @@ protected:
   smtk::common::TypeContainer m_suboptions;
 
   mutable smtk::io::Logger* m_log{ nullptr };
-  bool m_deleteLog{ false };
+  // NOLINTNEXTLINE(modernize-use-default-member-init)
+  bool m_deleteLog;
 };
 
 } // namespace resource

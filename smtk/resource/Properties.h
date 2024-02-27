@@ -781,7 +781,7 @@ protected:
   friend Component;
 
   ComponentProperties(const Component* component);
-  ~ComponentProperties();
+  ~ComponentProperties() override;
 
   const smtk::common::UUID& id() const override;
   smtk::common::TypeMapBase<std::string>& properties() override;
