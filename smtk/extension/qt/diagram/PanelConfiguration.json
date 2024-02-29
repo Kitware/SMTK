@@ -6,6 +6,7 @@
       "Name": "Details",
       "Attributes": {
         "TopLevel": true,
+        "Legend": true,
         "SearchBar": true,
         "Title": "Diagram"
       },

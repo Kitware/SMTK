@@ -85,6 +85,11 @@ The top-level view configuration may specify the following attributes:
      - The text that should appear as the view's name. If you place
        this view inside a dock widget, it will be in the panel's title bar.
 
+   * - Legend
+     - Either ``true`` or ``false`` to indicate whether to show the legend.
+       (Note the legend may be created and maintained even when false, but
+       will not be shown if false.)
+
    * - SearchBar
      - Either ``true`` or ``false`` to indicate whether to provide a
        search bar to select objects in the diagram.
