@@ -252,14 +252,14 @@ public:
   std::shared_ptr<smtk::resource::Resource> clone(
     smtk::resource::CopyOptions& options) const override;
 
-  /// Implement copyStructure() to copy arcs and nodes from a non-empty resource of the same type.
-  bool copyStructure(
+  /// Implement copyInitialize() to copy arcs and nodes from a non-empty resource of the same type.
+  bool copyInitialize(
     const std::shared_ptr<const smtk::resource::Resource>& source,
     smtk::resource::CopyOptions& options) override;
 
-  /// Implement copyRelations() to copy any external links from a non-empty resource of
+  /// Implement copyFinalize() to copy any external links from a non-empty resource of
   /// the same type.
-  bool copyRelations(
+  bool copyFinalize(
     const std::shared_ptr<const smtk::resource::Resource>& source,
     smtk::resource::CopyOptions& options) override;
 
@@ -492,7 +492,7 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
 }
 
 template<typename Traits>
-bool Resource<Traits>::copyStructure(
+bool Resource<Traits>::copyInitialize(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
@@ -509,7 +509,7 @@ bool Resource<Traits>::copyStructure(
   // Note that this simply constructs new nodes of the same type
   // assuming they can be created with default constructors.
   // If your subclass requires something fancier, you should
-  // override copyStructure().
+  // override copyInitialize().
   if (options.copyComponents())
   {
     smtk::resource::Component::Visitor copyComponent =
@@ -528,22 +528,43 @@ bool Resource<Traits>::copyStructure(
 
   // Copy arcs
   this->arcs().copyArcs(graphSource.get(), options, this);
-  // TODO.
-  // TODO: Look for an option to omit arc copying (specific to graph resource) in suboptions?
-  // TODO: Need to iterate only over explicit arc types (implicit arcs do not need copying)
-  // TODO: For each arc type, for each arc, look up endpoints in options.objectMapping() and create arc.
 
   return true;
 }
 
 template<typename Traits>
-bool Resource<Traits>::copyRelations(
+bool Resource<Traits>::copyFinalize(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
 {
   // Copy links.
   this->copyLinks(source, options);
 
+  // Provide target nodes with an opportunity to copy state data from their source nodes.
+  if (options.copyComponents())
+  {
+    smtk::resource::Component::Visitor assignComponent =
+      [&](const std::shared_ptr<smtk::resource::Component>& comp) {
+        auto sourceNode = std::dynamic_pointer_cast<smtk::graph::Component>(comp);
+        if (sourceNode && !options.shouldOmitId(sourceNode->id()))
+        {
+          if (
+            auto* targetNode =
+              options.targetObjectFromSourceId<smtk::graph::Component>(sourceNode->id()))
+          {
+            targetNode->assign(sourceNode, options);
+          }
+          else
+          {
+            smtkErrorMacro(
+              options.log(),
+              "Source node mapping for " << source->id() << ", \"" << sourceNode->name()
+                                         << "\", did not produce a target.");
+          }
+        }
+      };
+    source->visit(assignComponent);
+  }
   return true;
 }
 

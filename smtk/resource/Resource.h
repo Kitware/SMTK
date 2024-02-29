@@ -364,7 +364,7 @@ public:
   /// while preserving UUIDs).
   ///
   /// This method does not copy the user-authored content of a resource.
-  /// Use the copyStructure() method on the returned clone if you wish to copy
+  /// Use the copyInitialize() method on the returned clone if you wish to copy
   /// that data.
   ///
   /// However, the \a options **will** determine whether ancillary data
@@ -373,7 +373,7 @@ public:
   /// present in the returned clone.
   virtual std::shared_ptr<Resource> clone(CopyOptions& options) const;
 
-  /// Copy data from a \a source resource into this resource.
+  /// Copy initial data from a \a source resource into this resource.
   ///
   /// This method must be subclassed by resources that wish to support copying;
   /// the default implementation simply returns false.
@@ -382,24 +382,35 @@ public:
   /// properties, and other self-contained resource-specific data from the \a source
   /// into this resource.
   ///
-  /// If this method returns true, you should call copyRelations() as well.
-  /// The copyRelations() method adds any requested references between objects (both
+  /// If this method returns true, you should call copyFinalize() as well.
+  /// If it returns false, you should abandon copying and allow the cloned resource
+  /// to be destroyed.
+  ///
+  /// This method begins the copy process by populating \a options.objectMapping(),
+  /// which maps \a source- component UUIDs to pointers to components in this resource.
+  /// You can (and should) call copyInitialize() on multiple resources before calling
+  /// copyFinalize() on any of them; in this way, references between components of
+  /// all the involved resources being copied can be properly resolved in the
+  /// copyFinalize() method.
+  ///
+  /// The copyFinalize() method adds any requested references between objects (both
   /// in the same and in external resources) using data stored in \a options by the
-  /// copyStructure() method. The two methods (copyStructure() and copyRelations())
+  /// copyInitialize() method. The two methods (copyInitialize() and copyFinalize())
   /// allow duplication of _multiple resources_ at once with references among them
-  /// properly translated. This is accomplished by calling copyStructure() on each resource
-  /// to be processed and _then_ calling copyRelations() on each resource.
+  /// properly translated. This is accomplished by calling copyInitialize() on each resource
+  /// to be processed and _then_ calling copyFinalize() on each resource.
   ///
   /// This method will always produce components that mirror the \a source components
   /// but have distinct UUIDs. On completion, the \a options object holds a map relating
   /// the \a source components to their copies in this resource.
-  virtual bool copyStructure(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+  virtual bool copyInitialize(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
-  /// Resolve internal and external references among components copied from a \a source resource.
+  /// Finalize copying of a resource by resolving internal and external references among
+  /// components copied from any of the \a source resources mapped in \a options.
   ///
   /// After components are copied from the \a source, there may still be references to the
   /// original components; this method resolves those references to the copied components.
-  virtual bool copyRelations(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+  virtual bool copyFinalize(const std::shared_ptr<const Resource>& source, CopyOptions& options);
 
   /// Copy the units system from \a rsrc into this resource as specified by \a options.
   ///
@@ -410,7 +421,7 @@ public:
   /// Copy all property data from \a rsrc, mapping them along the way via \a options.
   ///
   /// This method is intended for use by subclasses of Resource from within their
-  /// copyStructure() implementation.
+  /// copyInitialize() implementation.
   ///
   /// Note that this method must be called **after** components have been copied from
   /// \a rsrc as it relies upon \a options.objectMapping() to contain entries that
@@ -450,7 +461,7 @@ protected:
   /// the mapping keys is transformed to the UUID of the map's corresponding value.
   ///
   /// This method is intended for use by subclasses of Resource from within their
-  /// copyRelations() implementation.
+  /// copyFinalize() implementation.
   void copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;

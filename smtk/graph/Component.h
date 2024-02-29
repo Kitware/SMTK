@@ -29,6 +29,10 @@
 
 namespace smtk
 {
+namespace resource
+{
+class CopyOptions;
+}
 namespace graph
 {
 namespace detail
@@ -264,6 +268,18 @@ public:
   RuntimeArcEndpoint<ConstArc> outgoing(smtk::string::Token arcType) const;
   RuntimeArcEndpoint<NonConstArc> incoming(smtk::string::Token arcType);
   RuntimeArcEndpoint<ConstArc> incoming(smtk::string::Token arcType) const;
+
+  /// Assign state data from the \a source node to this instance.
+  ///
+  /// This method is only intended to be called from a graph resource's
+  /// copyInitialize() method to assign node state from the \a source.
+  /// At the time this is called, \a options will have a mapping from
+  /// every node in \a source's parent resource to every node in this
+  /// node's parent resource.
+  ///
+  /// The order in which assign() is invoked on nodes is not specified,
+  /// so you may not rely on other nodes having their state set properly.
+  virtual bool assign(const ConstPtr& source, smtk::resource::CopyOptions& options);
 
 protected:
   Component(const std::shared_ptr<smtk::graph::ResourceBase>&);

@@ -90,7 +90,7 @@ smtk::operation::Operation::Result CopyResources::operateInternal()
       return this->createResult(Outcome::FAILED);
     }
     copies[source] = target;
-    if (!target->copyStructure(source, options))
+    if (!target->copyInitialize(source, options))
     {
       smtkErrorMacro(
         this->log(),
@@ -102,7 +102,7 @@ smtk::operation::Operation::Result CopyResources::operateInternal()
   // of each input, we must copy relationship information that may span resources.
   for (const auto& copyPair : copies)
   {
-    if (!copyPair.second->copyRelations(copyPair.first, options))
+    if (!copyPair.second->copyFinalize(copyPair.first, options))
     {
       smtkErrorMacro(
         this->log(),

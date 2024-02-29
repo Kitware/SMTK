@@ -92,7 +92,7 @@ public:
   /// Copy renderable geometry from \a source into this resource.
   ///
   /// This method is intended to be called by subclasses that choose to
-  /// override smtk::resource::Resource::copyStructure().
+  /// override smtk::resource::Resource::copyInitialize().
   /// This method does nothing if \a options.copyGeometry() is false, so
   /// it is safe to call it without checking \a options yourself.
   void copyGeometry(

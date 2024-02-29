@@ -5,8 +5,8 @@ Copy API
 --------
 
 The :smtk:`Resource <smtk::resource::Resource>` class now has virtual methods to
-produce an empty ``clone()`` of itself; to copy user data (via ``copyStructure()``;
-and to copy internal/external relationships among components (via ``copyRelations()``).
+produce an empty ``clone()`` of itself; to copy user data (via ``copyInitialize()``;
+and to copy internal/external relationships among components (via ``copyFinalize()``).
 See the user's guide for more information.
 
 A new operation, :smtk:`CopyResources <smtk::operation::CoypResources>` is provided
