@@ -32,8 +32,7 @@
 namespace
 {
 
-bool g_alwaysCreatePipelines =
-  true; // TODO: XXX: FIXME: DO NOT COMMIT without changing to false for backwards-compatibility.
+bool g_alwaysCreatePipelines = false;
 
 } // anonymous namespace
 
