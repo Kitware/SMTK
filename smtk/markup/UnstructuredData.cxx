@@ -329,5 +329,23 @@ UnstructuredData::children()
   return this->incoming<arcs::BoundariesToShapes>();
 }
 
+bool UnstructuredData::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceData = std::dynamic_pointer_cast<const UnstructuredData>(source))
+  {
+    ok &= this->copyAssignment(sourceData->pointIds(), m_pointIds);
+    ok &= this->copyAssignment(sourceData->cellIds(), m_cellIds);
+    ok &= this->copyData(sourceData->shapeData(), m_mesh, options);
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

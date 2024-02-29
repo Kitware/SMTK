@@ -47,5 +47,21 @@ std::array<std::array<double, 3>, 2>& Box::range()
   return m_range;
 }
 
+bool Box::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceBox = std::dynamic_pointer_cast<const Box>(source))
+  {
+    m_range = sourceBox->m_range;
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

@@ -45,6 +45,10 @@ public:
   const std::array<double, 3>& radius() const;
   std::array<double, 3>& radius();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::array<double, 3> m_center;
   std::array<double, 3> m_radius;

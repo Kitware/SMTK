@@ -46,6 +46,10 @@ public:
   const smtk::string::Token& mimetype() const;
   smtk::string::Token& mimetype();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   smtk::string::Token m_data;
   smtk::string::Token m_mimetype;

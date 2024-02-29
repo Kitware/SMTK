@@ -41,6 +41,10 @@ public:
   const std::array<std::array<double, 3>, 2>& range() const;
   std::array<std::array<double, 3>, 2>& range();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::array<std::array<double, 3>, 2> m_range;
 };

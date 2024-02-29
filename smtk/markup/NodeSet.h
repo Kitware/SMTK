@@ -54,6 +54,15 @@ public:
     const;
   std::multimap<smtk::markup::AssignedIds::IdType, smtk::markup::AssignedIds::IdType>& nodes();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override
+  {
+    (void)source;
+    (void)options;
+    return false;
+  }
+
 protected:
   std::weak_ptr<smtk::markup::AssignedIds> m_domain;
   std::multimap<smtk::markup::AssignedIds::IdType, smtk::markup::AssignedIds::IdType> m_nodes;

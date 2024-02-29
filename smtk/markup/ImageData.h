@@ -81,6 +81,10 @@ public:
   bool setShapeData(vtkSmartPointer<vtkImageData> image, Superclass::ShapeOptions& options);
   vtkSmartPointer<vtkImageData> shapeData() const { return m_image; }
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::shared_ptr<AssignedIds> m_pointIds;
   std::shared_ptr<AssignedIds> m_cellIds;

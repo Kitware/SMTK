@@ -88,6 +88,10 @@ public:
   ArcEndpointInterface<arcs::BoundariesToShapes, ConstArc, IncomingArc> children() const;
   ArcEndpointInterface<arcs::BoundariesToShapes, NonConstArc, IncomingArc> children();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::shared_ptr<AssignedIds> m_pointIds;
   std::shared_ptr<AssignedIds> m_cellIds;

@@ -45,7 +45,11 @@ public:
 
   ~SequentialAssignedIds() override = default;
 
+  using AssignedIds::AssignedIdCtor;
   using AssignedIds::Forwardness;
+
+  /// Provide a constructor functor to be passed to IdSpace::requestRange().
+  AssignedIdCtor cloneFunctor() const override;
 
   /**\brief An iterator for simple, monotonically-increasing IDs.
     *

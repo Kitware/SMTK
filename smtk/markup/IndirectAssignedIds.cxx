@@ -20,6 +20,16 @@ namespace smtk
 namespace markup
 {
 
+AssignedIds::AssignedIdCtor IndirectAssignedIds::cloneFunctor() const
+{
+  AssignedIdCtor ctor =
+    [&](const std::shared_ptr<IdSpace>& space, IdNature nature, IdType begin, IdType end) {
+      return std::shared_ptr<AssignedIds>(
+        new IndirectAssignedIds(space, nature, begin, end, nullptr));
+    };
+  return ctor;
+}
+
 void IndirectAssignedIds::setIdArray(vtkSmartPointer<vtkIdTypeArray> idArray)
 {
   m_idToIndex.clear();

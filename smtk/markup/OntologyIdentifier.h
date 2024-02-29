@@ -76,6 +76,10 @@ public:
   ArcEndpointInterface<arcs::OntologyToIdentifiers, ConstArc, IncomingArc> parent() const;
   ArcEndpointInterface<arcs::OntologyToIdentifiers, NonConstArc, IncomingArc> parent();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   smtk::string::Token m_ontologyId; // TODO: replace with a property rather than local storage.
 };

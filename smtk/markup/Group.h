@@ -19,7 +19,12 @@ namespace smtk
 namespace markup
 {
 
-/// A set of components owned by this collection (i.e., held by shared pointer).
+/// A set of components owned by this component.
+///
+/// The GroupsToMembers arc enforces ownership; the members
+/// each "own" the group so that the members cannot be
+/// deleted without deleting the group as well.
+/// You must "ungroup" the members to delete them individually.
 class SMTKMARKUP_EXPORT Group : public smtk::markup::Component
 {
 public:
@@ -37,20 +42,12 @@ public:
   /// Provide an initializer for resources to call after construction.
   void initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper) override;
 
-  bool setKeys(const std::weak_ptr<smtk::markup::AssignedIds>& keys);
-  const std::weak_ptr<smtk::markup::AssignedIds>& keys() const;
-  std::weak_ptr<smtk::markup::AssignedIds>& keys();
-
   /**\brief Return the container of members of this group.
     */
   //@{
   ArcEndpointInterface<arcs::GroupsToMembers, ConstArc, OutgoingArc> members() const;
   ArcEndpointInterface<arcs::GroupsToMembers, NonConstArc, OutgoingArc> members();
   //@}
-
-protected:
-  std::weak_ptr<smtk::markup::AssignedIds> m_keys;
-  bool m_ownsMembers;
 };
 
 } // namespace markup

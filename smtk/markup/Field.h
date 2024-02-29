@@ -57,6 +57,10 @@ public:
   ArcEndpointInterface<arcs::FieldsToShapes, ConstArc, OutgoingArc> shapes() const;
   ArcEndpointInterface<arcs::FieldsToShapes, NonConstArc, OutgoingArc> shapes();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   smtk::string::Token m_fieldType;
 };

@@ -7,32 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/markup/Group.h"
+#ifndef smtk_markup_CopyOptions_h
+#define smtk_markup_CopyOptions_h
 
-#include "smtk/markup/Traits.h"
+#include "smtk/markup/Exports.h"
+#include "smtk/resource/CopyOptions.h"
 
 namespace smtk
 {
 namespace markup
 {
 
-Group::~Group() = default;
-
-void Group::initialize(const nlohmann::json& data, smtk::resource::json::Helper& helper)
+class SMTKMARKUP_EXPORT CopyOptions
 {
-  (void)data;
-  (void)helper;
-}
+public:
+  using CopyType = smtk::resource::CopyOptions::CopyType;
 
-ArcEndpointInterface<arcs::GroupsToMembers, ConstArc, OutgoingArc> Group::members() const
-{
-  return this->outgoing<arcs::GroupsToMembers>();
-}
+  CopyType copyDiscreteData() const { return m_copyDiscreteData; }
+  bool setCopyDiscreteData(CopyType);
 
-ArcEndpointInterface<arcs::GroupsToMembers, NonConstArc, OutgoingArc> Group::members()
-{
-  return this->outgoing<arcs::GroupsToMembers>();
-}
+protected:
+  CopyType m_copyDiscreteData{ CopyType::Shallow };
+};
 
 } // namespace markup
 } // namespace smtk
+
+#endif // smtk_markup_CopyOptions_h

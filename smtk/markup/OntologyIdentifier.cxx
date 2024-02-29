@@ -71,5 +71,21 @@ OntologyIdentifier::parent()
   return this->incoming<arcs::OntologyToIdentifiers>();
 }
 
+bool OntologyIdentifier::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceOntologyIdentifier = std::dynamic_pointer_cast<const OntologyIdentifier>(source))
+  {
+    this->setOntologyId(sourceOntologyIdentifier->ontologyId());
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

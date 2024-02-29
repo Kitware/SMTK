@@ -15,9 +15,13 @@
 #include "smtk/graph/ArcImplementation.h"
 #include "smtk/graph/Component.h"
 
+#include "vtkSmartPointer.h"
+
 #include "nlohmann/json.hpp"
 
 #include <type_traits>
+
+class vtkDataObject;
 
 namespace smtk
 {
@@ -38,6 +42,7 @@ using NonConstArc = smtk::graph::NonConstArc;
 using IncomingArc = smtk::graph::IncomingArc;
 using OutgoingArc = smtk::graph::OutgoingArc;
 
+class AssignedIds;
 class Group;
 class Label;
 namespace arcs
@@ -111,9 +116,53 @@ public:
   ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, NonConstArc, IncomingArc>
   ontologyClasses();
   //@}
+
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   /// A functor for changing the name of a component.
   struct ModifyName;
+
+  /// Copy the \a sourceAssignment's IDs into the \a targetAssignment.
+  ///
+  /// \a sourceAssignment is assumed to originate from an external resource
+  /// while \a targetAssignment is held by a component of this resource.
+  /// The target domain is looked up by name from the source domain's name
+  /// and the matching IDs are requested.
+  /// On success, true is returned.
+  /// If false is returned, the matching IDs could not be allocated from
+  /// the target domain.
+  bool copyAssignment(
+    const AssignedIds& sourceAssignment,
+    std::shared_ptr<AssignedIds>& targetAssignment);
+
+  /// Use copyData<T>() instead. It calls this method.
+  bool copyBaseData(
+    const vtkSmartPointer<vtkDataObject>& baseSourceData,
+    vtkSmartPointer<vtkDataObject>& baseTargetData,
+    smtk::resource::CopyOptions& options);
+
+  /// Copy the \a sourceData into the \a targetData.
+  ///
+  /// The \a options are used to determine whether to perform a shallow
+  /// or deep copy.
+  template<typename DataType>
+  bool copyData(
+    const vtkSmartPointer<DataType>& sourceData,
+    vtkSmartPointer<DataType>& targetData,
+    smtk::resource::CopyOptions& options)
+  {
+    vtkSmartPointer<vtkDataObject> baseSourceData = sourceData;
+    vtkSmartPointer<vtkDataObject> baseTargetData = targetData;
+    bool didCopy = this->copyBaseData(baseSourceData, baseTargetData, options);
+    if (didCopy)
+    {
+      targetData = dynamic_cast<DataType*>(baseTargetData.GetPointer());
+    }
+    return didCopy;
+  }
 
   std::string m_name;
 };

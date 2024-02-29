@@ -25,6 +25,10 @@
 
 namespace smtk
 {
+namespace resource
+{
+class CopyOptions;
+}
 /// Markup resource
 namespace markup
 {
@@ -60,6 +64,11 @@ public:
   /// Override methods that revise the location of the resource so
   /// we can reset resource-relative URLs.
   bool setLocation(const std::string& location) override;
+
+  /// Override copyInitialize() to copy domain information.
+  bool copyInitialize(
+    const std::shared_ptr<const smtk::resource::Resource>& source,
+    smtk::resource::CopyOptions& options) override;
 
   // Wrap this method (instead of create()) to avoid name conflict in MSVC.
   template<typename componentT, typename... Args>
