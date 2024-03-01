@@ -154,9 +154,8 @@ protected:
     vtkSmartPointer<DataType>& targetData,
     smtk::resource::CopyOptions& options)
   {
-    vtkSmartPointer<vtkDataObject> baseSourceData = sourceData;
     vtkSmartPointer<vtkDataObject> baseTargetData = targetData;
-    bool didCopy = this->copyBaseData(baseSourceData, baseTargetData, options);
+    bool didCopy = this->copyBaseData(sourceData, baseTargetData, options);
     if (didCopy)
     {
       targetData = dynamic_cast<DataType*>(baseTargetData.GetPointer());

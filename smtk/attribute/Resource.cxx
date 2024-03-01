@@ -1408,7 +1408,7 @@ void Resource::updateViewComponentIdAttributes(
   if (comp.attribute("ID", idString))
   {
     smtk::common::UUID uuid(idString);
-    auto pobj = options.targetObjectFromSourceId<smtk::resource::PersistentObject>(uuid);
+    auto* pobj = options.targetObjectFromSourceId<smtk::resource::PersistentObject>(uuid);
     if (pobj)
     {
       comp.setAttribute("ID", pobj->id().toString());

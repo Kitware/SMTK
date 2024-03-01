@@ -22,8 +22,9 @@ AssignedIds::AssignedIdCtor SequentialAssignedIds::cloneFunctor() const
 {
   AssignedIdCtor ctor =
     [&](const std::shared_ptr<IdSpace>& space, IdNature nature, IdType begin, IdType end) {
-      return std::shared_ptr<AssignedIds>(
-        new SequentialAssignedIds(space, nature, begin, end, nullptr));
+      auto data = std::make_shared<SequentialAssignedIds>(space, nature, begin, end, nullptr);
+      std::shared_ptr<AssignedIds> result = data;
+      return result;
     };
   return ctor;
 }

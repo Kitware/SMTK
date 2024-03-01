@@ -100,7 +100,7 @@ void Resource::visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> vis
 
 void Resource::visitGeometry(std::function<void(const std::unique_ptr<Geometry>&)> visitor) const
 {
-  for (auto& entry : m_geometry)
+  for (const auto& entry : m_geometry)
   {
     visitor(entry.second);
   }
