@@ -4,6 +4,7 @@ set(smtkResourcePythonTests
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkResourcePythonDataTests
+  testCloneResources
 )
 
 foreach (test ${smtkResourcePythonTests})

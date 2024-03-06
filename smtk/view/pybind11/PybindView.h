@@ -47,6 +47,8 @@ inline PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_Vie
     .def("attribute", (bool (smtk::view::Configuration::Component::*)(::std::string const &) const) &smtk::view::Configuration::Component::attribute, py::arg("attname"))
     .def("attributeAsBool", (bool (smtk::view::Configuration::Component::*)(::std::string const &, bool &) const) &smtk::view::Configuration::Component::attributeAsBool, py::arg("attname"), py::arg("value"))
     .def("attributeAsBool", (bool (smtk::view::Configuration::Component::*)(::std::string const &) const) &smtk::view::Configuration::Component::attributeAsBool, py::arg("attname"))
+    .def("attributeAsInt", (bool (smtk::view::Configuration::Component::*)(::std::string const &, int &) const) &smtk::view::Configuration::Component::attributeAsInt, py::arg("attname"), py::arg("value"))
+    .def("attributeAsString", (std::string (smtk::view::Configuration::Component::*)(::std::string const &) const) &smtk::view::Configuration::Component::attributeAsString, py::arg("attname"))
     .def("attributes", &smtk::view::Configuration::Component::attributes)
     .def("addChild", &smtk::view::Configuration::Component::addChild, py::arg("childName"), py::return_value_policy::reference)
     .def("numberOfChildren", &smtk::view::Configuration::Component::numberOfChildren)

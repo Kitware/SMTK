@@ -49,6 +49,13 @@ bool Configuration::Component::attributeAsBool(const std::string& attname, bool&
   return false;
 }
 
+std::string Configuration::Component::attributeAsString(const std::string& attname) const
+{
+  std::string s;
+  this->attribute(attname, s);
+  return s;
+}
+
 bool Configuration::Component::attributeAsInt(const std::string& attname, int& val) const
 {
   std::string s;
