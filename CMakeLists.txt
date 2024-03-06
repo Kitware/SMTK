@@ -556,7 +556,11 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
                 ${ARGN})
       set_tests_properties("${name}"
         PROPERTIES
-          ENVIRONMENT "${smtk_python_test_environment}")
+          ENVIRONMENT "${smtk_python_test_environment}"
+          # Note, if you change SKIP_RETURN_CODE, you must also change
+          # the value of SKIP_ENTIRE in smtk/smtk/testing.py
+          SKIP_RETURN_CODE 42
+      )
       smtk_test_apply_sanitizer("${name}")
     endfunction ()
   endif()

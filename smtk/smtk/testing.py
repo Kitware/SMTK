@@ -20,6 +20,12 @@ TEMP_DIR = '.'
 SOURCE_DIR = ''
 WORKER_DIR = ''
 INTERACTIVE = False
+# If the return code for the entire process is SKIP_ENTIRE,
+# then CTest will show the test as NotRun rather than succeeded
+# but with some/all tests skipped. This number must match the
+# SKIP_RETURN_CODE value specified in the smtk_add_test_python
+# cmake macro (in the top-level CMakeLists.txt).
+SKIP_ENTIRE = 42
 
 
 def find_data(path):

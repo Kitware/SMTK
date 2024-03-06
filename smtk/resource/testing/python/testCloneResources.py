@@ -13,12 +13,19 @@ import os
 import smtk
 import smtk.attribute
 import smtk.graph
-import smtk.markup
 import smtk.string
 import smtk.io
 import smtk.resource
 import smtk.testing
 import sys
+
+try:
+    import smtk.markup
+    haveMarkup = True
+except:
+    print('Skipping TestCloneResources due to missing markup support.')
+    haveMarkup = False
+    sys.exit(smtk.testing.SKIP_ENTIRE)
 
 
 class TestCloneResources(smtk.testing.TestCase):
@@ -165,6 +172,6 @@ class TestCloneResources(smtk.testing.TestCase):
         print('Comparing Attribute Resources Succeeded!')
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and haveMarkup:
     smtk.testing.process_arguments()
     smtk.testing.main()
