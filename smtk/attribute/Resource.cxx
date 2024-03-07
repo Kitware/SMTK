@@ -1226,7 +1226,12 @@ std::shared_ptr<smtk::resource::Resource> Resource::clone(
     this->definitions(allDefs, /* sort list: */ false);
     for (const auto& def : allDefs)
     {
-      rsrc->copyDefinition(def);
+      // A Definition could have already been copied - for example it could be
+      // used to represent an Expression
+      if (!rsrc->hasDefinition(def->type()))
+      {
+        rsrc->copyDefinition(def);
+      }
     }
 
     if (options.copyTemplateData() && !options.copyTemplateVersion())

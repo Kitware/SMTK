@@ -171,7 +171,11 @@ public:
   void findAttributes(
     smtk::attribute::DefinitionPtr def,
     std::vector<smtk::attribute::AttributePtr>& result) const;
+
   smtk::attribute::DefinitionPtr findDefinition(const std::string& type) const;
+
+  /// Return true if the Resource has a Definition with the requested type
+  bool hasDefinition(const std::string& type) const;
 
   // Return a list of definitions that are not derived from another definition
   void findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& result) const;
@@ -521,6 +525,12 @@ inline smtk::attribute::DefinitionPtr Resource::findDefinition(const std::string
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
   it = m_definitions.find(typeName);
   return (it == m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
+}
+
+inline bool Resource::hasDefinition(const std::string& typeName) const
+{
+  auto it = m_definitions.find(typeName);
+  return (it != m_definitions.end());
 }
 
 inline void Resource::findDefinitionAttributes(

@@ -78,6 +78,7 @@ inline PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute
     .def("findStyles", &smtk::attribute::Resource::findStyles, py::arg("stype"))
     .def("hasAttributes", (bool (smtk::attribute::Resource::*) () const) &smtk::attribute::Resource::hasAttributes)
     .def("hasAttributes", (bool (smtk::attribute::Resource::*) (const smtk::resource::ConstPersistentObjectPtr&) const) &smtk::attribute::Resource::hasAttributes, py::arg("object"))
+    .def("hasDefinition", &smtk::attribute::Resource::hasDefinition, py::arg("type"))
     .def("isRoleUnique", &smtk::attribute::Resource::isRoleUnique)
     .def("numberOfAdvanceLevels", &smtk::attribute::Resource::numberOfAdvanceLevels)
     .def("numberOfCategories", &smtk::attribute::Resource::numberOfCategories)

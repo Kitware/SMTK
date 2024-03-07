@@ -115,19 +115,27 @@ class TestCloneResources(smtk.testing.TestCase):
 
         clonedAtts = self.origAttResource.clone(opts)
         clonedMarkup = self.origMarkupResource.clone(opts)
-        if (clonedAtts.copyInitialize(self.origAttResource, opts) and clonedMarkup.copyInitialize(self.origMarkupResource, opts)):
-            print('Copy Initialized for Resources Worked.')
-            if (clonedAtts.copyFinalize(self.origAttResource, opts) and clonedMarkup.copyFinalize(self.origMarkupResource, opts)):
-                print('Copy Finalized for Resources Worked.')
-                print('  +++++ Cloned Attribute Resource ++++++')
-                self.printResource(clonedAtts)
-                print('  +++++ Cloned Markup Resource ++++++')
-                self.printResource(clonedMarkup)
-                self.compareClonedAttResource(clonedAtts, 0)
-            else:
-                raise RuntimeError('Copy Finalized Failed for All Resource')
-        else:
-            raise RuntimeError('Copy Initialized Failed for All Resource')
+        if not clonedAtts.copyInitialize(self.origAttResource, opts):
+            raise RuntimeError(
+                'Copy Initialized Failed for Attribute Resource')
+
+        if not clonedMarkup.copyInitialize(self.origMarkupResource, opts):
+            raise RuntimeError('Copy Initialized Failed for Markup Resource')
+
+        print('Copy Initialized for Resources Worked.')
+
+        if not clonedAtts.copyFinalize(self.origAttResource, opts):
+            raise RuntimeError('Copy Finalized Failed for Attribute Resource')
+
+        if not clonedMarkup.copyFinalize(self.origMarkupResource, opts):
+            raise RuntimeError('Copy Finalized Failed for Markup Resource')
+
+        print('Copy Finalized for Resources Worked.')
+        print('  +++++ Cloned Attribute Resource ++++++')
+        self.printResource(clonedAtts)
+        print('  +++++ Cloned Markup Resource ++++++')
+        self.printResource(clonedMarkup)
+        self.compareClonedAttResource(clonedAtts, 0)
 
     def compareClonedAttResource(self, attRes, sameMarkup):
         if attRes.id() == self.origAttResource.id():
