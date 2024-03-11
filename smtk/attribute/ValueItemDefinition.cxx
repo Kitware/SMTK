@@ -330,9 +330,6 @@ void ValueItemDefinition::copyTo(
       // In the case that the Expression Definition exists in the source Attribute Resource,
       // Lets queue it up so that this Item Definition's Expression Definition can be set once
       // it has been copied.
-      std::cout << "Adding expression definition \"" << m_expressionType
-                << "\" to copy-expression queue" << std::endl;
-
       info.UnresolvedExpItems.push(std::make_pair(m_expressionType, def));
     }
   }
