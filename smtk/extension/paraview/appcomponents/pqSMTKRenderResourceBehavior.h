@@ -45,6 +45,13 @@ public:
   static pqSMTKRenderResourceBehavior* instance(QObject* parent = nullptr);
   ~pqSMTKRenderResourceBehavior() override;
 
+  /// Set/get whether pipelines are always created for new resources
+  /// or only when the resource provides geometry data for the VTK backend.
+  ///
+  /// For backwards-compatibility, this is false by default.
+  static bool setAlwaysCreatePipelines(bool shouldCreate);
+  static bool alwaysCreatePipelines();
+
 Q_SIGNALS:
   void pipelineSourceCreated(
     smtk::resource::Resource::Ptr smtkResource,

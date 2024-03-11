@@ -9,10 +9,12 @@
 //=========================================================================
 #include "smtk/markup/Component.h"
 
+#include "smtk/markup/CopyOptions.h"
 #include "smtk/markup/Group.h"
 #include "smtk/markup/Label.h"
 #include "smtk/markup/Resource.h"
 
+#include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/json/Helper.h"
 
 namespace smtk
@@ -116,6 +118,67 @@ ArcEndpointInterface<arcs::OntologyIdentifiersToIndividuals, NonConstArc, Incomi
 Component::ontologyClasses()
 {
   return this->incoming<arcs::OntologyIdentifiersToIndividuals>();
+}
+
+bool Component::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  (void)options;
+  // We use setName() instead of direct assignment
+  // so that the resource's multi-index-container is
+  // kept up-to-date.
+  this->setName(source->name());
+  return true;
+}
+
+bool Component::copyAssignment(
+  const AssignedIds& sourceAssignment,
+  std::shared_ptr<AssignedIds>& targetAssignment)
+{
+  if (!sourceAssignment.space())
+  {
+    return false;
+  }
+  auto targetIdSpace = this->parentResourceAs<smtk::markup::Resource>()->domains().findAs<IdSpace>(
+    sourceAssignment.space()->name());
+  if (!targetIdSpace)
+  {
+    return false;
+  }
+  targetAssignment = targetIdSpace->requestRange(
+    sourceAssignment.nature(),
+    sourceAssignment.size(),
+    sourceAssignment.range()[0],
+    sourceAssignment.cloneFunctor());
+  return !!targetAssignment;
+}
+
+bool Component::copyBaseData(
+  const vtkSmartPointer<vtkDataObject>& baseSourceData,
+  vtkSmartPointer<vtkDataObject>& baseTargetData,
+  smtk::resource::CopyOptions& options)
+{
+  smtk::markup::CopyOptions markupOptions;
+  if (options.suboptions().contains<smtk::markup::CopyOptions>())
+  {
+    markupOptions = options.suboptions().get<smtk::markup::CopyOptions>();
+  }
+  switch (markupOptions.copyDiscreteData())
+  {
+    case smtk::resource::CopyOptions::CopyType::None:
+      baseTargetData = nullptr;
+      return true;
+    case smtk::resource::CopyOptions::CopyType::Deep:
+      baseTargetData = baseSourceData->NewInstance();
+      baseTargetData->DeepCopy(baseSourceData);
+      return true;
+    case smtk::resource::CopyOptions::CopyType::Shallow:
+      baseTargetData = baseSourceData->NewInstance();
+      baseTargetData->ShallowCopy(baseSourceData);
+      return true;
+  }
+  return false;
 }
 
 } // namespace markup

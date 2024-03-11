@@ -62,5 +62,22 @@ std::array<double, 2>& Cone::radii()
   return m_radii;
 }
 
+bool Cone::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceCone = std::dynamic_pointer_cast<const Cone>(source))
+  {
+    m_endpoints = sourceCone->m_endpoints;
+    m_radii = sourceCone->m_radii;
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

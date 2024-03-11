@@ -28,6 +28,7 @@ inline PySharedPtrClass< smtk::graph::ResourceBase> pybind11_init_smtk_graph_Res
 {
   PySharedPtrClass< smtk::graph::ResourceBase, smtk::geometry::Resource> instance(m, "ResourceBase");
   instance
+    .def("arcs", (smtk::graph::ArcMap&(smtk::graph::ResourceBase::*)())&smtk::graph::ResourceBase::arcs, py::return_value_policy::reference_internal)
     .def("arcTypes", &smtk::graph::ResourceBase::arcTypes)
     .def("nodeTypes", &smtk::graph::ResourceBase::nodeTypes)
     .def("createNodeOfType", &smtk::graph::ResourceBase::createNodeOfType, py::arg("nodeType"))

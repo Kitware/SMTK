@@ -76,6 +76,7 @@ set(operationXML
 set(operationOperators
   AssignColors
   CoordinateTransform
+  CopyResources
   EditProperties
   MarkModified
   ReadResource

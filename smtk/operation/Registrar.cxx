@@ -16,6 +16,7 @@
 #endif
 #include "smtk/operation/operators/AssignColors.h"
 #include "smtk/operation/operators/CoordinateTransform.h"
+#include "smtk/operation/operators/CopyResources.h"
 #include "smtk/operation/operators/EditProperties.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/MarkModified.h"
@@ -44,6 +45,7 @@ namespace
 typedef std::tuple<
   AssignColors,
   CoordinateTransform,
+  CopyResources,
   EditProperties,
   MarkModified,
 #ifdef SMTK_PYTHON_ENABLED

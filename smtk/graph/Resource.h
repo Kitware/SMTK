@@ -26,6 +26,7 @@
 #include "smtk/graph/evaluators/Dump.h"
 #include "smtk/graph/filter/Grammar.h"
 
+#include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/filter/Filter.h"
 
 #include <fstream>
@@ -235,6 +236,33 @@ public:
   /// Return the set of arc types accepted by this resource.
   const std::set<smtk::string::Token>& arcTypes() const override { return m_arcs.types(); }
 
+  /// Override the base resource to store and retrieve a template type.
+  smtk::string::Token templateType() const override { return m_templateType; }
+  bool setTemplateType(const smtk::string::Token& templateType) override;
+
+  /// Override the base resource to store and retrieve a template version number.
+  std::size_t templateVersion() const override { return m_templateVersion; }
+  bool setTemplateVersion(std::size_t templateVersion) override;
+
+  /// Implement clone() to make a copy of a graph resource.
+  ///
+  /// The output copy will not have any nodes or arcs but will have any run-time arc types
+  /// registered to match the originating resource if \a options has copyTemplateData()
+  /// set to true.
+  std::shared_ptr<smtk::resource::Resource> clone(
+    smtk::resource::CopyOptions& options) const override;
+
+  /// Implement copyInitialize() to copy arcs and nodes from a non-empty resource of the same type.
+  bool copyInitialize(
+    const std::shared_ptr<const smtk::resource::Resource>& source,
+    smtk::resource::CopyOptions& options) override;
+
+  /// Implement copyFinalize() to copy any external links from a non-empty resource of
+  /// the same type.
+  bool copyFinalize(
+    const std::shared_ptr<const smtk::resource::Resource>& source,
+    smtk::resource::CopyOptions& options) override;
+
 protected:
   /// A functor to create smtk::string::Tokens of accepted node types.
   template<typename ResourceType>
@@ -386,10 +414,159 @@ protected:
     this->initializeResource();
   }
 
+  smtk::string::Token m_templateType;
+  std::size_t m_templateVersion{ 0 };
   ArcMap m_arcs;
   std::set<smtk::string::Token> m_nodeTypes;
   std::set<smtk::string::Token> m_arcTypes;
 };
+
+template<typename Traits>
+bool Resource<Traits>::setTemplateType(const smtk::string::Token& templateType)
+{
+  if (m_templateType == templateType)
+  {
+    return false;
+  }
+  m_templateType = templateType;
+  return true;
+}
+
+template<typename Traits>
+bool Resource<Traits>::setTemplateVersion(std::size_t templateVersion)
+{
+  if (m_templateVersion == templateVersion || templateVersion == 0)
+  {
+    return false;
+  }
+  m_templateVersion = templateVersion;
+  return true;
+}
+
+template<typename Traits>
+std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
+  smtk::resource::CopyOptions& options) const
+{
+  using smtk::resource::CopyOptions;
+
+  std::shared_ptr<smtk::graph::ResourceBase> result;
+  if (auto rsrcMgr = this->manager())
+  {
+    result = std::dynamic_pointer_cast<ResourceBase>(rsrcMgr->create(this->typeName()));
+  }
+  if (!result)
+  {
+    result = Resource<Traits>::create();
+  }
+  if (!result)
+  {
+    return result;
+  }
+
+  if (this->isNameSet())
+  {
+    result->setName(this->name());
+  }
+
+  if (options.copyLocation())
+  {
+    result->setLocation(this->location());
+  }
+
+  result->copyUnitSystem(shared_from_this(), options);
+
+  if (options.copyTemplateData() || options.copyComponents())
+  {
+    if (options.copyTemplateData())
+    {
+      result->setTemplateType(this->templateType());
+      auto version = this->templateVersion();
+      result->setTemplateVersion(version);
+    }
+
+    // TODO: Copy any run-time arc types.
+    return result;
+  }
+
+  return result;
+}
+
+template<typename Traits>
+bool Resource<Traits>::copyInitialize(
+  const std::shared_ptr<const smtk::resource::Resource>& source,
+  smtk::resource::CopyOptions& options)
+{
+  const auto& graphSource = std::dynamic_pointer_cast<const Resource<Traits>>(source);
+  if (!graphSource)
+  {
+    smtkErrorMacro(
+      options.log(),
+      "Resource types do not match (" << source->typeName() << " vs " << this->typeName() << ").");
+    return false;
+  }
+
+  // Copy nodes
+  // Note that this simply constructs new nodes of the same type
+  // assuming they can be created with default constructors.
+  // If your subclass requires something fancier, you should
+  // override copyInitialize().
+  if (options.copyComponents())
+  {
+    smtk::resource::Component::Visitor copyComponent =
+      [&](const std::shared_ptr<smtk::resource::Component>& comp) {
+        auto node = this->createNodeOfType(comp->typeToken());
+        options.objectMapping()[comp->id()] = node;
+      };
+    source->visit(copyComponent);
+  }
+
+  // Copy property data
+  this->copyProperties(source, options);
+
+  // Copy renderable geometry
+  this->copyGeometry(graphSource, options);
+
+  // Copy arcs
+  this->arcs().copyArcs(graphSource.get(), options, this);
+
+  return true;
+}
+
+template<typename Traits>
+bool Resource<Traits>::copyFinalize(
+  const std::shared_ptr<const smtk::resource::Resource>& source,
+  smtk::resource::CopyOptions& options)
+{
+  // Copy links.
+  this->copyLinks(source, options);
+
+  // Provide target nodes with an opportunity to copy state data from their source nodes.
+  if (options.copyComponents())
+  {
+    smtk::resource::Component::Visitor assignComponent =
+      [&](const std::shared_ptr<smtk::resource::Component>& comp) {
+        auto sourceNode = std::dynamic_pointer_cast<smtk::graph::Component>(comp);
+        if (sourceNode && !options.shouldOmitId(sourceNode->id()))
+        {
+          if (
+            auto* targetNode =
+              options.targetObjectFromSourceId<smtk::graph::Component>(sourceNode->id()))
+          {
+            targetNode->assign(sourceNode, options);
+          }
+          else
+          {
+            smtkErrorMacro(
+              options.log(),
+              "Source node mapping for " << source->id() << ", \"" << sourceNode->name()
+                                         << "\", did not produce a target.");
+          }
+        }
+      };
+    source->visit(assignComponent);
+  }
+  return true;
+}
 
 } // namespace graph
 } // namespace smtk

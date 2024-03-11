@@ -32,6 +32,11 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def(py::init<>())
     .def_static("create", &smtk::resource::PyResource::create)
     .def("clean", &smtk::resource::Resource::clean)
+    .def("clone", &smtk::resource::Resource::clone)
+    .def("copyInitialize", &smtk::resource::Resource::copyInitialize, py::arg("source"), py::arg("copyOptions"))
+    .def("copyFinalize", &smtk::resource::Resource::copyFinalize, py::arg("source"), py::arg("copyOptions"))
+    .def("copyProperties", &smtk::resource::Resource::copyProperties, py::arg("source"), py::arg("copyOptions"))
+    .def("copyUnitSystem", &smtk::resource::Resource::copyUnitSystem, py::arg("source"), py::arg("copyOptions"))
     .def("filter", &smtk::resource::Resource::filter, py::arg("queryString"))
     .def("find", (smtk::resource::Component::Ptr (smtk::resource::Resource::*)(const smtk::common::UUID&) const) &smtk::resource::Resource::find)
     .def("id", &smtk::resource::Resource::id)
@@ -105,6 +110,33 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("longVectorProperties", [](smtk::resource::Resource& resource)
       {
         smtk::resource::PropertiesOfType<std::vector<long>> props = resource.properties().get<std::vector<long>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("stringTokenProperties", [](smtk::resource::Resource& resource)
+      {
+        smtk::resource::PropertiesOfType<smtk::string::Token> props = resource.properties().get<smtk::string::Token>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("stringTokenSetProperties", [](smtk::resource::Resource& resource)
+      {
+        smtk::resource::PropertiesOfType<std::set<smtk::string::Token>> props =
+          resource.properties().get<std::set<smtk::string::Token>>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("coordinateFrameProperties", [](smtk::resource::Resource& resource)
+      {
+        smtk::resource::PropertiesOfType<smtk::resource::properties::CoordinateFrame> props =
+          resource.properties().get<smtk::resource::properties::CoordinateFrame>();
+        return props;
+      }, py::return_value_policy::reference_internal
+    )
+    .def("namedCoordinateFrameProperties", [](smtk::resource::Resource& resource)
+      {
+        smtk::resource::PropertiesOfType<std::map<std::string, smtk::resource::properties::CoordinateFrame>> props =
+          resource.properties().get<std::map<std::string, smtk::resource::properties::CoordinateFrame>>();
         return props;
       }, py::return_value_policy::reference_internal
     )

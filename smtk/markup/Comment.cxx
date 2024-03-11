@@ -72,5 +72,22 @@ smtk::string::Token& Comment::mimetype()
   return m_mimetype;
 }
 
+bool Comment::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceComment = std::dynamic_pointer_cast<const Comment>(source))
+  {
+    m_data = sourceComment->m_data;
+    m_mimetype = sourceComment->m_mimetype;
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

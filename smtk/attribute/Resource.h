@@ -397,8 +397,8 @@ public:
   ///
   /// A resource template-type is not required, but if present it can be used to
   /// register updaters for migrating from an old template to a newer version.
-  virtual bool setTemplateType(const smtk::string::Token& templateType);
-  const smtk::string::Token& templateType() const { return m_templateType; }
+  bool setTemplateType(const smtk::string::Token& templateType) override;
+  smtk::string::Token templateType() const override { return m_templateType; }
 
   /// Set/get the version of the template this instance of the resource is based upon.
   ///
@@ -406,8 +406,39 @@ public:
   /// template (i.e., SBT file) the definitions in the current resource
   /// are drawn from. It is used during the update process to determine
   /// which updaters are applicable.
-  virtual bool setTemplateVersion(std::size_t templateVersion);
-  std::size_t templateVersion() const { return m_templateVersion; }
+  bool setTemplateVersion(std::size_t templateVersion) override;
+  std::size_t templateVersion() const override { return m_templateVersion; }
+
+  /// Create an empty, un-managed clone of this resource instance.
+  ///
+  /// If \a options has copyTemplateData() set to true, then this resource's
+  /// Definition instances will be copied to the output resources.
+  std::shared_ptr<smtk::resource::Resource> clone(
+    smtk::resource::CopyOptions& options) const override;
+
+  /// Copy data from the \a other resource into this resource, as specified by \a options.
+  bool copyInitialize(
+    const std::shared_ptr<const smtk::resource::Resource>& other,
+    smtk::resource::CopyOptions& options) override;
+
+  /// Copy relations (associations, references) from the \a source resource
+  /// into this resource, as specified by \a options.
+  bool copyFinalize(
+    const std::shared_ptr<const smtk::resource::Resource>& source,
+    smtk::resource::CopyOptions& options) override;
+
+  /// Copy View Information from the \a source resource
+  /// into this resource, as specified by \a options.
+  void copyViews(
+    const std::shared_ptr<const smtk::attribute::Resource>& source,
+    smtk::resource::CopyOptions& options);
+  /// Update ID information of a View Component using the object mapping (if provided)
+  ///
+  /// If /a comp contains an ID attribute and it maps to a different persistent object,
+  /// the mapped object's id will be substituted in /a comp.
+  void updateViewComponentIdAttributes(
+    smtk::view::Configuration::Component& comp,
+    smtk::resource::CopyOptions& options);
 
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);

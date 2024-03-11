@@ -85,8 +85,19 @@ public:
   /// should use that class rather than directly copy the code above to mark
   /// geometry as modified.)
   void visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> visitor);
+  void visitGeometry(std::function<void(const std::unique_ptr<Geometry>&)> visitor) const;
 
   Resource(Resource&&) = default;
+
+  /// Copy renderable geometry from \a source into this resource.
+  ///
+  /// This method is intended to be called by subclasses that choose to
+  /// override smtk::resource::Resource::copyInitialize().
+  /// This method does nothing if \a options.copyGeometry() is false, so
+  /// it is safe to call it without checking \a options yourself.
+  void copyGeometry(
+    const std::shared_ptr<const Resource>& source,
+    smtk::resource::CopyOptions& options);
 
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);

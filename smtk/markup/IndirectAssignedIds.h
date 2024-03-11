@@ -50,7 +50,11 @@ public:
 
   ~IndirectAssignedIds() override = default;
 
+  using AssignedIds::AssignedIdCtor;
   using AssignedIds::Forwardness;
+
+  /// Provide a constructor functor to be passed to IdSpace::requestRange().
+  AssignedIdCtor cloneFunctor() const override;
 
   /// Set/get the array of IDs used in the order they are indexed by the component.
   void setIdArray(vtkSmartPointer<vtkIdTypeArray> idArray);

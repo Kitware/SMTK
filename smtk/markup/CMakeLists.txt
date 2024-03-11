@@ -26,6 +26,9 @@ set(operations
 )
 
 list(APPEND classes
+  # Miscellany
+  CopyOptions
+
   ## Resource and data it holds
   Resource
   DomainMap

@@ -42,10 +42,20 @@ public:
   /// Return the type of arc this class implements.
   virtual std::string typeName() const { return std::string(); }
 
+  /// Return whether arcs of this type are directed or undirected.
   virtual Directionality directionality() const { return Directionality::IsDirected; }
+  /// If true, methods that edit arcs may sometimes return true.
+  ///
+  /// Otherwise, arcs may never be edited.
   virtual bool mutability() const { return false; }
+  /// If true, arc endpoint connections are explicitly stored by SMTK.
+  ///
+  /// Otherwise, fetching arcs is procedural.
+  virtual bool explicitStorage() const { return false; }
 
+  /// The set of query-filter strings describing nodes that may serve as "from" endpoints.
   virtual std::unordered_set<smtk::string::Token> fromTypes() const { return {}; }
+  /// The set of query-filter strings describing nodes that may serve as "to" endpoints.
   virtual std::unordered_set<smtk::string::Token> toTypes() const { return {}; }
 
   /// The minimum out-degree of a FromType node. This is not enforced.
@@ -57,6 +67,12 @@ public:
   /// The maximum in-degree of a ToType node. This is enforced.
   virtual std::size_t maximumInDegree() const { return unconstrained(); }
 
+  /// Returns true if an arc between the proposed nodes may be inserted.
+  ///
+  /// This is used by some smtk::operation::Operation::ableToOperate() overrides
+  /// to validate inputs.
+  ///
+  /// \sa smtk::graph::CreateArc
   virtual bool acceptsRuntime(
     Component* from,
     Component* to,

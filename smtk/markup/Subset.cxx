@@ -100,5 +100,22 @@ ArcEndpointInterface<arcs::BoundariesToShapes, NonConstArc, IncomingArc> Subset:
 }
 #endif // 0
 
+bool Subset::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceSubset = std::dynamic_pointer_cast<const Subset>(source))
+  {
+    this->setDomainName(sourceSubset->domainName());
+    ok &= this->copyAssignment(sourceSubset->ids(), m_ids);
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

@@ -17,8 +17,16 @@ using namespace smtk::attribute;
 std::string AttributeCopyOptions::convertToString(const std::string& prefix) const
 {
   std::stringstream ss;
+  ss << prefix << (!this->performAssignment() ? " !" : " ") << "PerformAssignment" << std::endl;
   ss << prefix << (!this->copyUUID() ? " !" : " ") << "CopyUUID" << std::endl;
   ss << prefix << (!this->copyDefinition() ? " !" : " ") << "CopyDefinition" << std::endl;
+  return ss.str();
+}
+
+std::string CommonAssignmentOptions::convertToString(const std::string& prefix) const
+{
+  std::stringstream ss;
+  ss << prefix << (!this->m_objectMapping ? " No " : " ") << "Mapping Provided" << std::endl;
   return ss.str();
 }
 
@@ -31,6 +39,7 @@ std::string AttributeAssignmentOptions::convertToString(const std::string& prefi
      << std::endl;
   ss << prefix << (!this->doNotValidateAssociations() ? " !" : " ") << "DoNotValidateAssociations"
      << std::endl;
+  ss << CommonAssignmentOptions::convertToString(prefix);
   return ss.str();
 }
 
@@ -47,6 +56,7 @@ std::string ItemAssignmentOptions::convertToString(const std::string& prefix) co
      << std::endl;
   ss << prefix << (!this->disableCopyAttributes() ? " !" : " ") << "DisableCopyAttributes"
      << std::endl;
+  ss << CommonAssignmentOptions::convertToString(prefix);
   return ss.str();
 }
 

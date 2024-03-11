@@ -33,7 +33,7 @@ struct SMTKCORE_EXPORT ComponentLinkBase
   virtual ~ComponentLinkBase() = default;
 };
 
-/// The ComponentLinks class is a component-specific API for maninpulating
+/// The ComponentLinks class is a component-specific API for manipulating
 /// unidirectional links from a component to other Resources and Components.
 /// Internally, the class is stateless; all calls are performed through the
 /// component's resource.

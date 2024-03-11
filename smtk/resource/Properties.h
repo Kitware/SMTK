@@ -37,7 +37,7 @@ namespace detail
 /// The Properties classes defined in this namespace closely correlate to
 /// counterparts in smtk::common::TypeMap, but are tailored to provide a UUID as
 /// an additional lookup parameter.
-
+///
 /// A common base class for resource properties. It is used to provide an API
 /// for removing properties associated with removed IDs to avoid having to
 /// upcast to a templated type.
@@ -46,7 +46,34 @@ class SMTKCORE_EXPORT PropertiesBase
 public:
   virtual ~PropertiesBase() = default;
 
-  virtual std::size_t eraseId(const smtk::common::UUID&) = 0;
+  /// Erase all properties held by this object which correspond to the given \a uid.
+  ///
+  /// The number of entries removed is returned.
+  virtual std::size_t eraseId(const smtk::common::UUID& uid) = 0;
+
+  /// Return true if properties of this type may be copy-constructed.
+  virtual bool isCopyable() const = 0;
+
+  /// Copy the property or properties held by \a other which correspond to \a otherId
+  /// into this object under the given \a uid.
+  ///
+  /// If \a propertyName is invalid, then all properties are copied. Otherwise,
+  /// just the named property is copied (assuming it exists in \a other).
+  ///
+  /// The number of entries copied is returned.
+  virtual std::size_t copyFrom(
+    PropertiesBase* other,
+    smtk::string::Token propertyName,
+    const smtk::common::UUID& otherId,
+    const smtk::common::UUID& uid) = 0;
+
+  /// Insert (into \a ids) all of the UUIDs that properties held by this object reference.
+  virtual void allIds(std::set<smtk::common::UUID>& ids) const = 0;
+  /// Insert (into \a names) all of the property names that exist in this object.
+  virtual void allNames(std::unordered_set<smtk::string::Token>& names) const = 0;
+  /// Insert (into \a ids) all of the UUIDs for which \a propName is defined.
+  virtual void idsWithProperty(smtk::string::Token& propName, std::set<smtk::common::UUID>& ids)
+    const = 0;
 };
 
 template<typename Type>
@@ -62,11 +89,98 @@ class PropertiesOfType<std::unordered_map<smtk::common::UUID, Type>>
   , public PropertiesBase
 {
   friend class Properties;
+  using SelfType = PropertiesOfType<std::unordered_map<smtk::common::UUID, Type>>;
+
   PropertiesOfType()
     : smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type>>()
     , PropertiesBase()
   {
   }
+
+  struct IsCopyable
+  {
+    template<typename PropType = Type>
+    typename std::enable_if<!std::is_copy_constructible<PropType>::value, bool>::type operator()()
+      const
+    {
+      return false;
+    }
+    template<typename PropType = Type>
+    typename std::enable_if<std::is_copy_constructible<PropType>::value, bool>::type operator()()
+      const
+    {
+      return true;
+    }
+  };
+
+  struct Copier
+  {
+    template<typename PropType = Type>
+    typename std::enable_if<!std::is_copy_constructible<PropType>::value, std::size_t>::type
+    operator()(
+      SelfType* self,
+      PropertiesBase* otherBase,
+      smtk::string::Token propertyName,
+      const smtk::common::UUID& otherId,
+      const smtk::common::UUID& uid) const
+    {
+      (void)self;
+      (void)propertyName;
+      (void)otherBase;
+      (void)otherId;
+      (void)uid;
+      return 0;
+    }
+
+    template<typename PropType = Type>
+    typename std::enable_if<std::is_copy_constructible<PropType>::value, std::size_t>::type
+    operator()(
+      SelfType* self,
+      PropertiesBase* otherBase,
+      smtk::string::Token propertyName,
+      const smtk::common::UUID& otherId,
+      const smtk::common::UUID& uid) const
+    {
+      std::size_t numCopied = 0;
+      auto* other =
+        dynamic_cast<PropertiesOfType<std::unordered_map<smtk::common::UUID, PropType>>*>(
+          otherBase);
+      if (!other || !uid || !otherId)
+      {
+        return numCopied;
+      }
+      if (propertyName.valid())
+      {
+        // Copy the one property (if it exists).
+        auto nameIt = other->data().find(propertyName.data());
+        if (nameIt == other->data().end())
+        {
+          return numCopied;
+        }
+        auto valIt = nameIt->second.find(otherId);
+        if (valIt == nameIt->second.end())
+        {
+          return numCopied;
+        }
+        ++numCopied;
+        self->data()[nameIt->first][uid] = valIt->second;
+      }
+      else
+      {
+        // Copy all the properties that exist.
+        for (const auto& pair : other->data())
+        {
+          auto fromIt = pair.second.find(otherId);
+          if (fromIt != pair.second.end())
+          {
+            ++numCopied; // += fromIt->second.size();
+            self->data()[pair.first][uid] = fromIt->second;
+          }
+        }
+      }
+      return numCopied;
+    }
+  };
 
 public:
   std::size_t eraseId(const smtk::common::UUID& id) override
@@ -77,6 +191,50 @@ public:
       count += pair.second.erase(id);
     }
     return count;
+  }
+
+  bool isCopyable() const override { return std::is_copy_constructible<Type>::value; }
+
+  std::size_t copyFrom(
+    PropertiesBase* otherBase,
+    smtk::string::Token propertyName,
+    const smtk::common::UUID& otherId,
+    const smtk::common::UUID& uid) override
+  {
+    return Copier()(this, otherBase, propertyName, otherId, uid);
+  }
+
+  void allNames(std::unordered_set<smtk::string::Token>& names) const override
+  {
+    for (const auto& nameToCompToValue : this->data())
+    {
+      names.insert(nameToCompToValue.first);
+    }
+  }
+
+  void allIds(std::set<smtk::common::UUID>& ids) const override
+  {
+    for (const auto& nameToCompToValue : this->data())
+    {
+      for (const auto& compToValue : nameToCompToValue.second)
+      {
+        ids.insert(compToValue.first);
+      }
+    }
+  }
+
+  void idsWithProperty(smtk::string::Token& propName, std::set<smtk::common::UUID>& ids)
+    const override
+  {
+    auto nameIt = this->data().find(propName.data());
+    if (nameIt == this->data().end())
+    {
+      return;
+    }
+    for (const auto& compToValue : nameIt->second)
+    {
+      ids.insert(compToValue.first);
+    }
   }
 };
 
@@ -346,6 +504,8 @@ private:
 class SMTKCORE_EXPORT Properties
 {
 public:
+  virtual ~Properties() = default;
+
   template<typename Type>
   using Indexed = std::unordered_map<smtk::common::UUID, Type>;
 
@@ -412,6 +572,36 @@ public:
 
   /// Remove all properties this object manages.
   virtual std::size_t clear() = 0;
+
+  /// Return the set of property storage types that have been registered.
+  std::unordered_set<smtk::string::Token> types() const
+  {
+    std::unordered_set<smtk::string::Token> result;
+    const auto& tmap = this->properties().data();
+    for (const auto& entry : tmap)
+    {
+      result.insert(entry.first);
+    }
+    return result;
+  }
+
+  /// Return the set of property names that exist for the given storage type.
+  std::unordered_set<smtk::string::Token> namesForType(smtk::string::Token storageType) const
+  {
+    std::unordered_set<smtk::string::Token> result;
+    const auto& tmap = this->properties().data();
+    auto it = tmap.find(storageType.data());
+    if (it == tmap.end())
+    {
+      return result;
+    }
+    auto* baseData = dynamic_cast<detail::PropertiesBase*>(it->second);
+    if (baseData)
+    {
+      baseData->allNames(result);
+    }
+    return result;
+  }
 
 private:
   virtual const smtk::common::UUID& id() const = 0;
@@ -591,7 +781,7 @@ protected:
   friend Component;
 
   ComponentProperties(const Component* component);
-  ~ComponentProperties();
+  ~ComponentProperties() override;
 
   const smtk::common::UUID& id() const override;
   smtk::common::TypeMapBase<std::string>& properties() override;

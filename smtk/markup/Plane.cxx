@@ -62,5 +62,22 @@ std::array<double, 3>& Plane::normal()
   return m_normal;
 }
 
+bool Plane::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourcePlane = std::dynamic_pointer_cast<const Plane>(source))
+  {
+    this->setBasePoint(sourcePlane->basePoint());
+    this->setNormal(sourcePlane->normal());
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

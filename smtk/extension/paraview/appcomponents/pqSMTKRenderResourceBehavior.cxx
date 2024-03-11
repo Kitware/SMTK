@@ -29,6 +29,13 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 
+namespace
+{
+
+bool g_alwaysCreatePipelines = false;
+
+} // anonymous namespace
+
 // pqApplyBehavior is ParaView's behavior for "handling the logic that needs to
 // happen after the user hits "Apply" on the pqPropertiesPanel." We require its
 // functionality so we can show the proxies for resources that were created
@@ -77,6 +84,11 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
           }
           case smtk::resource::EventType::ADDED:
             QTimer::singleShot(0, this, [this, rsrc]() {
+              if (pqSMTKRenderResourceBehavior::alwaysCreatePipelines())
+              {
+                this->createPipelineSource(rsrc);
+                return;
+              }
               // Only add pipeline sources for geometry resources...
               if (auto geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc))
               {
@@ -128,6 +140,21 @@ pqSMTKRenderResourceBehavior::~pqSMTKRenderResourceBehavior()
 
   QObject::disconnect(this);
   delete m_p;
+}
+
+bool pqSMTKRenderResourceBehavior::setAlwaysCreatePipelines(bool shouldCreate)
+{
+  if (g_alwaysCreatePipelines == shouldCreate)
+  {
+    return false;
+  }
+  g_alwaysCreatePipelines = shouldCreate;
+  return true;
+}
+
+bool pqSMTKRenderResourceBehavior::alwaysCreatePipelines()
+{
+  return g_alwaysCreatePipelines;
 }
 
 pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(

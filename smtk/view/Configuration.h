@@ -67,6 +67,10 @@ public:
     /// either t or true (ignoring case).  Else it returns false.
     bool attributeAsBool(const std::string& attname) const;
 
+    /// Returns the value of the attribute named \a attname as a string. It will return
+    /// an empty string if the attribute does not exists
+    std::string attributeAsString(const std::string& attname) const;
+
     bool attributeAsInt(const std::string& attname, int& val) const;
     bool attributeAsDouble(const std::string& attname, double& val) const;
 
@@ -77,6 +81,7 @@ public:
     void copyContents(const Component& comp);
 
     const std::vector<Component>& children() const { return m_children; }
+    std::vector<Component>& children() { return m_children; }
 
     std::size_t numberOfChildren() const { return m_children.size(); }
 

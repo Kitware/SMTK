@@ -6,6 +6,16 @@ set(smtkResourcePythonTests
 set(smtkResourcePythonDataTests
 )
 
+if ((SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT) AND SMTK_ENABLE_MARKUP)
+  if (TARGET VTK::FiltersParallelDIY2)
+    if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")
+      list(APPEND smtkResourcePythonDataTests
+        testCloneResources
+      )
+    endif()
+  endif()
+endif()
+
 foreach (test ${smtkResourcePythonTests})
   smtk_add_test_python(${test}Py ${test}.py --src-dir=${smtk_SOURCE_DIR})
 endforeach()

@@ -1,4 +1,5 @@
 set(geometrySrcs
+  Geometry.cxx
   Registrar.cxx
   Resource.cxx
   Manager.cxx

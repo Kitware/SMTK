@@ -261,12 +261,52 @@ namespace qt
 namespace remus
 {
 }
-/**\brief Use VTK instead of ParaView.
+/**\brief Classes that depend on VTK for visualization of resource data.
   *
   */
 namespace vtk
 {
+/**\brief Expose geometric SMTK resources to VTK.
+ */
+namespace geometry
+{
 }
+
+/**\brief Make VTK IO classes available to SMTK and vice versa.
+ */
+namespace io
+{
+/**\brief Make VTK IO classes available to SMTK mesh resources and vice versa.
+ */
+namespace mesh
+{
+}
+} // namespace io
+
+/**\brief Bridge markup SMTK resources into renderable VTK geometry.
+ */
+namespace markup
+{
+}
+
+/**\brief SMTK operations that depend on VTK data or algorithms.
+ *
+ * Generally, these are operations that perform geometric
+ * processing on the renderable geometry of resources/components
+ * rather than their "native" geometric format.
+ */
+namespace operators
+{
+}
+
+/**\brief VTK "source" algorithms that generate data from SMTK.
+ *
+ */
+namespace source
+{
+}
+
+} // namespace vtk
 /**\brief Expose algorithms for creating models from image data.
   *
   */

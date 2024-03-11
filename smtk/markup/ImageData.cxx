@@ -169,5 +169,23 @@ bool ImageData::setShapeData(vtkSmartPointer<vtkImageData> image, Superclass::Sh
   return didChange;
 }
 
+bool ImageData::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceImageData = std::dynamic_pointer_cast<const ImageData>(source))
+  {
+    ok &= this->copyAssignment(sourceImageData->pointIds(), m_pointIds);
+    ok &= this->copyAssignment(sourceImageData->cellIds(), m_cellIds);
+    ok &= this->copyData(sourceImageData->shapeData(), m_image, options);
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

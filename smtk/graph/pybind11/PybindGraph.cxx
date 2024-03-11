@@ -21,6 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindArcMap.h"
 #include "PybindResourceBase.h"
 #include "PybindComponent.h"
 
@@ -39,4 +40,5 @@ PYBIND11_MODULE(_smtkPybindGraph, graph)
 
   auto smtk_graph_ResourceBase = pybind11_init_smtk_graph_ResourceBase(graph);
   auto smtk_graph_Component = pybind11_init_smtk_graph_Component(graph);
+  auto smtk_graph_ArcMap = pybind11_init_smtk_graph_ArcMap(graph);
 }

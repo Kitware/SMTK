@@ -73,5 +73,22 @@ std::array<double, 3>& Sphere::radius()
   return m_radius;
 }
 
+bool Sphere::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceSphere = std::dynamic_pointer_cast<const Sphere>(source))
+  {
+    this->setCenter(sourceSphere->center());
+    this->setRadius(sourceSphere->radius());
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk

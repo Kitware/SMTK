@@ -43,6 +43,8 @@ public:
   };
   using IdRange =
     std::array<IdType, 2>; // struct { smtk::markup::IdSpace* idSpace; IdType begin; IdType end; };
+  using AssignedIdCtor = std::function<
+    std::shared_ptr<AssignedIds>(const std::shared_ptr<IdSpace>&, IdNature, IdType, IdType)>;
 
   template<typename... Args>
   AssignedIds(
@@ -60,6 +62,9 @@ public:
   }
 
   virtual ~AssignedIds();
+
+  /// Subclasses must override this method to return a functor producing an instance of themselves.
+  virtual AssignedIdCtor cloneFunctor() const;
 
   /// The access-level of iteration (constant or mutable), used as a template parameter.
   // enum Constness { Const, NonConst }; // All iterators must be constant or IDs are not sequential.

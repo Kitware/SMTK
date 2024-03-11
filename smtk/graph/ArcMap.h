@@ -28,6 +28,10 @@
 
 namespace smtk
 {
+namespace resource
+{
+class CopyOptions;
+}
 namespace graph
 {
 
@@ -241,6 +245,24 @@ public:
     }
     return *dynamic_cast<ArcImplementationType*>(it->second.get());
   }
+
+  /// Copy arcs from a \a source resource's arcs.
+  ///
+  /// This method is only intended for use from within graph-resource
+  /// overrides of smtk::resource::Resource::copyRelations(), where
+  /// the \a source is a resource sharing the same set of compile-time
+  /// traits.
+  ///
+  /// This method copies run-time arc types and then copies arcs
+  /// themselves, translating endpoint component UUIDs via the \a options
+  /// provided.
+  ///
+  /// Only explicit arcs are copied.
+  virtual void copyArcs(
+    const smtk::graph::ResourceBase* source,
+    //const ArcMap& source,
+    smtk::resource::CopyOptions& options,
+    smtk::graph::ResourceBase* target);
 
 protected:
   template<typename Type>

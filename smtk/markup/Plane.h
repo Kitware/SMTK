@@ -43,6 +43,10 @@ public:
   const std::array<double, 3>& normal() const;
   std::array<double, 3>& normal();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::array<double, 3> m_basePoint;
   std::array<double, 3> m_normal;

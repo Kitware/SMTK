@@ -40,6 +40,8 @@ class Operation;
 }
 namespace resource
 {
+class CopyOptions;
+
 /// Operations need the ability to lock and unlock resources, but no additional
 /// access privilege is required. We therefore use the PassKey pattern to grant
 /// Operation access to a resource's lock.
@@ -60,7 +62,13 @@ class DerivedFrom;
 class Manager;
 class Metadata;
 
-/// An abstract base class for SMTK resources.
+/**\brief An abstract base class for SMTK resources.
+  *
+  * Resources represent a collection of persistent objects written
+  * to a single file (i.e., a document). While it is possible –
+  * via resource::Links – for a document to reference objects external
+  * to a file, resources are intended mostly to be self-contained.
+  */
 class SMTKCORE_EXPORT Resource : public PersistentObject
 {
 public:
@@ -82,7 +90,8 @@ public:
   ///
   /// When an object, A, without renderable geometry is linked to object(s), B,
   /// with renderable geometry, SMTK user-interface elements should show
-  /// visibility-control badges for both A and B.
+  /// visibility-control badges for both A and B. This is indicated by a
+  /// link from A to B.
   static constexpr smtk::resource::Links::RoleType VisuallyLinkedRole = -4;
 
   smtkTypeMacro(smtk::resource::Resource);
@@ -90,11 +99,17 @@ public:
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
   ~Resource() override;
 
-  /// index is a compile-time intrinsic of the derived resource; as such, it
+  ///@name Resource Type Introspection
+  ///@{
+  /// Resources provide an integer type-id common to their class definition
+  /// as well as methods to detect when resources are derived from a common
+  /// ancestor class.
+
+  /// Index is a compile-time intrinsic of the derived resource's type; as such, it
   /// cannot be set.
   virtual Index index() const { return std::type_index(typeid(*this)).hash_code(); }
 
-  /// given a resource type, return whether or not this resource is or is
+  /// Given a resource type, return whether or not this resource is or is
   /// derived from the resource described by the index.
   template<class ResourceType>
   bool isOfType() const
@@ -102,38 +117,64 @@ public:
     return this->isOfType(std::type_index(typeid(ResourceType)).hash_code());
   }
 
-  /// given a resource index, return whether or not this resource is or is
+  /// Given a resource index, return whether or not this resource is or is
   /// derived from the resource described by the index.
   virtual bool isOfType(const Index& index) const;
 
-  /// given a resource's unique name, return whether or not this resource is or
+  /// Given a resource's unique name, return whether or not this resource is or
   /// is derived from the resource described by the name.
   virtual bool isOfType(const std::string& typeName) const;
 
-  /// given a resource's unique name, return the number of generations derived
+  /// Given a resource's unique name, return the number of generations derived
   /// from the resource described from the name (or a negative value if this
   /// resource is not derived from the input resource type).
   virtual int numberOfGenerationsFromBase(const std::string& typeName) const;
+  ///@}
 
-  /// id and location are run-time intrinsics of the derived resource; we need
-  /// to allow the user to reset these values.
+  ///@name Unique Resource IDs
+  ///@{
+  /// Because resources inherit PersistentObject, they (and the components
+  /// they own) must provide unique identifiers.
+
+  /// Set/get the UUID of a resource.
+  ///
+  /// This may be modified at construction but should not change afterward
+  /// unless there are exceptional circumstances.
   const smtk::common::UUID& id() const override { return m_id; }
-  const std::string& location() const { return m_location; }
-
   bool setId(const smtk::common::UUID& myID) override;
-  virtual bool setLocation(const std::string& location);
+  ///@}
 
-  /// Return the user-assigned name of the resource.
+  ///@name Resource Location
+  ///@{
+  /// Resources must have a URL where they reside when not in memory.
+
+  /// Set/get the location (a URL) where the resource is stored persistently.
+  ///
+  /// This may change when a user chooses to "Save As…" a different filename.
+  const std::string& location() const { return m_location; }
+  virtual bool setLocation(const std::string& location);
+  ///@}
+
+  ///@name Naming
+  ///@{
+  /// As they inherit PersistentObject, resources must provide a name.
+  /// By default, if a resource has no name but has a location (URL), the
+  /// stem of its filename is used as its name.
+
+  /// Set/get the user-assigned name of the resource.
   ///
   /// If no name has been assigned, return the stem of its filename.
   /// You may use isNameSet() to determine whether the returned name
   /// is generated or assigned.
   std::string name() const override;
   virtual bool setName(const std::string& name);
-  bool isNameSet() { return !m_name.empty(); }
+  bool isNameSet() const { return !m_name.empty(); }
+  ///@}
 
-  /// Indicate whether the resource is in sync with its location.
-  ///
+  ///@name Clean/Dirty State
+  ///@{
+  /// Indicate whether the resource is in sync with the persistent storage at its location().
+
   /// Resources that have a non-empty location and are identical to
   /// the data stored at location are clean. All other resources are dirty.
   ///
@@ -143,6 +184,14 @@ public:
   /// its metadata's read method should return a clean resource.
   virtual bool clean() const { return m_clean; }
   void setClean(bool state = true);
+  ///@}
+
+  ///@name Removing (un-managing) Resources
+  ///@{
+  /// Resources are typically owned by an smtk::resource::Manager.
+  /// However, operations may sometimes request that a resource be
+  /// unmanaged (released from the manager and thus removed from memory).
+  /// These methods provide information about the ownership of this resource.
 
   /// Mark the resource to indicate it is about to removed (meaning it is being removed from memory
   /// not necessarily for deletion)
@@ -150,8 +199,16 @@ public:
 
   /// Return whether the object is marked for removal
   virtual bool isMarkedForRemoval() const { return m_markedForRemoval; }
+
   /// Resources that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
+  ///@}
+
+  ///@name Finding, Visiting, and Filtering Components.
+  ///@{
+  /// A resource owns a collection of components.
+  /// These methods provide a consistent API for discovering, filtering,
+  /// and iterating a resource's components.
 
   /// Given a resource component's UUID, return the resource component.
   virtual ComponentPtr find(const smtk::common::UUID& compId) const = 0;
@@ -186,29 +243,194 @@ public:
   /// pointer cast this can be slower than other find methods.
   template<typename Collection>
   Collection filterAs(const std::string& queryString) const;
+  ///@}
 
+  ///@name Cross-resource Links
+  ///@{
+  /// Links provide a way to express relationships between components
+  /// in other resources (as well as within the same resource).
+  /// These methods provide access to the storage for link data.
+
+  /// Fetch the links stored for this resource and its components.
   Links& links() override { return m_links; }
   const Links& links() const override { return m_links; }
+  ///@}
 
+  ///@name Property Data
+  ///@{
+  /// Resources and their components may be annotated with free-form properties.
+  /// These methods provide read/write and read-only access to the annotations.
   Properties& properties() override { return m_properties; }
   const Properties& properties() const override { return m_properties; }
+  ///@}
 
+  ///@name Resource Queries
+  ///@{
+  /// Sometimes different types of resources (i.e., instances of different subclasses)
+  /// may need a uniform API to provide information; query objects exist for this purpose
+  /// and these methods provide read/write and read-only access to a query factory and
+  /// cached data related to these queries.
   const Queries& queries() const { return m_queries; }
   Queries& queries() { return m_queries; }
+  ///@}
 
-  /// classes that are granted permission to the key may retrieve the resource's
-  /// lock.
+  ///@name Resource Locking
+  ///@{
+  /// SMTK assumes that only one thread at a time may modify a resource and its
+  /// components.
+  /// Resources may be locked using the methods provided by the resource.
+  /// Components may not be locked, so threads block access to the entire resource.
+  ///
+  /// Operations are designed to acquire resource locks for you before the operation
+  /// is run. You should strive to use the operation framework for this rather than
+  /// to manually lock resources.
+
+  /// Classes that are granted permission to the key may retrieve the resource's
+  /// lock. This prevents other threads from modifying the resource simultaneously.
   Lock& lock(Key()) const { return m_lock; }
 
   /// Anyone can query whether or not the resource is locked.
   LockType locked() const { return m_lock.state(); }
+  ///@}
 
   Resource(Resource&&) noexcept;
 
+  ///@name Units and Dimensional Analysis.
   ///@{
-  /// \brief Sets and Gets the system of units used by this resource
+  /// Resources may own a "unit system" (i.e., a set of transformations that
+  /// can be applied to convert dimensional measurements between scales in
+  /// a consistent way) in order to accept user inputs in convenient units
+  /// while ensuring SMTK's outputs are dimensionally consistent.
+  ///
+  /// Many resources may share reference to a common unit system, but this
+  /// is not enforced; it is also possible for resources to have distinct
+  /// unit systems.
+
+  /// \brief Sets the system of units used by this resource.
   virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+  /// \brief Gets the system of units used by this resource.
   const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+  ///@}
+
+  ///@name Resource Templates
+  ///@{
+  /// A resource _may_ have a template (also called a "schema," "theme," or
+  /// "convention") describing a convention for how its contents are structured.
+  /// Subclasses of the base resource class may override these methods to
+  /// advertise their ability to model their structure according to multiple
+  /// templates (by providing a valid template name and version).
+
+  /// Set/get the "type" of a resource's template.
+  ///
+  /// A resource template-type is not required, but if present it can be used to
+  /// register updaters for migrating from an old template to a newer version.
+  ///
+  /// The default implementation returns an invalid string token (indicating
+  /// the resource does not support templates). Subclasses must override this
+  /// method if they wish to support document templates.
+  virtual bool setTemplateType(const smtk::string::Token& templateType);
+  virtual smtk::string::Token templateType() const;
+
+  /// Set/get the version number of the template this instance of the resource is based upon.
+  ///
+  /// If non-zero, this number indicates the version number of the
+  /// template (i.e., the attribute/item definitions for attribute resources)
+  /// the current resource draws from. It is used during the update process to determine
+  /// which updaters are applicable.
+  ///
+  /// The default implementation always returns 0, indicating version numbers
+  /// are not supported by resources of this type. Subclasses must override
+  /// these methods if they wish to support document-template versioning.
+  virtual bool setTemplateVersion(std::size_t templateVersion);
+  virtual std::size_t templateVersion() const;
+  ///@}
+
+  ///@name Copying and Updating
+  ///@{
+  /// One resource may be used as a template for other resources. (This is also
+  /// known as "prototypal inheritance.") Subclasses of the base resource class
+  /// which implement these methods provide a way to clone, copy, and/or update
+  /// resource templates/schemas.
+
+  /// Create an empty, un-managed clone of this resource instance.
+  ///
+  /// Note that it is valid to (and the default implementation does) return
+  /// a null pointer to indicate a resource cannot be cloned.
+  ///
+  /// This method may be used create a resource for either copying (i.e.,
+  /// in order to create a new resource with the same structure as the
+  /// original but with distinct UUIDs) or updating (i.e., in order to
+  /// transform a resource from one revision of a template to another
+  /// while preserving UUIDs).
+  ///
+  /// This method does not copy the user-authored content of a resource.
+  /// Use the copyInitialize() method on the returned clone if you wish to copy
+  /// that data.
+  ///
+  /// However, the \a options **will** determine whether ancillary data
+  /// such as template-specific data, the unit system, and other information
+  /// not related to the information being modeled by the resource is
+  /// present in the returned clone.
+  virtual std::shared_ptr<Resource> clone(CopyOptions& options) const;
+
+  /// Copy initial data from a \a source resource into this resource.
+  ///
+  /// This method must be subclassed by resources that wish to support copying;
+  /// the default implementation simply returns false.
+  ///
+  /// Call this method on the result of clone() to copy persistent objects,
+  /// properties, and other self-contained resource-specific data from the \a source
+  /// into this resource.
+  ///
+  /// If this method returns true, you should call copyFinalize() as well.
+  /// If it returns false, you should abandon copying and allow the cloned resource
+  /// to be destroyed.
+  ///
+  /// This method begins the copy process by populating \a options.objectMapping(),
+  /// which maps \a source- component UUIDs to pointers to components in this resource.
+  /// You can (and should) call copyInitialize() on multiple resources before calling
+  /// copyFinalize() on any of them; in this way, references between components of
+  /// all the involved resources being copied can be properly resolved in the
+  /// copyFinalize() method.
+  ///
+  /// The copyFinalize() method adds any requested references between objects (both
+  /// in the same and in external resources) using data stored in \a options by the
+  /// copyInitialize() method. The two methods (copyInitialize() and copyFinalize())
+  /// allow duplication of _multiple resources_ at once with references among them
+  /// properly translated. This is accomplished by calling copyInitialize() on each resource
+  /// to be processed and _then_ calling copyFinalize() on each resource.
+  ///
+  /// This method will always produce components that mirror the \a source components
+  /// but have distinct UUIDs. On completion, the \a options object holds a map relating
+  /// the \a source components to their copies in this resource.
+  virtual bool copyInitialize(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+
+  /// Finalize copying of a resource by resolving internal and external references among
+  /// components copied from any of the \a source resources mapped in \a options.
+  ///
+  /// After components are copied from the \a source, there may still be references to the
+  /// original components; this method resolves those references to the copied components.
+  virtual bool copyFinalize(const std::shared_ptr<const Resource>& source, CopyOptions& options);
+
+  /// Copy the units system from \a rsrc into this resource as specified by \a options.
+  ///
+  /// This method is provided so subclasses that implement clone() do
+  /// not need to repeat code common to all resources.
+  void copyUnitSystem(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
+
+  /// Copy all property data from \a rsrc, mapping them along the way via \a options.
+  ///
+  /// This method is intended for use by subclasses of Resource from within their
+  /// copyInitialize() implementation.
+  ///
+  /// Note that this method must be called **after** components have been copied from
+  /// \a rsrc as it relies upon \a options.objectMapping() to contain entries that
+  /// map original component UUIDs to their new UUIDs.
+  ///
+  /// If \a options.copyComponents() is false, any properties on the resource
+  /// and non-component properties (property entries with a UUID that do not
+  /// correspond to a component in \a rsrc) will still be copied.
+  void copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyOptions& options);
   ///@}
 
 protected:
@@ -217,6 +439,30 @@ protected:
   // constructors are declared private to enforce this relationship.
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
+
+  /// Copy **all** property data for \a sourceId from \a rsrc into \a targetId of _this_ resource.
+  ///
+  /// This is called from copyProperties() for each entry in \a rsrc, possibly
+  /// with the \a options objectMappings() applied.
+  ///
+  /// This method returns true if any properties were copied and false otherwise.
+  ///
+  /// Note that some properties may not be copy-constructible – these properties
+  /// will not be copied and, depending on \a options, may result in a log message.
+  bool copyPropertiesForId(
+    const std::shared_ptr<Resource>& rsrc,
+    const smtk::common::UUID& sourceId,
+    const smtk::common::UUID& targetId,
+    const CopyOptions& options);
+
+  /// Copy links from \a rsrc (except those excluded by \a options), mapping them along the way.
+  ///
+  /// The objectMapping() in \a options is used to transform links, so that any UUID present in
+  /// the mapping keys is transformed to the UUID of the map's corresponding value.
+  ///
+  /// This method is intended for use by subclasses of Resource from within their
+  /// copyFinalize() implementation.
+  void copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;
   std::shared_ptr<units::System> m_unitsSystem;

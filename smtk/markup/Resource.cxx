@@ -17,6 +17,7 @@
 // #include "smtk/markup/arcs/ChildrenAs.txx"
 // #include "smtk/markup/arcs/ParentsAs.txx"
 
+#include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/query/Queries.h"
 
 #include "smtk/common/Paths.h"
@@ -75,6 +76,51 @@ bool Resource::setLocation(const std::string& location)
     }
   }
   return true;
+}
+
+bool Resource::copyInitialize(
+  const std::shared_ptr<const smtk::resource::Resource>& source,
+  smtk::resource::CopyOptions& options)
+{
+  // Copy the domains from the source resource but without adding
+  // ID assignments (as components are copied, they will request
+  // assignments that should be valid and consistent as long as
+  // the source resource is properly defined).
+  auto markupSource = std::dynamic_pointer_cast<const smtk::markup::Resource>(source);
+  if (!markupSource)
+  {
+    smtkErrorMacro(options.log(), "Source resource must be a markup resource.");
+    return false;
+  }
+  for (const auto& domainName : markupSource->domains().keys())
+  {
+    if (!domainName.hasData())
+    {
+      smtkErrorMacro(
+        options.log(), "Domain " << domainName.id() << " has no associated string; cannot create.");
+      continue;
+    }
+    auto sourceDomain = markupSource->domains().find(domainName);
+    if (!sourceDomain)
+    {
+      continue;
+    }
+    auto targetDomain = this->domains().find(domainName);
+    if (!targetDomain)
+    {
+      auto space = Resource::domainFactory().makeFromName(domainName.data());
+      if (space)
+      {
+        this->domains().insert(domainName, space);
+      }
+      else
+      {
+        smtkErrorMacro(
+          options.log(), "Could not create a \"" << domainName.data() << "\" for target.");
+      }
+    }
+  }
+  return this->Superclass::copyInitialize(source, options);
 }
 
 std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(

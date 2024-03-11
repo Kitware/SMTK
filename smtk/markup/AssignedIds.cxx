@@ -27,6 +27,15 @@ AssignedIds::~AssignedIds()
   }
 }
 
+AssignedIds::AssignedIdCtor AssignedIds::cloneFunctor() const
+{
+  AssignedIdCtor ctor =
+    [&](const std::shared_ptr<IdSpace>& space, IdNature nature, IdType begin, IdType end) {
+      return std::make_shared<AssignedIds>(space, nature, begin, end, nullptr);
+    };
+  return ctor;
+}
+
 AssignedIds::IdRange AssignedIds::range() const
 {
   return m_range;

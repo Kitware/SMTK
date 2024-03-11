@@ -49,4 +49,15 @@ inline py::class_< smtk::resource::PropertiesOfType<ValueType> > pybind11_init_s
   return instance;
 }
 
+inline py::class_<smtk::resource::Properties> pybind11_init_smtk_resource_Properties(py::module& m)
+{
+  py::class_<smtk::resource::Properties> instance(m, "Properties");
+  instance
+    .def("types", &smtk::resource::Properties::types)
+    .def("namesForType", &smtk::resource::Properties::namesForType, py::arg("type"))
+    .def("clear", &smtk::resource::Properties::clear)
+    ;
+  return instance;
+}
+
 #endif

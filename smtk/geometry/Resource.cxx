@@ -21,6 +21,8 @@
 #include "smtk/geometry/Geometry.h"
 #include "smtk/geometry/Manager.h"
 
+#include "smtk/resource/CopyOptions.h"
+
 namespace smtk
 {
 namespace geometry
@@ -94,6 +96,38 @@ void Resource::visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> vis
   {
     visitor(entry.second);
   }
+}
+
+void Resource::visitGeometry(std::function<void(const std::unique_ptr<Geometry>&)> visitor) const
+{
+  for (const auto& entry : m_geometry)
+  {
+    visitor(entry.second);
+  }
+}
+
+void Resource::copyGeometry(
+  const std::shared_ptr<const Resource>& source,
+  smtk::resource::CopyOptions& options)
+{
+  if (!options.copyGeometry())
+  {
+    return;
+  }
+
+  if (!options.copyComponents())
+  {
+    options.omitComponents(source);
+  }
+
+  source->visitGeometry([&](const std::unique_ptr<Geometry>& sourceGeometry) {
+    auto& targetGeometry = this->geometry(sourceGeometry->backend());
+    if (!targetGeometry)
+    {
+      return;
+    }
+    targetGeometry->copyGeometry(sourceGeometry, options);
+  });
 }
 
 } // namespace geometry

@@ -23,6 +23,7 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindComponent.h"
+#include "PybindCopyOptions.h"
 #include "PybindManager.h"
 #include "PybindObserver.h"
 #include "PybindPersistentObject.h"
@@ -41,10 +42,11 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
+  auto smtk_resource_CopyOptions = pybind11_init_smtk_resource_CopyOptions(resource);
   auto smtk_resource_PersistentObject = pybind11_init_smtk_resource_PersistentObject(resource);
+  auto smtk_resource_Properties = pybind11_init_smtk_resource_Properties(resource);
   auto smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);
   auto smtk_resource_Component = pybind11_init_smtk_resource_Component(resource);
-  //auto smtk_resource_Properties = pybind11_init_smtk_resource_Properties(resource);
 
   // Declare each type of property we support. See smtk::resource::ResourceProperties::PropertyTypes
   // for the list of predefined property types. If you have a plugin that wants other types supported,

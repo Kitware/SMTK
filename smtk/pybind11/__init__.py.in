@@ -75,6 +75,18 @@ def findAvailablePlugins():
         pluginList += ([os.path.join(pluginDir, pluginCheck, x) for x in entries if x.endswith(ending)])
     return pluginList
 
+def loadedPlugins():
+    from paraview import servermanager
+    pm = servermanager.vtkSMProxyManager.GetProxyManager()
+    lm = pm.GetPluginManager()
+    info = lm.GetLocalInformation()
+    plugins = []
+    for ii in range(info.GetNumberOfPlugins()):
+        name = info.GetPluginName(ii)
+        if 'smtk' in name.casefold() and info.GetPluginLoaded(ii):
+            plugins += [name]
+    return plugins
+
 def loadPlugins(pluginList = None):
     """Load all of the provided plugins in pluginList or, if empty, load all available plugins.
 
@@ -119,6 +131,13 @@ def applicationContext():
     import smtk.common
     import smtk.plugin
     if appContext == None:
+        # If no SMTK plugins are loaded, load all the available plugins
+        # If any SMTK plugins are loaded, then load no more (assume the
+        # script author knows what he's doing).
+        if len(loadedPlugins()) == 0:
+            loaded, skipped = loadPlugins()
+        # Now get (if running inside ParaView UI) or create (if a script)
+        # an smtk.common.Managers object
         try:
             from smtk.extension.paraview.appcomponents import pqSMTKBehavior
             bb = pqSMTKBehavior.instance()
@@ -133,6 +152,48 @@ def applicationContext():
             appContext = smtk.common.Managers.create()
             smtk.plugin.registerPluginsTo(appContext)
     return appContext
+
+def read(filenames, context=None):
+    """Read in SMTK-formatted files and manage the resulting resources.
+
+    The filenames you pass in may be a single string or an iterable object
+    producing string filenames.
+    This function is synchronous; it will not return until all the files
+    have been read or an error has occurred (in which case an empty list
+    will be returned).
+    """
+
+    import smtk.operation
+    import smtk.attribute
+    if context == None:
+        context = applicationContext()
+    opmgr = context.get('smtk.operation.Manager')
+    result = []
+    if not opmgr:
+        print('ERROR: No operation manager.')
+        return result
+    reader = opmgr.createOperation('smtk::operation::ReadResource')
+    if not reader:
+        print('ERROR: Could not create operation to read resources.')
+        return result
+    if type(filenames) == str:
+        filenames = list([filenames])
+    fp = reader.parameters().findFile('filename')
+    if not fp.setNumberOfValues(len(filenames)):
+        print('ERROR: Could not extend reader parameters for %d files' % len(filenames))
+        return result
+    for ii in range(len(filenames)):
+        if not fp.setValue(ii, filenames[ii]):
+            print('WARNING: Could not append filename %d "%s".' % (ii, filenames[ii]))
+            continue
+    rres = reader.operate()
+    outcome = rres.findInt('outcome').value()
+    if outcome != int(smtk.operation.Operation.SUCCEEDED):
+        print('ERROR: Operation failed with outcome %d' % outcome)
+        return result
+    rlist = rres.findResource('resource')
+    result = [rlist.value(ii) for ii in range(rlist.numberOfValues())]
+    return result
 
 def wrappingProtocol():
     return 'pybind11'

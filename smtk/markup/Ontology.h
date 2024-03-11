@@ -43,6 +43,10 @@ public:
   const std::string& url() const;
   std::string& url();
 
+  /// Assign this node's state from \a source.
+  bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
+    override;
+
 protected:
   std::string m_url;
 };

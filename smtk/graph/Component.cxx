@@ -180,5 +180,13 @@ ArcImplementationBase* Component::arcsOfType(smtk::string::Token arcType)
   return arcsOfType;
 }
 
+bool Component::assign(const ConstPtr& source, smtk::resource::CopyOptions& options)
+{
+  (void)source;
+  (void)options;
+  // By default, nodes have no state that needs to be copied.
+  return true;
+}
+
 } // namespace graph
 } // namespace smtk

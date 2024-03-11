@@ -42,5 +42,21 @@ ArcEndpointInterface<arcs::FieldsToShapes, NonConstArc, OutgoingArc> Field::shap
   return this->outgoing<arcs::FieldsToShapes>();
 }
 
+bool Field::assign(
+  const smtk::graph::Component::ConstPtr& source,
+  smtk::resource::CopyOptions& options)
+{
+  bool ok = this->Superclass::assign(source, options);
+  if (auto sourceField = std::dynamic_pointer_cast<const Field>(source))
+  {
+    m_fieldType = sourceField->m_fieldType;
+  }
+  else
+  {
+    ok = false;
+  }
+  return ok;
+}
+
 } // namespace markup
 } // namespace smtk
