@@ -6,7 +6,10 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="edit properties" Label="freeform properties" BaseType="operation">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
-        <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
+        <Accepts>
+          <Resource Name="smtk::resource::Resource"/>
+          <Resource Name="smtk::resource::Resource" Filter="*"/>
+        </Accepts>
       </AssociationsDef>
       <BriefDescription>Set (or remove) an attribute value on a component.</BriefDescription>
       <DetailedDescription>
