@@ -162,6 +162,8 @@ void pqSMTKDiagramPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* 
   {
     m_layout = new QVBoxLayout;
     m_layout->setObjectName("Layout");
+    m_layout->setSpacing(0);
+    m_layout->setMargin(0);
     this->setLayout(m_layout);
   }
   m_layout->addWidget(m_diagram->widget());

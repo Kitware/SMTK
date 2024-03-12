@@ -558,8 +558,10 @@ public:
   void applyViewHints()
   {
     // Grab current viewport rectangle (adjusted by a margin since fitInView seems to apply one):
-    QRectF finalRect =
-      m_view->mapToScene(m_view->viewport()->rect()).boundingRect().adjusted(10, 10, -10, -10);
+    int fw = m_view->frameWidth();
+    QRectF finalRect = m_view->mapToScene(m_view->viewport()->rect())
+                         .boundingRect()
+                         .adjusted(2 * fw, 2 * fw, -2 * fw, -2 * fw);
     // Now union it with the hints provided by all the generators:
     for (const auto& rect : this->m_inclusions)
     {
