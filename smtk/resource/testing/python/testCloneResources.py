@@ -94,19 +94,20 @@ class TestCloneResources(smtk.testing.TestCase):
         opts.setCopyLocation(True)  # Normally this is false
 
         clonedAtts = self.origAttResource.clone(opts)
-        if clonedAtts.copyInitialize(self.origAttResource, opts):
-            print('Copy Initialized for Attributes Worked.')
-            if clonedAtts.copyFinalize(self.origAttResource, opts):
-                print('Copy Finalized for Attributes Worked.')
-                print('  +++++ Cloned Attribute Resource ++++++')
-                self.printResource(clonedAtts)
-                self.compareClonedAttResource(clonedAtts, 1)
-            else:
-                raise RuntimeError(
-                    'Copy Finalized Failed for Attribute Resource')
-        else:
+
+        if not clonedAtts.copyInitialize(self.origAttResource, opts):
             raise RuntimeError(
                 'Copy Initialized Failed for Attribute Resource')
+
+        print('Copy Initialized for Attributes Worked.')
+        if not clonedAtts.copyFinalize(self.origAttResource, opts):
+            raise RuntimeError(
+                'Copy Finalized Failed for Attribute Resource')
+
+        print('Copy Finalized for Attributes Worked.')
+        print('  +++++ Cloned Attribute Resource ++++++')
+        self.printResource(clonedAtts)
+        self.compareClonedAttResource(clonedAtts, 1)
 
     def testCloneAllResource(self):
         print('-------- Testing Copying All Resources --------')
