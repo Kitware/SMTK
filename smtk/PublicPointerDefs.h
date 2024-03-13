@@ -275,6 +275,13 @@ class Project;
 } // namespace old
 } // namespace project
 
+namespace task
+{
+class Adaptor;
+class Manager;
+class Task;
+} // namespace task
+
 namespace resource
 {
 /// @see smtk::resource::Manager
@@ -697,6 +704,8 @@ typedef smtk::weak_ptr<smtk::project::Manager> WeakManagerPtr;
 /// @see smtk::project::Project
 typedef smtk::shared_ptr<smtk::project::Project> ProjectPtr;
 typedef smtk::shared_ptr<const smtk::project::Project> ConstProjectPtr;
+typedef smtk::weak_ptr<smtk::project::Project> WeakProjectPtr;
+typedef smtk::weak_ptr<const smtk::project::Project> ConstWeakProjectPtr;
 namespace old
 {
 /// @see smtk::project::Manager
@@ -705,6 +714,24 @@ typedef smtk::shared_ptr<smtk::project::old::Manager> ManagerPtr;
 typedef smtk::shared_ptr<smtk::project::old::Project> ProjectPtr;
 } // namespace old
 } // namespace project
+
+namespace task
+{
+/// @see smtk::task::Adaptor
+typedef smtk::shared_ptr<smtk::task::Adaptor> AdaptorPtr;
+typedef smtk::shared_ptr<const smtk::task::Adaptor> ConstAdaptorPtr;
+typedef smtk::weak_ptr<smtk::task::Adaptor> WeakAdaptorPtr;
+typedef smtk::weak_ptr<const smtk::task::Adaptor> ConstWeakAdaptorPtr;
+/// @see smtk::yask::Manager
+typedef smtk::shared_ptr<smtk::task::Manager> ManagerPtr;
+typedef smtk::weak_ptr<smtk::task::Manager> WeakManagerPtr;
+/// @see smtk::task::Task
+typedef smtk::shared_ptr<smtk::task::Task> TaskPtr;
+typedef smtk::shared_ptr<const smtk::task::Task> ConstTaskPtr;
+typedef smtk::weak_ptr<smtk::task::Task> WeakTaskPtr;
+typedef smtk::weak_ptr<const smtk::task::Task> ConstWeakTaskPtr;
+} // namespace task
+
 // These are used internally by SMTK
 namespace internal
 {
