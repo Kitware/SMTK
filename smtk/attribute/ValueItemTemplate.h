@@ -36,12 +36,12 @@ class SMTK_ALWAYS_EXPORT ValueItemTemplate : public ValueItem
 public:
   typedef DataT DataType;
   typedef typename std::vector<DataT> value_type;
-  typedef value_type const_iterator;
+  typedef typename value_type::const_iterator const_iterator;
   typedef ValueItemDefinitionTemplate<DataType> DefType;
 
   ~ValueItemTemplate() override = default;
-  typename std::vector<DataT>::const_iterator begin() const { return m_values.begin(); }
-  typename std::vector<DataT>::const_iterator end() const { return m_values.end(); }
+  const_iterator begin() const { return m_values.begin(); }
+  const_iterator end() const { return m_values.end(); }
   bool setNumberOfValues(std::size_t newSize) override;
 
   ///@{
