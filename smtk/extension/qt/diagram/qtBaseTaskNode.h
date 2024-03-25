@@ -78,6 +78,11 @@ public:
   /// Return true if the task is currently active (i.e., being worked on by the user).
   bool isActive() const;
 
+  ///Setup a context menu to be displayed by the node's underlying widget
+  ///
+  /// Returns true if setting up the menu was successful.
+  virtual bool setupContextMenu(QMenu*) { return false; }
+
   /// Deals with state updates
   virtual void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) = 0;
 

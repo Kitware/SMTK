@@ -70,12 +70,18 @@ public:
   /// Handle renames, etc.
   void dataUpdated() override;
 
+  /// Setup a context menu for this type of node
+  bool setupContextMenu(QMenu*) override;
+
 protected:
   friend class DefaultTaskNodeWidget;
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
   /// Update the node bounds to fit its content.
   int updateSize() override;
+
+  /// Change the name of the task
+  bool renameTask();
 
   DefaultTaskNodeWidget* m_container{ nullptr };
 };

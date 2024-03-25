@@ -121,7 +121,7 @@ public:
     // need to do this
     QObject::connect(
       m_title, &QPushButton::customContextMenuRequested, this, [self, this](const QPoint& pt) {
-        if (!self)
+        if (!(self && self->m_node))
         {
           return;
         }
@@ -131,11 +131,10 @@ public:
 
         QMenu* menu = new QMenu();
         menu->setObjectName(menuName);
-        auto* renameAction = new QAction("Rename task…");
-        renameAction->setObjectName("RenameTaskAction");
-        QObject::connect(
-          renameAction, &QAction::triggered, self.data(), &DefaultTaskNodeWidget::renameTask);
-        menu->addAction(renameAction);
+        if (!self->m_node->setupContextMenu(menu))
+        {
+          return;
+        }
         // Figure out where to place the context menu.
         // Simply calling self->mapToGlobal(pt) doesn't work; instead we must
         // translate from the proxy-widget's coordinates to the parent node's coordinates,
@@ -148,49 +147,6 @@ public:
         delete menu;
       });
     this->updateTaskState(m_node->m_task->state(), m_node->m_task->state(), m_node->isActive());
-  }
-
-  // This method runs the rename task operation
-  bool renameTask()
-  {
-    bool ok;
-    auto* task = m_node->task();
-    if (!task)
-    {
-      return false;
-    }
-    // Request the new name from the user
-    QString origName(task->name().c_str());
-    QString newName = QInputDialog::getText(
-      nullptr, tr("Renaming Task"), tr("New Task Name: "), QLineEdit::Normal, origName, &ok);
-    // If the name is the same or the user canceled the dialog just return
-    if (!ok || (origName == newName))
-    {
-      return false;
-    }
-
-    // Prep and run the operation (if possible)
-    auto opMgr = task->manager()->managers()->get<smtk::operation::Manager::Ptr>();
-    auto op = opMgr->create("smtk::task::RenameTask");
-    if (!op)
-    {
-      return false;
-    }
-    if (!op->parameters()->associate(task->shared_from_this()))
-    {
-      return false;
-    }
-    if (!op->parameters()->findAs<smtk::attribute::StringItem>("name")->setValue(
-          newName.toStdString()))
-    {
-      return false;
-    }
-    if (!op->ableToOperate())
-    {
-      return false;
-    }
-    opMgr->launchers()(op);
-    return true;
   }
 
   void flashWarning()
@@ -437,6 +393,57 @@ void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::Stat
 void qtDefaultTaskNode::dataUpdated()
 {
   m_container->m_title->setText(QString::fromStdString(m_task->name()));
+}
+
+// This method runs the rename task operation
+bool qtDefaultTaskNode::renameTask()
+{
+  bool ok;
+  if (!m_task)
+  {
+    return false;
+  }
+  // Request the new name from the user
+  QString origName(m_task->name().c_str());
+  QString newName = QInputDialog::getText(
+    nullptr, tr("Renaming Task"), tr("New Task Name: "), QLineEdit::Normal, origName, &ok);
+  // If the name is the same or the user canceled the dialog just return
+  if (!ok || (origName == newName))
+  {
+    return false;
+  }
+
+  // Prep and run the operation (if possible)
+  auto opMgr = m_task->manager()->managers()->get<smtk::operation::Manager::Ptr>();
+  auto op = opMgr->create("smtk::task::RenameTask");
+  if (!op)
+  {
+    return false;
+  }
+  if (!op->parameters()->associate(m_task->shared_from_this()))
+  {
+    return false;
+  }
+  if (!op->parameters()->findAs<smtk::attribute::StringItem>("name")->setValue(
+        newName.toStdString()))
+  {
+    return false;
+  }
+  if (!op->ableToOperate())
+  {
+    return false;
+  }
+  opMgr->launchers()(op);
+  return true;
+}
+
+bool qtDefaultTaskNode::setupContextMenu(QMenu* menu)
+{
+  auto* renameAction = new QAction("Rename task…");
+  renameAction->setObjectName("RenameTaskAction");
+  QObject::connect(renameAction, &QAction::triggered, this, &qtDefaultTaskNode::renameTask);
+  menu->addAction(renameAction);
+  return menu;
 }
 
 } // namespace extension
