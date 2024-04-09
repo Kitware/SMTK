@@ -635,66 +635,21 @@ void XmlDocV1Parser::process(
   // Add the new Categories
   seccategories.insert(newCats.begin(), newCats.end());
 
+  // Since Analyses Block can support template instantiation
+  // We need to process Template Definitions prior to Analyses
+  this->processTemplatesDefinitions(amnode, globalTemplateMap);
+
   // Process Analysis Info
-  std::set<std::string> categories;
   node = amnode.child("Analyses");
   if (node)
   {
     attribute::Analyses& analyses = m_resource->analyses();
-    xml_node anode;
     auto xatt = node.attribute("Exclusive");
     if (xatt && xatt.as_bool())
     {
       analyses.setTopLevelExclusive(true);
     }
-    for (anode = node.first_child(); anode; anode = anode.next_sibling())
-    {
-      s = anode.attribute("Type").value();
-      categories.clear();
-      for (cnode = anode.first_child(); cnode; cnode = cnode.next_sibling())
-      {
-        if (cnode.text().empty())
-        {
-          continue;
-        }
-        categories.insert(cnode.text().get());
-      }
-      auto* analysis = analyses.create(s);
-      if (analysis == nullptr)
-      {
-        smtkErrorMacro(m_logger, "Failed to create Analysis: " << s);
-        continue;
-      }
-      analysis->setLocalCategories(categories);
-      // Does this analysis have a base type?
-      xatt = anode.attribute("BaseType");
-      if (xatt)
-      {
-        const auto* bt = xatt.value();
-        auto* parent = analyses.find(bt);
-        if (parent == nullptr)
-        {
-          smtkErrorMacro(m_logger, "Failed to set Analysis: " << s << " parent to " << bt);
-        }
-        analysis->setParent(parent);
-      }
-      xatt = anode.attribute("Exclusive");
-      if (xatt && xatt.as_bool())
-      {
-        analysis->setExclusive(true);
-      }
-      xatt = anode.attribute("Required");
-      if (xatt && xatt.as_bool())
-      {
-        analysis->setRequired(true);
-      }
-      // Does the analysis have a label?
-      xatt = anode.attribute("Label");
-      if (xatt)
-      {
-        analysis->setLabel(xatt.value());
-      }
-    }
+    this->processAnalysisInformationChildren(node);
   }
 
   // Process AdvanceLevel Info
@@ -728,7 +683,6 @@ void XmlDocV1Parser::process(
   }
   this->processConfigurations(amnode);
   this->processItemDefinitionBlocks(amnode, globalTemplateMap);
-  this->processTemplatesDefinitions(amnode, globalTemplateMap);
   this->processAssociationRules(amnode);
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
@@ -774,6 +728,84 @@ void XmlDocV1Parser::process(
   this->processHints(amnode);
 }
 
+void XmlDocV1Parser::processAnalysisInformationChildren(xml_node& node)
+{
+  for (xml_node child = node.first_child(); child; child = child.next_sibling())
+  {
+    std::string nodeName = child.name();
+    if ((nodeName == "Block") || (nodeName == "Template"))
+    {
+      pugi::xml_node instancedTemplateNode;
+      if (this->createXmlFromTemplate(child, instancedTemplateNode))
+      {
+        this->processAnalysisInformationChildren(instancedTemplateNode);
+        this->releaseXmlTemplate(instancedTemplateNode);
+      }
+      continue;
+    }
+    if (nodeName == "Analysis")
+    {
+      this->createAnalysis(child);
+      continue;
+    }
+    smtkWarningMacro(m_logger, "Skipping unsupported Analysis child element type: " << nodeName);
+  }
+}
+
+void XmlDocV1Parser::createAnalysis(xml_node& anode)
+{
+  attribute::Analyses& analyses = m_resource->analyses();
+  std::set<std::string> categories;
+  std::string s;
+  xml_node cnode;
+  xml_attribute xatt;
+
+  s = anode.attribute("Type").value();
+  for (cnode = anode.first_child(); cnode; cnode = cnode.next_sibling())
+  {
+    if (cnode.text().empty())
+    {
+      continue;
+    }
+    categories.insert(cnode.text().get());
+  }
+  auto* analysis = analyses.create(s);
+  if (analysis == nullptr)
+  {
+    smtkErrorMacro(m_logger, "Failed to create Analysis: " << s);
+    return;
+  }
+  analysis->setLocalCategories(categories);
+  // Does this analysis have a base type?
+  xatt = anode.attribute("BaseType");
+  if (xatt)
+  {
+    const auto* bt = xatt.value();
+    auto* parent = analyses.find(bt);
+    if (parent == nullptr)
+    {
+      smtkErrorMacro(m_logger, "Failed to set Analysis: " << s << " parent to " << bt);
+    }
+    analysis->setParent(parent);
+  }
+  xatt = anode.attribute("Exclusive");
+  if (xatt && xatt.as_bool())
+  {
+    analysis->setExclusive(true);
+  }
+  xatt = anode.attribute("Required");
+  if (xatt && xatt.as_bool())
+  {
+    analysis->setRequired(true);
+  }
+  // Does the analysis have a label?
+  xatt = anode.attribute("Label");
+  if (xatt)
+  {
+    analysis->setLabel(xatt.value());
+  }
+}
+
 void XmlDocV1Parser::processItemDefinitionBlocks(
   xml_node& root,
   std::map<std::string, std::map<std::string, TemplateInfo>>& globalTemplateMap)
@@ -809,7 +841,7 @@ void XmlDocV1Parser::processTemplatesDefinitions(
   xml_node child, node = root.child("Templates");
   if (!node)
   {
-    return; // There are no ItemBlocks
+    return; // There are no Templates
   }
 
   xml_attribute xnsatt = node.attribute("Namespace");
