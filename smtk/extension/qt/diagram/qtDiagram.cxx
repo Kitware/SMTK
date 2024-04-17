@@ -75,8 +75,8 @@
 #include <QDockWidget>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QGridLayout>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QPalette>
@@ -85,6 +85,7 @@
 #include <QSizeGrip>
 #include <QTimer>
 #include <QToolBar>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <QWidgetAction>
 
@@ -106,11 +107,12 @@ public:
     , m_self(self)
     , m_scene(new qtDiagramScene(m_self))
     , m_widget(new QWidget)
-    // m_widget contains a QGridLayout with two overlapping widgets:
-    , m_sidebarOuterLayout(new QGridLayout(m_widget))
+    // Layout for possibly the toolbar and the rest of the widget's contents:
+    , m_mainLayout(new QVBoxLayout)
+    // Layout for the actual diagram and drawer
+    , m_contentsLayout(new QHBoxLayout)
     , m_sidebarOuter(new QFrame)
     , m_view(new qtDiagramView(m_scene, m_self))
-    // m_sidebarOuter contains a QGridLayout with two overlapping widgets:
     , m_sidebarMiddleLayout(new QVBoxLayout(m_sidebarOuter))
     , m_sidebarSizer(new QSizeGrip(m_sidebarOuter))
     , m_sidebarMiddle(new QScrollArea)
@@ -121,7 +123,7 @@ public:
     , m_legend(new qtDiagramLegend("Legend", m_self))
   {
     // If this view is inside a dock-widget, take over the dock's title-bar.
-    // Otherwise, put the dock inside m_sidebarOuterLayout above m_view.
+    // Otherwise, put the dock inside m_mainLayout above m_view.
     m_dock = nullptr;
     QObject* dp = info.get<QWidget*>();
     while (dp && !m_dock)
@@ -129,28 +131,31 @@ public:
       m_dock = qobject_cast<QDockWidget*>(dp);
       dp = dp->parent();
     }
-    const int gridRow = m_dock ? 0 : 1;
     m_toolbar = new QToolBar(m_dock ? static_cast<QPointer<QWidget>>(m_dock) : m_widget);
     m_toolbar->setObjectName("DiagramToolbar");
     m_toolbar->setIconSize(QSize(16, 16));
 
+    m_mainLayout->setObjectName("MainLayout");
+    m_mainLayout->setSpacing(0);
+
     m_scene->setObjectName("DiagramScene");
-    m_widget->setObjectName("OuterDiagramGrid");
-    m_widget->setLayout(m_sidebarOuterLayout);
+    m_widget->setObjectName("OuterDiagramWdiget");
+    m_widget->setLayout(m_mainLayout);
     m_self->Widget = m_widget;
 
-    m_sidebarOuterLayout->setObjectName("SidebarOuterLayout");
-    m_sidebarOuterLayout->setSpacing(0);
+    m_contentsLayout->setObjectName("ContentsLayout");
+    m_contentsLayout->setSpacing(0);
     if (m_dock)
     {
       m_dock->setTitleBarWidget(m_toolbar);
     }
     else
     {
-      m_sidebarOuterLayout->addWidget(m_toolbar, 0, 0, Qt::AlignLeft | Qt::AlignTop);
+      m_mainLayout->addWidget(m_toolbar, Qt::AlignLeft | Qt::AlignTop);
     }
-    m_sidebarOuterLayout->addWidget(m_view, gridRow, 0, Qt::AlignLeft | Qt::AlignTop);
-    m_sidebarOuterLayout->addWidget(m_sidebarOuter, gridRow, 0, Qt::AlignLeft | Qt::AlignTop);
+    m_mainLayout->addLayout(m_contentsLayout);
+    m_contentsLayout->addWidget(m_sidebarOuter, Qt::AlignLeft | Qt::AlignTop);
+    m_contentsLayout->addWidget(m_view, Qt::AlignLeft | Qt::AlignTop);
     m_sidebarOuter->setObjectName("SidebarOuter");
     // Mark the sidebar "outer" widget as a subwindow so it will
     // be resized by the QSizeGrip contained inside in the "middle" layout.
@@ -576,7 +581,8 @@ public:
   qtDiagramScene* m_scene{ nullptr };
   QPointer<QWidget> m_widget;
 
-  QPointer<QGridLayout> m_sidebarOuterLayout;
+  QPointer<QVBoxLayout> m_mainLayout;
+  QPointer<QHBoxLayout> m_contentsLayout;
   QPointer<QFrame> m_sidebarOuter;
   qtDiagramView* m_view{ nullptr };
 

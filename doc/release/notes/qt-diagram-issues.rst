@@ -11,3 +11,4 @@ Diagram view issues fixed
   keys (previously, only backspace worked).
 + Make shift in "select" mode temporarily enter "pan" mode to mirror
   the behavior of the same key in "pan" mode (which enters "select").
++ Replaced GridLayout which was causing the widget not to expand to consume all of the available space.
