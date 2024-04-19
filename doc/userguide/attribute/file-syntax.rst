@@ -1,4 +1,4 @@
-Template File Syntax (Reference) for Version 7 XML Attribute Files
+Template File Syntax (Reference) for Version 8 XML Attribute Files
 ==================================================================
 
 File Layout
@@ -17,7 +17,7 @@ Attributes that can be included in this XML Element.
    * - Version
      - Integer value that indicates the SMTK attribute format (Required)
 
-       Current value is 7 (latest version)
+       Current value is 8 (latest version)
 
    * - DisplayHint
      - Boolean value that indicates if the Attribute Resource should be automatically
@@ -731,11 +731,19 @@ This element can contain the following children XML Elements:
    * - XML Child Element
      - Description
 
+   * - <CategoryExpression>
+     - Specifies the local category expression specified on the
+       Definition
+
+       See `CategoryExpression Format`_.
+
    * - <CategoryInfo>
      - Specifies the local category constraints specified on the
        Definition
 
        See `CategoryInfo Format`_.
+       **Note** - This is an old style format - please use CategoryExpression
+       elements instead
 
    * - <ItemDefinitions>
      - Defines the items contained within the attributes generated
@@ -916,6 +924,62 @@ Attributes that can be included in this XML Element.
        and 1 inclusive.
        If not specified its value is 0, 0, 0.
 
+
+CategoryExpression Format
+~~~~~~~~~~~~~~~~~~~~~~~~~
+This subsection of an AttDef Element describes the local category constants imposed on the Definition.  All Item Definitions belonging to
+this Definition, as well as all Definitions derived from this, will inherit these constraints unless explicitly told not to.
+
+The category expression can be specified using one of the following methods:
+
+* Specifying the PassMode attribute - this is used to create trivial pass all / reject all expressions
+* Specifying an expression string which is the contents of the CategoryExpression element
+
+A category expression string is composed of series of category names separated by either a '|' (representing Or) or a '&' (representing And).
+You can used '(' and ')' to model sub-expressions.  You can also place a '!' before a category name or sub-expression to mean "not".  In terms of categories names,
+if the name could be consider a valid C++ variable name, you can simply use the name in the expression.  If the name does not conform to this format you can enclose it in single quotes.
+
+Here is an example of a CategoryExpression Element.
+
+.. code-block:: xml
+
+          <CategoryExpression InheritanceMode="Or">
+             (a &amp; !b) &amp; (d | 'category with spaces')
+          </CategoryExpression>
+
+
+Note that in XML ``&amp;`` represents ``&``.
+
+In this example the expression will match if the test set of categories contains **a** and either **d** or **category with spaces** but not **b**.
+
+The CategotyInfo Element itself can have the following XML Attributes:
+
+.. list-table:: XML Attributes for <CategoryExpression> Element
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - XML Attribute
+     - Description
+
+   * - PassMode
+     - String value representing that the expression will either pass or reject any set of categories being tested
+
+       If set to *All*, then the expression will pass any set of categories provided to it.
+
+       If set to *None*, then the expression will not pass any set of categories provided to it.
+
+       (Optional)
+
+   * - InheritanceMode
+     - String value that indicates how the Definition should combine its local category information with the category information
+       inherited from its Base Definition.
+
+       If set to *And*, then its local category information will be and'd with its Base Definition's.  If it is set to *Or*, then its local category information will be or'd with its Base Definition's.  If it is set to *LocalOnly*, then the Base Definition's category information will be ignored.
+
+       (Optional - the default is *And*)
+
+
 CategoryInfo Format
 ~~~~~~~~~~~~~~~~~~~
 This subsection of an AttDef Element describes the local category constants imposed on the Definition.  All Item Definitions belonging to
@@ -929,7 +993,7 @@ The category information is divided into two elements:
 The children of these elements include <Cat> elements whose values are category names.  These elements can optionally include an XML attribute called **Combination** which can be set to *Or* or *And*.
 If set to *And*, all of the categories listed must be active in the owning attribute resource in order for the set to be considered *satisfied*.  If *Or* is specified, then only one of the categories need to be active in order for the set to be *satisfied*.  The default is *Or*.
 
-The CategotyInfo Element itself can have the following XML Attributes:
+The CategoryInfo Element itself can have the following XML Attributes:
 
 .. list-table:: XML Attributes for <CategoryInfo> Element
    :widths: 10 40
@@ -1111,6 +1175,15 @@ This element can contain the following children XML Elements:
    * - XML Child Element
      - Description
 
+   * - <CategoryExpression>
+     - Specifies the local category expression specified on the
+       Item Definition.  The format is identical to the one used for Attribute Definitions except
+       that the category inheritance mode controls how the Item Definition's local category information is
+       combined with the category information it inherits from either its owning Attribute or Item Definition.
+       (Optional)
+
+       See `CategoryExpression Format`_.
+
    * - <CategoryInfo>
      - Specifies the local category constraints specified on the
        Item Definition.  The format is identical to the one used for Attribute Definitions except
@@ -1119,6 +1192,8 @@ This element can contain the following children XML Elements:
        (Optional)
 
        See `CategoryInfo Format`_.
+       **Note** - This is an old style format - please use CategoryExpression
+       elements instead
 
    * - <BriefDescription>
      - Provides a brief description of the item (Optional).
@@ -1481,6 +1556,14 @@ The Structure Element contains a Value element along with optional category and 
      - Simple form when defining only discrete values without category information or associated Item Definitions.
        See `Simple Discrete Value Form`_.
 
+   * - <CategoryExpression>
+     - Specifies the additional category constraints associated with this discrete value.
+       The format is identical to the one used for Attribute Definitions except
+       that the category inheritance mode is not used.
+       (Optional)
+
+       See `CategoryExpression Format`_.
+
    * - <CategoryInfo>
      - Specifies the additional category constraints associated with this discrete value.
        The format is identical to the one used for Attribute Definitions except
@@ -1488,6 +1571,8 @@ The Structure Element contains a Value element along with optional category and 
        (Optional)
 
        See `CategoryInfo Format`_.
+       **Note** - This is an old style format - please use CategoryExpression
+       elements instead
 
    * - <Items>
      - Represents the Children Items that are associated with this discrete value.

@@ -61,7 +61,18 @@ inline py::class_< smtk::attribute::Categories > pybind11_init_smtk_attribute_Ca
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::set<::std::string>&) const) &smtk::attribute::Categories::Set::passes, py::arg("categories"))
     .def("passes", (bool (smtk::attribute::Categories::Set::*)(const ::std::string&) const) &smtk::attribute::Categories::Set::passes, py::arg("category"))
     ;
-  py::class_< smtk::attribute::Categories::Stack >(instance, "Stack")
+  py::class_< smtk::attribute::Categories::Expression, smtk::attribute::Categories::Set >(instance, "Expression")
+    .def(py::init<>())
+    .def("deepcopy", (smtk::attribute::Categories::Expression & (smtk::attribute::Categories::Expression::*)(::smtk::attribute::Categories::Expression const &)) &smtk::attribute::Categories::Expression::operator=)
+
+    .def("setExpression", &smtk::attribute::Categories::Expression::setExpression)
+    .def("expression", &smtk::attribute::Categories::Expression::expression)
+    .def("setAllPass", &smtk::attribute::Categories::Expression::setAllPass)
+    .def("allPass", &smtk::attribute::Categories::Expression::allPass)
+    .def("setAllReject", &smtk::attribute::Categories::Expression::setAllReject)
+    .def("allReject", &smtk::attribute::Categories::Expression::allReject)
+    ;
+ py::class_< smtk::attribute::Categories::Stack >(instance, "Stack")
     .def(py::init<>())
     .def("deepcopy", (smtk::attribute::Categories::Stack & (smtk::attribute::Categories::Stack::*)(::smtk::attribute::Categories::Stack const &)) &smtk::attribute::Categories::Stack::operator=)
 

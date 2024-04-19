@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows
 
+#include "smtk/attribute/categories/Evaluators.h"
 #include <set>
 #include <string>
 #include <utility>
@@ -70,12 +71,12 @@ public:
     ///@{
     ///\brief Set/Get the CombinationMode associated with the included categories.
     Set::CombinationMode inclusionMode() const { return m_includeMode; }
-    void setInclusionMode(const Set::CombinationMode& newMode) { m_includeMode = newMode; }
+    void setInclusionMode(const Set::CombinationMode& newMode);
     ///@}
     ///@{
     ///\brief Set/Get the CombinationMode associated with the excluded categories.
     Set::CombinationMode exclusionMode() const { return m_excludeMode; }
-    void setExclusionMode(const Set::CombinationMode& newMode) { m_excludeMode = newMode; }
+    void setExclusionMode(const Set::CombinationMode& newMode);
     ///@}
     ///\brief Return the set of category names associated with the inclusion set.
     const std::set<std::string>& includedCategoryNames() const { return m_includedCategories; }
@@ -84,6 +85,7 @@ public:
     {
       m_includeMode = mode;
       m_includedCategories = values;
+      this->updatedSetInfo();
     }
     ///\brief Return the set of category names associated with the exclusion set.
     const std::set<std::string>& excludedCategoryNames() const { return m_excludedCategories; }
@@ -92,17 +94,34 @@ public:
     {
       m_excludeMode = mode;
       m_excludedCategories = values;
+      this->updatedSetInfo();
     }
     ///\brief Add a category name to the inclusion set.
-    void insertInclusion(const std::string& val) { m_includedCategories.insert(val); }
+    void insertInclusion(const std::string& val)
+    {
+      m_includedCategories.insert(val);
+      this->updatedSetInfo();
+    }
     ///\brief Add a category name to the exclusion set.
-    void insertExclusion(const std::string& val) { m_excludedCategories.insert(val); }
+    void insertExclusion(const std::string& val)
+    {
+      m_excludedCategories.insert(val);
+      this->updatedSetInfo();
+    }
     ///\brief Remove a category name from the inclusion set.
-    void eraseInclusion(const std::string& val) { m_includedCategories.erase(val); }
+    void eraseInclusion(const std::string& val)
+    {
+      m_includedCategories.erase(val);
+      this->updatedSetInfo();
+    }
     ///\brief Remove a category name from the exclusion set.
-    void eraseExclusion(const std::string& val) { m_excludedCategories.erase(val); }
+    void eraseExclusion(const std::string& val)
+    {
+      m_excludedCategories.erase(val);
+      this->updatedSetInfo();
+    }
     ///\brief Remove all names from both inclusion and exclusion sets.
-    void reset()
+    virtual void reset()
     {
       m_includedCategories.clear();
       m_excludedCategories.clear();
@@ -125,8 +144,8 @@ public:
     /// If the input set is empty then the method will return true.  Else if
     /// the instance's mode is Or then at least one of its category names must be in the
     /// input set.  If the mode is And then all of the instance's names must be in the input set.
-    bool passes(const std::set<std::string>& cats) const;
-    bool passes(const std::string& cat) const;
+    virtual bool passes(const std::set<std::string>& cats) const;
+    virtual bool passes(const std::string& cat) const;
     ///@}
     static bool passesCheck(
       const std::set<std::string>& cats,
@@ -134,19 +153,79 @@ public:
       Set::CombinationMode comboMode);
 
     ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
-    int compare(const Set& rhs) const;
-    std::string convertToString(const std::string& prefix = "") const;
+    virtual int compare(const Set& rhs) const;
+    virtual std::string convertToString(const std::string& prefix = "") const;
 
-  private:
+  protected:
+    virtual void updatedSetInfo(){};
     Set::CombinationMode m_includeMode{ Set::CombinationMode::Or },
       m_excludeMode{ Set::CombinationMode::Or }, m_combinationMode{ Set::CombinationMode::And };
     std::set<std::string> m_includedCategories, m_excludedCategories;
   };
 
+  class SMTKCORE_EXPORT Expression : public Set
+  {
+  public:
+    Expression();
+    ///@{
+    ///\brief Set/Get the expression string.
+    ///
+    /// Setting the expression will return true if the string represented a valid expression and will construct an
+    /// appropriate evaluator.  If not, no changes are made and false is returned.
+    bool setExpression(const std::string& expString);
+    const std::string& expression() const;
+    ///@}
+
+    ///\brief Set the expression to pass all sets of categories
+    void setAllPass();
+    ///\brief Set the expression to reject any set of categories
+    void setAllReject();
+    ///\brief Indicates that the expression is set to pass all sets of categories
+    bool allPass() const { return (m_expression.empty() ? m_allPass : false); }
+    ///\brief Indicates that the expression is set to reject all sets of categories
+    bool allReject() const { return (m_expression.empty() ? !m_allPass : false); }
+
+    ///\brief Resets the expression to its unset condition and sets the default
+    /// evaluator to reject all.
+    void reset() override
+    {
+      this->setAllReject();
+      m_isSet = false;
+    }
+
+    ///\brief Indicates that the expression has been set
+    bool isSet() const { return m_isSet; }
+    ///@{
+    ///\brief  Return true if the input set of categories satisfies the Set's
+    /// constraints.
+    ///
+    /// If the input set is empty then the method will return true.  Else if
+    /// the instance's mode is Or then at least one of its category names must be in the
+    /// input set.  If the mode is And then all of the instance's names must be in the input set.
+    bool passes(const std::set<std::string>& cats) const override;
+    bool passes(const std::string& cat) const override;
+    ///@}
+    ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
+    int compare(const Expression& rhs) const;
+
+    std::string convertToString(const std::string& prefix = "") const override;
+
+    const std::set<std::string>& categoryNames() const { return m_categoryNames; }
+
+  protected:
+    void updatedSetInfo() override;
+    bool buildEvaluator();
+    std::string m_expression;
+    categories::Evaluators::Eval m_evaluator;
+    bool m_allPass = false;
+    bool m_isSet = false;
+    std::set<std::string> m_categoryNames;
+  };
+
   class SMTKCORE_EXPORT Stack
   {
   public:
-    bool append(CombinationMode mode, const Set& categorySet);
+    bool append(CombinationMode mode, const Expression& exp);
     void clear() { m_stack.clear(); }
     bool passes(const std::set<std::string>& cats) const;
     bool passes(const std::string& cat) const;
@@ -157,7 +236,7 @@ public:
     bool operator<(const Stack& rhs) const;
 
   protected:
-    std::vector<std::pair<CombinationMode, Set>> m_stack;
+    std::vector<std::pair<CombinationMode, Expression>> m_stack;
   };
 
   Categories() = default;
@@ -176,7 +255,6 @@ public:
   void reset() { m_stacks.clear(); }
   ///\brief Return the number of stacks in this instance.
   std::size_t size() const { return m_stacks.size(); }
-  ///\brief Return the sets contained in this instance.
   ///\brief Return the stacks contained in this instance.
   const std::set<Stack>& stacks() const { return m_stacks; }
   ///\brief Return a set of all category names referenced in all of the instance's stacks.
@@ -186,7 +264,9 @@ public:
   ///\brief Print to cerr the current contents of the instance.
   void print() const;
   static std::string combinationModeAsString(Set::CombinationMode mode);
+  static std::string combinationModeAsSymbol(Set::CombinationMode mode);
   static bool combinationModeFromString(const std::string& val, Set::CombinationMode& mode);
+  static bool combinationModeStringToSymbol(const std::string& val, std::string& symbol);
 
 private:
   std::set<Stack> m_stacks;

@@ -57,9 +57,10 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
       enumName = defPtr->discreteEnum(i);
       // Check conditional items
       conditionalItems = defPtr->conditionalItems(enumName);
-      const smtk::attribute::Categories::Set& categoryValues = defPtr->enumCategories(enumName);
+      const smtk::attribute::Categories::Expression& categoryValues =
+        defPtr->enumCategories(enumName);
       json valueJson, structureJson, resultJson;
-      if (!conditionalItems.empty() || !categoryValues.empty())
+      if (!conditionalItems.empty() || categoryValues.isSet())
       {
         // Structure enums
         // TODO: Simplifiy the logic here
@@ -70,28 +71,21 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
         {
           structureJson["Items"] = conditionalItems;
         }
-        if (!categoryValues.empty())
+        if (categoryValues.isSet())
         {
           // Process Category Info
-          structureJson["CategoryInfo"]["Combination"] =
-            smtk::attribute::Categories::combinationModeAsString(categoryValues.combinationMode());
-
-          // Inclusion Info
-          if (!categoryValues.includedCategoryNames().empty())
+          if (!categoryValues.expression().empty())
           {
-            structureJson["CategoryInfo"]["InclusionCombination"] =
-              smtk::attribute::Categories::combinationModeAsString(categoryValues.inclusionMode());
-            structureJson["CategoryInfo"]["IncludeCategories"] =
-              categoryValues.includedCategoryNames();
+            // Process Category Expression
+            structureJson["CategoryExpression"]["Expression"] = categoryValues.expression();
           }
-
-          // Exclusion Info
-          if (!categoryValues.excludedCategoryNames().empty())
+          else if (categoryValues.allPass())
           {
-            structureJson["CategoryInfo"]["ExclusionCombination"] =
-              smtk::attribute::Categories::combinationModeAsString(categoryValues.exclusionMode());
-            structureJson["CategoryInfo"]["ExcludeCategories"] =
-              categoryValues.excludedCategoryNames();
+            structureJson["CategoryExpression"]["PassMode"] = "All";
+          }
+          else
+          {
+            structureJson["CategoryExpression"]["PassMode"] = "None";
           }
         }
         if (defPtr->hasEnumAdvanceLevel(enumName))
@@ -186,8 +180,9 @@ static void processDerivedValueDefFromJson(
           std::cerr << "Item Definition: " << defPtr->name() << " is missing Enum!\n";
           continue;
         }
-        auto itemsValue = structure->find("Items");     // list of conditional Items
-        auto catInfo = structure->find("CategoryInfo"); // Current Form
+        auto itemsValue = structure->find("Items");          // list of conditional Items
+        auto catExp = structure->find("CategoryExpression"); // Current Form
+        auto catInfo = structure->find("CategoryInfo");      // Old Form since 05/24
         auto catsValue = structure->find("Categories"); // list of categories for enum - Deprecated
         // Should just iterate once
         for (auto currentEnum = enumValue->begin(); currentEnum != enumValue->end(); currentEnum++)
@@ -203,9 +198,40 @@ static void processDerivedValueDefFromJson(
               defPtr->addConditionalItem(discreteEnum, currentItem);
             }
           }
-          if (catInfo != structure->end())
+          if (catExp != structure->end())
           {
-            attribute::Categories::Set localCats;
+            attribute::Categories::Expression localExp;
+            auto catExpression = catExp->find("Expression");
+            auto catPassMode = catExp->find("PassMode");
+            if (catExpression != catExp->end())
+            {
+              localExp.setExpression(*catExpression);
+              defPtr->setEnumCategories(discreteEnum, localExp);
+            }
+            else if (catPassMode != catExp->end())
+            {
+              if (*catPassMode == "None")
+              {
+                localExp.setAllReject();
+                defPtr->setEnumCategories(discreteEnum, localExp);
+              }
+              else if (*catPassMode == "All")
+              {
+                localExp.setAllPass();
+                defPtr->setEnumCategories(discreteEnum, localExp);
+              }
+              else
+              {
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  "When converting json, Category Expression PassMode value: "
+                    << *catPassMode << " is unsupported.");
+              }
+            }
+          }
+          else if (catInfo != structure->end())
+          {
+            attribute::Categories::Expression localCats;
             auto combineMode = catInfo->find("Combination");
             smtk::attribute::Categories::CombinationMode cmode;
             // If Combination is not specified - assume the default value;
@@ -278,7 +304,7 @@ static void processDerivedValueDefFromJson(
           }
           else if (catsValue != structure->end()) // Old Deprecated Format
           {
-            smtk::attribute::Categories::Set localCats;
+            smtk::attribute::Categories::Expression localCats;
             auto ccm = structure->find("categoryCheckMode");
             smtk::attribute::Categories::CombinationMode mode =
               smtk::attribute::Categories::CombinationMode::Or;

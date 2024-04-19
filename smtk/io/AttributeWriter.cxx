@@ -11,12 +11,12 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/XmlStringWriter.h"
-#include "smtk/io/XmlV7StringWriter.h"
+#include "smtk/io/XmlV8StringWriter.h"
 #include <cassert>
 #include <fstream>
 
-#define DEFAULT_FILE_VERSION 7
-#define MAX_FILE_VERSION 7
+#define DEFAULT_FILE_VERSION 8
+#define MAX_FILE_VERSION 8
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
@@ -169,7 +169,8 @@ XmlStringWriter* AttributeWriter::newXmlStringWriter(
     case 5:
     case 6:
     case 7:
-      writer = new XmlV7StringWriter(resource, logger);
+    case 8:
+      writer = new XmlV8StringWriter(resource, logger);
       break;
 
     default:

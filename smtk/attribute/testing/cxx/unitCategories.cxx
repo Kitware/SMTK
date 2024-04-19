@@ -116,7 +116,7 @@ bool testCategories(
           std::string e = videf->discreteEnum(i);
           std::cerr << prefix << " Testing Item Definition:" << idef->name() << " enum = " << e
                     << "'s Categories: ";
-          if (!compareSets(videf->enumCategories(e).includedCategoryNames(), enumCats[i]))
+          if (!compareSets(videf->enumCategories(e).categoryNames(), enumCats[i]))
           {
             status = false;
           }

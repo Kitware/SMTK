@@ -241,7 +241,7 @@ public:
   const std::set<std::string>& activeCategories() const { return m_activeCategories; }
   ///@}
 
-  bool passActiveCategoryCheck(const smtk::attribute::Categories::Set& cats) const;
+  bool passActiveCategoryCheck(const smtk::attribute::Categories::Expression& cats) const;
   bool passActiveCategoryCheck(const smtk::attribute::Categories& cats) const;
 
   void addView(smtk::view::ConfigurationPtr);

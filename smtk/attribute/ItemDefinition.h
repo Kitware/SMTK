@@ -94,17 +94,20 @@ public:
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
   const smtk::attribute::Categories& categories() const { return m_categories; }
 
-  ///\brief Returns the categories::Set explicitly assigned to the Items Definition
-  smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
-  const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
+  ///\brief Returns the categories::Expression explicitly assigned to the Items Definition
+  smtk::attribute::Categories::Expression& localCategories() { return m_localCategories; }
+  const smtk::attribute::Categories::Expression& localCategories() const
+  {
+    return m_localCategories;
+  }
 
   ///\brief Sets the local categories.
   ///
   /// This method is intended for use by Python applications, because Python code cannot
   /// manipulate the reference returned by the localCategories() method.
-  void setLocalCategories(const smtk::attribute::Categories::Set& catSet)
+  void setLocalCategories(const smtk::attribute::Categories::Expression& catExp)
   {
-    m_localCategories = catSet;
+    m_localCategories = catExp;
   }
 
   ///\brief Determines how the Definition should combine its local category Set with the
@@ -192,7 +195,7 @@ protected:
   bool m_isOptional;
   bool m_isEnabledByDefault;
   std::string m_label;
-  attribute::Categories::Set m_localCategories;
+  attribute::Categories::Expression m_localCategories;
   attribute::Categories m_categories;
   std::string m_detailedDescription;
   std::string m_briefDescription;

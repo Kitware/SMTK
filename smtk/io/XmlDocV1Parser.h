@@ -104,15 +104,17 @@ protected:
 
   virtual void processCategoryAtts(
     pugi::xml_node& node,
-    attribute::Categories::Set& catSet,
+    attribute::Categories::Expression& catExp,
     attribute::Categories::CombinationMode& inheritanceMode);
-  void processOldStyleCategoryNode(pugi::xml_node& node, smtk::attribute::Categories::Set& catSet);
+  void processOldStyleCategoryNode(
+    pugi::xml_node& node,
+    smtk::attribute::Categories::Expression& catExp);
   void processItemDefCategoryInfoNode(
     pugi::xml_node& node,
     smtk::attribute::ItemDefinitionPtr idef);
   virtual void processCategoryInfoNode(
     pugi::xml_node& node,
-    attribute::Categories::Set& catSet,
+    attribute::Categories::Expression& catExp,
     attribute::Categories::CombinationMode& inheritanceMode);
 
   virtual void processDefinitionInformation(pugi::xml_node& defNode);

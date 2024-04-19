@@ -80,9 +80,9 @@ Read::Result Read::operateInternal()
   VersionNumber version;
   try
   {
-    // Is this a supported version?  Should be 3.0, 4.0, 5.0, or 6.0.
+    // Is this a supported version?  Should be 3.0, 4.0, 5.0, 6.0, or 7.0.
     version = j.at("version");
-    if (version >= VersionNumber(3) && version < VersionNumber(7))
+    if (version >= VersionNumber(3) && version < VersionNumber(8))
     {
       supportedVersion = true;
     }
