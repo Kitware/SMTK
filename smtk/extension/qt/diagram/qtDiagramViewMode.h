@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include "smtk/common/TypeContainer.h"
+#include "smtk/operation/Operation.h" // for Operation::Result
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -85,6 +86,24 @@ protected:
   /// (such as enabling/disabling items in the scene, adding items to be
   /// drawn while the mode is active, etc.)
   virtual void enterMode() {}
+
+  /// This method is called by the diagram when an operation is observed.
+  ///
+  /// Subclasses may override this if they have state related to persistent
+  /// objects in order to adapt to those objects being modified or expunged.
+  virtual void updateFromOperation(
+    std::unordered_set<smtk::resource::PersistentObject*>& created,
+    std::unordered_set<smtk::resource::PersistentObject*>& modified,
+    std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+    const smtk::operation::Operation& operation,
+    const smtk::operation::Operation::Result& result)
+  {
+    (void)created;
+    (void)modified;
+    (void)expunged;
+    (void)operation;
+    (void)result;
+  }
 
   /// A method subclasses may call to invoke deleters on the view's selection.
   bool removeSelectedObjects();

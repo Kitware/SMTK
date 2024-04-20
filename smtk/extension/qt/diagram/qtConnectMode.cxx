@@ -324,5 +324,41 @@ void qtConnectMode::abandonConnection()
   }
 }
 
+qtPreviewArc* qtConnectMode::previewArc() const
+{
+  return m_previewArc;
+}
+
+void qtConnectMode::updateFromOperation(
+  std::unordered_set<smtk::resource::PersistentObject*>& created,
+  std::unordered_set<smtk::resource::PersistentObject*>& modified,
+  std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+  const smtk::operation::Operation& operation,
+  const smtk::operation::Operation::Result& result)
+{
+  (void)created;
+  (void)modified;
+  (void)operation;
+  (void)result;
+
+  bool resetPreview = false;
+  auto* predecessor = m_previewArc->predecessor();
+  if (predecessor && expunged.find(predecessor->object()) != expunged.end())
+  {
+    resetPreview = true;
+  }
+  auto* successor = m_previewArc->successor();
+  if (successor && expunged.find(successor->object()) != expunged.end())
+  {
+    resetPreview = true;
+  }
+  if (resetPreview)
+  {
+    // NB: We do not call abandonConnection() here because that might
+    // cause us to exit this mode; we only want to reset the preview.
+    m_previewArc->setPredecessor(nullptr);
+  }
+}
+
 } // namespace extension
 } // namespace smtk
