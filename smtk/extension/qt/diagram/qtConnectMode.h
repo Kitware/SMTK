@@ -50,6 +50,17 @@ public:
 
   ~qtConnectMode() override;
 
+  /// Return the preview arc this mode uses to indicate potential connections.
+  qtPreviewArc* previewArc() const;
+
+  /// Ensure the preview arc does not become invalid when objects are expunged.
+  void updateFromOperation(
+    std::unordered_set<smtk::resource::PersistentObject*>& created,
+    std::unordered_set<smtk::resource::PersistentObject*>& modified,
+    std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+    const smtk::operation::Operation& operation,
+    const smtk::operation::Operation::Result& result) override;
+
 public Q_SLOTS:
   void hoverConnectNode(qtBaseObjectNode* node);
   void clickConnectNode(qtBaseObjectNode* node);

@@ -543,8 +543,12 @@ public:
       vv(std::static_pointer_cast<smtk::resource::Component>(value));
     }
 
-    // Now iterate over diagram generators to process the objects.
+    // Now iterate over diagram modes and generators to process the objects.
     this->resetViewHints();
+    for (const auto& entry : m_modeMap)
+    {
+      entry.second->updateFromOperation(created, modified, expunged, op, result);
+    }
     for (const auto& entry : m_generators)
     {
       entry.second->updateScene(created, modified, expunged, op, result);

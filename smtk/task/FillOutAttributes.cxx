@@ -218,7 +218,7 @@ bool FillOutAttributes::initializeResources()
       auto resources = resourceManager->find<smtk::attribute::Resource>();
       for (const auto& resource : resources)
       {
-        const std::string& role = smtk::project::detail::role(resource);
+        std::string role = smtk::project::detail::role(resource);
         for (auto& attributeSet : m_attributeSets)
         {
           if (
@@ -369,7 +369,7 @@ int FillOutAttributes::update(
         auto resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(weakResource.lock());
         if (resource)
         {
-          const std::string& role = smtk::project::detail::role(resource);
+          std::string role = smtk::project::detail::role(resource);
           // Do we care about this resource?
           for (auto& predicate : m_attributeSets)
           {
