@@ -119,6 +119,9 @@ protected:
   void processDefinitionInformationChildren(pugi::xml_node& node);
   void createDefinition(pugi::xml_node& defNode);
 
+  void processAnalysisInformationChildren(pugi::xml_node& node);
+  void createAnalysis(pugi::xml_node& analysisNode);
+
   virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def);
   virtual void processDefinitionAtts(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def);
   virtual void processDefinitionContents(
