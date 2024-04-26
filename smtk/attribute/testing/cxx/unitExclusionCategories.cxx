@@ -81,7 +81,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   // 7: Or Or Or
 
   DefinitionPtr A = attRes->createDefinition("A");
-  Categories::Set testCats;
+  Categories::Expression testCats;
   testCats.insertInclusion("a");
   testCats.insertInclusion("b");
   testCats.insertExclusion("c");

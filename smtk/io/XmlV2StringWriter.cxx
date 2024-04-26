@@ -115,7 +115,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
   if (idef->isDiscrete())
   {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    size_t j, i, nItems, nCats, n = idef->numberOfDiscreteValues();
+    size_t j, i, nItems, n = idef->numberOfDiscreteValues();
     xml_node dnode, snode, inodes;
     std::string ename;
     std::vector<std::string> citems;
@@ -126,11 +126,10 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
       citems = idef->conditionalItems(ename);
       nItems = citems.size();
       // Lets see if there are any categories
-      const Categories::Set& cats = idef->enumCategories(ename);
-      nCats = cats.includedCategoryNames().size() + cats.excludedCategoryNames().size();
+      const Categories::Expression& catExp = idef->enumCategories(ename);
       // Use the Structure Form if the enum has either
-      // children item or explicit categories associated with it
-      if (nItems || nCats)
+      // children item or explicit category expression is associated with it
+      if (nItems || catExp.isSet())
       {
         snode = dnodes.append_child("Structure");
         dnode = snode.append_child("Value");
@@ -149,34 +148,24 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
             inodes.append_child("Item").text().set(citems[j].c_str());
           }
         }
-        // Lets write out the enum's category info
-        if (nCats)
+        // Lets write out the enum's category expression information
+        if (catExp.isSet())
         {
-          xml_node catInfoNode = snode.append_child("CategoryInfo");
-          xml_node catGroupNode;
-          catInfoNode.append_attribute("Combination")
-            .set_value(Categories::combinationModeAsString(cats.combinationMode()).c_str());
 
-          // Inclusion Categories
-          if (!cats.includedCategoryNames().empty())
+          xml_node catExpNode = snode.append_child("CategoryExpression");
+          if (!catExp.expression().empty())
           {
-            catGroupNode = catInfoNode.append_child("Include");
-            catGroupNode.append_attribute("Combination")
-              .set_value(Categories::combinationModeAsString(cats.inclusionMode()).c_str());
-            for (const auto& str : cats.includedCategoryNames())
-            {
-              catGroupNode.append_child("Cat").text().set(str.c_str());
-            }
+            catExpNode.text().set(catExp.expression().c_str());
           }
-          // Exclusion Categories
-          if (!cats.excludedCategoryNames().empty())
+          else
           {
-            catGroupNode = catInfoNode.append_child("Exclude");
-            catGroupNode.append_attribute("Combination")
-              .set_value(Categories::combinationModeAsString(cats.exclusionMode()).c_str());
-            for (const auto& str : cats.excludedCategoryNames())
+            if (catExp.allPass())
             {
-              catGroupNode.append_child("Cat").text().set(str.c_str());
+              catExpNode.append_attribute("PassMode").set_value("All");
+            }
+            else
+            {
+              catExpNode.append_attribute("PassMode").set_value("None");
             }
           }
         }
@@ -736,7 +725,7 @@ void XmlV2StringWriter::processItemDefinition(xml_node& node, ItemDefinitionPtr 
 
 void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefinitionPtr idef)
 {
-  xml_node child, catInfoNode, catGroupNode;
+  xml_node child, catExpNode, catGroupNode;
   node.append_attribute("Name").set_value(idef->name().c_str());
   if (!idef->label().empty())
   {
@@ -750,32 +739,25 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   }
   // Lets write out the category stuff
   auto& localCats = idef->localCategories();
-  catInfoNode = node.append_child("CategoryInfo");
-  catInfoNode.append_attribute("InheritanceMode")
+  catExpNode = node.append_child("CategoryExpression");
+  catExpNode.append_attribute("InheritanceMode")
     .set_value(Categories::combinationModeAsString(idef->categoryInheritanceMode()).c_str());
-  catInfoNode.append_attribute("Combination")
-    .set_value(Categories::combinationModeAsString(localCats.combinationMode()).c_str());
-
-  // Inclusion Categories
-  if (!localCats.includedCategoryNames().empty())
+  if (localCats.isSet())
   {
-    catGroupNode = catInfoNode.append_child("Include");
-    catGroupNode.append_attribute("Combination")
-      .set_value(Categories::combinationModeAsString(localCats.inclusionMode()).c_str());
-    for (const auto& str : localCats.includedCategoryNames())
+    if (!localCats.expression().empty())
     {
-      catGroupNode.append_child("Cat").text().set(str.c_str());
+      catExpNode.text().set(localCats.expression().c_str());
     }
-  }
-  // Exclusion Categories
-  if (!localCats.excludedCategoryNames().empty())
-  {
-    catGroupNode = catInfoNode.append_child("Exclude");
-    catGroupNode.append_attribute("Combination")
-      .set_value(Categories::combinationModeAsString(localCats.exclusionMode()).c_str());
-    for (const auto& str : localCats.excludedCategoryNames())
+    else
     {
-      catGroupNode.append_child("Cat").text().set(str.c_str());
+      if (localCats.allPass())
+      {
+        catExpNode.append_attribute("PassMode").set_value("All");
+      }
+      else
+      {
+        catExpNode.append_attribute("PassMode").set_value("None");
+      }
     }
   }
 

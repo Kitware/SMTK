@@ -27,6 +27,7 @@ int main()
 {
   int status = 0;
   {
+
     smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
     smtk::attribute::Resource& resource(*resptr.get());
     std::cout << "Resource Created\n";

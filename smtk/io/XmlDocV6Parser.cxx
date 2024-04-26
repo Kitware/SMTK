@@ -94,7 +94,7 @@ void XmlDocV6Parser::process(
 // This is to support specifying category inheritance via XML Attributes
 void XmlDocV6Parser::processCategoryAtts(
   xml_node& node,
-  Categories::Set& catSet,
+  Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
@@ -111,13 +111,13 @@ void XmlDocV6Parser::processCategoryAtts(
   xatt = node.attribute("CategoryCheckMode");
   if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    catSet.setInclusionMode(catMode);
+    catExp.setInclusionMode(catMode);
   }
 }
 
 void XmlDocV6Parser::processCategoryInfoNode(
   xml_node& node,
-  Categories::Set& catSet,
+  Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
@@ -145,7 +145,7 @@ void XmlDocV6Parser::processCategoryInfoNode(
   xatt = node.attribute("Combination");
   if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    catSet.setCombinationMode(catMode);
+    catExp.setCombinationMode(catMode);
   }
   // Get the Include set (if one exists)
   xml_node catGroup;
@@ -156,11 +156,11 @@ void XmlDocV6Parser::processCategoryInfoNode(
     xatt = catGroup.attribute("Combination");
     if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
     {
-      catSet.setInclusionMode(catMode);
+      catExp.setInclusionMode(catMode);
     }
     for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
-      catSet.insertInclusion(child.text().get());
+      catExp.insertInclusion(child.text().get());
     }
   }
   catGroup = node.child("Exclude");
@@ -170,11 +170,11 @@ void XmlDocV6Parser::processCategoryInfoNode(
     xatt = catGroup.attribute("Combination");
     if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
     {
-      catSet.setExclusionMode(catMode);
+      catExp.setExclusionMode(catMode);
     }
     for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
-      catSet.insertExclusion(child.text().get());
+      catExp.insertExclusion(child.text().get());
     }
   }
 }

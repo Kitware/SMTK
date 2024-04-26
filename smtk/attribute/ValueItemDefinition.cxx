@@ -399,7 +399,7 @@ bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& 
 
 void ValueItemDefinition::setEnumCategories(
   const std::string& enumValue,
-  const smtk::attribute::Categories::Set& cats)
+  const smtk::attribute::Categories::Expression& exp)
 {
   if (
     std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
@@ -407,7 +407,7 @@ void ValueItemDefinition::setEnumCategories(
   {
     return; // enum not defined
   }
-  m_valueToCategoryAssociations[enumValue] = cats;
+  m_valueToCategoryAssociations[enumValue] = exp;
 }
 
 void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const std::string& cat)
@@ -418,13 +418,16 @@ void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const st
   {
     return; // enum not defined
   }
-  m_valueToCategoryAssociations[enumValue].insertInclusion(cat);
+  std::string expString("'");
+  expString.append(cat).append("'");
+  m_valueToCategoryAssociations[enumValue].setExpression(expString);
 }
 
-const smtk::attribute::Categories::Set& ValueItemDefinition::enumCategories(
+const smtk::attribute::Categories::Expression& ValueItemDefinition::enumCategories(
   const std::string& enumValue) const
 {
-  static smtk::attribute::Categories::Set dummy;
+  static smtk::attribute::Categories::Expression dummy;
+  dummy.setAllPass();
   auto result = m_valueToCategoryAssociations.find(enumValue);
   if (result == m_valueToCategoryAssociations.end())
   {
@@ -498,8 +501,8 @@ std::vector<std::string> ValueItemDefinition::relevantEnums(
   {
     for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
     {
-      const auto& cats = this->enumCategories(m_discreteValueEnums[i]);
-      if (cats.empty() || cats.passes(testCategories))
+      const auto& catExp = this->enumCategories(m_discreteValueEnums[i]);
+      if (catExp.allPass() || catExp.passes(testCategories))
       {
         if (
           (!includeReadAccess) ||
@@ -542,8 +545,8 @@ bool ValueItemDefinition::isDiscreteIndexValid(int index, const std::set<std::st
     return false;
   }
 
-  const auto& cats = this->enumCategories(m_discreteValueEnums[index]);
-  return (cats.empty() || cats.passes(categories));
+  const auto& catExp = this->enumCategories(m_discreteValueEnums[index]);
+  return (catExp.allPass() || catExp.passes(categories));
 }
 
 bool ValueItemDefinition::isDiscreteIndexValid(int index) const

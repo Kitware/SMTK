@@ -16,12 +16,14 @@ set(ioSrcs
   XmlDocV5Parser.cxx
   XmlDocV6Parser.cxx
   XmlDocV7Parser.cxx
+  XmlDocV8Parser.cxx
   XmlV2StringWriter.cxx
   XmlV3StringWriter.cxx
   XmlV4StringWriter.cxx
   XmlV5StringWriter.cxx
   XmlV6StringWriter.cxx
   XmlV7StringWriter.cxx
+  XmlV8StringWriter.cxx
 )
 
 set(ioHeaders
@@ -41,6 +43,7 @@ set(ioHeaders
   XmlDocV5Parser.h
   XmlDocV6Parser.h
   XmlDocV7Parser.h
+  XmlDocV8Parser.h
   XmlStringWriter.h
   XmlV2StringWriter.h
   XmlV3StringWriter.h
@@ -48,6 +51,7 @@ set(ioHeaders
   XmlV5StringWriter.h
   XmlV6StringWriter.h
   XmlV7StringWriter.h
+  Xml87StringWriter.h
 )
 
 # mesh-related I/O

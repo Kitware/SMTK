@@ -172,7 +172,7 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   std::cerr << "TestAtt Categories: ";
   att->categories().print();
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 6; i++)
   {
     smtkTest(s[i] != nullptr, "Could not find s" << i << "!");
     std::cerr << "s" << i << " Categories: ";
@@ -419,6 +419,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef0->setCategoryInheritanceMode(Categories::CombinationMode::Or);
   sItemDef0->localCategories().insertInclusion("a");
   sItemDef0->localCategories().insertInclusion("b");
+  std::cerr << "S0 = " << sItemDef0->localCategories().expression() << std::endl;
   sItemDef0->setDefaultValue("foo");
   StringItemDefinitionPtr sItemDef1 = A->addItemDefinition<StringItemDefinition>("s1");
   sItemDef1->localCategories().insertInclusion("b");
@@ -432,7 +433,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   StringItemDefinitionPtr sItemDef3 = A->addItemDefinition<StringItemDefinition>("s3");
   sItemDef3->addDiscreteValue("a", "e1");
   sItemDef3->addDiscreteValue("b", "e2");
-  smtk::attribute::Categories::Set es;
+  smtk::attribute::Categories::Expression es;
   es.insertInclusion("a");
   es.insertInclusion("b");
   es.setInclusionMode(Categories::Set::CombinationMode::And);

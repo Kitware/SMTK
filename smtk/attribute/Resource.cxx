@@ -525,6 +525,7 @@ void Resource::finalizeDefinitions()
     def->applyCategories(initialCats);
     def->applyAdvanceLevels(0, 0);
   }
+
   // Now all of the definitions have been processed we need to combine all
   // of their categories to form the Resource's categories
   m_categories.clear();
@@ -1434,7 +1435,7 @@ void Resource::setActiveCategories(const std::set<std::string>& cats)
   m_activeCategories = cats;
 }
 
-bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories::Set& cats) const
+bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories::Expression& cats) const
 {
   if (!m_activeCategoriesEnabled)
   {

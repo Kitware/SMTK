@@ -51,30 +51,28 @@ SMTKCORE_EXPORT void to_json(
   {
     j["AdvanceWriteLevel"] = itemDefPtr->localAdvanceLevel(1);
   }
-  // Process Category Info
-  auto& cats = itemDefPtr->localCategories();
-  j["CategoryInfo"]["Combination"] =
-    smtk::attribute::Categories::combinationModeAsString(cats.combinationMode());
+  // Process Local Category Expression
+  if (itemDefPtr->localCategories().isSet())
+  {
+    // If the expression string is not empty save it, else we are dealing with
+    // a trivial All Pass/Reject constraint
+    if (!itemDefPtr->localCategories().expression().empty())
+    {
+      j["CategoryExpression"]["Expression"] = itemDefPtr->localCategories().expression();
+    }
+    else if (itemDefPtr->localCategories().allPass())
+    {
+      j["CategoryExpression"]["PassMode"] = "All";
+    }
+    else
+    {
+      j["CategoryExpression"]["PassMode"] = "None";
+    }
+  }
 
-  // Inheritance Option
-  j["CategoryInfo"]["InheritanceMode"] =
+  // Inheritance Option - this is always needed
+  j["CategoryExpression"]["InheritanceMode"] =
     smtk::attribute::Categories::combinationModeAsString(itemDefPtr->categoryInheritanceMode());
-
-  // Inclusion Info
-  if (!cats.includedCategoryNames().empty())
-  {
-    j["CategoryInfo"]["InclusionCombination"] =
-      smtk::attribute::Categories::combinationModeAsString(cats.inclusionMode());
-    j["CategoryInfo"]["IncludeCategories"] = cats.includedCategoryNames();
-  }
-
-  // Exclusion Info
-  if (!cats.excludedCategoryNames().empty())
-  {
-    j["CategoryInfo"]["ExclusionCombination"] =
-      smtk::attribute::Categories::combinationModeAsString(cats.exclusionMode());
-    j["CategoryInfo"]["ExcludeCategories"] = cats.excludedCategoryNames();
-  }
 
   if (!itemDefPtr->briefDescription().empty())
   {
@@ -159,11 +157,53 @@ SMTKCORE_EXPORT void from_json(
     itemDefPtr->setDetailedDescription(*result);
   }
 
-  // Process Category Info
-  auto catInfo = j.find("CategoryInfo");  // Current Form
-  auto categories = j.find("Categories"); // Old Deprecated Form
+  // Process Category Information
+  auto catExp = j.find("CategoryExpression"); // Current Form
+  auto catInfo = j.find("CategoryInfo");      // Old Form since 05/24
+  auto categories = j.find("Categories");     // Old Deprecated Form
 
-  if (catInfo != j.end())
+  if (catExp != j.end())
+  {
+    smtk::attribute::Categories::CombinationMode cmode;
+    auto inheritanceMode = catExp->find("InheritanceMode");
+    if (inheritanceMode != catExp->end())
+    {
+      if (smtk::attribute::Categories::combinationModeFromString(*inheritanceMode, cmode))
+      {
+        itemDefPtr->setCategoryInheritanceMode(cmode);
+      }
+      else
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "When converting json, definition "
+            << itemDefPtr->label()
+            << " has an invalid category inheritance mode = " << *inheritanceMode);
+      }
+    }
+    // Is this a trivial reject / pass constraint
+    auto passMode = catExp->find("PassMode");
+    if (passMode != catExp->end())
+    {
+      if (*passMode == "All")
+      {
+        itemDefPtr->localCategories().setAllPass();
+      }
+      else if (*passMode == "None")
+      {
+        itemDefPtr->localCategories().setAllReject();
+      }
+    }
+    else
+    {
+      auto catExpression = catExp->find("Expression");
+      if (catExpression != catExp->end())
+      {
+        itemDefPtr->localCategories().setExpression(*catExpression);
+      }
+    }
+  }
+  else if (catInfo != j.end())
   {
     smtk::attribute::Categories::CombinationMode cmode;
     auto inheritanceMode = catInfo->find("InheritanceMode");

@@ -141,6 +141,9 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
+  categories/Actions.h
+  categories/Evaluators.h
+  categories/Syntax.h
   filter/Attribute.h
   filter/Grammar.h
   update/AttributeUpdateFactory.h

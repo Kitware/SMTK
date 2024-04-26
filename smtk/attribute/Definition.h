@@ -143,17 +143,20 @@ public:
   void setCategoryInheritanceMode(Categories::CombinationMode mode) { m_combinationMode = mode; }
   ///@}
 
-  ///\brief Returns the categories explicitly assigned to the Definition
-  smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
-  const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
+  ///\brief Returns the category expression explicitly assigned to the Definition
+  smtk::attribute::Categories::Expression& localCategories() { return m_localCategories; }
+  const smtk::attribute::Categories::Expression& localCategories() const
+  {
+    return m_localCategories;
+  }
 
   ///\brief Sets the local categories.
   ///
   /// This method is intended for use by Python applications, because Python code cannot
   /// manipulate the reference returned by the localCategories() method.
-  void setLocalCategories(const smtk::attribute::Categories::Set& catSet)
+  void setLocalCategories(const smtk::attribute::Categories::Expression& catExp)
   {
-    m_localCategories = catSet;
+    m_localCategories = catExp;
   }
 
   /**
@@ -458,7 +461,7 @@ protected:
   std::string m_type;
   std::string m_label;
   bool m_isNodal;
-  attribute::Categories::Set m_localCategories;
+  attribute::Categories::Expression m_localCategories;
   attribute::Categories m_categories;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];

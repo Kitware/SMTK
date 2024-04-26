@@ -248,11 +248,37 @@ bool processDerivedValueDefChildNode(pugi::xml_node& node, const ItemDefType& id
       // Does the enum have explicit categories
       // This is the old format for categories
       xml_node catNodes = child.child("Categories");
-      // This is the current format
+      // This is the style used prior to 5/2024
       xml_node catInfoNode = child.child("CategoryInfo");
-      if (catInfoNode)
+      // This is the latest style
+      xml_node catExpNode = child.child("CategoryExpression");
+      if (catExpNode)
       {
-        Categories::Set cats;
+        Categories::Expression catExp;
+        // Is this a trivial expression - all pass or none pass?
+        xatt = catExpNode.attribute("PassMode");
+        if (xatt)
+        {
+          std::string pmode = xatt.value();
+          if (pmode == "All")
+          {
+            catExp.setAllPass();
+          }
+          else if (pmode == "None")
+          {
+            catExp.setAllReject();
+          }
+        }
+        else
+        {
+          std::string exp = catExpNode.text().get();
+          catExp.setExpression(exp);
+        }
+        idef->setEnumCategories(v, catExp);
+      }
+      else if (catInfoNode)
+      {
+        Categories::Expression cats;
         // Lets get the overall combination mode
         xatt = catInfoNode.attribute("Combination");
         if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
@@ -293,7 +319,7 @@ bool processDerivedValueDefChildNode(pugi::xml_node& node, const ItemDefType& id
       }
       else if (catNodes)
       {
-        Categories::Set cats;
+        Categories::Expression cats;
         xatt = catNodes.attribute("CategoryCheckMode");
         if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
         {
@@ -1165,7 +1191,7 @@ void XmlDocV1Parser::processAssociationDef(xml_node& node, DefinitionPtr def)
 // This is to support specifying category inheritance via XML Attributes
 void XmlDocV1Parser::processCategoryAtts(
   xml_node& node,
-  Categories::Set& catSet,
+  Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
@@ -1181,15 +1207,15 @@ void XmlDocV1Parser::processCategoryAtts(
   xatt = node.attribute("CategoryCheckMode");
   if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    catSet.setInclusionMode(catMode);
+    catExp.setInclusionMode(catMode);
   }
 }
 
-void XmlDocV1Parser::processOldStyleCategoryNode(xml_node& node, Categories::Set& catSet)
+void XmlDocV1Parser::processOldStyleCategoryNode(xml_node& node, Categories::Expression& catExp)
 {
   for (xml_node child = node.first_child(); child; child = child.next_sibling())
   {
-    catSet.insertInclusion(child.text().get());
+    catExp.insertInclusion(child.text().get());
   }
 }
 
@@ -1202,7 +1228,7 @@ void XmlDocV1Parser::processItemDefCategoryInfoNode(xml_node& node, ItemDefiniti
 
 void XmlDocV1Parser::processCategoryInfoNode(
   xml_node& node,
-  Categories::Set& catSet,
+  Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
   attribute::Categories::Set::CombinationMode catMode;
@@ -1220,7 +1246,7 @@ void XmlDocV1Parser::processCategoryInfoNode(
   xatt = node.attribute("Combination");
   if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
   {
-    catSet.setCombinationMode(catMode);
+    catExp.setCombinationMode(catMode);
   }
   // Get the Include set (if one exists)
   xml_node catGroup;
@@ -1231,11 +1257,11 @@ void XmlDocV1Parser::processCategoryInfoNode(
     xatt = catGroup.attribute("Combination");
     if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
     {
-      catSet.setInclusionMode(catMode);
+      catExp.setInclusionMode(catMode);
     }
     for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
-      catSet.insertInclusion(child.text().get());
+      catExp.insertInclusion(child.text().get());
     }
   }
   catGroup = node.child("Exclude");
@@ -1245,11 +1271,11 @@ void XmlDocV1Parser::processCategoryInfoNode(
     xatt = catGroup.attribute("Combination");
     if (XmlDocV1Parser::getCategoryComboMode(xatt, catMode))
     {
-      catSet.setExclusionMode(catMode);
+      catExp.setExclusionMode(catMode);
     }
     for (child = catGroup.first_child(); child; child = child.next_sibling())
     {
-      catSet.insertExclusion(child.text().get());
+      catExp.insertExclusion(child.text().get());
     }
   }
 }
