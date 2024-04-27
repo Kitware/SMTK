@@ -143,7 +143,7 @@ set(attributeHeaders
   VoidItemDefinition.h
   categories/Actions.h
   categories/Evaluators.h
-  categories/Syntax.h
+  categories/Grammar.h
   filter/Attribute.h
   filter/Grammar.h
   update/AttributeUpdateFactory.h
