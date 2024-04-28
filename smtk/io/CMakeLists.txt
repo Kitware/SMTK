@@ -51,7 +51,7 @@ set(ioHeaders
   XmlV5StringWriter.h
   XmlV6StringWriter.h
   XmlV7StringWriter.h
-  Xml87StringWriter.h
+  XmlV8StringWriter.h
 )
 
 # mesh-related I/O
