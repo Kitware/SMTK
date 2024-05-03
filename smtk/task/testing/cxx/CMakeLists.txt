@@ -4,6 +4,7 @@ set(unit_tests
   TestTaskBasics.cxx
   #TestTaskGroup.cxx
   TestTaskJSON.cxx
+  TestTaskPorts.cxx
   # TestTaskUIState.cxx
 )
 

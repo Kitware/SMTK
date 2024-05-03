@@ -15,6 +15,8 @@ set(adaptors
 
 set(operations
   AddDependency
+  ConnectPorts
+  DisconnectPorts
   EmplaceWorklet
   RemoveDependency
   RenameTask
@@ -26,13 +28,17 @@ set(taskSrcs
   Gallery.cxx
   Instances.cxx
   Manager.cxx
+  ObjectsInRoles.cxx
+  Port.cxx
+  PortInstances.cxx
   Registrar.cxx
   Worklet.cxx
   adaptor/ResourceAndRole.cxx
   json/Configurator.cxx
   json/Helper.cxx
-  json/jsonManager.cxx
   json/jsonAdaptor.cxx
+  json/jsonManager.cxx
+  json/jsonPort.cxx
   json/jsonWorklet.cxx
 )
 
@@ -42,6 +48,10 @@ set(taskHeaders
   Gallery.h
   Instances.h
   Manager.h
+  ObjectsInRoles.h
+  Port.h
+  PortData.h
+  PortInstances.h
   Registrar.h
   State.h
   Worklet.h
@@ -52,6 +62,7 @@ set(taskHeaders
   json/Helper.h
   json/jsonAdaptor.h
   json/jsonManager.h
+  json/jsonPort.h
   json/jsonWorklet.h
 )
 

@@ -102,10 +102,14 @@ public:
   /// Insert a node into the diagram's reverse-lookup map.
   bool addNode(qtBaseNode* node, bool enforceInteractionMode = true);
 
-  /// Remove a node from the diagram's maps.
+  /// Remove a node from the diagram.
   ///
-  /// This will also remove all arcs attached to the node.
+  /// This will also remove all arcs attached to the node as well as it's children.
   bool removeNode(qtBaseNode* node);
+
+  /// Remove a node index from the diagram's maps.
+  ///
+  bool removeNodeIndex(const smtk::common::UUID& nodeId);
 
   /// Insert an \a arc into the diagram's nodal lookup maps.
   ///
@@ -201,7 +205,7 @@ public:
   /// if the resulting rectangle is not completely contained in the diagramWidget()'s active
   /// viewport.
   ///
-  /// This method should be called by generators within their updateScene() method.
+  /// This method should be called by generators within their updateSceneArcs/Nodes() methods.
   /// After the diagram has invoked this method on all its generators, it will determine
   /// whether to make changes to the viewport.
   ///

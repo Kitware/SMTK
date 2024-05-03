@@ -14,7 +14,7 @@
   Views have been defined to allow the user to create Suppliers and Consumers.
   The user is able to create Consumers and Suppliers and validate the above constraints when associating Suppliers to a Consumer.
 
-  Updated to use Templates to show how reuse Association Infomation
+  Updated to use Templates to show how to reuse Association Information
   -->
 <SMTK_AttributeResource Version="7">
 

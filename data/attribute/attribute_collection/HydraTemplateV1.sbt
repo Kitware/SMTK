@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <SMTK_AttributeManager Version="1">
-  <!--**********  Category and Analysis Infomation ***********-->
+  <!--**********  Category and Analysis Information ***********-->
   <Categories Default="General">
     <Cat>General</Cat>
     <Cat>Incompressible Navier-Stokes</Cat>

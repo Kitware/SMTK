@@ -1,3 +1,5 @@
+.. _smtk-task-concepts:
+
 Key Concepts
 ============
 
@@ -12,6 +14,8 @@ Each task has *state* that indicates how complete it is.
 Tasks may reference other tasks as *dependencies*,
 which means the referenced tasks must be completed (or at least completable)
 before their *dependent* tasks may be undertaken by the user.
+Finally, a task may pass configuration data to downstream tasks and
+accept configuration data from upstream tasks via *ports*.
 
 The graph of tasks (with dependencies as arcs) indicates what tasks a user may
 work on, what tasks are incomplete, and what tasks cannot be performed because of
@@ -62,6 +66,13 @@ dependencies whose dependents reference all of the head tasks).
   your task is unavailable, incomplete, or completable; the base class
   is unavailable until its dependencies are met, at which time it
   will transition straight to completable.
+
+:smtk:`Port <smtk::task::Port>`
+  instances may serve as either an input or an output for configuration
+  data. A task may be asked to produce :smtk:`PortData <smtk::task::PortData>`
+  for any of its output ports and will be informed when any of its input
+  ports have been updated. Each port indicates the type of data it
+  accepts (for input ports) or produces (for output ports).
 
 :smtk:`Task instance-tracker and factory <smtk::task::Instances>`
   is used to create instances of registered task classes.
@@ -148,6 +159,14 @@ strict and lazy dependency evaluation.
 
 Task Worklets and Task Galleries
 --------------------------------
-There are times when a user will need to interactively extend a task workflow  by adding a tasks or a group of related tasks.  To provide this functionality, SMTK provide the concept of a :smtk:smtk::task::Worklet.  A worklet is defined as an object representing a template for a set of tasks that can be instantiated to reuse some portion of a workflow. In SMTK, a worklet is a subclass of :smtk:smtk::resource::Component and its instances are held by a project's :smtk:smtk::task::Manager.
+There are times when a user will need to interactively extend
+a task workflow by adding a tasks or a group of related tasks.
+SMTK provides this functionality with :smtk:`worklets <smtk::task::Worklet>`.
+A worklet is defined as an object representing a template for a set of tasks
+that can be instantiated to reuse some portion of a workflow.
+In SMTK, a worklet is a subclass of :smtk:`smtk::resource::Component` and
+its instances are held by a project's :smtk:`smtk::task::Manager`.
 
-Worklets can be versioned with a schema type and version number so that they and the workflows into which they are instantiated can be processed by updaters (see :smtk:update::Factory <smtk::common::update::Factory>).
+Worklets can be versioned with a schema type and version number so that
+they and the workflows into which they are instantiated can be processed by
+updaters (see :smtk:`update::Factory <smtk::common::update::Factory>`).

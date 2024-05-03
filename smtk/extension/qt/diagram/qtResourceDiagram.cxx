@@ -542,13 +542,15 @@ bool qtResourceDiagram::updateGraphArcs(
   return didModify;
 }
 
-void qtResourceDiagram::updateScene(
+void qtResourceDiagram::updateSceneNodes(
   std::unordered_set<smtk::resource::PersistentObject*>& created,
   std::unordered_set<smtk::resource::PersistentObject*>& modified,
   std::unordered_set<smtk::resource::PersistentObject*>& expunged,
   const smtk::operation::Operation& operation,
   const smtk::operation::Operation::Result& result)
 {
+  (void)modified;
+  (void)expunged;
   (void)operation;
   (void)result;
 
@@ -559,9 +561,7 @@ void qtResourceDiagram::updateScene(
                    .get<smtk::common::Managers::Ptr>()
                    ->get<smtk::resource::Manager::Ptr>();
   auto& objectNodeFactory = mgr->objectNodeFactory();
-  // auto& bareNodeFactory = mgr->bareNodeFactory();
-  bool didModify = false;
-  bool somethingAdded = false;
+  m_sceneModified = false;
   for (auto* object : created)
   {
     if (!this->acceptObject(object))
@@ -581,7 +581,7 @@ void qtResourceDiagram::updateScene(
         auto nit = m_groupingNodes.find(*it);
         if (nit == m_groupingNodes.end())
         {
-          didModify = true;
+          m_sceneModified = true;
           qtGroupingNode* gnode;
           if (git == m_groupItemData.end())
           {
@@ -608,7 +608,10 @@ void qtResourceDiagram::updateScene(
             }
           }
           QObject::connect(
-            node, &qtBaseNode::nodeMoved, this, &qtResourceDiagram::updateArcsOfSendingNode);
+            node,
+            &qtBaseNode::nodeMoved,
+            this,
+            &qtResourceDiagram::updateArcsOfSendingNodeRecursive);
           m_diagram->addNode(node);
           treeEntry.push_back(node);
           m_groupingNodes[*it] = node;
@@ -662,18 +665,40 @@ void qtResourceDiagram::updateScene(
       // std::cout << "  Add " << node << " obj " << object->typeName() << "\n";
       if (node)
       {
-        somethingAdded = true;
-        didModify = true;
+        m_addedToScene = true;
+        m_sceneModified = true;
         treeEntry.push_back(node);
         QObject::connect(
-          node, &qtBaseNode::nodeMoved, this, &qtResourceDiagram::updateArcsOfSendingNode);
+          node,
+          &qtBaseNode::nodeMoved,
+          this,
+          &qtDiagramGenerator::updateArcsOfSendingNodeRecursive);
         m_diagram->addNode(node);
         m_diagramNodes.insert(treeEntry);
       }
     }
   }
+}
 
-  // Now that all the nodes exist, add arcs as needed between them.
+void qtResourceDiagram::updateSceneArcs(
+  std::unordered_set<smtk::resource::PersistentObject*>& created,
+  std::unordered_set<smtk::resource::PersistentObject*>& modified,
+  std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+  const smtk::operation::Operation& operation,
+  const smtk::operation::Operation::Result& result)
+{
+  (void)operation;
+  (void)result;
+
+  auto mgr = m_diagram->information()
+               .get<smtk::common::Managers::Ptr>()
+               ->get<smtk::extension::qtManager::Ptr>();
+  auto rsrcMgr = m_diagram->information()
+                   .get<smtk::common::Managers::Ptr>()
+                   ->get<smtk::resource::Manager::Ptr>();
+  bool didModify = m_sceneModified;
+
+  // All the nodes exist; add arcs as needed between them.
   //
   // NB: We do not check acceptObject(object) inside this loop since
   // we wish to create arcs to nodes created by other diagram generators
@@ -723,7 +748,7 @@ void qtResourceDiagram::updateScene(
   // the diagram to zoom out so the entire layout is in view (which should
   // only happen when components are added to (not removed from or modified)
   // the diagram.
-  this->generateLayout(didModify && somethingAdded);
+  this->generateLayout(didModify && m_addedToScene);
 
   // We should now be able to clear the JSON data provided by the operation.
   // Do this so that subsequent operations which do not provide JSON do not
@@ -813,42 +838,6 @@ bool qtResourceDiagram::setNodeSpacing(double value)
   }
   m_nodeSpacing = value;
   return true;
-}
-
-void qtResourceDiagram::updateArcsOfSendingNode()
-{
-  auto* node = dynamic_cast<qtBaseNode*>(this->sender());
-  if (node)
-  {
-    this->updateArcsOfNode(node);
-  }
-}
-
-void qtResourceDiagram::updateArcsOfNode(qtBaseNode* node)
-{
-  // I. Collect affected arcs (this may visit the same arcs twice).
-  std::unordered_set<qtBaseArc*> affectedArcs;
-  this->addArcsOfNodeRecursive(node, affectedArcs);
-  // II. Update arc points (just once)
-  for (const auto& arc : affectedArcs)
-  {
-    arc->updateArcPoints();
-  }
-}
-
-void qtResourceDiagram::addArcsOfNodeRecursive(
-  qtBaseNode* node,
-  std::unordered_set<qtBaseArc*>& arcs)
-{
-  auto selfArcs = m_diagram->arcsOfNode(node);
-  arcs.insert(selfArcs.begin(), selfArcs.end());
-  for (auto* child : node->childItems())
-  {
-    if (auto* childNode = dynamic_cast<qtBaseNode*>(child))
-    {
-      this->addArcsOfNodeRecursive(childNode, arcs);
-    }
-  }
 }
 
 void qtResourceDiagram::generateLayout(bool zoomToLayout)

@@ -20,10 +20,14 @@
 #include "smtk/common/PathsHelperWindows.h"
 #endif
 
+#include "smtk/common/Version.h"
+
 #include "smtk/Options.h"
 #include "smtk/io/Logger.h"
 
 #include <cstdio>
+#include <iostream>
+#include <sstream>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -296,6 +300,41 @@ std::vector<std::string> Paths::workerSearchPaths(bool pruneInvalid)
 
   return pruneInvalid ? Paths::pruneInvalidDirectories(Paths::s_workerSearchPaths)
                       : Paths::s_workerSearchPaths;
+}
+
+std::vector<std::string> Paths::findAvailablePlugins(const std::set<std::string>& pluginNames)
+{
+  std::vector<std::string> pluginList;
+  boost::filesystem::path corePath = smtk::common::Paths::pathToThisLibrary();
+  auto version = smtk::common::Version::number();
+  std::ostringstream pluginTop;
+  pluginTop << "smtk-" << version;
+  boost::filesystem::path pluginDir = pluginTop.str();
+  pluginDir = corePath / pluginDir;
+
+  std::string ending;
+#if !defined(_WIN32) && !defined(_WIN64)
+  ending = ".so";
+#else
+  ending = ".dll";
+#endif
+  for (const auto& pp : boost::filesystem::directory_iterator(pluginDir))
+  {
+    if (boost::filesystem::is_directory(pp))
+    {
+      if (
+        pluginNames.empty() || pluginNames.find(pp.path().filename().string()) != pluginNames.end())
+      {
+        auto pluginFile = pp / (pp.path().filename().string() + ending);
+        if (boost::filesystem::is_regular_file(pluginFile))
+        {
+          pluginList.push_back(pluginFile.string());
+        }
+      }
+    }
+  }
+
+  return pluginList;
 }
 
 /**\brief Return the top-level SMTK install directory configured when the package was built.

@@ -22,6 +22,8 @@
 #include "smtk/extension/qt/diagram/qtDiagramView.h"
 #include "smtk/extension/qt/diagram/qtDiagramViewConfiguration.h"
 #include "smtk/extension/qt/diagram/qtTaskArc.h"
+#include "smtk/extension/qt/diagram/qtTaskPortArc.h"
+#include "smtk/extension/qt/diagram/qtTaskPortNode.h"
 
 // nodes
 #include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
@@ -85,6 +87,10 @@
 #include <QWidgetAction>
 
 #define SMTK_ARC_TASK_DEP "task dependency"
+#define SMTK_ARC_TASK_DEP_TOK "task dependency"_token
+#define SMTK_ARC_PORT_CONN "port connection"
+#define SMTK_ARC_PORT_CONN_TOK "port connection"_token
+
 // Uncomment to get debug printouts from workflow events.
 // #define SMTK_DBG_WORKFLOWS 1
 
@@ -158,41 +164,11 @@ public:
     }
   }
 
-  bool configure(const nlohmann::json& data)
-  {
-    m_layoutMap = data.get<std::unordered_map<smtk::common::UUID, std::pair<double, double>>>();
-    return true;
-  }
-
-  nlohmann::json configuration()
-  {
-    nlohmann::json config;
-    // Need to update the layout map
-    m_layoutMap.clear();
-    for (const auto& entry : m_taskIndex)
-    {
-      auto* node = entry.second;
-      auto* task = entry.first;
-      auto qpoint = node->pos();
-      std::pair<double, double> pos(qpoint.x(), qpoint.y());
-      m_layoutMap[task->id()] = pos;
-    }
-    config = m_layoutMap;
-    return config;
-  }
-
   qtTaskEditor* m_self;
   // The task manager for the active project (if any project is active).
   smtk::task::Manager* m_taskManager{ nullptr };
   // Observers that keep task- and arc-items up to date.
   smtk::task::Active::Observers::Key m_activeObserverKey;
-  // Nodes mapped from their source task:
-  std::unordered_map<Task*, qtBaseTaskNode*> m_taskIndex;
-  // Arcs grouped by their predecessor task:
-  std::unordered_map<qtBaseTaskNode*, std::unordered_set<qtTaskArc*>> m_arcIndex;
-  // Configuration that an operation (read, emplace-worklet, etc.) may provide for layout.
-  std::unordered_map<smtk::common::UUID, std::pair<double, double>> m_layoutMap;
-
   // The operation manager obtained from the view information.
   std::shared_ptr<smtk::operation::Manager> m_operationManager;
   // The common::Managers object obtained from the view information.
@@ -211,6 +187,9 @@ qtTaskEditor::qtTaskEditor(
   // Register an arc type for dependencies
   this->diagram()->legend()->addEntry(
     new qtDiagramLegendEntry("arc"_token, SMTK_ARC_TASK_DEP, this));
+  // Register an arc type for port connections
+  this->diagram()->legend()->addEntry(
+    new qtDiagramLegendEntry("arc"_token, SMTK_ARC_PORT_CONN, this));
 }
 
 qtTaskEditor::~qtTaskEditor() = default;
@@ -225,9 +204,9 @@ bool qtTaskEditor::updateArcs(
   if (auto* adaptor = dynamic_cast<smtk::task::Adaptor*>(object))
   {
     // Adaptors get an arc.
-    auto fromIt = m_p->m_taskIndex.find(adaptor->from());
-    auto toIt = m_p->m_taskIndex.find(adaptor->to());
-    if (fromIt == m_p->m_taskIndex.end() || toIt == m_p->m_taskIndex.end())
+    auto* fromTaskNode = this->findTaskNode(adaptor->from());
+    auto* toTaskNode = this->findTaskNode(adaptor->to());
+    if (!(fromTaskNode && toTaskNode))
     {
       smtkWarningMacro(
         smtk::io::Logger::instance(),
@@ -235,7 +214,7 @@ bool qtTaskEditor::updateArcs(
       return diagramModified;
     }
     qtTaskArc* arc = nullptr;
-    const auto* arcs = this->diagram()->findArcs(fromIt->second, toIt->second);
+    const auto* arcs = this->diagram()->findArcs(fromTaskNode, toTaskNode);
     if (arcs)
     {
       auto it = arcs->find(smtk::common::typeName<qtTaskArc>());
@@ -279,9 +258,8 @@ bool qtTaskEditor::updateArcs(
           legendInfo[arcType] = entry;
         }
       }
-      arc = new qtTaskArc(this, fromIt->second, toIt->second, adaptor);
+      arc = new qtTaskArc(this, fromTaskNode, toTaskNode, adaptor);
       this->diagram()->addArc(arc);
-      m_p->m_arcIndex[fromIt->second].insert(arc);
       diagramModified = true;
       modBounds = modBounds.united(arc->boundingRect());
     }
@@ -318,7 +296,7 @@ bool qtTaskEditor::updateArcs(
       // predecessor is not a dependency, so remove any attached dependency arcs.
       if (const auto* arcMap = this->diagram()->findArcs(predecessor, taskNode))
       {
-        auto it = arcMap->find("task dependency"_token);
+        auto it = arcMap->find(SMTK_ARC_TASK_DEP_TOK);
         if (it != arcMap->end())
         {
           std::unordered_set<qtBaseArc*> arcsToErase(it->second.begin(), it->second.end());
@@ -327,7 +305,6 @@ bool qtTaskEditor::updateArcs(
             auto* taskArc = dynamic_cast<qtTaskArc*>(arc);
             diagramModified = true;
             modBounds = modBounds.united(taskArc->boundingRect());
-            m_p->m_arcIndex[predecessor].erase(taskArc);
             this->diagram()->removeArc(taskArc);
           }
         }
@@ -345,7 +322,7 @@ bool qtTaskEditor::updateArcs(
       bool shouldCreate = true;
       if (arcMapSet)
       {
-        auto it = arcMapSet->find("task dependency"_token);
+        auto it = arcMapSet->find(SMTK_ARC_TASK_DEP_TOK);
         if (it != arcMapSet->end())
         {
           // The dependency arc already exists.
@@ -356,8 +333,84 @@ bool qtTaskEditor::updateArcs(
       {
         auto* arc = new qtTaskArc(this, depNode, taskNode);
         this->diagram()->addArc(arc);
-        auto fromIt = m_p->m_taskIndex.find(depNode->task());
-        m_p->m_arcIndex[fromIt->second].insert(arc);
+        diagramModified = true;
+        modBounds = modBounds.united(arc->boundingRect());
+      }
+    }
+  }
+  else if (auto* port = dynamic_cast<smtk::task::Port*>(object))
+  {
+    // Port connections get arcs.
+    // Only attach arcs to input ports; output ports must always attach
+    // to an input port if a connection exists at all, so we are guaranteed
+    // to enumerate all arcs considering only one port direction.
+    // Furthermore, input ports may accept arcs from non-port objects
+    // (e.g., resources or components), which are captured if we always
+    // consider input ports but not vice-versa.
+    auto* portNode = dynamic_cast<qtTaskPortNode*>(m_diagram->findNode(port->id()));
+    if (!portNode || port->direction() != smtk::task::Port::Direction::In)
+    {
+      // TODO: Warn?
+      return diagramModified;
+    }
+    portNode->dataUpdated();
+    const auto& portConns = port->connections();
+    // Use m_diagram->predecessorsOf(portNode) to visit all objects that \a port
+    // connects to; any arcs not present in portConns should be removed.
+    auto predecessors = this->diagram()->predecessorsOf(portNode);
+    for (auto* basePredecessor : predecessors)
+    {
+      auto* predecessor = dynamic_cast<qtBaseObjectNode*>(basePredecessor);
+      if (!predecessor)
+      {
+        // TODO: Warn?
+        continue;
+      }
+      if (portConns.find(predecessor->object()) != portConns.end())
+      {
+        // This predecessor is still a dependency. No need to remove it.
+        continue;
+      }
+      // predecessor is not a dependency, so remove any attached dependency arcs.
+      if (const auto* arcMap = this->diagram()->findArcs(predecessor, portNode))
+      {
+        auto it = arcMap->find(SMTK_ARC_PORT_CONN_TOK);
+        if (it != arcMap->end())
+        {
+          std::unordered_set<qtBaseArc*> arcsToErase(it->second.begin(), it->second.end());
+          for (auto* arc : arcsToErase)
+          {
+            auto* portArc = dynamic_cast<qtTaskPortArc*>(arc);
+            diagramModified = true;
+            modBounds = modBounds.united(portArc->boundingRect());
+            this->diagram()->removeArc(portArc);
+          }
+        }
+      }
+    }
+    // Create any missing dependency arcs on newly-created ports.
+    for (const auto& connObj : portConns)
+    {
+      auto* depNode = dynamic_cast<qtBaseObjectNode*>(m_diagram->findNode(connObj->id()));
+      if (!depNode)
+      {
+        continue;
+      } // TODO: Warn?
+      const auto* arcMapSet = m_diagram->findArcs(depNode, portNode);
+      bool shouldCreate = true;
+      if (arcMapSet)
+      {
+        auto it = arcMapSet->find(SMTK_ARC_TASK_DEP_TOK);
+        if (it != arcMapSet->end())
+        {
+          // The dependency arc already exists.
+          shouldCreate = false;
+        }
+      }
+      if (shouldCreate)
+      {
+        auto* arc = new qtTaskPortArc(this, depNode, portNode);
+        this->diagram()->addArc(arc);
         diagramModified = true;
         modBounds = modBounds.united(arc->boundingRect());
       }
@@ -366,13 +419,25 @@ bool qtTaskEditor::updateArcs(
   return diagramModified;
 }
 
-void qtTaskEditor::updateScene(
+qtBaseTaskNode* qtTaskEditor::findTaskNode(const smtk::task::Task* task) const
+{
+  if (!task)
+  {
+    return nullptr;
+  }
+
+  return dynamic_cast<qtBaseTaskNode*>(m_diagram->findNode(task->id()));
+}
+
+void qtTaskEditor::updateSceneNodes(
   std::unordered_set<smtk::resource::PersistentObject*>& created,
   std::unordered_set<smtk::resource::PersistentObject*>& modified,
   std::unordered_set<smtk::resource::PersistentObject*>& expunged,
   const smtk::operation::Operation& operation,
   const smtk::operation::Operation::Result& result)
 {
+  (void)modified;
+  (void)expunged;
   (void)operation;
   (void)result;
 
@@ -426,7 +491,6 @@ void qtTaskEditor::updateScene(
             "Could not find task node class " << taskNodeType << " creating default task node!");
         }
 
-        m_p->m_taskIndex[task] = tnode;
         tnode->setEnabled(this->diagram()->nodesEnabled());
         if (this->diagram()->arcSelectionEnabled())
         {
@@ -438,8 +502,32 @@ void qtTaskEditor::updateScene(
         }
         // Index the task for everyone
         this->diagram()->addNode(tnode);
+        QObject::connect(
+          tnode, &qtBaseNode::nodeMoved, this, &qtTaskEditor::updateArcsOfSendingNodeRecursive);
         diagramModified = true;
         modBounds = modBounds.united(tnode->boundingRect());
+        for (const auto& pinfo : task->ports())
+        {
+          // See if we have already built the TaskPortNode for this port
+          if (m_diagram->findNode(pinfo.second->id()))
+          {
+            continue;
+          }
+
+          qtTaskPortNode* pnode = new qtTaskPortNode(this, pinfo.second, tnode);
+          pnode->setEnabled(this->diagram()->nodesEnabled());
+          if (this->diagram()->arcSelectionEnabled())
+          {
+            pnode->setFlags(pnode->flags() & ~QGraphicsItem::ItemIsSelectable);
+          }
+          else
+          {
+            pnode->setFlags(pnode->flags() | QGraphicsItem::ItemIsSelectable);
+          }
+          // Index the port for everyone
+          this->diagram()->addNode(pnode);
+          modBounds = modBounds.united(pnode->boundingRect());
+        }
       }
     }
     else if (auto* project = dynamic_cast<smtk::project::Project*>(obj))
@@ -455,19 +543,19 @@ void qtTaskEditor::updateScene(
             return;
           }
           // std::cout << "Switch active task from " << prev << " to " << next << "\n";
-          auto prevNode = m_p->m_taskIndex.find(prev);
-          auto nextNode = m_p->m_taskIndex.find(next);
-          if (prevNode != m_p->m_taskIndex.end())
+          auto* prevTaskNode = this->findTaskNode(prev);
+          auto* nextTaskNode = this->findTaskNode(next);
+          if (prevTaskNode)
           {
             auto prevState = prev->state();
-            prevNode->second->updateTaskState(prevState, prevState, false);
-            prevNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Normal);
+            prevTaskNode->updateTaskState(prevState, prevState, false);
+            prevTaskNode->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Normal);
           }
-          if (nextNode != m_p->m_taskIndex.end())
+          if (nextTaskNode)
           {
             auto nextState = next->state();
-            nextNode->second->updateTaskState(nextState, nextState, true);
-            nextNode->second->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
+            nextTaskNode->updateTaskState(nextState, nextState, true);
+            nextTaskNode->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
           }
         },
         0,
@@ -475,27 +563,87 @@ void qtTaskEditor::updateScene(
         "qtTaskEditor watching active task.");
     }
   }
-  // Second, create arcs now that nodes have been established.
+
+  // Second, create ports now that nodes have been established.
+  for (auto* obj : created)
+  {
+    if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
+    {
+      // See if we have already built the TaskPortNode for this port
+      if (m_diagram->findNode(port->id()))
+      {
+        continue;
+      }
+
+      auto* tnode = this->findTaskNode(port->parent());
+      qtTaskPortNode* pnode = new qtTaskPortNode(this, port, tnode);
+
+      pnode->setEnabled(this->diagram()->nodesEnabled());
+      if (this->diagram()->arcSelectionEnabled())
+      {
+        pnode->setFlags(pnode->flags() & ~QGraphicsItem::ItemIsSelectable);
+      }
+      else
+      {
+        pnode->setFlags(pnode->flags() | QGraphicsItem::ItemIsSelectable);
+      }
+      // Index the port for everyone
+      this->diagram()->addNode(pnode);
+      diagramModified = true;
+      modBounds = modBounds.united(pnode->boundingRect());
+    }
+  }
+
+  // Finally, if changes were made, draw attention to the task-diagram.
+  if (diagramModified)
+  {
+    this->diagram()->includeInView(modBounds);
+  }
+}
+
+void qtTaskEditor::updateSceneArcs(
+  std::unordered_set<smtk::resource::PersistentObject*>& created,
+  std::unordered_set<smtk::resource::PersistentObject*>& modified,
+  std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+  const smtk::operation::Operation& operation,
+  const smtk::operation::Operation::Result& result)
+{
+  (void)operation;
+  (void)result;
+
+  // Track whether changes were made to the diagram. If so, we
+  // will ask the view to scale/scroll to include the task-diagram.
+  bool diagramModified = false;
+  QRectF modBounds;
+
+  auto managers = this->diagram()->managers();
+  auto qtmgr = managers ? managers->get<smtk::extension::qtManager::Ptr>() : nullptr;
+  if (!qtmgr)
+  {
+    return;
+  }
+
+  // First, create arcs now that ports and tasks have been established.
   ArcLegendEntries legendInfo = m_diagram->legend()->typesInGroup("arc"_token);
   for (auto* obj : created)
   {
     diagramModified |= this->updateArcs<false>(obj, modBounds, legendInfo);
   }
-  // Third, process modified tasks/adaptors
+  // Second, process modified tasks/adaptors
   for (auto* obj : modified)
   {
     diagramModified |= this->updateArcs<true>(obj, modBounds, legendInfo);
   }
-  // Fourth, process expunged tasks/adaptors
+  // Third, process expunged tasks/adaptors
   for (auto* obj : expunged)
   {
     if (auto* adaptor = dynamic_cast<smtk::task::Adaptor*>(obj))
     {
-      auto fromIt = m_p->m_taskIndex.find(adaptor->from());
-      auto toIt = m_p->m_taskIndex.find(adaptor->to());
-      if (fromIt != m_p->m_taskIndex.end() && toIt != m_p->m_taskIndex.end())
+      auto* fromTaskNode = this->findTaskNode(adaptor->from());
+      auto* toTaskNode = this->findTaskNode(adaptor->to());
+      if (fromTaskNode && toTaskNode)
       {
-        const auto* candidates = this->diagram()->findArcs(fromIt->second, toIt->second);
+        const auto* candidates = this->diagram()->findArcs(fromTaskNode, toTaskNode);
         if (candidates)
         {
           std::unordered_set<qtTaskArc*> arcsToErase;
@@ -516,7 +664,6 @@ void qtTaskEditor::updateScene(
           {
             modBounds = modBounds.united(taskArc->boundingRect());
             diagramModified = true;
-            m_p->m_arcIndex[fromIt->second].erase(taskArc);
             this->diagram()->removeArc(taskArc);
           }
         }
@@ -524,11 +671,30 @@ void qtTaskEditor::updateScene(
     }
     else if (auto* task = dynamic_cast<smtk::task::Task*>(obj))
     {
-      m_p->m_taskIndex.erase(task);
-      auto* node = this->diagram()->findNode(task->id());
-      modBounds = modBounds.united(node->boundingRect());
-      diagramModified = true;
-      this->diagram()->removeNode(node);
+      if (auto* node = this->diagram()->findNode(task->id()))
+      {
+        QRectF nodeBounds = node->boundingRect();
+        nodeBounds = nodeBounds.united(node->childrenBoundingRect());
+        modBounds = modBounds.united(node->sceneTransform().mapRect(nodeBounds));
+        diagramModified = true;
+        // Remove all of the task's ports from the diagram before the task.
+        // This also forces removal of port-port arcs.
+        for (auto portEntry : task->ports())
+        {
+          this->diagram()->removeNode(this->diagram()->findNode(portEntry.second->id()));
+        }
+        this->diagram()->removeNode(node);
+      }
+    }
+    else if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
+    {
+      if (auto* node = this->diagram()->findNode(port->id()))
+      {
+        QRectF nodeBounds = node->boundingRect();
+        modBounds = modBounds.united(node->sceneTransform().mapRect(nodeBounds));
+        diagramModified = true;
+        this->diagram()->removeNode(node);
+      }
     }
     else if (auto* project = dynamic_cast<smtk::project::Project*>(obj))
     {

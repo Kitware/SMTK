@@ -31,6 +31,7 @@ namespace json
 
 Helper::Helper()
   : m_tasks(this)
+  , m_ports(this)
   , m_adaptors(this)
 {
 }
@@ -38,6 +39,7 @@ Helper::Helper()
 Helper::Helper(Manager* taskManager)
   : m_taskManager(taskManager)
   , m_tasks(this)
+  , m_ports(this)
   , m_adaptors(this)
 {
 }
@@ -101,6 +103,11 @@ std::size_t Helper::nestingDepth()
 Configurator<Task>& Helper::tasks()
 {
   return m_tasks;
+}
+
+Configurator<Port>& Helper::ports()
+{
+  return m_ports;
 }
 
 Configurator<Adaptor>& Helper::adaptors()

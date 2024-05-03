@@ -32,6 +32,8 @@ namespace smtk
 namespace extension
 {
 
+class qtBaseArc;
+class qtBaseNode;
 class qtDiagram;
 class qtDiagramLegendEntry;
 
@@ -69,6 +71,21 @@ public:
   /// sure to check the diagram's node index before blindly adding/removing
   /// scene items.
   virtual void updateScene(
+    std::unordered_set<smtk::resource::PersistentObject*>&,
+    std::unordered_set<smtk::resource::PersistentObject*>&,
+    std::unordered_set<smtk::resource::PersistentObject*>&,
+    const smtk::operation::Operation&,
+    const smtk::operation::Operation::Result&)
+  {
+  }
+
+  virtual void updateSceneNodes(
+    std::unordered_set<smtk::resource::PersistentObject*>& created,
+    std::unordered_set<smtk::resource::PersistentObject*>& modified,
+    std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+    const smtk::operation::Operation& operation,
+    const smtk::operation::Operation::Result& result);
+  virtual void updateSceneArcs(
     std::unordered_set<smtk::resource::PersistentObject*>& created,
     std::unordered_set<smtk::resource::PersistentObject*>& modified,
     std::unordered_set<smtk::resource::PersistentObject*>& expunged,
@@ -135,7 +152,20 @@ public:
   }
   ///@}
 
+public Q_SLOTS:
+  /// Identify arcs that need updating when a node is moved.
+  ///
+  /// The node is identified by examining the sender of the signal,
+  /// not by an argument. Then, updateArcsOfNodeRecursive() is called with that node.
+  void updateArcsOfSendingNodeRecursive();
+
+  /// Identify arcs that need updating when a node (not necessarily a leaf node) is moved.
+  void updateArcsOfNodeRecursive(qtBaseNode* node);
+
 protected:
+  /// Used by updateArcsOfNodeRecursive to find arcs attached to node *and* all its children.
+  void addArcsOfNodeRecursive(qtBaseNode* node, std::unordered_set<qtBaseArc*>& arcs);
+
   /// The parent diagram.
   qtDiagram* m_diagram{ nullptr };
 };

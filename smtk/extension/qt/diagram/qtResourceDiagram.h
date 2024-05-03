@@ -78,8 +78,16 @@ public:
     qtDiagram* parent);
   ~qtResourceDiagram() override = default;
 
-  /// Called when an operation completes.
-  void updateScene(
+  /// Called when an operation completes before updateSceneArcs().
+  void updateSceneNodes(
+    std::unordered_set<smtk::resource::PersistentObject*>& created,
+    std::unordered_set<smtk::resource::PersistentObject*>& modified,
+    std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+    const smtk::operation::Operation& operation,
+    const smtk::operation::Operation::Result& result) override;
+
+  /// Called when an operation completes after updateSceneNodes().
+  void updateSceneArcs(
     std::unordered_set<smtk::resource::PersistentObject*>& created,
     std::unordered_set<smtk::resource::PersistentObject*>& modified,
     std::unordered_set<smtk::resource::PersistentObject*>& expunged,
@@ -176,20 +184,7 @@ public:
   bool setNodeSpacing(double value);
   //@}
 
-protected Q_SLOTS:
-  /// Identify arcs that need updating when a node is moved.
-  ///
-  /// The node is identified by examining the sender of the signal,
-  /// not by an argument. Then, updateArcsOfNode() is called with that node.
-  void updateArcsOfSendingNode();
-
-  /// Identify arcs that need updating when a node (not necessarily a leaf node) is moved.
-  void updateArcsOfNode(qtBaseNode* node);
-
 protected:
-  /// Used by updateArcsOfNode to find arcs attached to node *and* all its children.
-  void addArcsOfNodeRecursive(qtBaseNode* node, std::unordered_set<qtBaseArc*>& arcs);
-
   /// Used by updateScene to cleans the layout of expunged nodes before removing the
   /// nodes from the scene.
   void removeFromLayout(const std::unordered_set<smtk::resource::PersistentObject*>& expunged);
@@ -245,6 +240,10 @@ protected:
   std::unordered_set<smtk::string::Token> m_classExclusions;
   ObjectRules m_acceptsRules;
   ObjectRules m_rejectsRules;
+  /// These ivars are used to store state between updateSceneNodes() and updateSceneArcs();
+  /// they are not valid at all times.
+  bool m_sceneModified{ false };
+  bool m_addedToScene{ false };
 };
 
 } // namespace extension

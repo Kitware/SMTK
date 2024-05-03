@@ -145,7 +145,6 @@ public:
 
   bool operator()(const smtk::resource::PersistentObject& object) const override
   {
-    std::cerr << "Header Test: " << m_componentType << " Object: " << object.name() << std::endl;
     // Allow "any" and "*" to always pass
     if ((m_componentType == "any") || (m_componentType == "*"))
     {

@@ -207,15 +207,18 @@ bool Categories::Expression::passes(const std::string& cat) const
 }
 
 ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
-int Categories::Expression::compare(const Expression& rhs) const
+int Categories::Expression::compare(const Set& rhs) const
 {
-  if (m_expression != rhs.m_expression)
+  if (const auto* expr = dynamic_cast<const Expression*>(&rhs))
   {
-    return (m_expression < rhs.m_expression) ? -1 : 1;
-  }
-  if (m_allPass != rhs.m_allPass)
-  {
-    return (m_allPass < rhs.m_allPass) ? -1 : 1;
+    if (m_expression != expr->m_expression)
+    {
+      return (m_expression < expr->m_expression) ? -1 : 1;
+    }
+    if (m_allPass != expr->m_allPass)
+    {
+      return (m_allPass < expr->m_allPass) ? -1 : 1;
+    }
   }
   return Categories::Set::compare(rhs);
 }

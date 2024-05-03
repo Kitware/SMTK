@@ -13,6 +13,7 @@
 #include "smtk/task/json/Configurator.h"
 
 #include "smtk/task/Adaptor.h"
+#include "smtk/task/Port.h"
 #include "smtk/task/Task.h"
 
 #include "smtk/common/Managers.h"
@@ -84,6 +85,9 @@ public:
   /// Return an object for registering task classes and serialization helpers.
   Configurator<Task>& tasks();
 
+  /// Return an object for registering port classes and serialization helpers.
+  Configurator<Port>& ports();
+
   /// Return an object for registering adaptor classes and serialization helpers.
   Configurator<Adaptor>& adaptors();
 
@@ -107,6 +111,9 @@ public:
 
   /// Populate \a tasks with the set of current tasks.
   void currentTasks(std::vector<Task*>& tasks);
+
+  /// Populate \a ports with the set of current ports.
+  void currentPorts(std::vector<Task*>& ports);
 
   /// Populate \a adaptors with the set of current adaptors.
   void currentAdaptors(std::vector<Adaptor*>& adaptors);
@@ -142,6 +149,7 @@ protected:
   Helper(Manager*);
   Manager* m_taskManager{ nullptr };
   Configurator<Task> m_tasks;
+  Configurator<Port> m_ports;
   Configurator<Adaptor> m_adaptors;
   Task* m_activeSerializedTask{ nullptr };
   smtk::common::Managers::Ptr m_managers;
