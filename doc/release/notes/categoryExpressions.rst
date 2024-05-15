@@ -9,9 +9,18 @@ This not only provided greater flexibility but is also easier to define.  For ex
 
 .. code-block:: xml
 
-          <CategoryExpression InheritanceMode="Or">(a &amp; !b) &amp; (d | 'category with spaces') </CategoryExpression>
+          <CategoryExpression InheritanceMode="Or">(a * !b) * (d + 'category with spaces') </CategoryExpression>
 
-Note that in XML ``&amp;`` represents ``&``.
+You can use the following symbols to represent logical operators:
+
+* And
+  * ``∧``, ``*``, ``&``
+* Or
+  * ``∨``, ``+``, ``|``
+* Complement
+  * ``¬``, ``~``, ``!``
+
+Note that in XML you must use ``&amp;`` to represent ``&`` and that ``∨`` is not the letter v but the Unicode **and** symbol.
 
 In this example the expression will match if the test set of categories contains **a** and either **d** or **category with spaces** but not **b**.
 
