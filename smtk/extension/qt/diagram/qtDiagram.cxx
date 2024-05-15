@@ -83,6 +83,7 @@
 #include <QPointF>
 #include <QScrollArea>
 #include <QSizeGrip>
+#include <QSplitter>
 #include <QTimer>
 #include <QToolBar>
 #include <QVBoxLayout>
@@ -109,8 +110,8 @@ public:
     , m_widget(new QWidget)
     // Layout for possibly the toolbar and the rest of the widget's contents:
     , m_mainLayout(new QVBoxLayout)
-    // Layout for the actual diagram and drawer
-    , m_contentsLayout(new QHBoxLayout)
+    // Splitter  for the  diagram and drawer
+    , m_contentsSplitter(new QSplitter)
     , m_sidebarOuter(new QFrame)
     , m_view(new qtDiagramView(m_scene, m_self))
     , m_sidebarMiddleLayout(new QVBoxLayout(m_sidebarOuter))
@@ -143,8 +144,7 @@ public:
     m_widget->setLayout(m_mainLayout);
     m_self->Widget = m_widget;
 
-    m_contentsLayout->setObjectName("ContentsLayout");
-    m_contentsLayout->setSpacing(0);
+    m_contentsSplitter->setObjectName("ContentsSplitter");
     if (m_dock)
     {
       m_dock->setTitleBarWidget(m_toolbar);
@@ -153,9 +153,9 @@ public:
     {
       m_mainLayout->addWidget(m_toolbar, Qt::AlignLeft | Qt::AlignTop);
     }
-    m_mainLayout->addLayout(m_contentsLayout);
-    m_contentsLayout->addWidget(m_sidebarOuter, Qt::AlignLeft | Qt::AlignTop);
-    m_contentsLayout->addWidget(m_view, Qt::AlignLeft | Qt::AlignTop);
+    m_mainLayout->addWidget(m_contentsSplitter);
+    m_contentsSplitter->addWidget(m_sidebarOuter);
+    m_contentsSplitter->addWidget(m_view);
     m_sidebarOuter->setObjectName("SidebarOuter");
     // Mark the sidebar "outer" widget as a subwindow so it will
     // be resized by the QSizeGrip contained inside in the "middle" layout.
@@ -586,7 +586,7 @@ public:
   QPointer<QWidget> m_widget;
 
   QPointer<QVBoxLayout> m_mainLayout;
-  QPointer<QHBoxLayout> m_contentsLayout;
+  QPointer<QSplitter> m_contentsSplitter;
   QPointer<QFrame> m_sidebarOuter;
   qtDiagramView* m_view{ nullptr };
 

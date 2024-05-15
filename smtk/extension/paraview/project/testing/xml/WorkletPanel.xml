@@ -30,13 +30,13 @@
   <pqevent object="1QInputDialog0" command="key" arguments="16777220" />
 
   <!-- Search for Worklet 1. -->
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="set_string" arguments="Worklet 1" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="set_string" arguments="Worklet 1" />
 
   <!-- Validate that the first worklet listed matches "Worklet 1" -->
-  <pqcheck object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Worklets" property="modelItemData" arguments="0.0,Worklet 1" />
+  <pqcheck object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Worklets" property="modelItemData" arguments="0.0,Worklet 1" />
 
   <!-- Emplace the worklet. -->
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="key" arguments="16777220" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/SidebarOuter/SidebarMiddle/qt_scrollarea_viewport/SidebarInner/Worklets/WorkletPalette/Search" command="key" arguments="16777220" />
 
   <!-- Validate that there are now 2 "Stage _ Attributes" tasks (the second created by EmplaceWorklet).
        Note that validation is tricky: if the EmplaceWorklet operation does not create new tasks, then
