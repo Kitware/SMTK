@@ -54,7 +54,7 @@ struct SMTKCORE_EXPORT CategoryNameSyntax
 };
 
 struct SMTKCORE_EXPORT ComplementOperator
-  : TAO_PEGTL_ISTRING("!")
+  : sor<TAO_PEGTL_ISTRING("!"), TAO_PEGTL_ISTRING("~"), TAO_PEGTL_ISTRING("¬")>
 {
 };
 struct SMTKCORE_EXPORT ComplementSyntax
@@ -69,11 +69,11 @@ struct SMTKCORE_EXPORT OperandSyntax
 };
 
 struct SMTKCORE_EXPORT AndOperator
-  : TAO_PEGTL_ISTRING("&")
+  : sor<TAO_PEGTL_ISTRING("&"), TAO_PEGTL_ISTRING("*"), TAO_PEGTL_ISTRING("∧")>
 {
 };
 struct SMTKCORE_EXPORT OrOperator
-  : TAO_PEGTL_ISTRING("|")
+  : sor<TAO_PEGTL_ISTRING("|"), TAO_PEGTL_ISTRING("+"), TAO_PEGTL_ISTRING("∨")>
 {
 };
 struct SMTKCORE_EXPORT BinaryOperator
@@ -82,7 +82,7 @@ struct SMTKCORE_EXPORT BinaryOperator
 };
 
 struct SMTKCORE_EXPORT ExpressionSyntax
-    : list<OperandSyntax, BinaryOperator, space>
+    : pad<list<OperandSyntax, BinaryOperator, space>, space>
 {
 };
 

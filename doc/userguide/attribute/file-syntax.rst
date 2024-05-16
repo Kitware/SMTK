@@ -935,20 +935,36 @@ The category expression can be specified using one of the following methods:
 * Specifying the PassMode attribute - this is used to create trivial pass all / reject all expressions
 * Specifying an expression string which is the contents of the CategoryExpression element
 
-A category expression string is composed of series of category names separated by either a '|' (representing Or) or a '&' (representing And).
-You can used '(' and ')' to model sub-expressions.  You can also place a '!' before a category name or sub-expression to mean "not".  In terms of categories names,
-if the name could be consider a valid C++ variable name, you can simply use the name in the expression.  If the name does not conform to this format you can enclose it in single quotes.
+A category expression string is composed of series of category names separated by either an **Or** or **And** symbol.
+You can used '(' and ')' to model sub-expressions.  You can also place a compliment symbol before a category name or sub-expression to mean **Negate**.  In terms of categories names,
+if the name could be consider a valid C++ variable name, you can simply use the name in the expression.  If the name does not conform to this format you can enclose it in single quotes.  The table below shows the characters used for the logical operation symbols.
+
+.. list-table:: Supported Symbols for Representing Logical Operations
+   :widths: 10 40
+   :header-rows: 1
+   :class: smtk-xml-att-table
+
+   * - Logical Operator
+     - Supported Symbols
+
+   * - And
+     - ``&``, ``*``, ``∧``
+   * - Or
+     - ``|``, ``+``, ``∨``
+   * - Complement
+     - ``!``, ``~``, ``¬``
+
 
 Here is an example of a CategoryExpression Element.
 
 .. code-block:: xml
 
           <CategoryExpression InheritanceMode="Or">
-             (a &amp; !b) &amp; (d | 'category with spaces')
+             (a * !b) * (d + 'category with spaces')
           </CategoryExpression>
 
 
-Note that in XML ``&amp;`` represents ``&``.
+Note that in XML, you must use ``&amp;`` and not ``&`` and that ``∨`` is not the letter v but the Unicode **and** symbol.
 
 In this example the expression will match if the test set of categories contains **a** and either **d** or **category with spaces** but not **b**.
 
@@ -979,6 +995,7 @@ The CategotyInfo Element itself can have the following XML Attributes:
 
        (Optional - the default is *And*)
 
+See data/attribute/attribute_collection/ConfigurationTestV8.sbt as an example of how to use Category Expressions.
 
 CategoryInfo Format
 ~~~~~~~~~~~~~~~~~~~
