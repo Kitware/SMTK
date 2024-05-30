@@ -253,6 +253,36 @@ the "construction method" value is represented as a tabbed
 widget with 1 tab for each of the "Structure" sections above.
 The default tab will be "2 points".
 
+----------------------
+Dealing with Relevance
+----------------------
+
+In many workflows, especially ones that support complex aspects such as multi-physics, typically only a subset of the information specified is relevant with respects to the current task.  For example, a hydrological workflow can have information related to constituent and heat transport; however, this information is not relevant if the task is to model only fluid flow.
+
+Once major aspect related to relevance is validity.  If information is not relevant then it should not affect validity.  In the above example, missing information concerning a constituent property should not indicate that the workflow is invalid (in this case invalid means incomplete); however, if the task was to change and require constituent transport, then it would be considered invalid.
+
+In SMTK's attribute resource, attributes and their items provide methods to indicate their relevance.  By default, relevance depends on a set of categories (typically this is the attribute resource's set of active categories) .  If the set of categories satisfies the category constraints associated with attribute or item, then it is considered relevant.
+
+For UI purposes, relevance can also take a requested read access level into consideration.  For example, if a workflow is displaying basic information (indicated by read access level 0) and an attribute contains only items with a greater read level, then none of the attribute items would be displayed and in this scenario the attribute itself would be considered not relevant (w/r to the UI) and should not be displayed.
+
+Custom Relevance for Items
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SMTK now supports the ability to assign a function to an attribute item that would
+be used to determine if an item is currently relevant. For example, it is now possible to have the relevance of one item depend on the value of another.
+
+**Note** that no effort is made to serialize or deserialize the provided function; your application that uses SMTK must call ``Item::setCustomIsRelevant()`` each time the item is loaded or created.
+
+Related API
+~~~~~~~~~~~
+
+* ``Attribute::isRelevant`` - method to call to see if an attribute is relevant
+* ``Item::isRelevant`` - method to call to see if an item is relevant
+* ``Item::defaultIsRelevant`` - default relevance method used by ``Attribute::isRelevant`` when no custom relevance function has been specified
+* ``Item::setCustomIsRelevant`` - method used to set a custom relevance function.
+
+Please see `customIsRelevantTest <https://gitlab.kitware.com/cmb/smtk/-/blob/master/smtk/attribute/testing/cxx/customIsRelevantTest.cxx>`_ for an example of how to use this functionality.
+
 ------------------
 Dealing with Units
 ------------------

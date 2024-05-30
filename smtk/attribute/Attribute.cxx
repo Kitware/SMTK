@@ -365,7 +365,8 @@ bool Attribute::isRelevant(
       }
     }
   }
-  if (!includeReadAccess)
+
+  if (m_items.empty() || !includeReadAccess)
   {
     return true;
   }

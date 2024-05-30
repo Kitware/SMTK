@@ -53,6 +53,12 @@ class SMTKCORE_EXPORT Item : public smtk::enable_shared_from_this<Item>
 
 public:
   smtkTypeMacroBase(smtk::attribute::Item);
+
+  ///\brief Typedef for custom relevance functions
+  typedef std::function<
+    bool(const Item*, bool includeCatagories, bool includeReadAccess, unsigned int readAccessLevel)>
+    RelevanceFunc;
+
   enum Type
   {
     AttributeRefType, //!< Needed for backward compatibility w/r XML/JSON formats < 4.0
@@ -98,16 +104,32 @@ public:
   }
   /// @}
 
+  ///@{
+  ///\brief Set and Get Methods for specifying a custom isRelevant function
+  void setCustomIsRelevant(RelevanceFunc func) { m_customIsRelevant = func; }
+  RelevanceFunc customIsRelevant() const { return m_customIsRelevant; }
+  ///@}
+
   ///\brief Returns true if the item is relevant.
+  ///
+  /// If a customIsRelevant function has been set, then it will be used to calculate if the
+  /// item is relevant based on includeCategories and includeReadAccess parameters, else
+  /// the item's defaultIsRelevant method will be used
+  bool isRelevant(
+    bool includeCatagories = true,
+    bool includeReadAccess = false,
+    unsigned int readAccessLevel = 0) const;
+
+  ///\brief Default isRelevant method that returns true if the item is relevant.
   ///
   /// If the item is marked ignored then return false.
   /// If includeCatagories is true and the item does not pass it's category checks, then return false,
   /// If includeReadAccess is true, and the item's advanceLevel is > readAccessLevel then return false.
   /// Else return true.
-  virtual bool isRelevant(
-    bool includeCatagories = true,
-    bool includeReadAccess = false,
-    unsigned int readAccessLevel = 0) const;
+  virtual bool defaultIsRelevant(
+    bool includeCatagories,
+    bool includeReadAccess,
+    unsigned int readAccessLevel) const;
 
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle
@@ -304,6 +326,7 @@ protected:
   bool m_isIgnored;
   smtk::attribute::ConstItemDefinitionPtr m_definition;
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
+  RelevanceFunc m_customIsRelevant = nullptr;
 
 private:
   bool m_hasLocalAdvanceLevelInfo[2];
