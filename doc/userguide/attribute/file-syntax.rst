@@ -174,6 +174,10 @@ added to the Attribute Resource.  The Property section is defined by a XML
     <Property Name="pd" Type="double"> 3.141 </Property>
     <Property Name="ps" Type="STRING">Test string</Property>
     <Property Name="pb" Type="bool"> YES </Property>
+    <Property Name="animals" Type="vector[string]">
+      <Value>the dog</Value>
+      <Value>a cat</Value>
+    </Property>
   </Properties>
 
 You can also look at data/attribute/attribute_collection/propertiesExample.rst and smtk/attribute/testing/cxx/unitXmlReaderProperties.cxx for a sample XML file and test.
@@ -200,9 +204,12 @@ The values that the **Type** attribute can be set to are:
 * int for an integer property
 * double for a double property
 * string for a string property
+* vector[string] for a vector of strings property
+* vector[double] for a vector of doubles property
 * bool for a boolean property
 
-The node's value is the value of the property being set.
+The node's value is the value of the property being set with the exception of the vector-based properties.  For these,
+the node should contain **Value Elements** whose content represents the appropriate values.
 
 Supported Values for Boolean Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

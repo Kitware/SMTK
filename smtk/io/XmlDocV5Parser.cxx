@@ -22,6 +22,32 @@ using namespace smtk;
 
 namespace
 {
+
+template<typename ValueType>
+ValueType node_as(const xml_node& node);
+
+template<>
+double node_as<double>(const xml_node& node)
+{
+  return node.text().as_double();
+}
+
+template<>
+std::string node_as<std::string>(const xml_node& node)
+{
+  std::string s = node.text().as_string();
+  return common::StringUtil::trim(s);
+}
+
+template<typename Container, typename ValueType = typename Container::value_type>
+void nodeToData(const xml_node& node, Container& container)
+{
+  for (const xml_node& child : node.children("Value"))
+  {
+    container.insert(container.end(), node_as<ValueType>(child));
+  }
+}
+
 template<typename T>
 void processProperties(T& object, xml_node& propertiesNode, Logger& logger)
 {
@@ -57,6 +83,14 @@ void processProperties(T& object, xml_node& propertiesNode, Logger& logger)
     else if (propType == "string")
     {
       object->properties().template get<std::string>()[propName] = propNode.text().as_string();
+    }
+    else if (propType == "vector[string]")
+    {
+      nodeToData(propNode, object->properties().template get<std::vector<std::string>>()[propName]);
+    }
+    else if (propType == "vector[double]")
+    {
+      nodeToData(propNode, object->properties().template get<std::vector<double>>()[propName]);
     }
     else if (propType == "bool")
     {

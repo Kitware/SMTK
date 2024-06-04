@@ -1,3 +1,15 @@
+IO
+==
+
+Supporting Vector Properties in XML Attribute Templates
+-------------------------------------------------------
+
+Starting in Version 8 XML Template Files, you can now define vector-based Properties on Attribute Resources and Attributes.
+Currently vector of doubles and vectors of strings are supported but this can be easily extended.
+
+Here is an example and is available in the data/attributes/attribute_collections directory as propertiesExample.sbt.
+
+.. code-block:: XML
 
 <SMTK_AttributeResource Version="8">
   <Properties>
