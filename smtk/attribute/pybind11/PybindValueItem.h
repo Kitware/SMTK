@@ -60,6 +60,8 @@ inline PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pyb
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)() const) &smtk::attribute::ValueItem::valueAsString)
     .def("valueAsString", (std::string (smtk::attribute::ValueItem::*)(::size_t) const) &smtk::attribute::ValueItem::valueAsString, py::arg("elementIndex"))
     .def("valueLabel", &smtk::attribute::ValueItem::valueLabel, py::arg("element"))
+    .def("units", &smtk::attribute::ValueItem::units)
+    .def("supportedUnits", &smtk::attribute::ValueItem::supportedUnits)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::ValueItem>(i);
       })

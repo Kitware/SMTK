@@ -51,7 +51,7 @@ public:
   /** \brief Creates instance if double item has units; Returns editor as QWidget */
   static qtDoubleUnitsLineEdit* checkAndCreate(qtInputsItem* item, const QString& tooltip);
 
-  qtDoubleUnitsLineEdit(qtInputsItem* item, const units::Unit& unit, const QString& tooltip);
+  qtDoubleUnitsLineEdit(qtInputsItem* item, const QString& tooltip);
   ~qtDoubleUnitsLineEdit() override;
 
   /**
@@ -130,8 +130,6 @@ protected:
   void focusOutEvent(QFocusEvent* event) override;
 
   QPointer<qtInputsItem> m_inputsItem;
-  units::Unit m_unit;
-  QStringList m_unitChoices;
   QString m_baseTooltip;
   int m_lastKey = -1;
 

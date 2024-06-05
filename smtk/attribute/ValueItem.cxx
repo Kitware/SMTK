@@ -16,6 +16,8 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "units/System.h"
+
 #include <algorithm> // for std::find
 #include <iostream>
 
@@ -853,4 +855,23 @@ std::vector<std::string> ValueItem::relevantEnums(
     }
   }
   return def->relevantEnums(false, dummy, includeReadAccess, readAccessLevel);
+}
+
+const std::string& ValueItem::units() const
+{
+  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+  return def->units();
+}
+
+std::string ValueItem::supportedUnits() const
+{
+  bool status = false;
+  auto munits = this->units();
+  auto unitsSystem = m_definition->unitsSystem();
+
+  if (!(munits.empty() || (unitsSystem == nullptr)))
+  {
+    auto myUnit = unitsSystem->unit(munits, &status);
+  }
+  return (status ? munits : std::string());
 }

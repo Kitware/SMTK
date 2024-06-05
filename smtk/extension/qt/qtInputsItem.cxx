@@ -730,16 +730,15 @@ void qtInputsItem::showExpressionResultWidgets(
   // Add units to the text if definition has units string recognized by units system
   QString displayText = text;
   auto item = m_itemInfo.itemAs<ValueItem>();
-  auto def =
-    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(item->definition());
-  if (!def->units().empty())
+  auto itemUnits = item->units();
+  if (!itemUnits.empty())
   {
-    auto unitsSystem = item->attribute()->attributeResource()->unitsSystem();
+    auto unitsSystem = item->definition()->unitsSystem();
     bool parsed = false;
-    unitsSystem->unit(def->units(), &parsed);
+    unitsSystem->unit(itemUnits, &parsed);
     if (parsed)
     {
-      displayText = QString("%1 %2").arg(text).arg(def->units().c_str());
+      displayText = QString("%1 %2").arg(text).arg(itemUnits.c_str());
     }
   }
   m_internals->m_expressionResultLineEdit->setText(displayText);
@@ -899,8 +898,6 @@ QFrame* qtInputsItem::createLabelFrame(
   const smtk::attribute::ValueItem* vitem,
   const smtk::attribute::ValueItemDefinition* vitemDef)
 {
-  smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
-  auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
   auto* iview = m_itemInfo.baseView();
   // Lets create the label and proper decorations
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -963,7 +960,8 @@ QFrame* qtInputsItem::createLabelFrame(
     label->setToolTip(strBriefDescription.c_str());
   }
 
-  if (!vitemDef->units().empty())
+  const auto& valUnits = vitem->units();
+  if (!valUnits.empty())
   {
     // Check if we should units to the label
     std::string option = "LineEdit"; // default behavior
@@ -972,18 +970,18 @@ QFrame* qtInputsItem::createLabelFrame(
     if (addUnitsLabel && !vitemDef->isDiscrete())
     {
       // Check if units are "valid"
-      auto unitsSystem = vitem->attribute()->attributeResource()->unitsSystem();
+      const auto& unitsSystem = vitemDef->unitsSystem();
       if (unitsSystem)
       {
         bool unitsParsed = false;
-        units::Unit defUnit = unitsSystem->unit(vitemDef->units(), &unitsParsed);
+        units::Unit defUnit = unitsSystem->unit(valUnits, &unitsParsed);
         addUnitsLabel = addUnitsLabel && (!unitsParsed);
       }
     }
     if (addUnitsLabel)
     {
       QString unitText = label->text();
-      unitText.append(" (").append(vitemDef->units().c_str()).append(")");
+      unitText.append(" (").append(valUnits.c_str()).append(")");
       label->setText(unitText);
     }
   }
@@ -1603,6 +1601,7 @@ QWidget* qtInputsItem::createDoubleWidget(
   auto dDef = vitem->definitionAs<DoubleItemDefinition>();
   auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
   double minVal, maxVal;
+  auto dUnits = vitem->units();
 
   // Let get the range of the item
   minVal = smtk_DOUBLE_MIN;
@@ -1703,7 +1702,7 @@ QWidget* qtInputsItem::createDoubleWidget(
           {
             tooltip.append("; ");
           }
-          tooltip.append("Val: ").append(val).append(" ").append(dDef->units().c_str());
+          tooltip.append("Val: ").append(val).append(" ").append(dUnits.c_str());
         }
       }
     }
@@ -1772,10 +1771,10 @@ QWidget* qtInputsItem::createDoubleWidget(
     spinbox->setMinimum(minVal);
     double step;
     int decimals;
-    if (!dDef->units().empty())
+    if (!dUnits.empty())
     {
       QString ustring = " ";
-      ustring.append(dDef->units().c_str());
+      ustring.append(dUnits.c_str());
       spinbox->setSuffix(ustring);
     }
     if (m_itemInfo.component().attributeAsDouble("StepSize", step))
@@ -1878,10 +1877,10 @@ QWidget* qtInputsItem::createIntWidget(
     spinbox->setMaximum(maxVal);
     spinbox->setMinimum(minVal);
     int step;
-    if (!iDef->units().empty())
+    if (!vitem->units().empty())
     {
       QString ustring = " ";
-      ustring.append(iDef->units().c_str());
+      ustring.append(vitem->units().c_str());
       spinbox->setSuffix(ustring);
     }
     if (m_itemInfo.component().attributeAsInt("StepSize", step))
@@ -2339,7 +2338,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
             {
               newToolTip.append("; ");
             }
-            newToolTip.append("Val: ").append(val).append(" ").append(dDef->units().c_str());
+            newToolTip.append("Val: ").append(val).append(" ").append(ditem->units().c_str());
           }
           valueUnitsBox->setToolTip(newToolTip);
           valChanged = true;

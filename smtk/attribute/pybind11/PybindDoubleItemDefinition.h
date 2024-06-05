@@ -30,7 +30,6 @@ inline PySharedPtrClass< smtk::attribute::DoubleItemDefinition, smtk::attribute:
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DoubleItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::DoubleItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DoubleItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::DoubleItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
     .def("createCopy", &smtk::attribute::DoubleItemDefinition::createCopy, py::arg("info"))
-    .def("hasSupportedUnits", &smtk::attribute::DoubleItemDefinition::hasSupportedUnits)
     .def("type", &smtk::attribute::DoubleItemDefinition::type)
     .def("setDefaultValue", (bool (smtk::attribute::DoubleItemDefinition::*)(double const &)) &smtk::attribute::DoubleItemDefinition::setDefaultValue)
     .def("setDefaultValue", (bool (smtk::attribute::DoubleItemDefinition::*)(::std::vector<double, std::allocator<double> > const &)) &smtk::attribute::DoubleItemDefinition::setDefaultValue)

@@ -58,10 +58,6 @@ public:
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
-  ///\brief Returns true if units and a units system have been specified and that the
-  /// specified units are supported by the units system
-  bool hasSupportedUnits() const;
-
   bool setUnits(const std::string& newUnits) override;
 
   ///\brief Splits input string into 2 parts with first part representing double value.

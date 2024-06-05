@@ -17,6 +17,8 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "units/System.h"
+
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -552,4 +554,25 @@ bool ValueItemDefinition::isDiscreteIndexValid(int index, const std::set<std::st
 bool ValueItemDefinition::isDiscreteIndexValid(int index) const
 {
   return ((index > -1) && (static_cast<unsigned int>(index) < m_discreteValueEnums.size()));
+}
+
+bool ValueItemDefinition::hasSupportedUnits() const
+{
+  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
+  {
+    bool status;
+    auto defUnit = m_unitsSystem->unit(m_units, &status);
+    return status;
+  }
+  return false;
+}
+
+std::string ValueItemDefinition::supportedUnits() const
+{
+  bool status = false;
+  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
+  {
+    auto defUnit = m_unitsSystem->unit(m_units, &status);
+  }
+  return (status ? m_units : std::string());
 }

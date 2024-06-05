@@ -229,6 +229,37 @@ void testBasicGettingValue()
   }
 }
 
+void testExplicitUnits()
+{
+  DoubleItemTest doubleItemTest;
+  DoubleItemPtr item1 = doubleItemTest.getDoubleItem1();
+  DoubleItemPtr item = doubleItemTest.getDoubleItem();
+
+  smtkTest(
+    item->setUnits("m"),
+    "Should  be able to set explicit units to m on an Item whose Definition has no units!");
+  smtkTest(
+    !item1->setUnits("m"),
+    "Should not be able to set explicit units on an Item whose Definition has units!");
+
+  smtkTest(item->setValue(100.0), "Could not set item to 100 m");
+  smtkTest(item->valueAsString() == "100 m", "Expected value string to be 100 m.");
+  smtkTest(
+    item->setUnits("cm"),
+    "Should  be able to set explicit units to cm on an Item whose Definition has no units!");
+  smtkTest(item->valueAsString() == "100 m", "Expected value string to remain to be 100 m.");
+  smtkTest(item->value() == 10000.0, "Expected value to be 10000.0 cm.");
+  smtkTest(
+    item->setUnits("K"),
+    "Should  be able to set explicit units to K on an Item whose Definition has no units!");
+  smtkTest(item->valueAsString() == "100 K", "Expected value string to remain to be 100 K.");
+  smtkTest(
+    item->setUnits("madeUpUnits"),
+    "Should  be able to set explicit units to madeUpUnits on an Item whose Definition has no "
+    "units!");
+  smtkTest(item->valueAsString() == "100", "Expected value string to remain to be 100 (no units).");
+}
+
 void testGettingValueWithExpression()
 {
   DoubleItemTest doubleItemTest;
@@ -360,6 +391,7 @@ int unitDoubleItem(int /*argc*/, char** const /*argv*/)
 {
   smtk::io::Logger::instance().reset();
   testBasicGettingValue();
+  testExplicitUnits();
   smtk::io::Logger::instance().reset();
 
   testGettingValueWithExpression();

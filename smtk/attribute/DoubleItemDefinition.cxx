@@ -101,17 +101,6 @@ bool DoubleItemDefinition::setUnits(const std::string& newUnits)
   return true;
 }
 
-bool DoubleItemDefinition::hasSupportedUnits() const
-{
-  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
-  {
-    bool status;
-    auto defUnit = m_unitsSystem->unit(m_units, &status);
-    return status;
-  }
-  return false;
-}
-
 bool DoubleItemDefinition::setDefaultValue(
   const std::vector<double>& vals,
   const std::string& units)

@@ -76,6 +76,85 @@ bool DoubleItem::initializeValues()
   return true;
 }
 
+const std::string& DoubleItem::units() const
+{
+  // Check to see if we have explicit units
+  if (!m_units.empty())
+  {
+    return m_units;
+  }
+  return ValueItem::units();
+}
+
+bool DoubleItem::setUnits(const std::string& newUnits)
+{
+  // make sure that the definition does not already specify units
+  const DoubleItemDefinition* def =
+    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
+  const std::string& defUnits = def->units();
+  if (!defUnits.empty())
+  {
+    return false; // Units are coming from the Definition
+  }
+
+  m_units = newUnits;
+
+  // Now we need to see if the current values are compatible with the new units
+  std::string valStr, valUnitsStr;
+  bool foundFirstSetValue = false;
+  bool canTransferValues = false;
+  for (std::size_t i = 0; i < this->numberOfValues(); i++)
+  {
+    if (!this->isSet(i))
+    {
+      continue; // skip unset values - nothing needs to be processed
+    }
+    // if this is the first set value we need to see if it (and all set values)'s units
+    // are compatible with the new units.  NOTE - the assumption here is that the units
+    // system is consistent - meaning that if all of the existing values were convertible to
+    // the original units, and if one value can be converted to the new units, then all of the
+    // remaining values must also be convertible
+    if (!foundFirstSetValue)
+    {
+      // Lets see if we can use the  units associate with the values
+      canTransferValues = this->setValueFromString(i, m_valuesAsString[i]);
+      if (!canTransferValues)
+      {
+        // So we can't use the value with its associated units so we will
+        // split the string and only keep the value
+        if (DoubleItemDefinition::splitStringStartingDouble(
+              m_valuesAsString[i], valStr, valUnitsStr))
+        {
+          this->setValueFromString(i, valStr);
+        }
+        else
+        {
+          // There was a problem splitting the string (which should never happen) and the value should be unset
+          this->unset(i);
+        }
+      }
+      foundFirstSetValue = true;
+    }
+    // we have determine that the units associated with the values are compatible with the new units
+    else if (canTransferValues)
+    {
+      this->setValueFromString(i, m_valuesAsString[i]);
+    }
+    // We are only transferring the values and removing the units
+    else if (DoubleItemDefinition::splitStringStartingDouble(
+               m_valuesAsString[i], valStr, valUnitsStr))
+    {
+      this->setValueFromString(i, valStr);
+    }
+    else
+    {
+      // There was a problem trying to split the string (which should never happen) and the value should be unset
+      this->unset(i);
+    }
+  }
+  return true;
+}
+
 bool DoubleItem::setValue(std::size_t element, const double& val)
 {
   if (element >= m_values.size())
@@ -104,19 +183,17 @@ bool DoubleItem::setValue(std::size_t element, const double& val)
   }
 
   m_valuesAsString[element] = this->streamValue(m_values[element]);
-  const DoubleItemDefinition* def =
-    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
-
-  // Append the definition's units if they are defined and supported
-  if (def->hasSupportedUnits())
+  // See if we need to append units - this only needs to be done if the
+  // item's units are supported
+  auto myUnitStr = this->supportedUnits();
+  if (!myUnitStr.empty())
   {
-    const std::string& units = def->units();
-    m_valuesAsString[element].append(" ").append(units);
+    m_valuesAsString[element].append(" ").append(myUnitStr);
   }
   return true;
 }
 
-bool DoubleItem::setValue(std::size_t element, const double& val, const std::string& units)
+bool DoubleItem::setValue(std::size_t element, const double& val, const std::string& valUnitStr)
 {
   if (element >= m_values.size())
   {
@@ -127,30 +204,29 @@ bool DoubleItem::setValue(std::size_t element, const double& val, const std::str
   double convertedVal = val;
 
   // Do we need to convert?
-  const DoubleItemDefinition* def =
-    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
-  const std::string& dunits = def->units();
-  if (dunits != units)
+  const std::string& myUnitStr = this->supportedUnits();
+  if (myUnitStr != valUnitStr)
   {
+    auto unitsSystem = this->definition()->unitsSystem();
     // Is there a units system specified?
-    if (!def->unitsSystem())
+    if (!unitsSystem)
     {
       return false; // we can not convert units
     }
     bool status;
-    auto defUnits = def->unitsSystem()->unit(dunits, &status);
+    auto myUnits = unitsSystem->unit(myUnitStr, &status);
     if (!status)
     {
-      return false; // Could not find the definition's units
+      return false; // Could not find the base's units
     }
-    auto valUnits = def->unitsSystem()->unit(units, &status);
+    auto valUnits = unitsSystem->unit(valUnitStr, &status);
     if (!status)
     {
       return false; // Could not find vals' units
     }
 
     units::Measurement m(val, valUnits);
-    auto newM = def->unitsSystem()->convert(m, defUnits, &status);
+    auto newM = unitsSystem->convert(m, myUnits, &status);
     if (!status)
     {
       return false; // could not convert
@@ -170,9 +246,9 @@ bool DoubleItem::setValue(std::size_t element, const double& val, const std::str
     return true; // nothing to be done
   }
   m_valuesAsString[element] = this->streamValue(m_values[element]);
-  if (def->hasSupportedUnits())
+  if (!myUnitStr.empty())
   {
-    m_valuesAsString[element].append(" ").append(units);
+    m_valuesAsString[element].append(" ").append(valUnitStr);
   }
   return true;
 }
@@ -192,27 +268,26 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     return false; // badly formatted string
   }
 
-  const DoubleItemDefinition* def =
-    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
-  const std::string& dunits = def->units();
+  auto unitsSystem = this->definition()->unitsSystem();
+  const std::string& myUnitStr = this->supportedUnits();
 
-  units::Unit defUnit;
+  units::Unit myUnit;
   // We can only do conversion if we have a units system and the
-  // definition has known units. Note that we don't need to do conversion
+  // item has known units. Note that we don't need to do conversion
   // if the value does not have units specified
   bool convert = false;
-  if (def->unitsSystem() && (!(dunits.empty() || valUnitsStr.empty())))
+  if (unitsSystem && (!(myUnitStr.empty() || valUnitsStr.empty())))
   {
-    // If we have a units System, let's see if the definition's units
+    // If we have a units System, let's see if the base units
     // are valid?
-    defUnit = def->unitsSystem()->unit(def->units(), &convert);
+    myUnit = unitsSystem->unit(myUnitStr, &convert);
   }
 
   double convertedVal;
   // Is conversion not possible or required
   if (!convert)
   {
-    if (!(valUnitsStr.empty() || (valUnitsStr == dunits)))
+    if (!(valUnitsStr.empty() || (valUnitsStr == myUnitStr)))
     {
       return false; // Units were specified that did not match the definition's
     }
@@ -229,7 +304,7 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     // We can convert units
     bool status;
 
-    auto valMeasure = def->unitsSystem()->measurement(val, &status);
+    auto valMeasure = unitsSystem->measurement(val, &status);
     if (!status)
     {
       // Could not parse the value
@@ -237,7 +312,7 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     }
     if (!valMeasure.m_units.dimensionless())
     {
-      auto convertedMeasure = def->unitsSystem()->convert(valMeasure, defUnit, &status);
+      auto convertedMeasure = unitsSystem->convert(valMeasure, myUnit, &status);
       if (!status)
       {
         return false;
@@ -257,15 +332,14 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
   }
   m_valuesAsString[element] = val;
 
-  // if the value didn't have units but the definition did and the units are supported
-  // by the units system, append the definition's units to the value
-  bool defUnitsSupported = def->hasSupportedUnits();
-  if (valUnitsStr.empty() && defUnitsSupported)
+  // if the value didn't have units but the item has units defined  and the units are supported
+  // by the units system, append the  units to the value
+  if (valUnitsStr.empty() && !myUnitStr.empty())
   {
-    m_valuesAsString[element].append(" ").append(dunits);
+    m_valuesAsString[element].append(" ").append(myUnitStr);
   }
-  // Else if the definition's units are not supported then drop the units from the string
-  else if (!defUnitsSupported)
+  // Else if the item's units are not supported then drop the units from the string
+  else if (myUnitStr.empty())
   {
     m_valuesAsString[element] = valStr;
   }
@@ -279,11 +353,10 @@ bool DoubleItem::appendValue(const double& val)
     return false;
   }
   std::string sval = this->streamValue(val);
-  const DoubleItemDefinition* def =
-    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
-  if (!def->units().empty())
+  std::string myUnitStr = this->supportedUnits();
+  if (!myUnitStr.empty())
   {
-    sval.append(" ").append(def->units());
+    sval.append(" ").append(myUnitStr);
   }
   m_valuesAsString.push_back(sval);
   return true;
@@ -308,12 +381,11 @@ bool DoubleItem::removeValue(std::size_t element)
 void DoubleItem::updateDiscreteValue(std::size_t element)
 {
   ValueItemTemplate<double>::updateDiscreteValue(element);
-  const DoubleItemDefinition* def =
-    dynamic_cast<const DoubleItemDefinition*>(this->definition().get());
+  std::string myUnitStr = this->supportedUnits();
   m_valuesAsString[element] = this->streamValue(m_values[element]);
-  if (!def->units().empty())
+  if (!myUnitStr.empty())
   {
-    m_valuesAsString[element].append(" ").append(def->units());
+    m_valuesAsString[element].append(" ").append(myUnitStr);
   }
 }
 
