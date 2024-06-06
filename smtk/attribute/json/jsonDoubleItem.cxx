@@ -29,6 +29,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::DoubleItemPtr& item
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ValueItem>(itemPtr));
   smtk::attribute::processDerivedValueToJson(j, itemPtr);
+  // if the item has explicit units we need to save them
+  if (itemPtr->hasExplicitUnits())
+  {
+    j["Units"] = itemPtr->units();
+  }
 }
 
 SMTKCORE_EXPORT void from_json(
@@ -42,6 +47,14 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
+
+  // See if there are units
+  auto result = j.find("Units");
+  if (result != j.end())
+  {
+    itemPtr->setUnits(*result);
+  }
+
   auto valItem = smtk::dynamic_pointer_cast<ValueItem>(itemPtr);
   smtk::attribute::from_json(j, valItem, itemExpressionInfo, attRefInfo);
   smtk::attribute::processDerivedValueFromJson<smtk::attribute::DoubleItemPtr, double>(

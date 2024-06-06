@@ -69,6 +69,22 @@ public:
   /// and not the converted value.
   std::string valueAsString(std::size_t element) const override;
 
+  ///\brief Explicitly set the units of the item.
+  ///
+  /// This can only be done if the item's definition does not already specify units.
+  /// Changing the units will replace the units associated with the item's value strings
+  /// and can result in the item's values changing.  This can happen if the string values
+  /// originally needed to be converted.
+  bool setUnits(const std::string& newUnits);
+
+  ///\brief Return the units the item's values are specified in.
+  ///
+  /// They can come from either the item's definition or from being explicitly assigned
+  const std::string& units() const override;
+
+  ///\brief Returns true if the item's units were explicitly assigned to the item.
+  bool hasExplicitUnits() const { return !m_units.empty(); }
+
 protected:
   DoubleItem(Attribute* owningAttribute, int itemPosition);
   DoubleItem(Item* owningItem, int myPosition, int mySubGroupPosition);
@@ -76,6 +92,7 @@ protected:
   void updateDiscreteValue(std::size_t element) override;
 
   std::vector<std::string> m_valuesAsString;
+  std::string m_units;
 
 private:
 };

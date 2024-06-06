@@ -2559,6 +2559,12 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
 
 void XmlDocV1Parser::processDoubleItem(pugi::xml_node& node, attribute::DoubleItemPtr item)
 {
+  xml_node unitsNode = node.child("Units");
+  if (unitsNode)
+  {
+    item->setUnits(unitsNode.text().get());
+  }
+
   this->processValueItem(node, dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr, double>(
     node, item, m_resource, m_itemExpressionInfo, m_logger);

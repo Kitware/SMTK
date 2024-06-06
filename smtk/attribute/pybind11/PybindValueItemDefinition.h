@@ -69,6 +69,8 @@ inline PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::
     .def("units", &smtk::attribute::ValueItemDefinition::units)
     .def("usingCommonLabel", &smtk::attribute::ValueItemDefinition::usingCommonLabel)
     .def("valueLabel", &smtk::attribute::ValueItemDefinition::valueLabel, py::arg("element"))
+    .def("hasSupportedUnits", &smtk::attribute::ValueItemDefinition::hasSupportedUnits)
+    .def("supportedUnits", &smtk::attribute::ValueItemDefinition::supportedUnits)
     .def_static("ToItemDefinition", [](const std::shared_ptr<smtk::attribute::ValueItemDefinition> d) {
         return std::dynamic_pointer_cast<smtk::attribute::ItemDefinition>(d);
       })

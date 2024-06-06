@@ -1304,6 +1304,11 @@ void XmlV2StringWriter::processDoubleItem(pugi::xml_node& node, attribute::Doubl
 {
   this->processValueItem(node, dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr>(node, item);
+  if (item->hasExplicitUnits())
+  {
+    xml_node unitsNode = node.append_child("Units");
+    unitsNode.text().set(item->units().c_str());
+  }
 }
 
 void XmlV2StringWriter::processIntItem(pugi::xml_node& node, attribute::IntItemPtr item)

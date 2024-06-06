@@ -253,6 +253,32 @@ the "construction method" value is represented as a tabbed
 widget with 1 tab for each of the "Structure" sections above.
 The default tab will be "2 points".
 
+------------------
+Dealing with Units
+------------------
+
+SMTK attribute resources support units via the `units`_ library;
+you can visit its repository for documentation on how to use the library,
+but SMTK does not require you to use the units library for most tasks.
+Instead, workflow designers specify units for items as a string and SMTK
+user-interface components accept values from users in any compatible units.
+This way, when you export a simulation attribute, all the unit conversions
+are automatically performed by SMTK for you.
+
+The value-based Items (DoubleItem, StringItem, IntegerItem, etc..) can have
+their *native* units (the units that the Item returns its value in) defined
+in their :smtk:`ItemDefinition <smtk::attribute::ItemDefinition>`. In the
+case of DoubleItems, they can also be explicitly assigned to the item itself
+(when its definition does not specify the units).
+
+.. _units: https://gitlab.kitware.com/units/units/
+
+For example, a DoubleItem **foo** has its units specify by its Definition as "meters".  If foo is assigned "10 cm", its returned value will be 0.1 (meters).
+
+Changing an Item's explicit units can affect its current values.  For example if a DoubleItem **bar** is explicitly assigned "cm" as its units and its value is set to "100 m", its return value will be 10000 (cm).  If its explicit units are then changed to "meters", its return value is now 100 (meters).  However, if an Item is assigned new units that not compatible to its input values, the input values are replaced with the new units.  For example, it we were to later change **bar**'s units to "K" (Kelvin), it return value will be 100 (Kelvin).
+
+Please see `unitDoubleItem <https://gitlab.kitware.com/cmb/smtk/-/blob/master/smtk/attribute/testing/cxx/unitDoubleItem.cxx>`_ for a simple example of using units.
+
 
 Migration to newer schema
 -------------------------

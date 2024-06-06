@@ -137,6 +137,19 @@ public:
     return m_activeChildrenItems[static_cast<std::size_t>(i)];
   }
 
+  ///\brief  Returns the native units of the item.
+  ///
+  /// These are the units that the item's value methods are returned in and are by default
+  /// specified by the item's definition
+  virtual const std::string& units() const;
+
+  ///\brief Return native units of the item that are supported by the units system assigned
+  /// to its definition.
+  ///
+  /// If there is no units system assigned to the definition or if the item's native units are
+  /// not supported by the units system, an empty string is returned.
+  virtual std::string supportedUnits() const;
+
   using Item::assign;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occurred.  By default, an attribute being used by this

@@ -48,6 +48,16 @@ public:
   const std::string& units() const { return m_units; }
   virtual bool setUnits(const std::string& newUnits);
 
+  ///\brief Returns true if units and a units system have been specified and that the
+  /// specified units are supported by the units system
+  bool hasSupportedUnits() const;
+
+  ///\brief Return native units of the definition that are supported by its units system.
+  ///
+  /// If there is no units system assigned to the definition or if the item's native units are
+  /// not supported by the units system, an empty string is returned.
+  std::string supportedUnits() const;
+
   bool isDiscrete() const { return !m_discreteValueEnums.empty(); }
   std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
   const std::string& discreteEnum(std::size_t ith) const
