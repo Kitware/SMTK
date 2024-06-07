@@ -96,6 +96,19 @@ bool Item::isRelevant(bool includeCategories, bool includeReadAccess, unsigned i
     return false; // Item has been marked to be ignored
   }
 
+  if (m_customIsRelevant)
+  {
+    return m_customIsRelevant(this, includeCategories, includeReadAccess, readAccessLevel);
+  }
+
+  return this->defaultIsRelevant(includeCategories, includeReadAccess, readAccessLevel);
+}
+
+bool Item::defaultIsRelevant(
+  bool includeCategories,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
+{
   if (includeCategories)
   {
     auto myAttribute = this->attribute();
