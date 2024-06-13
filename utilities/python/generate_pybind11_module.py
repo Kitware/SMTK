@@ -25,8 +25,9 @@ if __name__ == '__main__':
 
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-I', '--include-dirs',
+                            action='append',
                             help='Add an include directory to the parser',
-                            default="")
+                            default=[])
 
     arg_parser.add_argument('-i', '--input-directory',
                             help='<Required> Input directory',
@@ -57,8 +58,8 @@ if __name__ == '__main__':
     if not os.path.exists(args.input_directory):
         raise IOError("No directory \"%s\"" % args.input_directory)
 
-    if not args.include_dirs:
-        args.include_dirs = args.input_directory
+    if len(args.include_dirs) == 0:
+        args.include_dirs.append(args.input_directory)
 
     def stream_with_line_breaks(stream):
         def write(string):
