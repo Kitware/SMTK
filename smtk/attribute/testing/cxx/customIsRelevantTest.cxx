@@ -27,7 +27,7 @@ bool customIsRelevant(
   bool includeReadAccess,
   unsigned int readAccessLevel)
 {
-  // This function will add an extra relevancy constraint indicating that
+  // This function will add an extra relevance constraint indicating that
   // this item is relevant only if item b's value is between 0 and 10 inclusive
 
   // find Item b
@@ -55,6 +55,44 @@ bool customIsRelevant(
   return item->defaultIsRelevant(includeCategories, includeReadAccess, readAccessLevel);
 }
 
+bool customEnumIsRelevant(
+  const Item* item,
+  int enumIndex,
+  bool includeCategories,
+  const std::set<std::string>& testCategories,
+  bool includeReadAccess,
+  unsigned int readAccessLevel)
+{
+  // This function will add an extra relevance constraint indicating that
+  // the "alpha" value is relevant only if item b's value is between 0 and 10 inclusive
+
+  const auto def = std::dynamic_pointer_cast<const ValueItemDefinition>(item->definition());
+  if (enumIndex == 0) // Alpha's index
+  {
+    // find Item b
+    auto att = item->attribute();
+    if (att)
+    {
+      auto itemB = att->findAs<DoubleItem>("b");
+      if (itemB)
+      {
+        if (!itemB->isSet())
+        {
+          // Item b has not value
+          return false;
+        }
+        double val = itemB->value();
+        if ((val < 0) || (val > 10))
+        {
+          return false;
+        }
+      }
+    }
+  }
+  return def->defaultIsEnumRelevant(
+    enumIndex, includeCategories, testCategories, includeReadAccess, readAccessLevel);
+}
+
 int main()
 {
   int status = 0;
@@ -66,6 +104,11 @@ int main()
   smtk::attribute::DefinitionPtr attDef = resource->createDefinition("Test");
   auto adef = attDef->addItemDefinition<DoubleItemDefinitionPtr>("a");
   auto bdef = attDef->addItemDefinition<DoubleItemDefinitionPtr>("b");
+  auto cdef = attDef->addItemDefinition<IntItemDefinitionPtr>("c");
+
+  // Lets set some discrete values for Item c
+  cdef->addDiscreteValue(1, "alpha");
+  cdef->addDiscreteValue(2, "beta");
 
   auto att = resource->createAttribute("testAtt", attDef);
   if (att)
@@ -90,7 +133,9 @@ int main()
     status = -1;
   }
 
-  for (int i = 0; i < 2; i++)
+  // Lets grab the discrete item
+  auto discreteItem = std::dynamic_pointer_cast<IntItem>(att->item(2));
+  for (int i = 0; i < 3; i++)
   {
     if (att->item(i)->isRelevant(false, false))
     {
@@ -103,10 +148,33 @@ int main()
     }
   }
 
-  // Now lets give Item a the custom relevancy function
+  // Lets test the discrete Item's enums - if we ignore categories and read access there should be 2
+  auto relevantEnums = discreteItem->relevantEnums(false, false, 0);
+  if (relevantEnums.size() != 2)
+  {
+    std::cerr << "ERROR: Initial Test: Item " << discreteItem->name()
+              << " has incorrect relevant enums values : ";
+    status = -1;
+  }
+  else
+  {
+    std::cerr << "Initial Test: Item " << discreteItem->name()
+              << " has correct relevant enum values : ";
+  }
+
+  for (const auto& estring : relevantEnums)
+  {
+    std::cerr << estring << " ";
+  }
+  std::cerr << std::endl;
+
+  // Now lets give Item a the custom relevance function
   att->item(0)->setCustomIsRelevant(customIsRelevant);
 
-  // Since b is not currently set, a should not be relevant
+  // Let give Item c's definition a custom enum relevance function
+  cdef->setCustomEnumIsRelevant(customEnumIsRelevant);
+
+  // Since b is not currently set, a should not be relevant and discreteItem should have only one relevant enum
   if (!att->item(0)->isRelevant(false, false))
   {
     std::cerr << "Pass Item b not set: Item " << att->item(0)->name() << " is not Relevant\n";
@@ -117,7 +185,26 @@ int main()
     status = -1;
   }
 
-  // now lets set b to 5 which should make a relevant
+  relevantEnums = discreteItem->relevantEnums(false, false, 0);
+  if (!((relevantEnums.size() == 1) && (relevantEnums[0] == "beta")))
+  {
+    std::cerr << "ERROR: Item b not set: Item " << discreteItem->name()
+              << " has incorrect relevant enums values : ";
+    status = -1;
+  }
+  else
+  {
+    std::cerr << "Initial Item b not set: Item " << discreteItem->name()
+              << " has correct relevant enum values : ";
+  }
+
+  for (const auto& estring : relevantEnums)
+  {
+    std::cerr << estring << " ";
+  }
+  std::cerr << std::endl;
+
+  // now lets set b to 5 which should make a relevant as well as both of the discreteItem's enums
   auto itemB = att->findAs<DoubleItem>("b");
   itemB->setValue(5.0);
 
@@ -131,6 +218,25 @@ int main()
               << " is NOT Relevant\n";
     status = -1;
   }
+
+  relevantEnums = discreteItem->relevantEnums(false, false, 0);
+  if (relevantEnums.size() != 2)
+  {
+    std::cerr << "ERROR: Item b set to 5: Item " << discreteItem->name()
+              << " has incorrect relevant enums values : ";
+    status = -1;
+  }
+  else
+  {
+    std::cerr << "Initial Item b set to 5: Item " << discreteItem->name()
+              << " has correct relevant enum values : ";
+  }
+
+  for (const auto& estring : relevantEnums)
+  {
+    std::cerr << estring << " ";
+  }
+  std::cerr << std::endl;
 
   return status;
 }

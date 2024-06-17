@@ -45,6 +45,16 @@ public:
   ValueItemDefinition(const std::string& myname);
   ~ValueItemDefinition() override;
 
+  ///\brief Typedef for custom relevance functions
+  typedef std::function<bool(
+    const Item*,
+    int enumIndex,
+    bool includeCatagories,
+    const std::set<std::string>& testCategories,
+    bool includeReadAccess,
+    unsigned int readAccessLevel)>
+    EnumRelevanceFunc;
+
   const std::string& units() const { return m_units; }
   virtual bool setUnits(const std::string& newUnits);
 
@@ -194,9 +204,27 @@ public:
   bool addConditionalItem(const std::string& enumValue, const std::string& itemName);
   std::vector<std::string> conditionalItems(const std::string& enumValue) const;
 
+  ///@{
+  ///\brief Set and Get Methods for specifying a custom isEnumRelevant function
+  void setCustomEnumIsRelevant(EnumRelevanceFunc func) { m_customEnumIsRelevant = func; }
+  EnumRelevanceFunc customEnumIsRelevant() const { return m_customEnumIsRelevant; }
+  ///@}
+
   ///\brief Return the enum strings that pass a set of categories and/or specified advance read access level.
   std::vector<std::string> relevantEnums(
     bool includeCategories,
+    const std::set<std::string>& testCategories,
+    bool includeReadAccess,
+    unsigned int readAccessLevel) const;
+
+  ///\brief Default isRelevant method that returns true if an Enum of the Definition is relevant.
+  ///
+  /// If includeCatagories is true and the Enum does not pass it's category checks, then return false,
+  /// If includeReadAccess is true, and the Enum's advanceLevel is > readAccessLevel then return false.
+  /// Else return true.
+  virtual bool defaultIsEnumRelevant(
+    int enumIndex,
+    bool includeCatagories,
     const std::set<std::string>& testCategories,
     bool includeReadAccess,
     unsigned int readAccessLevel) const;
@@ -229,6 +257,7 @@ protected:
   std::map<std::string, std::vector<std::string>> m_valueToItemAssociations;
   std::map<std::string, smtk::attribute::Categories::Expression> m_valueToCategoryAssociations;
   std::map<std::string, unsigned int> m_valueToAdvanceLevelAssociations;
+  EnumRelevanceFunc m_customEnumIsRelevant = nullptr;
 
 private:
 };

@@ -487,6 +487,33 @@ bool ValueItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
   return true;
 }
 
+bool ValueItemDefinition::defaultIsEnumRelevant(
+  int enumIndex,
+  bool includeCategories,
+  const std::set<std::string>& testCategories,
+  bool includeReadAccess,
+  unsigned int readAccessLevel) const
+{
+  if (includeCategories)
+  {
+    const auto& catExp = this->enumCategories(m_discreteValueEnums[enumIndex]);
+    if (catExp.allPass() || catExp.passes(testCategories))
+    {
+      if (
+        (!includeReadAccess) ||
+        (this->enumAdvanceLevel(m_discreteValueEnums[enumIndex]) <= readAccessLevel))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  return (
+    (!includeReadAccess) ||
+    (this->enumAdvanceLevel(m_discreteValueEnums[enumIndex]) <= readAccessLevel));
+}
+
 std::vector<std::string> ValueItemDefinition::relevantEnums(
   bool includeCategories,
   const std::set<std::string>& testCategories,
@@ -499,30 +526,12 @@ std::vector<std::string> ValueItemDefinition::relevantEnums(
     return m_discreteValueEnums;
   }
 
-  if (includeCategories)
+  for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
   {
-    for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
+    if (this->defaultIsEnumRelevant(
+          i, includeCategories, testCategories, includeReadAccess, readAccessLevel))
     {
-      const auto& catExp = this->enumCategories(m_discreteValueEnums[i]);
-      if (catExp.allPass() || catExp.passes(testCategories))
-      {
-        if (
-          (!includeReadAccess) ||
-          (this->enumAdvanceLevel(m_discreteValueEnums[i]) <= readAccessLevel))
-        {
-          result.push_back(m_discreteValueEnums[i]);
-        }
-      }
-    }
-  }
-  else
-  {
-    for (std::size_t i = 0; i < m_discreteValueEnums.size(); i++)
-    {
-      if (this->enumAdvanceLevel(m_discreteValueEnums[i]) <= readAccessLevel)
-      {
-        result.push_back(m_discreteValueEnums[i]);
-      }
+      result.push_back(m_discreteValueEnums[i]);
     }
   }
   return result;

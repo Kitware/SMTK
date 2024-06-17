@@ -32,6 +32,8 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
     .def("name", &smtk::attribute::Item::name)
     .def("label", &smtk::attribute::Item::label)
     .def("type", &smtk::attribute::Item::type)
+    .def("customIsRelevant", &smtk::attribute::Item::customIsRelevant)
+    .def("setCustomIsRelevant", &smtk::attribute::Item::setCustomIsRelevant, py::arg("customIsRelevantFunc"))
     .def("isRelevant", &smtk::attribute::Item::isRelevant, py::arg("includeCategoryChecking") = true, py::arg("includeReadAccess") = true, py::arg("readAccessLevel") = 0)
     .def("defaultIsRelevant", &smtk::attribute::Item::defaultIsRelevant, py::arg("includeCategoryChecking"), py::arg("includeReadAccess"), py::arg("readAccessLevel"))
     .def("isValid", (bool (smtk::attribute::Item::*)(bool) const) &smtk::attribute::Item::isValid, py::arg("useActiveCategories") = true)
