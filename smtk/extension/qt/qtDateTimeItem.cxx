@@ -525,8 +525,8 @@ void qtDateTimeItem::updateUI()
 
   this->loadInputValues();
 
-  // we need this layout so that for items with conditionan children,
-  // the label will line up at Top-left against the chilren's widgets.
+  // we need this layout so that for items with conditional children,
+  // the label will line up at Top-left against the children's widgets.
   //  QVBoxLayout* vTLlayout = new QVBoxLayout;
   //  vTLlayout->setObjectName("vTLlayout");
   //  vTLlayout->setMargin(0);
