@@ -200,7 +200,15 @@ std::pair<std::string, std::string> qtReferenceItem::selectionIconPaths() const
 
 void qtReferenceItem::updateItemData()
 {
-  this->updateUI();
+  smtk::attribute::ItemPtr itm = m_itemInfo.item();
+  if (itm->isOptional())
+  {
+    this->setOutputOptional(itm->localEnabledState() ? 1 : 0);
+  }
+
+  this->synchronize(UpdateSource::GUI_FROM_ITEM);
+
+  this->updateSynopsisLabels();
   this->Superclass::updateItemData();
 }
 
@@ -423,7 +431,7 @@ void qtReferenceItem::createWidget()
   }
 
   this->clearWidgets();
-  this->updateItemData();
+  this->updateUI();
 }
 
 void qtReferenceItem::clearWidgets()
@@ -646,12 +654,6 @@ void qtReferenceItem::updateUI()
   {
     m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
   }
-  if (itm->isOptional())
-  {
-    this->setOutputOptional(itm->localEnabledState() ? 1 : 0);
-  }
-  this->synchronize(UpdateSource::GUI_FROM_ITEM);
-
   // Add a vertical spacer the same height as buttons that are sometimes hidden.
   m_widget->show();
   entryLayout->addItem(new QSpacerItem(
@@ -661,7 +663,7 @@ void qtReferenceItem::updateUI()
     QSizePolicy::Fixed));
 
   this->sneakilyHideButtons();
-  this->updateSynopsisLabels();
+  this->updateItemData();
 }
 
 void qtReferenceItem::popupClosing()
