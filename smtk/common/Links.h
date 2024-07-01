@@ -21,6 +21,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/multi_index_container.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <cassert>
 #include <functional>
 #include <limits>
 #include <set>
