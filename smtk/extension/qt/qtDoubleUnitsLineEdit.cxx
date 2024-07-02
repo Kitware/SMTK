@@ -27,6 +27,7 @@
 #include <Qt>
 
 #include "units/Measurement.h"
+#include "units/PreferredUnits.h"
 
 #include <algorithm> // std::sort et al
 #include <sstream>
@@ -166,15 +167,15 @@ qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
   }
 
   // Get units system
-  auto unitsSystem = dItem->definition()->unitsSystem();
-  if (unitsSystem == nullptr)
+  auto unitSystem = dItem->definition()->unitsSystem();
+  if (unitSystem == nullptr)
   {
     return nullptr;
   }
 
   // Try parsing the unit string
   bool parsedOK = false;
-  auto unit = unitsSystem->unit(dUnits, &parsedOK);
+  auto unit = unitSystem->unit(dUnits, &parsedOK);
   if (!parsedOK)
   {
     qWarning() << "Ignoring unrecognized units \"" << dUnits.c_str() << "\""
@@ -301,11 +302,18 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
   auto dItem = m_inputsItem->itemAs<DoubleItem>();
   auto dUnits = dItem->units();
-  auto unitsSystem = dItem->definition()->unitsSystem();
+  auto unitSystem = dItem->definition()->unitsSystem();
 
   // Parsing the Item's unit string
   bool parsedOK = false;
-  auto unit = unitsSystem->unit(dUnits, &parsedOK);
+  auto unit = unitSystem->unit(dUnits, &parsedOK);
+
+  std::shared_ptr<units::PreferredUnits> preferred;
+  auto cit = unitSystem->m_unitContexts.find(unitSystem->m_activeUnitContext);
+  if (cit != unitSystem->m_unitContexts.end())
+  {
+    preferred = cit->second;
+  }
 
   QString text = this->text();
   auto utext = text.toStdString();
@@ -331,20 +339,37 @@ void qtDoubleUnitsLineEdit::onTextEdited()
     }
 
     // Get list of compatible units
-    auto compatibleUnits = unitsSystem->compatibleUnits(unit);
+    auto compatibleUnits = unitSystem->compatibleUnits(unit);
     QStringList unitChoices;
 
-    //  create a list of possible units names
-    for (const auto& unit : compatibleUnits)
+    // Create a list of possible units names:
+    if (preferred)
     {
-      unitChoices.push_back(unit.name().c_str());
+      // We have a context; this provides preferred units as a
+      // developer-ordered list of units, placing dUnits at
+      // position 0 of the suggestions.
+      units::CompatibleUnitOptions opts;
+      opts.m_inputUnitPriority = 0;
+      for (const auto& suggestion : preferred->suggestedUnits(dUnits, opts))
+      {
+        unitChoices.push_back(suggestion.c_str());
+      }
     }
-
-    // Lets remove duplicates and sort the list
-    unitChoices.removeDuplicates();
-    unitChoices.sort();
-    // Now make the Item's units appear at the top
-    unitChoices.push_front(dUnits.c_str());
+    else
+    {
+      // We don't have a unit-system context; just
+      // find compatible units. This may present
+      // duplicates and is definitely not sorted.
+      for (const auto& unit : compatibleUnits)
+      {
+        unitChoices.push_back(unit.name().c_str());
+      }
+      // Lets remove duplicates and sort the list
+      unitChoices.removeDuplicates();
+      unitChoices.sort();
+      // Now make the Item's units appear at the top
+      unitChoices.push_front(dUnits.c_str());
+    }
 
     // Generate the completer strings
     for (const QString& unit : unitChoices)
@@ -363,7 +388,7 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
   // Update background based on current input string
   parsedOK = false;
-  auto measurement = unitsSystem->measurement(utext, &parsedOK);
+  auto measurement = unitSystem->measurement(utext, &parsedOK);
   if (!parsedOK)
   {
     QColor invalidColor = m_inputsItem->uiManager()->correctedTempInvalidValueColor();
@@ -396,7 +421,7 @@ void qtDoubleUnitsLineEdit::onTextEdited()
     }
     else
     {
-      units::Measurement convertedMsmt = unitsSystem->convert(measurement, unit, &converted);
+      units::Measurement convertedMsmt = unitSystem->convert(measurement, unit, &converted);
       if (!converted)
       {
         std::ostringstream ss;
