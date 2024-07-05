@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
   smtk::attribute::Resource& resource(*resptr);
   std::cout << "Resource Created\n";
   // Lets add some analyses
-  auto analyses = resptr->analyses();
+  auto& analyses = resptr->analyses();
   std::set<std::string> cats;
   cats.insert("Flow");
   cats.insert("General");

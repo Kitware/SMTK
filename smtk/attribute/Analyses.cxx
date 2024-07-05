@@ -18,6 +18,8 @@
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
+#include "smtk/io/Logger.h"
+
 using namespace smtk::attribute;
 
 namespace
@@ -147,8 +149,10 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
 
   if (m_required)
   {
-    std::cerr << "Warning: Analysis: " << m_name << " is marked Required but is part of an analysis"
-              << " whose children are Exclusive - The Required property will be ignored!\n";
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Analysis: " << m_name << " is marked Required but is part of an analysis"
+                   << " whose children are Exclusive - The Required property will be ignored!");
   }
   if (m_exclusive)
   {
@@ -171,7 +175,18 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
   }
 }
 
-Analyses::~Analyses()
+Analyses::Analysis& Analyses::Analysis::operator=(const Analyses::Analysis& src)
+{
+  // assign the src information with the exception of name and parent/child information to this
+  this->m_exclusive = src.m_exclusive;
+  this->m_required = src.m_required;
+  this->m_label = src.m_label;
+  this->m_categories = src.m_categories;
+
+  return *this;
+}
+
+void Analyses::clear()
 {
   // Delete all analyses contained
   for (auto it = m_analyses.begin(); it != m_analyses.end(); ++it)
@@ -179,6 +194,11 @@ Analyses::~Analyses()
     delete *it;
   }
   m_analyses.clear();
+}
+
+Analyses::~Analyses()
+{
+  this->clear();
 }
 
 Analyses::Analysis* Analyses::create(const std::string& name)
@@ -319,7 +339,7 @@ void Analyses::getAnalysisItemCategories(
     }
     else
     {
-      std::cerr << "Could not find Analysis: " << item->name() << std::endl;
+      smtkErrorMacro(smtk::io::Logger::instance(), "Could not find Analysis: " << item->name());
     }
   }
 
@@ -343,7 +363,7 @@ void Analyses::getAnalysisItemCategories(
     }
     else
     {
-      std::cerr << "Could not find Analysis: " << sitem->value() << std::endl;
+      smtkErrorMacro(smtk::io::Logger::instance(), "Could not find Analysis: " << sitem->value());
     }
     // Lets check its active children
     int i, n = static_cast<int>(sitem->numberOfActiveChildrenItems());
@@ -383,4 +403,32 @@ std::set<std::string> Analyses::getAnalysisAttributeCategories(ConstAttributePtr
   std::set<std::string> cats;
   this->getAnalysisAttributeCategories(attribute, cats);
   return cats;
+}
+
+Analyses& Analyses::operator=(const Analyses& src)
+{
+  this->clear();
+
+  std::map<const Analyses::Analysis*, Analyses::Analysis*> aMap;
+
+  m_topLevelExclusive = src.m_topLevelExclusive;
+
+  // Create a copy each analysis from the source
+  for (const auto* srcAnal : src.m_analyses)
+  {
+    auto* copyAnal = this->create(srcAnal->name());
+    *copyAnal = *srcAnal;
+    aMap[srcAnal] = copyAnal;
+  }
+
+  // Now iterate again and add the parent information which will also update the children info
+  std::size_t i, n = m_analyses.size();
+  for (i = 0; i < n; i++)
+  {
+    if (src.m_analyses[i]->parent())
+    {
+      this->m_analyses[i]->setParent(aMap[src.m_analyses[i]->parent()]);
+    }
+  }
+  return *this;
 }

@@ -36,6 +36,7 @@ class TestCloneResources(smtk.testing.TestCase):
             smtk.testing.DATA_DIR, 'attribute', 'attribute_collection', 'cloneTest.smtk')
         rr = smtk.read(attFilename)
         self.origAttResource = rr[0]
+        self.origAttResource.setName('attResource')
         # Read in the original markup resource
         markupFilename = os.path.join(
             smtk.testing.DATA_DIR, 'model', '3d', 'smtk', 'coarse-knee.smtk')
@@ -44,12 +45,21 @@ class TestCloneResources(smtk.testing.TestCase):
         # add a resource property to xx to test that it gets copied
         # even when component properties are not.
         self.origMarkupResource.stringProperties().set('foo', 'bar')
+        self.origAttResource.stringProperties().set('foo', 'bar')
+
+        # Let's associate the markup resource to the attribute resource
+        self.origAttResource.associate(self.origMarkupResource)
 
         compset = self.origMarkupResource.filter(
             'smtk::markup::UnstructuredData')
         att = self.origAttResource.findAttribute("Test Attribute")
         refitem = att.associations()
         refitem.setValue(0, compset.pop())
+        # The original attribute did not have any active categories or analyses so let's add some
+        self.origAttResource.setActiveCategories({"A", "B"})
+        self.origAttResource.setActiveCategoriesEnabled(True)
+        analysis = self.origAttResource.analyses().create("foo")
+        analysis.setLocalCategories({"A"})
         print('------- Setup Results --------')
         print('  +++++ Original Attribute Resource ++++++')
         self.printResource(self.origAttResource)
@@ -72,6 +82,15 @@ class TestCloneResources(smtk.testing.TestCase):
             self.printAttInfo(resource)
 
     def printAttInfo(self, resource):
+        # Print the number of resources directly associated with it
+        print('  number of associated resources:',
+              len(resource.associations()))
+        # Print the number of analyses
+        print('  number of analyses:', resource.analyses().size())
+        # print the active categories
+        print('  active categories:', resource.activeCategories())
+        print('  active categories enabled:',
+              resource.activeCategoriesEnabled())
         # Find the test attribute
         att = resource.findAttribute("Test Attribute")
         refitem = att.associations()
@@ -139,6 +158,22 @@ class TestCloneResources(smtk.testing.TestCase):
         self.compareClonedAttResource(clonedAtts, 0)
 
     def compareClonedAttResource(self, attRes, sameMarkup):
+        if attRes.stringProperties().contains('foo'):
+            if attRes.stringProperties().at('foo') != 'bar':
+                raise RuntimeError(
+                    'Copied Attribute Resource do not have a string property foo equal to bar')
+        else:
+            raise RuntimeError(
+                'Copied Attribute Resource do not have a string property foo')
+        if attRes.activeCategoriesEnabled() != self.origAttResource.activeCategoriesEnabled():
+            raise RuntimeError(
+                'Attribute Resources do not have the same active categories enabled option')
+        if attRes.activeCategories() != self.origAttResource.activeCategories():
+            raise RuntimeError(
+                'Attribute Resources do not have the same active categories')
+        if attRes.analyses().size() != self.origAttResource.analyses().size():
+            raise RuntimeError(
+                'Attribute Resources do not have the same number of analyses')
         if attRes.id() == self.origAttResource.id():
             raise RuntimeError('Attribute Resources have same ID')
 
@@ -157,13 +192,29 @@ class TestCloneResources(smtk.testing.TestCase):
         if d1.expression().id() == origD1.expression().id():
             raise RuntimeError('Items d1 do the same expression attribute')
 
+        attResAsso = attRes.associations()
+        origAttResAsso = self.origAttResource.associations()
+        # The copy should have the same number of associates resources as the source
+        if len(attResAsso) != len(origAttResAsso):
+            raise RuntimeError(
+                'Copied Attribute Resources has incorrect number of associated resources')
+
         attAsso = att.associations()
         origAttAsso = origAtt.associations()
+
         if bool(sameMarkup):
+            if len(attResAsso):
+                if not (self.origMarkupResource in attResAsso):
+                    raise RuntimeError(
+                        'Copied Attribute Resource is not associated to the origin MarkUp Resource and should be')
             if attAsso.value(0).id() != origAttAsso.value(0).id():
                 raise RuntimeError(
                     'Attributes are not associated with the same component and should be')
         else:
+            if len(attResAsso):
+                if self.origMarkupResource in attResAsso:
+                    raise RuntimeError(
+                        'Copied Attribute Resource is  associated to the origin MarkUp Resource and not should be')
             if attAsso.value(0).id() == origAttAsso.value(0).id():
                 raise RuntimeError(
                     'Attributes are associated with the same component and should not be')

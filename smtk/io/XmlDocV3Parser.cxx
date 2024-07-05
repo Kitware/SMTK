@@ -793,7 +793,8 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
             surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
           key.first,
           item->attribute()->resource()->id(),
-          rhs1);
+          rhs1,
+          role);
       }
 
       links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
@@ -836,7 +837,8 @@ void XmlDocV3Parser::processReferenceItem(pugi::xml_node& node, ReferenceItemPtr
             surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
           key.first,
           item->attribute()->resource()->id(),
-          rhs1);
+          rhs1,
+          role);
       }
 
       links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
