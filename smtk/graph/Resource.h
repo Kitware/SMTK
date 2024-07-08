@@ -463,6 +463,10 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
     return result;
   }
 
+  // Insert the source of the original into the object mapping
+  // so its properties can be copied if need
+  options.objectMapping()[this->id()] = result.get();
+
   if (this->isNameSet())
   {
     result->setName(this->name());

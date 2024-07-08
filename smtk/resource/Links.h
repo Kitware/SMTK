@@ -15,6 +15,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 
+#include <limits>
+
 namespace smtk
 {
 namespace resource
@@ -34,6 +36,9 @@ public:
   typedef std::pair<smtk::common::UUID, smtk::common::UUID> Key;
   typedef int RoleType;
 
+  /// Special RoleType indicating that the link is invalid
+  static RoleType invalidRoleType() { return std::numeric_limits<Links::RoleType>::lowest(); }
+
   /// Given a resource or component and a role, check if a link of this role type
   /// exists between us and the input object.
   bool isLinkedTo(const ResourcePtr&, const RoleType&) const;
@@ -41,7 +46,7 @@ public:
 
   /// Given a resource or component and a role type, construct a link from
   /// us to the input object and assign the link a random UUID. Return a key
-  /// that uniquely identifies the link if successfull, or return a key
+  /// that uniquely identifies the link if successful, or return a key
   /// comprised of a pair of null UUIDs if the link construction failed.
   Key addLinkTo(const ResourcePtr&, const RoleType&);
   Key addLinkTo(const ComponentPtr&, const RoleType&);

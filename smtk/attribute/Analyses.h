@@ -94,6 +94,9 @@ public:
     void buildAnalysisItem(smtk::attribute::StringItemDefinitionPtr& sitem) const;
     /// @}
 
+    ///\brief copy all but the parent children information of an existing analysis
+    Analysis& operator=(const Analysis& src);
+
   protected:
     Analysis(const std::string& name)
       : m_name(name)
@@ -112,6 +115,10 @@ public:
 
   /// \brief Basic constructor - Note that by default top level Analyses are not Exclusive
   Analyses() = default;
+
+  ///\brief Destroys the Instance and deletes all Analysis Instances contained within.
+  ~Analyses();
+
   /// \brief Create a new Analysis and return it.
   /// Note that the name must be unique with respects to the other Analysis Instances defined within
   /// this Instance.  If the name is not unique no Analysis is created and nullptr is returned.
@@ -129,16 +136,21 @@ public:
   /// \brief Return the number of Analysis Instances
   std::size_t size() const { return m_analyses.size(); }
 
+  ///\brief Assign the contents of an Analyses object to this one
+  ///
+  /// This will copy all of the analysis objects contained in src.
+  Analyses& operator=(const Analyses& src);
+
   /// @{
   /// \brief Methods to set and retrieve the exclusivity property pertaining the top level Analysis Instances.
   ///
   /// This property behaves similarly to an Analysis's Exclusive property.  If true, then only one of the top level
-  /// Analysis Instances can be choosen.  Else any combination of top level analysis instances are allowed.
+  /// Analysis instances can be chosen.  Else any combination of top level analysis instances are allowed.
   void setTopLevelExclusive(bool mode) { m_topLevelExclusive = mode; }
   bool areTopLevelExclusive() const { return m_topLevelExclusive; }
   /// @}
 
-  /// \brief Convience method that set's an Analysis' Parent by using their names.
+  /// \brief Convenience method that set's an Analysis' Parent by using their names.
   ///
   /// If neither name corresponds to an existing Analysis then the method returns false.
   bool setAnalysisParent(const std::string& analysis, const std::string& parent);
@@ -156,8 +168,8 @@ public:
   std::set<std::string> getAnalysisAttributeCategories(
     smtk::attribute::ConstAttributePtr attribute);
 
-  /// \brief Destroys the Instance and deletes all Analysis Instances contained within.
-  ~Analyses();
+  /// \brief Deletes all Analysis Instances contained within.
+  void clear();
 
 protected:
   /// \brief Calculate the set of categories associated with an Analysis Attribute's Item.

@@ -40,7 +40,7 @@ inline PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute
     .def("addStyle", &smtk::attribute::Resource::addStyle, py::arg("defTypeName"), py::arg("style"))
     .def("advanceLevelColor", &smtk::attribute::Resource::advanceLevelColor, py::arg("level"))
     .def("advanceLevels", &smtk::attribute::Resource::advanceLevels)
-    .def("analyses", &smtk::attribute::Resource::analyses)
+    .def("analyses", &smtk::attribute::Resource::analyses, py::return_value_policy::reference_internal)
     .def("associations", &smtk::attribute::Resource::associations)
     .def("associate", &smtk::attribute::Resource::associate)
     .def("attributes", (std::set<smtk::attribute::AttributePtr> (smtk::attribute::Resource::*)(const smtk::resource::ConstPersistentObjectPtr&) const) &smtk::attribute::Resource::attributes, py::arg("object"))

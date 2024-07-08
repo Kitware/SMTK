@@ -316,7 +316,9 @@ void Resource::copyLinks(const std::shared_ptr<const Resource>& rsrc, const Copy
   {
     if (
       options.shouldExcludeLinksInRole(sourceLink.role) || options.shouldOmitId(sourceLink.left) ||
-      options.shouldOmitId(sourceLink.right) || options.shouldOmitId(sourceLink.id))
+      options.shouldOmitId(sourceLink.right) || options.shouldOmitId(sourceLink.id) ||
+      // Ignore links with invalid roles
+      sourceLink.role == Links::invalidRoleType())
     {
       continue;
     }
@@ -359,7 +361,6 @@ void Resource::copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyO
   for (const auto& sourceEntry : sourceMap)
   {
     auto it = targetMap.find(sourceEntry.first);
-    std::cout << "Copy " << sourceEntry.first << " data\n";
     if (it == targetMap.end())
     {
       smtkErrorMacro(options.log(), "No matching \"" << sourceEntry.first << "\" property data.");
@@ -386,7 +387,7 @@ void Resource::copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyO
       }
 
       smtk::common::UUID targetId;
-      if (auto* targetObj = options.targetObjectFromSourceId<Component>(sourceId))
+      if (auto* targetObj = options.targetObjectFromSourceId<PersistentObject>(sourceId))
       {
         targetId = targetObj->id();
       }

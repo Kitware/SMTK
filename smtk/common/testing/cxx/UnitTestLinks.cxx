@@ -17,6 +17,7 @@
 
 namespace
 {
+
 struct MyBase
 {
   MyBase() = default;
@@ -51,7 +52,7 @@ void UnitTest()
   smtkTest(links.size() == 1, "Should have 1 link.");
 
   // Try to insert another link with the same id (should fail).
-  inserted = links.insert(0, 2, 3);
+  inserted = links.insert(0, 2, 3, -100);
   smtkTest(inserted.second == false, "Should not be able to insert a link with the same id.");
 
   // Add a link that reuses one of the original values
@@ -143,7 +144,7 @@ void UnitTestLinksEraseAll()
   // return true.
   {
     MyLinks links;
-    links.insert(MyBase("myBase1"), 0, 0, 0);
+    links.insert(MyBase("myBase1"), 0, 0, 0, -100);
     smtkTest(links.erase_all<MyLinks::Right>(0) == true, "");
     smtkTest(links.empty(), "");
   }
@@ -152,7 +153,7 @@ void UnitTestLinksEraseAll()
   // should return false.
   {
     MyLinks links;
-    links.insert(MyBase("myBase1"), 1, 1, 1);
+    links.insert(MyBase("myBase1"), 1, 1, 1, -100);
     smtkTest(links.erase_all<MyLinks::Right>(0) == false, "");
     smtkTest(links.size() == 1, "");
   }
@@ -161,8 +162,8 @@ void UnitTestLinksEraseAll()
   // Links should return false.
   {
     MyLinks links;
-    links.insert(MyBase("myBase1"), 0, 0, 0);
-    links.insert(MyBase("myBase2"), 1, 1, 1);
+    links.insert(MyBase("myBase1"), 0, 0, 0, -100);
+    links.insert(MyBase("myBase2"), 1, 1, 1, -100);
     smtkTest(links.erase_all<MyLinks::Right>(2) == false, "");
     smtkTest(links.size() == 2, "");
   }
@@ -171,8 +172,8 @@ void UnitTestLinksEraseAll()
   // Links should return true.
   {
     MyLinks links;
-    links.insert(MyBase("myBase1"), 0, 0, 0);
-    links.insert(MyBase("myBase2"), 1, 1, 1);
+    links.insert(MyBase("myBase1"), 0, 0, 0, -100);
+    links.insert(MyBase("myBase2"), 1, 1, 1, -100);
     smtkTest(links.erase_all<MyLinks::Right>(1) == true, "");
     smtkTest(links.size() == 1, "");
   }
@@ -181,9 +182,9 @@ void UnitTestLinksEraseAll()
   // entries present in Links should return true.
   {
     MyLinks links;
-    links.insert(MyBase("myBase1"), 0, 0, 0);
-    links.insert(MyBase("myBase2"), 1, 1, 1);
-    links.insert(MyBase("myBase2"), 1, 1, 1);
+    links.insert(MyBase("myBase1"), 0, 0, 0, -100);
+    links.insert(MyBase("myBase2"), 1, 1, 1, -100);
+    links.insert(MyBase("myBase2"), 1, 1, 1, -100);
     smtkTest(links.erase_all<MyLinks::Right>(1) == true, "");
     smtkTest(links.size() == 1, "");
   }
@@ -227,7 +228,7 @@ void MoveOnlyTest()
   smtkTest(links.size() == 1, "Should have 1 link.");
 
   // Try to insert another link with the same id (should fail).
-  inserted = links.insert(MyMoveOnlyBase("m"), 0, 2, 3);
+  inserted = links.insert(MyMoveOnlyBase("m"), 0, 2, 3, -100);
   smtkTest(inserted.second == false, "Should not be able to insert a link with the same id.");
 
   // Add a link that reuses one of the original values
