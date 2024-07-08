@@ -12,6 +12,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
 
+#include <QApplication>
+#include <QThread>
+
 static qtSMTKCallObserversOnMainThreadBehavior* g_instance = nullptr;
 
 qtSMTKCallObserversOnMainThreadBehavior::qtSMTKCallObserversOnMainThreadBehavior(QObject* parent)
@@ -93,19 +96,27 @@ void qtSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   if (operationManager)
   {
     operationManager->observers().overrideWith(
-      [this](
+      [this, operationManager](
         const smtk::operation::Operation& oper,
         smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
-        auto id = smtk::common::UUID::random();
-        m_activeOperationMutex.lock();
-        m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
-        m_activeOperationMutex.unlock();
-        Q_EMIT operationEvent(
-          QString::fromStdString(id.toString()),
-          static_cast<int>(event),
-          result ? QString::fromStdString(result->name()) : QString(),
-          QPrivateSignal());
+        if (QThread::currentThread() != qApp->thread())
+        {
+          auto id = smtk::common::UUID::random();
+          m_activeOperationMutex.lock();
+          m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
+          m_activeOperationMutex.unlock();
+          Q_EMIT operationEvent(
+            QString::fromStdString(id.toString()),
+            static_cast<int>(event),
+            result ? QString::fromStdString(result->name()) : QString(),
+            QPrivateSignal());
+        }
+        else
+        {
+          // Directly invoke the observers.
+          operationManager->observers().callObserversDirectly(oper, event, result);
+        }
         return 0;
       });
 
@@ -132,7 +143,8 @@ void qtSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
         }
         m_activeOperations.erase(id);
         m_activeOperationMutex.unlock();
-      });
+      },
+      Qt::BlockingQueuedConnection);
   }
 
   // Override the selection Observers' call method to emit a private signal

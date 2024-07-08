@@ -17,6 +17,9 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include <QApplication>
+#include <QThread>
+
 static pqSMTKCallObserversOnMainThreadBehavior* g_instance = nullptr;
 
 pqSMTKCallObserversOnMainThreadBehavior::pqSMTKCallObserversOnMainThreadBehavior(QObject* parent)
@@ -104,19 +107,27 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Override the operation Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkOperationManager()->observers().overrideWith(
-    [this](
+    [this, wrapper](
       const smtk::operation::Operation& oper,
       smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
-      auto id = smtk::common::UUID::random();
-      m_activeOperationMutex.lock();
-      m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
-      m_activeOperationMutex.unlock();
-      Q_EMIT operationEvent(
-        QString::fromStdString(id.toString()),
-        static_cast<int>(event),
-        result ? QString::fromStdString(result->name()) : QString(),
-        QPrivateSignal());
+      if (QThread::currentThread() != qApp->thread())
+      {
+        auto id = smtk::common::UUID::random();
+        m_activeOperationMutex.lock();
+        m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
+        m_activeOperationMutex.unlock();
+        Q_EMIT operationEvent(
+          QString::fromStdString(id.toString()),
+          static_cast<int>(event),
+          result ? QString::fromStdString(result->name()) : QString(),
+          QPrivateSignal());
+      }
+      else
+      {
+        // Directly invoke the observers.
+        wrapper->smtkOperationManager()->observers().callObserversDirectly(oper, event, result);
+      }
       return 0;
     });
 
@@ -143,7 +154,8 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       }
       m_activeOperations.erase(id);
       m_activeOperationMutex.unlock();
-    });
+    },
+    Qt::BlockingQueuedConnection);
 
   // Override the selection Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
