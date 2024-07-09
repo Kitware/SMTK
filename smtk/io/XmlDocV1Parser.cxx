@@ -2011,7 +2011,7 @@ smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node& attNode)
   return smtk::common::UUID::null();
 }
 
-void XmlDocV1Parser::processAttribute(xml_node& attNode)
+smtk::attribute::AttributePtr XmlDocV1Parser::processAttribute(xml_node& attNode)
 {
   xml_node itemsNode, assocsNode, iNode, node;
   std::string name, type;
@@ -2025,14 +2025,14 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
   if (!xatt)
   {
     smtkErrorMacro(m_logger, "Invalid Attribute! - Missing XML Attribute Name");
-    return;
+    return smtk::attribute::AttributePtr();
   }
   name = xatt.value();
   xatt = attNode.attribute("Type");
   if (!xatt)
   {
     smtkErrorMacro(m_logger, "Invalid Attribute: " << name << "  - Missing XML Attribute Type");
-    return;
+    return smtk::attribute::AttributePtr();
   }
   type = xatt.value();
 
@@ -2044,7 +2044,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
     smtkErrorMacro(
       m_logger,
       "Attribute: " << name << " of Type: " << type << "  - can not find attribute definition");
-    return;
+    return smtk::attribute::AttributePtr();
   }
 
   // Is the definition abstract?
@@ -2053,7 +2053,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
     smtkErrorMacro(
       m_logger,
       "Attribute: " << name << " of Type: " << type << "  - is based on an abstract definition");
-    return;
+    return smtk::attribute::AttributePtr();
   }
 
   // Do we have a valid uuid?
@@ -2072,7 +2072,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
       m_logger,
       "Attribute: " << name << " of Type: " << type
                     << "  - could not be created - is the name in use");
-    return;
+    return smtk::attribute::AttributePtr();
   }
 
   // Set the attribute include index
@@ -2185,6 +2185,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
       }
     }
   }
+  return att;
 }
 
 void XmlDocV1Parser::processItem(xml_node& node, ItemPtr item)

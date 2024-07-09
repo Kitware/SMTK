@@ -55,8 +55,14 @@ public:
     unsigned int readAccessLevel)>
     EnumRelevanceFunc;
 
+  /// @{
+  ///\brief Set/Get the units string associated with the definition
+  ///
+  /// If the units string is supported by the units system assigned to
+  /// the definition, then unit conversion will be supported.
   const std::string& units() const { return m_units; }
   virtual bool setUnits(const std::string& newUnits);
+  /// @}
 
   ///\brief Returns true if units and a units system have been specified and that the
   /// specified units are supported by the units system

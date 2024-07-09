@@ -42,5 +42,17 @@ unsigned int XmlV8StringWriter::fileVersion() const
   return 8;
 }
 
+void XmlV8StringWriter::processDefinitionInternal(
+  pugi::xml_node& definition,
+  smtk::attribute::DefinitionPtr def)
+{
+  XmlV7StringWriter::processDefinitionInternal(definition, def);
+
+  if (!def->units().empty())
+  {
+    definition.append_attribute("Units").set_value(def->units().c_str());
+  }
+}
+
 } // namespace io
 } // namespace smtk

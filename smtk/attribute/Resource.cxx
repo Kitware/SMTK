@@ -789,6 +789,7 @@ bool Resource::copyDefinitionImpl(
   newDef->setLabel(sourceDef->label());
   newDef->setVersion(sourceDef->version());
   newDef->setIsAbstract(sourceDef->isAbstract());
+  newDef->setUnits(sourceDef->units());
   if (sourceDef->hasLocalAdvanceLevelInfo(0))
   {
     newDef->setLocalAdvanceLevel(0, sourceDef->localAdvanceLevel(0));

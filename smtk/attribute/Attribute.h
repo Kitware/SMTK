@@ -402,6 +402,30 @@ public:
   // registered with an Evaluator, else returns nullptr.
   std::unique_ptr<smtk::attribute::Evaluator> createEvaluator() const;
 
+  /// @{
+  ///\brief Set/Get the units string associated with the attribute
+  ///
+  /// This means that the information that the attributes represents
+  /// conceptually has units but unlike attribute Items, does not have a numerical value
+  /// associated with it.  For example an attribute may be used to indicate that a numerical
+  /// field being output by a simulation represents a temperature whose units should be in Kelvin.
+  ///
+  ///\brief Return the units associated to the attribute
+  ///
+  /// Returns the units that have been explicitly on the attribute, else it will return those
+  /// set on its definition
+  const std::string& units() const;
+  ///\brief Return the units explicitly set on the attribute
+  const std::string& localUnits() const { return m_localUnits; }
+  ///\brief Explicitly sets the units on the attribute
+  ///
+  /// This will fail and return false under the following circumstances:
+  /// 1. There are no units associated with its definition and the newUnits string is not empty
+  /// 2. There is no units system associated with its definition and newUnits is not the same as those on the definition
+  /// 3. There is no way to convert between the units associated with its definition and newUnits
+  bool setLocalUnits(const std::string& newUnits);
+  /// @}
+
   class GuardedLinks
   {
   public:
@@ -467,6 +491,7 @@ protected:
   std::size_t m_includeIndex;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
+  std::string m_localUnits;
 };
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const

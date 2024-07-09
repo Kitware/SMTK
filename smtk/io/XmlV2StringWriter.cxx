@@ -1119,6 +1119,11 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
   }
   node.append_attribute("ID").set_value(att->id().toString().c_str());
 
+  if (!att->localUnits().empty())
+  {
+    node.append_attribute("Units").set_value(att->localUnits().c_str());
+  }
+
   // Are we saving attribute association information?
   if (m_includeAttributeAssociations)
   {

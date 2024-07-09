@@ -33,11 +33,11 @@ public:
     pugi::xml_node& rootNode,
     std::map<std::string, std::map<std::string, smtk::io::TemplateInfo>>& globalTemplateMap)
     override;
-  void processAttribute(pugi::xml_node& attNode) override;
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
 
 protected:
+  smtk::attribute::AttributePtr processAttribute(pugi::xml_node& attNode) override;
   void processHints(pugi::xml_node& root) override;
 };
 } // namespace io

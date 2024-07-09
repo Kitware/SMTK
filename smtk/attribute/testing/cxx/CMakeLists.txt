@@ -83,6 +83,7 @@ set(unit_tests
   unitAttributeAssociationConstraints.cxx
   unitAttributeBasics.cxx
   unitAttributeExclusiveAnalysis.cxx
+  unitAttributeUnits.cxx
   unitReferenceItemChildrenTest.cxx
   unitCategories.cxx
   unitComponentItem.cxx

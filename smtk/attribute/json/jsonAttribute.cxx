@@ -74,6 +74,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
     j["AdvanceWriteLevel"] = att->localAdvanceLevel(1);
   }
 
+  if (!att->localUnits().empty())
+  {
+    j["Units"] = att->localUnits();
+  }
+
   // Process its Items
   int i, n = static_cast<int>(att->numberOfItems());
   if (n)
@@ -131,6 +136,12 @@ SMTKCORE_EXPORT void from_json(
   if (result != j.end())
   {
     att->setLocalAdvanceLevel(1, *result);
+  }
+
+  result = j.find("Units");
+  if (result != j.end())
+  {
+    att->setLocalUnits(*result);
   }
 
   // Process items
