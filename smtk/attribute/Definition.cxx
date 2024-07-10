@@ -672,11 +672,11 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 void Definition::setItemDefinitionUnitsSystem(
   const smtk::attribute::ItemDefinitionPtr& itemDef) const
 {
-  // Get the units system of the attribute resource
+  const auto& defUnitsSystem = this->unitsSystem();
   auto attRes = this->resource();
-  if (attRes)
+  if (defUnitsSystem)
   {
-    itemDef->setUnitsSystem(attRes->unitsSystem());
+    itemDef->setUnitsSystem(defUnitsSystem);
   }
 }
 
@@ -884,4 +884,21 @@ void Definition::applyAdvanceLevels(
   {
     def->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);
   }
+}
+
+const std::shared_ptr<units::System>& Definition::unitsSystem() const
+{
+  static std::shared_ptr<units::System> nullUnitsSystem;
+  auto attRes = this->resource();
+  if (attRes)
+  {
+    return attRes->unitsSystem();
+  }
+  return nullUnitsSystem;
+}
+
+bool Definition::setUnits(const std::string& newUnits)
+{
+  m_units = newUnits;
+  return true;
 }

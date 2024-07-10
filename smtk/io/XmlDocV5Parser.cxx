@@ -147,25 +147,24 @@ void XmlDocV5Parser::process(
   }
 }
 
-void XmlDocV5Parser::processAttribute(pugi::xml_node& attNode)
+smtk::attribute::AttributePtr XmlDocV5Parser::processAttribute(pugi::xml_node& attNode)
 {
-  XmlDocV4Parser::processAttribute(attNode);
+  auto att = XmlDocV4Parser::processAttribute(attNode);
 
-  xml_node propertiesNode = attNode.child("Properties");
-  if (propertiesNode)
+  if (att)
   {
-    xml_attribute xatt = attNode.attribute("Name");
-    if (!xatt)
+    xml_node propertiesNode = attNode.child("Properties");
+    if (propertiesNode)
     {
-      return;
-    }
-    std::string name = xatt.value();
-    auto att = m_resource->findAttribute(name);
-    if (att)
-    {
-      processProperties(att, propertiesNode, m_logger);
+      xml_attribute xatt = attNode.attribute("Name");
+      if (xatt)
+      {
+        std::string name = xatt.value();
+        processProperties(att, propertiesNode, m_logger);
+      }
     }
   }
+  return att;
 }
 
 bool XmlDocV5Parser::canParse(pugi::xml_document& doc)

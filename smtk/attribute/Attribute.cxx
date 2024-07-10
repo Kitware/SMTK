@@ -37,6 +37,9 @@
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
 
+#include "units/Converter.h"
+#include "units/System.h"
+
 #include <cassert>
 #include <functional>
 #include <iostream>
@@ -1094,6 +1097,7 @@ bool Attribute::assign(
   }
   this->setAppliesToBoundaryNodes(sourceAtt->appliesToBoundaryNodes());
   this->setAppliesToInteriorNodes(sourceAtt->appliesToInteriorNodes());
+  this->setLocalUnits(sourceAtt->localUnits());
   // Update items
   for (std::size_t i = 0; i < sourceAtt->numberOfItems(); ++i)
   {
@@ -1180,4 +1184,58 @@ bool Attribute::assign(
   return m_associatedObjects->assign(sourceAtt->m_associatedObjects, assocOptions, logger);
 
   // TODO what about m_userData and Properties?
+}
+
+const std::string& Attribute::units() const
+{
+  if (!(m_localUnits.empty() && m_definition))
+  {
+    return m_localUnits;
+  }
+
+  return m_definition->units();
+}
+
+bool Attribute::setLocalUnits(const std::string& newUnits)
+{
+  const std::string& currentUnits = this->units();
+  if (newUnits == currentUnits)
+  {
+    return true;
+  }
+
+  if (currentUnits.empty() || !m_definition)
+  {
+    return false;
+  }
+
+  const auto& unitSys = m_definition->unitsSystem();
+  // Can't determine if the units are compatible w/o units system
+  if (!unitSys)
+  {
+    return false;
+  }
+
+  // Can we convert from the current units to the proposed new units?
+  bool unitsSupported;
+  auto cUnits = unitSys->unit(currentUnits, &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the current units are not supported by the units system
+    return false;
+  }
+  auto nUnits = unitSys->unit(newUnits, &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the new units are not supported by the units system
+    return false;
+  }
+
+  if (unitSys->convert(cUnits, nUnits))
+  {
+    m_localUnits = newUnits;
+    return true;
+  }
+  // No known conversion
+  return false;
 }

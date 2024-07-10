@@ -150,3 +150,27 @@ void XmlDocV8Parser::processDefCategoryExpressionNode(xml_node& node, Definition
   this->processCategoryExpressionNode(node, def->localCategories(), inheritanceMode);
   def->setCategoryInheritanceMode(inheritanceMode);
 }
+
+void XmlDocV8Parser::processDefinitionAtts(xml_node& defNode, smtk::attribute::DefinitionPtr& def)
+{
+  pugi::xml_attribute xatt = defNode.attribute("Units");
+  if (xatt)
+  {
+    def->setUnits(xatt.value());
+  }
+
+  this->XmlDocV7Parser::processDefinitionAtts(defNode, def);
+}
+
+smtk::attribute::AttributePtr XmlDocV8Parser::processAttribute(pugi::xml_node& attNode)
+{
+  auto att = XmlDocV7Parser::processAttribute(attNode);
+
+  xml_attribute xatt = attNode.attribute("Units");
+  if (att && xatt)
+  {
+    att->setLocalUnits(xatt.value());
+  }
+
+  return att;
+}

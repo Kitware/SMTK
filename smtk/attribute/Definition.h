@@ -426,6 +426,20 @@ public:
   bool ignoreCategories() const { return m_ignoreCategories; }
   void setIgnoreCategories(bool val) { m_ignoreCategories = val; }
 
+  /// @{
+  ///\brief Set/Get the units string associated with the definition
+  ///
+  /// This means that the information that the definition's attributes represents
+  /// conceptually has units but unlike attribute Items, does not have a numerical value
+  /// associated with it.  For example an attribute may be used to indicate that a numerical
+  /// field being output by a simulation represents a temperature whose units should be in Kelvin
+  const std::string& units() const { return m_units; }
+  bool setUnits(const std::string& newUnits);
+  /// @}
+
+  /// \brief Gets the system of units used by this definition.
+  const std::shared_ptr<units::System>& unitsSystem() const;
+
 protected:
   friend class smtk::attribute::Resource;
   /// AttributeDefinitions can only be created by an attribute resource
@@ -490,6 +504,7 @@ protected:
   Tags m_tags;
   std::size_t m_includeIndex;
   Categories::CombinationMode m_combinationMode;
+  std::string m_units;
 
 private:
   /// These colors are returned for base definitions w/o set colors

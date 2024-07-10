@@ -36,6 +36,8 @@ protected:
   // Three virtual methods for writing contents
   std::string className() const override;
   unsigned int fileVersion() const override;
+  void processDefinitionInternal(pugi::xml_node& definition, smtk::attribute::DefinitionPtr def)
+    override;
 
 private:
 };

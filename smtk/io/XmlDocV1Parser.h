@@ -134,7 +134,7 @@ protected:
     smtk::attribute::DefinitionPtr& def);
 
   virtual void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def);
-  virtual void processAttribute(pugi::xml_node& attNode);
+  virtual smtk::attribute::AttributePtr processAttribute(pugi::xml_node& attNode);
   virtual void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
 
   void addDefaultCategoryIfNeeded(const smtk::attribute::ItemDefinitionPtr& idef);

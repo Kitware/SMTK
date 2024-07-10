@@ -32,10 +32,12 @@ public:
   static bool canParse(pugi::xml_document& doc);
 
 protected:
+  smtk::attribute::AttributePtr processAttribute(pugi::xml_node& attNode) override;
   void processCategoryExpressionNode(
     pugi::xml_node& node,
     attribute::Categories::Expression& catExp,
     attribute::Categories::CombinationMode& inheritanceMode);
+  void processDefinitionAtts(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def) override;
   void processItemDefChildNode(pugi::xml_node& node, const smtk::attribute::ItemDefinitionPtr& idef)
     override;
   void processItemDefCategoryExpressionNode(
