@@ -1280,16 +1280,17 @@ bool Resource::copyInitialize(
     // Construct options for copying attributes but not their contents.
     smtk::attribute::CopyAssignmentOptions attOptions;
 
-    attOptions.copyOptions.setCopyUUID(false);
-    attOptions.copyOptions.setPerformAssignment(false);
-    attOptions.copyOptions.setCopyDefinition(
-      false); // These should already be present from clone().
-
     if (options.suboptions().contains<smtk::attribute::CopyAssignmentOptions>())
     {
       // Our caller is providing an override.
       attOptions = options.suboptions().get<smtk::attribute::CopyAssignmentOptions>();
     }
+    // Since this method only copies the structure of the resource and not the attributes'
+    // items' value and the fact that the definition information should have already been
+    // copied in the clone method - these options should always be off.
+    attOptions.copyOptions.setCopyUUID(false);
+    attOptions.copyOptions.setPerformAssignment(false);
+    attOptions.copyOptions.setCopyDefinition(false);
 
     // Copy all the attributes.
     source->attributes(allAttributes);
@@ -1328,27 +1329,28 @@ bool Resource::copyFinalize(
   }
 
   smtk::attribute::CopyAssignmentOptions attOptions;
+  if (options.suboptions().contains<smtk::attribute::CopyAssignmentOptions>())
+  {
+    // Our caller is providing an override.
+    attOptions = options.suboptions().get<smtk::attribute::CopyAssignmentOptions>();
+  }
+  else
+  {
+    // Set some realistic defaults
 
-  // I. Copy associations and reference-item data.
+    // There should be no need to validate these
+    attOptions.attributeOptions.setDoNotValidateAssociations(true);
+    attOptions.itemOptions.setDoNotValidateReferenceInfo(true);
 
-  // None of the copy options should be needed since all of the
-  // attributes should already be copied
-  attOptions.copyOptions.setCopyUUID(false);
-  attOptions.copyOptions.setPerformAssignment(true);
-  attOptions.copyOptions.setCopyDefinition(false); // These should already be present from clone().
+    attOptions.attributeOptions.setCopyAssociations(true);
+  }
 
-  attOptions.attributeOptions.setIgnoreMissingItems(false);
-  attOptions.attributeOptions.setAllowPartialAssociations(false);
-  attOptions.attributeOptions.setDoNotValidateAssociations(
-    true); // There should be no need to validate
-  attOptions.attributeOptions.setCopyAssociations(true);
-  attOptions.attributeOptions.setObjectMapping(&options.objectMapping());
-
-  attOptions.itemOptions.setIgnoreMissingChildren(false);
-  attOptions.itemOptions.setAllowPartialValues(false);
-  attOptions.itemOptions.setIgnoreReferenceValues(false);
-  attOptions.itemOptions.setDoNotValidateReferenceInfo(true);
+  // All of the required attributes should already be copied - this option should
+  // always be off
   attOptions.itemOptions.setDisableCopyAttributes(true);
+
+  // Set the object mapping
+  attOptions.attributeOptions.setObjectMapping(&options.objectMapping());
   attOptions.itemOptions.setObjectMapping(&options.objectMapping());
 
   // for each attribute in the source resource copy assign its data to its copy

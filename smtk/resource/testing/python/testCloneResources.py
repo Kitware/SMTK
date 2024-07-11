@@ -115,11 +115,15 @@ class TestCloneResources(smtk.testing.TestCase):
         clonedAtts = self.origAttResource.clone(opts)
 
         if not clonedAtts.copyInitialize(self.origAttResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError(
                 'Copy Initialized Failed for Attribute Resource')
 
         print('Copy Initialized for Attributes Worked.')
         if not clonedAtts.copyFinalize(self.origAttResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError(
                 'Copy Finalized Failed for Attribute Resource')
 
@@ -136,18 +140,26 @@ class TestCloneResources(smtk.testing.TestCase):
         clonedAtts = self.origAttResource.clone(opts)
         clonedMarkup = self.origMarkupResource.clone(opts)
         if not clonedAtts.copyInitialize(self.origAttResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError(
                 'Copy Initialized Failed for Attribute Resource')
 
         if not clonedMarkup.copyInitialize(self.origMarkupResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError('Copy Initialized Failed for Markup Resource')
 
         print('Copy Initialized for Resources Worked.')
 
         if not clonedAtts.copyFinalize(self.origAttResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError('Copy Finalized Failed for Attribute Resource')
 
         if not clonedMarkup.copyFinalize(self.origMarkupResource, opts):
+            print('Logger Output:\n')
+            print(smtk.io.Logger.instance().convertToString(True), '\n')
             raise RuntimeError('Copy Finalized Failed for Markup Resource')
 
         print('Copy Finalized for Resources Worked.')
