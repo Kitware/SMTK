@@ -204,23 +204,6 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   m_p->m_overrideWhen = pqSMTKAttributeItemWidget::OverrideWhenConvert(ow);
   m_p->m_fallbackStrategy = pqSMTKAttributeItemWidget::FallbackStrategyConvert(fs);
   m_p->m_geometrySource = pqSMTKAttributeItemWidget::GeometrySourceConvert(gs);
-  QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
-  m_p->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
-    [guardedObject](
-      const smtk::operation::Operation& op,
-      smtk::operation::EventType event,
-      smtk::operation::Operation::Result res) {
-      if (
-        event == smtk::operation::EventType::DID_OPERATE &&
-        dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
-        guardedObject->item() &&
-        res->findReference("modified")->contains(guardedObject->item()->attribute()))
-      {
-        guardedObject->updateWidgetFromItem();
-      }
-      return 0;
-    },
-    "pqSMTKAttributeItemWidget: Update widget from item when parent attribute is modified.");
 }
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
@@ -232,23 +215,6 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
       smtk::extension::qtAttributeItemInfo(itm, smtk::view::Configuration::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
-  QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
-  m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(
-    [guardedObject](
-      const smtk::operation::Operation& op,
-      smtk::operation::EventType event,
-      smtk::operation::Operation::Result res) {
-      if (
-        event == smtk::operation::EventType::DID_OPERATE &&
-        dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
-        guardedObject->item() &&
-        res->findReference("modified")->contains(guardedObject->item()->attribute()))
-      {
-        guardedObject->updateWidgetFromItem();
-      }
-      return 0;
-    },
-    "pqSMTKAttributeItemWidget: Update widget from item when parent attribute is modified.");
   m_isLeafItem = true;
   this->createWidget();
 }
@@ -257,10 +223,6 @@ pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
 {
   auto* ui = this->uiManager();
   auto operationManager = ui ? ui->operationManager() : nullptr;
-  if (operationManager && m_p->m_opObserver.assigned())
-  {
-    operationManager->observers().erase(m_p->m_opObserver);
-  }
   delete this->m_p;
   this->m_p = nullptr;
 }
