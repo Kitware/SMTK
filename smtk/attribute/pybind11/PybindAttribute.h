@@ -45,7 +45,6 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
   instance
     .def(py::init<::smtk::attribute::Attribute const &>())
     .def("deepcopy", (smtk::attribute::Attribute & (smtk::attribute::Attribute::*)(::smtk::attribute::Attribute const &)) &smtk::attribute::Attribute::operator=)
-    .def_static("New", (smtk::attribute::AttributePtr (*)(::std::string const &, const ::smtk::attribute::DefinitionPtr&)) &smtk::attribute::Attribute::New, py::arg("myName"), py::arg("myDefinition"))
     .def_static("New", (smtk::attribute::AttributePtr (*)(::std::string const &, const ::smtk::attribute::DefinitionPtr&, ::smtk::common::UUID const &)) &smtk::attribute::Attribute::New, py::arg("myName"), py::arg("myDefinition"), py::arg("myId"))
     .def("appliesToBoundaryNodes", &smtk::attribute::Attribute::appliesToBoundaryNodes)
     .def("appliesToInteriorNodes", &smtk::attribute::Attribute::appliesToInteriorNodes)

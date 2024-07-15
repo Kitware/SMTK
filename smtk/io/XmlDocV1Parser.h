@@ -242,6 +242,7 @@ protected:
   bool getColor(pugi::xml_node& node, double color[3], const std::string& colorName);
 
   virtual smtk::common::UUID getAttributeID(pugi::xml_node& attNode);
+  virtual smtk::common::UUID getDefinitionID(pugi::xml_node& defNode);
 
   /// For processing item definition blocks
   void processItemDefinitionBlocks(

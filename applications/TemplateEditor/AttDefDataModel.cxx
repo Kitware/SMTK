@@ -82,7 +82,7 @@ bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
   auto def = this->get(index);
 
   DefinitionPtrVec defVec;
-  def->resource()->derivedDefinitions(def, defVec);
+  def->attributeResource()->derivedDefinitions(def, defVec);
   return !defVec.empty();
 }
 

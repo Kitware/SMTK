@@ -17,6 +17,9 @@
 #include "pugixml/src/pugixml.cpp"
 
 using namespace pugi;
+
+#include "smtk/io/XmlPropertyParsingHelper.txx"
+
 using namespace smtk::attribute;
 using namespace smtk::io;
 using namespace smtk;
@@ -135,6 +138,13 @@ void XmlDocV8Parser::processDefinitionChildNode(xml_node& node, DefinitionPtr& d
 {
   std::string nodeName = node.name();
 
+  // Are we dealing with Properties
+  if (nodeName == "Properties")
+  {
+    processProperties(def, node, m_logger);
+    return;
+  }
+
   // Are we dealing with Category Expressions
   if (nodeName == "CategoryExpression")
   {
@@ -173,4 +183,22 @@ smtk::attribute::AttributePtr XmlDocV8Parser::processAttribute(pugi::xml_node& a
   }
 
   return att;
+}
+
+smtk::common::UUID XmlDocV8Parser::getDefinitionID(xml_node& attNode)
+{
+  xml_attribute xatt;
+  smtk::common::UUID id;
+
+  xatt = attNode.attribute("ID");
+  if (!xatt)
+  {
+    id = smtk::common::UUID::null();
+  }
+  else
+  {
+    id = smtk::common::UUID(xatt.value());
+  }
+
+  return id;
 }

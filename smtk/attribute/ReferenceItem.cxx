@@ -999,8 +999,8 @@ Item::Status ReferenceItem::assign(
           smtkErrorMacro(
             logger,
             "Could not assign PersistentObject:"
-              << val->name() << " to ReferenceItem: " << sourceItem->name()
-              << " and allowPartialValues options was not specified.");
+              << val->name() << " of type: " << val->typeName() << " to ReferenceItem: "
+              << sourceItem->name() << " and allowPartialValues options was not specified.");
           return result;
         }
       }

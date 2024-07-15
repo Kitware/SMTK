@@ -555,7 +555,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       }
       else
       {
-        baseDef = res->findDefinition(*baseType);
+        baseDef = res->findDefinition(baseType->get<std::string>());
         if (!baseDef)
         {
           smtkErrorMacro(
@@ -565,7 +565,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
           continue;
         }
       }
-      def = res->createDefinition(*type, baseDef);
+      // Definitions were made into Components after SMTK 24.01 so see if there is
+      // an id and if so use it.
+      auto id = currentDef.find("ID");
+      if (id != currentDef.end())
+      {
+        smtk::common::UUID uuid(id->get<std::string>());
+        def = res->createDefinition(*type, baseDef, uuid);
+      }
+      else
+      {
+        def = res->createDefinition(*type, baseDef);
+      }
       if (!def)
       {
         smtkWarningMacro(
@@ -591,7 +602,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       smtk::attribute::DefinitionPtr def;
       for (const auto& defName : exclusion)
       {
-        def = res->findDefinition(defName);
+        def = res->findDefinition(defName.get<std::string>());
         if (def)
         {
           defs.push_back(def);
@@ -628,7 +639,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         continue;
       }
       // Lets find the target definition
-      auto tdef = res->findDefinition(*type);
+      auto tdef = res->findDefinition(type->get<std::string>());
       if (!tdef)
       {
         smtkErrorMacro(
@@ -648,7 +659,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       smtk::attribute::DefinitionPtr def;
       for (const auto& defName : *prerequisite)
       {
-        def = res->findDefinition(defName);
+        def = res->findDefinition(defName.get<std::string>());
         if (def)
         {
           tdef->addPrerequisite(def);
@@ -740,7 +751,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
           continue;
         }
 
-        if (!res->findDefinition(def))
+        if (!res->findDefinition(def.get<std::string>()))
         {
           smtkErrorMacro(
             smtk::io::Logger::instance(),
@@ -783,7 +794,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
           "Invalid Attribute! - Missing Type for attribute:" << *name);
         continue;
       }
-      smtk::attribute::DefinitionPtr def = res->findDefinition(*type);
+      smtk::attribute::DefinitionPtr def = res->findDefinition(type->get<std::string>());
       if (def == nullptr)
       {
         smtkErrorMacro(

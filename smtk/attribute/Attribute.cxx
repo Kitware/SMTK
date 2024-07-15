@@ -58,20 +58,6 @@ Attribute::Attribute(
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
   , m_id(myId)
-{
-  m_hasLocalAdvanceLevelInfo[0] = false;
-  m_hasLocalAdvanceLevelInfo[1] = false;
-  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
-}
-
-Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
-  : m_name(myName)
-  , m_definition(myDefinition)
-  , m_appliesToBoundaryNodes(false)
-  , m_appliesToInteriorNodes(false)
-  , m_isColorSet(false)
-  , m_aboutToBeDeleted(false)
-  , m_id(smtk::common::UUIDGenerator::instance().random())
   , m_includeIndex(0)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
@@ -111,6 +97,14 @@ void Attribute::removeAllItems()
     m_items[i]->detachOwningAttribute();
   }
   m_items.clear();
+}
+
+bool Attribute::setId(const common::UUID&)
+{
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "Changing the ID for Attribute: " << m_name << " is not supported\n");
+  return false;
 }
 
 const double* Attribute::color() const
@@ -386,7 +380,7 @@ bool Attribute::isRelevant(
 
 ResourcePtr Attribute::attributeResource() const
 {
-  return m_definition->resource();
+  return m_definition->attributeResource();
 }
 
 const smtk::resource::ResourcePtr Attribute::resource() const

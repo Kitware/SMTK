@@ -106,10 +106,14 @@ public:
 
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName,
-    const std::string& baseTypeName = "");
+    const std::string& baseTypeName = "",
+    const smtk::common::UUID& id = smtk::common::UUID::null());
+
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& name,
-    attribute::DefinitionPtr baseDefiniiton);
+    attribute::DefinitionPtr baseDefiniiton,
+    const smtk::common::UUID& id = smtk::common::UUID::null());
+
   // Description:
   // For simplicity, only Definitions without any children can be currently
   // removed (external nodes).
@@ -131,12 +135,17 @@ public:
    */
   bool setDefaultNameSeparator(const std::string& separator);
 
-  smtk::attribute::AttributePtr createAttribute(const std::string& name, const std::string& type);
   smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
   smtk::attribute::AttributePtr createAttribute(const std::string& type);
   smtk::attribute::AttributePtr createAttribute(
     const std::string& name,
-    attribute::DefinitionPtr def);
+    const std::string& type,
+    const smtk::common::UUID& id = smtk::common::UUID::null());
+  smtk::attribute::AttributePtr createAttribute(
+    const std::string& name,
+    attribute::DefinitionPtr def,
+    const smtk::common::UUID& id = smtk::common::UUID::null());
+
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
@@ -181,6 +190,7 @@ public:
     std::vector<smtk::attribute::AttributePtr>& result) const;
 
   smtk::attribute::DefinitionPtr findDefinition(const std::string& type) const;
+  smtk::attribute::DefinitionPtr findDefinition(const smtk::common::UUID& id) const;
 
   /// Return true if the Resource has a Definition with the requested type
   bool hasDefinition(const std::string& type) const;
@@ -218,13 +228,6 @@ public:
   const double* advanceLevelColor(int level) const;
   void setAdvanceLevelColor(int level, const double* l_color);
 
-  // For Reader classes
-  smtk::attribute::AttributePtr
-  createAttribute(const std::string& name, const std::string& type, const smtk::common::UUID& id);
-  smtk::attribute::AttributePtr createAttribute(
-    const std::string& name,
-    attribute::DefinitionPtr def,
-    const smtk::common::UUID& id);
   std::string createUniqueName(const std::string& type) const;
 
   void finalizeDefinitions();
@@ -490,6 +493,7 @@ protected:
     m_attributeClusters;
   std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
   std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;
+  std::map<smtk::common::UUID, smtk::attribute::DefinitionPtr> m_definitionIdMap;
 
   std::map<
     smtk::attribute::DefinitionPtr,
@@ -552,6 +556,14 @@ inline smtk::attribute::DefinitionPtr Resource::findDefinition(const std::string
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
   it = m_definitions.find(typeName);
   return (it == m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
+}
+
+inline smtk::attribute::DefinitionPtr Resource::findDefinition(
+  const smtk::common::UUID& defId) const
+{
+  std::map<smtk::common::UUID, DefinitionPtr>::const_iterator it;
+  it = m_definitionIdMap.find(defId);
+  return (it == m_definitionIdMap.end()) ? smtk::attribute::DefinitionPtr() : it->second;
 }
 
 inline bool Resource::hasDefinition(const std::string& typeName) const
