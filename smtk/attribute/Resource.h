@@ -87,10 +87,18 @@ public:
   /// Link from an attribute to persistent objects
   /// which manifest, exhibit, or possess the attribute.
   static constexpr smtk::resource::Links::RoleType AssociationRole = -1;
+  static constexpr smtk::resource::Links::RoleType associationRole()
+  {
+    return Resource::AssociationRole;
+  }
 
   /// Link from an attribute item to persistent objects
   /// which the item contains or references.
   static constexpr smtk::resource::Links::RoleType ReferenceRole = -2;
+  static constexpr smtk::resource::Links::RoleType referenceRole()
+  {
+    return Resource::ReferenceRole;
+  }
 
   ~Resource() override;
 

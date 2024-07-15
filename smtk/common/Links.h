@@ -397,6 +397,16 @@ public:
     return modified;
   }
 
+  /// Visit all links by ID
+  void visitLinks(std::function<void(const id_type& id)> visitor) const
+  {
+    const auto& self = this->Parent::template get<smtk::common::detail::Id>();
+    for (const auto& entry : self)
+    {
+      visitor(entry.id);
+    }
+  }
+
   /// Return a set of ids corresponding to the input value for the tagged search
   /// criterion.
   template<typename tag>

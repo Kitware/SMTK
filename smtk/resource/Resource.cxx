@@ -302,44 +302,7 @@ void Resource::copyUnitSystem(
 
 void Resource::copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options)
 {
-  if (!options.copyLinks())
-  {
-    // Skip copying link data if told to.
-    return;
-  }
-
-  // Only copy link-data if shouldExcludeLinksInRole(role) is false.
-  const auto& sourceLinks = rsrc->links().data();
-  auto& targetLinks = this->links().data();
-  const auto& sourceLinksById = sourceLinks.get<smtk::common::detail::Id>();
-  for (const auto& sourceLink : sourceLinksById)
-  {
-    if (
-      options.shouldExcludeLinksInRole(sourceLink.role) || options.shouldOmitId(sourceLink.left) ||
-      options.shouldOmitId(sourceLink.right) || options.shouldOmitId(sourceLink.id) ||
-      // Ignore links with invalid roles
-      sourceLink.role == Links::invalidRoleType())
-    {
-      continue;
-    }
-    // We need to copy this link. Transform its left- and right-hand side IDs.
-    smtk::common::Link<
-      smtk::common::UUID,
-      smtk::common::UUID,
-      smtk::common::UUID,
-      int,
-      smtk::resource::detail::ResourceLinkBase>
-      targetEntry(sourceLink);
-    if (auto* target = options.targetObjectFromSourceId<PersistentObject>(targetEntry.left))
-    {
-      targetEntry.left = target->id();
-    }
-    if (auto* target = options.targetObjectFromSourceId<PersistentObject>(targetEntry.right))
-    {
-      targetEntry.right = target->id();
-    }
-    targetLinks.insert(targetEntry);
-  }
+  this->links().copyFrom(rsrc, options);
 }
 
 void Resource::copyProperties(const std::shared_ptr<const Resource>& rsrc, CopyOptions& options)

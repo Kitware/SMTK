@@ -90,6 +90,7 @@ inline PySharedPtrClass< smtk::mesh::Resource> pybind11_init_smtk_mesh_Resource(
     .def("writeLocation", (void (smtk::mesh::Resource::*)(::smtk::common::FileLocation const &)) &smtk::mesh::Resource::writeLocation, py::arg("path"))
     .def("writeLocation", (void (smtk::mesh::Resource::*)(::std::string const &)) &smtk::mesh::Resource::writeLocation, py::arg("path"))
     .def("writeLocation", (smtk::common::FileLocation const & (smtk::mesh::Resource::*)() const) &smtk::mesh::Resource::writeLocation)
+    .def_static("classificationRole", &smtk::mesh::Resource::classificationRole)
     .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {
         return std::dynamic_pointer_cast<smtk::mesh::Resource>(i);
       })

@@ -11,11 +11,12 @@
 # =============================================================================
 import os
 import smtk
+import smtk.common
+import smtk.resource
 import smtk.attribute
 import smtk.graph
 import smtk.string
 import smtk.io
-import smtk.resource
 import smtk.testing
 import sys
 
@@ -28,43 +29,65 @@ except:
     sys.exit(smtk.testing.SKIP_ENTIRE)
 
 
+def printLogOnFail(ok, opts):
+    if not ok:
+        print('Log output:\n', opts.log().convertToString(True), '\n')
+    return ok
+
+
 class TestCloneResources(smtk.testing.TestCase):
 
     def setUp(self):
+        # Reset the smtk.common.Managers object used by smtk.read() to eliminate
+        # previously-read resources from memory:
+        if smtk.appContext:
+            rsrcMgr = smtk.appContext.get('smtk.resource.Manager')
+            for rsrc in rsrcMgr.resources():
+                rsrcMgr.remove(rsrc)
+
         # Read in the original attribute resource
         attFilename = os.path.join(
             smtk.testing.DATA_DIR, 'attribute', 'attribute_collection', 'cloneTest.smtk')
-        rr = smtk.read(attFilename)
-        self.origAttResource = rr[0]
+        self.origAttResource = smtk.read(attFilename)[0]
         self.origAttResource.setName('attResource')
         # Read in the original markup resource
         markupFilename = os.path.join(
             smtk.testing.DATA_DIR, 'model', '3d', 'smtk', 'coarse-knee.smtk')
-        rr = smtk.read(markupFilename)
-        self.origMarkupResource = rr[0]
+        self.origMarkupResource = smtk.read(markupFilename)[0]
         # add a resource property to xx to test that it gets copied
         # even when component properties are not.
         self.origMarkupResource.stringProperties().set('foo', 'bar')
         self.origAttResource.stringProperties().set('foo', 'bar')
 
         # Let's associate the markup resource to the attribute resource
-        self.origAttResource.associate(self.origMarkupResource)
+        self.assertTrue(self.origAttResource.associate(self.origMarkupResource),
+                        'Could not associatte attribute resource to markup resource.')
 
         compset = self.origMarkupResource.filter(
             'smtk::markup::UnstructuredData')
-        att = self.origAttResource.findAttribute("Test Attribute")
+        att = self.origAttResource.findAttribute('Test Attribute')
         refitem = att.associations()
         refitem.setValue(0, compset.pop())
         # The original attribute did not have any active categories or analyses so let's add some
-        self.origAttResource.setActiveCategories({"A", "B"})
+        self.origAttResource.setActiveCategories({'A', 'B'})
         self.origAttResource.setActiveCategoriesEnabled(True)
-        analysis = self.origAttResource.analyses().create("foo")
-        analysis.setLocalCategories({"A"})
+        analysis = self.origAttResource.analyses().create('foo')
+        analysis.setLocalCategories({'A'})
+
+        # Create a "visual link" between an attribute and a markup component.
+        self.originalMarkupComp = compset.pop()
+        mcomp = self.originalMarkupComp
+        att.links().addLinkTo(mcomp, smtk.resource.Resource.visuallyLinkedRole())
+        self.assertTrue(att.links().isLinkedTo(mcomp, smtk.resource.Resource.visuallyLinkedRole()),
+                        'Could not visually link attribute to markup component.')
+
         print('------- Setup Results --------')
-        print('  +++++ Original Attribute Resource ++++++')
-        self.printResource(self.origAttResource)
-        print('  +++++ Original Markup Resource ++++++')
-        self.printResource(self.origMarkupResource)
+        print(self.origMarkupResource.id(), self.origMarkupResource.name())
+        print(self.originalMarkupComp.id(), self.originalMarkupComp.name())
+        print(self.origAttResource.id(), self.origAttResource.name())
+        print(att.id(), att.name())
+        print('Visually linked', mcomp.name(), 'to', att.name())
+        self.printAttInfo(self.origAttResource)
 
     def printResource(self, resource):
         print(resource, resource.id())
@@ -92,17 +115,17 @@ class TestCloneResources(smtk.testing.TestCase):
         print('  active categories enabled:',
               resource.activeCategoriesEnabled())
         # Find the test attribute
-        att = resource.findAttribute("Test Attribute")
+        att = resource.findAttribute('Test Attribute')
         refitem = att.associations()
         print('  association: ', refitem.value(
             0).name(), refitem.value(0).id(), '\n')
-        d0 = att.findDouble("d0")
-        d1 = att.findDouble("d1")
+        d0 = att.findDouble('d0')
+        d1 = att.findDouble('d1')
         print('  d0 = ', d0.value(0),
               ' d1 = {', d1.expression().name(), d1.expression().id(), '}\n')
-        view = resource.findView("AttributeResourceCloneTest")
-        val = view.details().child(0).child(0).attributeAsString("ID")
-        if view.details().child(0).child(0).attribute("ID"):
+        view = resource.findView('AttributeResourceCloneTest')
+        val = view.details().child(0).child(0).attributeAsString('ID')
+        if view.details().child(0).child(0).attribute('ID'):
             print('  View: ', view.name(), ' has Attribute ID: ', val)
         else:
             print('  View: ', view.name(), ' does not have an ID Attribute')
@@ -114,23 +137,19 @@ class TestCloneResources(smtk.testing.TestCase):
 
         clonedAtts = self.origAttResource.clone(opts)
 
-        if not clonedAtts.copyInitialize(self.origAttResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError(
-                'Copy Initialized Failed for Attribute Resource')
+        self.assertTrue(
+            printLogOnFail(clonedAtts.copyInitialize(
+                self.origAttResource, opts), opts),
+            'copyInitialize Failed for attribute resource')
+        self.assertTrue(
+            printLogOnFail(clonedAtts.copyFinalize(
+                self.origAttResource, opts), opts),
+            'copyFinalize Failed for attribute resource')
 
-        print('Copy Initialized for Attributes Worked.')
-        if not clonedAtts.copyFinalize(self.origAttResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError(
-                'Copy Finalized Failed for Attribute Resource')
-
-        print('Copy Finalized for Attributes Worked.')
-        print('  +++++ Cloned Attribute Resource ++++++')
-        self.printResource(clonedAtts)
-        self.compareClonedAttResource(clonedAtts, 1)
+        # print('  +++++ Cloned Attribute Resource ++++++')
+        # self.printResource(clonedAtts)
+        self.printAttInfo(clonedAtts)
+        self.compareClonedAttResource(clonedAtts, True, opts)
 
     def testCloneAllResource(self):
         print('-------- Testing Copying All Resources --------')
@@ -139,107 +158,109 @@ class TestCloneResources(smtk.testing.TestCase):
 
         clonedAtts = self.origAttResource.clone(opts)
         clonedMarkup = self.origMarkupResource.clone(opts)
-        if not clonedAtts.copyInitialize(self.origAttResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError(
-                'Copy Initialized Failed for Attribute Resource')
 
-        if not clonedMarkup.copyInitialize(self.origMarkupResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError('Copy Initialized Failed for Markup Resource')
+        self.assertTrue(
+            printLogOnFail(clonedAtts.copyInitialize(
+                self.origAttResource, opts), opts),
+            'copyInitialize failed for attribute resource')
+        self.assertTrue(
+            printLogOnFail(clonedMarkup.copyInitialize(
+                self.origMarkupResource, opts), opts),
+            'copyInitialize failed for markup resource')
 
-        print('Copy Initialized for Resources Worked.')
+        self.assertTrue(
+            printLogOnFail(clonedAtts.copyFinalize(
+                self.origAttResource, opts), opts),
+            'copyFinalize failed for attribute resource')
+        self.assertTrue(
+            printLogOnFail(clonedMarkup.copyFinalize(
+                self.origMarkupResource, opts), opts),
+            'copyFinalize failed for markup resource')
 
-        if not clonedAtts.copyFinalize(self.origAttResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError('Copy Finalized Failed for Attribute Resource')
+        # print('  +++++ Cloned Attribute Resource ++++++')
+        # self.printResource(clonedAtts)
+        self.printAttInfo(clonedAtts)
+        # print('  +++++ Cloned Markup Resource ++++++')
+        # self.printResource(clonedMarkup)
+        self.compareClonedAttResource(clonedAtts, False, opts)
 
-        if not clonedMarkup.copyFinalize(self.origMarkupResource, opts):
-            print('Logger Output:\n')
-            print(smtk.io.Logger.instance().convertToString(True), '\n')
-            raise RuntimeError('Copy Finalized Failed for Markup Resource')
+    def compareClonedAttResource(self, attRes, sameMarkup, opts):
+        self.assertTrue(attRes.stringProperties().contains(
+            'foo'), 'Missing "foo" property.')
+        self.assertEqual(attRes.stringProperties().at('foo'), 'bar',
+                         'Copied attribute resource does not have a string property foo equal to bar.')
 
-        print('Copy Finalized for Resources Worked.')
-        print('  +++++ Cloned Attribute Resource ++++++')
-        self.printResource(clonedAtts)
-        print('  +++++ Cloned Markup Resource ++++++')
-        self.printResource(clonedMarkup)
-        self.compareClonedAttResource(clonedAtts, 0)
+        self.assertEqual(attRes.activeCategoriesEnabled(), self.origAttResource.activeCategoriesEnabled(),
+                         'Attribute resources do not have the same active categories enabled.')
+        self.assertEqual(attRes.activeCategories(), self.origAttResource.activeCategories(),
+                         'Attribute Resources do not have the same active categories.')
+        self.assertEqual(attRes.analyses().size(), self.origAttResource.analyses().size(),
+                         'Attribute Resources do not have the same number of analyses.')
+        self.assertNotEqual(attRes.id(), self.origAttResource.id(),
+                            'Attribute Resources have same ID')
 
-    def compareClonedAttResource(self, attRes, sameMarkup):
-        if attRes.stringProperties().contains('foo'):
-            if attRes.stringProperties().at('foo') != 'bar':
-                raise RuntimeError(
-                    'Copied Attribute Resource do not have a string property foo equal to bar')
-        else:
-            raise RuntimeError(
-                'Copied Attribute Resource do not have a string property foo')
-        if attRes.activeCategoriesEnabled() != self.origAttResource.activeCategoriesEnabled():
-            raise RuntimeError(
-                'Attribute Resources do not have the same active categories enabled option')
-        if attRes.activeCategories() != self.origAttResource.activeCategories():
-            raise RuntimeError(
-                'Attribute Resources do not have the same active categories')
-        if attRes.analyses().size() != self.origAttResource.analyses().size():
-            raise RuntimeError(
-                'Attribute Resources do not have the same number of analyses')
-        if attRes.id() == self.origAttResource.id():
-            raise RuntimeError('Attribute Resources have same ID')
+        origAtt = self.origAttResource.findAttribute('Test Attribute')
+        att = attRes.findAttribute('Test Attribute')
+        self.assertNotEqual(att.id(), origAtt.id(), 'Attributes have same ID.')
 
-        origAtt = self.origAttResource.findAttribute("Test Attribute")
-        att = attRes.findAttribute("Test Attribute")
-        if att.id() == origAtt.id():
-            raise RuntimeError('Attributes have same ID')
+        d0 = att.findDouble('d0')
+        d1 = att.findDouble('d1')
+        origD0 = origAtt.findDouble('d0')
+        origD1 = origAtt.findDouble('d1')
+        self.assertEqual(d0.value(), origD0.value(),
+                         'Items d0 do not have the same value.')
 
-        d0 = att.findDouble("d0")
-        d1 = att.findDouble("d1")
-        origD0 = origAtt.findDouble("d0")
-        origD1 = origAtt.findDouble("d1")
-        if d0.value() != origD0.value():
-            raise RuntimeError('Items d0 do not have the same value')
-
-        if d1.expression().id() == origD1.expression().id():
-            raise RuntimeError('Items d1 do the same expression attribute')
+        self.assertNotEqual(d1.expression().id(), origD1.expression().id(),
+                            'Items d1 have the same expression attribute, but it should be distinct.')
 
         attResAsso = attRes.associations()
         origAttResAsso = self.origAttResource.associations()
+        print('attRes assocs:')
+        for ar in attResAsso:
+            print('  ', ar.name(), ar.id())
+        print('origAttRes assocs:')
+        for ar in origAttResAsso:
+            print('  ', ar.name(), ar.id())
+        print('--')
         # The copy should have the same number of associates resources as the source
-        if len(attResAsso) != len(origAttResAsso):
-            raise RuntimeError(
-                'Copied Attribute Resources has incorrect number of associated resources')
+        self.assertEqual(len(attResAsso), len(origAttResAsso),
+                         'Copied Attribute Resources has incorrect number of associated resources.')
 
         attAsso = att.associations()
         origAttAsso = origAtt.associations()
 
-        if bool(sameMarkup):
+        if sameMarkup:
             if len(attResAsso):
-                if not (self.origMarkupResource in attResAsso):
-                    raise RuntimeError(
-                        'Copied Attribute Resource is not associated to the origin MarkUp Resource and should be')
-            if attAsso.value(0).id() != origAttAsso.value(0).id():
-                raise RuntimeError(
-                    'Attributes are not associated with the same component and should be')
+                self.assertTrue(self.origMarkupResource in attResAsso,
+                                'Copied attribute resource is not associated to the original markup resource and should be.')
+            self.assertEqual(attAsso.value(0).id(), origAttAsso.value(0).id(),
+                             'Attributes are not associated with the same component and should be.')
         else:
             if len(attResAsso):
-                if self.origMarkupResource in attResAsso:
-                    raise RuntimeError(
-                        'Copied Attribute Resource is  associated to the origin MarkUp Resource and not should be')
-            if attAsso.value(0).id() == origAttAsso.value(0).id():
-                raise RuntimeError(
-                    'Attributes are associated with the same component and should not be')
+                self.assertFalse(self.origMarkupResource in attResAsso,
+                                 'Copied attribute resource is associated to the original markup resource and should not be.')
+            self.assertNotEqual(attAsso.value(0).id(), origAttAsso.value(0).id(),
+                                'Attributes are associated with the same component and should not be.')
 
         # Lets compare the views - the Attribute IDs should be different if they exist
-        view = attRes.findView("AttributeResourceCloneTest")
-        val = view.details().child(0).child(0).attributeAsString("ID")
+        view = attRes.findView('AttributeResourceCloneTest')
+        val = view.details().child(0).child(0).attributeAsString('ID')
 
-        origView = self.origAttResource.findView("AttributeResourceCloneTest")
-        origVal = origView.details().child(0).child(0).attributeAsString("ID")
-        if val == origVal:
-            raise RuntimeError(
-                'View contains IDs that point to the same attribute which is wrong')
+        origView = self.origAttResource.findView('AttributeResourceCloneTest')
+        origVal = origView.details().child(0).child(0).attributeAsString('ID')
+        self.assertNotEqual(
+            val, origVal, 'View contains IDs that point to the same attribute which is wrong.')
+
+        mcomp = self.originalMarkupComp
+        if sameMarkup:
+            self.assertTrue(att.links().isLinkedTo(mcomp, smtk.resource.Resource.visuallyLinkedRole()),
+                            'Visual link not copied.')
+        else:
+            self.assertFalse(att.links().isLinkedTo(mcomp, smtk.resource.Resource.visuallyLinkedRole()),
+                             'Visually linked to original (not new) component.')
+            ncomp = opts.targetComponentFromSourceId(mcomp.id())
+            self.assertTrue(att.links().isLinkedTo(ncomp, smtk.resource.Resource.VisuallyLinkedRole),
+                            'Visual link not preserved in cloned resource.')
 
         print('Comparing Attribute Resources Succeeded!')
 

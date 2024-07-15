@@ -150,6 +150,8 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("setName", &smtk::resource::Resource::setName, py::arg("name"))
     .def("typeName", &smtk::resource::Resource::typeName)
     .def("visit", &smtk::resource::Resource::visit, py::arg("v"))
+    .def_static("visuallyLinkedRole", &smtk::resource::Resource::visuallyLinkedRole)
+    .def_readonly_static("VisuallyLinkedRole", &smtk::resource::Resource::VisuallyLinkedRole)
     .def_readonly_static("type_index", &smtk::resource::Resource::type_index)
     .def_readonly_static("type_name", &smtk::resource::Resource::type_name)
     ;

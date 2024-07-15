@@ -25,7 +25,6 @@ inline py::class_< smtk::resource::detail::ComponentLinkBase > pybind11_init_smt
   instance
     .def(py::init<>())
     .def(py::init<::smtk::resource::detail::ComponentLinkBase const &>())
-    .def("deepcopy", (smtk::resource::detail::ComponentLinkBase & (smtk::resource::detail::ComponentLinkBase::*)(::smtk::resource::detail::ComponentLinkBase const &)) &smtk::resource::detail::ComponentLinkBase::operator=)
     ;
   return instance;
 }
@@ -35,7 +34,6 @@ inline py::class_< smtk::resource::detail::ComponentLinks, smtk::resource::Links
   py::class_< smtk::resource::detail::ComponentLinks, smtk::resource::Links > instance(m, "ComponentLinks");
   instance
     .def(py::init<::smtk::resource::detail::ComponentLinks const &>())
-    .def("deepcopy", (smtk::resource::detail::ComponentLinks & (smtk::resource::detail::ComponentLinks::*)(::smtk::resource::detail::ComponentLinks const &)) &smtk::resource::detail::ComponentLinks::operator=)
     ;
   return instance;
 }

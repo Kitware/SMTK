@@ -199,8 +199,9 @@ Links::Key Links::addLinkTo(
     }
 
     resourceLinkData.insert(
-      ResourceLinkData::LinkBase(rhs1), resourceLinkId, lhs1->id(), rhs1->id(), role);
+      ResourceLinkData::LinkBase(rhs1), resourceLinkId, lhs1->id(), rhs1->id(), topLevelRole());
     componentLinkData = &resourceLinkData.value(resourceLinkId);
+    resourceRange = resourceLinks.equal_range(rhs1->id());
   }
   else
   {
@@ -407,7 +408,7 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
   if (!resourceLinkData.contains(key.first))
   {
-    return std::make_pair(ResourcePtr(), invalidRoleType());
+    return std::make_pair(ResourcePtr(), invalidRole());
   }
 
   const auto& resourceLink = resourceLinkData.value(key.first);
@@ -446,7 +447,7 @@ std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
   if (!resourceLinkData.contains(key.first))
   {
-    return std::make_pair(smtk::common::UUID::null(), invalidRoleType());
+    return std::make_pair(smtk::common::UUID::null(), invalidRole());
   }
 
   const auto& resourceLink = resourceLinkData.value(key.first);

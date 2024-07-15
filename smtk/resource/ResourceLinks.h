@@ -28,6 +28,7 @@ namespace smtk
 {
 namespace resource
 {
+class CopyOptions;
 class Resource;
 
 namespace detail
@@ -82,7 +83,7 @@ public:
 
   typedef ResourceLinkData::Link Link;
 
-  ~ResourceLinks();
+  ~ResourceLinks() override;
 
   /// Access the underlying link data.
   ResourceLinkData& data() { return m_data; }
@@ -95,6 +96,14 @@ public:
   /// Remove all links from this resource to another resource. This is useful
   /// when we know the resource parameter is being permanently deleted.
   bool removeAllLinksTo(const ResourcePtr&);
+
+  /// Copy links from \a source's links with the given \a options.
+  ///
+  /// This will copy both resource and component links as \a options indicates.
+  /// Both resources and components are mapped through the \a options' object-mapping,
+  /// so any links to objects that are also being copied will point to the copy
+  /// and not the original object in \a source.
+  void copyFrom(const ConstResourcePtr& source, const smtk::resource::CopyOptions& options);
 
 private:
   ResourceLinks(Resource*);

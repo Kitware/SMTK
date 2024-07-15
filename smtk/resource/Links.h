@@ -31,13 +31,26 @@ struct LinkInformation;
 class SMTKCORE_EXPORT Links
 {
 public:
+  /// Force this class to be polymorphic.
+  virtual ~Links() = default;
+
   /// A Key is a pair of UUIDs. the First UUID is the id of the resource link,
   /// and the second one is the id of the component link.
   typedef std::pair<smtk::common::UUID, smtk::common::UUID> Key;
   typedef int RoleType;
 
-  /// Special RoleType indicating that the link is invalid
-  static RoleType invalidRoleType() { return std::numeric_limits<Links::RoleType>::lowest(); }
+  /// A special role used to link pairs of resources together.
+  ///
+  /// All top-level links between resources use this role;
+  /// if you intend to link two resources in a specific role,
+  /// this is stored by a second Link in the bottom-level
+  /// Links container between null UUIDs.
+  static constexpr RoleType TopLevelRole = std::numeric_limits<Links::RoleType>::lowest();
+  static constexpr RoleType topLevelRole() { return Links::TopLevelRole; }
+
+  /// A special Role indicating that a link is invalid.
+  static constexpr RoleType InvalidRole = std::numeric_limits<Links::RoleType>::lowest() + 1;
+  static constexpr RoleType invalidRole() { return Links::InvalidRole; }
 
   /// Given a resource or component and a role, check if a link of this role type
   /// exists between us and the input object.
@@ -96,6 +109,17 @@ protected:
 
   virtual const smtk::common::UUID& leftHandSideComponentId() const;
 
+  /// This is protected so that ResourceLinks::copyLinks() can call it.
+  ///
+  /// In general, you should not call this method directly; instead, call
+  /// `addLinkTo(Component, RoleType)` or `addLinkTo(Resource, RoleType)`.
+  Key addLinkTo(
+    Resource* lhs1,
+    const smtk::common::UUID& lhs2,
+    const ResourcePtr& rhs1,
+    const smtk::common::UUID& rhs2,
+    const RoleType& role);
+
 private:
   bool isLinkedTo(
     const Resource* lhs1,
@@ -103,13 +127,6 @@ private:
     const smtk::common::UUID& rhs1,
     const smtk::common::UUID& rhs2,
     const RoleType& role) const;
-
-  Key addLinkTo(
-    Resource* lhs1,
-    const smtk::common::UUID& lhs2,
-    const ResourcePtr& rhs1,
-    const smtk::common::UUID& rhs2,
-    const RoleType& role);
 
   PersistentObjectSet
   linkedTo(const Resource* lhs1, const smtk::common::UUID& lhs2, const RoleType& role) const;

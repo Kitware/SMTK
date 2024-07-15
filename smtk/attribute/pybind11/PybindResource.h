@@ -107,6 +107,8 @@ inline PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute
       })
     .def("copyAttribute", (smtk::attribute::AttributePtr (smtk::attribute::Resource::*)(const smtk::attribute::AttributePtr& att, const smtk::attribute::CopyAssignmentOptions&)) &smtk::attribute::Resource::copyAttribute, py::arg("sourceAttribute"), py::arg("options") = smtk::attribute::CopyAssignmentOptions())
     .def("copyAttribute", (smtk::attribute::AttributePtr (smtk::attribute::Resource::*)(const smtk::attribute::AttributePtr& att, const smtk::attribute::CopyAssignmentOptions&, smtk::io::Logger&)) &smtk::attribute::Resource::copyAttribute, py::arg("sourceAttribute"), py::arg("options"), py::arg("logger"))
+    .def_static("associationRole", &smtk::attribute::Resource::associationRole)
+    .def_static("referenceRole", &smtk::attribute::Resource::referenceRole)
     ;
   return instance;
 }
