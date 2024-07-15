@@ -14,6 +14,6 @@ additional functionality.
 .. toctree::
    :maxdepth: 3
 
-   qt.rst
+   qt/index.rst
    vtk.rst
    paraview/index.rst

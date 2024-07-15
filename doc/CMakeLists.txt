@@ -126,7 +126,10 @@ if (SPHINX_FOUND)
     userguide/extension/paraview/widgets/design.rst
     userguide/extension/paraview/widgets/gallery.rst
     userguide/extension/paraview/widgets/index.rst
-    userguide/extension/qt.rst
+    userguide/extension/qt/index.rst
+    userguide/extension/qt/concepts.rst
+    userguide/extension/qt/attribute-views.rst
+    userguide/extension/qt/diagram.rst
     userguide/extension/vtk.rst
     userguide/geometry/concepts.rst
     userguide/geometry/index.rst

@@ -69,6 +69,5 @@ public:
   // state of children
   QMap<QWidget*, QPair<QLayout*, QWidget*>> m_children;
 
-  smtk::operation::Observers::Key m_opObserver;
   State m_state{ State::Idle };
 };
