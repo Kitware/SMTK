@@ -30,8 +30,8 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 {
   attribute.doc() = "<description>";
 
-  py::module::import("smtk.common");
-  py::module::import("smtk.resource");
+  auto sc = py::module::import("smtk.common");
+  auto sr = py::module::import("smtk.resource");
 
   attributePart1(attribute);
   attributePart2(attribute);

@@ -23,13 +23,16 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindComponent.h"
+#include "PybindComponentLinks.h"
 #include "PybindCopyOptions.h"
+#include "PybindLinks.h"
 #include "PybindManager.h"
 #include "PybindObserver.h"
 #include "PybindPersistentObject.h"
 #include "PybindProperties.h"
 #include "PybindPropertyType.h"
 #include "PybindResource.h"
+#include "PybindResourceLinks.h"
 #include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -44,6 +47,11 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
   // comparing the dependencies of each of the wrapped objects.
   auto smtk_resource_CopyOptions = pybind11_init_smtk_resource_CopyOptions(resource);
   auto smtk_resource_PersistentObject = pybind11_init_smtk_resource_PersistentObject(resource);
+  auto smtk_resource_Links = pybind11_init_smtk_resource_Links(resource);
+  auto smtk_resource_detail_ComponentLinkBase = pybind11_init_smtk_resource_detail_ComponentLinkBase(resource);
+  auto smtk_resource_detail_ResourceLinkBase = pybind11_init_smtk_resource_detail_ResourceLinkBase(resource);
+  auto smtk_resource_ComponentLinks = pybind11_init_smtk_resource_detail_ComponentLinks(resource);
+  auto smtk_resource_ResourceLinks = pybind11_init_smtk_resource_detail_ResourceLinks(resource);
   auto smtk_resource_Properties = pybind11_init_smtk_resource_Properties(resource);
   auto smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);
   auto smtk_resource_Component = pybind11_init_smtk_resource_Component(resource);

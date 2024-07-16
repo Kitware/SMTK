@@ -93,6 +93,10 @@ public:
   /// visibility-control badges for both A and B. This is indicated by a
   /// link from A to B.
   static constexpr smtk::resource::Links::RoleType VisuallyLinkedRole = -4;
+  static constexpr smtk::resource::Links::RoleType visuallyLinkedRole()
+  {
+    return Resource::VisuallyLinkedRole;
+  }
 
   smtkTypeMacro(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);

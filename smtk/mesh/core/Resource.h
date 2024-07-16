@@ -81,6 +81,10 @@ public:
   /// A mesh resource may be classified to a model, indicating the mesh set
   /// discretizes the linked model component.
   static constexpr smtk::resource::Links::RoleType ClassificationRole = -3;
+  static constexpr smtk::resource::Links::RoleType classificationRole()
+  {
+    return Resource::ClassificationRole;
+  }
 
   static smtk::shared_ptr<Resource> create(const smtk::common::UUID& resourceID)
   {

@@ -14,6 +14,7 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/PersistentObject.h"
 
 #include "smtk/resource/Resource.h"
@@ -29,6 +30,7 @@ inline PySharedPtrClass< smtk::resource::Component, smtk::resource::PyComponent,
   PySharedPtrClass< smtk::resource::Component, smtk::resource::PyComponent, smtk::resource::PersistentObject > instance(m, "Component");
   instance
     .def(py::init<>())
+    .def("links", (smtk::resource::Component::Links& (smtk::resource::Component::*)()) &smtk::resource::Component::links, py::return_value_policy::reference_internal)
     .def("deepcopy", (smtk::resource::Component & (smtk::resource::Component::*)(::smtk::resource::Component const &)) &smtk::resource::Component::operator=)
     .def("resource", &smtk::resource::Component::resource)
     .def("stringProperties", [](smtk::resource::Component& component)

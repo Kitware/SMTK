@@ -14,4 +14,5 @@ so that the provenance of all the inputs to a simulation can be tracked.
 
    concepts.rst
    filtering-and-searching.rst
+   links.rst
    copy-template-update.rst

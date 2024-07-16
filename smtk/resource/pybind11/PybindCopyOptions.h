@@ -52,6 +52,24 @@ inline py::class_< smtk::resource::CopyOptions > pybind11_init_smtk_resource_Cop
     .def("shouldOmitId", &smtk::resource::CopyOptions::shouldOmitId)
     .def("omitComponents", &smtk::resource::CopyOptions::omitComponents, py::arg("resource"))
     .def("objectMapping", (smtk::resource::CopyOptions::ObjectMapType& (smtk::resource::CopyOptions::*)())&smtk::resource::CopyOptions::objectMapping)
+    .def("targetObjectFromSourceId", [](const smtk::resource::CopyOptions& self, const smtk::common::UUID& uid)
+      {
+        auto* obj = self.targetObjectFromSourceId<smtk::resource::PersistentObject>(uid);
+        auto optr = obj ? obj->shared_from_this() : nullptr;
+        return optr;
+      }, py::arg("id"))
+    .def("targetComponentFromSourceId", [](const smtk::resource::CopyOptions& self, const smtk::common::UUID& uid)
+      {
+        auto* obj = self.targetObjectFromSourceId<smtk::resource::Component>(uid);
+        auto optr = obj ? obj->shared_from_this() : nullptr;
+        return optr;
+      }, py::arg("id"))
+    .def("targetResourceFromSourceId", [](const smtk::resource::CopyOptions& self, const smtk::common::UUID& uid)
+      {
+        auto* obj = self.targetObjectFromSourceId<smtk::resource::Resource>(uid);
+        auto optr = obj ? obj->shared_from_this() : nullptr;
+        return optr;
+      }, py::arg("id"))
     .def("log", &smtk::resource::CopyOptions::log)
     ;
   return instance;

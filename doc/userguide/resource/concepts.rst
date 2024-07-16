@@ -44,37 +44,8 @@ In addition to these useful base classes,
 
 :smtk:`Links <smtk::resource::Links>`
   Resource links connect persistent objects via a unidirectional
-  relationship that exists for a specific purpose, or role. Links are
-  stored separately from the objects they connect, but each resource
-  instance owns the link that holds all outgoing connections from the
-  resource and its components. The smtk::resource::Link class is an
-  abstract API provided on both resources and components; on the
-  resource, the link subclass provides actual storage, while on
-  components, the subclass asks its parent resource for the links object
-  in order to search for connections. Roles are simply integers. Roles
-  less than zero are reserved for internal SMTK use while positive roles
-  are available for user-specified (i.e., application-specific) roles.
-
-  .. list-table:: SMTK system roles for Links
-     :widths: 50 50
-     :header-rows: 1
-
-     * - Role
-       - Purpose
-     * - :smtk:`smtk::attribute::Resource::AssociationRole`
-       - Link objects to an *instance* of an attribute to
-         indicate they possess, exhibit, or manifest the attribute.
-     * - :smtk:`smtk::attribute::Resource::ReferenceRole`
-       - Link objects to an *item* of an attribute to indicate the
-         item contains or references the object.
-     * - :smtk:`smtk::mesh::Resource::ClassificationRole`
-       - Link a mesh-set object to a source component whose geometry
-         the mesh-set discretizes.
-     * - :smtk:`smtk::resource::Resource::VisuallyLinkedRole`
-       - Link objects to one another to indicate the source
-         (left-hand) object (which does not have renderable geometry)
-         should be provided with visibility controls for the target
-         (right-hand) object(s) (which should have renderable geometry).
+  relationship that exists for a specific purpose, or role.
+  Links are discussed further below in the :ref:`resource links` section.
 
 :smtk:`Properties <smtk::resource::Properties>`
   Resources and components contain a dictionary-like data structure that

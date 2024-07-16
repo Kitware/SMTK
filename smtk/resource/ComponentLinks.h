@@ -46,6 +46,8 @@ public:
 
   friend class smtk::resource::Component;
 
+  ~ComponentLinks() override = default;
+
 private:
   ComponentLinks(const Component*);
 
