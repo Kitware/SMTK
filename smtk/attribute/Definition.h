@@ -11,6 +11,8 @@
 #ifndef smtk_attribute_Definition_h
 #define smtk_attribute_Definition_h
 
+#include "smtk/resource/Component.h"
+
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacroBase.
@@ -42,7 +44,7 @@ class Resource;
   * single attribute. Instances of a definition should be created
   * through Resource::createAttribute().
   */
-class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
+class SMTKCORE_EXPORT Definition : public resource::Component
 {
 public:
   /// Return types for canBeAssociated method
@@ -54,7 +56,10 @@ public:
     Prerequisite //!< A prerequisite association does not yet exist.
   };
 
-  smtkTypeMacroBase(smtk::attribute::Definition);
+  smtkTypeMacro(smtk::attribute::Definition);
+  smtkSuperclassMacro(smtk::resource::Component);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
+
   struct SMTKCORE_EXPORT WeakDefinitionPtrCompare
   {
     bool operator()(
@@ -72,14 +77,31 @@ public:
   };
 
   typedef std::set<WeakDefinitionPtr, WeakDefinitionPtrCompare> WeakDefinitionSet;
-  virtual ~Definition();
+  ~Definition() override;
 
-  // Description:
-  // The type is the identifier that is used to access the
-  // attribute definition through the Resource. It should never change.
+  ///\brief  Returns Definition's type
+  ///
+  /// The type is an additional identifier that can be used to access the
+  /// attribute definition through the Resource. It should never change.
   const std::string& type() const { return m_type; }
 
-  smtk::attribute::ResourcePtr resource() const { return m_resource.lock(); }
+  /// Return the name of the definition - this is the same as its type
+  std::string name() const override { return this->type(); }
+
+  ///\brief Returns the attribute resource that owns the definition
+  smtk::attribute::ResourcePtr attributeResource() const;
+
+  ///\brief Implementation of resource::Component::resource() method
+  const smtk::resource::ResourcePtr resource() const override;
+
+  /// Return a unique identifier for the definition which will be persistent across sessions.
+  const common::UUID& id() const override { return m_id; }
+
+  /// Assign an ID to this definition.
+  ///
+  /// This not supported for definitions.  The Id is set in the constructor and should
+  /// never be changed.
+  bool setId(const common::UUID& myID) override;
 
   ///\brief return the smtk::attribute::Tags associated with the Definition
   const Tags& tags() const { return m_tags; }
@@ -446,7 +468,8 @@ protected:
   Definition(
     const std::string& myType,
     smtk::attribute::DefinitionPtr myBaseDef,
-    smtk::attribute::ResourcePtr myResource);
+    smtk::attribute::ResourcePtr myResource,
+    const smtk::common::UUID& myId);
 
   void clearResource() { m_resource.reset(); }
 
@@ -469,6 +492,7 @@ protected:
   void setItemDefinitionUnitsSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const;
 
   smtk::attribute::WeakResourcePtr m_resource;
+  smtk::common::UUID m_id;
   int m_version;
   bool m_isAbstract;
   smtk::attribute::DefinitionPtr m_baseDefinition;

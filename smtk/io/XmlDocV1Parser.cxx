@@ -989,6 +989,8 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
     smtkErrorMacro(m_logger, "Definition missing Type XML Attribute");
     return;
   }
+  auto id = this->getDefinitionID(defNode);
+
   baseType = defNode.attribute("BaseType").value();
   if (!baseType.empty())
   {
@@ -1000,12 +1002,14 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
         "Could not find Base Definition: " << baseType << " needed to create Definition: " << type);
       return;
     }
-    def = m_resource->createDefinition(type, baseDef);
+
+    def = m_resource->createDefinition(type, baseDef, id);
   }
   else
   {
-    def = m_resource->createDefinition(type);
+    def = m_resource->createDefinition(type, "", id);
   }
+
   if (!def)
   {
     if (m_reportAsError)
@@ -2008,6 +2012,12 @@ smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node& attNode)
   smtkWarningMacro(
     m_logger, "Attribute: " << name << " is being assigned a new ID (Version 1 Format)!");
 
+  return smtk::common::UUID::null();
+}
+
+smtk::common::UUID XmlDocV1Parser::getDefinitionID(xml_node&)
+{
+  // Prior to V8 - Definition IDs were not stored in XML format
   return smtk::common::UUID::null();
 }
 

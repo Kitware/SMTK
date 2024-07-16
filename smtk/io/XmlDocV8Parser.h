@@ -38,14 +38,15 @@ protected:
     attribute::Categories::Expression& catExp,
     attribute::Categories::CombinationMode& inheritanceMode);
   void processDefinitionAtts(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def) override;
+  void processDefinitionChildNode(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def)
+    override;
   void processItemDefChildNode(pugi::xml_node& node, const smtk::attribute::ItemDefinitionPtr& idef)
     override;
   void processItemDefCategoryExpressionNode(
     pugi::xml_node& node,
     smtk::attribute::ItemDefinitionPtr idef);
-  void processDefinitionChildNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def)
-    override;
   void processDefCategoryExpressionNode(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def);
+  smtk::common::UUID getDefinitionID(pugi::xml_node& defNode) override;
 };
 } // namespace io
 } // namespace smtk

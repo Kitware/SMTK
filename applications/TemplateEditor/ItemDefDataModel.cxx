@@ -157,7 +157,7 @@ void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::Def
 void ItemDefDataModel::clearAttributes(smtk::attribute::DefinitionPtr def)
 {
   std::vector<smtk::attribute::AttributePtr> atts;
-  auto sys = def->resource();
+  auto sys = def->attributeResource();
   sys->findAttributes(def->type(), atts);
   for (const auto& att : atts)
   {

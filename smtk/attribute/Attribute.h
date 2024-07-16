@@ -85,13 +85,6 @@ public:
 
   static smtk::attribute::AttributePtr New(
     const std::string& myName,
-    const smtk::attribute::DefinitionPtr& myDefinition)
-  {
-    return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition));
-  }
-
-  static smtk::attribute::AttributePtr New(
-    const std::string& myName,
     const smtk::attribute::DefinitionPtr& myDefinition,
     const smtk::common::UUID& myId)
   {
@@ -376,11 +369,12 @@ public:
   bool isAboutToBeDeleted() const { return m_aboutToBeDeleted; }
 
   const common::UUID& id() const override { return m_id; }
-  bool setId(const common::UUID& uid) override
-  {
-    m_id = uid;
-    return true;
-  }
+
+  /// Assign an ID to this attribute.
+  ///
+  /// This not supported for attributes.  The Id is set in the constructor and should
+  /// never be changed.
+  bool setId(const common::UUID& uid) override;
 
   // These methods are use primarily by I/O operations.  The include ID corresponds to
   // the include directory information store in the attribute resource and is used
@@ -461,7 +455,6 @@ protected:
     const std::string& myName,
     const smtk::attribute::DefinitionPtr& myDefinition,
     const smtk::common::UUID& myId);
-  Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition);
 
   /// Constructs the attribute from its definition
   void build();

@@ -370,7 +370,7 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if (func)
   {
-    ResourcePtr attResource = func->definition()->resource();
+    ResourcePtr attResource = func->definition()->attributeResource();
     attResource->rename(func, item->text().toLatin1().constData());
   }
 }
@@ -464,7 +464,7 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
     return;
   }
   this->Internals->FuncList->blockSignals(true);
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
 
   smtk::attribute::AttributePtr newFunc = attResource->createAttribute(attDef->type());
   this->attributeCreated(newFunc);

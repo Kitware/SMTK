@@ -7,9 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_attribute_ReferenceItemDefinition_txx
-#define smtk_attribute_ReferenceItemDefinition_txx
-
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -517,4 +514,3 @@ void ReferenceItemDefinition::setUnitsSystem(const shared_ptr<units::System>& un
 }
 } // namespace attribute
 } // namespace smtk
-#endif

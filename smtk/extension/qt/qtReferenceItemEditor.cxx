@@ -329,7 +329,7 @@ void qtReferenceItemEditor::updateChoices(const smtk::common::UUID& ignoreResour
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
 
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
   // Lets get a set of possible candidates that could be assigned to the item
   auto resManager = this->uiManager()->resourceManager();
 

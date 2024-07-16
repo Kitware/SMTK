@@ -17,6 +17,8 @@
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/io/Logger.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -30,8 +32,10 @@ double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 Definition::Definition(
   const std::string& myType,
   smtk::attribute::DefinitionPtr myBaseDef,
-  ResourcePtr myResource)
+  ResourcePtr myResource,
+  const smtk::common::UUID& myId)
 {
+  m_id = myId;
   m_resource = myResource;
   m_baseDefinition = myBaseDef;
   m_type = myType;
@@ -73,6 +77,25 @@ const Tag* Definition::tag(const std::string& name) const
   }
 
   return tag;
+}
+
+bool Definition::setId(const common::UUID&)
+{
+  smtkErrorMacro(
+    smtk::io::Logger::instance(),
+    "Changing the ID for Attribute Definition " << m_type << " is not supported\n");
+  return false;
+}
+
+ResourcePtr Definition::attributeResource() const
+{
+  return m_resource.lock();
+  ;
+}
+
+const smtk::resource::ResourcePtr Definition::resource() const
+{
+  return this->attributeResource();
 }
 
 Tag* Definition::tag(const std::string& name)
@@ -186,7 +209,7 @@ bool Definition::isRelevant(
 {
   if (includeCategoryCheck && (!m_ignoreCategories))
   {
-    auto aResource = this->resource();
+    auto aResource = this->attributeResource();
     if (aResource && aResource->activeCategoriesEnabled())
     {
       if (!this->categories().passes(aResource->activeCategories()))
@@ -673,7 +696,7 @@ void Definition::setItemDefinitionUnitsSystem(
   const smtk::attribute::ItemDefinitionPtr& itemDef) const
 {
   const auto& defUnitsSystem = this->unitsSystem();
-  auto attRes = this->resource();
+  auto attRes = this->attributeResource();
   if (defUnitsSystem)
   {
     itemDef->setUnitsSystem(defUnitsSystem);
@@ -685,7 +708,7 @@ void Definition::updateDerivedDefinitions()
   DefinitionPtr def = this->shared_from_this();
   if (def)
   {
-    auto attresource = this->resource();
+    auto attresource = this->attributeResource();
     if (attresource != nullptr)
     {
       attresource->updateDerivedDefinitionIndexOffsets(def);
@@ -750,7 +773,7 @@ std::set<AttributePtr> Definition::attributes(
 {
   // Get all attributes that are associated with the object and then remove all attributes whose definitions
   // are not derived from this one.
-  auto atts = this->resource()->attributes(object);
+  auto atts = this->attributeResource()->attributes(object);
   auto sharedDef = this->shared_from_this();
   for (auto it = atts.begin(); it != atts.end();)
   {
@@ -889,7 +912,7 @@ void Definition::applyAdvanceLevels(
 const std::shared_ptr<units::System>& Definition::unitsSystem() const
 {
   static std::shared_ptr<units::System> nullUnitsSystem;
-  auto attRes = this->resource();
+  auto attRes = this->attributeResource();
   if (attRes)
   {
     return attRes->unitsSystem();

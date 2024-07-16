@@ -140,7 +140,7 @@ void qtBaseAttributeView::getDefinitions(
   QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
-  attribute::ResourcePtr attResource = attDef->resource();
+  attribute::ResourcePtr attResource = attDef->attributeResource();
   attResource->findAllDerivedDefinitions(attDef, true, newdefs);
   if (!attDef->isAbstract() && !defs.contains(attDef))
   {

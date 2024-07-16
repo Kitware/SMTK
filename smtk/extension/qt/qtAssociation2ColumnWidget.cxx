@@ -354,7 +354,7 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
     return;
   }
 
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
   // If this resource is marked for removal there is nothing to be done
   if (attResource->isMarkedForRemoval())
   {

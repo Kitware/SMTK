@@ -43,7 +43,7 @@ std::vector<Weights> computeWeights(
 {
   // Access the attribute resource containing the annotations
   smtk::attribute::ResourcePtr attributeResource =
-    definition != nullptr ? definition->resource() : nullptr;
+    definition != nullptr ? definition->attributeResource() : nullptr;
 
   // Construct a vector of point profiles
   std::vector<Weights> pointProfiles(samplePoints.size() / 3);

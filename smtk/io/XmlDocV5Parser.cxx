@@ -10,114 +10,15 @@
 
 #include "smtk/io/XmlDocV5Parser.h"
 
-#include "smtk/common/StringUtil.h"
-
 #define PUGIXML_HEADER_ONLY
 // NOLINTNEXTLINE(bugprone-suspicious-include)
 #include "pugixml/src/pugixml.cpp"
-
 using namespace pugi;
+
+#include "smtk/io/XmlPropertyParsingHelper.txx"
+
 using namespace smtk::io;
 using namespace smtk;
-
-namespace
-{
-
-template<typename ValueType>
-ValueType node_as(const xml_node& node);
-
-template<>
-double node_as<double>(const xml_node& node)
-{
-  return node.text().as_double();
-}
-
-template<>
-std::string node_as<std::string>(const xml_node& node)
-{
-  std::string s = node.text().as_string();
-  return common::StringUtil::trim(s);
-}
-
-template<typename Container, typename ValueType = typename Container::value_type>
-void nodeToData(const xml_node& node, Container& container)
-{
-  for (const xml_node& child : node.children("Value"))
-  {
-    container.insert(container.end(), node_as<ValueType>(child));
-  }
-}
-
-template<typename T>
-void processProperties(T& object, xml_node& propertiesNode, Logger& logger)
-{
-  for (const xml_node& propNode : propertiesNode.children("Property"))
-  {
-    const xml_attribute propNameAtt = propNode.attribute("Name");
-    if (!propNameAtt)
-    {
-      smtkWarningMacro(logger, "Missing Name xml attribute in Property xml node.");
-      continue;
-    }
-    const xml_attribute propTypeAtt = propNode.attribute("Type");
-    if (!propTypeAtt)
-    {
-      smtkWarningMacro(logger, "Missing Type xml attribute in Property xml node.");
-      continue;
-    }
-
-    // Convert the type to lower case
-    std::string attVal = propTypeAtt.value();
-    std::string propType = smtk::common::StringUtil::lower(attVal);
-
-    std::string propName = propNameAtt.value();
-
-    if (propType == "int")
-    {
-      object->properties().template get<int>()[propName] = propNode.text().as_int();
-    }
-    else if (propType == "double")
-    {
-      object->properties().template get<double>()[propName] = propNode.text().as_double();
-    }
-    else if (propType == "string")
-    {
-      object->properties().template get<std::string>()[propName] = propNode.text().as_string();
-    }
-    else if (propType == "vector[string]")
-    {
-      nodeToData(propNode, object->properties().template get<std::vector<std::string>>()[propName]);
-    }
-    else if (propType == "vector[double]")
-    {
-      nodeToData(propNode, object->properties().template get<std::vector<double>>()[propName]);
-    }
-    else if (propType == "bool")
-    {
-      std::string sval = propNode.text().as_string();
-      bool bval;
-      if (smtk::common::StringUtil::toBoolean(sval, bval))
-      {
-        object->properties().template get<bool>()[propName] = bval;
-      }
-      else
-      {
-        smtkWarningMacro(
-          logger,
-          "Invalid Boolean Property Value:" << propNode.text().as_string() << " for Property: "
-                                            << propName << " of Object: " << object->name() << ".");
-      }
-    }
-    else
-    {
-      smtkWarningMacro(
-        logger,
-        "Unsupported Type:" << propTypeAtt.value()
-                            << " in Property xml node for Object: " << object->name() << ".");
-    }
-  }
-}
-}; // namespace
 
 XmlDocV5Parser::XmlDocV5Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV4Parser(myResource, logger)

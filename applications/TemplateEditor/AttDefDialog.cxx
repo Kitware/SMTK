@@ -60,7 +60,7 @@ bool AttDefDialog::validate_impl()
   const QString type = this->Ui->leType->text();
   valid &= !type.isEmpty();
 
-  auto def = this->BaseDef->resource()->findDefinition(type.toStdString());
+  auto def = this->BaseDef->attributeResource()->findDefinition(type.toStdString());
   valid &= !def;
 
   return valid;

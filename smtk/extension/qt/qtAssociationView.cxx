@@ -222,7 +222,7 @@ void qtAssociationView::updateUI()
   // Get all of the attributes that match the list of definitions
   Q_FOREACH (attribute::DefinitionPtr attDef, currentDefs)
   {
-    ResourcePtr attResource = attDef->resource();
+    ResourcePtr attResource = attDef->attributeResource();
     std::vector<smtk::attribute::AttributePtr> result;
     attResource->findAttributes(attDef, result);
     if (!result.empty())

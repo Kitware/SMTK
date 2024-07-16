@@ -686,7 +686,7 @@ void qtAttributeView::onAttributeNameChanged(QStandardItem* item)
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if (aAttribute && item->text().toStdString() != aAttribute->name())
   {
-    ResourcePtr attResource = aAttribute->definition()->resource();
+    ResourcePtr attResource = aAttribute->definition()->attributeResource();
     // Lets see if the name is in use
     auto att = attResource->findAttribute(item->text().toStdString());
     if (att != nullptr)
@@ -852,7 +852,7 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     return;
   }
 
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
 
   smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
   QStandardItem* item = this->addAttributeListItem(newAtt);
@@ -936,7 +936,7 @@ bool smtk::extension::qtAttributeView::deleteAttribute(smtk::attribute::Attribut
   if (att != nullptr)
   {
     attribute::DefinitionPtr attDef = att->definition();
-    ResourcePtr attResource = attDef->resource();
+    ResourcePtr attResource = attDef->attributeResource();
     status = attResource->removeAttribute(att);
   }
 
@@ -1110,7 +1110,7 @@ void qtAttributeView::onViewByWithDefinition(smtk::attribute::DefinitionPtr attD
 {
   smtk::attribute::AttributePtr currentAtt = m_internals->selectedAttribute.lock();
   std::vector<smtk::attribute::AttributePtr> result;
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
   attResource->findAttributes(attDef, result);
   if (!result.empty())
   {
@@ -1203,7 +1203,7 @@ void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
   }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  ResourcePtr attResource = attDef->resource();
+  ResourcePtr attResource = attDef->attributeResource();
   attResource->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   int row = 1;
@@ -1521,7 +1521,7 @@ int qtAttributeView::handleOperationEvent(
 
   // If there is no definition or it's attribute resource is mark for removal
   // then we don't need to update anything
-  if ((currentDef == nullptr) || currentDef->resource()->isMarkedForRemoval())
+  if ((currentDef == nullptr) || currentDef->attributeResource()->isMarkedForRemoval())
   {
     return 0;
   }

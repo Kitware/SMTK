@@ -32,6 +32,7 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::DefinitionPtr& defPtr)
 {
   j["Type"] = defPtr->type();
+  j["ID"] = defPtr->id().toString();
   if (!defPtr->label().empty())
   {
     j["Label"] = defPtr->label();
@@ -164,20 +165,28 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     j["Tags"] = tagInfo;
   }
 
+  smtk::attribute::ResourcePtr attResource = defPtr->attributeResource();
+  if (!attResource)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "When converting to json, definition " << defPtr->label() << " has an invalid resourcePtr");
+    return;
+  }
+
   auto associationRuleForDef =
-    defPtr->resource()->associationRules().associationRulesForDefinitions().find(defPtr->type());
+    attResource->associationRules().associationRulesForDefinitions().find(defPtr->type());
   if (
-    associationRuleForDef !=
-    defPtr->resource()->associationRules().associationRulesForDefinitions().end())
+    associationRuleForDef != attResource->associationRules().associationRulesForDefinitions().end())
   {
     j["AssociationRule"] = associationRuleForDef->second;
   }
 
   auto dissociationRuleForDef =
-    defPtr->resource()->associationRules().dissociationRulesForDefinitions().find(defPtr->type());
+    attResource->associationRules().dissociationRulesForDefinitions().find(defPtr->type());
   if (
     dissociationRuleForDef !=
-    defPtr->resource()->associationRules().dissociationRulesForDefinitions().end())
+    attResource->associationRules().dissociationRulesForDefinitions().end())
   {
     j["DissociationRule"] = dissociationRuleForDef->second;
   }
@@ -193,8 +202,7 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  smtk::attribute::ResourcePtr attResource =
-    std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
+  smtk::attribute::ResourcePtr attResource = defPtr->attributeResource();
   if (attResource == nullptr)
   {
     smtkErrorMacro(
