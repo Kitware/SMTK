@@ -61,7 +61,7 @@ class TestCloneResources(smtk.testing.TestCase):
 
         # Let's associate the markup resource to the attribute resource
         self.assertTrue(self.origAttResource.associate(self.origMarkupResource),
-                        'Could not associatte attribute resource to markup resource.')
+                        'Could not associate attribute resource to markup resource.')
 
         compset = self.origMarkupResource.filter(
             'smtk::markup::UnstructuredData')
