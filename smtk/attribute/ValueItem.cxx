@@ -527,8 +527,8 @@ Item::Status ValueItem::assign(
     else
     {
       // Do we have the expression in the options' mapping information?
-      Attribute* rawDestExpAtt =
-        options.itemOptions.targetObjectFromSourceId<Attribute>(sourceValueItem->attribute()->id());
+      Attribute* rawDestExpAtt = options.itemOptions.targetObjectFromSourceId<Attribute>(
+        sourceValueItem->expression()->id());
       if (rawDestExpAtt)
       {
         status = this->setExpression(rawDestExpAtt->shared_from_this());
