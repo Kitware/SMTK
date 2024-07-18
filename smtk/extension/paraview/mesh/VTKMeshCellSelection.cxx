@@ -183,7 +183,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
         }
       }
 
-      smtk::operation::Operation::Result selectionResult = selectCells->operate(Key());
+      smtk::operation::Operation::Result selectionResult = selectCells->operate(this->childKey());
       smtk::attribute::ComponentItem::Ptr created = selectionResult->findComponent("created");
       selection.insert(created->value());
       result->findComponent("created")->appendValue(created->value());

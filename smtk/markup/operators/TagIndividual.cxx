@@ -244,7 +244,7 @@ std::size_t TagIndividual::untagNodes(
     expunged->appendValue(tag);
     auto delOp = smtk::markup::Delete::create();
     delOp->parameters()->associations()->appendValue(tag);
-    delOp->operate(TagIndividual::Key{});
+    delOp->operate(this->childKey());
   }
   else if (numUntagged)
   {

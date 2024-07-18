@@ -28,7 +28,7 @@ Helper& Helper::instance()
 {
   if (g_instanceStack.empty())
   {
-    g_instanceStack.emplace_back(std::unique_ptr<Helper>(new Helper));
+    g_instanceStack.emplace_back(new Helper);
   }
   return *(g_instanceStack.back());
 }

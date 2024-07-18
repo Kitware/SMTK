@@ -14,6 +14,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/common/Deprecation.h"
 
 #include <functional>
 #include <map>
@@ -209,6 +210,9 @@ protected:
   /// on the operation's parameters.
   virtual ResourceAccessMap identifyLocksRequired();
 
+  /// Returns the set of resources that are currently locked by this operation.
+  const ResourceAccessMap& lockedResources() const { return this->m_lockedResources; }
+
   /// Perform the actual operation and construct the result.
   virtual Result operateInternal() = 0;
 
@@ -237,21 +241,61 @@ protected:
   std::weak_ptr<Manager> m_manager;
   std::shared_ptr<smtk::common::Managers> m_managers;
 
-  // Operations need the ability to execute Operations without going through
-  // all of the checks and locks associated with the public operate() method.
-  // We therefore use a variant of the PassKey pattern to grant Operation
-  // and all of its children access to another operator's operateInternal()
-  // method. It is up to the writer of the outer Operation to ensure that
-  // Resources are accessed with appropriate lock types and that Operations
-  // called in this manner have valid inputs.
-  struct Key
+  enum LockOption
   {
-    explicit Key() = default;
-    Key(std::initializer_list<int>) {}
+    LockAll,
+    ParentLocksOnly,
+    SkipLocks
   };
 
+  enum ObserverOption
+  {
+    InvokeObservers,
+    SkipObservers
+  };
+
+  enum ParametersOption
+  {
+    Validate,
+    SkipValidation
+  };
+
+private:
+  struct BaseKey
+  {
+    BaseKey() = default;
+    BaseKey(
+      const Operation* parent,
+      ObserverOption observerOption,
+      LockOption lockOption,
+      ParametersOption paramsOption)
+      : m_parent(parent)
+      , m_lockOption(lockOption)
+      , m_observerOption(observerOption)
+      , m_paramsOption(paramsOption)
+    {
+    }
+
+    const Operation* m_parent{ nullptr };
+    LockOption m_lockOption{ LockOption::SkipLocks };
+    ObserverOption m_observerOption{ ObserverOption::SkipObservers };
+    ParametersOption m_paramsOption{ ParametersOption::SkipValidation };
+  };
+
+protected:
+  SMTK_DEPRECATED_IN_24_08("Use this->childKey() instead.")
+  struct Key : BaseKey
+  {
+    Key() = default;
+  };
+
+  BaseKey childKey(
+    ObserverOption observerOption = ObserverOption::SkipObservers,
+    LockOption lockOption = LockOption::LockAll,
+    ParametersOption paramsOption = ParametersOption::Validate) const;
+
 public:
-  Result operate(Key) { return operateInternal(); }
+  Result operate(const BaseKey& key);
 
 private:
   // Construct the operation's specification. This is typically done by reading
@@ -260,10 +304,13 @@ private:
   // operation's input and output attributes.
   virtual Specification createSpecification() = 0;
 
+  void unlockResources(const ResourceAccessMap& resources);
+
   Specification m_specification;
   Parameters m_parameters;
   Definition m_resultDefinition;
   std::vector<std::weak_ptr<smtk::attribute::Attribute>> m_results;
+  ResourceAccessMap m_lockedResources;
 };
 
 /**\brief Return the outcome of an operation given its \a result object.
