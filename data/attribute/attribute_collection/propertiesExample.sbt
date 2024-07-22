@@ -11,7 +11,11 @@
     </Property>
   </Properties>
   <Definitions>
-    <AttDef Type="Test"/>
+    <AttDef Type="Test">
+      <Properties>
+        <Property Name="alpha" Type="Int"> 100 </Property>
+      </Properties>
+    </AttDef>
   </Definitions>
   <Attributes>
     <Att Name="foo" Type="Test">

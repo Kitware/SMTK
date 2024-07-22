@@ -64,9 +64,17 @@ int unitXmlReaderProperties(int /*unused*/, char* /*unused*/[])
   smtkTest(
     attRes->properties().at<bool>("pb"), "Resource Bool Property pb was false but should be true");
 
-  // Now lets test the properties on the attribute
+  // Now lets test the properties on the attribute and definition
   auto att = attRes->findAttribute("foo");
   smtkTest(att != nullptr, "Could not find attribute foo");
+  auto def = att->definition();
+  smtkTest(def != nullptr, "Could not find attribute foo's definition");
+  smtkTest(
+    def->properties().contains<int>("alpha"), "Definition does not contains Int Property alpha");
+  smtkTest(
+    def->properties().at<int>("alpha") == 100,
+    "Attribute Definition Int Property alpha is " << def->properties().at<int>("alpha")
+                                                  << " but should be 100.");
   smtkTest(att->properties().contains<int>("pi"), "Attribute does not contains Int Property pi");
   smtkTest(
     att->properties().contains<double>("pd"), "Attribute does not contains Double Property pd");
