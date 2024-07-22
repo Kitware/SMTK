@@ -240,6 +240,9 @@ public:
   // Returns the conditional that matches object
   std::size_t testConditionals(PersistentObjectPtr& objet) const;
 
+  // Returns the criteria information as a string
+  std::string criteriaAsString() const;
+
 protected:
   ReferenceItemDefinition(const std::string& myName);
 

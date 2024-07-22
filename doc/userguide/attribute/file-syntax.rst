@@ -47,7 +47,7 @@ This element can contain the following optional children XML Elements:
 - Templates : used to define reusable  parameterized blocks of Attribute/Item Definitions Information(see `Templates Section`_)
 - Definitions : used to define attribute definitions (see `Definitions Section`_)
 - Attributes : used to define attributes
-- Views : used to define various Views (used to create GUIs)
+- Views : used to define various Views (used to create GUIs) (see `Views Section`_)
 
 Includes Section
 --------------------
@@ -2285,6 +2285,17 @@ The XML Element should have one child element called <InstancedAttributes>.  The
      - A boolean indicating (if set to true) that the Attribute's associations (if specified) should not be displayed.
 
        (Optional) – default is false
+
+   * - UnitsMode
+     - A string that indicates how to handle the case where the attribute has units assigned to it.  Supported value include:
+
+       * "None" (do not display the attribute's units)
+       * "Editable" (allow the user to edit the attribute's units)
+       * "ViewOnly" (display the attribute's units but do not allow them to be edited)
+
+       **Note**: these values are case insensitive
+
+       (Optional) - default is editable
 
 Here in an example UI of an Associations View.
 

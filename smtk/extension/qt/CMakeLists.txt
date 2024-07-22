@@ -50,6 +50,7 @@ set(QAttrLibSrcs
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
   qtDoubleUnitsLineEdit.cxx
+  qtUnitsLineEdit.cxx
   qtViewRegistrar.cxx
   qtWorkletModel.cxx
   qtWorkletPalette.cxx
@@ -170,6 +171,7 @@ set(QAttrLibMocHeaders
   qtLineEdit.h
   qtDoubleLineEdit.h
   qtDoubleUnitsLineEdit.h
+  qtUnitsLineEdit.cxx
 
   qtItem.h
   qtDiscreteValueEditor.h

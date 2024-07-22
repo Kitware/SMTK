@@ -896,12 +896,15 @@ Item::Status ReferenceItem::assign(
     }
     else
     {
+      auto def = this->definitionAs<ReferenceItemDefinition>();
       result.markFailed();
       smtkErrorMacro(
         logger,
         "ReferenceItem: " << name() << "'s number of values (" << myNumVals
                           << ") can not hold source ReferenceItem's number of values ("
-                          << sourceNumVals << ") and Partial Copying was not permitted");
+                          << sourceNumVals << ") and Partial Copying was not permitted."
+                          << " Reference Criteria:\n"
+                          << def->criteriaAsString());
       return result;
     }
   }

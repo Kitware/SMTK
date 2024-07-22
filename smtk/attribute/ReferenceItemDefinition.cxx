@@ -259,6 +259,22 @@ void ReferenceItemDefinition::copyTo(Ptr dest, smtk::attribute::ItemDefinition::
   dest->m_conditionalItemNames = m_conditionalItemNames;
 }
 
+std::string ReferenceItemDefinition::criteriaAsString() const
+{
+  std::string s;
+  s.append("Rejection Criteria\n");
+  for (const auto& rejected : m_rejected)
+  {
+    s.append("\t(").append(rejected.first).append(", ").append(rejected.second).append(")\n");
+  }
+  s.append("Acceptance Criteria\n");
+  for (const auto& accepted : m_acceptable)
+  {
+    s.append("\t(").append(accepted.first).append(", ").append(accepted.second).append(")\n");
+  }
+  return s;
+}
+
 bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc) const
 {
   // TODO:

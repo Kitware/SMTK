@@ -512,7 +512,7 @@ smtkEditPropertiesView::~smtkEditPropertiesView()
   delete m_p;
 }
 
-bool smtkEditPropertiesView::displayItem(smtk::attribute::ItemPtr item) const
+bool smtkEditPropertiesView::displayItem(const smtk::attribute::ItemPtr& item) const
 {
   if (item && item->name() == "colors")
   {
