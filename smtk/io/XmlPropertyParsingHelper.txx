@@ -30,6 +30,19 @@ double node_as<double>(const xml_node& node)
 }
 
 template<>
+int node_as<int>(const xml_node& node)
+{
+  return node.text().as_int();
+}
+
+template<>
+long node_as<long>(const xml_node& node)
+{
+  std::string v = node.text().as_string();
+  return std::stol(v);
+}
+
+template<>
 std::string node_as<std::string>(const xml_node& node)
 {
   std::string s = node.text().as_string();
@@ -88,6 +101,14 @@ void processProperties(T& object, xml_node& propertiesNode, smtk::io::Logger& lo
     else if (propType == "vector[double]")
     {
       nodeToData(propNode, object->properties().template get<std::vector<double>>()[propName]);
+    }
+    else if (propType == "vector[int]")
+    {
+      nodeToData(propNode, object->properties().template get<std::vector<int>>()[propName]);
+    }
+    else if (propType == "vector[long]")
+    {
+      nodeToData(propNode, object->properties().template get<std::vector<long>>()[propName]);
     }
     else if (propType == "bool")
     {

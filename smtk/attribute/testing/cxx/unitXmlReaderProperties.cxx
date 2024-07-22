@@ -64,6 +64,28 @@ int unitXmlReaderProperties(int /*unused*/, char* /*unused*/[])
   smtkTest(
     attRes->properties().at<bool>("pb"), "Resource Bool Property pb was false but should be true");
 
+  smtkTest(
+    attRes->properties().contains<std::vector<int>>("pvi"),
+    "Resource does not contains vector<int> Property pvi");
+  smtkTest(
+    attRes->properties().at<std::vector<int>>("pvi")[0] == 10,
+    "Resource's vector<int> Property pvi [0] = "
+      << attRes->properties().at<std::vector<int>>("pvi")[0] << " but should be 10");
+  smtkTest(
+    attRes->properties().contains<std::vector<long>>("pvl"),
+    "Resource does not contains vector<long> Property pvl");
+  smtkTest(
+    attRes->properties().at<std::vector<long>>("pvl")[0] == 1000,
+    "Resource's vector<long> Property pvi [0] = "
+      << attRes->properties().at<std::vector<long>>("pvl")[0] << " but should be 1000");
+  smtkTest(
+    attRes->properties().contains<std::vector<std::string>>("animals"),
+    "Resource does not contains vector<string> Property animals");
+  smtkTest(
+    attRes->properties().at<std::vector<std::string>>("animals")[0] == "the dog",
+    "Resource's vector<string> Property animals [0] = \""
+      << attRes->properties().at<std::vector<std::string>>("animals")[0]
+      << "\" but should be \"the dog\"");
   // Now lets test the properties on the attribute and definition
   auto att = attRes->findAttribute("foo");
   smtkTest(att != nullptr, "Could not find attribute foo");
