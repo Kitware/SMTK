@@ -498,3 +498,73 @@ bool DoubleItem::setToDefault(std::size_t element)
   }
   return true;
 }
+
+double DoubleItem::value(std::size_t element, smtk::io::Logger& log) const
+{
+  if (!this->isSet(element))
+  {
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" element " << element << " is not set (attribute \""
+                << this->attribute()->name() << "\").");
+    return 0.0;
+  }
+
+  if (isExpression())
+  {
+    double eval = this->evaluateExpression(element, log);
+    const std::string& exStr = this->expression()->units();
+    if (exStr.empty() || (exStr == units()))
+    {
+      return eval; // no conversion needed
+    }
+    // We need to convert to the units of the item
+    auto unitsSystem = this->definition()->unitsSystem();
+    // Is there a units system specified?
+    if (!unitsSystem)
+    {
+      smtkErrorMacro(
+        log,
+        "No units system set for Item \"" << this->name() << "\" element " << element
+                                          << " (attribute \"" << this->attribute()->name()
+                                          << "\").");
+      return 0.0;
+    }
+    bool status;
+    auto myUnits = unitsSystem->unit(this->units(), &status);
+    if (!status)
+    {
+      smtkErrorMacro(
+        log,
+        "Item \"" << this->name() << "\" element " << element << " (attribute \""
+                  << this->attribute()->name() << "\")'s units: " << this->units()
+                  << " are not supported for conversion.");
+      return 0.0;
+    }
+    auto exUnits = unitsSystem->unit(exStr, &status);
+    if (!status)
+    {
+      smtkErrorMacro(
+        log,
+        "Item \"" << this->name() << "\" element " << element << " (attribute \""
+                  << this->attribute()->name() << "\")'s expression's units: " << exStr
+                  << " are not supported for conversion.");
+      return 0.0;
+    }
+
+    units::Measurement m(eval, exUnits);
+    auto newM = unitsSystem->convert(m, myUnits, &status);
+    if (!status)
+    {
+      smtkErrorMacro(
+        log,
+        "Failed to convert between Item \"" << this->name() << "\" element " << element
+                                            << " (attribute \"" << this->attribute()->name()
+                                            << "\")'s expression's units: " << exStr << " to "
+                                            << this->units() << ".");
+      return 0.0;
+    }
+    return newM.m_value;
+  }
+  return m_values[element];
+}

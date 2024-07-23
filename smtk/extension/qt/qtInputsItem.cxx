@@ -1375,7 +1375,10 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       std::vector<smtk::attribute::AttributePtr>::iterator it;
       for (it = result.begin(); it != result.end(); ++it)
       {
-        attNames.push_back((*it)->name().c_str());
+        if (inputitem->isAcceptable(*it))
+        {
+          attNames.push_back((*it)->name().c_str());
+        }
       }
       attNames.sort();
       // Now add Please Select and Create Options
@@ -1507,15 +1510,12 @@ void qtInputsItem::onExpressionReferenceChanged()
       new smtk::extension::qtAttributeEditorDialog(newAtt, m_itemInfo.uiManager(), m_widget);
     auto status = editor->exec();
     QStringList itemsInComboBox;
-    if (status == QDialog::Rejected)
+    if ((status == QDialog::Rejected) || (!inputitem->setExpression(newAtt)))
     {
       lAttResource->removeAttribute(newAtt);
     }
     else
     {
-      // The user has created a new expression so add it
-      // to the list of expression names and set the item to use it
-      inputitem->setExpression(newAtt);
       itemsInComboBox.append(newAtt->name().c_str());
 
       // Signal that a new attribute was created - since this instance is not

@@ -221,6 +221,11 @@ void ReferenceItemDefinition::copyTo(Ptr dest, smtk::attribute::ItemDefinition::
   dest->setNumberOfRequiredValues(m_numberOfRequiredValues);
   dest->setMaxNumberOfValues(m_maxNumberOfValues);
   dest->setIsExtensible(m_isExtensible);
+  dest->setRole(m_role);
+  dest->setHoldReference(m_holdReference);
+  dest->setEnforcesCategories(m_enforcesCategories);
+  dest->setLockType(m_lockType);
+  dest->setOnlyResources(m_onlyResources);
   for (const auto& acceptable : m_acceptable)
   {
     dest->setAcceptsEntries(acceptable.first, acceptable.second, true);

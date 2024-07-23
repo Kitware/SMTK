@@ -43,6 +43,9 @@ public:
     const CopyAssignmentOptions& options,
     smtk::io::Logger& logger) override;
 
+  using ValueItemTemplate<double>::value;
+  double value(std::size_t element, smtk::io::Logger& log) const override;
+
   using ValueItemTemplate<double>::setValue;
   ///@{
   /// \brief Sets a value of the Item in the units defined in its definition.

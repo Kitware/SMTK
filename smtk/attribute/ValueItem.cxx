@@ -16,6 +16,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "units/Converter.h"
 #include "units/System.h"
 
 #include <algorithm> // for std::find
@@ -305,23 +306,84 @@ bool ValueItem::allowsExpressions() const
   return def->allowsExpressions();
 }
 
-bool ValueItem::setExpression(smtk::attribute::AttributePtr exp)
+bool ValueItem::isAcceptable(const smtk::attribute::AttributePtr& exp) const
 {
   const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
-  if (def->allowsExpressions())
+  if (!def->allowsExpressions())
   {
-    if (!exp)
-    {
-      m_expression->unset();
-      return true;
-    }
-    if (def->isValidExpression(exp))
-    {
-      m_expression->setValue(exp);
-      return true;
-    }
+    return false;
   }
-  return false;
+
+  if (!exp)
+  {
+    return true;
+  }
+
+  if (!def->isValidExpression(exp))
+  {
+    return false;
+  }
+
+  if (this->units() == exp->units())
+  {
+    return true;
+  }
+
+  // Are the units (if any) compatible?
+  if (exp->units().empty())
+  {
+    return true;
+  }
+
+  if (this->units().empty())
+  {
+    return false;
+  }
+
+  const auto& unitSys = def->unitsSystem();
+  // Can't determine if the units are compatible w/o units system
+  if (!unitSys)
+  {
+    return false;
+  }
+
+  bool unitsSupported;
+
+  // Are the item units supported by the units system
+  auto iUnits = unitSys->unit(this->units(), &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the item's units are not supported by the units system
+    return false;
+  }
+
+  // Are the expression units supported by the units system
+  auto eUnits = unitSys->unit(exp->units(), &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the expression's units are not supported by the units system
+    return false;
+  }
+
+  return (unitSys->convert(iUnits, eUnits) != nullptr);
+}
+
+bool ValueItem::setExpression(smtk::attribute::AttributePtr exp)
+{
+  if (!this->isAcceptable(exp))
+  {
+    return false;
+  }
+
+  if (!exp)
+  {
+    m_expression->unset();
+  }
+  else
+  {
+    m_expression->setValue(exp);
+  }
+  return true;
 }
 
 void ValueItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)

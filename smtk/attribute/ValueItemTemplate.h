@@ -45,12 +45,28 @@ public:
   bool setNumberOfValues(std::size_t newSize) override;
 
   ///@{
-  /// \brief Returns a value of the item in the units specified in the units of its definition
-  DataT value(std::size_t element = 0) const;
-  DataT value(smtk::io::Logger& log) const { return this->value(0, log); }
-  DataT value(std::size_t element, smtk::io::Logger& log) const;
+  ///\brief Return the value for the item's specified element
+  ///
+  /// If the element is not set or in the case of an expression, an error is encountered during
+  /// evaluation, DataT() is returned.
+  ///
+  /// Note:  When DataT does not have a default constructor, as in the case of double or
+  /// int. DataT() results in a zero-initialized value:
+  /// https://en.cppreference.com/w/cpp/language/value_initialization
+  virtual DataT value(std::size_t element = 0) const;
+  virtual DataT value(smtk::io::Logger& log) const { return this->value(0, log); }
+  virtual DataT value(std::size_t element, smtk::io::Logger& log) const;
   ///@}
 
+  ///\brief Evaluates an Item's expression for a specified element in the units of its definition
+  ///
+  /// If the element is not set or an error is encountered during
+  /// evaluation, DataT() is returned.
+  ///
+  /// Note:  When DataT does not have a default constructor, as in the case of double or
+  /// int. DataT() results in a zero-initialized value:
+  /// https://en.cppreference.com/w/cpp/language/value_initialization
+  DataT evaluateExpression(std::size_t element, smtk::io::Logger& log) const;
   using ValueItem::valueAsString;
   std::string valueAsString(std::size_t element) const override;
   virtual bool setValue(const DataT& val) { return this->setValue(0, val); }
@@ -140,9 +156,63 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element) const
   return this->value(element, smtk::io::Logger::instance());
 }
 
-// When DataT does not have a default constructor, as in the case of double or
-// int. DataT() results in a zero-initialized value:
-// https://en.cppreference.com/w/cpp/language/value_initialization
+template<typename DataT>
+DataT ValueItemTemplate<DataT>::evaluateExpression(std::size_t element, smtk::io::Logger& log) const
+{
+  if (!(this->isSet(element) && this->isExpression()))
+  {
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" element " << element << " is either not set "
+                << " or is not an expression (attribute \"" << this->attribute()->name() << "\").");
+    return DataT();
+  }
+
+  smtk::attribute::AttributePtr expAtt = this->expression();
+  if (!expAtt)
+  {
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" has no reference expression (attribute \""
+                << this->attribute()->name() << "\").");
+    return DataT();
+  }
+
+  std::unique_ptr<smtk::attribute::Evaluator> evaluator = expAtt->createEvaluator();
+  if (!evaluator)
+  {
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" expression is not evaluate (attribute \""
+                << this->attribute()->name() << "\").");
+    return DataT();
+  }
+
+  smtk::attribute::Evaluator::ValueType result;
+  // |evaluator| will report errors in |log| for the caller.
+  if (!evaluator->evaluate(
+        result, log, element, Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS))
+  {
+    return DataT();
+  }
+
+  DataT resultAsDataT;
+  try
+  {
+    resultAsDataT = boost::get<DataT>(result);
+  }
+  catch (const boost::bad_get&)
+  {
+    smtkErrorMacro(
+      log,
+      "Item \"" << this->name() << "\" evaluation result was not compatible (attribute \""
+                << this->attribute()->name() << "\").");
+    return DataT();
+  }
+
+  return resultAsDataT;
+}
+
 template<typename DataT>
 DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log) const
 {
@@ -157,49 +227,7 @@ DataT ValueItemTemplate<DataT>::value(std::size_t element, smtk::io::Logger& log
 
   if (isExpression())
   {
-    smtk::attribute::AttributePtr expAtt = expression();
-    if (!expAtt)
-    {
-      smtkErrorMacro(
-        log,
-        "Item \"" << this->name() << "\" has no reference expression (attribute \""
-                  << this->attribute()->name() << "\").");
-      return DataT();
-    }
-
-    std::unique_ptr<smtk::attribute::Evaluator> evaluator = expAtt->createEvaluator();
-    if (!evaluator)
-    {
-      smtkErrorMacro(
-        log,
-        "Item \"" << this->name() << "\" expression is not evaluate (attribute \""
-                  << this->attribute()->name() << "\").");
-      return DataT();
-    }
-
-    smtk::attribute::Evaluator::ValueType result;
-    // |evaluator| will report errors in |log| for the caller.
-    if (!evaluator->evaluate(
-          result, log, element, Evaluator::DependentEvaluationMode::EVALUATE_DEPENDENTS))
-    {
-      return DataT();
-    }
-
-    DataT resultAsDataT;
-    try
-    {
-      resultAsDataT = boost::get<DataT>(result);
-    }
-    catch (const boost::bad_get&)
-    {
-      smtkErrorMacro(
-        log,
-        "Item \"" << this->name() << "\" evaluation result was not compatible (attribute \""
-                  << this->attribute()->name() << "\").");
-      return DataT();
-    }
-
-    return resultAsDataT;
+    return this->evaluateExpression(element, log);
   }
   else
   {

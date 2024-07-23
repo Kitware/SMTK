@@ -28,3 +28,14 @@ are the same as the case of assigning a value with units to a ValueItem.
 Derived Definitions inherit units associated with their base Definition.  When overriding the units being inherited, by default a Definition's units must be compatible with the units coming from its base Definition, though the method provides an option to force units to be set even if they are not compatible.
 
 Definitions whose units are "*" indicate that Definitions derived and Attributes that are create from can be assigned any supported units.
+
+Expression Attributes and Value Items with Units
+-------------------------------------------------
+
+ValueItems will now test units when assigning expressions.  If the expression has units and they
+are not convertible to the item's units, the assignment will now fail.
+
+Also if a double item's units are different from its expression, the expression's
+evaluated value is converted to those of the item when calling its value methods.
+
+See smtk/attribute/testing/c++/unitInfixExpressionEvaluator and data/attribute/DoubleItemExample.sbt for examples.
