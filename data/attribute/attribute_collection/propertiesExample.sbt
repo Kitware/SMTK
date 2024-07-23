@@ -5,6 +5,12 @@
     <Property Name="pd" Type="double"> 3.141 </Property>
     <Property Name="ps" Type="STRING">Test string</Property>
     <Property Name="pb" Type="bool"> YES </Property>
+    <Property Name="pvi" Type="vector[int]">
+      <Value> 10 </Value>
+    </Property>
+    <Property Name="pvl" Type="vector[long]">
+      <Value> 1000 </Value>
+    </Property>
     <Property Name="animals" Type="vector[string]">
       <Value>the dog</Value>
       <Value>a cat</Value>
