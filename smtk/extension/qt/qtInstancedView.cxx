@@ -265,7 +265,7 @@ void qtInstancedView::updateUI()
   this->Internals->m_isEmpty = true;
   for (i = 0; i < n; i++)
   {
-    if ((atts[i]->numberOfItems() > 0) || !atts[i]->units().empty())
+    if ((atts[i]->numberOfItems() > 0) || atts[i]->supportsUnits())
     {
       qtAttribute* attInstance = new qtAttribute(atts[i], comps[i], this->widget(), this);
       if (attInstance)

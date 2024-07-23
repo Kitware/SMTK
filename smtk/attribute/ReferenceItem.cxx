@@ -999,11 +999,14 @@ Item::Status ReferenceItem::assign(
         else
         {
           result.markFailed();
+          auto def = smtk::dynamic_pointer_cast<const ReferenceItemDefinition>(this->definition());
           smtkErrorMacro(
             logger,
             "Could not assign PersistentObject:"
               << val->name() << " of type: " << val->typeName() << " to ReferenceItem: "
-              << sourceItem->name() << " and allowPartialValues options was not specified.");
+              << sourceItem->name() << " and allowPartialValues options was not specified."
+              << " Reference Criteria:\n"
+              << def->criteriaAsString());
           return result;
         }
       }

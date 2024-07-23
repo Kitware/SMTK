@@ -48,9 +48,9 @@ void XmlV8StringWriter::processDefinitionInternal(
 {
   XmlV7StringWriter::processDefinitionInternal(definition, def);
 
-  if (!def->units().empty())
+  if (!def->localUnits().empty())
   {
-    definition.append_attribute("Units").set_value(def->units().c_str());
+    definition.append_attribute("Units").set_value(def->localUnits().c_str());
   }
   // Add its ID
   definition.append_attribute("ID").set_value(def->id().toString().c_str());

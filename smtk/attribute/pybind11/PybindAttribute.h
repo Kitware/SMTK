@@ -139,6 +139,10 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
     .def("setlocalAdvanceLevel", &smtk::attribute::Attribute::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))
     .def("unsetLocalAdvanceLevel", &smtk::attribute::Attribute::unsetLocalAdvanceLevel, py::arg("mode") = 0)
     .def("hasLocalAdvanceLevelInfo", &smtk::attribute::Attribute::hasLocalAdvanceLevelInfo, py::arg("mode") = 0)
+    .def("units", &smtk::attribute::Attribute::units)
+    .def("localUnits", &smtk::attribute::Attribute::localUnits)
+    .def("setLocalUnits", &smtk::attribute::Attribute::setLocalUnits, py::arg("newUnits"))
+    .def("supportsUnits", &smtk::attribute::Attribute::supportsUnits)
     .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Component> i) {
         return std::dynamic_pointer_cast<smtk::attribute::Attribute>(i);
       })

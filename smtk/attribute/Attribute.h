@@ -339,6 +339,12 @@ public:
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
   const smtk::attribute::Categories& categories() const;
 
+  ///@{
+  ///\brief Returns true if the attribute is valid.
+  ///
+  /// An irrelevant attribute is considered valid since for all intents and purposes it is treated
+  /// as though it does not exist.  A relevant attribute if valid if all of its relevant children items
+  /// are valid
   bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const;
 
@@ -396,29 +402,37 @@ public:
   // registered with an Evaluator, else returns nullptr.
   std::unique_ptr<smtk::attribute::Evaluator> createEvaluator() const;
 
-  /// @{
-  ///\brief Set/Get the units string associated with the attribute
+  ///\brief Return the units associated to the attribute
+  ///
+  /// Returns the units that have been locally set on the attribute, else it will return those
+  /// returned from its definition's units method
   ///
   /// This means that the information that the attributes represents
   /// conceptually has units but unlike attribute Items, does not have a numerical value
   /// associated with it.  For example an attribute may be used to indicate that a numerical
   /// field being output by a simulation represents a temperature whose units should be in Kelvin.
   ///
-  ///\brief Return the units associated to the attribute
-  ///
-  /// Returns the units that have been explicitly on the attribute, else it will return those
-  /// set on its definition
+  /// If the attribute has no local units set and its definition's units method returns "*", then
+  /// this will return an empty string indicating that the attribute is currently unit-less
   const std::string& units() const;
-  ///\brief Return the units explicitly set on the attribute
+
+  ///\brief Return the units locally set on the attribute
   const std::string& localUnits() const { return m_localUnits; }
-  ///\brief Explicitly sets the units on the attribute
+
+  ///\brief Locally set the units on the attribute
   ///
   /// This will fail and return false under the following circumstances:
   /// 1. There are no units associated with its definition and the newUnits string is not empty
   /// 2. There is no units system associated with its definition and newUnits is not the same as those on the definition
-  /// 3. There is no way to convert between the units associated with its definition and newUnits
+  /// 3. newUnits are not supported by the associated units system
+  /// 4. Its definition's units are not "*" or there is no way to convert between the units associated with its definition
+  ///    and newUnits
   bool setLocalUnits(const std::string& newUnits);
-  /// @}
+
+  ///\brief Returns true if the attribute supports units.
+  ///
+  /// An attribute supports units if its definition's units() does not return an empty string.
+  bool supportsUnits() const;
 
   class GuardedLinks
   {

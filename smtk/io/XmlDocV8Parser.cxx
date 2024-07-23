@@ -166,7 +166,7 @@ void XmlDocV8Parser::processDefinitionAtts(xml_node& defNode, smtk::attribute::D
   pugi::xml_attribute xatt = defNode.attribute("Units");
   if (xatt)
   {
-    def->setUnits(xatt.value());
+    def->setLocalUnits(xatt.value());
   }
 
   this->XmlDocV7Parser::processDefinitionAtts(defNode, def);

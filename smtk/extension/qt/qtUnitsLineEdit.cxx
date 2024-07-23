@@ -19,6 +19,7 @@
 #include <QFocusEvent>
 #include <QFont>
 #include <QKeyEvent>
+#include <QRegularExpressionValidator>
 #include <QStringListModel>
 #include <QVariant>
 #include <Qt>
@@ -76,24 +77,17 @@ qtUnitsLineEdit::qtUnitsLineEdit(
   , m_uiManager(uiManager)
 {
 
-  // Parsing the Item's unit string
-  bool parsedOK = false;
-  auto unit = m_unitSys->unit(m_baseUnit.toStdString(), &parsedOK);
-
-  // If the units are supported then setup a completer
-  if (parsedOK)
+  QStringList unitChoices;
+  std::shared_ptr<units::PreferredUnits> preferred;
+  auto cit = m_unitSys->m_unitContexts.find(m_unitSys->m_activeUnitContext);
+  if (cit != m_unitSys->m_unitContexts.end())
   {
+    preferred = cit->second;
+  }
 
-    std::shared_ptr<units::PreferredUnits> preferred;
-    auto cit = m_unitSys->m_unitContexts.find(m_unitSys->m_activeUnitContext);
-    if (cit != m_unitSys->m_unitContexts.end())
-    {
-      preferred = cit->second;
-    }
-
-    // Get the completer strings
-    QStringList unitChoices;
-
+  // if the base unit is empty then all supported units are allowed
+  if (m_baseUnit.isEmpty())
+  {
     // Create a list of possible units names:
     if (preferred)
     {
@@ -102,7 +96,7 @@ qtUnitsLineEdit::qtUnitsLineEdit(
       // position 0 of the suggestions.
       units::CompatibleUnitOptions opts;
       opts.m_inputUnitPriority = 0;
-      for (const auto& suggestion : preferred->suggestedUnits(m_baseUnit.toStdString(), opts))
+      for (const auto& suggestion : preferred->suggestedUnits("*", opts))
       {
         unitChoices.push_back(suggestion.c_str());
       }
@@ -114,10 +108,10 @@ qtUnitsLineEdit::qtUnitsLineEdit(
       // duplicates and is definitely not sorted.
 
       // Get list of compatible units
-      auto compatibleUnits = m_unitSys->compatibleUnits(unit);
-      for (const auto& unit : compatibleUnits)
+      auto compatibleUnits = m_unitSys->allUnits();
+      for (const auto& unitName : compatibleUnits)
       {
-        unitChoices.push_back(unit.name().c_str());
+        unitChoices.push_back(unitName.c_str());
       }
       // Lets remove duplicates and sort the list
       unitChoices.removeDuplicates();
@@ -125,7 +119,53 @@ qtUnitsLineEdit::qtUnitsLineEdit(
       // Now make the Item's units appear at the top
       //unitChoices.push_front(dUnits.c_str());
     }
+  }
+  else
+  {
+    // Parsing the unit string
+    bool parsedOK = false;
+    auto unit = m_unitSys->unit(m_baseUnit.toStdString(), &parsedOK);
 
+    // If the units are supported then setup a completer
+    if (parsedOK)
+    {
+
+      // Create a list of possible units names:
+      if (preferred)
+      {
+        // We have a context; this provides preferred units as a
+        // developer-ordered list of units, placing dUnits at
+        // position 0 of the suggestions.
+        units::CompatibleUnitOptions opts;
+        opts.m_inputUnitPriority = 0;
+        for (const auto& suggestion : preferred->suggestedUnits(m_baseUnit.toStdString(), opts))
+        {
+          unitChoices.push_back(suggestion.c_str());
+        }
+      }
+      else
+      {
+        // We don't have a unit-system context; just
+        // find compatible units. This may present
+        // duplicates and is definitely not sorted.
+
+        // Get list of compatible units
+        auto compatibleUnits = m_unitSys->compatibleUnits(unit);
+        for (const auto& unit : compatibleUnits)
+        {
+          unitChoices.push_back(unit.name().c_str());
+        }
+        // Lets remove duplicates and sort the list
+        unitChoices.removeDuplicates();
+        unitChoices.sort();
+        // Now make the Item's units appear at the top
+        //unitChoices.push_front(dUnits.c_str());
+      }
+    }
+  }
+
+  if (!unitChoices.empty())
+  {
     auto* model = new qtCompleterStringModel(this);
     model->setStringList(unitChoices);
     m_completer = new QCompleter(model, parent);
@@ -136,6 +176,9 @@ qtUnitsLineEdit::qtUnitsLineEdit(
   // Connect up the signals
   QObject::connect(this, &QLineEdit::textEdited, this, &qtUnitsLineEdit::onTextEdited);
   QObject::connect(this, &QLineEdit::editingFinished, this, &qtUnitsLineEdit::onEditFinished);
+
+  // Prevent leading spaces
+  this->setValidator(new QRegularExpressionValidator(QRegularExpression("^\\S*$"), this));
 }
 
 bool qtUnitsLineEdit::isCurrentTextValid() const
@@ -143,13 +186,15 @@ bool qtUnitsLineEdit::isCurrentTextValid() const
   auto utext = this->text().toStdString();
   // Remove all surrounding white space
   smtk::common::StringUtil::trim(utext);
+
+  // Empty strings are only allowed if the baseUnit is also empty
+  // which indicates that any supported units as well as unit-less
+  // values are permitted
   if (utext.empty())
   {
-    return false;
+    return m_baseUnit.isEmpty();
   }
   bool parsedOK = false;
-  auto baseU = m_unitSys->unit(m_baseUnit.toStdString(), &parsedOK);
-
   // Is the current value supported by the unit system?
   parsedOK = false;
   auto newU = m_unitSys->unit(utext, &parsedOK);
@@ -157,7 +202,14 @@ bool qtUnitsLineEdit::isCurrentTextValid() const
   {
     return false;
   }
+
+  if (m_baseUnit.isEmpty())
+  {
+    return true;
+  }
+
   // Can you convert between the units?
+  auto baseU = m_unitSys->unit(m_baseUnit.toStdString(), &parsedOK);
   return (m_unitSys->convert(baseU, newU) != nullptr);
 }
 

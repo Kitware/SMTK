@@ -36,6 +36,7 @@ bool testAttributeUnits(const attribute::ResourcePtr& attRes, const std::string&
   AttributePtr b = attRes->findAttribute("b");
   AttributePtr b1 = attRes->findAttribute("b1");
   AttributePtr c = attRes->findAttribute("c");
+  AttributePtr d = attRes->findAttribute("d");
 
   if (!a->definition()->units().empty())
   {
@@ -75,6 +76,31 @@ bool testAttributeUnits(const attribute::ResourcePtr& attRes, const std::string&
     std::cerr << prefix << "Attribute c has units: " << c->units() << " but should be in foo!\n";
     status = false;
   }
+  if (!d->units().empty())
+  {
+    std::cerr << prefix << "Attribute d has units: " << d->units() << " but should be empty!\n";
+    status = false;
+  }
+  if (!d->setLocalUnits("K"))
+  {
+    std::cerr << prefix << "Could not set attribute d's units to K\n";
+    status = false;
+  }
+  if (!d->setLocalUnits("miles"))
+  {
+    std::cerr << prefix << "Could not set attribute d's units to miles\n";
+    status = false;
+  }
+  if (d->setLocalUnits("foo"))
+  {
+    std::cerr << prefix << "Could  set attribute d's units to foo which should not be allowed\n";
+    status = false;
+  }
+  if (!d->setLocalUnits(""))
+  {
+    std::cerr << prefix << "Could not set attribute d to be unit-less\n";
+    status = false;
+  }
   return status;
 }
 
@@ -86,20 +112,82 @@ int unitAttributeUnits(int /*unused*/, char* /*unused*/[])
   // I. Let's create an attribute resource and some definitions and attributes
   attribute::ResourcePtr attRes = attribute::Resource::create();
 
+  std::cerr << "Definition Units Tests\n";
   // A will not have any units specified
   DefinitionPtr A = attRes->createDefinition("A");
   // B will have a unit of length (meters)
   DefinitionPtr B = attRes->createDefinition("B");
-  B->setUnits("meters");
+  B->setLocalUnits("meters");
+
+  // B1 will derive from B
+  DefinitionPtr B1 = attRes->createDefinition("B1", B);
+  // By default B1 should have meters for units
+  if (B1->units() != "meters")
+  {
+    std::cerr << "B1 inherited: " << B1->units() << " - should have been meters\n";
+    status = -1;
+  }
+  // We should be able to set B1's units to miles
+  if (!B1->setLocalUnits("miles"))
+  {
+    std::cerr << "Was not able to set B1's units to miles\n";
+    status = -1;
+  }
+  else if (B1->units() != "miles")
+  {
+    std::cerr << "B1 units: " << B1->units() << " - should have been miles\n";
+    status = -1;
+  }
+  // We should not be able to set B1's units to K (Kelvin)
+  if (B1->setLocalUnits("K"))
+  {
+    std::cerr << "Was  able to set B1's units to K\n";
+    status = -1;
+  }
+
   // C will have non supported units (foo)
   DefinitionPtr C = attRes->createDefinition("C");
-  C->setUnits("foo");
+  C->setLocalUnits("foo");
 
+  // D will have support all units
+  DefinitionPtr D = attRes->createDefinition("D");
+  D->setLocalUnits("*");
+  DefinitionPtr D1 = attRes->createDefinition("D1", D);
+  // We should be able to set D1 to miles
+  if (!D1->setLocalUnits("miles"))
+  {
+    std::cerr << "Was not able to set D1's units to miles\n";
+    status = -1;
+  }
+  // We should be able to set D1 to meters
+  if (!D1->setLocalUnits("meters"))
+  {
+    std::cerr << "Was not able to set D1's units to meters\n";
+    status = -1;
+  }
+  // Now that there are explicit units on D1 we should be able
+  // to set them to something that is not compatible without forcing it
+  if (D1->setLocalUnits("K"))
+  {
+    std::cerr << "Was able to set D1's units to K\n";
+    status = -1;
+  }
+  else if (!D1->setLocalUnits("K", true))
+  {
+    std::cerr << "Was not able to force setting D1's units to K\n";
+    status = -1;
+  }
+
+  if (status == 0)
+  {
+    std::cerr << "All Definition Unit Tests Passed!\n";
+  }
   // Lets create some attributes
   auto a = attRes->createAttribute("a", "A");
   auto b = attRes->createAttribute("b", "B");
   auto b1 = attRes->createAttribute("b1", "B");
   auto c = attRes->createAttribute("c", "C");
+  auto d = attRes->createAttribute("d", "D");
 
   // Lets do some unit assignments
   // Should not be able to assign any units to an attribute whose

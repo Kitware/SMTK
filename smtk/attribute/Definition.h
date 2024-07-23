@@ -448,16 +448,32 @@ public:
   bool ignoreCategories() const { return m_ignoreCategories; }
   void setIgnoreCategories(bool val) { m_ignoreCategories = val; }
 
-  /// @{
-  ///\brief Set/Get the units string associated with the definition
+  ///\brief Return the units associated to the definition
   ///
-  /// This means that the information that the definition's attributes represents
+  /// Returns the units that have been locally set on the definition, else if the definition has
+  /// a base definition, then its base definition's units are returned.
+  ///
+  /// This means that the information that the attributes, generated from the definition, represents
   /// conceptually has units but unlike attribute Items, does not have a numerical value
   /// associated with it.  For example an attribute may be used to indicate that a numerical
-  /// field being output by a simulation represents a temperature whose units should be in Kelvin
-  const std::string& units() const { return m_units; }
-  bool setUnits(const std::string& newUnits);
-  /// @}
+  /// field being output by a simulation represents a temperature whose units should be in Kelvin.
+  ///
+  /// **Note** A definition's units method returning "*" indicates that its attributes or derived definitions can be assigned
+  /// any supported units
+  const std::string& units() const;
+
+  ///\brief Return the units locally set on the definition
+  const std::string& localUnits() const { return m_localUnits; }
+
+  ///\brief Locally set the units on the definition
+  ///
+  /// This will fail and return false under the following circumstances:
+  /// 1. There is no units system associated with the definition, the definition has a base definition whose units() are
+  ///    not empty,  and newUnits is not the same as those returned from its base definition
+  /// 2. newUnits are not supported by the associated units system
+  /// 3. Its base definition's units are not "*" or there is no way to convert between the units associated with its base definition
+  ///    and newUnits
+  bool setLocalUnits(const std::string& newUnits, bool force = false);
 
   /// \brief Gets the system of units used by this definition.
   const std::shared_ptr<units::System>& unitsSystem() const;
@@ -528,7 +544,7 @@ protected:
   Tags m_tags;
   std::size_t m_includeIndex;
   Categories::CombinationMode m_combinationMode;
-  std::string m_units;
+  std::string m_localUnits;
 
 private:
   /// These colors are returned for base definitions w/o set colors

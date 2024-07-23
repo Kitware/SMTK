@@ -5,6 +5,7 @@
   <Associations />
   <Definitions>
     <AttDef Type="doubleFunc" Association="None" Units="m"/>
+    <AttDef Type="B" Label="B" BaseType="" Unique="false" Units="*"/>
     <AttDef Type="A" Label="A" BaseType="" Unique="false" Units="m">
       <ItemDefinitions>
         <Double Name="d0" Label="Optional Double" Optional="true">
@@ -34,6 +35,7 @@
             <View Item="d1" ExpressionOnly="true"/>
           </ItemViews>
         </Att>
+        <Att Type="B" Name="Attribute (any units)"/>
       </InstancedAttributes>
     </View>
   </Views>
