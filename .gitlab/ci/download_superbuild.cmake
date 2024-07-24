@@ -10,16 +10,16 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20240503: Refresh for new SDK usage (Xcode 14.2)
+# 20240724: Refresh for Units Library supporting "*" units
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_item "6636158ec6586ba79a5656e3")
-  set(file_hash "d25862f76bbe4256498396cc5c0526ae74cdb6ed66eaf48bd9444edad4ece01f778d20db364a172abcea8a6b43573ead951052419b123d63ec1730b25e3a4ca7")
+  set(file_item "66a13fdd5d2551c516b1d5c7")
+  set(file_hash "e248699a4b7926b2bb5fc19880a460ac36c4ebe0896dab77d8232ce96fe934e539ec77ce7602d60490499b8edf756a1ad3a68c18365606e2d8b3e45c6488a240")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_item "6636158ec6586ba79a5656df")
-  set(file_hash "811570d6bed9a808fd00c98ed7d435c98408034fcc2bd2705878014a88a66717af566ef549d579052a7d8582a0c7c7393164e4a22ad8abbdb2460d915de4887e")
+  set(file_item "66a13fdd5d2551c516b1d5c5")
+  set(file_hash "807ceb6fdfad77103b849659fa033f242d8211895ebd21d9492809cae96e16fb17050daffc7f71a7fc65b8746d34c66e8d05e479fbb523b8a1b4ce0ef9af7cb5")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_item "6636158ec6586ba79a5656dd")
-  set(file_hash "cc89f4ab4b71ef1946ed9199b9d6216827cd3c9a92a1520718f448aed3a4f9afb334d516cbe06a32f9d01f1dec8232915b4baa6c42632997e37fdc5565ee9a35")
+  set(file_item "66a13fdd5d2551c516b1d5c3")
+  set(file_hash "a4697df02417badf76f28ab51d51db4815f13cb861a3e5f0a0d224b5dde0a389c230d385a8f03f3959b32434cadfb375ebe105c041400481d93e70711e9c8389")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")
