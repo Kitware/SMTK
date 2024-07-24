@@ -137,7 +137,7 @@ smtkAssignColorsView::~smtkAssignColorsView()
   delete this->Internals;
 }
 
-bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item) const
+bool smtkAssignColorsView::displayItem(const smtk::attribute::ItemPtr& item) const
 {
   if (item && item->name() == "colors")
   {

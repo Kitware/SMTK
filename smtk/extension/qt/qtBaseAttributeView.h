@@ -44,7 +44,11 @@ public:
   /// If you override this method, you may wish to call this from
   /// your override, since it checks the advance-level and category
   /// settings for the item.
-  virtual bool displayItem(smtk::attribute::ItemPtr) const;
+  virtual bool displayItem(const smtk::attribute::ItemPtr&) const;
+  /// Determines if an Attribute should be displayed solely based on categories
+  ///
+  /// This method is used by qtAttribute to deal with Attributes with units.
+  virtual bool displayAttribute(const smtk::attribute::AttributePtr&) const;
   virtual bool displayItemDefinition(const smtk::attribute::ItemDefinitionPtr&) const;
   /// Determines if an item can be modified
   virtual bool isItemWriteable(const smtk::attribute::ItemPtr&) const;

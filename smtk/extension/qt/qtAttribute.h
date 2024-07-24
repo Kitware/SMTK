@@ -88,6 +88,7 @@ protected:
 
 protected Q_SLOTS:
   void onItemModified();
+  void onUnitsChanged(QString);
 
 private:
   qtAttributeInternals* m_internals;

@@ -240,7 +240,7 @@ smtkMeshInspectorView::~smtkMeshInspectorView()
   delete m_p;
 }
 
-bool smtkMeshInspectorView::displayItem(smtk::attribute::ItemPtr item) const
+bool smtkMeshInspectorView::displayItem(const smtk::attribute::ItemPtr& item) const
 {
   // Here is where item visibility can be overridden for the custom view.
   return this->qtBaseAttributeView::displayItem(item);

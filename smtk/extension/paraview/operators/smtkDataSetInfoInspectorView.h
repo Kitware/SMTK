@@ -33,7 +33,7 @@ public:
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  bool displayItem(smtk::attribute::ItemPtr) const override;
+  bool displayItem(const smtk::attribute::ItemPtr&) const override;
 
 public Q_SLOTS: // NOLINT(readability-redundant-access-specifiers)
   void updateUI() override;

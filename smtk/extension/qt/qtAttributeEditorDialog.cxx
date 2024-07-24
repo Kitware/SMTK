@@ -27,6 +27,7 @@
 
 #include <QMessageBox>
 #include <QPushButton>
+#include <QTimer>
 
 using namespace smtk::extension;
 
@@ -106,4 +107,9 @@ void qtAttributeEditorDialog::attributeNameChanged()
     return;
   }
   attResource->rename(m_attribute, newName);
+  // This method can be triggered by a change of focus event.  Since
+  // updating the instanceView's contents causes all of its internal widgets
+  // to be destroyed we need to use a timer so that if a focus event was involved,
+  // it will be processed before the view is updated.
+  QTimer::singleShot(0, [=]() { m_instancedView->updateUI(); });
 }

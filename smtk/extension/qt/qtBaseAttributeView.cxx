@@ -156,14 +156,22 @@ void qtBaseAttributeView::getDefinitions(
   }
 }
 
-bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item) const
+bool qtBaseAttributeView::displayItem(const smtk::attribute::ItemPtr& item) const
 {
   if (!item)
   {
     return false;
   }
-  auto idef = item->definition();
   return this->advanceLevelTest(item) && this->categoryTest(item);
+}
+
+bool qtBaseAttributeView::displayAttribute(const smtk::attribute::AttributePtr& att) const
+{
+  if (!att)
+  {
+    return false;
+  }
+  return m_ignoreCategories || att->isRelevant();
 }
 
 bool qtBaseAttributeView::displayItemDefinition(

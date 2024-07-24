@@ -158,7 +158,7 @@ smtkDataSetInfoInspectorView::~smtkDataSetInfoInspectorView()
   delete m_p;
 }
 
-bool smtkDataSetInfoInspectorView::displayItem(smtk::attribute::ItemPtr item) const
+bool smtkDataSetInfoInspectorView::displayItem(const smtk::attribute::ItemPtr& item) const
 {
   // Here is where item visibility can be overridden for the custom view.
   return this->qtBaseAttributeView::displayItem(item);
