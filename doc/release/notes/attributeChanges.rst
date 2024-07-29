@@ -24,3 +24,7 @@ Attribute's units to Celsius.
 
 The rules for assigning local units to an Attribute that override those inherited through its definition
 are the same as the case of assigning a value with units to a ValueItem.
+
+Derived Definitions inherit units associated with their base Definition.  When overriding the units being inherited, by default a Definition's units must be compatible with the units coming from its base Definition, though the method provides an option to force units to be set even if they are not compatible.
+
+Definitions whose units are "*" indicate that Definitions derived and Attributes that are create from can be assigned any supported units.

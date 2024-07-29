@@ -19,6 +19,9 @@
 
 #include "smtk/io/Logger.h"
 
+#include "units/Converter.h"
+#include "units/System.h"
+
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -920,8 +923,62 @@ const std::shared_ptr<units::System>& Definition::unitsSystem() const
   return nullUnitsSystem;
 }
 
-bool Definition::setUnits(const std::string& newUnits)
+bool Definition::setLocalUnits(const std::string& newUnits, bool force)
 {
-  m_units = newUnits;
-  return true;
+  const auto& currentUnits = this->units();
+  if (currentUnits.empty() || force)
+  {
+    m_localUnits = newUnits;
+    return true;
+  }
+  const auto& unitSys = this->unitsSystem();
+  if (!unitSys)
+  {
+    return false; // There is no unit system
+  }
+
+  // Are the requested units supported by the units system
+  bool unitsSupported;
+  auto nUnits = unitSys->unit(newUnits, &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the new units are not supported by the units system
+    return false;
+  }
+
+  if (currentUnits == "*")
+  {
+    // This definition can accept any support units
+    m_localUnits = newUnits;
+    return true;
+  }
+
+  // Can we convert from the current units to the proposed new units?
+  auto cUnits = unitSys->unit(currentUnits, &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the current units are not supported by the units system so
+    // there is no conversion
+    return false;
+  }
+
+  if (unitSys->convert(cUnits, nUnits))
+  {
+    m_localUnits = newUnits;
+    return true;
+  }
+  // No known conversion
+  return false;
+}
+
+const std::string& Definition::units() const
+{
+  // If it has units set, return them.  Else if there is
+  // a base definition return those
+  if (m_localUnits.empty() && m_baseDefinition)
+  {
+    return m_baseDefinition->units();
+  }
+
+  return m_localUnits;
 }

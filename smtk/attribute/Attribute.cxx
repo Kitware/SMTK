@@ -1182,12 +1182,22 @@ bool Attribute::assign(
 
 const std::string& Attribute::units() const
 {
-  if (!(m_localUnits.empty() && m_definition))
+  // Return the attribute's local units if any of the following is true:
+  // 1. They have been set
+  // 2. The attribute has no definition
+  // 3. The attribute's definition's units are * which means the attribute must have its
+  //    units set locally but can be set to any valid unit
+  if ((!(m_localUnits.empty() && m_definition)) || (m_definition->units() == "*"))
   {
     return m_localUnits;
   }
 
   return m_definition->units();
+}
+
+bool Attribute::supportsUnits() const
+{
+  return (m_definition && !m_definition->units().empty());
 }
 
 bool Attribute::setLocalUnits(const std::string& newUnits)
@@ -1198,7 +1208,7 @@ bool Attribute::setLocalUnits(const std::string& newUnits)
     return true;
   }
 
-  if (currentUnits.empty() || !m_definition)
+  if (!(this->supportsUnits() && m_definition))
   {
     return false;
   }
@@ -1210,14 +1220,16 @@ bool Attribute::setLocalUnits(const std::string& newUnits)
     return false;
   }
 
-  // Can we convert from the current units to the proposed new units?
-  bool unitsSupported;
-  auto cUnits = unitSys->unit(currentUnits, &unitsSupported);
-  if (!unitsSupported)
+  // If the definitions units = "*" then the attribute can be unit-less (empty string)
+  if (newUnits.empty() && m_definition->units() == "*")
   {
-    // the current units are not supported by the units system
-    return false;
+    m_localUnits = newUnits;
+    return true;
   }
+
+  bool unitsSupported;
+
+  // Are the requested units supported by the units system
   auto nUnits = unitSys->unit(newUnits, &unitsSupported);
   if (!unitsSupported)
   {
@@ -1225,6 +1237,22 @@ bool Attribute::setLocalUnits(const std::string& newUnits)
     return false;
   }
 
+  // If the definitions units = "*", which means that the attribute's
+  // definition can support any units, then as long as the requested units
+  // are supported we will accept them.
+  if (m_definition->units() == "*")
+  {
+    m_localUnits = newUnits;
+    return true;
+  }
+
+  // Can we convert from the current units to the proposed new units?
+  auto cUnits = unitSys->unit(currentUnits, &unitsSupported);
+  if (!unitsSupported)
+  {
+    // the current units are not supported by the units system
+    return false;
+  }
   if (unitSys->convert(cUnits, nUnits))
   {
     m_localUnits = newUnits;

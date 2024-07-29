@@ -33,7 +33,6 @@
 #include <QFrame>
 #include <QLabel>
 #include <QPointer>
-#include <QRegularExpressionValidator>
 #include <QVBoxLayout>
 
 #include <cstdlib> // for atexit()
@@ -141,48 +140,54 @@ void qtAttribute::createWidget(bool createWidgetWhenEmpty)
   m_isEmpty = true;
 
   auto att = this->attribute();
-  if (
-    (att == nullptr) ||
-    ((att->numberOfItems() == 0) && (att->associations() == nullptr) &&
-     (att->units().empty() || (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::None))))
+  if (!createWidgetWhenEmpty)
   {
-    return;
-  }
-
-  // Based on the View, see if the attribute should be displayed
-  if (!m_internals->m_view->displayAttribute(att))
-  {
-    return;
-  }
-
-  // We will always display units if there are any associated with the attribute and we were told to display them else
-  // we need to see if any items would be displayed
-  if (att->units().empty() || (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::None))
-  {
-    int numShowItems = 0;
-    std::size_t i, n = att->numberOfItems();
-    if (m_internals->m_view)
+    if (
+      (att == nullptr) ||
+      ((att->numberOfItems() == 0) && (att->associations() == nullptr) &&
+       ((!att->supportsUnits()) ||
+        (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::None))))
     {
-      for (i = 0; i < n; i++)
+      return;
+    }
+
+    // Based on the View, see if the attribute should be displayed
+    if (!m_internals->m_view->displayAttribute(att))
+    {
+      return;
+    }
+
+    // We will always display units if there are any associated with the attribute and we were told to display them else
+    // we need to see if any items would be displayed
+    if (
+      (!att->supportsUnits()) ||
+      (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::None))
+    {
+      int numShowItems = 0;
+      std::size_t i, n = att->numberOfItems();
+      if (m_internals->m_view)
       {
-        if (m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
+        for (i = 0; i < n; i++)
+        {
+          if (m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
+          {
+            numShowItems++;
+          }
+        }
+        // also check associations
+        if (m_internals->m_view->displayItem(att->associations()))
         {
           numShowItems++;
         }
       }
-      // also check associations
-      if (m_internals->m_view->displayItem(att->associations()))
+      else // show everything
       {
-        numShowItems++;
+        numShowItems = static_cast<int>(att->associations() ? n + 1 : n);
       }
-    }
-    else // show everything
-    {
-      numShowItems = static_cast<int>(att->associations() ? n + 1 : n);
-    }
-    if ((numShowItems == 0) && !createWidgetWhenEmpty)
-    {
-      return;
+      if (numShowItems == 0)
+      {
+        return;
+      }
     }
   }
 
@@ -240,9 +245,9 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   qtItem* qItem = nullptr;
   smtk::attribute::AttributePtr att = this->attribute();
   auto* uiManager = m_internals->m_view->uiManager();
-  // If the attribute has units - display them
-  if (!(att->units().empty() ||
-        (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::None)))
+
+  // If the attribute has units and we were told not to ignore them then display them
+  if (att->supportsUnits() && (m_internals->m_unitsMode != qtAttributeInternals::UnitsMode::None))
   {
     QFrame* unitFrame = new QFrame(this->m_widget);
     std::string unitFrameName = att->name() + "UnitsFrame";
@@ -256,25 +261,27 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     unitFrame->setLayout(unitsLayout);
     std::string unitsLabel = att->name() + "'s units:";
 
+    // Are we suppose to allow editing?
     if (m_internals->m_unitsMode == qtAttributeInternals::UnitsMode::Editable)
     {
       QLabel* uLabel = new QLabel(unitsLabel.c_str(), unitFrame);
       unitsLayout->addWidget(uLabel);
-      auto* unitsWidget = new qtUnitsLineEdit(
-        att->definition()->units().c_str(), att->definition()->unitsSystem(), uiManager, unitFrame);
+
+      // If the attribute's definition has explicit units use them else use those set explicitly on the attribute
+      QString baseUnits = (att->definition()->units() == "*") ? att->units().c_str()
+                                                              : att->definition()->units().c_str();
+      auto* unitsWidget =
+        new qtUnitsLineEdit(baseUnits, att->definition()->unitsSystem(), uiManager, unitFrame);
       std::string unitsWidgetName = att->name() + "UnitsLineWidget";
       unitsWidget->setObjectName(unitsWidgetName.c_str());
       unitsLayout->addWidget(unitsWidget);
       unitsWidget->setAndClassifyText(att->units().c_str());
       // Create a regular expression validator to prevent leading spaces
-      unitsWidget->setValidator(
-        new QRegularExpressionValidator(QRegularExpression("^\\S*$"), this));
       QObject::connect(
         unitsWidget, &qtUnitsLineEdit::editingCompleted, this, &qtAttribute::onUnitsChanged);
     }
-    else
+    else // Units are to be displayed read only
     {
-      // if we are here, units are to be displayed as read only so just add the units to the label
       unitsLabel.append(att->units());
       QLabel* uLabel = new QLabel(unitsLabel.c_str(), unitFrame);
       unitsLayout->addWidget(uLabel);

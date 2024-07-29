@@ -371,7 +371,7 @@ int TestProjectPortability(int /*unused*/, char** const /*unused*/)
   {
     std::vector<smtk::attribute::DefinitionPtr> defList;
     myAtts->definitions(defList);
-    if (defList.size() != 2)
+    if (defList.size() != 3)
     {
       std::cerr << "Attribute resource missing definitions\n";
       return 1;

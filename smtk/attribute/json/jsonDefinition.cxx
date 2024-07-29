@@ -80,10 +80,10 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     j["Nodal"] = true;
   }
 
-  // Does the Definition have units?
-  if (!defPtr->units().empty())
+  // Does the Definition have local units?
+  if (!defPtr->localUnits().empty())
   {
-    j["Units"] = defPtr->units();
+    j["Units"] = defPtr->localUnits();
   }
 
   // Process Local Category Expression
@@ -263,7 +263,7 @@ SMTKCORE_EXPORT void from_json(
   result = j.find("Units");
   if (result != j.end())
   {
-    defPtr->setUnits(*result);
+    defPtr->setLocalUnits(*result);
   }
 
   // Process Category Info ()
