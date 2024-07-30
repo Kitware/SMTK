@@ -4,13 +4,13 @@
   <!--**********  Attribute Definitions ***********-->
   <Associations />
   <Definitions>
-    <AttDef Type="doubleFunc" Association="None" Units="m"/>
+    <AttDef Type="doubleFunc" Association="None" Units="*"/>
     <AttDef Type="B" Label="B" BaseType="" Unique="false" Units="*"/>
     <AttDef Type="A" Label="A" BaseType="" Unique="false" Units="m">
       <ItemDefinitions>
         <Double Name="d0" Label="Optional Double" Optional="true">
         </Double>
-        <Double Name="d1" Label="Expression Double">
+        <Double Name="d1" Label="Expression Double" Units="feet">
           <ExpressionType>doubleFunc</ExpressionType>
         </Double>
       </ItemDefinitions>

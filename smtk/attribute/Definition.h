@@ -447,6 +447,7 @@ public:
   ///@{
   bool ignoreCategories() const { return m_ignoreCategories; }
   void setIgnoreCategories(bool val) { m_ignoreCategories = val; }
+  ///@}
 
   ///\brief Return the units associated to the definition
   ///

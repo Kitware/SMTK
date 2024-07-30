@@ -26,13 +26,23 @@
 
 const std::string sbt = R"(
   <?xml version="1.0" encoding="utf-8" ?>
-  <SMTK_AttributeResource Version="4">
+  <SMTK_AttributeResource Version="8">
     <Definitions>
-      <AttDef Type="infixExpression" Label="InfixExpression">
+      <AttDef Type="infixExpression" Label="InfixExpression"  Units="feet">
         <ItemDefinitions>
           <String Name="expression" Extensible="true"/>
         </ItemDefinitions>
       </AttDef>
+    <AttDef Type="A" Label="A" BaseType="" Unique="false">
+      <ItemDefinitions>
+        <Double Name="d1" Label="Expression Double" Units="in">
+          <ExpressionType>infixExpression</ExpressionType>
+        </Double>
+        <Double Name="d2" Label="Expression Double" Units="K">
+          <ExpressionType>infixExpression</ExpressionType>
+        </Double>
+      </ItemDefinitions>
+    </AttDef>
     </Definitions>
   </SMTK_AttributeResource>
 )";
@@ -65,6 +75,7 @@ void testSimpleEvaluation()
   smtk::attribute::ResourcePtr attRes = createResourceForTest();
   smtk::attribute::DefinitionPtr infixExpDef = attRes->findDefinition("infixExpression");
   smtk::attribute::AttributePtr infixExpAtt = attRes->createAttribute(infixExpDef);
+  smtk::attribute::AttributePtr a = attRes->createAttribute("A");
 
   infixExpAtt->findString("expression")->setValue("2 + 2");
 
@@ -82,6 +93,16 @@ void testSimpleEvaluation()
       double computation = boost::get<double>(result);
 
   smtkTest(computation == 4.0, "Incorrectly computed 2 + 2.")
+
+    //Lets try assigning the expression which is in inches to a double whose units are feet
+    auto d1 = a->findDouble("d1");
+  smtkTest(d1->setExpression(infixExpAtt), "Could not set expression to d1.");
+  smtkTest(
+    d1->value() == 48.0,
+    "Item d1 should have return 48 (inches) but instead returned: " << d1->value() << ".");
+  // We should be able to set the expression on d2 which whose units are Kelvin
+  auto d2 = a->findDouble("d2");
+  smtkTest(!d2->setExpression(infixExpAtt), "Was able to set expression to d2.");
 }
 
 void testOneChildExpression()

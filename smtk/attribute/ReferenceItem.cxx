@@ -902,9 +902,7 @@ Item::Status ReferenceItem::assign(
         logger,
         "ReferenceItem: " << name() << "'s number of values (" << myNumVals
                           << ") can not hold source ReferenceItem's number of values ("
-                          << sourceNumVals << ") and Partial Copying was not permitted."
-                          << " Reference Criteria:\n"
-                          << def->criteriaAsString());
+                          << sourceNumVals << ") and Partial Copying was not permitted.");
       return result;
     }
   }
@@ -999,13 +997,44 @@ Item::Status ReferenceItem::assign(
         else
         {
           result.markFailed();
+          std::stringstream reason;
           auto def = smtk::dynamic_pointer_cast<const ReferenceItemDefinition>(this->definition());
+          if (i >= this->numberOfValues())
+          {
+            reason << "Index: " << i << " is not less than " << this->numberOfValues() << "\n";
+          }
+          if (!def->isValueValid(val))
+          {
+            reason << " Definition says the value is not valid\n";
+          }
+          auto refAtt = m_referencedAttribute.lock();
+          if (refAtt == nullptr)
+          {
+            reason << " Referenced Attribute is null/n";
+          }
+          else
+          {
+            auto refAttRes = refAtt->attributeResource();
+            if (refAttRes == nullptr)
+            {
+              reason << "Referenced Attribute Resource is null\n";
+            }
+            else
+            {
+              auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(val);
+              if (refAttRes->findAttribute(comp, def->role()) != nullptr)
+              {
+                reason << "Found attribute in referenced resource/n";
+              }
+            }
+          }
           smtkErrorMacro(
             logger,
             "Could not assign PersistentObject:"
               << val->name() << " of type: " << val->typeName() << " to ReferenceItem: "
               << sourceItem->name() << " and allowPartialValues options was not specified."
-              << " Reference Criteria:\n"
+              << " Reason:\n"
+              << reason.str() << "\n Reference Criteria:\n"
               << def->criteriaAsString());
           return result;
         }

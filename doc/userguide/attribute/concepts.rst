@@ -332,9 +332,9 @@ Please see `unitDoubleItem <https://gitlab.kitware.com/cmb/smtk/-/blob/master/sm
 Units and Attributes
 ~~~~~~~~~~~~~~~~~~~~
 
-There are times when the attribute itself represents information that has units associated with it.  For example, an attribute could represent a temperature field that will be computed by a solver and the user needs to indicate the units they would like the field calculated in.  In this case there are no *values* but just the units themselves.  Attribute definitions can now have units set on them.  These units are inherited by definitions that are derived from it as well as the attributes that produced from it.  A derived definition can override these units, through by default as in the case of value items, the derived definition's units must be compatible with its base definition units.  So for example if the base definition's units are meters, you could set the derived definition's units to miles but not to feet/sec.  You can however explicitly force a unit change.
+There are times when the attribute itself represents information that has units associated with it.  For example, an attribute could represent a temperature field that will be computed by a solver and the user needs to indicate the units they would like the field calculated in.  In this case there are no *values* but just the units themselves.  Attribute definitions can now have units set on them.  These units are inherited by definitions that are derived from it as well as the attributes that produced from it.  A derived definition can override these units, through by default as in the case of value items, the derived definition's units must be compatible with its base definition units.  So for example if the base definition's units are meters, you could set the derived definition's units to miles but not to feet/sec.  You can however explicitly force a unit change if needed.
 
-Attributes inherit units from the definition they are based on and as with derived , can have different units locally set on them.  However, in this case the new units must be compatible with those of its definition (there is now way of forcing incompatible units).
+Attributes inherit units from the definition they are based on and as with derived , can have different units locally set on them.  However, in this case the new units must be compatible with those of its definition (there is no way of forcing incompatible units).
 
 Definitions with Units "*"
 ++++++++++++++++++++++++++
@@ -343,6 +343,19 @@ There are cases where attributes coming from the same definition need to have di
 In this case, workflow designers can set the definition's units to be "*" indicating any units are allowed.  Note that this also pertains to any definition derived from it.
 
 An attribute whose definition has "*" units will by default be unit-less (meaning that the units it returns are the empty string). The only restriction in terms of setting the attribute's local units is that the new units must either be one supported by the units system or an empty string meaning that the attribute is unit-less.
+
+Expression Attributes with Units
+++++++++++++++++++++++++++++++++
+Units are now taken into consideration when assigning an expression attribute to a double item that supports expressions.  Previously, in order to assign an expression to the double item, only its definition is checked to see if it is compatible to the double item's expression type requirement.
+Now the following additional constraints are now enforced:
+
+* If the double item is unit-less then only unit-less expression attributes can be assigned to it
+* If the double item has units associated with it, then only unit-less expression attributes, or expression attributes whose units can be converted to those of the double item can be assigned to it.
+
+If the case where both the expression attribute and the double item have different (but compatible units) the value computed from the expression will be converted into the units specified by the item.  So for example if an expression returns a value of 4 feet and the double item's units is in inches, then the double item's value method will return 48 (inches).
+
+Please see `unitDoubleItem <https://gitlab.kitware.com/cmb/smtk/-/blob/master/smtk/attribute/testing/cxx/unitInfixExpressionEvaluator.cxx>`_ for a simple example of using expressions involving units with Items.
+
 
 Related API
 ~~~~~~~~~~~
