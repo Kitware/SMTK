@@ -338,6 +338,11 @@ public:
               {
                 defaultMode = viewMode.get();
               }
+              if (!child.attributeAsString("Shortcut").empty())
+              {
+                QString shortcut = QString::fromStdString(child.attributeAsString("Shortcut"));
+                viewMode->modeAction()->setShortcut(QKeySequence(shortcut));
+              }
             }
             else
             {
