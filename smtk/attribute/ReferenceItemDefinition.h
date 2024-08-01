@@ -75,6 +75,8 @@ public:
   bool enforcesCategories() const { return m_enforcesCategories; }
 
   virtual bool isValueValid(resource::ConstPersistentObjectPtr entity) const;
+  /// Debug method that returns a description concerning the validity of the entity
+  std::string validityCheck(resource::ConstPersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.
   std::size_t numberOfRequiredValues() const;
@@ -265,6 +267,8 @@ protected:
 
   void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
 
+  /// Debug method that returns a description concerning the validity of the component
+  std::string componentValidityCheck(const smtk::resource::Component* comp) const;
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
   bool m_isExtensible;

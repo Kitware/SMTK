@@ -28,6 +28,7 @@
 
 #include "smtk/resource/CopyOptions.h"
 #include "smtk/resource/filter/Filter.h"
+#include "smtk/resource/filter/ResourceActions.h"
 
 #include <fstream>
 #include <memory>
@@ -452,10 +453,12 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
   std::shared_ptr<smtk::graph::ResourceBase> result;
   if (auto rsrcMgr = this->manager())
   {
+    std::cerr << "Clone: Asking Resource Manager\n";
     result = std::dynamic_pointer_cast<ResourceBase>(rsrcMgr->create(this->typeName()));
   }
   if (!result)
   {
+    std::cerr << "Clone: Creating it myself\n";
     result = Resource<Traits>::create();
   }
   if (!result)

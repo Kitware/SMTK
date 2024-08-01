@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_filter_Integer_h
-#define smtk_resource_filter_Integer_h
+#ifndef smtk_resource_filter_IntegerGrammar_h
+#define smtk_resource_filter_IntegerGrammar_h
 
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Property.h"
@@ -70,21 +70,6 @@ struct Property<long>
   static long convert(const std::string& input) { return std::stol(input); }
 };
 
-/// Actions related to parsing rules for this type.
-template <> struct Action<Property<long>::TypeName> : TypeNameAction<long> {};
-template <> struct Action<Property<long>::Name> : NameAction<long> {};
-template <> struct Action<Property<long>::Regex> : RegexAction<long> {};
-template <> struct Action<Property<long>::Value> : ValueAction<long> {};
-
-/// Actions related to parsing rules for vectors of this type.
-template <> struct Action<Property<std::vector<long> >::TypeName> :
-    TypeNameAction<std::vector<long> > {};
-template <> struct Action<Property<std::vector<long> >::Name> :
-    NameAction<std::vector<long> > {};
-template <> struct Action<Property<std::vector<long> >::Regex> :
-    RegexAction<std::vector<long> > {};
-template <> struct Action<Property<std::vector<long> >::Value> :
-    ValueAction<std::vector<long> > {};
 // clang-format on
 } // namespace filter
 } // namespace resource

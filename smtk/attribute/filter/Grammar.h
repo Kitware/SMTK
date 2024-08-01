@@ -14,9 +14,10 @@
 
 #include "smtk/attribute/filter/Attribute.h"
 
-#include "smtk/resource/filter/FloatingPoint.h"
-#include "smtk/resource/filter/Integer.h"
-#include "smtk/resource/filter/String.h"
+#include "smtk/resource/filter/FloatingPointGrammar.h"
+#include "smtk/resource/filter/IntegerGrammar.h"
+#include "smtk/resource/filter/StringGrammar.h"
+#include "smtk/resource/filter/VectorGrammar.h"
 
 namespace smtk
 {
@@ -30,7 +31,7 @@ namespace filter
 /// Definition type information.
 struct SMTKCORE_EXPORT Grammar
   : seq<
-      sor<TAO_PEGTL_ISTRING("attribute"), TAO_PEGTL_STRING("*"), TAO_PEGTL_ISTRING("any")>,
+      ComponentHeader,
       opt<smtk::resource::filter::bracketed<list_must<
         pad<
           sor<

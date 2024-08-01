@@ -7,11 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_filter_Action_h
-#define smtk_resource_filter_Action_h
+#ifndef smtk_attribute_filter_Action_h
+#define smtk_attribute_filter_Action_h
 
 #include "smtk/resource/filter/Property.h"
 #include "smtk/resource/filter/Rules.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 
 #include "smtk/Regex.h"
 
@@ -23,7 +26,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk
 {
-namespace resource
+namespace attribute
 {
 namespace filter
 {
@@ -48,7 +51,7 @@ template<typename Type, template<typename T> class RuleClass>
 struct TypeNameAction
 {
   template<typename Input>
-  static void apply(const Input&, Rules& rules)
+  static void apply(const Input&, smtk::resource::filter::Rules& rules)
   {
     rules.emplace_back(new RuleClass<Type>());
   }
@@ -60,16 +63,48 @@ template<typename Type, template<typename T> class RuleClass>
 struct NameAction
 {
   template<typename Input>
-  static void apply(const Input& input, Rules& rules)
+  static void apply(const Input& input, smtk::resource::filter::Rules& rules)
   {
-    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::unique_ptr<smtk::resource::filter::Rule>& rule = rules.data().back();
     std::string name = input.string();
     static_cast<RuleClass<Type>*>(rule.get())->acceptableKeys =
-      [name](const PersistentObject& object) -> std::vector<std::string> {
+      [name](const smtk::resource::PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       if (object.properties().contains<Type>(name))
       {
         returnValue.push_back(name);
+      }
+      else
+      {
+        // if the object is an attribute we need to check its definitions, or
+        // if the object is definition, we need to check the definitions it is based on
+        // If the object is an attribute then check its Definitions
+        smtk::attribute::DefinitionPtr def;
+
+        const auto* att = dynamic_cast<const smtk::attribute::Attribute*>(&object);
+        if (att)
+        {
+          def = att->definition();
+        }
+        else
+        {
+          const auto* attDef = dynamic_cast<const smtk::attribute::Definition*>(&object);
+          if (attDef)
+          {
+            def = attDef->baseDefinition();
+          }
+        }
+        if (def)
+        {
+          for (; def != nullptr; def = def->baseDefinition())
+          {
+            if (def->properties().contains<Type>(name))
+            {
+              returnValue.push_back(name);
+              break;
+            }
+          }
+        }
       }
       return returnValue;
     };
@@ -82,18 +117,49 @@ template<typename Type, template<typename T> class RuleClass>
 struct RegexAction
 {
   template<typename Input>
-  static void apply(const Input& input, Rules& rules)
+  static void apply(const Input& input, smtk::resource::filter::Rules& rules)
   {
-    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::unique_ptr<smtk::resource::filter::Rule>& rule = rules.data().back();
     smtk::regex regex(input.string());
     static_cast<RuleClass<Type>*>(rule.get())->acceptableKeys =
-      [regex](const PersistentObject& object) -> std::vector<std::string> {
+      [regex](const smtk::resource::PersistentObject& object) -> std::vector<std::string> {
       std::vector<std::string> returnValue;
       for (const auto& key : object.properties().get<Type>().keys())
       {
         if (smtk::regex_match(key, regex))
         {
           returnValue.push_back(key);
+        }
+      }
+      // if the object is an attribute we need to check its definitions, or
+      // if the object is definition, we need to check the definitions it is based on
+      // If the object is an attribute then check its Definitions
+      smtk::attribute::DefinitionPtr def;
+
+      const auto* att = dynamic_cast<const smtk::attribute::Attribute*>(&object);
+      if (att)
+      {
+        def = att->definition();
+      }
+      else
+      {
+        const auto* attDef = dynamic_cast<const smtk::attribute::Definition*>(&object);
+        if (attDef)
+        {
+          def = attDef->baseDefinition();
+        }
+      }
+      if (def)
+      {
+        for (; def != nullptr; def = def->baseDefinition())
+        {
+          for (const auto& key : def->properties().get<Type>().keys())
+          {
+            if (smtk::regex_match(key, regex))
+            {
+              returnValue.push_back(key);
+            }
+          }
         }
       }
       return returnValue;
@@ -107,10 +173,10 @@ template<typename Type, template<typename T> class RuleClass>
 struct ValueAction
 {
   template<typename Input>
-  static void apply(const Input& input, Rules& rules)
+  static void apply(const Input& input, smtk::resource::filter::Rules& rules)
   {
-    std::unique_ptr<Rule>& rule = rules.data().back();
-    Type value = Property<Type>::convert(input.string());
+    std::unique_ptr<smtk::resource::filter::Rule>& rule = rules.data().back();
+    Type value = smtk::resource::filter::Property<Type>::convert(input.string());
     static_cast<RuleClass<Type>*>(rule.get())->acceptableValue = [value](const Type& val) -> bool {
       return val == value;
     };
@@ -123,9 +189,9 @@ template<typename Type, template<typename T> class RuleClass>
 struct ValueRegexAction
 {
   template<typename Input>
-  static void apply(const Input& input, Rules& rules)
+  static void apply(const Input& input, smtk::resource::filter::Rules& rules)
   {
-    std::unique_ptr<Rule>& rule = rules.data().back();
+    std::unique_ptr<smtk::resource::filter::Rule>& rule = rules.data().back();
     smtk::regex regex(input.string());
     static_cast<RuleClass<Type>*>(rule.get())->acceptableValue = [regex](const Type& val) -> bool {
       return smtk::regex_match(val, regex);
@@ -133,7 +199,7 @@ struct ValueRegexAction
   }
 };
 } // namespace filter
-} // namespace resource
+} // namespace attribute
 } // namespace smtk
 
 #endif
