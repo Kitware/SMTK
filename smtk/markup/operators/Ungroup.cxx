@@ -60,7 +60,7 @@ Ungroup::Result Ungroup::operateInternal()
     group->disconnect();
     deleteOp->parameters()->associations()->appendValue(group);
   }
-  auto deleteResult = deleteOp->operate(Key{});
+  auto deleteResult = deleteOp->operate(this->childKey());
   auto deleteExpunged = deleteResult->findComponent("expunged");
   for (std::size_t ii = 0; ii < deleteExpunged->numberOfValues(); ++ii)
   {

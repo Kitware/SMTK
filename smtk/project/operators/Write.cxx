@@ -111,7 +111,8 @@ Write::Result Write::operateInternal()
       }
 
       write->parameters()->associate(resource);
-      smtk::operation::Operation::Result writeResult = write->operate();
+      smtk::operation::Operation::Result writeResult =
+        write->operate(this->childKey(ObserverOption::InvokeObservers));
       if (
         writeResult->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))

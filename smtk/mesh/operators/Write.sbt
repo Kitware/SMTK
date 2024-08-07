@@ -17,7 +17,7 @@
         the original mesh.
       </DetailedDescription>
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1"
-                       Extensible="false" OnlyResources="true">
+                       Extensible="false" LockType="Read" OnlyResources="true">
         <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>

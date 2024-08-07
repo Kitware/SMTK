@@ -115,7 +115,7 @@ WriteResource::Result WriteResource::operateInternal()
       writeOp->parameters()->associate(resource);
 
       // Execute the operation
-      smtk::operation::Operation::Result writeOpResult = writeOp->operate(Key());
+      smtk::operation::Operation::Result writeOpResult = writeOp->operate(this->childKey());
 
       // Test for success
       if (
@@ -174,7 +174,7 @@ WriteResource::Result WriteResource::operateInternal()
     writeOp->parameters()->associate(resource);
 
     // Execute the operation
-    smtk::operation::Operation::Result writeOpResult = writeOp->operate(Key());
+    smtk::operation::Operation::Result writeOpResult = writeOp->operate(this->childKey());
 
     // Test for success
     if (

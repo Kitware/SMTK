@@ -63,7 +63,8 @@ public:
 
 protected:
   Helper();
-  Operation::Key* m_key;
+  Operation::Key* m_key{ nullptr };
+
   /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
   /// was used to create this helper.
   bool m_topLevel = true;
