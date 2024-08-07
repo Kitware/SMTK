@@ -50,15 +50,21 @@ set(resourceHeaders
   filter/Action.h
   filter/Enclosed.h
   filter/Filter.h
-  filter/FloatingPoint.h
+  filter/FloatingPointActions.h
+  filter/FloatingPointGrammar.h
   filter/Grammar.h
-  filter/Integer.h
+  filter/IntegerActions.h
+  filter/IntegerGrammar.h
   filter/Name.h
   filter/Property.h
+  filter/ResourceActions.h
   filter/Rule.h
+  filter/RuleFor.h
   filter/Rules.h
-  filter/String.h
-  filter/Vector.h
+  filter/StringActions.h
+  filter/StringGrammar.h
+  filter/VectorActions.h
+  filter/VectorGrammar.h
   json/Helper.h
   json/jsonComponentLinkBase.h
   json/jsonPropertyCoordinateFrame.h

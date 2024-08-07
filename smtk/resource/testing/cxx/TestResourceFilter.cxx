@@ -15,6 +15,7 @@
 #include "smtk/resource/PersistentObject.h"
 
 #include "smtk/resource/filter/Filter.h"
+#include "smtk/resource/filter/ResourceActions.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 

@@ -17,6 +17,7 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/resource/filter/Filter.h"
+#include "smtk/resource/filter/ResourceActions.h"
 
 #include "smtk/common/Paths.h"
 #include "smtk/common/TypeName.h"

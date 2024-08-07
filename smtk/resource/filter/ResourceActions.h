@@ -7,31 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_filter_Rule_h
-#define smtk_resource_filter_Rule_h
+#ifndef smtk_resource_filter_ResourceActions_h
+#define smtk_resource_filter_ResourceActions_h
 
-#include "smtk/resource/PersistentObject.h"
-
-#include <algorithm>
-
-namespace smtk
-{
-namespace resource
-{
-namespace filter
-{
-
-/// A base class for filter rules.
-class Rule
-{
-public:
-  virtual ~Rule() = default;
-
-  virtual bool operator()(const PersistentObject&) const = 0;
-};
-
-} // namespace filter
-} // namespace resource
-} // namespace smtk
+#include "smtk/resource/filter/Action.h"
+#include "smtk/resource/filter/FloatingPointActions.h"
+#include "smtk/resource/filter/IntegerActions.h"
+#include "smtk/resource/filter/StringActions.h"
 
 #endif

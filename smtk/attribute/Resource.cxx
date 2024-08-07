@@ -28,6 +28,8 @@
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/filter/Filter.h"
 
+#include "smtk/attribute/filter/ResourceActions.h"
+
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
 
@@ -1067,7 +1069,8 @@ std::string Resource::createAttributeQuery(const std::string& defType)
 std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
   const std::string& filterString) const
 {
-  return smtk::resource::filter::Filter<smtk::attribute::filter::Grammar>(filterString);
+  return smtk::resource::filter::
+    Filter<smtk::attribute::filter::Grammar, smtk::attribute::filter::Action>(filterString);
 }
 
 // visit all components in the resource.

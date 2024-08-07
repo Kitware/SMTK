@@ -110,7 +110,7 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/[])
     modelMgr = model::Resource::create();
     smtkTest(
       associateOperation->parameters()->findResource("associate to") != nullptr,
-      "Cannot access associate opration's input resource parameter.");
+      "Cannot access associate operation's input resource parameter.");
     associateOperation->parameters()->findResource("associate to")->setValue(modelMgr);
 
     auto result = associateOperation->operate();
@@ -133,7 +133,7 @@ int unitAttributeAssociation(int /*unused*/, char* /*unused*/[])
 
     smtkTest(
       dissociateOperation->parameters()->findResource("dissociate from") != nullptr,
-      "Cannot access dissociate opration's input resource parameter.");
+      "Cannot access dissociate operation's input resource parameter.");
     dissociateOperation->parameters()->findResource("dissociate from")->setValue(modelMgr);
 
     smtkTest(dissociateOperation->ableToOperate() == true, "Dissociate operator cannot operate");

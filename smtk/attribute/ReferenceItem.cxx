@@ -1005,7 +1005,7 @@ Item::Status ReferenceItem::assign(
           }
           if (!def->isValueValid(val))
           {
-            reason << " Definition says the value is not valid\n";
+            reason << def->validityCheck(val);
           }
           auto refAtt = m_referencedAttribute.lock();
           if (refAtt == nullptr)

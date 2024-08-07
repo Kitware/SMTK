@@ -117,6 +117,27 @@ bool ReferenceItemDefinition::isValueValid(resource::ConstPersistentObjectPtr en
   return ok;
 }
 
+std::string ReferenceItemDefinition::validityCheck(resource::ConstPersistentObjectPtr entity) const
+{
+  std::string status;
+  if (!entity)
+  {
+    return "Entity was null\n";
+  }
+
+  const smtk::resource::Resource* rsrc;
+  const smtk::resource::Component* comp;
+  if ((rsrc = dynamic_cast<const smtk::resource::Resource*>(entity.get())))
+  {
+    return "Entity was a Resource\n";
+  }
+  else if ((comp = dynamic_cast<const smtk::resource::Component*>(entity.get())))
+  {
+    return this->componentValidityCheck(comp);
+  }
+  return "Unsupported Condition\n";
+}
+
 std::size_t ReferenceItemDefinition::numberOfRequiredValues() const
 {
   return m_numberOfRequiredValues;
@@ -376,15 +397,78 @@ bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component* co
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
-    if (
-      !m_onlyResources && rsrc->isOfType(acceptable.first) &&
-      rsrc->queryOperation(acceptable.second)(*comp))
+    if (rsrc->isOfType(acceptable.first) && rsrc->queryOperation(acceptable.second)(*comp))
     {
       return this->checkCategories(comp);
     }
   }
 
   return false;
+}
+
+std::string ReferenceItemDefinition::componentValidityCheck(
+  const smtk::resource::Component* comp) const
+{
+  // All components are required to have resources in order to be valid.
+  auto rsrc = comp->resource();
+  std::stringstream reason;
+  if (m_onlyResources || !rsrc)
+  {
+    if (m_onlyResources)
+    {
+      return "Definition only supported Resources and a Component was provided\n";
+    }
+    else
+    {
+      return "Component had no Resource\n";
+    }
+  }
+
+  // For every element in the rejected filter map...
+  for (const auto& rejected : m_rejected)
+  {
+    // ...ask (a) if the filter explicitly rejects components, (b) if our
+    // resource is of the right type, and (b) if its associated filter accepts
+    // the component.
+    if (rsrc->isOfType(rejected.first) && rsrc->queryOperation(rejected.second)(*comp))
+    {
+      reason << "Rejected due to Rule: " << rejected.first << "," << rejected.second << std::endl;
+      return reason.str();
+    }
+  }
+
+  // If there are no filter values, then we accept all components.
+  if (m_acceptable.empty())
+  {
+    return "Component Passed!/n";
+  }
+
+  // For every element in the accepted filter map...
+  for (const auto& acceptable : m_acceptable)
+  {
+    // ...ask (a) if the filter explicitly rejects components, (b) if our
+    // resource is of the right type, and (b) if its associated filter accepts
+    // the component.
+    if (rsrc->isOfType(acceptable.first) && rsrc->queryOperation(acceptable.second)(*comp))
+    {
+      if (this->checkCategories(comp))
+      {
+        return "Component Passed!\n";
+      }
+      else
+      {
+        return "Component Match Acceptance Rule but failed Categories Check\n";
+      }
+    }
+  }
+  // In this case revisit the acceptable criteria
+  reason << "Component Failed all Acceptance Criteria: Type Info: " << rsrc->typeName() << ", "
+         << comp->typeName() << " Criteria: \n";
+  for (const auto& acceptable : m_acceptable)
+  {
+    reason << acceptable.first << "," << acceptable.second << std::endl;
+  }
+  return reason.str();
 }
 
 std::size_t ReferenceItemDefinition::addConditional(
