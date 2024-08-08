@@ -86,6 +86,11 @@ void processProperties(T& object, xml_node& propertiesNode, smtk::io::Logger& lo
     {
       object->properties().template get<int>()[propName] = propNode.text().as_int();
     }
+    else if (propType == "long")
+    {
+      std::string v = propNode.text().as_string();
+      object->properties().template get<long>()[propName] = std::stol(v);
+    }
     else if (propType == "double")
     {
       object->properties().template get<double>()[propName] = propNode.text().as_double();

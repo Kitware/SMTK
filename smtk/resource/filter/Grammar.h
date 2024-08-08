@@ -12,9 +12,10 @@
 
 #include "smtk/CoreExports.h"
 
-#include "smtk/resource/filter/FloatingPoint.h"
-#include "smtk/resource/filter/Integer.h"
-#include "smtk/resource/filter/String.h"
+#include "smtk/resource/filter/FloatingPointGrammar.h"
+#include "smtk/resource/filter/IntegerGrammar.h"
+#include "smtk/resource/filter/StringGrammar.h"
+#include "smtk/resource/filter/VectorGrammar.h"
 
 namespace smtk
 {

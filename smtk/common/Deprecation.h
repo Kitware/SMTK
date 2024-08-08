@@ -76,4 +76,10 @@
 #define SMTK_DEPRECATED_IN_24_01(reason)
 #endif
 
+#if SMTK_DEPRECATION_LVEL >= SMTK_VERSION_CHECK(24, 01, 99)
+#define SMTK_DEPRECATED_IN_24_08(reason) SMTK_DEPRECATION(SMTK_DEPRECATION_REASON(24, 08, reason))
+#else
+#define SMTK_DEPRECATED_IN_24_08(reason)
+#endif
+
 #endif // smtk_common_Deprecation_h

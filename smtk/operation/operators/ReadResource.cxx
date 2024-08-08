@@ -161,7 +161,8 @@ ReadResource::Result ReadResource::operateInternal()
 
     // Run the local read internally using Key (do not fire observers) and
     // copy the output resources into our result.
-    smtk::operation::Operation::Result readOperationResult = readOperation->operate(Key{});
+    smtk::operation::Operation::Result readOperationResult =
+      readOperation->operate(this->childKey());
     if (
       readOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))

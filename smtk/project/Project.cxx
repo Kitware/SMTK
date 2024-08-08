@@ -13,6 +13,7 @@
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/filter/Filter.h"
+#include "smtk/resource/filter/ResourceActions.h"
 
 #include "smtk/task/Instances.h"
 #include "smtk/task/Manager.h"

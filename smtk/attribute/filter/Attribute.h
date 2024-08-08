@@ -12,7 +12,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/resource/filter/Action.h"
+#include "smtk/attribute/filter/Action.h"
+#include "smtk/attribute/filter/Grammar.h"
 #include "smtk/resource/filter/Enclosed.h"
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Property.h"
@@ -28,6 +29,17 @@ namespace filter
 {
 
 using namespace tao::pegtl;
+
+struct ComponentHeader
+  : sor<
+      TAO_PEGTL_ISTRING("attribute"),
+      TAO_PEGTL_ISTRING("definition"),
+      TAO_PEGTL_ISTRING("smtk::attribute::Attribute"),
+      TAO_PEGTL_ISTRING("smtk::attribute::Definition"),
+      TAO_PEGTL_STRING("*"),
+      TAO_PEGTL_ISTRING("any")>
+{
+};
 
 /// Description for grammar describing an Attribute's Definition Type specification.
 /// The following are valid examples:
@@ -120,9 +132,54 @@ public:
   std::string m_typeRegex;
 };
 
+// Rule for dealing with component header information
+class ComponentHeaderRule : public smtk::resource::filter::Rule
+{
+public:
+  ComponentHeaderRule(const std::string& componentType)
+    : m_componentType(componentType)
+  {
+  }
+
+  ~ComponentHeaderRule() override = default;
+
+  bool operator()(const smtk::resource::PersistentObject& object) const override
+  {
+    std::cerr << "Header Test: " << m_componentType << " Object: " << object.name() << std::endl;
+    // Allow "any" and "*" to always pass
+    if ((m_componentType == "any") || (m_componentType == "*"))
+    {
+      return true;
+    }
+    if ((m_componentType == "attribute") || (m_componentType == "smtk::attribute::Attribute"))
+    {
+      const auto* attribute = dynamic_cast<const smtk::attribute::Attribute*>(&object);
+      return (attribute != nullptr);
+    }
+    if ((m_componentType == "definition") || (m_componentType == "smtk::attribute::Definition"))
+    {
+      const auto* definition = dynamic_cast<const smtk::attribute::Definition*>(&object);
+      return (definition != nullptr);
+    }
+    // Unsupported Component Type
+    return false;
+  }
+  std::string m_componentType;
+};
+
 /// Actions related to parsing rules for this type. They basically insert the
 /// appropriate rule into the set of rules.
-struct TypeNameAction
+struct ComponentHeaderAction
+{
+  template<typename Input>
+  static void apply(const Input& input, smtk::resource::filter::Rules& rules)
+  {
+    std::string componentTypeName = input.string();
+    rules.emplace_back(new ComponentHeaderRule(componentTypeName));
+  }
+};
+
+struct AttributeTypeSpecTypeNameAction
 {
   template<typename Input>
   static void apply(const Input& input, smtk::resource::filter::Rules& rules)
@@ -132,7 +189,7 @@ struct TypeNameAction
   }
 };
 
-struct TypeRegexAction
+struct AttributeTypeSpecTypeRegexAction
 {
   template<typename Input>
   static void apply(const Input& input, smtk::resource::filter::Rules& rules)
@@ -142,26 +199,20 @@ struct TypeRegexAction
   }
 };
 
+template<>
+struct Action<ComponentHeader> : ComponentHeaderAction
+{
+};
+template<>
+struct Action<AttributeTypeSpec::TypeName> : AttributeTypeSpecTypeNameAction
+{
+};
+template<>
+struct Action<AttributeTypeSpec::TypeRegex> : AttributeTypeSpecTypeRegexAction
+{
+};
 } // namespace filter
 } // namespace attribute
-/// Since the Action template class is defined in the resource::filter name space, we need be in that
-/// namespace to do template specialization.
-namespace resource
-{
-namespace filter
-{
-template<>
-struct Action<smtk::attribute::filter::AttributeTypeSpec::TypeName>
-  : smtk::attribute::filter::TypeNameAction
-{
-};
-template<>
-struct Action<smtk::attribute::filter::AttributeTypeSpec::TypeRegex>
-  : smtk::attribute::filter::TypeRegexAction
-{
-};
-} // namespace filter
-} // namespace resource
 } // namespace smtk
 
 #endif

@@ -85,7 +85,7 @@ Transform::Result Transform::operateInternal()
   }
 
   // Execute the transform.
-  transform->operate(Key());
+  transform->operate(this->childKey());
 
   // Access the attribute associated with the modified meshes.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

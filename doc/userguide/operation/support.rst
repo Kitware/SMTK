@@ -73,6 +73,90 @@ use to register an icon to your operation.
 Icons are functors that take in a secondary (background) color and return
 a string holding SVG for an icon that contrasts well with the background.
 
+Resource Locking
+----------------
+
+To prevent operations running in separate threads from modifying the same persistent objects
+at the same time, each operation must lock the resources it uses.
+SMTK provides both read- and write-locks for resources.
+Locking is performed only at the granularity of resources, not components.
+Lock acquisition should never occur on the user-interface thread of an application.
+By default, operations inspect their input parameters and acquire locks for all the resources
+mentioned (directly or via components they own) before the ``operateInternal()`` method is
+called.
+You may override this, but you are responsible to ensure resource-locking is consistent
+and does not cause deadlocks or race conditions.
+
+An operation that locks a resource for reading may run simultaneous with other operations
+that hold read-locks, but when a write-lock is held, no other operations that lock the
+same resource may run simultaneously (whether read- or write-locks are requested).
+
+It is possible for an operation to:
+
+1. synchronously run another operation internally as part of its processing.
+
+  The default behavior of ``operate()`` can be altered by passing a value of `Operation::BaseKey`
+  as the parameter. This value is returned by ``Operation::childKey()`` and is only accessible by
+  classes that derive from ``Operation``. Any operation that passes the value returned from
+  ``Operation::childKey()`` establishes itself as the "parent" operation and the nested operation
+  is considered a "child". The following options are available for altering the default behavior of
+  ``operate()``:
+
+    .. list-table:: Locking behavior
+      :widths: 10 40
+      :header-rows: 1
+
+      * - Option
+        - Description
+
+      * - LockOption::LockAll
+        - All resource locks will be acquired before ``operateInternal()`` is called. Any resource
+          locks already acquired by the parent operation will be shared with the child operation,
+          thus allowing the child operation to acquire any additional resource locks required by it.
+          The child operation will fail if it attempts to acquire a write lock on a resource that
+          the parent operation already holds a read lock on. **This is the default option**.
+
+      * - LockOption::ParentLocksOnly
+        - No additional locks will be attempted to be acquired by the child operation. The child
+          operation will fail if it does require more resource locks than its parent.
+
+      * - LockOption::SkipLocks
+        - No resource locking will be attempted by the child operation. **This is the legacy
+          behavior**.
+
+    .. list-table:: Observer behavior
+      :widths: 10 40
+      :header-rows: 1
+
+      * - Option
+        - Description
+
+      * - ObserverOption::InvokeObservers
+        - Observers will be invoked following parameter validation and again following
+          ``operateInternal()``.
+
+      * - ObserverOption::SkipObservers
+        - No observers will be invoked. **This is the default option**.
+
+    .. list-table:: Parameters behavior
+      :widths: 10 40
+      :header-rows: 1
+
+      * - Option
+        - Description
+
+      * - ParametersOption::Validate
+        - The parameters of the child operation will be validated to determine if
+          ``operateInternal()`` can be called. **This is the default option**.
+
+      * - ParametersOption::SkipValidation
+        - No validation of the child operation's parameters will take place. **This is the legacy
+          behavior**.
+
+2. asynchronously launch another operation to run later in a separate thread.
+
+
+
 Launching operations
 --------------------
 

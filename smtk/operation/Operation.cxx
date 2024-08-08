@@ -31,9 +31,11 @@
 
 #include "nlohmann/json.hpp"
 
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <sstream>
+#include <thread>
 
 namespace
 {
@@ -130,22 +132,63 @@ ResourceAccessMap Operation::identifyLocksRequired()
 
 Operation::Result Operation::operate()
 {
+  // Call operate that will invoke observers.
+  return this->operate(BaseKey(
+    nullptr, ObserverOption::InvokeObservers, LockOption::LockAll, ParametersOption::Validate));
+}
+
+Operation::Result Operation::operate(const BaseKey& key)
+{
   // Gather all requested resources and their lock types.
-  auto resourcesAndLockTypes = this->identifyLocksRequired();
+  const auto resourcesAndLockTypes = this->identifyLocksRequired();
 
   // Mutex to prevent multiple Operations from locking resources at the same
   // time (which could result in deadlock).
   static std::mutex mutex;
 
-  // Lock the resources.
-  mutex.lock();
-  for (auto& resourceAndLockType : resourcesAndLockTypes)
-  {
-    auto resource = resourceAndLockType.first.lock();
-    auto& lockType = resourceAndLockType.second;
+  // Track resources that were actually locked by this operation instance.
+  ResourceAccessMap lockedByThis;
 
-// Leave this for debugging, but do not include it in every debug build
-// as it can be quite noisy.
+  size_t numRetries = 0;
+
+  if (key.m_lockOption != LockOption::SkipLocks)
+  {
+    // Lock the resources.
+    while (true)
+    {
+      // TODO: A maximum retry limit may be a good thing add here to prevent some operation from
+      // occupying a thread in the operation thread pool indefinitely in the event that it cannot
+      // acquire all of its resources' locks within a reasonable amount of time.
+      if (numRetries++ > 0)
+      {
+        // Allow other threads to have CPU time.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      }
+
+      // Only allow one operation at a time to attempt to acquire all necessary resource locks.
+      std::lock_guard<std::mutex> guard(mutex);
+
+      if (key.m_parent)
+      {
+        // Inherit resource locks from the parent operation.
+        this->m_lockedResources = key.m_parent->lockedResources();
+      }
+
+      // Populate queue for pending resource locks.
+      std::queue<ResourceAccessMap::value_type> pending;
+      for (const auto& resourceAndLockType : resourcesAndLockTypes)
+      {
+        pending.push(resourceAndLockType);
+      }
+
+      while (!pending.empty())
+      {
+        const auto resourceAndLockType = pending.front();
+        auto resource = resourceAndLockType.first.lock();
+        const auto& lockType = resourceAndLockType.second;
+
+        // Leave this for debugging, but do not include it in every debug build
+        // as it can be quite noisy.
 #if 0
     // Given the puzzling result of deadlock that can arise if one Operation
     // calls another Operation using its public API and passes it a Resource
@@ -158,17 +201,86 @@ Operation::Result Operation::operate()
     // This will avoid the inner Operation's resource locking and execute it
     // directly. Be sure to verify the operation's validity prior to execution
     // (via the ableToOperate() method).
-    std::cout << "Operation \"" << this->typeName() << "\" is locking resource " << resource->name()
-              << " (" << resource->typeName() << ") with lock type \""
-              << (lockType == smtk::resource::LockType::Read
-                     ? "Read"
-                     : (lockType == smtk::resource::LockType::Write ? "Write" : "DoNotLock"))
-              << "\"\n";
+        std::cout << "Operation \"" << this->typeName() << "\" is locking resource " << resource->name()
+          << " (" << resource->typeName() << ") with lock type \""
+          << (lockType == smtk::resource::LockType::Read
+            ? "Read"
+            : (lockType == smtk::resource::LockType::Write ? "Write" : "DoNotLock"))
+          << "\"\n";
 #endif
 
-    resource->lock({}).lock(lockType);
+        // Is this resource already locked (by a parent perhaps).
+        const auto it = this->m_lockedResources.find(resource);
+        if (it != this->m_lockedResources.end())
+        {
+          // Verify that no writer is allowed while the (parent) operation
+          // already has a read lock on the resource.
+          if (it->second == resource::LockType::Read && lockType == resource::LockType::Write)
+          {
+            // This operation should not be able to operate. Undo the current
+            // resource locking and fail early.
+            this->unlockResources(lockedByThis);
+            smtkErrorMacro(
+              this->log(),
+              "Attempted to acquire a write lock on a resource that a parent operation currently "
+              "holds a read lock on.");
+            return this->createResult(Outcome::UNABLE_TO_OPERATE);
+          }
+          else
+          {
+            // This lock is already acquired by the parent, so pop this
+            // resource from the queue and continue at the next
+            // resource.
+            pending.pop();
+            continue;
+          }
+        }
+        else if (key.m_lockOption == LockOption::ParentLocksOnly)
+        {
+          // The parent does not already hold the lock for this resource, so
+          // fail early.
+          return this->createResult(Outcome::UNABLE_TO_OPERATE);
+        }
+
+        // Attempt to acquire this resource's lock.
+        if (
+          lockType != smtk::resource::LockType::DoNotLock && !resource->lock({}).tryLock(lockType))
+        {
+          // This resource's lock could not be acquired. Release the locks on any
+          // resource whose lock was successfully acquired so that other threads
+          // have a chance to attempt the locks if they are waiting.
+          this->unlockResources(lockedByThis);
+          lockedByThis.clear();
+          this->m_lockedResources.clear();
+
+          // Stop processing the queue. The locks will be attempted again later.
+          break;
+        }
+
+        this->m_lockedResources.insert(resourceAndLockType);
+        lockedByThis.insert(resourceAndLockType);
+
+        // Pop this resource from the queue.
+        pending.pop();
+      } // while (!pending.empty())
+
+      if (pending.empty())
+      {
+        // All of the locks were acquired successfully. Continue with the
+        // operation logic.
+        break;
+      }
+      else
+      {
+        // All of the resource locks could not be acquired. Release the locks on any
+        // resource whose lock was successfully acquired so that other threads
+        // have a chance to attempt the locks if they are waiting.
+        this->unlockResources(lockedByThis);
+        lockedByThis.clear();
+        this->m_lockedResources.clear();
+      }
+    } // while (true)
   }
-  mutex.unlock();
 
   // Remember where the log was so we only serialize messages for this
   // operation:
@@ -183,10 +295,10 @@ Operation::Result Operation::operate()
   // -- and observers of both will expect them to be called in pairs.
   auto manager = m_manager.lock();
   bool observePostOperation = manager != nullptr;
-  Outcome outcome;
+  Outcome outcome = Outcome::UNKNOWN;
 
   // First, we check that the operation is able to operate.
-  if (!this->ableToOperate())
+  if (key.m_paramsOption == ParametersOption::Validate && !this->ableToOperate())
   {
     outcome = Outcome::UNABLE_TO_OPERATE;
     result = this->createResult(outcome);
@@ -194,34 +306,40 @@ Operation::Result Operation::operate()
     observePostOperation = false;
   }
   // Then, we check if any observers wish to cancel this operation.
-  else if (manager && manager->observers()(*this, EventType::WILL_OPERATE, nullptr))
-  {
-    outcome = Outcome::CANCELED;
-    result = this->createResult(outcome);
-  }
   else
   {
-    // Finally, execute the operation.
-
-    // Set the debug level if specified as a convenience for subclasses:
-    smtk::attribute::IntItem::Ptr debugItem = this->parameters()->findInt("debug level");
-    m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
-
-    // Perform the derived operation.
-    result = this->operateInternal();
-    // Post-process the result if the operation was successful.
-    outcome = static_cast<Outcome>(result->findInt("outcome")->value());
-    if (outcome == Outcome::SUCCEEDED)
+    if (
+      key.m_observerOption == ObserverOption::InvokeObservers && manager &&
+      manager->observers()(*this, EventType::WILL_OPERATE, nullptr))
     {
-      this->postProcessResult(result);
+      outcome = Outcome::CANCELED;
+      result = this->createResult(outcome);
     }
 
-    // By default, all executed operations are assumed to modify any input
-    // resource accessed with a Write LockType and any resources referenced in
-    // the result.
-    if (outcome == Outcome::SUCCEEDED || outcome == Outcome::FAILED)
+    if (outcome != Outcome::CANCELED)
     {
-      this->markModifiedResources(result);
+      // Finally, execute the operation.
+
+      // Set the debug level if specified as a convenience for subclasses:
+      smtk::attribute::IntItem::Ptr debugItem = this->parameters()->findInt("debug level");
+      m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
+
+      // Perform the derived operation.
+      result = this->operateInternal();
+      // Post-process the result if the operation was successful.
+      outcome = static_cast<Outcome>(result->findInt("outcome")->value());
+      if (outcome == Outcome::SUCCEEDED)
+      {
+        this->postProcessResult(result);
+      }
+
+      // By default, all executed operations are assumed to modify any input
+      // resource accessed with a Write LockType and any resources referenced in
+      // the result.
+      if (outcome == Outcome::SUCCEEDED || outcome == Outcome::FAILED)
+      {
+        this->markModifiedResources(result);
+      }
     }
   }
 
@@ -241,7 +359,7 @@ Operation::Result Operation::operate()
   }
 
   // Execute post-operation observation
-  if (observePostOperation)
+  if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
   {
     manager->observers()(*this, EventType::DID_OPERATE, result);
   }
@@ -255,16 +373,21 @@ Operation::Result Operation::operate()
       static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
   }
 
-  // Unlock the resources.
-  for (auto& resourceAndLockType : resourcesAndLockTypes)
-  {
-    auto resource = resourceAndLockType.first.lock();
-    auto& lockType = resourceAndLockType.second;
-
-    resource->lock({}).unlock(lockType);
-  }
+  // Unlock the resources locked by this operation instance.
+  this->unlockResources(lockedByThis);
+  this->m_lockedResources.clear();
 
   return result;
+}
+
+void Operation::unlockResources(const ResourceAccessMap& resources)
+{
+  for (const auto& resourceAndLockType : resources)
+  {
+    auto resource = resourceAndLockType.first.lock();
+    const auto& lockType = resourceAndLockType.second;
+    resource->lock({}).unlock(lockType);
+  }
 }
 
 Operation::Outcome Operation::safeOperate()
@@ -573,6 +696,14 @@ Operation::Specification Operation::createBaseSpecification() const
   smtk::io::AttributeReader reader;
   reader.readContents(spec, Operation_xml, this->log());
   return spec;
+}
+
+Operation::BaseKey Operation::childKey(
+  ObserverOption observerOption,
+  LockOption lockOption,
+  ParametersOption paramsOption) const
+{
+  return BaseKey(this, observerOption, lockOption, paramsOption);
 }
 
 smtk::resource::ManagerPtr Operation::resourceManager()

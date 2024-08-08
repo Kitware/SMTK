@@ -7,13 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_filter_FloatingPoint_h
-#define smtk_resource_filter_FloatingPoint_h
+#ifndef smtk_resource_filter_FloatingPointGrammar_h
+#define smtk_resource_filter_FloatingPointGrammar_h
 
-#include "smtk/resource/filter/Action.h"
 #include "smtk/resource/filter/Name.h"
 #include "smtk/resource/filter/Property.h"
-#include "smtk/resource/filter/Vector.h"
 
 namespace smtk
 {
@@ -101,21 +99,6 @@ struct Property<double>
   static double convert(const std::string& input) { return std::stod(input); }
 };
 
-/// Actions related to parsing rules for this type.
-template <> struct Action<Property<double>::TypeName> : TypeNameAction<double> {};
-template <> struct Action<Property<double>::Name> : NameAction<double> {};
-template <> struct Action<Property<double>::Regex> : RegexAction<double> {};
-template <> struct Action<Property<double>::Value> : ValueAction<double> {};
-
-/// Actions related to parsing rules for vectors of this type.
-template <> struct Action<Property<std::vector<double> >::TypeName> :
-    TypeNameAction<std::vector<double> > {};
-template <> struct Action<Property<std::vector<double> >::Name> :
-    NameAction<std::vector<double> > {};
-template <> struct Action<Property<std::vector<double> >::Regex> :
-    RegexAction<std::vector<double> > {};
-template <> struct Action<Property<std::vector<double> >::Value> :
-    ValueAction<std::vector<double> > {};
 // clang-format on
 } // namespace filter
 } // namespace resource

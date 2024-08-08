@@ -144,7 +144,8 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    smtk::operation::Operation::Result writeOperationResult = writeOperation->operate(Key());
+    smtk::operation::Operation::Result writeOperationResult =
+      writeOperation->operate(this->childKey());
     if (
       writeOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))

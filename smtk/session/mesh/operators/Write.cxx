@@ -118,7 +118,7 @@ Write::Result Write::operateInternal()
       exportOp->parameters()->associate(resource);
 
       // Execute the operation
-      smtk::operation::Operation::Result exportOpResult = exportOp->operate(Key());
+      smtk::operation::Operation::Result exportOpResult = exportOp->operate(this->childKey());
 
       // Test for success
       if (
@@ -189,7 +189,7 @@ Write::Result Write::operateInternal()
     exportOp->parameters()->associate(resource);
 
     // Execute the operation
-    smtk::operation::Operation::Result exportOpResult = exportOp->operate(Key());
+    smtk::operation::Operation::Result exportOpResult = exportOp->operate(this->childKey());
 
     // Test for success
     if (
