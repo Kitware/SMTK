@@ -28,12 +28,12 @@ Helper& Helper::instance()
 {
   if (g_instanceStack.empty())
   {
-    g_instanceStack.emplace_back(std::unique_ptr<Helper>(new Helper));
+    g_instanceStack.emplace_back(new Helper);
   }
   return *(g_instanceStack.back());
 }
 
-Helper& Helper::pushInstance(Operation::Key* opKey)
+Helper& Helper::pushInstance(Operation::BaseKey* opKey)
 {
   g_instanceStack.emplace_back(new Helper);
   g_instanceStack.back()->m_key = opKey;

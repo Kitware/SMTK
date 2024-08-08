@@ -45,7 +45,7 @@ public:
   ///
   /// The returned \a Helper will have the same managers as
   /// the previous (if any) helper.
-  static Helper& pushInstance(Operation::Key* opsKey);
+  static Helper& pushInstance(Operation::BaseKey* opsKey);
 
   /// Pop a helper instance off the local thread's stack.
   static void popInstance();
@@ -59,11 +59,12 @@ public:
   bool topLevel() const { return m_topLevel; }
 
   /// Return the key currently being used.
-  const Operation::Key* key() const { return m_key; }
+  const Operation::BaseKey* key() const { return m_key; }
 
 protected:
   Helper();
-  Operation::Key* m_key;
+  Operation::BaseKey* m_key{ nullptr };
+
   /// m_topLevel indicates whether pushInstance() (false) or instance() (true)
   /// was used to create this helper.
   bool m_topLevel = true;
