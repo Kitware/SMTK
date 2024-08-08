@@ -33,7 +33,7 @@ Helper& Helper::instance()
   return *(g_instanceStack.back());
 }
 
-Helper& Helper::pushInstance(Operation::Key* opKey)
+Helper& Helper::pushInstance(Operation::BaseKey* opKey)
 {
   g_instanceStack.emplace_back(new Helper);
   g_instanceStack.back()->m_key = opKey;
