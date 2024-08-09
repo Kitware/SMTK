@@ -65,6 +65,11 @@ public:
   /// we can reset resource-relative URLs.
   bool setLocation(const std::string& location) override;
 
+  /// Override clone() to create a new markup resource using
+  /// \a this resource as a template.
+  std::shared_ptr<smtk::resource::Resource> clone(
+    smtk::resource::CopyOptions& options) const override;
+
   /// Override copyInitialize() to copy domain information.
   bool copyInitialize(
     const std::shared_ptr<const smtk::resource::Resource>& source,

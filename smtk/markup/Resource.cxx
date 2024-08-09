@@ -78,6 +78,14 @@ bool Resource::setLocation(const std::string& location)
   return true;
 }
 
+std::shared_ptr<smtk::resource::Resource> Resource::clone(
+  smtk::resource::CopyOptions& options) const
+{
+  auto result = std::shared_ptr<Resource>(new Resource);
+  this->prepareClone(options, result);
+  return result;
+}
+
 bool Resource::copyInitialize(
   const std::shared_ptr<const smtk::resource::Resource>& source,
   smtk::resource::CopyOptions& options)
