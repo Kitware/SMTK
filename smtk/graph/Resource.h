@@ -250,8 +250,29 @@ public:
   /// The output copy will not have any nodes or arcs but will have any run-time arc types
   /// registered to match the originating resource if \a options has copyTemplateData()
   /// set to true.
+  ///
+  /// Note that unless concrete subclasses override this method, this will return
+  /// a null pointer if no resource manager exists on \a this.
+  /// This graph resource templated on a Traits object is typically not identical
+  /// to a full implementation of a new graph-based resource. This implementation
+  /// has no way to create a duplicate resource of the same type without the resource
+  /// manager.
+  ///
+  /// If you choose to override this method, you may call prepareClone() described
+  /// below with a bare resource to populate.
   std::shared_ptr<smtk::resource::Resource> clone(
     smtk::resource::CopyOptions& options) const override;
+
+  /// Copy graph arc-types and other data that is part of the schema of a graph
+  /// resource (rather than the content of the resource).
+  ///
+  /// This method is called by clone() if a \a result resource can be created.
+  /// If your subclass of the graph resource overrides clone(), you are expected
+  /// to call this method from within your override (or perform the equivalent
+  /// initialization yourself).
+  virtual void prepareClone(
+    smtk::resource::CopyOptions& options,
+    const std::shared_ptr<smtk::graph::ResourceBase>& result) const;
 
   /// Implement copyInitialize() to copy arcs and nodes from a non-empty resource of the same type.
   bool copyInitialize(
@@ -448,22 +469,28 @@ template<typename Traits>
 std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
   smtk::resource::CopyOptions& options) const
 {
-  using smtk::resource::CopyOptions;
-
   std::shared_ptr<smtk::graph::ResourceBase> result;
   if (auto rsrcMgr = this->manager())
   {
-    std::cerr << "Clone: Asking Resource Manager\n";
     result = std::dynamic_pointer_cast<ResourceBase>(rsrcMgr->create(this->typeName()));
   }
-  if (!result)
+  if (result)
   {
-    std::cerr << "Clone: Creating it myself\n";
-    result = Resource<Traits>::create();
+    this->prepareClone(options, result);
   }
+  return result;
+}
+
+template<typename Traits>
+void Resource<Traits>::prepareClone(
+  smtk::resource::CopyOptions& options,
+  const std::shared_ptr<smtk::graph::ResourceBase>& result) const
+{
+  using smtk::resource::CopyOptions;
+
   if (!result)
   {
-    return result;
+    return;
   }
 
   // Insert the source of the original into the object mapping
@@ -492,10 +519,7 @@ std::shared_ptr<smtk::resource::Resource> Resource<Traits>::clone(
     }
 
     // TODO: Copy any run-time arc types.
-    return result;
   }
-
-  return result;
 }
 
 template<typename Traits>
