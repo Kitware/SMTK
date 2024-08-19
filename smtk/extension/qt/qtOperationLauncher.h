@@ -40,7 +40,7 @@ class SMTKQTEXT_EXPORT ResultHandler : public QObject
 
 public:
   explicit ResultHandler();
-  smtk::operation::Operation::Result waitForResult();
+  smtk::operation::Operation::Result waitForResult() const;
   std::shared_future<smtk::operation::Operation::Result>& future() { return m_future; }
 
 Q_SIGNALS:
