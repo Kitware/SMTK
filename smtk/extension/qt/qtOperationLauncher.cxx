@@ -11,6 +11,7 @@
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
 #include <QApplication>
+#include <QThread>
 
 // To enable SINGLE_THREAD, set CMake variable SMTK_ENABLE_OPERATION_THREADS to OFF.
 #ifdef SINGLE_THREAD
@@ -140,9 +141,21 @@ ResultHandler::ResultHandler()
 {
 }
 
-smtk::operation::Operation::Result ResultHandler::waitForResult()
+smtk::operation::Operation::Result ResultHandler::waitForResult() const
 {
+  // Check if the result is being waited for on the main thread so that the
+  // event loop can be pumped here manually.
+  if (QThread::currentThread() == qApp->thread())
+  {
+    const auto timeout = std::chrono::milliseconds(100);
+    while (m_future.wait_for(timeout) != std::future_status::ready)
+    {
+      // Process events while waiting for the result.
+      QCoreApplication::processEvents();
+    }
+  }
   return m_future.get();
 }
+
 } // namespace extension
 } // namespace smtk
