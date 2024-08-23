@@ -10,6 +10,7 @@
 #ifndef smtk_task_json_Configurator_h
 #define smtk_task_json_Configurator_h
 
+#include "smtk/task/Adaptor.h"
 #include "smtk/task/Task.h"
 
 #include "smtk/common/Managers.h"
@@ -149,6 +150,15 @@ protected:
   SwizzleId m_nextNested = -1;
   static HelperTypeMap s_types;
 };
+
+#ifdef SMTK_MSVC
+// MSVC requires explicit template instantiations to be exported. Otherwise,
+// multiple instantiations will occur for each consuming DLL which will cause
+// issues with type containers since each instance of what is effectively the
+// same type will have a different type ID in each DLL.
+template class SMTKCORE_EXPORT Configurator<Task>;
+template class SMTKCORE_EXPORT Configurator<Adaptor>;
+#endif
 
 } // namespace json
 } // namespace task
