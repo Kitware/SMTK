@@ -46,7 +46,8 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ExportMesh::SupportedIOTypes()
 bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate exporter
@@ -74,7 +75,8 @@ bool ExportMesh::operator()(
   const std::string& modelPropertyName) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate exporter

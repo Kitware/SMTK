@@ -31,7 +31,7 @@ class vtkSMTKWrapper;
 class vtkActor;
 class vtkCompositeDataSet;
 class vtkCompositeDataDisplayAttributes;
-class vtkCompositePolyDataMapper2;
+class vtkCompositePolyDataMapper;
 class vtkDataObject;
 class vtkGlyph3DMapper;
 class vtkMapper;
@@ -378,10 +378,10 @@ protected:
 
   /**
    * Clear the current selection stored in the mapper's
-   * vtkCompositeDisplayDataAttributes. For vtkCompositePolyDataMapper2,
+   * vtkCompositeDisplayDataAttributes. For vtkCompositePolyDataMapper,
    * setting the top node as false is enough since the state of the top
    * node will stream down to its nodes.  Glyph3DMapper does not behave as
-   * vtkCompositePolyDataMapper2, hence it is necessary to update the block
+   * vtkCompositePolyDataMapper, hence it is necessary to update the block
    * visibility of each node directly.
    */
   void ClearSelection(vtkMapper* mapper);
@@ -458,8 +458,8 @@ protected:
 
   vtkNew<vtkApplyTransforms> ApplyTransforms;
   vtkNew<vtkMultiBlockDataSet> CurrentData;
-  vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
-  vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
+  vtkSmartPointer<vtkCompositePolyDataMapper> EntityMapper;
+  vtkSmartPointer<vtkCompositePolyDataMapper> SelectedEntityMapper;
 
   vtkSmartPointer<vtkGlyph3DMapper> GlyphMapper;
   vtkSmartPointer<vtkGlyph3DMapper> SelectedGlyphMapper;

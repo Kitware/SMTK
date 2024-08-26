@@ -51,7 +51,8 @@ bool WriteMesh::operator()(
   mesh::Subset subset) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate writer
@@ -75,7 +76,8 @@ bool WriteMesh::operator()(
 bool WriteMesh::operator()(smtk::mesh::ResourcePtr resource, mesh::Subset subset) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(resource->writeLocation().absolutePath());
+  boost::filesystem::path fpath(resource->writeLocation().absolutePath());
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate writer

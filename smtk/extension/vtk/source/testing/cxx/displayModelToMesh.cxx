@@ -19,7 +19,7 @@
 #include "vtkActor.h"
 #include "vtkColorTransferFunction.h"
 #include "vtkCommand.h"
-#include "vtkCompositePolyDataMapper2.h"
+#include "vtkCompositePolyDataMapper.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkInteractorStyleSwitch.h"
 #include "vtkNew.h"
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
       vtkNew<vtkActor> act;
       vtkNew<vtkResourceMultiBlockSource> src;
-      vtkNew<vtkCompositePolyDataMapper2> map;
+      vtkNew<vtkCompositePolyDataMapper> map;
       vtkNew<vtkRenderer> ren;
       vtkNew<vtkRenderWindow> win;
       src->SetResource(c);

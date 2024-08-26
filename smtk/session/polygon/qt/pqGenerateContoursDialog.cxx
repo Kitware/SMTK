@@ -27,6 +27,7 @@
 #include "vtkPVDataInformation.h"
 #include "vtkPVDataSetAttributesInformation.h"
 #include "vtkPVRenderView.h"
+#include "vtkSMColorMapEditorHelper.h"
 #include "vtkSMPVRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
@@ -72,8 +73,8 @@ inline bool internal_COLOR_REP_BY_ARRAY(
   int attribute_type,
   bool rescale = true)
 {
-  bool res = vtkSMPVRepresentationProxy::SetScalarColoring(reproxy, arrayname, attribute_type);
-  if (rescale && res && vtkSMPVRepresentationProxy::GetUsingScalarColoring(reproxy))
+  bool res = vtkSMColorMapEditorHelper::SetScalarColoring(reproxy, arrayname, attribute_type);
+  if (rescale && res && vtkSMColorMapEditorHelper::GetUsingScalarColoring(reproxy))
   {
     vtkSMPropertyHelper inputHelper(reproxy->GetProperty("Input"));
     vtkSMSourceProxy* inputProxy = vtkSMSourceProxy::SafeDownCast(inputHelper.GetAsProxy());
@@ -91,7 +92,7 @@ inline bool internal_COLOR_REP_BY_ARRAY(
       // make sure we have the requested array before calling rescale TF
       if (info)
       {
-        res = vtkSMPVRepresentationProxy::RescaleTransferFunctionToDataRange(
+        res = vtkSMColorMapEditorHelper::RescaleTransferFunctionToDataRange(
           reproxy, arrayname, attribute_type);
       }
     }

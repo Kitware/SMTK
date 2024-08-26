@@ -11,7 +11,7 @@
 #include <vtkAlgorithmOutput.h>
 #include <vtkCompositeDataDisplayAttributes.h>
 #include <vtkCompositeDataIterator.h>
-#include <vtkCompositePolyDataMapper2.h>
+#include <vtkCompositePolyDataMapper.h>
 #include <vtkFieldData.h>
 #include <vtkGlyph3DMapper.h>
 #include <vtkImageData.h>
@@ -172,7 +172,7 @@ void ColorBlockAsEntity(
 }
 
 void ColorBlockAsEntity(
-  vtkCompositePolyDataMapper2* mapper,
+  vtkCompositePolyDataMapper* mapper,
   vtkDataObject* block,
   const smtk::common::UUID& uuid,
   const smtk::resource::ResourcePtr& res)
@@ -242,8 +242,8 @@ typename std::enable_if<!HasNewAPI<RenderView>::value, void>::type MarkRedistrib
 vtkStandardNewMacro(vtkSMTKResourceRepresentation);
 
 vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
-  : EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
-  , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
+  : EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper>::New())
+  , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , SelectedGlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , Entities(vtkSmartPointer<vtkActor>::New())
@@ -1003,14 +1003,14 @@ void vtkSMTKResourceRepresentation::ClearSelection(vtkMapper* mapper)
     attr->RemoveBlockColors();
   };
 
-  auto* cpdm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  auto* cpdm = vtkCompositePolyDataMapper::SafeDownCast(mapper);
   if (cpdm)
   {
     auto* blockAttr = cpdm->GetCompositeDataDisplayAttributes();
     clearAttributes(blockAttr);
     auto* data = cpdm->GetInputDataObject(0, 0);
 
-    // For vtkCompositePolyDataMapper2, setting the top node as false is enough
+    // For vtkCompositePolyDataMapper, setting the top node as false is enough
     // since the state of the top node will stream down to its nodes.
     blockAttr->SetBlockVisibility(data, false);
     return;
@@ -1022,7 +1022,7 @@ void vtkSMTKResourceRepresentation::ClearSelection(vtkMapper* mapper)
     auto* blockAttr = gm->GetBlockAttributes();
     clearAttributes(blockAttr);
 
-    // Glyph3DMapper does not behave as vtkCompositePolyDataMapper2, hence it is
+    // Glyph3DMapper does not behave as vtkCompositePolyDataMapper, hence it is
     // necessary to update the block visibility of each node directly.
     auto* mbds = vtkMultiBlockDataSet::SafeDownCast(gm->GetInputDataObject(0, 0));
     vtkDataObjectTreeIterator* iter = mbds->NewTreeIterator();
@@ -1540,7 +1540,7 @@ void vtkSMTKResourceRepresentation::ApplyInternalBlockAttributes()
 
 void vtkSMTKResourceRepresentation::ApplyEntityAttributes(vtkMapper* mapper)
 {
-  auto* cpm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  auto* cpm = vtkCompositePolyDataMapper::SafeDownCast(mapper);
   if (!cpm)
   {
     vtkErrorMacro(<< "Invalid mapper!");

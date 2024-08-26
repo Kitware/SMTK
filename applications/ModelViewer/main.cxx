@@ -45,7 +45,7 @@
 #include <QTreeView>
 
 #include <vtkActor.h>
-#include <vtkCompositePolyDataMapper2.h>
+#include <vtkCompositePolyDataMapper.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
@@ -133,8 +133,8 @@ int main(int argc, char* argv[])
   QVTKOpenGLNativeWidget widget;
   widget.resize(256, 256);
 
-  vtkSmartPointer<vtkCompositePolyDataMapper2> sphereMapper =
-    vtkSmartPointer<vtkCompositePolyDataMapper2>::New();
+  vtkSmartPointer<vtkCompositePolyDataMapper> sphereMapper =
+    vtkSmartPointer<vtkCompositePolyDataMapper>::New();
   sphereMapper->SetInputConnection(generator->GetOutputPort());
 
   vtkSmartPointer<vtkActor> sphereActor = vtkSmartPointer<vtkActor>::New();

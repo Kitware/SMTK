@@ -25,7 +25,7 @@
 #include "vtkBoundingBox.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkCompositeDataSet.h"
-#include "vtkCompositePolyDataMapper2.h"
+#include "vtkCompositePolyDataMapper.h"
 #include "vtkDataSet.h"
 #include "vtkExtractBlock.h"
 #include "vtkExtractEdges.h"

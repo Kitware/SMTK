@@ -95,7 +95,7 @@ Read::Result Read::operateInternal()
       // for each UI element type specified, look to see if one is registered in the
       // view manager and, if so, pass it the configuration specified.
       auto& elementStateMap = viewManager->elementStateMap();
-      for (auto& element : it->items())
+      for (const auto& element : it->items())
       {
         auto it = elementStateMap.find(element.key());
         if (it != elementStateMap.end())

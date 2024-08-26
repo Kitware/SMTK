@@ -22,7 +22,7 @@
 class vtkActor;
 class vtkAlgorithmOutput;
 class vtkCompositeDataSet;
-class vtkCompositePolyDataMapper2;
+class vtkCompositePolyDataMapper;
 class vtkPlaneCutter;
 class vtkExtractEdges;
 class vtkExtractBlock;
@@ -152,10 +152,10 @@ protected:
   vtkNew<vtkPVMetaSliceDataSet> Crinkle;
   vtkNew<vtkPlaneCutter> Cutter;
   vtkNew<vtkPVGeometryFilter> Surface;
-  vtkNew<vtkCompositePolyDataMapper2> SurfaceMapper;
+  vtkNew<vtkCompositePolyDataMapper> SurfaceMapper;
   vtkNew<vtkActor> SurfaceActor;
   vtkNew<vtkExtractEdges> Edges;
-  vtkNew<vtkCompositePolyDataMapper2> EdgeMapper;
+  vtkNew<vtkCompositePolyDataMapper> EdgeMapper;
   vtkNew<vtkActor> EdgeActor;
   bool DrawHandles{ true };
   std::array<double, 4> EdgeColor;

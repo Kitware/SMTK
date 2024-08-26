@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora33:
-    # Update to use Units Library that supports "*" units.
-    image: "kitware/cmb:ci-smtk-fedora33-20240724"
+    # Update to use ParaView 5.13.0
+    image: "kitware/cmb:ci-smtk-fedora33-20240905"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -74,7 +74,7 @@
 
 .fedora33_paraview:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20240724"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20240905"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview

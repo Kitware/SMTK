@@ -70,7 +70,8 @@ smtk::mesh::ResourcePtr ReadMesh::operator()(
   mesh::Subset subset) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   smtk::mesh::ResourcePtr resource = nullptr;
@@ -113,7 +114,8 @@ bool ReadMesh::operator()(
   mesh::Subset subset) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate reader
