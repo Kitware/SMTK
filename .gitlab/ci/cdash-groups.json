@@ -4,7 +4,6 @@
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_coverage" },
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_nodata" },
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_paraview" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_paraview59_compat" },
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_plain" },
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_tidy" },
         { "group": "master", "site": "gitlab-ci", "buildname": "fedora33_ubsan" },

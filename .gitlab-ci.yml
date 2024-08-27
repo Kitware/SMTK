@@ -93,25 +93,25 @@ fedora33-paraview:test:
     needs:
         - fedora33-paraview:build
 
-fedora33-paraview59-compat:build:
-    extends:
-        - .fedora33_paraview59_compat
-        - .cmake_build_linux
-        - .cmake_build_artifacts
-        - .linux_builder_tags
-        - .run_automatically
+# fedora33-paraview59-compat:build:
+#     extends:
+#         - .fedora33_paraview59_compat
+#         - .cmake_build_linux
+#         - .cmake_build_artifacts
+#         - .linux_builder_tags
+#         - .run_automatically
 
-fedora33-paraview59-compat:test:
-    extends:
-        - .fedora33_paraview59_compat
-        - .cmake_test_linux
-        - .cmake_test_artifacts
-        - .linux_test_tags
-        - .run_dependent
-    dependencies:
-        - fedora33-paraview59-compat:build
-    needs:
-        - fedora33-paraview59-compat:build
+# fedora33-paraview59-compat:test:
+#     extends:
+#         - .fedora33_paraview59_compat
+#         - .cmake_test_linux
+#         - .cmake_test_artifacts
+#         - .linux_test_tags
+#         - .run_dependent
+#     dependencies:
+#         - fedora33-paraview59-compat:build
+#     needs:
+#         - fedora33-paraview59-compat:build
 
 fedora33-nodata:build:
     extends:
