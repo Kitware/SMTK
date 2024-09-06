@@ -66,7 +66,8 @@ bool ImportMesh::ExtensionIsSupported(const std::string& ext)
 smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   for (auto& importer : smtk::io::ImportMesh::SupportedIOTypes())
@@ -92,7 +93,8 @@ smtk::mesh::ResourcePtr ImportMesh::operator()(
   std::string domainPropertyName) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate importer
@@ -120,7 +122,8 @@ bool ImportMesh::operator()(
   std::string domainPropertyName) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate importer

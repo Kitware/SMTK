@@ -29,6 +29,17 @@
 
 #include <sstream>
 
+#if NLOHMANN_JSON_VERSION_MAJOR > 3 ||                                                             \
+  (NLOHMANN_JSON_VERSION_MAJOR == 3 && NLOHMANN_JSON_VERSION_MINOR >= 11)
+#include "nlohmann/detail/abi_macros.hpp"
+#else
+
+#define NLOHMANN_JSON_NAMESPACE_BEGIN                                                              \
+  namespace nlohmann                                                                               \
+  {
+#define NLOHMANN_JSON_NAMESPACE_END }
+#endif
+
 namespace
 {
 struct ResourceMetadataKeyContainer
@@ -52,8 +63,8 @@ struct OperationMetadataKeyContainer
 };
 } // namespace
 
-namespace nlohmann
-{
+NLOHMANN_JSON_NAMESPACE_BEGIN
+
 namespace detail
 {
 template<>
@@ -69,7 +80,7 @@ struct has_to_json<
 {
 };
 } // namespace detail
-} // namespace nlohmann
+NLOHMANN_JSON_NAMESPACE_END
 
 namespace smtk
 {

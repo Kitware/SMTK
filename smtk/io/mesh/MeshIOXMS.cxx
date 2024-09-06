@@ -841,7 +841,8 @@ bool MeshIOXMS::exportMesh(
 bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   if (ext == ".2dm")
@@ -888,7 +889,8 @@ bool MeshIOXMS::exportMesh(
   const std::string& modelPropertyName) const
 {
   // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
+  boost::filesystem::path fpath(filePath);
+  std::string ext = fpath.extension().string();
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   if (ext == ".2dm")

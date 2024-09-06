@@ -16,6 +16,7 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
 
   # Generated VTK python wrappings.
   ".*Python.cxx.*warning.*static member accessed through instance.*"
+ ".*Python.cxx.*warning.*readability-qualified-auto.*"
 
   # Clang-Tidy won't ignore this correctly
   "warning.*operator=().*should return 'OrderedArcs.'"

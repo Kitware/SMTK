@@ -16,7 +16,7 @@
 
 #include "vtkActor.h"
 #include "vtkCommand.h"
-#include "vtkCompositePolyDataMapper2.h"
+#include "vtkCompositePolyDataMapper.h"
 #include "vtkCubeSource.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkInteractorStyleSwitch.h"
