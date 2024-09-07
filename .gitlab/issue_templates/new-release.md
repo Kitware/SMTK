@@ -58,7 +58,7 @@ Please remove this comment.
 
     - Create a merge request targeting `release`
       - [ ] Obtain a GitLab API token for the `kwrobot.release.cmb` user (ask
-            @ben.boeckel if you do not have one)
+            @utils/maintainers/release if you do not have one)
       - [ ] Add the `kwrobot.release.cmb` user to your fork with at least
             `Developer` privileges (so it can open MRs)
       - [ ] Use [the `release-mr`][release-mr] script to open the create the
@@ -77,7 +77,7 @@ Please remove this comment.
       - [ ] `git push origin vVERSION`
 
   - Software process updates (these can all be done independently)
-    - [ ] Update kwrobot with the new `release` branch rules (@ben.boeckel)
+    - [ ] Update kwrobot with the new `release` branch rules (@utils/maintainers/ghostflow)
     - [ ] Run [this script][cdash-update-groups] to update the CDash groups
       - This must be done after a nightly run to ensure all builds are in the
         `release` group
