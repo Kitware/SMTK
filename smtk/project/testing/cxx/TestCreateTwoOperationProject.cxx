@@ -74,7 +74,7 @@ void clearDirectory(const std::string& path)
   ::boost::filesystem::path boostPath(path);
   if (::boost::filesystem::exists(boostPath))
   {
-    std::cout << "Deleting existing directory " << path << std::endl;
+    std::cerr << "Deleting existing directory " << path << std::endl;
     ::boost::filesystem::remove_all(boostPath);
   }
 }
@@ -144,7 +144,7 @@ bool testInheritedAPI(const smtk::project::Project::Ptr& project)
       }
     };
   project->visit(visitor);
-  std::cout << "Visited " << numComp[0] << " project components, including " << numComp[3]
+  std::cerr << "Visited " << numComp[0] << " project components, including " << numComp[3]
             << " tasks.\n";
   ::test(
     numComp[0] ==
@@ -211,7 +211,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
       smtkTest(false, "Error importing " << importPath);
     }
     std::string opName = importResult->findString("unique_name")->value();
-    std::cout << "Imported operation \"" << opName << "\"" << std::endl;
+    std::cerr << "Imported operation \"" << opName << "\"" << std::endl;
   }
   auto taskRegistry = smtk::plugin::addToManagers<smtk::task::Registrar>(managers);
 
@@ -235,7 +235,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
     smtkTest(ifs.good(), "ifstream error with jsonPath " << jsonPath);
     nlohmann::json j = nlohmann::json::parse(ifs);
     ifs.close();
-    // std::cout << j.dump(2) << std::endl;
+    // std::cerr << j.dump(2) << std::endl;
 
     auto& resourceHelper = smtk::resource::json::Helper::instance();
     resourceHelper.setManagers(managers);
@@ -299,9 +299,10 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
       std::cerr << log << std::endl;
       smtkTest(false, "failed to write " << projectLocation);
     }
-    std::cout << "Wrote " << projectLocation << std::endl;
+    std::cerr << "Wrote " << projectLocation << std::endl;
   }
 
+  std::cerr << "Testing Project Contents\n";
   // Test that filtering for tasks and worklets by type works.
   auto tasks = project->filter("smtk::task::GatherResources");
   smtkTest(tasks.size() == 1, "Expected to filter 1 GatherResources task from the project.");
@@ -314,10 +315,14 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
 
   auto worklets = project->filter("'smtk::task::Worklet'");
   smtkTest(worklets.empty(), "Expected to filter 0 worklets from project.");
+  std::cerr << "Project Contents Passed!\n";
 
   projectManager->remove(project);
+  std::cerr << "Removed project from ProjectManager!";
   resourceManager->remove(project);
+  std::cerr << "Removed project from ResourceManager!";
   project.reset();
+  std::cerr << "Project reset!";
 
 #if READ_PROJECT
   readProject(managers);
