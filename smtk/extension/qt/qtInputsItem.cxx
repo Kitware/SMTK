@@ -1934,11 +1934,20 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 
       if (sDef->isMultiline())
       {
+        bool expandInY = false;
         qtTextEdit* textEdit = new qtTextEdit(pWidget);
         textEdit->setObjectName(QString("textEdit%1").arg(elementIdx));
         textEdit->setPlainText(valText);
         QObject::connect(textEdit, SIGNAL(textChanged()), this, SLOT(onTextEditChanged()));
         inputWidget = textEdit;
+        if (m_itemInfo.component().attributeAsBool("ExpandInY", expandInY) && expandInY)
+        {
+          inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        }
+        else
+        {
+          inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        }
       }
       else
       {
@@ -1957,9 +1966,13 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 
         lineEdit->setText(valText);
         inputWidget = lineEdit;
+        inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       }
       //      inputWidget->setMinimumWidth(100);
-      inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+      if (item->type() != smtk::attribute::Item::StringType)
+      {
+        inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+      }
       if (sDef->hasDefault())
       {
         int defaultIdx =
