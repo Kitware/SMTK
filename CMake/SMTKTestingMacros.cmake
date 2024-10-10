@@ -60,11 +60,21 @@ function(smtk_unit_tests)
       if(SMTK_ut_LABEL)
         set_tests_properties(${tname} PROPERTIES LABELS "${SMTK_ut_LABEL}")
       endif()
+      # If we build python wrappings, some tests will need their PATH and PYTHONPATH
+      # set in order to be able to import and run python codef from C++:
+      if (SMTK_ENABLE_PYTHON_WRAPPING)
+        set_property(TEST ${tname} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")
+      endif()
     endforeach()
 
     foreach (test ${SMTK_ut_SOURCES_SERIAL})
       get_filename_component(tname ${test} NAME_WE)
       set_tests_properties(${tname} PROPERTIES RUN_SERIAL TRUE)
+      # If we build python wrappings, some tests will need their PATH and PYTHONPATH
+      # set in order to be able to import and run python codef from C++:
+      if (SMTK_ENABLE_PYTHON_WRAPPING)
+        set_property(TEST ${tname} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")
+      endif()
     endforeach()
 
   endif ()
