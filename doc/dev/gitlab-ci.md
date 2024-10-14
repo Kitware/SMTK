@@ -26,8 +26,10 @@ Linux CI uses docker containers to run jobs. The base of each job is a docker
 image, produced by nightly tasks in the superbuild. Windows and macOS use
 bare-metal machines with a gitlab-runner service to accept jobs to run. The base
 of these is a tarball of a superbuild install tree, again produced nightly, and
-uploaded to [data.kitware.com](https://data.kitware.com/). This leads to a few
-confusing differences in how things are set up.
+uploaded to [Google Drive][cmb-upload-gdrive]. This leads to a few confusing
+differences in how things are set up.
+
+[cmb-upload-gdrive]: https://drive.google.com/drive/folders/10i4bHyCHwHj94NaxWRJBthTr54gllPmz
 
 ## Updating CI images
 
@@ -45,15 +47,18 @@ might be an update to ParaView, for instance.
    4. Update the `image:` tag at the top of [os-linux.yml](https://gitlab.kitware.com/cmb/smtk/-/blob/master/.gitlab/os-linux.yml)
       since it is used as the base for all linux jobs.
 5. Update Windows/macOS:
-   1. Go to the CMB ci folder on [data.kitware.com](https://data.kitware.com/#collection/58fa68228d777f16d01e03e5/folder/5f0726469014a6d84e0e7c4a)
+   1. Go to the `ci/smtk` folder on [Google Drive][cmb-upload-gdrive].
    2. For each OS, find the nightly build tarball with the change you need.
-   3. Check the item, and from the "checkbox" menu, choose "Pick check resources for Move or Copy"
-   4. Navigate to the "keep" directory next to the date folders, and choose "Copy picked resources here"
-   6. In smtk, edit `.gitlab/ci/download_superbuild.cmake`, in the "Determine the tarball to download" section
-      1. From the website, click the file link, and copy the "Unique ID" into the "file_item" variable entry
-      2. Click the `(i)` icon next to the file, and copy the "SHA-512" into the "file_hash" variable entry
-         1. Note: do not use the ID from this popup, it is different and won't work.
-      3. Update the date for the referenced file in the comment.
+   3. Select the items and move them under the `keep/ci/smtk` directory.
+   6. In `keep/ci/smtk`, edit `.gitlab/ci/download_superbuild.cmake`, in the "Determine the tarball
+      to download" section
+      1. From Google Drive, for each item use the three-dot menu to access `Share > Copy Link`
+      2. Extract the File ID from the URL. For
+         `https://drive.google.com/file/d/15uih5dSgTTbfJpt3e_UXwcDmhKXcG3cq/view?usp=drive_link` the
+         File ID is `15uih5dSgTTbfJpt3e_UXwcDmhKXcG3cq`
+      3. Find the job which uploaded the tarball and see its SHA512 (or download the file and
+         compute it locally with `sha512sum` (Linux) or `shasum -a 512` (macOS))
+      4. Update the date and reason for the referenced file in the comment.
 6. Submit a merge request for SMTK. The pipelines that run will use the new images/tarballs that you have
    specified. Once any issues are resolved, you can merge.
 
