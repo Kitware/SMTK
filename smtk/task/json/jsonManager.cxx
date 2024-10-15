@@ -10,11 +10,15 @@
 #include "smtk/task/json/jsonManager.h"
 #include "smtk/task/Adaptor.h"
 #include "smtk/task/Manager.h"
+#include "smtk/task/Port.h"
 #include "smtk/task/Task.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonAdaptor.h"
+#include "smtk/task/json/jsonPort.h"
 #include "smtk/task/json/jsonTask.h"
 #include "smtk/task/json/jsonWorklet.h"
+
+#include "smtk/resource/Manager.h"
 
 #include "smtk/io/Logger.h"
 
@@ -43,7 +47,38 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     }
     // helper.setManagers(managers);
     std::map<smtk::common::UUID, Task::Ptr> taskMap;
+    std::map<smtk::common::UUID, Port::Ptr> portMap;
     std::map<json::Helper::SwizzleId, Adaptor::Ptr> adaptorMap;
+    // Deserialize ports first so tasks can find them upon initial
+    // configuration.
+    if (jj.contains("ports"))
+    {
+      for (const auto& jsonPort : jj.at("ports"))
+      {
+        json::Helper::SwizzleId portSwizzle = 0;
+        auto portId = smtk::common::UUID::null();
+        auto jPortId = jsonPort.at("id");
+        if (jPortId.is_number_integer())
+        {
+          portSwizzle = jPortId.get<json::Helper::SwizzleId>();
+        }
+        else if (jPortId.is_string())
+        {
+          portId = jsonPort.at("id").get<smtk::common::UUID>();
+        }
+        Port::Ptr port = jsonPort;
+        if (portSwizzle)
+        {
+          helper.ports().setSwizzleId(port.get(), portSwizzle);
+          portId = port->id(); // port->setId(portId);
+        }
+        else
+        {
+          portSwizzle = helper.ports().swizzleId(port.get());
+        }
+        portMap[portId] = port;
+      }
+    }
     for (const auto& jsonTask : jj.at("tasks"))
     {
       json::Helper::SwizzleId taskSwizzle = 0;
@@ -68,6 +103,130 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         taskSwizzle = helper.tasks().swizzleId(task.get());
       }
       taskMap[taskId] = task;
+    }
+    // Do a second pass on ports to deserialize connections and UI config.
+    // All objects in a port's connections should now exist (tasks have
+    // been created and a project should load its child resources before
+    // deserializing the task manager, so external connections are also OK).
+    if (jj.contains("ports"))
+    {
+      for (const auto& jsonPort : jj.at("ports"))
+      {
+        auto jPortId = jsonPort.at("id");
+        Port::Ptr port;
+        if (jPortId.is_number_integer())
+        {
+          auto portSwizzle = jPortId.get<json::Helper::SwizzleId>();
+          auto* tp = helper.ports().unswizzle(portSwizzle);
+          port = tp ? std::static_pointer_cast<smtk::task::Port>(tp->shared_from_this()) : nullptr;
+        }
+        else
+        {
+          auto portId = jsonPort.at("id").get<smtk::common::UUID>();
+          auto it = portMap.find(portId);
+          if (it != portMap.end())
+          {
+            port = it->second;
+          }
+        }
+        if (!port)
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Could not find port for id: " << jPortId << ".");
+          continue;
+        }
+        auto* portRsrc = port->parentResource();
+        if (jsonPort.contains("connections"))
+        {
+          auto resourceManager = helper.managers()->get<smtk::resource::Manager::Ptr>();
+          const auto& jpconn(jsonPort.at("connections"));
+          port->connections().reserve(jpconn.size());
+          for (const auto& dep : jsonPort.at("connections"))
+          {
+            if (dep.is_number_integer())
+            {
+              // Set by call to helper.ports().setSwizzleId(port.get(), portId) above
+              auto* depPort = helper.ports().unswizzle(dep.get<json::Helper::SwizzleId>());
+              if (depPort)
+              {
+                port->connections().insert(depPort);
+              }
+              else
+              {
+                smtkErrorMacro(
+                  smtk::io::Logger::instance(),
+                  port->name() << " has unknown dependency " << dep.get<json::Helper::SwizzleId>()
+                               << "; skipping.");
+                continue;
+              }
+            }
+            else if (dep.is_array() && dep.size() == 2)
+            {
+              // We have an array with 1 or 2 UUIDs:
+              // [ null, UUID ] ⇒  dep is a component in the project resource.
+              // [ UUID, null ] ⇒  dep is a resource (presumably one owned by the project).
+              // [ UUID, UUID ] ⇒  dep is a component in an external resource.
+              if (dep[0].is_null())
+              {
+                // Fetch project component:
+                auto* comp = portRsrc->find(dep[1].get<smtk::common::UUID>()).get();
+                if (comp)
+                {
+                  port->connections().insert(comp);
+                }
+                else
+                {
+                  smtkErrorMacro(
+                    smtk::io::Logger::instance(),
+                    "Could not find \"" << dep[1] << "\" in project resource.");
+                }
+              }
+              else if (dep[1].is_null())
+              {
+                // Fetch resource.
+                auto* rsrc = resourceManager->get(dep[0].get<smtk::common::UUID>()).get();
+                if (rsrc)
+                {
+                  port->connections().insert(rsrc);
+                }
+                else
+                {
+                  smtkErrorMacro(
+                    smtk::io::Logger::instance(),
+                    "Could not find \"" << dep[0] << "\" in resource manager.");
+                }
+              }
+              else
+              {
+                // Both dep[0] and dep[1] should be UUIDs.
+                auto* rsrc = resourceManager->get(dep[0].get<smtk::common::UUID>()).get();
+                if (rsrc)
+                {
+                  auto* comp = rsrc->find(dep[1].get<smtk::common::UUID>()).get();
+                  if (comp)
+                  {
+                    port->connections().insert(comp);
+                  }
+                  else
+                  {
+                    smtkErrorMacro(
+                      smtk::io::Logger::instance(),
+                      "Could not find \"" << dep[1] << "\" in resource \"" << rsrc->name()
+                                          << "\".");
+                  }
+                }
+                else
+                {
+                  smtkErrorMacro(
+                    smtk::io::Logger::instance(),
+                    "Could not find \"" << dep[0] << "\" in resource manager.");
+                }
+              }
+            }
+          }
+        }
+        // TODO: UI state.
+      }
     }
     // Do a second pass to deserialize dependencies and UI config.
     for (const auto& jsonTask : jj.at("tasks"))
@@ -235,6 +394,24 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
 
 void to_json(nlohmann::json& jj, const Manager& manager)
 {
+  (void)manager;
+  // Serialize ports
+  nlohmann::json::array_t portList;
+  manager.portInstances().visit([&portList](const smtk::task::Port::Ptr& port) {
+    // auto& helper = json::Helper::instance();
+    nlohmann::json jsonPort = port;
+    if (!jsonPort.is_null())
+    {
+      // helper.updateUIState(port, jsonTask);
+      portList.push_back(jsonPort);
+    }
+    return smtk::common::Visit::Continue;
+  });
+  if (!portList.empty())
+  {
+    jj["ports"] = portList;
+  }
+
   // Serialize tasks
   nlohmann::json::array_t taskList;
   manager.taskInstances().visit([&taskList](const smtk::task::Task::Ptr& task) {

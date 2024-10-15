@@ -11,6 +11,8 @@
 
 #include "smtk/project/ResourceContainer.h"
 
+#include "smtk/task/Manager.h"
+#include "smtk/task/ObjectsInRoles.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
 
@@ -26,10 +28,43 @@
 
 #include <stdexcept>
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace task
 {
+
+namespace
+{
+
+Port* fetchPort(
+  FillOutAttributes* self,
+  const std::string& portName,
+  const nlohmann::json& portDict,
+  json::Helper& helper)
+{
+  auto it = portDict.find(portName);
+  Port* port = nullptr;
+  if (it != portDict.end())
+  {
+    if (it->is_number_integer())
+    {
+      port = helper.ports().unswizzle(it->get<int>());
+    }
+    else
+    {
+      port = helper.taskManager().portInstances().findById(it->get<smtk::common::UUID>()).get();
+    }
+  }
+  if (port)
+  {
+    port->setParent(self);
+  }
+  return port;
+}
+
+} // anonymous namespace
 
 constexpr const char* const FillOutAttributes::type_name;
 
@@ -62,7 +97,14 @@ void FillOutAttributes::configure(const Configuration& config)
   auto& helper = json::Helper::instance();
   helper.setManagers(m_managers);
 
-  auto result = config.find("attribute-sets");
+  auto result = config.find("ports");
+  if (result != config.end())
+  {
+    m_ports["in"] = fetchPort(this, "in", *result, helper);
+    m_ports["out"] = fetchPort(this, "out", *result, helper);
+  }
+
+  result = config.find("attribute-sets");
   if (result != config.end())
   {
     result->get_to(m_attributeSets);
@@ -92,6 +134,100 @@ void FillOutAttributes::configure(const Configuration& config)
     {
       this->internalStateChanged(this->computeInternalState());
     }
+  }
+}
+
+const std::unordered_map<smtk::string::Token, Port*>& FillOutAttributes::ports() const
+{
+  if (m_ports.empty())
+  {
+    if (this->manager())
+    {
+      auto pi = this->manager()->portInstances().createFromName(
+        "smtk::task::Port",
+        { { "name", "in" },
+          { "direction", "in" },
+          { "data-types", { "smtk::task::ObjectsInRoles" } } },
+        m_managers);
+      auto po = this->manager()->portInstances().createFromName(
+        "smtk::task::Port",
+        { { "name", "out" },
+          { "direction", "out" },
+          { "data-types", { "smtk::task::ObjectsInRoles" } } },
+        m_managers);
+      auto* self = const_cast<FillOutAttributes*>(this);
+      pi->setParent(self);
+      po->setParent(self);
+      self->m_ports["in"] = pi.get();
+      self->m_ports["out"] = po.get();
+    }
+  }
+  return m_ports;
+}
+
+std::shared_ptr<PortData> FillOutAttributes::portData(const Port* port) const
+{
+  auto resourceManager = m_managers->get<smtk::resource::Manager::Ptr>();
+  auto it = m_ports.find("out");
+  if (it == m_ports.end() || it->second != port || !resourceManager)
+  {
+    return nullptr;
+  }
+  auto data = std::make_shared<smtk::task::ObjectsInRoles>();
+  for (const auto& attSet : m_attributeSets)
+  {
+    for (const auto& rsrcEntry : attSet.m_resources)
+    {
+      auto rsrc = resourceManager->get(rsrcEntry.first);
+      if (rsrc)
+      {
+        data->addObject(rsrc.get(), attSet.m_role);
+      }
+    }
+  }
+  return data;
+}
+
+void FillOutAttributes::portDataUpdated(const Port* port)
+{
+  if (m_ports.empty() || m_ports["in"] != port)
+  {
+    return;
+  }
+  bool stateMayHaveChanged = false;
+  for (auto* conn : port->connections())
+  {
+    auto portData = std::dynamic_pointer_cast<ObjectsInRoles>(port->portData(conn));
+    const auto& roleMap = portData->data();
+    if (portData)
+    {
+      for (auto& attSet : m_attributeSets)
+      {
+        // Does the port data provide any resources for this attribute-set's role?
+        auto it = roleMap.find(attSet.m_role);
+        if (it == roleMap.end())
+        { // Accept "unassigned" resources in any role (so that raw resource connections work).
+          it = roleMap.find("unassigned"_token);
+        }
+        if (it == roleMap.end())
+        {
+          continue;
+        }
+        // There is a matching role. Are the objects in that role attribute resources?
+        for (auto* obj : it->second)
+        {
+          if (auto* resource = dynamic_cast<smtk::attribute::Resource*>(obj))
+          {
+            auto rit = attSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
+            stateMayHaveChanged |= this->updateResourceEntry(*resource, attSet, rit->second);
+          }
+        }
+      }
+    }
+  }
+  if (stateMayHaveChanged)
+  {
+    this->internalStateChanged(this->computeInternalState());
   }
 }
 
@@ -362,8 +498,8 @@ int FillOutAttributes::update(
       {
         predicatesUpdated = true; //categories have been changed
       }
-      auto mentionedResources = smtk::operation::extractResources(result);
 
+      auto mentionedResources = smtk::operation::extractResources(result);
       for (const auto& weakResource : mentionedResources)
       {
         auto resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(weakResource.lock());
@@ -407,7 +543,7 @@ int FillOutAttributes::update(
   return 0;
 }
 
-bool FillOutAttributes::hasRelevantInfomation(
+bool FillOutAttributes::hasRelevantInformation(
   const smtk::resource::ManagerPtr& resourceManager,
   bool& foundResources) const
 {
@@ -457,7 +593,7 @@ State FillOutAttributes::computeInternalState() const
   }
 
   bool foundResources;
-  if (!this->hasRelevantInfomation(resourceManager, foundResources))
+  if (!this->hasRelevantInformation(resourceManager, foundResources))
   {
     if (foundResources)
     {

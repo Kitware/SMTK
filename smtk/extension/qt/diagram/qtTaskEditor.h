@@ -30,6 +30,8 @@ namespace smtk
 namespace extension
 {
 
+class qtBaseArc;
+class qtBaseNode;
 class qtBaseTaskNode;
 
 /**\brief A widget that displays SMTK tasks available to users in a diagram.
@@ -49,7 +51,14 @@ public:
     qtDiagram* parent);
   ~qtTaskEditor() override;
 
-  void updateScene(
+  void updateSceneNodes(
+    std::unordered_set<smtk::resource::PersistentObject*>& created,
+    std::unordered_set<smtk::resource::PersistentObject*>& modified,
+    std::unordered_set<smtk::resource::PersistentObject*>& expunged,
+    const smtk::operation::Operation& operation,
+    const smtk::operation::Operation::Result& result) override;
+
+  void updateSceneArcs(
     std::unordered_set<smtk::resource::PersistentObject*>& created,
     std::unordered_set<smtk::resource::PersistentObject*>& modified,
     std::unordered_set<smtk::resource::PersistentObject*>& expunged,
@@ -74,8 +83,10 @@ public:
   /// Return true if we can accept the drag-and-drop data at the finalized location.
   bool acceptDrop(QDropEvent* event) override;
 
+  /// Return the qtBaseTaskNode that corresponds to a Task
+  qtBaseTaskNode* findTaskNode(const smtk::task::Task* task) const;
+
 protected:
-  // std::unordered_map<smtk::task::Task*, qtBaseTaskNode*> m_taskNodes;
   template<bool RemoveUnusedArcs>
   bool updateArcs(
     smtk::resource::PersistentObject* object,

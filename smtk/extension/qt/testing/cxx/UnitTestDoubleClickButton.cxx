@@ -47,7 +47,14 @@ DoubleClickButtonTester::DoubleClickButtonTester()
 
 void DoubleClickButtonTester::testSingleAndDoubleClicks()
 {
-  QVERIFY(QTest::qWaitForWindowActive(m_window));
+  if (QGuiApplication::platformName().startsWith(QLatin1String("wayland"), Qt::CaseInsensitive))
+  {
+    QSKIP("Platform does not support window activation");
+  }
+  else
+  {
+    QVERIFY(QTest::qWaitForWindowActive(m_window));
+  }
 
   QTest::mouseClick(m_button, Qt::LeftButton);
   QTest::qWait(qtDoubleClickButton::timeout);

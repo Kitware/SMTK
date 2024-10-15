@@ -36,6 +36,17 @@ class ResourceAndRole;
   * After each operation, attributes with a definition are validated.
   * If all attributes identify are valid, the task becomes completable.
   * Otherwise, the task will remain (or become) incomplete.
+  *
+  * FillOutAttributes has a single input and output port, both of which
+  * pass PortData of type ObjectsInRoles.
+  * The task itself is configured with AttributeSet instances that specify
+  * a role and the port-data is searched for these roles in order to
+  * configure attributes to be filled out.
+  * The output port contains only the attribute(s) configured by this
+  * task and does not include upstream port information so that when
+  * the output port is marked as modified it is possible for downstream
+  * tasks to be certain that it is the attributes in question that have
+  * been updated.
   */
 class SMTKCORE_EXPORT FillOutAttributes : public Task
 {
@@ -94,6 +105,18 @@ public:
   /// Parse configuration information to initialize this instance.
   void configure(const Configuration& config);
 
+  /// Report this task's ports.
+  const std::unordered_map<smtk::string::Token, Port*>& ports() const override;
+
+  /// Return data for this task's output port.
+  ///
+  /// This task only has one port. Resources for each attribute-set's roles
+  /// are reported. No upstream port data is transmitted to the downstream port.
+  std::shared_ptr<PortData> portData(const Port* port) const override;
+
+  /// Update the task based on new port data.
+  void portDataUpdated(const Port* port) override;
+
   /// Provide the attribute resource(s) that the user should edit.
   bool getViewData(smtk::common::TypeContainer& configuration) const override;
 
@@ -125,16 +148,26 @@ protected:
     const smtk::attribute::AttributePtr& attribute,
     ResourceAttributes& resourceAtts);
 
-  ///\brief Returns true if the task has relevant information in terms of its definitions and instances.
-  ///
-  ///  The task as relevant information if any of its definitions' or instances' isRelevant methods return true.  It will also
-  /// indicate if it found any of its required resources via the foundResources parameter.
+  SMTK_DEPRECATED_IN_NEXT("Use hasRelevantInformation (proper spelling) instead.")
   bool hasRelevantInfomation(
+    const smtk::resource::ManagerPtr& resourceManager,
+    bool& foundResources) const
+  {
+    return this->hasRelevantInformation(resourceManager, foundResources);
+  }
+
+  /// Returns true if the task has relevant information in terms of its definitions and instances.
+  ///
+  /// The task has relevant information if any of its definitions' or instances' isRelevant() methods
+  /// return true. It will also indicate if it found any of its required resources via the
+  /// \a foundResources parameter.
+  bool hasRelevantInformation(
     const smtk::resource::ManagerPtr& resourceManager,
     bool& foundResources) const;
   smtk::common::Managers::Ptr m_managers;
   smtk::operation::Observers::Key m_observer;
   std::vector<AttributeSet> m_attributeSets;
+  std::unordered_map<smtk::string::Token, Port*> m_ports;
 };
 } // namespace task
 } // namespace smtk

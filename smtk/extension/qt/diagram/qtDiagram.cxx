@@ -554,9 +554,15 @@ public:
     {
       entry.second->updateFromOperation(created, modified, expunged, op, result);
     }
+    // Update nodes first; this may also remove arcs attached to deleted nodes:
     for (const auto& entry : m_generators)
     {
-      entry.second->updateScene(created, modified, expunged, op, result);
+      entry.second->updateSceneNodes(created, modified, expunged, op, result);
+    }
+    // Then update arcs afterward so they can make use of new nodes:
+    for (const auto& entry : m_generators)
+    {
+      entry.second->updateSceneArcs(created, modified, expunged, op, result);
     }
     this->applyViewHints();
   }
@@ -934,6 +940,11 @@ bool qtDiagram::removeNode(qtBaseNode* node)
   delete node;
 
   return true;
+}
+
+bool qtDiagram::removeNodeIndex(const smtk::common::UUID& nodeId)
+{
+  return (m_p->m_nodeIndex.erase(nodeId) > 0);
 }
 
 bool qtDiagram::addArc(qtBaseArc* arc, bool enforceSelectionMode)

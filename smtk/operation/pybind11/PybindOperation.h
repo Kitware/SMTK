@@ -33,12 +33,52 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def_static("create", &smtk::operation::PyOperation::create)
     .def("typeName", &smtk::operation::Operation::typeName)
     .def("index", &smtk::operation::Operation::index)
-    .def("ableToOperate", &smtk::operation::Operation::ableToOperate)
-    .def("operate", (smtk::operation::Operation::Result (smtk::operation::Operation::*)()) &smtk::operation::Operation::operate)
+    .def("ableToOperate", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as ableToOperate will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->ableToOperate();
+        }
+        return self.ableToOperate();
+      }
+    )
+    .def("operate", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as operate will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->operate();
+        }
+        return self.operate();
+      }
+    )
     .def("safeOperate", (smtk::operation::Operation::Outcome (smtk::operation::Operation::*)()) &smtk::operation::Operation::safeOperate)
     .def("safeOperate", (smtk::operation::Operation::Outcome (smtk::operation::Operation::*)(smtk::operation::Handler)) &smtk::operation::Operation::safeOperate)
-    .def("log", &smtk::operation::Operation::log, pybind11::return_value_policy::reference)
-    .def("specification", &smtk::operation::Operation::specification)
+    .def("log", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as ableToOperate will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->log();
+        }
+        return self.log();
+      }, pybind11::return_value_policy::reference
+    )
+    .def("specification", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as specification() will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->specification();
+        }
+        return self.specification();
+      }
+    )
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))
     .def("_parameters", (smtk::operation::Operation::Parameters (smtk::operation::Operation::*)()) &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))

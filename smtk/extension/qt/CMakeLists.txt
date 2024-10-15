@@ -96,6 +96,7 @@ set(QAttrLibSrcs
   diagram/qtGroupingNode.cxx
   diagram/qtLegendDelegate.cxx
   diagram/qtPanMode.cxx
+  diagram/qtTaskPortArc.cxx
   diagram/qtPreviewArc.cxx
   diagram/qtResourceDiagram.cxx
   diagram/qtResourceDiagramArc.cxx
@@ -104,6 +105,7 @@ set(QAttrLibSrcs
   diagram/qtSelectMode.cxx
   diagram/qtTaskArc.cxx
   diagram/qtTaskEditor.cxx
+  diagram/qtTaskPortNode.cxx
 )
 
 set(QAttrLibUIs
@@ -214,6 +216,7 @@ set(QAttrLibMocHeaders
   diagram/qtObjectArc.h
   diagram/qtObjectNodeFactory.h
   diagram/qtPanMode.h
+  diagram/qtTaskPortArc.h
   diagram/qtPreviewArc.h
   diagram/qtResourceDiagram.h
   diagram/qtResourceDiagramArc.h
@@ -223,6 +226,7 @@ set(QAttrLibMocHeaders
   diagram/qtTaskArc.h
   diagram/qtTaskEditor.h
   diagram/qtTaskNodeFactory.h
+  diagram/qtTaskPortNode.h
 
   qtManager.h
 )

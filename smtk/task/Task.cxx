@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/task/Task.h"
 #include "smtk/task/Manager.h"
+#include "smtk/task/Port.h"
+#include "smtk/task/PortData.h"
 
 #include "smtk/string/json/jsonToken.h"
 #include "smtk/task/json/Helper.h"
@@ -220,6 +222,18 @@ const std::shared_ptr<resource::Resource> Task::resource() const
     }
   }
   return rsrc;
+}
+
+const std::unordered_map<smtk::string::Token, Port*>& Task::ports() const
+{
+  static std::unordered_map<smtk::string::Token, Port*> empty;
+  return empty;
+}
+
+std::shared_ptr<PortData> Task::portData(const Port* port) const
+{
+  (void)port;
+  return nullptr;
 }
 
 bool Task::addStyle(const smtk::string::Token& styleClass)

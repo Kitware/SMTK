@@ -206,7 +206,7 @@ public:
     bool passes(const std::string& cat) const override;
     ///@}
     ///\brief Compares with other set - returns -1 if this < rhs, 0 if they are equal, and 1 if this > rhs
-    int compare(const Expression& rhs) const;
+    int compare(const Set& rhs) const override;
 
     std::string convertToString(const std::string& prefix = "") const override;
 

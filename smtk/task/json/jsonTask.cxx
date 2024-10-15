@@ -48,6 +48,18 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
       config["dependencies"] = deps;
     }
     config["strict-dependencies"] = task->areDependenciesStrict();
+    nlohmann::json portDict;
+    for (const auto& entry : task->ports())
+    {
+      if (entry.second)
+      {
+        portDict[entry.first.data()] = entry.second->id();
+      }
+    }
+    if (!portDict.empty())
+    {
+      config["ports"] = portDict;
+    }
   }
   return config;
 }

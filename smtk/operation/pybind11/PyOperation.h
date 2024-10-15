@@ -134,48 +134,81 @@ public:
 
   bool ableToOperate() override
     {
-      // When a python operation is constructed on one thread and called on
-      // another, we need to temporarily cut the relationship between
-      // PyThreadState and the original thread before calling this method on a
-      // new thread. Otherwise, we result in deadlock. Pybind11's
-      // gil_scoped_release provides this functionality.
-      pybind11::gil_scoped_release thread_state(true);
-      PYBIND11_OVERLOAD(bool, Operation, ableToOperate, );
+      bool able;
+      PyOperation::runOnMainThread([&]()
+        {
+          able = this->ableToOperateMainThread();
+        }
+      );
+      return able;
     }
+
+  bool ableToOperateMainThread()
+  {
+    PYBIND11_OVERLOAD(bool, Operation, ableToOperate, );
+  }
 
   std::string typeName() const override { return m_typeName; }
 
   smtk::io::Logger& log() const override
     {
-      // When a python operation is constructed on one thread and called on
-      // another, we need to temporarily cut the relationship between
-      // PyThreadState and the original thread before calling this method on a
-      // new thread. Otherwise, we result in deadlock. Pybind11's
-      // gil_scoped_release provides this functionality.
-      pybind11::gil_scoped_release thread_state(true);
-      PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, );
+      smtk::io::Logger* result;
+      PyOperation::runOnMainThread([&]()
+        {
+          result = &(this->logMainThread());
+        }
+      );
+      return *result;
     }
+
+  smtk::io::Logger& logMainThread() const
+  {
+    PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, );
+  }
 
   Result operateInternal() override
     {
-      // Python operations often raise exceptions. If they are uncaught, they
-      // become C++ exceptions. We convert these exceptions to a failed
-      // execution.
-      try
-      {
-        return this->operateInternalPy();
-      }
-      catch(std::exception& e)
-      {
-        this->log().addRecord(smtk::io::Logger::Error, e.what());
-        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-      }
+      Result result = nullptr;
+      PyOperation::runOnMainThread([&]()
+        {
+          // Python operations often raise exceptions. If they are uncaught, they
+          // become C++ exceptions. We convert these exceptions to a failed
+          // execution.
+          try
+          {
+            result = this->operateInternalPy();
+          }
+          catch(std::exception& e)
+          {
+            // We call logMainThread() here since we are already on the main thread:
+            this->logMainThread().addRecord(smtk::io::Logger::Error, e.what());
+            result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
+          }
+        }
+      );
+      return result;
     }
 
   void postProcessResult(Result& res) override
+  {
+    PyOperation::runOnMainThread([&]()
+      {
+        this->postProcessResultMainThread(res);
+      }
+    );
+  }
+  void postProcessResultMainThread(Result& res)
     { PYBIND11_OVERLOAD(void, Operation, postProcessResult, res); }
 
   void generateSummary(Result& res) override
+  {
+    PyOperation::runOnMainThread([&]()
+      {
+        this->generateSummaryMainThread(res);
+      }
+    );
+  }
+  void generateSummaryMainThread(Result& res)
     { PYBIND11_OVERLOAD(void, Operation, generateSummary, res); }
 
   // We incorporate the base class's method with a different access modifier
@@ -186,6 +219,16 @@ public:
 
 private:
   Specification createSpecification() override
+  {
+    Specification result;
+    PyOperation::runOnMainThread([&]()
+      {
+        result = this->createSpecificationMainThread();
+      }
+    );
+    return result;
+  }
+  Specification createSpecificationMainThread()
     { PYBIND11_OVERLOAD_PURE(Specification, Operation, createSpecification); }
 
   void setIndex(Index index) { m_index = index; }

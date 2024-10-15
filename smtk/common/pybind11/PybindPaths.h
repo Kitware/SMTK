@@ -34,6 +34,7 @@ inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::mod
     .def("toplevelDirectory", &smtk::common::Paths::toplevelDirectory)
     .def("bundleDirectory", &smtk::common::Paths::bundleDirectory)
     .def("workerSearchPaths", &smtk::common::Paths::workerSearchPaths, py::arg("pruneInvalid") = true)
+    .def("findAvailablePlugins", &smtk::common::Paths::findAvailablePlugins, py::arg("pluginNames") = std::set<std::string>())
     .def("toplevelDirectoryConfigured", &smtk::common::Paths::toplevelDirectoryConfigured)
     .def("forceUpdate", &smtk::common::Paths::forceUpdate)
     ;

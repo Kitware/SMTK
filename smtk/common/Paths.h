@@ -20,6 +20,7 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,7 @@ public:
   std::string toplevelDirectory();
   std::string bundleDirectory();
   std::vector<std::string> workerSearchPaths(bool pruneInvalid = true);
+  std::vector<std::string> findAvailablePlugins(const std::set<std::string>& pluginNames = {});
 
   std::string toplevelDirectoryConfigured();
 

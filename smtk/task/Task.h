@@ -35,6 +35,8 @@ namespace task
 {
 
 class Manager;
+class Port;
+class PortData;
 class Task;
 /// Free functions that populate a set of workflow "head" tasks for an input \a task
 /// (this is the set of tasks that \a task ultimately depends on but are not themselves
@@ -111,16 +113,6 @@ public:
 
   ~Task() override = default;
 
-  /// Set/get the task's unique identifier.
-  const common::UUID& id() const override { return m_id; }
-  bool setId(const common::UUID& newId) override;
-
-  /// Return the task's name
-  std::string name() const override { return m_name; }
-  virtual void setName(const std::string& name);
-
-  const std::shared_ptr<resource::Resource> resource() const override;
-
   /// A method called by all constructors passed Configuration information.
   ///
   /// In general, this method should set member variables directly
@@ -131,6 +123,16 @@ public:
   /// when this method is called.
   void configure(const Configuration& config);
 
+  /// Set/get the task's unique identifier.
+  const common::UUID& id() const override { return m_id; }
+  bool setId(const common::UUID& newId) override;
+
+  /// Return the task's name
+  std::string name() const override { return m_name; }
+  virtual void setName(const std::string& name);
+
+  const std::shared_ptr<resource::Resource> resource() const override;
+
   /// Return the title of the task (if one was provided).
   SMTK_DEPRECATED_IN_24_01("Use name() instead.")
   const std::string& title() const { return m_name; }
@@ -139,6 +141,27 @@ public:
   /// This is not intended to be a unique identifier.
   SMTK_DEPRECATED_IN_24_01("Use setName() instead.")
   void setTitle(const std::string& title) { this->setName(title); }
+
+  /// Return a set of ports for this task indexed by their function (a descriptive string).
+  virtual const std::unordered_map<smtk::string::Token, Port*>& ports() const;
+
+  /// Given a port owned by this task, return data to be transmitted over the port.
+  ///
+  /// Subclasses that own ports must override this method in order to produce port-data.
+  virtual std::shared_ptr<PortData> portData(const Port* port) const;
+
+  /// Accept notification that data on the given \a port has been updated.
+  ///
+  /// This function will be called when processing operation results.
+  /// There is no guarantee that resources other than the project owning
+  /// this task is locked; if you need to modify other resources as a
+  /// result of this notification, you should launch an operation so that
+  /// those resources are properly locked.
+  ///
+  /// Because this function will be called on the user-interface thread,
+  /// it is acceptable to take actions affecting the user interface,
+  /// including changing the state of this task.
+  virtual void portDataUpdated(const Port* port) { (void)port; }
 
   /// Set/get style classes for the task.
   /// A style class specifies how applications should present the task

@@ -59,7 +59,7 @@ void Project::visit(smtk::resource::Component::Visitor& visitor) const
     return;
   }
 
-  // Currently, a project's only components are tasks, adaptors, and worklets.
+  // Currently, a project's only components are tasks, adaptors, ports, and worklets.
   m_taskManager->taskInstances().visit([&visitor](const smtk::task::Task::Ptr& task) {
     visitor(task);
     return smtk::common::Visit::Continue;
@@ -67,6 +67,11 @@ void Project::visit(smtk::resource::Component::Visitor& visitor) const
 
   m_taskManager->adaptorInstances().visit([&visitor](const smtk::task::Adaptor::Ptr& adaptor) {
     visitor(adaptor);
+    return smtk::common::Visit::Continue;
+  });
+
+  m_taskManager->portInstances().visit([&visitor](const smtk::task::Port::Ptr& port) {
+    visitor(port);
     return smtk::common::Visit::Continue;
   });
 
@@ -97,6 +102,12 @@ smtk::resource::ComponentPtr Project::find(const smtk::common::UUID& compId) con
   if (adaptor)
   {
     return adaptor;
+  }
+
+  auto port = m_taskManager->portInstances().findById(compId);
+  if (port)
+  {
+    return port;
   }
 
   for (const auto& entry : m_taskManager->gallery().worklets())

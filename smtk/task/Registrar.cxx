@@ -15,6 +15,7 @@
 #include "smtk/task/FillOutAttributes.h"
 #include "smtk/task/GatherResources.h"
 #include "smtk/task/Group.h"
+#include "smtk/task/Port.h"
 #include "smtk/task/SubmitOperation.h"
 #include "smtk/task/Task.h"
 #include "smtk/task/adaptor/ConfigureOperation.h"
@@ -26,11 +27,14 @@
 #include "smtk/task/json/jsonFillOutAttributes.h"
 #include "smtk/task/json/jsonGatherResources.h"
 #include "smtk/task/json/jsonGroup.h"
+#include "smtk/task/json/jsonPort.h"
 #include "smtk/task/json/jsonResourceAndRole.h"
 #include "smtk/task/json/jsonSubmitOperation.h"
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/task/operators/AddDependency.h"
+#include "smtk/task/operators/ConnectPorts.h"
+#include "smtk/task/operators/DisconnectPorts.h"
 #include "smtk/task/operators/EmplaceWorklet.h"
 #include "smtk/task/operators/RemoveDependency.h"
 #include "smtk/task/operators/RenameTask.h"
@@ -54,10 +58,15 @@ using TaskJSON = std::tuple<
   json::jsonGatherResources,
   json::jsonGroup,
   json::jsonSubmitOperation>;
+
 using AdaptorList = std::tuple<adaptor::ConfigureOperation, adaptor::ResourceAndRole>;
 using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceAndRole>;
 
-using OperationList = std::tuple<AddDependency, EmplaceWorklet, RemoveDependency, RenameTask>;
+using PortList = std::tuple<Port>;
+using PortJSON = std::tuple<json::jsonPort>;
+
+using OperationList = std::
+  tuple<AddDependency, ConnectPorts, DisconnectPorts, EmplaceWorklet, RemoveDependency, RenameTask>;
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
@@ -73,6 +82,9 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   // Adaptors
   typeLabels[smtk::common::typeName<smtk::task::adaptor::ConfigureOperation>()] = "operation adaptor";
   typeLabels[smtk::common::typeName<smtk::task::adaptor::ResourceAndRole>()] = "resource and role adaptor";
+
+  // Ports
+  typeLabels[smtk::common::typeName<smtk::task::Port>()] = "port";
   // clang-format on
 }
 
@@ -97,6 +109,10 @@ void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
   auto& adaptorInstances = taskManager->adaptorInstances();
   adaptorInstances.registerTypes<AdaptorList>();
   json::Configurator<Adaptor>::registerTypes<AdaptorList, AdaptorJSON>();
+
+  auto& portInstances = taskManager->portInstances();
+  portInstances.registerTypes<PortList>();
+  json::Configurator<Port>::registerTypes<PortList, PortJSON>();
 }
 
 void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
@@ -108,6 +124,10 @@ void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
   auto& adaptorInstances = taskManager->adaptorInstances();
   adaptorInstances.unregisterTypes<AdaptorList>();
   json::Configurator<Adaptor>::unregisterTypes<AdaptorList>();
+
+  auto& portInstances = taskManager->portInstances();
+  portInstances.unregisterTypes<PortList>();
+  json::Configurator<Port>::unregisterTypes<PortList>();
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
@@ -116,7 +136,9 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::ArcCreator arcCreator(operationManager);
   arcCreator.registerOperation<smtk::task::AddDependency>({ "task dependency" });
+  arcCreator.registerOperation<smtk::task::ConnectPorts>({ "port connection" });
   smtk::operation::ArcDeleter arcDeleter(operationManager);
+  arcDeleter.registerOperation<smtk::task::DisconnectPorts>();
   arcDeleter.registerOperation<smtk::task::RemoveDependency>();
 }
 
@@ -126,7 +148,9 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
   smtk::operation::ArcCreator arcCreator(operationManager);
   arcCreator.unregisterOperation<smtk::task::AddDependency>();
+  arcCreator.unregisterOperation<smtk::task::ConnectPorts>();
   smtk::operation::ArcDeleter arcDeleter(operationManager);
+  arcDeleter.unregisterOperation<smtk::task::DisconnectPorts>();
   arcDeleter.unregisterOperation<smtk::task::RemoveDependency>();
 }
 
