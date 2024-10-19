@@ -35,21 +35,9 @@ file(DOWNLOAD
   ".gitlab/superbuild-gdrive.txt"
   STATUS download_status)
 
-# Check the download status.
-list(GET download_status 0 res)
-if (res)
-  list(GET download_status 1 err)
-  message(FATAL_ERROR
-    "Failed to download superbuild Google Drive page: ${err}")
-endif ()
-
-file(READ ".gitlab/superbuild-gdrive.txt" superbuild_gdrive_intertitial)
-# Extract the UUID from the form.
-string(REGEX REPLACE ".*name=\"uuid\" value=\"\([0-9a-f-]*\)\".*" "\\1" gdrive_uuid "${superbuild_gdrive_intertitial}")
-
-# Actually download the file.
+# Download the file.
 file(DOWNLOAD
-  "https://drive.usercontent.google.com/download?export=download&id=${file_id}&export=download&authuser=0&confirm=t&uuid=${gdrive_uuid}"
+  "https://drive.usercontent.google.com/download?export=download&id=${file_id}&export=download&authuser=0&confirm=t"
   ".gitlab/superbuild.tar.gz"
   STATUS download_status
   EXPECTED_HASH "SHA512=${file_hash}")
