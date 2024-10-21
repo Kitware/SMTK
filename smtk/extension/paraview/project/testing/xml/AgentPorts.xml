@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<pqevents>
+  <!-- Reset the server. -->
+  <pqevent object="pqClientMainWindow/MainControlsToolbar/actionServerDisconnect" command="activate" arguments="" />
+
+  <!-- Lock the window size. -->
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
+
+  <!-- Load the math_op python operation as a plugin -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menuTools" />
+  <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionManage_Plugins" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/splitter/localGroup/loadLocal" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/1pqFileDialog0" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/operations/math_op.py" />
+  <pqevent object="pqClientMainWindow/PluginManagerDialog/buttonBox/1QPushButton0" command="activate" arguments="" />
+
+  <!-- Load a project with agents that transfer data via ports -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_File" />
+  <pqevent object="pqClientMainWindow/menubar/menu_File" command="activate" arguments="actionFileOpen" />
+  <pqevent object="pqClientMainWindow/FileOpenDialog" command="filesSelected" arguments="$PARAVIEW_DATA_ROOT/projects/PortDataObjects/portDataToReferenceItem.smtk" />
+  <pqevent object="pqClientMainWindow/propertiesDock/propertiesPanel/Accept" command="activate" arguments="" />
+
+  <!-- Connect the output port of the "Stage 1 Attributes" task to the "Stage 1 Operation" task's input port.
+       This should associate the attribute on the output port to the operation parameters.
+       Validate the association by running the operation, which completes the task.
+  -->
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Search" command="set_string" arguments="c" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Search" command="set_string" arguments="con" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Search" command="set_string" arguments="con" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Search" command="set_string" arguments="conn" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationToolboxDock/1pqSMTKOperationToolboxPanel0/OperationPalette/Operations" command="editOperationParameters" arguments="(12519246552442341654,smtk::task::ConnectPorts)" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="expand" arguments="0.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setCurrent" arguments="0.0.0.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="0.0.0.0,0.0.0.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::task::ConnectPorts11/ReferenceItemFrame_to/CopyFromSelection" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view/qt_scrollarea_vcontainer/1QScrollBar0" command="mousePress" arguments="1,1,0,8,69" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view/qt_scrollarea_vcontainer/1QScrollBar0" command="mouseRelease" arguments="1,0,0,8,69" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view/qt_scrollarea_vcontainer/1QScrollBar0" command="mousePress" arguments="1,1,0,9,59" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view/qt_scrollarea_vcontainer/1QScrollBar0" command="mouseRelease" arguments="1,0,0,9,59" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setCurrent" arguments="0.0.4.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="0.0.4.0,0.0.4.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::task::ConnectPorts11/ReferenceItemFrame_from/CopyFromSelection" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::task::ConnectPorts11/ReferenceItemFrame_from/EditReferenceItemMembers" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setCurrent" arguments="0.0.5.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="0.0.6.0,0.0.6.0" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::task::ConnectPorts11/ReferenceItemFrame_from/CopyFromSelection" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/OpViewApplyButton" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_tabbar/1CloseButton0" command="activate" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,285,142" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,285,142" />
+  <pqevent object="nodeContainer_eaf53a10-ceaf-4543-a0a5-2f5ce7e2a5a1/m_title" command="set_boolean" arguments="true" />
+  <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/assignColorsView/AssignColorsParameters/ApplyDefaultColorBtn" command="activate" arguments="" />
+
+  <!-- Validate that the operation ran by changing the active task to a dependent task and validating one of its parameters -->
+  <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,450,140" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,450,140" />
+  <pqevent object="nodeContainer_8941c887-c27e-4a1d-9d37-416230605664/m_title" command="set_boolean" arguments="true" />
+  <pqcheck object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/math_op.MathOp9/IntValue/dataFrame/valuesFrame/editBox0" property="text" arguments="100" />
+
+  <!-- Hide the "Diagram" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
+  <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_View" />
+  <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Diagram" />
+
+  <!-- Reset the camera. -->
+  <pqevent object="pqClientMainWindow/cameraToolbar/actionResetCamera" command="activate" arguments="" />
+</pqevents>

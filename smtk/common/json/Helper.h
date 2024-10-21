@@ -10,7 +10,11 @@
 #ifndef smtk_common_json_Helper_h
 #define smtk_common_json_Helper_h
 
+#include "smtk/common/CompilerInformation.h" // for SMTK_ALWAYS_EXPORT
 #include "smtk/common/UUID.h"
+
+#include "nlohmann/json.hpp"
+
 #include <set>
 
 namespace smtk
@@ -25,7 +29,7 @@ namespace common
 /// only a subset of its specification attribute resource links would be
 /// needed.
 template<typename LeftIdType = smtk::common::UUID, typename RightIdType = smtk::common::UUID>
-class SMTKCORE_EXPORT Helper
+class SMTK_ALWAYS_EXPORT Helper
 {
 public:
   Helper() = default;
@@ -34,6 +38,12 @@ public:
   /// Copy construction and assignment are disallowed.
   Helper(const Helper&) = delete;
   void operator=(const Helper&) = delete;
+
+  /// Return the active helper instance.
+  static Helper* instance() { return nullptr; }
+  /// Create a new helper, making it active.
+  static Helper* activate() { return nullptr; }
+  static bool deactivate() { return false; }
 
   /// Return the set of required Persistent Object
   /// Ids that should be used to determine which links
@@ -88,16 +98,62 @@ public:
   }
   ///@}
 
-  /// Return the helper "singleton".
-  ///
-  static Helper& instance() { return s_instancedHelper; }
-
   /// Reset the helper's state.
   ///
   /// This should be called before beginning serialization or deserialization.
   /// Additionally, calling it after each of these resources is recommended since
   /// it will free memory.
   void clear();
+
+  /// Check whether a link should be included.
+  bool includeLink(const LeftIdType& leftId) const
+  {
+    return m_requiredIds.find(leftId) != m_requiredIds.end();
+  }
+
+  /// Return JSON for the given LeftIdType value, substituting placeholder text if needed.
+  nlohmann::json serializeLeft(LeftIdType value) const
+  {
+    if (m_hasLeftPlaceholderId && value == m_leftPlaceholderId)
+    {
+      return m_leftPlaceholderText;
+    }
+    return value;
+  }
+
+  /// Return JSON for the given RightIdType value, substituting placeholder text if needed.
+  nlohmann::json serializeRight(RightIdType value) const
+  {
+    if (m_hasRightPlaceholderId && value == m_rightPlaceholderId)
+    {
+      return m_rightPlaceholderText;
+    }
+    return value;
+  }
+
+  /// Return LeftIdType value, replacing placeholder text if needed.
+  LeftIdType deserializeLeft(const nlohmann::json& value) const
+  {
+    if (
+      m_hasLeftPlaceholderId && value.is_string() &&
+      value.get<std::string>() == m_leftPlaceholderText)
+    {
+      return m_leftPlaceholderId;
+    }
+    return value.get<LeftIdType>();
+  }
+
+  /// Return RightIdType value, replacing placeholder text if needed.
+  RightIdType deserializeRight(const nlohmann::json& value) const
+  {
+    if (
+      m_hasRightPlaceholderId && value.is_string() &&
+      value.get<std::string>() == m_rightPlaceholderText)
+    {
+      return m_rightPlaceholderId;
+    }
+    return value.get<RightIdType>();
+  }
 
 protected:
   std::set<LeftIdType> m_requiredIds;
@@ -111,9 +167,6 @@ protected:
 };
 
 template<typename LeftIdType, typename RightIdType>
-thread_local smtk::common::Helper<LeftIdType, RightIdType>
-  Helper<LeftIdType, RightIdType>::s_instancedHelper;
-template<typename LeftIdType, typename RightIdType>
 void Helper<LeftIdType, RightIdType>::clear()
 {
   m_requiredIds.clear();
@@ -122,6 +175,21 @@ void Helper<LeftIdType, RightIdType>::clear()
   m_leftPlaceholderText = "0000000!0000!0000!0000!000000000000";
   m_rightPlaceholderText = "FFFFFFF!FFFF!FFFF!FFFF!FFFFFFFFFFFF";
 }
+
+/// Specialize the helper for UUIDs.
+///
+/// The default implementation will always return a null pointer,
+/// causing from_json/to_json to fall back to serializing all links
+/// with no replacement. This implementation may return a null pointer
+/// if no helper has been pushed.
+template<>
+SMTKCORE_EXPORT Helper<smtk::common::UUID, smtk::common::UUID>*
+Helper<smtk::common::UUID, smtk::common::UUID>::instance();
+template<>
+SMTKCORE_EXPORT Helper<smtk::common::UUID, smtk::common::UUID>*
+Helper<smtk::common::UUID, smtk::common::UUID>::activate();
+template<>
+SMTKCORE_EXPORT bool Helper<smtk::common::UUID, smtk::common::UUID>::deactivate();
 
 } // namespace common
 } // namespace smtk

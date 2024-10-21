@@ -330,6 +330,73 @@ void JsonTest()
   }
 }
 
+void SubsetJsonTest()
+{
+  using UUID = smtk::common::UUID;
+  typedef smtk::common::Links<UUID, UUID, UUID, int, MyBase> LocalLinks;
+  LocalLinks links;
+  // Create some IDs and populate links.
+  auto aa = UUID::random();
+  auto bb = UUID::random();
+  auto cc = UUID::random();
+  auto dd = UUID::random();
+  links.insert(UUID::random(), aa, bb, 100);
+  links.insert(UUID::random(), aa, cc, 100);
+  links.insert(UUID::random(), bb, aa, 100);
+  links.insert(UUID::random(), bb, dd, 100);
+  links.insert(UUID::random(), cc, bb, 100);
+  links.insert(UUID::random(), cc, aa, 100);
+  links.insert(UUID::random(), cc, dd, 100);
+
+  smtkTest(smtk::common::Helper<>::instance() == nullptr, "Should not have a helper yet.");
+
+  // Serialize the subset of links with aa or bb on the left-hand side:
+  auto* helper = smtk::common::Helper<>::activate();
+  smtkTest(!!helper, "Should have a helper now.");
+  helper->requiredIds().insert(aa);
+  helper->requiredIds().insert(bb);
+  helper->setLeftPlaceholderId(aa);
+  helper->setRightPlaceholderId(aa);
+  nlohmann::json j = links;
+  helper->deactivate();
+  smtkTest(!smtk::common::Helper<>::instance(), "Should not have a helper any longer.");
+
+  // Deserialize links, replacing the placeholder (previously aa) with dd.
+  helper = smtk::common::Helper<>::activate();
+  smtkTest(!!helper, "Should have a helper again.");
+  helper->setLeftPlaceholderId(dd);
+  helper->setRightPlaceholderId(dd);
+  LocalLinks newLinks = j.get<LocalLinks>();
+  helper->deactivate();
+
+  smtkTest(links.size() == 7, "Should start with 7 links.");
+  smtkTest(newLinks.size() == 4, "Should subset the 4 links with aa/bb on left.");
+
+  for (const auto& link : newLinks)
+  {
+    auto id = link.id;
+    smtkTest(links.at(id).id == newLinks.at(id).id, "Link ids should be equal.");
+    if (links.at(id).left != aa)
+    {
+      smtkTest(links.at(id).left == newLinks.at(id).left, "Link lefts should be equal.");
+    }
+    else
+    {
+      smtkTest(newLinks.at(id).left == dd, "Link lefts should be replaced.");
+    }
+    if (links.at(id).right != aa)
+    {
+      smtkTest(links.at(id).right == newLinks.at(id).right, "Link rights should be equal.");
+    }
+    else
+    {
+      smtkTest(newLinks.at(id).right == dd, "Link rights should be replaced.");
+    }
+    smtkTest(links.at(id).role == newLinks.at(id).role, "Link roles should be equal.");
+    smtkTest(links.at(id).value == newLinks.at(id).value, "Link roles should be equal.");
+  }
+}
+
 void MoveOnlyJsonTest()
 {
   typedef smtk::common::Links<int, std::size_t, short, int, MyMoveOnlyBase> MyLinks;
@@ -409,6 +476,7 @@ int UnitTestLinks(int /*unused*/, char** const /*unused*/)
   MoveOnlyTest();
   JsonTest();
   MoveOnlyJsonTest();
+  SubsetJsonTest();
   RecursionTest();
   MoveOnlyRecursionTest();
 

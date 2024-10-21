@@ -14,7 +14,7 @@
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Resource.h"
-#include "smtk/task/Task.h"
+#include "smtk/task/AgentlessTask.h"
 
 #include "smtk/common/Visit.h"
 
@@ -39,12 +39,12 @@ class ResourceAndRole;
   * parameters, and may allow users to run the operation once or repeatedly.
   * See the user's guide for more information on how to configure this operation.
   */
-class SMTKCORE_EXPORT SubmitOperation : public Task
+class SMTKCORE_EXPORT SubmitOperation : public AgentlessTask
 {
 public:
   smtkTypeMacro(smtk::task::SubmitOperation);
-  smtkSuperclassMacro(smtk::task::Task);
-  smtkCreateMacro(smtk::task::Task);
+  smtkSuperclassMacro(smtk::task::AgentlessTask);
+  smtkCreateMacro(smtk::resource::PersistentObject);
 
   /// Specify how users interact with the operation.
   enum RunStyle
@@ -182,7 +182,7 @@ protected:
     const std::shared_ptr<smtk::attribute::Item>& item);
 
   /// Check m_resourcesByRole to see if all requirements are met.
-  State computeInternalState() const;
+  State computeInternalState() const override;
 
   smtk::common::Managers::Ptr m_managers;
   smtk::operation::Observers::Key m_observer;

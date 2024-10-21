@@ -34,6 +34,7 @@ Port::Configuration jsonPort::operator()(const Port* port, Helper& helper) const
     config["type"] = port->typeName();
     config["name"] = port->name();
     config["direction"] = Port::LabelFromDirection(port->direction());
+    config["access"] = Port::LabelFromAccess(port->access());
     config["data-types"] = port->dataTypes();
     if (!port->style().empty())
     {

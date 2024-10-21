@@ -49,7 +49,7 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     std::map<smtk::common::UUID, Task::Ptr> taskMap;
     std::map<smtk::common::UUID, Port::Ptr> portMap;
     std::map<json::Helper::SwizzleId, Adaptor::Ptr> adaptorMap;
-    // Deserialize ports first so tasks can find them upon initial
+    // Deserialize ports first so tasks/agents can find them upon initial
     // configuration.
     if (jj.contains("ports"))
     {
@@ -228,7 +228,7 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         // TODO: UI state.
       }
     }
-    // Do a second pass to deserialize dependencies and UI config.
+    // Do a second pass to deserialize dependencies.
     for (const auto& jsonTask : jj.at("tasks"))
     {
       auto jTaskId = jsonTask.at("id");
@@ -298,7 +298,6 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         }
         task->addDependencies(taskDeps);
       }
-      // TODO: UI state.
     }
 
     // Now configure dependent tasks with adaptors if specified.

@@ -35,7 +35,6 @@ inline PySharedPtrClass< smtk::task::FillOutAttributes, smtk::task::Task > pybin
     .def("visitAttributeSets", (smtk::common::Visit (smtk::task::FillOutAttributes::*)(::smtk::task::FillOutAttributes::ConstAttributeSetVisitor) const) &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
     .def("visitAttributeSets", (smtk::common::Visit (smtk::task::FillOutAttributes::*)(::smtk::task::FillOutAttributes::AttributeSetVisitor)) &smtk::task::FillOutAttributes::visitAttributeSets, py::arg("visitor"))
 
-    .def_readonly_static("type_name", &smtk::task::FillOutAttributes::type_name)
     ;
   py::class_< smtk::task::FillOutAttributes::AttributeSet >(instance, "AttributeSet")
     .def(py::init<>())

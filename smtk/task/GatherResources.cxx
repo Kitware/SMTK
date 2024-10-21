@@ -35,7 +35,7 @@ GatherResources::GatherResources(
   const Configuration& config,
   Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, taskManager, managers)
+  : AgentlessTask(config, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);
@@ -46,7 +46,7 @@ GatherResources::GatherResources(
   const PassedDependencies& dependencies,
   Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, dependencies, taskManager, managers)
+  : AgentlessTask(config, dependencies, taskManager, managers)
   , m_managers(managers)
 {
   this->configure(config);

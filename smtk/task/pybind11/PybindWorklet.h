@@ -17,9 +17,9 @@
 
 namespace py = pybind11;
 
-inline PySharedPtrClass< smtk::task::Worklet > pybind11_init_smtk_task_Worklet(py::module &m)
+inline PySharedPtrClass< smtk::task::Worklet, smtk::resource::Component > pybind11_init_smtk_task_Worklet(py::module &m)
 {
-  PySharedPtrClass< smtk::task::Worklet > instance(m, "Worklet");
+  PySharedPtrClass< smtk::task::Worklet, smtk::resource::Component > instance(m, "Worklet");
   instance
     .def("schema", &smtk::task::Worklet::schema)
     .def("version", &smtk::task::Worklet::version)

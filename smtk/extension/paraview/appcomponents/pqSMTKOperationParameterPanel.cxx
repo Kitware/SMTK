@@ -22,6 +22,7 @@
 #include "smtk/project/Project.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/SubmitOperation.h"
+#include "smtk/task/SubmitOperationAgent.h"
 
 #include "smtk/operation/Operation.h"
 
@@ -71,6 +72,58 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
+
+namespace
+{
+
+smtk::operation::Operation* operationForTask(
+  smtk::task::Task* task,
+  smtk::task::SubmitOperationAgent::RunStyle* runStyle = nullptr)
+{
+  if (!task)
+  {
+    return nullptr;
+  }
+  if (runStyle)
+  {
+    *runStyle = smtk::task::SubmitOperationAgent::RunStyle::Once;
+  }
+  for (const auto& agent : task->agents())
+  {
+    if (auto* opAgent = dynamic_cast<smtk::task::SubmitOperationAgent*>(agent))
+    {
+      if (runStyle)
+      {
+        *runStyle = opAgent->runStyle();
+      }
+      return opAgent->operation();
+    }
+  }
+  auto* oldOpTask = dynamic_cast<smtk::task::SubmitOperation*>(task);
+  if (oldOpTask)
+  {
+    if (runStyle)
+    {
+      switch (oldOpTask->runStyle())
+      {
+        default:
+        case smtk::task::SubmitOperation::RunStyle::Iteratively:
+          *runStyle = smtk::task::SubmitOperationAgent::RunStyle::Iteratively;
+          break;
+        case smtk::task::SubmitOperation::RunStyle::Once:
+          *runStyle = smtk::task::SubmitOperationAgent::RunStyle::Once;
+          break;
+        case smtk::task::SubmitOperation::RunStyle::OnCompletion:
+          *runStyle = smtk::task::SubmitOperationAgent::RunStyle::OnCompletion;
+          break;
+      }
+    }
+    return oldOpTask->operation();
+  }
+  return nullptr;
+}
+
+} // anonymous namespace
 
 pqSMTKOperationParameterPanel::pqSMTKOperationParameterPanel(QWidget* parent)
   : Superclass(parent)
@@ -619,13 +672,14 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
           m_taskObserver.release();
           // First, if oldTask is an operation task, remove its parameter-panel
           // (if it was configured to display one).
-          auto* oldOpTask = dynamic_cast<smtk::task::SubmitOperation*>(oldTask);
-          if (oldOpTask)
+          smtk::task::SubmitOperationAgent::RunStyle runStyle;
+          auto* prevOp = operationForTask(oldTask);
+          if (prevOp)
           {
-            auto styles = oldOpTask->style();
+            auto styles = oldTask->style();
             for (const auto& style : styles)
             {
-              auto configurations = oldOpTask->manager()->getStyle(style);
+              auto configurations = oldTask->manager()->getStyle(style);
               if (!configurations.contains("operation-panel"))
               {
                 continue;
@@ -636,23 +690,23 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
               {
                 continue;
               }
-              this->closeTabForOperation(oldOpTask->operation()->shared_from_this(), true);
+              this->closeTabForOperation(prevOp->shared_from_this(), true);
             }
           }
 
           // Now that we've "deactivated" any previous operation task, see if we
           // need to "activate" a new one.
-          auto* submitOpTask = dynamic_cast<smtk::task::SubmitOperation*>(newTask);
-          if (!submitOpTask)
+          auto* nextOp = operationForTask(newTask, &runStyle);
+          if (!nextOp)
           {
             return;
           }
 
           nlohmann::json panelStyle;
-          auto styles = submitOpTask->style();
+          auto styles = newTask->style();
           for (const auto& style : styles)
           {
-            auto configurations = submitOpTask->manager()->getStyle(style);
+            auto configurations = newTask->manager()->getStyle(style);
             if (!configurations.contains("operation-panel"))
             {
               continue;
@@ -668,10 +722,10 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             // Observe the task so when it transitions state we can react (e.g., by
             // removing the operation tab when the task is completed.)
             QPointer<pqSMTKOperationParameterPanel> self(this);
-            m_taskObserver = submitOpTask->observers().insert([self, &activeTracker](
-                                                                smtk::task::Task& task,
-                                                                smtk::task::State priorState,
-                                                                smtk::task::State currentState) {
+            m_taskObserver = newTask->observers().insert([self, &activeTracker](
+                                                           smtk::task::Task& task,
+                                                           smtk::task::State priorState,
+                                                           smtk::task::State currentState) {
               // If the panel has been destroyed or the task being
               // observed is no longer active, ignore this event.
               if (!self || activeTracker.task() != &task)
@@ -682,32 +736,32 @@ void pqSMTKOperationParameterPanel::handleProjectEvent(
             });
             // TODO: Fetch proper view-config from the task based on the "view" tag's
             //       value (one of "anew"/"override"/"modified").
-            if (submitOpTask->state() != smtk::task::State::Completed)
+            if (newTask->state() != smtk::task::State::Completed)
             {
               // Find or create TabData instance
-              auto* op = submitOpTask->operation();
-              TabData* tabData = this->tabDataForOperation(*op);
+              TabData* tabData = this->tabDataForOperation(*nextOp);
               if (tabData == nullptr)
               {
-                tabData = this->createTabData(op);
+                tabData = this->createTabData(nextOp);
               }
-
               // Get the view configuration
               smtk::view::ConfigurationPtr view = tabData->m_uiMgr->findOrCreateOperationView();
 
+#if 0
               // Process any style:hide-items in the task's style
               if (panelStyle.contains("hide-items"))
               {
-                submitOpTask->configureHiddenItems(view, panelStyle.at("hide-items"));
+                newTask->configureHiddenItems(view, panelStyle.at("hide-items"));
               }
+#endif
 
               this->editExistingOperationParameters(
-                submitOpTask->operation()->shared_from_this(),
+                nextOp->shared_from_this(),
                 /* associate selection? */
-                false, // TODO: Determine whether submitOpTask->associations() is specified.
+                false, // TODO: Determine whether nextOp->associations() is specified.
                 /* allow tab to be closed? */ false,
-                /* show apply button */ submitOpTask->runStyle() !=
-                  smtk::task::SubmitOperation::RunStyle::OnCompletion,
+                /* show apply button */ runStyle !=
+                  smtk::task::SubmitOperationAgent::RunStyle::OnCompletion,
                 view);
             }
           }

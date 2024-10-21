@@ -4,6 +4,7 @@ set(smtkTaskPythonTests
 
 # tests that require SMTK_DATA_DIR
 set(smtkTaskPythonDataTests
+  testTaskAgents
 )
 
 foreach (test ${smtkTaskPythonTests})

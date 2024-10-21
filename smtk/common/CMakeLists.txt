@@ -8,9 +8,6 @@ set(commonSrcs
   Extension.cxx
   FileLocation.cxx
   InfixExpressionGrammar.cxx
-  json/jsonLinks.cxx
-  json/jsonUUID.cxx
-  json/jsonVersionNumber.cxx
   Managers.cxx
   Paths.cxx
   RuntimeTypeContainer.cxx
@@ -22,6 +19,10 @@ set(commonSrcs
   UUID.cxx
   UUIDGenerator.cxx
   VersionNumber.cxx
+  json/Helper.cxx
+  json/jsonLinks.cxx
+  json/jsonUUID.cxx
+  json/jsonVersionNumber.cxx
 )
 
 set(commonHeaders
@@ -42,11 +43,6 @@ set(commonHeaders
   InfixExpressionGrammar.h
   InfixExpressionGrammarImpl.h
   Instances.h
-  json/jsonLinks.h
-  json/jsonTypeMap.h
-  json/jsonUUID.h
-  json/jsonVersionNumber.h
-  json/Helper.h
   Links.h
   Managers.h
   Observers.h
@@ -71,6 +67,11 @@ set(commonHeaders
   VersionMacros.h
   Visit.h
   WeakReferenceWrapper.h
+  json/Helper.h
+  json/jsonLinks.h
+  json/jsonTypeMap.h
+  json/jsonUUID.h
+  json/jsonVersionNumber.h
   testing/cxx/helpers.h
 
   update/Factory.h

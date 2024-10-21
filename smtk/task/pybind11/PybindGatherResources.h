@@ -31,7 +31,6 @@ inline PySharedPtrClass< smtk::task::GatherResources, smtk::task::Task > pybind1
     .def_static("create", (std::shared_ptr<smtk::task::GatherResources> (*)()) &smtk::task::GatherResources::create)
     .def_static("create", (std::shared_ptr<smtk::task::GatherResources> (*)(::std::shared_ptr<smtk::task::GatherResources> &)) &smtk::task::GatherResources::create, py::arg("ref"))
     .def("typeName", &smtk::task::GatherResources::typeName)
-    .def_readonly_static("type_name", &smtk::task::GatherResources::type_name)
     ;
   py::class_< smtk::task::GatherResources::ResourceSet >(instance, "ResourceSet")
     .def(py::init<::smtk::task::GatherResources::ResourceSet const &>())

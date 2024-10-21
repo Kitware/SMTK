@@ -65,6 +65,13 @@ public:
     Out //!< The task provides data for this port.
   };
 
+  /// Whether the task fetches data from a port or provides data for a port.
+  enum Access
+  {
+    Internal, //!< This port is inward facing and is used by its task's children.
+    External  //!< This port is outward facing and is used by other tasks
+  };
+
   /// Ports may be configured with arbitrary JSON objects.
   using Configuration = nlohmann::json;
 
@@ -77,8 +84,6 @@ public:
     const Configuration& config,
     Manager& taskManager,
     const std::shared_ptr<smtk::common::Managers>& managers = nullptr);
-
-  ~Port() override = default;
 
   /// A method called by all constructors passed Configuration information.
   ///
@@ -93,13 +98,19 @@ public:
 
   /// Return the task's name
   std::string name() const override { return m_name; }
-  virtual void setName(const std::string& name);
+  virtual bool setName(const std::string& name);
 
   /// Return the port's direction.
   ///
   /// A port's direction may not change; it should be set by configure(), which
   /// is called at construction.
   Direction direction() const { return m_direction; }
+
+  /// Return the port's access.
+  ///
+  /// A port's access may not change; it should be set by configure(), which
+  /// is called at construction.
+  Access access() const { return m_access; }
 
   /// Return the types of data this port is allowed to pass.
   std::unordered_set<smtk::string::Token>& dataTypes() { return m_dataTypes; }
@@ -158,6 +169,10 @@ public:
   static Direction DirectionFromLabel(const std::string& label);
   static smtk::string::Token LabelFromDirection(Direction dir);
 
+  /// Convert Access enumerants to/from labels.
+  static Access AccessFromLabel(const std::string& label);
+  static smtk::string::Token LabelFromAccess(Access ac);
+
 protected:
   /// The unique identifier for this task.
   smtk::common::UUID m_id;
@@ -169,6 +184,8 @@ protected:
   std::weak_ptr<smtk::task::Manager> m_manager;
   /// The direction of this port.
   Direction m_direction{ Direction::In };
+  /// The access of this port with respect to its task
+  Access m_access{ Access::External };
   /// The port's upstream/downstream connections.
   std::unordered_set<PersistentObject*> m_connections;
   /// The subclasses of PortData this port is allowed to pass.
