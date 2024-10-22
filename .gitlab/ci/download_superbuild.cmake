@@ -29,12 +29,6 @@ if (NOT DEFINED file_id OR NOT DEFINED file_hash)
     "Unknown file and hash for the superbuild")
 endif ()
 
-# Download the file. First download the virus scanning intertitial page form.
-file(DOWNLOAD
-  "https://drive.google.com/uc?export=download&id=${file_id}&authuser=0"
-  ".gitlab/superbuild-gdrive.txt"
-  STATUS download_status)
-
 # Download the file.
 file(DOWNLOAD
   "https://drive.usercontent.google.com/download?export=download&id=${file_id}&export=download&authuser=0&confirm=t"
