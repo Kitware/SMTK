@@ -52,3 +52,31 @@ Also implemented differentiation between attributes and definitions.  If the rul
 **Note** that the ``properties()`` methods on attribute and definition objects do not return *inherited* values but instead only those values local to the object. In the future, we may add methods to interact directly with inherited properties but for now only filter-strings process inherited properties.
 
 See smtk/attribute/testing/c++/unitPropertiesFilter.cxx and data/attribute/propertiesFilterExample.sbt for examples.
+
+Expanded Expression Support
+---------------------------
+
+Value Item Definitions now represent their expression information as a Component Item Definition.  This provides more flexibility when specifying which types of attributes can be assigned to Value Items as expressions.  You can now how multiple acceptable conditions which include regular expressions as well as property constraints on both the attribute and its definitions. In addition, you can now include rejection conditions.
+
+The older mechanism of specifying the expression constraint as a string representing the attribute definition type is still supported.  Both the JSON and XML file formats have been updated to support this new functionality.  Here is an example of how to
+specify expression information in XML using this more flexible approach:
+
+.. code-block:: xml
+
+        <Double Name="testDoubleItem" Label="testDoubleItem" NumberOfRequiredValues="1">
+          <CategoryExpression InheritanceMode="And" />
+          <ExpressionInfomation Name="expression" NumberOfRequiredValues="1">
+            <Accepts>
+              <Resource Name="smtk::attribute::Resource" Filter="attribute[type='doubleItemTestExpression']" />
+            </Accepts>
+            <Rejects />
+          </ExpressionInfomation>
+        </Double>
+
+Ability to Extract Information from Attribute Queries
+-----------------------------------------------------
+
+`smtk::attribute::Resource::extractGrammarInfo`` provides the ability to examine an attribute query string and extract information from it.  Currently this information includes:
+
+* Type Information - that can either refer to an attribute definition type name or a regular expression that will be applied to type names.
+* Indication if the query contains property constraints.

@@ -28,3 +28,9 @@ for its height by using the new **ExpandInY** option.  Here is an example:
   </Views>
 
 Please see data/attribute/attribute_collection/StringItemExample.sbt for a complete example.
+
+Added the Ability to Suppress Expression Creation
+--------------------------------------------------
+
+qtInputsItem now supports the *DisableExpressionCreation* attribute option in its ItemView.
+When set to true, this will remove the ability to create an expression via the expression combo box.

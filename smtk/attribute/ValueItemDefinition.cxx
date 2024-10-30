@@ -32,8 +32,8 @@ ValueItemDefinition::ValueItemDefinition(const std::string& myName)
   m_numberOfRequiredValues = 1;
   m_maxNumberOfValues = 0;
   m_isExtensible = false;
-  m_expressionDefinition = ComponentItemDefinition::New("expression");
-  m_expressionDefinition->setNumberOfRequiredValues(1);
+  m_expressionInformation = ComponentItemDefinition::New("expression");
+  m_expressionInformation->setNumberOfRequiredValues(1);
 }
 
 ValueItemDefinition::~ValueItemDefinition() = default;
@@ -119,49 +119,87 @@ std::string ValueItemDefinition::valueLabel(std::size_t element) const
 
 bool ValueItemDefinition::isValidExpression(const smtk::attribute::AttributePtr& exp) const
 {
-  return this->allowsExpressions() && m_expressionDefinition->isValueValid(exp);
+  return this->allowsExpressions() && m_expressionInformation->isValueValid(exp);
 }
 
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return (!m_expressionType.empty());
+  return (!m_expressionInformation->acceptableEntries().empty());
+}
+
+void ValueItemDefinition::setExpressionType(const std::string& etype)
+{
+  if (m_expressionType == etype)
+  {
+    return;
+  }
+
+  m_expressionInformation->clearAcceptableEntries();
+  m_expressionInformation->clearRejectedEntries();
+
+  m_expressionType = etype;
+
+  if (!m_expressionType.empty())
+  {
+    std::string a = smtk::attribute::Resource::createAttributeQuery(m_expressionType);
+    m_expressionInformation->setAcceptsEntries(
+      smtk::common::typeName<attribute::Resource>(), a, true);
+  }
+}
+
+std::string ValueItemDefinition::expressionType() const
+{
+  // return an empty string if there is not exactly 1 acceptable entry or
+  // if there are are any rejected entries.
+  if (
+    (m_expressionInformation->acceptableEntries().size() != 1) ||
+    (m_expressionInformation->rejectedEntries().size()))
+  {
+    return std::string();
+  }
+
+  auto entry = m_expressionInformation->acceptableEntries().begin();
+  if (entry->first != smtk::common::typeName<attribute::Resource>())
+  {
+    return std::string(); // The entry does not refer to an attribute resource
+  }
+
+  auto entryInfo = Resource::extractGrammarInfo(entry->second);
+  if (entryInfo.isRegex() || entryInfo.hasProperties())
+  {
+    return std::string(); // The entry is a Regex or contains property constraints
+  }
+  return entryInfo.typeInfo();
 }
 
 void ValueItemDefinition::setExpressionDefinition(const smtk::attribute::DefinitionPtr& exp)
 {
   if (exp == nullptr)
   {
-    if (!m_expressionType.empty())
-    {
-      m_expressionType = "";
-      m_expressionDefinition->clearAcceptableEntries();
-    }
+    this->setExpressionType("");
   }
-  else if (exp->type() != m_expressionType)
+  else
   {
-    m_expressionDefinition->clearAcceptableEntries();
-    std::string a = smtk::attribute::Resource::createAttributeQuery(exp);
-    m_expressionDefinition->setAcceptsEntries(
-      smtk::common::typeName<attribute::Resource>(), a, true);
-    m_expressionType = exp->type();
+    this->setExpressionType(exp->type());
   }
 }
 
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition(
   const smtk::attribute::ResourcePtr& attResource) const
 {
-  if (m_expressionType.empty())
+  auto expType = this->expressionType();
+  if (expType.empty())
   {
     return nullptr;
   }
-  return attResource->findDefinition(m_expressionType);
+  return attResource->findDefinition(expType);
 }
 
 void ValueItemDefinition::buildExpressionItem(ValueItem* vitem) const
 {
   auto expItem = smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
-    m_expressionDefinition->buildItem(vitem, 0, -1));
-  expItem->setDefinition(m_expressionDefinition);
+    m_expressionInformation->buildItem(vitem, 0, -1));
+  expItem->setDefinition(m_expressionInformation);
   vitem->m_expression = expItem;
 }
 
@@ -327,7 +365,7 @@ void ValueItemDefinition::copyTo(
       // if the Expression Definition does not exists in the Source Attribute Resource.  For example
       // a workflow could be storing all of the Expressions in their Attribute Resource.
       def->m_expressionType = m_expressionType;
-      m_expressionDefinition->copyTo(def->m_expressionDefinition, info);
+      m_expressionInformation->copyTo(def->m_expressionInformation, info);
 
       // In the case that the Expression Definition exists in the source Attribute Resource,
       // Lets queue it up so that this Item Definition's Expression Definition can be set once

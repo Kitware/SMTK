@@ -409,6 +409,8 @@ void processDerivedValue(
   ItemExpressionInfo info;
 
   // Is this an expression?
+  // The following is an old style form of getting the
+  // expression using the attribute expression name.
   xatt = node.attribute("Expression");
   if (allowsExpressions && xatt)
   {
@@ -1751,6 +1753,12 @@ void XmlDocV1Parser::processValueDefChildNode(
   {
     std::string etype = node.text().get();
     idef->setExpressionType(etype);
+    return;
+  }
+
+  if (nodeName == "ExpressionInformation")
+  {
+    this->processComponentDef(node, idef->expressionInformation());
     return;
   }
 

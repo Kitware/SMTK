@@ -144,8 +144,15 @@ set(attributeHeaders
   categories/Actions.h
   categories/Evaluators.h
   categories/Grammar.h
+  filter/Action.h
   filter/Attribute.h
+  filter/FloatingPointActions.h
   filter/Grammar.h
+  filter/GrammarInfo.h
+  filter/GrammarInfoActions.h
+  filter/IntegerActions.h
+  filter/ResourceActions.h
+  filter/StringActions.h
   update/AttributeUpdateFactory.h
   update/ItemUpdateFactory.h
   update/ResourceUpdateFactory.h

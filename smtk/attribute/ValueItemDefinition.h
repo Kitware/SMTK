@@ -74,22 +74,68 @@ public:
   /// not supported by the units system, an empty string is returned.
   std::string supportedUnits() const;
 
+  ///\brief Returns true if the definition is discrete in nature.
   bool isDiscrete() const { return !m_discreteValueEnums.empty(); }
+  ///\brief Returns the number of discrete values defined in definition.
   std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
+  ///\brief Returns the \a ith enumeration string.
   const std::string& discreteEnum(std::size_t ith) const
   {
     assert(m_discreteValueEnums.size() > ith);
     return m_discreteValueEnums[ith];
   }
+  ///\brief Finds the \a index of a discrete enumeration string.
+  ///
+  ///  Returns false if \a enumVal is not present.
   bool getEnumIndex(const std::string& enumVal, std::size_t& index) const;
+  ///@{
+  ///\brief Get/Set the default discrete value via its index location.
   int defaultDiscreteIndex() const { return m_defaultDiscreteIndex; }
   void setDefaultDiscreteIndex(int discreteIndex);
+  ///}@
 
+  ///\brief Returns true if the definition allows expressions.
   bool allowsExpressions() const;
+  ///\brief Returns true if \a exp can be assigned to the definition's
+  /// items as an expression.
   bool isValidExpression(const smtk::attribute::AttributePtr& exp) const;
-  std::string expressionType() const { return m_expressionType; }
-  void setExpressionType(const std::string& etype) { m_expressionType = etype; }
+  ///\brief Return the component item which is used to represent the
+  /// definition's expression constraints.
+  smtk::attribute::ComponentItemDefinitionPtr& expressionInformation()
+  {
+    return m_expressionInformation;
+  }
+  ///\brief Return the expression type used when assigning expression
+  /// attributes to the definition's items.
+  ///
+  /// Note: This is a convenience method when the expression information
+  /// represents a single accept constraint containing no regular expression
+  /// in the type name or property constraints. In any other situation,
+  /// this method will return an empty string.
+  std::string expressionType() const;
+  ///\brief Set the type of expression to be used determine if an
+  /// attribute can be used an expression for the definition's items.
+  ///
+  /// Note: This is a convenience method to handle the common case where
+  /// there is only one acceptable condition which indicates that the definition's
+  /// items will only accept an attribute as an expression if it belongs to or derived
+  /// from the definition /a etype.
+  void setExpressionType(const std::string& etype);
+  ///\brief Set the type of expression to be used determine if an
+  /// attribute can be used an expression for the definition's items.
+  ///
+  /// Note: This is a convenience method to handle the common case where
+  /// there is only one acceptable condition which indicates that the definition's
+  /// items will only accept an attribute as an expression if it belongs to or derived
+  /// from \a exp.
   void setExpressionDefinition(const smtk::attribute::DefinitionPtr& exp);
+  ///\brief Return the expression definition used when assigning expression
+  /// attributes to the definition's items.
+  ///
+  /// Note: This is a convenience method when the expression information
+  /// represents a single accept constraint containing no regular expression
+  /// in the type name or property constraints. In any other situation,
+  /// this method will return nullptr.
   smtk::attribute::DefinitionPtr expressionDefinition(
     const smtk::attribute::ResourcePtr& attResource) const;
   // Should only be called internally by the ValueItem
@@ -257,7 +303,7 @@ protected:
   bool m_isExtensible;
   std::string m_units;
   std::string m_expressionType;
-  smtk::attribute::ComponentItemDefinitionPtr m_expressionDefinition;
+  smtk::attribute::ComponentItemDefinitionPtr m_expressionInformation;
   std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, std::set<std::string>> m_itemToValueAssociations;
   std::map<std::string, std::vector<std::string>> m_valueToItemAssociations;

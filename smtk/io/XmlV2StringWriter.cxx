@@ -949,13 +949,10 @@ void XmlV2StringWriter::processValueDef(pugi::xml_node& node, ValueItemDefinitio
   }
   if (idef->allowsExpressions())
   {
-    attribute::DefinitionPtr exp = idef->expressionDefinition(m_resource);
-    if (exp)
-    {
-      xml_node enode = node.append_child("ExpressionType");
-      enode.text().set(exp->type().c_str());
-    }
+    xml_node expInfoNode = node.append_child("ExpressionInformation");
+    this->processItemDefinition(expInfoNode, idef->expressionInformation());
   }
+
   if (!idef->units().empty())
   {
     node.append_attribute("Units") = idef->units().c_str();
