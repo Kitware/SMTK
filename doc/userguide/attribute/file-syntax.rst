@@ -1390,8 +1390,15 @@ Basic Value Items include Strings, Integers and Doubles.  They are represented a
        See `Specifying Labels`_.
        (Optional)
 
+   * - <ExpressionInformation>
+     - Indicates that the Item's value(s) can be represented using an expression.  The format for this element
+       is identical to the one used for Component Item Definitions (See `Component Item Definition`_).  This provides more flexibility when specifying which types of attributes can be assigned to Value Items as expressions.  You can now how multiple acceptable conditions which include regular expressions as well as property constraints on both the attribute and its definitions. In addition, you can now include rejection conditions.
+       (Optional)
+
    * - <ExpressionType>
      - Indicates that the Item's value(s) can be represented using an expression of the indicated type.
+       Note that this is a simplified way of specifying the definition's expression information.  For
+       more complex expression constraints please use an **<ExpressionInformation>** element.
        (Optional)
 
    * - <DiscreteInfo>

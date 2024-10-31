@@ -245,8 +245,10 @@ public:
   QPointer<QComboBox> m_expressionCombo;
   QPointer<QLabel> m_expressionEqualsLabel;
   QPointer<QLineEdit> m_expressionResultLineEdit;
-  QString m_lastExpression;
-  int m_editPrecision;
+  smtk::common::UUID m_lastExpressionID;
+  smtk::common::UUID m_lastExpressionResourceID;
+  int m_editPrecision = 0;           // Use full precision by default
+  bool m_disableExpCreation = false; // All Expressions to be created by default
 
   // Store expression on/off state in lieu of widget visibility which isn't immediate
   bool m_usingExpression = false;
@@ -307,6 +309,8 @@ qtInputsItem::qtInputsItem(const qtAttributeItemInfo& info)
   m_internals->m_editPrecision = 0; // Use full precision by default
   // See if we are suppose to override it
   m_itemInfo.component().attributeAsInt("EditPrecision", m_internals->m_editPrecision);
+  m_itemInfo.component().attributeAsBool(
+    "DisableExpressionCreation", m_internals->m_disableExpCreation);
 
   this->createWidget();
 }
@@ -1350,41 +1354,33 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     m_internals->m_expressionCombo->blockSignals(true);
     m_internals->m_expressionCombo->clear();
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-    // Lets find the attribute resource that contains the expression information
-    ResourcePtr lAttResource = smtk::attribute::utility::findResourceContainingDefinition(
-      valItemDef->expressionType(), sourceAttResource, this->uiManager()->resourceManager());
-    if (lAttResource == nullptr)
-    {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(),
-        " Could not find any AttributeResource containing Expressions of Type: "
-          << valItemDef->expressionType());
-      return;
-    }
-    smtk::attribute::DefinitionPtr attDef =
-      lAttResource->findDefinition(valItemDef->expressionType());
-    QStringList attNames;
-
-    int setIndex = 0;
+    // Find all of the attributes that can be used as expressions
+    auto comps = smtk::attribute::utility::associatableObjects(
+      inputitem->expressionReference(), this->uiManager()->resourceManager());
 
     //Lets build the list of possible expressions
-    if (attDef)
+    int index = 0;
+    for (const auto& comp : comps)
     {
-      std::vector<smtk::attribute::AttributePtr> result;
-      lAttResource->findAttributes(attDef, result);
-      std::vector<smtk::attribute::AttributePtr>::iterator it;
-      for (it = result.begin(); it != result.end(); ++it)
+      auto expAtt = std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp);
+      if (!expAtt)
       {
-        if (inputitem->isAcceptable(*it))
-        {
-          attNames.push_back((*it)->name().c_str());
-        }
+        continue; // skip all non-attributes
       }
-      attNames.sort();
-      // Now add Please Select and Create Options
-      attNames.insert(0, "Please Select");
-      attNames.insert(1, "Create...");
-      m_internals->m_expressionCombo->addItems(attNames);
+      m_internals->m_expressionCombo->addItem(expAtt->name().c_str());
+      m_internals->m_expressionCombo->setItemData(
+        index, expAtt->resource()->id().toString().c_str(), Qt::UserRole);
+      m_internals->m_expressionCombo->setItemData(
+        index, expAtt->id().toString().c_str(), Qt::UserRole + 1);
+      ++index;
+    }
+    // sort the names
+    m_internals->m_expressionCombo->model()->sort(0);
+    // Now add Please Select and Create Options
+    m_internals->m_expressionCombo->insertItem(0, "Please Select");
+    if (!(m_internals->m_disableExpCreation || valItemDef->expressionType().empty()))
+    {
+      m_internals->m_expressionCombo->insertItem(1, "Create...");
     }
 
     // Can we find the item's current expression?
@@ -1393,7 +1389,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       smtk::attribute::AttributePtr att = inputitem->expression();
       if (att != nullptr)
       {
-        setIndex = attNames.indexOf(att->name().c_str());
+        index = m_internals->m_expressionCombo->findText(att->name().c_str());
 
         if (att->canEvaluate())
         {
@@ -1407,35 +1403,50 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     }
     // If we have not found a valid expression and we have the name of the
     // expression that was used previously lets try that
-    if ((setIndex == 0) && (m_internals->m_lastExpression != ""))
+    if ((index == -1) && (!m_internals->m_lastExpressionID.isNull()))
     {
-      AttributePtr attPtr =
-        lAttResource->findAttribute(m_internals->m_lastExpression.toStdString());
-      if (attPtr)
+      auto attResource = this->uiManager()->resourceManager()->get<smtk::attribute::Resource>(
+        m_internals->m_lastExpressionResourceID);
+      if (attResource == nullptr)
       {
-        setIndex = attNames.indexOf(m_internals->m_lastExpression);
-        inputitem->setExpression(attPtr);
-
-        if (attPtr->canEvaluate())
+        std::cerr << "Can not find selected Last Expression Attribute Resource by Id: "
+                  << m_internals->m_lastExpressionResourceID.toString() << std::endl;
+      }
+      else
+      {
+        AttributePtr attPtr = attResource->findAttribute(m_internals->m_lastExpressionID);
+        if (attPtr == nullptr)
         {
-          updateExpressionRefWidgetForEvaluation(inputitem, false);
+          std::cerr << "Can not find selected Last Expression Attribute by Id: "
+                    << m_internals->m_lastExpressionID.toString() << std::endl;
         }
-        else
+        if (attPtr)
         {
-          hideExpressionResultWidgets();
-        }
+          index = m_internals->m_expressionCombo->findText(attPtr->name().c_str());
+          inputitem->setExpression(attPtr);
 
-        Q_EMIT this->modified();
+          if (attPtr->canEvaluate())
+          {
+            updateExpressionRefWidgetForEvaluation(inputitem, false);
+          }
+          else
+          {
+            hideExpressionResultWidgets();
+          }
+
+          Q_EMIT this->modified();
+        }
       }
     }
 
     // If item is set but we could not find the expression - lets clear it and send a modified
-    if (inputitem->isExpression() && (setIndex == 0))
+    if (inputitem->isExpression() && (index == -1))
     {
       inputitem->setExpression(nullptr);
+      index = 0; // Go back to please select option
       Q_EMIT this->modified();
     }
-    m_internals->m_expressionCombo->setCurrentIndex(setIndex);
+    m_internals->m_expressionCombo->setCurrentIndex(index);
     m_internals->m_expressionCombo->blockSignals(false);
   }
   else
@@ -1447,7 +1458,8 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     {
       // Lets save the current name of the expression attribute in case
       // the user simply wants to switch back
-      m_internals->m_lastExpression = inputitem->expression()->name().c_str();
+      m_internals->m_lastExpressionResourceID = inputitem->expression()->resource()->id();
+      m_internals->m_lastExpressionID = inputitem->expression()->id();
       inputitem->setExpression(nullptr);
 
       hideExpressionResultWidgets();
@@ -1502,57 +1514,76 @@ void qtInputsItem::onExpressionReferenceChanged()
 
     hideExpressionResultWidgets();
   }
-  else if (curIdx == 1)
+  else if (
+    (curIdx == 1) && !(m_internals->m_disableExpCreation || valItemDef->expressionType().empty()))
   {
+    // NOTE: in the current implementation we only allow the creation on an expression based on only 1
+    // attribute definition so the following logic is correct - in the future this will need to be
+    // redesigned to support the ability to choose among multiple definitions.
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
     smtk::attribute::AttributePtr newAtt = lAttResource->createAttribute(attDef->type());
     auto* editor =
       new smtk::extension::qtAttributeEditorDialog(newAtt, m_itemInfo.uiManager(), m_widget);
     auto status = editor->exec();
-    QStringList itemsInComboBox;
     if ((status == QDialog::Rejected) || (!inputitem->setExpression(newAtt)))
     {
       lAttResource->removeAttribute(newAtt);
-    }
-    else
-    {
-      itemsInComboBox.append(newAtt->name().c_str());
-
-      // Signal that a new attribute was created - since this instance is not
-      // observing the Operation Manager we don't need to set the source parameter
-      auto signalOp = this->uiManager()->operationManager()->create<smtk::attribute::Signal>();
-      signalOp->parameters()->findComponent("created")->appendValue(newAtt);
-      signalOp->operate();
-    }
-    for (int index = 2; index < m_internals->m_expressionCombo->count(); index++)
-    {
-      itemsInComboBox << m_internals->m_expressionCombo->itemText(index);
-    }
-    itemsInComboBox.sort();
-    // Now add Please Select and Create Options
-    itemsInComboBox.insert(0, "Please Select");
-    itemsInComboBox.insert(1, "Create...");
-    m_internals->m_expressionCombo->blockSignals(true);
-    m_internals->m_expressionCombo->clear();
-    m_internals->m_expressionCombo->addItems(itemsInComboBox);
-    auto expressionAtt = inputitem->expression();
-    if (expressionAtt == nullptr)
-    {
+      m_internals->m_expressionCombo->blockSignals(true);
       m_internals->m_expressionCombo->setCurrentIndex(0);
+      m_internals->m_expressionCombo->blockSignals(false);
+      return;
     }
-    else
-    {
-      auto index = itemsInComboBox.indexOf(expressionAtt->name().c_str());
-      m_internals->m_expressionCombo->setCurrentIndex(index);
-    }
+
+    // Prep the combobox with the new entry - first remove the first 2
+    // items which are the Please Select and Create options
+    m_internals->m_expressionCombo->blockSignals(true);
+    m_internals->m_expressionCombo->removeItem(0);
+    m_internals->m_expressionCombo->removeItem(0);
+
+    // Now add the new item
+    m_internals->m_expressionCombo->insertItem(0, newAtt->name().c_str());
+    m_internals->m_expressionCombo->setItemData(
+      0, newAtt->resource()->id().toString().c_str(), Qt::UserRole);
+    m_internals->m_expressionCombo->setItemData(
+      0, newAtt->id().toString().c_str(), Qt::UserRole + 1);
+
+    // sort the names
+    m_internals->m_expressionCombo->model()->sort(0);
+    // Now add back Please Select and Create Options
+    m_internals->m_expressionCombo->insertItem(0, "Please Select");
+    m_internals->m_expressionCombo->insertItem(1, "Create...");
+
+    auto index = m_internals->m_expressionCombo->findText(newAtt->name().c_str());
+    m_internals->m_expressionCombo->setCurrentIndex(index);
     m_internals->m_expressionCombo->blockSignals(false);
+
+    // Signal that a new attribute was created - since this instance is not
+    // observing the Operation Manager we don't need to set the source parameter
+    auto signalOp = this->uiManager()->operationManager()->create<smtk::attribute::Signal>();
+    signalOp->parameters()->findComponent("created")->appendValue(newAtt);
+    signalOp->operate();
 
     hideExpressionResultWidgets();
   }
   else
   {
-    AttributePtr attPtr =
-      lAttResource->findAttribute(m_internals->m_expressionCombo->currentText().toStdString());
+    smtk::common::UUID resID(
+      m_internals->m_expressionCombo->itemData(curIdx, Qt::UserRole).toString().toStdString());
+    smtk::common::UUID attID(
+      m_internals->m_expressionCombo->itemData(curIdx, Qt::UserRole + 1).toString().toStdString());
+    auto attResource = this->uiManager()->resourceManager()->get<smtk::attribute::Resource>(resID);
+    if (attResource == nullptr)
+    {
+      std::cerr << "Can not find selected Attribute Resource by Id: " << resID.toString()
+                << std::endl;
+      return;
+    }
+    AttributePtr attPtr = attResource->findAttribute(attID);
+    if (attPtr == nullptr)
+    {
+      std::cerr << "Can not find selected Attribute by Id: " << attID.toString() << std::endl;
+      return;
+    }
     if (inputitem->isSet() && attPtr == inputitem->expression())
     {
       hideExpressionResultWidgets();
@@ -1577,11 +1608,13 @@ void qtInputsItem::onExpressionReferenceChanged()
   auto currentExpression = inputitem->expression();
   if (currentExpression == nullptr)
   {
-    m_internals->m_lastExpression = "";
+    m_internals->m_lastExpressionResourceID = smtk::common::UUID();
+    m_internals->m_lastExpressionID = smtk::common::UUID();
   }
   else
   {
-    m_internals->m_lastExpression = currentExpression->name().c_str();
+    m_internals->m_lastExpressionResourceID = currentExpression->resource()->id();
+    m_internals->m_lastExpressionID = currentExpression->id();
   }
 
   auto* iview = m_itemInfo.baseView();

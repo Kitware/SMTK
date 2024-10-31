@@ -14,6 +14,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/json/jsonComponentItemDefinition.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
@@ -60,7 +61,7 @@ SMTKCORE_EXPORT void to_json(
   }
   if (defPtr->allowsExpressions())
   {
-    j["ExpressionType"] = defPtr->expressionType();
+    j["ExpressionInformation"] = defPtr->expressionInformation();
   }
   if (!defPtr->units().empty())
   {
@@ -141,6 +142,12 @@ SMTKCORE_EXPORT void from_json(
   if (result != j.end())
   {
     defPtr->setExpressionType(*result);
+  }
+
+  result = j.find("ExpressionInformation");
+  if (result != j.end())
+  {
+    smtk::attribute::from_json(*result, defPtr->expressionInformation(), resPtr);
   }
 
   result = j.find("Units");

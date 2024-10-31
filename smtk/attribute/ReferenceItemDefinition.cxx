@@ -350,6 +350,9 @@ bool ReferenceItemDefinition::checkCategories(const smtk::resource::Component* c
     return true;
   }
 
+  // In the case of attribute components, we need to make sure they are
+  // relevant
+
   const auto* const att = dynamic_cast<const smtk::attribute::Attribute*>(comp);
   if (!att)
   {

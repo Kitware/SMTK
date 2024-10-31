@@ -29,6 +29,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <fstream>
+#include <iomanip>
 #include <string>
 
 using namespace smtk::attribute;
@@ -209,7 +211,7 @@ void testBasicGettingValue()
   smtkTest(item->value() == 5.0, "Expected value to be 5.0") smtkTest(
     smtk::io::Logger::instance().hasErrors() == false, "Expected global logger to have no errors.")
 
-    // Lets test an item with units
+    // let's test an item with units
     DoubleItemPtr item1 = doubleItemTest.getDoubleItem1();
   smtkTest(item1->value() == 1000.0, "Expected default to be 1000.0 cm.");
   smtkTest(item1->setValue(20.0), "Could not set value to 20.0 cm.");
@@ -346,10 +348,14 @@ void testEvaluatorXMLIO()
   DoubleItemTest doubleItemTest;
   doubleItemTest.SetUpDoubleItemTestExpressions();
 
+  std::string writeRroot(SMTK_SCRATCH_DIR);
+  std::string fname = writeRroot + "/unitDoubleItemTest.sbi";
   smtk::io::AttributeWriter writer;
   smtk::io::Logger log;
   std::string sbi1Contents;
   writer.writeContents(doubleItemTest.mp_attRes, sbi1Contents, log, false);
+  // let's also save out the contents to a file
+  writer.write(doubleItemTest.mp_attRes, fname, log);
 
   smtk::io::AttributeReader reader;
   smtk::attribute::ResourcePtr importedResource = smtk::attribute::Resource::create();
@@ -368,11 +374,17 @@ void testEvaluatorXMLIO()
 // reading it, then writing it again to get the same result.
 void testEvaluatorJSONIO()
 {
+  std::string writeRroot(SMTK_SCRATCH_DIR);
+  std::string rname = writeRroot + "/unitDoubleItemTest.smtk";
   DoubleItemTest doubleItemTest;
   doubleItemTest.SetUpDoubleItemTestExpressions();
 
   nlohmann::json json1Contents;
   smtk::attribute::to_json(json1Contents, doubleItemTest.mp_attRes);
+  // let's save the contents to a file as well
+  std::ofstream jsonFile(rname);
+  jsonFile << std::setw(1) << json1Contents;
+  jsonFile.close();
 
   smtk::attribute::ResourcePtr importedResource = smtk::attribute::Resource::create();
   // Register the Evaluator in the same way as the test fixture.

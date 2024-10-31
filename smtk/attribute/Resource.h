@@ -34,6 +34,8 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/SymbolDependencyStorage.h"
 
+#include "smtk/attribute/filter/GrammarInfo.h"
+
 #include "smtk/string/Token.h"
 
 #include "smtk/view/Configuration.h"
@@ -176,6 +178,7 @@ public:
     */
   std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string&) const override;
+  static filter::GrammarInfo extractGrammarInfo(const std::string& s);
   ///\brief Given an attribute definition, construct a valid query to retrive attributes of that type
   static std::string createAttributeQuery(const smtk::attribute::DefinitionPtr& def);
   static std::string createAttributeQuery(const std::string& defType);

@@ -11,6 +11,7 @@
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute//filter/Grammar.h"
+#include "smtk/attribute//filter/GrammarInfoActions.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Definition.h"
@@ -1073,6 +1074,37 @@ std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
     Filter<smtk::attribute::filter::Grammar, smtk::attribute::filter::Action>(filterString);
 }
 
+filter::GrammarInfo Resource::extractGrammarInfo(const std::string& filterString)
+{
+  filter::GrammarInfo info;
+  tao::pegtl::string_input<> in(filterString, "constructRule");
+  try
+  {
+    tao::pegtl::
+      parse<smtk::attribute::filter::Grammar, smtk::attribute::filter::ExtractGrammarAction>(
+        in, info);
+  }
+  catch (tao::pegtl::parse_error& err)
+  {
+    const auto p = err.positions.front();
+#if TAO_PEGTL_VERSION_MAJOR <= 2 && TAO_PEGTL_VERSION_MINOR <= 7
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "smtk::attribute::resource::extractGrammarInfo: " << err.what() << "\n"
+                                                        << in.line_as_string(p) << "\n"
+                                                        << std::string(p.byte_in_line, ' ')
+                                                        << "^\n");
+#else
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "smtk::attribute::resource::extractGrammarInfo: " << err.what() << "\n"
+                                                        << in.line_at(p) << "\n"
+                                                        << std::string(p.byte_in_line, ' ')
+                                                        << "^\n");
+#endif
+  }
+  return info;
+}
 // visit all components in the resource.
 void Resource::visit(smtk::resource::Component::Visitor& visitor) const
 {

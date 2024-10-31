@@ -16,6 +16,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -29,6 +30,9 @@ inline PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::
     .def("addChildItemDefinition", &smtk::attribute::ValueItemDefinition::addChildItemDefinition, py::arg("cdef"))
     .def("addConditionalItem", &smtk::attribute::ValueItemDefinition::addConditionalItem, py::arg("enumValue"), py::arg("itemName"))
     .def("allowsExpressions", &smtk::attribute::ValueItemDefinition::allowsExpressions)
+    .def("expressionInformation", &smtk::attribute::ValueItemDefinition::expressionInformation)
+    .def("expressionType", &smtk::attribute::ValueItemDefinition::expressionType)
+    .def("setExpressionType", &smtk::attribute::ValueItemDefinition::setExpressionType)
     .def("buildChildrenItems", &smtk::attribute::ValueItemDefinition::buildChildrenItems, py::arg("vitem"))
     .def("buildExpressionItem", &smtk::attribute::ValueItemDefinition::buildExpressionItem, py::arg("vitem"))
     .def("childrenItemDefinitions", &smtk::attribute::ValueItemDefinition::childrenItemDefinitions)
