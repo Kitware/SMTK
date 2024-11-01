@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora33:
-    # Update to use ParaView 5.13.0
-    image: "kitware/cmb:ci-smtk-fedora33-20240905"
+    # Update to use ParaView 5.13.1 and to fix Python Artifacts
+    image: "kitware/cmb:ci-smtk-fedora33-20241101"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -74,7 +74,7 @@
 
 .fedora33_paraview:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20240905"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20241101"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
