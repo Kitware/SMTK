@@ -26,7 +26,7 @@ stages:
 # Additionally, jobs may also contain:
 #
 #   - artifacts
-#   - dependency/needs jobs for required jobs
+#   - needs jobs for required jobs
 ################################################################################
 
 # Linux
@@ -48,8 +48,6 @@ fedora33:test:
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
-    dependencies:
-        - fedora33:build
     needs:
         - fedora33:build
 
@@ -68,8 +66,6 @@ fedora33-vtk-python3:test:
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
-    dependencies:
-        - fedora33-vtk-python3:build
     needs:
         - fedora33-vtk-python3:build
 
@@ -88,8 +84,6 @@ fedora33-paraview:test:
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
-    dependencies:
-        - fedora33-paraview:build
     needs:
         - fedora33-paraview:build
 
@@ -108,8 +102,6 @@ fedora33-paraview59-compat:test:
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
-    dependencies:
-        - fedora33-paraview59-compat:build
     needs:
         - fedora33-paraview59-compat:build
 
@@ -128,8 +120,6 @@ fedora33-nodata:test:
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
-    dependencies:
-        - fedora33-nodata:build
     needs:
         - fedora33-nodata:build
 
@@ -150,8 +140,6 @@ fedora33-asan:test:
         - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_dependent
-    dependencies:
-        - fedora33-asan:build
     needs:
         - fedora33-asan:build
 
@@ -170,8 +158,6 @@ fedora33-ubsan:test:
         - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_dependent
-    dependencies:
-        - fedora33-ubsan:build
     needs:
         - fedora33-ubsan:build
 
@@ -198,8 +184,6 @@ fedora33-coverage:test:
         - .linux_test_tags
         - .cmake_coverage_artifacts
         - .run_dependent
-    dependencies:
-        - fedora33-coverage:build
     needs:
         - fedora33-coverage:build
 
@@ -209,8 +193,6 @@ fedora33-coverage:analyze:
         - .cmake_coverage_linux
         - .linux_builder_tags
         - .run_dependent
-    dependencies:
-        - fedora33-coverage:test
     needs:
         - fedora33-coverage:test
 
@@ -233,8 +215,6 @@ macos-arm64:test:
         - .cmake_test_artifacts
         - .macos_arm64_builder_tags
         - .run_dependent
-    dependencies:
-        - macos-arm64:build
     needs:
         - macos-arm64:build
 
@@ -253,8 +233,6 @@ macos-x86_64:test:
         - .cmake_test_artifacts
         - .macos_builder_tags
         - .run_dependent
-    dependencies:
-        - macos-x86_64:build
     needs:
         - macos-x86_64:build
 
@@ -277,7 +255,5 @@ windows-vs2022-ninja:test:
         - .cmake_test_artifacts
         - .windows_builder_tags
         - .run_dependent
-    dependencies:
-        - windows-vs2022-ninja:build
     needs:
         - windows-vs2022-ninja:build
