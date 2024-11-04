@@ -354,7 +354,8 @@ void pqSMTKOperationParameterPanel::editOperationParameters(
     signalOp->parameters()
       ->findComponent("modified")
       ->appendValue(opTab->m_operation->parameters());
-    signalOp->operate(); // Causes an update of the GUI.
+    // Cause the GUI to update
+    m_wrapper->smtkOperationManager()->launchers()(signalOp);
   }
   else
   {

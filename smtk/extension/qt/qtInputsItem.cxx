@@ -1561,7 +1561,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     // observing the Operation Manager we don't need to set the source parameter
     auto signalOp = this->uiManager()->operationManager()->create<smtk::attribute::Signal>();
     signalOp->parameters()->findComponent("created")->appendValue(newAtt);
-    signalOp->operate();
+    this->uiManager()->operationManager()->launchers()(signalOp);
 
     hideExpressionResultWidgets();
   }
