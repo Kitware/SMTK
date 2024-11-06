@@ -46,6 +46,7 @@ set(commonHeaders
   json/jsonTypeMap.h
   json/jsonUUID.h
   json/jsonVersionNumber.h
+  json/Helper.h
   Links.h
   Managers.h
   Observers.h
