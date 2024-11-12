@@ -498,7 +498,7 @@ void qtReferenceItem::updateUI()
   delete m_widget;
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
-  m_widget->setObjectName("ReferenceItemFrame");
+  m_widget->setObjectName(QString::fromStdString("ReferenceItemFrame_" + itm->name()));
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
