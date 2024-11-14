@@ -33,6 +33,7 @@
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtDoubleLineEdit.h"
 #include "smtk/extension/qt/qtDoubleUnitsLineEdit.h"
+#include "smtk/extension/qt/qtExpressionSortFilterProxyModel.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
@@ -55,6 +56,7 @@
 #include <QPointer>
 #include <QSizePolicy>
 #include <QSpinBox>
+#include <QStandardItemModel>
 #include <QTextEdit>
 #include <QTextStream>
 #include <QTimer>
@@ -247,6 +249,10 @@ public:
   QPointer<QLineEdit> m_expressionResultLineEdit;
   smtk::common::UUID m_lastExpressionID;
   smtk::common::UUID m_lastExpressionResourceID;
+  QPointer<QLineEdit> m_expressionSearchBar;
+  QPointer<qtExpressionSortFilterProxyModel> m_expressionProxyModel;
+  QPointer<QStandardItemModel> m_expressionModel;
+  QPointer<QToolButton> m_expressionSearchButton;
   int m_editPrecision = 0;           // Use full precision by default
   bool m_disableExpCreation = false; // All Expressions to be created by default
 
@@ -1316,6 +1322,19 @@ QFrame* qtInputsItem::createExpressionRefFrame()
     Qt::QueuedConnection);
   m_internals->m_expressionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
+  m_internals->m_expressionSearchBar = new QLineEdit(frame);
+  m_internals->m_expressionSearchBar->setObjectName("expressionSearchBar");
+  m_internals->m_expressionSearchBar->setVisible(false);
+
+  QObject::connect(
+    m_internals->m_expressionSearchBar, &QLineEdit::textChanged, this, [this](const QString& text) {
+      // Update the filter
+      onFilterChanged(text);
+    });
+
+  m_internals->m_expressionProxyModel = new qtExpressionSortFilterProxyModel();
+  m_internals->m_expressionModel = new QStandardItemModel();
+
   m_internals->m_expressionEqualsLabel = new QLabel("=", frame);
   m_internals->m_expressionEqualsLabel->setObjectName("expressionEqualsLabel");
   m_internals->m_expressionEqualsLabel->setVisible(false);
@@ -1325,6 +1344,24 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   m_internals->m_expressionResultLineEdit->setVisible(false);
   m_internals->m_expressionResultLineEdit->setReadOnly(true);
 
+  m_internals->m_expressionSearchButton = new QToolButton(frame);
+  m_internals->m_expressionSearchButton->setObjectName("expressionSearchButton");
+  m_internals->m_expressionSearchButton->setCheckable(true);
+  QString resourceName(":/icons/attribute/filter.svg");
+  m_internals->m_expressionSearchButton->setIconSize(QSize(13, 13));
+  m_internals->m_expressionSearchButton->setIcon(QIcon(resourceName));
+  m_internals->m_expressionSearchButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  m_internals->m_expressionSearchButton->setToolTip("Enable filtering of expression options");
+  m_internals->m_expressionSearchButton->setFocusPolicy(Qt::ClickFocus);
+
+  QObject::connect(
+    m_internals->m_expressionSearchButton,
+    SIGNAL(toggled(bool)),
+    this,
+    SLOT(displayExpressionFilter(bool)));
+
+  expressionLayout->addWidget(m_internals->m_expressionSearchButton);
+  expressionLayout->addWidget(m_internals->m_expressionSearchBar);
   expressionLayout->addWidget(m_internals->m_expressionCombo);
   expressionLayout->addWidget(m_internals->m_expressionEqualsLabel);
   expressionLayout->addWidget(m_internals->m_expressionResultLineEdit);
@@ -1367,21 +1404,43 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       {
         continue; // skip all non-attributes
       }
-      m_internals->m_expressionCombo->addItem(expAtt->name().c_str());
-      m_internals->m_expressionCombo->setItemData(
-        index, expAtt->resource()->id().toString().c_str(), Qt::UserRole);
-      m_internals->m_expressionCombo->setItemData(
-        index, expAtt->id().toString().c_str(), Qt::UserRole + 1);
+
+      // Add attributes to the expression model
+      QString attName = expAtt->name().c_str();
+      QStandardItem* item = new QStandardItem();
+      item->setData(attName, Qt::EditRole);
+      item->setData(expAtt->resource()->id().toString().c_str(), Qt::UserRole);
+      item->setData(expAtt->id().toString().c_str(), Qt::UserRole + 1);
+      QString toolTip = QString("Attribute Type: ") + expAtt->type().c_str();
+      item->setData(toolTip, Qt::ToolTipRole);
+      m_internals->m_expressionModel->appendRow(item);
+
       ++index;
     }
     // sort the names
-    m_internals->m_expressionCombo->model()->sort(0);
+    m_internals->m_expressionModel->sort(0);
+
     // Now add Please Select and Create Options
-    m_internals->m_expressionCombo->insertItem(0, "Please Select");
+    m_internals->m_expressionModel->insertRow(0);
+    QModelIndex modelIndex = m_internals->m_expressionModel->index(0, 0);
+    m_internals->m_expressionModel->setData(modelIndex, "Please Select");
+
+    // Ensure the expressionCreation option is disabled
+    m_internals->m_expressionProxyModel->enableExpressionCreation(false);
+
     if (!(m_internals->m_disableExpCreation || valItemDef->expressionType().empty()))
     {
-      m_internals->m_expressionCombo->insertItem(1, "Create...");
+      m_internals->m_expressionModel->insertRow(1);
+      QModelIndex modelIndex = m_internals->m_expressionModel->index(1, 0);
+      m_internals->m_expressionModel->setData(modelIndex, "Create...");
+      m_internals->m_expressionProxyModel->enableExpressionCreation(true);
     }
+
+    m_internals->m_expressionProxyModel->setSourceModel(m_internals->m_expressionModel);
+    m_internals->m_expressionCombo->setModel(m_internals->m_expressionProxyModel);
+
+    // Reset the index back to the beginning, since otherwise Please Select will not be the default option initially
+    index = 0;
 
     // Can we find the item's current expression?
     if (inputitem->isExpression())
@@ -1537,21 +1596,28 @@ void qtInputsItem::onExpressionReferenceChanged()
     // Prep the combobox with the new entry - first remove the first 2
     // items which are the Please Select and Create options
     m_internals->m_expressionCombo->blockSignals(true);
-    m_internals->m_expressionCombo->removeItem(0);
-    m_internals->m_expressionCombo->removeItem(0);
+    m_internals->m_expressionModel->removeRows(0, 2);
 
     // Now add the new item
-    m_internals->m_expressionCombo->insertItem(0, newAtt->name().c_str());
-    m_internals->m_expressionCombo->setItemData(
-      0, newAtt->resource()->id().toString().c_str(), Qt::UserRole);
-    m_internals->m_expressionCombo->setItemData(
-      0, newAtt->id().toString().c_str(), Qt::UserRole + 1);
+    QStandardItem* item = new QStandardItem();
+    item->setData(newAtt->name().c_str(), Qt::EditRole);
+    item->setData(newAtt->resource()->id().toString().c_str(), Qt::UserRole);
+    item->setData(newAtt->id().toString().c_str(), Qt::UserRole + 1);
+    QString toolTip = QString("Attribute Type: ") + newAtt->type().c_str();
+    item->setData(toolTip, Qt::ToolTipRole);
+    m_internals->m_expressionModel->appendRow(item);
 
     // sort the names
-    m_internals->m_expressionCombo->model()->sort(0);
+    m_internals->m_expressionModel->sort(0);
+
     // Now add back Please Select and Create Options
-    m_internals->m_expressionCombo->insertItem(0, "Please Select");
-    m_internals->m_expressionCombo->insertItem(1, "Create...");
+    m_internals->m_expressionModel->insertRow(0);
+    QModelIndex modelIndex = m_internals->m_expressionModel->index(0, 0);
+    m_internals->m_expressionModel->setData(modelIndex, "Please Select");
+
+    m_internals->m_expressionModel->insertRow(1);
+    modelIndex = m_internals->m_expressionModel->index(1, 0);
+    m_internals->m_expressionModel->setData(modelIndex, "Create...");
 
     auto index = m_internals->m_expressionCombo->findText(newAtt->name().c_str());
     m_internals->m_expressionCombo->setCurrentIndex(index);
@@ -1623,6 +1689,41 @@ void qtInputsItem::onExpressionReferenceChanged()
     iview->valueChanged(inputitem->shared_from_this());
   }
   Q_EMIT this->modified();
+}
+
+void qtInputsItem::displayExpressionFilter(bool checkstate)
+{
+  m_internals->m_expressionSearchBar->setVisible(checkstate);
+  if (checkstate)
+  {
+    m_internals->m_expressionSearchBar->setFixedWidth(150);
+    m_internals->m_expressionFrame->adjustSize();
+  }
+  else
+  {
+    m_internals->m_expressionSearchBar->clear();
+  }
+}
+
+void qtInputsItem::onFilterChanged(const QString& keywords)
+{
+  QString currentText = m_internals->m_expressionCombo->currentText();
+
+  // Get the list of items that matches the currentText, should only be 1 long, but in any case get the corresponding
+  // row of the first item in the list
+  auto items = m_internals->m_expressionModel->findItems(currentText);
+  int currentRow = m_internals->m_expressionModel->indexFromItem(items[0]).row();
+
+  m_internals->m_expressionProxyModel->setCurrentRow(currentRow);
+
+  m_internals->m_expressionCombo->blockSignals(true);
+
+  QRegularExpression regex;
+  regex.setPattern(keywords);
+
+  // Set the new filter
+  m_internals->m_expressionProxyModel->setFilterRegularExpression(regex);
+  m_internals->m_expressionCombo->blockSignals(false);
 }
 
 QWidget* qtInputsItem::createDoubleWidget(

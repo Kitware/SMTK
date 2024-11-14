@@ -18,5 +18,6 @@
     <file alias = "function.png">icons/function.png</file>
     <file alias = "arrowRight.png">icons/grnArrowRight.png</file>
     <file alias = "arrowLeft.png">icons/grnArrowLeft.png</file>
+    <file alias = "filter.svg">icons/filter.svg</file>
   </qresource>
 </RCC>
