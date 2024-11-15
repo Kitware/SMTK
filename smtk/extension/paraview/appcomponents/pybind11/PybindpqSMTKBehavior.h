@@ -43,7 +43,18 @@ inline py::class_< pqSMTKBehavior, QObject > pybind11_init_pqSMTKBehavior(py::mo
     .def("getPVResource", &pqSMTKBehavior::getPVResource, py::arg("resource"))
     .def("getPVResourceProxy", &pqSMTKBehavior::getPVResourceProxy, py::arg("resource"))
     .def("getPVResourceManager", &pqSMTKBehavior::getPVResourceManager, py::arg("resourceManager"))
-    .def_static("instance", &pqSMTKBehavior::instance, py::arg("parent") = nullptr)
+    .def_static("instance", []() -> py::object
+      {
+        auto* inst = pqSMTKBehavior::instance();
+        if (inst)
+        {
+          return py::cast(inst);
+        }
+        // Return "None" when QCoreApplication::instance() is null.
+        // This corresponds to a process where QCoreApplication has
+        // not been initialized (i.e., a non-GUI process).
+        return py::object(py::cast(nullptr));
+      }, py::return_value_policy::reference_internal)
     .def_static("processEvents", &pqSMTKBehavior::processEvents)
     .def("removingManagerFromServer", (void (pqSMTKBehavior::*)(::vtkSMSMTKWrapperProxy *, ::pqServer *)) &pqSMTKBehavior::removingManagerFromServer, py::arg("mgr"), py::arg("server"))
     .def("removingManagerFromServer", (void (pqSMTKBehavior::*)(::pqSMTKWrapper *, ::pqServer *)) &pqSMTKBehavior::removingManagerFromServer, py::arg("mgr"), py::arg("server"))

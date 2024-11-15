@@ -93,7 +93,7 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
 #if SMTK_ENABLE_PYTHON_WRAPPING
   smtk::operation::PyOperation::runOnMainThread =
     [](smtk::operation::PyOperation::SimpleFunction fn) {
-      if (QThread::currentThread() == qApp->thread())
+      if (!QCoreApplication::instance() || QThread::currentThread() == qApp->thread())
       {
         // We're running in the GUI thread already, just call the function:
         fn();

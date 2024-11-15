@@ -101,6 +101,10 @@ pqSMTKBehavior* pqSMTKBehavior::instance(QObject* parent)
 {
   if (!g_instance)
   {
+    if (!QCoreApplication::instance())
+    {
+      return nullptr;
+    }
     g_instance = new pqSMTKBehavior(parent);
   }
 
