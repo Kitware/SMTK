@@ -50,6 +50,14 @@ typedef std::tuple<Add, Create, Define, Print, Read, Remove, Write> OperationLis
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
+  if (!managers->contains<smtk::resource::Manager::Ptr>())
+  {
+    smtk::resource::Registrar::registerTo(managers);
+  }
+  if (!managers->contains<smtk::operation::Manager::Ptr>())
+  {
+    smtk::operation::Registrar::registerTo(managers);
+  }
   if (
     managers->contains<smtk::operation::Manager::Ptr>() &&
     managers->contains<smtk::resource::Manager::Ptr>())
