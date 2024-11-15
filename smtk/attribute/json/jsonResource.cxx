@@ -415,7 +415,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         analysis->setLocalCategories(info.second);
       }
     }
-    // Do we have parent infomation to deal with?
+    // Do we have parent information to deal with?
     auto analysesParentInfo = j.find("AnalysesParentInfo");
     if (analysesParentInfo != j.end())
     {
@@ -470,7 +470,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       }
     }
     auto analysesLabelInfo = j.find("AnalysesLabelInfo");
-    // Do we have label infomation to deal with?
+    // Do we have label information to deal with?
     if (analysesLabelInfo != j.end())
     {
       for (auto const& val : analysesLabelInfo->items())

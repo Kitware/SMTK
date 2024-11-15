@@ -481,6 +481,9 @@ protected:
   void addItem(smtk::attribute::ItemPtr& iPtr) { m_items.push_back(iPtr); }
   void setName(const std::string& newname) { m_name = newname; }
 
+  /// This allows the resource to change an Attribute ID
+  void resetId(const smtk::common::UUID& newId) { m_id = newId; }
+
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ReferenceItemPtr m_associatedObjects;

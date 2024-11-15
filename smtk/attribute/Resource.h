@@ -221,6 +221,16 @@ public:
 
   bool rename(AttributePtr att, const std::string& newName);
 
+  /// Changes the ID of an Attribute.
+  ///
+  /// If /a newId is currently in use, the Attribute's ID will not
+  /// be changed and the method will return false.
+  ///
+  /// NOTE: Care must be taken when resetting the ID since this currently
+  /// does not update the links that refer to the Attribute's original
+  /// ID.
+  bool resetId(AttributePtr att, const smtk::common::UUID& newId);
+
   // Access Analysis Information
   smtk::attribute::Analyses& analyses() { return m_analyses; }
 

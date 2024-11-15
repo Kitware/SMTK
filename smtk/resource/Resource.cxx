@@ -407,5 +407,15 @@ bool Resource::copyPropertiesForId(
   return false;
 }
 
+bool Resource::setManager(ManagerPtr newManager)
+{
+  if (m_manager.lock())
+  {
+    return false;
+  }
+  m_manager = newManager;
+  return true;
+}
+
 } // namespace resource
 } // namespace smtk

@@ -208,6 +208,13 @@ public:
   ManagerPtr manager() const { return m_manager.lock(); }
   ///@}
 
+  /// Set the manager that the resource will use to decode its link
+  /// information.
+  ///
+  /// Note: this is typically the same as the manager that is managing the
+  /// resource but is not the case when dealing with resources that are not
+  /// being managed.
+  bool setManager(ManagerPtr newManager);
   ///@name Finding, Visiting, and Filtering Components.
   ///@{
   /// A resource owns a collection of components.
