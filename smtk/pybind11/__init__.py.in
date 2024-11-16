@@ -136,15 +136,22 @@ def findAvailablePlugins():
     return shufflePlugins(pluginList)
 
 def loadedPlugins():
-    from paraview import servermanager
-    pm = servermanager.vtkSMProxyManager.GetProxyManager()
-    lm = pm.GetPluginManager()
-    info = lm.GetLocalInformation()
+    """Return a list of plugins that have been loaded.
+    Note that plugins are only supported via ParaView; if you build
+    SMTK without ParaView, this will always return an empty list.
+    """
     plugins = []
-    for ii in range(info.GetNumberOfPlugins()):
-        name = info.GetPluginName(ii)
-        if 'smtk' in name.casefold() and info.GetPluginLoaded(ii):
-            plugins += [name]
+    try:
+        from paraview import servermanager
+        pm = servermanager.vtkSMProxyManager.GetProxyManager()
+        lm = pm.GetPluginManager()
+        info = lm.GetLocalInformation()
+        for ii in range(info.GetNumberOfPlugins()):
+            name = info.GetPluginName(ii)
+            if 'smtk' in name.casefold() and info.GetPluginLoaded(ii):
+                plugins += [name]
+    except:
+        pass
     return plugins
 
 def loadPlugins(pluginList = None):

@@ -4,8 +4,11 @@ set(smtkTaskPythonTests
 
 # tests that require SMTK_DATA_DIR
 set(smtkTaskPythonDataTests
-  testTaskAgents
 )
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  list(APPEND smtkTaskPythonDataTests testTaskAgents)
+endif()
 
 foreach (test ${smtkTaskPythonTests})
   smtk_add_test_python(${test}Py ${test}.py --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
