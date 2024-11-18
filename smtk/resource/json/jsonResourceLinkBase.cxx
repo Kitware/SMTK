@@ -18,6 +18,11 @@
 #include "smtk/resource/json/jsonComponentLinkBase.h"
 #include "smtk/resource/json/jsonSurrogate.h"
 
+// Ignore warning about non-inlined template specializations of smtk::common::Helper<>
+#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
+#pragma warning(disable : 4506) /* no definition for inline function */
+#endif
+
 namespace nlohmann
 {
 smtk::resource::detail::ResourceLinkBase
