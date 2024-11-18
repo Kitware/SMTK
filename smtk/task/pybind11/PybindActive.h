@@ -30,7 +30,6 @@ inline py::class_< smtk::task::Active > pybind11_init_smtk_task_Active(py::modul
     .def("switchTo", &smtk::task::Active::switchTo, py::arg("arg0"))
     .def("task", &smtk::task::Active::task)
     .def("typeName", &smtk::task::Active::typeName)
-    .def_readonly_static("type_name", &smtk::task::Active::type_name)
     ;
   return instance;
 }

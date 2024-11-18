@@ -13,10 +13,12 @@
 
 #include "smtk/task/Adaptor.h"
 #include "smtk/task/FillOutAttributes.h"
+#include "smtk/task/FillOutAttributesAgent.h"
+#include "smtk/task/GatherObjectsAgent.h"
 #include "smtk/task/GatherResources.h"
-#include "smtk/task/Group.h"
 #include "smtk/task/Port.h"
 #include "smtk/task/SubmitOperation.h"
+#include "smtk/task/SubmitOperationAgent.h"
 #include "smtk/task/Task.h"
 #include "smtk/task/adaptor/ConfigureOperation.h"
 #include "smtk/task/adaptor/ResourceAndRole.h"
@@ -26,7 +28,6 @@
 #include "smtk/task/json/jsonConfigureOperation.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
 #include "smtk/task/json/jsonGatherResources.h"
-#include "smtk/task/json/jsonGroup.h"
 #include "smtk/task/json/jsonPort.h"
 #include "smtk/task/json/jsonResourceAndRole.h"
 #include "smtk/task/json/jsonSubmitOperation.h"
@@ -51,12 +52,11 @@ namespace smtk
 namespace task
 {
 
-using TaskList = std::tuple<Task, FillOutAttributes, GatherResources, Group, SubmitOperation>;
+using TaskList = std::tuple<Task, FillOutAttributes, GatherResources, SubmitOperation>;
 using TaskJSON = std::tuple<
   json::jsonTask,
   json::jsonFillOutAttributes,
   json::jsonGatherResources,
-  json::jsonGroup,
   json::jsonSubmitOperation>;
 
 using AdaptorList = std::tuple<adaptor::ConfigureOperation, adaptor::ResourceAndRole>;
@@ -64,6 +64,8 @@ using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceA
 
 using PortList = std::tuple<Port>;
 using PortJSON = std::tuple<json::jsonPort>;
+
+using AgentList = std::tuple<FillOutAttributesAgent, GatherObjectsAgent, SubmitOperationAgent>;
 
 using OperationList = std::
   tuple<AddDependency, ConnectPorts, DisconnectPorts, EmplaceWorklet, RemoveDependency, RenameTask>;
@@ -76,7 +78,6 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   typeLabels[smtk::common::typeName<smtk::task::Task>()] = "task";
   typeLabels[smtk::common::typeName<smtk::task::FillOutAttributes>()] = "fill out attributes task";
   typeLabels[smtk::common::typeName<smtk::task::GatherResources>()] = "gather resources task";
-  typeLabels[smtk::common::typeName<smtk::task::Group>()] = "group task";
   typeLabels[smtk::common::typeName<smtk::task::SubmitOperation>()] = "operation task";
 
   // Adaptors
@@ -94,7 +95,6 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
   typeLabels.erase(smtk::common::typeName<smtk::task::Task>());
   typeLabels.erase(smtk::common::typeName<smtk::task::FillOutAttributes>());
   typeLabels.erase(smtk::common::typeName<smtk::task::GatherResources>());
-  typeLabels.erase(smtk::common::typeName<smtk::task::Group>());
   typeLabels.erase(smtk::common::typeName<smtk::task::SubmitOperation>());
   typeLabels.erase(smtk::common::typeName<smtk::task::adaptor::ConfigureOperation>());
   typeLabels.erase(smtk::common::typeName<smtk::task::adaptor::ResourceAndRole>());
@@ -113,6 +113,9 @@ void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
   auto& portInstances = taskManager->portInstances();
   portInstances.registerTypes<PortList>();
   json::Configurator<Port>::registerTypes<PortList, PortJSON>();
+
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.registerTypes<AgentList>();
 }
 
 void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
@@ -128,6 +131,9 @@ void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
   auto& portInstances = taskManager->portInstances();
   portInstances.unregisterTypes<PortList>();
   json::Configurator<Port>::unregisterTypes<PortList>();
+
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.unregisterTypes<AgentList>();
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

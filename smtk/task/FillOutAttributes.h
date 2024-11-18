@@ -14,7 +14,7 @@
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/resource/Resource.h"
-#include "smtk/task/Task.h"
+#include "smtk/task/AgentlessTask.h"
 
 #include "smtk/common/Visit.h"
 
@@ -48,12 +48,12 @@ class ResourceAndRole;
   * tasks to be certain that it is the attributes in question that have
   * been updated.
   */
-class SMTKCORE_EXPORT FillOutAttributes : public Task
+class SMTKCORE_EXPORT FillOutAttributes : public AgentlessTask
 {
 public:
   smtkTypeMacro(smtk::task::FillOutAttributes);
-  smtkSuperclassMacro(smtk::task::Task);
-  smtkCreateMacro(smtk::task::Task);
+  smtkSuperclassMacro(smtk::task::AgentlessTask);
+  smtkCreateMacro(smtk::resource::PersistentObject);
 
   /// Per-resource sets of validated attributes
   ///
@@ -140,7 +140,7 @@ protected:
     smtk::operation::Operation::Result result);
 
   /// Check m_resourcesByRole to see if all requirements are met.
-  State computeInternalState() const;
+  State computeInternalState() const override;
 
   /// Determine if an attribute needs to be tested for its validity.  Returns true if the attribute was not already contained
   /// in resourceAtts

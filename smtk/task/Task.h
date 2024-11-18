@@ -20,6 +20,7 @@
 #include "smtk/common/Managers.h"
 #include "smtk/common/Observers.h"
 #include "smtk/common/Visit.h"
+#include "smtk/task/Agent.h"
 #include "smtk/task/State.h"
 
 #include "nlohmann/json.hpp"
@@ -27,6 +28,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 namespace smtk
@@ -34,6 +36,7 @@ namespace smtk
 namespace task
 {
 
+class Agent;
 class Manager;
 class Port;
 class PortData;
@@ -63,21 +66,13 @@ SMTKCORE_EXPORT std::set<smtk::task::Task*> workflowsOfTask(const Task& task);
   * Once the first set of conditions is met, users are allowed to undertake the
   * task. Once the second set of conditions is met, users are allowed to mark
   * the task complete and thus gain access to those tasks which depend on it.
-  *
-  * Subclasses of Task are responsible for monitoring the application's state;
-  * the base class provides no methods to aid in this other than access to the
-  * application's managers at construction.
-  * Once the subclass has determined conditions are met, it should call
-  * the `internalStateChanged()` method.
-  * The base class will determine if this results in a state transition or not
-  * (based on dependencies blocking the change) and notify observers as needed.
   */
 class SMTKCORE_EXPORT Task : public smtk::resource::Component
 {
 public:
   smtkTypeMacro(smtk::task::Task);
   smtkSuperclassMacro(smtk::resource::Component);
-  smtkCreateMacro(smtk::task::Task);
+  smtkCreateMacro(smtk::resource::PersistentObject);
 
   /// A task's state changes may be observed.
   using Observer = std::function<void(Task&, State, State)>;
@@ -145,6 +140,12 @@ public:
   /// Return a set of ports for this task indexed by their function (a descriptive string).
   virtual const std::unordered_map<smtk::string::Token, Port*>& ports() const;
 
+  /// Change the Name of a Port
+  ///
+  /// This method is used to update internal data structures. Please use task::Port::setName
+  /// to change the name of the Port - it will call this method with an appropriate lambda.
+  bool changePortName(Port* port, const std::string& newName, std::function<bool()> fp);
+
   /// Given a port owned by this task, return data to be transmitted over the port.
   ///
   /// Subclasses that own ports must override this method in order to produce port-data.
@@ -158,10 +159,16 @@ public:
   /// result of this notification, you should launch an operation so that
   /// those resources are properly locked.
   ///
+  /// If \a port is one of the task's input ports (i.e., \a port->direction() == In),
+  /// then each agent of the task is called with the port.
+  /// If \a port is one of the task's output ports (i.e., \a port->direction() == Out),
+  /// then each downstream task of \a port has its portDataUpdated() method with
+  /// the connected port.
+  ///
   /// Because this function will be called on the user-interface thread,
   /// it is acceptable to take actions affecting the user interface,
   /// including changing the state of this task.
-  virtual void portDataUpdated(const Port* port) { (void)port; }
+  virtual void portDataUpdated(const Port* port);
 
   /// Set/get style classes for the task.
   /// A style class specifies how applications should present the task
@@ -198,48 +205,82 @@ public:
 
   /// Get the state.
   ///
-  /// This state is a composition of \a m_internalState – updated by subclasses as
-  /// needed – and the state of any dependencies.
-  /// Because \a m_internalState is initialized to State::Completable,
-  /// the default behavior is to become Completable once all dependencies are met
+  /// This state is a composition of \a m_agentState (he combined state
+  /// of all of the task's agents), \a m_childrenState (the combined state of all
+  /// the task's children) – and \a m_dependencyState (the state of any dependencies).
+  ///
+  /// Since the task as no agents by default, \a m_agentState is initialized to
+  /// State::Completable. Similarly, since the task has no children by default,
+  /// m_childrenState is initialized to State::Irrelevant.  Therefore the default
+  /// behavior is to become Completable once all dependencies are met
   /// (i.e., Completable or Completed) and Completed only if dependencies are met
   /// **and** markCompleted(true) has been called.
-  /// Thus, the implementation in this base class will never return Incomplete.
-  /// If a subclass marks the internal state as Incomplete, then this method may
-  /// return Incomplete.
   ///
-  /// The table below shows the internal state of the task in the far left column
-  /// and the lowest state of all the task's dependencies in the top header row.
-  /// The table entries are the resulting value returned by this method.
+  /// In terms of expected values, \a m_dependnecyState can have the following values:
+  /// - Irrelevant : There are no dependencies or all of their states are Irrelevant.
+  /// - Unavailable : At least one of the relevant dependencies' states is less than Completable or
+  ///   all are Completable but strict dependency observance has been requested.
+  /// - Completable : All of the relevant dependencies' states are at least Completable but all
+  ///   are not Completed and strict dependency observance has not been requested.
+  /// - Completed : All of the relevant dependencies' states are Completed.
   ///
+  /// In terms of expected values, \a m_agentState can have the following values:
+  /// - Irrelevant : There are no agents or all of their states are Irrelevant
+  /// - Unavailable : All relevant agents are Unavailable.
+  /// - Completable : All relevant agents are Completable.
+  /// - Incomplete : The states of the agents are different and .
+  ///
+  /// In terms of expected values, \a m_childrenState can have the following values:
+  /// - Irrelevant : There are no children or all of their states are Irrelevant
+  /// - Unavailable : The minimum state of all relevant children is Unavailable.
+  /// - Incomplete : The minimum state of all relevant children is Incomplete.
+  /// - Completable : The minimum state of all relevant children is Completable.
+  /// - Completed : All relevant children are Completed.
+  ///
+  /// In terms of calculating the state of the task itself :
   /// <table>
-  /// <caption>State "truth table" given internal and dependency states</caption>
-  /// <tr><th>Dependencies/<br>Internal</th><th>Unavailable</th><th>Incomplete</th> <th>Completable</th><th>Completed</th></tr>
-  /// <tr><td colspan="5">Strict dependencies disabled.</td></tr>
-  /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
-  /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
-  /// <tr><th>Incomplete</th>               <td>Unavailable</td> <td>Incomplete</td><td>Incomplete</td> <td>Incomplete</td></tr>
-  /// <tr><th>Completable</th>              <td>Unavailable</td> <td>Incomplete</td><td>Completable</td><td style="background: #cecece;">Completable</td></tr>
-  /// <tr><td colspan="5">Strict dependencies enabled.</td></tr>
-  /// <tr><th>Irrelevant</th>               <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td> <td>Irrelevant</td></tr>
-  /// <tr><th>Unavailable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td>Unavailable</td></tr>
-  /// <tr><th>Incomplete</th>               <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td> <td>Incomplete</td></tr>
-  /// <tr><th>Completable</th>              <td>Unavailable</td><td>Unavailable</td><td>Unavailable</td><td style="background: #cecece;">Completable</td></tr>
+  /// <tr><th>DependencyState <th>AgentState <th>ChildrenState <th>TaskState
+  /// <tr><td>Unavailable <td>Any <td>Any <td>Unavailable
+  /// <tr><td rowspan="18">
+  ///       <br> Irrelevant
+  ///       <br> Completable
+  ///       <br> Completed
+  ///     <td rowspan="4"> Irrelevant
+  ///     <td>Irrelevant <td>Irrelevant
+  /// <tr><td>Incomplete <td rowspan="2">Incomplete
+  /// <tr><td>Completable
+  /// <tr><td>Completed <td>
+  ///                      <br> Completable (if m_complete is false)
+  ///                      <br> Completed (if m_complete is true)
+  /// <tr><td>Unavailable <td rowspan="3">Irrelevant <td>Unavailable
+  /// <tr><td>Incomplete <td>Incomplete
+  /// <tr><td>Completable <td>
+  ///                       <br> Completable (if m_complete is false)
+  ///                       <br> Completed (if m_complete is true)
+  /// <tr><td>Unavailable <td>Unavailable <td> Unavailable
+  /// <tr><td>Unavailable <td>\> Unavailable <td rowspan="5">Incomplete
+  /// <tr><td>\> Unavailable <td>Unavailable
+  /// <tr><td>Incomplete <td>Any
+  /// <tr><td>Any <td>Incomplete
+  /// <tr><td rowspan="2">Completable <td>Completable
+  /// <tr><td>Completed <td>
+  ///                      <br> Completable (if m_complete is false)
+  ///                      <br> Completed (if m_complete is true)
   /// </table>
-  ///
-  /// Note that the internal state (far left column) and the table values (not including the top
-  /// header row) do not include State::Completed; only the user may mark a task
-  /// completed. Furthermore, the user is only allowed to mark a Completable task completed.
-  /// When the user has marked a completable task as completed, the bottom-right entry of each
-  /// table section (with a light grey background) will be Completed instead of Completable.
-  ///
-  /// Each task instance may be configured with a "dependency strictness" that determines when
-  /// users may work on a task with incomplete dependencies and whether users are allowed to mark
-  /// a task with incomplete dependencies as completed.
-  ///
-  /// A subclass that wishes to autocomplete might invoke the base-class method although this could
-  /// frustrate users.
+
   virtual State state() const;
+
+  /// Return whether or not the task has been marked completed.
+  bool isCompleted() const { return m_completed; }
+
+  /// Returns the state of a task's agents.
+  State agentState() const { return m_agentState; }
+
+  /// Returns the state of a task's children.
+  State childrenState() const { return m_childrenState; }
+
+  /// Returns the state of a task's dependencies.
+  State dependencyState() const { return m_dependencyState; }
 
   /// Return whether or not users are allowed to mark a task completed.
   ///
@@ -321,10 +362,6 @@ public:
   /// Return a parent task if one exists; null otherwise.
   Task* parent() const { return m_parent; }
 
-  /// Return whether or not the task has children.
-  /// By default, tasks do not support children.
-  virtual bool hasChildren() const { return false; }
-
   /// Visit children. If hasChildren returns false, this will return immediately.
   ///
   /// For the signature taking a Visitor, this method returns
@@ -333,29 +370,68 @@ public:
   /// Subclasses that override hasChildren should override these methods.
   virtual smtk::common::Visit visit(RelatedTasks relation, Visitor visitor) const;
 
+  /// Return whether or not the task has children.
+  virtual bool hasChildren() const { return !m_children.empty(); }
+
+  /// Return the children of the task
+  const std::unordered_set<Task*> children() const { return m_children; }
+
+  /// Return the agents of the task
+  ///
+  /// Note that the agents returned are owned by the task and should not be
+  /// deleted.
+  std::unordered_set<Agent*> agents() const;
+
   /// Return this object's observers so other classes may insert themselves.
   Observers& observers() { return m_observers; }
 
-  /// Return the internal state of the task.
+  ///\brief Updates the state of the task based on the change of an agent.
   ///
-  /// This should not generally be used; instead, call `state()`.
-  /// This state does not include dependencies or user-completion;
-  /// it only reports whether the application has met conditions
-  /// inherent for the task itself.
-  State internalState() const { return m_internalState; }
+  /// Will return true if the task's state has changed.
+  /// If this results in the task's state changing, observers are invoked
+  /// if \a signal is true (the default).
+  ///
+  /// The \a signal parameter exists so that agents that wish to change
+  /// their parent task's m_agentState without forcing the final state of
+  /// the task to change may do so. This can happen, for instance, when
+  /// a dependency causes the task's final state to become Unavailable
+  /// but a task's state to transition from Completable to Incomplete.
+  /// Since Incomplete > Unavailable, the overall task state should not
+  /// be modified by the agent. However, the task's agent-state also
+  /// needs to be modified from within Task::changeState.
+  ///
+  /// If you are writing an agent and \a next is less than your agent's
+  /// internal state, pass false to \a signal.
+  virtual bool updateAgentState(const Agent* agent, State prev, State next, bool signal = true);
 
   /// Return the tasks's manager (or null if unmanaged).
   Manager* manager() const { return m_manager.lock().get(); }
+
+  /// Return the application-state container.
+  ///
+  /// This will return null if the task has no task::Manager.
+  std::shared_ptr<smtk::common::Managers> managers() const;
 
 protected:
   friend SMTKCORE_EXPORT void
   workflowsOfTask(Task*, std::set<smtk::task::Task*>&, std::set<smtk::task::Task*>&);
 
-  /// Indicate the state has changed.
+  /// Indicate the state of this task has changed.
+  ///
   /// This method invokes observers if and only if \a previous and \a next are different.
   /// It will also update m_completed to match the new state.
   ///
-  /// It returns false if \a previous == \a next and true otherwise.
+  /// Note that this method invokes Agent::taskStateChanged() for each of the
+  /// task's agents and any agent may interrupt the state change inside this method.
+  /// If this occurs, the agent is responsible for calling Task::updateAgentState(),
+  /// which in turn will call Task::changeState() with a different \a next value.
+  /// This nested call will fire observers once the final state allowed by agents
+  /// is determined. This means that not all calls to Task::changeState() will result
+  /// in observers being fired, even when the state is changing.
+  ///
+  /// It returns false if \a previous == \a next or if an agent disallowed
+  /// the state change to \a next (in which case observers from a nested call to
+  /// changeState will have already succeeded) and true otherwise.
   bool changeState(State previous, State next);
 
   /// Update our state because a dependent task has changed state or
@@ -363,14 +439,27 @@ protected:
   ///
   /// Returns true if this task's state changed and false otherwise.
   /// This method will invoke observers if it returns true.
-  virtual bool updateState(Task& dependency, State prev, State next);
+  virtual bool updateDependencyState(Task& dependency, State prev, State next);
 
-  /// Update the internal state, possibly transitioning the task's final state.
+  ///\brief Updates the state of the task based on the change of a child task.
   ///
-  /// This method returns true if the task's final state changed and
-  /// false otherwise.
-  /// If true is returned, observers have been invoked.
-  bool internalStateChanged(State next);
+  /// Will return true if the task's state has changed. If this results in the
+  // task's state changing, observers will have been invoked.
+  virtual bool updateChildrenState(const Task* child, State prev, State next);
+
+  ///\brief Compute the state based on the state of the task's dependencies
+  ///
+  /// Each task instance may be configured with a "dependency strictness" that determines when
+  /// users may work on a task with incomplete dependencies and whether users are allowed to mark
+  /// a task with incomplete dependencies as completed.
+  ///
+  /// A subclass that wishes to autocomplete might invoke the base-class method although this could
+  /// frustrate users.
+  virtual State computeDependencyState() const;
+  /// Compute the state based on state of the task's agents
+  virtual State computeAgentState() const;
+  /// Compute the state based on the state of the task's children
+  virtual State computeChildrenState() const;
 
   /// A task name to present to the user.
   std::string m_name;
@@ -399,13 +488,19 @@ protected:
   std::weak_ptr<smtk::task::Manager> m_manager;
   /// The unique identifier for this task.
   smtk::common::UUID m_id;
+  /// The children of the task
+  std::unordered_set<Task*> m_children;
+  /// The agents of the task
+  std::unordered_set<std::unique_ptr<Agent>> m_agents;
+  //std::unordered_set<Agent*> m_agents;
+  /// The ports of the Task
+  std::unordered_map<smtk::string::Token, Port*> m_ports;
+
+  State m_agentState = State::Completable;
+  State m_dependencyState = State::Irrelevant;
+  State m_childrenState = State::Irrelevant;
 
 private:
-  /// The internal state of the task as provided by subclasses.
-  /// This is private so subclasses cannot alter it directly;
-  /// instead they should invoke `internalStateChanged()` so that
-  /// the Task's final state can be updated and observers invoked.
-  State m_internalState = State::Completable;
 };
 
 template<typename Container>

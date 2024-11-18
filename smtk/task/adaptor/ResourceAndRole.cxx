@@ -12,7 +12,6 @@
 
 #include "smtk/task/FillOutAttributes.h"
 #include "smtk/task/GatherResources.h"
-#include "smtk/task/Group.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonFillOutAttributes.h"
 #include "smtk/task/json/jsonGatherResources.h"
@@ -117,61 +116,12 @@ bool ResourceAndRole::updateDownstreamTask(State upstreamPrev, State upstreamNex
           fill->internalStateChanged(fill->computeInternalState());
         }
       }
-      else if (auto* group = dynamic_cast<Group*>(dest))
-      {
-        Task::Configuration configs;
-        gather->visitResourceSets(
-          [&configs](const GatherResources::ResourceSet& resourceSet) -> smtk::common::Visit {
-            nlohmann::json jsonResourceSet = resourceSet;
-            configs.push_back(jsonResourceSet);
-            return smtk::common::Visit::Continue;
-          });
-        group->setAdaptorData(m_fromTag, configs);
-      }
       else
       {
         smtkErrorMacro(
           smtk::io::Logger::instance(),
           "Cannot configure resource and role on a \"" << (dest ? dest->typeName() : "null")
                                                        << "\" task.");
-      }
-    }
-    else if (auto* group = dynamic_cast<Group*>(source))
-    {
-      auto* dest = this->to();
-      if ((fill = dynamic_cast<FillOutAttributes*>(dest)))
-      {
-        if (group->adaptorData().contains(m_toTag))
-        {
-          json::Helper::instance().setManagers(group->managers());
-          for (const auto& jsonResourceSet : group->adaptorData()[m_toTag])
-          {
-            auto resourceSet = jsonResourceSet.get<smtk::task::GatherResources::ResourceSet>();
-            auto& role_config = configs[resourceSet.m_role];
-            for (auto const& weakResource : resourceSet.m_resources)
-            {
-              auto resource = weakResource.lock();
-              if (resource)
-              {
-                role_config.insert(resource);
-              }
-            }
-          }
-        }
-        // Look for matching roles in attribute sets and populate with
-        // the gathered resources.
-        fill->visitAttributeSets(updateFillOutAttributes);
-        if (didChange)
-        {
-          fill->internalStateChanged(fill->computeInternalState());
-        }
-      }
-      else
-      {
-        smtkErrorMacro(
-          smtk::io::Logger::instance(),
-          "Cannot configure resource and role on a \"" << (dest ? dest->typeName() : "null")
-                                                       << ".");
       }
     }
     else

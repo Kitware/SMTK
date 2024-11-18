@@ -18,6 +18,8 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
 #include "smtk/view/Configuration.h"
 
 #include "pqActiveObjects.h"
@@ -50,7 +52,11 @@ class smtkAssignColorsViewInternals : public Ui::AssignColorsParameters
 public:
   smtkAssignColorsViewInternals() = default;
 
-  ~smtkAssignColorsViewInternals() { delete CurrentAtt; }
+  ~smtkAssignColorsViewInternals()
+  {
+    this->ObserverKey.release();
+    delete CurrentAtt;
+  }
 
   qtAttribute* createAttUI(smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
   {
@@ -118,11 +124,46 @@ public:
     return false;
   }
 
+  /// Update widgets when the operation parameters have been modified.
+  int handleOperationEvent(
+    const smtk::operation::Operation& op,
+    smtk::operation::EventType event,
+    smtk::operation::Operation::Result result)
+  {
+    (void)op;
+    // If the operation did not execute or if the view's
+    // attribute resource is marked for removal, just return
+    if (event != smtk::operation::EventType::DID_OPERATE)
+    {
+      return 0;
+    }
+
+    auto compItem = result->findComponent("modified");
+    std::size_t i, n = compItem->numberOfValues();
+    for (i = 0; i < n; i++)
+    {
+      if (compItem->isSet(i))
+      {
+        if (this->CurrentAtt->attribute() == compItem->value(i))
+        {
+          // Update the attribute's items
+          auto items = this->CurrentAtt->items();
+          for (auto* item : items)
+          {
+            item->updateItemData();
+          }
+        }
+      }
+    }
+    return 0;
+  }
+
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QHBoxLayout> EditorLayout;
 
   QPointer<pqPresetDialog> PaletteChooser;
   smtk::shared_ptr<smtk::operation::Operation> CurrentOp;
+  smtk::operation::Observers::Key ObserverKey;
 };
 
 smtkAssignColorsView::smtkAssignColorsView(const smtk::view::Information& info)
@@ -130,6 +171,19 @@ smtkAssignColorsView::smtkAssignColorsView(const smtk::view::Information& info)
 {
   this->Internals = new smtkAssignColorsViewInternals;
   this->Internals->CurrentOp = info.get<smtk::shared_ptr<smtk::operation::Operation>>();
+  QPointer<smtkAssignColorsView> self(this);
+  auto opMgr = this->Internals->CurrentOp->manager();
+  this->Internals->ObserverKey =
+    opMgr->observers().insert([self, this](
+                                const smtk::operation::Operation& op,
+                                smtk::operation::EventType event,
+                                smtk::operation::Operation::Result result) {
+      if (self && this->Internals)
+      {
+        return this->Internals->handleOperationEvent(op, event, result);
+      }
+      return 0;
+    });
 }
 
 smtkAssignColorsView::~smtkAssignColorsView()

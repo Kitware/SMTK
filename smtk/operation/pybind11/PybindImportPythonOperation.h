@@ -28,6 +28,8 @@ PySharedPtrClass< smtk::operation::ImportPythonOperation, smtk::operation::XMLOp
     .def("deepcopy", (smtk::operation::ImportPythonOperation & (smtk::operation::ImportPythonOperation::*)(::smtk::operation::ImportPythonOperation const &)) &smtk::operation::ImportPythonOperation::operator=)
     .def_static("create", (std::shared_ptr<smtk::operation::ImportPythonOperation> (*)()) &smtk::operation::ImportPythonOperation::create)
     .def_static("create", (std::shared_ptr<smtk::operation::ImportPythonOperation> (*)(::std::shared_ptr<smtk::operation::ImportPythonOperation> &)) &smtk::operation::ImportPythonOperation::create, py::arg("ref"))
+    .def_static("importOperationsFromModule", &smtk::operation::ImportPythonOperation::importOperationsFromModule, py::arg("module"), py::arg("operationManager"))
+    .def_static("importOperation", &smtk::operation::ImportPythonOperation::importOperation, py::arg("operationManager"), py::arg("module"), py::arg("operationName"))
     .def("shared_from_this", (std::shared_ptr<const smtk::operation::ImportPythonOperation> (smtk::operation::ImportPythonOperation::*)() const) &smtk::operation::ImportPythonOperation::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::operation::ImportPythonOperation> (smtk::operation::ImportPythonOperation::*)()) &smtk::operation::ImportPythonOperation::shared_from_this)
     ;

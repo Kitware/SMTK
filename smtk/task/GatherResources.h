@@ -13,7 +13,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Observer.h"
 #include "smtk/resource/Resource.h"
-#include "smtk/task/Task.h"
+#include "smtk/task/AgentlessTask.h"
 
 #include "smtk/common/Visit.h"
 
@@ -28,12 +28,12 @@ namespace task
   * with a Role as specified (at construction time). When all the required resources
   * are present with the required roles, then the task becomes completable.
   */
-class SMTKCORE_EXPORT GatherResources : public Task
+class SMTKCORE_EXPORT GatherResources : public AgentlessTask
 {
 public:
   smtkTypeMacro(smtk::task::GatherResources);
-  smtkSuperclassMacro(smtk::task::Task);
-  smtkCreateMacro(smtk::task::Task);
+  smtkSuperclassMacro(smtk::task::AgentlessTask);
+  smtkCreateMacro(smtk::resource::PersistentObject);
 
   /// A predicate used to collect resources that fit a given role.
   struct ResourceSet
@@ -101,7 +101,7 @@ protected:
   void updateResources(smtk::resource::Resource& resource, smtk::resource::EventType event);
 
   /// Check m_resourcesByRole to see if all requirements are met.
-  State computeInternalState() const;
+  State computeInternalState() const override;
 
   bool m_autoconfigure = false;
   smtk::common::Managers::Ptr m_managers;

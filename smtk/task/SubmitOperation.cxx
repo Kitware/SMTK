@@ -163,7 +163,7 @@ SubmitOperation::SubmitOperation(
   const Configuration& config,
   Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, taskManager, managers)
+  : AgentlessTask(config, taskManager, managers)
   , m_managers(managers)
 {
   // Mark the association specifier as invalid by default.
@@ -176,7 +176,7 @@ SubmitOperation::SubmitOperation(
   const PassedDependencies& dependencies,
   Manager& taskManager,
   const smtk::common::Managers::Ptr& managers)
-  : Task(config, dependencies, taskManager, managers)
+  : AgentlessTask(config, dependencies, taskManager, managers)
   , m_managers(managers)
 {
   // Mark the association specifier as invalid by default.

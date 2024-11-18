@@ -19,9 +19,9 @@
 
 namespace py = pybind11;
 
-inline PySharedPtrClass< smtk::task::Task > pybind11_init_smtk_task_Task(py::module &m)
+inline PySharedPtrClass< smtk::task::Task, smtk::resource::Component > pybind11_init_smtk_task_Task(py::module &m)
 {
-  PySharedPtrClass< smtk::task::Task > instance(m, "Task");
+  PySharedPtrClass< smtk::task::Task, smtk::resource::Component > instance(m, "Task");
   instance
     .def("typeName", &smtk::task::Task::typeName)
     .def_static("create", (std::shared_ptr<smtk::task::Task> (*)()) &smtk::task::Task::create)
@@ -35,13 +35,14 @@ inline PySharedPtrClass< smtk::task::Task > pybind11_init_smtk_task_Task(py::mod
     .def("title", &smtk::task::Task::name)
     .def("setTitle", &smtk::task::Task::setName, py::arg("title"))
     .def("state", &smtk::task::Task::state)
+    .def("agents", &smtk::task::Task::agents, py::return_value_policy::reference_internal)
+    .def("children", &smtk::task::Task::children, py::return_value_policy::reference_internal)
     .def("markCompleted", &smtk::task::Task::markCompleted, py::arg("completed"))
     .def("dependencies", &smtk::task::Task::dependencies)
     .def("addDependency", &smtk::task::Task::addDependency, py::arg("dependency"))
     .def("removeDependency", &smtk::task::Task::removeDependency, py::arg("dependency"))
     .def("observers", &smtk::task::Task::observers)
-    .def("internalState", &smtk::task::Task::internalState)
-    .def_readonly_static("type_name", &smtk::task::Task::type_name)
+    //.def("internalState", &smtk::task::Task::internalState)
     ;
   return instance;
 }

@@ -3,9 +3,15 @@
 set(tasks
   FillOutAttributes
   GatherResources
-  Group
   SubmitOperation
   Task
+)
+
+set(agents
+  Agent
+  FillOutAttributesAgent
+  GatherObjectsAgent
+  SubmitOperationAgent
 )
 
 set(adaptors
@@ -24,6 +30,7 @@ set(operations
 
 set(taskSrcs
   Active.cxx
+  AgentlessTask.cxx
   Adaptor.cxx
   Gallery.cxx
   Instances.cxx
@@ -44,6 +51,7 @@ set(taskSrcs
 
 set(taskHeaders
   Active.h
+  AgentlessTask.h
   Adaptor.h
   Gallery.h
   Instances.h
@@ -69,6 +77,17 @@ set(taskHeaders
 foreach(task ${tasks})
   list(APPEND taskSrcs ${task}.cxx json/json${task}.cxx)
   list(APPEND taskHeaders ${task}.h json/json${task}.h)
+endforeach()
+
+foreach(agent ${agents})
+  list(APPEND taskSrcs "${agent}.cxx")
+  list(APPEND taskHeaders "${agent}.h")
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/json/json${agent}.h")
+    list(APPEND taskHeaders "json/json${agent}.h")
+    if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/json/json${agent}.cxx")
+      list(APPEND taskSrcs "json/json${agent}.cxx")
+    endif()
+  endif()
 endforeach()
 
 foreach(operation ${operations})

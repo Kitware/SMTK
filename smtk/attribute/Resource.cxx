@@ -469,6 +469,25 @@ bool Resource::rename(smtk::attribute::AttributePtr att, const std::string& newN
   return true;
 }
 
+bool Resource::resetId(AttributePtr att, const smtk::common::UUID& newId)
+{
+  // Make sure that this Resource is managing this attribute
+  if (att->resource() != shared_from_this())
+  {
+    return false;
+  }
+  // Make sure that the new id doesn't exists
+  if (this->find(newId) != nullptr)
+  {
+    return false;
+  }
+  std::cerr << "Changing Att Id from: " << att->id() << " to " << newId << std::endl;
+  m_attributeIdMap.erase(att->id());
+  att->resetId(newId);
+  m_attributeIdMap[newId] = att;
+  return true;
+}
+
 std::string Resource::createUniqueName(const std::string& type) const
 {
   int i = 0;

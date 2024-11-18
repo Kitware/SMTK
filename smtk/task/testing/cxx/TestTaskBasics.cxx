@@ -17,10 +17,10 @@
 #include "smtk/plugin/Registry.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/AgentlessTask.h"
 #include "smtk/task/GatherResources.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Registrar.h"
-#include "smtk/task/Task.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -31,7 +31,7 @@ using namespace smtk::task;
 
 static bool taskDestroyed = false;
 
-class UnavailableTask : public Task
+class UnavailableTask : public AgentlessTask
 {
 public:
   smtkTypeMacro(test_task::UnavailableTask);
@@ -41,7 +41,7 @@ public:
     const Configuration& config,
     Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr)
-    : Task(config, taskManager, managers)
+    : AgentlessTask(config, taskManager, managers)
   {
     this->internalStateChanged(State::Unavailable);
   }
@@ -50,7 +50,7 @@ public:
     const Task::PassedDependencies& deps,
     Manager& taskManager,
     const smtk::common::Managers::Ptr& managers = nullptr)
-    : Task(config, deps, taskManager, managers)
+    : AgentlessTask(config, deps, taskManager, managers)
   {
     this->internalStateChanged(State::Unavailable);
   }
@@ -115,7 +115,7 @@ int TestTaskBasics(int, char*[])
       ++called;
       from = prev;
       to = next;
-      std::cout << "  " << task.name() << " transitioned: " << prev << " ⟶ " << next << "\n";
+      std::cerr << "  " << task.name() << " transitioned: " << prev << " ⟶ " << next << "\n";
     };
     auto okey = t1->observers().insert(callback);
 

@@ -189,7 +189,8 @@ pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
 void pqSMTKRenderResourceBehavior::destroyPipelineSource(
   const smtk::resource::Resource::Ptr& resource)
 {
-  pqSMTKResource* source = pqSMTKBehavior::instance()->getPVResource(resource);
+  auto* behavior = pqSMTKBehavior::instance();
+  pqSMTKResource* source = behavior ? behavior->getPVResource(resource) : nullptr;
 
   if (source != nullptr)
   {

@@ -14,6 +14,10 @@
 
 #include "smtk/common/Links.h"
 
+#include "smtk/common/UUID.h"
+#include "smtk/common/json/Helper.h"
+#include "smtk/common/json/jsonUUID.h"
+
 #include "nlohmann/json.hpp"
 
 // Define how links are serialized.
@@ -31,16 +35,36 @@ template<
   typename base_type>
 void to_json(json& j, const Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
-  for (const auto& link : links)
+  const auto* helper = Helper<left_type, right_type>::instance();
+  if (helper)
   {
-    json jlink;
-    const base_type& base = static_cast<const base_type&>(link);
-    jlink["id"] = link.id;
-    jlink["base"] = base;
-    jlink["left"] = link.left;
-    jlink["right"] = link.right;
-    jlink["role"] = link.role;
-    j.push_back(jlink);
+    for (const auto& link : links)
+    {
+      if (!helper->includeLink(link.left))
+      {
+        continue; // This link is not required
+      }
+      const base_type& base = static_cast<const base_type&>(link);
+      json jlink{ { "id", link.id },
+                  { "base", base },
+                  { "role", link.role },
+                  { "left", helper->serializeLeft(link.left) },
+                  { "right", helper->serializeRight(link.right) } };
+      j.push_back(jlink);
+    }
+  }
+  else
+  {
+    for (const auto& link : links)
+    {
+      const base_type& base = static_cast<const base_type&>(link);
+      json jlink{ { "id", link.id },
+                  { "base", base },
+                  { "role", link.role },
+                  { "left", link.left },
+                  { "right", link.right } };
+      j.push_back(jlink);
+    }
   }
 }
 
@@ -52,14 +76,30 @@ template<
   typename base_type>
 void from_json(const json& j, Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
-  for (json::const_iterator it = j.begin(); it != j.end(); ++it)
+  const auto* helper = Helper<left_type, right_type>::instance();
+  if (helper)
   {
-    base_type base = it->at("base");
-    id_type id = it->at("id");
-    left_type left = it->at("left");
-    right_type right = it->at("right");
-    role_type role = it->at("role");
-    links.insert(std::move(base), id, left, right, role);
+    for (json::const_iterator it = j.begin(); it != j.end(); ++it)
+    {
+      links.insert(
+        std::move(it->at("base").get<base_type>()),
+        it->at("id").get<id_type>(),
+        helper->deserializeLeft(it->at("left")),
+        helper->deserializeRight(it->at("right")),
+        it->at("role").get<role_type>());
+    }
+  }
+  else
+  {
+    for (json::const_iterator it = j.begin(); it != j.end(); ++it)
+    {
+      links.insert(
+        std::move(it->at("base").get<base_type>()),
+        it->at("id").get<id_type>(),
+        it->at("left").get<left_type>(),
+        it->at("right").get<right_type>(),
+        it->at("role").get<role_type>());
+    }
   }
 }
 

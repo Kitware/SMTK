@@ -388,12 +388,13 @@ bool Manager::changePortId(Port* port, std::function<bool()> fp)
   return fp();
 }
 
-void Manager::changePortName(Port* port, std::function<void()> fp)
+bool Manager::changePortName(Port* port, const std::string& newName, std::function<bool()> fp)
 {
   (void)port;
+  (void)newName;
   // Currently there are no internal data structures that need to be called so just call
   // the function passed in
-  fp();
+  return fp();
 }
 
 } // namespace task

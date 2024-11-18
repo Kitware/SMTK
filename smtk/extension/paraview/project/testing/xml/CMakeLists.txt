@@ -6,12 +6,14 @@ endif()
 
 set(TESTS_WITH_BASELINES
   ${CMAKE_CURRENT_SOURCE_DIR}/WorkletPanel.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/AgentPorts.xml
 )
 
 include(SMTKPVTestingMacros)
 
 #TODO: this should be set for the entire project's xml tests
 set(WorkletPanel_USES_DIRECT_DATA ON)
+set(AgentPorts_USES_DIRECT_DATA ON)
 
 if (SMTK_DATA_DIR)
 smtk_add_client_tests(

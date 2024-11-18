@@ -22,6 +22,7 @@
 
 #include "smtk/task/Active.h"
 #include "smtk/task/Adaptor.h"
+#include "smtk/task/Agent.h"
 #include "smtk/task/Gallery.h"
 #include "smtk/task/Instances.h"
 #include "smtk/task/PortInstances.h"
@@ -111,6 +112,13 @@ public:
   PortInstances& portInstances() { return m_portInstances; }
   const PortInstances& portInstances() const { return m_portInstances; }
 
+  /// The signatures the agent factory uses to construct agents.
+  using AgentFactory = smtk::common::Factory<smtk::task::Agent, Task*>;
+
+  /// Return a factory to create agents for tasks.
+  const AgentFactory& agentFactory() const { return m_agentFactory; }
+  AgentFactory& agentFactory() { return m_agentFactory; }
+
   /// Return the managers instance that contains this manager, if it exists.
   smtk::common::Managers::Ptr managers() const { return m_managers.lock(); }
   void setManagers(const smtk::common::Managers::Ptr& managers);
@@ -144,7 +152,7 @@ public:
   ///
   /// This method is used to update internal data structures. Please use task::Port::setName
   /// to change the name of the Port - it will call this method with an appropriate lambda.
-  void changePortName(Port* port, std::function<void()> fp);
+  bool changePortName(Port* port, const std::string& newName, std::function<bool()> fp);
 
   /// Use an elevated priority for the task-manager's observation of operations.
   ///
@@ -179,6 +187,7 @@ private:
   TaskInstances m_taskInstances;
   AdaptorInstances m_adaptorInstances;
   PortInstances m_portInstances;
+  AgentFactory m_agentFactory;
   Active m_active;
   std::weak_ptr<smtk::common::Managers> m_managers;
   smtk::resource::Resource* m_parent = nullptr;

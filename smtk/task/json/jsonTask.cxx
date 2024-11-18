@@ -8,7 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/task/json/jsonTask.h"
+
 #include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonAgent.h"
+#include "smtk/task/json/jsonFillOutAttributesAgent.h"
+#include "smtk/task/json/jsonSubmitOperationAgent.h"
 
 #include "smtk/task/Manager.h"
 
@@ -37,7 +41,10 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     {
       config["style"] = task->style();
     }
-    config["state"] = stateName(task->state());
+    config["agentState"] = stateName(task->agentState());
+    config["childrenState"] = stateName(task->childrenState());
+    config["dependencyState"] = stateName(task->dependencyState());
+    config["completed"] = task->isCompleted();
     nlohmann::json::array_t deps;
     for (const auto& dependency : task->dependencies())
     {
@@ -59,6 +66,32 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     if (!portDict.empty())
     {
       config["ports"] = portDict;
+    }
+
+    nlohmann::json::array_t agentArr;
+    for (const auto& agent : task->agents())
+    {
+      if (agent)
+      {
+        agentArr.push_back(agent->configuration());
+      }
+    }
+    if (!agentArr.empty())
+    {
+      config["agents"] = agentArr;
+    }
+
+    nlohmann::json::array_t childArr;
+    for (const auto& child : task->children())
+    {
+      if (child)
+      {
+        childArr.emplace_back(child->id());
+      }
+    }
+    if (!childArr.empty())
+    {
+      config["children"] = childArr;
     }
   }
   return config;

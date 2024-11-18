@@ -30,6 +30,14 @@ inline py::class_<smtk::string::Token> pybind11_init_smtk_string_Token(py::modul
       {
         return "<smtk.string.Token '" + token.data() + "'>";
       })
+    .def("__hash__", [](const smtk::string::Token& self)
+      {
+        return static_cast<int>(self.id());
+      })
+    .def("__eq__", [](const smtk::string::Token& self, const smtk::string::Token& other)
+      {
+        return self == other;
+      })
     ;
   return instance;
 }

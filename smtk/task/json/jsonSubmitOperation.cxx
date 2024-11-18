@@ -89,28 +89,6 @@ void to_json(nlohmann::json& j, const SubmitOperation::ParameterSpec& parameterS
   }
 }
 
-#if 0
-void from_json(const nlohmann::json& j, SubmitOperation::ResourceAttributes& resourceAttributes)
-{
-  auto result = j.find("valid");
-  if (result != j.end())
-  {
-    result->get_to(resourceAttributes.m_valid);
-  }
-  result = j.find("invalid");
-  if (result != j.end())
-  {
-    result->get_to(resourceAttributes.m_invalid);
-  }
-}
-
-void to_json(nlohmann::json& j, const SubmitOperation::ResourceAttributes& resourceAttributes)
-{
-  j = nlohmann::json{ { "valid", resourceAttributes.m_valid },
-                      { "invalid", resourceAttributes.m_invalid } };
-}
-#endif // 0
-
 namespace json
 {
 

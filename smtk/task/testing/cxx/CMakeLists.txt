@@ -2,7 +2,6 @@ set(unit_tests
   TestActiveTask.cxx
   TestConfigureOperation.cxx
   TestTaskBasics.cxx
-  #TestTaskGroup.cxx
   TestTaskJSON.cxx
   TestTaskPorts.cxx
   # TestTaskUIState.cxx

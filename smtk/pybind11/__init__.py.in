@@ -57,6 +57,66 @@ def _windows_dll_path():
 if sys.version_info >= (3, 8) and sys.platform == 'win32':
     _windows_dll_path()
 
+def shufflePlugins(pluginList):
+    """Reorder plugins so they load in a sane order.
+    Until plugin dependencies are supported, this is needed."""
+    from pathlib import Path
+    from functools import cmp_to_key
+    priority = {
+        'smtkResourcePlugin': 1,
+        'smtkGeometryPlugin': 2,
+        'smtkAttributePlugin': 3,
+        'smtkOperationPlugin': 4,
+
+        'smtkMeshPlugin': 5,
+        'smtkModelPlugin': 6,
+        'smtkTaskPlugin': 7,
+        'smtkProjectPlugin': 8,
+        'smtkGraphPlugin': 9,
+        'smtkMarkupPlugin': 10,
+
+        'smtkReadWriteResourceManagerStatePlugin': 11,
+
+        'smtkOpencascadeSessionPlugin': 12,
+        'smtkDelaunayPlugin': 13,
+        'smtkPolygonSessionPlugin': 14,
+        'smtkMeshSessionPlugin': 15,
+        'smtkVTKOperationsPlugin': 16,
+        'smtkVTKSessionPlugin': 17,
+
+        'smtkViewPlugin': 18,
+        'smtkDefaultConfigurationPlugin': 19,
+
+        'smtkQtPlugin': 20,
+        'smtkPVServerExtPlugin': 21,
+        'smtkPVMeshExtPlugin': 22,
+        'smtkPVModelExtPlugin': 23,
+        'smtkPQComponentsPlugin': 24,
+        'smtkPQReadersPlugin': 25,
+        'smtkPQCoreProjectPlugin': 26,
+        'smtkPQWidgetsPlugin': 27,
+        'smtkPQOperationViewsPlugin': 28,
+        'smtkPQMarkupPlugin': 29,
+        'smtkPQLegacyOperationsPlugin': 30,
+        'smtkPQOperationsPanelPlugin': 31,
+        'smtkPQGroupingPlugin': 32,
+        'smtkPQGuiComponentsPlugin': 33,
+        'smtkPQGuiProjectPlugin': 34,
+
+        'smtkOscillatorSessionPlugin': 35,
+    }
+    maxpri = 1<<32
+    def comparator(path1, path2):
+        pt1 = Path(path1)
+        pt2 = Path(path2)
+        p1 = priority[pt1.stem] if pt1.stem in priority else maxpri
+        p2 = priority[pt2.stem] if pt2.stem in priority else maxpri
+        if p1 != p2:
+            return p1 - p2
+        return -1 if path1 < path2 else +1 if path1 > path2 else 0
+    result = sorted(pluginList, key=cmp_to_key(comparator))
+    return result
+
 def findAvailablePlugins():
     """Search this SMTK installation for plugins, returning their full paths."""
     import os
@@ -73,18 +133,25 @@ def findAvailablePlugins():
     for pluginCheck in [x for x in os.listdir(pluginDir) if os.path.isdir(os.path.join(pluginDir,x))]:
         entries = os.listdir(os.path.join(pluginDir, pluginCheck))
         pluginList += ([os.path.join(pluginDir, pluginCheck, x) for x in entries if x.endswith(ending)])
-    return pluginList
+    return shufflePlugins(pluginList)
 
 def loadedPlugins():
-    from paraview import servermanager
-    pm = servermanager.vtkSMProxyManager.GetProxyManager()
-    lm = pm.GetPluginManager()
-    info = lm.GetLocalInformation()
+    """Return a list of plugins that have been loaded.
+    Note that plugins are only supported via ParaView; if you build
+    SMTK without ParaView, this will always return an empty list.
+    """
     plugins = []
-    for ii in range(info.GetNumberOfPlugins()):
-        name = info.GetPluginName(ii)
-        if 'smtk' in name.casefold() and info.GetPluginLoaded(ii):
-            plugins += [name]
+    try:
+        from paraview import servermanager
+        pm = servermanager.vtkSMProxyManager.GetProxyManager()
+        lm = pm.GetPluginManager()
+        info = lm.GetLocalInformation()
+        for ii in range(info.GetNumberOfPlugins()):
+            name = info.GetPluginName(ii)
+            if 'smtk' in name.casefold() and info.GetPluginLoaded(ii):
+                plugins += [name]
+    except:
+        pass
     return plugins
 
 def loadPlugins(pluginList = None):
@@ -190,10 +257,27 @@ def read(filenames, context=None):
     outcome = rres.findInt('outcome').value()
     if outcome != int(smtk.operation.Operation.SUCCEEDED):
         print('ERROR: Operation failed with outcome %d' % outcome)
+        print(reader.log().convertToString())
         return result
     rlist = rres.findResource('resource')
     result = [rlist.value(ii) for ii in range(rlist.numberOfValues())]
     return result
+
+def importPythonOperationsFromModule(module_name):
+    """Import all of the python operation classes present in \a module_name."""
+    import smtk.operation
+    ctxt = applicationContext()
+    opMgr = ctxt.get('smtk::operation::Manager')
+    if opMgr:
+        opMgr.importOperationsFromModule(module_name);
+
+def importPythonOperation(module_name, operation_name):
+    """Register the \a operation_name operation from \a module_name."""
+    import smtk.operation
+    ctxt = applicationContext()
+    opMgr = ctxt.get('smtk::operation::Manager')
+    if opMgr:
+        opMgr.registerOperation(module_name, operation_name);
 
 def wrappingProtocol():
     return 'pybind11'

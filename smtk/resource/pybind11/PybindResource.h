@@ -146,6 +146,7 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("setClean", &smtk::resource::Resource::setClean, py::arg("state") = true)
     .def("setId", &smtk::resource::Resource::setId, py::arg("id"))
     .def("setLocation", &smtk::resource::Resource::setLocation, py::arg("location"))
+    .def("setManager", &smtk::resource::Resource::setManager, py::arg("manager"))
     .def("setMarkedForRemoval", &smtk::resource::Resource::setMarkedForRemoval, py::arg("val"))
     .def("setName", &smtk::resource::Resource::setName, py::arg("name"))
     .def("typeName", &smtk::resource::Resource::typeName)

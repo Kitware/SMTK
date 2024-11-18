@@ -74,6 +74,13 @@ dependencies whose dependents reference all of the head tasks).
   ports have been updated. Each port indicates the type of data it
   accepts (for input ports) or produces (for output ports).
 
+:smtk:`Agent <smtk::task::Agent>`
+  instances are assigned to a task and affect its state, the
+  data ingested from its input ports, the data broadcast on its
+  output ports, and its availability to users.
+  Agents may also override the way a task's child-tasks affect
+  its state.
+
 :smtk:`Task instance-tracker and factory <smtk::task::Instances>`
   is used to create instances of registered task classes.
   Any plugins that provide new Task subclasses should
@@ -88,6 +95,12 @@ dependencies whose dependents reference all of the head tasks).
   indication before deletion that the task will be destroyed and
   thus should not be active.
   This object can be observed for changes to the active task.
+
+:smtk:`Agent factory <smtk::task::Manager::AgentFactory>`
+  is used to create instances of registered agent classes.
+  Any plugins that provide new Agent subclasses should
+  register those classes with the factory in their registrar
+  (see :ref:`smtk-plugin-sys`).
 
 :smtk:`Adaptor <smtk::task::Adaptor>`
   instances configure a "downstream" task when the "upstream"

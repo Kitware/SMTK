@@ -37,6 +37,7 @@ class SMTKCORE_EXPORT PortData : smtkEnableSharedPtr(PortData)
 {
 public:
   smtkTypeMacroBase(smtk::task::PortData);
+  smtkCreateMacro(smtk::task::PortData);
 
   /// This default virtual destructor forces PortData to be polymorphic.
   virtual ~PortData() = default;

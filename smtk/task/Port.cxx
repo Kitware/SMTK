@@ -85,6 +85,16 @@ void Port::configure(const Configuration& config)
     m_direction = Direction::In; // TODO: Warn?
   }
 
+  it = config.find("access");
+  if (it != config.end())
+  {
+    m_access = Port::AccessFromLabel(it->get<std::string>());
+  }
+  else
+  {
+    m_access = Access::External; // TODO: Warn?
+  }
+
   it = config.find("name");
   if (it != config.end())
   {
@@ -143,23 +153,22 @@ bool Port::setId(const common::UUID& newId)
   return fp();
 }
 
-void Port::setName(const std::string& newName)
+bool Port::setName(const std::string& newName)
 {
   auto fp = [this, newName]() {
     if (this->m_name == newName)
     {
-      return;
+      return false;
     }
     this->m_name = newName;
-    return;
+    return true;
   };
 
-  if (auto manager = m_manager.lock())
+  if (m_parent)
   {
-    manager->changePortName(this, fp);
-    return;
+    return m_parent->changePortName(this, newName, fp);
   }
-  fp();
+  return fp();
 }
 
 std::shared_ptr<PortData> Port::portData(smtk::resource::PersistentObject* object) const
@@ -256,6 +265,29 @@ Port::Direction Port::DirectionFromLabel(const std::string& label)
   }
 }
 
+Port::Access Port::AccessFromLabel(const std::string& label)
+{
+  std::string labelCopy(label);
+  smtk::string::Token down(smtk::common::StringUtil::lower(labelCopy));
+  switch (down.id())
+  {
+    case "smtk::task::access::external"_hash:
+    case "port::access::external"_hash:
+    case "access::external"_hash:
+    case "external"_hash:
+      return Access::External;
+      break;
+
+    default:
+    case "smtk::task::port::access::internal"_hash:
+    case "port::access::internal"_hash:
+    case "access::internal"_hash:
+    case "internal"_hash:
+      return Access::Internal;
+      break;
+  }
+}
+
 smtk::string::Token Port::LabelFromDirection(Direction dir)
 {
   switch (dir)
@@ -265,6 +297,18 @@ smtk::string::Token Port::LabelFromDirection(Direction dir)
     default:
     case In:
       return "in";
+  }
+}
+
+smtk::string::Token Port::LabelFromAccess(Access a)
+{
+  switch (a)
+  {
+    case External:
+      return "external";
+    default:
+    case Internal:
+      return "internal";
   }
 }
 
