@@ -155,7 +155,21 @@ public:
     }
     m_mainLayout->addWidget(m_contentsSplitter);
     m_contentsSplitter->addWidget(m_sidebarOuter);
-    m_contentsSplitter->addWidget(m_view);
+    QFrame* mainFrame = new QFrame();
+    mainFrame->setObjectName("MainCentralFame");
+    QVBoxLayout* mainFrameLayout = new QVBoxLayout();
+    mainFrameLayout->setObjectName("MainCentralFameLayout");
+    mainFrameLayout->setContentsMargins(0, 0, 0, 0);
+    mainFrame->setLayout(mainFrameLayout);
+    m_topFrame = new QFrame(mainFrame);
+    m_topFrame->setObjectName("TopFrame");
+    QHBoxLayout* topFrameLayout = new QHBoxLayout();
+    topFrameLayout->setObjectName("TopFrameLayout");
+    mainFrameLayout->addWidget(m_topFrame);
+    m_topFrame->setLayout(topFrameLayout);
+    topFrameLayout->setContentsMargins(0, 0, 0, 0);
+    mainFrameLayout->addWidget(m_view);
+    m_contentsSplitter->addWidget(mainFrame);
     m_sidebarOuter->setObjectName("SidebarOuter");
     // Mark the sidebar "outer" widget as a subwindow so it will
     // be resized by the QSizeGrip contained inside in the "middle" layout.
@@ -599,6 +613,7 @@ public:
   QPointer<QVBoxLayout> m_mainLayout;
   QPointer<QSplitter> m_contentsSplitter;
   QPointer<QFrame> m_sidebarOuter;
+  QPointer<QFrame> m_topFrame;
   qtDiagramView* m_view{ nullptr };
 
   QPointer<QVBoxLayout> m_sidebarMiddleLayout;
@@ -830,6 +845,11 @@ qtDiagramView* qtDiagram::diagramWidget() const
 qtDiagramLegend* qtDiagram::legend() const
 {
   return m_p ? m_p->m_legend : nullptr;
+}
+
+QFrame* qtDiagram::topFrame() const
+{
+  return m_p ? m_p->m_topFrame : nullptr;
 }
 
 qtBaseNode* qtDiagram::findNode(const smtk::common::UUID& uid) const

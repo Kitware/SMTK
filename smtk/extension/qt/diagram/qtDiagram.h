@@ -32,6 +32,7 @@
 #include <unordered_set>
 
 class QLabel;
+class QFrame;
 
 namespace smtk
 {
@@ -85,6 +86,9 @@ public:
 
   /// Return the legend widget held in the sidebar().
   qtDiagramLegend* legend() const;
+
+  /// Return the top frame of the central area of the diagram.
+  QFrame* topFrame() const;
 
   /// Provide the scene with a way to identify graphical items.
   ///

@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/icons/diagram">
+    <file alias = "house-solid.svg">icons/house-solid.svg</file>
+  </qresource>
+</RCC>

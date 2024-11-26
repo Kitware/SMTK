@@ -104,6 +104,7 @@ set(QAttrLibSrcs
   diagram/qtResourceNode.cxx
   diagram/qtSelectMode.cxx
   diagram/qtTaskArc.cxx
+  diagram/qtTaskPath.cxx
   diagram/qtTaskEditor.cxx
   diagram/qtTaskPortNode.cxx
 )
@@ -226,6 +227,7 @@ set(QAttrLibMocHeaders
   diagram/qtTaskArc.h
   diagram/qtTaskEditor.h
   diagram/qtTaskNodeFactory.h
+  diagram/qtTaskPath.h
   diagram/qtTaskPortNode.h
 
   qtManager.h
@@ -275,6 +277,7 @@ add_library(smtkQtExt
   qtDescriptivePhraseModelIcons.qrc
   qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
+  diagram/qtDiagramIcons.qrc
   ${rpJsonHeader}
   ${tpXmlHeader}
 )

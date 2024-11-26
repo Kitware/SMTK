@@ -96,10 +96,6 @@ Read::Result Read::operateInternal()
   }
   file.close();
 
-  // Access the project's id
-  std::string projectIdStr = j.at("id");
-  smtk::common::UUID projectId(projectIdStr);
-
   // Create a new project for the import
   boost::filesystem::path projectFilePath(filename);
   auto project = this->projectManager()->create(j.at("type").get<std::string>(), this->managers());
@@ -109,8 +105,6 @@ Read::Result Read::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  project->setId(projectId);
-  project->setLocation(filename);
   project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
   project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
 

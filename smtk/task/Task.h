@@ -341,7 +341,7 @@ public:
 
   /// Add a container of task-pointers as dependencies.
   ///
-  /// Returns true if all \a dependencies were added, false if any already existed or were null.
+  /// Returns true if all \a tasks were added, false if any already existed or were null.
   /// This method will invoke observers if adding the dependencies changes this task's state.
   template<typename Container>
   bool addDependencies(const Container& tasks);
@@ -354,13 +354,24 @@ public:
 
   /// Remove a container of task-pointers as dependencies.
   ///
-  /// Returns true if all \a dependencies were removed, false otherwise.
+  /// Returns true if all \a tasks were removed, false otherwise.
   /// This method will invoke observers if removing the dependencies changes this task's state.
   template<typename Container>
   bool removeDependencies(const Container& tasks);
 
   /// Return a parent task if one exists; null otherwise.
   Task* parent() const { return m_parent; }
+
+  /// Returns the ancestral tasks related to this one.
+  ///
+  /// Note that this will include the task itself.
+  std::unordered_set<const Task*> ancestors() const;
+
+  /// Returns the lineage of this task.
+  ///
+  /// The resulting vector will start with the most ancestral task and end
+  /// with this task's parent.
+  std::vector<Task*> lineage() const;
 
   /// Visit children. If hasChildren returns false, this will return immediately.
   ///
@@ -373,8 +384,35 @@ public:
   /// Return whether or not the task has children.
   virtual bool hasChildren() const { return !m_children.empty(); }
 
+  /// Check whether adding a child task would induce a cycle.
+  bool canAddChild(const std::shared_ptr<Task>& child) const;
+
+  /// Add a child task.
+  ///
+  /// Returns true if the \a child was added, false if it already existed, is null
+  /// or would result in a cycle.
+  bool addChild(const std::shared_ptr<Task>& child);
+
+  /// Add a container of task-pointers as children.
+  ///
+  /// Returns true if all \a children were added, false if any already existed, were null,
+  /// or would result in a cycle.
+  template<typename Container>
+  bool addChildren(const Container& tasks);
+
+  /// Remove a child task.
+  ///
+  /// Returns true if the \a child was removed, false if not.
+  bool removeChild(const std::shared_ptr<Task>& child);
+
+  /// Remove a container of task-pointers as children.
+  ///
+  /// Returns true if all \a task were removed, false otherwise.
+  template<typename Container>
+  bool removeChildren(const Container& tasks);
+
   /// Return the children of the task
-  const std::unordered_set<Task*> children() const { return m_children; }
+  const std::unordered_set<Task*>& children() const { return m_children; }
 
   /// Return the agents of the task
   ///
@@ -433,6 +471,12 @@ protected:
   /// the state change to \a next (in which case observers from a nested call to
   /// changeState will have already succeeded) and true otherwise.
   bool changeState(State previous, State next);
+
+  /// Adds a child to a task.
+  ///
+  /// /a taskSet contains this task and all of its ancestors.  This method allows reuse of
+  /// the ancestral information when adding several children at once.
+  bool addChild(const std::shared_ptr<Task>& child, const std::unordered_set<const Task*>& taskSet);
 
   /// Update our state because a dependent task has changed state or
   /// a subclass has marked the internal state as changed.
@@ -521,6 +565,29 @@ bool Task::removeDependencies(const Container& tasks)
   for (const auto& task : tasks)
   {
     removedAll &= this->removeDependency(task);
+  }
+  return removedAll;
+}
+
+template<typename Container>
+bool Task::addChildren(const Container& tasks)
+{
+  auto taskSet = this->ancestors();
+  bool addedAll = true;
+  for (const auto& task : tasks)
+  {
+    addedAll &= this->addChild(task, taskSet);
+  }
+  return addedAll;
+}
+
+template<typename Container>
+bool Task::removeChildren(const Container& tasks)
+{
+  bool removedAll = true;
+  for (const auto& task : tasks)
+  {
+    removedAll &= this->removeChild(task);
   }
   return removedAll;
 }
