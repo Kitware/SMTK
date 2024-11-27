@@ -283,8 +283,7 @@ private:
   };
 
 protected:
-  SMTK_DEPRECATED_IN_24_08("Use this->childKey() instead.")
-  struct Key : BaseKey
+  struct SMTK_DEPRECATED_IN_24_11("Use this->childKey() instead.") Key : BaseKey
   {
     Key() = default;
   };

@@ -126,7 +126,7 @@ Read::Result Read::operateInternal()
   auto& resourceHelper = smtk::resource::json::Helper::pushInstance(project);
   // Add a key to the operation helper so that the ResourceContainer de-serialization code can
   // internally call Resource Read Operations.
-  Operation::Key key;
+  auto key = this->childKey();
   smtk::operation::Helper::pushInstance(&key);
   resourceHelper.setManagers(this->managers());
   auto& taskHelper =
