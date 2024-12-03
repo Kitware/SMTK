@@ -148,7 +148,7 @@ protected:
     const smtk::attribute::AttributePtr& attribute,
     ResourceAttributes& resourceAtts);
 
-  SMTK_DEPRECATED_IN_NEXT("Use hasRelevantInformation (proper spelling) instead.")
+  SMTK_DEPRECATED_IN_24_11("Use hasRelevantInformation (proper spelling) instead.")
   bool hasRelevantInfomation(
     const smtk::resource::ManagerPtr& resourceManager,
     bool& foundResources) const

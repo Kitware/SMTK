@@ -180,7 +180,7 @@ public:
 
   /// @{
   /// \brief Formats the full path to the item with respect to the attribute.
-  SMTK_DEPRECATED_IN_NEXT("Use Item::path() instead.")
+  SMTK_DEPRECATED_IN_24_11("Use Item::path() instead.")
   std::string itemPath(const ItemPtr& item, const std::string& sep = "/") const;
   /// @}
 
